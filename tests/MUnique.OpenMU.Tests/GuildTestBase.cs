@@ -30,7 +30,7 @@ public class GuildTestBase
     protected Mock<IGameServer> GameServer1 { get; set; } = null!;
 
     /// <summary>
-    /// Gets or sets the repository manager.
+    /// Gets or sets the repository provider.
     /// </summary>
     protected IPersistenceContextProvider PersistenceContextProvider { get; set; } = null!;
 

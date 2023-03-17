@@ -45,10 +45,10 @@
                         <span class="oi oi-list" aria-hidden="true"></span> Accounts
                     </NavLink>
                 </li>
-                @if (this.GameConfigurationId is not null)
+                @if (this.GameConfigurationId is { } gameConfigurationId )
                 {
                     <li>
-                        <NavLink href="@("edit/" + typeof(GameConfiguration).FullName + "/" + this.GameConfigurationId)">
+                        <NavLink href="@("edit-config/" + typeof(GameConfiguration).FullName + "/" + this.GameConfigurationId)">
                             <span class="oi oi-cog" aria-hidden="true"></span> Game Configuration
                         </NavLink>
                     </li>

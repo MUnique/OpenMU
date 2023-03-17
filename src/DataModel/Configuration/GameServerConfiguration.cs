@@ -19,4 +19,10 @@ public class GameServerConfiguration
     /// Gets or sets the maps which should be hosted on the server.
     /// </summary>
     public virtual ICollection<GameMapDefinition> Maps { get; protected set; } = null!;
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return $"Default ({this.MaximumPlayers} players)"; // TODO Add Description field
+    }
 }

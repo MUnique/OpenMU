@@ -38,7 +38,7 @@ public class DataUpdateService
     /// <exception cref="System.InvalidOperationException">The plugin manager is not initialized.</exception>
     public async ValueTask<IReadOnlyCollection<IConfigurationUpdatePlugIn>> DetermineAvailableUpdatesAsync()
     {
-        using var context = this._contextProvider.CreateNewUpdateContext();
+        using var context = this._contextProvider.CreateNewContext();
         var updates = (await context.GetAsync<ConfigurationUpdate>().ConfigureAwait(false)).ToList();
 
         var initializationKey = await DetermineInitializationKeyAsync(context);
@@ -70,13 +70,14 @@ public class DataUpdateService
     /// <param name="progress">The progress provider. Reports the progress back to the caller.</param>
     public async ValueTask ApplyUpdatesAsync(IReadOnlyList<IConfigurationUpdatePlugIn> updates, IProgress<(int CurrentUpdatingVersion, bool IsCompleted)> progress)
     {
-        using var context = this._contextProvider.CreateNewUpdateContext();
+        using var context = this._contextProvider.CreateNewContext();
         var updateStates = await context.GetAsync<ConfigurationUpdateState>();
         var updateState = updateStates.FirstOrDefault() ?? context.CreateNew<ConfigurationUpdateState>();
+        var gameConfiguration = (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).First();
         foreach (var update in updates)
         {
             progress.Report((update.Version, false));
-            await update.ApplyUpdateAsync(context).ConfigureAwait(false);
+            await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
             
             updateState.CurrentInstalledVersion = Math.Max(update.Version, updateState.CurrentInstalledVersion);
             updateState.InitializationKey = update.DataInitializationKey;

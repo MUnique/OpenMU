@@ -18,7 +18,7 @@ using MUnique.OpenMU.Web.AdminPanel.Models;
 /// </summary>
 public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupportDataChangedNotification
 {
-    private readonly IPersistenceContextProvider _persistenceContextProvider;
+    private readonly IDataSource<GameConfiguration> _dataSource;
     private readonly IModalService _modalService;
     private string _nameFilter = string.Empty;
     private Guid _pointFilter;
@@ -27,11 +27,11 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
     /// <summary>
     /// Initializes a new instance of the <see cref="PlugInController" /> class.
     /// </summary>
-    /// <param name="persistenceContextProvider">The persistence context provider.</param>
+    /// <param name="dataSource">The data source.</param>
     /// <param name="modalService">The modal service.</param>
-    public PlugInController(IPersistenceContextProvider persistenceContextProvider, IModalService modalService)
+    public PlugInController(IDataSource<GameConfiguration> dataSource, IModalService modalService)
     {
-        this._persistenceContextProvider = persistenceContextProvider;
+        this._dataSource = dataSource;
         this._modalService = modalService;
     }
 
@@ -129,18 +129,12 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
 
         try
         {
-            using var context = this._persistenceContextProvider.CreateNewContext();
+            var gameConfiguration = await this._dataSource.GetOwnerAsync(Guid.Empty);
             var allPlugIns = GetPluginTypes().ToDictionary(t => t.GUID, t => t);
-            foreach (var gameConfig in await context.GetAsync<GameConfiguration>().ConfigureAwait(false))
-            {
-                var rest = count - result.Count;
-                if (rest == 0)
-                {
-                    break;
-                }
 
-                result.AddRange(this.GetPluginsOfConfig(offset, allPlugIns, gameConfig, rest));
-            }
+            var rest = count - result.Count;
+
+            result.AddRange(this.GetPluginsOfConfig(offset, allPlugIns, gameConfiguration, rest));
         }
         catch (NotImplementedException)
         {
@@ -154,18 +148,18 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
     /// Activates the plugin of the specified view item.
     /// </summary>
     /// <param name="item">The item.</param>
-    public void Activate(PlugInConfigurationViewItem item)
+    public ValueTask ActivateAsync(PlugInConfigurationViewItem item)
     {
-        this.ChangeActiveFlag(item, true);
+        return this.ChangeActiveFlagAsync(item, true);
     }
 
     /// <summary>
     /// Deactivates the plugin of the specified view item.
     /// </summary>
     /// <param name="item">The item.</param>
-    public void Deactivate(PlugInConfigurationViewItem item)
+    public ValueTask DeactivateAsync(PlugInConfigurationViewItem item)
     {
-        this.ChangeActiveFlag(item, false);
+        return this.ChangeActiveFlagAsync(item, false);
     }
 
     /// <summary>
@@ -196,10 +190,8 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
         var result = await modal.Result.ConfigureAwait(false);
         if (!result.Cancelled)
         {
-            using var context = this._persistenceContextProvider.CreateNewContext();
-            context.Attach(item.Configuration);
             item.Configuration.SetConfiguration(configuration!);
-            await context.SaveChangesAsync().ConfigureAwait(false);
+            await (await this._dataSource.GetContextAsync().ConfigureAwait(false)).SaveChangesAsync().ConfigureAwait(false);
             this.DataChanged?.Invoke(this, EventArgs.Empty);
         }
     }
@@ -295,15 +287,14 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
         return gameConfig.PlugInConfigurations.Where(c => allPlugIns.TryGetValue(c.TypeId, out var plugInType)
                                                           && this.FilterByPoint(plugInType)
                                                           && this.FilterByName(plugInType)
-                                                          && this.FilterByTypeName(plugInType));
+                                                          && this.FilterByTypeName(plugInType))
+            .OrderBy(p => p.CustomConfiguration is null); // First the ones which can be configured
     }
 
-    private void ChangeActiveFlag(PlugInConfigurationViewItem item, bool value)
+    private async ValueTask ChangeActiveFlagAsync(PlugInConfigurationViewItem item, bool value)
     {
-        using var context = this._persistenceContextProvider.CreateNewContext();
-        context.Attach(item.Configuration);
         item.Configuration.IsActive = value;
-        context.SaveChanges();
+        await (await this._dataSource.GetContextAsync().ConfigureAwait(true)).SaveChangesAsync().ConfigureAwait(true);
         this.DataChanged?.Invoke(this, EventArgs.Empty);
     }
 

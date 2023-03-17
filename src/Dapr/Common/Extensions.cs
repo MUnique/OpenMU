@@ -68,7 +68,7 @@ public static class Extensions
                         throw new Exception($"{nameof(IPersistenceContextProvider)} not registered.");
                     }
 
-                    var configs = persistenceContextProvider.CreateNewTypedContext<PlugInConfiguration>().GetAsync<PlugInConfiguration>().AsTask().WaitAndUnwrapException();
+                    var configs = persistenceContextProvider.CreateNewTypedContext<PlugInConfiguration>(false).GetAsync<PlugInConfiguration>().AsTask().WaitAndUnwrapException();
                     return configs.ToList();
                 }
                 catch (PostgresException)

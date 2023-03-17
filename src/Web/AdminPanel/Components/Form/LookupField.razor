@@ -22,7 +22,7 @@
             }
             else if (typeof(TObject).Namespace?.StartsWith(nameof(MUnique)) ?? false)
             {
-                <NavLink href="@("edit/" + typeof(TObject).FullName + "/" + item.GetId())">@item.GetName()</NavLink>
+                <NavLink href="@("edit-config/" + typeof(TObject).FullName + "/" + item.GetId())">@item.GetName()</NavLink>
             }
             else
             {

@@ -23,20 +23,20 @@ internal abstract class GenericRepositoryBase<T> : IRepository<T>, ILoadByProper
     /// <summary>
     /// Initializes a new instance of the <see cref="GenericRepositoryBase{T}" /> class.
     /// </summary>
-    /// <param name="repositoryManager">The repository manager.</param>
+    /// <param name="repositoryProvider">The repository provider.</param>
     /// <param name="logger">The logger.</param>
-    protected GenericRepositoryBase(RepositoryManager repositoryManager, ILogger logger)
+    protected GenericRepositoryBase(IContextAwareRepositoryProvider repositoryProvider, ILogger logger)
     {
         this._logger = logger;
-        this.RepositoryManager = repositoryManager;
+        this.RepositoryProvider = repositoryProvider;
         using var completeContext = new EntityDataContext();
         this.FullEntityType = completeContext.Model.FindEntityType(typeof(T)) ?? throw new InvalidOperationException($"{typeof(T)} is not included in the model");
     }
 
     /// <summary>
-    /// Gets the repository manager.
+    /// Gets the repository provider.
     /// </summary>
-    protected RepositoryManager RepositoryManager { get; }
+    protected IContextAwareRepositoryProvider RepositoryProvider { get; }
 
     /// <summary>
     /// Gets the complete meta model of the entity type in <see cref="EntityDataContext"/>.
@@ -82,6 +82,7 @@ internal abstract class GenericRepositoryBase<T> : IRepository<T>, ILoadByProper
     public virtual async ValueTask<T?> GetByIdAsync(Guid id)
     {
         using var context = this.GetContext();
+        
         var result = await context.Context.Set<T>().FindAsync(id).ConfigureAwait(false);
         if (result is null)
         {
@@ -118,7 +119,7 @@ internal abstract class GenericRepositoryBase<T> : IRepository<T>, ILoadByProper
     /// <returns>The navigations which should be considered when loading the data.</returns>
     protected virtual IEnumerable<INavigationBase> GetNavigations(EntityEntry entityEntry)
     {
-        return entityEntry.Navigations.Select(n => n.Metadata);
+        return FullEntityType.GetNavigations();
     }
 
     /// <summary>
@@ -132,8 +133,16 @@ internal abstract class GenericRepositoryBase<T> : IRepository<T>, ILoadByProper
 
         foreach (var navigation in this.GetNavigations(entityEntry).OfType<INavigation>())
         {
-            if (!navigation.IsCollection)
+            if (!navigation.IsCollection && navigation.GetClrValue(obj) is null)
             {
+                if (currentContext is ITypedContext editContext
+                    && editContext.RootType != navigation.DeclaringEntityType
+                    && editContext.IsBackReference(entityEntry.Metadata.ClrType))
+                {
+                    // prevents endless loop.
+                    continue;
+                }
+
                 if (this.FullEntityType.FindPrimaryKey()?.Properties[0] == navigation.ForeignKey.Properties[0])
                 {
                     // The entity type is a many-to-many join entity and the property of the navigation is the "owner" of it.
@@ -142,6 +151,7 @@ internal abstract class GenericRepositoryBase<T> : IRepository<T>, ILoadByProper
                 else
                 {
                     await this.LoadNavigationPropertyAsync(entityEntry, navigation).ConfigureAwait(false);
+                    navigation.SetIsLoadedWhenNoTracking(obj);
                 }
             }
         }
@@ -150,6 +160,14 @@ internal abstract class GenericRepositoryBase<T> : IRepository<T>, ILoadByProper
         {
             if (collection.Metadata is INavigation metadata)
             {
+                if (currentContext is ITypedContext editContext
+                    && editContext.RootType != metadata.DeclaringEntityType
+                    && editContext.IsBackReference(entityEntry.Metadata.ClrType))
+                {
+                    // prevents endless loop.
+                    continue;
+                }
+
                 await this.LoadCollectionAsync(entityEntry, metadata, currentContext).ConfigureAwait(false);
                 collection.IsLoaded = true;
             }
@@ -198,7 +216,7 @@ internal abstract class GenericRepositoryBase<T> : IRepository<T>, ILoadByProper
 
         loadStatusAware.LoadingStatus = LoadingStatus.Loading;
 
-        if (this.RepositoryManager.GetRepository(foreignKeyProperty.DeclaringEntityType.ClrType) is ILoadByProperty repository)
+        if (this.RepositoryProvider.GetRepository(foreignKeyProperty.DeclaringEntityType.ClrType) is ILoadByProperty repository)
         {
             var foreignKeyValue = entityEntry.Property(navigation.ForeignKey.PrincipalKey.Properties[0].Name).CurrentValue;
             if (foreignKeyValue is { })
@@ -251,7 +269,7 @@ internal abstract class GenericRepositoryBase<T> : IRepository<T>, ILoadByProper
             IRepository? repository = null;
             try
             {
-                repository = this.RepositoryManager.GetRepository(navigation.TargetEntityType.ClrType);
+                repository = this.RepositoryProvider.GetRepository(navigation.TargetEntityType.ClrType);
             }
             catch (RepositoryNotFoundException ex)
             {
@@ -273,7 +291,7 @@ internal abstract class GenericRepositoryBase<T> : IRepository<T>, ILoadByProper
     }
 
     /// <summary>
-    /// Gets a context to work with. If no context is currently registered at the repository manager, a new one is getting created.
+    /// Gets a context to work with. If no context is currently registered at the repository provider, a new one is getting created.
     /// </summary>
     /// <returns>The context.</returns>
     protected abstract EntityFrameworkContextBase GetContext();

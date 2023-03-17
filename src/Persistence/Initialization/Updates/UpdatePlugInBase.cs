@@ -33,9 +33,9 @@ public abstract class UpdatePlugInBase : IConfigurationUpdatePlugIn
     public abstract bool IsMandatory { get; }
 
     /// <inheritdoc />
-    public async ValueTask ApplyUpdateAsync(IContext context)
+    public async ValueTask ApplyUpdateAsync(IContext context, GameConfiguration gameConfiguration)
     {
-        await this.ApplyAsync(context);
+        await this.ApplyAsync(context, gameConfiguration);
         this.AddUpdateEntry(context);
     }
 
@@ -43,11 +43,12 @@ public abstract class UpdatePlugInBase : IConfigurationUpdatePlugIn
     /// Applies this update on the given persistence context.
     /// </summary>
     /// <param name="context">The persistence context.</param>
+    /// <param name="gameConfiguration">The game configuration which can be updated.</param>
     /// <remarks>
-    /// Calling <see cref="IContext.SaveChangesAsync"/> is not required in this implementation.
-    /// It will be called by <see cref="DataUpdateService"/>.
+    /// Calling <see cref="IContext.SaveChangesAsync" /> is not required in this implementation.
+    /// It will be called by <see cref="DataUpdateService" />.
     /// </remarks>
-    protected abstract ValueTask ApplyAsync(IContext context);
+    protected abstract ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration);
 
     private void AddUpdateEntry(IContext context)
     {

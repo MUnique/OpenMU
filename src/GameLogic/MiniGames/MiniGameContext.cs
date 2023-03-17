@@ -474,7 +474,7 @@ public class MiniGameContext : Disposable, IEventStateProvider
 
         try
         {
-            using var context = this._gameContext.PersistenceContextProvider.CreateNewTypedContext<MiniGameRankingEntry>();
+            using var context = this._gameContext.PersistenceContextProvider.CreateNewTypedContext<MiniGameRankingEntry>(false);
             context.Attach(this.Definition);
             var instanceId = Guid.NewGuid();
             var timestamp = DateTime.UtcNow;

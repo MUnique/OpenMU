@@ -53,7 +53,7 @@ public class ByteArrayDownloadController : Controller
         }
 
         var createContextMethod = typeof(IPersistenceContextProvider).GetMethod(nameof(IPersistenceContextProvider.CreateNewTypedContext))!.MakeGenericMethod(type);
-        using var persistenceContext = (IContext)createContextMethod.Invoke(this._persistenceContextProvider, Array.Empty<object>())!;
+        using var persistenceContext = (IContext)createContextMethod.Invoke(this._persistenceContextProvider, new object?[] { false, null })!;
 
         var obj = await persistenceContext.GetByIdAsync(id, type).ConfigureAwait(false);
         if (obj is null)

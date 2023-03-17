@@ -37,4 +37,10 @@ public class CharacterQuestState
     /// </summary>
     [MemberOfAggregate]
     public virtual ICollection<QuestMonsterKillRequirementState> RequirementStates { get; protected set; } = null!;
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return $"#{this.Group}, Last finished: '{this.LastFinishedQuest?.Name}', Active: '{this.ActiveQuest?.Name}'";
+    }
 }

@@ -7,9 +7,9 @@ namespace MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.Persistence.BasicModel;
 
 /// <summary>
-/// A repository manager which creates new in-memory repositories on-demand.
+/// A repository provider which creates new in-memory repositories on-demand.
 /// </summary>
-public class InMemoryRepositoryManager : BaseRepositoryManager
+public class InMemoryRepositoryProvider : BaseRepositoryProvider
 {
     /// <summary>
     /// Gets all <see cref="IMemoryRepository"/> which were added to this manager.
