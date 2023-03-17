@@ -155,10 +155,8 @@ public sealed class EditMap : ComponentBase, IDisposable
 
         await this.GameConfigurationSource.DiscardChangesAsync();
         this._maps = null;
-        // OnAfterRender will load again ...
-        //var cts = this._disposeCts.Token;
-        //_ = Task.Run(() => this.LoadDataAsync(cts), cts);
-        
+
+        // OnAfterRender will load the maps again ...
         return true;
     }
 
