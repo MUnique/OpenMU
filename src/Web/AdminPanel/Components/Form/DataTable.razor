@@ -29,16 +29,16 @@
         }
     </thead>
     <tbody>
-        @if (this._isLoading)
-        {
-            <tr>Loading ...</tr>
-        }
-        else if (this._items != null)
+        @if (this._items != null)
         {
             @foreach (var item in this._items)
             {
                 <tr>@ItemTemplate(item)</tr>
             }
+        }
+        else if (this._isLoading)
+        {
+            <tr>Loading ...</tr>
         }
     </tbody>
     <tfoot>

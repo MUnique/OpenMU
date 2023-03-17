@@ -288,7 +288,7 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
                                                           && this.FilterByPoint(plugInType)
                                                           && this.FilterByName(plugInType)
                                                           && this.FilterByTypeName(plugInType))
-            .OrderBy(p => p.CustomConfiguration is not null);
+            .OrderBy(p => p.CustomConfiguration is null); // First the ones which can be configured
     }
 
     private async ValueTask ChangeActiveFlagAsync(PlugInConfigurationViewItem item, bool value)
