@@ -24,6 +24,6 @@ internal abstract class KalimaBase : BaseMapInitializer
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()
     {
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[259], 007, 019, Direction.South); // Oracle Layla
+        yield return this.CreateMonsterSpawn(1, this.NpcDictionary[259], 007, 019, Direction.South); // Oracle Layla
     }
 }

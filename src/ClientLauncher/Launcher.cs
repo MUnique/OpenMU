@@ -6,6 +6,8 @@ namespace MUnique.OpenMU.ClientLauncher;
 
 using System.Diagnostics;
 using System.IO;
+using System.Net;
+using System.Net.Sockets;
 using System.Windows.Forms;
 using Microsoft.Win32;
 
@@ -46,13 +48,19 @@ public class Launcher : ILauncher
             return;
         }
 
+        if (this.ResolveHost() is not { } ipAddress)
+        {
+            MessageBox.Show($"Address '{this.HostAddress} could not be resolved to an IPv4 address.", "Error");
+            return;
+        }
+
         if (OperatingSystem.IsWindows())
         {
             using var localMachineKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
             using var key = localMachineKey.CreateSubKey(@"SOFTWARE\WebZen\Mu\Connection");
             key.SetValue("Key", Environment.TickCount, RegistryValueKind.DWord);
-            key.SetValue("ParameterA", this.HostEncode(), RegistryValueKind.String);
-            key.SetValue("ParameterB", this.PortEncode(), RegistryValueKind.DWord);
+            key.SetValue("ParameterA", this.HostEncode(ipAddress), RegistryValueKind.String);
+            key.SetValue("ParameterB", this.PortEncode(ipAddress), RegistryValueKind.DWord);
         }
         else
         {
@@ -84,10 +92,10 @@ public class Launcher : ILauncher
     /// Encodes the Port, so that the main.exe can read it.
     /// </summary>
     /// <returns>Encoded port value which will be put into ParameterB.</returns>
-    private int PortEncode()
+    private int PortEncode(string ipAddress)
     {
         var port = this.HostPort;
-        switch (this.HostAddress!.Length % 4)
+        switch (ipAddress.Length % 4)
         {
             case 0:
                 port += 12 - (((port / 4) % 4) * 8);
@@ -110,15 +118,34 @@ public class Launcher : ILauncher
         }
     }
 
+    private string? ResolveHost()
+    {
+        if (IPAddress.TryParse(this.HostAddress, out _))
+        {
+            return this.HostAddress;
+        }
+
+        var entry = Dns.GetHostEntry(this.HostAddress!);
+        if (entry.AddressList.FirstOrDefault(a => a.AddressFamily == AddressFamily.InterNetwork) is { } ipAddress)
+        {
+            var address = ipAddress.ToString();
+
+            // The game client blocks connections to 127.0.0.1 (probably to prevent cheating).
+            return address == "127.0.0.1" ? "127.127.127.127" : address;
+        }
+
+        return null;
+    }
+
     /// <summary>
     /// Encodes the IP Address of the server, so that the main.exe can read it.
     /// </summary>
     /// <returns>Encoded string value of the ip address which to put into ParameterA.</returns>
-    private string HostEncode()
+    private string HostEncode(string ipAddress)
     {
         var result = new StringBuilder();
         var counter = 0;
-        foreach (var ch in this.HostAddress!)
+        foreach (var ch in ipAddress)
         {
             var encodedCharacter = '\0';
             counter++;

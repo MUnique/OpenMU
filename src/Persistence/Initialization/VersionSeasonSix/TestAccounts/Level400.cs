@@ -4,10 +4,10 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.TestAccounts;
 
+using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
-using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 using MUnique.OpenMU.Persistence.Initialization.Items;
@@ -91,6 +91,31 @@ internal class Level400 : AccountInitializerBase
         character.Inventory.Items.Add(this.CreateFenrir(InventoryConstants.PetSlot, ItemOptionTypes.GoldFenrir));
 
         this.AddDarkKnightItems(character.Inventory);
+        this.AddTestJewelsAndPotions(character.Inventory);
+        this.AddPets(character.Inventory);
+        return character;
+    }
+
+    /// <inheritdoc/>
+    protected override Character CreateMagicGladiator()
+    {
+        var character = this.CreateMagicGladiator(CharacterClassNumber.DuelMaster);
+
+        character.Attributes.First(a => a.Definition == Stats.BaseStrength).Value += 1200;
+        character.Attributes.First(a => a.Definition == Stats.BaseAgility).Value += 400;
+        character.LevelUpPoints -= 1600; // for the added strength and agility
+        character.MasterLevelUpPoints = 100; // To test master skill tree
+
+        character.Inventory!.Items.Add(this.CreateWeapon(InventoryConstants.LeftHandSlot, 0, 23, 15, 4, true, true)); // Explosion Blade+15+16+S+L
+
+        // Volcano Set+15+16+L:
+        character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.ArmorSlot, 32, 8, null, 15, 4, true));
+        character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.PantsSlot, 32, 9, null, 15, 4, true));
+        character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.GlovesSlot, 32, 10, null, 15, 4, true));
+        character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.BootsSlot, 32, 11, null, 15, 4, true));
+        character.Inventory.Items.Add(this.CreateWings(InventoryConstants.WingsSlot, 39, 15)); // Wing of Ruin +15
+        character.Inventory.Items.Add(this.CreateFenrir(InventoryConstants.PetSlot, ItemOptionTypes.GoldFenrir));
+
         this.AddTestJewelsAndPotions(character.Inventory);
         this.AddPets(character.Inventory);
         return character;

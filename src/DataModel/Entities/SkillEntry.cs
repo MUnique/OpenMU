@@ -47,10 +47,10 @@ public class SkillEntry : INotifyPropertyChanged
     /// Gets or sets the power up element of this skill of this player. It is a "cached" element which will be created on demand and can be applied multiple times.
     /// </summary>
     [Transient]
-    public IElement? BuffPowerUp { get; set; }
+    public (AttributeDefinition Target, IElement BuffPowerUp)[]? PowerUps { get; set; }
 
     /// <summary>
-    /// Gets or sets the duration of the <see cref="BuffPowerUp"/>.
+    /// Gets or sets the duration of the <see cref="PowerUps"/>.
     /// </summary>
     /// <remarks>
     /// It is an IElement, because the duration can be dependent from the player attributes.

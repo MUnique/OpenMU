@@ -28,7 +28,6 @@ public partial class ItemOptionLink : MUnique.OpenMU.DataModel.Entities.ItemOpti
     /// <summary>
     /// Gets the raw object of <see cref="ItemOption" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("itemOption")]
     [System.Text.Json.Serialization.JsonPropertyName("itemOption")]
     public IncreasableItemOption RawItemOption
     {
@@ -37,7 +36,6 @@ public partial class ItemOptionLink : MUnique.OpenMU.DataModel.Entities.ItemOpti
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.Items.IncreasableItemOption ItemOption
     {

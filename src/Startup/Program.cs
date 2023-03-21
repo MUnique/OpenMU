@@ -13,11 +13,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Nito.AsyncEx.Synchronous;
-using Serilog;
-using Serilog.Debugging;
 using MUnique.OpenMU.ChatServer;
 using MUnique.OpenMU.ConnectServer;
+using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.FriendServer;
 using MUnique.OpenMU.GuildServer;
 using MUnique.OpenMU.Interfaces;
@@ -32,6 +30,9 @@ using MUnique.OpenMU.PlugIns;
 using MUnique.OpenMU.Web.AdminPanel;
 using MUnique.OpenMU.Web.AdminPanel.Services;
 using MUnique.OpenMU.Web.Map.Map;
+using Nito.AsyncEx.Synchronous;
+using Serilog;
+using Serilog.Debugging;
 
 /// <summary>
 /// The startup class for an all-in-one game server.
@@ -170,7 +171,7 @@ internal sealed class Program : IDisposable
                 break;
             case "?":
             case "help":
-                var commandList = "exit, gc, pid";
+                var commandList = "help, exit, gc, pid";
                 Console.WriteLine($"Commands available: {commandList}");
                 break;
             case "":
@@ -178,7 +179,7 @@ internal sealed class Program : IDisposable
                 break;
             default:
                 Console.WriteLine("Unknown command");
-                break;
+                goto case "help";
         }
 
         if (_confirmExit && !string.IsNullOrWhiteSpace(input))
@@ -205,46 +206,39 @@ internal sealed class Program : IDisposable
             builder.AddAdminPanel(includeMapApp: true);
         }
 
-        builder.Host
-            .ConfigureServices(c =>
-            {
-                c.AddSingleton(this._servers)
-                    .AddSingleton<IConfigurationChangePublisher, ConfigurationChangeHandler>()
-                    .AddIpResolver(args)
-                    .AddSingleton(this._gameServers)
-                    .AddSingleton(this._gameServers.Values)
-                    .AddSingleton(s =>
-                        this.DeterminePersistenceContextProviderAsync(
-                            args,
-                            s.GetService<ILoggerFactory>() ?? throw new Exception($"{nameof(ILoggerFactory)} not registered."))
-                            .WaitAndUnwrapException())
-                    .AddSingleton<IPersistenceContextProvider>(s => s.GetService<IMigratableDatabaseContextProvider>()!)
-                    .AddSingleton<ILoginServer, LoginServer>()
-                    .AddSingleton<IGuildServer, GuildServer>()
-                    .AddSingleton<IFriendServer, FriendServer>()
-                    .AddSingleton<ChatServer>()
-                    .AddSingleton<IChatServer>(s => s.GetService<ChatServer>()!)
-                    .AddSingleton<ConnectServerFactory>()
-                    .AddSingleton<ConnectServerContainer>()
-                    .AddScoped<IMapFactory, JavascriptMapFactory>()
-                    .AddSingleton<SetupService>()
-                    .AddSingleton<IEnumerable<IConnectServer>>(provider => provider.GetService<ConnectServerContainer>() ?? throw new Exception($"{nameof(ConnectServerContainer)} not registered."))
-                    .AddSingleton<IGuildChangePublisher, GuildChangeToGameServerPublisher>()
-                    .AddSingleton<IFriendNotifier, FriendNotifierToGameServer>()
-                    .AddSingleton<PlugInManager>()
-                    .AddSingleton<IServerProvider, LocalServerProvider>()
-                    .AddSingleton<ICollection<PlugInConfiguration>>(s => s.GetService<IPersistenceContextProvider>()?.CreateNewTypedContext<PlugInConfiguration>().GetAsync<PlugInConfiguration>().AsTask().WaitAndUnwrapException().ToList() ?? throw new Exception($"{nameof(IPersistenceContextProvider)} not registered."))
-                    .AddHostedService<ChatServerContainer>()
-                    .AddHostedService<GameServerContainer>()
-                    .AddHostedService(provider => provider.GetService<ConnectServerContainer>());
-            });
+        builder.Services.AddSingleton(this._servers)
+            .AddSingleton<IConfigurationChangePublisher, ConfigurationChangeHandler>()
+            .AddIpResolver(args)
+            .AddSingleton(this._gameServers)
+            .AddSingleton(this._gameServers.Values)
+            .AddSingleton(s =>
+                this.DeterminePersistenceContextProviderAsync(
+                    args,
+                    s.GetService<ILoggerFactory>() ?? throw new Exception($"{nameof(ILoggerFactory)} not registered."))
+                    .WaitAndUnwrapException())
+            .AddSingleton<IPersistenceContextProvider>(s => s.GetService<IMigratableDatabaseContextProvider>()!)
+            .AddSingleton<ILoginServer, LoginServer>()
+            .AddSingleton<IGuildServer, GuildServer>()
+            .AddSingleton<IFriendServer, FriendServer>()
+            .AddSingleton<ChatServer>()
+            .AddSingleton<IChatServer>(s => s.GetService<ChatServer>()!)
+            .AddSingleton<ConnectServerFactory>()
+            .AddSingleton<ConnectServerContainer>()
+            .AddScoped<IMapFactory, JavascriptMapFactory>()
+            .AddSingleton<SetupService>()
+            .AddSingleton<IEnumerable<IConnectServer>>(provider => provider.GetService<ConnectServerContainer>() ?? throw new Exception($"{nameof(ConnectServerContainer)} not registered."))
+            .AddSingleton<IGuildChangePublisher, GuildChangeToGameServerPublisher>()
+            .AddSingleton<IFriendNotifier, FriendNotifierToGameServer>()
+            .AddSingleton<PlugInManager>()
+            .AddSingleton<IServerProvider, LocalServerProvider>()
+            .AddSingleton<ICollection<PlugInConfiguration>>(this.PlugInConfigurationsFactory)
+            .AddHostedService<ChatServerContainer>()
+            .AddHostedService<GameServerContainer>()
+            .AddHostedService(provider => provider.GetService<ConnectServerContainer>()!);
         var host = builder.Build();
 
+        // NpgsqlLoggingConfiguration.InitializeLogging(host.Services.GetRequiredService<ILoggerFactory>())
         this._logger.Information("Host created");
-        if (host.Services.GetService<ILoggerFactory>() is { } loggerFactory)
-        {
-            NpgsqlLoggingProvider.Initialize(loggerFactory);
-        }
 
         if (addAdminPanel)
         {
@@ -257,8 +251,65 @@ internal sealed class Program : IDisposable
 
         await host.StartAsync().ConfigureAwait(false);
         stopwatch.Stop();
-        this._logger.Information($"Host started, elapsed time: {stopwatch.Elapsed}");
+        this._logger.Information("Host started, elapsed time: {elapsed}",stopwatch.Elapsed);
+        this._logger.Information("Admin Panel bound to urls: {urls}", string.Join("; ", host.Urls));
         return host;
+    }
+
+    private ICollection<PlugInConfiguration> PlugInConfigurationsFactory(IServiceProvider serviceProvider)
+    {
+        var persistenceContextProvider = serviceProvider.GetService<IPersistenceContextProvider>() ?? throw new Exception($"{nameof(IPersistenceContextProvider)} not registered.");
+        using var context = persistenceContextProvider.CreateNewTypedContext<PlugInConfiguration>(false);
+        var configs = context.GetAsync<PlugInConfiguration>().AsTask().WaitAndUnwrapException().ToList();
+
+        // We check if we miss any plugin configurations in the database. If we do, we try to add them.
+        var pluginManager = new PlugInManager(null, serviceProvider.GetService<ILoggerFactory>()!, serviceProvider);
+        pluginManager.DiscoverAndRegisterPlugInsOf<ISupportDefaultCustomConfiguration>();
+        var typesWithMissingConfigs = pluginManager.KnownPlugInTypes.Where(t => configs.All(c => c.TypeId != t.GUID)).ToList();
+        if (!typesWithMissingConfigs.Any())
+        {
+            return configs;
+        }
+
+        configs.AddRange(this.CreateMissingPlugInConfigurations(typesWithMissingConfigs, persistenceContextProvider));
+        return configs;
+    }
+
+    private IEnumerable<PlugInConfiguration> CreateMissingPlugInConfigurations(IEnumerable<Type> plugInTypes, IPersistenceContextProvider persistenceContextProvider)
+    {
+        GameConfiguration gameConfiguration;
+
+        using (var context = persistenceContextProvider.CreateNewContext())
+        {
+            gameConfiguration = context.GetAsync<GameConfiguration>().AsTask().WaitAndUnwrapException().First();
+        }
+
+        using var saveContext = persistenceContextProvider.CreateNewContext(gameConfiguration);
+        saveContext.Attach(gameConfiguration);
+        foreach (var plugInType in plugInTypes)
+        {
+            var plugInConfiguration = saveContext.CreateNew<PlugInConfiguration>();
+            plugInConfiguration.TypeId = plugInType.GUID;
+            plugInConfiguration.IsActive = true;
+            gameConfiguration.PlugInConfigurations.Add(plugInConfiguration);
+            if (plugInType.GetInterfaces().Contains(typeof(ISupportDefaultCustomConfiguration)))
+            {
+                try
+                {
+                    var plugin = (ISupportDefaultCustomConfiguration)Activator.CreateInstance(plugInType)!;
+                    var defaultConfig = plugin.CreateDefaultConfig();
+                    plugInConfiguration.SetConfiguration(defaultConfig);
+                }
+                catch (Exception ex)
+                {
+                    this._logger.Warning(ex, "Could not create custom default configuration for plugin type {plugInType}", plugInType);
+                }
+            }
+
+            yield return plugInConfiguration;
+        }
+
+        saveContext.SaveChanges();
     }
 
     private ushort DetermineUshort(string parameterName, string[] args, ushort defaultValue)
@@ -310,13 +361,13 @@ internal sealed class Program : IDisposable
         }
         else
         {
-            contextProvider = await this.PrepareRepositoryManagerAsync(args.Contains("-reinit"), version, args.Contains("-autoupdate"), loggerFactory).ConfigureAwait(false);
+            contextProvider = await this.PrepareRepositoryProviderAsync(args.Contains("-reinit"), version, args.Contains("-autoupdate"), loggerFactory).ConfigureAwait(false);
         }
 
         return contextProvider;
     }
 
-    private async Task<IMigratableDatabaseContextProvider> PrepareRepositoryManagerAsync(bool reinit, string version, bool autoupdate, ILoggerFactory loggerFactory)
+    private async Task<IMigratableDatabaseContextProvider> PrepareRepositoryProviderAsync(bool reinit, string version, bool autoupdate, ILoggerFactory loggerFactory)
     {
         var contextProvider = new PersistenceContextProvider(loggerFactory, null);
         if (reinit || !await contextProvider.DatabaseExistsAsync().ConfigureAwait(false))

@@ -28,7 +28,6 @@ public partial class ItemOption : MUnique.OpenMU.DataModel.Configuration.Items.I
     /// <summary>
     /// Gets the raw object of <see cref="OptionType" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("optionType")]
     [System.Text.Json.Serialization.JsonPropertyName("optionType")]
     public ItemOptionType RawOptionType
     {
@@ -37,7 +36,6 @@ public partial class ItemOption : MUnique.OpenMU.DataModel.Configuration.Items.I
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionType OptionType
     {
@@ -48,7 +46,6 @@ public partial class ItemOption : MUnique.OpenMU.DataModel.Configuration.Items.I
     /// <summary>
     /// Gets the raw object of <see cref="PowerUpDefinition" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("powerUpDefinition")]
     [System.Text.Json.Serialization.JsonPropertyName("powerUpDefinition")]
     public PowerUpDefinition RawPowerUpDefinition
     {
@@ -57,7 +54,6 @@ public partial class ItemOption : MUnique.OpenMU.DataModel.Configuration.Items.I
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Attributes.PowerUpDefinition PowerUpDefinition
     {

@@ -35,6 +35,10 @@ public sealed class Trap : NonPlayerCharacter, IAttacker
     /// <inheritdoc/>
     public IAttributeSystem Attributes { get; }
 
+    /// <inheritdoc/>
+    /// <remarks>Traps don't do combos.</remarks>
+    public ComboStateMachine? ComboState => null;
+
     /// <summary>
     /// Attacks the specified player.
     /// </summary>
@@ -43,7 +47,7 @@ public sealed class Trap : NonPlayerCharacter, IAttacker
     {
         // need to find specific animation
         // Maybe add SpecificAnimation and AttackWhenPlayerOn properties to MonsterDefinition?? or create new TrapDefinition?
-        await player.AttackByAsync(this, null).ConfigureAwait(false);
+        await player.AttackByAsync(this, null, false).ConfigureAwait(false);
         await this.ForEachWorldObserverAsync<IShowAnimationPlugIn>(p => p.ShowAnimationAsync(this, TrapAttackAnimation, player, this.Rotation), true).ConfigureAwait(false);
     }
 

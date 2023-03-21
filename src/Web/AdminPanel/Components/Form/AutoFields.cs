@@ -36,14 +36,19 @@ public class AutoFields : ComponentBase
         Builders.Add(new ByteFieldBuilder());
         Builders.Add(new ShortFieldBuilder());
         Builders.Add(new BooleanFieldBuilder());
-        Builders.Add(new DateFieldBuilder());
+        Builders.Add(new DateTimeFieldBuilder());
+        Builders.Add(new DateOnlyFieldBuilder());
+        Builders.Add(new TimeOnlyFieldBuilder());
+        Builders.Add(new TimeSpanFieldBuilder());
         Builders.Add(new EnumFieldBuilder());
+        Builders.Add(new FlagsEnumFieldBuilder());
         Builders.Add(new ExitGateFieldBuilder());
         Builders.Add(new LookupFieldBuilder());
         Builders.Add(new EmbeddedFormFieldBuilder());
         Builders.Add(new ObjectCollectionFieldBuilder());
         Builders.Add(new IntCollectionFieldBuilder());
         Builders.Add(new ByteArrayFieldBuilder());
+        Builders.Add(new ValueListFieldBuilder());
     }
 
     /// <summary>

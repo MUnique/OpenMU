@@ -821,6 +821,38 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="TeleportTarget" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="targetId">The target id.</param>
+    /// <param name="teleportTargetX">The teleport target x.</param>
+    /// <param name="teleportTargetY">The teleport target y.</param>
+    /// <remarks>
+    /// Is sent by the client when: A wizard uses the 'Teleport Ally' skill to teleport a party member of his view range to a nearby coordinate.
+    /// Causes reaction on server side: If the target player is in the same party and in the range, it will teleported to the specified coordinates.
+    /// </remarks>
+    public static async ValueTask SendTeleportTargetAsync(this IConnection? connection, ushort @targetId, byte @teleportTargetX, byte @teleportTargetY)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = TeleportTargetRef.Length;
+            var packet = new TeleportTargetRef(connection.Output.GetSpan(length)[..length]);
+            packet.TargetId = @targetId;
+            packet.TeleportTargetX = @teleportTargetX;
+            packet.TeleportTargetY = @teleportTargetY;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="UnlockVault" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
@@ -1675,44 +1707,6 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
-    /// Sends a <see cref="AreaSkillHit" /> to this connection.
-    /// </summary>
-    /// <param name="connection">The connection.</param>
-    /// <param name="skillId">The skill id.</param>
-    /// <param name="targetX">The target x.</param>
-    /// <param name="targetY">The target y.</param>
-    /// <param name="hitCounter">A sequential hit counter which should prevent that hits are sent multiple times.</param>
-    /// <param name="targetId">The target id.</param>
-    /// <param name="animationCounter">A sequential animation counter which acts as a reference to the previously sent Area Skill Animation packet.</param>
-    /// <remarks>
-    /// Is sent by the client when: An area skill was performed and the client decided to hit a target.
-    /// Causes reaction on server side: The server is calculating the damage and applying it to the target. The attacker gets a response back with the caused damage.
-    /// </remarks>
-    public static async ValueTask SendAreaSkillHitAsync(this IConnection? connection, ushort @skillId, byte @targetX, byte @targetY, byte @hitCounter, ushort @targetId, byte @animationCounter)
-    {
-        if (connection is null)
-        {
-            return;
-        }
-
-        int WritePacket()
-        {
-            var length = AreaSkillHitRef.Length;
-            var packet = new AreaSkillHitRef(connection.Output.GetSpan(length)[..length]);
-            packet.SkillId = @skillId;
-            packet.TargetX = @targetX;
-            packet.TargetY = @targetY;
-            packet.HitCounter = @hitCounter;
-            packet.TargetId = @targetId;
-            packet.AnimationCounter = @animationCounter;
-
-            return packet.Header.Length;
-        }
-
-        await connection.SendAsync(WritePacket).ConfigureAwait(false);
-    }
-
-    /// <summary>
     /// Sends a <see cref="AreaSkill075" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
@@ -1773,6 +1767,66 @@ public static class ConnectionExtensions
             packet.TargetX = @targetX;
             packet.TargetY = @targetY;
             packet.Rotation = @rotation;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="RageAttackRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="skillId">The skill id.</param>
+    /// <param name="targetId">The target id.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player performs a skill with a target, e.g. attacking or buffing.
+    /// Causes reaction on server side: Damage is calculated and the target is hit, if the attack was successful. A response is sent back with the caused damage, and all surrounding players get an animation message.
+    /// </remarks>
+    public static async ValueTask SendRageAttackRequestAsync(this IConnection? connection, ushort @skillId, ushort @targetId)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = RageAttackRequestRef.Length;
+            var packet = new RageAttackRequestRef(connection.Output.GetSpan(length)[..length]);
+            packet.SkillId = @skillId;
+            packet.TargetId = @targetId;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="RageAttackRangeRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="skillId">The skill id.</param>
+    /// <param name="targetId">The target id.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player (rage fighter) performs the dark side skill on a target.
+    /// Causes reaction on server side: The targets (up to 5) are determined and sent back to the player with the RageAttackRangeResponse.
+    /// </remarks>
+    public static async ValueTask SendRageAttackRangeRequestAsync(this IConnection? connection, ushort @skillId, ushort @targetId)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = RageAttackRangeRequestRef.Length;
+            var packet = new RageAttackRangeRequestRef(connection.Output.GetSpan(length)[..length]);
+            packet.SkillId = @skillId;
+            packet.TargetId = @targetId;
 
             return packet.Header.Length;
         }
@@ -2614,7 +2668,7 @@ public static class ConnectionExtensions
     /// Is sent by the client when: The player wants to command its equipped pet (raven).
     /// Causes reaction on server side: 
     /// </remarks>
-    public static async ValueTask SendPetCommandRequestAsync(this IConnection? connection, byte @petType, PetCommandMode @commandMode, ushort @targetId)
+    public static async ValueTask SendPetCommandRequestAsync(this IConnection? connection, PetType @petType, PetCommandMode @commandMode, ushort @targetId)
     {
         if (connection is null)
         {
@@ -2660,6 +2714,62 @@ public static class ConnectionExtensions
             packet.Pet = @pet;
             packet.Storage = @storage;
             packet.ItemSlot = @itemSlot;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="MuHelperStatusChangeRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="pauseStatus">The pause status.</param>
+    /// <remarks>
+    /// Is sent by the client when: The client clicked on MU Helper play or pause button.
+    /// Causes reaction on server side: The server validates, if user can use the helper and sends the status back.
+    /// </remarks>
+    public static async ValueTask SendMuHelperStatusChangeRequestAsync(this IConnection? connection, bool @pauseStatus)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = MuHelperStatusChangeRequestRef.Length;
+            var packet = new MuHelperStatusChangeRequestRef(connection.Output.GetSpan(length)[..length]);
+            packet.PauseStatus = @pauseStatus;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="MuHelperSaveDataRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="helperData">The helper data.</param>
+    /// <remarks>
+    /// Is sent by the client when: The client want to save current MU Helper data.
+    /// Causes reaction on server side: The server should save supplied MU Helper data.
+    /// </remarks>
+    public static async ValueTask SendMuHelperSaveDataRequestAsync(this IConnection? connection, Memory<byte> @helperData)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = MuHelperSaveDataRequestRef.Length;
+            var packet = new MuHelperSaveDataRequestRef(connection.Output.GetSpan(length)[..length]);
+            @helperData.Span.CopyTo(packet.HelperData);
 
             return packet.Header.Length;
         }
@@ -2982,7 +3092,7 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
-    /// Sends a <see cref="RequestEventRemainingTime" /> to this connection.
+    /// Sends a <see cref="MiniGameOpeningStateRequest" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
     /// <param name="eventType">The event type.</param>
@@ -2991,7 +3101,7 @@ public static class ConnectionExtensions
     /// Is sent by the client when: The player requests to get the remaining time of the currently entered event.
     /// Causes reaction on server side: The remaining time is sent back to the client.
     /// </remarks>
-    public static async ValueTask SendRequestEventRemainingTimeAsync(this IConnection? connection, byte @eventType, byte @eventLevel)
+    public static async ValueTask SendMiniGameOpeningStateRequestAsync(this IConnection? connection, MiniGameType @eventType, byte @eventLevel)
     {
         if (connection is null)
         {
@@ -3000,8 +3110,8 @@ public static class ConnectionExtensions
 
         int WritePacket()
         {
-            var length = RequestEventRemainingTimeRef.Length;
-            var packet = new RequestEventRemainingTimeRef(connection.Output.GetSpan(length)[..length]);
+            var length = MiniGameOpeningStateRequestRef.Length;
+            var packet = new MiniGameOpeningStateRequestRef(connection.Output.GetSpan(length)[..length]);
             packet.EventType = @eventType;
             packet.EventLevel = @eventLevel;
 
@@ -3032,6 +3142,36 @@ public static class ConnectionExtensions
         {
             var length = BloodCastleEnterRequestRef.Length;
             var packet = new BloodCastleEnterRequestRef(connection.Output.GetSpan(length)[..length]);
+            packet.CastleLevel = @castleLevel;
+            packet.TicketItemInventoryIndex = @ticketItemInventoryIndex;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ChaosCastleEnterRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="castleLevel">The level of the chaos castle. Appears to always be 0.</param>
+    /// <param name="ticketItemInventoryIndex">The index of the ticket item in the inventory.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player requests to enter the chaos castle by using the 'Armor of Guardsman' item.
+    /// Causes reaction on server side: The server checks if the player can enter the event and sends a response (Code 0xAF) back to the client. If it was successful, the character gets moved to the event map.
+    /// </remarks>
+    public static async ValueTask SendChaosCastleEnterRequestAsync(this IConnection? connection, byte @castleLevel, byte @ticketItemInventoryIndex)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ChaosCastleEnterRequestRef.Length;
+            var packet = new ChaosCastleEnterRequestRef(connection.Output.GetSpan(length)[..length]);
             packet.CastleLevel = @castleLevel;
             packet.TicketItemInventoryIndex = @ticketItemInventoryIndex;
 

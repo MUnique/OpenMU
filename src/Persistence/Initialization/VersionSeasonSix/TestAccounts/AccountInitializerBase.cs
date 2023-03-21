@@ -2,23 +2,38 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.Persistence.Initialization.Items;
-
 namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.TestAccounts;
 
+using System;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameServer.MessageHandler.Quests;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
+using MUnique.OpenMU.Persistence.Initialization.Items;
+using MUnique.OpenMU.Persistence.Initialization.Skills;
 
 /// <summary>
 /// Abstract base class for a test account initializer.
 /// </summary>
 internal abstract class AccountInitializerBase : InitializerBase
 {
+    private static readonly HashSet<SkillNumber> EventSkills = new()
+    {
+        SkillNumber.Stun,
+        SkillNumber.CancelStun,
+        SkillNumber.SwellMana,
+        SkillNumber.Invisibility,
+        SkillNumber.CancelInvisibility,
+        SkillNumber.SpellofProtection,
+        SkillNumber.SpellofRestriction,
+        SkillNumber.SpellofPursuit,
+        SkillNumber.ShieldBurn,
+    };
+
     /// <summary>
     /// Initializes a new instance of the <see cref="AccountInitializerBase"/> class.
     /// </summary>
@@ -31,6 +46,7 @@ internal abstract class AccountInitializerBase : InitializerBase
     {
         this.Level = level;
         this.AccountName = accountName;
+        this.ItemHelper = new ItemHelper(this.Context, this.GameConfiguration);
     }
 
     /// <summary>
@@ -42,12 +58,19 @@ internal abstract class AccountInitializerBase : InitializerBase
     protected int Level { get; }
 
     /// <summary>
+    /// Gets a value indicating whether to add all available skills automatically.
+    /// </summary>
+    protected bool AddAllSkills { get; set; }
+
+    /// <summary>
     /// Gets the name of the account.
     /// </summary>
     /// <value>
     /// The name of the account.
     /// </value>
     protected string AccountName { get; }
+
+    protected ItemHelper ItemHelper { get; }
 
     /// <inheritdoc />
     public sealed override void Initialize()
@@ -87,6 +110,11 @@ internal abstract class AccountInitializerBase : InitializerBase
             account.Characters.Add(darkLord);
         }
 
+        if (this.CreateMagicGladiator() is { } magicGladiator)
+        {
+            account.Characters.Add(magicGladiator);
+        }
+
         return account;
     }
 
@@ -94,25 +122,31 @@ internal abstract class AccountInitializerBase : InitializerBase
     /// Creates the dark lord.
     /// </summary>
     /// <returns>The dark lord, or null.</returns>
-    protected abstract Character? CreateDarkLord();
+    protected virtual Character? CreateDarkLord() => null;
+
+    /// <summary>
+    /// Creates the magic gladiator.
+    /// </summary>
+    /// <returns>The magic gladiator, or null.</returns>
+    protected virtual Character? CreateMagicGladiator() => null;
 
     /// <summary>
     /// Creates the knight.
     /// </summary>
     /// <returns>The dark knight, or null.</returns>
-    protected abstract Character? CreateKnight();
+    protected virtual Character? CreateKnight() => null;
 
     /// <summary>
     /// Creates the elf.
     /// </summary>
     /// <returns>The elf, or null.</returns>
-    protected abstract Character? CreateElf();
+    protected virtual Character? CreateElf() => null;
 
     /// <summary>
     /// Creates the wizard.
     /// </summary>
     /// <returns>The wizard, or null.</returns>
-    protected abstract Character? CreateWizard();
+    protected virtual Character? CreateWizard() => null;
 
     /// <summary>
     /// Creates the knight.
@@ -155,6 +189,16 @@ internal abstract class AccountInitializerBase : InitializerBase
     }
 
     /// <summary>
+    /// Creates the magic gladiator.
+    /// </summary>
+    /// <param name="characterClassNumber">The character class number.</param>
+    /// <returns>The created magic gladiator.</returns>
+    protected Character CreateMagicGladiator(CharacterClassNumber characterClassNumber)
+    {
+        return this.CreateCharacter(this.AccountName + "Mg", characterClassNumber, this.Level, 4);
+    }
+
+    /// <summary>
     /// Creates the character.
     /// </summary>
     /// <param name="name">The name.</param>
@@ -191,11 +235,54 @@ internal abstract class AccountInitializerBase : InitializerBase
         }
 
         character.Attributes.First(a => a.Definition == Stats.Level).Value = level;
-        character.Experience = GameConfigurationInitializer.CalculateNeededExperience(level);
+        character.Experience = GameConfigurationInitializerBase.CalculateNeededExperience(level);
         character.LevelUpPoints = (int)((character.Attributes.First(a => a.Definition == Stats.Level).Value - 1)
                                         * character.CharacterClass.StatAttributes.First(a => a.Attribute == Stats.PointsPerLevelUp).BaseValue);
         character.Inventory = this.Context.CreateNew<ItemStorage>();
         character.Inventory.Money = 10000000;
+
+        if (level > 220)
+        {
+            // Some skills require a completed level 220 quest, so we add it here.
+            var marlonNpc = this.GameConfiguration.Monsters.First(m => m.Designation == "Marlon");
+            if (marlonNpc.Quests
+                    .Where(q => q.QualifiedCharacter == character.CharacterClass
+                                || q.QualifiedCharacter!.NextGenerationClass == character.CharacterClass)
+                    .OrderByDescending(q => q.Number).FirstOrDefault() is { } marlonQuest)
+            {
+                var questInfo220 = this.Context.CreateNew<CharacterQuestState>();
+                questInfo220.Group = QuestConstants.LegacyQuestGroup;
+                questInfo220.LastFinishedQuest = marlonQuest;
+                character.QuestStates.Add(questInfo220);
+            }
+
+            var comboQuest = marlonNpc.Quests
+                .Where(q => q.QualifiedCharacter == character.CharacterClass
+                            || q.QualifiedCharacter!.NextGenerationClass == character.CharacterClass)
+                .FirstOrDefault(q => q.Rewards.Any(r => r.AttributeReward == Stats.IsSkillComboAvailable));
+            if (comboQuest is { })
+            {
+                var attribute = this.Context.CreateNew<StatAttribute>(Stats.IsSkillComboAvailable.GetPersistent(this.GameConfiguration), 1);
+                character.Attributes.Add(attribute);
+            }
+        }
+
+        if (this.AddAllSkills)
+        {
+            var weaponSkills = this.GameConfiguration.Items.Where(i => i.Skill is not null && i.ItemSlot is not null).Select(i => i.Skill!).Distinct().ToHashSet();
+            var availableSkills = this.GameConfiguration.Skills.Where(s => s.QualifiedCharacters.Contains(character.CharacterClass)
+                                                                           && s.Number != (short)SkillNumber.NovaStart
+                                                                           && s.Number < 300 // no master skills
+                                                                           && !EventSkills.Contains((SkillNumber)s.Number)
+                                                                           && !weaponSkills.Contains(s)).ToList();
+            foreach (var availableSkill in availableSkills)
+            {
+                var skillEntry = this.Context.CreateNew<SkillEntry>();
+                skillEntry.Skill = availableSkill;
+                character.LearnedSkills.Add(skillEntry);
+            }
+        }
+
         return character;
     }
 
@@ -478,10 +565,7 @@ internal abstract class AccountInitializerBase : InitializerBase
     /// <returns>The created orb.</returns>
     protected Item CreateOrb(byte itemSlot, byte itemNumber)
     {
-        var potion = this.Context.CreateNew<Item>();
-        potion.Definition = this.GameConfiguration.Items.FirstOrDefault(def => def.Group == 12 && def.Number == itemNumber);
-        potion.ItemSlot = itemSlot;
-        return potion;
+        return this.ItemHelper.CreateOrb(itemSlot, itemNumber);
     }
 
     /// <summary>
@@ -585,11 +669,7 @@ internal abstract class AccountInitializerBase : InitializerBase
 
     private Item CreatePotion(byte itemSlot, byte itemNumber)
     {
-        var potion = this.Context.CreateNew<Item>();
-        potion.Definition = this.GameConfiguration.Items.FirstOrDefault(def => def.Group == 14 && def.Number == itemNumber);
-        potion.Durability = 3; // Stack of 3 Potions
-        potion.ItemSlot = itemSlot;
-        return potion;
+        return this.ItemHelper.CreatePotion(itemSlot, itemNumber, 3, 0);
     }
 
     private Item CreateJewelOfBless(byte itemSlot)
@@ -646,21 +726,21 @@ internal abstract class AccountInitializerBase : InitializerBase
         var vault = account.Vault ??= this.Context.CreateNew<ItemStorage>();
         vault.Items.Add(this.CreateBloodCastleTicket(0, 8));
         vault.Items.Add(this.CreateBloodCastleTicket(2, 8));
-        vault.Items.Add(this.CreateBloodCastleTicket(4, 8));
-        vault.Items.Add(this.CreateBloodCastleTicket(6, 8));
+        vault.Items.Add(this.CreateBloodCastleTicket(4, 7));
+        vault.Items.Add(this.CreateBloodCastleTicket(6, 7));
         vault.Items.Add(this.CreateBloodCastleTicket(16, 6));
         vault.Items.Add(this.CreateBloodCastleTicket(18, 6));
-        vault.Items.Add(this.CreateBloodCastleTicket(20, 6));
-        vault.Items.Add(this.CreateBloodCastleTicket(22, 6));
+        vault.Items.Add(this.CreateBloodCastleTicket(20, 5));
+        vault.Items.Add(this.CreateBloodCastleTicket(22, 5));
 
-        vault.Items.Add(this.CreateDevilSquareTicket(32, 8));
-        vault.Items.Add(this.CreateDevilSquareTicket(33, 8));
-        vault.Items.Add(this.CreateDevilSquareTicket(34, 8));
-        vault.Items.Add(this.CreateDevilSquareTicket(35, 8));
-        vault.Items.Add(this.CreateDevilSquareTicket(36, 6));
-        vault.Items.Add(this.CreateDevilSquareTicket(37, 6));
-        vault.Items.Add(this.CreateDevilSquareTicket(38, 6));
-        vault.Items.Add(this.CreateDevilSquareTicket(39, 6));
+        vault.Items.Add(this.CreateDevilSquareTicket(32, 7));
+        vault.Items.Add(this.CreateDevilSquareTicket(33, 7));
+        vault.Items.Add(this.CreateDevilSquareTicket(34, 6));
+        vault.Items.Add(this.CreateDevilSquareTicket(35, 6));
+        vault.Items.Add(this.CreateDevilSquareTicket(36, 5));
+        vault.Items.Add(this.CreateDevilSquareTicket(37, 5));
+        vault.Items.Add(this.CreateDevilSquareTicket(38, 4));
+        vault.Items.Add(this.CreateDevilSquareTicket(39, 4));
     }
 
     protected Item CreateFullAncient(byte itemSlot, ItemGroups group, byte number, byte level, string ancientName)
@@ -695,7 +775,7 @@ internal abstract class AccountInitializerBase : InitializerBase
             ancient.ItemOptions.Add(ancientBonus);
         }
 
-        ancient.ItemSetGroups.Add(set);
+        ancient.ItemSetGroups.Add(itemOfSet);
 
         return ancient;
     }

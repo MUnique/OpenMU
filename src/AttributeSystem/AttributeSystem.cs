@@ -64,7 +64,7 @@ public class AttributeSystem : IAttributeSystem
     public IElement CreateRelatedAttribute(AttributeRelationship relationship, IAttributeSystem sourceAttributeHolder)
     {
         var inputElements = new[] { sourceAttributeHolder.GetOrCreateAttribute(relationship.GetInputAttribute()) };
-        return new AttributeRelationshipElement(inputElements, relationship.InputOperand, relationship.InputOperator);
+        return new AttributeRelationshipElement(inputElements, relationship.GetOperandElement(sourceAttributeHolder), relationship.InputOperator);
     }
 
     /// <summary>
@@ -157,15 +157,15 @@ public class AttributeSystem : IAttributeSystem
     {
         var stringBuilder = new StringBuilder();
         stringBuilder.AppendLine("Stat Attributes:");
-        foreach (var statAttribute in this._attributes.OfType<StatAttribute>())
+        foreach (var statAttribute in this._attributes.Values.OfType<StatAttribute>())
         {
-            stringBuilder.AppendLine(statAttribute.Value.ToString(CultureInfo.InvariantCulture));
+            stringBuilder.AppendLine($"  {statAttribute.Definition}: {statAttribute.Value}");
         }
 
         stringBuilder.AppendLine("Others:");
-        foreach (var attribute in this._attributes.OfType<IComposableAttribute>())
+        foreach (var attribute in this._attributes.Values.OfType<IComposableAttribute>())
         {
-            stringBuilder.AppendLine(attribute.Value.ToString(CultureInfo.InvariantCulture));
+            stringBuilder.AppendLine($"  {attribute.Definition}: {attribute.Value}");
         }
 
         return stringBuilder.ToString();

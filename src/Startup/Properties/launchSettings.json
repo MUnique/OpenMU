@@ -2,7 +2,26 @@
   "profiles": {
     "MUnique.OpenMU.Startup": {
       "commandName": "Project",
-      "commandLineArgs": "-autostart -resolveIp:local --demo --reinit",
+      "commandLineArgs": "-autostart -resolveIp:local",
+      "applicationUrl": "http://localhost",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "http://+:80"
+      }
+    },
+    "Startup with DB reinit": {
+      "commandName": "Project",
+      "commandLineArgs": "-autostart -resolveIp:local -reinit",
+      "applicationUrl": "http://localhost",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "http://+:80"
+      }
+    },
+    "Startup in demo mode": {
+      "commandName": "Project",
+      "commandLineArgs": "-autostart -resolveIp:local -demo",
+      "applicationUrl": "http://localhost",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ASPNETCORE_URLS": "http://+:80"

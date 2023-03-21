@@ -17,17 +17,17 @@ using MUnique.OpenMU.Persistence;
 /// </summary>
 public class AccountService : IDataService<Account>, ISupportDataChangedNotification
 {
-    private readonly IPlayerContext _playerContext;
+    private readonly IDataSource<Account> _dataSource;
     private readonly IModalService _modalService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AccountService"/> class.
     /// </summary>
-    /// <param name="playerContext">The player context.</param>
+    /// <param name="dataSource">The player context.</param>
     /// <param name="modalService">The modal service.</param>
-    public AccountService(IPlayerContext playerContext, IModalService modalService)
+    public AccountService(IDataSource<Account> dataSource, IModalService modalService)
     {
-        this._playerContext = playerContext;
+        this._dataSource = dataSource;
         this._modalService = modalService;
     }
 
@@ -44,9 +44,10 @@ public class AccountService : IDataService<Account>, ISupportDataChangedNotifica
     {
         try
         {
-            return (await this._playerContext.GetAccountsOrderedByLoginNameAsync(offset, count).ConfigureAwait(false)).ToList();
+            var playerContext = (IPlayerContext) await this._dataSource.GetContextAsync().ConfigureAwait(false);
+            return (await playerContext.GetAccountsOrderedByLoginNameAsync(offset, count).ConfigureAwait(false)).ToList();
         }
-        catch (NotImplementedException)
+        catch
         {
             return new List<Account>();
         }
@@ -59,7 +60,8 @@ public class AccountService : IDataService<Account>, ISupportDataChangedNotifica
     public async ValueTask BanAsync(Account account)
     {
         account.State = AccountState.Banned;
-        await this._playerContext.SaveChangesAsync().ConfigureAwait(false);
+        var context = await this._dataSource.GetContextAsync().ConfigureAwait(false);
+        await context.SaveChangesAsync().ConfigureAwait(false);
     }
 
     /// <summary>
@@ -69,7 +71,8 @@ public class AccountService : IDataService<Account>, ISupportDataChangedNotifica
     public async ValueTask UnbanAsync(Account account)
     {
         account.State = AccountState.Normal;
-        await this._playerContext.SaveChangesAsync().ConfigureAwait(false);
+        var context = await this._dataSource.GetContextAsync().ConfigureAwait(false);
+        await context.SaveChangesAsync().ConfigureAwait(false);
     }
 
     /// <summary>
@@ -89,14 +92,16 @@ public class AccountService : IDataService<Account>, ISupportDataChangedNotifica
         var result = await modal.Result.ConfigureAwait(false);
         if (!result.Cancelled)
         {
-            var item = this._playerContext.CreateNew<Account>();
+            var context = await this._dataSource.GetContextAsync().ConfigureAwait(false);
+            await context.SaveChangesAsync().ConfigureAwait(false);
+            var item = context.CreateNew<Account>();
             item.LoginName = accountParameters.LoginName;
             item.PasswordHash = BCrypt.Net.BCrypt.HashPassword(accountParameters.Password);
             item.EMail = accountParameters.EMail;
             item.State = accountParameters.State;
             item.SecurityCode = accountParameters.SecurityCode;
             item.RegistrationDate = DateTime.UtcNow;
-            await this._playerContext.SaveChangesAsync().ConfigureAwait(false);
+            await context.SaveChangesAsync().ConfigureAwait(false);
             this.RaiseDataChanged();
         }
     }

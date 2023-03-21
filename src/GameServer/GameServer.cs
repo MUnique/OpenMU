@@ -69,6 +69,7 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
             this._gameContext.GameMapCreated += (_, _) => this.OnPropertyChanged(nameof(this.Context));
             this._gameContext.GameMapRemoved += (_, _) => this.OnPropertyChanged(nameof(this.Context));
             mapInitializer.PlugInManager = this._gameContext.PlugInManager;
+            mapInitializer.PathFinderPool = this._gameContext.PathFinderPool;
         }
         catch (Exception ex)
         {

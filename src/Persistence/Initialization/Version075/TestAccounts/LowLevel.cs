@@ -4,9 +4,9 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.Version075.TestAccounts;
 
+using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
-using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 
@@ -38,7 +38,6 @@ internal class LowLevel : AccountInitializerBase
         character.Inventory.Items.Add(this.CreateArmorItem(63, 5, 10)); // Leather Gloves
         character.Inventory.Items.Add(this.CreateArmorItem(65, 5, 11)); // Leather Boots
         this.AddTestJewelsAndPotions(character.Inventory);
-        this.AddPets(character.Inventory);
         return character;
     }
 

@@ -78,13 +78,15 @@ public class ItemDefinition
     public int Value { get; set; }
 
     /// <summary>
-    /// Gets or sets the class name of the consumer handler.
+    /// Gets or sets the formula to calculate the required experience for a specific pet level.
+    /// Only applies, if this item is actually a trainable pet.
+    /// The variable for the pet level is "level".
     /// </summary>
-    public string? ConsumeHandlerClass { get; set; }
+    public string? PetExperienceFormula { get; set; }
 
     /// <summary>
     /// Gets or sets the effect which is applied when this item is consumed.
-    /// Setting the <see cref="ConsumeHandlerClass"/> is not required when this effect definition is set.
+    /// Creating a consume handler plugin is not required when this effect definition is set.
     /// </summary>
     public virtual MagicEffectDefinition? ConsumeEffect { get; set; }
 
@@ -139,4 +141,10 @@ public class ItemDefinition
     /// </summary>
     [MemberOfAggregate]
     public virtual ICollection<ItemDropItemGroup> DropItems { get; protected set; } = null!;
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return $"{this.Name} ({this.Group}, {this.Number}) [{this.Width}x{this.Height}]";
+    }
 }

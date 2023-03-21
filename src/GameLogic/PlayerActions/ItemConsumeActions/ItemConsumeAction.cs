@@ -5,17 +5,17 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
 
 using System.ComponentModel;
-using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.PlugIns;
+using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
-using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Action to consume an item.
 /// </summary>
 public class ItemConsumeAction
 {
-    private IDictionary<ItemDefinition, IItemConsumeHandler>? _consumeHandlers;
+    private readonly IItemConsumeHandlerPlugIn _magicEffectHandler = new ApplyMagicEffectConsumeHandlerPlugIn();
 
     /// <summary>
     /// Handles the consume request.
@@ -33,10 +33,23 @@ public class ItemConsumeAction
             return;
         }
 
-        this.InitializeConsumeHandlersIfRequired(player.GameContext);
-        if (!this._consumeHandlers!.TryGetValue(item.Definition, out var consumeHandler))
+        var consumeHandler = player.GameContext.PlugInManager.GetStrategy<ItemIdentifier, IItemConsumeHandlerPlugIn>(new ItemIdentifier(item.Definition.Number, item.Definition.Group))
+                      ?? player.GameContext.PlugInManager.GetStrategy<ItemIdentifier, IItemConsumeHandlerPlugIn>(new ItemIdentifier(null, item.Definition.Group));
+
+        if (consumeHandler is null && item.Definition.Skill is { } && !item.IsWearable())
+        {
+            consumeHandler = player.GameContext.PlugInManager.GetStrategy<ItemIdentifier, IItemConsumeHandlerPlugIn>(ItemConstants.AllScrolls);
+        }
+
+        if (consumeHandler is null && item.Definition.ConsumeEffect is { })
+        {
+            consumeHandler = this._magicEffectHandler;
+        }
+
+        if (consumeHandler is null)
         {
             await player.InvokeViewPlugInAsync<IRequestedItemConsumptionFailedPlugIn>(p => p.RequestedItemConsumptionFailedAsync()).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Using this item is not implemented.", MessageType.BlueNormal)).ConfigureAwait(false);
             return;
         }
 
@@ -60,71 +73,13 @@ public class ItemConsumeAction
 
         if (item.Durability == 0)
         {
-            await player.Inventory.RemoveItemAsync(item).ConfigureAwait(false);
-            await player.InvokeViewPlugInAsync<Views.Inventory.IItemRemovedPlugIn>(p => p.RemoveItemAsync(inventorySlot)).ConfigureAwait(false);
+            await player.DestroyInventoryItemAsync(item).ConfigureAwait(false);
         }
         else
         {
             await player.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(item, true)).ConfigureAwait(false);
         }
 
-        player.GameContext.PlugInManager.GetPlugInPoint<PlugIns.IItemConsumedPlugIn>()?.ItemConsumed(player, item, targetItem);
-        if (item.Durability == 0)
-        {
-            player.GameContext.PlugInManager.GetPlugInPoint<IItemDestroyedPlugIn>()?.ItemDestroyed(item);
-        }
-    }
-
-    private void InitializeConsumeHandlersIfRequired(IGameContext gameContext)
-    {
-        if (this._consumeHandlers != null)
-        {
-            return;
-        }
-
-        this._consumeHandlers = new Dictionary<ItemDefinition, IItemConsumeHandler>();
-
-        // find all items with configured item consume handler
-        var items = gameContext.Configuration.Items.Where(def => !string.IsNullOrEmpty(def.ConsumeHandlerClass));
-        foreach (var item in items)
-        {
-            var consumeHandler = this.CreateConsumeHandler(gameContext, item.ConsumeHandlerClass!);
-            this._consumeHandlers.Add(item, consumeHandler);
-        }
-
-        IItemConsumeHandler effectHandler = new ApplyMagicEffectConsumeHandler();
-        var effectItems = gameContext.Configuration.Items.Where(def => def.ConsumeEffect is not null);
-        foreach (var item in effectItems)
-        {
-            this._consumeHandlers.Add(item, effectHandler);
-        }
-    }
-
-    private IItemConsumeHandler CreateConsumeHandler(IGameContext gameContext, string handlerTypeName)
-    {
-        var handlerType = Type.GetType(handlerTypeName);
-        if (handlerType is null)
-        {
-            throw new ArgumentException($"The consume handler {handlerTypeName} wasn't found.", nameof(handlerTypeName));
-        }
-
-        var constructors = handlerType.GetConstructors();
-        foreach (var ctor in constructors)
-        {
-            var parameters = ctor.GetParameters();
-            if (!parameters.Any())
-            {
-                return ctor.Invoke(Array.Empty<object>()) as IItemConsumeHandler
-                       ?? throw new ArgumentException($"The consume handler {handlerTypeName} isn't implementing {nameof(IItemConsumeHandler)}.", nameof(handlerTypeName));
-            }
-
-            if (parameters.Length == 1 && parameters[0].ParameterType == typeof(IPersistenceContextProvider))
-            {
-                return ctor.Invoke(new object[] { gameContext.PersistenceContextProvider }) as IItemConsumeHandler
-                       ?? throw new ArgumentException($"The consume handler {handlerTypeName} isn't implementing {nameof(IItemConsumeHandler)}.", nameof(handlerTypeName));
-            }
-        }
-
-        throw new ArgumentException($"The consume handler {handlerTypeName} has no suitable constructor. One of '{handlerTypeName}()' or '{handlerTypeName}({nameof(IPersistenceContextProvider)}) is required.", nameof(handlerTypeName));
+        player.GameContext.PlugInManager.GetPlugInPoint<IItemConsumedPlugIn>()?.ItemConsumed(player, item, targetItem);
     }
 }

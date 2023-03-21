@@ -8,6 +8,7 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Quests;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameServer.MessageHandler.Quests;
+using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
 
@@ -33,7 +34,7 @@ internal class Quests : InitializerBase
         this.FindScrollOfEmperor(CharacterClassNumber.DarkKnight);
         this.FindScrollOfEmperor(CharacterClassNumber.FairyElf);
         this.FindScrollOfEmperor(CharacterClassNumber.DarkWizard);
-        this.FindScrollOfEmperor(CharacterClassNumber.DarkKnight);
+        this.FindScrollOfEmperor(CharacterClassNumber.Summoner);
         this.TreasuresOfMu(CharacterClassNumber.DarkKnight, Quest.BrokenSwordNumber);
         this.TreasuresOfMu(CharacterClassNumber.FairyElf, Quest.TearOfElfNumber);
         this.TreasuresOfMu(CharacterClassNumber.DarkWizard, Quest.SoulShardOfWizardNumber);
@@ -62,6 +63,7 @@ internal class Quests : InitializerBase
     {
         var npc = this.GameConfiguration.Monsters.First(m => m.Number == npcNumber);
         var questDefinition = this.Context.CreateNew<QuestDefinition>();
+        questDefinition.SetGuid(group, number, (byte?)qualifiedCharacter ?? 0);
         npc.Quests.Add(questDefinition);
         questDefinition.QuestGiver = npc;
         questDefinition.Name = name;
@@ -87,6 +89,7 @@ internal class Quests : InitializerBase
     {
         var apostleDevin = this.GameConfiguration.Monsters.First(m => m.Number == 406);
         var infiltrationOfBarracks = this.Context.CreateNew<QuestDefinition>();
+        infiltrationOfBarracks.SetGuid(QuestConstants.LegacyQuestGroup, 5);
         apostleDevin.Quests.Add(infiltrationOfBarracks);
         infiltrationOfBarracks.QuestGiver = apostleDevin;
         infiltrationOfBarracks.Name = "Infiltrate The Barracks of Balgass";
@@ -96,22 +99,26 @@ internal class Quests : InitializerBase
         infiltrationOfBarracks.MinimumCharacterLevel = 400;
 
         var balram = this.Context.CreateNew<QuestMonsterKillRequirement>();
+        balram.SetGuid(infiltrationOfBarracks.Number, 409);
         balram.MinimumNumber = 20;
         balram.Monster = this.GameConfiguration.Monsters.First(m => m.Number == 409);
         infiltrationOfBarracks.RequiredMonsterKills.Add(balram);
 
         var deathSpirit = this.Context.CreateNew<QuestMonsterKillRequirement>();
+        deathSpirit.SetGuid(infiltrationOfBarracks.Number, 410);
         deathSpirit.MinimumNumber = 20;
         deathSpirit.Monster = this.GameConfiguration.Monsters.First(m => m.Number == 410);
         infiltrationOfBarracks.RequiredMonsterKills.Add(deathSpirit);
 
         var soram = this.Context.CreateNew<QuestMonsterKillRequirement>();
+        soram.SetGuid(infiltrationOfBarracks.Number, 411);
         soram.MinimumNumber = 20;
         soram.Monster = this.GameConfiguration.Monsters.First(m => m.Number == 411);
         infiltrationOfBarracks.RequiredMonsterKills.Add(soram);
 
         // Rewards:
         var pointReward = this.Context.CreateNew<QuestReward>();
+        pointReward.SetGuid(infiltrationOfBarracks.Number, (short)QuestRewardType.LevelUpPoints);
         pointReward.Value = 10;
         pointReward.RewardType = QuestRewardType.LevelUpPoints;
         infiltrationOfBarracks.Rewards.Add(pointReward);
@@ -122,6 +129,7 @@ internal class Quests : InitializerBase
     {
         var apostleDevin = this.GameConfiguration.Monsters.First(m => m.Number == 406);
         var intoTheDarkness = this.Context.CreateNew<QuestDefinition>();
+        intoTheDarkness.SetGuid(QuestConstants.LegacyQuestGroup, 6);
         apostleDevin.Quests.Add(intoTheDarkness);
         intoTheDarkness.QuestGiver = apostleDevin;
         intoTheDarkness.Name = "Into the 'Darkness' Zone";
@@ -131,6 +139,7 @@ internal class Quests : InitializerBase
         intoTheDarkness.MinimumCharacterLevel = 400;
 
         var darkElf = this.Context.CreateNew<QuestMonsterKillRequirement>();
+        darkElf.SetGuid(intoTheDarkness.Number, 412);
         darkElf.MinimumNumber = 1;
         darkElf.Monster = this.GameConfiguration.Monsters.First(m => m.Number == 412);
         intoTheDarkness.RequiredMonsterKills.Add(darkElf);
@@ -159,6 +168,7 @@ internal class Quests : InitializerBase
     {
         var apostleDevin = this.GameConfiguration.Monsters.First(m => m.Number == 406);
         var evidenceOfStrength = this.Context.CreateNew<QuestDefinition>();
+        evidenceOfStrength.SetGuid(QuestConstants.LegacyQuestGroup, 4);
         apostleDevin.Quests.Add(evidenceOfStrength);
         evidenceOfStrength.QuestGiver = apostleDevin;
         evidenceOfStrength.Name = "Evidence of Strength";
@@ -183,6 +193,7 @@ internal class Quests : InitializerBase
     {
         var marlon = this.GameConfiguration.Monsters.First(m => m.Number == 229);
         var secretDarkStone = this.Context.CreateNew<QuestDefinition>();
+        secretDarkStone.SetGuid(QuestConstants.LegacyQuestGroup, 3, (byte)CharacterClassNumber.BladeKnight);
         marlon.Quests.Add(secretDarkStone);
         secretDarkStone.QuestGiver = marlon;
         secretDarkStone.Name = "Secret of the 'Dark Stone'";
@@ -208,6 +219,7 @@ internal class Quests : InitializerBase
     {
         var marlon = this.GameConfiguration.Monsters.First(m => m.Number == 229);
         var heroStatus = this.Context.CreateNew<QuestDefinition>();
+        heroStatus.SetGuid(QuestConstants.LegacyQuestGroup, 2, (byte)characterClass);
         marlon.Quests.Add(heroStatus);
         heroStatus.QuestGiver = marlon;
         heroStatus.Name = "Gain Hero Status";
@@ -239,6 +251,7 @@ internal class Quests : InitializerBase
     {
         var sebinaThePriestess = this.GameConfiguration.Monsters.First(m => m.Number == 235);
         var treasuresOfMu = this.Context.CreateNew<QuestDefinition>();
+        treasuresOfMu.SetGuid(QuestConstants.LegacyQuestGroup, 1, (byte)characterClass);
         sebinaThePriestess.Quests.Add(treasuresOfMu);
         treasuresOfMu.QuestGiver = sebinaThePriestess;
         treasuresOfMu.Name = "Treasures of MU";
@@ -264,6 +277,7 @@ internal class Quests : InitializerBase
     {
         var sebinaThePriestess = this.GameConfiguration.Monsters.First(m => m.Number == 235);
         var findScrollOfEmperor = this.Context.CreateNew<QuestDefinition>();
+        findScrollOfEmperor.SetGuid(QuestConstants.LegacyQuestGroup, 0, (byte)characterClass);
         sebinaThePriestess.Quests.Add(findScrollOfEmperor);
         findScrollOfEmperor.QuestGiver = sebinaThePriestess;
         findScrollOfEmperor.Name = "Find the 'Scroll of Emperor'";
@@ -305,6 +319,7 @@ internal class Quests : InitializerBase
         itemRequirement.Item = this.GameConfiguration.Items.First(item => item.Group == itemGroup && item.Number == itemNumber);
 
         var dropItemGroup = this.Context.CreateNew<DropItemGroup>();
+        dropItemGroup.SetGuid(quest.Number, itemNumber, quest.QualifiedCharacter?.Number ?? 0);
         dropItemGroup.Description = $"Quest Item '{itemRequirement.Item.Name}'";
         dropItemGroup.PossibleItems.Add(itemRequirement.Item);
         dropItemGroup.Chance = 10.0 / 10000.0;

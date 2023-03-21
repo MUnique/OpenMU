@@ -28,7 +28,6 @@ public partial class MonsterSpawnArea : MUnique.OpenMU.DataModel.Configuration.M
     /// <summary>
     /// Gets the raw object of <see cref="MonsterDefinition" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("monsterDefinition")]
     [System.Text.Json.Serialization.JsonPropertyName("monsterDefinition")]
     public MonsterDefinition RawMonsterDefinition
     {
@@ -37,7 +36,6 @@ public partial class MonsterSpawnArea : MUnique.OpenMU.DataModel.Configuration.M
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.MonsterDefinition MonsterDefinition
     {
@@ -48,7 +46,6 @@ public partial class MonsterSpawnArea : MUnique.OpenMU.DataModel.Configuration.M
     /// <summary>
     /// Gets the raw object of <see cref="GameMap" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("gameMap")]
     [System.Text.Json.Serialization.JsonPropertyName("gameMap")]
     public GameMapDefinition RawGameMap
     {
@@ -57,7 +54,6 @@ public partial class MonsterSpawnArea : MUnique.OpenMU.DataModel.Configuration.M
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.GameMapDefinition GameMap
     {

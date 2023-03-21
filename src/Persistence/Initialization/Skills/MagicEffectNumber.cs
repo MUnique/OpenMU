@@ -10,6 +10,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.Skills;
 /// <remarks>Might not be complete. Negative numbers are for internal usage and their effects are not exposed to the game client.</remarks>
 internal enum MagicEffectNumber : short
 {
+    #region Artificial effects which don't end up as an actual magic effect, but regenerate something
+
     /// <summary>
     /// The shield recover skill effect number.
     /// </summary>
@@ -26,13 +28,7 @@ internal enum MagicEffectNumber : short
     /// </remarks>
     Heal = -2,
 
-    /// <summary>
-    /// The shield skill effect number.
-    /// </summary>
-    /// <remarks>
-    /// Internal.
-    /// </remarks>
-    ShieldSkill = -1,
+    #endregion
 
     /// <summary>
     /// Undefined effect number.
@@ -258,4 +254,17 @@ internal enum MagicEffectNumber : short
     /// The wiz enhance effect.
     /// </summary>
     WizEnhance = 0x52,
+
+    #region Artificial effects which are not sent to the client, starting at 200.
+
+    /// <summary>
+    /// The shield skill effect number.
+    /// </summary>
+    /// <remarks>
+    /// Internal.
+    /// </remarks>
+    ShieldSkill = 200,
+
+    #endregion
+
 }

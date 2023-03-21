@@ -4,20 +4,20 @@
 
 namespace MUnique.OpenMU.Persistence.EntityFramework.Json;
 
+using System.Text.Json.Serialization;
 using MUnique.OpenMU.Persistence.EntityFramework.Model;
-using Newtonsoft.Json.Serialization;
 
 /// <summary>
-/// A reference resolver which resolves them by looking at the objects occuring in the <see cref="GameConfiguration" />.
+/// A reference resolver which resolves them by looking at the objects occurring in the <see cref="GameConfiguration" />.
 /// The cache is maintained by instances of the <see cref="ConfigurationTypeRepository{T}" />.
 /// </summary>
 /// <remarks>TODO: I don't like it as a singleton, but I keep it until I find a cleaner solution.</remarks>
-internal class ConfigurationIdReferenceResolver : IReferenceResolver
+internal class ConfigurationIdReferenceResolver : ReferenceResolver
 {
     /// <summary>
     /// The singleton instance.
     /// </summary>
-    private static readonly ConfigurationIdReferenceResolver InstanceValue = new ();
+    private static readonly ConfigurationIdReferenceResolver InstanceValue = new();
 
     private readonly IDictionary<Guid, IIdentifiable> _cache = new Dictionary<Guid, IIdentifiable>();
 
@@ -34,9 +34,9 @@ internal class ConfigurationIdReferenceResolver : IReferenceResolver
     public static ConfigurationIdReferenceResolver Instance => InstanceValue;
 
     /// <inheritdoc />
-    public object ResolveReference(object context, string reference)
+    public override object ResolveReference(string referenceId)
     {
-        var id = new Guid(reference);
+        var id = new Guid(referenceId);
         if (id == Guid.Empty)
         {
             return null!;
@@ -52,23 +52,17 @@ internal class ConfigurationIdReferenceResolver : IReferenceResolver
     }
 
     /// <inheritdoc/>
-    public string GetReference(object context, object value)
+    public override string GetReference(object value, out bool alreadyExists)
     {
         var p = (IIdentifiable)value;
-
+        alreadyExists = this._cache.ContainsKey(p.Id);
         return p.Id.ToString();
     }
 
     /// <inheritdoc/>
-    public bool IsReferenced(object context, object value)
+    public override void AddReference(string referenceId, object value)
     {
-        throw new NotImplementedException();
-    }
-
-    /// <inheritdoc/>
-    public void AddReference(object context, string reference, object value)
-    {
-        Guid id = new Guid(reference);
+        var id = new Guid(referenceId);
         this._cache[id] = (IIdentifiable)value;
     }
 

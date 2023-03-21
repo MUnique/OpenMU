@@ -2,9 +2,6 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.Web.Map;
-using Nito.AsyncEx.Synchronous;
-
 namespace MUnique.OpenMU.Web.AdminPanel;
 
 using System.IO;
@@ -17,6 +14,7 @@ using Microsoft.Extensions.Hosting;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Persistence.Initialization.Updates;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix;
 using MUnique.OpenMU.Web.AdminPanel.Models;
 using MUnique.OpenMU.Web.AdminPanel.Services;
@@ -56,28 +54,18 @@ public static class WebApplicationExtensions
 
         services.AddBlazoredModal();
 
-        services.AddSingleton<ILookupController, PersistentObjectsLookupController>();
-        services.AddSingleton<SetupService>();
+        services.AddScoped<ILookupController, PersistentObjectsLookupController>();
 
+        services.AddScoped<IDataSource<GameConfiguration>, GameConfigurationDataSource>();
+        services.AddScoped<IDataSource<Account>, AccountDataSource>();
+        services.AddScoped<SetupService>();
+        services.AddScoped<DataUpdateService>();
         services.AddScoped<AccountService>();
         services.AddScoped<IDataService<Account>>(serviceProvider => serviceProvider.GetService<AccountService>()!);
         services.AddScoped<PlugInController>();
         services.AddScoped<IDataService<PlugInConfigurationViewItem>>(serviceProvider => serviceProvider.GetService<PlugInController>()!);
         services.AddScoped<IUserService, NginxHtpasswdFileUserService>();
         services.AddScoped<IChangeNotificationService, ChangeNotificationService>();
-
-        services.AddScoped(provider =>
-        {
-            var contextProvider = provider.GetService<IPersistenceContextProvider>();
-            using var initialContext = contextProvider!.CreateNewConfigurationContext();
-            return initialContext.GetAsync<GameConfiguration>().AsTask().WaitAndUnwrapException().FirstOrDefault()!;
-        });
-
-        services.AddTransient(provider =>
-        {
-            var contextProvider = provider.GetService<IPersistenceContextProvider>();
-            return contextProvider!.CreateNewPlayerContext(provider.GetService<GameConfiguration>()!);
-        });
 
         StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configuration);
         return builder;

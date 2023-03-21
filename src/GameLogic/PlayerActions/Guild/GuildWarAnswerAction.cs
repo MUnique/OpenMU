@@ -109,7 +109,9 @@ public class GuildWarAnswerAction
     {
         var playerReference = new WeakReference<Player>(guildPlayer);
 
+#pragma warning disable VSTHRD100 // Avoid async void methods
         async void OnScorePropertyChanged(object? sender, PropertyChangedEventArgs args)
+#pragma warning restore VSTHRD100 // Avoid async void methods
         {
             try
             {

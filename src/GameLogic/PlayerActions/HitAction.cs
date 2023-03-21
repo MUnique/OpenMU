@@ -21,6 +21,17 @@ public class HitAction
     /// <param name="lookingDirection">The looking direction.</param>
     public async ValueTask HitAsync(Player player, IAttackable target, byte attackAnimation, Direction lookingDirection)
     {
+        if (player.Attributes is not { } attributes)
+        {
+            return;
+        }
+
+        if (attributes[Stats.IsStunned] > 0)
+        {
+            player.Logger.LogWarning($"Probably Hacker - player {player} is attacking in stunned state");
+            return;
+        }
+
         if (player.IsAtSafezone())
         {
             player.Logger.LogWarning($"Probably Hacker - player {player} is attacking from safezone");
@@ -43,7 +54,7 @@ public class HitAction
         }
 
         player.Rotation = lookingDirection;
-        await target.AttackByAsync(player, null).ConfigureAwait(false);
+        await target.AttackByAsync(player, null, false).ConfigureAwait(false);
         if (player.Attributes?[Stats.TransformationSkin] is { } skin and not 0
             && await this.ApplySkinnedMonstersSkillAsync(player, target, (short)skin).ConfigureAwait(false) is var (skill, effectApplied))
         {
@@ -70,13 +81,15 @@ public class HitAction
             return (skill, effectApplied);
         }
 
-        if (skill.MagicEffectDef is { } effectDefinition
+        // Currently, we just support one effect for monsters.
+        // E.g. Poison for Poison Bull Fighters.
+        if (skill.MagicEffectDef is { Duration: not null } effectDefinition
             && !target.MagicEffectList.ActiveEffects.ContainsKey(effectDefinition.Number)
-            && effectDefinition.PowerUpDefinition is { Boost: not null, Duration: not null } powerUpDef)
+            && effectDefinition.PowerUpDefinitions.FirstOrDefault() is { Boost: not null } powerUpDef)
         {
-            var powerUp = target.Attributes!.CreateElement(powerUpDef.Boost!);
-            var powerUpDuration = target.Attributes!.CreateElement(powerUpDef.Duration!);
-            var magicEffect = effectDefinition.PowerUpDefinition.TargetAttribute == Stats.IsPoisoned
+            var powerUp = target.Attributes.CreateElement(powerUpDef.Boost!);
+            var powerUpDuration = target.Attributes.CreateElement(effectDefinition.Duration!);
+            var magicEffect = powerUpDef.TargetAttribute == Stats.IsPoisoned
                 ? new PoisonMagicEffect(powerUp, effectDefinition, TimeSpan.FromSeconds(powerUpDuration.Value), player, target)
                 : new MagicEffect(powerUp, effectDefinition, TimeSpan.FromSeconds(powerUpDuration.Value));
             await target.MagicEffectList.AddEffectAsync(magicEffect).ConfigureAwait(false);

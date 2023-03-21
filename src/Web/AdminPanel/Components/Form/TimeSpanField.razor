@@ -1,0 +1,48 @@
+﻿@using System.ComponentModel.DataAnnotations
+@using System.Diagnostics.CodeAnalysis
+@inherits NotifyableInputBase<TimeSpan>
+
+    <div>
+        <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
+        <input id="@this.FieldIdentifier.FieldName"
+               type="number"
+               value="@CurrentValue.TotalMilliseconds"
+               class="@CssClass"
+               onchange="@this.OnValueChange"
+               pattern="^[0-9]+$" min="0"
+               title="@this.FieldIdentifier.FieldName in milliseconds"
+               alt="@this.FieldIdentifier.FieldName in milliseconds" />
+        <ValidationMessage For=@this.ValueExpression />
+    </div>
+
+@code {
+
+    /// <summary>
+    /// Gets or sets the label which should be displayed. If it's not explicitly provided, the component shows the
+    /// Name defined in the <see cref="DisplayAttribute"/>. If there is no Name in a <see cref="DisplayAttribute"/>, it shows the property name instead.
+    /// </summary>
+    [Parameter]
+    public string? Label { get; set; }
+
+    /// <inheritdoc />
+    protected override bool TryParseValueFromString(string? value, [MaybeNullWhen(false)] out TimeSpan result, [NotNullWhen(false)] out string? validationErrorMessage)
+    {
+        if (TimeSpan.TryParse(value, out result))
+        {
+            validationErrorMessage = null;
+            return true;
+        }
+
+        validationErrorMessage = "Wrong Format";
+        return false;
+    }
+
+    private void OnValueChange(ChangeEventArgs args)
+    {
+        if (args.Value is { } totalMilliseconds
+            && double.TryParse(totalMilliseconds!.ToString(), out var parsed))
+        {
+            this.CurrentValue = TimeSpan.FromMilliseconds(parsed);
+        }
+    }
+}

@@ -16,7 +16,12 @@ internal interface IPathFinder
     /// </summary>
     /// <param name="start">The start point.</param>
     /// <param name="end">The end point.</param>
+    /// <param name="terrain">
+    /// The two-dimensional grid of the terrain.
+    /// For each coordinate it contains the cost of traveling to it from a neighbor coordinate.
+    /// The value of 0 means, that the coordinate is unreachable, <see cref="BaseGridNetwork.UnreachableGridNodeValue" />.
+    /// </param>
     /// <param name="cancellationToken">The optional cancellation token to cancel the operation.</param>
     /// <returns>The path between start and end, including <paramref name="end"/>, but excluding <paramref name="start"/>.</returns>
-    IList<PathResultNode>? FindPath(Point start, Point end, CancellationToken cancellationToken = default);
+    IList<PathResultNode>? FindPath(Point start, Point end, byte[,] terrain, CancellationToken cancellationToken = default);
 }

@@ -13,25 +13,13 @@ using MUnique.OpenMU.GameLogic.Views.Character;
 /// <summary>
 /// Consume handler for potions which refills the players attribute <see cref="Stats.CurrentMana"/>.
 /// </summary>
-public abstract class ManaPotionConsumehandler : RecoverConsumeHandler.ManaHealthConsumeHandler, IItemConsumeHandler
+public abstract class ManaPotionConsumehandler : RecoverConsumeHandlerPlugIn.ManaHealthConsumeHandlerPlugIn, IItemConsumeHandlerPlugIn
 {
     /// <inheritdoc/>
-    protected override AttributeDefinition MaximumAttribute
-    {
-        get
-        {
-            return Stats.MaximumMana;
-        }
-    }
+    protected override AttributeDefinition MaximumAttribute => Stats.MaximumMana;
 
     /// <inheritdoc/>
-    protected override AttributeDefinition CurrentAttribute
-    {
-        get
-        {
-            return Stats.CurrentMana;
-        }
-    }
+    protected override AttributeDefinition CurrentAttribute => Stats.CurrentMana;
 
     /// <inheritdoc />
     public override async ValueTask<bool> ConsumeItemAsync(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)

@@ -96,7 +96,9 @@ public class ItemSerializer : IItemSerializer
     {
         item.ThrowNotInitializedProperty(item.Definition is null, nameof(item.Definition));
         target[0] = (byte)item.Definition.Number;
-        target[1] = (byte)((item.Level << 3) & LevelMask);
+
+        var itemLevel = item.IsTrainablePet() ? 0 : item.Level;
+        target[1] = (byte)((itemLevel << 3) & LevelMask);
 
         var itemOption = item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.Option);
         if (itemOption != null)
@@ -303,16 +305,17 @@ public class ItemSerializer : IItemSerializer
         var bonusLevel = (ancientByte & AncientBonusLevelMask) >> 2;
         var setDiscriminator = ancientByte & AncientDiscriminatorMask;
         var ancientSets = item.Definition!.PossibleItemSetGroups
-            .Where(set => set.AncientSetDiscriminator == setDiscriminator && set.Options.Any(o => o.OptionType == ItemOptionTypes.AncientOption)).ToList();
+            .Where(set => set.Options.Any(o => o.OptionType == ItemOptionTypes.AncientOption))
+            .SelectMany(i => i.Items).Where(i => i.ItemDefinition == item.Definition)
+            .Where(set => set.AncientSetDiscriminator == setDiscriminator).ToList();
         if (ancientSets.Count > 1)
         {
             throw new ArgumentException($"Ambiguous ancient set discriminator: {ancientSets.Count} sets with discriminator {setDiscriminator} found for item definition ({item.Definition.Number}, {item.Definition.Group}).");
         }
 
-        var ancientSet = ancientSets.FirstOrDefault()
+        var itemOfSet = ancientSets.FirstOrDefault()
                          ?? throw new ArgumentException($"Couldn't find ancient set (discriminator {setDiscriminator}) for item ({item.Definition.Number}, {item.Definition.Group}).");
-        item.ItemSetGroups.Add(ancientSet);
-        var itemOfSet = ancientSet.Items.First(i => i.ItemDefinition == item.Definition);
+        item.ItemSetGroups.Add(itemOfSet);
         if (bonusLevel > 0)
         {
             var optionLink = persistenceContext.CreateNew<ItemOptionLink>();

@@ -19,5 +19,5 @@ public interface IItemMovedPlugIn
     /// </summary>
     /// <param name="player">The player.</param>
     /// <param name="item">The item.</param>
-    void ItemMoved(Player player, Item item);
+    ValueTask ItemMovedAsync(Player player, Item item);
 }

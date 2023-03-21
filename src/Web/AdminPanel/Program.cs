@@ -50,7 +50,7 @@ public class Program
             throw new NotImplementedException();
         }
 
-        public IContext CreateNewConfigurationContext()
+        public IConfigurationContext CreateNewConfigurationContext()
         {
             throw new NotImplementedException();
         }
@@ -75,7 +75,12 @@ public class Program
             throw new NotImplementedException();
         }
 
-        public IContext CreateNewTypedContext<T>()
+        public IContext CreateNewTypedContext<T>(bool useCache, GameConfiguration? gameConfiguration = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IContext CreateNewUpdateContext()
         {
             throw new NotImplementedException();
         }

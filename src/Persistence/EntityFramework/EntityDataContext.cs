@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using MUnique.OpenMU.Persistence.EntityFramework.Extensions.ModelBuilder;
+
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
 using Microsoft.EntityFrameworkCore;
@@ -41,72 +43,29 @@ public class EntityDataContext : ExtendedTypeContext
         modelBuilder.Entity<Model.AttributeDefinition>();
         modelBuilder.Entity<ConnectServerDefinition>();
         modelBuilder.Entity<ChatServerDefinition>();
-        modelBuilder.Entity<PowerUpDefinitionWithDuration>()
-            .HasOne(d => d.RawBoost)
-            .WithOne(v => v.ParentAsBoost!)
-            .OnDelete(DeleteBehavior.Cascade)
-            .HasConstraintName("PowerUpDefinitionWithDuration_Boost");
-
-        modelBuilder.Entity<PowerUpDefinitionWithDuration>()
-            .HasOne(d => d.RawDuration)
-            .WithOne(v => v.ParentAsDuration!)
-            .OnDelete(DeleteBehavior.Cascade)
-            .HasConstraintName("PowerUpDefinitionWithDuration_Duration");
-        modelBuilder.Entity<PowerUpDefinitionWithDuration>().Property(d => d.BoostId);
-        modelBuilder.Entity<PowerUpDefinitionWithDuration>().Property(d => d.DurationId);
-        modelBuilder.Entity<PowerUpDefinitionWithDuration>()
-            .HasOne(d => d.RawTargetAttribute);
-
-        modelBuilder.Entity<PowerUpDefinitionValue>().Ignore(p => p.ConstantValue);
-        modelBuilder.Entity<Model.ConstValueAttribute>().Ignore(c => c.AggregateType);
-
-        modelBuilder.Entity<Account>(entity =>
-        {
-            entity.Property(account => account.LoginName).HasMaxLength(10).IsRequired();
-            entity.HasIndex(account => account.LoginName).IsUnique();
-        });
-
-        modelBuilder.Entity<Character>(entity =>
-        {
-            entity.Property(character => character.Name).HasMaxLength(10).IsRequired();
-            entity.HasIndex(character => character.Name).IsUnique();
-            entity.Metadata.FindNavigation(nameof(Character.RawCharacterClass))!.ForeignKey.IsRequired = true;
-            entity.Property(character => character.CharacterSlot).IsRequired();
-            var accountKey = entity.Metadata.GetForeignKeys().First(key => key.PrincipalEntityType == modelBuilder.Entity<Account>().Metadata);
-            accountKey.DeleteBehavior = DeleteBehavior.Cascade;
-
-            entity.HasMany(character => character.RawLetters).WithOne(letter => letter.Receiver!).OnDelete(DeleteBehavior.Cascade);
-        });
-
-        modelBuilder.Entity<ItemStorage>().HasMany(storage => storage.RawItems).WithOne(item => item.RawItemStorage!);
-        modelBuilder.Entity<GameServerDefinition>();
-        modelBuilder.Entity<ItemBasePowerUpDefinition>().Ignore(d => d.BaseValueElement);
-        modelBuilder.Entity<LevelBonus>().Ignore(l => l.AdditionalValueElement);
-        modelBuilder.Entity<ExitGate>().HasOne(gate => gate.RawMap);
-        modelBuilder.Entity<GameMapDefinition>().HasMany(map => map.RawEnterGates);
-        modelBuilder.Entity<GameMapDefinition>().HasMany(map => map.RawExitGates).WithOne(g => g.RawMap);
-        modelBuilder.Entity<GameMapDefinition>().HasOne(map => map.RawSafezoneMap);
-        modelBuilder.Entity<GameMapDefinition>().HasMany(map => map.RawMonsterSpawns);
-
-        modelBuilder.Entity<MonsterSpawnArea>().HasOne(spawn => spawn.RawMonsterDefinition);
-        modelBuilder.Entity<MonsterSpawnArea>().HasOne(spawn => spawn.RawGameMap);
-
-        modelBuilder.Entity<SkillEntry>().Ignore(s => s.BuffPowerUp).Ignore(s => s.PowerUpDuration);
-        modelBuilder.Entity<Model.ConstValueAttribute>().Ignore(c => c.AggregateType);
-        modelBuilder.Entity<CharacterClass>()
-            .HasMany(c => c.RawBaseAttributeValues)
-            .WithOne(c => c.CharacterClass!);
-        modelBuilder.Entity<Model.StatAttribute>().Ignore("ValueGetter");
-
-        modelBuilder.Entity<MasterSkillDefinition>().HasOne(s => s.RawRoot);
-        modelBuilder.Entity<LetterBody>().HasOne(body => body.RawHeader);
-        modelBuilder.Entity<LetterHeader>().Ignore(header => header.ReceiverName);
-        modelBuilder.Entity<MonsterDefinition>().HasMany<QuestDefinition>().WithOne(q => q.RawQuestGiver);
         modelBuilder.Entity<MiniGameRankingEntry>();
+        modelBuilder.Entity<GameServerDefinition>();
+        modelBuilder.Entity<ConfigurationUpdate>();
+        modelBuilder.Entity<ConfigurationUpdateState>();
 
-        // TODO:
-        modelBuilder.Entity<GameConfiguration>().Ignore(c => c.ExperienceTable)
-            .Ignore(c => c.MasterExperienceTable);
+        modelBuilder.Entity<PowerUpDefinitionValue>().Apply();
+        modelBuilder.Entity<Model.ConstValueAttribute>().Apply();
+        modelBuilder.Entity<Account>().Apply();
+        modelBuilder.Entity<Character>().Apply();
+        modelBuilder.Entity<ItemStorage>().Apply();
+        modelBuilder.Entity<ItemSetGroup>().Apply();
+        modelBuilder.Entity<ItemBasePowerUpDefinition>().Apply();
+        modelBuilder.Entity<LevelBonus>().Apply();
+        modelBuilder.Entity<ExitGate>().Apply();
+        modelBuilder.Entity<GameMapDefinition>().Apply();
+        modelBuilder.Entity<MonsterSpawnArea>().Apply();
+        modelBuilder.Entity<SkillEntry>().Apply();
+        modelBuilder.Entity<CharacterClass>().Apply();
+        modelBuilder.Entity<MasterSkillDefinition>().Apply();
+        modelBuilder.Entity<LetterBody>().Apply();
+        modelBuilder.Entity<LetterHeader>().Apply();
+        modelBuilder.Entity<MonsterDefinition>().Apply();
+        modelBuilder.Entity<GameConfiguration>().Apply();
 
         // join entity keys:
         this.AddJoinDefinitions(modelBuilder);

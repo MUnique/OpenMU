@@ -26,6 +26,7 @@ public class StoreItemListRequestAction
             return;
         }
 
+        player.LastRequestedPlayerStore = new WeakReference<Player>(requestedPlayer);
         await player.InvokeViewPlugInAsync<IShowShopItemListPlugIn>(p => p.ShowShopItemListAsync(requestedPlayer, false)).ConfigureAwait(false);
     }
 }

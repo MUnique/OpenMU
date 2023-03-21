@@ -25,12 +25,10 @@ public partial class Character : MUnique.OpenMU.DataModel.Entities.Character, II
     /// <summary>
     /// Gets the raw collection of <see cref="Attributes" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("attributes")]
     [System.Text.Json.Serialization.JsonPropertyName("attributes")]
     public ICollection<StatAttribute> RawAttributes { get; } = new List<StatAttribute>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.AttributeSystem.StatAttribute> Attributes
     {
@@ -48,12 +46,10 @@ public partial class Character : MUnique.OpenMU.DataModel.Entities.Character, II
     /// <summary>
     /// Gets the raw collection of <see cref="Letters" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("letters")]
     [System.Text.Json.Serialization.JsonPropertyName("letters")]
     public IList<LetterHeader> RawLetters { get; } = new List<LetterHeader>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override IList<MUnique.OpenMU.Interfaces.LetterHeader> Letters
     {
@@ -71,12 +67,10 @@ public partial class Character : MUnique.OpenMU.DataModel.Entities.Character, II
     /// <summary>
     /// Gets the raw collection of <see cref="LearnedSkills" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("learnedSkills")]
     [System.Text.Json.Serialization.JsonPropertyName("learnedSkills")]
     public ICollection<SkillEntry> RawLearnedSkills { get; } = new List<SkillEntry>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Entities.SkillEntry> LearnedSkills
     {
@@ -94,12 +88,10 @@ public partial class Character : MUnique.OpenMU.DataModel.Entities.Character, II
     /// <summary>
     /// Gets the raw collection of <see cref="DropItemGroups" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("dropItemGroups")]
     [System.Text.Json.Serialization.JsonPropertyName("dropItemGroups")]
     public ICollection<DropItemGroup> RawDropItemGroups { get; } = new List<DropItemGroup>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.DropItemGroup> DropItemGroups
     {
@@ -117,12 +109,10 @@ public partial class Character : MUnique.OpenMU.DataModel.Entities.Character, II
     /// <summary>
     /// Gets the raw collection of <see cref="QuestStates" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("questStates")]
     [System.Text.Json.Serialization.JsonPropertyName("questStates")]
     public ICollection<CharacterQuestState> RawQuestStates { get; } = new List<CharacterQuestState>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Entities.CharacterQuestState> QuestStates
     {
@@ -140,7 +130,6 @@ public partial class Character : MUnique.OpenMU.DataModel.Entities.Character, II
     /// <summary>
     /// Gets the raw object of <see cref="CharacterClass" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("characterClass")]
     [System.Text.Json.Serialization.JsonPropertyName("characterClass")]
     public CharacterClass RawCharacterClass
     {
@@ -149,7 +138,6 @@ public partial class Character : MUnique.OpenMU.DataModel.Entities.Character, II
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.CharacterClass CharacterClass
     {
@@ -160,7 +148,6 @@ public partial class Character : MUnique.OpenMU.DataModel.Entities.Character, II
     /// <summary>
     /// Gets the raw object of <see cref="CurrentMap" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("currentMap")]
     [System.Text.Json.Serialization.JsonPropertyName("currentMap")]
     public GameMapDefinition RawCurrentMap
     {
@@ -169,7 +156,6 @@ public partial class Character : MUnique.OpenMU.DataModel.Entities.Character, II
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.GameMapDefinition CurrentMap
     {
@@ -180,7 +166,6 @@ public partial class Character : MUnique.OpenMU.DataModel.Entities.Character, II
     /// <summary>
     /// Gets the raw object of <see cref="Inventory" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("inventory")]
     [System.Text.Json.Serialization.JsonPropertyName("inventory")]
     public ItemStorage RawInventory
     {
@@ -189,7 +174,6 @@ public partial class Character : MUnique.OpenMU.DataModel.Entities.Character, II
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Entities.ItemStorage Inventory
     {

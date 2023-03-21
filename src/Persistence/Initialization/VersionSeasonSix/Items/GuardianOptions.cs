@@ -45,8 +45,8 @@ internal class GuardianOptions : InitializerBase
         definition.Name = "Guardian Option (Weapon)";
         definition.AddsRandomly = false;
 
-        definition.PossibleOptions.Add(this.CreateOption(ItemGroups.Weapon, Stats.AttackRatePvp, 10, AggregateType.AddRaw));
-        definition.PossibleOptions.Add(this.CreateOption(ItemGroups.Weapon, Stats.FinalDamageIncreasePvp, 200, AggregateType.AddRaw));
+        definition.PossibleOptions.Add(this.CreateOption(ItemGroups.Weapon, Stats.AttackRatePvp, 10, AggregateType.AddRaw, ItemOptionDefinitionNumbers.GuardianOption1));
+        definition.PossibleOptions.Add(this.CreateOption(ItemGroups.Weapon, Stats.FinalDamageIncreasePvp, 200, AggregateType.AddRaw, ItemOptionDefinitionNumbers.GuardianOption2));
     }
 
     private void CreatePantsOption()
@@ -56,8 +56,8 @@ internal class GuardianOptions : InitializerBase
         definition.Name = "Guardian Option (Pants)";
         definition.AddsRandomly = false;
 
-        definition.PossibleOptions.Add(this.CreateOption(ItemGroups.Pants, Stats.DefenseRatePvp, 10, AggregateType.AddRaw));
-        definition.PossibleOptions.Add(this.CreateOption(ItemGroups.Pants, Stats.DefenseBase, 200, AggregateType.AddRaw));
+        definition.PossibleOptions.Add(this.CreateOption(ItemGroups.Pants, Stats.DefenseRatePvp, 10, AggregateType.AddRaw, ItemOptionDefinitionNumbers.GuardianOption1));
+        definition.PossibleOptions.Add(this.CreateOption(ItemGroups.Pants, Stats.DefenseBase, 200, AggregateType.AddRaw, ItemOptionDefinitionNumbers.GuardianOption2));
     }
 
     private void CreateArmorOption()
@@ -67,8 +67,8 @@ internal class GuardianOptions : InitializerBase
         definition.Name = "Guardian Option (Armor)";
         definition.AddsRandomly = false;
 
-        definition.PossibleOptions.Add(this.CreateOption(ItemGroups.Armor, Stats.DefenseRatePvp, 10, AggregateType.AddRaw));
-        definition.PossibleOptions.Add(this.CreateOption(ItemGroups.Armor, Stats.ShieldRecoveryEverywhere, 1, AggregateType.AddRaw));
+        definition.PossibleOptions.Add(this.CreateOption(ItemGroups.Armor, Stats.DefenseRatePvp, 10, AggregateType.AddRaw, ItemOptionDefinitionNumbers.GuardianOption1));
+        definition.PossibleOptions.Add(this.CreateOption(ItemGroups.Armor, Stats.ShieldRecoveryEverywhere, 1, AggregateType.AddRaw, ItemOptionDefinitionNumbers.GuardianOption2));
     }
 
     private void CreateHelmOption()
@@ -78,8 +78,8 @@ internal class GuardianOptions : InitializerBase
         definition.Name = "Guardian Option (Helm)";
         definition.AddsRandomly = false;
 
-        definition.PossibleOptions.Add(this.CreateOption(ItemGroups.Helm, Stats.DefenseRatePvp, 10, AggregateType.AddRaw));
-        definition.PossibleOptions.Add(this.CreateOption(ItemGroups.Helm, Stats.ShieldRecoveryMultiplier, 20, AggregateType.AddRaw)); // 20 absolute, need test
+        definition.PossibleOptions.Add(this.CreateOption(ItemGroups.Helm, Stats.DefenseRatePvp, 10, AggregateType.AddRaw, ItemOptionDefinitionNumbers.GuardianOption1));
+        definition.PossibleOptions.Add(this.CreateOption(ItemGroups.Helm, Stats.ShieldRecoveryMultiplier, 20, AggregateType.AddRaw, ItemOptionDefinitionNumbers.GuardianOption2)); // 20 absolute, need test
     }
 
     private void CreateGlovesOption()
@@ -89,8 +89,8 @@ internal class GuardianOptions : InitializerBase
         definition.Name = "Guardian Option (Gloves)";
         definition.AddsRandomly = false;
 
-        definition.PossibleOptions.Add(this.CreateOption(ItemGroups.Gloves, Stats.DefenseRatePvp, 10, AggregateType.AddRaw));
-        definition.PossibleOptions.Add(this.CreateOption(ItemGroups.Gloves, Stats.MaximumHealth, 200, AggregateType.AddFinal));
+        definition.PossibleOptions.Add(this.CreateOption(ItemGroups.Gloves, Stats.DefenseRatePvp, 10, AggregateType.AddRaw, ItemOptionDefinitionNumbers.GuardianOption1));
+        definition.PossibleOptions.Add(this.CreateOption(ItemGroups.Gloves, Stats.MaximumHealth, 200, AggregateType.AddFinal, ItemOptionDefinitionNumbers.GuardianOption2));
     }
 
     private void CreateBootsOption()
@@ -100,13 +100,14 @@ internal class GuardianOptions : InitializerBase
         definition.Name = "Guardian Option (Boots)";
         definition.AddsRandomly = false;
 
-        definition.PossibleOptions.Add(this.CreateOption(ItemGroups.Boots, Stats.DefenseRatePvp, 10, AggregateType.AddRaw));
-        definition.PossibleOptions.Add(this.CreateOption(ItemGroups.Boots, Stats.MaximumShield, 200, AggregateType.AddFinal));
+        definition.PossibleOptions.Add(this.CreateOption(ItemGroups.Boots, Stats.DefenseRatePvp, 10, AggregateType.AddRaw, ItemOptionDefinitionNumbers.GuardianOption1));
+        definition.PossibleOptions.Add(this.CreateOption(ItemGroups.Boots, Stats.MaximumShield, 200, AggregateType.AddFinal, ItemOptionDefinitionNumbers.GuardianOption2));
     }
 
-    private IncreasableItemOption CreateOption(ItemGroups itemGroup, AttributeDefinition attributeDefinition, float value, AggregateType aggregateType)
+    private IncreasableItemOption CreateOption(ItemGroups itemGroup, AttributeDefinition attributeDefinition, float value, AggregateType aggregateType, short optionNumber)
     {
         var itemOption = this.Context.CreateNew<IncreasableItemOption>();
+        itemOption.SetGuid(optionNumber, (short)itemGroup);
         itemOption.OptionType = this.GameConfiguration.ItemOptionTypes.First(t => t == ItemOptionTypes.GuardianOption);
         itemOption.Number = (int)itemGroup;
         itemOption.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();

@@ -20,15 +20,15 @@ public class JsonDownloadController<T, TSerializable> : ControllerBase
     where T : class
     where TSerializable : class
 {
-    private readonly IPersistenceContextProvider _persistenceContextProvider;
+    private readonly IDataSource<T> _dataSource;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="JsonDownloadController{T,TSerializable}"/> class.
+    /// Initializes a new instance of the <see cref="JsonDownloadController{T,TSerializable}" /> class.
     /// </summary>
-    /// <param name="persistenceContextProvider">The persistence context provider.</param>
-    public JsonDownloadController(IPersistenceContextProvider persistenceContextProvider)
+    /// <param name="_dataSource">The data source.</param>
+    public JsonDownloadController(IDataSource<T> _dataSource)
     {
-        this._persistenceContextProvider = persistenceContextProvider;
+        this._dataSource = _dataSource;
     }
 
     /// <summary>
@@ -39,13 +39,16 @@ public class JsonDownloadController<T, TSerializable> : ControllerBase
     /// The requested configuration as json string.
     /// </returns>
     [HttpGet("[controller]_{objectId}.json")]
-    public IActionResult? GetConfigurationById(Guid objectId)
+    public async ValueTask<IActionResult?> GetConfigurationById(Guid objectId)
     {
-        using var context = this._persistenceContextProvider.CreateNewTypedContext<T>();
-        var item = context.GetByIdAsync<T>(objectId);
-        if (item is IConvertibleTo<TSerializable> convertibleTo)
+        await this._dataSource.DiscardChangesAsync();
+        var owner = await this._dataSource.GetOwnerAsync(objectId);
+        
+        if (owner is IConvertibleTo<TSerializable> convertibleTo)
         {
-            return this.Content(convertibleTo.Convert().ToJson(), "application/json");
+            convertibleTo.Convert().ToJson(this.Response.Body);
+            this.Response.ContentType = "application/json";
+            return this.Ok();
         }
 
         return null;

@@ -28,12 +28,10 @@ public partial class CharacterClass : MUnique.OpenMU.DataModel.Configuration.Cha
     /// <summary>
     /// Gets the raw collection of <see cref="StatAttributes" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("statAttributes")]
     [System.Text.Json.Serialization.JsonPropertyName("statAttributes")]
     public ICollection<StatAttributeDefinition> RawStatAttributes { get; } = new List<StatAttributeDefinition>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.StatAttributeDefinition> StatAttributes
     {
@@ -51,12 +49,10 @@ public partial class CharacterClass : MUnique.OpenMU.DataModel.Configuration.Cha
     /// <summary>
     /// Gets the raw collection of <see cref="AttributeCombinations" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("attributeCombinations")]
     [System.Text.Json.Serialization.JsonPropertyName("attributeCombinations")]
     public ICollection<AttributeRelationship> RawAttributeCombinations { get; } = new List<AttributeRelationship>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.AttributeSystem.AttributeRelationship> AttributeCombinations
     {
@@ -74,12 +70,10 @@ public partial class CharacterClass : MUnique.OpenMU.DataModel.Configuration.Cha
     /// <summary>
     /// Gets the raw collection of <see cref="BaseAttributeValues" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("baseAttributeValues")]
     [System.Text.Json.Serialization.JsonPropertyName("baseAttributeValues")]
     public ICollection<ConstValueAttribute> RawBaseAttributeValues { get; } = new List<ConstValueAttribute>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.AttributeSystem.ConstValueAttribute> BaseAttributeValues
     {
@@ -97,7 +91,6 @@ public partial class CharacterClass : MUnique.OpenMU.DataModel.Configuration.Cha
     /// <summary>
     /// Gets the raw object of <see cref="NextGenerationClass" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("nextGenerationClass")]
     [System.Text.Json.Serialization.JsonPropertyName("nextGenerationClass")]
     public CharacterClass RawNextGenerationClass
     {
@@ -106,7 +99,6 @@ public partial class CharacterClass : MUnique.OpenMU.DataModel.Configuration.Cha
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.CharacterClass NextGenerationClass
     {
@@ -117,7 +109,6 @@ public partial class CharacterClass : MUnique.OpenMU.DataModel.Configuration.Cha
     /// <summary>
     /// Gets the raw object of <see cref="HomeMap" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("homeMap")]
     [System.Text.Json.Serialization.JsonPropertyName("homeMap")]
     public GameMapDefinition RawHomeMap
     {
@@ -126,12 +117,29 @@ public partial class CharacterClass : MUnique.OpenMU.DataModel.Configuration.Cha
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.GameMapDefinition HomeMap
     {
         get => base.HomeMap;
         set => base.HomeMap = value;
+    }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="ComboDefinition" />.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonPropertyName("comboDefinition")]
+    public SkillComboDefinition RawComboDefinition
+    {
+        get => base.ComboDefinition as SkillComboDefinition;
+        set => base.ComboDefinition = value;
+    }
+
+    /// <inheritdoc/>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Configuration.SkillComboDefinition ComboDefinition
+    {
+        get => base.ComboDefinition;
+        set => base.ComboDefinition = value;
     }
 
 

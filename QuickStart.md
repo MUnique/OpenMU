@@ -11,7 +11,8 @@ General requirements:
 * A game client (check our Discord FAQs)
 * Knowledge or way to start the game client, so that it connects to the server. Our Launcher will do that.
 
-  * Launcher binaries: [MUnique.OpenMU.ClientLauncher.v0.4.0.zip](https://github.com/MUnique/OpenMU/releases/download/v0.4.0/MUnique.OpenMU.ClientLauncher.v0.4.0.zip)
+  * Launcher binaries: [MUnique.OpenMU.ClientLauncher v0.7.0.zip](https://github.com/MUnique/OpenMU/releases/download/v0.7.0/MUnique.OpenMU.ClientLauncher_0.7.0.zip)
+    * It requires the [.NET 7 runtime](https://dotnet.microsoft.com/download/dotnet/7.0)
   * If your server and client runs on your local host, use any IP of 127.x.x.x, except 127.0.0.1, because this one is blocked by the client. For example, you could use 127.127.127.127
 
 This guide describes two ways of starting the server. Use Docker, if you just
@@ -58,12 +59,12 @@ Requirements:
 
   * PostgreSQL installed
 
-  * Visual Studio 2022 (17.0) installed
+  * Visual Studio 2022 (17.4+) installed
 
-  * [.NET Core SDK SDK 6.0.100](https://dotnet.microsoft.com/download/dotnet/6.0)
-    (it should be included in Visual Studio 17.0)
+  * [.NET SDK 7](https://dotnet.microsoft.com/download/dotnet/7.0)
+    (it should be included in Visual Studio 17.4+)
 
-  * [Saxon HE 9.9.1.6](https://sourceforge.net/projects/saxon/files/Saxon-HE/9.9/SaxonHE9-9-1-6N-setup.exe/download) installed
+  * [NodeJS 16+](https://nodejs.org) installed
 
   * This repository cloned
 
@@ -116,6 +117,8 @@ These are the user names:
 * test300: General test account with level 300
 * test400: General test account with level 400, master characters
 * testgm: Test account of a game master
+* testgm2: Test account of a game master with summoner and rage fighter characters
+* testunlock: Test account without characters, but unlocked character classes
 * quest1: Test account for the level 150 quests
 * quest2: Test account for the level 220 quests
 * quest3: Test account for the level 400 quests

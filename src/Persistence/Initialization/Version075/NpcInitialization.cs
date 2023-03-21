@@ -45,6 +45,7 @@ internal partial class NpcInitialization : InitializerBase
             def.Designation = "Chaos Goblin";
             def.NpcWindow = NpcWindow.ChaosMachine;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
+            def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
         }
 
@@ -53,6 +54,7 @@ internal partial class NpcInitialization : InitializerBase
             def.Number = 239;
             def.Designation = "Arena Guard";
             def.ObjectKind = NpcObjectKind.PassiveNpc;
+            def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
         }
 
@@ -62,6 +64,7 @@ internal partial class NpcInitialization : InitializerBase
             def.Designation = "Baz The Vault Keeper";
             def.NpcWindow = NpcWindow.VaultStorage;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
+            def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
         }
 
@@ -71,6 +74,7 @@ internal partial class NpcInitialization : InitializerBase
             def.Designation = "Guild Master";
             def.NpcWindow = NpcWindow.GuildMaster;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
+            def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
         }
 
@@ -80,7 +84,8 @@ internal partial class NpcInitialization : InitializerBase
             def.Designation = "Elf Lala";
             def.NpcWindow = NpcWindow.Merchant;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
-            def.MerchantStore = this.CreateElfLalaStore();
+            def.MerchantStore = this.CreateElfLalaStore(def.Number);
+            def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
         }
 
@@ -90,7 +95,8 @@ internal partial class NpcInitialization : InitializerBase
             def.Designation = "Eo the Craftsman";
             def.NpcWindow = NpcWindow.Merchant;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
-            def.MerchantStore = this.CreateEoTheCraftsmanStore();
+            def.MerchantStore = this.CreateEoTheCraftsmanStore(def.Number);
+            def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
         }
 
@@ -100,7 +106,8 @@ internal partial class NpcInitialization : InitializerBase
             def.Designation = "Caren the Barmaid";
             def.NpcWindow = NpcWindow.Merchant;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
-            def.MerchantStore = this.CreateCarenTheBarmaidStore();
+            def.MerchantStore = this.CreateCarenTheBarmaidStore(def.Number);
+            def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
         }
 
@@ -110,7 +117,8 @@ internal partial class NpcInitialization : InitializerBase
             def.Designation = "Izabel The Wizard";
             def.NpcWindow = NpcWindow.Merchant;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
-            def.MerchantStore = this.CreateIzabelTheWizardStore();
+            def.MerchantStore = this.CreateIzabelTheWizardStore(def.Number);
+            def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
         }
 
@@ -120,7 +128,8 @@ internal partial class NpcInitialization : InitializerBase
             def.Designation = "Zienna The Weapons Merchant";
             def.NpcWindow = NpcWindow.Merchant;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
-            def.MerchantStore = this.CreateZiennaStore();
+            def.MerchantStore = this.CreateZiennaStore(def.Number);
+            def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
         }
 
@@ -129,6 +138,7 @@ internal partial class NpcInitialization : InitializerBase
             def.Number = 247;
             def.Designation = "Guard";
             def.ObjectKind = NpcObjectKind.Guard;
+            def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
         }
 
@@ -138,7 +148,8 @@ internal partial class NpcInitialization : InitializerBase
             def.Designation = "Wandering Merchant";
             def.NpcWindow = NpcWindow.Merchant;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
-            def.MerchantStore = this.CreateWanderingMerchant();
+            def.MerchantStore = this.CreateWanderingMerchant(def.Number);
+            def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
         }
 
@@ -147,6 +158,7 @@ internal partial class NpcInitialization : InitializerBase
             def.Number = 249;
             def.Designation = "Guard";
             def.ObjectKind = NpcObjectKind.Guard;
+            def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
         }
 
@@ -156,7 +168,8 @@ internal partial class NpcInitialization : InitializerBase
             def.Designation = "Wandering Merchant";
             def.NpcWindow = NpcWindow.Merchant;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
-            def.MerchantStore = this.CreateWanderingMerchant();
+            def.MerchantStore = this.CreateWanderingMerchant(def.Number);
+            def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
         }
 
@@ -166,7 +179,8 @@ internal partial class NpcInitialization : InitializerBase
             def.Designation = "Hanzo The Blacksmith";
             def.NpcWindow = NpcWindow.Merchant;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
-            def.MerchantStore = this.CreateHanzoTheBlacksmith();
+            def.MerchantStore = this.CreateHanzoTheBlacksmith(def.Number);
+            def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
         }
 
@@ -176,7 +190,8 @@ internal partial class NpcInitialization : InitializerBase
             def.Designation = "Potion Girl";
             def.NpcWindow = NpcWindow.Merchant;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
-            def.MerchantStore = this.CreatePotionGirlItemStorage();
+            def.MerchantStore = this.CreatePotionGirlItemStorage(def.Number);
+            def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
         }
 
@@ -186,7 +201,8 @@ internal partial class NpcInitialization : InitializerBase
             def.Designation = "Pasi The Mage";
             def.NpcWindow = NpcWindow.Merchant;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
-            def.MerchantStore = this.CreatePasiTheMageStore();
+            def.MerchantStore = this.CreatePasiTheMageStore(def.Number);
+            def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
         }
 
@@ -196,7 +212,8 @@ internal partial class NpcInitialization : InitializerBase
             def.Designation = "Lumen the Barmaid";
             def.NpcWindow = NpcWindow.Merchant;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
-            def.MerchantStore = this.CreateLumenTheBarmaidStore();
+            def.MerchantStore = this.CreateLumenTheBarmaidStore(def.Number);
+            def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
         }
 
@@ -205,6 +222,7 @@ internal partial class NpcInitialization : InitializerBase
             def.Number = 200;
             def.Designation = "Soccerball";
             def.ObjectKind = NpcObjectKind.SoccerBall;
+            def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
         }
     }

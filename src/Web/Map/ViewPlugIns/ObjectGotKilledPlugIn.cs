@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.Web.Map.ViewPlugIns;
 
 using Microsoft.JSInterop;
-using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Views.World;
 
@@ -27,8 +26,9 @@ public class ObjectGotKilledPlugIn : JsViewPlugInBase, IObjectGotKilledPlugIn
     }
 
     /// <inheritdoc />
-    public async ValueTask ObjectGotKilledAsync(IAttackable killedObject, IAttacker killerObject, Skill? skill = null)
+    public async ValueTask ObjectGotKilledAsync(IAttackable killedObject, IAttacker? killerObject)
     {
-        await this.InvokeAsync(killedObject.Id, killerObject.Id).ConfigureAwait(false);
+        // todo: maybe add the skill which led to the death, for special effects
+        await this.InvokeAsync(killedObject.Id, killerObject?.Id ?? 0).ConfigureAwait(false);
     }
 }

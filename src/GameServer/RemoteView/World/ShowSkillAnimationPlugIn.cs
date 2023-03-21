@@ -22,6 +22,15 @@ using MUnique.OpenMU.PlugIns;
 [MinimumClient(3, 0, ClientLanguage.Invariant)]
 public class ShowSkillAnimationPlugIn : IShowSkillAnimationPlugIn
 {
+    /// <summary>
+    /// The combo skill identifier.
+    /// </summary>
+    internal const ushort ComboSkillId = 59;
+
+    private const ushort NovaStartSkillId = 58;
+    private const short ForceSkillId = 60;
+    private const short ForceWaveSkillId = 66;
+
     private readonly RemotePlayer _player;
 
     /// <summary>
@@ -39,9 +48,29 @@ public class ShowSkillAnimationPlugIn : IShowSkillAnimationPlugIn
     /// <inheritdoc/>
     public async ValueTask ShowSkillAnimationAsync(IAttacker attacker, IAttackable? target, short skillNumber, bool effectApplied)
     {
+        if (skillNumber == ForceWaveSkillId)
+        {
+            skillNumber = ForceSkillId;
+        }
+
         var playerId = attacker.GetId(this._player);
         var targetId = target.GetId(this._player);
         var skillId = NumberConversionExtensions.ToUnsigned(skillNumber);
         await this._player.Connection.SendSkillAnimationAsync(skillId, playerId, targetId).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    public async ValueTask ShowComboAnimationAsync(IAttacker attacker, IAttackable? target)
+    {
+        var playerId = attacker.GetId(this._player);
+        var targetId = ((IIdentifiable?)target ?? attacker).GetId(this._player);
+        await this._player.Connection.SendSkillAnimationAsync(ComboSkillId, playerId, targetId).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public async ValueTask ShowNovaStartAsync(IAttacker attacker)
+    {
+        var playerId = attacker.GetId(this._player);
+        await this._player.Connection.SendSkillAnimationAsync(NovaStartSkillId, playerId, 0).ConfigureAwait(false);
     }
 }

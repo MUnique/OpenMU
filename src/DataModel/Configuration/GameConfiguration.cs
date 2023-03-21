@@ -114,6 +114,11 @@ public class GameConfiguration
     public bool ShouldDropMoney { get; set; }
 
     /// <summary>
+    /// Gets or sets the duration of item drops on the ground.
+    /// </summary>
+    public TimeSpan ItemDropDuration { get; set; }
+
+    /// <summary>
     /// Gets or sets the accumulated damage which needs to be done to decrease <see cref="Item.Durability"/> of a defending item by 1.
     /// </summary>
     public double DamagePerOneItemDurability { get; set; }
@@ -241,4 +246,10 @@ public class GameConfiguration
     /// </summary>
     [MemberOfAggregate]
     public virtual ICollection<MiniGameDefinition> MiniGameDefinitions { get; protected set; } = null!;
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return "Default Game Configuration";
+    }
 }

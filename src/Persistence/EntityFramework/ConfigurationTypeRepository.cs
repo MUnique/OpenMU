@@ -18,7 +18,7 @@ using MUnique.OpenMU.Persistence.EntityFramework.Model;
 internal class ConfigurationTypeRepository<T> : IRepository<T>, IConfigurationTypeRepository
     where T : class
 {
-    private readonly RepositoryManager _repositoryManager;
+    private readonly IContextAwareRepositoryProvider _repositoryProvider;
 
     private readonly Func<GameConfiguration, ICollection<T>> _collectionSelector;
 
@@ -32,11 +32,11 @@ internal class ConfigurationTypeRepository<T> : IRepository<T>, IConfigurationTy
     /// <summary>
     /// Initializes a new instance of the <see cref="ConfigurationTypeRepository{T}" /> class.
     /// </summary>
-    /// <param name="repositoryManager">The repository manager.</param>
+    /// <param name="repositoryProvider">The repository provider.</param>
     /// <param name="collectionSelector">The collection selector which returns the collection of <typeparamref name="T" /> of a <see cref="GameConfiguration" />.</param>
-    public ConfigurationTypeRepository(RepositoryManager repositoryManager, Func<GameConfiguration, ICollection<T>> collectionSelector)
+    public ConfigurationTypeRepository(IContextAwareRepositoryProvider repositoryProvider, Func<GameConfiguration, ICollection<T>> collectionSelector)
     {
-        this._repositoryManager = repositoryManager;
+        this._repositoryProvider = repositoryProvider;
         this._collectionSelector = collectionSelector;
     }
 
@@ -59,6 +59,7 @@ internal class ConfigurationTypeRepository<T> : IRepository<T>, IConfigurationTy
     public ValueTask<T?> GetByIdAsync(Guid id)
     {
         this.EnsureCacheForCurrentConfiguration();
+
         var dictionary = this._cache[this.GetCurrentGameConfiguration()];
         if (dictionary.TryGetValue(id, out var result))
         {
@@ -71,14 +72,14 @@ internal class ConfigurationTypeRepository<T> : IRepository<T>, IConfigurationTy
     /// <inheritdoc />
     public async ValueTask<bool> DeleteAsync(object obj)
     {
-        if (obj is T item)
+        if (obj is not T item)
         {
-            var gameConfiguration = this.GetCurrentGameConfiguration();
-            var collection = this._collectionSelector(gameConfiguration);
-            return collection.Remove(item);
+            return false;
         }
 
-        return false;
+        var gameConfiguration = this.GetCurrentGameConfiguration();
+        var collection = this._collectionSelector(gameConfiguration);
+        return collection.Remove(item);
     }
 
     /// <inheritdoc />
@@ -101,11 +102,11 @@ internal class ConfigurationTypeRepository<T> : IRepository<T>, IConfigurationTy
 
     /// <summary>
     /// Ensures the cache for the current configuration.
+    /// TODO: Call this at a better place and time - so that we can remove this check before every GetById
     /// </summary>
     public void EnsureCacheForCurrentConfiguration()
     {
         var configuration = this.GetCurrentGameConfiguration();
-
         if (this._cache.ContainsKey(configuration))
         {
             return;
@@ -131,7 +132,7 @@ internal class ConfigurationTypeRepository<T> : IRepository<T>, IConfigurationTy
 
     private GameConfiguration GetCurrentGameConfiguration()
     {
-        var context = (this._repositoryManager.ContextStack.GetCurrentContext() as CachingEntityFrameworkContext)?.Context as EntityDataContext;
+        var context = (this._repositoryProvider.ContextStack.GetCurrentContext() as CachingEntityFrameworkContext)?.Context as EntityDataContext;
         if (context is null)
         {
             throw new InvalidOperationException("This repository can only be used within an account context.");

@@ -39,4 +39,9 @@ public interface ISupportWalk : ILocateable
     /// <param name="directions">The directions.</param>
     /// <returns>The number of written directions.</returns>
     ValueTask<int> GetDirectionsAsync(Memory<Direction> directions);
+
+    /// <summary>
+    /// Stops the walking.
+    /// </summary>
+    ValueTask StopWalkingAsync();
 }

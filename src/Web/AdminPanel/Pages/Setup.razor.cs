@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Pages;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
+using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.Web.AdminPanel.Components;
 using MUnique.OpenMU.Web.AdminPanel.Services;
 
@@ -15,6 +16,10 @@ using MUnique.OpenMU.Web.AdminPanel.Services;
 /// </summary>
 public partial class Setup
 {
+    private bool _isDataInitialized;
+
+    private ClientVersion? _gameClientVersion;
+
     /// <summary>
     /// Gets or sets a value indicating whether to show the <see cref="Install"/> component.
     /// </summary>
@@ -31,6 +36,16 @@ public partial class Setup
     /// </summary>
     [Inject]
     public IJSRuntime JsRuntime { get; set; } = null!;
+
+    /// <inheritdoc />
+    protected override async Task OnInitializedAsync()
+    {
+        this._isDataInitialized = await this.SetupService.IsDataInitializedAsync().ConfigureAwait(false);
+        if (this._isDataInitialized)
+        {
+            this._gameClientVersion = await this.SetupService.GetCurrentGameClientVersionAsync().ConfigureAwait(false);
+        }
+    }
 
     private Task OnUpdateClickAsync()
     {

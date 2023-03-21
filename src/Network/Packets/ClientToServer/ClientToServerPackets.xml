@@ -658,6 +658,32 @@
       </Fields>
     </Packet>
     <Packet>
+      <HeaderType>C3Header</HeaderType>
+      <Code>B0</Code>
+      <Name>TeleportTarget</Name>
+      <Length>7</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A wizard uses the 'Teleport Ally' skill to teleport a party member of his view range to a nearby coordinate.</SentWhen>
+      <CausedReaction>If the target player is in the same party and in the range, it will teleported to the specified coordinates.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>TargetId</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>TeleportTargetX</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>TeleportTargetY</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>82</Code>
       <SubCode>00</SubCode>
@@ -897,7 +923,7 @@
         </Enum>
       </Enums>
     </Packet>
-    <Packet>
+	<Packet>
       <HeaderType>C1Header</HeaderType>
       <Code>42</Code>
       <Name>PartyListRequest</Name>
@@ -1400,7 +1426,6 @@
       <HeaderType>C3Header</HeaderType>
       <Code>DB</Code>
       <Name>AreaSkillHit</Name>
-      <Length>12</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>An area skill was performed and the client decided to hit a target.</SentWhen>
       <CausedReaction>The server is calculating the damage and applying it to the target. The attacker gets a response back with the caused damage.</CausedReaction>
@@ -1427,17 +1452,39 @@
           <Description>A sequential hit counter which should prevent that hits are sent multiple times.</Description>
         </Field>
         <Field>
-          <Index>9</Index>
-          <Type>ShortBigEndian</Type>
-          <Name>TargetId</Name>
+          <Index>8</Index>
+          <Type>Byte</Type>
+          <Name>TargetCount</Name>
+          <Description>Number of targets which will follow in the structure.</Description>
         </Field>
         <Field>
-          <Index>11</Index>
-          <Type>Byte</Type>
-          <Name>AnimationCounter</Name>
-          <Description>A sequential animation counter which acts as a reference to the previously sent Area Skill Animation packet.</Description>
+          <Index>9</Index>
+          <Type>Structure[]</Type>
+          <TypeName>TargetData</TypeName>
+          <Name>Targets</Name>
+          <ItemCountField>TargetCount</ItemCountField>
         </Field>
       </Fields>
+      <Structures>
+        <Structure>
+          <Name>TargetData</Name>
+          <Description>Contains the data of the target</Description>
+          <Length>3</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>ShortBigEndian</Type>
+              <Name>TargetId</Name>
+            </Field>
+            <Field>
+              <Index>2</Index>
+              <Type>Byte</Type>
+              <Name>AnimationCounter</Name>
+              <Description>A sequential animation counter which acts as a reference to the previously sent Area Skill Animation packet.</Description>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
     </Packet>
     <Packet>
       <HeaderType>C1Header</HeaderType>
@@ -1613,6 +1660,48 @@
           </Fields>
         </Structure>
       </Structures>
+    </Packet>
+    <Packet>
+      <HeaderType>C3Header</HeaderType>
+      <Code>4A</Code>
+      <Name>RageAttackRequest</Name>
+      <Length>8</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player performs a skill with a target, e.g. attacking or buffing.</SentWhen>
+      <CausedReaction>Damage is calculated and the target is hit, if the attack was successful. A response is sent back with the caused damage, and all surrounding players get an animation message.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>SkillId</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>TargetId</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>4B</Code>
+      <Name>RageAttackRangeRequest</Name>
+      <Length>7</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player (rage fighter) performs the dark side skill on a target.</SentWhen>
+      <CausedReaction>The targets (up to 5) are determined and sent back to the player with the RageAttackRangeResponse.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>SkillId</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>TargetId</Name>
+        </Field>
+      </Fields>
     </Packet>
     <Packet>
       <HeaderType>C1Header</HeaderType>
@@ -2209,7 +2298,8 @@
       <Fields>
         <Field>
           <Index>3</Index>
-          <Type>Byte</Type>
+          <Type>Enum</Type>
+          <TypeName>PetType</TypeName>
           <Name>PetType</Name>
         </Field>
         <Field>
@@ -2253,6 +2343,40 @@
         </Field>
       </Fields>
     </Packet>
+	  <Packet>
+		  <HeaderType>C1HeaderWithSubCode</HeaderType>
+		  <Code>BF</Code>
+		  <SubCode>51</SubCode>
+		  <Name>MuHelperStatusChangeRequest</Name>
+		  <Length>5</Length>
+		  <Direction>ClientToServer</Direction>
+		  <SentWhen>The client clicked on MU Helper play or pause button.</SentWhen>
+		  <CausedReaction>The server validates, if user can use the helper and sends the status back.</CausedReaction>
+		  <Fields>
+			  <Field>
+				  <Index>4</Index>
+				  <Type>Boolean</Type>
+				  <Name>PauseStatus</Name>
+			  </Field>
+		  </Fields>
+	  </Packet>
+	  <Packet>
+		  <HeaderType>C2Header</HeaderType>
+		  <Code>AE</Code>
+		  <Name>MuHelperSaveDataRequest</Name>
+		  <Length>261</Length>
+		  <Direction>ClientToServer</Direction>
+		  <SentWhen>The client want to save current MU Helper data.</SentWhen>
+		  <CausedReaction>The server should save supplied MU Helper data.</CausedReaction>
+		  <Fields>
+			  <Field>
+				  <Index>4</Index>
+				  <Type>Binary</Type>
+				  <Name>HelperData</Name>
+				  <Length>257</Length>
+			  </Field>
+		  </Fields>
+	  </Packet>
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>F6</Code>
@@ -2490,7 +2614,7 @@
     <Packet>
       <HeaderType>C1Header</HeaderType>
       <Code>91</Code>
-      <Name>RequestEventRemainingTime</Name>
+      <Name>MiniGameOpeningStateRequest</Name>
       <Length>5</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The player requests to get the remaining time of the currently entered event.</SentWhen>
@@ -2498,7 +2622,8 @@
       <Fields>
         <Field>
           <Index>3</Index>
-          <Type>Byte</Type>
+          <Type>Enum</Type>
+					<TypeName>MiniGameType</TypeName>
           <Name>EventType</Name>
         </Field>
         <Field>
@@ -2528,6 +2653,30 @@
           <Type>Byte</Type>
           <Name>TicketItemInventoryIndex</Name>
           <Description>The index of the ticket item in the inventory. Be aware, that the value is 12 higher than it should be - it makes no sense, but it is what it is...</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>AF</Code>
+			<SubCode>01</SubCode>
+			<Name>ChaosCastleEnterRequest</Name>
+      <Length>6</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player requests to enter the chaos castle by using the 'Armor of Guardsman' item.</SentWhen>
+      <CausedReaction>The server checks if the player can enter the event and sends a response (Code 0xAF) back to the client. If it was successful, the character gets moved to the event map.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>CastleLevel</Name>
+          <Description>The level of the chaos castle. Appears to always be 0.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>TicketItemInventoryIndex</Name>
+          <Description>The index of the ticket item in the inventory.</Description>
         </Field>
       </Fields>
     </Packet>

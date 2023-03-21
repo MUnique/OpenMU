@@ -71,13 +71,14 @@ public class Storage : IStorage
     {
         get
         {
-            for (int x = 0; x < InventoryConstants.RowSize; x++)
+            for (int row = 0; row < this._rows; row++)
             {
-                for (int y = 0; y < this._rows; y++)
+                for (int column = 0; column < InventoryConstants.RowSize; column++)
                 {
-                    if (!this._usedSlots[x, y])
+
+                    if (!this._usedSlots[row, column])
                     {
-                        yield return this.GetSlot(x, y);
+                        yield return this.GetSlot(column, row);
                     }
                 }
             }
@@ -93,7 +94,7 @@ public class Storage : IStorage
     protected Item?[] ItemArray { get; }
 
     /// <inheritdoc/>
-    public virtual ValueTask<bool> AddItemAsync(byte slot, Item item)
+    public virtual async ValueTask<bool> AddItemAsync(byte slot, Item item)
     {
         var result = this.AddItemInternal((byte)(slot - this._slotOffset), item);
         if (result)
@@ -102,7 +103,7 @@ public class Storage : IStorage
             item.ItemSlot = slot;
         }
 
-        return ValueTask.FromResult(result);
+        return result;
     }
 
     /// <inheritdoc/>

@@ -10,6 +10,11 @@ namespace MUnique.OpenMU.Persistence;
 public interface IContext : IDisposable
 {
     /// <summary>
+    /// Gets a value indicating whether this instance has changes.
+    /// </summary>
+    bool HasChanges { get; }
+
+    /// <summary>
     /// Saves the changes of the context.
     /// </summary>
     /// <returns><c>True</c>, if the saving was successful; <c>false</c>, otherwise.</returns>

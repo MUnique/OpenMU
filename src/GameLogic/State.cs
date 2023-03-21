@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.GameLogic;
 /// <summary>
 /// A state of a state machine.
 /// </summary>
-public sealed class State : IEquatable<State>
+public class State : IEquatable<State>
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="State"/> class.

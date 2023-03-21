@@ -12,22 +12,40 @@ public static class AttributeRelationshipExtensions
     /// <summary>
     /// Gets the target attribute and throws an exception if it's not initialized yet.
     /// </summary>
-    /// <param name="element">The element.</param>
+    /// <param name="relationship">The attribute relationship.</param>
     /// <returns>The target attribute definition.</returns>
     /// <exception cref="InvalidOperationException">TargetAttribute not initialized.</exception>
-    public static AttributeDefinition GetTargetAttribute(this AttributeRelationship element)
+    public static AttributeDefinition GetTargetAttribute(this AttributeRelationship relationship)
     {
-        return element.TargetAttribute ?? throw new InvalidOperationException("TargetAttribute not initialized.");
+        return relationship.TargetAttribute ?? throw new InvalidOperationException("TargetAttribute not initialized.");
     }
 
     /// <summary>
     /// Gets the input attribute and throws an exception if it's not initialized yet.
     /// </summary>
-    /// <param name="element">The element.</param>
+    /// <param name="relationship">The attribute relationship.</param>
     /// <returns>The input attribute definition.</returns>
     /// <exception cref="InvalidOperationException">TargetAttribute not initialized.</exception>
-    public static AttributeDefinition GetInputAttribute(this AttributeRelationship element)
+    public static AttributeDefinition GetInputAttribute(this AttributeRelationship relationship)
     {
-        return element.InputAttribute ?? throw new InvalidOperationException("InputAttribute not initialized.");
+        return relationship.InputAttribute ?? throw new InvalidOperationException("InputAttribute not initialized.");
+    }
+
+    /// <summary>
+    /// Gets the operand attribute.
+    /// </summary>
+    /// <param name="relationship">The attribute relationship.</param>
+    /// <param name="attributeSystem">The attribute system.</param>
+    /// <returns>
+    /// The input attribute definition.
+    /// </returns>
+    public static IElement GetOperandElement(this AttributeRelationship relationship, IAttributeSystem attributeSystem)
+    {
+        if (relationship.OperandAttribute is { } operandAttribute)
+        {
+            return attributeSystem.GetOrCreateAttribute(operandAttribute);
+        }
+
+        return new ConstantElement(relationship.InputOperand);
     }
 }

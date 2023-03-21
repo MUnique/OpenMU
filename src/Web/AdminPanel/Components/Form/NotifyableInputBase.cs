@@ -56,9 +56,12 @@ public abstract class NotifyableInputBase<TValue> : InputBase<TValue>
                 return;
             }
 
-            this._getter ??= this.ValueExpression!.Compile();
-            this.CurrentValue = this._getter();
-            await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
+            await this.InvokeAsync(() =>
+            {
+                this._getter ??= this.ValueExpression!.Compile();
+                this.CurrentValue = this._getter();
+                this.StateHasChanged();
+            }).ConfigureAwait(false);
         }
         catch
         {

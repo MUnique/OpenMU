@@ -4,15 +4,16 @@
 
 namespace MUnique.OpenMU.GameLogic;
 
-using Nito.AsyncEx.Synchronous;
+using System.ComponentModel;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views.Character;
+using Nito.AsyncEx.Synchronous;
 
 /// <summary>
 /// The implementation of the skill list, which automatically adds the passive skill power ups to the player.
 /// </summary>
-public class SkillList : ISkillList
+public sealed class SkillList : ISkillList, IDisposable
 {
     private readonly IDictionary<ushort, SkillEntry> _availableSkills;
 
@@ -21,6 +22,8 @@ public class SkillList : ISkillList
     private readonly ICollection<SkillEntry> _itemSkills;
 
     private readonly Player _player;
+
+    private List<IDisposable>? _passivePowerUps;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SkillList"/> class.
@@ -60,6 +63,15 @@ public class SkillList : ISkillList
 
     /// <inheritdoc/>
     public byte SkillCount => (byte)this._availableSkills.Count;
+
+    private List<IDisposable> PassivePowerUps => this._passivePowerUps ??= new ();
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        this._passivePowerUps?.ForEach(p => p.Dispose());
+        this._passivePowerUps = null;
+    }
 
     /// <inheritdoc/>
     public SkillEntry? GetSkill(ushort skillId)
@@ -151,8 +163,9 @@ public class SkillList : ISkillList
             return;
         }
 
-        // maybe to do: We don't need to hold it, as it's added to the player attributes.
-        _ = new PowerUpWrapper(new PassiveSkillBoostPowerUp(skillEntry), masterDefinition.TargetAttribute, this._player.Attributes!);
+        var passiveBoost = new PassiveSkillBoostPowerUp(skillEntry);
+        this.PassivePowerUps.Add(passiveBoost);
+        this.PassivePowerUps.Add(new PowerUpWrapper(passiveBoost, masterDefinition.TargetAttribute, this._player.Attributes!));
     }
 
     private async ValueTask Inventory_WearingItemsChangedAsync(ItemEventArgs eventArgs)
@@ -174,20 +187,16 @@ public class SkillList : ISkillList
         }
     }
 
-    private sealed class PassiveSkillBoostPowerUp : IElement
+    private sealed class PassiveSkillBoostPowerUp : IElement, IDisposable
     {
+        private readonly SkillEntry _skillEntry;
+
         public PassiveSkillBoostPowerUp(SkillEntry skillEntry)
         {
-            this.Value = skillEntry.CalculateValue();
-            this.AggregateType = skillEntry.Skill!.MasterDefinition!.Aggregation;
-            skillEntry.PropertyChanged += (sender, eventArgs) =>
-            {
-                if (eventArgs.PropertyName == nameof(SkillEntry.Level))
-                {
-                    this.Value = skillEntry.CalculateValue();
-                    this.ValueChanged?.Invoke(this, EventArgs.Empty);
-                }
-            };
+            this._skillEntry = skillEntry;
+            this.Value = this._skillEntry.CalculateValue();
+            this.AggregateType = this._skillEntry.Skill!.MasterDefinition!.Aggregation;
+            this._skillEntry.PropertyChanged += this.OnSkillEntryOnPropertyChanged;
         }
 
         public event EventHandler? ValueChanged;
@@ -195,5 +204,25 @@ public class SkillList : ISkillList
         public float Value { get; private set; }
 
         public AggregateType AggregateType { get; }
+
+        public void Dispose()
+        {
+            this._skillEntry.PropertyChanged -= this.OnSkillEntryOnPropertyChanged;
+        }
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return $"{this.Value} ({this.AggregateType})";
+        }
+
+        private void OnSkillEntryOnPropertyChanged(object? sender, PropertyChangedEventArgs eventArgs)
+        {
+            if (eventArgs.PropertyName == nameof(SkillEntry.Level))
+            {
+                this.Value = this._skillEntry.CalculateValue();
+                this.ValueChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
     }
 }

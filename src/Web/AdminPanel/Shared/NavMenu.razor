@@ -45,15 +45,15 @@
                         <span class="oi oi-list" aria-hidden="true"></span> Accounts
                     </NavLink>
                 </li>
-                @if (this.GameConfiguration != null)
+                @if (this.GameConfigurationId is { } gameConfigurationId )
                 {
                     <li>
-                        <NavLink href="@("edit/" + typeof(GameConfiguration).FullName + "/" + this.GameConfiguration.GetId())">
+                        <NavLink href="@("edit-config/" + typeof(GameConfiguration).FullName + "/" + this.GameConfigurationId)">
                             <span class="oi oi-cog" aria-hidden="true"></span> Game Configuration
                         </NavLink>
                     </li>
                     <li>
-                        <NavLink href="@("map-editor/" + this.GameConfiguration.Maps.OrderBy(c => c.Number).First().GetId())">
+                        <NavLink href="map-editor">
                             <span class="oi oi-globe" aria-hidden="true"></span> Map Editor
                         </NavLink>
                     </li>
@@ -66,6 +66,16 @@
                 <li>
                     <NavLink href="setup">
                         <span class="oi oi-cog" aria-hidden="true"></span> Setup
+                    </NavLink>
+                </li>
+                <li>
+                    <NavLink href="config-updates">
+                        <span class="oi oi-medical-cross" aria-hidden="true"></span> Updates
+                        @if (this._availableConfigUpdates > 0)
+                        {
+                            <span class="badge badge-light ml-2">@this._availableConfigUpdates</span>
+                            <span class="sr-only">available updates</span>
+                        }
                     </NavLink>
                 </li>
             }

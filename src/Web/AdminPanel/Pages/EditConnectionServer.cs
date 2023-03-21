@@ -12,7 +12,7 @@ using MUnique.OpenMU.Web.AdminPanel.Components;
 /// <summary>
 /// Edit page for the <see cref="ConnectServerConfiguration"/>.
 /// </summary>
-[Route("/editConnectionServer/{id:guid}")]
+[Route("/edit-connectionServer/{id:guid}")]
 public sealed class EditConnectionServer : EditBase
 {
     /// <inheritdoc />

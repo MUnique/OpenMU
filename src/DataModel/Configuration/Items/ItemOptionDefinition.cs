@@ -37,4 +37,10 @@ public class ItemOptionDefinition
     /// </summary>
     [MemberOfAggregate]
     public virtual ICollection<IncreasableItemOption> PossibleOptions { get; protected set; } = null!;
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return this.Name;
+    }
 }

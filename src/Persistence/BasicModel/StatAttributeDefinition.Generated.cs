@@ -38,7 +38,6 @@ public partial class StatAttributeDefinition : MUnique.OpenMU.DataModel.Configur
     /// <summary>
     /// Gets the raw object of <see cref="Attribute" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("attribute")]
     [System.Text.Json.Serialization.JsonPropertyName("attribute")]
     public AttributeDefinition RawAttribute
     {
@@ -47,7 +46,6 @@ public partial class StatAttributeDefinition : MUnique.OpenMU.DataModel.Configur
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.AttributeSystem.AttributeDefinition Attribute
     {

@@ -28,12 +28,10 @@ public partial class QuestDefinition : MUnique.OpenMU.DataModel.Configuration.Qu
     /// <summary>
     /// Gets the raw collection of <see cref="RequiredMonsterKills" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("requiredMonsterKills")]
     [System.Text.Json.Serialization.JsonPropertyName("requiredMonsterKills")]
     public ICollection<QuestMonsterKillRequirement> RawRequiredMonsterKills { get; } = new List<QuestMonsterKillRequirement>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.Quests.QuestMonsterKillRequirement> RequiredMonsterKills
     {
@@ -51,12 +49,10 @@ public partial class QuestDefinition : MUnique.OpenMU.DataModel.Configuration.Qu
     /// <summary>
     /// Gets the raw collection of <see cref="RequiredItems" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("requiredItems")]
     [System.Text.Json.Serialization.JsonPropertyName("requiredItems")]
     public ICollection<QuestItemRequirement> RawRequiredItems { get; } = new List<QuestItemRequirement>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.Quests.QuestItemRequirement> RequiredItems
     {
@@ -74,12 +70,10 @@ public partial class QuestDefinition : MUnique.OpenMU.DataModel.Configuration.Qu
     /// <summary>
     /// Gets the raw collection of <see cref="Rewards" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("rewards")]
     [System.Text.Json.Serialization.JsonPropertyName("rewards")]
     public ICollection<QuestReward> RawRewards { get; } = new List<QuestReward>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.Quests.QuestReward> Rewards
     {
@@ -97,7 +91,6 @@ public partial class QuestDefinition : MUnique.OpenMU.DataModel.Configuration.Qu
     /// <summary>
     /// Gets the raw object of <see cref="QuestGiver" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("questGiver")]
     [System.Text.Json.Serialization.JsonPropertyName("questGiver")]
     public MonsterDefinition RawQuestGiver
     {
@@ -106,7 +99,6 @@ public partial class QuestDefinition : MUnique.OpenMU.DataModel.Configuration.Qu
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.MonsterDefinition QuestGiver
     {
@@ -117,7 +109,6 @@ public partial class QuestDefinition : MUnique.OpenMU.DataModel.Configuration.Qu
     /// <summary>
     /// Gets the raw object of <see cref="QualifiedCharacter" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("qualifiedCharacter")]
     [System.Text.Json.Serialization.JsonPropertyName("qualifiedCharacter")]
     public CharacterClass RawQualifiedCharacter
     {
@@ -126,7 +117,6 @@ public partial class QuestDefinition : MUnique.OpenMU.DataModel.Configuration.Qu
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.CharacterClass QualifiedCharacter
     {

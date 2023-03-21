@@ -7,6 +7,8 @@ namespace MUnique.OpenMU.Persistence.SourceGenerator;
 using System.Reflection;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
+using MUnique.OpenMU.AttributeSystem;
+using MUnique.OpenMU.DataModel.Composition;
 
 /// <summary>
 /// Source Generator which creates classes of the our entities specifically for the entity framework core.
@@ -21,22 +23,25 @@ public class EfCoreModelGenerator : ModelGeneratorBase, IUnboundSourceGenerator
 
     private const string GameConfigurationFullName = "MUnique.OpenMU.DataModel.Configuration.GameConfiguration";
 
+    private static readonly Type[] IgnoredTypes = { typeof(SimpleElement) };
+
     /// <summary>
     /// The standalone types which should not contain additional foreign key, because they were used somewhere in collections (except at GameConfiguration).
     /// For these types, join entity classes will be created and ManyToManyCollectionAdapter{T,TJoin} are used adapt between these types and the join entities.
     /// </summary>
-    private static readonly string[] StandaloneTypes = new[]
+    private static readonly (string TypeName, bool StandaloneForEntityOnly)[] StandaloneTypes =
     {
-        "MUnique.OpenMU.DataModel.Configuration.CharacterClass",
-        "MUnique.OpenMU.DataModel.Configuration.DropItemGroup",
-        "MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition",
-        "MUnique.OpenMU.DataModel.Configuration.Items.ItemOption",
-        "MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionType",
-        "MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionDefinition",
-        "MUnique.OpenMU.DataModel.Configuration.Items.ItemSetGroup",
-        "MUnique.OpenMU.DataModel.Configuration.MasterSkillDefinition",
-        "MUnique.OpenMU.DataModel.Configuration.Skill",
-        "MUnique.OpenMU.DataModel.Configuration.GameMapDefinition",
+        ("MUnique.OpenMU.DataModel.Configuration.CharacterClass", false),
+        ("MUnique.OpenMU.DataModel.Configuration.DropItemGroup", false),
+        ("MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition", false),
+        ("MUnique.OpenMU.DataModel.Configuration.Items.ItemOption", false),
+        ("MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionType", false),
+        ("MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionDefinition", false),
+        ("MUnique.OpenMU.DataModel.Configuration.Items.ItemSetGroup", false),
+        ("MUnique.OpenMU.DataModel.Configuration.Items.ItemOfItemSet", true),
+        ("MUnique.OpenMU.DataModel.Configuration.MasterSkillDefinition", false),
+        ("MUnique.OpenMU.DataModel.Configuration.Skill", false),
+        ("MUnique.OpenMU.DataModel.Configuration.GameMapDefinition", false),
     };
 
     /// <summary>
@@ -195,6 +200,16 @@ public static class MapsterConfigurator
         return source;
     }
 
+    private static bool IsMemberOfAggregate(PropertyInfo propertyInfo)
+    {
+        if (propertyInfo?.Name.StartsWith("Raw") ?? false)
+        {
+            propertyInfo = propertyInfo.DeclaringType?.GetProperty(propertyInfo.Name.Substring(3), BindingFlags.Instance | BindingFlags.Public);
+        }
+
+        return propertyInfo?.GetCustomAttribute<MemberOfAggregateAttribute>() is { };
+    }
+
     private string GenerateDbContext()
     {
         var ignores = new StringBuilder();
@@ -209,7 +224,7 @@ public static class MapsterConfigurator
             .SelectMany(t => t.GetProperties().Where(p =>
                 p.PropertyType.IsGenericType &&
                 p.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>) &&
-                StandaloneTypes.Contains(p.PropertyType.GenericTypeArguments[0].FullName))).ToList();
+                IsStandaloneType(p.PropertyType.GenericTypeArguments[0].FullName, t))).ToList();
 
         foreach (PropertyInfo propertyInfo in allStandaloneCollectionProperties)
         {
@@ -220,11 +235,33 @@ public static class MapsterConfigurator
                 .AppendLine($"        modelBuilder.Entity<{joinTypeName}>().HasKey(join => new {{ join.{propertyInfo.ReflectedType.Name}Id, join.{elementType.Name}Id }});");
         }
 
+        var deleteCascades = new StringBuilder();
+        deleteCascades.AppendLine("        // All members which are marked with the MemberOfAggregateAttribute, should be defined with ON DELETE CASCADE.");
+        foreach (var type in this.CustomTypes)
+        {
+            foreach (var propertyInfo in type.GetProperties()
+                         .Where(p => p.GetCustomAttribute<MemberOfAggregateAttribute>() is { })
+                         .Where(p => !IgnoredTypes.Contains(p.PropertyType)))
+            {
+                var propertyType = propertyInfo.PropertyType;
+                var isCollection = propertyType.IsGenericType;
+                if (isCollection)
+                {
+                    deleteCascades.AppendLine($"        modelBuilder.Entity<{type.Name}>().HasMany(entity => entity.Raw{propertyInfo.Name}).WithOne().OnDelete(DeleteBehavior.Cascade);");
+                }
+                else
+                {
+                    deleteCascades.AppendLine($"        modelBuilder.Entity<{type.Name}>().HasOne(entity => entity.Raw{propertyInfo.Name}).WithOne().OnDelete(DeleteBehavior.Cascade);");
+                }
+            }
+        }
+
         var source = $@"{string.Format(FileHeaderTemplate, "ExtendedTypeContext")}
 
 namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
 
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 using MUnique.OpenMU.Persistence;
 
 /// <summary>
@@ -236,6 +273,7 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
     protected override void OnModelCreating(Microsoft.EntityFrameworkCore.ModelBuilder modelBuilder)
     {{
 {ignores}
+{deleteCascades}
     }}
 
     /// <summary>
@@ -281,9 +319,10 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
             .Where(p => p.GetGetMethod() is { IsVirtual: true, IsFinal: false }
                         && !p.PropertyType.IsValueType
                         && !p.PropertyType.IsArray)
-            .Where(p => !(p.PropertyType.IsGenericType
+            .Where(p => type.FullName == GameConfigurationFullName ||
+                        !(p.PropertyType.IsGenericType
                           && p.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>)
-                          && StandaloneTypes.Contains(p.PropertyType.GenericTypeArguments[0].FullName)) || type.FullName == GameConfigurationFullName)
+                          && IsStandaloneType(p.PropertyType.GenericTypeArguments[0].FullName, type)))
             .ToList();
 
         var collectionProperties = virtualNavigationProperties
@@ -381,12 +420,10 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
     /// Gets the raw string of <see cref=""{property.Name}"" />.
     /// </summary>
     [Column(nameof({property.Name}))]
-    [Newtonsoft.Json.JsonProperty(nameof({property.Name}))]
     [System.Text.Json.Serialization.JsonPropertyName(""{property.Name.ToCamelCase()}"")]
     public string Raw{property.Name} {{ get; set; }}
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     [NotMapped]
     public override {originalPropertyTypeName} {property.Name}
@@ -417,10 +454,24 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         return string.Empty;
     }
 
+    private static bool IsStandaloneType(string typeName, Type referencingType)
+    {
+        return StandaloneTypes.Any(st =>
+        {
+
+            if (st.TypeName != typeName)
+            {
+                return false;
+            }
+
+            return !st.StandaloneForEntityOnly || !IsConfigurationType(referencingType);
+        });
+    }
+
     private IEnumerable<PropertyInfo> GetStandaloneCollectionProperties(Type type)
     {
         return type.FullName != GameConfigurationFullName ?
-            type.GetProperties().Where(p => p.PropertyType.IsGenericType && p.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>) && StandaloneTypes.Contains(p.PropertyType.GenericTypeArguments[0].FullName)).ToList() :
+            type.GetProperties().Where(p => p.PropertyType.IsGenericType && p.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>) && IsStandaloneType(p.PropertyType.GenericTypeArguments[0].FullName, type)).ToList() :
             Enumerable.Empty<PropertyInfo>();
     }
 

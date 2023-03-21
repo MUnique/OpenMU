@@ -68,7 +68,7 @@ public static class Extensions
                         throw new Exception($"{nameof(IPersistenceContextProvider)} not registered.");
                     }
 
-                    var configs = persistenceContextProvider.CreateNewTypedContext<PlugInConfiguration>().GetAsync<PlugInConfiguration>().AsTask().WaitAndUnwrapException();
+                    var configs = persistenceContextProvider.CreateNewTypedContext<PlugInConfiguration>(false).GetAsync<PlugInConfiguration>().AsTask().WaitAndUnwrapException();
                     return configs.ToList();
                 }
                 catch (PostgresException)
@@ -163,8 +163,7 @@ public static class Extensions
             .WriteTo
             .GrafanaLoki(
                 uri: "http://loki:3100",
-                filtrationLabels: includeLabels,
-                filtrationMode: LokiLabelFiltrationMode.Include)
+                propertiesAsLabels: includeLabels)
             .WriteTo
             .Console(LogEventLevel.Information)
             .Filter.ByExcluding(Matching.FromSource("Microsoft")) // We don't want all of the ASP.NET logging, because that really keeps loki and the console pretty busy

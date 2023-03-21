@@ -10,7 +10,7 @@ using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.GameLogic.Views.Trade;
 using MUnique.OpenMU.Interfaces;
-using static OpenMU.GameLogic.InventoryConstants;
+using static OpenMU.DataModel.InventoryConstants;
 
 /// <summary>
 /// Action to move an item between <see cref="Storages"/> or the same storage.
@@ -79,9 +79,10 @@ public class MoveItemAction
                 break;
         }
 
-        if (movement != Movement.None)
+        if (movement != Movement.None
+            && player.GameContext.PlugInManager.GetPlugInPoint<PlugIns.IItemMovedPlugIn>() is { } itemMovedPlugIn)
         {
-            player.GameContext.PlugInManager.GetPlugInPoint<PlugIns.IItemMovedPlugIn>()?.ItemMoved(player, item);
+            await itemMovedPlugIn.ItemMovedAsync(player, item).ConfigureAwait(false);
         }
     }
 
@@ -143,7 +144,7 @@ public class MoveItemAction
                     player.Inventory,
                     InventoryRows,
                     EquippableSlotsCount,
-                    (byte)(EquippableSlotsCount + GetInventorySize(player)));
+                    (byte)(EquippableSlotsCount + player.GetInventorySize()));
                 break;
             case Storages.PersonalStore when player.ShopStorage is not null:
                 result = new StorageInfo(
@@ -207,6 +208,13 @@ public class MoveItemAction
             var itemDefinition = item.Definition;
             if (storage.GetItem(toSlot) != null || itemDefinition?.ItemSlot is null)
             {
+                return Movement.None;
+            }
+
+            if (player.CurrentMiniGame is { } miniGame
+                && !miniGame.IsItemAllowedToEquip(item))
+            {
+                await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("You can't equip this item during the event.", MessageType.BlueNormal)).ConfigureAwait(false);
                 return Movement.None;
             }
 

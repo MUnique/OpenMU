@@ -49,6 +49,6 @@ public class GameServerDefinition
     /// <inheritdoc/>
     public override string ToString()
     {
-        return string.Format(CultureInfo.InvariantCulture, "[GameServerDefinition ServerID={0}, Description={1}]", this.ServerID, this.Description);
+        return string.Format(CultureInfo.InvariantCulture, "#{0} - {1}", this.ServerID, this.Description);
     }
 }

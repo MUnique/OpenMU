@@ -25,9 +25,12 @@ public static class FieldExtensions
             case FieldType.Boolean:
                 return 1;
             case FieldType.Float:
+                return sizeof(float);
             case FieldType.IntegerLittleEndian:
             case FieldType.IntegerBigEndian:
                 return sizeof(int);
+            case FieldType.Double:
+                return sizeof(double);
             case FieldType.LongLittleEndian:
             case FieldType.LongBigEndian:
                 return sizeof(long);

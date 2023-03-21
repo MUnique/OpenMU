@@ -8,13 +8,14 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Threading;
-using Nito.AsyncEx;
 using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
+using Nito.AsyncEx;
 
 /// <summary>
 /// The game context which holds all data of the game together.
@@ -28,6 +29,8 @@ public class GameContext : AsyncDisposable, IGameContext
     private static readonly Counter<int> MapCounter = Meter.CreateCounter<int>("MapCount");
 
     private static readonly Counter<int> MiniGameCounter = Meter.CreateCounter<int>("MiniGameCount");
+
+    private static readonly IObjectPool<PathFinder> PathFinderPoolInstance = new LimitedObjectPool<PathFinder>(new PathFinderPoolingPolicy());
 
     private readonly Dictionary<ushort, GameMap> _mapList = new();
 
@@ -127,6 +130,11 @@ public class GameContext : AsyncDisposable, IGameContext
     /// <inheritdoc />
     public ILoggerFactory LoggerFactory { get; }
 
+    /// <summary>
+    /// Gets the path finder pool.
+    /// </summary>
+    public IObjectPool<PathFinder> PathFinderPool => PathFinderPoolInstance;
+
     /// <inheritdoc />
     public int PlayerCount => this._playerList.Count;
 
@@ -207,6 +215,9 @@ public class GameContext : AsyncDisposable, IGameContext
 
             switch (miniGameDefinition.Type)
             {
+                case MiniGameType.ChaosCastle:
+                    miniGameContext = new ChaosCastleContext(miniGameKey, miniGameDefinition, this, this._mapInitializer);
+                    break;
                 case MiniGameType.DevilSquare:
                     miniGameContext = new DevilSquareContext(miniGameKey, miniGameDefinition, this, this._mapInitializer);
                     break;

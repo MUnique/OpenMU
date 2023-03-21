@@ -204,7 +204,7 @@ public sealed class BloodCastleContext : MiniGameContext
         var sortedFinishers = finishers
             .Select(f => this._gameStates[f.Name])
             .WhereNotNull()
-            .OrderBy(state => state.Score)
+            .OrderByDescending(state => state.Score)
             .ToList();
 
         var scoreList = new List<(string Name, int Score, int BonusExp, int BonusMoney)>();
@@ -314,9 +314,7 @@ public sealed class BloodCastleContext : MiniGameContext
             return false;
         }
 
-        await player.Inventory!.RemoveItemAsync(item).ConfigureAwait(false);
-        await player.PersistenceContext.DeleteAsync(item).ConfigureAwait(false);
-        await player.InvokeViewPlugInAsync<IItemRemovedPlugIn>(p => p.RemoveItemAsync(item.ItemSlot)).ConfigureAwait(false);
+        await player.DestroyInventoryItemAsync(item).ConfigureAwait(false);
 
         this._questItem = null;
         this._questItemOwner = null;

@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.FriendServer;
 
 using System.Collections.Immutable;
+using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
 
@@ -14,6 +15,7 @@ using MUnique.OpenMU.Persistence;
 public class FriendServer : IFriendServer
 {
     private readonly IPersistenceContextProvider _persistenceContextProvider;
+    private readonly ILogger<FriendServer> _logger;
     private readonly IFriendNotifier _friendNotifier;
     private readonly IChatServer _chatServer;
 
@@ -23,11 +25,13 @@ public class FriendServer : IFriendServer
     /// <param name="friendNotifier">The friend notifier.</param>
     /// <param name="chatServer">The chat server.</param>
     /// <param name="persistenceContextProvider">The persistence context provider.</param>
-    public FriendServer(IFriendNotifier friendNotifier, IChatServer chatServer, IPersistenceContextProvider persistenceContextProvider)
+    /// <param name="logger">The logger.</param>
+    public FriendServer(IFriendNotifier friendNotifier, IChatServer chatServer, IPersistenceContextProvider persistenceContextProvider, ILogger<FriendServer> logger)
     {
         this._friendNotifier = friendNotifier;
         this._chatServer = chatServer;
         this._persistenceContextProvider = persistenceContextProvider;
+        this._logger = logger;
         this.OnlineFriends = new Dictionary<string, OnlineFriend>();
     }
 
@@ -200,9 +204,23 @@ public class FriendServer : IFriendServer
             friends.ToImmutableList(),
             requesters.ToImmutableList());
 
-        await this._friendNotifier.InitializeMessengerAsync(serverId, initializationData).ConfigureAwait(false);
+        try
+        {
+            await this._friendNotifier.InitializeMessengerAsync(serverId, initializationData).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, "Unexpected error when notifying about messenger initialization. Server id {serverId}, CharacterId {characterId}, CharacterName '{characterName}'.", serverId, characterId, characterName);
+        }
 
-        await this.SetOnlineStateAsync(characterId, characterName, serverId, context).ConfigureAwait(false);
+        try
+        {
+            await this.SetOnlineStateAsync(characterId, characterName, serverId, context).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, "Unexpected error when changing the online state. Server id {serverId}, CharacterId {characterId}, CharacterName '{characterName}'.", serverId, characterId, characterName);
+        }
     }
 
     /// <inheritdoc/>

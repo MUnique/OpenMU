@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project>
+
+    <ItemGroup Label="commom configuration code style.">
+        
+        <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.4.27">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.435">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+        </PackageReference>
+        
+    </ItemGroup>
+
+    <Choose>
+        <When Condition="Exists('../SharedAssemblyInfo.cs')">
+            <ItemGroup>
+                <Compile Include="..\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
+                <Compile Include="..\SharedGlobalUsings.cs" Link="SharedGlobalUsings.cs" />
+                <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
+                <None Include="..\.editorconfig" Link=".editorconfig" />
+            </ItemGroup>
+        </When>
+        <Otherwise>
+            <ItemGroup>
+                <Compile Include="..\..\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
+                <Compile Include="..\..\SharedGlobalUsings.cs" Link="SharedGlobalUsings.cs" />
+                <AdditionalFiles Include="..\..\stylecop.json" Link="stylecop.json" />
+                <None Include="..\..\.editorconfig" Link=".editorconfig" />
+            </ItemGroup>
+        </Otherwise>
+    </Choose>
+</Project>

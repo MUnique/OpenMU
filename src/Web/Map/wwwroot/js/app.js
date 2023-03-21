@@ -39,7 +39,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     function verb(n) { return function (v) { return step([n, v]); }; }
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
             if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
             if (y = 0, t) op = [op[0] & 2, t.value];
             switch (op[0]) {
@@ -575,7 +575,8 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
                 World.prototype.addAreaSkillAnimation = function (playerId, skill, x, y, rotation) {
                     var animating = this.getObjectById(playerId);
                     if (animating !== undefined && animating !== null) {
-                        animating.rotateTo(rotation);
+                        var rotationMultiplier = 0x10;
+                        animating.rotateTo(rotation / rotationMultiplier);
                     }
                 };
                 World.prototype.addAnimation = function (animatingId, animation, targetId, direction) {

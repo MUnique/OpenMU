@@ -112,6 +112,7 @@ public class PacketHandlerPlugInContainer<THandler> : StrategyPlugInProvider<byt
             return;
         }
 
+        using var loggingScope = this.Logger.BeginScope(("EventId", handler.GetType().Name));
         if (handler.IsEncryptionExpected && (packet.Span[0] < 0xC3))
         {
             this.Logger.LogWarning($"Packet was not encrypted and will not be handled: {packet.Span.AsString()}");

@@ -15,6 +15,7 @@ public class SkillHitValidator
 
     private const byte TwisterSkillId = 8;
     private const byte EvilSpiritSkillId = 9;
+    private const byte MultishotSkillId = 235;
 
     private static readonly TimeSpan MaxAnimationToHitDelay = TimeSpan.FromSeconds(10);
 
@@ -28,6 +29,8 @@ public class SkillHitValidator
     private readonly HitEntry[] _hits = new HitEntry[MaximumCounterValue + 1];
 
     private byte _lastTwisterIndex;
+
+    private byte _lastMultishotIndex;
 
     /// <summary>
     /// The game client doesn't reset its counter when it connects with a new account.
@@ -47,6 +50,11 @@ public class SkillHitValidator
     }
 
     /// <summary>
+    /// Gets the last registered skill identifier.
+    /// </summary>
+    public ushort LastRegisteredSkillId { get; private set; }
+
+    /// <summary>
     /// Tries to register an animation with the specified counter.
     /// </summary>
     /// <param name="skillId">The skill identifier.</param>
@@ -61,6 +69,12 @@ public class SkillHitValidator
         {
             // Twister is a implemented wrong at the client side. It sends a counter of the animations here, but not in the hit packets.
             this._lastTwisterIndex = animationCounter;
+        }
+
+        if (skillId == MultishotSkillId)
+        {
+            // Multishot is a implemented wrong at the client side. It sends a counter of the animations here, but not in the hit packets.
+            this._lastMultishotIndex = animationCounter;
         }
 
         if (skillId == EvilSpiritSkillId
@@ -82,8 +96,18 @@ public class SkillHitValidator
             this._counter.Increase();
         }
 
+        this.LastRegisteredSkillId = skillId;
         this._hits[animationCounter] = new HitEntry(skillId, DateTime.UtcNow, true, 0);
         return true;
+    }
+
+    /// <summary>
+    /// Increases the counter by one, after a hit was done.
+    /// It must just be called once after a combined hit.
+    /// </summary>
+    public void IncreaseCounterAfterHit()
+    {
+        this._counter.Increase();
     }
 
     /// <summary>
@@ -95,7 +119,7 @@ public class SkillHitValidator
     /// <returns>
     ///   <c>true</c> if a hit request is valid for the specified skill identifier; otherwise, <c>false</c>.
     /// </returns>
-    public bool IsHitValid(ushort skillId, byte animationCounter, byte hitCounter)
+    public (bool IsValid, bool IncreaseCounter) IsHitValid(ushort skillId, byte animationCounter, byte hitCounter)
     {
         if (animationCounter == 0 && skillId == TwisterSkillId)
         {
@@ -103,47 +127,51 @@ public class SkillHitValidator
             animationCounter = this._lastTwisterIndex;
         }
 
+        if (animationCounter == 0 && skillId == MultishotSkillId)
+        {
+            // Multishot is implemented wrong at the client side. It doesn't send an animation counter in hit packets.
+            animationCounter = this._lastMultishotIndex;
+        }
+
         if (this._hits[animationCounter] is { } animationEntry)
         {
             if (!animationEntry.IsAnimation)
             {
                 this._logger.LogWarning("Possible Hacker - Skill Hit Invalid because the given animation counter wasn't registered as animation.");
-                return false;
+                return (false, false);
             }
 
             var expectedCount = this._counter.Count;
             if (expectedCount != hitCounter)
             {
-                this._logger.LogWarning($"Hit count out of sync - hacker? Expected: {this._counter.Count}, Actual: {animationCounter}.");
-                return false;
+                this._logger.LogWarning($"Hit count out of sync - hacker? Expected: {this._counter.Count}, Actual: {hitCounter}.");
+                return (false, false);
             }
 
             if (animationEntry.Skill != skillId)
             {
                 this._logger.LogWarning($"Wrong skill in referenced animation - hacker?");
-                return false;
+                return (false, false);
             }
 
-            this._counter.Increase();
             var newCount = animationEntry.HitCount + 1;
 
             this._hits[animationCounter] = animationEntry with { HitCount = newCount };
-            Console.WriteLine(this._hits[animationCounter]);
             this._hits[hitCounter] = new HitEntry(skillId, DateTime.UtcNow, false, 0);
 
             var timestampDiff = DateTime.UtcNow - animationEntry.TimeStamp;
             if (timestampDiff > MaxAnimationToHitDelay)
             {
                 this._logger.LogWarning("Possible Hacker - Skill Hit Invalid because of too high time difference between animation and hit");
-                return false;
+                return (false, true);
             }
 
-            return true;
+            return (true, true);
         }
         else
         {
             this._logger.LogWarning("Possible Hacker - Skill Hit Invalid because of missing previous animation.");
-            return false;
+            return (false, false);
         }
     }
 

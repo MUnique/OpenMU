@@ -2,9 +2,9 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using Nito.AsyncEx;
-
 namespace MUnique.OpenMU.GameLogic;
+
+using Nito.AsyncEx;
 
 /// <summary>
 /// The storage of the personal store of a player.

@@ -5,13 +5,12 @@
 namespace MUnique.OpenMU.GameLogic.NPC;
 
 using System.Buffers;
-using Nito.AsyncEx;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Pathfinding;
-using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
+using Nito.AsyncEx;
 
 /// <summary>
 /// The implementation of a monster, which can attack players.
@@ -31,13 +30,16 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
     /// <summary>
     /// The duration of the <see cref="_skillPowerUp"/>.
     /// </summary>
-    /// <remarks>
-    /// It is an IElement, because the duration can be dependent from the player attributes.
-    /// </remarks>
     private readonly IElement? _skillPowerUpDuration;
 
+    /// <summary>
+    /// The target attribute of the <see cref="_skillPowerUp"/>.
+    /// </summary>
+    private readonly AttributeDefinition? _skillPowerUpTarget;
+
+    private readonly IObjectPool<PathFinder> _pathFinderPool;
+
     private bool _isCalculatingPath;
-    private PathFinder? _pathFinder;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Monster" /> class.
@@ -48,14 +50,16 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
     /// <param name="dropGenerator">The drop generator.</param>
     /// <param name="npcIntelligence">The monster intelligence.</param>
     /// <param name="plugInManager">The plug in manager.</param>
+    /// <param name="pathFinderPool">The path finder pool.</param>
     /// <param name="eventStateProvider">The event state provider.</param>
-    public Monster(MonsterSpawnArea spawnInfo, MonsterDefinition stats, GameMap map, IDropGenerator dropGenerator, INpcIntelligence npcIntelligence, PlugInManager plugInManager, IEventStateProvider? eventStateProvider = null)
+    public Monster(MonsterSpawnArea spawnInfo, MonsterDefinition stats, GameMap map, IDropGenerator dropGenerator, INpcIntelligence npcIntelligence, PlugInManager plugInManager, IObjectPool<PathFinder> pathFinderPool, IEventStateProvider? eventStateProvider = null)
         : base(spawnInfo, stats, map, eventStateProvider, dropGenerator, plugInManager)
     {
+        this._pathFinderPool = pathFinderPool;
         this._walker = new Walker(this, () => this.StepDelay);
         this._intelligence = npcIntelligence;
 
-        (this._skillPowerUp, this._skillPowerUpDuration) = this.CreateMagicEffectPowerUp();
+        (this._skillPowerUp, this._skillPowerUpDuration, this._skillPowerUpTarget) = this.CreateMagicEffectPowerUp();
 
         this._intelligence.Npc = this;
         this._intelligence.Start();
@@ -80,18 +84,22 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
     /// <inheritdoc/>
     public TimeSpan StepDelay => this.Definition.MoveDelay;
 
+    /// <inheritdoc/>
+    /// <remarks>Monsters don't do combos.</remarks>
+    public ComboStateMachine? ComboState => null;
+
     /// <summary>
     /// Attacks the specified target.
     /// </summary>
     /// <param name="target">The target.</param>
     public async ValueTask AttackAsync(IAttackable target)
     {
-        await target.AttackByAsync(this, null).ConfigureAwait(false);
+        await target.AttackByAsync(this, null, false).ConfigureAwait(false);
 
         await this.ForEachWorldObserverAsync<IShowAnimationPlugIn>(p => p.ShowMonsterAttackAnimationAsync(this, target, this.GetDirectionTo(target)), true).ConfigureAwait(false);
         if (this.Definition.AttackSkill is { } attackSkill)
         {
-            await target.TryApplyElementalEffectsAsync(this, attackSkill, this._skillPowerUp, this._skillPowerUpDuration).ConfigureAwait(false);
+            await target.TryApplyElementalEffectsAsync(this, attackSkill, this._skillPowerUp, this._skillPowerUpDuration, this._skillPowerUpTarget).ConfigureAwait(false);
 
             await this.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowSkillAnimationAsync(this, target, attackSkill, true), true).ConfigureAwait(false);
         }
@@ -101,35 +109,38 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
     /// Walks to the target coordinates.
     /// </summary>
     /// <param name="target">The target object.</param>
-    public async ValueTask WalkToAsync(Point target)
+    public async ValueTask<bool> WalkToAsync(Point target)
     {
         if (this._isCalculatingPath || this.IsWalking)
         {
-            return;
+            return false;
         }
 
         IList<PathResultNode>? calculatedPath;
         this._isCalculatingPath = true;
+        PathFinder? pathFinder = null;
         try
         {
-            if (this._pathFinder is null)
-            {
-                this._pathFinder = new PathFinder(new GridNetwork(this.CurrentMap.Terrain.AIgrid, true));
-            }
-            else
-            {
-                this._pathFinder.ResetPathFinder();
-            }
-
-            calculatedPath = this._pathFinder.FindPath(this.Position, target);
+            pathFinder = await this._pathFinderPool.GetAsync().ConfigureAwait(false);
+            pathFinder.ResetPathFinder();
+            calculatedPath = pathFinder.FindPath(this.Position, target, this.CurrentMap.Terrain.AIgrid);
             if (calculatedPath is null)
             {
-                return;
+                return false;
             }
         }
         finally
         {
             this._isCalculatingPath = false;
+            if (pathFinder is not null)
+            {
+                this._pathFinderPool.Return(pathFinder);
+            }
+        }
+
+        if (calculatedPath.Count == 0)
+        {
+            return false;
         }
 
         // The walker just supports maximum 16 steps.
@@ -149,13 +160,14 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
         }
 
         await this.WalkToAsync(new Point(targetNode.X, targetNode.Y), steps).ConfigureAwait(false);
+        return true;
     }
 
     /// <summary>
     /// Walks to the target object.
     /// </summary>
     /// <param name="target">The target object.</param>
-    public ValueTask WalkToAsync(ILocateable target) => this.WalkToAsync(target.Position);
+    public ValueTask<bool> WalkToAsync(ILocateable target) => this.WalkToAsync(target.Position);
 
     /// <summary>
     /// Walks to the specified target coordinates using the specified steps.
@@ -177,6 +189,9 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
 
     /// <inheritdoc />
     public ValueTask<int> GetStepsAsync(Memory<WalkingStep> steps) => this._walker.GetStepsAsync(steps);
+
+    /// <inheritdoc />
+    public ValueTask StopWalkingAsync() => this._walker.StopAsync();
 
     /// <inheritdoc />
     public override ValueTask ReflectDamageAsync(IAttacker reflector, uint damage)
@@ -286,25 +301,23 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
     /// <summary>
     /// Creates the magic effect power up for the given skill of a monster.
     /// </summary>
-    private (IElement? PowerUp, IElement? Duration) CreateMagicEffectPowerUp()
+    /// <remarks>
+    /// Currently, we just support one effect for monsters.
+    /// </remarks>
+    private (IElement? PowerUp, IElement? Duration, AttributeDefinition? Target) CreateMagicEffectPowerUp()
     {
         var skill = this.Definition.AttackSkill;
-        if (skill?.MagicEffectDef is null)
+        if (skill?.MagicEffectDef?.PowerUpDefinitions.FirstOrDefault() is not { } powerUpDefinition
+            || skill.MagicEffectDef.Duration is not { } duration)
         {
-            return (null, null);
+            return (null, null, null);
         }
 
-        if (skill.MagicEffectDef.PowerUpDefinition?.Boost is null)
+        if (powerUpDefinition.Boost is null)
         {
-            throw new InvalidOperationException($"Skill {skill.Name} ({skill.Number}) has no magic effect definition or is without a PowerUpDefintion.");
+            throw new InvalidOperationException($"Skill {skill.Name} ({skill.Number}) has no magic effect definition or is without a PowerUpDefinition.");
         }
 
-        if (skill.MagicEffectDef.PowerUpDefinition.Duration is null)
-        {
-            throw new InvalidOperationException($"PowerUpDefinition {skill.MagicEffectDef.PowerUpDefinition.GetId()} no Duration.");
-        }
-
-        var powerUpDef = skill.MagicEffectDef.PowerUpDefinition;
-        return (this.Attributes.CreateElement(powerUpDef.Boost), this.Attributes.CreateElement(powerUpDef.Duration));
+        return (this.Attributes.CreateElement(powerUpDefinition.Boost), this.Attributes.CreateElement(duration), powerUpDefinition.TargetAttribute);
     }
 }

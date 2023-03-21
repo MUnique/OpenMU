@@ -26,6 +26,8 @@ public partial class ExitGatePicker
     private Image<Rgba32> _terrainImage = null!;
     private GameMapDefinition? _map;
 
+    private IList<GameMapDefinition> _maps = new List<GameMapDefinition>();
+
     /// <summary>
     /// Gets or sets the persistence context.
     /// </summary>
@@ -70,6 +72,13 @@ public partial class ExitGatePicker
     {
         base.OnParametersSet();
         this.Map = this.SelectedGate?.Map;
+    }
+
+    /// <inheritdoc />
+    protected override async Task OnInitializedAsync()
+    {
+        this._maps = (await this.LookupController.GetSuggestionsAsync<GameMapDefinition>(string.Empty, null)).OrderBy(c => c.Number).ToList();
+        await base.OnInitializedAsync();
     }
 
     private string GetCssClass(Gate gate)

@@ -171,12 +171,12 @@ public class ItemSerializerTests
         item.HasSkill = true;
 
         var ancientSet = this._gameConfiguration.ItemSetGroups.First(i => i.Name == "Hyon");
+        var itemOfSet = ancientSet.Items.First(i => i.ItemDefinition == item.Definition);
         var ancientBonus = context.CreateNew<ItemOptionLink>();
-        ancientBonus.ItemOption = ancientSet.Items.First(i => i.ItemDefinition == item.Definition).BonusOption;
+        ancientBonus.ItemOption = itemOfSet.BonusOption;
         ancientBonus.Level = 2; // 10 Str
         item.ItemOptions.Add(ancientBonus);
-
-        item.ItemSetGroups.Add(ancientSet);
+        item.ItemSetGroups.Add(itemOfSet);
 
         var array = new byte[this._itemSerializer.NeededSpace];
         this._itemSerializer.SerializeItem(array, item);
@@ -193,7 +193,8 @@ public class ItemSerializerTests
         item.Durability = 10;
 
         var ancientSet = this._gameConfiguration.ItemSetGroups.First(i => i.Name == "Gywen");
-        item.ItemSetGroups.Add(ancientSet);
+        var itemOfSet = ancientSet.Items.First(i => i.ItemDefinition == item.Definition);
+        item.ItemSetGroups.Add(itemOfSet);
 
         var array = new byte[this._itemSerializer.NeededSpace];
         this._itemSerializer.SerializeItem(array, item);

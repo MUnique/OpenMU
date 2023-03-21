@@ -50,8 +50,14 @@ public class MagicEffectDefinition
     public bool SendDuration { get; set; }
 
     /// <summary>
-    /// Gets or sets the powerUp definition which is used to create the actual power up element.
+    /// Gets or sets the duration which describes how long the <see cref="PowerUpDefinitions"/> apply, in seconds.
     /// </summary>
     [MemberOfAggregate]
-    public virtual PowerUpDefinitionWithDuration? PowerUpDefinition { get; set; }
+    public virtual PowerUpDefinitionValue? Duration { get; set; }
+
+    /// <summary>
+    /// Gets or sets the power up definitions which are used to create the actual power up element.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<PowerUpDefinition> PowerUpDefinitions { get; protected set; } = null!;
 }

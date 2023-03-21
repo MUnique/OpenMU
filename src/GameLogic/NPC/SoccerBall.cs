@@ -2,14 +2,13 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.PlugIns;
-
 namespace MUnique.OpenMU.GameLogic.NPC;
 
-using Nito.AsyncEx;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Pathfinding;
+using MUnique.OpenMU.PlugIns;
+using Nito.AsyncEx;
 
 /// <summary>
 /// The implementation of a soccer ball.
@@ -38,6 +37,9 @@ public sealed class SoccerBall : NonPlayerCharacter, IAttackable, IMovable
     public event AsyncEventHandler<(Point From, Point To)>? Moved;
 
     /// <inheritdoc />
+    public event EventHandler<DeathInformation>? Died;
+
+    /// <inheritdoc />
     public IAttributeSystem Attributes { get; }
 
     /// <inheritdoc />
@@ -53,7 +55,7 @@ public sealed class SoccerBall : NonPlayerCharacter, IAttackable, IMovable
     public DeathInformation? LastDeath => null;
 
     /// <inheritdoc />
-    public async ValueTask AttackByAsync(IAttacker attacker, SkillEntry? skill)
+    public async ValueTask AttackByAsync(IAttacker attacker, SkillEntry? skill, bool isCombo)
     {
         var direction = attacker.GetDirectionTo(this);
         await this.MoveToDirectionAsync(direction, skill is { }).ConfigureAwait(false);
@@ -71,6 +73,12 @@ public sealed class SoccerBall : NonPlayerCharacter, IAttackable, IMovable
     {
         // A ball doesn't take any damage
         return ValueTask.CompletedTask;
+    }
+
+    /// <inheritdoc />
+    public ValueTask KillInstantlyAsync()
+    {
+        throw new NotImplementedException();
     }
 
     /// <inheritdoc />

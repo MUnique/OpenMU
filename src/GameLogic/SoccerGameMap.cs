@@ -24,7 +24,7 @@ public class SoccerGameMap : GameMap
     /// <param name="mapDefinition">The map definition.</param>
     /// <param name="itemDropDuration">Duration of the item drop.</param>
     /// <param name="chunkSize">Size of the chunk.</param>
-    public SoccerGameMap(GameMapDefinition mapDefinition, int itemDropDuration, byte chunkSize)
+    public SoccerGameMap(GameMapDefinition mapDefinition, TimeSpan itemDropDuration, byte chunkSize)
         : base(mapDefinition, itemDropDuration, chunkSize)
     {
         this.ObjectAdded += this.OnObjectAddedAsync;

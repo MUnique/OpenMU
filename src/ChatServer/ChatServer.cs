@@ -5,8 +5,8 @@
 namespace MUnique.OpenMU.ChatServer;
 
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Timers;
@@ -316,14 +316,20 @@ public sealed class ChatServer : IChatServer, IDisposable
         try
         {
             var bottomDateTimeMargin = DateTime.Now.Subtract(this.Settings.ClientTimeout);
+
             for (int i = this._connectedClients.Count - 1; i >= 0; i--)
             {
                 var client = this._connectedClients[i];
-                if (client.LastActivity < bottomDateTimeMargin)
+                if (client.LastActivity >= bottomDateTimeMargin)
                 {
-                    this._logger.LogDebug($"Disconnecting client {client}, because of activity timeout. LastActivity: {client.LastActivity}");
-                    await client.LogOffAsync().ConfigureAwait(false);
+                    continue;
                 }
+
+                this._logger.LogDebug(
+                    "Disconnecting client {Client}, because of activity timeout. LastActivity: {ClientLastActivity}",
+                    client, client.LastActivity);
+
+                await client.LogOffAsync().ConfigureAwait(false);
             }
         }
         catch (Exception ex)

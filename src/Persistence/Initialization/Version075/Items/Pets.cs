@@ -62,6 +62,7 @@ public class Pets : InitializerBase
             }
         }
 
+        pet.SetGuid(pet.Group, pet.Number);
         return pet;
     }
 }

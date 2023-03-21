@@ -38,7 +38,7 @@ public class GameMap
     /// <param name="mapDefinition">The map definition.</param>
     /// <param name="itemDropDuration">Duration of the item drop.</param>
     /// <param name="chunkSize">Size of the chunk.</param>
-    public GameMap(GameMapDefinition mapDefinition, int itemDropDuration, byte chunkSize)
+    public GameMap(GameMapDefinition mapDefinition, TimeSpan itemDropDuration, byte chunkSize)
     {
         this.Id = Guid.NewGuid();
         this.Definition = mapDefinition;
@@ -78,9 +78,9 @@ public class GameMap
     public ExitGate? SafeZoneSpawnGate => this._safezoneSpawnGate;
 
     /// <summary>
-    /// Gets the time in seconds of how long drops are laying on the ground until they are disappearing.
+    /// Gets the duration about how long drops are laying on the ground until they are disappearing.
     /// </summary>
-    public int ItemDropDuration { get; }
+    public TimeSpan ItemDropDuration { get; }
 
     /// <summary>
     /// Gets the definition of the map.
@@ -109,7 +109,7 @@ public class GameMap
     /// <param name="point">The coordinates.</param>
     /// <param name="range">The range.</param>
     /// <returns>The attackables in range of the specified coordinate.</returns>
-    public IEnumerable<IAttackable> GetAttackablesInRange(Point point, int range)
+    public IList<IAttackable> GetAttackablesInRange(Point point, int range)
     {
         return this._areaOfInterestManager.GetInRange(point, range).OfType<IAttackable>().ToList();
     }
@@ -228,6 +228,22 @@ public class GameMap
         {
             await monster.CurrentMap.RemoveAsync(monster).ConfigureAwait(false);
             monster.Dispose();
+        }
+    }
+
+    /// <summary>
+    /// Clears the drops on invalid terrain.
+    /// </summary>
+    public async ValueTask ClearDropsOnInvalidTerrain()
+    {
+        var drops = this._objectsInMap.Values
+            .OfType<DroppedItem>()
+            .Where(d => !this.Terrain.WalkMap[d.Position.X, d.Position.Y])
+            .ToList();
+
+        foreach (var drop in drops)
+        {
+            await drop.DisposeAsync().ConfigureAwait(false);
         }
     }
 }

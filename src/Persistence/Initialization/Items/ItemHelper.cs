@@ -76,6 +76,7 @@ internal class ItemHelper
         var item = this._context.CreateNew<Item>();
         item.Definition = this._gameConfiguration.Items.First(def => def.Group == (byte)group && def.Number == learnableId);
         item.ItemSlot = itemSlot;
+        item.Durability = 1;
 
         return item;
     }

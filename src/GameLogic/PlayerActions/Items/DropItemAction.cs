@@ -94,9 +94,20 @@ public class DropItemAction
         var owners = item.Definition!.IsBoundToCharacter
             ? player.GetAsEnumerable()
             : player.Party?.PartyList.AsEnumerable() ?? player.GetAsEnumerable();
-        var droppedItem = new DroppedItem(item, target, player.CurrentMap!, player, owners);
-        await player.CurrentMap!.AddAsync(droppedItem).ConfigureAwait(false);
+
+        // we have to remove it from the inventory already here, so it gets saved without a storage.
         await this.RemoveItemFromInventoryAsync(player, item).ConfigureAwait(false);
+
+        // We have to save here already. Otherwise, if the item got modified since last
+        // save point by the dropper, changes would not be saved by the picking up player!
+        await player.PersistenceContext.SaveChangesAsync().ConfigureAwait(false);
+
+        // Some room for improvement: When the item is not persisted, we don't need to save.
+        // However, to check this in the right order, we need to extend IContext to
+        // give us this information.
+        var wasItemPersisted = player.PersistenceContext.Detach(item);
+        var droppedItem = new DroppedItem(item, target, player.CurrentMap!, player, owners, wasItemPersisted);
+        await player.CurrentMap!.AddAsync(droppedItem).ConfigureAwait(false);
     }
 
     private async ValueTask RemoveItemFromInventoryAsync(Player player, Item item)

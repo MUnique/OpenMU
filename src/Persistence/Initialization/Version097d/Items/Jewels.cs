@@ -41,10 +41,10 @@ public class Jewels : Version095d.Items.Jewels
         itemDefinition.Group = 14;
         itemDefinition.DropsFromMonsters = true;
         itemDefinition.DropLevel = 72;
-        itemDefinition.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.LifeJewelConsumeHandler).FullName;
         itemDefinition.Durability = 1;
         itemDefinition.Width = 1;
         itemDefinition.Height = 1;
+        itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
         return itemDefinition;
     }
 }

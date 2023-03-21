@@ -54,6 +54,9 @@ public class TradeAcceptAction : BaseTradeAction
     /// <param name="trader">Trader for which the trade should be opened.</param>
     internal async ValueTask OpenTradeAsync(ITrader trader)
     {
+        // first make sure that all items which could be transferred are already present in the database
+        await trader.PersistenceContext.SaveChangesAsync().ConfigureAwait(false);
+
         trader.BackupInventory = new BackupItemStorage(trader.Inventory!.ItemStorage);
         trader.TradingMoney = 0;
         await trader.InvokeViewPlugInAsync<IShowTradeRequestAnswerPlugIn>(p => p.ShowTradeRequestAnswerAsync(true)).ConfigureAwait(false);

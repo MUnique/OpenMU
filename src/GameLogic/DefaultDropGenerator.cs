@@ -48,22 +48,30 @@ public class DefaultDropGenerator : IDropGenerator
             return Enumerable.Empty<Item>();
         }
 
-        var questGroups = character.QuestStates?
-                              .SelectMany(q => q.ActiveQuest?.RequiredItems
-                                                   .Where(i => i.DropItemGroup is { })
-                                                   .Select(i => i.DropItemGroup!)
-                                               ?? Enumerable.Empty<DropItemGroup>())
-                          ?? Enumerable.Empty<DropItemGroup>();
-        var dropGroups = 
-            monster.ObjectKind == NpcObjectKind.Destructible
-                ? (IEnumerable<DropItemGroup>)monster.DropItemGroups
+        IEnumerable<DropItemGroup> dropGroups;
+        if (monster.DropItemGroups.MaxBy(g => g.Chance) is { Chance: >= 1.0 } alwaysDrops)
+        {
+            dropGroups = alwaysDrops.GetAsEnumerable();
+        }
+        else
+        {
+            var questGroups = character.QuestStates?
+                            .SelectMany(q => q.ActiveQuest?.RequiredItems
+                                                 .Where(i => i.DropItemGroup is { })
+                                                 .Select(i => i.DropItemGroup!)
+                                             ?? Enumerable.Empty<DropItemGroup>())
+                        ?? Enumerable.Empty<DropItemGroup>();
+
+            dropGroups = monster.ObjectKind == NpcObjectKind.Destructible
+                ? monster.DropItemGroups
                 : CombineDropGroups(
-                    monster.DropItemGroups,
-                    character.DropItemGroups,
-                    map.DropItemGroups,
-                    questGroups)
-                .Where(group => IsGroupRelevant(monster, group))
-                .OrderBy(group => group.Chance);
+                        monster.DropItemGroups,
+                        character.DropItemGroups,
+                        map.DropItemGroups,
+                        questGroups)
+                    .Where(group => IsGroupRelevant(monster, group))
+                    .OrderBy(group => group.Chance);
+        }
 
         IList<Item>? droppedItems = null;
         for (int i = 0; i < monster.NumberOfMaximumItemDrops; i++)
@@ -88,7 +96,10 @@ public class DefaultDropGenerator : IDropGenerator
     /// <inheritdoc/>
     public Item? GenerateItemDrop(DropItemGroup selectedGroup)
     {
-        var item = this.GenerateRandomItem(selectedGroup.PossibleItems);
+        var item = selectedGroup.ItemType == SpecialItemType.Ancient
+            ? this.GenerateRandomAncient()
+            : this.GenerateRandomItem(selectedGroup.PossibleItems);
+
         if (item is null)
         {
             return null;
@@ -324,14 +335,14 @@ public class DefaultDropGenerator : IDropGenerator
 
     private void ApplyRandomAncientOption(Item item)
     {
-        var ancientSet = item.ItemSetGroups.Where(g => g.Options.Any(o => o.OptionType == ItemOptionTypes.AncientOption)).SelectRandom(this._randomizer);
+        var ancientSet = item.Definition?.PossibleItemSetGroups.Where(g => g!.Options.Any(o => o.OptionType == ItemOptionTypes.AncientOption)).SelectRandom(this._randomizer);
         if (ancientSet is null)
         {
             return;
         }
 
-        item.ItemSetGroups.Add(ancientSet);
         var itemOfSet = ancientSet.Items.First(i => i.ItemDefinition == item.Definition);
+        item.ItemSetGroups.Add(itemOfSet);
         var bonusOption = itemOfSet.BonusOption ?? throw Error.NotInitializedProperty(itemOfSet, nameof(itemOfSet.BonusOption)); // for example: +5str or +10str
         var bonusOptionLink = new ItemOptionLink();
         bonusOptionLink.ItemOption = bonusOption;

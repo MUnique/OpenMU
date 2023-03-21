@@ -3,7 +3,10 @@
 @using System.Reflection
 @typeparam TValue
 
+@if (this._actualLabel != string.Empty)
+{
 <label for="@this._fieldIdentifier.FieldName">@this._actualLabel</label>
+}
 
 @code {
     private string _actualLabel = null!;
@@ -27,7 +30,7 @@
         base.OnParametersSet();
         this._fieldIdentifier = FieldIdentifier.Create(this.ValueExpression);
         this._actualLabel = (string.IsNullOrWhiteSpace(this.Text) ? null : this.Text)
-                           ?? this._fieldIdentifier.Model.GetType().GetProperty(this._fieldIdentifier.FieldName)?.GetCustomAttribute<DisplayAttribute>()?.Name
-                           ?? this._fieldIdentifier.FieldName;
+                            ?? this._fieldIdentifier.Model.GetType().GetProperty(this._fieldIdentifier.FieldName)?.GetCustomAttribute<DisplayAttribute>()?.Name
+                            ?? CaptionHelper.SeparateWords(this._fieldIdentifier.FieldName);
     }
 }

@@ -42,6 +42,14 @@ public enum SpawnTrigger
     /// For example, at devil square there is a wave of bosses, which spawn only once.
     /// </remarks>
     OnceAtWaveStart,
+
+    /// <summary>
+    /// The monster spawns manually controlled by the code of an event.
+    /// </summary>
+    /// <remarks>
+    /// For example chaos castle enemies, because their number is not known beforehand.
+    /// </remarks>
+    ManuallyForEvent,
 }
 
 /// <summary>
@@ -108,7 +116,7 @@ public class MonsterSpawnArea
     /// <inheritdoc/>
     public override string ToString()
     {
-        var isPoint = this.X1 == this.X2 && this.Y1 == this.Y2;
+        var isPoint = this.IsPoint();
         var result = isPoint
             ? $"{this.MonsterDefinition?.Designation} - Quantity: {this.Quantity} - At: {this.X1}/{this.Y1}"
             : $"{this.MonsterDefinition?.Designation} - Quantity: {this.Quantity} - Area: {this.X1}/{this.Y1} to {this.X2}/{this.Y2}";
@@ -120,4 +128,12 @@ public class MonsterSpawnArea
 
         return result;
     }
+
+    /// <summary>
+    /// Determines whether this instance is a spawn point.
+    /// </summary>
+    /// <returns>
+    ///   <c>true</c> if this instance is point; otherwise, <c>false</c>.
+    /// </returns>
+    public bool IsPoint() => this.X1 == this.X2 && this.Y1 == this.Y2;
 }

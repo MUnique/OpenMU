@@ -39,6 +39,7 @@ internal partial class NpcInitialization : Version075.NpcInitialization
             def.Designation = "Sevina the Priestess";
             def.NpcWindow = NpcWindow.LegacyQuest;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
+            def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
         }
 
@@ -47,6 +48,7 @@ internal partial class NpcInitialization : Version075.NpcInitialization
             def.Number = 236;
             def.Designation = "Golden Archer";
             def.ObjectKind = NpcObjectKind.PassiveNpc;
+            def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
         }
 
@@ -56,6 +58,7 @@ internal partial class NpcInitialization : Version075.NpcInitialization
             def.Designation = "Charon";
             def.NpcWindow = NpcWindow.DevilSquare;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
+            def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
         }
     }

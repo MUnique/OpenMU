@@ -68,7 +68,9 @@ public class NonPlayerCharacter : AsyncDisposable, IObservable, IRotatable, ILoc
     /// </summary>
     public virtual void Initialize()
     {
-        const int maxRetry = 20;
+        const int maxRetryForAreas = 100;
+        var maxRetry = this.SpawnArea.IsPoint() ? 1 : maxRetryForAreas;
+
         Point? spawnPoint = null;
 
         for (var retry = 0; retry < maxRetry && spawnPoint is null; retry++)

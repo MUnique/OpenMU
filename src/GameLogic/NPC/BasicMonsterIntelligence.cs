@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.NPC;
 
 using System.Diagnostics;
 using System.Threading;
+using MUnique.OpenMU.GameLogic.Attributes;
 
 /// <summary>
 /// A basic monster AI which is pretty basic.
@@ -53,8 +54,9 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
     /// <inheritdoc/>
     public void Start()
     {
+        TimeSpan randomized = this.Npc.Definition.AttackDelay + TimeSpan.FromMilliseconds(Rand.NextInt(0, 1000));
         // TODO: Optimize this: start timer when first observer is added. stop timer when last observer is removed.
-        this._aiTimer = new Timer(_ => this.SafeTick(), null, this.Npc.Definition.AttackDelay, this.Npc.Definition.AttackDelay);
+        this._aiTimer = new Timer(_ => this.SafeTick(), null, randomized, this.Npc.Definition.AttackDelay);
     }
 
     /// <inheritdoc/>
@@ -140,6 +142,10 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
         {
             await this.TickAsync().ConfigureAwait(false);
         }
+        catch (OperationCanceledException)
+        {
+            // can be ignored.
+        }
         catch (Exception ex)
         {
             Debug.Fail(ex.Message, ex.StackTrace);
@@ -154,6 +160,11 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
         }
 
         if (this.Monster.IsWalking)
+        {
+            return;
+        }
+
+        if (this.Monster.Attributes[Stats.IsStunned] > 0)
         {
             return;
         }
@@ -184,6 +195,11 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
         // no target?
         if (target is null)
         {
+            if (this.Monster.Attributes[Stats.IsFrozen] > 0)
+            {
+                return;
+            }
+
             // we move around randomly, so the monster does not look dead when watched from distance.
             if (await this.IsObservedByAttackerAsync().ConfigureAwait(false))
             {
@@ -197,19 +213,26 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
         if (target.IsInRange(this.Monster.Position, this.Monster.Definition.AttackRange + 1) && !this.Monster.IsAtSafezone())
         {
             await this.Monster.AttackAsync(target).ConfigureAwait(false);  // yes, attack
+            return;
+        }
+
+        if (this.Monster.Attributes[Stats.IsFrozen] > 0)
+        {
+            return;
         }
 
         // Target in View Range?
-        else if (target.IsInRange(this.Monster.Position, this.Monster.Definition.ViewRange + 1))
+        if (target.IsInRange(this.Monster.Position, this.Monster.Definition.ViewRange + 1))
         {
             // no, walk to the target
             var walkTarget = this.Monster.CurrentMap!.Terrain.GetRandomCoordinate(target.Position, this.Monster.Definition.AttackRange);
-            await this.Monster.WalkToAsync(walkTarget).ConfigureAwait(false);
+            if (await this.Monster.WalkToAsync(walkTarget).ConfigureAwait(false))
+            {
+                return;
+            }
         }
-        else
-        {
-            // we move around randomly, so the monster does not look dead when watched from distance.
-            await this.Monster.RandomMoveAsync().ConfigureAwait(false);
-        }
+
+        // we move around randomly, so the monster does not look dead when watched from distance.
+        await this.Monster.RandomMoveAsync().ConfigureAwait(false);
     }
 }

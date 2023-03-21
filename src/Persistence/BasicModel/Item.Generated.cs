@@ -28,12 +28,10 @@ public partial class Item : MUnique.OpenMU.DataModel.Entities.Item, IIdentifiabl
     /// <summary>
     /// Gets the raw collection of <see cref="ItemOptions" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("itemOptions")]
     [System.Text.Json.Serialization.JsonPropertyName("itemOptions")]
     public ICollection<ItemOptionLink> RawItemOptions { get; } = new List<ItemOptionLink>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Entities.ItemOptionLink> ItemOptions
     {
@@ -51,16 +49,14 @@ public partial class Item : MUnique.OpenMU.DataModel.Entities.Item, IIdentifiabl
     /// <summary>
     /// Gets the raw collection of <see cref="ItemSetGroups" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("itemSetGroups")]
     [System.Text.Json.Serialization.JsonPropertyName("itemSetGroups")]
-    public ICollection<ItemSetGroup> RawItemSetGroups { get; } = new List<ItemSetGroup>();
+    public ICollection<ItemOfItemSet> RawItemSetGroups { get; } = new List<ItemOfItemSet>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
-    public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemSetGroup> ItemSetGroups
+    public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemOfItemSet> ItemSetGroups
     {
-        get => base.ItemSetGroups ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.ItemSetGroup, ItemSetGroup>(this.RawItemSetGroups);
+        get => base.ItemSetGroups ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.ItemOfItemSet, ItemOfItemSet>(this.RawItemSetGroups);
         protected set
         {
             this.ItemSetGroups.Clear();
@@ -74,7 +70,6 @@ public partial class Item : MUnique.OpenMU.DataModel.Entities.Item, IIdentifiabl
     /// <summary>
     /// Gets the raw object of <see cref="Definition" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("definition")]
     [System.Text.Json.Serialization.JsonPropertyName("definition")]
     public ItemDefinition RawDefinition
     {
@@ -83,7 +78,6 @@ public partial class Item : MUnique.OpenMU.DataModel.Entities.Item, IIdentifiabl
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition Definition
     {

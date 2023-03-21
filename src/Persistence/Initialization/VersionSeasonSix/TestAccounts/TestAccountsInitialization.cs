@@ -38,5 +38,7 @@ public class TestAccountsInitialization : InitializerBase
         new TestAccounts.Quest220(this.Context, this.GameConfiguration).Initialize();
         new TestAccounts.Quest400(this.Context, this.GameConfiguration).Initialize();
         new TestAccounts.GameMaster(this.Context, this.GameConfiguration).Initialize();
+        new TestAccounts.GameMaster2(this.Context, this.GameConfiguration).Initialize();
+        new TestAccounts.Unlocked(this.Context, this.GameConfiguration).Initialize();
     }
 }

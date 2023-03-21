@@ -4,7 +4,9 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
+using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.World;
 
 /// <summary>
@@ -32,9 +34,20 @@ public class TargetedSkillAction
     public async ValueTask PerformSkillAsync(Player player, IAttackable target, ushort skillId)
     {
         using var loggerScope = player.Logger.BeginScope(this.GetType());
-        if (player.IsAtSafezone())
+
+        if (target is null)
         {
-            player.Logger.LogWarning($"Probably Hacker - player {player} is attacking from safezone");
+            return;
+        }
+
+        if (player.Attributes is not { } attributes)
+        {
+            return;
+        }
+
+        if (attributes[Stats.IsStunned] > 0)
+        {
+            player.Logger.LogWarning($"Probably Hacker - player {player} is attacking in stunned state");
             return;
         }
 
@@ -45,7 +58,15 @@ public class TargetedSkillAction
             return;
         }
 
-        if (target is null)
+        var miniGame = player.CurrentMiniGame;
+        var inMiniGame = miniGame is { };
+        var isBuff = skill.SkillType is SkillType.Buff or SkillType.Regeneration;
+        if (player.IsAtSafezone() && !(inMiniGame && isBuff))
+        {
+            return;
+        }
+
+        if (inMiniGame && !miniGame!.IsSkillAllowed(skill, player, target))
         {
             return;
         }
@@ -71,11 +92,9 @@ public class TargetedSkillAction
             return;
         }
 
-        if (skill.SkillType == SkillType.SummonMonster && player.Summon is { } summon)
+        if (skill.SkillType == SkillType.SummonMonster && player.Summon is { })
         {
-            // remove summon, if exists
-            summon.Item1.Dispose();
-            player.SummonDied();
+            await player.RemoveSummonAsync().ConfigureAwait(false);
             return;
         }
 
@@ -118,13 +137,25 @@ public class TargetedSkillAction
         var skill = skillEntry.Skill;
         var success = false;
         var targets = this.DetermineTargets(player, targetedTarget, skill);
+        bool isCombo = false;
+        if (skill.SkillType is SkillType.DirectHit or SkillType.CastleSiegeSkill
+            && player.ComboState is { } comboState
+            && !targetedTarget.IsAtSafezone()
+            && !player.IsAtSafezone()
+            && targetedTarget.IsActive()
+            && player.IsActive())
+        {
+            isCombo = await comboState.RegisterSkillAsync(skill).ConfigureAwait(false);
+        }
+
         foreach (var target in targets)
         {
             if (skill.SkillType == SkillType.DirectHit || skill.SkillType == SkillType.CastleSiegeSkill)
             {
                 if (!target.IsAtSafezone() && !player.IsAtSafezone())
                 {
-                    await target.AttackByAsync(player, skillEntry).ConfigureAwait(false);
+                    await target.AttackByAsync(player, skillEntry, isCombo).ConfigureAwait(false);
+                    player.LastAttackedTarget.SetTarget(target);
                     success = await target.TryApplyElementalEffectsAsync(player, skillEntry).ConfigureAwait(false) || success;
                 }
             }
@@ -145,7 +176,7 @@ public class TargetedSkillAction
                 }
                 else if (skill.SkillType == SkillType.Regeneration)
                 {
-                    target.ApplyRegeneration(player, skillEntry);
+                    await target.ApplyRegenerationAsync(player, skillEntry).ConfigureAwait(false);
                     success = true;
                 }
                 else
@@ -157,6 +188,11 @@ public class TargetedSkillAction
             {
                 player.Logger.LogWarning($"Skill.MagicEffectDef is null, skill: {skill.Name} ({skill.Number}), skillType: {skill.SkillType}.");
             }
+        }
+
+        if (isCombo)
+        {
+            await player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowComboAnimationAsync(player, targetedTarget), true).ConfigureAwait(false);
         }
 
         return success;
@@ -181,7 +217,28 @@ public class TargetedSkillAction
 
         if (skill.Target == SkillTarget.ExplicitWithImplicitInRange)
         {
-            if (skill.ImplicitTargetRange > 0)
+            if (player.GameContext.PlugInManager.GetStrategy<short, IAreaSkillTargetFilter>(skill.Number) is { } filterPlugin)
+            {
+                var rotationToTarget = (byte)(player.Position.GetAngleDegreeTo(targetedTarget.Position) / 360.0 * 255.0);
+                var attackablesInRange =
+                    player.CurrentMap?
+                        .GetAttackablesInRange(player.Position, skill.Range)
+                        .Where(a => a != player)
+                        .Where(a => player.GameContext.Configuration.AreaSkillHitsPlayer || a is NonPlayerCharacter)
+                        .Where(a => !a.IsAtSafezone())
+                        .Where(a => filterPlugin.IsTargetWithinBounds(player, a, player.Position, rotationToTarget))
+                        .ToList();
+                if (attackablesInRange is not null)
+                {
+                    if (!attackablesInRange.Contains(targetedTarget))
+                    {
+                        attackablesInRange.Add(targetedTarget);
+                    }
+
+                    return attackablesInRange;
+                }
+            }
+            else if (skill.ImplicitTargetRange > 0)
             {
                 var targetsOfTarget = targetedTarget.CurrentMap?.GetAttackablesInRange(targetedTarget.Position, skill.ImplicitTargetRange) ?? Enumerable.Empty<IAttackable>();
                 if (!player.GameContext.Configuration.AreaSkillHitsPlayer && targetedTarget is Monster)
@@ -190,6 +247,10 @@ public class TargetedSkillAction
                 }
 
                 return targetsOfTarget;
+            }
+            else
+            {
+                // do nothing.
             }
 
             return targetedTarget.GetAsEnumerable();

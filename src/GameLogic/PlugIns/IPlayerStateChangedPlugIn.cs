@@ -23,8 +23,10 @@ using MUnique.OpenMU.PlugIns;
 public interface IPlayerStateChangedPlugIn
 {
     /// <summary>
-    /// Is called when the <see cref="Player.PlayerState"/> changed.
+    /// Is called when the <see cref="Player.PlayerState" /> changed.
     /// </summary>
     /// <param name="player">The player.</param>
-    void PlayerStateChanged(Player player);
+    /// <param name="previousState">The previous state.</param>
+    /// <param name="currentState">The current state.</param>
+    ValueTask PlayerStateChangedAsync(Player player, State previousState, State currentState);
 }

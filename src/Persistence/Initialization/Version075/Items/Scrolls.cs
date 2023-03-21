@@ -67,12 +67,12 @@ public class Scrolls : InitializerBase
         scroll.DropLevel = dropLevel;
         scroll.DropsFromMonsters = true;
         scroll.Durability = 1;
-        scroll.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.LearnablesConsumeHandler).FullName;
         scroll.QualifiedCharacters.Add(this.GameConfiguration.CharacterClasses.First(c => c.Number == (int)CharacterClassNumber.DarkWizard));
 
         this.CreateItemRequirementIfNeeded(scroll, Stats.Level, levelRequirement);
         this.CreateItemRequirementIfNeeded(scroll, Stats.TotalEnergyRequirementValue, energyRequirement);
 
         scroll.Value = money;
+        scroll.SetGuid(scroll.Group, scroll.Number);
     }
 }

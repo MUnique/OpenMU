@@ -39,6 +39,10 @@ public static class ObservableExtensions
             {
                 await action(plugIn).ConfigureAwait(false);
             }
+            catch (InvalidOperationException ex) when (ex.Message.StartsWith("Writing is not allowed after writer was completed"))
+            {
+                // we can ignore these exceptions. The player got disconnected in the mean time.
+            }
             catch (Exception ex)
             {
                 observer.Logger.LogError(ex, $"Error when invoking view action of {typeof(TViewPlugIn)}");
@@ -52,10 +56,23 @@ public static class ObservableExtensions
     /// <param name="observable">The observable.</param>
     /// <param name="playerId">The player identifier.</param>
     /// <returns>The observing player with the specified identifier, if found. Otherwise, null.</returns>
-    public static async ValueTask<Player?> GetObservingPlayerWithIdAsync(this IObservable observable, ushort playerId)
+    public static ValueTask<Player?> GetObservingPlayerWithIdAsync(this IObservable observable, ushort playerId)
+    {
+        return observable.GetObservingWithIdAsync<Player>(playerId);
+    }
+
+    /// <summary>
+    /// Gets the observing player with the specified identifier, if found. Otherwise, null.
+    /// </summary>
+    /// <typeparam name="TObserving">The type of the observing.</typeparam>
+    /// <param name="observable">The observable.</param>
+    /// <param name="objectId">The object identifier.</param>
+    /// <returns>The observing player with the specified identifier, if found. Otherwise, null.</returns>
+    public static async ValueTask<TObserving?> GetObservingWithIdAsync<TObserving>(this IObservable observable, ushort objectId)
+        where TObserving : IWorldObserver, IIdentifiable
     {
         using var readerLock = await observable.ObserverLock.ReaderLockAsync();
-        return observable.Observers.OfType<Player>().FirstOrDefault(p => p.Id == playerId);
+        return observable.Observers.OfType<TObserving>().FirstOrDefault(p => p.Id == objectId);
     }
 
     /// <summary>

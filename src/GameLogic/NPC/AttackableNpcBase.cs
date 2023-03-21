@@ -98,9 +98,9 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
                                   || (this.SpawnArea.SpawnTrigger == SpawnTrigger.AutomaticDuringWave && (this._eventStateProvider?.IsSpawnWaveActive(this.SpawnArea.WaveNumber) ?? false));
 
     /// <inheritdoc />
-    public async ValueTask AttackByAsync(IAttacker attacker, SkillEntry? skill)
+    public async ValueTask AttackByAsync(IAttacker attacker, SkillEntry? skill, bool isCombo)
     {
-        var hitInfo = attacker.CalculateDamage(this, skill);
+        var hitInfo = await attacker.CalculateDamageAsync(this, skill, isCombo).ConfigureAwait(false);
         await this.HitAsync(hitInfo, attacker, skill?.Skill).ConfigureAwait(false);
         if (hitInfo.HealthDamage > 0)
         {
@@ -108,6 +108,11 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
             if (attacker is Player player)
             {
                 await player.AfterHitTargetAsync().ConfigureAwait(false);
+            }
+
+            if (attacker as IPlayerSurrogate is { } playerSurrogate)
+            {
+                await playerSurrogate.Owner.AfterHitTargetAsync().ConfigureAwait(false);
             }
         }
     }
@@ -117,6 +122,12 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
 
     /// <inheritdoc />
     public abstract ValueTask ApplyPoisonDamageAsync(IAttacker initialAttacker, uint damage);
+
+    /// <inheritdoc/>
+    public ValueTask KillInstantlyAsync()
+    {
+        throw new NotImplementedException();
+    }
 
     /// <inheritdoc/>
     public override void Initialize()
@@ -187,7 +198,7 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
     /// <returns>The target player of a hit notification.</returns>
     protected virtual Player? GetHitNotificationTarget(IAttacker attacker)
     {
-        return attacker as Player;
+        return attacker as Player ?? (attacker as IPlayerSurrogate)?.Owner;
     }
 
     /// <summary>

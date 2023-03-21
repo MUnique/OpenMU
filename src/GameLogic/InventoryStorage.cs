@@ -2,12 +2,11 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.PlugIns;
-
 namespace MUnique.OpenMU.GameLogic;
 
 using MUnique.OpenMU.GameLogic.Views.World;
-using static OpenMU.GameLogic.InventoryConstants;
+using MUnique.OpenMU.PlugIns;
+using static OpenMU.DataModel.InventoryConstants;
 
 /// <summary>
 /// The storage of an inventory of a player, which also contains equippable slots. This class also manages the powerups which get created by equipped items.
@@ -25,10 +24,10 @@ public class InventoryStorage : Storage, IInventoryStorage
     /// <param name="context">The game context.</param>
     public InventoryStorage(Player player, IGameContext context)
         : base(
-            GetInventorySize(player),
+            player.GetInventorySize(),
             EquippableSlotsCount,
             0,
-            new ItemStorageAdapter(player.SelectedCharacter?.Inventory ?? throw Error.NotInitializedProperty(player, "SelectedCharacter.Inventory"), FirstEquippableItemSlotIndex, GetInventorySize(player)))
+            new ItemStorageAdapter(player.SelectedCharacter?.Inventory ?? throw Error.NotInitializedProperty(player, "SelectedCharacter.Inventory"), FirstEquippableItemSlotIndex, player.GetInventorySize()))
     {
         this._player = player;
         this.EquippedItemsChanged += async eventArgs => await this.UpdateItemsOnChangeAsync(eventArgs.Item).ConfigureAwait(false);
@@ -67,7 +66,7 @@ public class InventoryStorage : Storage, IInventoryStorage
         var success = await base.AddItemAsync(slot, convertedItem ?? item).ConfigureAwait(false);
         if (!success && convertedItem != null)
         {
-            await this._player.PersistenceContext.DeleteAsync(convertedItem).ConfigureAwait(false);
+            this._player.PersistenceContext.Detach(convertedItem);
         }
 
         if (success)

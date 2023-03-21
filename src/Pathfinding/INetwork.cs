@@ -13,8 +13,8 @@ public interface INetwork
     /// Gets the node at the specified position.
     /// </summary>
     /// <param name="position">The position.</param>
-    /// <returns>The node at the specified position.</returns>
-    Node GetNodeAt(Point position);
+    /// <returns>The node at the specified position, or null if there is no node at this position.</returns>
+    Node? GetNodeAt(Point position);
 
     /// <summary>
     /// Gets the nodes which can be reached by the specified node.
@@ -24,8 +24,19 @@ public interface INetwork
     IEnumerable<Node> GetPossibleNextNodes(Node node);
 
     /// <summary>
+    /// Prepares the network for the next path finding.
     /// Resets the status of all nodes of the network.
     /// Needed to be called before any new path is being searched.
     /// </summary>
-    void ResetStatus();
+    /// <param name="start">The start point.</param>
+    /// <param name="end">The end point.</param>
+    /// <param name="grid">
+    /// The two-dimensional grid.
+    /// For each coordinate it contains the cost of traveling to it from a neighbor coordinate.
+    /// The value of 0 means, that the coordinate is unreachable, <see cref="BaseGridNetwork.UnreachableGridNodeValue" />.
+    /// </param>
+    /// <returns>
+    /// If the preparations were successful and the pathfinding can proceed.
+    /// </returns>
+    bool Prepare(Point start, Point end, byte[,] grid);
 }

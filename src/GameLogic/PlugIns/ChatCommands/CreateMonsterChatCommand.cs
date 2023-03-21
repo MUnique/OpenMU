@@ -49,7 +49,7 @@ internal class CreateMonsterChatCommand : ChatCommandPlugInBase<CreateMonsterCha
         };
 
         INpcIntelligence intelligence = arguments.IsIntelligent ? new BasicMonsterIntelligence() : new NullMonsterIntelligence();
-        var monster = new Monster(area, monsterDef, gameMap, NullDropGenerator.Instance, intelligence, gameMaster.GameContext.PlugInManager);
+        var monster = new Monster(area, monsterDef, gameMap, NullDropGenerator.Instance, intelligence, gameMaster.GameContext.PlugInManager, gameMaster.GameContext.PathFinderPool);
         intelligence.Npc = monster;
         monster.Initialize();
         await gameMap.AddAsync(monster).ConfigureAwait(false);

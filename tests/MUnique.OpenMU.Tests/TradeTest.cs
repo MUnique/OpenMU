@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Tests;
 
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
+using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;

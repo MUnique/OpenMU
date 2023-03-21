@@ -19,7 +19,7 @@ public sealed class TemporaryItem : Item
     public TemporaryItem()
     {
         this.ItemOptions = new List<ItemOptionLink>();
-        this.ItemSetGroups = new List<ItemSetGroup>();
+        this.ItemSetGroups = new List<ItemOfItemSet>();
     }
 
     /// <summary>

@@ -9,6 +9,7 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 using MUnique.OpenMU.Persistence.Initialization.Items;
+using MUnique.OpenMU.Persistence.Initialization.Skills;
 
 /// <summary>
 /// Helper class to create weapon item definitions.
@@ -32,9 +33,13 @@ internal class Weapons : InitializerBase
 
     private static readonly float[] StaffRiseIncreaseByLevel = { 0, 3, 7, 10, 14, 17, 21, 24, 28, 31, 35, 40, 45, 50, 56, 63 };
 
+    private static readonly float[] ScepterRiseIncreaseByLevel = { 0, 2, 3, 5, 6, 8, 9, 11, 12, 14, 16, 18, 21, 25, 29, 33 };
+
     private ItemLevelBonusTable? _weaponDamageIncreaseTable;
 
     private ItemLevelBonusTable? _staffRiseTable;
+
+    private ItemLevelBonusTable? _scepterRiseTable;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Weapons" /> class.
@@ -101,6 +106,7 @@ internal class Weapons : InitializerBase
     {
         this._weaponDamageIncreaseTable = this.CreateItemBonusTable(DamageIncreaseByLevel, "Damage Increase (Weapons)", "The damage increase by weapon level. It increases by 3 per level, and 1 more after level 10.");
         this._staffRiseTable = this.CreateItemBonusTable(StaffRiseIncreaseByLevel, "Staff Rise", "The staff rise bonus per item level.");
+        this._scepterRiseTable = this.CreateItemBonusTable(ScepterRiseIncreaseByLevel, "Scepter Rise", "The scepter rise bonus per item level.");
 
         this.CreateWeapon(0, 0, 0, 0, 1, 2, true, "Kris", 6, 6, 11, 50, 20, 0, 0, 40, 40, 0, 0, 1, 1, 1, 1, 1, 1, 1);
         this.CreateWeapon(0, 1, 0, 0, 1, 3, true, "Short Sword", 3, 3, 7, 20, 22, 0, 0, 60, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1);
@@ -126,7 +132,7 @@ internal class Weapons : InitializerBase
         this.CreateWeapon(0, 21, 0, 56, 2, 4, true, "Dark Reign Blade", 140, 115, 142, 40, 100, 115, 0, 116, 53, 9, 0, 0, 0, 0, 1, 0, 0, 0);
         this.CreateWeapon(0, 22, 0, 22, 1, 4, true, "Bone Blade", 147, 122, 135, 40, 95, 0, 380, 100, 35, 0, 0, 0, 2, 0, 0, 0, 0, 0);
         this.CreateWeapon(0, 23, 0, 56, 2, 4, true, "Explosion Blade", 147, 127, 155, 45, 110, 134, 380, 98, 48, 7, 0, 0, 0, 0, 1, 0, 0, 0);
-        this.CreateWeapon(0, 24, 0, 22, 1, 2, true, "Daybreak", 115, 182, 218, 40, 90, 0, 0, 192, 30, 0, 0, 0, 2, 0, 0, 0, 0, 0);
+        this.CreateWeapon(0, 24, 0, 22, 2, 2, true, "Daybreak", 115, 182, 218, 40, 90, 0, 0, 192, 30, 0, 0, 0, 2, 0, 0, 0, 0, 0);
         this.CreateWeapon(0, 25, 0, 56, 2, 4, true, "Sword Dancer", 115, 109, 136, 40, 90, 108, 0, 136, 57, 9, 0, 0, 0, 0, 1, 0, 0, 0);
         this.CreateWeapon(0, 26, 0, 22, 1, 4, true, "Flamberge", 137, 115, 126, 40, 90, 0, 380, 193, 53, 0, 0, 0, 2, 0, 0, 0, 0, 0);
         this.CreateWeapon(0, 27, 0, 22, 1, 4, true, "Sword Breaker", 133, 91, 99, 35, 90, 0, 380, 53, 176, 0, 0, 0, 2, 0, 0, 0, 0, 0);
@@ -286,6 +292,7 @@ internal class Weapons : InitializerBase
         item.DropLevel = dropLevel;
         item.MaximumItemLevel = MaximumItemLevel;
         item.DropsFromMonsters = dropsFromMonsters;
+        item.SetGuid(item.Group, item.Number);
         if (slot == 0 && knightClass > 0 && width == 1)
         {
             item.ItemSlot = this.GameConfiguration.ItemSlotTypes.First(t => t.ItemSlots.Contains(0) && t.ItemSlots.Contains(1));
@@ -345,28 +352,88 @@ internal class Weapons : InitializerBase
                 item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == ExcellentOptions.WizardryAttackOptionsName));
                 item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == HarmonyOptions.WizardryAttackOptionsName));
 
-                var staffRisePowerUp = this.CreateItemBasePowerUpDefinition(Stats.StaffRise, staffRise);
-                staffRisePowerUp.BonusPerLevelTable = this._staffRiseTable;
-                item.BasePowerUpAttributes.Add(staffRisePowerUp);
+                if (darkLordClass > 0)
+                {
+                    var scepterRisePowerUp = this.CreateItemBasePowerUpDefinition(Stats.ScepterRise, staffRise);
+                    scepterRisePowerUp.BonusPerLevelTable = this._scepterRiseTable;
+                    item.BasePowerUpAttributes.Add(scepterRisePowerUp);
+                }
+                else
+                {
+                    var staffRisePowerUp = this.CreateItemBasePowerUpDefinition(Stats.StaffRise, staffRise);
+                    staffRisePowerUp.BonusPerLevelTable = this._staffRiseTable;
+                    item.BasePowerUpAttributes.Add(staffRisePowerUp);
+                }
             }
         }
 
         if (group == (int)ItemGroups.Bows && height > 1)
         {
-            var ammunitionConsumption = this.Context.CreateNew<ItemBasePowerUpDefinition>();
-            ammunitionConsumption.TargetAttribute = Stats.AmmunitionConsumptionRate.GetPersistent(this.GameConfiguration);
-            ammunitionConsumption.BaseValue = 1.0f;
-            item.BasePowerUpAttributes.Add(ammunitionConsumption);
+            item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.AmmunitionConsumptionRate, 1));
         }
 
         item.IsAmmunition = group == (int)ItemGroups.Bows && height == 1;
 
         if (group != (int)ItemGroups.Bows && width == 2)
         {
-            var isTwoHandedWeapon = this.Context.CreateNew<ItemBasePowerUpDefinition>();
-            isTwoHandedWeapon.TargetAttribute = Stats.IsTwoHandedWeaponEquipped.GetPersistent(this.GameConfiguration);
-            isTwoHandedWeapon.BaseValue = 1.0f;
-            item.BasePowerUpAttributes.Add(isTwoHandedWeapon);
+            item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsTwoHandedWeaponEquipped, 1));
+        }
+
+        if (group == (int)ItemGroups.Swords)
+        {
+            if (ragefighterClass == 0 || number < 3)
+            {
+                if (width == 1)
+                {
+                    item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsOneHandedSwordEquipped, 1));
+                }
+                else
+                {
+                    item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsTwoHandedSwordEquipped, 1));
+                }
+            }
+            else
+            {
+                item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsGloveWeaponEquipped, 1));
+            }
+        }
+
+        if (group == (int)ItemGroups.Spears)
+        {
+            item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsSpearEquipped, 1));
+        }
+
+        if (group == (int)ItemGroups.Scepters)
+        {
+            if (skillNumber == (int)SkillNumber.ForceWave)
+            {
+                item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsScepterEquipped, 1));
+            }
+            else if (knightClass > 0 && (skillNumber == (int)SkillNumber.FallingSlash || number < 5))
+            {
+                item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsMaceEquipped, 1));
+            }
+            else
+            {
+                // not a relevant mace or scepter ...
+            }
+        }
+
+        if (group == (int)ItemGroups.Staff)
+        {
+            if (wizardClass == 0 && summonerClass > 0)
+            {
+                item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsStickEquipped, 1));
+            }
+            else
+            {
+                item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(width == 1 ? Stats.IsOneHandedStaffEquipped : Stats.IsTwoHandedStaffEquipped, 1));
+            }
+        }
+
+        if (group == (int)ItemGroups.Bows && !item.IsAmmunition)
+        {
+            item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(slot == 0 ? Stats.IsCrossBowEquipped : Stats.IsBowEquipped, 1));
         }
     }
 

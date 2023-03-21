@@ -28,12 +28,10 @@ public partial class ItemDropItemGroup : MUnique.OpenMU.DataModel.Configuration.
     /// <summary>
     /// Gets the raw collection of <see cref="PossibleItems" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("possibleItems")]
     [System.Text.Json.Serialization.JsonPropertyName("possibleItems")]
     public ICollection<ItemDefinition> RawPossibleItems { get; } = new List<ItemDefinition>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition> PossibleItems
     {
@@ -51,7 +49,6 @@ public partial class ItemDropItemGroup : MUnique.OpenMU.DataModel.Configuration.
     /// <summary>
     /// Gets the raw object of <see cref="Monster" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("monster")]
     [System.Text.Json.Serialization.JsonPropertyName("monster")]
     public MonsterDefinition RawMonster
     {
@@ -60,7 +57,6 @@ public partial class ItemDropItemGroup : MUnique.OpenMU.DataModel.Configuration.
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.MonsterDefinition Monster
     {

@@ -12,6 +12,16 @@ using MUnique.OpenMU.DataModel.Configuration;
 internal class Exile : Initialization.BaseMapInitializer
 {
     /// <summary>
+    /// The default number of the map.
+    /// </summary>
+    internal const byte Number = 5;
+
+    /// <summary>
+    /// The default name of the map.
+    /// </summary>
+    internal const string Name = "Exile";
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="Exile"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -22,8 +32,8 @@ internal class Exile : Initialization.BaseMapInitializer
     }
 
     /// <inheritdoc/>
-    protected override byte MapNumber => 5;
+    protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => "Exile";
+    protected override string MapName => Name;
 }

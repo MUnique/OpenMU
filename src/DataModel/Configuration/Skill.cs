@@ -79,29 +79,39 @@ public enum SkillType
     AreaSkillExplicitHits = 4,
 
     /// <summary>
+    /// Area skill, which only hits the explicit target. No declaration of hits by the client.
+    /// </summary>
+    AreaSkillExplicitTarget = 5,
+
+    /// <summary>
+    /// The nova skill which hits all targets in range and applies some bonus damage.
+    /// </summary>
+    Nova = 6,
+
+    /// <summary>
     /// The buff skill type. Applies magic effects on players.
     /// </summary>
-    Buff = 5,
+    Buff = 10,
 
     /// <summary>
     /// The regeneration skill type. Regenerates the target attribute of the defined effect.
     /// </summary>
-    Regeneration = 6,
+    Regeneration = 11,
 
     /// <summary>
     /// The passive boost skill type. Applies boosts to the player who has learned this skill, without the need to be casted.
     /// </summary>
-    PassiveBoost = 7,
+    PassiveBoost = 20,
 
     /// <summary>
     /// The skill type for monster summoning.
     /// </summary>
-    SummonMonster = 8,
+    SummonMonster = 30,
 
     /// <summary>
     /// Other skill type.
     /// </summary>
-    Other = 9,
+    Other = 40,
 }
 
 /// <summary>

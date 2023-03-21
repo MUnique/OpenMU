@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic;
 
 using MUnique.OpenMU.GameLogic.PlayerActions.Trade;
+using MUnique.OpenMU.Pathfinding;
 
 /// <summary>
 /// Provides information about the available metrics of this project.
@@ -20,6 +21,7 @@ public static class Metrics
         {
             yield return GameContext.MeterName;
             yield return BaseTradeAction.MeterName;
+            yield return PathFinder.MeterName;
         }
     }
 }

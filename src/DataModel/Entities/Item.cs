@@ -44,9 +44,9 @@ public class Item
     public virtual ICollection<ItemOptionLink> ItemOptions { get; protected set; } = null!;
 
     /// <summary>
-    /// Gets or sets the item set group (Ancient Set,).
+    /// Gets or sets the applied item set groups (Ancient Set).
     /// </summary>
-    public virtual ICollection<ItemSetGroup> ItemSetGroups { get; protected set; } = null!;
+    public virtual ICollection<ItemOfItemSet> ItemSetGroups { get; protected set; } = null!;
 
     /// <summary>
     /// Gets or sets the socket count. This limits the amount of socket options in the <see cref="ItemOptions"/>.
@@ -59,6 +59,12 @@ public class Item
     public int? StorePrice { get; set; }
 
     /// <summary>
+    /// Gets or sets the pet experience.
+    /// Only applies, if this item is actually a trainable pet.
+    /// </summary>
+    public int PetExperience { get; set; }
+
+    /// <summary>
     /// Assigns the values of another item to this item.
     /// </summary>
     /// <param name="otherItem">The other item.</param>
@@ -69,6 +75,7 @@ public class Item
         this.Level = otherItem.Level;
         this.HasSkill = otherItem.HasSkill;
         this.SocketCount = otherItem.SocketCount;
+        this.PetExperience = otherItem.PetExperience;
         if (otherItem.ItemOptions != null && otherItem.ItemOptions.Any())
         {
             this.ItemOptions.Clear();
@@ -99,7 +106,7 @@ public class Item
             stringBuilder.Append("Excellent ");
         }
 
-        var ancientSet = this.ItemSetGroups.FirstOrDefault(s => s.AncientSetDiscriminator != 0);
+        var ancientSet = this.ItemSetGroups.FirstOrDefault(s => s.AncientSetDiscriminator != 0)?.ItemSetGroup;
         if (ancientSet != null)
         {
             stringBuilder.Append(ancientSet.Name).Append(" ");

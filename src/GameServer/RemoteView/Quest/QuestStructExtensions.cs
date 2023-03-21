@@ -41,17 +41,17 @@ public static class QuestStructExtensions
                 QuestCount = (byte)questCount,
             };
 
-            if (questState != null)
+            if (questState?.LastFinishedQuest != null)
             {
-                for (int i = 0; i < (questState.LastFinishedQuest?.Number ?? 0); i++)
+                for (int i = 0; i <= questState.LastFinishedQuest.Number; i++)
                 {
                     message[i] = LegacyQuestState.Complete;
                 }
+            }
 
-                if (questState.ActiveQuest != null)
-                {
-                    message[questState.ActiveQuest.Number] = LegacyQuestState.Active;
-                }
+            if (questState?.ActiveQuest != null)
+            {
+                message[questState.ActiveQuest.Number] = LegacyQuestState.Active;
             }
 
             if (player.SelectedCharacter?.CharacterClass?.GetBaseClass(player.GameContext.Configuration).Number != (byte)CharacterClassNumber.DarkKnight)

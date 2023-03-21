@@ -4,13 +4,14 @@
 
 namespace MUnique.OpenMU.Web.AdminPanel.Pages;
 
-using System.Globalization;
 using System.Reflection;
 using System.Threading;
 using Blazored.Modal.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
+using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.Extensions.Logging;
+using Microsoft.JSInterop;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Web.AdminPanel;
@@ -21,19 +22,15 @@ using MUnique.OpenMU.Web.AdminPanel.Services;
 /// </summary>
 public abstract class EditBase : ComponentBase, IAsyncDisposable
 {
-    private static readonly IDictionary<Type, IList<(string Caption, string Path)>> EditorPages =
-        new Dictionary<Type, IList<(string, string)>>
-        {
-            { typeof(GameMapDefinition), new List<(string, string)> { ("Map Editor", "/map-editor/{0}") } },
-        };
-
     private object? _model;
     private Type? _type;
+    private bool _isOwningContext;
     private IContext? _persistenceContext;
     private CancellationTokenSource? _disposeCts;
     private DataLoadingState _loadingState;
     private Task? _loadTask;
     private IDisposable? _modalDisposable;
+    private IDisposable? _navigationLockDisposable;
 
     private enum DataLoadingState
     {
@@ -54,11 +51,7 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
     /// Gets or sets the identifier of the object which should be edited.
     /// </summary>
     [Parameter]
-    public Guid Id
-    {
-        get;
-        set;
-    }
+    public Guid Id { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Type.FullName"/> of the object which should be edited.
@@ -79,6 +72,35 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
     public IModalService ModalService { get; set; } = null!;
 
     /// <summary>
+    /// Gets or sets the configuration data source.
+    /// </summary>
+    [Inject]
+    public IDataSource<GameConfiguration> ConfigDataSource { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the navigation manager.
+    /// </summary>
+    [Inject]
+    public NavigationManager NavigationManager { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the java script runtime.
+    /// </summary>
+    [Inject]
+    public IJSRuntime JavaScript { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the logger.
+    /// </summary>
+    [Inject]
+    public ILogger<EditBase>? Logger { get; set; }
+
+    /// <summary>
+    /// Gets the data source of the type which is edited.
+    /// </summary>
+    protected virtual IDataSource EditDataSource => this.ConfigDataSource;
+
+    /// <summary>
     /// Gets the model which should be edited.
     /// </summary>
     protected object? Model => this._model;
@@ -88,42 +110,100 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
     /// </summary>
     protected virtual Type? Type => this._type ??= this.DetermineTypeByTypeString();
 
-    [Inject]
-    private ILogger<Edit>? Logger { get; set; }
-
     /// <inheritdoc />
     public async ValueTask DisposeAsync()
     {
+        this._navigationLockDisposable?.Dispose();
+        this._navigationLockDisposable = null;
+
         this._disposeCts?.Cancel();
         this._disposeCts?.Dispose();
         this._disposeCts = null;
+
         await (this._loadTask ?? Task.CompletedTask).ConfigureAwait(false);
-        if (this._persistenceContext is IDisposable disposable)
+        await this.EditDataSource.DiscardChangesAsync();
+
+        if (this._isOwningContext)
         {
-            disposable.Dispose();
-            this._persistenceContext = null;
+            this._persistenceContext?.Dispose();
         }
+
+        this._persistenceContext = null;
+    }
+
+    /// <inheritdoc />
+    public override async Task SetParametersAsync(ParameterView parameters)
+    {
+        this._model = null;
+        this._disposeCts?.Cancel();
+        this._disposeCts?.Dispose();
+        await (this._loadTask ?? Task.CompletedTask);
+        await base.SetParametersAsync(parameters);
+    }
+
+    /// <inheritdoc />
+    protected override async Task OnParametersSetAsync()
+    {
+        this._loadingState = DataLoadingState.LoadingStarted;
+        var cts = new CancellationTokenSource();
+        this._disposeCts = cts;
+        this._type = null;
+        this._loadTask = Task.Run(() => this.LoadDataAsync(cts.Token), cts.Token);
+
+        await base.OnParametersSetAsync();
     }
 
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        if (this.Model is { })
+        if (this.Model is null)
         {
-            var downloadMarkup = this.GetDownloadMarkup();
-            var editorsMarkup = this.GetEditorsMarkup();
-            builder.AddMarkupContent(0, $"<h1>Edit {this.Type!.Name}</h1>{downloadMarkup}{editorsMarkup}\r\n");
-            builder.OpenComponent<CascadingValue<IContext>>(1);
-            builder.AddAttribute(2, nameof(CascadingValue<IContext>.Value), this._persistenceContext);
-            builder.AddAttribute(3, nameof(CascadingValue<IContext>.IsFixed), true);
-            builder.AddAttribute(4, nameof(CascadingValue<IContext>.ChildContent), (RenderFragment)(builder2 =>
-            {
-                var sequence = 4;
-                this.AddFormToRenderTree(builder2, ref sequence);
-            }));
-
-            builder.CloseComponent();
+            return;
         }
+
+        var downloadMarkup = this.GetDownloadMarkup();
+        var editorsMarkup = this.GetEditorsMarkup();
+        builder.AddMarkupContent(0, $"<h1>Edit {CaptionHelper.SeparateWords(this.Type!.Name)}</h1>{downloadMarkup}{editorsMarkup}\r\n");
+        builder.OpenComponent<CascadingValue<IContext>>(1);
+        builder.AddAttribute(2, nameof(CascadingValue<IContext>.Value), this._persistenceContext);
+        builder.AddAttribute(3, nameof(CascadingValue<IContext>.IsFixed), this._isOwningContext);
+        builder.AddAttribute(4, nameof(CascadingValue<IContext>.ChildContent), (RenderFragment)(builder2 =>
+        {
+            var sequence = 4;
+            this.AddFormToRenderTree(builder2, ref sequence);
+        }));
+
+        builder.CloseComponent();
+    }
+
+    private async ValueTask OnBeforeInternalNavigation(LocationChangingContext context)
+    {
+        if (this._persistenceContext?.HasChanges is true)
+        {
+            var isConfirmed = await JavaScript.InvokeAsync<bool>("window.confirm",
+                "There are unsaved changes. Are you sure you want to discard them?");
+
+            if (!isConfirmed)
+            {
+                context.PreventNavigation();
+            }
+            else if (this._isOwningContext)
+            {
+                this._persistenceContext.Dispose();
+                this._persistenceContext = null;
+            }
+            else
+            {
+                await this.EditDataSource.DiscardChangesAsync();
+            }
+        }
+    }
+
+    /// <inheritdoc />
+    protected override Task OnInitializedAsync()
+    {
+        this._navigationLockDisposable = this.NavigationManager.RegisterLocationChangingHandler(this.OnBeforeInternalNavigation);
+        return base.OnInitializedAsync();
     }
 
     /// <summary>
@@ -132,26 +212,11 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
     /// <param name="builder">The builder.</param>
     /// <param name="currentSequence">The current sequence.</param>
     protected abstract void AddFormToRenderTree(RenderTreeBuilder builder, ref int currentSequence);
-
-    /// <inheritdoc />
-    protected override Task OnParametersSetAsync()
-    {
-        this._disposeCts?.Cancel();
-        this._disposeCts?.Dispose();
-
-        this._model = null;
-        this._loadingState = DataLoadingState.LoadingStarted;
-        var cts = new CancellationTokenSource();
-        this._disposeCts = cts;
-        this._loadTask = Task.Run(() => this.LoadDataAsync(cts.Token), cts.Token);
-
-        return base.OnParametersSetAsync();
-    }
-
+    
     /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (this._loadingState == DataLoadingState.Loaded && this._modalDisposable is { } modal)
+        if (this._loadingState is not DataLoadingState.Loading && this._modalDisposable is { } modal)
         {
             modal.Dispose();
             this._modalDisposable = null;
@@ -171,7 +236,7 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
             }).ConfigureAwait(false);
         }
 
-        await base.OnAfterRenderAsync(firstRender).ConfigureAwait(false);
+        await base.OnAfterRenderAsync(firstRender).ConfigureAwait(true);
     }
 
     /// <summary>
@@ -184,7 +249,8 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
         {
             if (this._persistenceContext is { } context)
             {
-                text = await context.SaveChangesAsync().ConfigureAwait(false) ? "The changes have been saved." : "There were no changes to save.";
+                var success = await context.SaveChangesAsync().ConfigureAwait(true);
+                text = success ? "The changes have been saved." : "There were no changes to save.";
             }
             else
             {
@@ -197,7 +263,24 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
             text = $"An unexpected error occured: {ex.Message}.";
         }
 
-        await this.ModalService.ShowMessageAsync("Save", text).ConfigureAwait(false);
+        await this.ModalService.ShowMessageAsync("Save", text).ConfigureAwait(true);
+    }
+
+    /// <summary>
+    /// Gets the optional editors markup for the current type.
+    /// </summary>
+    /// <returns>The optional editors markup for the current type.</returns>
+    protected virtual string? GetEditorsMarkup()
+    {
+        return null;
+    }
+
+    /// <summary>
+    /// It loads the owner of the <see cref="EditDataSource"/>.
+    /// </summary>
+    protected virtual async ValueTask LoadOwnerAsync()
+    {
+        await this.EditDataSource.GetOwnerAsync(Guid.Empty);
     }
 
     private string? GetDownloadMarkup()
@@ -211,24 +294,6 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
         return null;
     }
 
-    private string? GetEditorsMarkup()
-    {
-        StringBuilder? stringBuilder = null;
-        if (this.Type is not null
-            && (EditorPages.TryGetValue(this.Type, out var editors)
-                || this.Type.BaseType is { } baseType && EditorPages.TryGetValue(baseType, out editors)))
-        {
-            foreach (var editor in editors)
-            {
-                var uri = string.Format(CultureInfo.InvariantCulture, editor.Path, this.Id);
-                stringBuilder ??= new StringBuilder();
-                stringBuilder.Append($@"<p><a href=""{uri}"">{editor.Caption}</a></p>");
-            }
-        }
-
-        return stringBuilder?.ToString();
-    }
-
     private Type? DetermineTypeByTypeString()
     {
         return AppDomain.CurrentDomain.GetAssemblies().Where(assembly => assembly.FullName?.StartsWith(nameof(MUnique)) ?? false)
@@ -237,34 +302,59 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
 
     private async Task LoadDataAsync(CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         if (this.Type is null)
         {
             throw new InvalidOperationException($"Only types of namespace {nameof(MUnique)} can be edited on this page.");
         }
 
-        var createContextMethod = typeof(IPersistenceContextProvider).GetMethod(nameof(IPersistenceContextProvider.CreateNewTypedContext))!.MakeGenericMethod(this.Type);
-        this._persistenceContext = (IContext)createContextMethod.Invoke(this.PersistenceContextProvider, Array.Empty<object>())!;
+        await LoadOwnerAsync();
+        cancellationToken.ThrowIfCancellationRequested();
+        if (this.EditDataSource.IsSupporting(this.Type))
+        {
+            this._isOwningContext = false;
+            this._persistenceContext = await this.EditDataSource.GetContextAsync();
+        }
+        else
+        {
+            this._isOwningContext = true;
+            var gameConfiguration = await this.ConfigDataSource.GetOwnerAsync(Guid.Empty).ConfigureAwait(true);
+            var createContextMethod = typeof(IPersistenceContextProvider).GetMethod(nameof(IPersistenceContextProvider.CreateNewTypedContext))!.MakeGenericMethod(this.Type);
+            this._persistenceContext = (IContext)createContextMethod.Invoke(this.PersistenceContextProvider, new object[] {true, gameConfiguration})!;
+        }
 
         try
         {
-            if (!cancellationToken.IsCancellationRequested)
+            cancellationToken.ThrowIfCancellationRequested();
+
+            try
             {
-                try
+                if (this.EditDataSource.IsSupporting(this.Type))
                 {
-                    this._model = await this._persistenceContext.GetByIdAsync(this.Id, this.Type).ConfigureAwait(false);
-                    this._loadingState = this.Model is not null
-                        ? DataLoadingState.Loaded
-                        : DataLoadingState.NotFound;
+                    this._model = this.EditDataSource.Get(this.Id);
                 }
-                catch (Exception ex)
+                else
                 {
-                    this._loadingState = DataLoadingState.Error;
-                    this.Logger?.LogError(ex, $"Could not load {this.Type.FullName} with {this.Id}: {ex.Message}{Environment.NewLine}{ex.StackTrace}");
-                    await this.InvokeAsync(() => this.ModalService.ShowMessageAsync("Error", "Could not load the data. Check the logs for details.")).ConfigureAwait(false);
+                    this._model = await this._persistenceContext.GetByIdAsync(this.Id, this.Type).ConfigureAwait(true);
                 }
 
-                await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
+                this._loadingState = this.Model is not null
+                    ? DataLoadingState.Loaded
+                    : DataLoadingState.NotFound;
             }
+            catch (Exception ex)
+            {
+                this._loadingState = DataLoadingState.Error;
+                this.Logger?.LogError(ex, $"Could not load {this.Type.FullName} with {this.Id}: {ex.Message}{Environment.NewLine}{ex.StackTrace}");
+                await this.InvokeAsync(() => this.ModalService.ShowMessageAsync("Error", "Could not load the data. Check the logs for details.")).ConfigureAwait(false);
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
+            await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(true);
+        }
+        catch (OperationCanceledException)
+        {
+            // expected when the page is getting disposed.
         }
         catch (TargetInvocationException ex) when (ex.InnerException is ObjectDisposedException)
         {
@@ -275,6 +365,10 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
             // Happens when the user navigated away (shouldn't happen with the modal loading indicator, but we check it anyway).
             // It would be great to have an async api with cancellation token support in the persistence layer
             // For the moment, we swallow the exception
+        }
+        catch (Exception ex)
+        {
+            this.Logger?.LogError(ex, "Unexpected error when loading data: {ex}", ex);
         }
     }
 }

@@ -459,6 +459,38 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="RageAttack" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="skillId">The skill id.</param>
+    /// <param name="sourceId">The source id.</param>
+    /// <param name="targetId">The target id.</param>
+    /// <remarks>
+    /// Is sent by the server when: A player (rage fighter) performs the dark side skill on a target and sent a RageAttackRangeRequest.
+    /// Causes reaction on client side: The targets are attacked with visual effects.
+    /// </remarks>
+    public static async ValueTask SendRageAttackAsync(this IConnection? connection, ushort @skillId, ushort @sourceId, ushort @targetId)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = RageAttackRef.Length;
+            var packet = new RageAttackRef(connection.Output.GetSpan(length)[..length]);
+            packet.SkillId = @skillId;
+            packet.SourceId = @sourceId;
+            packet.TargetId = @targetId;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="AppearanceChanged" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
@@ -3998,6 +4030,98 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="SkillStageUpdate" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="objectId">The object id.</param>
+    /// <param name="stage">The stage.</param>
+    /// <param name="skillNumber">The skill number.</param>
+    /// <remarks>
+    /// Is sent by the server when: After a player started a skill which needs to load up, like Nova.
+    /// Causes reaction on client side: The client may show the loading intensity.
+    /// </remarks>
+    public static async ValueTask SendSkillStageUpdateAsync(this IConnection? connection, ushort @objectId, byte @stage, byte @skillNumber = 0x28)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = SkillStageUpdateRef.Length;
+            var packet = new SkillStageUpdateRef(connection.Output.GetSpan(length)[..length]);
+            packet.ObjectId = @objectId;
+            packet.SkillNumber = @skillNumber;
+            packet.Stage = @stage;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="MuHelperStatusUpdate" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="consumeMoney">The flag, if money should be consumed. If this is 'true', setting PauseStatus to 'false' doesn't cause starting the helper.</param>
+    /// <param name="money">The money.</param>
+    /// <param name="pauseStatus">The pause status. A value of 'true' always works to stop the helper. However, it can only be started, with ConsumeMoney set to 'false'.</param>
+    /// <remarks>
+    /// Is sent by the server when: The server validated or changed the status of the MU Helper.
+    /// Causes reaction on client side: The client toggle the MU Helper status.
+    /// </remarks>
+    public static async ValueTask SendMuHelperStatusUpdateAsync(this IConnection? connection, bool @consumeMoney, uint @money, bool @pauseStatus)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = MuHelperStatusUpdateRef.Length;
+            var packet = new MuHelperStatusUpdateRef(connection.Output.GetSpan(length)[..length]);
+            packet.ConsumeMoney = @consumeMoney;
+            packet.Money = @money;
+            packet.PauseStatus = @pauseStatus;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="MuHelperConfigurationData" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="helperData">The helper data.</param>
+    /// <remarks>
+    /// Is sent by the server when: The server saved the users MU Helper data.
+    /// Causes reaction on client side: The user wants to save the MU Helper data.
+    /// </remarks>
+    public static async ValueTask SendMuHelperConfigurationDataAsync(this IConnection? connection, Memory<byte> @helperData)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = MuHelperConfigurationDataRef.Length;
+            var packet = new MuHelperConfigurationDataRef(connection.Output.GetSpan(length)[..length]);
+            @helperData.Span.CopyTo(packet.HelperData);
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="FriendAdded" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
@@ -4472,12 +4596,12 @@ public static class ConnectionExtensions
     /// <param name="gameType">The game type.</param>
     /// <param name="remainingEnteringTimeMinutes">The remaining entering time minutes.</param>
     /// <param name="userCount">The user count.</param>
-    /// <param name="remainingEnteringTimeMinutes2">The remaining entering time minutes 2.</param>
+    /// <param name="remainingEnteringTimeMinutesLow">Just used for Chaos Castle. In this case, this field contains the lower byte of the remaining minutes. For other event types, this field is not used.</param>
     /// <remarks>
     /// Is sent by the server when: The player requests to get the current opening state of a mini game event, by clicking on an ticket item.
     /// Causes reaction on client side: The opening state of the event (remaining entering time, etc.) is shown at the client.
     /// </remarks>
-    public static async ValueTask SendMiniGameOpeningStateAsync(this IConnection? connection, MiniGameType @gameType, byte @remainingEnteringTimeMinutes, byte @userCount, byte @remainingEnteringTimeMinutes2)
+    public static async ValueTask SendMiniGameOpeningStateAsync(this IConnection? connection, MiniGameType @gameType, byte @remainingEnteringTimeMinutes, byte @userCount, byte @remainingEnteringTimeMinutesLow)
     {
         if (connection is null)
         {
@@ -4491,7 +4615,7 @@ public static class ConnectionExtensions
             packet.GameType = @gameType;
             packet.RemainingEnteringTimeMinutes = @remainingEnteringTimeMinutes;
             packet.UserCount = @userCount;
-            packet.RemainingEnteringTimeMinutes2 = @remainingEnteringTimeMinutes2;
+            packet.RemainingEnteringTimeMinutesLow = @remainingEnteringTimeMinutesLow;
 
             return packet.Header.Length;
         }
@@ -4624,6 +4748,64 @@ public static class ConnectionExtensions
             packet.CurMonster = @curMonster;
             packet.ItemOwnerId = @itemOwnerId;
             packet.ItemLevel = @itemLevel;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ChaosCastleEnterResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <remarks>
+    /// Is sent by the server when: The player requested to enter the chaos castle mini game by using the 'Armor of Guardsman' item.
+    /// Causes reaction on client side: In case it failed, it shows the corresponding error message.
+    /// </remarks>
+    public static async ValueTask SendChaosCastleEnterResultAsync(this IConnection? connection, ChaosCastleEnterResult.EnterResult @result)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ChaosCastleEnterResultRef.Length;
+            var packet = new ChaosCastleEnterResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="MapEventState" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="enable">The enable.</param>
+    /// <param name="event">The event.</param>
+    /// <remarks>
+    /// Is sent by the server when: The state of event is about to change.
+    /// Causes reaction on client side: The event's effect is shown.
+    /// </remarks>
+    public static async ValueTask SendMapEventStateAsync(this IConnection? connection, bool @enable, MapEventState.Events @event)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = MapEventStateRef.Length;
+            var packet = new MapEventStateRef(connection.Output.GetSpan(length)[..length]);
+            packet.Enable = @enable;
+            packet.Event = @event;
 
             return packet.Header.Length;
         }

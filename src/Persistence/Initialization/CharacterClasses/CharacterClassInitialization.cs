@@ -71,13 +71,62 @@ internal partial class CharacterClassInitialization : InitializerBase
 
     private AttributeRelationship CreateAttributeRelationship(AttributeDefinition targetAttribute, float multiplier, AttributeDefinition sourceAttribute, InputOperator inputOperator = InputOperator.Multiply)
     {
-        var relationship = this.Context.CreateNew<AttributeRelationship>(targetAttribute.GetPersistent(this.GameConfiguration) ?? targetAttribute, multiplier, sourceAttribute.GetPersistent(this.GameConfiguration) ?? sourceAttribute, inputOperator);
-        return relationship;
+        return this.Context.CreateNew<AttributeRelationship>(targetAttribute.GetPersistent(this.GameConfiguration) ?? targetAttribute, multiplier, sourceAttribute.GetPersistent(this.GameConfiguration) ?? sourceAttribute, inputOperator, default(AttributeDefinition?));
+    }
+
+    private AttributeRelationship CreateAttributeRelationship(AttributeDefinition targetAttribute, AttributeDefinition multiplierAttribute, AttributeDefinition sourceAttribute, InputOperator inputOperator = InputOperator.Multiply)
+    {
+        return this.Context.CreateNew<AttributeRelationship>(
+            targetAttribute.GetPersistent(this.GameConfiguration) ?? targetAttribute,
+            0f,
+            sourceAttribute.GetPersistent(this.GameConfiguration) ?? sourceAttribute,
+            inputOperator,
+            multiplierAttribute.GetPersistent(this.GameConfiguration) ?? multiplierAttribute);
+    }
+
+    private AttributeRelationship CreateConditionalRelationship(AttributeDefinition targetAttribute, AttributeDefinition conditionalAttribute, AttributeDefinition sourceAttribute)
+    {
+        return this.Context.CreateNew<AttributeRelationship>(
+            targetAttribute.GetPersistent(this.GameConfiguration) ?? targetAttribute,
+            conditionalAttribute.GetPersistent(this.GameConfiguration) ?? conditionalAttribute,
+            sourceAttribute.GetPersistent(this.GameConfiguration) ?? sourceAttribute);
     }
 
     private ConstValueAttribute CreateConstValueAttribute(float value, AttributeDefinition attribute)
     {
         return this.Context.CreateNew<ConstValueAttribute>(value, attribute.GetPersistent(this.GameConfiguration));
+    }
+
+    private void AddCommonAttributeRelationships(ICollection<AttributeRelationship> attributeRelationships)
+    {
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.TotalStrength, 1, Stats.BaseStrength));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.TotalAgility, 1, Stats.BaseAgility));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.TotalVitality, 1, Stats.BaseVitality));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.TotalEnergy, 1, Stats.BaseEnergy));
+
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.DefensePvm, 1, Stats.DefenseBase));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.DefensePvp, 1, Stats.DefenseBase));
+
+        attributeRelationships.Add(this.CreateConditionalRelationship(Stats.DefenseBase, Stats.IsShieldEquipped, Stats.BonusDefenseWithShield));
+
+        var tempDefense = this.Context.CreateNew<AttributeDefinition>(Guid.NewGuid(), "Temp Defense Bonus multiplier with Shield", string.Empty);
+        this.GameConfiguration.Attributes.Add(tempDefense);
+        attributeRelationships.Add(this.CreateAttributeRelationship(tempDefense, Stats.IsShieldEquipped, Stats.DefenseIncreaseWithEquippedShield));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.DefensePvm, tempDefense, Stats.DefenseBase));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.DefensePvp, tempDefense, Stats.DefenseBase));
+
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.HealthRecoveryMultiplier, 0.01f, Stats.IsInSafezone));
+        if (this.UseClassicPvp)
+        {
+            attributeRelationships.Add(this.CreateAttributeRelationship(Stats.DefenseRatePvp, 1, Stats.DefenseRatePvm));
+            attributeRelationships.Add(this.CreateAttributeRelationship(Stats.AttackRatePvp, 1, Stats.AttackRatePvm));
+        }
+        else
+        {
+            attributeRelationships.Add(this.CreateAttributeRelationship(Stats.ShieldRecoveryMultiplier, 0.01f, Stats.IsInSafezone));
+        }
+
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.MaximumGuildSize, 0.1f, Stats.Level));
     }
 
     private void AddCommonBaseAttributeValues(ICollection<ConstValueAttribute> baseAttributeValues, bool isMaster)
@@ -90,6 +139,7 @@ internal partial class CharacterClassInitialization : InitializerBase
         baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.ExperienceRate));
         baseAttributeValues.Add(this.CreateConstValueAttribute(0.03f, Stats.PoisonDamageMultiplier));
         baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.ItemDurationIncrease));
+        baseAttributeValues.Add(this.CreateConstValueAttribute(2, Stats.AbilityRecoveryAbsolute));
 
         if (isMaster)
         {

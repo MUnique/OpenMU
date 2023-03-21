@@ -89,6 +89,12 @@ public static class MapsterConfigurator
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.ChatServerEndpoint, MUnique.OpenMU.DataModel.Configuration.ChatServerEndpoint>()
             .Include<ChatServerEndpoint, BasicModel.ChatServerEndpoint>();
 
+        Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.ConfigurationUpdate, MUnique.OpenMU.DataModel.Configuration.ConfigurationUpdate>()
+            .Include<ConfigurationUpdate, BasicModel.ConfigurationUpdate>();
+
+        Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.ConfigurationUpdateState, MUnique.OpenMU.DataModel.Configuration.ConfigurationUpdateState>()
+            .Include<ConfigurationUpdateState, BasicModel.ConfigurationUpdateState>();
+
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.ConnectServerDefinition, MUnique.OpenMU.DataModel.Configuration.ConnectServerDefinition>()
             .Include<ConnectServerDefinition, BasicModel.ConnectServerDefinition>();
 
@@ -170,6 +176,12 @@ public static class MapsterConfigurator
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.Skill, MUnique.OpenMU.DataModel.Configuration.Skill>()
             .Include<Skill, BasicModel.Skill>();
 
+        Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.SkillComboDefinition, MUnique.OpenMU.DataModel.Configuration.SkillComboDefinition>()
+            .Include<SkillComboDefinition, BasicModel.SkillComboDefinition>();
+
+        Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.SkillComboStep, MUnique.OpenMU.DataModel.Configuration.SkillComboStep>()
+            .Include<SkillComboStep, BasicModel.SkillComboStep>();
+
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.StatAttributeDefinition, MUnique.OpenMU.DataModel.Configuration.StatAttributeDefinition>()
             .Include<StatAttributeDefinition, BasicModel.StatAttributeDefinition>();
 
@@ -250,9 +262,6 @@ public static class MapsterConfigurator
 
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Attributes.PowerUpDefinitionValue, MUnique.OpenMU.DataModel.Attributes.PowerUpDefinitionValue>()
             .Include<PowerUpDefinitionValue, BasicModel.PowerUpDefinitionValue>();
-
-        Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Attributes.PowerUpDefinitionWithDuration, MUnique.OpenMU.DataModel.Attributes.PowerUpDefinitionWithDuration>()
-            .Include<PowerUpDefinitionWithDuration, BasicModel.PowerUpDefinitionWithDuration>();
 
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.AttributeSystem.AttributeDefinition, MUnique.OpenMU.AttributeSystem.AttributeDefinition>()
             .Include<AttributeDefinition, BasicModel.AttributeDefinition>();

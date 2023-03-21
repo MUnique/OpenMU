@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.TestAccounts;
 
+using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
@@ -24,6 +25,7 @@ internal class GameMaster : Level400
     public GameMaster(IContext context, GameConfiguration gameConfiguration)
         : base(context, gameConfiguration, "testgm", 400)
     {
+        this.AddAllSkills = true;
     }
 
     /// <inheritdoc />

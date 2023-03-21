@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.World;
@@ -36,16 +37,27 @@ public class AreaSkillAttackAction
             return;
         }
 
-        if (skill.SkillType == SkillType.AreaSkillAutomaticHits)
+        if (skill.SkillType is SkillType.AreaSkillAutomaticHits or SkillType.AreaSkillExplicitTarget)
         {
-            await this.PerformAutomaticHitsAsync(player, extraTargetId, targetAreaCenter, skillEntry!, skill).ConfigureAwait(false);
+            await this.PerformAutomaticHitsAsync(player, extraTargetId, targetAreaCenter, skillEntry!, skill, rotation).ConfigureAwait(false);
         }
 
         await player.ForEachWorldObserverAsync<IShowAreaSkillAnimationPlugIn>(p => p.ShowAreaSkillAnimationAsync(player, skill, targetAreaCenter, rotation), true).ConfigureAwait(false);
     }
 
-    private async ValueTask PerformAutomaticHitsAsync(Player player, ushort extraTargetId, Point targetAreaCenter, SkillEntry skillEntry, Skill skill)
+    private async ValueTask PerformAutomaticHitsAsync(Player player, ushort extraTargetId, Point targetAreaCenter, SkillEntry skillEntry, Skill skill, byte rotation)
     {
+        if (player.Attributes is not { } attributes)
+        {
+            return;
+        }
+
+        if (attributes[Stats.IsStunned] > 0)
+        {
+            player.Logger.LogWarning($"Probably Hacker - player {player} is attacking in stunned state");
+            return;
+        }
+
         if (player.IsAtSafezone())
         {
             player.Logger.LogWarning($"Probably Hacker - player {player} is attacking from safezone");
@@ -53,26 +65,43 @@ public class AreaSkillAttackAction
         }
 
         bool isExtraTargetDefined = extraTargetId != 0xFFFF;
+        var extraTarget = isExtraTargetDefined ? player.GetObject(extraTargetId) as IAttackable : null;
+
         var attackablesInRange =
-            player.CurrentMap?
-            .GetAttackablesInRange(targetAreaCenter, skill.Range)
-            .Where(a => a != player)
-            .Where(a => !a.IsAtSafezone())
-            ?? Enumerable.Empty<IAttackable>();
-        if (!player.GameContext.Configuration.AreaSkillHitsPlayer)
+            skill.SkillType == SkillType.AreaSkillExplicitTarget
+                ? null
+                : player.CurrentMap?
+                    .GetAttackablesInRange(targetAreaCenter, skill.Range)
+                    .Where(a => a != player)
+                    .Where(a => !a.IsAtSafezone());
+
+        bool isCombo = false;
+        if (player.ComboState is { } comboState)
         {
-            attackablesInRange = attackablesInRange.Where(a => a is not Player);
+            isCombo = await comboState.RegisterSkillAsync(skill).ConfigureAwait(false);
         }
 
-        var extraTarget = isExtraTargetDefined ? player.GetObject(extraTargetId) as IAttackable : null;
-        foreach (var target in attackablesInRange)
+        if (attackablesInRange is not null)
         {
-            await this.ApplySkillAsync(player, skillEntry, target, targetAreaCenter).ConfigureAwait(false);
-
-            if (target == extraTarget)
+            if (player.GameContext.PlugInManager.GetStrategy<short, IAreaSkillTargetFilter>(skill.Number) is { } filterPlugin)
             {
-                isExtraTargetDefined = false;
-                extraTarget = null;
+                attackablesInRange = attackablesInRange.Where(a => filterPlugin.IsTargetWithinBounds(player, a, targetAreaCenter, rotation));
+            }
+
+            if (!player.GameContext.Configuration.AreaSkillHitsPlayer)
+            {
+                attackablesInRange = attackablesInRange.Where(a => a is not Player);
+            }
+
+            foreach (var target in attackablesInRange)
+            {
+                await this.ApplySkillAsync(player, skillEntry, target, targetAreaCenter, isCombo).ConfigureAwait(false);
+
+                if (target == extraTarget)
+                {
+                    isExtraTargetDefined = false;
+                    extraTarget = null;
+                }
             }
         }
 
@@ -81,19 +110,26 @@ public class AreaSkillAttackAction
             && player.IsInRange(extraTarget.Position, skill.Range + 2)
             && !player.IsAtSafezone())
         {
-            await this.ApplySkillAsync(player, skillEntry, extraTarget, targetAreaCenter).ConfigureAwait(false);
+            await this.ApplySkillAsync(player, skillEntry, extraTarget, targetAreaCenter, isCombo).ConfigureAwait(false);
+        }
+
+        if (isCombo)
+        {
+            await player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowComboAnimationAsync(player, extraTarget), true).ConfigureAwait(false);
         }
     }
 
-    private async ValueTask ApplySkillAsync(Player player, SkillEntry skillEntry, IAttackable target, Point targetAreaCenter)
+    private async ValueTask ApplySkillAsync(Player player, SkillEntry skillEntry, IAttackable target, Point targetAreaCenter, bool isCombo)
     {
         skillEntry.ThrowNotInitializedProperty(skillEntry.Skill is null, nameof(skillEntry.Skill));
 
         if (target.CheckSkillTargetRestrictions(player, skillEntry.Skill))
         {
-            await target.AttackByAsync(player, skillEntry).ConfigureAwait(false);
+            await target.AttackByAsync(player, skillEntry, isCombo).ConfigureAwait(false);
             await target.TryApplyElementalEffectsAsync(player, skillEntry).ConfigureAwait(false);
-            if (player.GameContext.PlugInManager.GetStrategy<short, IAreaSkillPlugIn>(skillEntry.Skill.Number) is { } strategy)
+            var baseSkill = skillEntry.GetBaseSkill();
+
+            if (player.GameContext.PlugInManager.GetStrategy<short, IAreaSkillPlugIn>(baseSkill.Number) is { } strategy)
             {
                 await strategy.AfterTargetGotAttackedAsync(player, target, skillEntry, targetAreaCenter).ConfigureAwait(false);
             }

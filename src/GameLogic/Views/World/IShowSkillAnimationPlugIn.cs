@@ -26,4 +26,17 @@ public interface IShowSkillAnimationPlugIn : IViewPlugIn
     /// <param name="skillNumber">The skill number, see also <see cref="Skill.Number"/>.</param>
     /// <param name="effectApplied">Flag, if a magic effect was applied with the skill.</param>
     ValueTask ShowSkillAnimationAsync(IAttacker attacker, IAttackable? target, short skillNumber, bool effectApplied);
+
+    /// <summary>
+    /// Shows the combo skill animation.
+    /// </summary>
+    /// <param name="attacker">The attacking object.</param>
+    /// <param name="target">The optional target.</param>
+    ValueTask ShowComboAnimationAsync(IAttacker attacker, IAttackable? target);
+
+    /// <summary>
+    /// Shows the nova start skill animation.
+    /// </summary>
+    /// <param name="attacker">The attacking object.</param>
+    ValueTask ShowNovaStartAsync(IAttacker attacker);
 }

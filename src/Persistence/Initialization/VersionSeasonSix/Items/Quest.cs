@@ -65,8 +65,8 @@ public class Quest : InitializerBase
     /// <inheritdoc />
     public override void Initialize()
     {
-        this.CreateQuestItem(ScrollOfEmperorNumber, "Scroll of Emperor", 0, 1);
-        this.CreateQuestItem(BrokenSwordNumber, "Broken Sword", 0, 2);
+        this.CreateQuestItem(ScrollOfEmperorNumber, "Scroll of Emperor", 0, 1, 1); // Ring of Honor is level 1
+        this.CreateQuestItem(BrokenSwordNumber, "Broken Sword", 0, 2, 1); // Dark Stone is level 1
         this.CreateQuestItem(TearOfElfNumber, "Tear of Elf", 0, 1);
         this.CreateQuestItem(SoulShardOfWizardNumber, "Soul Shard of Wizard", 0, 1);
         this.CreateQuestItem(EyeOfAbyssalNumber, "Eye of Abyssal", 0, 2);
@@ -75,7 +75,7 @@ public class Quest : InitializerBase
         this.CreateQuestItem(FeatherOfDarkPhoenixNumber, "Feather of Dark Phoenix", 0, 2);
     }
 
-    private void CreateQuestItem(byte number, string name, byte dropLevel, byte height)
+    private void CreateQuestItem(byte number, string name, byte dropLevel, byte height, byte maximumLevel = 0)
     {
         var item = this.Context.CreateNew<ItemDefinition>();
         this.GameConfiguration.Items.Add(item);
@@ -88,5 +88,7 @@ public class Quest : InitializerBase
         item.IsBoundToCharacter = true;
         item.DropsFromMonsters = false; // it'll be added explicitly to a DropItemGroup
         item.Durability = 1;
+        item.MaximumItemLevel = maximumLevel;
+        item.SetGuid(item.Group, item.Number);
     }
 }

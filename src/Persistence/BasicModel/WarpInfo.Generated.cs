@@ -28,7 +28,6 @@ public partial class WarpInfo : MUnique.OpenMU.DataModel.Configuration.WarpInfo,
     /// <summary>
     /// Gets the raw object of <see cref="Gate" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("gate")]
     [System.Text.Json.Serialization.JsonPropertyName("gate")]
     public ExitGate RawGate
     {
@@ -37,7 +36,6 @@ public partial class WarpInfo : MUnique.OpenMU.DataModel.Configuration.WarpInfo,
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.DataModel.Configuration.ExitGate Gate
     {

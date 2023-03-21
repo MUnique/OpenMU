@@ -49,6 +49,7 @@ public class Jewels : Version097d.Items.Jewels
         itemDefinition.Durability = 1;
         itemDefinition.Width = 1;
         itemDefinition.Height = 1;
+        itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
         return itemDefinition;
     }
 
@@ -68,6 +69,7 @@ public class Jewels : Version097d.Items.Jewels
         itemDefinition.Width = 1;
         itemDefinition.Height = 1;
         itemDefinition.Value = 25;
+        itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
         return itemDefinition;
     }
 
@@ -83,11 +85,11 @@ public class Jewels : Version097d.Items.Jewels
         itemDefinition.Group = 14;
         itemDefinition.DropsFromMonsters = false;
         itemDefinition.DropLevel = 150;
-        itemDefinition.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.HarmonyJewelConsumeHandler).FullName;
         itemDefinition.Durability = 1;
         itemDefinition.Width = 1;
         itemDefinition.Height = 1;
         itemDefinition.Value = 25;
+        itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
         return itemDefinition;
     }
 
@@ -103,11 +105,11 @@ public class Jewels : Version097d.Items.Jewels
         itemDefinition.Group = 14;
         itemDefinition.DropsFromMonsters = false;
         itemDefinition.DropLevel = 150;
-        itemDefinition.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.LowerRefineStoneConsumeHandler).FullName;
         itemDefinition.Durability = 1;
         itemDefinition.Width = 1;
         itemDefinition.Height = 1;
         itemDefinition.Value = 25;
+        itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
         return itemDefinition;
     }
 
@@ -123,11 +125,11 @@ public class Jewels : Version097d.Items.Jewels
         itemDefinition.Group = 14;
         itemDefinition.DropsFromMonsters = false;
         itemDefinition.DropLevel = 150;
-        itemDefinition.ConsumeHandlerClass = typeof(OpenMU.GameLogic.PlayerActions.ItemConsumeActions.HigherRefineStoneConsumeHandler).FullName;
         itemDefinition.Durability = 1;
         itemDefinition.Width = 1;
         itemDefinition.Height = 1;
         itemDefinition.Value = 25;
+        itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
         return itemDefinition;
     }
 }

@@ -22,7 +22,16 @@ public class LogoutAction
         player.Party?.KickMySelfAsync(player);
         await player.SetSelectedCharacterAsync(null).ConfigureAwait(false);
         await player.MagicEffectList.ClearAllEffectsAsync().ConfigureAwait(false);
-        await player.PersistenceContext.SaveChangesAsync().ConfigureAwait(false);
+
+        try
+        {
+            await player.PersistenceContext.SaveChangesAsync().ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            player.Logger.LogError($"Couldn't Save at Disconnect. Player: {player}", ex);
+        }
+
         if (logoutType == LogoutType.CloseGame)
         {
             await player.DisconnectAsync().ConfigureAwait(false);

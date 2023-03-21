@@ -55,17 +55,17 @@ public enum HeroState
 public enum CharacterStatus
 {
     /// <summary>
-    /// The character is normal
+    /// The character is normal.
     /// </summary>
     Normal = 0,
 
     /// <summary>
-    /// The character is banned
+    /// The character is banned.
     /// </summary>
     Banned = 1,
 
     /// <summary>
-    /// The character is a GameMaster (have mu logo on the head)
+    /// The character is a GameMaster (have mu logo on the head).
     /// </summary>
     GameMaster = 32,
 }
@@ -190,11 +190,6 @@ public class Character
     public CharacterPose Pose { get; set; }
 
     /// <summary>
-    /// Gets or sets the quest info. Don't know yet what its content is.
-    /// </summary>
-    public byte[]? QuestInfo { get; set; }
-
-    /// <summary>
     /// Gets or sets the used fruit points.
     /// </summary>
     public int UsedFruitPoints { get; set; }
@@ -213,6 +208,11 @@ public class Character
     /// Gets or sets the key configuration, which is set by the client and just saved as is.
     /// </summary>
     public byte[]? KeyConfiguration { get; set; }
+
+    /// <summary>
+    /// Gets or sets the configuration of the mu helper, which is set by the client and just saved as is.
+    /// </summary>
+    public byte[]? MuHelperConfiguration { get; set; }
 
     /// <summary>
     /// Gets or sets the stat attributes.

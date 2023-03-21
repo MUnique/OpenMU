@@ -12,6 +12,16 @@ using MUnique.OpenMU.DataModel.Configuration;
 internal class SilentMap : BaseMapInitializer
 {
     /// <summary>
+    /// The Number of the Map.
+    /// </summary>
+    internal const byte Number = 40;
+
+    /// <summary>
+    /// The Name of the Map.
+    /// </summary>
+    internal const string Name = "Silent Map?";
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="SilentMap"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -22,8 +32,8 @@ internal class SilentMap : BaseMapInitializer
     }
 
     /// <inheritdoc/>
-    protected override byte MapNumber => 40;
+    protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => "Silent Map?";
+    protected override string MapName => Name;
 }

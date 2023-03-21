@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.Attributes;
 
+using System.Collections.Concurrent;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.NPC;
 
@@ -16,8 +17,8 @@ public class MonsterAttributeHolder : IAttributeSystem
         new Dictionary<AttributeDefinition, Func<AttackableNpcBase, float>>
         {
             { Stats.CurrentHealth, m => m.Health },
-            { Stats.DefensePvm, m => m.Attributes.GetValueOfAttribute(Stats.DefenseBase) },
-            { Stats.DefensePvp, m => m.Attributes.GetValueOfAttribute(Stats.DefenseBase) },
+            { Stats.DefensePvm, m => m.Attributes.GetValueOfAttribute(Stats.DefenseBase) + ((m as Monster)?.SummonedBy?.Attributes?[Stats.SummonedMonsterDefenseIncrease] ?? 0) },
+            { Stats.DefensePvp, m => m.Attributes.GetValueOfAttribute(Stats.DefenseBase) + ((m as Monster)?.SummonedBy?.Attributes?[Stats.SummonedMonsterDefenseIncrease] ?? 0) },
             { Stats.DamageReceiveDecrement, m => 1.0f },
             { Stats.AttackDamageIncrease, m => 1.0f },
             { Stats.ShieldBypassChance, m => 1.0f },
@@ -29,13 +30,13 @@ public class MonsterAttributeHolder : IAttributeSystem
             { Stats.CurrentHealth, (m, v) => m.Health = (int)v },
         };
 
-    private static readonly IDictionary<MonsterDefinition, IDictionary<AttributeDefinition, float>> MonsterStatAttributesCache = new Dictionary<MonsterDefinition, IDictionary<AttributeDefinition, float>>();
+    private static readonly ConcurrentDictionary<MonsterDefinition, IDictionary<AttributeDefinition, float>> MonsterStatAttributesCache = new();
 
     private readonly AttackableNpcBase _monster;
 
     private readonly IDictionary<AttributeDefinition, float> _statAttributes;
 
-    private readonly object _attributesLock = new ();
+    private readonly object _attributesLock = new();
 
     /// <summary>
     /// Attribute dictionary of a monster instance.
@@ -70,7 +71,14 @@ public class MonsterAttributeHolder : IAttributeSystem
     /// <inheritdoc/>
     public float GetValueOfAttribute(AttributeDefinition attributeDefinition)
     {
-        if (this._attributes != null && this._attributes.TryGetValue(attributeDefinition, out var attribute))
+        IDictionary<AttributeDefinition, IComposableAttribute>? attributes;
+        lock (this._attributesLock)
+        {
+            attributes = this._attributes;
+        }
+
+        if (attributes is not null
+            && attributes.TryGetValue(attributeDefinition, out var attribute))
         {
             return attribute.Value;
         }
@@ -108,24 +116,31 @@ public class MonsterAttributeHolder : IAttributeSystem
     /// <inheritdoc/>
     public void RemoveElement(IElement element, AttributeDefinition targetAttribute)
     {
-        var attributeDictionary = this._attributes;
-        if (attributeDictionary != null)
+        IDictionary<AttributeDefinition, IComposableAttribute>? attributes;
+        lock (this._attributesLock)
         {
-            if (attributeDictionary.TryGetValue(targetAttribute, out var attribute))
-            {
-                attribute.RemoveElement(element);
-                if (attribute.Elements.Skip(1).Take(1).Any())
-                {
-                    attributeDictionary.Remove(targetAttribute);
-                }
-            }
+            attributes = this._attributes;
+        }
 
-            if (attributeDictionary.Count == 0)
+        if (attributes is null)
+        {
+            return;
+        }
+
+        if (attributes.TryGetValue(targetAttribute, out var attribute))
+        {
+            attribute.RemoveElement(element);
+            if (attribute.Elements.Skip(1).Take(1).Any())
             {
-                lock (this._attributesLock)
-                {
-                    this._attributes = null;
-                }
+                attributes.Remove(targetAttribute);
+            }
+        }
+
+        if (attributes.Count == 0)
+        {
+            lock (this._attributesLock)
+            {
+                this._attributes = null;
             }
         }
     }
@@ -142,32 +157,25 @@ public class MonsterAttributeHolder : IAttributeSystem
         throw new NotImplementedException();
     }
 
-    private static IDictionary<AttributeDefinition, float> GetStatAttributeOfMonster(MonsterDefinition monsterDef)
+    private static IDictionary<AttributeDefinition, float> GetStatAttributeOfMonster(MonsterDefinition monsterDefinition)
     {
-        if (!MonsterStatAttributesCache.TryGetValue(monsterDef, out var result))
-        {
-            result = monsterDef.Attributes.ToDictionary(
+        return MonsterStatAttributesCache.GetOrAdd(monsterDefinition, monsterDef => monsterDef.Attributes.ToDictionary(
                 m => m.AttributeDefinition ?? throw Error.NotInitializedProperty(m, nameof(m.AttributeDefinition)),
-                m => m.Value);
-            MonsterStatAttributesCache.Add(monsterDef, result);
-        }
-
-        return result;
+                m => m.Value));
     }
 
     private IDictionary<AttributeDefinition, IComposableAttribute> GetAttributeDictionary()
     {
-        if (this._attributes is null)
+        lock (this._attributesLock)
         {
-            lock (this._attributesLock)
+            var attributes = this._attributes;
+            if (attributes is null)
             {
-                if (this._attributes is null)
-                {
-                    this._attributes = new Dictionary<AttributeDefinition, IComposableAttribute>();
-                }
+                attributes = new Dictionary<AttributeDefinition, IComposableAttribute>();
+                this._attributes = attributes;
             }
-        }
 
-        return this._attributes;
+            return attributes;
+        }
     }
 }

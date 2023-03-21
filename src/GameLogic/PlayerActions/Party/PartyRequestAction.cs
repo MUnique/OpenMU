@@ -20,6 +20,11 @@ public class PartyRequestAction
     /// <param name="toRequest">The player which receives the request.</param>
     public async ValueTask HandlePartyRequestAsync(Player player, Player toRequest)
     {
+        if (player.CurrentMiniGame?.Definition.AllowParty is false)
+        {
+            await this.SendMessageToPlayerAsync(player, "A party is not possible during this event.", MessageType.BlueNormal).ConfigureAwait(false);
+        }
+
         if (toRequest.Party != null || toRequest.LastPartyRequester != null)
         {
             await this.SendMessageToPlayerAsync(player, $"{player.Name} is already in a party.", MessageType.BlueNormal).ConfigureAwait(false);

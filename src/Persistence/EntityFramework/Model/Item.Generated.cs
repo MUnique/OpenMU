@@ -89,6 +89,6 @@ internal partial class Item : MUnique.OpenMU.DataModel.Entities.Item, IIdentifia
 
     protected void InitJoinCollections()
     {
-        this.ItemSetGroups = new ManyToManyCollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.ItemSetGroup, ItemItemSetGroup>(this.JoinedItemSetGroups, joinEntity => joinEntity.ItemSetGroup, entity => new ItemItemSetGroup { Item = this, ItemId = this.Id, ItemSetGroup = (ItemSetGroup)entity, ItemSetGroupId = ((ItemSetGroup)entity).Id});
+        this.ItemSetGroups = new ManyToManyCollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.ItemOfItemSet, ItemItemOfItemSet>(this.JoinedItemSetGroups, joinEntity => joinEntity.ItemOfItemSet, entity => new ItemItemOfItemSet { Item = this, ItemId = this.Id, ItemOfItemSet = (ItemOfItemSet)entity, ItemOfItemSetId = ((ItemOfItemSet)entity).Id});
     }
 }

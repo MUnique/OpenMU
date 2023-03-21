@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic;
 
 using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
 
@@ -30,7 +31,7 @@ public interface IGameContext
     float ExperienceRate { get; }
 
     /// <summary>
-    /// Gets the repository manager. Used to retrieve data, e.g. from a database.
+    /// Gets the repository provider. Used to retrieve data, e.g. from a database.
     /// </summary>
     IPersistenceContextProvider PersistenceContextProvider { get; }
 
@@ -68,6 +69,11 @@ public interface IGameContext
     /// Gets the drop generator.
     /// </summary>
     IDropGenerator DropGenerator { get; }
+
+    /// <summary>
+    /// Gets the object pool for path finders.
+    /// </summary>
+    IObjectPool<PathFinder> PathFinderPool { get; }
 
     /// <summary>
     /// Gets the initialized maps which are hosted on this context.

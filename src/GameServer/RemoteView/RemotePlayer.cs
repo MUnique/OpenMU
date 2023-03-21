@@ -117,9 +117,9 @@ public class RemotePlayer : Player, IClientVersionProvider
             ("Account", this.GetAccountName()),
             ("Character", this.GetSelectedCharacterName()));
 
+        Memory<byte> buffer = Memory<byte>.Empty;
         try
         {
-            Memory<byte> buffer;
             IMemoryOwner<byte>? owner = null;
             if (sequence.Length <= this._packetBuffer.Length)
             {
@@ -149,7 +149,7 @@ public class RemotePlayer : Player, IClientVersionProvider
         }
         catch (Exception ex)
         {
-            this.Logger.LogError(ex, "Error while processing a message");
+            this.Logger.LogError(ex, $"Error while processing the message: {buffer.ToArray().AsString()}");
         }
     }
 

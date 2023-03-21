@@ -25,12 +25,10 @@ public partial class Guild : MUnique.OpenMU.DataModel.Entities.Guild, IIdentifia
     /// <summary>
     /// Gets the raw collection of <see cref="Members" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("members")]
     [System.Text.Json.Serialization.JsonPropertyName("members")]
     public ICollection<GuildMember> RawMembers { get; } = new List<GuildMember>();
     
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override ICollection<MUnique.OpenMU.DataModel.Entities.GuildMember> Members
     {
@@ -48,7 +46,6 @@ public partial class Guild : MUnique.OpenMU.DataModel.Entities.Guild, IIdentifia
     /// <summary>
     /// Gets the raw object of <see cref="Hostility" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("hostility")]
     [System.Text.Json.Serialization.JsonPropertyName("hostility")]
     public Guild RawHostility
     {
@@ -57,7 +54,6 @@ public partial class Guild : MUnique.OpenMU.DataModel.Entities.Guild, IIdentifia
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.Interfaces.Guild Hostility
     {
@@ -68,7 +64,6 @@ public partial class Guild : MUnique.OpenMU.DataModel.Entities.Guild, IIdentifia
     /// <summary>
     /// Gets the raw object of <see cref="AllianceGuild" />.
     /// </summary>
-    [Newtonsoft.Json.JsonProperty("allianceGuild")]
     [System.Text.Json.Serialization.JsonPropertyName("allianceGuild")]
     public Guild RawAllianceGuild
     {
@@ -77,7 +72,6 @@ public partial class Guild : MUnique.OpenMU.DataModel.Entities.Guild, IIdentifia
     }
 
     /// <inheritdoc/>
-    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public override MUnique.OpenMU.Interfaces.Guild AllianceGuild
     {

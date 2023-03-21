@@ -1,6 +1,6 @@
 ﻿@using System.ComponentModel.DataAnnotations
 @using System.Diagnostics.CodeAnalysis
-@inherits NotifyableInputBase<DateTime>
+@inherits NotifyableInputBase<DateOnly>
 
     <div>
         <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
@@ -18,9 +18,9 @@
     public string? Label { get; set; }
 
     /// <inheritdoc />
-    protected override bool TryParseValueFromString(string? value, [MaybeNullWhen(false)] out DateTime result, [NotNullWhen(false)] out string? validationErrorMessage)
+    protected override bool TryParseValueFromString(string? value, [MaybeNullWhen(false)] out DateOnly result, [NotNullWhen(false)] out string? validationErrorMessage)
     {
-        if (DateTime.TryParse(value, out result))
+        if (DateOnly.TryParse(value, out result))
         {
             validationErrorMessage = null;
             return true;
