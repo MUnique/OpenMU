@@ -2,7 +2,7 @@
 
 <EditForm Model="@Model" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator />
-    <AutoFields />
+    <AutoFields HideCollections="@this.HideCollections"/>
 
     <ValidationSummary />
     <div>
@@ -21,6 +21,12 @@
     /// </summary>
     [Parameter]
     public T Model { get; set; } = default!;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether to hide collections or not.
+    /// </summary>
+    [Parameter]
+    public bool HideCollections { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="EditForm.OnValidSubmit"/> event callback.

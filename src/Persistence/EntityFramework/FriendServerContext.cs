@@ -22,7 +22,7 @@ internal class FriendServerContext : CachingEntityFrameworkContext, IFriendServe
     /// <param name="repositoryProvider">The repositoryManager.</param>
     /// <param name="logger">The logger.</param>
     public FriendServerContext(FriendContext context, IContextAwareRepositoryProvider repositoryProvider, ILogger<FriendServerContext> logger)
-        : base(context, repositoryProvider, logger)
+        : base(context, repositoryProvider, null, logger)
     {
     }
 

@@ -13,7 +13,9 @@ using System.Globalization;
 /// <summary>
 /// A generic edit page, which shows an <see cref="AutoForm{T}"/> for the given <see cref="EditConfigBase.TypeString"/> and <see cref="EditConfigBase.Id"/>.
 /// </summary>
+[Route("/edit-config/{typeString}/")]
 [Route("/edit-config/{typeString}/{id:guid}")]
+[Route("/edit-config/{typeString}/{id:guid}/hide-collections")]
 public sealed class EditConfig : EditBase
 {
     private static readonly IDictionary<Type, IList<(string Caption, string Path)>> EditorPages =
@@ -25,8 +27,10 @@ public sealed class EditConfig : EditBase
     /// <inheritdoc />
     protected override void AddFormToRenderTree(RenderTreeBuilder builder, ref int currentSequence)
     {
+        var hideCollections = this.NavigationManager.Uri.EndsWith("hide-collections");
         builder.OpenComponent(++currentSequence, typeof(AutoForm<>).MakeGenericType(this.Type!));
         builder.AddAttribute(++currentSequence, nameof(AutoForm<object>.Model), this.Model);
+        builder.AddAttribute(++currentSequence, nameof(AutoForm<object>.HideCollections), hideCollections);
         builder.AddAttribute(++currentSequence, nameof(AutoForm<object>.OnValidSubmit), EventCallback.Factory.Create(this, this.SaveChangesAsync));
         builder.CloseComponent();
     }

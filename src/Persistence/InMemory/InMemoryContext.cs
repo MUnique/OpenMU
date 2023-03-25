@@ -2,9 +2,10 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using Nito.AsyncEx.Synchronous;
-
 namespace MUnique.OpenMU.Persistence.InMemory;
+
+using System.Collections;
+using Nito.AsyncEx.Synchronous;
 
 /// <summary>
 /// An in-memory context which get it's data from the repositories of the <see cref="InMemoryPersistenceContextProvider"/>.
@@ -119,5 +120,11 @@ public class InMemoryContext : IContext
         where T : class
     {
         return this.Provider.GetRepository<T>().GetAllAsync();
+    }
+
+    /// <inheritdoc/>
+    public ValueTask<IEnumerable> GetAsync(Type type)
+    {
+        return this.Provider.GetRepository(type).GetAllAsync();
     }
 }

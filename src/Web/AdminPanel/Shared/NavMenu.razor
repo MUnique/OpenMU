@@ -48,10 +48,11 @@
                 @if (this.GameConfigurationId is { } gameConfigurationId )
                 {
                     <li>
-                        <NavLink href="@("edit-config/" + typeof(GameConfiguration).FullName + "/" + this.GameConfigurationId)">
+                        <NavLink href="@($"edit-config/{typeof(GameConfiguration).FullName}/")">
                             <span class="oi oi-cog" aria-hidden="true"></span> Game Configuration
                         </NavLink>
                     </li>
+                    <ConfigNavMenu GameConfigurationId="@gameConfigurationId" />
                     <li>
                         <NavLink href="map-editor">
                             <span class="oi oi-globe" aria-hidden="true"></span> Map Editor

@@ -186,6 +186,14 @@ internal class EntityFrameworkContextBase : IContext
     }
 
     /// <inheritdoc/>
+    public async ValueTask<IEnumerable> GetAsync(Type type)
+    {
+        using var l = await this._lock.LockAsync();
+        using var context = this.RepositoryProvider.ContextStack.UseContext(this);
+        return await this.GetRepository(type).GetAllAsync().ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
     public void Dispose()
     {
         if (!this._isDisposed)
@@ -268,7 +276,7 @@ internal class EntityFrameworkContextBase : IContext
             }
 
             var changedEntries = this.Context.ChangeTracker.Entries()
-                .Where(entity => entity.State == EntityState.Unchanged
+                .Where(entity => entity.State != EntityState.Unchanged
                                  && entity.Metadata.ClrType.IsConfigurationType()).ToList();
             foreach (var entry in changedEntries)
             {

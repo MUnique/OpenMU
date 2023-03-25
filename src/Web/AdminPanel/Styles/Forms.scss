@@ -13,7 +13,7 @@
 .valid.modified {
     @extend .is-valid;
     @extend .was-validated;
-    @extend .form-control:valid;
+    @extend .form-control, :valid;
 }
 
 .validation-message {
@@ -41,14 +41,47 @@ form > div > div > div:first-of-type {
 
 form > div > div > div:first-of-type > span {
     @extend .input-group-text;
+    height: 38px;
 }
 
 form > div > div > input {
-    @extend .input-group-append;
+    @extend .form-control;
 }
 
 .blazored-modal-content {
     max-height: 700px;
     overflow-y: auto;
     padding-right: 10px;
+}
+
+details > summary {
+    list-style-type: 'ℹ';
+}
+
+details[open] > summary {
+    list-style-type: 'x';
+}
+
+label > details {
+    @extend .ml-2;
+    position: absolute;
+    display: inline;
+    z-index: 0;
+}
+
+label > details[open] {
+    z-index: 1;
+    
+}
+
+label > details > div {
+    @extend .alert;
+    @extend .alert-secondary;
+    /*@extend .rounded;
+    @extend .border;
+    @extend .border-primary;*/
+    @extend .shadow;
+    @extend .mr-3;
+    /*    
+    @extend .p-3;*/
 }

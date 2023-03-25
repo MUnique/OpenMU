@@ -2192,7 +2192,7 @@ fieldset:disabled a.primary-button {
   line-height: 1.5;
   border-radius: 0.3rem; }
 
-.btn-sm, .btn-group-sm > .btn, .btn-group-sm > button, .btn-group-sm > .primary-button, table button {
+.btn-sm, .btn-group-sm > .btn, .btn-group-sm > button, .btn-group-sm > .primary-button, tbody button {
   padding: 0.25rem 0.5rem;
   font-size: 0.875rem;
   line-height: 1.5;
@@ -2494,7 +2494,7 @@ input[type="button"].btn-block {
   .dropleft .dropdown-toggle-split::before {
     margin-right: 0; }
 
-.btn-sm + .dropdown-toggle-split, .btn-group-sm > .btn + .dropdown-toggle-split, .btn-group-sm > button + .dropdown-toggle-split, .btn-group-sm > .primary-button + .dropdown-toggle-split, table button + .dropdown-toggle-split {
+.btn-sm + .dropdown-toggle-split, .btn-group-sm > .btn + .dropdown-toggle-split, .btn-group-sm > button + .dropdown-toggle-split, .btn-group-sm > .primary-button + .dropdown-toggle-split, tbody button + .dropdown-toggle-split {
   padding-right: 0.375rem;
   padding-left: 0.375rem; }
 
@@ -3141,41 +3141,41 @@ div.input-group > div:first-child:first-of-type > .input-group-text:not(:first-c
     .custom-select {
       transition: none; } }
 
-.nav, nav > div > ul {
+.nav, app > nav > div > ul {
   display: flex;
   flex-wrap: wrap;
   padding-left: 0;
   margin-bottom: 0;
   list-style: none; }
 
-.nav-link, nav > div > ul > li > a {
+.nav-link, app > nav > div > ul > li > a {
   display: block;
   padding: 0.5rem 1rem; }
-  .nav-link:hover, nav > div > ul > li > a:hover, .nav-link:focus, nav > div > ul > li > a:focus {
+  .nav-link:hover, app > nav > div > ul > li > a:hover, .nav-link:focus, app > nav > div > ul > li > a:focus {
     text-decoration: none; }
-  .nav-link.disabled, nav > div > ul > li > a.disabled {
+  .nav-link.disabled, app > nav > div > ul > li > a.disabled {
     color: #6c757d;
     pointer-events: none;
     cursor: default; }
 
 .nav-tabs {
   border-bottom: 1px solid #dee2e6; }
-  .nav-tabs .nav-link, .nav-tabs nav > div > ul > li > a {
+  .nav-tabs .nav-link, .nav-tabs app > nav > div > ul > li > a {
     margin-bottom: -1px;
     border: 1px solid transparent;
     border-top-left-radius: 0.25rem;
     border-top-right-radius: 0.25rem; }
-    .nav-tabs .nav-link:hover, .nav-tabs nav > div > ul > li > a:hover, .nav-tabs .nav-link:focus, .nav-tabs nav > div > ul > li > a:focus {
+    .nav-tabs .nav-link:hover, .nav-tabs app > nav > div > ul > li > a:hover, .nav-tabs .nav-link:focus, .nav-tabs app > nav > div > ul > li > a:focus {
       border-color: #e9ecef #e9ecef #dee2e6; }
-    .nav-tabs .nav-link.disabled, .nav-tabs nav > div > ul > li > a.disabled {
+    .nav-tabs .nav-link.disabled, .nav-tabs app > nav > div > ul > li > a.disabled {
       color: #6c757d;
       background-color: transparent;
       border-color: transparent; }
-  .nav-tabs .nav-link.active, .nav-tabs nav > div > ul > li > a.active,
+  .nav-tabs .nav-link.active, .nav-tabs app > nav > div > ul > li > a.active,
   .nav-tabs .nav-item.show .nav-link,
-  .nav-tabs nav > div > ul > li.show .nav-link,
-  .nav-tabs .nav-item.show nav > div > ul > li > a,
-  .nav-tabs nav > div > ul > li.show nav > div > ul > li > a {
+  .nav-tabs app > nav > div > ul > li.show .nav-link,
+  .nav-tabs .nav-item.show app > nav > div > ul > li > a,
+  .nav-tabs app > nav > div > ul > li.show app > nav > div > ul > li > a {
     color: #495057;
     background-color: #fff;
     border-color: #dee2e6 #dee2e6 #fff; }
@@ -3184,24 +3184,24 @@ div.input-group > div:first-child:first-of-type > .input-group-text:not(:first-c
     border-top-left-radius: 0;
     border-top-right-radius: 0; }
 
-.nav-pills .nav-link, .nav-pills nav > div > ul > li > a {
+.nav-pills .nav-link, .nav-pills app > nav > div > ul > li > a {
   border-radius: 0.25rem; }
 
-.nav-pills .nav-link.active, .nav-pills nav > div > ul > li > a.active,
+.nav-pills .nav-link.active, .nav-pills app > nav > div > ul > li > a.active,
 .nav-pills .show > .nav-link,
-.nav-pills nav > div > ul > li.show > a {
+.nav-pills app > nav > div > ul > li.show > a {
   color: #fff;
   background-color: #007bff; }
 
-.nav-fill > .nav-link, nav > div > ul > li.nav-fill > a,
+.nav-fill > .nav-link, app > nav > div > ul > li.nav-fill > a,
 .nav-fill .nav-item,
-.nav-fill nav > div > ul > li {
+.nav-fill app > nav > div > ul > li {
   flex: 1 1 auto;
   text-align: center; }
 
-.nav-justified > .nav-link, nav > div > ul > li.nav-justified > a,
+.nav-justified > .nav-link, app > nav > div > ul > li.nav-justified > a,
 .nav-justified .nav-item,
-.nav-justified nav > div > ul > li {
+.nav-justified app > nav > div > ul > li {
   flex-basis: 0;
   flex-grow: 1;
   text-align: center; }
@@ -3212,20 +3212,20 @@ div.input-group > div:first-child:first-of-type > .input-group-text:not(:first-c
 .tab-content > .active {
   display: block; }
 
-.navbar, nav > div:first-child {
+.navbar, app > nav > div:first-child {
   position: relative;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   padding: 0.5rem 1rem; }
-  .navbar .container, nav > div:first-child .container, .navbar .container-fluid, nav > div:first-child .container-fluid, .navbar .container-sm, nav > div:first-child .container-sm, .navbar .container-md, nav > div:first-child .container-md, .navbar .container-lg, nav > div:first-child .container-lg, .navbar .container-xl, nav > div:first-child .container-xl, nav > div:first-child > .container-sm, nav > div:first-child > .container-md, nav > div:first-child > .container-lg, nav > div:first-child > .container-xl {
+  .navbar .container, app > nav > div:first-child .container, .navbar .container-fluid, app > nav > div:first-child .container-fluid, .navbar .container-sm, app > nav > div:first-child .container-sm, .navbar .container-md, app > nav > div:first-child .container-md, .navbar .container-lg, app > nav > div:first-child .container-lg, .navbar .container-xl, app > nav > div:first-child .container-xl, app > nav > div:first-child > .container-sm, app > nav > div:first-child > .container-md, app > nav > div:first-child > .container-lg, app > nav > div:first-child > .container-xl {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between; }
 
-.navbar-brand, nav > div:first-child > a {
+.navbar-brand, app > nav > div:first-child > a {
   display: inline-block;
   padding-top: 0.3125rem;
   padding-bottom: 0.3125rem;
@@ -3233,7 +3233,7 @@ div.input-group > div:first-child:first-of-type > .input-group-text:not(:first-c
   font-size: 1.25rem;
   line-height: inherit;
   white-space: nowrap; }
-  .navbar-brand:hover, nav > div:first-child > a:hover, .navbar-brand:focus, nav > div:first-child > a:focus {
+  .navbar-brand:hover, app > nav > div:first-child > a:hover, .navbar-brand:focus, app > nav > div:first-child > a:focus {
     text-decoration: none; }
 
 .navbar-nav {
@@ -3242,7 +3242,7 @@ div.input-group > div:first-child:first-of-type > .input-group-text:not(:first-c
   padding-left: 0;
   margin-bottom: 0;
   list-style: none; }
-  .navbar-nav .nav-link, .navbar-nav nav > div > ul > li > a {
+  .navbar-nav .nav-link, .navbar-nav app > nav > div > ul > li > a {
     padding-right: 0;
     padding-left: 0; }
   .navbar-nav .dropdown-menu {
@@ -3254,22 +3254,22 @@ div.input-group > div:first-child:first-of-type > .input-group-text:not(:first-c
   padding-top: 0.5rem;
   padding-bottom: 0.5rem; }
 
-.navbar-collapse, nav > div {
+.navbar-collapse, app > nav > div {
   flex-basis: 100%;
   flex-grow: 1;
   align-items: center; }
 
-.navbar-toggler, nav > div:first-child > button {
+.navbar-toggler, app > nav > div:first-child > button {
   padding: 0.25rem 0.75rem;
   font-size: 1.25rem;
   line-height: 1;
   background-color: transparent;
   border: 1px solid transparent;
   border-radius: 0.25rem; }
-  .navbar-toggler:hover, nav > div:first-child > button:hover, .navbar-toggler:focus, nav > div:first-child > button:focus {
+  .navbar-toggler:hover, app > nav > div:first-child > button:hover, .navbar-toggler:focus, app > nav > div:first-child > button:focus {
     text-decoration: none; }
 
-.navbar-toggler-icon, nav > div:first-child > button > span {
+.navbar-toggler-icon, app > nav > div:first-child > button > span {
   display: inline-block;
   width: 1.5em;
   height: 1.5em;
@@ -3299,7 +3299,7 @@ div.input-group > div:first-child:first-of-type > .input-group-text:not(:first-c
       flex-direction: row; }
       .navbar-expand-sm .navbar-nav .dropdown-menu {
         position: absolute; }
-      .navbar-expand-sm .navbar-nav .nav-link, .navbar-expand-sm .navbar-nav nav > div > ul > li > a {
+      .navbar-expand-sm .navbar-nav .nav-link, .navbar-expand-sm .navbar-nav app > nav > div > ul > li > a {
         padding-right: 0.5rem;
         padding-left: 0.5rem; }
     .navbar-expand-sm > .container,
@@ -3311,10 +3311,10 @@ div.input-group > div:first-child:first-of-type > .input-group-text:not(:first-c
       flex-wrap: nowrap; }
     .navbar-expand-sm .navbar-nav-scroll {
       overflow: visible; }
-    .navbar-expand-sm .navbar-collapse, .navbar-expand-sm nav > div {
+    .navbar-expand-sm .navbar-collapse, .navbar-expand-sm app > nav > div {
       display: flex !important;
       flex-basis: auto; }
-    .navbar-expand-sm .navbar-toggler, .navbar-expand-sm nav > div:first-child > button {
+    .navbar-expand-sm .navbar-toggler, .navbar-expand-sm app > nav > div:first-child > button {
       display: none; } }
 
 @media (max-width: 767.98px) {
@@ -3335,7 +3335,7 @@ div.input-group > div:first-child:first-of-type > .input-group-text:not(:first-c
       flex-direction: row; }
       .navbar-expand-md .navbar-nav .dropdown-menu {
         position: absolute; }
-      .navbar-expand-md .navbar-nav .nav-link, .navbar-expand-md .navbar-nav nav > div > ul > li > a {
+      .navbar-expand-md .navbar-nav .nav-link, .navbar-expand-md .navbar-nav app > nav > div > ul > li > a {
         padding-right: 0.5rem;
         padding-left: 0.5rem; }
     .navbar-expand-md > .container,
@@ -3347,10 +3347,10 @@ div.input-group > div:first-child:first-of-type > .input-group-text:not(:first-c
       flex-wrap: nowrap; }
     .navbar-expand-md .navbar-nav-scroll {
       overflow: visible; }
-    .navbar-expand-md .navbar-collapse, .navbar-expand-md nav > div {
+    .navbar-expand-md .navbar-collapse, .navbar-expand-md app > nav > div {
       display: flex !important;
       flex-basis: auto; }
-    .navbar-expand-md .navbar-toggler, .navbar-expand-md nav > div:first-child > button {
+    .navbar-expand-md .navbar-toggler, .navbar-expand-md app > nav > div:first-child > button {
       display: none; } }
 
 @media (max-width: 991.98px) {
@@ -3371,7 +3371,7 @@ div.input-group > div:first-child:first-of-type > .input-group-text:not(:first-c
       flex-direction: row; }
       .navbar-expand-lg .navbar-nav .dropdown-menu {
         position: absolute; }
-      .navbar-expand-lg .navbar-nav .nav-link, .navbar-expand-lg .navbar-nav nav > div > ul > li > a {
+      .navbar-expand-lg .navbar-nav .nav-link, .navbar-expand-lg .navbar-nav app > nav > div > ul > li > a {
         padding-right: 0.5rem;
         padding-left: 0.5rem; }
     .navbar-expand-lg > .container,
@@ -3383,10 +3383,10 @@ div.input-group > div:first-child:first-of-type > .input-group-text:not(:first-c
       flex-wrap: nowrap; }
     .navbar-expand-lg .navbar-nav-scroll {
       overflow: visible; }
-    .navbar-expand-lg .navbar-collapse, .navbar-expand-lg nav > div {
+    .navbar-expand-lg .navbar-collapse, .navbar-expand-lg app > nav > div {
       display: flex !important;
       flex-basis: auto; }
-    .navbar-expand-lg .navbar-toggler, .navbar-expand-lg nav > div:first-child > button {
+    .navbar-expand-lg .navbar-toggler, .navbar-expand-lg app > nav > div:first-child > button {
       display: none; } }
 
 @media (max-width: 1199.98px) {
@@ -3407,7 +3407,7 @@ div.input-group > div:first-child:first-of-type > .input-group-text:not(:first-c
       flex-direction: row; }
       .navbar-expand-xl .navbar-nav .dropdown-menu {
         position: absolute; }
-      .navbar-expand-xl .navbar-nav .nav-link, .navbar-expand-xl .navbar-nav nav > div > ul > li > a {
+      .navbar-expand-xl .navbar-nav .nav-link, .navbar-expand-xl .navbar-nav app > nav > div > ul > li > a {
         padding-right: 0.5rem;
         padding-left: 0.5rem; }
     .navbar-expand-xl > .container,
@@ -3419,10 +3419,10 @@ div.input-group > div:first-child:first-of-type > .input-group-text:not(:first-c
       flex-wrap: nowrap; }
     .navbar-expand-xl .navbar-nav-scroll {
       overflow: visible; }
-    .navbar-expand-xl .navbar-collapse, .navbar-expand-xl nav > div {
+    .navbar-expand-xl .navbar-collapse, .navbar-expand-xl app > nav > div {
       display: flex !important;
       flex-basis: auto; }
-    .navbar-expand-xl .navbar-toggler, .navbar-expand-xl nav > div:first-child > button {
+    .navbar-expand-xl .navbar-toggler, .navbar-expand-xl app > nav > div:first-child > button {
       display: none; } }
 
 .navbar-expand {
@@ -3440,7 +3440,7 @@ div.input-group > div:first-child:first-of-type > .input-group-text:not(:first-c
     flex-direction: row; }
     .navbar-expand .navbar-nav .dropdown-menu {
       position: absolute; }
-    .navbar-expand .navbar-nav .nav-link, .navbar-expand .navbar-nav nav > div > ul > li > a {
+    .navbar-expand .navbar-nav .nav-link, .navbar-expand .navbar-nav app > nav > div > ul > li > a {
       padding-right: 0.5rem;
       padding-left: 0.5rem; }
   .navbar-expand > .container,
@@ -3452,38 +3452,38 @@ div.input-group > div:first-child:first-of-type > .input-group-text:not(:first-c
     flex-wrap: nowrap; }
   .navbar-expand .navbar-nav-scroll {
     overflow: visible; }
-  .navbar-expand .navbar-collapse, .navbar-expand nav > div {
+  .navbar-expand .navbar-collapse, .navbar-expand app > nav > div {
     display: flex !important;
     flex-basis: auto; }
-  .navbar-expand .navbar-toggler, .navbar-expand nav > div:first-child > button {
+  .navbar-expand .navbar-toggler, .navbar-expand app > nav > div:first-child > button {
     display: none; }
 
-.navbar-light .navbar-brand, .navbar-light nav > div:first-child > a {
+.navbar-light .navbar-brand, .navbar-light app > nav > div:first-child > a {
   color: rgba(0, 0, 0, 0.9); }
-  .navbar-light .navbar-brand:hover, .navbar-light nav > div:first-child > a:hover, .navbar-light .navbar-brand:focus, .navbar-light nav > div:first-child > a:focus {
+  .navbar-light .navbar-brand:hover, .navbar-light app > nav > div:first-child > a:hover, .navbar-light .navbar-brand:focus, .navbar-light app > nav > div:first-child > a:focus {
     color: rgba(0, 0, 0, 0.9); }
 
-.navbar-light .navbar-nav .nav-link, .navbar-light .navbar-nav nav > div > ul > li > a {
+.navbar-light .navbar-nav .nav-link, .navbar-light .navbar-nav app > nav > div > ul > li > a {
   color: rgba(0, 0, 0, 0.5); }
-  .navbar-light .navbar-nav .nav-link:hover, .navbar-light .navbar-nav nav > div > ul > li > a:hover, .navbar-light .navbar-nav .nav-link:focus, .navbar-light .navbar-nav nav > div > ul > li > a:focus {
+  .navbar-light .navbar-nav .nav-link:hover, .navbar-light .navbar-nav app > nav > div > ul > li > a:hover, .navbar-light .navbar-nav .nav-link:focus, .navbar-light .navbar-nav app > nav > div > ul > li > a:focus {
     color: rgba(0, 0, 0, 0.7); }
-  .navbar-light .navbar-nav .nav-link.disabled, .navbar-light .navbar-nav nav > div > ul > li > a.disabled {
+  .navbar-light .navbar-nav .nav-link.disabled, .navbar-light .navbar-nav app > nav > div > ul > li > a.disabled {
     color: rgba(0, 0, 0, 0.3); }
 
-.navbar-light .navbar-nav .show > .nav-link, .navbar-light .navbar-nav nav > div > ul > li.show > a,
+.navbar-light .navbar-nav .show > .nav-link, .navbar-light .navbar-nav app > nav > div > ul > li.show > a,
 .navbar-light .navbar-nav .active > .nav-link,
-.navbar-light .navbar-nav nav > div > ul > li.active > a,
+.navbar-light .navbar-nav app > nav > div > ul > li.active > a,
 .navbar-light .navbar-nav .nav-link.show,
-.navbar-light .navbar-nav nav > div > ul > li > a.show,
+.navbar-light .navbar-nav app > nav > div > ul > li > a.show,
 .navbar-light .navbar-nav .nav-link.active,
-.navbar-light .navbar-nav nav > div > ul > li > a.active {
+.navbar-light .navbar-nav app > nav > div > ul > li > a.active {
   color: rgba(0, 0, 0, 0.9); }
 
-.navbar-light .navbar-toggler, .navbar-light nav > div:first-child > button {
+.navbar-light .navbar-toggler, .navbar-light app > nav > div:first-child > button {
   color: rgba(0, 0, 0, 0.5);
   border-color: rgba(0, 0, 0, 0.1); }
 
-.navbar-light .navbar-toggler-icon, .navbar-light nav > div:first-child > button > span {
+.navbar-light .navbar-toggler-icon, .navbar-light app > nav > div:first-child > button > span {
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%280, 0, 0, 0.5%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e"); }
 
 .navbar-light .navbar-text {
@@ -3493,39 +3493,39 @@ div.input-group > div:first-child:first-of-type > .input-group-text:not(:first-c
     .navbar-light .navbar-text a:hover, .navbar-light .navbar-text a:focus {
       color: rgba(0, 0, 0, 0.9); }
 
-.navbar-dark .navbar-brand, nav > div:first-child .navbar-brand, .navbar-dark nav > div:first-child > a, nav > div:first-child > a {
+.navbar-dark .navbar-brand, app > nav > div:first-child .navbar-brand, .navbar-dark app > nav > div:first-child > a, app > nav > div:first-child > a {
   color: #fff; }
-  .navbar-dark .navbar-brand:hover, nav > div:first-child .navbar-brand:hover, .navbar-dark nav > div:first-child > a:hover, nav > div:first-child > a:hover, .navbar-dark .navbar-brand:focus, nav > div:first-child .navbar-brand:focus, .navbar-dark nav > div:first-child > a:focus, nav > div:first-child > a:focus {
+  .navbar-dark .navbar-brand:hover, app > nav > div:first-child .navbar-brand:hover, .navbar-dark app > nav > div:first-child > a:hover, app > nav > div:first-child > a:hover, .navbar-dark .navbar-brand:focus, app > nav > div:first-child .navbar-brand:focus, .navbar-dark app > nav > div:first-child > a:focus, app > nav > div:first-child > a:focus {
     color: #fff; }
 
-.navbar-dark .navbar-nav .nav-link, nav > div:first-child .navbar-nav .nav-link, .navbar-dark .navbar-nav nav > div > ul > li > a, nav > div:first-child .navbar-nav nav > div > ul > li > a {
+.navbar-dark .navbar-nav .nav-link, app > nav > div:first-child .navbar-nav .nav-link, .navbar-dark .navbar-nav app > nav > div > ul > li > a, app > nav > div:first-child .navbar-nav app > nav > div > ul > li > a {
   color: rgba(255, 255, 255, 0.5); }
-  .navbar-dark .navbar-nav .nav-link:hover, nav > div:first-child .navbar-nav .nav-link:hover, .navbar-dark .navbar-nav nav > div > ul > li > a:hover, nav > div:first-child .navbar-nav nav > div > ul > li > a:hover, .navbar-dark .navbar-nav .nav-link:focus, nav > div:first-child .navbar-nav .nav-link:focus, .navbar-dark .navbar-nav nav > div > ul > li > a:focus, nav > div:first-child .navbar-nav nav > div > ul > li > a:focus {
+  .navbar-dark .navbar-nav .nav-link:hover, app > nav > div:first-child .navbar-nav .nav-link:hover, .navbar-dark .navbar-nav app > nav > div > ul > li > a:hover, app > nav > div:first-child .navbar-nav app > nav > div > ul > li > a:hover, .navbar-dark .navbar-nav .nav-link:focus, app > nav > div:first-child .navbar-nav .nav-link:focus, .navbar-dark .navbar-nav app > nav > div > ul > li > a:focus, app > nav > div:first-child .navbar-nav app > nav > div > ul > li > a:focus {
     color: rgba(255, 255, 255, 0.75); }
-  .navbar-dark .navbar-nav .nav-link.disabled, nav > div:first-child .navbar-nav .nav-link.disabled, .navbar-dark .navbar-nav nav > div > ul > li > a.disabled, nav > div:first-child .navbar-nav nav > div > ul > li > a.disabled {
+  .navbar-dark .navbar-nav .nav-link.disabled, app > nav > div:first-child .navbar-nav .nav-link.disabled, .navbar-dark .navbar-nav app > nav > div > ul > li > a.disabled, app > nav > div:first-child .navbar-nav app > nav > div > ul > li > a.disabled {
     color: rgba(255, 255, 255, 0.25); }
 
-.navbar-dark .navbar-nav .show > .nav-link, nav > div:first-child .navbar-nav .show > .nav-link, .navbar-dark .navbar-nav nav > div > ul > li.show > a, nav > div:first-child .navbar-nav nav > div > ul > li.show > a,
-.navbar-dark .navbar-nav .active > .nav-link, nav > div:first-child .navbar-nav .active > .nav-link,
-.navbar-dark .navbar-nav nav > div > ul > li.active > a, nav > div:first-child .navbar-nav nav > div > ul > li.active > a,
-.navbar-dark .navbar-nav .nav-link.show, nav > div:first-child .navbar-nav .nav-link.show,
-.navbar-dark .navbar-nav nav > div > ul > li > a.show, nav > div:first-child .navbar-nav nav > div > ul > li > a.show,
-.navbar-dark .navbar-nav .nav-link.active, nav > div:first-child .navbar-nav .nav-link.active,
-.navbar-dark .navbar-nav nav > div > ul > li > a.active, nav > div:first-child .navbar-nav nav > div > ul > li > a.active {
+.navbar-dark .navbar-nav .show > .nav-link, app > nav > div:first-child .navbar-nav .show > .nav-link, .navbar-dark .navbar-nav app > nav > div > ul > li.show > a, app > nav > div:first-child .navbar-nav app > nav > div > ul > li.show > a,
+.navbar-dark .navbar-nav .active > .nav-link, app > nav > div:first-child .navbar-nav .active > .nav-link,
+.navbar-dark .navbar-nav app > nav > div > ul > li.active > a, app > nav > div:first-child .navbar-nav app > nav > div > ul > li.active > a,
+.navbar-dark .navbar-nav .nav-link.show, app > nav > div:first-child .navbar-nav .nav-link.show,
+.navbar-dark .navbar-nav app > nav > div > ul > li > a.show, app > nav > div:first-child .navbar-nav app > nav > div > ul > li > a.show,
+.navbar-dark .navbar-nav .nav-link.active, app > nav > div:first-child .navbar-nav .nav-link.active,
+.navbar-dark .navbar-nav app > nav > div > ul > li > a.active, app > nav > div:first-child .navbar-nav app > nav > div > ul > li > a.active {
   color: #fff; }
 
-.navbar-dark .navbar-toggler, nav > div:first-child .navbar-toggler, .navbar-dark nav > div:first-child > button, nav > div:first-child > button {
+.navbar-dark .navbar-toggler, app > nav > div:first-child .navbar-toggler, .navbar-dark app > nav > div:first-child > button, app > nav > div:first-child > button {
   color: rgba(255, 255, 255, 0.5);
   border-color: rgba(255, 255, 255, 0.1); }
 
-.navbar-dark .navbar-toggler-icon, nav > div:first-child .navbar-toggler-icon, .navbar-dark nav > div:first-child > button > span, nav > div:first-child > button > span {
+.navbar-dark .navbar-toggler-icon, app > nav > div:first-child .navbar-toggler-icon, .navbar-dark app > nav > div:first-child > button > span, app > nav > div:first-child > button > span {
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.5%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e"); }
 
-.navbar-dark .navbar-text, nav > div:first-child .navbar-text {
+.navbar-dark .navbar-text, app > nav > div:first-child .navbar-text {
   color: rgba(255, 255, 255, 0.5); }
-  .navbar-dark .navbar-text a, nav > div:first-child .navbar-text a {
+  .navbar-dark .navbar-text a, app > nav > div:first-child .navbar-text a {
     color: #fff; }
-    .navbar-dark .navbar-text a:hover, nav > div:first-child .navbar-text a:hover, .navbar-dark .navbar-text a:focus, nav > div:first-child .navbar-text a:focus {
+    .navbar-dark .navbar-text a:hover, app > nav > div:first-child .navbar-text a:hover, .navbar-dark .navbar-text a:focus, app > nav > div:first-child .navbar-text a:focus {
       color: #fff; }
 
 .card {
@@ -5256,7 +5256,7 @@ button.bg-dark:focus {
 .flex-row {
   flex-direction: row !important; }
 
-.flex-column, nav > div > ul {
+.flex-column, app > nav > div > ul {
   flex-direction: column !important; }
 
 .flex-row-reverse {
@@ -5985,7 +5985,7 @@ button.bg-dark:focus {
 
 .pr-3,
 .px-3,
-nav > div > ul > li {
+app > nav > div > ul > li {
   padding-right: 1rem !important; }
 
 .pb-3,
@@ -5994,7 +5994,7 @@ nav > div > ul > li {
 
 .pl-3,
 .px-3,
-nav > div > ul > li {
+app > nav > div > ul > li {
   padding-left: 1rem !important; }
 
 .p-4 {
@@ -6012,7 +6012,7 @@ nav > div > ul > li {
 .py-4 {
   padding-bottom: 1.5rem !important; }
 
-.pl-4, nav > div:first-child,
+.pl-4, app > nav > div:first-child,
 .px-4 {
   padding-left: 1.5rem !important; }
 
@@ -7380,7 +7380,7 @@ a.text-dark:hover, a.text-dark:focus {
     min-width: 992px !important; }
   .container {
     min-width: 992px !important; }
-  .navbar, nav > div:first-child {
+  .navbar, app > nav > div:first-child {
     display: none; }
   .badge {
     border: 1px solid #000; }
@@ -7423,7 +7423,7 @@ a, .btn-link {
   background-color: #1b6ec2;
   border-color: #1861ac; }
 
-.top-row, nav > div:first-child {
+.top-row, app > nav > div:first-child {
   height: 3.5rem;
   display: flex;
   align-items: center; }
@@ -7545,46 +7545,46 @@ mark {
   100% {
     transform: rotate(360deg); } }
 
-nav {
+app > nav {
   background-image: linear-gradient(180deg, #052767 0%, #3a0647 70%); }
 
-nav > div:first-child {
+app > nav > div:first-child {
   background-color: rgba(0, 0, 0, 0.4); }
 
 @media (min-width: 768px) {
-  nav {
+  app > nav {
     width: 250px;
     height: 100vh;
     position: sticky;
     top: 0; }
-  nav > div:first-child > button {
+  app > nav > div:first-child > button {
     display: none; }
-  nav > .collapse {
+  app > nav > .collapse {
     display: block !important; } }
 
-nav .oi {
+app > nav .oi {
   width: 2rem;
   font-size: 1.1rem;
   vertical-align: text-top;
   top: -2px; }
 
-nav > div:first-child > a {
+app > nav > div:first-child > a {
   font-size: 1.1rem; }
 
-nav > div:first-child > button {
+app > nav > div:first-child > button {
   background-color: rgba(255, 255, 255, 0.1); }
 
-nav > div > ul > li {
+app > nav > div > ul > li {
   font-size: 0.9rem;
   padding-bottom: 0.5rem; }
 
-nav > div > ul > li:first-of-type {
+app > nav > div > ul > li:first-of-type {
   padding-top: 1rem; }
 
-nav > div > ul > li:last-of-type {
+app > nav > div > ul > li:last-of-type {
   padding-bottom: 1rem; }
 
-nav > div > ul > li > a {
+app > nav > div > ul > li > a {
   color: #d7d7d7;
   border-radius: 4px;
   height: 3rem;
@@ -7592,11 +7592,11 @@ nav > div > ul > li > a {
   align-items: center;
   line-height: 3rem; }
 
-nav > div > ul > li > a.active {
+app > nav > div > ul > li > a.active {
   background-color: rgba(255, 255, 255, 0.25);
   color: white; }
 
-nav > div > ul > li > a.hover {
+app > nav > div > ul > li > a.hover {
   background-color: rgba(255, 255, 255, 0.1);
   color: white; }
 
@@ -7620,7 +7620,7 @@ a, .btn-link {
   background-color: #1b6ec2;
   border-color: #1861ac; }
 
-.top-row, nav > div:first-child {
+.top-row, app > nav > div:first-child {
   height: 3.5rem;
   display: flex;
   align-items: center; }
@@ -7745,30 +7745,29 @@ mark {
 .main {
   flex: 1; }
 
-.main .top-row, .main nav > div:first-child {
+.main .top-row, .main app > nav > div:first-child {
   background-color: #f7f7f7;
   border-bottom: 1px solid #d6d5d5;
   justify-content: flex-end; }
 
-.main .top-row > a, .main nav > div:first-child > a, .main .top-row .btn-link, .main nav > div:first-child .btn-link {
+.main .top-row > a, .main app > nav > div:first-child > a, .main .top-row .btn-link, .main app > nav > div:first-child .btn-link {
   white-space: nowrap;
   margin-left: 1.5rem; }
 
-.main .top-row a:first-child, .main nav > div:first-child a:first-child {
+.main .top-row a:first-child, .main app > nav > div:first-child a:first-child {
   overflow: hidden;
   text-overflow: ellipsis; }
 
 @media (max-width: 767.98px px) {
-  .main .top-row:not(.auth), .main nav > div:not(.auth):first-child {
+  .main .top-row:not(.auth), .main app > nav > div:not(.auth):first-child {
     display: none; }
-  .main .top-row.auth, .main nav > div.auth:first-child {
+  .main .top-row.auth, .main app > nav > div.auth:first-child {
     justify-content: space-between; }
-  .main .top-row a, .main nav > div:first-child a, .main .top-row .btn-link, .main nav > div:first-child .btn-link {
+  .main .top-row a, .main app > nav > div:first-child a, .main .top-row .btn-link, .main app > nav > div:first-child .btn-link {
     margin-left: 0; } }
 
 @media (min-width: 768px) {
-  .main .top-row, .main nav > div:first-child {
-    position: sticky;
+  .main .top-row, .main app > nav > div:first-child {
     top: 0; }
   .main > div {
     padding-left: 2rem !important;
@@ -8160,7 +8159,7 @@ a, .btn-link {
   background-color: #1b6ec2;
   border-color: #1861ac; }
 
-.top-row, nav > div:first-child {
+.top-row, app > nav > div:first-child {
   height: 3.5rem;
   display: flex;
   align-items: center; }
@@ -8352,7 +8351,7 @@ a, .btn-link {
   background-color: #1b6ec2;
   border-color: #1861ac; }
 
-.top-row, nav > div:first-child {
+.top-row, app > nav > div:first-child {
   height: 3.5rem;
   display: flex;
   align-items: center; }

@@ -185,6 +185,9 @@ public static class MapsterConfigurator
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.StatAttributeDefinition, MUnique.OpenMU.DataModel.Configuration.StatAttributeDefinition>()
             .Include<StatAttributeDefinition, BasicModel.StatAttributeDefinition>();
 
+        Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.SystemConfiguration, MUnique.OpenMU.DataModel.Configuration.SystemConfiguration>()
+            .Include<SystemConfiguration, BasicModel.SystemConfiguration>();
+
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.WarpInfo, MUnique.OpenMU.DataModel.Configuration.WarpInfo>()
             .Include<WarpInfo, BasicModel.WarpInfo>();
 

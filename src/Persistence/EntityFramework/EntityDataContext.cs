@@ -47,6 +47,7 @@ public class EntityDataContext : ExtendedTypeContext
         modelBuilder.Entity<GameServerDefinition>();
         modelBuilder.Entity<ConfigurationUpdate>();
         modelBuilder.Entity<ConfigurationUpdateState>();
+        modelBuilder.Entity<SystemConfiguration>();
 
         modelBuilder.Entity<PowerUpDefinitionValue>().Apply();
         modelBuilder.Entity<Model.ConstValueAttribute>().Apply();

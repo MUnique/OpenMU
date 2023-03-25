@@ -1,0 +1,42 @@
+﻿@page "/edit-config-grid/{typeString}"
+@using MUnique.OpenMU.Persistence;
+@using Microsoft.AspNetCore.Components.QuickGrid;
+
+@if (this.Type is not null)
+{
+    <h1>@CaptionHelper.GetPluralizedTypeCaption(this.Type)</h1>
+}
+
+@if (this.ViewModels is null)
+{
+    <span class="spinner-border" role="status" aria-hidden="true"></span>
+    <span class="sr-only">Loading...</span>
+    return;
+}
+
+<div>
+    <QuickGrid Items="@this.ViewModels" Pagination="@_pagination" Theme="none" >
+        <PropertyColumn Property="@(c => c.Name)" Sortable="true">
+            <HeaderTemplate>
+                <button class="col-title" onclick="@(() => context.Grid.SortByColumnAsync(context))">
+                    <div class="col-title-text">@context.Title</div>
+                    <div class="sort-indicator" aria-hidden="true"></div>
+                </button>
+                <div class="col-search ml-5">
+                    <input class="small" type="search" autofocus @bind="@NameFilter" @bind:event="oninput" placeholder="Search ..."/>
+                </div>
+            </HeaderTemplate>
+        </PropertyColumn>
+
+        <TemplateColumn Align="Align.Center">
+            @{
+                var targetUrl = $"edit-config/{this.TypeString}/" + context.Id;
+            }
+            <button type="button" class="btn-info" @onclick="@(() => this.NavigationManager.NavigateTo(targetUrl))">Edit</button>
+        </TemplateColumn>
+        <TemplateColumn>
+            <button type="button" class="btn-danger" @onclick="@(() => OnRemoveClickAsync(context))">Remove</button>
+        </TemplateColumn>
+    </QuickGrid>
+</div>
+<Paginator Value="@_pagination" />

@@ -42,7 +42,7 @@ internal class Program
         var loggerFactory = new LoggerFactory().AddSerilog(logger);
         _logger = loggerFactory.CreateLogger<Program>();
 
-        var addressResolver = IpAddressResolverFactory.DetermineIpResolver(args, loggerFactory);
+        var addressResolver = IpAddressResolverFactory.CreateIpResolver(args, null, loggerFactory);
         var settings = new Settings("ChatServer.cfg");
         var serviceContainer = new ServiceContainer();
         serviceContainer.AddService(typeof(ILoggerFactory), loggerFactory);

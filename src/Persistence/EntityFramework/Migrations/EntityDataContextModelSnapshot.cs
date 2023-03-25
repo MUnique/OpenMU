@@ -3115,6 +3115,32 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.ToTable("StatAttributeDefinition", "config");
                 });
 
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.SystemConfiguration", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("AutoStart")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("AutoUpdateSchema")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("IpResolver")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("IpResolverParameter")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("ReadConsoleInput")
+                        .HasColumnType("boolean");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SystemConfiguration", "config");
+                });
+
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.WarpInfo", b =>
                 {
                     b.Property<Guid>("Id")
@@ -4403,7 +4429,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 {
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.CharacterQuestState", null)
                         .WithMany("RawRequirementStates")
-                        .HasForeignKey("CharacterQuestStateId");
+                        .HasForeignKey("CharacterQuestStateId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.QuestMonsterKillRequirement", "RawRequirement")
                         .WithMany()
