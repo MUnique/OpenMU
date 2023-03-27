@@ -94,7 +94,7 @@ app > nav > div > ul > li > a.active {
 app > nav > div > ul > li > a.hover {
     background-color: rgba(255,255,255,0.1);
     color: white;
-}
+} 
 
 app > nav > div > ul > li.dropdown > a {
     @extend .dropdown-toggle;

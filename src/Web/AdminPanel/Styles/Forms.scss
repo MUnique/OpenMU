@@ -55,11 +55,11 @@ form > div > div > input {
 }
 
 details > summary {
-    list-style-type: 'ℹ';
+    list-style-type: '🛈';
 }
 
 details[open] > summary {
-    list-style-type: 'x';
+    list-style-type: '✖';
 }
 
 label > details {
@@ -71,17 +71,15 @@ label > details {
 
 label > details[open] {
     z-index: 1;
-    
 }
 
 label > details > div {
     @extend .alert;
     @extend .alert-secondary;
-    /*@extend .rounded;
-    @extend .border;
-    @extend .border-primary;*/
     @extend .shadow;
     @extend .mr-3;
-    /*    
-    @extend .p-3;*/
+}
+
+.blazored-typeahead:valid {
+    padding: 0px 0px 0px 0px !important;
 }

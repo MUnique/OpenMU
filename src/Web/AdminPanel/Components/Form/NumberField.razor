@@ -4,7 +4,7 @@
 
 <div>
     <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
-    <InputNumber id="@this.FieldIdentifier.FieldName" @bind-Value="@CurrentValue" />
+    <InputNumber id="@this.FieldIdentifier.FieldName" @bind-Value="@CurrentValue" min="@Min" max="@Max"/>
     <ValidationMessage For=@this.ValueExpression />
 </div>
 
@@ -15,6 +15,18 @@
     /// </summary>
     [Parameter]
     public string? Label { get; set; }
+
+    /// <summary>
+    /// Gets or sets the minimum value.
+    /// </summary>
+    [Parameter]
+    public TNumber? Min { get; set; }
+
+    /// <summary>
+    /// Gets or sets the maximum value.
+    /// </summary>
+    [Parameter]
+    public TNumber? Max { get; set; }
 
     /// <inheritdoc />
     protected override bool TryParseValueFromString(string? value, [MaybeNullWhen(false)] out TNumber result, [NotNullWhen(false)] out string? validationErrorMessage)

@@ -2,19 +2,18 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.DataModel.Entities;
-
 namespace MUnique.OpenMU.Web.AdminPanel.Pages;
 
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
+using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Web.AdminPanel.Components.Form;
+using MUnique.OpenMU.Web.AdminPanel.Components.ItemEdit;
 
 /// <summary>
 /// The edit page for account data.
 /// </summary>
-/// <seealso cref="MUnique.OpenMU.Web.AdminPanel.Pages.EditBase" />
 [Route("/edit-account/{accountId:guid}/{typeString}/{id:guid}")]
 public partial class EditAccount : EditBase
 {
@@ -36,17 +35,26 @@ public partial class EditAccount : EditBase
     /// <inheritdoc />
     protected override async ValueTask LoadOwnerAsync()
     {
-        await this.AccountData.GetOwnerAsync(this.AccountId);
+        await this.AccountData.GetOwnerAsync(this.AccountId).ConfigureAwait(true);
     }
 
     /// <inheritdoc />
     protected override void AddFormToRenderTree(RenderTreeBuilder builder, ref int currentSequence)
     {
-        // TODO: Instead of AutoForm, create more specialized components
-        builder.OpenComponent(++currentSequence, typeof(AutoForm<>).MakeGenericType(this.Type!));
-        builder.AddAttribute(++currentSequence, nameof(AutoForm<object>.Model), this.Model);
-        builder.AddAttribute(++currentSequence, nameof(AutoForm<object>.OnValidSubmit), EventCallback.Factory.Create(this, this.SaveChangesAsync));
-        builder.CloseComponent();
+        if (this.Type == typeof(Item))
+        {
+            builder.OpenComponent(++currentSequence, typeof(ItemEdit));
+            builder.AddAttribute(++currentSequence, nameof(ItemEdit.Item), this.Model);
+            builder.AddAttribute(++currentSequence, nameof(ItemEdit.OnValidSubmit), EventCallback.Factory.Create(this, this.SaveChangesAsync));
+            builder.CloseComponent();
+        }
+        else
+        {
+            // TODO: Instead of AutoForm, create more specialized components
+            builder.OpenComponent(++currentSequence, typeof(AutoForm<>).MakeGenericType(this.Type!));
+            builder.AddAttribute(++currentSequence, nameof(AutoForm<object>.Model), this.Model);
+            builder.AddAttribute(++currentSequence, nameof(AutoForm<object>.OnValidSubmit), EventCallback.Factory.Create(this, this.SaveChangesAsync));
+            builder.CloseComponent();
+        }
     }
 }
-
