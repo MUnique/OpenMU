@@ -9,10 +9,10 @@ using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 /// <summary>
 /// A chat message processor which handles chat commands.
 /// </summary>
-public class ChatCommandProcessorMessage : IChatProcessorMessage
+public class ChatMessageCommandProcessor : IChatMessageProcessor
 {
     /// <inheritdoc />
-    public async ValueTask ConsumeAsync(Player sender, (string Message, string PlayerName) content)
+    public async ValueTask ProcessMessageAsync(Player sender, (string Message, string PlayerName) content)
     {
         var commandKey = content.Message.Split(' ').First();
         var commandHandler = sender.GameContext.PlugInManager.GetStrategy<IChatCommandPlugIn>(commandKey);

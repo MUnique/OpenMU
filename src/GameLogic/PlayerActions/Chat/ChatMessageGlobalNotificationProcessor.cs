@@ -10,10 +10,10 @@ using MUnique.OpenMU.GameLogic.PlugIns;
 /// <summary>
 /// A chat message processor which sends a global notification.
 /// </summary>
-public class ChatGlobalNotificationProcessorMessage : IChatProcessorMessage
+public class ChatMessageGlobalNotificationProcessor : IChatMessageProcessor
 {
     /// <inheritdoc />
-    public async ValueTask ConsumeAsync(Player sender, (string Message, string PlayerName) content)
+    public async ValueTask ProcessMessageAsync(Player sender, (string Message, string PlayerName) content)
     {
         var eventArgs = new CancelEventArgs();
         sender.GameContext.PlugInManager.GetPlugInPoint<IChatMessageReceivedPlugIn>()

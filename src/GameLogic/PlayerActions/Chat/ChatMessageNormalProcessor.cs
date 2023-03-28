@@ -7,12 +7,12 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Chat;
 using MUnique.OpenMU.GameLogic.Views;
 
 /// <summary>
-/// A chat processor message for normal chat.
+/// A chat message processor for normal chat.
 /// </summary>
-public class ChatNormalProcessorMessage : IChatProcessorMessage
+public class ChatMessageNormalProcessor : IChatMessageProcessor
 {
     /// <inheritdoc />
-    public async ValueTask ConsumeAsync(Player sender, (string Message, string PlayerName) content)
+    public async ValueTask ProcessMessageAsync(Player sender, (string Message, string PlayerName) content)
     {
         sender.Logger.LogDebug("Sending Chat Message to Observers, Count: {0}", sender.Observers.Count);
         await sender.ForEachWorldObserverAsync<IChatViewPlugIn>(p => p.ChatMessageAsync(content.Message, sender.SelectedCharacter!.Name, ChatMessageType.Normal), true).ConfigureAwait(false);

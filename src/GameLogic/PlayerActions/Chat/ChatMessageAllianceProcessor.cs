@@ -1,4 +1,4 @@
-﻿// <copyright file="ChatGuildProcessorMessage.cs" company="MUnique">
+﻿// <copyright file="ChatAllianceProcessorMessage.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -8,12 +8,12 @@ using System.ComponentModel;
 using MUnique.OpenMU.GameLogic.PlugIns;
 
 /// <summary>
-/// A chat message processor which sends the message to the guild.
+/// A chat message processor for alliance chat.
 /// </summary>
-public class ChatGuildProcessorMessage : IChatProcessorMessage
+public class ChatMessageAllianceProcessor : IChatMessageProcessor
 {
     /// <inheritdoc />
-    public async ValueTask ConsumeAsync(Player sender, (string Message, string PlayerName) content)
+    public async ValueTask ProcessMessageAsync(Player sender, (string Message, string PlayerName) content)
     {
         var eventArgs = new CancelEventArgs();
         sender.GameContext.PlugInManager.GetPlugInPoint<IChatMessageReceivedPlugIn>()?.ChatMessageReceived(sender, content.Message, eventArgs);
@@ -27,6 +27,7 @@ public class ChatGuildProcessorMessage : IChatProcessorMessage
             return;
         }
 
-        await publisher.GuildMessageAsync(sender.GuildStatus.GuildId, sender.SelectedCharacter!.Name, content.Message).ConfigureAwait(false);
+        // TODO: Use DI to get the IEventPublisher
+        await publisher.AllianceMessageAsync(sender.GuildStatus.GuildId, sender.SelectedCharacter!.Name, content.Message).ConfigureAwait(false);
     }
 }
