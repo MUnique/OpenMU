@@ -16,8 +16,9 @@ panel, too.
 
 ## Parameters
 
-**Please note, that the most of these parameters (except ```-demo``` and ```-adminpanel```) are not necessary anymore, because
-these settings/actions can be done more conveniently over the admin panel, too.**
+**Please note, that the most of these parameters (except ```-demo``` and ```-adminpanel```)
+are not necessary anymore, because these settings/actions can be done more conveniently
+over the admin panel, too.**
 
 You can start the server with the following parameters:
 

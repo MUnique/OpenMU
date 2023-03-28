@@ -99,16 +99,21 @@ If you have that, you'll need to do:
 * Then you can connect to the server through the game client.
 
 ## Helpful (optional) steps
-* __Auto Start__: If you don't want to start each server listener after starting the
-  process, you can either activate "Auto Start"
+
+* __Auto Start__: If you don't want to start each server listener after starting
+  the process, you can either activate "Auto Start"
+
   * in the admin panel at ```Configuration -> System```,
+
   * or with the start parameter ```-autostart```.
+
 * __IP Resolving__: If you encounter disconnects after selecting a server, it's most
   likely a wrong setting for the IP resolver. You can change it easily over the
   admin panel at ```Configuration -> System``` as well.
   You may also change the setting by providing start parameters or environment
   parameters, however I just recommend this for experienced users. Look at this
   [Readme](src/Startup/Readme.md) for more information.
+
 * __Changing the game version__: If you want to player another version than
   season 6, you may initialize the database with another game version.
   You can do this over the admin panel as well, at the ```Setup``` page.

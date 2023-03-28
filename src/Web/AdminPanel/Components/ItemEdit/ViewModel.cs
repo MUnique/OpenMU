@@ -180,6 +180,10 @@ public class ViewModel : INotifyPropertyChanged
                 optionLink.ItemOption = luckOption;
                 this.Item.ItemOptions.Add(optionLink);
             }
+            else
+            {
+                // can't add luck when it's not possible.
+            }
 
             this.OnPropertyChanged();
         }
@@ -673,7 +677,8 @@ public class ViewModel : INotifyPropertyChanged
             this.Level = 0;
         }
 
-        this.Durability = this.Durability;
+        // Reassigning the durability will limit it to the maximum value.
+        this.Durability = this.Item.Durability;
 
         var possibleOptions = this.Definition.PossibleItemOptions.SelectMany(pio => pio.PossibleOptions).ToHashSet();
         var impossibleOptions = this.ItemOptions.Where(iol => iol.ItemOption is null || possibleOptions.Contains(iol.ItemOption)).ToList();

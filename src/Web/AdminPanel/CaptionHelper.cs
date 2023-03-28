@@ -50,7 +50,7 @@ public static class CaptionHelper
     public static string GetPluralizedTypeCaption(Type type)
     {
         var result = GetTypeCaption(type);
-        return result.Replace(" Definition", "s");
+        return result.Replace(" Definition", "s", StringComparison.InvariantCulture);
     }
 
     /// <summary>
