@@ -16,7 +16,7 @@ public partial class ItemEdit
 {
     private ViewModel? _viewModel;
 
-    private Func<IncreasableItemOption, string> CaptionFactory => obj => $"{obj.PowerUpDefinition?.TargetAttribute} ({obj.Number})";
+    private Func<IncreasableItemOption, string> CaptionFactory => obj => $"{(obj.PowerUpDefinition ?? obj.LevelDependentOptions.FirstOrDefault()?.PowerUpDefinition)?.TargetAttribute} ({obj.Number})";
 
     /// <summary>
     /// Gets or sets the item.

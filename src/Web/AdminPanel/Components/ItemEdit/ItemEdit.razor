@@ -112,14 +112,47 @@
         }
     }
     
+    @if (this._viewModel.PossibleHarmonyOptions.Any())
+    {
+        <LookupField
+            TObject="IncreasableItemOption"
+            @bind-Value="@this._viewModel.HarmonyOption"
+            CaptionFactory="@this.CaptionFactory"
+            ExplicitLookupController="@(new EnumerableLookupController(this._viewModel.PossibleHarmonyOptions))" />
+        @if (this._viewModel.HarmonyOptionLink is { } optionLink
+             && optionLink.ItemOption?.LevelDependentOptions.Count > 1
+             && optionLink.ItemOption?.LevelDependentOptions.Max(o => o.Level) is { } maxLevel and > 1
+             && optionLink.ItemOption?.LevelDependentOptions.Min(o => o.Level) is { } minLevel and >= 0)
+        {
+            <select class="mb-3" @bind="@optionLink.Level">
+                @for (int level = minLevel; level < maxLevel + 1; level++)
+                {
+                    @if ((optionLink.ItemOption.LevelDependentOptions.FirstOrDefault(ldo => ldo.Level == level)?.PowerUpDefinition
+                          ?? optionLink.ItemOption.PowerUpDefinition) is { } powerUp
+                         && $"+{powerUp.Boost?.ConstantValue.Value} {powerUp.TargetAttribute} (Level {level})" is { } caption)
+                    {
+                        @if (level == optionLink.Level)
+                        {
+                            <option value="@level" selected>@caption</option>
+                        }
+                        else
+                        {
+                            <option value="@level">@caption</option>
+                        }
+                    }
+                }
+            </select>
+        }
+    }
+    
     @if (this._viewModel.Definition?.MaximumSockets > 0)
     {
         <NumberField
             Min="1"
             Max="@this._viewModel.Definition.MaximumSockets"
             @bind-Value="@this._viewModel.SocketCount" />
-        <ul class="list-group">
-        @foreach(var socket in _viewModel.Sockets.Where(s => s.SocketNumber <= this._viewModel.Definition.MaximumSockets))
+        <ul class="list-group mb-3">
+        @foreach(var socket in _viewModel.Sockets.Where(s => s.SocketNumber <= this._viewModel.SocketCount))
         {
             <li class="list-group-item">
             <LookupField
@@ -135,6 +168,27 @@
             </li>
         }
         </ul>
+    }
+    
+    @if (this._viewModel.PossibleSocketBonusOptions.Any())
+    {
+        <LookupField
+            TObject="IncreasableItemOption"
+            @bind-Value="@this._viewModel.SocketBonusOption"
+            CaptionFactory="@this.CaptionFactory"
+            ExplicitLookupController="@(new EnumerableLookupController(this._viewModel.PossibleSocketBonusOptions))" />
+    }
+    
+    @if (this._viewModel.PossibleFenrirOptions.Any())
+    {
+        <LookupField
+            @bind-Value="@this._viewModel.FenrirOption"
+            ExplicitLookupController="@(new EnumerableLookupController(ViewModel.FenrirOptions))" />
+    }
+    
+    @if (this._viewModel.PossibleGuardianOption is { })
+    {
+        <BooleanField Label="Has Guardian Option (Level 380 PvP)" @bind-Value="@this._viewModel.HasGuardianOption" />
     }
 
     <ValidationSummary />
