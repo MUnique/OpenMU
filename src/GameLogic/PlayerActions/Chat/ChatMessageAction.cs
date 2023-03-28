@@ -12,7 +12,7 @@ using MUnique.OpenMU.GameLogic.Views;
 public class ChatMessageAction
 {
     private readonly IDictionary<string, ChatMessageType> _messagePrefixes;
-    private readonly IDictionary<ChatMessageType, IChatProcessorMessage> _chatProcessMessages;
+    private readonly IDictionary<ChatMessageType, IChatMessageProcessor> _chatProcessMessages;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ChatMessageAction"/> class.
@@ -29,15 +29,15 @@ public class ChatMessageAction
             { "/", ChatMessageType.Command },
         };
 
-        this._chatProcessMessages = new Dictionary<ChatMessageType, IChatProcessorMessage>
+        this._chatProcessMessages = new Dictionary<ChatMessageType, IChatMessageProcessor>
         {
-            { ChatMessageType.Command, new ChatCommandProcessorMessage() },
-            { ChatMessageType.Whisper, new ChatWhisperProcessorMessage() },
-            { ChatMessageType.Party, new ChatPartyProcessorMessage() },
-            { ChatMessageType.Alliance, new ChatAllianceProcessorMessage() },
-            { ChatMessageType.Guild, new ChatGuildProcessorMessage() },
-            { ChatMessageType.GlobalNotification, new ChatGlobalNotificationProcessorMessage() },
-            { ChatMessageType.Normal, new ChatNormalProcessorMessage() },
+            { ChatMessageType.Command, new ChatMessageCommandProcessor() },
+            { ChatMessageType.Whisper, new ChatMessageWhisperProcessor() },
+            { ChatMessageType.Party, new ChatMessagePartyProcessor() },
+            { ChatMessageType.Alliance, new ChatMessageAllianceProcessor() },
+            { ChatMessageType.Guild, new ChatMessageGuildProcessor() },
+            { ChatMessageType.GlobalNotification, new ChatMessageGlobalNotificationProcessor() },
+            { ChatMessageType.Normal, new ChatMessageNormalProcessor() },
         };
     }
 
@@ -70,7 +70,7 @@ public class ChatMessageAction
             return;
         }
 
-        await this._chatProcessMessages[messageType].ConsumeAsync(sender, (message, playerName)).ConfigureAwait(true);
+        await this._chatProcessMessages[messageType].ProcessMessageAsync(sender, (message, playerName)).ConfigureAwait(true);
     }
 
     private ChatMessageType GetMessageType(string message, bool whisper)
