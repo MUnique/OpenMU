@@ -15,7 +15,7 @@ using MUnique.OpenMU.Pathfinding;
 /// </summary>
 public class AreaSkillAttackAction
 {
-    private const int DefaultTarget = 0xFFFF;
+    private const int UndefinedTarget = 0xFFFF;
 
     /// <summary>
     /// Performs the skill by the player at the specified area. Additionally to the target area, a target object can be specified.
@@ -66,7 +66,7 @@ public class AreaSkillAttackAction
             return;
         }
 
-        bool isExtraTargetDefined = extraTargetId != DefaultTarget;
+        bool isExtraTargetDefined = extraTargetId != UndefinedTarget;
         var extraTarget = isExtraTargetDefined ? player.GetObject(extraTargetId) as IAttackable : null;
 
         var attackablesInRange =
