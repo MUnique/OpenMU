@@ -35,7 +35,7 @@ public class QuestCompletionAction
 
         foreach (var requiredItem in activeQuest.RequiredItems)
         {
-            if (!(requiredItem.MinimumNumber > player.Inventory?.Items.Count(i => i.Definition == requiredItem.Item)))
+            if (requiredItem.MinimumNumber <= player.Inventory?.Items.Count(i => i.Definition == requiredItem.Item))
             {
                 continue;
             }
