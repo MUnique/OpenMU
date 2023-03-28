@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Chat;
 /// <summary>
 /// Interface for a chat message processor.
 /// </summary>
-public interface IChatProcessorMessage
+public interface IChatMessageProcessor
 {
     /// <summary>
     /// Sends a chat message from the player to other players.
@@ -15,5 +15,5 @@ public interface IChatProcessorMessage
     /// <param name="sender" cref="Player"></param>
     /// <param name="content"></param>
     /// <returns></returns>
-    ValueTask ConsumeAsync(Player sender, (string Message, string PlayerName) content);
+    ValueTask ProcessMessageAsync(Player sender, (string Message, string PlayerName) content);
 }
