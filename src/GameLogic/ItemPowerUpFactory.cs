@@ -189,19 +189,16 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
         foreach (var optionLink in options)
         {
             var option = optionLink.ItemOption ?? throw Error.NotInitializedProperty(optionLink, nameof(optionLink.ItemOption));
-            var powerUp = option.PowerUpDefinition ?? throw Error.NotInitializedProperty(option, nameof(option.PowerUpDefinition));
             var level = option.LevelType == LevelType.ItemLevel ? item.Level : optionLink.Level;
-            if (level > 0)
-            {
-                var optionOfLevel = option.LevelDependentOptions?.FirstOrDefault(l => l.Level == level);
-                if (optionOfLevel is null && level > 1)
-                {
-                    this._logger.LogWarning($"Item has {nameof(IncreasableItemOption)} with level > 1, but no definition in {nameof(IncreasableItemOption.LevelDependentOptions)}");
-                    continue;
-                }
 
-                powerUp = optionOfLevel?.PowerUpDefinition ?? powerUp;
+            var optionOfLevel = option.LevelDependentOptions?.FirstOrDefault(l => l.Level == level);
+            if (optionOfLevel is null && level > 1)
+            {
+                this._logger.LogWarning($"Item has {nameof(IncreasableItemOption)} with level > 1, but no definition in {nameof(IncreasableItemOption.LevelDependentOptions)}");
+                continue;
             }
+
+            var powerUp = optionOfLevel?.PowerUpDefinition ?? option.PowerUpDefinition;
 
             if (powerUp?.Boost is null)
             {

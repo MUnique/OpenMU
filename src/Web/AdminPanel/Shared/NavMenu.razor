@@ -47,22 +47,8 @@
                 </li>
                 @if (this.GameConfigurationId is { } gameConfigurationId )
                 {
-                    <li>
-                        <NavLink href="@("edit-config/" + typeof(GameConfiguration).FullName + "/" + this.GameConfigurationId)">
-                            <span class="oi oi-cog" aria-hidden="true"></span> Game Configuration
-                        </NavLink>
-                    </li>
-                    <li>
-                        <NavLink href="map-editor">
-                            <span class="oi oi-globe" aria-hidden="true"></span> Map Editor
-                        </NavLink>
-                    </li>
+                    <ConfigNavMenu GameConfigurationId="@gameConfigurationId" />
                 }
-                <li>
-                    <NavLink href="plugins">
-                        <span class="oi oi-puzzle-piece" aria-hidden="true"></span> Plugins
-                    </NavLink>
-                </li>
                 <li>
                     <NavLink href="setup">
                         <span class="oi oi-cog" aria-hidden="true"></span> Setup

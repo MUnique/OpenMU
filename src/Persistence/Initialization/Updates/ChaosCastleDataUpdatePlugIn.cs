@@ -31,15 +31,18 @@ public class ChaosCastleDataUpdatePlugIn : UpdatePlugInBase
 
     /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
-    
+
     /// <inheritdoc />
     public override string Name => PlugInName;
-    
+
     /// <inheritdoc />
     public override string Description => PlugInDescription;
 
     /// <inheritdoc />
     public override bool IsMandatory => true;
+
+    /// <inheritdoc />
+    public override DateTime CreatedAt => new(2023, 03, 05, 20, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
 #pragma warning disable CS1998
@@ -62,7 +65,4 @@ public class ChaosCastleDataUpdatePlugIn : UpdatePlugInBase
             chaosCastleMap.UpdateTerrainFromResources();
         }
     }
-
-    /// <inheritdoc />
-    public override DateTime CreatedAt => new(2023, 03, 05, 20, 0, 0, DateTimeKind.Utc);
 }

@@ -21,6 +21,18 @@ public class InputByte : InputBase<byte>
     [Parameter]
     public string ParsingErrorMessage { get; set; } = "The {0} field must be a number between 0 and 255.";
 
+    /// <summary>
+    /// Gets or sets the minimum value.
+    /// </summary>
+    [Parameter]
+    public byte Min { get; set; } = byte.MinValue;
+
+    /// <summary>
+    /// Gets or sets the maximum value.
+    /// </summary>
+    [Parameter]
+    public byte Max { get; set; } = byte.MaxValue;
+
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
@@ -31,8 +43,8 @@ public class InputByte : InputBase<byte>
         builder.AddAttribute(4, "class", this.CssClass);
         builder.AddAttribute(5, "value", BindConverter.FormatValue(this.CurrentValueAsString));
         builder.AddAttribute(6, "onchange", EventCallback.Factory.CreateBinder<string>(this, v => this.CurrentValueAsString = v, this.CurrentValueAsString!));
-        builder.AddAttribute(7, "min", "0");
-        builder.AddAttribute(8, "max", "255");
+        builder.AddAttribute(7, "min", this.Min);
+        builder.AddAttribute(8, "max", this.Max);
         builder.CloseElement();
     }
 

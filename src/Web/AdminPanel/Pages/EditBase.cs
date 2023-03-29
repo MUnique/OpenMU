@@ -121,7 +121,7 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
         this._disposeCts = null;
 
         await (this._loadTask ?? Task.CompletedTask).ConfigureAwait(false);
-        await this.EditDataSource.DiscardChangesAsync();
+        await this.EditDataSource.DiscardChangesAsync().ConfigureAwait(true);
 
         if (this._isOwningContext)
         {
@@ -137,8 +137,8 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
         this._model = null;
         this._disposeCts?.Cancel();
         this._disposeCts?.Dispose();
-        await (this._loadTask ?? Task.CompletedTask);
-        await base.SetParametersAsync(parameters);
+        await (this._loadTask ?? Task.CompletedTask).ConfigureAwait(true);
+        await base.SetParametersAsync(parameters).ConfigureAwait(true);
     }
 
     /// <inheritdoc />
@@ -150,7 +150,7 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
         this._type = null;
         this._loadTask = Task.Run(() => this.LoadDataAsync(cts.Token), cts.Token);
 
-        await base.OnParametersSetAsync();
+        await base.OnParametersSetAsync().ConfigureAwait(true);
     }
 
     /// <inheritdoc />
@@ -163,7 +163,7 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
 
         var downloadMarkup = this.GetDownloadMarkup();
         var editorsMarkup = this.GetEditorsMarkup();
-        builder.AddMarkupContent(0, $"<h1>Edit {CaptionHelper.SeparateWords(this.Type!.Name)}</h1>{downloadMarkup}{editorsMarkup}\r\n");
+        builder.AddMarkupContent(0, $"<h1>Edit {CaptionHelper.GetTypeCaption(this.Type!)}</h1>{downloadMarkup}{editorsMarkup}\r\n");
         builder.OpenComponent<CascadingValue<IContext>>(1);
         builder.AddAttribute(2, nameof(CascadingValue<IContext>.Value), this._persistenceContext);
         builder.AddAttribute(3, nameof(CascadingValue<IContext>.IsFixed), this._isOwningContext);
@@ -174,29 +174,6 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
         }));
 
         builder.CloseComponent();
-    }
-
-    private async ValueTask OnBeforeInternalNavigation(LocationChangingContext context)
-    {
-        if (this._persistenceContext?.HasChanges is true)
-        {
-            var isConfirmed = await JavaScript.InvokeAsync<bool>("window.confirm",
-                "There are unsaved changes. Are you sure you want to discard them?");
-
-            if (!isConfirmed)
-            {
-                context.PreventNavigation();
-            }
-            else if (this._isOwningContext)
-            {
-                this._persistenceContext.Dispose();
-                this._persistenceContext = null;
-            }
-            else
-            {
-                await this.EditDataSource.DiscardChangesAsync();
-            }
-        }
     }
 
     /// <inheritdoc />
@@ -280,7 +257,31 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
     /// </summary>
     protected virtual async ValueTask LoadOwnerAsync()
     {
-        await this.EditDataSource.GetOwnerAsync(Guid.Empty);
+        await this.EditDataSource.GetOwnerAsync(Guid.Empty).ConfigureAwait(true);
+    }
+
+    private async ValueTask OnBeforeInternalNavigation(LocationChangingContext context)
+    {
+        if (this._persistenceContext?.HasChanges is true)
+        {
+            var isConfirmed = await this.JavaScript.InvokeAsync<bool>("window.confirm",
+                    "There are unsaved changes. Are you sure you want to discard them?")
+                .ConfigureAwait(true);
+
+            if (!isConfirmed)
+            {
+                context.PreventNavigation();
+            }
+            else if (this._isOwningContext)
+            {
+                this._persistenceContext.Dispose();
+                this._persistenceContext = null;
+            }
+            else
+            {
+                await this.EditDataSource.DiscardChangesAsync().ConfigureAwait(true);
+            }
+        }
     }
 
     private string? GetDownloadMarkup()
@@ -308,19 +309,19 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
             throw new InvalidOperationException($"Only types of namespace {nameof(MUnique)} can be edited on this page.");
         }
 
-        await LoadOwnerAsync();
+        await this.LoadOwnerAsync().ConfigureAwait(true);
         cancellationToken.ThrowIfCancellationRequested();
         if (this.EditDataSource.IsSupporting(this.Type))
         {
             this._isOwningContext = false;
-            this._persistenceContext = await this.EditDataSource.GetContextAsync();
+            this._persistenceContext = await this.EditDataSource.GetContextAsync().ConfigureAwait(true);
         }
         else
         {
             this._isOwningContext = true;
             var gameConfiguration = await this.ConfigDataSource.GetOwnerAsync(Guid.Empty).ConfigureAwait(true);
             var createContextMethod = typeof(IPersistenceContextProvider).GetMethod(nameof(IPersistenceContextProvider.CreateNewTypedContext))!.MakeGenericMethod(this.Type);
-            this._persistenceContext = (IContext)createContextMethod.Invoke(this.PersistenceContextProvider, new object[] {true, gameConfiguration})!;
+            this._persistenceContext = (IContext)createContextMethod.Invoke(this.PersistenceContextProvider, new object[] { true, gameConfiguration})!;
         }
 
         try
@@ -331,11 +332,15 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
             {
                 if (this.EditDataSource.IsSupporting(this.Type))
                 {
-                    this._model = this.EditDataSource.Get(this.Id);
+                    this._model = this.Id == default
+                        ? this.EditDataSource.GetAll(this.Type).OfType<object>().FirstOrDefault()
+                        : this.EditDataSource.Get(this.Id);
                 }
                 else
                 {
-                    this._model = await this._persistenceContext.GetByIdAsync(this.Id, this.Type).ConfigureAwait(true);
+                    this._model = this.Id == default
+                        ? (await this._persistenceContext.GetAsync(this.Type).ConfigureAwait(true)).OfType<object>().FirstOrDefault()
+                        : await this._persistenceContext.GetByIdAsync(this.Id, this.Type).ConfigureAwait(true);
                 }
 
                 this._loadingState = this.Model is not null

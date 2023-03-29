@@ -40,6 +40,8 @@ using Serilog.Debugging;
 internal sealed class Program : IDisposable
 {
     private static bool _confirmExit;
+    private static SystemConfiguration? _systemConfiguration;
+
     private readonly IDictionary<int, IGameServer> _gameServers = new Dictionary<int, IGameServer>();
     private readonly IList<IManageableServer> _servers = new List<IManageableServer>();
     private readonly Serilog.ILogger _logger;
@@ -71,7 +73,6 @@ internal sealed class Program : IDisposable
     {
         using var exitCts = new CancellationTokenSource();
         var exitToken = exitCts.Token;
-        var isDaemonMode = args.Contains("-daemon");
 
         void OnCancelKeyPress(object? sender, ConsoleCancelEventArgs e)
         {
@@ -105,12 +106,10 @@ internal sealed class Program : IDisposable
         {
             await Task.Delay(100).ConfigureAwait(false);
 
-            if (isDaemonMode)
+            if (_systemConfiguration?.ReadConsoleInput is true)
             {
-                continue;
+                await HandleConsoleInputAsync(exitCts, exitToken).ConfigureAwait(false);
             }
-
-            await HandleConsoleInputAsync(exitCts, exitToken).ConfigureAwait(false);
         }
     }
 
@@ -123,7 +122,11 @@ internal sealed class Program : IDisposable
         this._logger.Information("Creating host...");
         this._serverHost = await this.CreateHostAsync(args).ConfigureAwait(false);
 
-        if (args.Contains("-autostart") || !this.IsAdminPanelEnabled(args))
+        var autoStart = _systemConfiguration?.AutoStart is true
+                        || args.Contains("-autostart")
+                        || !this.IsAdminPanelEnabled(args);
+
+        if (autoStart)
         {
             foreach (var chatServer in this._servers.OfType<ChatServer>())
             {
@@ -208,13 +211,14 @@ internal sealed class Program : IDisposable
 
         builder.Services.AddSingleton(this._servers)
             .AddSingleton<IConfigurationChangePublisher, ConfigurationChangeHandler>()
-            .AddIpResolver(args)
+            .AddSingleton(s => this.CreateIpResolver(s, args))
             .AddSingleton(this._gameServers)
             .AddSingleton(this._gameServers.Values)
             .AddSingleton(s =>
                 this.DeterminePersistenceContextProviderAsync(
                     args,
-                    s.GetService<ILoggerFactory>() ?? throw new Exception($"{nameof(ILoggerFactory)} not registered."))
+                    s.GetService<ILoggerFactory>() ?? throw new Exception($"{nameof(ILoggerFactory)} not registered."),
+                    s.GetService<IConfigurationChangePublisher>() ?? throw new Exception($"{nameof(IConfigurationChangePublisher)} not registered."))
                     .WaitAndUnwrapException())
             .AddSingleton<IPersistenceContextProvider>(s => s.GetService<IMigratableDatabaseContextProvider>()!)
             .AddSingleton<ILoginServer, LoginServer>()
@@ -251,20 +255,32 @@ internal sealed class Program : IDisposable
 
         await host.StartAsync().ConfigureAwait(false);
         stopwatch.Stop();
-        this._logger.Information("Host started, elapsed time: {elapsed}",stopwatch.Elapsed);
+        this._logger.Information("Host started, elapsed time: {elapsed}", stopwatch.Elapsed);
         this._logger.Information("Admin Panel bound to urls: {urls}", string.Join("; ", host.Urls));
         return host;
+    }
+
+    private IIpAddressResolver CreateIpResolver(IServiceProvider serviceProvider, string[] args)
+    {
+        (IpResolverType IpResolver, string? IpResolverParameter)? settings = default;
+        if (_systemConfiguration is not null)
+        {
+            settings = (_systemConfiguration.IpResolver, _systemConfiguration.IpResolverParameter);
+        }
+
+        return IpAddressResolverFactory.CreateIpResolver(args, settings, serviceProvider.GetService<ILoggerFactory>()!);
     }
 
     private ICollection<PlugInConfiguration> PlugInConfigurationsFactory(IServiceProvider serviceProvider)
     {
         var persistenceContextProvider = serviceProvider.GetService<IPersistenceContextProvider>() ?? throw new Exception($"{nameof(IPersistenceContextProvider)} not registered.");
         using var context = persistenceContextProvider.CreateNewTypedContext<PlugInConfiguration>(false);
+
         var configs = context.GetAsync<PlugInConfiguration>().AsTask().WaitAndUnwrapException().ToList();
 
         // We check if we miss any plugin configurations in the database. If we do, we try to add them.
         var pluginManager = new PlugInManager(null, serviceProvider.GetService<ILoggerFactory>()!, serviceProvider);
-        pluginManager.DiscoverAndRegisterPlugInsOf<ISupportDefaultCustomConfiguration>();
+        pluginManager.DiscoverAndRegisterPlugIns();
         var typesWithMissingConfigs = pluginManager.KnownPlugInTypes.Where(t => configs.All(c => c.TypeId != t.GUID)).ToList();
         if (!typesWithMissingConfigs.Any())
         {
@@ -349,7 +365,7 @@ internal sealed class Program : IDisposable
         return parameter.Substring(parameter.IndexOf(':') + 1);
     }
 
-    private async Task<IMigratableDatabaseContextProvider> DeterminePersistenceContextProviderAsync(string[] args, ILoggerFactory loggerFactory)
+    private async Task<IMigratableDatabaseContextProvider> DeterminePersistenceContextProviderAsync(string[] args, ILoggerFactory loggerFactory, IConfigurationChangePublisher changePublisher)
     {
         var version = this.GetVersionParameter(args);
 
@@ -361,15 +377,17 @@ internal sealed class Program : IDisposable
         }
         else
         {
-            contextProvider = await this.PrepareRepositoryProviderAsync(args.Contains("-reinit"), version, args.Contains("-autoupdate"), loggerFactory).ConfigureAwait(false);
+            contextProvider = await this.PrepareRepositoryProviderAsync(args.Contains("-reinit"), version, loggerFactory, changePublisher).ConfigureAwait(false);
         }
+
+        await this.ReadSystemConfigurationAsync(contextProvider).ConfigureAwait(false);
 
         return contextProvider;
     }
 
-    private async Task<IMigratableDatabaseContextProvider> PrepareRepositoryProviderAsync(bool reinit, string version, bool autoupdate, ILoggerFactory loggerFactory)
+    private async Task<IMigratableDatabaseContextProvider> PrepareRepositoryProviderAsync(bool reinit, string version, ILoggerFactory loggerFactory, IConfigurationChangePublisher changePublisher)
     {
-        var contextProvider = new PersistenceContextProvider(loggerFactory, null);
+        var contextProvider = new PersistenceContextProvider(loggerFactory, changePublisher);
         if (reinit || !await contextProvider.DatabaseExistsAsync().ConfigureAwait(false))
         {
             this._logger.Information("The database is getting (re-)initialized...");
@@ -379,24 +397,24 @@ internal sealed class Program : IDisposable
         }
         else if (!await contextProvider.IsDatabaseUpToDateAsync().ConfigureAwait(false))
         {
-            if (autoupdate)
+            if (_systemConfiguration?.AutoUpdateSchema is true)
             {
-                Console.WriteLine("The database needs to be updated before the server can be started. Updating...");
+                Console.WriteLine("The database schema needs to be updated before the server can be started. Updating...");
                 await contextProvider.ApplyAllPendingUpdatesAsync().ConfigureAwait(false);
-                Console.WriteLine("The database has been successfully updated.");
+                Console.WriteLine("The database schema has been successfully updated.");
             }
             else
             {
-                Console.WriteLine("The database needs to be updated before the server can be started. Apply update? (y/n)");
+                Console.WriteLine("The database schema needs to be updated before the server can be started. Apply update? (y/n)");
                 var key = Console.ReadLine()?.ToLowerInvariant();
                 if (key == "y")
                 {
                     await contextProvider.ApplyAllPendingUpdatesAsync().ConfigureAwait(false);
-                    Console.WriteLine("The database has been successfully updated.");
+                    Console.WriteLine("The database schema has been successfully updated.");
                 }
                 else
                 {
-                    Console.WriteLine("Cancelled the update process, can't start the server.");
+                    Console.WriteLine("Cancelled the schema update process, can't start the server.");
                     return null!;
                 }
             }
@@ -407,6 +425,16 @@ internal sealed class Program : IDisposable
         }
 
         return contextProvider;
+    }
+
+    private async Task ReadSystemConfigurationAsync(IPersistenceContextProvider persistenceContextProvider)
+    {
+        using var context = persistenceContextProvider.CreateNewTypedContext<SystemConfiguration>(false);
+        var config = (await context.GetAsync<SystemConfiguration>().ConfigureAwait(false)).FirstOrDefault();
+        if (config != null)
+        {
+            _systemConfiguration = config;
+        }
     }
 
     private async Task InitializeDataAsync(string version, ILoggerFactory loggerFactory, IPersistenceContextProvider contextProvider)

@@ -24,7 +24,7 @@ public interface IDataSource : IDisposable
     /// </summary>
     /// <param name="ownerId">The unique identifier of the owner. If none is provided,
     /// it loads the first instance of the owner type.</param>
-    /// <returns></returns>
+    /// <returns>The owner.</returns>
     ValueTask<object> GetOwnerAsync(Guid ownerId = default);
 
     /// <summary>

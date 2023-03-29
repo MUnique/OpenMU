@@ -19,7 +19,7 @@ internal class GameConfigurationContext : CachingEntityFrameworkContext, IConfig
     /// <param name="repositoryProvider">The repository provider.</param>
     /// <param name="logger">The logger.</param>
     public GameConfigurationContext(IContextAwareRepositoryProvider repositoryProvider, ILogger<GameConfigurationContext> logger)
-        : base(new ConfigurationContext(), repositoryProvider, logger)
+        : base(new ConfigurationContext(), repositoryProvider, null, logger)
     {
     }
 

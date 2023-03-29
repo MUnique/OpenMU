@@ -16,6 +16,10 @@ panel, too.
 
 ## Parameters
 
+**Please note, that the most of these parameters (except ```-demo``` and ```-adminpanel```)
+are not necessary anymore, because these settings/actions can be done more conveniently
+over the admin panel, too.**
+
 You can start the server with the following parameters:
 
 | Parameter   | Description       |
@@ -43,7 +47,7 @@ It supports the following values:
 | public | Default value, if nothing is specified. The public ip is automatically determined by an [external API](https://www.ipify.org/). | -resolveIP:public |
 | local  | Determines a local ip. If none is found, a loopback IP is used (127.127.127.127). | -resolveIP:local |
 | loopback  | For testing on the same machine, a loopback IP is used (127.127.127.127). | -resolveIP:loopback |
-| [An IPv4-Address] | Defines a custom and constant IP address| -resolveIP:140.82.118.4 |
+| [An IPv4-Address] | Defines a custom and constant IP address or a host name. | -resolveIP:140.82.118.4 |
 
 ## Environment variables
 
@@ -58,3 +62,16 @@ They may be helpful when running the server in a container or under linux.
 | DB_HOST | Host name/address of the postgres database |
 | DB_ADMIN_USER | User name of the admin user of the postgres database |
 | DB_ADMIN_PW   | Password of the admin user of the postgres database |
+
+## Settings priority
+
+As you noticed, you can set some options in different ways. Therefore, a clear
+priority has been worked out to make the most sense:
+
+1. Start parameters
+2. Environment variables
+3. Settings over the admin panel (Configuration -> System)
+
+Start parameters have the highest priority, then environment variables and then
+the settings over the admin panel. The idea is, that start parameters and
+environment variables should only be used in special cases by experienced users.

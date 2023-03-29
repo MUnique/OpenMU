@@ -22,6 +22,8 @@ using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.EntityFramework;
 using MUnique.OpenMU.PlugIns;
+using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.Network;
 
 /// <summary>
 /// Common extensions for the building of daprized services.
@@ -285,5 +287,41 @@ public static class Extensions
         await app.Services.GetService<IDatabaseConnectionSettingProvider>()!
             .InitializeAsync(default)
             .ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Adds the ip resolver to the collection, depending on the command line arguments
+    /// and the <see cref="SystemConfiguration"/> in the database.
+    /// </summary>
+    /// <param name="serviceCollection">The service collection.</param>
+    /// <param name="args">The arguments.</param>
+    /// <returns>The <paramref name="serviceCollection"/>.</returns>
+    public static IServiceCollection AddIpResolver(this IServiceCollection serviceCollection, string[] args)
+    {
+        return serviceCollection.AddSingleton(serviceProvider =>
+        {
+            (IpResolverType IpResolver, string? IpResolverParameter)? settings = default;
+            try
+            {
+
+                var persistenceContextProvider = serviceProvider.GetService<IPersistenceContextProvider>() ?? throw new Exception($"{nameof(IPersistenceContextProvider)} not registered.");
+                using var context = persistenceContextProvider.CreateNewTypedContext<SystemConfiguration>(false);
+
+                // TODO: this may lead to a deadlock?
+                var configuration = context.GetAsync<SystemConfiguration>().AsTask().WaitAndUnwrapException().FirstOrDefault();
+                
+                if (configuration is not null)
+                {
+                    settings = (configuration.IpResolver, configuration.IpResolverParameter);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                serviceProvider.GetService<ILogger<IIpAddressResolver>>()?.LogError(ex, "Unexpected error when trying to load the system configuration during ip resolver creation: {ex}", ex);
+            }
+
+            return IpAddressResolverFactory.CreateIpResolver(args, settings, serviceProvider.GetService<ILoggerFactory>()!);
+        });
     }
 }

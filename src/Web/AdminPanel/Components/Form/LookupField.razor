@@ -5,14 +5,14 @@
 
 @typeparam TObject
 @inherits NotifyableInputBase<TObject>
-@inject ILookupController _lookupController;
 
 <div>
     <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
     <BlazoredTypeahead TItem="TObject" TValue="TObject"
                        @bind-Value="@this.CurrentValue"
-                       SearchMethod="@(text => this._lookupController.GetSuggestionsAsync<TObject>(text, null))"
+                       SearchMethod="@(text => this.EffectiveLookupController.GetSuggestionsAsync<TObject>(text, null))"
                        EnableDropDown="true"
+                       MaximumSuggestions="20"
                        placeholder="Search ..."
                        id="@this.FieldIdentifier.FieldName">
         <SelectedTemplate Context="item">
@@ -20,40 +20,18 @@
             {
                 @string.Empty;
             }
-            else if (typeof(TObject).Namespace?.StartsWith(nameof(MUnique)) ?? false)
+            else if (typeof(TObject).IsConfigurationType() && item is IIdentifiable identifiable)
             {
-                <NavLink href="@("edit-config/" + typeof(TObject).FullName + "/" + item.GetId())">@item.GetName()</NavLink>
+                <NavLink href="@("edit-config/" + typeof(TObject).FullName + "/" + identifiable.Id)">@CaptionFactory(item)</NavLink>
             }
             else
             {
-                @item.GetName()
+                @CaptionFactory(item)
             }
         </SelectedTemplate>
         <ResultTemplate Context="item">
-            @item.GetName()
+            @CaptionFactory(item)
         </ResultTemplate>
     </BlazoredTypeahead>
     <ValidationMessage For=@this.ValueExpression />
 </div>
-
-@code {
-
-    /// <summary>
-    /// Gets or sets the label which should be displayed. If it's not explicitly provided, the component shows the
-    /// Name defined in the <see cref="DisplayAttribute"/>. If there is no Name in a <see cref="DisplayAttribute"/>, it shows the property name instead.
-    /// </summary>
-    [Parameter]
-    public string? Label { get; set; }
-
-    /// <summary>
-    /// Gets or sets the persistence context.
-    /// </summary>
-    [CascadingParameter]
-    public IContext PersistenceContext { get; set; } = null!;
-
-    /// <inheritdoc />
-    protected override bool TryParseValueFromString(string? value, [MaybeNullWhen(false)] out TObject result, [NotNullWhen(false)] out string? validationErrorMessage)
-    {
-        throw new NotImplementedException();
-    }
-}

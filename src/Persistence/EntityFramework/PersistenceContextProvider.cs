@@ -49,8 +49,7 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
     {
         try
         {
-            await 
-                using var installationContext = new EntityDataContext();
+            await using var installationContext = new EntityDataContext();
             return !(await installationContext.Database.GetPendingMigrationsAsync().ConfigureAwait(false)).Any();
         }
         catch
@@ -161,7 +160,11 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
     /// <inheritdoc />
     public IContext CreateNewContext(DataModel.Configuration.GameConfiguration gameConfiguration)
     {
-        return new CachingEntityFrameworkContext(new EntityDataContext { CurrentGameConfiguration = gameConfiguration as GameConfiguration }, this.RepositoryProvider, this._loggerFactory.CreateLogger<CachingEntityFrameworkContext>());
+        return new CachingEntityFrameworkContext(
+            new EntityDataContext { CurrentGameConfiguration = gameConfiguration as GameConfiguration },
+            this.RepositoryProvider,
+            this._changePublisher,
+            this._loggerFactory.CreateLogger<CachingEntityFrameworkContext>());
     }
 
     /// <inheritdoc />
@@ -179,7 +182,7 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
     /// <inheritdoc />
     public IContext CreateNewTradeContext()
     {
-        return new CachingEntityFrameworkContext(new TradeContext(), this.RepositoryProvider, this._loggerFactory.CreateLogger<CachingEntityFrameworkContext>());
+        return new CachingEntityFrameworkContext(new TradeContext(), this.RepositoryProvider, null, this._loggerFactory.CreateLogger<CachingEntityFrameworkContext>());
     }
 
     /// <inheritdoc />
@@ -210,7 +213,7 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
         var dbContext = new TypedContext<T> { CurrentGameConfiguration = gameConfiguration as GameConfiguration };
         if (useCache)
         {
-            return new CachingEntityFrameworkContext(dbContext, this.RepositoryProvider, this._loggerFactory.CreateLogger<CachingEntityFrameworkContext>());
+            return new CachingEntityFrameworkContext(dbContext, this.RepositoryProvider, this._changePublisher, this._loggerFactory.CreateLogger<CachingEntityFrameworkContext>());
         }
 
         var repositoryProvider = new NonCachingRepositoryProvider(this._loggerFactory, null, this._changePublisher, this.RepositoryProvider.ContextStack);

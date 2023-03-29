@@ -2,8 +2,6 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.Persistence.Initialization.Updates;
-
 namespace MUnique.OpenMU.Persistence.Initialization;
 
 using System.ComponentModel.Design;
@@ -15,7 +13,9 @@ using MUnique.OpenMU.GameLogic.PlugIns.InvasionEvents;
 using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 using MUnique.OpenMU.GameLogic.Resets;
 using MUnique.OpenMU.GameServer.MessageHandler;
+using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.PlugIns;
+using MUnique.OpenMU.Persistence.Initialization.Updates;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -93,6 +93,7 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
         {
             this.GameConfiguration = temporaryContext.CreateNew<GameConfiguration>();
             this.GameConfiguration.SetGuid(1);
+            this.CreateSystemConfiguration(temporaryContext);
             await temporaryContext.SaveChangesAsync().ConfigureAwait(false);
         }
 
@@ -276,5 +277,18 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
         }
 
         return gameServerConfiguration;
+    }
+
+    private void CreateSystemConfiguration(IContext context)
+    {
+        var systemConfiguration = context.CreateNew<SystemConfiguration>();
+        systemConfiguration.SetGuid(0);
+        systemConfiguration.AutoStart = true;
+        systemConfiguration.AutoUpdateSchema = true;
+        systemConfiguration.ReadConsoleInput = false;
+
+        var (type, param) = IpAddressResolverFactory.DetermineBestFittingResolver(Environment.GetCommandLineArgs());
+        systemConfiguration.IpResolver = type;
+        systemConfiguration.IpResolverParameter = param;
     }
 }

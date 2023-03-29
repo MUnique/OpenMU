@@ -20,7 +20,7 @@ internal class GuildServerContext : CachingEntityFrameworkContext, IGuildServerC
     /// <param name="repositoryProvider">The repository provider.</param>
     /// <param name="logger">The logger.</param>
     public GuildServerContext(GuildContext guildContext, IContextAwareRepositoryProvider repositoryProvider, ILogger<GuildServerContext> logger)
-        : base(guildContext, repositoryProvider, logger)
+        : base(guildContext, repositoryProvider, null, logger)
     {
     }
 

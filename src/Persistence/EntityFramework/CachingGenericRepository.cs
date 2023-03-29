@@ -37,7 +37,7 @@ internal class CachingGenericRepository<T> : GenericRepositoryBase<T>
     protected override EntityFrameworkContextBase GetContext()
     {
         var context = this.RepositoryProvider.ContextStack.GetCurrentContext() as EntityFrameworkContextBase;
-        return new CachingEntityFrameworkContext(context?.Context ?? new EntityDataContext(), this.RepositoryProvider, context is null, this._loggerFactory.CreateLogger<CachingEntityFrameworkContext>());
+        return new CachingEntityFrameworkContext(context?.Context ?? new EntityDataContext(), this.RepositoryProvider, context is null, null, this._loggerFactory.CreateLogger<CachingEntityFrameworkContext>());
     }
 
     /// <inheritdoc/>

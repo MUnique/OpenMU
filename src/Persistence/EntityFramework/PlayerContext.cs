@@ -20,7 +20,7 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
     /// <param name="repositoryProvider">The repository provider.</param>
     /// <param name="logger">The logger.</param>
     public PlayerContext(DbContext context, IContextAwareRepositoryProvider repositoryProvider, ILogger<PlayerContext> logger)
-        : base(context, repositoryProvider, logger)
+        : base(context, repositoryProvider, null, logger)
     {
     }
 

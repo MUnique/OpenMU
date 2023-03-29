@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+namespace MUnique.OpenMU.Persistence.Initialization;
+
 using System.Diagnostics;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Attributes;
@@ -13,8 +15,6 @@ using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.PlugIns;
 
-namespace MUnique.OpenMU.Persistence.Initialization;
-
 /// <summary>
 /// This class helps to create the same GUIDs for the same initial configuration data.
 /// </summary>
@@ -23,7 +23,7 @@ internal static class GuidHelper
     private static readonly Dictionary<Type, short> TypeIds = new();
 
     /// <summary>
-    /// Initializes the <see cref="GuidHelper"/> class.
+    /// Initializes the <see cref="GuidHelper" /> class.
     /// </summary>
     static GuidHelper()
     {
@@ -33,9 +33,11 @@ internal static class GuidHelper
         TypeIds.Add(typeof(GameServerConfiguration), 4);
         TypeIds.Add(typeof(GameServerEndpoint), 5);
         TypeIds.Add(typeof(ConnectServerDefinition), 6);
-        
+
         TypeIds.Add(typeof(ChatServerDefinition), 8);
         TypeIds.Add(typeof(ChatServerEndpoint), 9);
+
+        TypeIds.Add(typeof(SystemConfiguration), 0x10);
 
         TypeIds.Add(typeof(AttributeDefinition), 0x20);
         TypeIds.Add(typeof(AttributeRelationship), 0x21);
@@ -61,7 +63,7 @@ internal static class GuidHelper
         TypeIds.Add(typeof(LevelBonus), 0x91);
         TypeIds.Add(typeof(ItemSetGroup), 0x92);
         TypeIds.Add(typeof(ItemOfItemSet), 0x93);
-        
+
         TypeIds.Add(typeof(ItemCrafting), 0x100);
         TypeIds.Add(typeof(ItemCraftingRequiredItem), 0x101);
         TypeIds.Add(typeof(ItemCraftingResultItem), 0x102);
@@ -76,7 +78,7 @@ internal static class GuidHelper
         TypeIds.Add(typeof(ExitGate), 0x302);
         TypeIds.Add(typeof(BattleZoneDefinition), 0x310);
         TypeIds.Add(typeof(WarpInfo), 0x320);
-        
+
         TypeIds.Add(typeof(Skill), 0x400);
         TypeIds.Add(typeof(SkillComboDefinition), 0x401);
         TypeIds.Add(typeof(SkillComboStep), 0x402);
@@ -140,9 +142,6 @@ internal static class GuidHelper
     /// <typeparam name="T">The type of object which should get the id.</typeparam>
     /// <param name="obj">The object.</param>
     /// <param name="number">The number.</param>
-    /// <returns>
-    /// The created unique identifier.
-    /// </returns>
     public static void SetGuid<T>(this T obj, short number)
     {
         obj.SetGuid(CreateGuid<T>(number));
@@ -155,9 +154,6 @@ internal static class GuidHelper
     /// <param name="obj">The object.</param>
     /// <param name="parentNumber">The parent number.</param>
     /// <param name="number">The child number.</param>
-    /// <returns>
-    /// The created unique identifier.
-    /// </returns>
     public static void SetGuid<T>(this T obj, short parentNumber, short number)
     {
         obj.SetGuid(CreateGuid<T>(parentNumber, number));
@@ -171,9 +167,6 @@ internal static class GuidHelper
     /// <param name="parentNumber">The parent number.</param>
     /// <param name="number">The child number.</param>
     /// <param name="subNumber">The sub number.</param>
-    /// <returns>
-    /// The created unique identifier.
-    /// </returns>
     public static void SetGuid<T>(this T obj, short parentNumber, short number, byte subNumber)
     {
         obj.SetGuid(CreateGuid<T>(parentNumber, number, subNumber));
