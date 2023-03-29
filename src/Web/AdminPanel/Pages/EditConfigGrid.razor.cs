@@ -70,7 +70,13 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
         this._disposeCts?.Dispose();
         this._disposeCts = null;
 
-        await (this._loadTask ?? Task.CompletedTask).ConfigureAwait(false);
+        try
+        {
+            await (this._loadTask ?? Task.CompletedTask).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+        }
     }
 
     /// <inheritdoc />
@@ -99,8 +105,12 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
             .Select(o => new ViewModel(o))
             .OrderBy(o => o.Name)
             .ToList();
-
-        await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
+        
+        await this.InvokeAsync(async () =>
+        {
+            await this._pagination.SetCurrentPageIndexAsync(0).ConfigureAwait(true);
+            this.StateHasChanged();
+        }).ConfigureAwait(false);
     }
 
     private Type? DetermineTypeByTypeString()
