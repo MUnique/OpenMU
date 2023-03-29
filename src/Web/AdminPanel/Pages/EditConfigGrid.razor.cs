@@ -109,11 +109,6 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
             .Select(assembly => assembly.GetType(this.TypeString)).FirstOrDefault(t => t != null);
     }
 
-    private Task OnRemoveClickAsync(ViewModel item)
-    {
-        throw new NotImplementedException();
-    }
-
     /// <summary>
     /// The view model for the grid.
     /// We use this instead of the objects, because it makes the code simpler.
