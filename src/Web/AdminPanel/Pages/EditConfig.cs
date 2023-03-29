@@ -1,17 +1,19 @@
-﻿// <copyright file="Edit.cs" company="MUnique">
+﻿// <copyright file="EditConfig.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
 namespace MUnique.OpenMU.Web.AdminPanel.Pages;
 
+using System.Globalization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Web.AdminPanel.Components.Form;
-using System.Globalization;
+using MUnique.OpenMU.Web.AdminPanel.Components.ItemEdit;
 
 /// <summary>
-/// A generic edit page, which shows an <see cref="AutoForm{T}"/> for the given <see cref="EditConfigBase.TypeString"/> and <see cref="EditConfigBase.Id"/>.
+/// A generic edit page, which shows an <see cref="AutoForm{T}"/> for the given <see cref="EditBase.TypeString"/> and <see cref="EditBase.Id"/>.
 /// </summary>
 [Route("/edit-config/{typeString}/")]
 [Route("/edit-config/{typeString}/{id:guid}")]
@@ -28,11 +30,22 @@ public sealed class EditConfig : EditBase
     protected override void AddFormToRenderTree(RenderTreeBuilder builder, ref int currentSequence)
     {
         var hideCollections = this.NavigationManager.Uri.EndsWith("hide-collections");
-        builder.OpenComponent(++currentSequence, typeof(AutoForm<>).MakeGenericType(this.Type!));
-        builder.AddAttribute(++currentSequence, nameof(AutoForm<object>.Model), this.Model);
-        builder.AddAttribute(++currentSequence, nameof(AutoForm<object>.HideCollections), hideCollections);
-        builder.AddAttribute(++currentSequence, nameof(AutoForm<object>.OnValidSubmit), EventCallback.Factory.Create(this, this.SaveChangesAsync));
-        builder.CloseComponent();
+
+        if (this.Type == typeof(Item))
+        {
+            builder.OpenComponent(++currentSequence, typeof(ItemEdit));
+            builder.AddAttribute(++currentSequence, nameof(ItemEdit.Item), this.Model);
+            builder.AddAttribute(++currentSequence, nameof(ItemEdit.OnValidSubmit), EventCallback.Factory.Create(this, this.SaveChangesAsync));
+            builder.CloseComponent();
+        }
+        else
+        {
+            builder.OpenComponent(++currentSequence, typeof(AutoForm<>).MakeGenericType(this.Type!));
+            builder.AddAttribute(++currentSequence, nameof(AutoForm<object>.Model), this.Model);
+            builder.AddAttribute(++currentSequence, nameof(AutoForm<object>.HideCollections), hideCollections);
+            builder.AddAttribute(++currentSequence, nameof(AutoForm<object>.OnValidSubmit), EventCallback.Factory.Create(this, this.SaveChangesAsync));
+            builder.CloseComponent();
+        }
     }
 
     /// <inheritdoc />
