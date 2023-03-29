@@ -19,16 +19,18 @@ public class PartyKickAction
     /// <param name="index">The index.</param>
     public async ValueTask KickPlayerAsync(Player player, byte index)
     {
-        if (player.Party is { } party)
+        if (player.Party is not { } party)
         {
-            if (!Equals(player, party.PartyList[0]) &&
-                !Equals(player, party.PartyList[index]))
-            {
-                player.Logger.LogWarning("Suspicious party kick request of {0}, could be hack attempt.", player);
-                return;
-            }
-
-            await party.KickPlayerAsync(index).ConfigureAwait(false);
+            return;
         }
+
+        if (!Equals(player, party.PartyList[0]) &&
+            !Equals(player, party.PartyList[index]))
+        {
+            player.Logger.LogWarning("Suspicious party kick request of {0}, could be hack attempt.", player);
+            return;
+        }
+
+        await party.KickPlayerAsync(index).ConfigureAwait(false);
     }
 }
