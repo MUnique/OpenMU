@@ -76,6 +76,11 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
         }
         catch (OperationCanceledException)
         {
+            // we can ignore that ...
+        }
+        catch
+        {
+            // and we should not throw exceptions in the dispose method ...
         }
     }
 
@@ -105,7 +110,7 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
             .Select(o => new ViewModel(o))
             .OrderBy(o => o.Name)
             .ToList();
-        
+
         await this.InvokeAsync(async () =>
         {
             await this._pagination.SetCurrentPageIndexAsync(0).ConfigureAwait(true);
