@@ -4,8 +4,8 @@
 @using MUnique.OpenMU.Persistence;
 
 <li class="dropdown">
-    <a href="#" role="button" aria-haspopup="true" aria-expanded="false" @onclick="ToggleGameConfig">
-        <span class="oi oi-cog" aria-hidden="true"></span> Game Configuration (new)
+    <a href="" role="button" aria-haspopup="true" aria-expanded="false" @onclick="ToggleGameConfig">
+        <span class="oi oi-cog" aria-hidden="true"></span> Game Configuration
     </a>
     @if (this._expandGameConfig)
     {
@@ -22,6 +22,13 @@
             <NavLink href="@($"edit-config-grid/{typeof(MiniGameDefinition).FullName}/")">Mini Games</NavLink>
             <NavLink href="@($"edit-config-grid/{typeof(WarpInfo).FullName}/")">Warp List</NavLink>
             <NavLink href="@($"edit-config-grid/{typeof(JewelMix).FullName}/")">Jewel Mixes</NavLink>
+            <hr/>
+            <NavLink href="plugins">
+                <span class="oi oi-puzzle-piece" aria-hidden="true"></span> Plugins
+            </NavLink>
+            <NavLink href="map-editor">
+                <span class="oi oi-globe" aria-hidden="true"></span> Map Editor
+            </NavLink>
             <hr/>
             <NavLink href="@($"edit-config/{typeof(GameConfiguration).FullName}/")" Match="NavLinkMatch.All">
                 <span class="oi oi-cog" aria-hidden="true"></span> Full Configuration
