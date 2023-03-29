@@ -151,17 +151,18 @@
             Min="1"
             Max="@this._viewModel.Definition.MaximumSockets"
             @bind-Value="@this._viewModel.SocketCount" />
-        <ul class="list-group mb-3">
+        <ul class="socket">
         @foreach(var socket in _viewModel.Sockets.Where(s => s.SocketIndex < this._viewModel.SocketCount))
         {
-            <li class="list-group-item">
-            <LookupField
-                Label="@socket.Caption"
+            <li>
+                <LookupField
+                    Label="@socket.Caption"
                 @bind-Value="@socket.Option"
                 ExplicitLookupController="new EnumerableLookupController(this._viewModel.PossibleSocketOptions)"></LookupField>
             @if (socket.Option is { } socketOption)
             {
-                <NumberField Min="1"
+                <NumberField
+                    Min="1"
                     Max="@socketOption.Option.LevelDependentOptions.Max(o => o.Level)"
                     Label="Option Level:" @bind-Value="socket.Level" />
             }

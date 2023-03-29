@@ -83,3 +83,24 @@ label > details > div {
 .blazored-typeahead:valid {
     padding: 0px 0px 0px 0px !important;
 }
+
+ul.socket {
+    @extend .list-group;
+    @extend .mb-3;
+   
+    //display: flex;
+}
+
+ul.socket > li {
+    @extend .list-group-item;
+    @extend .d-flex;
+}
+
+ul.socket > li > div {
+    @extend .flex-fill;
+    @extend .w-50;
+}
+
+ul.socket > li > div:last-of-type {
+    @extend .ml-3;
+}
