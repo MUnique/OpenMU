@@ -33,7 +33,7 @@ public class ViewModel : INotifyPropertyChanged
         this.ExcellentOptions = new ItemOptionList(ItemOptionTypes.Excellent, item, persistenceContext);
         this.WingOptions = new ItemOptionList(ItemOptionTypes.Wing, item, persistenceContext);
         this.Sockets = new List<SocketViewModel>(
-            Enumerable.Range(1, this.Definition?.MaximumSockets ?? 0)
+            Enumerable.Range(0, this.Definition?.MaximumSockets ?? 0)
                 .Select(i => new SocketViewModel(item, this._persistenceContext, i, this.PossibleSocketOptions)));
     }
 

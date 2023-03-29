@@ -152,7 +152,7 @@
             Max="@this._viewModel.Definition.MaximumSockets"
             @bind-Value="@this._viewModel.SocketCount" />
         <ul class="list-group mb-3">
-        @foreach(var socket in _viewModel.Sockets.Where(s => s.SocketNumber <= this._viewModel.SocketCount))
+        @foreach(var socket in _viewModel.Sockets.Where(s => s.SocketIndex < this._viewModel.SocketCount))
         {
             <li class="list-group-item">
             <LookupField

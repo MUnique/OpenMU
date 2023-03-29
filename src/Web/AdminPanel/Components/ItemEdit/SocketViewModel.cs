@@ -23,20 +23,20 @@ public class SocketViewModel
     /// </summary>
     /// <param name="item">The item.</param>
     /// <param name="persistenceContext">The persistence context.</param>
-    /// <param name="socketNumber">The socket number.</param>
+    /// <param name="socketIndex">The socket number.</param>
     /// <param name="possibleOptions">The possible options.</param>
-    public SocketViewModel(Item item, IContext persistenceContext, int socketNumber, IEnumerable<SocketOptionViewModel> possibleOptions)
+    public SocketViewModel(Item item, IContext persistenceContext, int socketIndex, IEnumerable<SocketOptionViewModel> possibleOptions)
     {
         this._item = item;
         this._persistenceContext = persistenceContext;
         this._possibleOptions = possibleOptions;
-        this.SocketNumber = socketNumber;
+        this.SocketIndex = socketIndex;
     }
 
     /// <summary>
     /// Gets the socket number.
     /// </summary>
-    public int SocketNumber { get; }
+    public int SocketIndex { get; }
 
     /// <summary>
     /// Gets or sets the level of the socket option.
@@ -56,12 +56,12 @@ public class SocketViewModel
     /// <summary>
     /// Gets the option link for this socket.
     /// </summary>
-    public ItemOptionLink? OptionLink => this._item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.SocketOption && o.Index == this.SocketNumber);
+    public ItemOptionLink? OptionLink => this._item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.SocketOption && o.Index == this.SocketIndex);
 
     /// <summary>
     /// Gets the field caption for the socket.
     /// </summary>
-    public string Caption => $"Socket {this.SocketNumber}:";
+    public string Caption => $"Socket {this.SocketIndex + 1}:";
 
     /// <summary>
     /// Gets or sets the option.
@@ -97,7 +97,7 @@ public class SocketViewModel
                 }
 
                 optionLink.ItemOption = value?.Option;
-                optionLink.Index = this.SocketNumber;
+                optionLink.Index = this.SocketIndex;
             }
         }
     }
