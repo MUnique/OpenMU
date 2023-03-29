@@ -99,6 +99,7 @@ ul.socket > li {
 ul.socket > li > div {
     @extend .flex-fill;
     @extend .w-50;
+    @extend .mw-50;
 }
 
 ul.socket > li > div:last-of-type {
