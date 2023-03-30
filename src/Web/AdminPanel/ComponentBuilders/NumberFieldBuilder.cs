@@ -14,6 +14,7 @@ using MUnique.OpenMU.Web.AdminPanel.Services;
 /// </summary>
 /// <typeparam name="TNumber">The type of the number.</typeparam>
 public class NumberFieldBuilder<TNumber> : BaseComponentBuilder, IComponentBuilder
+    where TNumber : struct
 {
     /// <inheritdoc/>
     public int BuildComponent(object model, PropertyInfo propertyInfo, RenderTreeBuilder builder, int currentIndex, IChangeNotificationService notificationService) => this.BuildField<TNumber, NumberField<TNumber>>(model, propertyInfo, builder, currentIndex, notificationService);
