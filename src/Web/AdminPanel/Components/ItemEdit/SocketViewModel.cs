@@ -94,6 +94,7 @@ public class SocketViewModel
                 {
                     optionLink = this._persistenceContext.CreateNew<ItemOptionLink>();
                     this._item.ItemOptions.Add(optionLink);
+                    optionLink.Level = 1;
                 }
 
                 optionLink.ItemOption = value?.Option;
