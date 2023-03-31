@@ -198,10 +198,14 @@
 
     <ValidationSummary />
     <div>
-        <button type="submit" class="primary-button">Save</button>
-        @if (this.OnCancel != null)
+        @if (this.OnValidSubmit.HasDelegate)
         {
-            <button type="button" onClick=@this.OnCancel>Cancel</button>
+            <button type="submit" class="primary-button">Save</button>
+        }
+
+        @if (this.OnCancel.HasDelegate)
+        {
+            <button type="button" class="cancel-button" @onclick=@this.OnCancel>Cancel</button>
         }
     </div>
 </EditForm>

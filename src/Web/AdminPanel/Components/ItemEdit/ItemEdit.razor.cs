@@ -12,11 +12,12 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Persistence;
 
+/// <summary>
+/// Specialized editor for an item.
+/// </summary>
 public partial class ItemEdit
 {
     private ViewModel? _viewModel;
-
-    private Func<IncreasableItemOption, string> CaptionFactory => obj => $"{(obj.PowerUpDefinition ?? obj.LevelDependentOptions.FirstOrDefault()?.PowerUpDefinition)?.TargetAttribute} ({obj.Number})";
 
     /// <summary>
     /// Gets or sets the item.
@@ -41,7 +42,9 @@ public partial class ItemEdit
     /// Gets or sets the task which should be executed when the cancel button gets clicked. If null, no cancel button is shown.
     /// </summary>
     [Parameter]
-    public Task? OnCancel { get; set; }
+    public EventCallback OnCancel { get; set; }
+
+    private Func<IncreasableItemOption, string> CaptionFactory => obj => $"{(obj.PowerUpDefinition ?? obj.LevelDependentOptions.FirstOrDefault()?.PowerUpDefinition)?.TargetAttribute} ({obj.Number})";
 
     /// <inheritdoc />
     protected override void OnParametersSet()

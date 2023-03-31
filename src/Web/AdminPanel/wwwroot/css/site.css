@@ -2243,7 +2243,7 @@ textarea.form-control, textarea.valid.modified, .invalid textarea.valid {
   }
 }
 
-.btn, .primary-button, button {
+.btn, .cancel-button, .primary-button, button {
   display: inline-block;
   font-weight: 400;
   color: #212529;
@@ -2259,26 +2259,27 @@ textarea.form-control, textarea.valid.modified, .invalid textarea.valid {
   transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 @media (prefers-reduced-motion: reduce) {
-  .btn, .primary-button, button {
+  .btn, .cancel-button, .primary-button, button {
     transition: none;
   }
 }
-.btn:hover, .primary-button:hover, button:hover {
+.btn:hover, .cancel-button:hover, .primary-button:hover, button:hover {
   color: #212529;
   text-decoration: none;
 }
-.btn:focus, .primary-button:focus, button:focus, .btn.focus, .focus.primary-button, button.focus {
+.btn:focus, .cancel-button:focus, .primary-button:focus, button:focus, .btn.focus, .focus.cancel-button, .focus.primary-button, button.focus {
   outline: 0;
   box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
-.btn.disabled, .disabled.primary-button, button.disabled, .btn:disabled, .primary-button:disabled, button:disabled {
+.btn.disabled, .disabled.cancel-button, .disabled.primary-button, button.disabled, .btn:disabled, .cancel-button:disabled, .primary-button:disabled, button:disabled {
   opacity: 0.65;
 }
-.btn:not(:disabled):not(.disabled), .primary-button:not(:disabled):not(.disabled), button:not(:disabled):not(.disabled) {
+.btn:not(:disabled):not(.disabled), .cancel-button:not(:disabled):not(.disabled), .primary-button:not(:disabled):not(.disabled), button:not(:disabled):not(.disabled) {
   cursor: pointer;
 }
-a.btn.disabled, a.disabled.primary-button,
+a.btn.disabled, a.disabled.cancel-button, a.disabled.primary-button,
 fieldset:disabled a.btn,
+fieldset:disabled a.cancel-button,
 fieldset:disabled a.primary-button {
   pointer-events: none;
 }
@@ -2313,33 +2314,33 @@ fieldset:disabled a.primary-button {
   box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.5);
 }
 
-.btn-secondary {
+.btn-secondary, .cancel-button {
   color: #fff;
   background-color: #6c757d;
   border-color: #6c757d;
 }
-.btn-secondary:hover {
+.btn-secondary:hover, .cancel-button:hover {
   color: #fff;
   background-color: #5a6268;
   border-color: #545b62;
 }
-.btn-secondary:focus, .btn-secondary.focus {
+.btn-secondary:focus, .cancel-button:focus, .btn-secondary.focus, .focus.cancel-button {
   color: #fff;
   background-color: #5a6268;
   border-color: #545b62;
   box-shadow: 0 0 0 0.2rem rgba(130, 138, 145, 0.5);
 }
-.btn-secondary.disabled, .btn-secondary:disabled {
+.btn-secondary.disabled, .disabled.cancel-button, .btn-secondary:disabled, .cancel-button:disabled {
   color: #fff;
   background-color: #6c757d;
   border-color: #6c757d;
 }
-.btn-secondary:not(:disabled):not(.disabled):active, .btn-secondary:not(:disabled):not(.disabled).active, .show > .btn-secondary.dropdown-toggle, app > nav > div > ul > li.dropdown.show > a.btn-secondary {
+.btn-secondary:not(:disabled):not(.disabled):active, .cancel-button:not(:disabled):not(.disabled):active, .btn-secondary:not(:disabled):not(.disabled).active, .cancel-button:not(:disabled):not(.disabled).active, .show > .btn-secondary.dropdown-toggle, .show > .dropdown-toggle.cancel-button, app > nav > div > ul > li.dropdown.show > a.btn-secondary, app > nav > div > ul > li.dropdown.show > a.cancel-button {
   color: #fff;
   background-color: #545b62;
   border-color: #4e555b;
 }
-.btn-secondary:not(:disabled):not(.disabled):active:focus, .btn-secondary:not(:disabled):not(.disabled).active:focus, .show > .btn-secondary.dropdown-toggle:focus, app > nav > div > ul > li.dropdown.show > a.btn-secondary:focus {
+.btn-secondary:not(:disabled):not(.disabled):active:focus, .cancel-button:not(:disabled):not(.disabled):active:focus, .btn-secondary:not(:disabled):not(.disabled).active:focus, .cancel-button:not(:disabled):not(.disabled).active:focus, .show > .btn-secondary.dropdown-toggle:focus, .show > .dropdown-toggle.cancel-button:focus, app > nav > div > ul > li.dropdown.show > a.btn-secondary:focus, app > nav > div > ul > li.dropdown.show > a.cancel-button:focus {
   box-shadow: 0 0 0 0.2rem rgba(130, 138, 145, 0.5);
 }
 
@@ -2740,14 +2741,14 @@ fieldset:disabled a.primary-button {
   pointer-events: none;
 }
 
-.btn-lg, .btn-group-lg > .btn, .btn-group-lg > .primary-button, .btn-group-lg > button {
+.btn-lg, .btn-group-lg > .btn, .btn-group-lg > .cancel-button, .btn-group-lg > .primary-button, .btn-group-lg > button {
   padding: 0.5rem 1rem;
   font-size: 1.25rem;
   line-height: 1.5;
   border-radius: 0.3rem;
 }
 
-.btn-sm, tbody button, .btn-group-sm > .btn, .btn-group-sm > .primary-button, .btn-group-sm > button {
+.btn-sm, tbody button, .btn-group-sm > .btn, .btn-group-sm > .cancel-button, .btn-group-sm > .primary-button, .btn-group-sm > button {
   padding: 0.25rem 0.5rem;
   font-size: 0.875rem;
   line-height: 1.5;
@@ -3031,27 +3032,32 @@ input[type=button].btn-block {
   display: inline-flex;
   vertical-align: middle;
 }
-.btn-group > .btn, .btn-group > .primary-button, .btn-group > button,
+.btn-group > .btn, .btn-group > .cancel-button, .btn-group > .primary-button, .btn-group > button,
 .btn-group-vertical > .btn,
+.btn-group-vertical > .cancel-button,
 .btn-group-vertical > .primary-button,
 .btn-group-vertical > button {
   position: relative;
   flex: 1 1 auto;
 }
-.btn-group > .btn:hover, .btn-group > .primary-button:hover, .btn-group > button:hover,
+.btn-group > .btn:hover, .btn-group > .cancel-button:hover, .btn-group > .primary-button:hover, .btn-group > button:hover,
 .btn-group-vertical > .btn:hover,
+.btn-group-vertical > .cancel-button:hover,
 .btn-group-vertical > .primary-button:hover,
 .btn-group-vertical > button:hover {
   z-index: 1;
 }
-.btn-group > .btn:focus, .btn-group > .primary-button:focus, .btn-group > button:focus, .btn-group > .btn:active, .btn-group > .primary-button:active, .btn-group > button:active, .btn-group > .btn.active, .btn-group > .active.primary-button, .btn-group > button.active,
+.btn-group > .btn:focus, .btn-group > .cancel-button:focus, .btn-group > .primary-button:focus, .btn-group > button:focus, .btn-group > .btn:active, .btn-group > .cancel-button:active, .btn-group > .primary-button:active, .btn-group > button:active, .btn-group > .btn.active, .btn-group > .active.cancel-button, .btn-group > .active.primary-button, .btn-group > button.active,
 .btn-group-vertical > .btn:focus,
+.btn-group-vertical > .cancel-button:focus,
 .btn-group-vertical > .primary-button:focus,
 .btn-group-vertical > button:focus,
 .btn-group-vertical > .btn:active,
+.btn-group-vertical > .cancel-button:active,
 .btn-group-vertical > .primary-button:active,
 .btn-group-vertical > button:active,
 .btn-group-vertical > .btn.active,
+.btn-group-vertical > .active.cancel-button,
 .btn-group-vertical > .active.primary-button,
 .btn-group-vertical > button.active {
   z-index: 1;
@@ -3066,19 +3072,21 @@ input[type=button].btn-block {
   width: auto;
 }
 
-.btn-group > .btn:not(:first-child), .btn-group > .primary-button:not(:first-child), .btn-group > button:not(:first-child),
+.btn-group > .btn:not(:first-child), .btn-group > .cancel-button:not(:first-child), .btn-group > .primary-button:not(:first-child), .btn-group > button:not(:first-child),
 .btn-group > .btn-group:not(:first-child) {
   margin-left: -1px;
 }
-.btn-group > .btn:not(:last-child):not(.dropdown-toggle), .btn-group > .primary-button:not(:last-child):not(.dropdown-toggle), .btn-group > button:not(:last-child):not(.dropdown-toggle),
+.btn-group > .btn:not(:last-child):not(.dropdown-toggle), .btn-group > .cancel-button:not(:last-child):not(.dropdown-toggle), .btn-group > .primary-button:not(:last-child):not(.dropdown-toggle), .btn-group > button:not(:last-child):not(.dropdown-toggle),
 .btn-group > .btn-group:not(:last-child) > .btn,
+.btn-group > .btn-group:not(:last-child) > .cancel-button,
 .btn-group > .btn-group:not(:last-child) > .primary-button,
 .btn-group > .btn-group:not(:last-child) > button {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
 }
-.btn-group > .btn:not(:first-child), .btn-group > .primary-button:not(:first-child), .btn-group > button:not(:first-child),
+.btn-group > .btn:not(:first-child), .btn-group > .cancel-button:not(:first-child), .btn-group > .primary-button:not(:first-child), .btn-group > button:not(:first-child),
 .btn-group > .btn-group:not(:first-child) > .btn,
+.btn-group > .btn-group:not(:first-child) > .cancel-button,
 .btn-group > .btn-group:not(:first-child) > .primary-button,
 .btn-group > .btn-group:not(:first-child) > button {
   border-top-left-radius: 0;
@@ -3096,12 +3104,12 @@ input[type=button].btn-block {
   margin-right: 0;
 }
 
-.btn-sm + .dropdown-toggle-split, tbody button + .dropdown-toggle-split, .btn-group-sm > .btn + .dropdown-toggle-split, .btn-group-sm > .primary-button + .dropdown-toggle-split, .btn-group-sm > button + .dropdown-toggle-split {
+.btn-sm + .dropdown-toggle-split, tbody button + .dropdown-toggle-split, .btn-group-sm > .btn + .dropdown-toggle-split, .btn-group-sm > .cancel-button + .dropdown-toggle-split, .btn-group-sm > .primary-button + .dropdown-toggle-split, .btn-group-sm > button + .dropdown-toggle-split {
   padding-right: 0.375rem;
   padding-left: 0.375rem;
 }
 
-.btn-lg + .dropdown-toggle-split, .btn-group-lg > .btn + .dropdown-toggle-split, .btn-group-lg > .primary-button + .dropdown-toggle-split, .btn-group-lg > button + .dropdown-toggle-split {
+.btn-lg + .dropdown-toggle-split, .btn-group-lg > .btn + .dropdown-toggle-split, .btn-group-lg > .cancel-button + .dropdown-toggle-split, .btn-group-lg > .primary-button + .dropdown-toggle-split, .btn-group-lg > button + .dropdown-toggle-split {
   padding-right: 0.75rem;
   padding-left: 0.75rem;
 }
@@ -3111,37 +3119,41 @@ input[type=button].btn-block {
   align-items: flex-start;
   justify-content: center;
 }
-.btn-group-vertical > .btn, .btn-group-vertical > .primary-button, .btn-group-vertical > button,
+.btn-group-vertical > .btn, .btn-group-vertical > .cancel-button, .btn-group-vertical > .primary-button, .btn-group-vertical > button,
 .btn-group-vertical > .btn-group {
   width: 100%;
 }
-.btn-group-vertical > .btn:not(:first-child), .btn-group-vertical > .primary-button:not(:first-child), .btn-group-vertical > button:not(:first-child),
+.btn-group-vertical > .btn:not(:first-child), .btn-group-vertical > .cancel-button:not(:first-child), .btn-group-vertical > .primary-button:not(:first-child), .btn-group-vertical > button:not(:first-child),
 .btn-group-vertical > .btn-group:not(:first-child) {
   margin-top: -1px;
 }
-.btn-group-vertical > .btn:not(:last-child):not(.dropdown-toggle), .btn-group-vertical > .primary-button:not(:last-child):not(.dropdown-toggle), .btn-group-vertical > button:not(:last-child):not(.dropdown-toggle),
+.btn-group-vertical > .btn:not(:last-child):not(.dropdown-toggle), .btn-group-vertical > .cancel-button:not(:last-child):not(.dropdown-toggle), .btn-group-vertical > .primary-button:not(:last-child):not(.dropdown-toggle), .btn-group-vertical > button:not(:last-child):not(.dropdown-toggle),
 .btn-group-vertical > .btn-group:not(:last-child) > .btn,
+.btn-group-vertical > .btn-group:not(:last-child) > .cancel-button,
 .btn-group-vertical > .btn-group:not(:last-child) > .primary-button,
 .btn-group-vertical > .btn-group:not(:last-child) > button {
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
 }
-.btn-group-vertical > .btn:not(:first-child), .btn-group-vertical > .primary-button:not(:first-child), .btn-group-vertical > button:not(:first-child),
+.btn-group-vertical > .btn:not(:first-child), .btn-group-vertical > .cancel-button:not(:first-child), .btn-group-vertical > .primary-button:not(:first-child), .btn-group-vertical > button:not(:first-child),
 .btn-group-vertical > .btn-group:not(:first-child) > .btn,
+.btn-group-vertical > .btn-group:not(:first-child) > .cancel-button,
 .btn-group-vertical > .btn-group:not(:first-child) > .primary-button,
 .btn-group-vertical > .btn-group:not(:first-child) > button {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
 
-.btn-group-toggle > .btn, .btn-group-toggle > .primary-button, .btn-group-toggle > button,
+.btn-group-toggle > .btn, .btn-group-toggle > .cancel-button, .btn-group-toggle > .primary-button, .btn-group-toggle > button,
 .btn-group-toggle > .btn-group > .btn,
+.btn-group-toggle > .btn-group > .cancel-button,
 .btn-group-toggle > .btn-group > .primary-button,
 .btn-group-toggle > .btn-group > button {
   margin-bottom: 0;
 }
-.btn-group-toggle > .btn input[type=radio], .btn-group-toggle > .primary-button input[type=radio], .btn-group-toggle > button input[type=radio],
+.btn-group-toggle > .btn input[type=radio], .btn-group-toggle > .cancel-button input[type=radio], .btn-group-toggle > .primary-button input[type=radio], .btn-group-toggle > button input[type=radio],
 .btn-group-toggle > .btn input[type=checkbox],
+.btn-group-toggle > .cancel-button input[type=checkbox],
 .btn-group-toggle > .primary-button input[type=checkbox],
 .btn-group-toggle > button input[type=checkbox],
 .btn-group-toggle > .btn-group > .btn input[type=radio],
@@ -3309,59 +3321,98 @@ form > div > div.has-validation > .custom-file:nth-last-child(n+3) .custom-file-
 .input-group-append {
   display: flex;
 }
-.input-group-prepend .btn, form > div > div > div:first-of-type .btn, .input-group-prepend .primary-button, form > div > div > div:first-of-type .primary-button, .input-group-prepend button, form > div > div > div:first-of-type button,
+.input-group-prepend .btn, form > div > div > div:first-of-type .btn, .input-group-prepend .cancel-button, form > div > div > div:first-of-type .cancel-button, .input-group-prepend .primary-button, form > div > div > div:first-of-type .primary-button, .input-group-prepend button, form > div > div > div:first-of-type button,
 .input-group-append .btn,
+.input-group-append .cancel-button,
 .input-group-append .primary-button,
 .input-group-append button {
   position: relative;
   z-index: 2;
 }
-.input-group-prepend .btn:focus, form > div > div > div:first-of-type .btn:focus, .input-group-prepend .primary-button:focus, form > div > div > div:first-of-type .primary-button:focus, .input-group-prepend button:focus, form > div > div > div:first-of-type button:focus,
+.input-group-prepend .btn:focus, form > div > div > div:first-of-type .btn:focus, .input-group-prepend .cancel-button:focus, form > div > div > div:first-of-type .cancel-button:focus, .input-group-prepend .primary-button:focus, form > div > div > div:first-of-type .primary-button:focus, .input-group-prepend button:focus, form > div > div > div:first-of-type button:focus,
 .input-group-append .btn:focus,
+.input-group-append .cancel-button:focus,
 .input-group-append .primary-button:focus,
 .input-group-append button:focus {
   z-index: 3;
 }
-.input-group-prepend .btn + .btn, form > div > div > div:first-of-type .btn + .btn, .input-group-prepend .primary-button + .btn, form > div > div > div:first-of-type .primary-button + .btn, .input-group-prepend .btn + .primary-button, form > div > div > div:first-of-type .btn + .primary-button, .input-group-prepend .primary-button + .primary-button, form > div > div > div:first-of-type .primary-button + .primary-button, .input-group-prepend button + .btn, form > div > div > div:first-of-type button + .btn, .input-group-prepend button + .primary-button, form > div > div > div:first-of-type button + .primary-button, .input-group-prepend .btn + button, form > div > div > div:first-of-type .btn + button, .input-group-prepend .primary-button + button, form > div > div > div:first-of-type .primary-button + button, .input-group-prepend button + button, form > div > div > div:first-of-type button + button,
+.input-group-prepend .btn + .btn, form > div > div > div:first-of-type .btn + .btn, .input-group-prepend .cancel-button + .btn, form > div > div > div:first-of-type .cancel-button + .btn, .input-group-prepend .btn + .cancel-button, form > div > div > div:first-of-type .btn + .cancel-button, .input-group-prepend .cancel-button + .cancel-button, form > div > div > div:first-of-type .cancel-button + .cancel-button, .input-group-prepend .primary-button + .btn, form > div > div > div:first-of-type .primary-button + .btn, .input-group-prepend .primary-button + .cancel-button, form > div > div > div:first-of-type .primary-button + .cancel-button, .input-group-prepend .btn + .primary-button, form > div > div > div:first-of-type .btn + .primary-button, .input-group-prepend .cancel-button + .primary-button, form > div > div > div:first-of-type .cancel-button + .primary-button, .input-group-prepend .primary-button + .primary-button, form > div > div > div:first-of-type .primary-button + .primary-button, .input-group-prepend button + .btn, form > div > div > div:first-of-type button + .btn, .input-group-prepend button + .cancel-button, form > div > div > div:first-of-type button + .cancel-button, .input-group-prepend button + .primary-button, form > div > div > div:first-of-type button + .primary-button, .input-group-prepend .btn + button, form > div > div > div:first-of-type .btn + button, .input-group-prepend .cancel-button + button, form > div > div > div:first-of-type .cancel-button + button, .input-group-prepend .primary-button + button, form > div > div > div:first-of-type .primary-button + button, .input-group-prepend button + button, form > div > div > div:first-of-type button + button,
 .input-group-prepend .btn + .input-group-text,
+.input-group-prepend form > div > div > div:first-of-type > .btn + span,
 form > div > div > div:first-of-type .btn + .input-group-text,
 form > div > div > div:first-of-type > .btn + span,
+.input-group-prepend .cancel-button + .input-group-text,
+.input-group-prepend form > div > div > div:first-of-type > .cancel-button + span,
+form > div > div > div:first-of-type .cancel-button + .input-group-text,
+form > div > div > div:first-of-type > .cancel-button + span,
 .input-group-prepend .primary-button + .input-group-text,
+.input-group-prepend form > div > div > div:first-of-type > .primary-button + span,
 form > div > div > div:first-of-type .primary-button + .input-group-text,
 form > div > div > div:first-of-type > .primary-button + span,
 .input-group-prepend button + .input-group-text,
+.input-group-prepend form > div > div > div:first-of-type > button + span,
 form > div > div > div:first-of-type button + .input-group-text,
 form > div > div > div:first-of-type > button + span,
 .input-group-prepend .input-group-text + .input-group-text,
+.input-group-prepend form > div > div > div:first-of-type > span + .input-group-text,
+.input-group-prepend form > div > div > div:first-of-type > .input-group-text + span,
+.input-group-prepend form > div > div > div:first-of-type > span + span,
 form > div > div > div:first-of-type .input-group-text + .input-group-text,
 form > div > div > div:first-of-type > span + .input-group-text,
 form > div > div > div:first-of-type > .input-group-text + span,
 form > div > div > div:first-of-type > span + span,
 .input-group-prepend .input-group-text + .btn,
+.input-group-prepend form > div > div > div:first-of-type > span + .btn,
 form > div > div > div:first-of-type .input-group-text + .btn,
 form > div > div > div:first-of-type > span + .btn,
+.input-group-prepend .input-group-text + .cancel-button,
+.input-group-prepend form > div > div > div:first-of-type > span + .cancel-button,
+form > div > div > div:first-of-type .input-group-text + .cancel-button,
+form > div > div > div:first-of-type > span + .cancel-button,
 .input-group-prepend .input-group-text + .primary-button,
+.input-group-prepend form > div > div > div:first-of-type > span + .primary-button,
 form > div > div > div:first-of-type .input-group-text + .primary-button,
 form > div > div > div:first-of-type > span + .primary-button,
 .input-group-prepend .input-group-text + button,
+.input-group-prepend form > div > div > div:first-of-type > span + button,
 form > div > div > div:first-of-type .input-group-text + button,
 form > div > div > div:first-of-type > span + button,
 .input-group-append .btn + .btn,
+.input-group-append .cancel-button + .btn,
+.input-group-append .btn + .cancel-button,
+.input-group-append .cancel-button + .cancel-button,
 .input-group-append .primary-button + .btn,
+.input-group-append .primary-button + .cancel-button,
 .input-group-append .btn + .primary-button,
+.input-group-append .cancel-button + .primary-button,
 .input-group-append .primary-button + .primary-button,
 .input-group-append button + .btn,
+.input-group-append button + .cancel-button,
 .input-group-append button + .primary-button,
 .input-group-append .btn + button,
+.input-group-append .cancel-button + button,
 .input-group-append .primary-button + button,
 .input-group-append button + button,
 .input-group-append .btn + .input-group-text,
+.input-group-append form > div > div > div:first-of-type > .btn + span,
+.input-group-append .cancel-button + .input-group-text,
+.input-group-append form > div > div > div:first-of-type > .cancel-button + span,
 .input-group-append .primary-button + .input-group-text,
+.input-group-append form > div > div > div:first-of-type > .primary-button + span,
 .input-group-append button + .input-group-text,
+.input-group-append form > div > div > div:first-of-type > button + span,
 .input-group-append .input-group-text + .input-group-text,
+.input-group-append form > div > div > div:first-of-type > span + .input-group-text,
+.input-group-append form > div > div > div:first-of-type > .input-group-text + span,
+.input-group-append form > div > div > div:first-of-type > span + span,
 .input-group-append .input-group-text + .btn,
+.input-group-append form > div > div > div:first-of-type > span + .btn,
+.input-group-append .input-group-text + .cancel-button,
+.input-group-append form > div > div > div:first-of-type > span + .cancel-button,
 .input-group-append .input-group-text + .primary-button,
-.input-group-append .input-group-text + button {
+.input-group-append form > div > div > div:first-of-type > span + .primary-button,
+.input-group-append .input-group-text + button,
+.input-group-append form > div > div > div:first-of-type > span + button {
   margin-left: -1px;
 }
 
@@ -3407,11 +3458,14 @@ form > div > div.input-group-lg > div:first-of-type > span,
 .input-group-lg > .input-group-append > .input-group-text,
 .input-group-lg > .input-group-prepend > .btn,
 form > div > div.input-group-lg > div:first-of-type > .btn,
+.input-group-lg > .input-group-prepend > .cancel-button,
+form > div > div.input-group-lg > div:first-of-type > .cancel-button,
 .input-group-lg > .input-group-prepend > .primary-button,
 form > div > div.input-group-lg > div:first-of-type > .primary-button,
 .input-group-lg > .input-group-prepend > button,
 form > div > div.input-group-lg > div:first-of-type > button,
 .input-group-lg > .input-group-append > .btn,
+.input-group-lg > .input-group-append > .cancel-button,
 .input-group-lg > .input-group-append > .primary-button,
 .input-group-lg > .input-group-append > button {
   padding: 0.5rem 1rem;
@@ -3433,11 +3487,14 @@ form > div > div.input-group-sm > div:first-of-type > span,
 .input-group-sm > .input-group-append > .input-group-text,
 .input-group-sm > .input-group-prepend > .btn,
 form > div > div.input-group-sm > div:first-of-type > .btn,
+.input-group-sm > .input-group-prepend > .cancel-button,
+form > div > div.input-group-sm > div:first-of-type > .cancel-button,
 .input-group-sm > .input-group-prepend > .primary-button,
 form > div > div.input-group-sm > div:first-of-type > .primary-button,
 .input-group-sm > .input-group-prepend > button,
 form > div > div.input-group-sm > div:first-of-type > button,
 .input-group-sm > .input-group-append > .btn,
+.input-group-sm > .input-group-append > .cancel-button,
 .input-group-sm > .input-group-append > .primary-button,
 .input-group-sm > .input-group-append > button {
   padding: 0.25rem 0.5rem;
@@ -3451,13 +3508,15 @@ form > div > div.input-group-sm > div:first-of-type > button,
   padding-right: 1.75rem;
 }
 
-.input-group > .input-group-prepend > .btn, form > div > div > .input-group-prepend > .btn, form > div > div > div:first-of-type > .btn, .input-group > .input-group-prepend > .primary-button, form > div > div > .input-group-prepend > .primary-button, form > div > div > div:first-of-type > .primary-button, .input-group > .input-group-prepend > button, form > div > div > .input-group-prepend > button, form > div > div > div:first-of-type > button,
+.input-group > .input-group-prepend > .btn, form > div > div > .input-group-prepend > .btn, form > div > div > div:first-of-type > .btn, .input-group > .input-group-prepend > .cancel-button, form > div > div > .input-group-prepend > .cancel-button, form > div > div > div:first-of-type > .cancel-button, .input-group > .input-group-prepend > .primary-button, form > div > div > .input-group-prepend > .primary-button, form > div > div > div:first-of-type > .primary-button, .input-group > .input-group-prepend > button, form > div > div > .input-group-prepend > button, form > div > div > div:first-of-type > button,
 .input-group > .input-group-prepend > .input-group-text,
 form > div > div > .input-group-prepend > .input-group-text,
 form > div > div > div:first-of-type > .input-group-text,
 form > div > div > div:first-of-type > span,
 .input-group:not(.has-validation) > .input-group-append:not(:last-child) > .btn,
 form > div > div:not(.has-validation) > .input-group-append:not(:last-child) > .btn,
+.input-group:not(.has-validation) > .input-group-append:not(:last-child) > .cancel-button,
+form > div > div:not(.has-validation) > .input-group-append:not(:last-child) > .cancel-button,
 .input-group:not(.has-validation) > .input-group-append:not(:last-child) > .primary-button,
 form > div > div:not(.has-validation) > .input-group-append:not(:last-child) > .primary-button,
 .input-group:not(.has-validation) > .input-group-append:not(:last-child) > button,
@@ -3466,6 +3525,8 @@ form > div > div:not(.has-validation) > .input-group-append:not(:last-child) > b
 form > div > div:not(.has-validation) > .input-group-append:not(:last-child) > .input-group-text,
 .input-group.has-validation > .input-group-append:nth-last-child(n+3) > .btn,
 form > div > div.has-validation > .input-group-append:nth-last-child(n+3) > .btn,
+.input-group.has-validation > .input-group-append:nth-last-child(n+3) > .cancel-button,
+form > div > div.has-validation > .input-group-append:nth-last-child(n+3) > .cancel-button,
 .input-group.has-validation > .input-group-append:nth-last-child(n+3) > .primary-button,
 form > div > div.has-validation > .input-group-append:nth-last-child(n+3) > .primary-button,
 .input-group.has-validation > .input-group-append:nth-last-child(n+3) > button,
@@ -3474,6 +3535,8 @@ form > div > div.has-validation > .input-group-append:nth-last-child(n+3) > butt
 form > div > div.has-validation > .input-group-append:nth-last-child(n+3) > .input-group-text,
 .input-group > .input-group-append:last-child > .btn:not(:last-child):not(.dropdown-toggle),
 form > div > div > .input-group-append:last-child > .btn:not(:last-child):not(.dropdown-toggle),
+.input-group > .input-group-append:last-child > .cancel-button:not(:last-child):not(.dropdown-toggle),
+form > div > div > .input-group-append:last-child > .cancel-button:not(:last-child):not(.dropdown-toggle),
 .input-group > .input-group-append:last-child > .primary-button:not(:last-child):not(.dropdown-toggle),
 form > div > div > .input-group-append:last-child > .primary-button:not(:last-child):not(.dropdown-toggle),
 .input-group > .input-group-append:last-child > button:not(:last-child):not(.dropdown-toggle),
@@ -3484,13 +3547,16 @@ form > div > div > .input-group-append:last-child > .input-group-text:not(:last-
   border-bottom-right-radius: 0;
 }
 
-.input-group > .input-group-append > .btn, form > div > div > .input-group-append > .btn, .input-group > .input-group-append > .primary-button, form > div > div > .input-group-append > .primary-button, .input-group > .input-group-append > button, form > div > div > .input-group-append > button,
+.input-group > .input-group-append > .btn, form > div > div > .input-group-append > .btn, .input-group > .input-group-append > .cancel-button, form > div > div > .input-group-append > .cancel-button, .input-group > .input-group-append > .primary-button, form > div > div > .input-group-append > .primary-button, .input-group > .input-group-append > button, form > div > div > .input-group-append > button,
 .input-group > .input-group-append > .input-group-text,
 form > div > div > .input-group-append > .input-group-text,
 form > div > div > div.input-group-append:first-of-type > span,
 .input-group > .input-group-prepend:not(:first-child) > .btn,
 form > div > div > .input-group-prepend:not(:first-child) > .btn,
 form > div > div > div:not(:first-child):first-of-type > .btn,
+.input-group > .input-group-prepend:not(:first-child) > .cancel-button,
+form > div > div > .input-group-prepend:not(:first-child) > .cancel-button,
+form > div > div > div:not(:first-child):first-of-type > .cancel-button,
 .input-group > .input-group-prepend:not(:first-child) > .primary-button,
 form > div > div > .input-group-prepend:not(:first-child) > .primary-button,
 form > div > div > div:not(:first-child):first-of-type > .primary-button,
@@ -3504,6 +3570,9 @@ form > div > div > div:first-of-type:not(:first-child) > span,
 .input-group > .input-group-prepend:first-child > .btn:not(:first-child),
 form > div > div > .input-group-prepend:first-child > .btn:not(:first-child),
 form > div > div > div:first-child:first-of-type > .btn:not(:first-child),
+.input-group > .input-group-prepend:first-child > .cancel-button:not(:first-child),
+form > div > div > .input-group-prepend:first-child > .cancel-button:not(:first-child),
+form > div > div > div:first-child:first-of-type > .cancel-button:not(:first-child),
 .input-group > .input-group-prepend:first-child > .primary-button:not(:first-child),
 form > div > div > .input-group-prepend:first-child > .primary-button:not(:first-child),
 form > div > div > div:first-child:first-of-type > .primary-button:not(:first-child),
@@ -4753,7 +4822,7 @@ a.badge:hover, a.badge:focus {
   display: none;
 }
 
-.btn .badge, .primary-button .badge, button .badge {
+.btn .badge, .cancel-button .badge, .primary-button .badge, button .badge {
   position: relative;
   top: -1px;
 }
@@ -7428,7 +7497,7 @@ button.bg-dark:focus {
   margin-bottom: 1rem !important;
 }
 
-.ml-3, ul.socket > li > div:last-of-type,
+.ml-3, ul.socket > li > div:last-of-type, .cancel-button,
 .mx-3 {
   margin-left: 1rem !important;
 }
@@ -9393,7 +9462,7 @@ a.text-dark:hover, a.text-dark:focus {
     text-shadow: none !important;
     box-shadow: none !important;
   }
-  a:not(.btn):not(.primary-button):not(button) {
+  a:not(.btn):not(.cancel-button):not(.primary-button):not(button) {
     text-decoration: underline;
   }
   abbr[title]::after {
@@ -9935,9 +10004,13 @@ form > div > div > div:first-of-type > span {
 }
 
 .blazored-modal-content {
-  max-height: 700px;
   overflow-y: auto;
   padding-right: 10px;
+}
+
+.modal-edit-item {
+  width: 80%;
+  height: 80%;
 }
 
 details > summary {
