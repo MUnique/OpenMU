@@ -34,8 +34,21 @@ public class ItemOptionList : IList<IncreasableItemOption>
         this._persistenceContext = persistenceContext;
     }
 
+    /// <inheritdoc />
+    public int Count => this.OptionLinks.Count();
+
+    /// <inheritdoc />
+    public bool IsReadOnly => false;
+
     private IEnumerable<ItemOptionLink> OptionLinks => this._item.ItemOptions
         .Where(link => link.ItemOption?.OptionType == this._optionType);
+
+    /// <inheritdoc />
+    public IncreasableItemOption this[int index]
+    {
+        get => throw new NotImplementedException();
+        set => throw new NotImplementedException();
+    }
 
     /// <inheritdoc />
     public IEnumerator<IncreasableItemOption> GetEnumerator()
@@ -93,12 +106,6 @@ public class ItemOptionList : IList<IncreasableItemOption>
     }
 
     /// <inheritdoc />
-    public int Count => this.OptionLinks.Count();
-
-    /// <inheritdoc />
-    public bool IsReadOnly => false;
-
-    /// <inheritdoc />
     public int IndexOf(IncreasableItemOption item)
     {
         var index = this.OptionLinks.TakeWhile(o => o.ItemOption != item).Count();
@@ -118,12 +125,5 @@ public class ItemOptionList : IList<IncreasableItemOption>
         {
             this.Remove(item);
         }
-    }
-
-    /// <inheritdoc />
-    public IncreasableItemOption this[int index]
-    {
-        get => throw new NotImplementedException();
-        set => throw new NotImplementedException();
     }
 }
