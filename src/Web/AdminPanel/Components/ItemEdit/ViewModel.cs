@@ -28,8 +28,8 @@ public class ViewModel : INotifyPropertyChanged
     /// <param name="persistenceContext">The persistence context.</param>
     public ViewModel(Item item, IContext persistenceContext)
     {
-        this._persistenceContext = persistenceContext;
-        this.Item = item;
+        this._persistenceContext = persistenceContext ?? throw new ArgumentNullException(nameof(persistenceContext));
+        this.Item = item ?? throw new ArgumentNullException(nameof(item));
         this.ExcellentOptions = new ItemOptionList(ItemOptionTypes.Excellent, item, persistenceContext);
         this.WingOptions = new ItemOptionList(ItemOptionTypes.Wing, item, persistenceContext);
         this.Sockets = new List<SocketViewModel>(
@@ -39,11 +39,6 @@ public class ViewModel : INotifyPropertyChanged
 
     /// <inheritdoc />
     public event PropertyChangedEventHandler? PropertyChanged;
-
-    /// <summary>
-    /// Gets the fenrir option types.
-    /// </summary>
-    internal static ItemOptionType[] FenrirOptions { get; } = { ItemOptionTypes.BlackFenrir, ItemOptionTypes.BlueFenrir, ItemOptionTypes.GoldFenrir };
 
     /// <summary>
     /// Gets the item.
@@ -100,7 +95,11 @@ public class ViewModel : INotifyPropertyChanged
                 return;
             }
 
-            // todo: check if level is valid
+            if (value > this.Definition?.MaximumItemLevel)
+            {
+                return;
+            }
+
             this.Item.Level = value;
             this.OnPropertyChanged();
         }
@@ -317,11 +316,6 @@ public class ViewModel : INotifyPropertyChanged
     }
 
     /// <summary>
-    /// Gets the socket bonus option link, if available.
-    /// </summary>
-    private ItemOptionLink? SocketBonusOptionLink => this.Item.ItemOptions.FirstOrDefault(io => io.ItemOption?.OptionType == ItemOptionTypes.SocketBonusOption);
-
-    /// <summary>
     /// Gets or sets the socket bonus option.
     /// </summary>
     public IncreasableItemOption? SocketBonusOption
@@ -355,11 +349,6 @@ public class ViewModel : INotifyPropertyChanged
             }
         }
     }
-
-    /// <summary>
-    /// Gets the socket bonus option link, if available.
-    /// </summary>
-    private IEnumerable<ItemOptionLink> FenrirOptionLinks => this.Item.ItemOptions.Where(io => io.ItemOption?.OptionType == ItemOptionTypes.BlackFenrir || io.ItemOption?.OptionType == ItemOptionTypes.BlueFenrir || io.ItemOption?.OptionType == ItemOptionTypes.GoldFenrir);
 
     /// <summary>
     /// Gets or sets the fenrir option.
@@ -422,10 +411,22 @@ public class ViewModel : INotifyPropertyChanged
                 return;
             }
 
-            this.Item.SocketCount = Math.Min(value, this.Item.Definition?.MaximumSockets ?? 0);
-            for (int i = this.Item.SocketCount; i < this.Item.Definition?.MaximumSockets; i++)
+            var maximumSockets = this.Item.Definition?.MaximumSockets ?? 0;
+
+            this.Item.SocketCount = Math.Min(value, maximumSockets);
+
+            // Remove sockets above the max.
+            while (this.Sockets.Count > maximumSockets)
             {
+                var i = this.Sockets.Count - 1;
                 this.Sockets[i].Option = null;
+                this.Sockets.RemoveAt(i);
+            }
+
+            // Add missing sockets.
+            for (int i = this.Sockets.Count; i < maximumSockets; i++)
+            {
+                this.Sockets.Add(new SocketViewModel(this.Item, this._persistenceContext, i, this.PossibleSocketOptions));
             }
 
             this.OnPropertyChanged();
@@ -644,6 +645,21 @@ public class ViewModel : INotifyPropertyChanged
     /// Gets the item set groups.
     /// </summary>
     public ICollection<ItemOfItemSet> ItemSetGroups => this.Item.ItemSetGroups;
+
+    /// <summary>
+    /// Gets the fenrir option types.
+    /// </summary>
+    internal static ItemOptionType[] FenrirOptions { get; } = { ItemOptionTypes.BlackFenrir, ItemOptionTypes.BlueFenrir, ItemOptionTypes.GoldFenrir };
+
+    /// <summary>
+    /// Gets the socket bonus option link, if available.
+    /// </summary>
+    private ItemOptionLink? SocketBonusOptionLink => this.Item.ItemOptions.FirstOrDefault(io => io.ItemOption?.OptionType == ItemOptionTypes.SocketBonusOption);
+
+    /// <summary>
+    /// Gets the socket bonus option link, if available.
+    /// </summary>
+    private IEnumerable<ItemOptionLink> FenrirOptionLinks => this.Item.ItemOptions.Where(io => io.ItemOption?.OptionType == ItemOptionTypes.BlackFenrir || io.ItemOption?.OptionType == ItemOptionTypes.BlueFenrir || io.ItemOption?.OptionType == ItemOptionTypes.GoldFenrir);
 
     /// <summary>
     /// Gets the possible ancient set items.
