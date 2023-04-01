@@ -22,23 +22,22 @@ internal class CachingGenericRepository<T> : GenericRepositoryBase<T>
     /// <summary>
     /// Initializes a new instance of the <see cref="CachingGenericRepository{T}" /> class.
     /// </summary>
-    /// <param name="repositoryManager">The repository manager.</param>
+    /// <param name="repositoryProvider">The repository provider.</param>
     /// <param name="loggerFactory">The logger factory.</param>
-    public CachingGenericRepository(RepositoryManager repositoryManager, ILoggerFactory loggerFactory)
-        : base(repositoryManager, loggerFactory.CreateLogger(MethodBase.GetCurrentMethod()?.DeclaringType ?? typeof(CachingGenericRepository<T>)))
+    public CachingGenericRepository(IContextAwareRepositoryProvider repositoryProvider, ILoggerFactory loggerFactory)
+        : base(repositoryProvider, loggerFactory.CreateLogger(MethodBase.GetCurrentMethod()?.DeclaringType ?? typeof(CachingGenericRepository<T>)))
     {
         this._loggerFactory = loggerFactory;
     }
 
     /// <summary>
-    /// Gets a context to work with. If no context is currently registered at the repository manager, a new one is getting created.
+    /// Gets a context to work with. If no context is currently registered at the repository provider, a new one is getting created.
     /// </summary>
     /// <returns>The context.</returns>
     protected override EntityFrameworkContextBase GetContext()
     {
-        var context = this.RepositoryManager.ContextStack.GetCurrentContext() as CachingEntityFrameworkContext;
-
-        return new CachingEntityFrameworkContext(context?.Context ?? new EntityDataContext(), this.RepositoryManager, context is null, this._loggerFactory.CreateLogger<CachingEntityFrameworkContext>());
+        var context = this.RepositoryProvider.ContextStack.GetCurrentContext() as EntityFrameworkContextBase;
+        return new CachingEntityFrameworkContext(context?.Context ?? new EntityDataContext(), this.RepositoryProvider, context is null, null, this._loggerFactory.CreateLogger<CachingEntityFrameworkContext>());
     }
 
     /// <inheritdoc/>

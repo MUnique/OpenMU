@@ -3,14 +3,24 @@
 @using System.Reflection
 @typeparam TValue
 
-@if (this._actualLabel != string.Empty)
+@if (!string.IsNullOrWhiteSpace(this._actualLabel))
 {
-<label for="@this._fieldIdentifier.FieldName">@this._actualLabel</label>
+    <label for="@this._fieldIdentifier.FieldName">
+        @this._actualLabel
+        @if (!string.IsNullOrWhiteSpace(this._description))
+        {
+            <details>
+                <summary></summary>
+                <div><span class="oi oi-info" aria-hidden="true"></span> @this._description</div>
+            </details>
+        }
+    </label>
 }
 
 @code {
     private string _actualLabel = null!;
     private FieldIdentifier _fieldIdentifier;
+    private string? _description;
 
     /// <summary>
     /// Gets or sets the text.
@@ -29,8 +39,11 @@
     {
         base.OnParametersSet();
         this._fieldIdentifier = FieldIdentifier.Create(this.ValueExpression);
+        var property = this._fieldIdentifier.Model.GetType().GetProperty(this._fieldIdentifier.FieldName);
+        var displayAttribute = property?.GetCustomAttribute<DisplayAttribute>();
         this._actualLabel = (string.IsNullOrWhiteSpace(this.Text) ? null : this.Text)
-                           ?? this._fieldIdentifier.Model.GetType().GetProperty(this._fieldIdentifier.FieldName)?.GetCustomAttribute<DisplayAttribute>()?.Name
-                           ?? this._fieldIdentifier.FieldName;
+                            ?? displayAttribute?.GetName()
+                            ?? CaptionHelper.SeparateWords(this._fieldIdentifier.FieldName);
+        this._description = displayAttribute?.GetDescription();
     }
 }

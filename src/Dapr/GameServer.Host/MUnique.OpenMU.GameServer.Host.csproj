@@ -13,6 +13,11 @@
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <DocumentationFile></DocumentationFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="..\..\Web\AdminPanel\wwwroot\css\site.css" Link="wwwroot\css\site.css" />
+    <Content Include="..\..\Web\AdminPanel\wwwroot\css\site.min.css" Link="wwwroot\css\site.min.css" />
+  </ItemGroup>
   
   <ItemGroup>
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.0" />
@@ -23,18 +28,4 @@
     <ProjectReference Include="..\Common\MUnique.OpenMU.Dapr.Common.csproj" />
     <ProjectReference Include="..\..\GameServer\MUnique.OpenMU.GameServer.csproj" />
   </ItemGroup>
-  
-  <ItemGroup>
-    <Compile Include="..\..\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
-    <Compile Include="..\..\SharedGlobalUsings.cs" Link="SharedGlobalUsings.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <AdditionalFiles Include="..\..\stylecop.json" Link="stylecop.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="..\..\.editorconfig" Link=".editorconfig" />
-  </ItemGroup>
-
 </Project>

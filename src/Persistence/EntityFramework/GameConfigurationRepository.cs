@@ -21,11 +21,11 @@ internal class GameConfigurationRepository : GenericRepository<GameConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="GameConfigurationRepository" /> class.
     /// </summary>
-    /// <param name="repositoryManager">The repository manager.</param>
+    /// <param name="repositoryProvider">The repository provider.</param>
     /// <param name="loggerFactory">The logger factory.</param>
     /// <param name="changePublisher">The change publisher.</param>
-    public GameConfigurationRepository(RepositoryManager repositoryManager, ILoggerFactory loggerFactory, IConfigurationChangePublisher? changePublisher)
-        : base(repositoryManager, loggerFactory, changePublisher)
+    public GameConfigurationRepository(IContextAwareRepositoryProvider repositoryProvider, ILoggerFactory loggerFactory, IConfigurationChangePublisher? changePublisher)
+        : base(repositoryProvider, loggerFactory, changePublisher)
     {
         this._objectLoader = new GameConfigurationJsonObjectLoader();
     }
@@ -33,7 +33,7 @@ internal class GameConfigurationRepository : GenericRepository<GameConfiguration
     /// <inheritdoc />
     public override async ValueTask<GameConfiguration?> GetByIdAsync(Guid id)
     {
-        var currentContext = this.RepositoryManager.ContextStack.GetCurrentContext() as EntityFrameworkContextBase;
+        var currentContext = this.RepositoryProvider.ContextStack.GetCurrentContext() as EntityFrameworkContextBase;
         if (currentContext is null)
         {
             throw new InvalidOperationException("There is no current context set.");
@@ -60,7 +60,7 @@ internal class GameConfigurationRepository : GenericRepository<GameConfiguration
     /// <inheritdoc />
     public override async ValueTask<IEnumerable<GameConfiguration>> GetAllAsync()
     {
-        var currentContext = this.RepositoryManager.ContextStack.GetCurrentContext() as EntityFrameworkContextBase;
+        var currentContext = this.RepositoryProvider.ContextStack.GetCurrentContext() as EntityFrameworkContextBase;
         if (currentContext is null)
         {
             throw new InvalidOperationException("There is no current context set.");

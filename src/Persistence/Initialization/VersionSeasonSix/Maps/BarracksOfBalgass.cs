@@ -45,6 +45,7 @@ internal class BarracksOfBalgass : BaseMapInitializer
         base.InitializeDropItemGroups();
 
         var flameOfCondor = this.Context.CreateNew<DropItemGroup>();
+        flameOfCondor.SetGuid(this.MapNumber, 1);
         flameOfCondor.Chance = 0.001;
         flameOfCondor.Description = "Flame of Condor";
         flameOfCondor.PossibleItems.Add(this.GameConfiguration.Items.First(item => item.Group == 13 && item.Number == 52));
@@ -55,43 +56,43 @@ internal class BarracksOfBalgass : BaseMapInitializer
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()
     {
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[408], 119, 168, Direction.South); // Gatekeeper
+        yield return this.CreateMonsterSpawn(1, this.NpcDictionary[408], 119, 168, Direction.South); // Gatekeeper
     }
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateMonsterSpawns()
     {
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[409], 039, 101); // Balram (Trainee Soldier)
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[409], 044, 110); // Balram (Trainee Soldier)
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[409], 052, 134); // Balram (Trainee Soldier)
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[409], 067, 112); // Balram (Trainee Soldier)
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[409], 087, 090); // Balram (Trainee Soldier)
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[409], 090, 067); // Balram (Trainee Soldier)
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[409], 090, 078); // Balram (Trainee Soldier)
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[409], 071, 101); // Balram (Trainee Soldier)
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[409], 064, 132); // Balram (Trainee Soldier)
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[409], 109, 101); // Balram (Trainee Soldier)
+        yield return this.CreateMonsterSpawn(100, this.NpcDictionary[409], 039, 101); // Balram (Trainee Soldier)
+        yield return this.CreateMonsterSpawn(101, this.NpcDictionary[409], 044, 110); // Balram (Trainee Soldier)
+        yield return this.CreateMonsterSpawn(102, this.NpcDictionary[409], 052, 134); // Balram (Trainee Soldier)
+        yield return this.CreateMonsterSpawn(103, this.NpcDictionary[409], 067, 112); // Balram (Trainee Soldier)
+        yield return this.CreateMonsterSpawn(104, this.NpcDictionary[409], 087, 090); // Balram (Trainee Soldier)
+        yield return this.CreateMonsterSpawn(105, this.NpcDictionary[409], 090, 067); // Balram (Trainee Soldier)
+        yield return this.CreateMonsterSpawn(106, this.NpcDictionary[409], 090, 078); // Balram (Trainee Soldier)
+        yield return this.CreateMonsterSpawn(107, this.NpcDictionary[409], 071, 101); // Balram (Trainee Soldier)
+        yield return this.CreateMonsterSpawn(108, this.NpcDictionary[409], 064, 132); // Balram (Trainee Soldier)
+        yield return this.CreateMonsterSpawn(109, this.NpcDictionary[409], 109, 101); // Balram (Trainee Soldier)
 
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[410], 098, 096); // Death Spirit (Trainee Soldier)
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[410], 122, 090); // Death Spirit (Trainee Soldier)
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[410], 125, 099); // Death Spirit (Trainee Soldier)
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[410], 137, 140); // Death Spirit (Trainee Soldier)
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[410], 140, 150); // Death Spirit (Trainee Soldier)
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[410], 044, 127); // Death Spirit (Trainee Soldier)
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[410], 057, 123); // Death Spirit (Trainee Soldier)
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[410], 079, 086); // Death Spirit (Trainee Soldier)
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[410], 101, 069); // Death Spirit (Trainee Soldier)
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[410], 121, 118); // Death Spirit (Trainee Soldier)
+        yield return this.CreateMonsterSpawn(200, this.NpcDictionary[410], 098, 096); // Death Spirit (Trainee Soldier)
+        yield return this.CreateMonsterSpawn(201, this.NpcDictionary[410], 122, 090); // Death Spirit (Trainee Soldier)
+        yield return this.CreateMonsterSpawn(202, this.NpcDictionary[410], 125, 099); // Death Spirit (Trainee Soldier)
+        yield return this.CreateMonsterSpawn(203, this.NpcDictionary[410], 137, 140); // Death Spirit (Trainee Soldier)
+        yield return this.CreateMonsterSpawn(204, this.NpcDictionary[410], 140, 150); // Death Spirit (Trainee Soldier)
+        yield return this.CreateMonsterSpawn(205, this.NpcDictionary[410], 044, 127); // Death Spirit (Trainee Soldier)
+        yield return this.CreateMonsterSpawn(206, this.NpcDictionary[410], 057, 123); // Death Spirit (Trainee Soldier)
+        yield return this.CreateMonsterSpawn(207, this.NpcDictionary[410], 079, 086); // Death Spirit (Trainee Soldier)
+        yield return this.CreateMonsterSpawn(208, this.NpcDictionary[410], 101, 069); // Death Spirit (Trainee Soldier)
+        yield return this.CreateMonsterSpawn(209, this.NpcDictionary[410], 121, 118); // Death Spirit (Trainee Soldier)
 
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[411], 127, 127); // Soram (Trainee Soldier)
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[411], 126, 166, 164, 164); // Soram (Trainee Soldier)
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[411], 123, 160); // Soram (Trainee Soldier)
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[411], 132, 156); // Soram (Trainee Soldier)
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[411], 132, 136); // Soram (Trainee Soldier)
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[411], 116, 103); // Soram (Trainee Soldier)
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[411], 129, 146); // Soram (Trainee Soldier)
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[411], 117, 098); // Soram (Trainee Soldier)
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[411], 113, 109); // Soram (Trainee Soldier)
+        yield return this.CreateMonsterSpawn(300, this.NpcDictionary[411], 127, 127); // Soram (Trainee Soldier)
+        yield return this.CreateMonsterSpawn(301, this.NpcDictionary[411], 126, 166, 164, 164); // Soram (Trainee Soldier)
+        yield return this.CreateMonsterSpawn(302, this.NpcDictionary[411], 123, 160); // Soram (Trainee Soldier)
+        yield return this.CreateMonsterSpawn(303, this.NpcDictionary[411], 132, 156); // Soram (Trainee Soldier)
+        yield return this.CreateMonsterSpawn(304, this.NpcDictionary[411], 132, 136); // Soram (Trainee Soldier)
+        yield return this.CreateMonsterSpawn(305, this.NpcDictionary[411], 116, 103); // Soram (Trainee Soldier)
+        yield return this.CreateMonsterSpawn(306, this.NpcDictionary[411], 129, 146); // Soram (Trainee Soldier)
+        yield return this.CreateMonsterSpawn(307, this.NpcDictionary[411], 117, 098); // Soram (Trainee Soldier)
+        yield return this.CreateMonsterSpawn(308, this.NpcDictionary[411], 113, 109); // Soram (Trainee Soldier)
     }
 
     /// <inheritdoc/>
@@ -126,6 +127,7 @@ internal class BarracksOfBalgass : BaseMapInitializer
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -157,6 +159,7 @@ internal class BarracksOfBalgass : BaseMapInitializer
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -188,6 +191,7 @@ internal class BarracksOfBalgass : BaseMapInitializer
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
     }
 }

@@ -78,11 +78,17 @@ when we access our "Contexts".
 We're also caching configuration data with this approach, by using so called [ConfigurationTypeRepositories](ConfigurationTypeRepository.cs).
 
 Each entity type has basically one repository, some are manually implemented,
-some are generic. There is a [RepositoryManager](RepositoryManager.cs) which
-holds and "manages" all of these repositories.
+some are generic. There is a [RepositoryProvider](RepositoryProvider.cs) which
+holds and "provides" all of these repositories.
 The implementation of this pattern is probably not the same as all of the examples
 of what you'll find at the internet. Workarounds and different requirements result
 in different implementations ;-)
+
+The [CacheAwareRepositoryProvider](CacheAwareRepositoryProvider.cs) holds two other
+repository providers. One which provides repositories which actually load the data
+from the database, and another one which returns repositories with cached data,
+based on the loaded GameConfiguration. The CacheAwareRepositoryProvider first tries
+to retrieve a repository for the cached data. If none is found, it takes the other.
 
 ### Loading whole object graphs
 

@@ -12,7 +12,7 @@
 
 <div class="map-select">
     <label for="mapSelect">Selected Map:</label>
-    <select title="Map" @onchange=this.OnMapSelected id="mapSelect" autocomplete="off">
+    <select title="Map" @onchange=this.OnMapSelectedAsync id="mapSelect" autocomplete="off">
         @foreach (var map in this.Maps ?? Enumerable.Empty<GameMapDefinition>())
         {
             <option value="@map.GetId()" selected=@(object.Equals(this.SelectedMap, map))>Map: @map.ToString()</option>

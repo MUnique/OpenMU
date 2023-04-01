@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
+using System.Diagnostics;
 using System.Threading;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -27,17 +28,16 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
     {
         this._loggerFactory = loggerFactory;
         this._changePublisher = changePublisher;
-        this.CachingRepositoryManager = new CachingRepositoryManager(loggerFactory);
-        this.CachingRepositoryManager.RegisterRepositories();
+        this.RepositoryProvider = new CacheAwareRepositoryProvider(loggerFactory, changePublisher);
     }
 
     /// <summary>
-    /// Gets the repository manager.
+    /// Gets the repository provider.
     /// </summary>
     /// <value>
-    /// The repository manager.
+    /// The repository provider.
     /// </value>
-    internal CachingRepositoryManager CachingRepositoryManager { get; private set; }
+    internal CacheAwareRepositoryProvider RepositoryProvider { get; private set; }
 
     /// <summary>
     /// Determines whether the database schema is up to date.
@@ -49,7 +49,7 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
     {
         try
         {
-            using var installationContext = new EntityDataContext();
+            await using var installationContext = new EntityDataContext();
             return !(await installationContext.Database.GetPendingMigrationsAsync().ConfigureAwait(false)).Any();
         }
         catch
@@ -63,7 +63,7 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
     /// </summary>
     public async Task ApplyAllPendingUpdatesAsync()
     {
-        using var installationContext = new EntityDataContext();
+        await using var installationContext = new EntityDataContext();
         await installationContext.Database.MigrateAsync().ConfigureAwait(false);
     }
 
@@ -73,8 +73,8 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
     /// <param name="cancellationToken">The cancellation token.</param>
     public async Task WaitForUpdatedDatabaseAsync(CancellationToken cancellationToken = default)
     {
-        while (!await this.DatabaseExistsAsync()
-.ConfigureAwait(false) || !await this.IsDatabaseUpToDateAsync().ConfigureAwait(false))
+        while (!await this.DatabaseExistsAsync().ConfigureAwait(false)
+               || !await this.IsDatabaseUpToDateAsync().ConfigureAwait(false))
         {
             await Task.Delay(3000, cancellationToken).ConfigureAwait(false);
         }
@@ -146,56 +146,77 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
 
         await this.ApplyAllPendingUpdatesAsync().ConfigureAwait(false);
 
-        // We create a new repository manager, so that the previously loaded data is not effective anymore.
-        this.CachingRepositoryManager = new CachingRepositoryManager(this._loggerFactory);
-        this.CachingRepositoryManager.RegisterRepositories();
+        // We create a new repository provider, so that the previously loaded data is not effective anymore.
+        this.RepositoryProvider = new CacheAwareRepositoryProvider(this._loggerFactory, this._changePublisher);
     }
 
     /// <inheritdoc />
     public IContext CreateNewContext()
     {
-        return new CachingEntityFrameworkContext(new EntityDataContext(), this.CachingRepositoryManager, this._loggerFactory.CreateLogger<CachingEntityFrameworkContext>());
+        var repositoryProvider = new NonCachingRepositoryProvider(this._loggerFactory, null, this._changePublisher, this.RepositoryProvider.ContextStack);
+        return new EntityFrameworkContext(new EntityDataContext(), this._loggerFactory, repositoryProvider, true, this._changePublisher);
     }
 
     /// <inheritdoc />
     public IContext CreateNewContext(DataModel.Configuration.GameConfiguration gameConfiguration)
     {
-        return new CachingEntityFrameworkContext(new EntityDataContext { CurrentGameConfiguration = gameConfiguration as GameConfiguration }, this.CachingRepositoryManager, this._loggerFactory.CreateLogger<CachingEntityFrameworkContext>());
+        return new CachingEntityFrameworkContext(
+            new EntityDataContext { CurrentGameConfiguration = gameConfiguration as GameConfiguration },
+            this.RepositoryProvider,
+            this._changePublisher,
+            this._loggerFactory.CreateLogger<CachingEntityFrameworkContext>());
     }
 
     /// <inheritdoc />
     public IPlayerContext CreateNewPlayerContext(DataModel.Configuration.GameConfiguration gameConfiguration)
     {
-        return new PlayerContext(new AccountContext { CurrentGameConfiguration = gameConfiguration as GameConfiguration }, this.CachingRepositoryManager, this._loggerFactory.CreateLogger<PlayerContext>());
+        return new PlayerContext(new AccountContext { CurrentGameConfiguration = gameConfiguration as GameConfiguration }, this.RepositoryProvider, this._loggerFactory.CreateLogger<PlayerContext>());
     }
 
     /// <inheritdoc />
     public IConfigurationContext CreateNewConfigurationContext()
     {
-        return new GameConfigurationContext(this.CachingRepositoryManager, this._loggerFactory.CreateLogger<GameConfigurationContext>());
+        return new GameConfigurationContext(this.RepositoryProvider, this._loggerFactory.CreateLogger<GameConfigurationContext>());
     }
 
     /// <inheritdoc />
     public IContext CreateNewTradeContext()
     {
-        return new CachingEntityFrameworkContext(new TradeContext(), this.CachingRepositoryManager, this._loggerFactory.CreateLogger<CachingEntityFrameworkContext>());
+        return new CachingEntityFrameworkContext(new TradeContext(), this.RepositoryProvider, null, this._loggerFactory.CreateLogger<CachingEntityFrameworkContext>());
     }
 
     /// <inheritdoc />
     public IFriendServerContext CreateNewFriendServerContext()
     {
-        return new FriendServerContext(new FriendContext(), this.CachingRepositoryManager, this._loggerFactory.CreateLogger<FriendServerContext>());
+        return new FriendServerContext(new FriendContext(), this.RepositoryProvider, this._loggerFactory.CreateLogger<FriendServerContext>());
     }
 
     /// <inheritdoc/>
     public IGuildServerContext CreateNewGuildContext()
     {
-        return new GuildServerContext(new GuildContext(), this.CachingRepositoryManager, this._loggerFactory.CreateLogger<GuildServerContext>());
+        return new GuildServerContext(new GuildContext(), this.RepositoryProvider, this._loggerFactory.CreateLogger<GuildServerContext>());
     }
 
     /// <inheritdoc />
-    public IContext CreateNewTypedContext<T>()
+    public IContext CreateNewTypedContext<T>(bool useCache, DataModel.Configuration.GameConfiguration? gameConfiguration = null)
     {
-        return new EntityFrameworkContext(new TypedContext<T>(), this._loggerFactory, this._changePublisher);
+        if (!typeof(T).IsConfigurationType() && gameConfiguration is null)
+        {
+            Debug.WriteLine($"Non-configuration type {typeof(T)} without game configuration");
+        }
+
+        if (useCache && gameConfiguration is null)
+        {
+            throw new ArgumentNullException(nameof(gameConfiguration), "When cache should be used, the game configuration must be provided.");
+        }
+
+        var dbContext = new TypedContext<T> { CurrentGameConfiguration = gameConfiguration as GameConfiguration };
+        if (useCache)
+        {
+            return new CachingEntityFrameworkContext(dbContext, this.RepositoryProvider, this._changePublisher, this._loggerFactory.CreateLogger<CachingEntityFrameworkContext>());
+        }
+
+        var repositoryProvider = new NonCachingRepositoryProvider(this._loggerFactory, null, this._changePublisher, this.RepositoryProvider.ContextStack);
+        return new EntityFrameworkContext(dbContext, this._loggerFactory, repositoryProvider, true, this._changePublisher);
     }
 }

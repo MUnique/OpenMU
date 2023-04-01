@@ -45,6 +45,9 @@ public class EntityDataContext : ExtendedTypeContext
         modelBuilder.Entity<ChatServerDefinition>();
         modelBuilder.Entity<MiniGameRankingEntry>();
         modelBuilder.Entity<GameServerDefinition>();
+        modelBuilder.Entity<ConfigurationUpdate>();
+        modelBuilder.Entity<ConfigurationUpdateState>();
+        modelBuilder.Entity<SystemConfiguration>();
 
         modelBuilder.Entity<PowerUpDefinitionValue>().Apply();
         modelBuilder.Entity<Model.ConstValueAttribute>().Apply();

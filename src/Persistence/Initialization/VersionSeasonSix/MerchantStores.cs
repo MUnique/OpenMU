@@ -13,7 +13,7 @@ using MUnique.OpenMU.Persistence.Initialization.Items;
 internal partial class NpcInitialization
 {
     /// <inheritdoc />
-    protected override ItemStorage CreatePotionGirlItemStorage()
+    protected override ItemStorage CreatePotionGirlItemStorage(short number)
     {
         List<Item> itemList = new ()
         {
@@ -62,11 +62,14 @@ internal partial class NpcInitialization
             this.ItemHelper.CreateItem(32, 10, 14, 1, 0), // Town Portal Scroll
             this.ItemHelper.CreateItem(33, 29, 13, 1, 0), // Armor of Guardsman
         };
-        return this.CreateMerchantStore(itemList);
+
+        var storage = this.CreateMerchantStore(itemList);
+        storage.SetGuid(number);
+        return storage;
     }
 
     /// <inheritdoc />
-    protected override ItemStorage CreateWanderingMerchant()
+    protected override ItemStorage CreateWanderingMerchant(short number)
     {
         List<Item> itemList = new ()
         {
@@ -101,11 +104,13 @@ internal partial class NpcInitialization
             this.ItemHelper.CreateSetItem(84, 9, ItemGroups.Gloves, null, 3, 1, true),   // Plate Gloves    +3+4+L
         };
 
-        return this.CreateMerchantStore(itemList);
+        var storage = this.CreateMerchantStore(itemList);
+        storage.SetGuid(number);
+        return storage;
     }
 
     /// <inheritdoc />
-    protected override ItemStorage CreateHanzoTheBlacksmith()
+    protected override ItemStorage CreateHanzoTheBlacksmith(short number)
     {
         List<Item> itemList = new ()
         {
@@ -140,11 +145,13 @@ internal partial class NpcInitialization
             this.ItemHelper.CreateWeapon(75, ItemGroups.Swords, 5, 3, 1, true, true, null),   // Blade            +3+4+L+S
         };
 
-        return this.CreateMerchantStore(itemList);
+        var storage = this.CreateMerchantStore(itemList);
+        storage.SetGuid(number);
+        return storage;
     }
 
     /// <inheritdoc />
-    protected override ItemStorage CreatePasiTheMageStore()
+    protected override ItemStorage CreatePasiTheMageStore(short number)
     {
         List<Item> itemList = new ()
         {
@@ -183,11 +190,13 @@ internal partial class NpcInitialization
             this.ItemHelper.CreateWeapon(94, ItemGroups.Staff, 3, 3, 1, true, false, null),  // Thunder Staff    +3+4+L
         };
 
-        return this.CreateMerchantStore(itemList);
+        var storage = this.CreateMerchantStore(itemList);
+        storage.SetGuid(number);
+        return storage;
     }
 
     /// <inheritdoc />
-    protected override ItemStorage CreateElfLalaStore()
+    protected override ItemStorage CreateElfLalaStore(short number)
     {
         List<Item> itemList = new ()
         {
@@ -263,11 +272,13 @@ internal partial class NpcInitialization
             this.ItemHelper.CreateWeapon(102, ItemGroups.Bows, 15, 2, 0, false, false, null), // Arrow +2
         };
 
-        return this.CreateMerchantStore(itemList);
+        var storage = this.CreateMerchantStore(itemList);
+        storage.SetGuid(number);
+        return storage;
     }
 
     /// <inheritdoc />
-    protected override ItemStorage CreateIzabelTheWizardStore()
+    protected override ItemStorage CreateIzabelTheWizardStore(short number)
     {
         List<Item> itemList = new ()
         {
@@ -327,11 +338,13 @@ internal partial class NpcInitialization
             this.ItemHelper.CreateScroll(62, 7), // Scroll of Twister
         };
 
-        return this.CreateMerchantStore(itemList);
+        var storage = this.CreateMerchantStore(itemList);
+        storage.SetGuid(number);
+        return storage;
     }
 
     /// <inheritdoc />
-    protected override ItemStorage CreateEoTheCraftsmanStore()
+    protected override ItemStorage CreateEoTheCraftsmanStore(short number)
     {
         List<Item> itemList = new ()
         {
@@ -362,11 +375,13 @@ internal partial class NpcInitialization
             this.ItemHelper.CreateShield(78, 3, false, null, 3, 2, true), // Elven Shield +3+Luck+5
         };
 
-        return this.CreateMerchantStore(itemList);
+        var storage = this.CreateMerchantStore(itemList);
+        storage.SetGuid(number);
+        return storage;
     }
 
     /// <inheritdoc />
-    protected override ItemStorage CreateZiennaStore()
+    protected override ItemStorage CreateZiennaStore(short number)
     {
         List<Item> itemList = new ()
         {
@@ -393,11 +408,13 @@ internal partial class NpcInitialization
             this.ItemHelper.CreateWeapon(70, ItemGroups.Bows, 13, 3, 1, true, true, null), // Bluewing Crossbow +3+Skill+Luck+4
         };
 
-        return this.CreateMerchantStore(itemList);
+        var storage = this.CreateMerchantStore(itemList);
+        storage.SetGuid(number);
+        return storage;
     }
 
     /// <inheritdoc />
-    protected override ItemStorage CreateLumenTheBarmaidStore()
+    protected override ItemStorage CreateLumenTheBarmaidStore(short number)
     {
         List<Item> itemList = new ()
         {
@@ -449,11 +466,13 @@ internal partial class NpcInitialization
             this.ItemHelper.CreateItem(65, 29, 13, 1, 0), // Armor of Guardsman
         };
 
-        return this.CreateMerchantStore(itemList);
+        var storage = this.CreateMerchantStore(itemList);
+        storage.SetGuid(number);
+        return storage;
     }
 
     /// <inheritdoc />
-    protected override ItemStorage CreateCarenTheBarmaidStore()
+    protected override ItemStorage CreateCarenTheBarmaidStore(short number)
     {
         List<Item> itemList = new ()
         {
@@ -470,14 +489,16 @@ internal partial class NpcInitialization
             this.ItemHelper.CreateItem(16, 29, 13, 1, 0), // Armor of Guardsman
         };
 
-        return this.CreateMerchantStore(itemList);
+        var storage = this.CreateMerchantStore(itemList);
+        storage.SetGuid(number);
+        return storage;
     }
 
     /// <summary>
     /// Creates the merchant store of 'Alex'.
     /// </summary>
     /// <returns>The created store.</returns>
-    private ItemStorage CreateAlexStore()
+    private ItemStorage CreateAlexStore(short number)
     {
         List<Item> itemList = new ()
         {
@@ -492,10 +513,12 @@ internal partial class NpcInitialization
             this.ItemHelper.CreateWeapon(38, ItemGroups.Scepters, 3, 3, 1, true, true, null), // Great Hammer +3+Skill+Luck+4
         };
 
-        return this.CreateMerchantStore(itemList);
+        var storage = this.CreateMerchantStore(itemList);
+        storage.SetGuid(number);
+        return storage;
     }
 
-    private ItemStorage CreateMarceStore()
+    private ItemStorage CreateMarceStore(short number)
     {
         List<Item> itemList = new ()
         {
@@ -506,10 +529,12 @@ internal partial class NpcInitialization
             this.ItemHelper.CreateScroll(4, 20),  // Drain Life Parchment
         };
 
-        return this.CreateMerchantStore(itemList);
+        var storage = this.CreateMerchantStore(itemList);
+        storage.SetGuid(number);
+        return storage;
     }
 
-    private ItemStorage CreateRheaStore()
+    private ItemStorage CreateRheaStore(short number)
     {
         List<Item> itemList = new ()
         {
@@ -539,10 +564,12 @@ internal partial class NpcInitialization
             this.ItemHelper.CreateWeapon(61, ItemGroups.Staff, 16, 3, 1, true, false, null), // Red Wing Stick +3+Luck+4
         };
 
-        return this.CreateMerchantStore(itemList);
+        var storage = this.CreateMerchantStore(itemList);
+        storage.SetGuid(number);
+        return storage;
     }
 
-    private ItemStorage CreateBoloStore()
+    private ItemStorage CreateBoloStore(short number)
     {
         List<Item> itemList = new ()
         {
@@ -554,6 +581,8 @@ internal partial class NpcInitialization
             this.ItemHelper.CreateWeapon(7, ItemGroups.Staff, 6, 3, 3, true, false, null), // Staff of Resurrection +3+Luck+12
         };
 
-        return this.CreateMerchantStore(itemList);
+        var storage = this.CreateMerchantStore(itemList);
+        storage.SetGuid(number);
+        return storage;
     }
 }

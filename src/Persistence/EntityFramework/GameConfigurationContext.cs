@@ -16,10 +16,10 @@ internal class GameConfigurationContext : CachingEntityFrameworkContext, IConfig
     /// <summary>
     /// Initializes a new instance of the <see cref="GameConfigurationContext"/> class.
     /// </summary>
-    /// <param name="repositoryManager">The repository manager.</param>
+    /// <param name="repositoryProvider">The repository provider.</param>
     /// <param name="logger">The logger.</param>
-    public GameConfigurationContext(RepositoryManager repositoryManager, ILogger<GameConfigurationContext> logger)
-        : base(new ConfigurationContext(), repositoryManager, logger)
+    public GameConfigurationContext(IContextAwareRepositoryProvider repositoryProvider, ILogger<GameConfigurationContext> logger)
+        : base(new ConfigurationContext(), repositoryProvider, null, logger)
     {
     }
 

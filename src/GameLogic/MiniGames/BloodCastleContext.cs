@@ -204,7 +204,7 @@ public sealed class BloodCastleContext : MiniGameContext
         var sortedFinishers = finishers
             .Select(f => this._gameStates[f.Name])
             .WhereNotNull()
-            .OrderBy(state => state.Score)
+            .OrderByDescending(state => state.Score)
             .ToList();
 
         var scoreList = new List<(string Name, int Score, int BonusExp, int BonusMoney)>();

@@ -34,4 +34,10 @@ public class InMemoryRepositoryAdapter<T> : RepositoryAdapter<T>, IMemoryReposit
     {
         return this._repository.RemoveAsync(key);
     }
+
+    /// <inheritdoc />
+    public void OnSaveChanges()
+    {
+        this._repository.OnSaveChanges();
+    }
 }

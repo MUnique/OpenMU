@@ -42,6 +42,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 		..\.gitignore = ..\.gitignore
 		..\azure-pipelines.yml = ..\azure-pipelines.yml
+		Directory.Build.props = Directory.Build.props
 		..\LICENSE = ..\LICENSE
 		..\QuickStart.md = ..\QuickStart.md
 		..\Readme.md = ..\Readme.md
@@ -147,7 +148,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Distributed", "Distributed"
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose-all-in-one", "..\deploy\all-in-one\docker-compose-all-in-one.dcproj", "{6518D58A-5F07-4341-87AF-FCF3715D2554}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MUnique.OpenMU.ClientErrorLogDecryptor", "ClientErrorLogDecryptor\MUnique.OpenMU.ClientErrorLogDecryptor.csproj", "{54125AC8-D0CB-4EC8-98DD-BE63E69FD3D6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.ClientErrorLogDecryptor", "ClientErrorLogDecryptor\MUnique.OpenMU.ClientErrorLogDecryptor.csproj", "{54125AC8-D0CB-4EC8-98DD-BE63E69FD3D6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MUnique.OpenMU.Web.ItemEditor", "Web\ItemEditor\MUnique.OpenMU.Web.ItemEditor.csproj", "{298D1A42-8958-4662-8A05-E6B6F16F7268}"
 EndProject

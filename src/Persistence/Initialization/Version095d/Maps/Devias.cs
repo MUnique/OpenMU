@@ -32,6 +32,6 @@ internal class Devias : Version075.Maps.Devias
             yield return npc;
         }
 
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[235], 183, 32, Direction.SouthEast); // Priest Sevina
+        yield return this.CreateMonsterSpawn(20, this.NpcDictionary[235], 183, 32, Direction.SouthEast); // Priest Sevina
     }
 }

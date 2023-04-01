@@ -1,0 +1,21 @@
+﻿@using MUnique.OpenMU.Persistence
+
+@typeparam TValue where TValue : struct, Enum
+@inherits NotifyableInputBase<TValue>
+
+<div>
+    <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
+    <BlazoredTypeahead TItem="TValue" TValue="TValue"
+                       SearchMethod="@this.SearchAsync"
+                       ValuesExpression="@(() => this.ValueAsSingleFlags)"
+                       Values="@this.ValueAsSingleFlags"
+                       EnableDropDown="true"
+                       ValuesChanged="@this.OnValueChangedAsync"
+                       ShowDropDownOnFocus="true"
+                       placeholder="@this.Placeholder"
+                       id="@this.FieldIdentifier.FieldName">
+        <SelectedTemplate Context="item">@item.GetName()</SelectedTemplate>
+        <ResultTemplate Context="item">@item.GetName()</ResultTemplate>
+    </BlazoredTypeahead>
+    <ValidationMessage For=@this.ValueExpression />
+</div>

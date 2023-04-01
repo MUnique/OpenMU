@@ -202,6 +202,7 @@ internal class BloodCastleInitializer : InitializerBase
     protected MiniGameDefinition CreateBloodCastleDefinition(byte level, short mapNumber)
     {
         var bloodCastle = this.Context.CreateNew<MiniGameDefinition>();
+        bloodCastle.SetGuid((short)MiniGameType.BloodCastle, level);
         this.GameConfiguration.MiniGameDefinitions.Add(bloodCastle);
         bloodCastle.Name = $"Blood Castle {level}";
         bloodCastle.Description = $"Event definition for blood castle event, level {level}.";
@@ -216,6 +217,7 @@ internal class BloodCastleInitializer : InitializerBase
         bloodCastle.GameLevel = level;
         bloodCastle.MapCreationPolicy = MiniGameMapCreationPolicy.Shared;
         bloodCastle.SaveRankingStatistics = true;
+        bloodCastle.AllowParty = true;
 
         this.CreateRewards(level, bloodCastle);
         this.CreateEvents(level, bloodCastle);
@@ -237,6 +239,7 @@ internal class BloodCastleInitializer : InitializerBase
         entranceToggleArea.EndY = 23;
         entranceToggleArea.SetTerrainAttribute = false;
         entranceToggleArea.TerrainAttribute = TerrainAttributeType.Blocked;
+        entranceToggleArea.IsClientUpdateRequired = true;
 
         // The next two areas are already unlocked because of the monster spawns.
         var behindGateArea = this.Context.CreateNew<MiniGameTerrainChange>();
@@ -247,6 +250,7 @@ internal class BloodCastleInitializer : InitializerBase
         behindGateArea.EndY = 89;
         behindGateArea.SetTerrainAttribute = false;
         behindGateArea.TerrainAttribute = TerrainAttributeType.Blocked;
+        behindGateArea.IsClientUpdateRequired = true;
 
         var altarArea = this.Context.CreateNew<MiniGameTerrainChange>();
         entranceToggleEvent.TerrainChanges.Add(altarArea);
@@ -256,6 +260,7 @@ internal class BloodCastleInitializer : InitializerBase
         altarArea.EndY = 83;
         altarArea.SetTerrainAttribute = false;
         altarArea.TerrainAttribute = TerrainAttributeType.Blocked;
+        altarArea.IsClientUpdateRequired = true;
 
         var bridgeToggleEvent = this.Context.CreateNew<MiniGameChangeEvent>();
         bloodCastle.ChangeEvents.Add(bridgeToggleEvent);
@@ -273,6 +278,7 @@ internal class BloodCastleInitializer : InitializerBase
         bridgeToggleArea.EndY = 75;
         bridgeToggleArea.SetTerrainAttribute = false;
         bridgeToggleArea.TerrainAttribute = TerrainAttributeType.NoGround;
+        bridgeToggleArea.IsClientUpdateRequired = true;
 
         var gateToggleEvent = this.Context.CreateNew<MiniGameChangeEvent>();
         bloodCastle.ChangeEvents.Add(gateToggleEvent);
@@ -290,6 +296,7 @@ internal class BloodCastleInitializer : InitializerBase
         gateToggleArea.EndY = 79;
         gateToggleArea.SetTerrainAttribute = false;
         gateToggleArea.TerrainAttribute = TerrainAttributeType.Blocked;
+        gateToggleArea.IsClientUpdateRequired = true;
 
         var spawnStatueEvent = this.Context.CreateNew<MiniGameChangeEvent>();
         bloodCastle.ChangeEvents.Add(spawnStatueEvent);

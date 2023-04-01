@@ -13,5 +13,23 @@
         </PackageReference>
         
     </ItemGroup>
-    
+
+    <Choose>
+        <When Condition="Exists('../SharedAssemblyInfo.cs')">
+            <ItemGroup>
+                <Compile Include="..\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
+                <Compile Include="..\SharedGlobalUsings.cs" Link="SharedGlobalUsings.cs" />
+                <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
+                <None Include="..\.editorconfig" Link=".editorconfig" />
+            </ItemGroup>
+        </When>
+        <Otherwise>
+            <ItemGroup>
+                <Compile Include="..\..\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
+                <Compile Include="..\..\SharedGlobalUsings.cs" Link="SharedGlobalUsings.cs" />
+                <AdditionalFiles Include="..\..\stylecop.json" Link="stylecop.json" />
+                <None Include="..\..\.editorconfig" Link=".editorconfig" />
+            </ItemGroup>
+        </Otherwise>
+    </Choose>
 </Project>

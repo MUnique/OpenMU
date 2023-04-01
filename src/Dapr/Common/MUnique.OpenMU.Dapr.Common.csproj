@@ -38,18 +38,4 @@
     <ProjectReference Include="..\..\Persistence\EntityFramework\MUnique.OpenMU.Persistence.EntityFramework.csproj" />
     <ProjectReference Include="..\ServerClients\MUnique.OpenMU.ServerClients.csproj" />
   </ItemGroup>
-  
-  <ItemGroup>
-    <Compile Include="..\..\SharedAssemblyInfo.cs" Link="SharedAssemblyInfo.cs" />
-    <Compile Include="..\..\SharedGlobalUsings.cs" Link="SharedGlobalUsings.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <AdditionalFiles Include="..\..\stylecop.json" Link="stylecop.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="..\..\.editorconfig" Link=".editorconfig" />
-  </ItemGroup>
-
 </Project>

@@ -45,14 +45,14 @@ internal class SantaVillage : BaseMapInitializer
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()
     {
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[467], 202, 041, Direction.SouthWest); // Snowman
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[468], 222, 024, Direction.SouthWest); // Little Santa Yellow
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[469], 202, 033, Direction.SouthWest); // Little Santa Green
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[470], 192, 024, Direction.SouthWest); // Little Santa Red
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[471], 207, 009, Direction.SouthWest); // Little Santa Blue
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[472], 225, 011, Direction.SouthWest); // Little Santa White
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[473], 232, 013, Direction.SouthWest); // Little Santa Black
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[474], 216, 019, Direction.SouthWest); // Little Santa Orange
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[475], 193, 027, Direction.SouthWest); // Little Santa Pink
+        yield return this.CreateMonsterSpawn(1, this.NpcDictionary[467], 202, 041, Direction.SouthWest); // Snowman
+        yield return this.CreateMonsterSpawn(2, this.NpcDictionary[468], 222, 024, Direction.SouthWest); // Little Santa Yellow
+        yield return this.CreateMonsterSpawn(3, this.NpcDictionary[469], 202, 033, Direction.SouthWest); // Little Santa Green
+        yield return this.CreateMonsterSpawn(4, this.NpcDictionary[470], 192, 024, Direction.SouthWest); // Little Santa Red
+        yield return this.CreateMonsterSpawn(5, this.NpcDictionary[471], 207, 009, Direction.SouthWest); // Little Santa Blue
+        yield return this.CreateMonsterSpawn(6, this.NpcDictionary[472], 225, 011, Direction.SouthWest); // Little Santa White
+        yield return this.CreateMonsterSpawn(7, this.NpcDictionary[473], 232, 013, Direction.SouthWest); // Little Santa Black
+        yield return this.CreateMonsterSpawn(8, this.NpcDictionary[474], 216, 019, Direction.SouthWest); // Little Santa Orange
+        yield return this.CreateMonsterSpawn(9, this.NpcDictionary[475], 193, 027, Direction.SouthWest); // Little Santa Pink
     }
 }

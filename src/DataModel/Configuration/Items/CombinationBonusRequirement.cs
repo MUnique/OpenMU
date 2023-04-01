@@ -23,4 +23,10 @@ public class CombinationBonusRequirement
     /// Gets or sets the minimum count of options in order to fulfill the requirement.
     /// </summary>
     public int MinimumCount { get; set; } = 1;
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return $"{OptionType}: SubOption Type {this.SubOptionType}, Min. Count {this.MinimumCount}";
+    }
 }

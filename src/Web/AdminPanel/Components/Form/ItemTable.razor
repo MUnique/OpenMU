@@ -1,6 +1,7 @@
 ﻿@typeparam TItem
 
 @using MUnique.OpenMU.Persistence
+@using System.Text.RegularExpressions
 @inherits InputBase<ICollection<TItem>>
 
 @inject IModalService _modal
@@ -13,11 +14,11 @@
         {
             @if (this._isCollapsed)
             {
-            <button type="button" class="btn-outline-info" @onclick="@this.OnToggleCollapseClick">Expand (@(this.Value?.Count) Items)</button>
+                <button type="button" class="btn-outline-info ml-3" @onclick="@this.OnToggleCollapseClick">Expand (@(this.Value?.Count) Items)</button>
             }
             else
             {
-            <button type="button" class="btn-outline-info" @onclick="@this.OnToggleCollapseClick">Collapse</button>
+                <button type="button" class="btn-outline-info ml-3" @onclick="@this.OnToggleCollapseClick">Collapse</button>
             }
         }
         </h5>
@@ -37,7 +38,25 @@
                             <td>
                                 @if (this._isEditable)
                                 {
-                                    <button type="button" class="btn-info" @onclick="@(() => this._navigationManager.NavigateTo("edit/" + typeof(TItem).FullName + "/" + item.Id, true))">Edit</button>
+                                    string urlPrefix;
+                                    if (typeof(TItem).IsConfigurationType())
+                                    {
+                                        urlPrefix = "edit-config";
+                                    }
+                                    else if (Regex.Match(this._navigationManager.Uri, @"\/edit-(.*)\/(.+)?\/M") is { Success: true } match)
+                                    {
+                                        urlPrefix = $"edit-{match.Groups[1]}/{match.Groups[2]}";
+                                    }
+                                    else if (Regex.Match(this._navigationManager.Uri, @"\/edit-(.*)?\/M") is { Success: true } matchConfig)
+                                    {
+                                        urlPrefix = $"edit-{matchConfig.Groups[1]}";
+                                    }
+                                    else
+                                    {
+                                        urlPrefix = "edit-account";                                        
+                                    }
+
+                                    <button type="button" class="btn-info" @onclick="@(() => this._navigationManager.NavigateTo($"{urlPrefix}/{typeof(TItem).FullName}/{item.Id}"))">Edit</button>
                                 }
                             </td>
                             <td>

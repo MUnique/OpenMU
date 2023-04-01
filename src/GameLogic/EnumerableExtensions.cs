@@ -30,6 +30,22 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
+    /// Returns the enumerable as list, by either casting it or creating it.
+    /// </summary>
+    /// <typeparam name="T">The type of the list elements.</typeparam>
+    /// <param name="enumerable">The enumerable.</param>
+    /// <returns>The list.</returns>
+    public static IList<T> AsList<T>(this IEnumerable<T> enumerable)
+    {
+        if (enumerable is IList<T> list)
+        {
+            return list;
+        }
+
+        return enumerable.ToList();
+    }
+
+    /// <summary>
     /// Selects a random element of an enumerable.
     /// </summary>
     /// <typeparam name="T">The generic type of the enumerable.</typeparam>

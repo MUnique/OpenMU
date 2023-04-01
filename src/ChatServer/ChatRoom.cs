@@ -2,13 +2,12 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using Nito.AsyncEx.Synchronous;
-
 namespace MUnique.OpenMU.ChatServer;
 
 using System.Threading;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Interfaces;
+using Nito.AsyncEx.Synchronous;
 
 /// <summary>
 /// This class represents a Chat Room.
@@ -41,7 +40,7 @@ internal sealed class ChatRoom : IDisposable
     public ChatRoom(ushort roomId, ILogger<ChatRoom> logger)
     {
         this._logger = logger;
-        this._logger.LogDebug($"Creating room {roomId}");
+        this._logger.LogDebug("Creating room {RoomId}", roomId);
         this._connectedClients = new List<IChatClient>(2);
         this._registeredClients = new List<ChatServerAuthenticationInfo>(2);
         this.RoomId = roomId;
@@ -123,7 +122,7 @@ internal sealed class ChatRoom : IDisposable
 
         this._isClosing = true;
         this._lockSlim = null;
-        this._logger.LogDebug($"Disposing room {this.RoomId}...");
+        this._logger.LogDebug("Disposing room {RoomId}...", this.RoomId);
         this._registeredClients.Clear();
         localLockSlim.EnterWriteLock();
         try
@@ -145,7 +144,7 @@ internal sealed class ChatRoom : IDisposable
         }
 
         localLockSlim.Dispose();
-        this._logger.LogDebug($"Room {this.RoomId} disposed.");
+        this._logger.LogDebug("Room {RoomId} disposed.", this.RoomId);
     }
 
     /// <summary>
@@ -165,7 +164,9 @@ internal sealed class ChatRoom : IDisposable
             throw new ObjectDisposedException("Chat room is already disposed.");
         }
 
-        this._logger.LogDebug($"Client {chatClient.Index} is trying to join the room {this.RoomId} with token '{chatClient.AuthenticationToken}'");
+        this._logger.LogDebug(
+            "Client {ChatClientIndex} is trying to join the room {RoomId} with token '{AuthenticationToken}'",
+            chatClient.Index, this.RoomId, chatClient.AuthenticationToken);
 
         this._lockSlim?.EnterWriteLock();
         try
@@ -175,7 +176,9 @@ internal sealed class ChatRoom : IDisposable
             {
                 if (authenticationInformation.AuthenticationRequiredUntil < DateTime.Now)
                 {
-                    this._logger.LogInformation($"Client {chatClient.Index} has tried to join the room {this.RoomId} with token '{chatClient.AuthenticationToken}', but was too late. It was valid until {authenticationInformation.AuthenticationRequiredUntil}.");
+                    this._logger.LogInformation(
+                        "Client {ChatClientIndex} has tried to join the room {RoomId} with token '{AuthenticationToken}', but was too late. It was valid until {AuthenticationRequiredUntil}.",
+                        chatClient.Index, this.RoomId, chatClient.AuthenticationToken, authenticationInformation.AuthenticationRequiredUntil);
                 }
                 else
                 {
@@ -190,7 +193,9 @@ internal sealed class ChatRoom : IDisposable
             }
             else
             {
-                this._logger.LogInformation($"Client {chatClient.Index} has tried to join the room {this.RoomId} with token '{chatClient.AuthenticationToken}', but was not registered.");
+                this._logger.LogInformation(
+                    "Client {ChatClientIndex} has tried to join the room {RoomId} with token '{AuthenticationToken}', but was not registered.",
+                    chatClient.Index, this.RoomId, chatClient.AuthenticationToken);
             }
         }
         finally

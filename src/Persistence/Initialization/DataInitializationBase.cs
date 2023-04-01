@@ -10,9 +10,12 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.MuHelper;
 using MUnique.OpenMU.GameLogic.PlugIns.InvasionEvents;
+using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 using MUnique.OpenMU.GameLogic.Resets;
 using MUnique.OpenMU.GameServer.MessageHandler;
+using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.PlugIns;
+using MUnique.OpenMU.Persistence.Initialization.Updates;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -89,6 +92,8 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
         using (var temporaryContext = this._persistenceContextProvider.CreateNewContext())
         {
             this.GameConfiguration = temporaryContext.CreateNew<GameConfiguration>();
+            this.GameConfiguration.SetGuid(1);
+            this.CreateSystemConfiguration(temporaryContext);
             await temporaryContext.SaveChangesAsync().ConfigureAwait(false);
         }
 
@@ -122,6 +127,7 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
         plugInManager.KnownPlugInTypes.ForEach(plugInType =>
         {
             var plugInConfiguration = this.Context.CreateNew<PlugInConfiguration>();
+            plugInConfiguration.SetGuid(plugInType.GUID);
             plugInConfiguration.TypeId = plugInType.GUID;
             plugInConfiguration.IsActive = true;
             this.GameConfiguration.PlugInConfigurations.Add(plugInConfiguration);
@@ -131,6 +137,11 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
             {
                 plugInConfiguration.IsActive = false;
                 plugInConfiguration.SetConfiguration(new ResetConfiguration());
+            }
+
+            if (plugInType == typeof(ChaosCastleStartPlugIn))
+            {
+                plugInConfiguration.SetConfiguration(ChaosCastleStartConfiguration.Default);
             }
 
             if (plugInType == typeof(GoldenInvasionPlugIn))
@@ -157,6 +168,8 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
             }
         });
 
+        this.AddAllUpdateEntries(plugInManager);
+
         await this.Context.SaveChangesAsync().ConfigureAwait(false);
     }
 
@@ -165,10 +178,37 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
     /// </summary>
     protected abstract void CreateGameClientDefinition();
 
+    private void AddAllUpdateEntries(PlugInManager plugInManager)
+    {
+        var updates = plugInManager.GetStrategyProvider<int, IConfigurationUpdatePlugIn>()
+                          ?.AvailableStrategies.Where(up => up.DataInitializationKey == this.Key)
+                          .OrderBy(up => up.Version)
+                          .ToList();
+        if (updates is not { Count: > 0 })
+        {
+            return;
+        }
+
+        foreach (var update in updates)
+        {
+            var entry = this.Context.CreateNew<ConfigurationUpdate>();
+            entry.Version = update.Version;
+            entry.Name = update.Name;
+            entry.Description = update.Description;
+            entry.CreatedAt = update.CreatedAt;
+            entry.InstalledAt = DateTime.UtcNow;
+        }
+
+        var updateState = this.Context.CreateNew<ConfigurationUpdateState>();
+        updateState.InitializationKey = this.Key;
+        updateState.CurrentInstalledVersion = updates.Max(u => u.Version);
+    }
+
     private async ValueTask CreateConnectServerDefinitionAsync()
     {
         var client = (await this.Context.GetAsync<GameClientDefinition>().ConfigureAwait(false)).First();
         var connectServer = this.Context.CreateNew<ConnectServerDefinition>();
+        connectServer.SetGuid(1);
         connectServer.Client = client;
         connectServer.ClientListenerPort = 44405;
         connectServer.Description = $"Connect Server ({new ClientVersion(client.Season, client.Episode, client.Language)})";
@@ -191,6 +231,7 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
         for (int i = 0; i < numberOfServers; i++)
         {
             var server = this.Context!.CreateNew<GameServerDefinition>();
+            server.SetGuid((short)i);
             server.ServerID = (byte)i;
             server.Description = $"Server {i}";
             server.ExperienceRate = 1.0f;
@@ -200,6 +241,7 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
             foreach (var client in await this.Context.GetAsync<GameClientDefinition>().ConfigureAwait(false))
             {
                 var endPoint = this.Context.CreateNew<GameServerEndpoint>();
+                endPoint.SetGuid((short)i, (short)server.Endpoints.Count);
                 endPoint.Client = client;
                 endPoint.NetworkPort = 55901 + i;
                 server.Endpoints.Add(endPoint);
@@ -210,11 +252,13 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
     private async ValueTask CreateChatServerDefinitionAsync()
     {
         var server = this.Context!.CreateNew<ChatServerDefinition>();
+        server.SetGuid(0);
         server.ServerId = 0;
         server.Description = "Chat Server";
 
         var client = (await this.Context!.GetAsync<GameClientDefinition>().ConfigureAwait(false)).First();
         var endPoint = this.Context.CreateNew<ChatServerEndpoint>();
+        server.SetGuid(0);
         endPoint.Client = client;
         endPoint.NetworkPort = 55980;
         server.Endpoints.Add(endPoint);
@@ -223,6 +267,7 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
     private GameServerConfiguration CreateGameServerConfiguration(ICollection<GameMapDefinition> maps)
     {
         var gameServerConfiguration = this.Context.CreateNew<GameServerConfiguration>();
+        gameServerConfiguration.SetGuid(0);
         gameServerConfiguration.MaximumPlayers = 1000;
 
         // by default we add every map to a server configuration
@@ -232,5 +277,18 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
         }
 
         return gameServerConfiguration;
+    }
+
+    private void CreateSystemConfiguration(IContext context)
+    {
+        var systemConfiguration = context.CreateNew<SystemConfiguration>();
+        systemConfiguration.SetGuid(0);
+        systemConfiguration.AutoStart = true;
+        systemConfiguration.AutoUpdateSchema = true;
+        systemConfiguration.ReadConsoleInput = false;
+
+        var (type, param) = IpAddressResolverFactory.DetermineBestFittingResolver(Environment.GetCommandLineArgs());
+        systemConfiguration.IpResolver = type;
+        systemConfiguration.IpResolverParameter = param;
     }
 }

@@ -141,4 +141,10 @@ public class ItemDefinition
     /// </summary>
     [MemberOfAggregate]
     public virtual ICollection<ItemDropItemGroup> DropItems { get; protected set; } = null!;
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return $"{this.Name} ({this.Group}, {this.Number}) [{this.Width}x{this.Height}]";
+    }
 }

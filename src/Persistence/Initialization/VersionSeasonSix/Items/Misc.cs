@@ -39,6 +39,7 @@ public class Misc : InitializerBase
         itemDefinition.Durability = 1;
         itemDefinition.Width = 1;
         itemDefinition.Height = 1;
+        itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
         this.GameConfiguration.Items.Add(itemDefinition);
     }
 
@@ -51,6 +52,7 @@ public class Misc : InitializerBase
         itemDefinition.Durability = 255;
         itemDefinition.Width = 1;
         itemDefinition.Height = 2;
+        itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
         this.GameConfiguration.Items.Add(itemDefinition);
     }
 }

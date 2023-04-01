@@ -55,16 +55,16 @@ internal class DevilSquare7 : BaseMapInitializer
         const byte y2 = 173;
         const byte quantity = 35;
 
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[434], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.FirstWaveNumber); // Gigantis
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[435], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.FirstWaveNumber); // Berserk
+        yield return this.CreateMonsterSpawn(1, this.NpcDictionary[434], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.FirstWaveNumber); // Gigantis
+        yield return this.CreateMonsterSpawn(2, this.NpcDictionary[435], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.FirstWaveNumber); // Berserk
 
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[438], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.SecondWaveNumber); // Persona
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[439], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.SecondWaveNumber); // Dreadfear
+        yield return this.CreateMonsterSpawn(3, this.NpcDictionary[438], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.SecondWaveNumber); // Persona
+        yield return this.CreateMonsterSpawn(4, this.NpcDictionary[439], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.SecondWaveNumber); // Dreadfear
 
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[436], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.ThirdWaveNumber); // Balram (Trainee)
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[437], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.ThirdWaveNumber); // Soram (Trainee)
+        yield return this.CreateMonsterSpawn(5, this.NpcDictionary[436], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.ThirdWaveNumber); // Balram (Trainee)
+        yield return this.CreateMonsterSpawn(6, this.NpcDictionary[437], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.ThirdWaveNumber); // Soram (Trainee)
 
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[440], x1, x2, y1, y2, 5, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, DevilSquareInitializer.BossWaveNumber); // Dark Elf Boss
+        yield return this.CreateMonsterSpawn(7, this.NpcDictionary[440], x1, x2, y1, y2, 5, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, DevilSquareInitializer.BossWaveNumber); // Dark Elf Boss
     }
 
     /// <inheritdoc />
@@ -99,6 +99,7 @@ internal class DevilSquare7 : BaseMapInitializer
                 { Stats.FireResistance, 25f / 255 },
             };
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -130,6 +131,7 @@ internal class DevilSquare7 : BaseMapInitializer
                 { Stats.FireResistance, 50f / 255 },
             };
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -161,6 +163,7 @@ internal class DevilSquare7 : BaseMapInitializer
                 { Stats.FireResistance, 23f / 255 },
             };
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -192,6 +195,7 @@ internal class DevilSquare7 : BaseMapInitializer
                 { Stats.FireResistance, 25f / 255 },
             };
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -223,6 +227,7 @@ internal class DevilSquare7 : BaseMapInitializer
                 { Stats.FireResistance, 29f / 255 },
             };
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -254,6 +259,7 @@ internal class DevilSquare7 : BaseMapInitializer
                 { Stats.FireResistance, 27f / 255 },
             };
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -285,6 +291,7 @@ internal class DevilSquare7 : BaseMapInitializer
                 { Stats.FireResistance, 23f / 255 },
             };
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
     }
 }

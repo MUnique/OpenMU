@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Json;
 
 using System.Data;
 using System.Text.Json.Serialization;
-using System.Text.Json.Serialization.Metadata;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -21,10 +20,11 @@ public class JsonObjectLoader
     private readonly ReferenceHandler _referenceHandler;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="JsonObjectLoader"/> class.
+    /// Initializes a new instance of the <see cref="JsonObjectLoader" /> class.
     /// </summary>
     /// <param name="queryBuilder">The query builder.</param>
     /// <param name="deserializer">The deserializer.</param>
+    /// <param name="referenceHandler">The reference handler.</param>
     public JsonObjectLoader(JsonQueryBuilder queryBuilder, JsonObjectDeserializer deserializer, ReferenceHandler referenceHandler)
     {
         this._queryBuilder = queryBuilder;

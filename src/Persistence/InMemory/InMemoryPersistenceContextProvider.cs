@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Persistence.InMemory;
 
 using System.Threading;
+using MUnique.OpenMU.DataModel.Configuration;
 
 /// <summary>
 /// A context provider which uses in-memory repositories to hold its data, e.g. for testing or demo purposes.
@@ -12,54 +13,54 @@ using System.Threading;
 /// </summary>
 public class InMemoryPersistenceContextProvider : IMigratableDatabaseContextProvider
 {
-    private InMemoryRepositoryManager _repositoryManager = new ();
+    private InMemoryRepositoryProvider _repositoryProvider = new ();
 
     /// <inheritdoc/>
     public IContext CreateNewContext()
     {
-        return new InMemoryContext(this._repositoryManager);
+        return new InMemoryContext(this._repositoryProvider);
     }
 
     /// <inheritdoc/>
-    public IContext CreateNewContext(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    public IContext CreateNewContext(GameConfiguration gameConfiguration)
     {
-        return new InMemoryContext(this._repositoryManager);
+        return new InMemoryContext(this._repositoryProvider);
     }
 
     /// <inheritdoc/>
     public IContext CreateNewTradeContext()
     {
-        return new InMemoryContext(this._repositoryManager);
+        return new InMemoryContext(this._repositoryProvider);
     }
 
     /// <inheritdoc/>
-    public IPlayerContext CreateNewPlayerContext(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    public IPlayerContext CreateNewPlayerContext(GameConfiguration gameConfiguration)
     {
-        return new PlayerInMemoryContext(this._repositoryManager);
+        return new PlayerInMemoryContext(this._repositoryProvider);
     }
 
     /// <inheritdoc/>
     public IConfigurationContext CreateNewConfigurationContext()
     {
-        return new ConfigurationInMemoryContext(this._repositoryManager);
+        return new ConfigurationInMemoryContext(this._repositoryProvider);
     }
 
     /// <inheritdoc />
     public IFriendServerContext CreateNewFriendServerContext()
     {
-        return new FriendServerInMemoryContext(this._repositoryManager);
+        return new FriendServerInMemoryContext(this._repositoryProvider);
     }
 
     /// <inheritdoc/>
     public IGuildServerContext CreateNewGuildContext()
     {
-        return new GuildServerInMemoryContext(this._repositoryManager);
+        return new GuildServerInMemoryContext(this._repositoryProvider);
     }
 
     /// <inheritdoc />
-    public IContext CreateNewTypedContext<T>()
+    public IContext CreateNewTypedContext<T>(bool useCache, GameConfiguration? gameConfiguration = null)
     {
-        return new InMemoryContext(this._repositoryManager);
+        return new InMemoryContext(this._repositoryProvider);
     }
 
     /// <inheritdoc />
@@ -96,7 +97,7 @@ public class InMemoryPersistenceContextProvider : IMigratableDatabaseContextProv
     /// <inheritdoc />
     public Task ReCreateDatabaseAsync()
     {
-        this._repositoryManager = new();
+        this._repositoryProvider = new();
         return Task.CompletedTask;
     }
 }

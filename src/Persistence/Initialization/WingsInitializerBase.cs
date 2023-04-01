@@ -1,12 +1,18 @@
-﻿using MUnique.OpenMU.AttributeSystem;
-using MUnique.OpenMU.GameLogic.Attributes;
-using MUnique.OpenMU.GameServer.RemoteView;
+﻿// <copyright file="WingsInitializerBase.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
 
 namespace MUnique.OpenMU.Persistence.Initialization;
 
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameServer.RemoteView;
 
+/// <summary>
+/// Base class for wing data initializing.
+/// </summary>
 public abstract class WingsInitializerBase : InitializerBase
 {
     private static readonly float[] DefenseIncreaseByLevel = { 0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 31, 36, 42, 49, 57, 66 };
@@ -51,19 +57,19 @@ public abstract class WingsInitializerBase : InitializerBase
             switch (tuple.Item2)
             {
                 case OptionType.CurseDamage:
-                    yield return this.CreateItemOption(tuple.Item1, Stats.MaximumCurseBaseDmg, 0, AggregateType.AddRaw, 4f);
+                    yield return this.CreateItemOption(tuple.Item1, Stats.MaximumCurseBaseDmg, 0, AggregateType.AddRaw, 4f, ItemOptionDefinitionNumbers.WingCurse);
                     break;
                 case OptionType.Defense:
-                    yield return this.CreateItemOption(tuple.Item1, Stats.DefenseBase, 0, AggregateType.AddRaw, 4f);
+                    yield return this.CreateItemOption(tuple.Item1, Stats.DefenseBase, 0, AggregateType.AddRaw, 4f, ItemOptionDefinitionNumbers.WingDefense);
                     break;
                 case OptionType.HealthRecover:
-                    yield return this.CreateItemOption(tuple.Item1, Stats.HealthRecoveryMultiplier, 0, AggregateType.AddRaw, 0.01f);
+                    yield return this.CreateItemOption(tuple.Item1, Stats.HealthRecoveryMultiplier, 0, AggregateType.AddRaw, 0.01f, ItemOptionDefinitionNumbers.WingHealthRecover);
                     break;
                 case OptionType.PhysDamage:
-                    yield return this.CreateItemOption(tuple.Item1, Stats.MaximumPhysBaseDmg, 0, AggregateType.AddRaw, 4f);
+                    yield return this.CreateItemOption(tuple.Item1, Stats.MaximumPhysBaseDmg, 0, AggregateType.AddRaw, 4f, ItemOptionDefinitionNumbers.WingPhysical);
                     break;
                 case OptionType.WizDamage:
-                    yield return this.CreateItemOption(tuple.Item1, Stats.MaximumWizBaseDmg, 0, AggregateType.AddRaw, 4f);
+                    yield return this.CreateItemOption(tuple.Item1, Stats.MaximumWizBaseDmg, 0, AggregateType.AddRaw, 4f, ItemOptionDefinitionNumbers.WingWizardry);
                     break;
                 default:
                     throw new ArgumentException("unknown OptionType");

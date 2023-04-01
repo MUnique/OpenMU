@@ -18,10 +18,10 @@ internal class GameServerDefinitionRepository : CachingGenericRepository<GameSer
     /// <summary>
     /// Initializes a new instance of the <see cref="GameServerDefinitionRepository" /> class.
     /// </summary>
-    /// <param name="repositoryManager">The repository manager.</param>
+    /// <param name="repositoryProvider">The repository provider.</param>
     /// <param name="loggerFactory">The logger factory.</param>
-    public GameServerDefinitionRepository(RepositoryManager repositoryManager, ILoggerFactory loggerFactory)
-        : base(repositoryManager, loggerFactory)
+    public GameServerDefinitionRepository(IContextAwareRepositoryProvider repositoryProvider, ILoggerFactory loggerFactory)
+        : base(repositoryProvider, loggerFactory)
     {
     }
 
@@ -40,7 +40,7 @@ internal class GameServerDefinitionRepository : CachingGenericRepository<GameSer
             if (definition.GameConfigurationId.HasValue)
             {
                 definition.RawGameConfiguration =
-                    await this.RepositoryManager.GetRepository<GameConfiguration>()
+                    await this.RepositoryProvider.GetRepository<GameConfiguration>()!
                         .GetByIdAsync(definition.GameConfigurationId.Value).ConfigureAwait(false);
 
                 if (currentContext is EntityDataContext context)
@@ -51,7 +51,7 @@ internal class GameServerDefinitionRepository : CachingGenericRepository<GameSer
 
             if (definition.ServerConfigurationId.HasValue)
             {
-                definition.ServerConfiguration = await this.RepositoryManager.GetRepository<GameServerConfiguration>()
+                definition.ServerConfiguration = await this.RepositoryProvider.GetRepository<GameServerConfiguration>()!
                     .GetByIdAsync(definition.ServerConfigurationId.Value).ConfigureAwait(false);
             }
         }

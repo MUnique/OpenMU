@@ -211,6 +211,13 @@ public class MoveItemAction
                 return Movement.None;
             }
 
+            if (player.CurrentMiniGame is { } miniGame
+                && !miniGame.IsItemAllowedToEquip(item))
+            {
+                await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("You can't equip this item during the event.", MessageType.BlueNormal)).ConfigureAwait(false);
+                return Movement.None;
+            }
+
             if (itemDefinition.ItemSlot.ItemSlots.Contains(toSlot) &&
                 player.CompliesRequirements(item))
             {

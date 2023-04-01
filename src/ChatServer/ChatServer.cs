@@ -5,8 +5,8 @@
 namespace MUnique.OpenMU.ChatServer;
 
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Timers;
@@ -23,6 +23,7 @@ public sealed class ChatServer : IChatServer, IDisposable
 {
     private readonly ChatRoomManager _manager;
     private readonly ILogger<ChatServer> _logger;
+    private readonly IIpAddressResolver _addressResolver;
     private readonly ILoggerFactory _loggerFactory;
     private readonly PlugInManager _plugInManager;
 
@@ -31,18 +32,16 @@ public sealed class ChatServer : IChatServer, IDisposable
     private readonly IList<IChatClient> _connectedClients = new List<IChatClient>();
 
     private readonly IList<ChatServerListener> _listeners = new List<ChatServerListener>();
-    private readonly Task<IPAddress> _resolveAddressTask;
 
     private Timer? _clientCleanupTimer;
     private Timer? _roomCleanupTimer;
 
     private ChatServerSettings? _settings;
 
-    private string? _ipAddress;
-
     private bool _isDisposed;
 
     private ServerState _serverState;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ChatServer" /> class.
     /// </summary>
@@ -51,12 +50,12 @@ public sealed class ChatServer : IChatServer, IDisposable
     /// <param name="plugInManager">The plug in manager.</param>
     public ChatServer(IIpAddressResolver addressResolver, ILoggerFactory loggerFactory, PlugInManager plugInManager)
     {
+        this._addressResolver = addressResolver;
         this._loggerFactory = loggerFactory;
         this._plugInManager = plugInManager;
         this._logger = loggerFactory.CreateLogger<ChatServer>();
         this._manager = new ChatRoomManager(loggerFactory);
         this._randomNumberGenerator = RandomNumberGenerator.Create();
-        this._resolveAddressTask = addressResolver.ResolveIPv4Async().AsTask();
     }
 
     /// <inheritdoc/>
@@ -107,12 +106,9 @@ public sealed class ChatServer : IChatServer, IDisposable
             throw new ArgumentException(errorMessage, nameof(roomId));
         }
 
-#pragma warning disable VSTHRD003 // Avoid awaiting foreign Tasks
-        var ipAddress = this._ipAddress ??= (await this._resolveAddressTask.ConfigureAwait(false)).ToString();
-#pragma warning restore VSTHRD003 // Avoid awaiting foreign Tasks
-
+        var ipAddress = await this._addressResolver.ResolveIPv4Async().ConfigureAwait(false);
         var index = room.GetNextClientIndex();
-        var authenticationInfo = new ChatServerAuthenticationInfo(index, roomId, clientName, ipAddress, this.GetRandomAuthenticationToken(index));
+        var authenticationInfo = new ChatServerAuthenticationInfo(index, roomId, clientName, ipAddress.ToString(), this.GetRandomAuthenticationToken(index));
         room.RegisterClient(authenticationInfo);
         return authenticationInfo;
     }
@@ -316,14 +312,20 @@ public sealed class ChatServer : IChatServer, IDisposable
         try
         {
             var bottomDateTimeMargin = DateTime.Now.Subtract(this.Settings.ClientTimeout);
+
             for (int i = this._connectedClients.Count - 1; i >= 0; i--)
             {
                 var client = this._connectedClients[i];
-                if (client.LastActivity < bottomDateTimeMargin)
+                if (client.LastActivity >= bottomDateTimeMargin)
                 {
-                    this._logger.LogDebug($"Disconnecting client {client}, because of activity timeout. LastActivity: {client.LastActivity}");
-                    await client.LogOffAsync().ConfigureAwait(false);
+                    continue;
                 }
+
+                this._logger.LogDebug(
+                    "Disconnecting client {Client}, because of activity timeout. LastActivity: {ClientLastActivity}",
+                    client, client.LastActivity);
+
+                await client.LogOffAsync().ConfigureAwait(false);
             }
         }
         catch (Exception ex)

@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Services;
 using System.ComponentModel;
 
 /// <summary>
-/// Interface for a service which notifies about changes of data.
+/// Interface for a service which notifies about changes of data within the admin panel.
 /// </summary>
 public interface IChangeNotificationService
 {

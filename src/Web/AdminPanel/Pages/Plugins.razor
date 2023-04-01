@@ -31,11 +31,11 @@
             <td>
                 @if (item.IsActive)
                 {
-                    <Button class="btn-warning" @onclick="() => this._plugInController.Deactivate(item)">Deactivate</Button>
+                    <Button class="btn-warning" @onclick="async () => await this._plugInController.DeactivateAsync(item)">Deactivate</Button>
                 }
                 else
                 {
-                    <Button class="btn-success" @onclick="() => this._plugInController.Activate(item)">Activate</Button>
+                    <Button class="btn-success" @onclick="async () => await this._plugInController.ActivateAsync(item)">Activate</Button>
                 }
 
                 @if (item.ConfigurationType is { })
@@ -55,14 +55,6 @@
 
 @code {
     
-
-    /// <inheritdoc />
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        this._plugInController.DataChanged += (s, e) => this.InvokeAsync(this.StateHasChanged);
-    }
-
     private void OnPlugInPointSelected(ChangeEventArgs args)
     {
         if (args.Value is string guidString

@@ -94,6 +94,18 @@ public class MagicEffectsList : AsyncDisposable
     }
 
     /// <summary>
+    /// Clears the effects after death of the player.
+    /// </summary>
+    public async ValueTask ClearEffectsAfterDeathAsync()
+    {
+        var effectsToRemove = this.ActiveEffects.Values.Where(effect => effect.Definition.StopByDeath).ToList();
+        foreach (var effect in effectsToRemove)
+        {
+            await effect.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
     /// Tries to get the currently active effect of the specified <see cref="MagicEffectDefinition.SubType"/>.
     /// </summary>
     /// <param name="subType">The <see cref="MagicEffectDefinition.SubType"/>.</param>

@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Services;
 /// </summary>
 /// <typeparam name="T">The type of the data objects.</typeparam>
 public interface IDataService<T>
+    where T : class
 {
     /// <summary>
     /// Gets the data objects of the specified offset in the specified amount.

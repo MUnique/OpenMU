@@ -20,6 +20,6 @@ public interface ILookupController
     /// <returns>
     /// All objects which meet the criteria.
     /// </returns>
-    Task<IEnumerable<T>> GetSuggestionsAsync<T>(string text, IContext persistenceContext)
+    Task<IEnumerable<T>> GetSuggestionsAsync<T>(string text, IContext? persistenceContext)
         where T : class;
 }

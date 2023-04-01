@@ -1,0 +1,15 @@
+﻿
+.col-title {
+    min-width: 0px;
+    display: flex;
+    flex-grow: 1;
+    padding: 0;
+}
+
+.col-title-text {
+    font-weight: bold;
+}
+
+.col-search {
+    width: 50%;
+}

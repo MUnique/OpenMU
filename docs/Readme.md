@@ -142,8 +142,10 @@ database (e.g. RavenDB).
 
 * [GameMap](GameMap.md): Description about the GameMap implementation
 
-* [Progress](Progress.md)/[Skills Progress](Skills-Progress.md): Information about
-  the feature implementation progress of the project
+* [Progress](Progress.md): Information about  the feature implementation
+progress of the project. See also:
+  * [Normal skill progress](https://github.com/MUnique/OpenMU/projects/9)
+  * [Master skill progress](https://github.com/MUnique/OpenMU/projects/10)
 
 * [Admin Panel](https://github.com/MUnique/OpenMU/tree/master/src/Web/AdminPanel):
   The user inferface of the server

@@ -18,4 +18,10 @@ public class MasterSkillRoot
     /// Gets or sets the name.
     /// </summary>
     public string Name { get; set; } = string.Empty;
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return this.Name;
+    }
 }

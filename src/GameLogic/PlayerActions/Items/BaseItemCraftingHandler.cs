@@ -28,6 +28,8 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
             return (error, null);
         }
 
+        player.Logger.LogInformation("Crafting success chance: {successRate} %", successRate);
+
         var price = this.GetPrice(successRate, items);
         if (!player.TryRemoveMoney(price))
         {
@@ -39,14 +41,18 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
         var success = Rand.NextRandomBool(successRate);
         if (success)
         {
+            player.Logger.LogInformation("Crafting succeeded with success chance: {successRate} %", successRate);
             if (await this.DoTheMixAsync(items, player, socketSlot).ConfigureAwait(false) is { } item)
             {
+                player.Logger.LogInformation("Crafted item: {item}", item);
                 return (CraftingResult.Success, item);
             }
 
+            player.Logger.LogInformation("Crafting handler failed to mix the items.");
             return (CraftingResult.Failed, null);
         }
 
+        player.Logger.LogInformation("Crafting failed with success chance: {successRate} %", successRate);
         foreach (var i in items)
         {
             await this.RequiredItemChangeAsync(player, i, false).ConfigureAwait(false);

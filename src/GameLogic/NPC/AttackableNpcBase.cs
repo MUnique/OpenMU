@@ -8,7 +8,6 @@ using System.Diagnostics;
 using System.Threading;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.Attributes;
-using MUnique.OpenMU.GameLogic.Pet;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Pathfinding;
@@ -123,6 +122,12 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
 
     /// <inheritdoc />
     public abstract ValueTask ApplyPoisonDamageAsync(IAttacker initialAttacker, uint damage);
+
+    /// <inheritdoc/>
+    public ValueTask KillInstantlyAsync()
+    {
+        throw new NotImplementedException();
+    }
 
     /// <inheritdoc/>
     public override void Initialize()

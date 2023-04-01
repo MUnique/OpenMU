@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [PlugIn("Quest - Currently Active Quests", "The default implementation of the ICurrentlyActiveQuestsPlugIn which is forwarding everything to the game client with specific data packets.")]
 [Guid("9851157D-97CA-42F3-840C-8448D02B49A4")]
-[MinimumClient(6, 0, ClientLanguage.Invariant)]
+[MinimumClient(5, 0, ClientLanguage.Invariant)]
 public class CurrentlyActiveQuestsPlugIn : ICurrentlyActiveQuestsPlugIn
 {
     private readonly RemotePlayer _player;

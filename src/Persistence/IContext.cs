@@ -4,11 +4,18 @@
 
 namespace MUnique.OpenMU.Persistence;
 
+using System.Collections;
+
 /// <summary>
 /// The context for repository actions.
 /// </summary>
 public interface IContext : IDisposable
 {
+    /// <summary>
+    /// Gets a value indicating whether this instance has changes.
+    /// </summary>
+    bool HasChanges { get; }
+
     /// <summary>
     /// Saves the changes of the context.
     /// </summary>
@@ -87,4 +94,11 @@ public interface IContext : IDisposable
     /// <returns>All objects of the specified type.</returns>
     ValueTask<IEnumerable<T>> GetAsync<T>()
         where T : class;
+
+    /// <summary>
+    /// Gets all objects of the specified type. Use with caution!.
+    /// </summary>
+    /// <param name="type">The type.</param>
+    /// <returns>All objects of the specified type.</returns>
+    ValueTask<IEnumerable> GetAsync(Type type);
 }

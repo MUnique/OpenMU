@@ -22,7 +22,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [PlugIn("NewPlayersInScopePlugIn", "The default implementation of the INewPlayersInScopePlugIn which is forwarding everything to the game client with specific data packets.")]
 [Guid("4cd64537-ae5f-4030-bca1-7fa30ebff6c6")]
-[MinimumClient(6, 3, ClientLanguage.Invariant)]
+[MinimumClient(5, 0, ClientLanguage.Invariant)]
 public class NewPlayersInScopePlugIn : INewPlayersInScopePlugIn
 {
     private readonly RemotePlayer _player;
