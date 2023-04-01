@@ -74,6 +74,7 @@ public abstract class RecoverConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn, IS
         player.PotionCooldownUntil = DateTime.UtcNow.Add(this.Configuration.CooldownTime);
     }
 
+    /// <inheritdoc />
     protected override bool CheckPreconditions(Player player, Item item)
     {
         return base.CheckPreconditions(player, item)
