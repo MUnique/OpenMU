@@ -10003,6 +10003,10 @@ form > div > div > div:first-of-type > span {
   height: 38px;
 }
 
+.blazored-modal {
+  max-height: 95%;
+}
+
 .blazored-modal-content {
   overflow-y: auto;
   padding-right: 10px;

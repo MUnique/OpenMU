@@ -54,8 +54,11 @@ form > div > div > input {
     @extend .form-control;
 }
 
+.blazored-modal {
+    max-height: 95%;
+}
+
 .blazored-modal-content {
-    //max-height: 90%;
     overflow-y: auto;
     padding-right: 10px;
 }
