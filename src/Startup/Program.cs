@@ -281,6 +281,16 @@ internal sealed class Program : IDisposable
         // We check if we miss any plugin configurations in the database. If we do, we try to add them.
         var pluginManager = new PlugInManager(null, serviceProvider.GetService<ILoggerFactory>()!, serviceProvider);
         pluginManager.DiscoverAndRegisterPlugIns();
+
+        var typesWithCustomConfig = pluginManager.KnownPlugInTypes.Where(t => t.GetInterfaces().Contains(typeof(ISupportDefaultCustomConfiguration))).ToDictionary(t => t.GUID, t => t);
+
+        var typesWithMissingCustomConfigs = configs.Where(c => string.IsNullOrWhiteSpace(c.CustomConfiguration) && typesWithCustomConfig.ContainsKey(c.TypeId)).ToList();
+        if (typesWithMissingCustomConfigs.Any())
+        {
+            typesWithMissingCustomConfigs.ForEach(c => CreateDefaultPlugInConfiguration(typesWithCustomConfig[c.TypeId]!, c));
+            context.SaveChanges();
+        }
+
         var typesWithMissingConfigs = pluginManager.KnownPlugInTypes.Where(t => configs.All(c => c.TypeId != t.GUID)).ToList();
         if (!typesWithMissingConfigs.Any())
         {
@@ -310,22 +320,27 @@ internal sealed class Program : IDisposable
             gameConfiguration.PlugInConfigurations.Add(plugInConfiguration);
             if (plugInType.GetInterfaces().Contains(typeof(ISupportDefaultCustomConfiguration)))
             {
-                try
-                {
-                    var plugin = (ISupportDefaultCustomConfiguration)Activator.CreateInstance(plugInType)!;
-                    var defaultConfig = plugin.CreateDefaultConfig();
-                    plugInConfiguration.SetConfiguration(defaultConfig);
-                }
-                catch (Exception ex)
-                {
-                    this._logger.Warning(ex, "Could not create custom default configuration for plugin type {plugInType}", plugInType);
-                }
+                CreateDefaultPlugInConfiguration(plugInType, plugInConfiguration);
             }
 
             yield return plugInConfiguration;
         }
 
         saveContext.SaveChanges();
+    }
+
+    private void CreateDefaultPlugInConfiguration(Type plugInType, PlugInConfiguration plugInConfiguration)
+    {
+        try
+        {
+            var plugin = (ISupportDefaultCustomConfiguration)Activator.CreateInstance(plugInType)!;
+            var defaultConfig = plugin.CreateDefaultConfig();
+            plugInConfiguration.SetConfiguration(defaultConfig);
+        }
+        catch (Exception ex)
+        {
+            this._logger.Warning(ex, "Could not create custom default configuration for plugin type {plugInType}", plugInType);
+        }
     }
 
     private ushort DetermineUshort(string parameterName, string[] args, ushort defaultValue)

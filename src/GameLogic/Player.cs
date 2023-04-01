@@ -435,6 +435,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public MuHelper.MuHelper MuHelper => this._muHelperLazy.Value;
 
     /// <summary>
+    /// Gets or sets the cooldown timestamp until no further potion can be consumed.
+    /// </summary>
+    public DateTime PotionCooldownUntil { get; set; } = DateTime.UtcNow;
+
+    /// <summary>
     /// Sets the selected character.
     /// </summary>
     /// <param name="character">The character.</param>
