@@ -90,6 +90,12 @@ public class GameServerContext : GameContext, IGameServerContext
     public override float ExperienceRate => base.ExperienceRate * this._gameServerDefinition.ExperienceRate;
 
     /// <inheritdoc />
+    public override string ToString()
+    {
+        return $"Game Server {this.Id}";
+    }
+
+    /// <inheritdoc />
     public async ValueTask ForEachGuildPlayerAsync(uint guildId, Func<Player, Task> action)
     {
         if (!this._playersByGuild.TryGetValue(guildId, out var playerList))

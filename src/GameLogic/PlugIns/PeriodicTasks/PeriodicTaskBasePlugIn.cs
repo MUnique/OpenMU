@@ -29,6 +29,7 @@ public abstract class PeriodicTaskBasePlugIn<TConfiguration, TState> : IPeriodic
     public async ValueTask ExecuteTaskAsync(GameContext gameContext)
     {
         var logger = gameContext.LoggerFactory.CreateLogger(this.GetType().Name);
+        using var scope = logger.BeginScope(gameContext);
 
         var state = this.GetStateByGameContext(gameContext);
 
@@ -55,7 +56,7 @@ public abstract class PeriodicTaskBasePlugIn<TConfiguration, TState> : IPeriodic
         {
             case PeriodicTaskState.NotStarted:
                 {
-                    if (!configuration.IsItTimeToStart())
+                    if (!this.IsItTimeToStart(gameContext))
                     {
                         return;
                     }
@@ -65,7 +66,10 @@ public abstract class PeriodicTaskBasePlugIn<TConfiguration, TState> : IPeriodic
                     state.State = PeriodicTaskState.Prepared;
                     await this.OnPreparedAsync(state).ConfigureAwait(false);
 
-                    logger.LogInformation($"{state.Description}: event prepared");
+                    if (!string.IsNullOrWhiteSpace(state.Description))
+                    {
+                        logger.LogInformation("{description} ({gameContext}): event prepared", state.Description, gameContext);
+                    }
 
                     break;
                 }
@@ -77,7 +81,10 @@ public abstract class PeriodicTaskBasePlugIn<TConfiguration, TState> : IPeriodic
 
                     await this.OnStartedAsync(state).ConfigureAwait(false);
 
-                    logger.LogInformation($"{state.Description}: event started");
+                    if (!string.IsNullOrWhiteSpace(state.Description))
+                    {
+                        logger.LogInformation("{description} ({gameContext}): event started", state.Description, gameContext);
+                    }
 
                     break;
                 }
@@ -88,7 +95,10 @@ public abstract class PeriodicTaskBasePlugIn<TConfiguration, TState> : IPeriodic
 
                     await this.OnFinishedAsync(state).ConfigureAwait(false);
 
-                    logger.LogInformation($"{state.Description}: event finished");
+                    if (!string.IsNullOrWhiteSpace(state.Description))
+                    {
+                        logger.LogInformation("{description} ({gameContext}): event finished", state.Description, gameContext);
+                    }
 
                     break;
                 }
@@ -97,6 +107,15 @@ public abstract class PeriodicTaskBasePlugIn<TConfiguration, TState> : IPeriodic
                 throw new NotImplementedException("Unknown state.");
         }
     }
+
+    /// <summary>
+    /// Gets a value indicating whether if it's the right time to start the task.
+    /// </summary>
+    /// <param name="gameContext">The game context.</param>
+    /// <returns>
+    ///   <c>true</c> if it's the right time to start the task; otherwise, <c>false</c>.
+    /// </returns>
+    protected virtual bool IsItTimeToStart(IGameContext gameContext) => this.Configuration?.IsItTimeToStart() ?? false;
 
     /// <summary>
     /// Called when the task should be prepared before starting it.
