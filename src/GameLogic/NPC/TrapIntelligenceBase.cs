@@ -71,7 +71,15 @@ public abstract class TrapIntelligenceBase : INpcIntelligence, IDisposable
     /// <inheritdoc/>
     public void Start()
     {
-        this._aiTimer = new Timer(state => this.SafeTick(), null, this.Trap.Definition.AttackDelay, this.Trap.Definition.AttackDelay);
+        var startDelay = this.Npc.Definition.AttackDelay + TimeSpan.FromMilliseconds(Rand.NextInt(0, 1000));
+        this._aiTimer ??= new Timer(_ => this.SafeTick(), null, startDelay, this.Npc.Definition.AttackDelay);
+    }
+
+    /// <inheritdoc/>
+    public void Pause()
+    {
+        this._aiTimer?.Dispose();
+        this._aiTimer = null;
     }
 
     /// <inheritdoc/>
