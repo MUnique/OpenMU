@@ -17,4 +17,7 @@ public class ChaosCastleGameServerState : PeriodicTaskGameServerState
         : base(context)
     {
     }
+
+    /// <inheritdoc />
+    public override string Description => "Chaos Castle";
 }
