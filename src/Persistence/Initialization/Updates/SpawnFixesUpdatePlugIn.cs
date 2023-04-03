@@ -59,8 +59,8 @@ public class SpawnFixesUpdatePlugIn : UpdatePlugInBase
             spawn.SpawnTrigger = SpawnTrigger.Wandering;
         }
 
-        UpdateChaosCastle1(context, gameConfiguration);
-        UpdateCrywolf(context, gameConfiguration);
+        UpdateChaosCastle1(gameConfiguration);
+        UpdateCrywolf(gameConfiguration);
         UpdateAtlans(context, gameConfiguration);
         UpdateNoria(context, gameConfiguration);
         UpdateDevias(context, gameConfiguration);
@@ -138,7 +138,7 @@ public class SpawnFixesUpdatePlugIn : UpdatePlugInBase
         zyro.Y2 = 139;
     }
 
-    private static void UpdateChaosCastle1(IContext context, GameConfiguration gameConfiguration)
+    private static void UpdateChaosCastle1(GameConfiguration gameConfiguration)
     {
         var chaosCastle = gameConfiguration.Maps.First(m => m.Number == ChaosCastle1.Number);
         foreach (var spawn in chaosCastle.MonsterSpawns)
@@ -147,7 +147,7 @@ public class SpawnFixesUpdatePlugIn : UpdatePlugInBase
         }
     }
 
-    private static void UpdateCrywolf(IContext context, GameConfiguration gameConfiguration)
+    private static void UpdateCrywolf(GameConfiguration gameConfiguration)
     {
         var chaosCastle = gameConfiguration.Maps.First(m => m.Number == CrywolfFortress.Number);
         foreach (var spawn in chaosCastle.MonsterSpawns.Where(s => s.MonsterDefinition?.Number is >= 204 and <= 209))
