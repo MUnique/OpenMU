@@ -29,4 +29,10 @@ public sealed class NullMonsterIntelligence : INpcIntelligence
     {
         // do nothing
     }
+
+    /// <inheritdoc />
+    public void Pause()
+    {
+        // do nothing
+    }
 }
