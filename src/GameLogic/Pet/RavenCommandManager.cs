@@ -42,7 +42,7 @@ public class RavenCommandManager : Disposable, IPetCommandManager
         this._petAttackerSurrogate = new AttackerSurrogate(owner, new RavenAttributeSystem(owner));
     }
 
-    private TimeSpan AttackDelay => TimeSpan.FromMilliseconds(1500 - (this._petAttackerSurrogate.Attributes[Stats.AttackSpeed] * 10));
+    private TimeSpan AttackDelay => TimeSpan.FromMilliseconds(Math.Max(100, 1500 - (this._petAttackerSurrogate.Attributes[Stats.AttackSpeed] * 10)));
 
     /// <summary>
     /// Sets the behaviour.
