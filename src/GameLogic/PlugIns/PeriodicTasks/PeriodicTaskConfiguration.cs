@@ -51,9 +51,9 @@ public class PeriodicTaskConfiguration
     /// Check if current time is OK for starting an invasion.
     /// </summary>
     /// <returns>Returns true if the invasion can be started.</returns>
-    public bool IsItTimeToStart()
+    public virtual bool IsItTimeToStart()
     {
-        if (Timetable.Count == 0)
+        if (this.Timetable.Count == 0)
         {
             return false;
         }
@@ -62,6 +62,6 @@ public class PeriodicTaskConfiguration
         var earlier = nowTime.Add(TimeSpan.FromSeconds(-5));
 
         // For example, p = 00:00. Check that time between 00:00:00 and 00:00:05
-        return Timetable.Any(p => p.IsBetween(earlier, nowTime));
+        return this.Timetable.Any(p => p.IsBetween(earlier, nowTime));
     }
 }

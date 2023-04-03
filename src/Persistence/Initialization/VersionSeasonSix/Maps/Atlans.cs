@@ -23,4 +23,15 @@ internal class Atlans : Version075.Maps.Atlans
 
     /// <inheritdoc />
     protected override string TerrainVersionPrefix => string.Empty;
+
+    /// <inheritdoc />
+    protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()
+    {
+        foreach (var npc in base.CreateNpcSpawns())
+        {
+            yield return npc;
+        }
+
+        yield return this.CreateMonsterSpawn(10, this.NpcDictionary[229], 17, 35, Direction.SouthEast, SpawnTrigger.Wandering); // Marlon
+    }
 }

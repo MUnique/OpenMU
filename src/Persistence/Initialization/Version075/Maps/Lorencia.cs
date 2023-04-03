@@ -43,7 +43,7 @@ internal class Lorencia : BaseMapInitializer
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()
     {
-        yield return this.CreateMonsterSpawn(1, this.NpcDictionary[248], 6, 145, Direction.SouthEast);
+        yield return this.CreateMonsterSpawn(1, this.NpcDictionary[248], 6, 145, Direction.SouthEast, SpawnTrigger.Wandering);
         yield return this.CreateMonsterSpawn(2, this.NpcDictionary[240], 146, 110, Direction.SouthEast);
         yield return this.CreateMonsterSpawn(3, this.NpcDictionary[240], 147, 145, Direction.SouthWest);
         yield return this.CreateMonsterSpawn(4, this.NpcDictionary[249], 131, 88, Direction.SouthWest);
@@ -52,7 +52,7 @@ internal class Lorencia : BaseMapInitializer
         yield return this.CreateMonsterSpawn(7, this.NpcDictionary[249], 94, 130, Direction.NorthWest);
         yield return this.CreateMonsterSpawn(8, this.NpcDictionary[249], 131, 148, Direction.SouthWest);
         yield return this.CreateMonsterSpawn(9, this.NpcDictionary[247], 114, 125, Direction.SouthEast);
-        yield return this.CreateMonsterSpawn(10, this.NpcDictionary[250], 183, 137, Direction.South);
+        yield return this.CreateMonsterSpawn(10, this.NpcDictionary[250], 183, 137, Direction.South, SpawnTrigger.Wandering);
         yield return this.CreateMonsterSpawn(11, this.NpcDictionary[251], 116, 141, Direction.SouthEast);
         yield return this.CreateMonsterSpawn(12, this.NpcDictionary[253], 127, 86, Direction.South);
         yield return this.CreateMonsterSpawn(13, this.NpcDictionary[254], 118, 113, Direction.SouthEast);
