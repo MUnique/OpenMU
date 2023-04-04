@@ -50,6 +50,15 @@ public enum SpawnTrigger
     /// For example chaos castle enemies, because their number is not known beforehand.
     /// </remarks>
     ManuallyForEvent,
+
+    /// <summary>
+    /// The object is wandering between maps. It spawns just at one spawn area
+    /// at the same time.
+    /// </summary>
+    /// <remarks>
+    /// Used for wandering merchants.
+    /// </remarks>
+    Wandering,
 }
 
 /// <summary>

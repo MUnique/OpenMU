@@ -21,12 +21,21 @@ public static class ItemExtensions
     /// </returns>
     public static bool IsWing(this Item item)
     {
-        return item.Definition?.Group is 12 or 13
-               && item.Definition.Width >= 2
-               && item.Definition.Height >= 2
-               && item.Definition.MaximumItemLevel >= 11
-               && item.Durability >= 200
-               && (item.Definition.ItemSlot?.ItemSlots.Any() ?? false);
+        return item.Definition?.IsWing() ?? false;
+    }
+
+    /// <summary>
+    /// Determines whether this instance is a wing.
+    /// </summary>
+    /// <param name="itemDefinition">The item definition.</param>
+    /// <returns>
+    ///   <c>true</c> if the specified item is wing; otherwise, <c>false</c>.
+    /// </returns>
+    public static bool IsWing(this ItemDefinition itemDefinition)
+    {
+        return itemDefinition?.Group is 12 or 13
+               && itemDefinition is { Width: >= 2, Height: >= 2, MaximumItemLevel: >= 11, Durability: >= 200 }
+               && (itemDefinition.ItemSlot?.ItemSlots.Any() ?? false);
     }
 
     /// <summary>

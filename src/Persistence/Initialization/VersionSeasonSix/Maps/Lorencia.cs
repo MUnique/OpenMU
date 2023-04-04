@@ -38,9 +38,10 @@ internal class Lorencia : Version095d.Maps.Lorencia
         yield return this.CreateMonsterSpawn(19, this.NpcDictionary[257], 174, 129, Direction.SouthWest);
         yield return this.CreateMonsterSpawn(20, this.NpcDictionary[257], 130, 128, Direction.SouthEast);
         yield return this.CreateMonsterSpawn(21, this.NpcDictionary[257], 132, 165, Direction.SouthEast);
-        yield return this.CreateMonsterSpawn(22, this.NpcDictionary[229], 136, 88, Direction.SouthWest);
+        yield return this.CreateMonsterSpawn(22, this.NpcDictionary[229], 136, 88, Direction.SouthWest, SpawnTrigger.Wandering); // Marlon
         yield return this.CreateMonsterSpawn(23, this.NpcDictionary[375], 132, 161, Direction.SouthEast);
         yield return this.CreateMonsterSpawn(24, this.NpcDictionary[543], 141, 143, Direction.South);
         yield return this.CreateMonsterSpawn(25, this.NpcDictionary[371], 130, 126, Direction.SouthEast);
+        yield return this.CreateMonsterSpawn(26, this.NpcDictionary[568], 131, 139, Direction.South, SpawnTrigger.Wandering); // Wandering Merchant Zyro
     }
 }

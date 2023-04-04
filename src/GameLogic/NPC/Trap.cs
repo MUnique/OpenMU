@@ -29,7 +29,6 @@ public sealed class Trap : NonPlayerCharacter, IAttacker
         this.Attributes = new TrapAttributeHolder(this);
         this._intelligence = trapIntelligence;
         this._intelligence.Npc = this;
-        this._intelligence.Start();
     }
 
     /// <inheritdoc/>
@@ -49,6 +48,20 @@ public sealed class Trap : NonPlayerCharacter, IAttacker
         // Maybe add SpecificAnimation and AttackWhenPlayerOn properties to MonsterDefinition?? or create new TrapDefinition?
         await player.AttackByAsync(this, null, false).ConfigureAwait(false);
         await this.ForEachWorldObserverAsync<IShowAnimationPlugIn>(p => p.ShowAnimationAsync(this, TrapAttackAnimation, player, this.Rotation), true).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    protected override void OnFirstObserverAdded()
+    {
+        base.OnFirstObserverAdded();
+        this._intelligence.Start();
+    }
+
+    /// <inheritdoc/>
+    protected override void OnLastObserverRemoved()
+    {
+        base.OnLastObserverRemoved();
+        this._intelligence.Pause();
     }
 
     /// <inheritdoc/>

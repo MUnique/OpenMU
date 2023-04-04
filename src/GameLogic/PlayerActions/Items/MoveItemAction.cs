@@ -310,6 +310,17 @@ public class MoveItemAction
     {
         int rowIndex = (toSlot - toStorage.StartIndex) / RowSize;
         int columnIndex = (toSlot - toStorage.StartIndex) % RowSize;
+
+        if (rowIndex + item.Definition!.Height > usedSlots.GetLength(0))
+        {
+            return true;
+        }
+
+        if (columnIndex + item.Definition.Width > usedSlots.GetLength(1))
+        {
+            return true;
+        }
+
         for (int r = rowIndex; r < rowIndex + item.Definition!.Height; r++)
         {
             for (int c = columnIndex; c < columnIndex + item.Definition.Width; c++)
