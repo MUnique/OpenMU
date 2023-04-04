@@ -7,7 +7,6 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.WanderingMerchants;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
-using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -36,6 +35,11 @@ public class WanderingMerchantsPlugIn : PeriodicTaskBasePlugIn<WanderingMerchant
     protected override bool IsItTimeToStart(IGameContext gameContext)
     {
         var state = this.GetStateByGameContext(gameContext);
+        if (!state.Merchants.Any())
+        {
+            return false;
+        }
+
         var minNext = state.Merchants.Min(m => m.NextWanderingAt);
         return DateTime.UtcNow >= minNext;
     }
