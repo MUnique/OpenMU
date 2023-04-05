@@ -8,6 +8,10 @@
 <div class=@($"mu-item-storage storage-rows{this._viewModel.Rows}")>
     @foreach (var item in this._viewModel.Items)
     {
-        <MuItem Model="item" />
+        <MuItem
+            Model="item"
+            OnClick="async () => await this.SetSelectedItemAsync(item)"
+            OnItemMoved="this.OnItemMovedAsync"
+            IsSelected="this.SelectedItem?.Item == item.Item"/>
     }
 </div>

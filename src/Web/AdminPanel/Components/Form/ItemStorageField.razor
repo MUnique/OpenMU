@@ -2,12 +2,26 @@
 @using System.Diagnostics.CodeAnalysis
 @using MUnique.OpenMU.DataModel.Configuration
 @using MUnique.OpenMU.DataModel.Entities
+@using MUnique.OpenMU.Persistence
 @using MUnique.OpenMU.Web.ItemEditor
+@using MUnique.OpenMU.Web.AdminPanel.Components.ItemEdit;
 @inherits NotifyableInputBase<ItemStorage>
 
 <div>
     <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
-    <MuItemStorage @bind-Value="@CurrentValue" id="@this.FieldIdentifier.FieldName" class="@CssClass" StorageType="@this.StorageType" />
+    <div>
+        <MuItemStorage @bind-Value="@CurrentValue" id="@this.FieldIdentifier.FieldName" class="@CssClass" StorageType="@this.StorageType" SelectedItemChanged="this.OnSelectedItemChanged"/>
+        @if (this._selectedItem is { })
+        {
+            <div class="jumbotron ml-3 w-50">
+                <div class="remove-button-container">
+                    <button type="button" class="remove-button btn-danger" @onclick="async () => await this.OnItemDeleteClickAsync()"><span class="oi oi-trash"></span> Remove</button>
+                </div>
+                <h3>@(this._selectedItem.Definition?.Name ?? @"<Please select a definition>")</h3>
+                <ItemEdit Item="@this._selectedItem" ItemChanged="this.StateHasChanged"></ItemEdit>
+            </div>
+        }
+    </div>
     <ValidationMessage For=@this.ValueExpression />
 </div>
 
@@ -19,6 +33,14 @@
     /// </summary>
     [Parameter]
     public string Label { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the persistence context.
+    /// </summary>
+    [CascadingParameter]
+    public IContext PersistenceContext { get; set; } = null!;
+
+    private Item? _selectedItem;
 
     private StorageType StorageType
     {
@@ -44,15 +66,6 @@
         }
     }
 
-
-
-    protected override void OnParametersSet()
-    {
-        base.OnParametersSet();
-        
-        //this.ViewModel = this.CurrentValue.CreateViewModel()
-    }
-
     /// <inheritdoc />
     protected override bool TryParseValueFromString(string? value, [MaybeNullWhen(false)] out ItemStorage result, [NotNullWhen(false)] out string? validationErrorMessage)
     {
@@ -66,5 +79,26 @@
     protected override string FormatValueAsString(ItemStorage? value)
     {
         return value is null ? string.Empty : string.Join(';', value);
+    }
+
+    private void OnSelectedItemChanged(Item? item)
+    {
+        this._selectedItem = item;
+        this.StateHasChanged();
+    }
+
+    private async Task OnItemDeleteClickAsync()
+    {
+        if (this._selectedItem is null)
+        {
+            return;
+        }
+
+        if (this.Value?.Items.Remove(this._selectedItem) is true)
+        {
+            await this.PersistenceContext.DeleteAsync(this._selectedItem);
+        }
+
+        this._selectedItem = null;
     }
 }

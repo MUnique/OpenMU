@@ -1,7 +1,44 @@
 ﻿
-<div class=@($"mu-item mu-item-col{this.Model.Column} mu-item-row{this.Model.Row}")>
+<div class=@($"mu-item c_{this.Model.Column} r_{this.Model.Row} w_{this.Model.Item.Definition?.Width ?? 1} h_{this.Model.Item.Definition?.Height ?? 1}")>
     @if (this.Model.Item.Definition is not null)
     {
-        <img src=@($"_content/MUnique.OpenMU.Web.ItemEditor/img/item/item_{this.Model.Item.Definition.Group}_{this.Model.Item.Definition.Number}_{this.Model.EffectLevel}{this.Model.OptionSuffix}.png") alt=@this.Model.Item />
+        <img src=@($"_content/MUnique.OpenMU.Web.ItemEditor/img/items/item_{this.Model.Item.Definition.Group}_{this.Model.Item.Definition.Number}_{this.Model.EffectLevel}{this.Model.OptionSuffix}.png") alt=@this.Model.Item />
     }
 </div>
+
+<div title=@this.Model.Item
+    class=@($"mu-item {(this.IsSelected ? "highlighted " : "")} mu-item-selector c_{this.Model.Column} r_{this.Model.Row} w_{this.Model.Item.Definition?.Width ?? 1} h_{this.Model.Item.Definition?.Height ?? 1}")
+     @onclick="this.OnClick"
+     tabindex="@(this.IsSelected ? 0 : null)"
+     @onkeydown="OnKeyPressAsync"></div>
+@if (this.IsSelected && this.TotalRows > 0)
+{
+    <div
+        class=@($"mu-item c_{this.Model.Column} r_{this.Model.Row} w_{this.Model.Item.Definition?.Width ?? 1} h_{this.Model.Item.Definition?.Height ?? 1}")
+        tabindex="1"
+        @onkeydown="OnKeyPressAsync">
+    @if (CanMoveLeft)
+    {
+        <div class="mu-item-move-arrow left rounded-left" @onclick="MoveLeftAsync" alt="Press A to move left">
+        </div>
+    }
+
+    @if (CanMoveRight)
+    {
+        <div class="mu-item-move-arrow right rounded-right" @onclick="MoveRightAsync" alt="Press D to move right">
+        </div>
+    }
+
+    @if (CanMoveUp)
+    {
+        <div class="mu-item-move-arrow up rounded-top" @onclick="MoveUpAsync" alt="Press W to move up">
+        </div>
+    }
+
+    @if (CanMoveDown)
+    {
+        <div class="mu-item-move-arrow down rounded-bottom" @onclick="MoveDownAsync" alt="Press S to move down">
+        </div>
+    }
+    </div>
+}

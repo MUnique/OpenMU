@@ -3,7 +3,7 @@
     --boxSize: 42px;
     --storageColumns: 8;
     
-    background-image: url('/_content/MUnique.OpenMU.Web.ItemEditor/inventory_back.png');
+    background-image: url('/_content/MUnique.OpenMU.Web.ItemEditor/img/inventory_back.png');
     background-size: 12.5%;
     width: calc(var(--boxSize) * (var(--storageColumns)));
 }
