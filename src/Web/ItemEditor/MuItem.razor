@@ -2,6 +2,6 @@
 <div class=@($"mu-item mu-item-col{this.Model.Column} mu-item-row{this.Model.Row}")>
     @if (this.Model.Item.Definition is not null)
     {
-        <img src=@($"_content/MUnique.OpenMU.Web.ItemEditor/img/item_{this.Model.Item.Definition.Group}_{this.Model.Item.Definition.Number}_{this.Model.EffectLevel}{this.Model.OptionSuffix}.png") alt=@this.Model.Item />
+        <img src=@($"_content/MUnique.OpenMU.Web.ItemEditor/img/item/item_{this.Model.Item.Definition.Group}_{this.Model.Item.Definition.Number}_{this.Model.EffectLevel}{this.Model.OptionSuffix}.png") alt=@this.Model.Item />
     }
 </div>
