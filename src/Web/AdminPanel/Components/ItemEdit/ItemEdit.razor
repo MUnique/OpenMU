@@ -18,7 +18,7 @@
         <ByteField @bind-Value="@this._viewModel.Level" Min="0" Max="@this._viewModel.Definition?.MaximumItemLevel" />
     }
     
-    @if (this.Item.GetMaximumDurabilityOfOnePiece() > 0)
+    @if (this.Item.IsWearable())
     {
         <NumberField @bind-Value="@this._viewModel.Durability" Min="1" Max="@this.Item.GetMaximumDurabilityOfOnePiece()"/>
     }
