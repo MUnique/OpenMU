@@ -39,9 +39,8 @@ public partial class MuItem
     public bool IsSelected { get; set; }
 
     private int TotalRows => this.Model.Parent.Rows;
-    private int Height => this.Model.Item.Definition?.Height ?? byte.MaxValue;
-    private int Width => this.Model.Item.Definition?.Width ?? byte.MaxValue;
-
+    private int Height => this.Model.Item.Definition?.Height ?? 1;
+    private int Width => this.Model.Item.Definition?.Width ?? 1;
     private bool CanMoveDown => this.TotalRows > this.Model.Row + this.Height;
     private bool CanMoveUp => this.Model.Row > 0;
     private bool CanMoveLeft => this.Model.Column > 0;
@@ -49,7 +48,7 @@ public partial class MuItem
 
     private async Task OnKeyPressAsync(KeyboardEventArgs obj)
     {
-        if (this.IsSelected)
+        if (!this.IsSelected)
         {
             return;
         }
@@ -73,26 +72,25 @@ public partial class MuItem
 
     private async Task MoveLeftAsync()
     {
-        this.Model.Item.ItemSlot--;
+        this.Model.Item.MoveLeft();
         await this.RaiseOnItemMovedAsync().ConfigureAwait(true);
-
     }
 
     private async Task MoveRightAsync()
     {
-        this.Model.Item.ItemSlot++;
+        this.Model.Item.MoveRight();
         await this.RaiseOnItemMovedAsync().ConfigureAwait(true);
     }
 
     private async Task MoveUpAsync()
     {
-        this.Model.Item.ItemSlot -= 8;
+        this.Model.Item.MoveUp();
         await this.RaiseOnItemMovedAsync().ConfigureAwait(true);
     }
 
     private async Task MoveDownAsync()
     {
-        this.Model.Item.ItemSlot += 8;
+        this.Model.Item.MoveDown();
         await this.RaiseOnItemMovedAsync().ConfigureAwait(true);
     }
 

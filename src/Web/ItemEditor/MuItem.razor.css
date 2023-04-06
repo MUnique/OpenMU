@@ -28,6 +28,12 @@
         opacity: 0.333;
     }
 
+.undefined-item {
+    height: 100%;
+    width: 100%;
+    background-color: greenyellow;
+}
+
 .mu-item-move-arrow {
     position: absolute;
     display: flex;
