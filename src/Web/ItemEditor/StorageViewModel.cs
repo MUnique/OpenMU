@@ -38,7 +38,7 @@ public class StorageViewModel
     /// <summary>
     /// Gets the items.
     /// </summary>
-    public IEnumerable<ItemViewModel> Items => this.Storage.Items.Where(this.IsIncluded).OrderBy(item => item.ItemSlot).Select(item => new ItemViewModel(this, item));
+    public IEnumerable<ItemViewModel> Items => this.Storage.Items.Where(this.IsIncluded).Select(item => new ItemViewModel(this, item));
 
     /// <summary>
     /// Gets the rows.
