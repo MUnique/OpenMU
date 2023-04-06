@@ -1,11 +1,1 @@
-﻿.remove-button-container {
-    position: relative;
-    display: flex;
-}
-
-.remove-button {
-    position: absolute;
-    top: -3rem;
-    right: -1rem;
-    display: inline !important;
-}
+﻿

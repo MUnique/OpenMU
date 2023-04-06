@@ -5,24 +5,44 @@
 @using MUnique.OpenMU.Persistence
 @using MUnique.OpenMU.Web.ItemEditor
 @using MUnique.OpenMU.Web.AdminPanel.Components.ItemEdit;
+
 @inherits NotifyableInputBase<ItemStorage>
 
 <div>
-    <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
+    @if (!this.HideLabel)
+    {
+        <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression"/>
+    }
     <div>
-        <MuItemStorage @bind-Value="@CurrentValue" id="@this.FieldIdentifier.FieldName" class="@CssClass" StorageType="@this.StorageType" SelectedItemChanged="this.OnSelectedItemChanged"/>
+        <div>
+            <MuItemStorage
+                @bind-Value="@CurrentValue"
+                id="@this.FieldIdentifier.FieldName"
+                class="@CssClass"
+                StorageType="@this.StorageType"
+                SelectedItem="@this._selectedItem"
+                SelectedItemChanged="this.OnSelectedItemChanged"/>
+            <div class="d-flex flex-column">
+                <button type="button" class="btn-info ml-1 mb-1" @onclick="@this.OnCreateItemClickAsync" title="Create"><span class="oi oi-plus"></span></button>
+                @if (this._selectedItem is null)
+                {
+                    <button type="button" class="btn-warning ml-1 mb-1 disabled" title="Delete"><span class="oi oi-trash"></span></button>
+                }
+                else
+                {
+                    <button type="button" class="btn-warning ml-1 mb-1" @onclick="this.OnItemDeleteClickAsync" title="Delete"><span class="oi oi-trash"></span></button>    
+                }
+            </div>
+        </div>
         @if (this._selectedItem is { })
         {
             <div class="jumbotron ml-3 w-50">
-                <div class="remove-button-container">
-                    <button type="button" class="remove-button btn-danger" @onclick="async () => await this.OnItemDeleteClickAsync()"><span class="oi oi-trash"></span> Remove</button>
-                </div>
                 <h3>@(this._selectedItem.Definition?.Name ?? @"<Please select a definition>")</h3>
                 <ItemEdit Item="@this._selectedItem" ItemChanged="this.StateHasChanged"></ItemEdit>
             </div>
         }
     </div>
-    <ValidationMessage For=@this.ValueExpression />
+    <ValidationMessage For=@this.ValueExpression/>
 </div>
 
 @code {
@@ -33,6 +53,12 @@
     /// </summary>
     [Parameter]
     public string Label { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets a value indicating if the label should be hidden.
+    /// </summary>
+    [Parameter]
+    public bool HideLabel { get; set; }
 
     /// <summary>
     /// Gets or sets the persistence context.
@@ -100,5 +126,15 @@
         }
 
         this._selectedItem = null;
+    }
+
+    private void OnCreateItemClickAsync()
+    {
+        if (this.Value is { } itemStorage)
+        {
+            var item = this.PersistenceContext.CreateNew<Item>();
+            itemStorage.Items.Add(item);
+            this._selectedItem = item;
+        }
     }
 }
