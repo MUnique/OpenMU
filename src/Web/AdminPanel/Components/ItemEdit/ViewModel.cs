@@ -493,9 +493,9 @@ public class ViewModel : INotifyPropertyChanged
                 return;
             }
 
-            if (value is null)
+            if (this.AncientSet is not null)
             {
-                foreach (var isg in this.PossibleAncientSetItems)
+                foreach (var isg in this.ItemSetGroups.Where(g => g.AncientSetDiscriminator > 0).ToList())
                 {
                     this.Item.ItemSetGroups.Remove(isg);
                 }
@@ -506,7 +506,8 @@ public class ViewModel : INotifyPropertyChanged
                     this._persistenceContext.DeleteAsync(optionLink).AsTask().WaitAndUnwrapException();
                 }
             }
-            else
+
+            if (value is not null)
             {
                 var itemOfSet = value.Items.First(ios => ios.ItemDefinition == this.Definition);
                 this.ItemSetGroups.Add(itemOfSet);
