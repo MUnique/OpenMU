@@ -34,6 +34,11 @@ public class ItemOptionList : IList<IncreasableItemOption>
         this._persistenceContext = persistenceContext;
     }
 
+    /// <summary>
+    /// Occurs when the list has changed.
+    /// </summary>
+    public event EventHandler? ListChanged;
+
     /// <inheritdoc />
     public int Count => this.OptionLinks.Count();
 
@@ -68,6 +73,7 @@ public class ItemOptionList : IList<IncreasableItemOption>
         var optionLink = this._persistenceContext.CreateNew<ItemOptionLink>();
         optionLink.ItemOption = option;
         this._item.ItemOptions.Add(optionLink);
+        this.ListChanged?.Invoke(this, EventArgs.Empty);
     }
 
     /// <inheritdoc />
@@ -99,6 +105,7 @@ public class ItemOptionList : IList<IncreasableItemOption>
         {
             this._item.ItemOptions.Remove(optionLink);
             this._persistenceContext.DeleteAsync(optionLink).AsTask().WaitAndUnwrapException();
+            this.ListChanged?.Invoke(this, EventArgs.Empty);
             return true;
         }
 

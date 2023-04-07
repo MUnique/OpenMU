@@ -34,6 +34,11 @@ public class SocketViewModel
     }
 
     /// <summary>
+    /// Occurs when the <see cref="Option"/> has been changed.
+    /// </summary>
+    public event EventHandler? OptionChanged;
+
+    /// <summary>
     /// Gets the socket number.
     /// </summary>
     public int SocketIndex { get; }
@@ -100,6 +105,8 @@ public class SocketViewModel
                 optionLink.ItemOption = value?.Option;
                 optionLink.Index = this.SocketIndex;
             }
+
+            this.OptionChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 }

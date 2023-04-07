@@ -1,7 +1,6 @@
 ﻿@page "/merchants"
 
 @using Microsoft.AspNetCore.Components.QuickGrid;
-@using MUnique.OpenMU.DataModel.Entities
 @using MUnique.OpenMU.Persistence
 
 <h1>Merchants</h1>
@@ -30,22 +29,17 @@
 }
 else
 {
-    <h2>@this._selectedMerchant.Merchant.Designation</h2>
-    <div>
-        <QuickGrid TGridItem="Item" Items="@(this._selectedMerchant.Items.OrderBy(item => item.ItemSlot).AsQueryable())" Pagination="@_itemPagination" Theme="none">
-            <PropertyColumn Align="Align.Left" Title="Slot" Property="@(c => c!.ItemSlot)" Sortable="true" />
-            <PropertyColumn Align="Align.Left" Title="Item" Property="@(c => c!.ToString())" Sortable="true" />
-            <TemplateColumn Align="Align.Center">
-                <button type="button" class="btn-info" @onclick="@(() => this.OnEditItemClickAsync(context!))">Edit</button>
-            </TemplateColumn>
-            <TemplateColumn Align="Align.Center">
-                <button type="button" class="btn-warning" @onclick="@(() => this.OnRemoveItemClickAsync(context!))">Remove</button>
-            </TemplateColumn>
-        </QuickGrid>
-        <Paginator Value="@_itemPagination" />
+    <div class="d-flex flex-row">
+        <button type="button" class="btn-lg btn-outline-dark mr-3" @onclick="this.OnBackButtonClickAsync">&lt; Back</button>
+        <h2>@this._selectedMerchant.Merchant.Designation</h2>
     </div>
-    
-    <div>
-        <button type="button" class="btn-info" @onclick="@this.OnCreateItemClickAsync">Create Item</button>
-    </div>
+    <hr/>
+    <CascadingValue TValue="IContext" Value="this._persistenceContext">
+        <EditForm Model="this._selectedMerchant.Merchant" OnValidSubmit="this.OnSaveButtonClickAsync">
+            <ItemStorageField @bind-Value="this._selectedMerchant.Merchant.MerchantStore" HideLabel="true"/>
+            <hr />
+            <button type="submit" class="primary-button">Save changes</button>
+            <button type="button" class="cancel-button" @onclick="this.OnCancelButtonClickAsync">Discard changes</button>
+        </EditForm>
+    </CascadingValue>
 }
