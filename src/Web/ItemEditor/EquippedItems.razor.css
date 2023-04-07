@@ -16,7 +16,7 @@
 .slot-left {
     width: calc(var(--boxSize) * 2);
     height: calc(var(--boxSize) * 4);
-    left: 2px;
+    left: 0px;
     top: 96px;
 }
 
@@ -27,7 +27,7 @@
 .slot-right {
     width: calc(var(--boxSize) * 2);
     height: calc(var(--boxSize) * 4);
-    left: 243px;
+    left: 241px;
     top: 96px;
 }
 
@@ -38,35 +38,35 @@
 .slot-helm {
     width: calc(var(--boxSize) * 2);
     height: calc(var(--boxSize) * 2);
-    left: 123px;
+    left: 121px;
     top: 2px;
 }
 
 .slot-armor {
     width: calc(var(--boxSize) * 2);
     height: calc(var(--boxSize) * 3);
-    left: 123px;
+    left: 121px;
     top: 96px;
 }
 
 .slot-pants {
     width: calc(var(--boxSize) * 2);
     height: calc(var(--boxSize) * 2);
-    left: 123px;
+    left: 121px;
     top: 231px;
 }
 
 .slot-gloves {
     width: calc(var(--boxSize) * 2);
     height: calc(var(--boxSize) * 2);
-    left: 2px;
+    left: 0px;
     top: 231px;
 }
 
 .slot-boots {
     width: calc(var(--boxSize) * 2);
     height: calc(var(--boxSize) * 2);
-    left: 243px;
+    left: 241px;
     top: 231px;
 }
 
@@ -88,7 +88,7 @@
 .slot-pet {
     width: calc(var(--boxSize) * 1);
     height: calc(var(--boxSize) * 1);
-    left: 2px;
+    left: 0px;
     top: 2px;
 }
 
