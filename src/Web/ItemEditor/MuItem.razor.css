@@ -36,16 +36,23 @@
 
 .mu-item-move-arrow {
     position: absolute;
-    display: flex;
     z-index: 101;
-    font-size: 1.5em;
     background-color: black;
-    color: aqua;
     opacity: 0.7;
 }
 
 .mu-item-move-arrow:hover {
     opacity: 0.95;
+}
+
+.item-amount-label {
+    opacity: 0.9;
+    color: wheat;
+    background-color: black;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    line-height: 1.1em;
 }
 
 .left {
