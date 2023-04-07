@@ -83,7 +83,9 @@
     .slot-wings ::deep > .w_4 {
         left: calc(var(--boxSize) * -0.5);
     }
-
+    .slot-wings ::deep > .w_5 {
+        left: calc(var(--boxSize) * -1);
+    }
 
 .slot-pet {
     width: calc(var(--boxSize) * 1);
