@@ -668,8 +668,11 @@ public class ViewModel : INotifyPropertyChanged
     {
         get
         {
-            return this.ItemSetGroups
-                .Where(isg => isg.AncientSetDiscriminator > 0);
+            return this.Definition?.PossibleItemSetGroups
+                .SelectMany(isg => isg.Items)
+                .Where(isi => isi.ItemDefinition == this.Definition)
+                .Where(isi => isi.AncientSetDiscriminator > 0)
+                ?? Enumerable.Empty<ItemOfItemSet>();
         }
     }
 
