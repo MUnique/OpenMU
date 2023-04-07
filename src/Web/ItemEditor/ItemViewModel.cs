@@ -58,20 +58,28 @@ public class ItemViewModel
     }
 
     /// <summary>
+    /// Gets a value indicating whether this instance is excellent.
+    /// </summary>
+    public bool IsExcellent => this.Item.ItemOptions.Any(o => o.ItemOption!.OptionType == ItemOptionTypes.Excellent);
+
+    /// <summary>
+    /// Gets a value indicating whether this instance is ancient.
+    /// </summary>
+    public bool IsAncient => this.Item.ItemSetGroups.Any(s => s.AncientSetDiscriminator > 0);
+
+    /// <summary>
     /// Gets the option suffix.
     /// </summary>
     public string OptionSuffix
     {
         get
         {
-            var isAncient = this.Item.ItemSetGroups.Any(s => s.AncientSetDiscriminator > 0);
-            if (isAncient)
+            if (this.IsAncient)
             {
                 return "_a";
             }
 
-            var isExcellent = this.Item.ItemOptions.Any(o => o.ItemOption!.OptionType == ItemOptionTypes.Excellent);
-            if (isExcellent && this.Item.Definition?.Group < 12)
+            if (this.Item.Definition?.Group < 12 && this.IsExcellent)
             {
                 return "_e";
             }

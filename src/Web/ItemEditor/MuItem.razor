@@ -11,6 +11,19 @@
         {
             <span class="item-amount-label">@this.Model.Item.Durability</span>
         }
+        @if (this.Model.IsAncient)
+        {
+            <span class="indicator anc"></span>
+        }
+        @if (this.Model.IsExcellent)
+        {
+            <span class="indicator exc"></span>
+        }
+        @for (int i = 0; i < this.Model.Item.SocketCount; i++)
+        {
+            var socketEquipped = this.Model.Item.ItemOptions.Any(io => io.Index == i && io.ItemOption?.OptionType == ItemOptionTypes.SocketOption);
+            <span class="indicator socket s@(i+1) @(socketEquipped ? "equipped" : "unequipped")"></span>
+        }
     }
 </div>
 

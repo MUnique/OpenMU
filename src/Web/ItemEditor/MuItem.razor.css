@@ -55,6 +55,55 @@
     line-height: 1.1em;
 }
 
+.indicator {
+    height: 10px;
+    width: 10px;
+    border-radius: 5px;
+    position: absolute;
+    top: 2px;
+    opacity: 0.9;
+}
+
+    .indicator.exc {
+        background-color: lawngreen;
+        left: 2px;
+    }
+
+    .indicator.anc {
+        background-color: blue;
+        right: 2px;
+    }
+
+    .indicator.socket {
+        border-color: gold;
+        border-style: solid;
+        border-width: 2px;
+        background-color: gray;
+        right: 2px;
+    }
+        .indicator.socket.equipped {
+            background-color: gold;
+        }
+
+        .indicator.socket.s1 {
+            top: 20px;
+        }
+        .indicator.socket.s2 {
+            top: 32px;
+        }
+
+        .indicator.socket.s3 {
+            top: 44px;
+        }
+
+        .indicator.socket.s4 {
+            top: 56px;
+        }
+
+        .indicator.socket.s5 {
+            top: 68px;
+        }
+
 .left {
     left: -24px;
     height: 100%;
