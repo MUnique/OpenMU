@@ -30,11 +30,22 @@ public class ViewModel : INotifyPropertyChanged
     {
         this._persistenceContext = persistenceContext ?? throw new ArgumentNullException(nameof(persistenceContext));
         this.Item = item ?? throw new ArgumentNullException(nameof(item));
-        this.ExcellentOptions = new ItemOptionList(ItemOptionTypes.Excellent, item, persistenceContext);
-        this.WingOptions = new ItemOptionList(ItemOptionTypes.Wing, item, persistenceContext);
+        var excellentOptions = new ItemOptionList(ItemOptionTypes.Excellent, item, persistenceContext);
+        var wingOptions = new ItemOptionList(ItemOptionTypes.Wing, item, persistenceContext);
         this.Sockets = new List<SocketViewModel>(
             Enumerable.Range(0, this.Definition?.MaximumSockets ?? 0)
-                .Select(i => new SocketViewModel(item, this._persistenceContext, i, this.PossibleSocketOptions)));
+                .Select(i =>
+                {
+                    var socket = new SocketViewModel(item, this._persistenceContext, i, this.PossibleSocketOptions);
+                    socket.OptionChanged += this.OnSocketOptionChanged;
+                    return socket;
+                }));
+
+        excellentOptions.ListChanged += (_, _) => this.OnPropertyChanged(nameof(this.ExcellentOptions));
+        wingOptions.ListChanged += (_, _) => this.OnPropertyChanged(nameof(this.WingOptions));
+
+        this.ExcellentOptions = excellentOptions;
+        this.WingOptions = wingOptions;
     }
 
     /// <inheritdoc />
@@ -420,13 +431,16 @@ public class ViewModel : INotifyPropertyChanged
             {
                 var i = this.Sockets.Count - 1;
                 this.Sockets[i].Option = null;
+                this.Sockets[i].OptionChanged -= this.OnSocketOptionChanged;
                 this.Sockets.RemoveAt(i);
             }
 
             // Add missing sockets.
             for (int i = this.Sockets.Count; i < maximumSockets; i++)
             {
-                this.Sockets.Add(new SocketViewModel(this.Item, this._persistenceContext, i, this.PossibleSocketOptions));
+                var socketViewModel = new SocketViewModel(this.Item, this._persistenceContext, i, this.PossibleSocketOptions);
+                socketViewModel.OptionChanged += this.OnSocketOptionChanged;
+                this.Sockets.Add(socketViewModel);
             }
 
             this.OnPropertyChanged();
@@ -505,6 +519,8 @@ public class ViewModel : INotifyPropertyChanged
                     this.ItemOptions.Add(optionLink);
                 }
             }
+
+            this.OnPropertyChanged();
         }
     }
 
@@ -709,5 +725,10 @@ public class ViewModel : INotifyPropertyChanged
 
         this.SocketCount = Math.Min(this.SocketCount, this.Definition.MaximumSockets);
         this.HasSkill &= this.Item.CanHaveSkill();
+    }
+
+    private void OnSocketOptionChanged(object? sender, EventArgs e)
+    {
+        this.OnPropertyChanged(nameof(this.Sockets));
     }
 }
