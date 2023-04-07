@@ -13,34 +13,49 @@
     {
         <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression"/>
     }
-    <div>
-        <div>
-            <MuItemStorage
-                @bind-Value="@CurrentValue"
-                id="@this.FieldIdentifier.FieldName"
-                class="@CssClass"
-                StorageType="@this.StorageType"
-                SelectedItem="@this._selectedItem"
-                SelectedItemChanged="this.OnSelectedItemChanged"/>
-            <div class="d-flex flex-column">
-                <button type="button" class="btn-info ml-1 mb-1" @onclick="@this.OnCreateItemClickAsync" title="Create"><span class="oi oi-plus"></span></button>
-                @if (this._selectedItem is null)
-                {
-                    <button type="button" class="btn-warning ml-1 mb-1 disabled" title="Delete"><span class="oi oi-trash"></span></button>
-                }
-                else
-                {
-                    <button type="button" class="btn-warning ml-1 mb-1" @onclick="this.OnItemDeleteClickAsync" title="Delete"><span class="oi oi-trash"></span></button>    
-                }
+    <div class="container editor-container" id="@this.FieldIdentifier.FieldName">
+        <div class="row editor-row">
+        <div class="col-4 left-column">
+            @if (this.StorageType == StorageType.Inventory)
+            {
+                <div class="equipped-box">
+                    <EquippedItems
+                        @bind-Value="@CurrentValue"
+                        SelectedItem="@this._selectedItem"
+                        SelectedItemChanged="this.OnSelectedItemChanged"/>
+                </div>
+            }
+            <div>
+                <MuItemStorage
+                    @bind-Value="@CurrentValue"
+
+                    class="@CssClass"
+                    StorageType="@this.StorageType"
+                    SelectedItem="@this._selectedItem"
+                    SelectedItemChanged="this.OnSelectedItemChanged"/>
             </div>
         </div>
+        <div class="col-1 middle-column">
+            <button type="button" class="btn-info mb-1" @onclick="@this.OnCreateItemClickAsync" title="Create"><span class="oi oi-plus"></span></button>
+            @if (this._selectedItem is null)
+            {
+                <button type="button" class="btn-warning mb-1 disabled" title="Delete"><span class="oi oi-trash"></span></button>
+            }
+            else
+            {
+                <button type="button" class="btn-warning mb-1" @onclick="this.OnItemDeleteClickAsync" title="Delete"><span class="oi oi-trash"></span></button>
+            }
+        </div>
+        <div class="col-7 right-column">
         @if (this._selectedItem is { })
         {
-            <div class="jumbotron ml-3 w-50">
+            <div class="alert alert-secondary item-edit">
                 <h3>@(this._selectedItem.Definition?.Name ?? @"<Please select a definition>")</h3>
                 <ItemEdit Item="@this._selectedItem" ItemChanged="this.StateHasChanged"></ItemEdit>
             </div>
         }
+        </div>
+        </div>
     </div>
     <ValidationMessage For=@this.ValueExpression/>
 </div>

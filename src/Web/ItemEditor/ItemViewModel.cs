@@ -20,7 +20,7 @@ public class ItemViewModel
     /// </summary>
     /// <param name="parent">The parent.</param>
     /// <param name="item">The item.</param>
-    public ItemViewModel(StorageViewModel parent, Item item)
+    public ItemViewModel(StorageViewModel? parent, Item item)
     {
         this.Parent = parent;
         this.Item = item;
@@ -29,7 +29,7 @@ public class ItemViewModel
     /// <summary>
     /// Gets the parent storage.
     /// </summary>
-    public StorageViewModel Parent { get; }
+    public StorageViewModel? Parent { get; }
 
     /// <summary>
     /// Gets the item.
@@ -101,5 +101,5 @@ public class ItemViewModel
     /// <summary>
     /// Gets the effective index of the item in the box.
     /// </summary>
-    private int EffectiveIndex => this.Item.ItemSlot - this.Parent.StartIndex;
+    private int EffectiveIndex => this.Item.ItemSlot - this.Parent?.StartIndex ?? 0;
 }

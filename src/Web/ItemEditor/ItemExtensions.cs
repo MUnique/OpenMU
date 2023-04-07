@@ -10,6 +10,16 @@ namespace MUnique.OpenMU.Web.ItemEditor;
 public static class ItemExtensions
 {
     /// <summary>
+    /// Returns the <see cref="Item"/> as <see cref="ItemViewModel"/>.
+    /// </summary>
+    /// <param name="item">The <see cref="Item"/>.</param>
+    /// <returns>The <see cref="ItemViewModel"/>.</returns>
+    public static ItemViewModel AsViewModel(this Item item)
+    {
+        return new ItemViewModel(null, item);
+    }
+
+    /// <summary>
     /// Moves the item one place to the left.
     /// </summary>
     /// <param name="item">The item.</param>

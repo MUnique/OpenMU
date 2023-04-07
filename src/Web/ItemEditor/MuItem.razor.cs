@@ -38,7 +38,7 @@ public partial class MuItem
     [Parameter]
     public bool IsSelected { get; set; }
 
-    private int TotalRows => this.Model.Parent.Rows;
+    private int TotalRows => this.Model.Parent?.Rows ?? 0;
     private int Height => this.Model.Item.Definition?.Height ?? 1;
     private int Width => this.Model.Item.Definition?.Width ?? 1;
     private bool CanMoveDown => this.TotalRows > this.Model.Row + this.Height;

@@ -712,6 +712,8 @@ public class ViewModel : INotifyPropertyChanged
             this.Level = 0;
         }
 
+        this.AncientSet = null;
+
         // Reassigning the durability will limit it to the maximum value.
         this.Durability = this.Item.Durability;
 

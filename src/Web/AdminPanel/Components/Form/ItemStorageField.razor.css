@@ -1,1 +1,37 @@
-﻿
+﻿.editor-container {
+    
+}
+
+.editor-row {
+    flex-wrap: nowrap;
+    width: inherit;
+}
+
+.left-column {
+    min-width: 336px;
+    max-width: 336px;
+    padding-left: 0;
+    padding-right: 0;
+    height: max-content;
+}
+
+
+.equipped-box {
+    background-color: black;
+    padding-left: 5px;
+}
+
+.middle-column {
+    max-width: 45px;
+    min-width: 45px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.right-column {
+    padding-right: 0;
+}
+
+.item-edit {
+    background-color: transparent;
+}
