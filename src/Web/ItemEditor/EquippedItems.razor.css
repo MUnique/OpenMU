@@ -3,7 +3,6 @@
     --boxSize: 42px;
     --storageColumns: 8;
     background-image: url('/_content/MUnique.OpenMU.Web.ItemEditor/img/equipment_back.png');
-    ---width: calc(var(--boxSize) * (var(--storageColumns)));
     width: 325px;
     height: 323px;
     display: flex;

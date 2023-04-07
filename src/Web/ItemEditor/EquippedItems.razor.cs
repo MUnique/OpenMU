@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Components;
 /// </summary>
 public partial class EquippedItems
 {
-    private static readonly string[] ClassNames = new string[]
+    private static readonly string[] ClassNames =
     {
         "slot-left",
         "slot-right",

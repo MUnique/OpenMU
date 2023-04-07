@@ -67,6 +67,9 @@ public partial class MuItem
             case "a" when this.CanMoveLeft:
                 await this.MoveLeftAsync().ConfigureAwait(true);
                 break;
+            default:
+                // do nothing
+                break;
         }
     }
 
