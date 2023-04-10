@@ -341,6 +341,8 @@ public class ItemConsumptionTest
         var item = this.GetItem();
         await player.Inventory!.AddItemAsync(ItemSlot, item).ConfigureAwait(false);
         var consumeHandler = new LargeHealthPotionConsumeHandlerPlugIn();
+        consumeHandler.Configuration = consumeHandler.CreateDefaultConfig() as RecoverConsumeHandlerConfiguration;
+        consumeHandler.Configuration!.RecoverSteps.Clear(); // When there are no steps, we recover all immediately.
         var success = await consumeHandler.ConsumeItemAsync(player, item, null, FruitUsage.Undefined).ConfigureAwait(false);
         Assert.That(success, Is.True);
         Assert.That(player.Attributes!.GetValueOfAttribute(Stats.CurrentHealth), Is.GreaterThan(0.0f));
