@@ -7,8 +7,6 @@ services:
       context: ../../src
       dockerfile: Startup/Dockerfile
     restart: "no"
-    environment:
-      RESOLVE_IP: loopback
     ports:
       - "81:80"
 

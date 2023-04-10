@@ -4,7 +4,6 @@ services:
   openmu-startup:
     restart: "unless-stopped"
     environment:
-      RESOLVE_IP: public
       ASPNETCORE_ENVIRONMENT: Production
 
   database:
