@@ -387,7 +387,7 @@ internal sealed class Program : IDisposable
         IMigratableDatabaseContextProvider contextProvider;
         if (args.Contains("-demo"))
         {
-            contextProvider = new InMemoryPersistenceContextProvider();
+            contextProvider = new InMemoryPersistenceContextProvider(changePublisher);
             await this.InitializeDataAsync(version, loggerFactory, contextProvider).ConfigureAwait(false);
         }
         else

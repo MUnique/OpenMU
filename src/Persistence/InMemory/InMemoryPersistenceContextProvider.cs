@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Persistence.InMemory;
 
 using System.Threading;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// A context provider which uses in-memory repositories to hold its data, e.g. for testing or demo purposes.
@@ -13,7 +14,17 @@ using MUnique.OpenMU.DataModel.Configuration;
 /// </summary>
 public class InMemoryPersistenceContextProvider : IMigratableDatabaseContextProvider
 {
+    private readonly IConfigurationChangePublisher? _changePublisher;
     private InMemoryRepositoryProvider _repositoryProvider = new ();
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="InMemoryPersistenceContextProvider"/> class.
+    /// </summary>
+    /// <param name="changePublisher">The change publisher.</param>
+    public InMemoryPersistenceContextProvider(IConfigurationChangePublisher? changePublisher = null)
+    {
+        this._changePublisher = changePublisher;
+    }
 
     /// <inheritdoc/>
     public IContext CreateNewContext()
@@ -60,7 +71,31 @@ public class InMemoryPersistenceContextProvider : IMigratableDatabaseContextProv
     /// <inheritdoc />
     public IContext CreateNewTypedContext<T>(bool useCache, GameConfiguration? gameConfiguration = null)
     {
-        return new InMemoryContext(this._repositoryProvider);
+        var context = new InMemoryContext(this._repositoryProvider);
+        if (this._changePublisher is { })
+        {
+#pragma warning disable VSTHRD100
+            async void OnContextOnSavedChanges(object? o, EventArgs e)
+#pragma warning restore VSTHRD100
+            {
+                try
+                {
+                    foreach (var obj in await context.GetAsync(typeof(T)).ConfigureAwait(false))
+                    {
+                        await this._changePublisher.ConfigurationChangedAsync(typeof(T), obj.GetId(), obj).ConfigureAwait(false);
+                    }
+                }
+                catch
+                {
+                    // ignore all errors.
+                }
+            }
+
+            context.SavedChanges += OnContextOnSavedChanges;
+
+        }
+
+        return context;
     }
 
     /// <inheritdoc />

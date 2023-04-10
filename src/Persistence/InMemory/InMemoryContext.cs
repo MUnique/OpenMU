@@ -22,6 +22,14 @@ public class InMemoryContext : IContext
     }
 
     /// <summary>
+    /// Occurs when changes have been "saved".
+    /// </summary>
+    public event EventHandler? SavedChanges;
+
+    /// <inheritdoc />
+    public bool HasChanges => false;
+
+    /// <summary>
     /// Gets the manager which holds the memory repositories.
     /// </summary>
     /// <value>
@@ -32,10 +40,8 @@ public class InMemoryContext : IContext
     /// <inheritdoc/>
     public void Dispose()
     {
-        // nothing to do here
+        this.SavedChanges = null;
     }
-
-    public bool HasChanges => false;
 
     /// <inheritdoc/>
     public bool SaveChanges()
@@ -49,9 +55,15 @@ public class InMemoryContext : IContext
     }
 
     /// <inheritdoc/>
-    public ValueTask<bool> SaveChangesAsync()
+    public async ValueTask<bool> SaveChangesAsync()
     {
-        return ValueTask.FromResult(this.SaveChanges());
+        var result = this.SaveChanges();
+        if (result)
+        {
+            this.SavedChanges?.Invoke(this, EventArgs.Empty);
+        }
+
+        return result;
     }
 
     /// <inheritdoc/>
