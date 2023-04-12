@@ -34,14 +34,16 @@ steps:
    containerRegistry: 'munique docker hub'
    command: 'login'
 - task: CmdLine@2
-  displayName: TEST - Build and Push ARM build
+  # condition: eq(variables.tagExists, 'false')
+  displayName: "Build and Push All-In-One Image (openmu)"
   inputs:
     script: |
       cd src
       docker buildx create --use
-      docker buildx build --platform linux/arm64/v8 \
+      docker buildx build --platform linux/amd64,linux/arm64/v8 \
         --file Startup/Dockerfile \
-        -t munique/openmu:armtest \
+        -t munique/openmu:latest \
+        -t munique/openmu:$(projectVersion) \
         --push \
         .
 - task: Docker@2
