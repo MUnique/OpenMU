@@ -20,8 +20,9 @@
     <None Include="docker-compose.yml" />
     <None Include=".dockerignore" />
     <None Include=".htpasswd" />
+    <None Include="nginx.prod80.conf" />
     <None Include="nginx.dev.conf" />
-    <None Include="nginx.prod.conf" />
+    <None Include="nginx.prod443.conf" />
     <None Include="README.md" />
   </ItemGroup>
 </Project>

@@ -42,7 +42,8 @@ for nginx. Otherwise, traffic from and to the admin panel is not encrypted.
 
 #### Adapt the config
 
-In the nginx.prod.conf, change "example.org" to your domain name.
+In the ```nginx.prod80.conf``` and ```nginx.prod443.conf```, change all "example.org"
+to your domain name.
 
 #### Run it
 
@@ -52,14 +53,14 @@ In the nginx.prod.conf, change "example.org" to your domain name.
 
 Hint: replace "example.org" with your domain.
 
-`docker compose run --rm  certbot certonly --webroot --webroot-path /var/www/certbot/ -d example.org`
+`docker compose -f docker-compose.yml -f docker-compose.prod.yml run --rm  certbot certonly --webroot --webroot-path /var/www/certbot/ -d example.org`
 
 #### Set up certificate renewal
 
 Because your certificates expire after 3 months, it's recommended to renew them regularly.
 To renew it, run this command:
 
-`docker compose run --rm certbot renew`
+`docker compose -f docker-compose.yml -f docker-compose.prod.yml run --rm certbot renew`
 
 Of course, it would make sense to add a cron job (e.g. once a week) on your host
 machine for that.
