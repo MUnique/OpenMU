@@ -59,9 +59,16 @@ public class SetupService
     /// </summary>
     public async ValueTask<bool> IsDataInitializedAsync()
     {
-        using var context = this._contextProvider.CreateNewConfigurationContext();
-        var id = await context.GetDefaultGameConfigurationIdAsync().ConfigureAwait(false);
-        return id is not null;
+        try
+        {
+            using var context = this._contextProvider.CreateNewConfigurationContext();
+            var id = await context.GetDefaultGameConfigurationIdAsync().ConfigureAwait(false);
+            return id is not null;
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     /// <summary>
