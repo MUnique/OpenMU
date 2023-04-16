@@ -56,7 +56,7 @@ In the nginx.prod.conf, change "example.org" to your domain name.
 
 Hint: replace "example.org" with your domain.
 
-`docker compose run --rm  certbot certonly --webroot --webroot-path /var/www/certbot/ -d example.org`
+`docker compose -f docker-compose.yml -f docker-compose.prod.yml run --rm certbot certonly --webroot --webroot-path /var/www/certbot/ -d example.org`
 
 #### Set up certificate renewal
 
