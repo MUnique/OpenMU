@@ -46,12 +46,7 @@ In the nginx.prod.conf, change "example.org" to your domain name.
 
 #### Run it
 
-`docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d`
-
-> Hint: Here, docker-compose is used with the **docker-compose** command instead
-> of **docker compose**.
-> Reason: The -f parameter is only available through **docker-compose**.
-
+`docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d`
 
 #### Run certbot explicitly
 
