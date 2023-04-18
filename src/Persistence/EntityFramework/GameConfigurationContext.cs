@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
+using System.Threading;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Persistence.EntityFramework.Model;
@@ -24,8 +25,8 @@ internal class GameConfigurationContext : CachingEntityFrameworkContext, IConfig
     }
 
     /// <inheritdoc />
-    public async ValueTask<Guid?> GetDefaultGameConfigurationIdAsync()
+    public async ValueTask<Guid?> GetDefaultGameConfigurationIdAsync(CancellationToken cancellationToken)
     {
-        return await this.Context.Set<GameConfiguration>().Select(g => g.Id).FirstOrDefaultAsync().ConfigureAwait(false);
+        return await this.Context.Set<GameConfiguration>().Select(g => g.Id).FirstOrDefaultAsync(cancellationToken).ConfigureAwait(false);
     }
 }

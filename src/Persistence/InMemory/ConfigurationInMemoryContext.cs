@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence.InMemory;
 
+using System.Threading;
 using MUnique.OpenMU.Persistence.BasicModel;
 
 public class ConfigurationInMemoryContext : InMemoryContext, IConfigurationContext
@@ -18,7 +19,7 @@ public class ConfigurationInMemoryContext : InMemoryContext, IConfigurationConte
     }
 
     /// <inheritdoc />
-    public async ValueTask<Guid?> GetDefaultGameConfigurationIdAsync()
+    public async ValueTask<Guid?> GetDefaultGameConfigurationIdAsync(CancellationToken cancellationToken)
     {
         var allConfigs = await this.Provider.GetRepository<GameConfiguration>().GetAllAsync().ConfigureAwait(false);
         return allConfigs.FirstOrDefault()?.Id;

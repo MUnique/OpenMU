@@ -17,8 +17,8 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="Dapr.AspNetCore" Version="1.9.0" />
-    <PackageReference Include="Dapr.Client" Version="1.9.0" />
+    <PackageReference Include="Dapr.AspNetCore" Version="1.10.0" />
+    <PackageReference Include="Dapr.Client" Version="1.10.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
     <PackageReference Include="Microsoft.OpenApi" Version="1.4.3" />

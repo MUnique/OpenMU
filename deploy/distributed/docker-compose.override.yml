@@ -68,3 +68,5 @@ services:
       dockerfile: Dapr/AdminPanel.Host/Dockerfile
     environment:
       ASPNETCORE_ENVIRONMENT: Development
+    ports:
+      - "88:80"

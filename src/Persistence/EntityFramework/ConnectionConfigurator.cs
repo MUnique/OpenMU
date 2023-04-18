@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Nito.AsyncEx.Synchronous;
 
 /// <summary>
 /// The database roles.
@@ -47,12 +48,12 @@ public static class ConnectionConfigurator
 {
     private static IDatabaseConnectionSettingProvider? _provider;
 
-    private static IDatabaseConnectionSettingProvider Provider => _provider ?? throw new InvalidOperationException("Call Initialize before.");
-
     /// <summary>
     /// Gets a value indicating whether this instance is initialized.
     /// </summary>
     public static bool IsInitialized => _provider is not null;
+
+    private static IDatabaseConnectionSettingProvider Provider => _provider ?? throw new InvalidOperationException("Call Initialize before.");
 
     /// <summary>
     /// Initializes this instance.
@@ -60,6 +61,11 @@ public static class ConnectionConfigurator
     /// <param name="provider">The <see cref="IDatabaseConnectionSettingProvider"/> which provides the required connection settings.</param>
     public static void Initialize(IDatabaseConnectionSettingProvider provider)
     {
+        if (_provider is not null)
+        {
+            throw new InvalidOperationException("provider is initialized already");
+        }
+
         _provider = provider;
     }
 
@@ -70,6 +76,7 @@ public static class ConnectionConfigurator
     /// <returns>The name of the role from the configured connection string.</returns>
     public static string GetRoleName(DatabaseRole role)
     {
+        Provider.Initialization?.WaitWithoutException();
         var settings = Provider.GetConnectionSetting(GetContextTypeOfRole(role));
         return Regex.Match(settings.ConnectionString!, "User Id=([^;]+?);").Groups[1].Value;
     }
@@ -81,6 +88,7 @@ public static class ConnectionConfigurator
     /// <returns>The password password of the role from the configured connection string.</returns>
     public static string GetRolePassword(DatabaseRole role)
     {
+        Provider.Initialization?.WaitWithoutException();
         var settings = Provider.GetConnectionSetting(GetContextTypeOfRole(role));
         return Regex.Match(settings.ConnectionString!, "Password=([^;]+?);").Groups[1].Value;
     }
@@ -99,6 +107,7 @@ public static class ConnectionConfigurator
             type = type.GetGenericTypeDefinition();
         }
 
+        Provider.Initialization?.WaitWithoutException();
         if (Provider.GetConnectionSetting(type) is { } setting)
         {
             switch (setting.DatabaseEngine)

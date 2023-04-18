@@ -287,7 +287,7 @@ internal sealed class Program : IDisposable
         var typesWithMissingCustomConfigs = configs.Where(c => string.IsNullOrWhiteSpace(c.CustomConfiguration) && typesWithCustomConfig.ContainsKey(c.TypeId)).ToList();
         if (typesWithMissingCustomConfigs.Any())
         {
-            typesWithMissingCustomConfigs.ForEach(c => CreateDefaultPlugInConfiguration(typesWithCustomConfig[c.TypeId]!, c));
+            typesWithMissingCustomConfigs.ForEach(c => this.CreateDefaultPlugInConfiguration(typesWithCustomConfig[c.TypeId]!, c));
             context.SaveChanges();
         }
 
@@ -320,7 +320,7 @@ internal sealed class Program : IDisposable
             gameConfiguration.PlugInConfigurations.Add(plugInConfiguration);
             if (plugInType.GetInterfaces().Contains(typeof(ISupportDefaultCustomConfiguration)))
             {
-                CreateDefaultPlugInConfiguration(plugInType, plugInConfiguration);
+                this.CreateDefaultPlugInConfiguration(plugInType, plugInConfiguration);
             }
 
             yield return plugInConfiguration;
@@ -406,7 +406,7 @@ internal sealed class Program : IDisposable
         if (reinit || !await contextProvider.DatabaseExistsAsync().ConfigureAwait(false))
         {
             this._logger.Information("The database is getting (re-)initialized...");
-            await contextProvider.ReCreateDatabaseAsync().ConfigureAwait(false);
+            using var update = await contextProvider.ReCreateDatabaseAsync().ConfigureAwait(false);
             await this.InitializeDataAsync(version, loggerFactory, contextProvider).ConfigureAwait(false);
             this._logger.Information("...initialization finished.");
         }

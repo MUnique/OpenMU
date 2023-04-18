@@ -10,6 +10,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.EntityFramework.Model;
+using Nito.Disposables;
+using Npgsql;
 
 /// <summary>
 /// The persistence context provider for the persistence implemented with entity framework core.
@@ -17,7 +19,7 @@ using MUnique.OpenMU.Persistence.EntityFramework.Model;
 public class PersistenceContextProvider : IMigratableDatabaseContextProvider
 {
     private readonly ILoggerFactory _loggerFactory;
-    private readonly IConfigurationChangePublisher? _changePublisher;
+    private IConfigurationChangePublisher? _changePublisher;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PersistenceContextProvider" /> class.
@@ -39,18 +41,13 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
     /// </value>
     internal CacheAwareRepositoryProvider RepositoryProvider { get; private set; }
 
-    /// <summary>
-    /// Determines whether the database schema is up to date.
-    /// </summary>
-    /// <returns>
-    ///   <c>true</c> if [is database up to date]; otherwise, <c>false</c>.
-    /// </returns>
-    public async Task<bool> IsDatabaseUpToDateAsync()
+    /// <inheritdoc />
+    public async Task<bool> IsDatabaseUpToDateAsync(CancellationToken cancellationToken = default)
     {
         try
         {
             await using var installationContext = new EntityDataContext();
-            return !(await installationContext.Database.GetPendingMigrationsAsync().ConfigureAwait(false)).Any();
+            return !(await installationContext.Database.GetPendingMigrationsAsync(cancellationToken).ConfigureAwait(false)).Any();
         }
         catch
         {
@@ -73,8 +70,8 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
     /// <param name="cancellationToken">The cancellation token.</param>
     public async Task WaitForUpdatedDatabaseAsync(CancellationToken cancellationToken = default)
     {
-        while (!await this.DatabaseExistsAsync().ConfigureAwait(false)
-               || !await this.IsDatabaseUpToDateAsync().ConfigureAwait(false))
+        while (!await this.DatabaseExistsAsync(cancellationToken).ConfigureAwait(false)
+               || !await this.IsDatabaseUpToDateAsync(cancellationToken).ConfigureAwait(false))
         {
             await Task.Delay(3000, cancellationToken).ConfigureAwait(false);
         }
@@ -105,16 +102,27 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
         }
     }
 
-    /// <summary>
-    /// Determines if the database exists already, by checking if any migration has been applied.
-    /// </summary>
-    /// <returns><c>True</c>, if the database exists; Otherwise, <c>false</c>.</returns>
-    public async Task<bool> DatabaseExistsAsync()
+    /// <inheritdoc />
+    public async Task<bool> DatabaseExistsAsync(CancellationToken cancellationToken = default)
     {
         try
         {
             await using var installationContext = new EntityDataContext();
-            return (await installationContext.Database.GetAppliedMigrationsAsync().ConfigureAwait(false)).Any();
+            return (await installationContext.Database.GetAppliedMigrationsAsync(cancellationToken).ConfigureAwait(false)).Any();
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    /// <inheritdoc />
+    public async Task<bool> CanConnectToDatabaseAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            await using var installationContext = new EntityDataContext();
+            return await installationContext.Database.CanConnectAsync(cancellationToken).ConfigureAwait(false);
         }
         catch
         {
@@ -123,31 +131,39 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
     }
 
     /// <summary>
-    /// Determines whether this instance can connect to the database.
-    /// </summary>
-    /// <returns>
-    ///   <c>true</c> if this instance can connect to the database; otherwise, <c>false</c>.
-    /// </returns>
-    public async Task<bool> CanConnectToDatabaseAsync()
-    {
-        await using var installationContext = new EntityDataContext();
-        return await installationContext.Database.CanConnectAsync().ConfigureAwait(false);
-    }
-
-    /// <summary>
     /// Recreates the database by deleting and creating it again.
     /// </summary>
-    public async Task ReCreateDatabaseAsync()
+    /// <returns>The disposable which should be disposed when the data creation process is finished.</returns>
+    public async Task<IDisposable> ReCreateDatabaseAsync()
     {
-        await using (var installationContext = new EntityDataContext())
+        var changePublisher = this._changePublisher;
+        this._changePublisher = null;
+        try
         {
-            await installationContext.Database.EnsureDeletedAsync().ConfigureAwait(false);
+            try
+            {
+                await using var installationContext = new EntityDataContext();
+                await installationContext.Database.EnsureDeletedAsync().ConfigureAwait(false);
+            }
+            catch (NpgsqlException)
+            {
+                // That's expected for a fresh database
+            }
+
+            await this.ApplyAllPendingUpdatesAsync().ConfigureAwait(false);
+
+            // We create a new repository provider, so that the previously loaded data is not effective anymore.
+            this.RepositoryProvider = new CacheAwareRepositoryProvider(this._loggerFactory, changePublisher);
+        }
+        catch
+        {
+            this._changePublisher = changePublisher;
         }
 
-        await this.ApplyAllPendingUpdatesAsync().ConfigureAwait(false);
-
-        // We create a new repository provider, so that the previously loaded data is not effective anymore.
-        this.RepositoryProvider = new CacheAwareRepositoryProvider(this._loggerFactory, this._changePublisher);
+        return new Disposable(() =>
+        {
+            this._changePublisher = changePublisher;
+        });
     }
 
     /// <inheritdoc />

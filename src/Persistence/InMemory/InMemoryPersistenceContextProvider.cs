@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using Nito.Disposables;
+
 namespace MUnique.OpenMU.Persistence.InMemory;
 
 using System.Threading;
@@ -99,13 +101,13 @@ public class InMemoryPersistenceContextProvider : IMigratableDatabaseContextProv
     }
 
     /// <inheritdoc />
-    public Task<bool> DatabaseExistsAsync()
+    public Task<bool> DatabaseExistsAsync(CancellationToken cancellationToken)
     {
         return Task.FromResult(true);
     }
 
     /// <inheritdoc />
-    public Task<bool> IsDatabaseUpToDateAsync()
+    public Task<bool> IsDatabaseUpToDateAsync(CancellationToken cancellationToken)
     {
         return Task.FromResult(true);
     }
@@ -124,15 +126,15 @@ public class InMemoryPersistenceContextProvider : IMigratableDatabaseContextProv
     }
 
     /// <inheritdoc />
-    public Task<bool> CanConnectToDatabaseAsync()
+    public Task<bool> CanConnectToDatabaseAsync(CancellationToken cancellationToken)
     {
         return Task.FromResult(true);
     }
 
     /// <inheritdoc />
-    public Task ReCreateDatabaseAsync()
+    public Task<IDisposable> ReCreateDatabaseAsync()
     {
         this._repositoryProvider = new();
-        return Task.CompletedTask;
+        return Task.FromResult<IDisposable>(new Disposable(() => { }));
     }
 }

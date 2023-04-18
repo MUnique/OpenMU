@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Web.AdminPanel.Shared;
 
+using System.Threading;
 using Microsoft.AspNetCore.Components;
 
 using MUnique.OpenMU.Persistence;
@@ -24,7 +25,7 @@ public partial class NavMenu : IDisposable
     private int _availableConfigUpdates;
 
     [Inject]
-    private IPersistenceContextProvider PersistenceContextProvider { get; set; } = null!;
+    private IMigratableDatabaseContextProvider PersistenceContextProvider { get; set; } = null!;
 
     [Inject]
     private SetupService SetupService { get; set; } = null!;
@@ -87,23 +88,38 @@ public partial class NavMenu : IDisposable
 
         try
         {
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+            if (!await this.PersistenceContextProvider.CanConnectToDatabaseAsync(cts.Token).ConfigureAwait(true)
+                || !await this.PersistenceContextProvider.DatabaseExistsAsync(cts.Token).ConfigureAwait(true))
+            {
+                return;
+            }
+
             using var context = this.PersistenceContextProvider.CreateNewConfigurationContext();
-            this.GameConfigurationId = await context.GetDefaultGameConfigurationIdAsync();
+            this.GameConfigurationId = await context.GetDefaultGameConfigurationIdAsync(cts.Token).ConfigureAwait(true);
         }
         catch
         {
             this.GameConfigurationId = null;
         }
-
-        this._onlyShowSetup = this.GameConfigurationId is null;
-        this._isLoadingConfig = false;
-        await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
+        finally
+        {
+            this._onlyShowSetup = this.GameConfigurationId is null;
+            this._isLoadingConfig = false;
+            await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
+        }
     }
 
     private async Task CheckForUpdatesAsync()
     {
         try
         {
+            if (this.GameConfigurationId is null)
+            {
+                this._availableConfigUpdates = 0;
+                return;
+            }
+
             var updates = await this.UpdateService.DetermineAvailableUpdatesAsync().ConfigureAwait(false);
             this._availableConfigUpdates = updates.Count;
         }
@@ -111,8 +127,10 @@ public partial class NavMenu : IDisposable
         {
             this._availableConfigUpdates = 0;
         }
-
-        await this.InvokeAsync(this.StateHasChanged);
+        finally
+        {
+            await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(true);
+        }
     }
 
     private void ToggleNavMenu()

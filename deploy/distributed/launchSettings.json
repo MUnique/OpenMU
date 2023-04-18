@@ -27,6 +27,10 @@
         "nginx": "StartWithoutDebugging",
         "prometheus": "StartWithoutDebugging",
         "zipkin": "StartWithoutDebugging"
+        "zipkin": "StartWithoutDebugging",
+        "gameServer0": "StartWithoutDebugging",
+        "gameServer0-dapr": "StartWithoutDebugging",
+        "redis-state": "StartWithoutDebugging"
       }
     }
   }

@@ -5,12 +5,12 @@
 namespace MUnique.OpenMU.Web.AdminPanel.Services;
 
 using System.Threading;
-using Nito.AsyncEx.Synchronous;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.Initialization;
 using MUnique.OpenMU.PlugIns;
+using Nito.AsyncEx.Synchronous;
 
 /// <summary>
 /// Service which allows to set the servers database up.
@@ -42,17 +42,38 @@ public class SetupService
     /// <summary>
     /// Gets a value indicating whether this application can connect to database.
     /// </summary>
-    public bool CanConnectToDatabase => this._contextProvider.CanConnectToDatabaseAsync().WaitAndUnwrapException();
+    public bool CanConnectToDatabase
+    {
+        get
+        {
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(3));
+            return this._contextProvider.CanConnectToDatabaseAsync(cts.Token).WaitAndUnwrapException();
+        }
+    }
 
     /// <summary>
     /// Gets a value indicating whether the data is installed.
     /// </summary>
-    public bool IsInstalled => this._contextProvider.DatabaseExistsAsync().WaitAndUnwrapException();
+    public bool IsInstalled
+    {
+        get
+        {
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(3));
+            return this._contextProvider.DatabaseExistsAsync(cts.Token).WaitAndUnwrapException();
+        }
+    }
 
     /// <summary>
     /// Gets a value indicating whether the database requires an update.
     /// </summary>
-    public bool IsUpdateRequired => !this._contextProvider.IsDatabaseUpToDateAsync().WaitAndUnwrapException();
+    public bool IsUpdateRequired
+    {
+        get
+        {
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(3));
+            return !this._contextProvider.IsDatabaseUpToDateAsync(cts.Token).WaitAndUnwrapException();
+        }
+    }
 
     /// <summary>
     /// Gets a value indicating whether the data is initialized.
@@ -61,8 +82,9 @@ public class SetupService
     {
         try
         {
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(3));
             using var context = this._contextProvider.CreateNewConfigurationContext();
-            var id = await context.GetDefaultGameConfigurationIdAsync().ConfigureAwait(false);
+            var id = await context.GetDefaultGameConfigurationIdAsync(cts.Token).ConfigureAwait(false);
             return id is not null;
         }
         catch
@@ -106,7 +128,7 @@ public class SetupService
     /// <param name="dataInitialization">The data initialization action.</param>
     public async Task CreateDatabaseAsync(Func<Task> dataInitialization)
     {
-        await this._contextProvider.ReCreateDatabaseAsync().ConfigureAwait(false);
+        using var update = await this._contextProvider.ReCreateDatabaseAsync().ConfigureAwait(false);
         await dataInitialization().ConfigureAwait(false);
         if (this.DatabaseInitialized is { } eventHandler)
         {
