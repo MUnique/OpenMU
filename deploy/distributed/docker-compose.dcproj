@@ -26,6 +26,8 @@
     <None Include="grafana.ini" />
     <None Include="grafana_datasources.yaml" />
     <None Include="loki-config.yaml" />
+    <None Include="nginx.prod.certificates.conf.template" />
+    <None Include="nginx.server_name.conf.template" />
     <None Include="nginx.prod80.conf" />
     <None Include="nginx.prod443.conf" />
     <None Include="nginx.dev.conf" />

@@ -40,10 +40,15 @@ Option B:
 If you want to share your server with the world, it's recommended to set up HTTPS
 for nginx. Otherwise, traffic from and to the admin panel is not encrypted.
 
-#### Adapt the config
+#### Set your domain name as environment variable
 
-In the ```nginx.prod80.conf``` and ```nginx.prod443.conf```, change all "example.org"
-to your domain name.
+Add an environment variable ```DOMAIN_NAME``` to your container.
+This can be done in [various ways](https://docs.docker.com/compose/environment-variables/set-environment-variables/),
+e.g. by editing the ```docker-compose.prod.yml``` or adding a parameter (see next
+paragraph).
+
+This variable is replaced in the nginx template config files which get included
+in the other configuration files.
 
 #### Run it
 

@@ -4,6 +4,7 @@ services:
   nginx-80:
     restart: "unless-stopped"
     volumes:
+      - ./nginx.server_name.conf.template:/etc/nginx/templates/nginx.server_name.conf.template
       - ./nginx.prod80.conf:/etc/nginx/nginx.conf:ro
       - ./.htpasswd:/etc/nginx/.htpasswd
       - ./certbot/www:/var/www/certbot/:ro
@@ -20,6 +21,8 @@ services:
     ports:
       - "443:443"
     volumes:
+      - ./nginx.server_name.conf.template:/etc/nginx/templates/nginx.server_name.conf.template
+      - ./nginx.prod.certificates.conf.template:/etc/nginx/templates/nginx.prod.certificates.conf.template
       - ./nginx.prod443.conf:/etc/nginx/nginx.conf:ro
       - ./.htpasswd:/etc/nginx/.htpasswd
       - ./certbot/conf/:/etc/nginx/ssl/:ro
