@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic;
 
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.PlugIns;
 using static OpenMU.DataModel.InventoryConstants;
@@ -50,6 +51,26 @@ public class InventoryStorage : Storage, IInventoryStorage
                     yield return this.ItemArray[i]!;
                 }
             }
+        }
+    }
+
+
+    /// <inheritdoc/>
+    public Item? EquippedAmmunitionItem
+    {
+        get
+        {
+            if (this.ItemArray[LeftHandSlot] is { } leftItem && (leftItem.Definition?.IsAmmunition ?? false))
+            {
+                return leftItem;
+            }
+
+            if (this.ItemArray[RightHandSlot] is { } rightItem && (rightItem.Definition?.IsAmmunition ?? false))
+            {
+                return rightItem;
+            }
+
+            return null;
         }
     }
 
@@ -128,6 +149,11 @@ public class InventoryStorage : Storage, IInventoryStorage
         {
             var factory = this._gameContext.ItemPowerUpFactory;
             this._player.Attributes.ItemPowerUps.Add(item, factory.GetPowerUps(item, this._player.Attributes).ToList());
+
+            // reset player equipped ammunition amount
+            if (this.EquippedAmmunitionItem is { } ammoItem) {
+                this._player.Attributes[Stats.AmmunitionAmount] = (float) ammoItem.Durability;
+            }
         }
     }
 
