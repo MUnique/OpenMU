@@ -193,6 +193,11 @@ public interface IInventoryStorage : IStorage
     /// Gets all items which are in the wearable slots.
     /// </summary>
     IEnumerable<Item> EquippedItems { get; }
+
+    /// <summary>
+    /// Gets equipped ammunition item.
+    /// </summary>
+    Item? EquippedAmmunitionItem { get; }
 }
 
 /// <summary>

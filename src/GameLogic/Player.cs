@@ -1653,23 +1653,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         await this.ForEachWorldObserverAsync<IUpdateCharacterHeroStatePlugIn>(o => o.UpdateCharacterHeroStateAsync(this), true).ConfigureAwait(false);
     }
 
-    private Item? GetAmmunitionItem()
-    {
-        if (this.Inventory?.GetItem(InventoryConstants.LeftHandSlot) is { } leftItem
-            && (leftItem.Definition?.IsAmmunition ?? false))
-        {
-            return leftItem;
-        }
-
-        if (this.Inventory?.GetItem(InventoryConstants.RightHandSlot) is { } rightItem
-            && (rightItem.Definition?.IsAmmunition ?? false))
-        {
-            return rightItem;
-        }
-
-        return null;
-    }
-
     private SkillComboDefinition? DetermineComboDefinition()
     {
         var characterClass = this.SelectedCharacter!.CharacterClass;
@@ -1716,7 +1699,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.Attributes.GetOrCreateAttribute(Stats.TransformationSkin).ValueChanged += this.OnTransformationSkinChanged;
 
         var ammoAttribute = this.Attributes.GetOrCreateAttribute(Stats.AmmunitionAmount);
-        this.Attributes[Stats.AmmunitionAmount] = (float)(this.GetAmmunitionItem()?.Durability ?? 0);
+        this.Attributes[Stats.AmmunitionAmount] = (float)(this.Inventory?.EquippedAmmunitionItem?.Durability ?? 0);
         ammoAttribute.ValueChanged += this.OnAmmunitionAmountChanged;
 
         await this.ClientReadyAfterMapChangeAsync().ConfigureAwait(false);
@@ -1790,7 +1773,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         try
         {
             var value = Math.Max((byte)this.Attributes![Stats.AmmunitionAmount], (byte)0);
-            if (this.GetAmmunitionItem() is { } ammoItem
+            if (this.Inventory?.EquippedAmmunitionItem is { } ammoItem
                 && (int)ammoItem.Durability != value)
             {
                 ammoItem.Durability = value;
