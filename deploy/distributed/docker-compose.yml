@@ -38,7 +38,7 @@ services:
       - 9090
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
-      - ./.volumes/prometheus-data:/prometheus
+      - prometheus-data:/prometheus
     command: --web.enable-lifecycle  --config.file=/etc/prometheus/prometheus.yml
 
   loki:
@@ -71,7 +71,7 @@ services:
     ports:
       - 9000
     volumes:
-      - ./.volumes/minio-data:/data
+      - minio-data:/data
 
   redis-state:
     image: redis
@@ -106,7 +106,7 @@ services:
     ports:
       - "5432"
     volumes:
-      - ./.volumes/dbdata:/var/lib/postgresql/data
+      - dbdata:/var/lib/postgresql/data
 
   zipkin:
     image: openzipkin/zipkin
