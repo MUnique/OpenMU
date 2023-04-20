@@ -1,1 +1,1 @@
-        set domain_name_var $DOMAIN_NAME;
+        server_name $DOMAIN_NAME;
