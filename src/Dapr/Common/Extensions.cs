@@ -65,6 +65,11 @@ public static class Extensions
             .AddSingleton<PlugInManager>();
     }
 
+    /// <summary>
+    /// Tries to load the plug in configurations.
+    /// </summary>
+    /// <param name="serviceProvider">The service provider.</param>
+    /// <param name="plugInConfigurations">The list of plug in configurations, where the loaded configurations will be added.</param>
     public static async ValueTask TryLoadPlugInConfigurationsAsync(this IServiceProvider serviceProvider, List<PlugInConfiguration> plugInConfigurations)
     {
         if (serviceProvider.GetService<IMigratableDatabaseContextProvider>() is not { } persistenceContextProvider)
@@ -74,17 +79,15 @@ public static class Extensions
 
         try
         {
-
             using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-            if (!persistenceContextProvider.CanConnectToDatabaseAsync(cts.Token).WaitAndUnwrapException()
-                || !persistenceContextProvider.DatabaseExistsAsync(cts.Token).WaitAndUnwrapException())
+            if (!await persistenceContextProvider.CanConnectToDatabaseAsync(cts.Token).ConfigureAwait(false)
+                || !await persistenceContextProvider.DatabaseExistsAsync(cts.Token).ConfigureAwait(false))
             {
                 return;
             }
 
             var configs = await persistenceContextProvider.CreateNewTypedContext<PlugInConfiguration>(false).GetAsync<PlugInConfiguration>().ConfigureAwait(false);
             plugInConfigurations.AddRange(configs);
-
         }
         catch
         {
@@ -313,18 +316,15 @@ public static class Extensions
             (IpResolverType IpResolver, string? IpResolverParameter)? settings = default;
             try
             {
-
                 var persistenceContextProvider = serviceProvider.GetService<IPersistenceContextProvider>() ?? throw new Exception($"{nameof(IPersistenceContextProvider)} not registered.");
                 using var context = persistenceContextProvider.CreateNewTypedContext<SystemConfiguration>(false);
 
                 // TODO: this may lead to a deadlock?
                 var configuration = context.GetAsync<SystemConfiguration>().AsTask().WaitAndUnwrapException().FirstOrDefault();
-                
                 if (configuration is not null)
                 {
                     settings = (configuration.IpResolver, configuration.IpResolverParameter);
                 }
-
             }
             catch (Exception ex)
             {
