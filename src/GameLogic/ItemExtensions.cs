@@ -112,27 +112,58 @@ public static class ItemExtensions
         return InventoryConstants.IsDefenseItemSlot(item.ItemSlot) || item.IsShield();
     }
 
+    /// <summary>
+    /// Determines whether this instance is a shield.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <returns>
+    ///   <c>true</c> if the specified item is a shield; otherwise, <c>false</c>.
+    /// </returns>
     public static bool IsShield(this Item item)
     {
         return item.Definition?.Group == ShieldItemGroup;
     }
 
+    /// <summary>
+    /// Determines whether this instance is a is weapon which deals physical damage.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <param name="minimumDmg">The minimum physical damage of the weapon.</param>
+    /// <returns>
+    ///   <c>true</c> if this instance is a is weapon which deals physical damage; otherwise, <c>false</c>.
+    /// </returns>
     public static bool IsPhysicalWeapon(this Item item, [NotNullWhen(true)] out float? minimumDmg)
     {
         minimumDmg = item.Definition?.BasePowerUpAttributes.FirstOrDefault(a => a.TargetAttribute == Stats.MinimumPhysBaseDmg)?.BaseValue;
         return minimumDmg is not null;
     }
 
+    /// <summary>
+    /// Determines whether this instance is a weapon which deals wizardry damage.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <param name="staffRise">The staff rise percentage of the weapon.</param>
+    /// <returns>
+    ///   <c>true</c> if this instance is a is weapon which deals wizardry damage; otherwise, <c>false</c>.
+    /// </returns>
     public static bool IsWizardryWeapon(this Item item, [NotNullWhen(true)] out float? staffRise)
     {
         staffRise = item.Definition?.BasePowerUpAttributes.FirstOrDefault(a => a.TargetAttribute == Stats.StaffRise)?.BaseValue;
         return staffRise is not null;
     }
 
-    public static bool IsScepter(this Item item, [NotNullWhen(true)] out float? scepterRise)
+    /// <summary>
+    /// Determines whether this instance is a scepter which increases raven damage.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <param name="stickRise">The stick rise percentage of the weapon.</param>
+    /// <returns>
+    ///   <c>true</c> if this instance is a scepter which increases raven damage; otherwise, <c>false</c>.
+    /// </returns>
+    public static bool IsScepter(this Item item, [NotNullWhen(true)] out float? stickRise)
     {
-        scepterRise = item.Definition?.BasePowerUpAttributes.FirstOrDefault(a => a.TargetAttribute == Stats.ScepterRise)?.BaseValue;
-        return scepterRise is not null;
+        stickRise = item.Definition?.BasePowerUpAttributes.FirstOrDefault(a => a.TargetAttribute == Stats.ScepterRise)?.BaseValue;
+        return stickRise is not null;
     }
 
     /// <summary>
@@ -299,6 +330,10 @@ public static class ItemExtensions
         else if (isExcellent)
         {
             dropLevel += 25;
+        }
+        else
+        {
+            // nothing to add
         }
 
         dropLevel += 3 * itemLevel;
