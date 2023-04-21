@@ -3,8 +3,6 @@ version: '3.4'
 services:
   nginx-80:
     restart: "unless-stopped"
-    environment:
-      DOMAIN_NAME: ${DOMAIN_NAME}
     volumes:
       - ./nginx.server_name.conf.template:/etc/nginx/templates/nginx.server_name.conf.template
       - ./nginx.prod80.conf:/etc/nginx/nginx.conf:ro
@@ -22,8 +20,6 @@ services:
     restart: "unless-stopped"
     ports:
       - "443:443"
-    environment:
-      DOMAIN_NAME: ${DOMAIN_NAME}
     volumes:
       - ./nginx.server_name.conf.template:/etc/nginx/templates/nginx.server_name.conf.template
       - ./nginx.prod.certificates.conf.template:/etc/nginx/templates/nginx.prod.certificates.conf.template
