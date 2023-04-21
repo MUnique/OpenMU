@@ -87,13 +87,13 @@ public class SimpleItemCraftingHandler : BaseItemCraftingHandler
                 }
 
                 if (this._settings.SuccessPercentageAdditionForExcellentItem != default
-                    && item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.Excellent))
+                    && item.IsExcellent())
                 {
                     rate = (byte)(rate + this._settings.SuccessPercentageAdditionForExcellentItem);
                 }
 
                 if (this._settings.SuccessPercentageAdditionForAncientItem != default
-                    && item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.AncientBonus))
+                    && item.IsAncient())
                 {
                     rate = (byte)(rate + this._settings.SuccessPercentageAdditionForAncientItem);
                 }
