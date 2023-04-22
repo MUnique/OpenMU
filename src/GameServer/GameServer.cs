@@ -35,6 +35,8 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
 
     private ServerState _serverState;
 
+    public static IGameServer? Pointer;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GameServer" /> class.
     /// </summary>
@@ -70,6 +72,7 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
             this._gameContext.GameMapRemoved += (_, _) => this.OnPropertyChanged(nameof(this.Context));
             mapInitializer.PlugInManager = this._gameContext.PlugInManager;
             mapInitializer.PathFinderPool = this._gameContext.PathFinderPool;
+            Pointer = this;
         }
         catch (Exception ex)
         {
