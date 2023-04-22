@@ -1,45 +1,48 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using MUnique.OpenMU.GameServer;
-using System.Text.Json;
-
-public class HomeController : Controller
+﻿namespace MUnique.OpenMU.API.Controllers
 {
-    [HttpGet]
-    public IActionResult Index()
-    {
-        var item = new
-        {
-            action = "Home/Index",
-            msg = "Your index response"
-        };
-        return Ok(JsonSerializer.Serialize(item));
-    }
+    using System.Text.Json;
+    using Microsoft.AspNetCore.Mvc;
+    using MUnique.OpenMU.GameServer;
 
-    [HttpGet]
-    public IActionResult Test(string id)
+    public class HomeController : Controller
     {
-        var item = new
+        [HttpGet]
+        public IActionResult Index()
         {
-            id = id,
-            action = "Home/About",
-            msg = "Your about response"
-        };
-        return Ok(JsonSerializer.Serialize(item));
-    }
-
-    [HttpGet]
-    public IActionResult ServerState()
-    {
-        var server = GameServer.Pointer;
-         if(server is not null)
-            {
             var item = new
-                {
-                    state = server.ServerState.ToString()
-                };
+            {
+                action = "Home/Index",
+                msg = "Your index response"
+            };
             return Ok(JsonSerializer.Serialize(item));
         }
 
-        return Ok("Server not ready");
+        [HttpGet]
+        public IActionResult Test(string id)
+        {
+            var item = new
+            {
+                id,
+                action = "Home/About",
+                msg = "Your about response"
+            };
+            return Ok(JsonSerializer.Serialize(item));
+        }
+
+        [HttpGet]
+        public IActionResult ServerState()
+        {
+            var server = GameServer.Instance;
+            if (server is not null)
+            {
+                var item = new
+                {
+                    state = server.ServerState.ToString()
+                };
+                return Ok(JsonSerializer.Serialize(item));
+            }
+
+            return Ok("Server not ready");
+        }
     }
 }

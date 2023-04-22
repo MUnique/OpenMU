@@ -10,7 +10,6 @@ namespace MUnique.OpenMU.API
         {
 
             var configuration = new ConfigurationBuilder()
-           .SetBasePath(Directory.GetCurrentDirectory())
            .AddJsonFile("appsettings-api.json", optional: false, reloadOnChange: true)
            .Build();
 
@@ -21,7 +20,7 @@ namespace MUnique.OpenMU.API
             .UseStartup<Startup>()
             .Build();
 
-            host.RunAsync();
+            _ = host.RunAsync();
         }
     }
 }
