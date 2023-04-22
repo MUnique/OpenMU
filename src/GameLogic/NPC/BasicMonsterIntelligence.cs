@@ -45,18 +45,18 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
     /// </summary>
     protected IAttackable? CurrentTarget { get; private set; }
 
-    private async ValueTask<bool> IsObservedByAttackerAsync()
-    {
-        using var readerLock = await this.Monster.ObserverLock.ReaderLockAsync();
-        return this.Monster.Observers.OfType<IAttacker>().Any();
-    }
-
     /// <inheritdoc/>
     public void Start()
     {
-        TimeSpan randomized = this.Npc.Definition.AttackDelay + TimeSpan.FromMilliseconds(Rand.NextInt(0, 1000));
-        // TODO: Optimize this: start timer when first observer is added. stop timer when last observer is removed.
-        this._aiTimer = new Timer(_ => this.SafeTick(), null, randomized, this.Npc.Definition.AttackDelay);
+        var startDelay = this.Npc.Definition.AttackDelay + TimeSpan.FromMilliseconds(Rand.NextInt(0, 1000));
+        this._aiTimer ??= new Timer(_ => this.SafeTick(), null, startDelay, this.Npc.Definition.AttackDelay);
+    }
+
+    /// <inheritdoc/>
+    public void Pause()
+    {
+        this._aiTimer?.Dispose();
+        this._aiTimer = null;
     }
 
     /// <inheritdoc/>
@@ -156,6 +156,7 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
     {
         if (!this.Monster.IsAlive)
         {
+            this.CurrentTarget = null;
             return;
         }
 
@@ -234,5 +235,11 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
 
         // we move around randomly, so the monster does not look dead when watched from distance.
         await this.Monster.RandomMoveAsync().ConfigureAwait(false);
+    }
+
+    private async ValueTask<bool> IsObservedByAttackerAsync()
+    {
+        using var readerLock = await this.Monster.ObserverLock.ReaderLockAsync();
+        return this.Monster.Observers.OfType<IAttacker>().Any();
     }
 }

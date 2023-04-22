@@ -59,10 +59,10 @@ Requirements:
 
   * PostgreSQL installed
 
-  * Visual Studio 2022 (17.4+) installed
+  * Visual Studio 2022 (17.5+) installed
 
   * [.NET SDK 7](https://dotnet.microsoft.com/download/dotnet/7.0)
-    (it should be included in Visual Studio 17.4+)
+    (it should be included in Visual Studio 17.5+)
 
   * [NodeJS 16+](https://nodejs.org) installed
 
@@ -76,35 +76,47 @@ If you have that, you'll need to do:
 
 * Edit OpenMU\Persistence\EntityFramework\ConnectionSettings.xml, so that the
   connection strings are correct - however only the user/password of the first
-  connection string needs to be correct. The server will try to create the
-  other roles specified by the settings.
+  and second connection string need to be correct. The server will try to create
+  the other roles specified by the settings.
 
 * Build the solution
 
 * Start MUnique.OpenMU.Startup
 
   * If required, it will create the database schemas, the required roles and
-    gives permissions to this roles
+    gives permissions to this roles.
 
-  * If you update to a newer state of the master-branch, it could be possible
-    that you have to delete the database again before starting. Currently, we
-    are not providing patches for database updates.
-
-  * You can reinstall the database by adding a '-reinit' parameter
-
-  * Optional: you can add the parameter '-resolveIP:' to bind the servers tcp
-    listeners to an ip address of a local network interface. Look at this
-    [Readme](src/Startup/Readme.md) for more information.
-
-  * Optional: you can add the parameter '-autostart' to save the next step.
+  * Optional: You can reinitialize the database by adding a ```-reinit``` parameter.
 
 * When the Admin Panel is initialized, go to <http://localhost/>. Then you
   should see three gameservers, the chat server and the connect server. Start
   the connect server and at least one gameserver.
-  If all goes well, you should be able to expand a gameserver and see the
-  hosted game maps.
+
+* If you update to a newer state of the master-branch, it could be possible
+    that you have to update the database and configuration.
+    You can find updates in the admin panel.
 
 * Then you can connect to the server through the game client.
+
+## Helpful (optional) steps
+
+* __Auto Start__: If you don't want to start each server listener after starting
+  the process, you can either activate "Auto Start"
+
+  * in the admin panel at ```Configuration -> System```,
+
+  * or with the start parameter ```-autostart```.
+
+* __IP Resolving__: If you encounter disconnects after selecting a server, it's most
+  likely a wrong setting for the IP resolver. You can change it easily over the
+  admin panel at ```Configuration -> System``` as well.
+  You may also change the setting by providing start parameters or environment
+  parameters, however I just recommend this for experienced users. Look at this
+  [Readme](src/Startup/Readme.md) for more information.
+
+* __Changing the game version__: If you want to player another version than
+  season 6, you may initialize the database with another game version.
+  You can do this over the admin panel as well, at the ```Setup``` page.
 
 ## Test Accounts
 
@@ -114,6 +126,8 @@ when the database is initialized.
 These are the user names:
 
 * test0 - test9: General test accounts, level 1 to 90, in 10 level steps
+
+Season 6 only:
 * test300: General test account with level 300
 * test400: General test account with level 400, master characters
 * testgm: Test account of a game master
@@ -125,4 +139,4 @@ These are the user names:
 * ancient: Test account with ancient item sets, level 330 characters
 * socket: Test account with socket item sets, level 380 characters
 
-The passwords of these accounts are the same as the user name.
+The __passwords__ of these accounts are the __same as the user name__.

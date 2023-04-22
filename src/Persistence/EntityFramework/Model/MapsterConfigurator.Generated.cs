@@ -89,6 +89,12 @@ public static class MapsterConfigurator
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.ChatServerEndpoint, MUnique.OpenMU.DataModel.Configuration.ChatServerEndpoint>()
             .Include<ChatServerEndpoint, BasicModel.ChatServerEndpoint>();
 
+        Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.ConfigurationUpdate, MUnique.OpenMU.DataModel.Configuration.ConfigurationUpdate>()
+            .Include<ConfigurationUpdate, BasicModel.ConfigurationUpdate>();
+
+        Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.ConfigurationUpdateState, MUnique.OpenMU.DataModel.Configuration.ConfigurationUpdateState>()
+            .Include<ConfigurationUpdateState, BasicModel.ConfigurationUpdateState>();
+
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.ConnectServerDefinition, MUnique.OpenMU.DataModel.Configuration.ConnectServerDefinition>()
             .Include<ConnectServerDefinition, BasicModel.ConnectServerDefinition>();
 
@@ -178,6 +184,9 @@ public static class MapsterConfigurator
 
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.StatAttributeDefinition, MUnique.OpenMU.DataModel.Configuration.StatAttributeDefinition>()
             .Include<StatAttributeDefinition, BasicModel.StatAttributeDefinition>();
+
+        Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.SystemConfiguration, MUnique.OpenMU.DataModel.Configuration.SystemConfiguration>()
+            .Include<SystemConfiguration, BasicModel.SystemConfiguration>();
 
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.WarpInfo, MUnique.OpenMU.DataModel.Configuration.WarpInfo>()
             .Include<WarpInfo, BasicModel.WarpInfo>();

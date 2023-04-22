@@ -40,34 +40,34 @@ internal class Elvenland : BaseMapInitializer
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()
     {
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[256], 37, 242, Direction.SouthWest); // Lahap
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[415], 44, 229, Direction.SouthWest); // Silvia
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[416], 29, 237, Direction.South); // Rhea
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[417], 37, 218, Direction.SouthWest); // Marce
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[257], 44, 189, Direction.SouthEast); // Shadow Phantom Soldier
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[257], 57, 231, Direction.SouthWest); // Shadow Phantom Soldier
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[257], 74, 74, 219, 220, 1, Direction.SouthWest); // Shadow Phantom Soldier
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[240], 51, 229, Direction.SouthWest); // Safety Guardian
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[385], 55, 243, Direction.SouthWest); // Mirage
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[452], 45, 243, Direction.SouthWest); // Seed Master
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[453], 49, 243, Direction.SouthWest); // Seed Researcher
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[540], 49, 216, Direction.South); // Lugard
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[492], 22, 225, Direction.South); // Moss
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[579], 20, 214, Direction.SouthEast); // David
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[568], 55, 199, Direction.South); // Wandering Merchant Zyro
+        yield return this.CreateMonsterSpawn(1, this.NpcDictionary[256], 37, 242, Direction.SouthWest); // Lahap
+        yield return this.CreateMonsterSpawn(2, this.NpcDictionary[415], 44, 229, Direction.SouthWest); // Silvia
+        yield return this.CreateMonsterSpawn(3, this.NpcDictionary[416], 29, 237, Direction.South); // Rhea
+        yield return this.CreateMonsterSpawn(4, this.NpcDictionary[417], 37, 218, Direction.SouthWest); // Marce
+        yield return this.CreateMonsterSpawn(5, this.NpcDictionary[257], 44, 189, Direction.SouthEast); // Shadow Phantom Soldier
+        yield return this.CreateMonsterSpawn(6, this.NpcDictionary[257], 57, 231, Direction.SouthWest); // Shadow Phantom Soldier
+        yield return this.CreateMonsterSpawn(7, this.NpcDictionary[257], 74, 74, 219, 220, 1, Direction.SouthWest); // Shadow Phantom Soldier
+        yield return this.CreateMonsterSpawn(8, this.NpcDictionary[240], 51, 229, Direction.SouthWest); // Safety Guardian
+        yield return this.CreateMonsterSpawn(9, this.NpcDictionary[385], 55, 243, Direction.SouthWest); // Mirage
+        yield return this.CreateMonsterSpawn(10, this.NpcDictionary[452], 45, 243, Direction.SouthWest); // Seed Master
+        yield return this.CreateMonsterSpawn(11, this.NpcDictionary[453], 49, 243, Direction.SouthWest); // Seed Researcher
+        yield return this.CreateMonsterSpawn(12, this.NpcDictionary[540], 49, 216, Direction.South); // Lugard
+        yield return this.CreateMonsterSpawn(13, this.NpcDictionary[492], 22, 225, Direction.South); // Moss
+        yield return this.CreateMonsterSpawn(14, this.NpcDictionary[579], 20, 214, Direction.SouthEast); // David
+        yield return this.CreateMonsterSpawn(15, this.NpcDictionary[568], 55, 199, Direction.South, SpawnTrigger.Wandering); // Wandering Merchant Zyro
     }
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateMonsterSpawns()
     {
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[418], 0, 128, 128, 245, 80); // Strange Rabbit
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[419], 0, 251, 128, 245, 45); // Polluted Butterfly
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[420], 0, 128, 0, 128, 45); // Hideous Rabbit
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[421], 0, 128, 0, 128, 30); // Werewolf
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[422], 128, 251, 0, 128, 30); // Cursed Lich
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[423], 128, 251, 0, 128, 20); // Totem Golem
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[424], 128, 251, 0, 128, 20); // Grizzly
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[425], 128, 251, 0, 128, 20); // Captain Grizzly
+        yield return this.CreateMonsterSpawn(21, this.NpcDictionary[418], 0, 128, 128, 245, 80); // Strange Rabbit
+        yield return this.CreateMonsterSpawn(22, this.NpcDictionary[419], 0, 251, 128, 245, 45); // Polluted Butterfly
+        yield return this.CreateMonsterSpawn(23, this.NpcDictionary[420], 0, 128, 0, 128, 45); // Hideous Rabbit
+        yield return this.CreateMonsterSpawn(24, this.NpcDictionary[421], 0, 128, 0, 128, 30); // Werewolf
+        yield return this.CreateMonsterSpawn(25, this.NpcDictionary[422], 128, 251, 0, 128, 30); // Cursed Lich
+        yield return this.CreateMonsterSpawn(26, this.NpcDictionary[423], 128, 251, 0, 128, 20); // Totem Golem
+        yield return this.CreateMonsterSpawn(27, this.NpcDictionary[424], 128, 251, 0, 128, 20); // Grizzly
+        yield return this.CreateMonsterSpawn(28, this.NpcDictionary[425], 128, 251, 0, 128, 20); // Captain Grizzly
     }
 
     /// <inheritdoc/>
@@ -98,6 +98,7 @@ internal class Elvenland : BaseMapInitializer
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -125,6 +126,7 @@ internal class Elvenland : BaseMapInitializer
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -152,6 +154,7 @@ internal class Elvenland : BaseMapInitializer
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -179,6 +182,7 @@ internal class Elvenland : BaseMapInitializer
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -211,6 +215,7 @@ internal class Elvenland : BaseMapInitializer
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -238,6 +243,7 @@ internal class Elvenland : BaseMapInitializer
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -266,6 +272,7 @@ internal class Elvenland : BaseMapInitializer
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -293,6 +300,7 @@ internal class Elvenland : BaseMapInitializer
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
     }
 }

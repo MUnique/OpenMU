@@ -14,5 +14,5 @@ public interface IObjectGotKilledPlugIn : IViewPlugIn
     /// </summary>
     /// <param name="killedObject">The killed object.</param>
     /// <param name="killerObject">The object which killed the object.</param>
-    ValueTask ObjectGotKilledAsync(IAttackable killedObject, IAttacker killerObject);
+    ValueTask ObjectGotKilledAsync(IAttackable killedObject, IAttacker? killerObject);
 }

@@ -20,11 +20,13 @@ public class QuestCancelAction
     public async ValueTask CancelQuestAsync(Player player, short group, short number)
     {
         var questState = player.GetQuestState(group, number);
-        if (questState?.ActiveQuest != null)
+        if (questState?.ActiveQuest is null)
         {
-            var quest = questState.ActiveQuest;
-            await questState.ClearAsync(player.PersistenceContext).ConfigureAwait(false);
-            await player.InvokeViewPlugInAsync<IQuestCancelledPlugIn>(p => p.QuestCancelledAsync(quest)).ConfigureAwait(false);
+            return;
         }
+
+        var quest = questState.ActiveQuest;
+        await questState.ClearAsync(player.PersistenceContext).ConfigureAwait(false);
+        await player.InvokeViewPlugInAsync<IQuestCancelledPlugIn>(p => p.QuestCancelledAsync(quest)).ConfigureAwait(false);
     }
 }

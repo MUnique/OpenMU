@@ -73,6 +73,7 @@ public class Potions : InitializerBase
         alcohol.Value = 30;
         alcohol.Width = 1;
         alcohol.Height = 2;
+        alcohol.SetGuid(alcohol.Group, alcohol.Number);
         return alcohol;
     }
 
@@ -93,6 +94,7 @@ public class Potions : InitializerBase
         apple.Value = 5;
         apple.Width = 1;
         apple.Height = 1;
+        apple.SetGuid(apple.Group, apple.Number);
         return apple;
     }
 
@@ -113,6 +115,7 @@ public class Potions : InitializerBase
         potion.Value = 10;
         potion.Width = 1;
         potion.Height = 1;
+        potion.SetGuid(potion.Group, potion.Number);
         return potion;
     }
 
@@ -133,6 +136,7 @@ public class Potions : InitializerBase
         potion.Value = 20;
         potion.Width = 1;
         potion.Height = 1;
+        potion.SetGuid(potion.Group, potion.Number);
         return potion;
     }
 
@@ -142,18 +146,19 @@ public class Potions : InitializerBase
     /// <returns>The created large healing definition.</returns>
     private ItemDefinition CreateLargeHealingPotion()
     {
-        var definition = this.Context.CreateNew<ItemDefinition>();
-        definition.Name = "Large Healing Potion";
-        definition.Number = 3;
-        definition.Group = 14;
-        definition.DropsFromMonsters = true;
-        definition.MaximumItemLevel = 1;
-        definition.DropLevel = 40;
-        definition.Durability = 3;
-        definition.Value = 30;
-        definition.Width = 1;
-        definition.Height = 1;
-        return definition;
+        var potion = this.Context.CreateNew<ItemDefinition>();
+        potion.Name = "Large Healing Potion";
+        potion.Number = 3;
+        potion.Group = 14;
+        potion.DropsFromMonsters = true;
+        potion.MaximumItemLevel = 1;
+        potion.DropLevel = 40;
+        potion.Durability = 3;
+        potion.Value = 30;
+        potion.Width = 1;
+        potion.Height = 1;
+        potion.SetGuid(potion.Group, potion.Number);
+        return potion;
     }
 
     /// <summary>
@@ -173,6 +178,7 @@ public class Potions : InitializerBase
         potion.Value = 10;
         potion.Width = 1;
         potion.Height = 1;
+        potion.SetGuid(potion.Group, potion.Number);
         return potion;
     }
 
@@ -193,6 +199,7 @@ public class Potions : InitializerBase
         potion.Value = 20;
         potion.Width = 1;
         potion.Height = 1;
+        potion.SetGuid(potion.Group, potion.Number);
         return potion;
     }
 
@@ -202,18 +209,19 @@ public class Potions : InitializerBase
     /// <returns>The created large mana definition.</returns>
     private ItemDefinition CreateLargeManaPotion()
     {
-        var definition = this.Context.CreateNew<ItemDefinition>();
-        definition.Name = "Large Mana Potion";
-        definition.Number = 6;
-        definition.Group = 14;
-        definition.DropsFromMonsters = true;
-        definition.MaximumItemLevel = 1;
-        definition.DropLevel = 40;
-        definition.Durability = 3;
-        definition.Value = 30;
-        definition.Width = 1;
-        definition.Height = 1;
-        return definition;
+        var potion = this.Context.CreateNew<ItemDefinition>();
+        potion.Name = "Large Mana Potion";
+        potion.Number = 6;
+        potion.Group = 14;
+        potion.DropsFromMonsters = true;
+        potion.MaximumItemLevel = 1;
+        potion.DropLevel = 40;
+        potion.Durability = 3;
+        potion.Value = 30;
+        potion.Width = 1;
+        potion.Height = 1;
+        potion.SetGuid(potion.Group, potion.Number);
+        return potion;
     }
 
     /// <summary>
@@ -231,6 +239,7 @@ public class Potions : InitializerBase
         potion.Durability = 3;
         potion.Width = 1;
         potion.Height = 1;
+        potion.SetGuid(potion.Group, potion.Number);
         return potion;
     }
 
@@ -249,6 +258,7 @@ public class Potions : InitializerBase
         potion.Durability = 3;
         potion.Width = 1;
         potion.Height = 1;
+        potion.SetGuid(potion.Group, potion.Number);
         return potion;
     }
 
@@ -258,16 +268,17 @@ public class Potions : InitializerBase
     /// <returns>The created large shield definition.</returns>
     private ItemDefinition CreateLargeShieldPotion()
     {
-        var definition = this.Context.CreateNew<ItemDefinition>();
-        definition.Name = "Large Shield Potion";
-        definition.Number = 37;
-        definition.Group = 14;
-        definition.DropsFromMonsters = false;
-        definition.DropLevel = 100;
-        definition.Durability = 3;
-        definition.Width = 1;
-        definition.Height = 1;
-        return definition;
+        var potion = this.Context.CreateNew<ItemDefinition>();
+        potion.Name = "Large Shield Potion";
+        potion.Number = 37;
+        potion.Group = 14;
+        potion.DropsFromMonsters = false;
+        potion.DropLevel = 100;
+        potion.Durability = 3;
+        potion.Width = 1;
+        potion.Height = 1;
+        potion.SetGuid(potion.Group, potion.Number);
+        return potion;
     }
 
     /// <summary>
@@ -286,6 +297,7 @@ public class Potions : InitializerBase
         potion.Durability = 3;
         potion.Width = 1;
         potion.Height = 1;
+        potion.SetGuid(potion.Group, potion.Number);
         return potion;
     }
 
@@ -305,6 +317,7 @@ public class Potions : InitializerBase
         potion.Durability = 3;
         potion.Width = 1;
         potion.Height = 1;
+        potion.SetGuid(potion.Group, potion.Number);
         return potion;
     }
 
@@ -314,17 +327,18 @@ public class Potions : InitializerBase
     /// <returns>The created large complex definition.</returns>
     private ItemDefinition CreateLargeComplexPotion()
     {
-        var definition = this.Context.CreateNew<ItemDefinition>();
-        definition.Name = "Large Complex Potion";
-        definition.Number = 40;
-        definition.Group = 14;
-        definition.DropsFromMonsters = true;
-        definition.DropLevel = 118;
-        definition.Value = 60;
-        definition.Durability = 3;
-        definition.Width = 1;
-        definition.Height = 1;
-        return definition;
+        var potion = this.Context.CreateNew<ItemDefinition>();
+        potion.Name = "Large Complex Potion";
+        potion.Number = 40;
+        potion.Group = 14;
+        potion.DropsFromMonsters = true;
+        potion.DropLevel = 118;
+        potion.Value = 60;
+        potion.Durability = 3;
+        potion.Width = 1;
+        potion.Height = 1;
+        potion.SetGuid(potion.Group, potion.Number);
+        return potion;
     }
 
     /// <summary>
@@ -333,17 +347,18 @@ public class Potions : InitializerBase
     /// <returns>The created antidote definition.</returns>
     private ItemDefinition CreateAntidotePotion()
     {
-        var definition = this.Context.CreateNew<ItemDefinition>();
-        definition.Name = "Antidote";
-        definition.Number = 8;
-        definition.Group = 14;
-        definition.DropsFromMonsters = true;
-        definition.DropLevel = 10;
-        definition.Durability = 3;
-        definition.Value = 10;
-        definition.Width = 1;
-        definition.Height = 1;
-        return definition;
+        var potion = this.Context.CreateNew<ItemDefinition>();
+        potion.Name = "Antidote";
+        potion.Number = 8;
+        potion.Group = 14;
+        potion.DropsFromMonsters = true;
+        potion.DropLevel = 10;
+        potion.Durability = 3;
+        potion.Value = 10;
+        potion.Width = 1;
+        potion.Height = 1;
+        potion.SetGuid(potion.Group, potion.Number);
+        return potion;
     }
 
     private ItemDefinition CreateTownPortalScroll()
@@ -358,6 +373,7 @@ public class Potions : InitializerBase
         definition.Value = 30;
         definition.Width = 1;
         definition.Height = 2;
+        definition.SetGuid(definition.Group, definition.Number);
         return definition;
     }
 
@@ -371,6 +387,7 @@ public class Potions : InitializerBase
         definition.Value = 30;
         definition.Width = 1;
         definition.Height = 1;
+        definition.SetGuid(definition.Group, definition.Number);
         return definition;
     }
 
@@ -388,6 +405,7 @@ public class Potions : InitializerBase
         fruits.Durability = 1;
         fruits.Width = 1;
         fruits.Height = 1;
+        fruits.SetGuid(fruits.Group, fruits.Number);
         return fruits;
     }
 
@@ -400,6 +418,7 @@ public class Potions : InitializerBase
         item.Durability = 10;
         item.Width = 1;
         item.Height = 2;
+        item.SetGuid(item.Group, item.Number);
         this.CreateConsumeEffect(item, 16, MagicEffectNumber.JackOlanternBlessing, Stats.AttackSpeed, 10, TimeSpan.FromMinutes(32));
         return item;
     }
@@ -413,6 +432,7 @@ public class Potions : InitializerBase
         item.Durability = 10;
         item.Width = 1;
         item.Height = 2;
+        item.SetGuid(item.Group, item.Number);
         this.CreateConsumeEffect(item, 16, MagicEffectNumber.JackOlanternWrath, Stats.BaseDamageBonus, 25, TimeSpan.FromMinutes(30));
         return item;
     }
@@ -426,6 +446,7 @@ public class Potions : InitializerBase
         item.Durability = 10;
         item.Width = 1;
         item.Height = 2;
+        item.SetGuid(item.Group, item.Number);
         this.CreateConsumeEffect(item, 16, MagicEffectNumber.JackOlanternCry, Stats.DefenseBase, 100, TimeSpan.FromMinutes(30));
         return item;
     }
@@ -439,6 +460,7 @@ public class Potions : InitializerBase
         item.Durability = 10;
         item.Width = 1;
         item.Height = 1;
+        item.SetGuid(item.Group, item.Number);
         this.CreateConsumeEffect(item, 16, MagicEffectNumber.JackOlanternFood, Stats.MaximumHealth, 500, TimeSpan.FromMinutes(30));
         return item;
     }
@@ -452,6 +474,7 @@ public class Potions : InitializerBase
         item.Durability = 10;
         item.Width = 1;
         item.Height = 1;
+        item.SetGuid(item.Group, item.Number);
         this.CreateConsumeEffect(item, 16, MagicEffectNumber.JackOlanternDrink, Stats.MaximumMana, 500, TimeSpan.FromMinutes(30));
         return item;
     }
@@ -465,6 +488,7 @@ public class Potions : InitializerBase
         item.Durability = 10;
         item.Width = 1;
         item.Height = 2;
+        item.SetGuid(item.Group, item.Number);
         this.CreateConsumeEffect(item, 16, MagicEffectNumber.CherryBlossomWine, Stats.MaximumMana, 700, TimeSpan.FromMinutes(30));
         return item;
     }
@@ -478,6 +502,7 @@ public class Potions : InitializerBase
         item.Durability = 10;
         item.Width = 1;
         item.Height = 1;
+        item.SetGuid(item.Group, item.Number);
         this.CreateConsumeEffect(item, 16, MagicEffectNumber.CherryBlossomRiceCake, Stats.MaximumHealth, 700, TimeSpan.FromMinutes(30));
         return item;
     }
@@ -491,6 +516,7 @@ public class Potions : InitializerBase
         item.Durability = 10;
         item.Width = 1;
         item.Height = 1;
+        item.SetGuid(item.Group, item.Number);
         this.CreateConsumeEffect(item, 16, MagicEffectNumber.CherryBlossomFlowerPetal, Stats.BaseDamageBonus, 40, TimeSpan.FromMinutes(30));
         return item;
     }
@@ -498,6 +524,7 @@ public class Potions : InitializerBase
     private MagicEffectDefinition CreateConsumeEffect(ItemDefinition item, byte subType, MagicEffectNumber effectNumber, AttributeDefinition targetAttribute, float boostValue, TimeSpan duration)
     {
         var effect = this.Context.CreateNew<MagicEffectDefinition>();
+        effect.SetGuid(item.Number, (short)effectNumber);
         this.GameConfiguration.MagicEffects.Add(effect);
         item.ConsumeEffect = effect;
         effect.Name = item.Name;

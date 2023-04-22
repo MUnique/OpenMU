@@ -3,7 +3,7 @@
 
 <div>
     <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
-    <InputByte id="@this.FieldIdentifier.FieldName" @bind-Value="@CurrentValue" />
+    <InputByte id="@this.FieldIdentifier.FieldName" @bind-Value="@CurrentValue" Min="@Min" Max="@(Max ?? byte.MaxValue)"/>
     <ValidationMessage For=@this.ValueExpression />
 </div>
 
@@ -14,6 +14,18 @@
     /// </summary>
     [Parameter]
     public string? Label { get; set; }
+
+    /// <summary>
+    /// Gets or sets the minimum value.
+    /// </summary>
+    [Parameter]
+    public byte Min { get; set; } = byte.MinValue;
+
+    /// <summary>
+    /// Gets or sets the maximum value.
+    /// </summary>
+    [Parameter]
+    public byte? Max { get; set; }
 
     /// <inheritdoc />
     protected override bool TryParseValueFromString(string? value, [MaybeNullWhen(false)] out byte result, [NotNullWhen(false)] out string? validationErrorMessage)

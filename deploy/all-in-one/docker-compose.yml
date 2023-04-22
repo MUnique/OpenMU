@@ -1,9 +1,9 @@
 version: '3'
 
 services:
-  nginx:
+  nginx-80:
     image: nginx:alpine
-    container_name: nginx
+    container_name: nginx-80
     ports:
       - "80:80"
     volumes:

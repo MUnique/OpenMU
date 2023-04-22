@@ -19,4 +19,39 @@ public abstract class ShieldPotionConsumeHandlerPlugIn : RecoverConsumeHandlerPl
 
     /// <inheritdoc/>
     protected override AttributeDefinition CurrentAttribute => Stats.CurrentShield;
+
+    /// <summary>
+    /// Gets the recover percentage.
+    /// </summary>
+    protected abstract double RecoverPercentage { get; }
+
+    /// <inheritdoc />
+    public sealed override object CreateDefaultConfig()
+    {
+        return new RecoverConsumeHandlerConfiguration
+        {
+            TotalRecoverPercentage = this.RecoverPercentage,
+            RecoverDelayReductionByPotionLevel = 1.0 / 16.0,
+            RecoverPercentageIncreaseByPotionLevel = 1,
+            CooldownTime = TimeSpan.FromSeconds(0.5),
+            RecoverSteps =
+            {
+                new RecoverStep
+                {
+                    Delay = TimeSpan.FromMilliseconds(200),
+                    RecoverPercentage = 20,
+                },
+                new RecoverStep
+                {
+                    Delay = TimeSpan.FromMilliseconds(600),
+                    RecoverPercentage = 60,
+                },
+                new RecoverStep
+                {
+                    Delay = TimeSpan.FromMilliseconds(200),
+                    RecoverPercentage = 20,
+                },
+            },
+        };
+    }
 }

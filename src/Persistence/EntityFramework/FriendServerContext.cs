@@ -19,10 +19,10 @@ internal class FriendServerContext : CachingEntityFrameworkContext, IFriendServe
     /// Initializes a new instance of the <see cref="FriendServerContext" /> class.
     /// </summary>
     /// <param name="context">The context.</param>
-    /// <param name="repositoryManager">The repositoryManager.</param>
+    /// <param name="repositoryProvider">The repositoryManager.</param>
     /// <param name="logger">The logger.</param>
-    public FriendServerContext(FriendContext context, RepositoryManager repositoryManager, ILogger<FriendServerContext> logger)
-        : base(context, repositoryManager, logger)
+    public FriendServerContext(FriendContext context, IContextAwareRepositoryProvider repositoryProvider, ILogger<FriendServerContext> logger)
+        : base(context, repositoryProvider, null, logger)
     {
     }
 

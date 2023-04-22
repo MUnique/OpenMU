@@ -3,13 +3,14 @@
 // </copyright>
 
 namespace MUnique.OpenMU.GameServer.RemoteView.MiniGames;
+
+using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.PlugIns;
-using System.Runtime.InteropServices;
 
 /// <summary>
 /// The default implementation of the <see cref="IBloodCastleStateViewPlugin"/> which is forwarding everything to the game client with specific data packets.
@@ -43,11 +44,11 @@ public class BloodCastleStateViewPlugIn : IBloodCastleStateViewPlugin
     {
         return status switch
         {
-            BloodCastleStatus.Ended => BloodCastleState.Status.Ended,
-            BloodCastleStatus.GateDestroyed => BloodCastleState.Status.GateDestroyed,
-            BloodCastleStatus.GateNotDestroyed => BloodCastleState.Status.GateNotDestroyed,
-            BloodCastleStatus.Started => BloodCastleState.Status.Started,
-            _ => throw new ArgumentException($"Unknown blood castle status {status}")
+            BloodCastleStatus.Ended => BloodCastleState.Status.BloodCastleEnded,
+            BloodCastleStatus.GateDestroyed => BloodCastleState.Status.BloodCastleGateDestroyed,
+            BloodCastleStatus.GateNotDestroyed => BloodCastleState.Status.BloodCastleGateNotDestroyed,
+            BloodCastleStatus.Started => BloodCastleState.Status.BloodCastleStarted,
+            _ => throw new ArgumentException($"Unknown blood castle status {status}"),
         };
     }
 }

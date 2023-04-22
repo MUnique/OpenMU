@@ -95,4 +95,16 @@ public class QuestDefinition
     /// </summary>
     [MemberOfAggregate]
     public virtual ICollection<QuestReward> Rewards { get; protected set; } = null!;
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        var result = this.Name;
+        if (this.QualifiedCharacter is { } characterClass)
+        {
+            result += $" ({characterClass.Name})";
+        }
+
+        return result;
+    }
 }

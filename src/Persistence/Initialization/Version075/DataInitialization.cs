@@ -52,6 +52,7 @@ public class DataInitialization : DataInitializationBase
     protected override void CreateGameClientDefinition()
     {
         var version075Definition = this.Context.CreateNew<GameClientDefinition>();
+        version075Definition.SetGuid(75);
         version075Definition.Season = 0;
         version075Definition.Episode = 75;
         version075Definition.Language = ClientLanguage.Invariant; // it doesn't fit into any available category - maybe it's so old that it didn't have differences in the protocol yet.

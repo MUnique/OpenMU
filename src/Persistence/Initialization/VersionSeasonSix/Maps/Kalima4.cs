@@ -43,74 +43,67 @@ internal class Kalima4 : KalimaBase
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateMonsterSpawns()
     {
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[190], 120, 050); // Death Angel 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[190], 105, 054); // Death Angel 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[190], 119, 057); // Death Angel 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[190], 110, 065); // Death Angel 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[190], 121, 067); // Death Angel 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[190], 111, 072); // Death Angel 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[190], 105, 086); // Death Angel 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[190], 118, 095); // Death Angel 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[190], 120, 075); // Death Angel 4
-
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[191], 087, 090); // Death Centurion 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[191], 068, 077); // Death Centurion 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[191], 063, 072); // Death Centurion 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[191], 058, 078); // Death Centurion 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[191], 057, 071); // Death Centurion 4
-
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[192], 110, 009); // Blood Soldier 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[192], 118, 017); // Blood Soldier 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[192], 110, 035); // Blood Soldier 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[192], 121, 027); // Blood Soldier 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[192], 119, 035); // Blood Soldier 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[192], 114, 044); // Blood Soldier 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[192], 108, 028); // Blood Soldier 4
-
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[193], 030, 075); // Aegis 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[193], 035, 021); // Aegis 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[193], 028, 017); // Aegis 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[193], 036, 011); // Aegis 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[193], 051, 011); // Aegis 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[193], 042, 012); // Aegis 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[193], 045, 022); // Aegis 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[193], 052, 024); // Aegis 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[193], 053, 017); // Aegis 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[193], 060, 009); // Aegis 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[193], 060, 022); // Aegis 4
-
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[194], 067, 022); // Rogue Centurion 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[194], 069, 009); // Rogue Centurion 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[194], 074, 014); // Rogue Centurion 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[194], 082, 008); // Rogue Centurion 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[194], 081, 019); // Rogue Centurion 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[194], 086, 013); // Rogue Centurion 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[194], 092, 006); // Rogue Centurion 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[194], 096, 016); // Rogue Centurion 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[194], 099, 009); // Rogue Centurion 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[194], 109, 019); // Rogue Centurion 4
-
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[195], 118, 084); // Necron 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[195], 104, 101); // Necron 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[195], 115, 106); // Necron 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[195], 093, 096); // Necron 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[195], 093, 084); // Necron 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[195], 082, 085); // Necron 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[195], 082, 077); // Necron 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[195], 074, 076); // Necron 4
-
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[196], 032, 050); // Schriker 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[196], 042, 051); // Schriker 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[196], 038, 058); // Schriker 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[196], 029, 065); // Schriker 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[196], 046, 066); // Schriker 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[196], 042, 097); // Schriker 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[196], 037, 109); // Schriker 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[196], 047, 107); // Schriker 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[196], 053, 093); // Schriker 4
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[196], 035, 087); // Schriker 4
-
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[197], 026, 076); // Illusion of Kundun 4
+        yield return this.CreateMonsterSpawn(100, this.NpcDictionary[190], 120, 050); // Death Angel 4
+        yield return this.CreateMonsterSpawn(101, this.NpcDictionary[190], 105, 054); // Death Angel 4
+        yield return this.CreateMonsterSpawn(102, this.NpcDictionary[190], 119, 057); // Death Angel 4
+        yield return this.CreateMonsterSpawn(103, this.NpcDictionary[190], 110, 065); // Death Angel 4
+        yield return this.CreateMonsterSpawn(104, this.NpcDictionary[190], 121, 067); // Death Angel 4
+        yield return this.CreateMonsterSpawn(105, this.NpcDictionary[190], 111, 072); // Death Angel 4
+        yield return this.CreateMonsterSpawn(106, this.NpcDictionary[190], 105, 086); // Death Angel 4
+        yield return this.CreateMonsterSpawn(107, this.NpcDictionary[190], 118, 095); // Death Angel 4
+        yield return this.CreateMonsterSpawn(108, this.NpcDictionary[190], 120, 075); // Death Angel 4
+        yield return this.CreateMonsterSpawn(109, this.NpcDictionary[191], 087, 090); // Death Centurion 4
+        yield return this.CreateMonsterSpawn(110, this.NpcDictionary[191], 068, 077); // Death Centurion 4
+        yield return this.CreateMonsterSpawn(111, this.NpcDictionary[191], 063, 072); // Death Centurion 4
+        yield return this.CreateMonsterSpawn(112, this.NpcDictionary[191], 058, 078); // Death Centurion 4
+        yield return this.CreateMonsterSpawn(113, this.NpcDictionary[191], 057, 071); // Death Centurion 4
+        yield return this.CreateMonsterSpawn(114, this.NpcDictionary[192], 110, 009); // Blood Soldier 4
+        yield return this.CreateMonsterSpawn(115, this.NpcDictionary[192], 118, 017); // Blood Soldier 4
+        yield return this.CreateMonsterSpawn(116, this.NpcDictionary[192], 110, 035); // Blood Soldier 4
+        yield return this.CreateMonsterSpawn(117, this.NpcDictionary[192], 121, 027); // Blood Soldier 4
+        yield return this.CreateMonsterSpawn(118, this.NpcDictionary[192], 119, 035); // Blood Soldier 4
+        yield return this.CreateMonsterSpawn(119, this.NpcDictionary[192], 114, 044); // Blood Soldier 4
+        yield return this.CreateMonsterSpawn(120, this.NpcDictionary[192], 108, 028); // Blood Soldier 4
+        yield return this.CreateMonsterSpawn(121, this.NpcDictionary[193], 030, 075); // Aegis 4
+        yield return this.CreateMonsterSpawn(122, this.NpcDictionary[193], 035, 021); // Aegis 4
+        yield return this.CreateMonsterSpawn(123, this.NpcDictionary[193], 028, 017); // Aegis 4
+        yield return this.CreateMonsterSpawn(124, this.NpcDictionary[193], 036, 011); // Aegis 4
+        yield return this.CreateMonsterSpawn(125, this.NpcDictionary[193], 051, 011); // Aegis 4
+        yield return this.CreateMonsterSpawn(126, this.NpcDictionary[193], 042, 012); // Aegis 4
+        yield return this.CreateMonsterSpawn(127, this.NpcDictionary[193], 045, 022); // Aegis 4
+        yield return this.CreateMonsterSpawn(128, this.NpcDictionary[193], 052, 024); // Aegis 4
+        yield return this.CreateMonsterSpawn(129, this.NpcDictionary[193], 053, 017); // Aegis 4
+        yield return this.CreateMonsterSpawn(130, this.NpcDictionary[193], 060, 009); // Aegis 4
+        yield return this.CreateMonsterSpawn(131, this.NpcDictionary[193], 060, 022); // Aegis 4
+        yield return this.CreateMonsterSpawn(132, this.NpcDictionary[194], 067, 022); // Rogue Centurion 4
+        yield return this.CreateMonsterSpawn(133, this.NpcDictionary[194], 069, 009); // Rogue Centurion 4
+        yield return this.CreateMonsterSpawn(134, this.NpcDictionary[194], 074, 014); // Rogue Centurion 4
+        yield return this.CreateMonsterSpawn(135, this.NpcDictionary[194], 082, 008); // Rogue Centurion 4
+        yield return this.CreateMonsterSpawn(136, this.NpcDictionary[194], 081, 019); // Rogue Centurion 4
+        yield return this.CreateMonsterSpawn(137, this.NpcDictionary[194], 086, 013); // Rogue Centurion 4
+        yield return this.CreateMonsterSpawn(138, this.NpcDictionary[194], 092, 006); // Rogue Centurion 4
+        yield return this.CreateMonsterSpawn(139, this.NpcDictionary[194], 096, 016); // Rogue Centurion 4
+        yield return this.CreateMonsterSpawn(140, this.NpcDictionary[194], 099, 009); // Rogue Centurion 4
+        yield return this.CreateMonsterSpawn(141, this.NpcDictionary[194], 109, 019); // Rogue Centurion 4
+        yield return this.CreateMonsterSpawn(142, this.NpcDictionary[195], 118, 084); // Necron 4
+        yield return this.CreateMonsterSpawn(143, this.NpcDictionary[195], 104, 101); // Necron 4
+        yield return this.CreateMonsterSpawn(144, this.NpcDictionary[195], 115, 106); // Necron 4
+        yield return this.CreateMonsterSpawn(145, this.NpcDictionary[195], 093, 096); // Necron 4
+        yield return this.CreateMonsterSpawn(146, this.NpcDictionary[195], 093, 084); // Necron 4
+        yield return this.CreateMonsterSpawn(147, this.NpcDictionary[195], 082, 085); // Necron 4
+        yield return this.CreateMonsterSpawn(148, this.NpcDictionary[195], 082, 077); // Necron 4
+        yield return this.CreateMonsterSpawn(149, this.NpcDictionary[195], 074, 076); // Necron 4
+        yield return this.CreateMonsterSpawn(150, this.NpcDictionary[196], 032, 050); // Schriker 4
+        yield return this.CreateMonsterSpawn(151, this.NpcDictionary[196], 042, 051); // Schriker 4
+        yield return this.CreateMonsterSpawn(152, this.NpcDictionary[196], 038, 058); // Schriker 4
+        yield return this.CreateMonsterSpawn(153, this.NpcDictionary[196], 029, 065); // Schriker 4
+        yield return this.CreateMonsterSpawn(154, this.NpcDictionary[196], 046, 066); // Schriker 4
+        yield return this.CreateMonsterSpawn(155, this.NpcDictionary[196], 042, 097); // Schriker 4
+        yield return this.CreateMonsterSpawn(156, this.NpcDictionary[196], 037, 109); // Schriker 4
+        yield return this.CreateMonsterSpawn(157, this.NpcDictionary[196], 047, 107); // Schriker 4
+        yield return this.CreateMonsterSpawn(158, this.NpcDictionary[196], 053, 093); // Schriker 4
+        yield return this.CreateMonsterSpawn(159, this.NpcDictionary[196], 035, 087); // Schriker 4
+        yield return this.CreateMonsterSpawn(160, this.NpcDictionary[197], 026, 076); // Illusion of Kundun 4
     }
 
     /// <inheritdoc/>
@@ -146,6 +139,7 @@ internal class Kalima4 : KalimaBase
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -178,6 +172,7 @@ internal class Kalima4 : KalimaBase
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -210,6 +205,7 @@ internal class Kalima4 : KalimaBase
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -242,6 +238,7 @@ internal class Kalima4 : KalimaBase
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -274,6 +271,7 @@ internal class Kalima4 : KalimaBase
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -306,6 +304,7 @@ internal class Kalima4 : KalimaBase
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -338,6 +337,7 @@ internal class Kalima4 : KalimaBase
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -370,6 +370,7 @@ internal class Kalima4 : KalimaBase
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
     }
 }

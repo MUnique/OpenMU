@@ -32,9 +32,10 @@ internal class Noria : Version095d.Maps.Noria
             yield return npc;
         }
 
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[544], 187, 125, Direction.SouthWest);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[257], 167, 118, Direction.SouthWest);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[450], 179, 126, Direction.SouthWest);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[451], 179, 129, Direction.SouthEast);
+        yield return this.CreateMonsterSpawn(10, this.NpcDictionary[544], 187, 125, Direction.SouthWest);
+        yield return this.CreateMonsterSpawn(11, this.NpcDictionary[257], 167, 118, Direction.SouthWest);
+        yield return this.CreateMonsterSpawn(12, this.NpcDictionary[450], 179, 126, Direction.SouthWest);
+        yield return this.CreateMonsterSpawn(13, this.NpcDictionary[451], 179, 129, Direction.SouthEast);
+        yield return this.CreateMonsterSpawn(14, this.NpcDictionary[229], 169, 88, Direction.SouthEast, SpawnTrigger.Wandering); // Marlon
     }
 }

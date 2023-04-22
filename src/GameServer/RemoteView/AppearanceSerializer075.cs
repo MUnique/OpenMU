@@ -6,8 +6,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView;
 
 using System.Collections.Concurrent;
 using System.Runtime.InteropServices;
+using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Entities;
-using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.PlugIns;
 

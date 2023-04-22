@@ -1,7 +1,6 @@
 ﻿@using MUnique.OpenMU.Web.AdminPanel.Services;
 
-@typeparam TItem
-@inject IDataService<TItem> _dataService;
+@typeparam TItem where TItem : class
 
 <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
     <div class="btn-group" role="group" aria-label="Navigation group">
@@ -30,16 +29,16 @@
         }
     </thead>
     <tbody>
-        @if (this._isLoading)
-        {
-            <tr>Loading ...</tr>
-        }
-        else if (this._items != null)
+        @if (this._items != null)
         {
             @foreach (var item in this._items)
             {
                 <tr>@ItemTemplate(item)</tr>
             }
+        }
+        else if (this._isLoading)
+        {
+            <tr>Loading ...</tr>
         }
     </tbody>
     <tfoot>
@@ -78,6 +77,12 @@
     public RenderFragment? TableFooter { get; set; }
 
     /// <summary>
+    /// Gets or sets the data service.
+    /// </summary>
+    [Inject]
+    public IDataService<TItem> DataService { get; set; } = null!;
+
+    /// <summary>
     /// Gets or sets the current page.
     /// </summary>
     public int Page { get; set; } = 1;
@@ -92,7 +97,7 @@
     {
         await base.OnInitializedAsync();
         await this.GetPageAsync(1);
-        if (this._dataService is ISupportDataChangedNotification dataChangedNotification)
+        if (this.DataService is ISupportDataChangedNotification dataChangedNotification)
         {
             dataChangedNotification.DataChanged += async (_, __) => await this.RefreshAsync();
         }
@@ -129,7 +134,7 @@
         try
         {
             await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
-            var loadedItems = await this._dataService.GetAsync((page - 1) * this.PageSize, this.PageSize);
+            var loadedItems = await this.DataService.GetAsync((page - 1) * this.PageSize, this.PageSize);
             var isRefresh = this.Page == page;
             if (isRefresh)
             {

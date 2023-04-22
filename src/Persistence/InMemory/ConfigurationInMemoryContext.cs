@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence.InMemory;
 
+using System.Threading;
 using MUnique.OpenMU.Persistence.BasicModel;
 
 public class ConfigurationInMemoryContext : InMemoryContext, IConfigurationContext
@@ -11,16 +12,16 @@ public class ConfigurationInMemoryContext : InMemoryContext, IConfigurationConte
     /// <summary>
     /// Initializes a new instance of the <see cref="ConfigurationInMemoryContext"/> class.
     /// </summary>
-    /// <param name="manager">The manager which holds the memory repositories.</param>
-    public ConfigurationInMemoryContext(InMemoryRepositoryManager manager)
-        : base(manager)
+    /// <param name="provider">The manager which holds the memory repositories.</param>
+    public ConfigurationInMemoryContext(InMemoryRepositoryProvider provider)
+        : base(provider)
     {
     }
 
     /// <inheritdoc />
-    public async ValueTask<Guid?> GetDefaultGameConfigurationIdAsync()
+    public async ValueTask<Guid?> GetDefaultGameConfigurationIdAsync(CancellationToken cancellationToken)
     {
-        var allConfigs = await this.Manager.GetRepository<GameConfiguration>().GetAllAsync().ConfigureAwait(false);
+        var allConfigs = await this.Provider.GetRepository<GameConfiguration>().GetAllAsync().ConfigureAwait(false);
         return allConfigs.FirstOrDefault()?.Id;
     }
 }

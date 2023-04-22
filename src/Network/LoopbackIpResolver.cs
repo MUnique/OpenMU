@@ -13,10 +13,15 @@ using System.Net;
 public class LoopbackIpResolver : CustomIpResolver
 {
     /// <summary>
+    /// Gets the local address.
+    /// </summary>
+    internal static IPAddress LoopbackAddress { get; } = new IPAddress(0x7F7F7F7F);
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="LoopbackIpResolver"/> class.
     /// </summary>
     public LoopbackIpResolver()
-        : base(new IPAddress(0x7F7F7F7F))
+        : base(LoopbackAddress)
     {
     }
 }

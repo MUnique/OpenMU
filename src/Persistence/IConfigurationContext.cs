@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence;
 
+using System.Threading;
 using MUnique.OpenMU.DataModel.Configuration;
 
 /// <summary>
@@ -15,6 +16,9 @@ public interface IConfigurationContext : IContext
     /// Gets the default context identifier.
     /// Usually, there is only one game configuration on a database.
     /// </summary>
-    /// <returns>The id of the default game configuration.</returns>
-    ValueTask<Guid?> GetDefaultGameConfigurationIdAsync();
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>
+    /// The id of the default game configuration.
+    /// </returns>
+    ValueTask<Guid?> GetDefaultGameConfigurationIdAsync(CancellationToken cancellationToken);
 }

@@ -8,7 +8,7 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
-using MUnique.OpenMU.GameServer.RemoteView;
+
 using MUnique.OpenMU.Persistence.Initialization;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 
@@ -85,7 +85,9 @@ public class Wings : WingsInitializerBase
 
         // The capes are a bit of a hybrid. Their damage gets increased like first wings, but they start slightly lower than 2nd wings.
         this.CreateWing(49, 2, 3, "Cape of Fighter", 180, 15, 200, 180, 0, 0, 0, 0, 0, 0, 1, this.BuildOptions((0b00, OptionType.HealthRecover), (0b10, OptionType.PhysDamage)), 20, 10, this._damageIncreaseByLevelTable, secondWingOptions);
-        this.CreateWing(30, 2, 3, "Cape of Lord", 180, 15, 200, 180, 0, 0, 0, 0, 1, 0, 0, this.BuildOptions((0b00, OptionType.PhysDamage)), 20, 10, this._damageIncreaseByLevelTable, this.CreateCapeOptions()).Group = 13;
+        var capeOfLord = this.CreateWing(30, 2, 3, "Cape of Lord", 180, 15, 200, 180, 0, 0, 0, 0, 1, 0, 0, this.BuildOptions((0b00, OptionType.PhysDamage)), 20, 10, this._damageIncreaseByLevelTable, this.CreateCapeOptions());
+        capeOfLord.Group = 13;
+        capeOfLord.SetGuid(capeOfLord.Group, capeOfLord.Number);
 
         this.CreateFeather();
         this.CreateFeatherOfCondor();
@@ -113,6 +115,7 @@ public class Wings : WingsInitializerBase
         feather.Width = 1;
         feather.Height = 2;
         feather.Durability = 1;
+        feather.SetGuid(feather.Group, feather.Number);
         this.GameConfiguration.Items.Add(feather);
     }
 
@@ -127,6 +130,7 @@ public class Wings : WingsInitializerBase
         feather.Width = 1;
         feather.Height = 2;
         feather.Durability = 1;
+        feather.SetGuid(feather.Group, feather.Number);
         this.GameConfiguration.Items.Add(feather);
     }
 
@@ -141,6 +145,7 @@ public class Wings : WingsInitializerBase
         feather.Width = 1;
         feather.Height = 2;
         feather.Durability = 1;
+        feather.SetGuid(feather.Group, feather.Number);
         this.GameConfiguration.Items.Add(feather);
     }
 
@@ -167,14 +172,19 @@ public class Wings : WingsInitializerBase
         }
 
         var optionDefinition = this.Context.CreateNew<ItemOptionDefinition>();
+        optionDefinition.SetGuid(wing.GetItemId());
         this.GameConfiguration.ItemOptions.Add(optionDefinition);
+        
         optionDefinition.Name = $"{name} Options";
         optionDefinition.AddChance = 0.25f;
         optionDefinition.AddsRandomly = true;
         optionDefinition.MaximumOptionsPerItem = 1;
         wing.PossibleItemOptions.Add(optionDefinition);
+        byte i = 0;
         foreach (var option in possibleOptions)
         {
+            i++;
+            option.SetGuid(ItemOptionDefinitionNumbers.WingDefense, wing.GetItemId(), i);
             optionDefinition.PossibleOptions.Add(option);
         }
 
@@ -196,6 +206,7 @@ public class Wings : WingsInitializerBase
         wing.DropsFromMonsters = false;
         wing.Durability = durability;
         wing.ItemSlot = this.GameConfiguration.ItemSlotTypes.First(st => st.ItemSlots.Contains(7));
+        wing.SetGuid(wing.Group, wing.Number);
 
         //// TODO: each level increases the requirement by 5 Levels
         this.CreateItemRequirementIfNeeded(wing, Stats.Level, levelRequirement);
@@ -225,15 +236,22 @@ public class Wings : WingsInitializerBase
     private ItemOptionDefinition CreateCapeOptions()
     {
         var definition = this.CreateSecondClassWingOptions();
+        definition.SetGuid(ItemOptionDefinitionNumbers.Cape);
         definition.Name = "Cape of Lord Options";
         definition.PossibleOptions.Add(this.CreateWingOption(4, Stats.TotalLeadership, 10f, AggregateType.AddRaw, 5f)); // Increase Command +10~75 Increases your Command by 10 plus 5 for each level. Only Cape of Lord can have it (PvM, PvP)
         this.GameConfiguration.ItemOptions.Add(definition);
+        foreach (var option in definition.PossibleOptions)
+        {
+            option.SetGuid(ItemOptionDefinitionNumbers.Cape, option.PowerUpDefinition!.TargetAttribute!.Id.ExtractFirstTwoBytes());
+        }
+
         return definition;
     }
 
     private ItemOptionDefinition CreateSecondClassWingOptions()
     {
         var definition = this.Context.CreateNew<ItemOptionDefinition>();
+        definition.SetGuid(ItemOptionDefinitionNumbers.Wing2nd);
         this.GameConfiguration.ItemOptions.Add(definition);
         definition.Name = "2nd Wing Options";
         definition.AddChance = 0.1f;
@@ -251,6 +269,7 @@ public class Wings : WingsInitializerBase
     private ItemOptionDefinition CreateThirdClassWingOptions()
     {
         var definition = this.Context.CreateNew<ItemOptionDefinition>();
+        definition.SetGuid(ItemOptionDefinitionNumbers.Wing3rd);
         this.GameConfiguration.ItemOptions.Add(definition);
         definition.Name = "3rd Wing Options";
         definition.AddChance = 0.1f;
@@ -265,18 +284,19 @@ public class Wings : WingsInitializerBase
         return definition;
     }
 
-    private IncreasableItemOption CreateWingOption(int number, AttributeDefinition attributeDefinition, float value, AggregateType aggregateType, float? valueIncrementPerLevel = null)
+    private IncreasableItemOption CreateWingOption(byte number, AttributeDefinition attributeDefinition, float value, AggregateType aggregateType, float? valueIncrementPerLevel = null)
     {
         var itemOption = this.Context.CreateNew<IncreasableItemOption>();
+        itemOption.SetGuid(ItemOptionDefinitionNumbers.Wing2nd, attributeDefinition.Id.ExtractFirstTwoBytes(), number);
         itemOption.OptionType = this.GameConfiguration.ItemOptionTypes.First(t => t == ItemOptionTypes.Wing);
         itemOption.Number = number;
-        var targetAttribute = this.GameConfiguration.Attributes.First(a => a == attributeDefinition);
+        var targetAttribute = attributeDefinition.GetPersistent(this.GameConfiguration);
         itemOption.PowerUpDefinition = this.CreatePowerUpDefinition(targetAttribute, value, aggregateType);
 
         if (valueIncrementPerLevel.HasValue)
         {
             itemOption.LevelType = LevelType.ItemLevel;
-            for (int level = 1; level <= MaximumItemLevel; level++)
+            for (int level = 1; level <= this.MaximumItemLevel; level++)
             {
                 var optionOfLevel = this.Context.CreateNew<ItemOptionOfLevel>();
                 optionOfLevel.Level = level;

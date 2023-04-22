@@ -109,6 +109,15 @@ public sealed class GameServerContainer : ServerContainerBase, IDisposable
     }
 
     /// <inheritdoc />
+    protected override async Task StartListenersAsync(CancellationToken cancellationToken)
+    {
+        foreach (var gameServer in this._gameServers.Values)
+        {
+            await gameServer.StartAsync(cancellationToken).ConfigureAwait(false);
+        }
+    }
+
+    /// <inheritdoc />
     protected override async Task StopInnerAsync(CancellationToken cancellationToken)
     {
         foreach (var gameServer in this._gameServers.Values)

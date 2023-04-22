@@ -13,6 +13,11 @@ using Microsoft.EntityFrameworkCore;
 public interface IDatabaseConnectionSettingProvider
 {
     /// <summary>
+    /// Gets the initialization task.
+    /// </summary>
+    Task? Initialization { get; }
+
+    /// <summary>
     /// Initializes the settings provider.
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>

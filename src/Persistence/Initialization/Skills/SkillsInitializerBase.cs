@@ -99,6 +99,8 @@ internal abstract class SkillsInitializerBase : InitializerBase
         {
             this.ApplyElementalModifier(elementalModifier, skill);
         }
+
+        skill.SetGuid(skill.Number);
     }
 
     private void ApplyElementalModifier(ElementalType elementalModifier, Skill skill)
@@ -147,6 +149,15 @@ internal abstract class SkillsInitializerBase : InitializerBase
 
     private MagicEffectDefinition CreateEffect(ElementalType type, MagicEffectNumber effectNumber, AttributeDefinition targetAttribute, float durationInSeconds)
     {
+        if (this.GameConfiguration.MagicEffects.FirstOrDefault(
+                e => e.Number == (short)effectNumber
+                     && e.SubType == (byte)(0xFF - type)
+                     && Equals(e.Duration?.ConstantValue.Value, durationInSeconds)
+                     && e.PowerUpDefinitions.FirstOrDefault()?.TargetAttribute == targetAttribute) is { } existingEffect)
+        {
+            return existingEffect;
+        }
+
         var effect = this.Context.CreateNew<MagicEffectDefinition>();
         this.GameConfiguration.MagicEffects.Add(effect);
         effect.Name = Enum.GetName(effectNumber) ?? string.Empty;

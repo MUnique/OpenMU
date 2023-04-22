@@ -42,17 +42,17 @@ internal class BalgassRefuge : BaseMapInitializer
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateMonsterSpawns()
     {
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[410], 104, 179); // Death Spirit (Trainee Soldier)
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[410], 104, 200); // Death Spirit (Trainee Soldier)
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[410], 085, 179); // Death Spirit (Trainee Soldier)
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[410], 086, 199); // Death Spirit (Trainee Soldier)
+        yield return this.CreateMonsterSpawn(1, this.NpcDictionary[410], 104, 179); // Death Spirit (Trainee Soldier)
+        yield return this.CreateMonsterSpawn(2, this.NpcDictionary[410], 104, 200); // Death Spirit (Trainee Soldier)
+        yield return this.CreateMonsterSpawn(3, this.NpcDictionary[410], 085, 179); // Death Spirit (Trainee Soldier)
+        yield return this.CreateMonsterSpawn(4, this.NpcDictionary[410], 086, 199); // Death Spirit (Trainee Soldier)
 
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[411], 092, 174); // Soram (Trainee Soldier)
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[411], 111, 190); // Soram (Trainee Soldier)
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[411], 094, 202); // Soram (Trainee Soldier)
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[411], 082, 190); // Soram (Trainee Soldier)
+        yield return this.CreateMonsterSpawn(10, this.NpcDictionary[411], 092, 174); // Soram (Trainee Soldier)
+        yield return this.CreateMonsterSpawn(11, this.NpcDictionary[411], 111, 190); // Soram (Trainee Soldier)
+        yield return this.CreateMonsterSpawn(12, this.NpcDictionary[411], 094, 202); // Soram (Trainee Soldier)
+        yield return this.CreateMonsterSpawn(13, this.NpcDictionary[411], 082, 190); // Soram (Trainee Soldier)
 
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[412], 097, 187); // Dark Elf (Trainee Soldier)
+        yield return this.CreateMonsterSpawn(20, this.NpcDictionary[412], 097, 187); // Dark Elf (Trainee Soldier)
     }
 
     /// <inheritdoc/>
@@ -87,6 +87,7 @@ internal class BalgassRefuge : BaseMapInitializer
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
     }
 }

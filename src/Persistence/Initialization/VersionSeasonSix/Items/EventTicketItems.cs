@@ -42,7 +42,7 @@ internal class EventTicketItems : InitializerBase
         // Devil Square:
         this.CreateEventItem(17, 14, 1, 1, "Devil's Eye", true, 7, 2, 36, 47, 60, 70, 80, 90);
         this.CreateEventItem(18, 14, 1, 1, "Devil's Key", true, 7, 2, 36, 47, 60, 70, 80, 90);
-        this.CreateEventItem(19, 14, 1, 1, "Devil's Invitation", true, 7);
+        this.CreateEventItem(19, 14, 1, 1, "Devil's Invitation", false, 7);
 
         // Imperial Guardian
         var scrapOfPaper = this.CreateEventItem(101, 14, 1, 1, "Suspicious Scrap of Paper", true, 0, 32);
@@ -69,6 +69,7 @@ internal class EventTicketItems : InitializerBase
         item.Durability = 1;
         item.DropsFromMonsters = dropsFromMonsters;
         item.MaximumItemLevel = maxItemLevel;
+        item.SetGuid(item.Group, item.Number);
         if (dropLevels.Length == 1)
         {
             item.DropLevel = dropLevels.First();

@@ -42,6 +42,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 		..\.gitignore = ..\.gitignore
 		..\azure-pipelines.yml = ..\azure-pipelines.yml
+		Directory.Build.props = Directory.Build.props
 		..\LICENSE = ..\LICENSE
 		..\QuickStart.md = ..\QuickStart.md
 		..\Readme.md = ..\Readme.md
@@ -146,6 +147,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Distributed", "Distributed", "{C154AA0C-4424-4D33-B6AF-39B2108EE7C4}"
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose-all-in-one", "..\deploy\all-in-one\docker-compose-all-in-one.dcproj", "{6518D58A-5F07-4341-87AF-FCF3715D2554}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.ClientErrorLogDecryptor", "ClientErrorLogDecryptor\MUnique.OpenMU.ClientErrorLogDecryptor.csproj", "{54125AC8-D0CB-4EC8-98DD-BE63E69FD3D6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MUnique.OpenMU.Web.ItemEditor", "Web\ItemEditor\MUnique.OpenMU.Web.ItemEditor.csproj", "{298D1A42-8958-4662-8A05-E6B6F16F7268}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.API", "API\MUnique.OpenMU.API.csproj", "{F1E7F173-CEA8-48F1-9B67-F2AAFAA5854E}"
 EndProject
@@ -332,6 +337,14 @@ Global
 		{6518D58A-5F07-4341-87AF-FCF3715D2554}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6518D58A-5F07-4341-87AF-FCF3715D2554}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6518D58A-5F07-4341-87AF-FCF3715D2554}.Release|Any CPU.Build.0 = Release|Any CPU
+		{54125AC8-D0CB-4EC8-98DD-BE63E69FD3D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54125AC8-D0CB-4EC8-98DD-BE63E69FD3D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54125AC8-D0CB-4EC8-98DD-BE63E69FD3D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54125AC8-D0CB-4EC8-98DD-BE63E69FD3D6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{298D1A42-8958-4662-8A05-E6B6F16F7268}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{298D1A42-8958-4662-8A05-E6B6F16F7268}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{298D1A42-8958-4662-8A05-E6B6F16F7268}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{298D1A42-8958-4662-8A05-E6B6F16F7268}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F1E7F173-CEA8-48F1-9B67-F2AAFAA5854E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F1E7F173-CEA8-48F1-9B67-F2AAFAA5854E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F1E7F173-CEA8-48F1-9B67-F2AAFAA5854E}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -388,6 +401,8 @@ Global
 		{565BED68-B303-4A3D-A8C0-0088D2A50C46} = {BA9EABE2-F32F-446D-A8AA-56866A6B6CFD}
 		{C154AA0C-4424-4D33-B6AF-39B2108EE7C4} = {BA9EABE2-F32F-446D-A8AA-56866A6B6CFD}
 		{6518D58A-5F07-4341-87AF-FCF3715D2554} = {565BED68-B303-4A3D-A8C0-0088D2A50C46}
+		{54125AC8-D0CB-4EC8-98DD-BE63E69FD3D6} = {C814AC11-2CAD-44F2-80DF-B37FD785E80E}
+		{298D1A42-8958-4662-8A05-E6B6F16F7268} = {820453DE-DA7A-454C-A077-BED8F0FA9764}
 		{F1E7F173-CEA8-48F1-9B67-F2AAFAA5854E} = {09EAF85E-358B-4065-8C81-B0B1FF6C0A09}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution

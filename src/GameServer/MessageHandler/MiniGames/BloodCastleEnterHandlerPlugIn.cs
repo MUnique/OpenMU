@@ -13,9 +13,9 @@ using System;
 using System.Runtime.InteropServices;
 
 /// <summary>
-/// Handler for animation packets.
+/// Handler for blood castle enter request packets.
 /// </summary>
-[PlugIn(nameof(BloodCastleEnterHandlerPlugIn), "Handler for blood castle enter packets.")]
+[PlugIn(nameof(BloodCastleEnterHandlerPlugIn), "Handler for blood castle enter request packets.")]
 [Guid("999D6CC6-7B5C-4D0A-89E5-DFC1A1E482FA")]
 internal class BloodCastleEnterHandlerPlugIn : IPacketHandlerPlugIn
 {

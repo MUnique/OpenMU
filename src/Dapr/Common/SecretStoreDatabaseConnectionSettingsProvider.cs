@@ -21,6 +21,7 @@ public class SecretStoreDatabaseConnectionSettingsProvider : IDatabaseConnection
     private readonly DaprClient _daprClient;
     private readonly ILogger<SecretStoreDatabaseConnectionSettingsProvider> _logger;
     private readonly Dictionary<string, ConnectionSetting> _connectionSettings = new(StringComparer.InvariantCultureIgnoreCase);
+    private bool _isInitialized;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SecretStoreDatabaseConnectionSettingsProvider" /> class.
@@ -34,38 +35,56 @@ public class SecretStoreDatabaseConnectionSettingsProvider : IDatabaseConnection
     }
 
     /// <inheritdoc />
-    public async Task InitializeAsync(CancellationToken cancellationToken)
+    public Task? Initialization { get; private set; }
+
+    /// <inheritdoc />
+    public Task InitializeAsync(CancellationToken cancellationToken)
     {
-        var isInitialized = false;
-        while (!isInitialized && !cancellationToken.IsCancellationRequested)
+        if (this._isInitialized)
         {
-            try
-            {
-                var secrets = await this._daprClient.GetBulkSecretAsync(SecretStoreName, cancellationToken: cancellationToken).ConfigureAwait(false);
-                foreach (var secret in secrets.Where(kvp => string.Equals(kvp.Key.Split(':')[0], "connectionStrings", StringComparison.InvariantCultureIgnoreCase)))
-                {
-                    var contextTypeName = secret.Value.Keys.First().Split(':').Last();
-                    var setting = new ConnectionSetting
-                    {
-                        ContextTypeName = contextTypeName,
-                        ConnectionString = secret.Value.Values.First()!,
-                        DatabaseEngine = DatabaseEngine.Npgsql,
-                    };
-
-                    this._connectionSettings.Add(contextTypeName, setting);
-                }
-
-                ConnectionConfigurator.Initialize(this);
-                isInitialized = true;
-            }
-            catch (DaprException ex)
-            {
-                // This should never happen - however, it may happen when we are using a Dapr secret store.
-                // It may not be started yet, and the implementation to get it does retrieve it in the constructor already.
-                this._logger.LogWarning(ex, "Error occurred when retrieving the connection strings from the secrets store. Trying again in 3 seconds...");
-                await Task.Delay(3000, cancellationToken).ConfigureAwait(false);
-            }
+            return Task.CompletedTask;
         }
+
+        this.Initialization = Task.Run(
+            async () =>
+            {
+                this._isInitialized = false;
+                while (!this._isInitialized && !cancellationToken.IsCancellationRequested)
+                {
+                    try
+                    {
+                        Console.WriteLine("trying to get secrets ...");
+                        var secrets = await this._daprClient.GetBulkSecretAsync(SecretStoreName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                        foreach (var secret in secrets.Where(kvp => string.Equals(kvp.Key.Split(':')[0], "connectionStrings", StringComparison.InvariantCultureIgnoreCase)))
+                        {
+                            var contextTypeName = secret.Value.Keys.First().Split(':').Last();
+                            var setting = new ConnectionSetting
+                            {
+                                ContextTypeName = contextTypeName,
+                                ConnectionString = secret.Value.Values.First()!,
+                                DatabaseEngine = DatabaseEngine.Npgsql,
+                            };
+
+                            this._connectionSettings.Add(contextTypeName, setting);
+                        }
+
+                        Console.WriteLine("secrects retrieved :)");
+
+                        this._isInitialized = true;
+                    }
+                    catch (DaprException ex)
+                    {
+                        // This should never happen - however, it may happen when we are using a Dapr secret store.
+                        // It may not be started yet, and the implementation to get it does retrieve it in the constructor already.
+                        this._logger.LogWarning(ex, "Error occurred when retrieving the connection strings from the secrets store. Trying again in 3 seconds...");
+                        Console.WriteLine("Error occurred when retrieving the connection strings from the secrets store. Trying again in 3 seconds...");
+                        await Task.Delay(3000, cancellationToken).ConfigureAwait(false);
+                    }
+                }
+            });
+        ConnectionConfigurator.Initialize(this);
+
+        return Task.CompletedTask;
     }
 
     /// <inheritdoc />

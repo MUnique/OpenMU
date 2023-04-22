@@ -71,6 +71,15 @@ public class ConnectServerContainer : ServerContainerBase, IEnumerable<IConnectS
     }
 
     /// <inheritdoc />
+    protected override async Task StartListenersAsync(CancellationToken cancellationToken)
+    {
+        foreach (var server in this._connectServers)
+        {
+            await server.StartAsync(cancellationToken).ConfigureAwait(false);
+        }
+    }
+
+    /// <inheritdoc />
     protected override async Task StartInnerAsync(CancellationToken cancellationToken)
     {
         using var persistenceContext = this._persistenceContextProvider.CreateNewConfigurationContext();

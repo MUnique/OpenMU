@@ -10,7 +10,7 @@ using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.GameLogic.Views.Trade;
 using MUnique.OpenMU.Interfaces;
-using static OpenMU.GameLogic.InventoryConstants;
+using static OpenMU.DataModel.InventoryConstants;
 
 /// <summary>
 /// Action to move an item between <see cref="Storages"/> or the same storage.
@@ -144,7 +144,7 @@ public class MoveItemAction
                     player.Inventory,
                     InventoryRows,
                     EquippableSlotsCount,
-                    (byte)(EquippableSlotsCount + GetInventorySize(player)));
+                    (byte)(EquippableSlotsCount + player.GetInventorySize()));
                 break;
             case Storages.PersonalStore when player.ShopStorage is not null:
                 result = new StorageInfo(
@@ -208,6 +208,13 @@ public class MoveItemAction
             var itemDefinition = item.Definition;
             if (storage.GetItem(toSlot) != null || itemDefinition?.ItemSlot is null)
             {
+                return Movement.None;
+            }
+
+            if (player.CurrentMiniGame is { } miniGame
+                && !miniGame.IsItemAllowedToEquip(item))
+            {
+                await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("You can't equip this item during the event.", MessageType.BlueNormal)).ConfigureAwait(false);
                 return Movement.None;
             }
 
@@ -303,6 +310,17 @@ public class MoveItemAction
     {
         int rowIndex = (toSlot - toStorage.StartIndex) / RowSize;
         int columnIndex = (toSlot - toStorage.StartIndex) % RowSize;
+
+        if (rowIndex + item.Definition!.Height > usedSlots.GetLength(0))
+        {
+            return true;
+        }
+
+        if (columnIndex + item.Definition.Width > usedSlots.GetLength(1))
+        {
+            return true;
+        }
+
         for (int r = rowIndex; r < rowIndex + item.Definition!.Height; r++)
         {
             for (int c = columnIndex; c < columnIndex + item.Definition.Width; c++)

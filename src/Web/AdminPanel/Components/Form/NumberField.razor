@@ -1,10 +1,12 @@
-﻿@typeparam TNumber
+﻿@typeparam TNumber where TNumber : struct
+
 @using System.Diagnostics.CodeAnalysis
+@using Microsoft.CodeAnalysis.CSharp.Syntax
 @inherits NotifyableInputBase<TNumber>
 
 <div>
     <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
-    <InputNumber id="@this.FieldIdentifier.FieldName" @bind-Value="@CurrentValue" />
+    <InputNumber id="@this.FieldIdentifier.FieldName" @bind-Value="@CurrentValue" min=@(Min ?? MinOfType) max=@(Max ?? MaxOfType) />
     <ValidationMessage For=@this.ValueExpression />
 </div>
 
@@ -16,9 +18,55 @@
     [Parameter]
     public string? Label { get; set; }
 
+    /// <summary>
+    /// Gets or sets the minimum value.
+    /// </summary>
+    [Parameter]
+    public TNumber? Min { get; set; }
+
+    /// <summary>
+    /// Gets or sets the maximum value.
+    /// </summary>
+    [Parameter]
+    public TNumber? Max { get; set; }
+
     /// <inheritdoc />
     protected override bool TryParseValueFromString(string? value, [MaybeNullWhen(false)] out TNumber result, [NotNullWhen(false)] out string? validationErrorMessage)
     {
         throw new NotImplementedException();
+    }
+
+    private TNumber? MinOfType
+    {
+        get
+        {
+            return typeof(TNumber) switch
+            {
+                var t when t == typeof(int) => (TNumber)(object)int.MinValue,
+                var t when t == typeof(long) => (TNumber)(object)long.MinValue,
+                var t when t == typeof(short) => (TNumber)(object)int.MinValue,
+                var t when t == typeof(float) => (TNumber)(object)float.MinValue,
+                var t when t == typeof(double) => (TNumber)(object)double.MinValue,
+                var t when t == typeof(decimal) => (TNumber)(object)decimal.MinValue,
+                _ => default,
+                };
+        }
+    }
+
+    private TNumber? MaxOfType
+    {
+        get
+        {
+            return typeof(TNumber) switch
+            {
+                var t when t == typeof(int) => (TNumber)(object)int.MaxValue,
+                var t when t == typeof(long) => (TNumber)(object)long.MaxValue,
+                var t when t == typeof(short) => (TNumber)(object)int.MaxValue,
+                var t when t == typeof(float) => (TNumber)(object)float.MaxValue,
+                var t when t == typeof(double) => (TNumber)(object)double.MaxValue,
+                var t when t == typeof(decimal) => (TNumber)(object)decimal.MaxValue,
+                _ => default,
+            };
+        }
     }
 }

@@ -16,7 +16,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [PlugIn(nameof(ConsumeItemHandlerPlugIn), "Handler for item consume packets.")]
 [Guid("53992288-0d11-49df-98a3-2912b7616558")]
-[MinimumClient(6, 0, ClientLanguage.Invariant)]
+[MinimumClient(5, 0, ClientLanguage.Invariant)]
 internal class ConsumeItemHandlerPlugIn : IPacketHandlerPlugIn
 {
     private readonly ItemConsumeAction _consumeAction = new ();

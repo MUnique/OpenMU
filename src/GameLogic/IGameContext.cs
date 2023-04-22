@@ -31,7 +31,7 @@ public interface IGameContext
     float ExperienceRate { get; }
 
     /// <summary>
-    /// Gets the repository manager. Used to retrieve data, e.g. from a database.
+    /// Gets the repository provider. Used to retrieve data, e.g. from a database.
     /// </summary>
     IPersistenceContextProvider PersistenceContextProvider { get; }
 

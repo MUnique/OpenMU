@@ -5,7 +5,7 @@
 namespace MUnique.OpenMU.Persistence.Initialization.PlugIns.CharacterCreated;
 
 using System.Runtime.InteropServices;
-using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>

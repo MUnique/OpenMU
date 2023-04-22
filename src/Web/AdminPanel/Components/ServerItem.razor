@@ -17,13 +17,13 @@
         @switch (this.Server.Type)
         {
             case ServerType.GameServer:
-                <NavLink href="@("edit/" + typeof(GameServerDefinition).FullName + "/" + this.Server.ConfigurationId)">@this.Server.Description</NavLink>
+                <NavLink href="@("edit-config/" + typeof(GameServerDefinition).FullName + "/" + this.Server.ConfigurationId)">@this.Server.Description</NavLink>
                 break;
             case ServerType.ConnectServer:
-                <NavLink href="@("editConnectionServer/" + this.Server.ConfigurationId)">@this.Server.Description</NavLink>
+                <NavLink href="@("edit-connectionServer/" + this.Server.ConfigurationId)">@this.Server.Description</NavLink>
                 break;
             case ServerType.ChatServer:
-                <NavLink href="@("edit/" + typeof(ChatServerDefinition).FullName + "/" + this.Server.ConfigurationId)">@this.Server.Description</NavLink>
+                <NavLink href="@("edit-config/" + typeof(ChatServerDefinition).FullName + "/" + this.Server.ConfigurationId)">@this.Server.Description</NavLink>
                 break;
             default:
                 @this.Server.Description

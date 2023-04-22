@@ -57,24 +57,24 @@ internal class DevilSquare4 : BaseMapInitializer
         const byte y2 = 109;
         const byte quantity = 35;
 
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[64], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.FirstWaveNumber); // Orc Archer
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[65], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.FirstWaveNumber); // Elite Orc
+        yield return this.CreateMonsterSpawn(1, this.NpcDictionary[64], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.FirstWaveNumber); // Orc Archer
+        yield return this.CreateMonsterSpawn(2, this.NpcDictionary[65], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.FirstWaveNumber); // Elite Orc
 
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[60], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.SecondWaveNumber); // Bloody Wolf
+        yield return this.CreateMonsterSpawn(3, this.NpcDictionary[60], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.SecondWaveNumber); // Bloody Wolf
         if (this.NpcDictionary.TryGetValue(294, out var axeWarrior))
         {
-            yield return this.CreateMonsterSpawn(this.NpcDictionary[294], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.SecondWaveNumber); // Axe Warrior
+            yield return this.CreateMonsterSpawn(4, this.NpcDictionary[294], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.SecondWaveNumber); // Axe Warrior
         }
         else
         {
             // In lower versions without Land of Trials, there is no Axe Warrior, but a the Alquamos, which is of comparable strength
-            yield return this.CreateMonsterSpawn(this.NpcDictionary[69], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.SecondWaveNumber); // Alquamos
+            yield return this.CreateMonsterSpawn(5, this.NpcDictionary[69], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.SecondWaveNumber); // Alquamos
         }
 
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[57], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.ThirdWaveNumber); // Iron Wheel
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[70], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.ThirdWaveNumber); // Queen Rainer
+        yield return this.CreateMonsterSpawn(6, this.NpcDictionary[57], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.ThirdWaveNumber); // Iron Wheel
+        yield return this.CreateMonsterSpawn(7, this.NpcDictionary[70], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.ThirdWaveNumber); // Queen Rainer
 
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[66], x1, x2, y1, y2, 5, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, DevilSquareInitializer.BossWaveNumber); // Cursed King
+        yield return this.CreateMonsterSpawn(8, this.NpcDictionary[66], x1, x2, y1, y2, 5, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, DevilSquareInitializer.BossWaveNumber); // Cursed King
     }
 
     /// <inheritdoc/>
@@ -110,6 +110,7 @@ internal class DevilSquare4 : BaseMapInitializer
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
     }
 }

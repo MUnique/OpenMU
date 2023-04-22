@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Persistence.Initialization.Tests;
 
 using Microsoft.Extensions.Logging.Abstractions;
+using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.Persistence.EntityFramework;
@@ -24,7 +25,7 @@ internal class TestInitializationWithEfCore
     public async Task SetupDatabaseAndTestLoadingDataAsync()
     {
         var manager = new PersistenceContextProvider(new NullLoggerFactory(), null);
-        await manager.ReCreateDatabaseAsync().ConfigureAwait(false);
+        using var update = await manager.ReCreateDatabaseAsync().ConfigureAwait(false);
         await this.TestDataInitializationAsync(new PersistenceContextProvider(new NullLoggerFactory(), null)).ConfigureAwait(false);
     }
 

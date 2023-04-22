@@ -1,0 +1,17 @@
+﻿@inherits Microsoft.AspNetCore.Components.Forms.InputBase<MUnique.OpenMU.DataModel.Entities.ItemStorage>
+
+@if (this._viewModel is null)
+{
+    return;
+}
+
+<div class=@($"mu-item-storage storage-rows{this._viewModel.Rows}")>
+    @foreach (var item in this._viewModel.Items)
+    {
+        <MuItem
+            Model="item"
+            OnClick="async () => await this.SetSelectedItemAsync(item)"
+            OnItemMoved="this.OnItemMovedAsync"
+            IsSelected="this.SelectedItem == item.Item"/>
+    }
+</div>

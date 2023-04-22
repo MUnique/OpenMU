@@ -95,6 +95,26 @@ public class MiniGameDefinition
     public int TicketItemLevel { get; set; }
 
     /// <summary>
+    /// Gets or sets the entrance fee which is deducted from the players inventory
+    /// when entering the mini game event.
+    /// </summary>
+    public int EntranceFee { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether player killers are allowed to
+    /// enter the mini game.
+    /// </summary>
+    /// <value>
+    ///   <c>true</c> if player killers are allowed to enter; otherwise, <c>false</c>.
+    /// </value>
+    public bool ArePlayerKillersAllowedToEnter { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether to allow being in a party during the event.
+    /// </summary>
+    public bool AllowParty { get; set; }
+
+    /// <summary>
     /// Gets or sets the entrance gate to the mini game map.
     /// </summary>
     [Required]

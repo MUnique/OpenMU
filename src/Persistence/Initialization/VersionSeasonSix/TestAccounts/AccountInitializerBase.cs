@@ -235,7 +235,7 @@ internal abstract class AccountInitializerBase : InitializerBase
         }
 
         character.Attributes.First(a => a.Definition == Stats.Level).Value = level;
-        character.Experience = GameConfigurationInitializer.CalculateNeededExperience(level);
+        character.Experience = GameConfigurationInitializerBase.CalculateNeededExperience(level);
         character.LevelUpPoints = (int)((character.Attributes.First(a => a.Definition == Stats.Level).Value - 1)
                                         * character.CharacterClass.StatAttributes.First(a => a.Attribute == Stats.PointsPerLevelUp).BaseValue);
         character.Inventory = this.Context.CreateNew<ItemStorage>();
@@ -726,21 +726,21 @@ internal abstract class AccountInitializerBase : InitializerBase
         var vault = account.Vault ??= this.Context.CreateNew<ItemStorage>();
         vault.Items.Add(this.CreateBloodCastleTicket(0, 8));
         vault.Items.Add(this.CreateBloodCastleTicket(2, 8));
-        vault.Items.Add(this.CreateBloodCastleTicket(4, 8));
-        vault.Items.Add(this.CreateBloodCastleTicket(6, 8));
+        vault.Items.Add(this.CreateBloodCastleTicket(4, 7));
+        vault.Items.Add(this.CreateBloodCastleTicket(6, 7));
         vault.Items.Add(this.CreateBloodCastleTicket(16, 6));
         vault.Items.Add(this.CreateBloodCastleTicket(18, 6));
-        vault.Items.Add(this.CreateBloodCastleTicket(20, 6));
-        vault.Items.Add(this.CreateBloodCastleTicket(22, 6));
+        vault.Items.Add(this.CreateBloodCastleTicket(20, 5));
+        vault.Items.Add(this.CreateBloodCastleTicket(22, 5));
 
-        vault.Items.Add(this.CreateDevilSquareTicket(32, 8));
-        vault.Items.Add(this.CreateDevilSquareTicket(33, 8));
-        vault.Items.Add(this.CreateDevilSquareTicket(34, 8));
-        vault.Items.Add(this.CreateDevilSquareTicket(35, 8));
-        vault.Items.Add(this.CreateDevilSquareTicket(36, 6));
-        vault.Items.Add(this.CreateDevilSquareTicket(37, 6));
-        vault.Items.Add(this.CreateDevilSquareTicket(38, 6));
-        vault.Items.Add(this.CreateDevilSquareTicket(39, 6));
+        vault.Items.Add(this.CreateDevilSquareTicket(32, 7));
+        vault.Items.Add(this.CreateDevilSquareTicket(33, 7));
+        vault.Items.Add(this.CreateDevilSquareTicket(34, 6));
+        vault.Items.Add(this.CreateDevilSquareTicket(35, 6));
+        vault.Items.Add(this.CreateDevilSquareTicket(36, 5));
+        vault.Items.Add(this.CreateDevilSquareTicket(37, 5));
+        vault.Items.Add(this.CreateDevilSquareTicket(38, 4));
+        vault.Items.Add(this.CreateDevilSquareTicket(39, 4));
     }
 
     protected Item CreateFullAncient(byte itemSlot, ItemGroups group, byte number, byte level, string ancientName)

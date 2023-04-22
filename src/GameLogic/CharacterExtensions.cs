@@ -67,6 +67,41 @@ public static class CharacterExtensions
         return character.CharacterStatus == CharacterStatus.GameMaster || character.LevelUpPoints > 0;
     }
 
+    /// <summary>
+    /// Determines whether the character is a "special" character with reduced level requirements for maps and events.
+    /// Special characters have a <see cref="CharacterClass.LevelWarpRequirementReductionPercent"/> of 33.
+    /// Usually, this includes the classes Magic Gladiator, Dark Lord, Rage Fighter and Summoner.
+    /// </summary>
+    /// <param name="character">The character.</param>
+    /// <returns>
+    ///   <c>true</c> if the character is a "special" character with reduced level requirements for maps and events; otherwise, <c>false</c>.
+    /// </returns>
+    public static bool IsSpecialCharacter(this Character character)
+    {
+        return character.CharacterClass?.LevelWarpRequirementReductionPercent > 30;
+    }
+
+    /// <summary>
+    /// Gets the effective move level requirement by considering <see cref="CharacterClass.LevelWarpRequirementReductionPercent"/>.
+    /// </summary>
+    /// <param name="character">The character.</param>
+    /// <param name="levelRequirement">The level requirement.</param>
+    /// <returns>The effective move level requirement.</returns>
+    public static int GetEffectiveMoveLevelRequirement(this Character character, int levelRequirement)
+    {
+        if (levelRequirement == 400)
+        {
+            return levelRequirement;
+        }
+
+        if (character.CharacterClass?.LevelWarpRequirementReductionPercent is { } reduction and > 0)
+        {
+            levelRequirement -= levelRequirement * 100 / reduction;
+        }
+
+        return levelRequirement;
+    }
+
     private static IEnumerable<ushort> GetFruitPoints(int divisor)
     {
         var current = 2;

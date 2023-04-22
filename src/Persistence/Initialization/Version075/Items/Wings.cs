@@ -95,6 +95,7 @@ public class Wings : WingsInitializerBase
         wing.DropsFromMonsters = false;
         wing.Durability = durability;
         wing.ItemSlot = this.GameConfiguration.ItemSlotTypes.First(st => st.ItemSlots.Contains(7));
+        wing.SetGuid(wing.Group, wing.Number);
 
         //// TODO: each level increases the requirement by 5 Levels
         this.CreateItemRequirementIfNeeded(wing, Stats.Level, levelRequirement);

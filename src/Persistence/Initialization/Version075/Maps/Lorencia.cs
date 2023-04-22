@@ -43,34 +43,34 @@ internal class Lorencia : BaseMapInitializer
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()
     {
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[248], 6, 145, Direction.SouthEast);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[240], 146, 110, Direction.SouthEast);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[240], 147, 145, Direction.SouthWest);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[249], 131, 88, Direction.SouthWest);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[249], 173, 125, Direction.SouthEast);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[249], 94, 125, Direction.NorthWest);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[249], 94, 130, Direction.NorthWest);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[249], 131, 148, Direction.SouthWest);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[247], 114, 125, Direction.SouthEast);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[250], 183, 137, Direction.South);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[251], 116, 141, Direction.SouthEast);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[253], 127, 86, Direction.South);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[254], 118, 113, Direction.SouthEast);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[255], 123, 135, Direction.SouthWest);
+        yield return this.CreateMonsterSpawn(1, this.NpcDictionary[248], 6, 145, Direction.SouthEast, SpawnTrigger.Wandering);
+        yield return this.CreateMonsterSpawn(2, this.NpcDictionary[240], 146, 110, Direction.SouthEast);
+        yield return this.CreateMonsterSpawn(3, this.NpcDictionary[240], 147, 145, Direction.SouthWest);
+        yield return this.CreateMonsterSpawn(4, this.NpcDictionary[249], 131, 88, Direction.SouthWest);
+        yield return this.CreateMonsterSpawn(5, this.NpcDictionary[249], 173, 125, Direction.SouthEast);
+        yield return this.CreateMonsterSpawn(6, this.NpcDictionary[249], 94, 125, Direction.NorthWest);
+        yield return this.CreateMonsterSpawn(7, this.NpcDictionary[249], 94, 130, Direction.NorthWest);
+        yield return this.CreateMonsterSpawn(8, this.NpcDictionary[249], 131, 148, Direction.SouthWest);
+        yield return this.CreateMonsterSpawn(9, this.NpcDictionary[247], 114, 125, Direction.SouthEast);
+        yield return this.CreateMonsterSpawn(10, this.NpcDictionary[250], 183, 137, Direction.South, SpawnTrigger.Wandering);
+        yield return this.CreateMonsterSpawn(11, this.NpcDictionary[251], 116, 141, Direction.SouthEast);
+        yield return this.CreateMonsterSpawn(12, this.NpcDictionary[253], 127, 86, Direction.South);
+        yield return this.CreateMonsterSpawn(13, this.NpcDictionary[254], 118, 113, Direction.SouthEast);
+        yield return this.CreateMonsterSpawn(14, this.NpcDictionary[255], 123, 135, Direction.SouthWest);
     }
 
     /// <inheritdoc />
     protected override IEnumerable<MonsterSpawnArea> CreateMonsterSpawns()
     {
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[000], 135, 240, 020, 088, 45);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[003], 180, 226, 090, 244, 45);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[002], 180, 226, 090, 244, 40);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[002], 135, 240, 020, 088, 20);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[006], 095, 175, 168, 244, 20);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[014], 095, 175, 168, 244, 15);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[001], 008, 094, 011, 244, 45);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[004], 008, 094, 011, 244, 45);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[007], 008, 060, 011, 080, 15);
+        yield return this.CreateMonsterSpawn(120, this.NpcDictionary[000], 135, 240, 020, 088, 45);
+        yield return this.CreateMonsterSpawn(121, this.NpcDictionary[003], 180, 226, 090, 244, 45);
+        yield return this.CreateMonsterSpawn(122, this.NpcDictionary[002], 180, 226, 090, 244, 40);
+        yield return this.CreateMonsterSpawn(123, this.NpcDictionary[002], 135, 240, 020, 088, 20);
+        yield return this.CreateMonsterSpawn(124, this.NpcDictionary[006], 095, 175, 168, 244, 20);
+        yield return this.CreateMonsterSpawn(125, this.NpcDictionary[014], 095, 175, 168, 244, 15);
+        yield return this.CreateMonsterSpawn(126, this.NpcDictionary[001], 008, 094, 011, 244, 45);
+        yield return this.CreateMonsterSpawn(127, this.NpcDictionary[004], 008, 094, 011, 244, 45);
+        yield return this.CreateMonsterSpawn(128, this.NpcDictionary[007], 008, 060, 011, 080, 15);
     }
 
     /// <inheritdoc />

@@ -54,12 +54,19 @@ public abstract class ServerContainerBase : IHostedService
     /// <param name="cancellationToken">The cancellation token.</param>
     protected abstract Task StopInnerAsync(CancellationToken cancellationToken);
 
+    /// <summary>
+    /// Starts the listeners of the hosted service.
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    protected abstract Task StartListenersAsync(CancellationToken cancellationToken);
+
     private async ValueTask OnDatabaseInitializedAsync()
     {
         try
         {
             await this.StopAsync(default).ConfigureAwait(false);
             await this.StartAsync(default).ConfigureAwait(false);
+            await this.StartListenersAsync(default).ConfigureAwait(false);
         }
         catch (Exception exception)
         {

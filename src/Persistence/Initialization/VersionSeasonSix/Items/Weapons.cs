@@ -132,7 +132,7 @@ internal class Weapons : InitializerBase
         this.CreateWeapon(0, 21, 0, 56, 2, 4, true, "Dark Reign Blade", 140, 115, 142, 40, 100, 115, 0, 116, 53, 9, 0, 0, 0, 0, 1, 0, 0, 0);
         this.CreateWeapon(0, 22, 0, 22, 1, 4, true, "Bone Blade", 147, 122, 135, 40, 95, 0, 380, 100, 35, 0, 0, 0, 2, 0, 0, 0, 0, 0);
         this.CreateWeapon(0, 23, 0, 56, 2, 4, true, "Explosion Blade", 147, 127, 155, 45, 110, 134, 380, 98, 48, 7, 0, 0, 0, 0, 1, 0, 0, 0);
-        this.CreateWeapon(0, 24, 0, 22, 1, 2, true, "Daybreak", 115, 182, 218, 40, 90, 0, 0, 192, 30, 0, 0, 0, 2, 0, 0, 0, 0, 0);
+        this.CreateWeapon(0, 24, 0, 22, 2, 2, true, "Daybreak", 115, 182, 218, 40, 90, 0, 0, 192, 30, 0, 0, 0, 2, 0, 0, 0, 0, 0);
         this.CreateWeapon(0, 25, 0, 56, 2, 4, true, "Sword Dancer", 115, 109, 136, 40, 90, 108, 0, 136, 57, 9, 0, 0, 0, 0, 1, 0, 0, 0);
         this.CreateWeapon(0, 26, 0, 22, 1, 4, true, "Flamberge", 137, 115, 126, 40, 90, 0, 380, 193, 53, 0, 0, 0, 2, 0, 0, 0, 0, 0);
         this.CreateWeapon(0, 27, 0, 22, 1, 4, true, "Sword Breaker", 133, 91, 99, 35, 90, 0, 380, 53, 176, 0, 0, 0, 2, 0, 0, 0, 0, 0);
@@ -292,6 +292,7 @@ internal class Weapons : InitializerBase
         item.DropLevel = dropLevel;
         item.MaximumItemLevel = MaximumItemLevel;
         item.DropsFromMonsters = dropsFromMonsters;
+        item.SetGuid(item.Group, item.Number);
         if (slot == 0 && knightClass > 0 && width == 1)
         {
             item.ItemSlot = this.GameConfiguration.ItemSlotTypes.First(t => t.ItemSlots.Contains(0) && t.ItemSlots.Contains(1));

@@ -6,12 +6,14 @@ namespace MUnique.OpenMU.Tests;
 
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
+using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.PlayerActions.Items;
 using MUnique.OpenMU.GameLogic.PlayerActions.Trade;
 using MUnique.OpenMU.GameLogic.Views.Trade;
+using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
 
@@ -203,6 +205,9 @@ public class TradeTest
         temporaryStorage.Setup(t => t.Items).Returns(new List<Item>());
         trader.Setup(t => t.TemporaryStorage).Returns(temporaryStorage.Object);
         trader.Setup(t => t.ViewPlugIns).Returns(new MockViewPlugInContainer());
+
+        var contextMock = new Mock<IPlayerContext>();
+        trader.Setup(t => t.PersistenceContext).Returns(contextMock.Object);
         return trader.Object;
     }
 

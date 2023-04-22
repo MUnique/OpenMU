@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.Web.AdminPanel.Components;
 
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using Microsoft.AspNetCore.Components;
@@ -38,10 +37,22 @@ public partial class MapEditor : IDisposable
     private GameMapDefinition? _selectedMap;
 
     /// <summary>
+    /// Occurs before the selected map changes by user input.
+    /// </summary>
+    [Parameter]
+    public EventCallback<MapChangingArgs>? SelectedMapChanging { get; set; }
+
+    /// <summary>
     /// Gets or sets the maps which can be edited.
     /// </summary>
     [Parameter]
     public List<GameMapDefinition> Maps { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the selected map identifier.
+    /// </summary>
+    [Parameter]
+    public Guid SelectedMapId { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="EditForm.OnValidSubmit"/> event callback.
@@ -78,7 +89,7 @@ public partial class MapEditor : IDisposable
     // [Parameter]
     private GameMapDefinition SelectedMap
     {
-        get => _selectedMap ?? throw Error.NotInitializedProperty(this);
+        get => this._selectedMap ?? throw Error.NotInitializedProperty(this);
         set
         {
             this._selectedMap = value;
@@ -96,15 +107,6 @@ public partial class MapEditor : IDisposable
     protected override async Task OnInitializedAsync()
     {
         this.NotificationService.PropertyChanged += this.OnPropertyChanged;
-        try
-        {
-            this.Maps = (await this.PersistenceContext.GetAsync<GameMapDefinition>().ConfigureAwait(false)).OrderBy(c => c.Number).ToList();
-        }
-        catch (Exception ex)
-        {
-            Debug.Fail(ex.Message, ex.StackTrace);
-        }
-
         await base.OnInitializedAsync().ConfigureAwait(false);
     }
 
@@ -112,7 +114,12 @@ public partial class MapEditor : IDisposable
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
-        this.SelectedMap = this.Maps.First();
+        if (this._selectedMap is null)
+        {
+            this.SelectedMap = this.SelectedMapId == Guid.Empty
+                    ? this.Maps.First()
+                    : this.Maps.First(m => m.GetId() == this.SelectedMapId);
+        }
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
@@ -246,6 +253,7 @@ public partial class MapEditor : IDisposable
         var obj = this.SelectedMap.EnterGates.FirstOrDefault<object>(g => g.GetId().ToString() == args.Value?.ToString())
                   ?? this.SelectedMap.ExitGates.FirstOrDefault<object>(g => g.GetId().ToString() == args.Value?.ToString())
                   ?? this.SelectedMap.MonsterSpawns.FirstOrDefault(g => g.GetId().ToString() == args.Value?.ToString());
+        
         this._focusedObject = obj;
     }
 
@@ -289,7 +297,8 @@ public partial class MapEditor : IDisposable
                     this.OnGateResizing(gate, x, y);
                     break;
                 default:
-                    throw new NotImplementedException($"Resizing for object {this._focusedObject} not implemented.");
+                    // do nothing
+                    return;
             }
 
             this.NotificationService.NotifyChange(this._focusedObject, null);
@@ -316,11 +325,9 @@ public partial class MapEditor : IDisposable
                 spawnArea.X2 = x;
                 spawnArea.Y1 = y;
                 break;
-            case null:
+            default:
                 // do nothing.
                 break;
-            default:
-                throw new InvalidOperationException("Unknown resizer position");
         }
     }
 
@@ -344,10 +351,9 @@ public partial class MapEditor : IDisposable
                 gate.X2 = x;
                 gate.Y1 = y;
                 break;
-            case null:
-                // do nothing
             default:
-                throw new InvalidOperationException("Unknown resizer position");
+                // do nothing
+                break;
         }
     }
 
@@ -396,6 +402,7 @@ public partial class MapEditor : IDisposable
         this._createMode = true;
 
         var exitGate = this.PersistenceContext.CreateNew<ExitGate>();
+        exitGate.Map = this.SelectedMap;
         this.SelectedMap.ExitGates.Add(exitGate);
         exitGate.X1 = 120;
         exitGate.Y1 = 120;
@@ -437,12 +444,43 @@ public partial class MapEditor : IDisposable
         this._focusedObject = null;
     }
 
-    private void OnMapSelected(ChangeEventArgs args)
+    private async Task OnMapSelectedAsync(ChangeEventArgs args)
     {
         if (args.Value is string idString
             && Guid.TryParse(idString, out var mapId))
         {
+            var cancelEventArgs = new MapChangingArgs(mapId);
+            if (this.SelectedMapChanging is { } callback)
+            {
+                await callback.InvokeAsync(cancelEventArgs);
+            }
+
+            if (cancelEventArgs.Cancel)
+            {
+                return;
+            }
+
             this.SelectedMap = this.Maps.First(m => m.GetId() == mapId);
         }
+    }
+
+    /// <summary>
+    /// Arguments of <see cref="MapEditor.SelectedMapChanging"/>.
+    /// </summary>
+    public class MapChangingArgs : CancelEventArgs
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MapChangingArgs"/> class.
+        /// </summary>
+        /// <param name="nextMap">The next map.</param>
+        public MapChangingArgs(Guid nextMap)
+        {
+            NextMap = nextMap;
+        }
+
+        /// <summary>
+        /// Gets the id of the next map.
+        /// </summary>
+        public Guid NextMap { get; }
     }
 }

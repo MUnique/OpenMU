@@ -230,4 +230,20 @@ public class GameMap
             monster.Dispose();
         }
     }
+
+    /// <summary>
+    /// Clears the drops on invalid terrain.
+    /// </summary>
+    public async ValueTask ClearDropsOnInvalidTerrain()
+    {
+        var drops = this._objectsInMap.Values
+            .OfType<DroppedItem>()
+            .Where(d => !this.Terrain.WalkMap[d.Position.X, d.Position.Y])
+            .ToList();
+
+        foreach (var drop in drops)
+        {
+            await drop.DisposeAsync().ConfigureAwait(false);
+        }
+    }
 }

@@ -62,7 +62,6 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
         (this._skillPowerUp, this._skillPowerUpDuration, this._skillPowerUpTarget) = this.CreateMagicEffectPowerUp();
 
         this._intelligence.Npc = this;
-        this._intelligence.Start();
     }
 
     /// <summary>
@@ -232,6 +231,20 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
             };
             await this.WalkToAsync(target, steps).ConfigureAwait(false);
         }
+    }
+
+    /// <inheritdoc/>
+    protected override void OnFirstObserverAdded()
+    {
+        base.OnFirstObserverAdded();
+        this._intelligence.Start();
+    }
+
+    /// <inheritdoc/>
+    protected override void OnLastObserverRemoved()
+    {
+        base.OnLastObserverRemoved();
+        this._intelligence.Pause();
     }
 
     /// <inheritdoc/>

@@ -97,24 +97,24 @@ public class CachedRepository<T> : IRepository<T>
     /// <inheritdoc/>
     public async ValueTask<bool> DeleteAsync(object obj)
     {
-        if (obj is IIdentifiable identifiable)
+        if (obj is not IIdentifiable identifiable)
         {
-            return await this.DeleteAsync(identifiable.Id).ConfigureAwait(false);
+            return false;
         }
 
-        return false;
+        return await this.DeleteAsync(identifiable.Id).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
     public async ValueTask<bool> DeleteAsync(Guid id)
     {
-        if (await this.BaseRepository.DeleteAsync(id).ConfigureAwait(false))
+        if (!await this.BaseRepository.DeleteAsync(id).ConfigureAwait(false))
         {
-            this.RemoveFromCache(id);
-            return true;
+            return false;
         }
 
-        return false;
+        this.RemoveFromCache(id);
+        return true;
     }
 
     /// <summary>
@@ -124,9 +124,9 @@ public class CachedRepository<T> : IRepository<T>
     /// <param name="obj">The object.</param>
     protected virtual void AddToCache(Guid id, T obj)
     {
-        if (this._cache.ContainsKey(id))
+        if (this._cache.TryGetValue(id, out var value))
         {
-            if (object.Equals(this._cache[id], obj))
+            if (Equals(value, obj))
             {
                 throw new ArgumentException("Other object with same id is already in cache.");
             }

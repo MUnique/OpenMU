@@ -118,9 +118,16 @@ public class Item
             stringBuilder.Append("+").Append(this.Level);
         }
 
-        foreach (var option in this.ItemOptions.OrderBy(o => o.ItemOption?.OptionType == ItemOptionTypes.Option))
+        foreach (var option in this.ItemOptions
+                     .Where(o => o.ItemOption?.OptionType != ItemOptionTypes.Luck)
+                     .OrderBy(o => o.ItemOption?.OptionType == ItemOptionTypes.Option))
         {
-            stringBuilder.Append("+").Append(option.ItemOption?.PowerUpDefinition);
+            var levelOption = option.ItemOption?.LevelDependentOptions.FirstOrDefault(o => o.Level == (option.ItemOption.LevelType == LevelType.ItemLevel ? this.Level : option.Level));
+            var powerUpDefinition = levelOption?.PowerUpDefinition ?? option.ItemOption?.PowerUpDefinition;
+            if (powerUpDefinition is not null)
+            {
+                stringBuilder.Append("+").Append(powerUpDefinition);
+            }
         }
 
         if (this.HasSkill)

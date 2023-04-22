@@ -22609,9 +22609,9 @@ public readonly struct MiniGameOpeningState
     }
 
     /// <summary>
-    /// Gets or sets the remaining entering time minutes 2.
+    /// Gets or sets just used for Chaos Castle. In this case, this field contains the lower byte of the remaining minutes. For other event types, this field is not used.
     /// </summary>
-    public byte RemainingEnteringTimeMinutes2
+    public byte RemainingEnteringTimeMinutesLow
     {
         get => this._data.Span[6];
         set => this._data.Span[6] = value;
@@ -23184,24 +23184,54 @@ public readonly struct BloodCastleState
     public enum Status
     {
         /// <summary>
-        /// The event has just started and is running.
+        /// The blood castle event has just started and is running.
         /// </summary>
-            Started = 0,
+            BloodCastleStarted = 0,
 
         /// <summary>
-        /// The event is running, but the gate is not destroyed.
+        /// The blood castle event is running, but the gate is not destroyed.
         /// </summary>
-            GateNotDestroyed = 1,
+            BloodCastleGateNotDestroyed = 1,
 
         /// <summary>
-        /// The event has ended.
+        /// The blood castle event has ended.
         /// </summary>
-            Ended = 2,
+            BloodCastleEnded = 2,
 
         /// <summary>
-        /// The event is running and the gate is destroyed.
+        /// The blood castle event is running and the gate is destroyed.
         /// </summary>
-            GateDestroyed = 4,
+            BloodCastleGateDestroyed = 4,
+
+        /// <summary>
+        /// The chaos castle event has just started and is running.
+        /// </summary>
+            ChaosCastleStarted = 5,
+
+        /// <summary>
+        /// The chaos castle event is running.
+        /// </summary>
+            ChaosCastleRunning = 6,
+
+        /// <summary>
+        /// The chaos castle event has ended.
+        /// </summary>
+            ChaosCastleEnded = 7,
+
+        /// <summary>
+        /// The chaos castle event reached the first stage of map shrinking.
+        /// </summary>
+            ChaosCastleStageOne = 8,
+
+        /// <summary>
+        /// The chaos castle event reached the second stage of map shrinking.
+        /// </summary>
+            ChaosCastleStageTwo = 9,
+
+        /// <summary>
+        /// The chaos castle event reached the third stage of map shrinking.
+        /// </summary>
+            ChaosCastleStageThree = 10,
     }
 
     private readonly Memory<byte> _data;
@@ -23323,6 +23353,128 @@ public readonly struct BloodCastleState
 
 
 /// <summary>
+/// Is sent by the server when: The player requested to enter the chaos castle mini game by using the 'Armor of Guardsman' item.
+/// Causes reaction on client side: In case it failed, it shows the corresponding error message.
+/// </summary>
+public readonly struct ChaosCastleEnterResult
+{
+    /// <summary>
+    /// Defines the result of the enter request.
+    /// </summary>
+    public enum EnterResult
+    {
+        /// <summary>
+        /// The event has been entered.
+        /// </summary>
+            Success = 0,
+
+        /// <summary>
+        /// Entering the event failed, e.g. by missing event ticket or level range.
+        /// </summary>
+            Failed = 1,
+
+        /// <summary>
+        /// Entering the event failed, because it's not opened.
+        /// </summary>
+            NotOpen = 2,
+
+        /// <summary>
+        /// Entering the event failed, because it's full.
+        /// </summary>
+            Full = 5,
+
+        /// <summary>
+        /// Entering the event failed, because the player doesn't have enough money for the entrance fee.
+        /// </summary>
+            NotEnoughMoney = 7,
+
+        /// <summary>
+        /// Entering the event failed, because the player has a pk state.
+        /// </summary>
+            PlayerKillerCantEnter = 8,
+    }
+
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ChaosCastleEnterResult"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public ChaosCastleEnterResult(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ChaosCastleEnterResult"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private ChaosCastleEnterResult(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xAF;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x01;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 5;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public ChaosCastleEnterResult.EnterResult Result
+    {
+        get => (EnterResult)this._data.Span[4];
+        set => this._data.Span[4] = (byte)value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="ChaosCastleEnterResult"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator ChaosCastleEnterResult(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="ChaosCastleEnterResult"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(ChaosCastleEnterResult packet) => packet._data; 
+}
+
+
+/// <summary>
 /// Is sent by the server when: The state of event is about to change.
 /// Causes reaction on client side: The event's effect is shown.
 /// </summary>
@@ -23424,42 +23576,6 @@ public readonly struct MapEventState
     /// <returns>The packet as byte span.</returns>
     public static implicit operator Memory<byte>(MapEventState packet) => packet._data; 
 }
-    /// <summary>
-    /// Defines the type of the mini game.
-    /// </summary>
-    public enum MiniGameType
-    {
-        /// <summary>
-        /// Undefined mini game type.
-        /// </summary>
-            Undefined = 0,
-
-        /// <summary>
-        /// The devil square mini game.
-        /// </summary>
-            DevilSquare = 1,
-
-        /// <summary>
-        /// The blood castle mini game.
-        /// </summary>
-            BloodCastle = 2,
-
-        /// <summary>
-        /// The chaos castle mini game.
-        /// </summary>
-            ChaosCastle = 4,
-
-        /// <summary>
-        /// The illusion temple mini game.
-        /// </summary>
-            IllusionTemple = 5,
-
-        /// <summary>
-        /// The doppelgänger mini game.
-        /// </summary>
-            Doppelganger = 6,
-    }
-
     /// <summary>
     /// Defines the role of a guild member.
     /// </summary>
