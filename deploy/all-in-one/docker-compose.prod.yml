@@ -11,6 +11,8 @@ services:
 
   nginx-80:
     restart: "unless-stopped"
+    environment:
+      DOMAIN_NAME: ${DOMAIN_NAME}
     volumes:
       - ./nginx.prod80.conf:/etc/nginx/nginx.conf:ro
       - ./.htpasswd:/etc/nginx/.htpasswd
@@ -25,6 +27,8 @@ services:
     image: nginx:alpine
     container_name: nginx-443
     restart: "unless-stopped"
+    environment:
+      DOMAIN_NAME: ${DOMAIN_NAME}
     ports:
       - "443:443"
     volumes:

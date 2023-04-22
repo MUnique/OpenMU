@@ -42,10 +42,10 @@ for nginx. Otherwise, traffic from and to the admin panel is not encrypted.
 
 #### Set your domain name as environment variable
 
-Add an environment variable ```DOMAIN_NAME``` to your container.
+Specify the environment variable ```DOMAIN_NAME``` for docker compose.
 This can be done in [various ways](https://docs.docker.com/compose/environment-variables/set-environment-variables/),
-e.g. by editing the ```docker-compose.prod.yml``` or adding a parameter (see next
-paragraph).
+e.g. by editing the ```docker-compose.prod.yml``` or
+[setting it in your shell](https://phoenixnap.com/kb/linux-set-environment-variable).
 
 This variable is replaced in the nginx template config files which get included
 in the other configuration files.
@@ -58,7 +58,7 @@ in the other configuration files.
 
 Hint: replace "example.org" with your domain.
 
-`docker compose -f docker-compose.yml -f docker-compose.prod.yml run --rm  certbot certonly --webroot --webroot-path /var/www/certbot/ -d example.org`
+`docker compose -f docker-compose.yml -f docker-compose.prod.yml run --rm certbot certonly --webroot --webroot-path /var/www/certbot/ -d example.org`
 
 #### Set up certificate renewal
 
