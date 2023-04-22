@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using System.IO;
-
-namespace MUnique.OpenMU.API
+﻿namespace MUnique.OpenMU.API
 {
+    using System.IO;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Configuration;
+
     public class HttpServer
     {
         public void Start()

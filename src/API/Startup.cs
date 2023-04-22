@@ -1,11 +1,11 @@
 ﻿
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
-using System.IO;
-
 namespace MUnique.OpenMU.API
 {
+    using System.IO;
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.DependencyInjection;
+
     public class Startup
     {
         public void ConfigureServices(IServiceCollection services)
