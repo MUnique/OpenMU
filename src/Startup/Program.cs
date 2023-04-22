@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using MUnique.OpenMU.API;
 using MUnique.OpenMU.ChatServer;
 using MUnique.OpenMU.ConnectServer;
 using MUnique.OpenMU.DataModel.Configuration;
@@ -57,6 +58,10 @@ internal sealed class Program : IDisposable
             .AddJsonFile("appsettings.json", false, true)
             .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", true, true)
             .Build();
+
+        Console.WriteLine("Start API.");
+        var api = new HttpServer();
+        api.Start();
 
         this._logger = new LoggerConfiguration()
             .ReadFrom.Configuration(configuration)

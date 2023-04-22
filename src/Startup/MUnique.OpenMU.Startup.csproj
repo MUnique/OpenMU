@@ -49,6 +49,7 @@
 
 
   <ItemGroup>
+    <ProjectReference Include="..\API\MUnique.OpenMU.API.csproj" />
     <ProjectReference Include="..\Web\AdminPanel\MUnique.OpenMU.Web.AdminPanel.csproj" />
     <ProjectReference Include="..\ChatServer\MUnique.OpenMU.ChatServer.csproj" />
     <ProjectReference Include="..\ConnectServer\MUnique.OpenMU.ConnectServer.csproj" />
