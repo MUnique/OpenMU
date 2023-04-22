@@ -40,6 +40,11 @@ public class SecretStoreDatabaseConnectionSettingsProvider : IDatabaseConnection
     /// <inheritdoc />
     public Task InitializeAsync(CancellationToken cancellationToken)
     {
+        if (this._isInitialized)
+        {
+            return Task.CompletedTask;
+        }
+
         this.Initialization = Task.Run(
             async () =>
             {
