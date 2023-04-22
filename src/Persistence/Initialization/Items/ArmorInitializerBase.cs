@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+namespace MUnique.OpenMU.Persistence.Initialization.Items;
+
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
@@ -9,9 +11,6 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
-using static MUnique.OpenMU.Network.Packets.ClientToServer.LahapJewelMixRequest;
-
-namespace MUnique.OpenMU.Persistence.Initialization.Items;
 
 /// <summary>
 /// Base class for an initializer for armor items.
@@ -71,6 +70,7 @@ public abstract class ArmorInitializerBase : InitializerBase
         foreach (var group in sets)
         {
             var setForDefenseRate = this.Context.CreateNew<ItemSetGroup>();
+            this.GameConfiguration.ItemSetGroups.Add(setForDefenseRate);
             setForDefenseRate.Name = group.First().Name.Split(' ')[0] + " Defense Rate Bonus";
             setForDefenseRate.MinimumItemCount = group.Count();
             setForDefenseRate.Options.Add(defenseRateBonus);
@@ -200,6 +200,7 @@ public abstract class ArmorInitializerBase : InitializerBase
     private void CreateSetGroup(byte setLevel, IncreasableItemOption option, ICollection<ItemDefinition> group)
     {
         var setForDefense = this.Context.CreateNew<ItemSetGroup>();
+        this.GameConfiguration.ItemSetGroups.Add(setForDefense);
         setForDefense.Name = $"{group.First().Name.Split(' ')[0]} Defense Bonus (Level {setLevel})";
         setForDefense.MinimumItemCount = group.Count;
         setForDefense.Options.Add(option);
