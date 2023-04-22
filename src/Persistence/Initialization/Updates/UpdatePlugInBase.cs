@@ -2,9 +2,9 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.DataModel.Configuration;
-
 namespace MUnique.OpenMU.Persistence.Initialization.Updates;
+
+using MUnique.OpenMU.DataModel.Configuration;
 
 /// <summary>
 /// Abstract base class for a <see cref="IConfigurationUpdatePlugIn"/>.
@@ -35,7 +35,7 @@ public abstract class UpdatePlugInBase : IConfigurationUpdatePlugIn
     /// <inheritdoc />
     public async ValueTask ApplyUpdateAsync(IContext context, GameConfiguration gameConfiguration)
     {
-        await this.ApplyAsync(context, gameConfiguration);
+        await this.ApplyAsync(context, gameConfiguration).ConfigureAwait(false);
         this.AddUpdateEntry(context);
     }
 

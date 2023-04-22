@@ -58,8 +58,11 @@ public partial class NavMenu : IDisposable
         await base.OnInitializedAsync().ConfigureAwait(false);
         this.SetupService.DatabaseInitialized += this.OnDatabaseInitializedAsync;
         this.UpdateService.UpdatesInstalled += this.OnUpdatesInstalledAsync;
-        _ = Task.Run(this.LoadGameConfigurationAsync);
-        _ = Task.Run(this.CheckForUpdatesAsync);
+        _ = Task.Run(async () =>
+        {
+            await this.LoadGameConfigurationAsync().ConfigureAwait(false);
+            await this.CheckForUpdatesAsync().ConfigureAwait(false);
+        });
     }
 
     private async ValueTask OnUpdatesInstalledAsync()
