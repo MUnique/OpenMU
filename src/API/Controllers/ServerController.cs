@@ -1,10 +1,9 @@
 ﻿namespace MUnique.OpenMU.API.Controllers
 {
-    using System.Linq;
-    using System.Text.Json;
     using Microsoft.AspNetCore.Mvc;
     using MUnique.OpenMU.GameServer;
     using MUnique.OpenMU.Interfaces;
+    using System.Text.Json;
 
     /// <summary>
     /// Server API controller
@@ -26,7 +25,7 @@
         /// <param name="id"></param>
         /// <param name="msg"></param>
         /// <returns></returns>
-        [Route("send/msg/{id=0}")]
+        [Route("send/{id=0}")]
         public async Task<IActionResult> SendGlobalMessage(int id, [FromQuery(Name = "msg")] string msg)
         {
             var server = (GameServer)_gameServers.Values.ElementAt(id);

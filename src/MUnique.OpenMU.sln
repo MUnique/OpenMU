@@ -150,7 +150,7 @@ Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose-all-in-one",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.ClientErrorLogDecryptor", "ClientErrorLogDecryptor\MUnique.OpenMU.ClientErrorLogDecryptor.csproj", "{54125AC8-D0CB-4EC8-98DD-BE63E69FD3D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MUnique.OpenMU.Web.ItemEditor", "Web\ItemEditor\MUnique.OpenMU.Web.ItemEditor.csproj", "{298D1A42-8958-4662-8A05-E6B6F16F7268}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.Web.ItemEditor", "Web\ItemEditor\MUnique.OpenMU.Web.ItemEditor.csproj", "{298D1A42-8958-4662-8A05-E6B6F16F7268}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.API", "API\MUnique.OpenMU.API.csproj", "{F1E7F173-CEA8-48F1-9B67-F2AAFAA5854E}"
 EndProject
@@ -284,6 +284,7 @@ Global
 		{482217F9-BBA8-4DA9-BEE0-03E278E0684B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{482217F9-BBA8-4DA9-BEE0-03E278E0684B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{401B1520-00B9-468D-9107-EEEF33C0084F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{401B1520-00B9-468D-9107-EEEF33C0084F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{401B1520-00B9-468D-9107-EEEF33C0084F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{401B1520-00B9-468D-9107-EEEF33C0084F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3CFAFD8C-E881-45BA-98CE-653D33C95419}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
