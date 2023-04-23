@@ -15,6 +15,11 @@ public enum StorageType
     Inventory,
 
     /// <summary>
+    /// The inventory extension.
+    /// </summary>
+    InventoryExtension,
+
+    /// <summary>
     /// The personal store.
     /// </summary>
     PersonalStore,
@@ -23,6 +28,11 @@ public enum StorageType
     /// The vault.
     /// </summary>
     Vault,
+
+    /// <summary>
+    /// The vault extension.
+    /// </summary>
+    VaultExtension,
 
     /// <summary>
     /// The merchant.

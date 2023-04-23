@@ -21,7 +21,11 @@ public partial class MuItemStorage
     public Item? SelectedItem
     {
         get => this._selectedItemModel?.Item;
-        set => this._selectedItemModel = value is null ? null : this._viewModel?.Items.FirstOrDefault(item => item.Item == value);
+        set
+        {
+            this._selectedItemModel = value is null ? null : this._viewModel?.Items.FirstOrDefault(item => item.Item == value);
+            _ = this.InvokeAsync(this.StateHasChanged);
+        }
     }
 
     /// <summary>
@@ -29,6 +33,12 @@ public partial class MuItemStorage
     /// </summary>
     [Parameter]
     public StorageType StorageType { get; set; }
+
+    /// <summary>
+    /// Gets or sets the number of extensions.
+    /// </summary>
+    [Parameter]
+    public byte NumberOfExtensions { get; set; }
 
     /// <summary>
     /// Gets or sets the callback when the selected item changed.
@@ -55,7 +65,7 @@ public partial class MuItemStorage
         base.OnParametersSet();
         if (this.Value is { } value)
         {
-            this._viewModel = value.CreateViewModel(this.StorageType);
+            this._viewModel = value.CreateViewModel(this.StorageType, this.NumberOfExtensions);
         }
     }
 
