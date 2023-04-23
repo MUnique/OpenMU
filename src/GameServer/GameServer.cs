@@ -78,12 +78,6 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
         }
     }
 
-    private static GameServer? _pointer;
-    /// <summary>
-    /// Gets get server instance
-    /// </summary>
-    public static GameServer? Instance => _pointer;
-
     /// <inheritdoc />
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -151,6 +145,7 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
     /// <inheritdoc/>
     public async ValueTask StartAsync()
     {
+
         using var logScope = this._logger.BeginScope(("GameServer", this.Id));
         this.ServerState = ServerState.Starting;
         try
@@ -467,7 +462,6 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
 
     private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
-        _pointer = this;
         this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

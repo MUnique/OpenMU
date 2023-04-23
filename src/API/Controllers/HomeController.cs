@@ -1,8 +1,8 @@
 ﻿namespace MUnique.OpenMU.API.Controllers
 {
+    using System.Linq;
     using System.Text.Json;
     using Microsoft.AspNetCore.Mvc;
-    using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameServer;
     using MUnique.OpenMU.Interfaces;
 
@@ -11,6 +11,13 @@
     /// </summary>
     public class HomeController : Controller
     {
+        private IDictionary<int, IGameServer> _gameServers;
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HomeController"/> class.
+        /// </summary>
+        /// <param name="gameServers"></param>
+        public HomeController(IDictionary<int, IGameServer> gameServers) => _gameServers = gameServers;
+
         [HttpGet]
         public IActionResult Index()
         {
@@ -28,9 +35,9 @@
         /// <param name="msg"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> SendGlobalMessage([FromQuery(Name = "msg")] string msg)
+        public async Task<IActionResult> SendGlobalMessage(int id, [FromQuery(Name = "msg")] string msg)
         {
-            GameServer? server = GameServer.Instance;
+            var server = (GameServer)_gameServers.Values.ElementAt(id);
             if (server is not null)
             {
                 await server.Context.SendGlobalNotificationAsync(msg).ConfigureAwait(false);
@@ -46,7 +53,7 @@
         [HttpGet]
         public IActionResult ServerState()
         {
-            var server = GameServer.Instance; 
+            var server = (GameServer)this._gameServers.First().Value;
             if (server is not null)
             {
                 var item = new
