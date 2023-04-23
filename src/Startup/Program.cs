@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.API;
+using MUnique.OpenMU.API.Controllers;
 using MUnique.OpenMU.ChatServer;
 using MUnique.OpenMU.ConnectServer;
 using MUnique.OpenMU.DataModel.Configuration;
@@ -239,7 +240,8 @@ internal sealed class Program : IDisposable
             .AddSingleton<ICollection<PlugInConfiguration>>(this.PlugInConfigurationsFactory)
             .AddHostedService<ChatServerContainer>()
             .AddHostedService<GameServerContainer>()
-            .AddHostedService(provider => provider.GetService<ConnectServerContainer>()!);
+            .AddHostedService(provider => provider.GetService<ConnectServerContainer>()!)
+            .AddControllers().AddApplicationPart(typeof(ServerController).Assembly);
         var host = builder.Build();
 
         // NpgsqlLoggingConfiguration.InitializeLogging(host.Services.GetRequiredService<ILoggerFactory>())
@@ -258,11 +260,6 @@ internal sealed class Program : IDisposable
         stopwatch.Stop();
         this._logger.Information("Host started, elapsed time: {elapsed}", stopwatch.Elapsed);
         this._logger.Information("Admin Panel bound to urls: {urls}", string.Join("; ", host.Urls));
-
-        this._logger.Information("Start API...");
-        var api = new HttpServer();
-        api.SetServers(_gameServers);
-        api.Start();
 
         return host;
     }

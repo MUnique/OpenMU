@@ -7,34 +7,26 @@
     using MUnique.OpenMU.Interfaces;
 
     /// <summary>
-    /// HomeController
+    /// Server API controller
     /// </summary>
-    public class HomeController : Controller
+    [Route("api/")]
+    public class ServerController : Controller
     {
         private IDictionary<int, IGameServer> _gameServers;
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="HomeController"/> class.
+        /// 
         /// </summary>
         /// <param name="gameServers"></param>
-        public HomeController(IDictionary<int, IGameServer> gameServers) => _gameServers = gameServers;
-
-        [HttpGet]
-        public IActionResult Index()
-        {
-            var item = new
-            {
-                action = "Home/Index",
-                msg = "Your index response"
-            };
-            return Ok(JsonSerializer.Serialize(item));
-        }
+        public ServerController(IDictionary<int, IGameServer> gameServers) => _gameServers = gameServers;
 
         /// <summary>
-        /// SendGlobalMessage
+        /// 
         /// </summary>
+        /// <param name="id"></param>
         /// <param name="msg"></param>
         /// <returns></returns>
-        [HttpGet]
+        [Route("send/msg/{id=0}")]
         public async Task<IActionResult> SendGlobalMessage(int id, [FromQuery(Name = "msg")] string msg)
         {
             var server = (GameServer)_gameServers.Values.ElementAt(id);
@@ -47,10 +39,11 @@
         }
 
         /// <summary>
-        /// ServerState
+        /// 
         /// </summary>
         /// <returns></returns>
         [HttpGet]
+        [Route("status")]
         public IActionResult ServerState()
         {
             var server = (GameServer)this._gameServers.First().Value;

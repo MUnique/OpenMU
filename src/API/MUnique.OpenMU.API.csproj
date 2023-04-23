@@ -41,10 +41,4 @@
     <ProjectReference Include="..\GameServer\MUnique.OpenMU.GameServer.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="appsettings-api.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>
