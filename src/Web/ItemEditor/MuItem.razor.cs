@@ -107,8 +107,7 @@ public partial class MuItem
 
     private async Task JumpUpAsync()
     {
-        var jumpRows = this.Model.Item.Definition?.Height;
-        jumpRows += this.Model.Parent?.EmptyRowsToPreviousStorage ?? 0;
+        var jumpRows = this.Model.Item.Definition?.Height ?? 1 + this.Model.Parent?.EmptyRowsToPreviousStorage ?? 0;
 
         for (var i = 0; i < jumpRows; i++)
         {
@@ -120,8 +119,7 @@ public partial class MuItem
 
     private async Task JumpDownAsync()
     {
-        var jumpRows = this.Model.Item.Definition?.Height;
-        jumpRows += this.Model.Parent?.EmptyRowsToNextStorage ?? 0;
+        var jumpRows = this.Model.Item.Definition?.Height ?? 1 + this.Model.Parent?.EmptyRowsToNextStorage ?? 0;
 
         // depending on how many inventory extensions we have, we must move some more rows.
         for (var i = 0; i < jumpRows; i++)
