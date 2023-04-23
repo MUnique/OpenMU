@@ -2,6 +2,7 @@
 {
     using System.Text.Json;
     using Microsoft.AspNetCore.Mvc;
+    using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameServer;
     using MUnique.OpenMU.Interfaces;
 
@@ -29,10 +30,10 @@
         [HttpGet]
         public async Task<IActionResult> SendGlobalMessage([FromQuery(Name = "msg")] string msg)
         {
-            var server = GameServer.Instance;
+            GameServer? server = GameServer.Instance;
             if (server is not null)
             {
-                await server.SendGlobalMessageAsync(msg, MessageType.GoldenCenter);
+                await server.Context.SendGlobalNotificationAsync(msg).ConfigureAwait(false);
                 return Ok("Done");
             }
             return Ok("Server not ready");
@@ -45,12 +46,13 @@
         [HttpGet]
         public IActionResult ServerState()
         {
-            var server = GameServer.Instance;
+            var server = GameServer.Instance; 
             if (server is not null)
             {
                 var item = new
                 {
-                    state = server.ServerState.ToString()
+                    state = server.ServerState.ToString(),
+                    players = server.Context.PlayerCount,
                 };
                 return Ok(JsonSerializer.Serialize(item));
             }
