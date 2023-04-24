@@ -15,8 +15,16 @@ using MUnique.OpenMU.Web.AdminPanel.Services;
 public class ShortFieldBuilder : BaseComponentBuilder, IComponentBuilder
 {
     /// <inheritdoc/>
-    public int BuildComponent(object model, PropertyInfo propertyInfo, RenderTreeBuilder builder, int currentIndex, IChangeNotificationService notificationService) => this.BuildField<short, ShortField>(model, propertyInfo, builder, currentIndex, notificationService);
+    public int BuildComponent(object model, PropertyInfo propertyInfo, RenderTreeBuilder builder, int currentIndex, IChangeNotificationService notificationService)
+    {
+        if (propertyInfo.PropertyType == typeof(short))
+        {
+            return this.BuildField<short, ShortField>(model, propertyInfo, builder, currentIndex, notificationService);
+        }
+
+        return this.BuildField<short?, NullableShortField>(model, propertyInfo, builder, currentIndex, notificationService);
+    }
 
     /// <inheritdoc/>
-    public bool CanBuildComponent(PropertyInfo propertyInfo) => propertyInfo.PropertyType == typeof(short);
+    public bool CanBuildComponent(PropertyInfo propertyInfo) => propertyInfo.PropertyType == typeof(short) || propertyInfo.PropertyType == typeof(short?);
 }
