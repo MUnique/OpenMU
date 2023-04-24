@@ -35,4 +35,20 @@ public static class TypeExtensions
 
         return null;
     }
+
+    /// <summary>
+    /// Determines whether this type is a <see cref="Nullable{T}"/>.
+    /// </summary>
+    /// <param name="type">The type.</param>
+    /// <returns>
+    ///   <c>true</c> if the specified type is a nullable; otherwise, <c>false</c>.
+    /// </returns>
+    public static bool IsNullable(this Type type) => type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
+
+    /// <summary>
+    /// Gets the generic type argument of the nullable.
+    /// </summary>
+    /// <param name="type">The nullable type.</param>
+    /// <returns>The generic type argument of the nullable.</returns>
+    public static Type GetTypeOfNullable(this Type type) => type.IsNullable() ? type.GetGenericArguments().First() : type;
 }
