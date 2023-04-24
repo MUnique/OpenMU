@@ -27,4 +27,10 @@ public class QuestItemRequirement
     /// Gets or sets the minimum number of <see cref="Item"/>s.
     /// </summary>
     public int MinimumNumber { get; set; }
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return $"{this.MinimumNumber} x {this.Item?.Name}";
+    }
 }
