@@ -38,14 +38,13 @@ public class DefaultDropGenerator : IDropGenerator
     }
 
     /// <inheritdoc/>
-    public IEnumerable<Item> GenerateItemDrops(MonsterDefinition monster, int gainedExperience, Player player, out uint? droppedMoney)
+    public async ValueTask<(IEnumerable<Item> Items, uint? Money)> GenerateItemDropsAsync(MonsterDefinition monster, int gainedExperience, Player player)
     {
-        droppedMoney = null;
         var character = player.SelectedCharacter;
         var map = player.CurrentMap?.Definition;
         if (map is null || character is null)
         {
-            return Enumerable.Empty<Item>();
+            return (Enumerable.Empty<Item>(), null);
         }
 
         IEnumerable<DropItemGroup> dropGroups;
@@ -55,24 +54,18 @@ public class DefaultDropGenerator : IDropGenerator
         }
         else
         {
-            var questGroups = character.QuestStates?
-                            .SelectMany(q => q.ActiveQuest?.RequiredItems
-                                                 .Where(i => i.DropItemGroup is { })
-                                                 .Select(i => i.DropItemGroup!)
-                                             ?? Enumerable.Empty<DropItemGroup>())
-                        ?? Enumerable.Empty<DropItemGroup>();
-
             dropGroups = monster.ObjectKind == NpcObjectKind.Destructible
                 ? monster.DropItemGroups
                 : CombineDropGroups(
                         monster.DropItemGroups,
                         character.DropItemGroups,
                         map.DropItemGroups,
-                        questGroups)
+                        await GetQuestItemGroupsAsync(player).ConfigureAwait(false))
                     .Where(group => IsGroupRelevant(monster, group))
                     .OrderBy(group => group.Chance);
         }
 
+        uint money = 0;
         IList<Item>? droppedItems = null;
         for (int i = 0; i < monster.NumberOfMaximumItemDrops; i++)
         {
@@ -82,15 +75,20 @@ public class DefaultDropGenerator : IDropGenerator
                 continue;
             }
 
-            var item = this.GenerateItemDropOrMoney(monster, group, gainedExperience, out droppedMoney);
-            if (item != null)
+            var item = this.GenerateItemDropOrMoney(monster, group, gainedExperience, out var droppedMoney);
+            if (item is not null)
             {
                 droppedItems ??= new List<Item>(1);
                 droppedItems.Add(item);
             }
+
+            if (droppedMoney is not null)
+            {
+                money += droppedMoney.Value;
+            }
         }
 
-        return droppedItems ?? Enumerable.Empty<Item>();
+        return (droppedItems ?? Enumerable.Empty<Item>(), money > 0 ? money : null);
     }
 
     /// <inheritdoc/>
@@ -137,27 +135,23 @@ public class DefaultDropGenerator : IDropGenerator
     }
 
     /// <inheritdoc/>
-    public Item? GenerateItemDrop(IEnumerable<DropItemGroup> groups, out ItemDropEffect? dropEffect, out uint? droppedMoney)
+    public (Item? Item, uint? Money, ItemDropEffect DropEffect) GenerateItemDrop(IEnumerable<DropItemGroup> groups)
     {
-        droppedMoney = null;
-        dropEffect = ItemDropEffect.Undefined;
         var group = this.SelectRandomGroup(groups.OrderBy(group => group.Chance));
         if (group is null)
         {
-            return null;
+            return (null, null, ItemDropEffect.Undefined);
         }
 
         if (@group is ItemDropItemGroup itemDropItemGroup)
         {
-            dropEffect = itemDropItemGroup.DropEffect;
             if (group.ItemType == SpecialItemType.Money)
             {
-                droppedMoney = (uint)itemDropItemGroup.MoneyAmount;
-                return null;
+                return (null, (uint)itemDropItemGroup.MoneyAmount, itemDropItemGroup.DropEffect);
             }
         }
 
-        return this.GenerateItemDrop(group);
+        return (this.GenerateItemDrop(group), null, ItemDropEffect.Undefined);
     }
 
     /// <summary>
@@ -289,6 +283,21 @@ public class DefaultDropGenerator : IDropGenerator
         }
 
         return dropGroups;
+    }
+
+    private static async ValueTask<IEnumerable<DropItemGroup>> GetQuestItemGroupsAsync(Player player)
+    {
+        if (player.SelectedCharacter is not { } character)
+        {
+            return Enumerable.Empty<DropItemGroup>();
+        }
+
+        if (player.Party is { } party)
+        {
+            return await party.GetQuestDropItemGroupsAsync(player).ConfigureAwait(false);
+        }
+
+        return character.GetQuestDropItemGroups();
     }
 
     private static bool IsGroupRelevant(MonsterDefinition monsterDefinition, DropItemGroup group)

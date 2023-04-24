@@ -289,7 +289,7 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
 
     private async ValueTask DropItemAsync(int exp, Player killer)
     {
-        var generatedItems = this._dropGenerator.GenerateItemDrops(this.Definition, exp, killer, out var droppedMoney);
+        var (generatedItems, droppedMoney) = await this._dropGenerator.GenerateItemDropsAsync(this.Definition, exp, killer).ConfigureAwait(false);
         if (droppedMoney > 0)
         {
             await this.HandleMoneyDropAsync(droppedMoney.Value, killer).ConfigureAwait(false);

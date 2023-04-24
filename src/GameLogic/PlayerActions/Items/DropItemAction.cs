@@ -55,22 +55,22 @@ public class DropItemAction
             return;
         }
 
-        var item = player.GameContext.DropGenerator.GenerateItemDrop(dropItemGroups, out var dropEffect, out var droppedMoneyAmount);
-        if (droppedMoneyAmount is { })
+        var (item, droppedMoneyAmount, dropEffect) = player.GameContext.DropGenerator.GenerateItemDrop(dropItemGroups);
+        if (droppedMoneyAmount is not null)
         {
             var droppedMoney = new DroppedMoney(droppedMoneyAmount.Value, player.Position, player.CurrentMap!);
             await player.CurrentMap!.AddAsync(droppedMoney).ConfigureAwait(false);
         }
 
-        if (item is { })
+        if (item is not null)
         {
             var droppedItem = new DroppedItem(item, player.Position, player.CurrentMap!, player);
             await player.CurrentMap!.AddAsync(droppedItem).ConfigureAwait(false);
         }
 
-        if (dropEffect is { } && dropEffect != ItemDropEffect.Undefined)
+        if (dropEffect is not ItemDropEffect.Undefined)
         {
-            await this.ShowDropEffectAsync(player, dropEffect.Value).ConfigureAwait(false);
+            await this.ShowDropEffectAsync(player, dropEffect).ConfigureAwait(false);
         }
 
         await this.RemoveItemFromInventoryAsync(player, sourceItem).ConfigureAwait(false);

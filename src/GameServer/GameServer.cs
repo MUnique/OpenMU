@@ -188,15 +188,7 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
         this._logger.LogInformation("Saving all open sessions...");
 
         // Because disconnecting might directly change the internal player list, we first collect all players.
-        var playerList = new List<Player>();
-
-        // TODO: Simpler way to get all players from the context.
-        await this._gameContext.ForEachPlayerAsync(player =>
-        {
-            playerList.Add(player);
-            return Task.CompletedTask;
-        }).ConfigureAwait(false);
-
+        var playerList = await this._gameContext.GetPlayersAsync().ConfigureAwait(false);
         await playerList.Select(player => player.DisconnectAsync().AsTask()).WhenAll().ConfigureAwait(false);
 
         this.ServerState = ServerState.Stopped;
