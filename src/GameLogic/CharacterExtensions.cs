@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic;
 
+using Nito.Disposables.Internals;
+using MUnique.OpenMU.DataModel.Configuration.Quests;
 using MUnique.OpenMU.GameLogic.Attributes;
 
 /// <summary>
@@ -100,6 +102,19 @@ public static class CharacterExtensions
         }
 
         return levelRequirement;
+    }
+
+    /// <summary>
+    /// Gets the quest drop item groups of a character.
+    /// </summary>
+    /// <param name="character">The character.</param>
+    /// <returns>The quest drop item groups of a character.</returns>
+    public static IEnumerable<DropItemGroup> GetQuestDropItemGroups(this Character character)
+    {
+        return character.QuestStates
+            .SelectMany(q => q.ActiveQuest?.RequiredItems ?? Enumerable.Empty<QuestItemRequirement>())
+            .Select(i => i.DropItemGroup)
+            .WhereNotNull();
     }
 
     private static IEnumerable<ushort> GetFruitPoints(int divisor)
