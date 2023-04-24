@@ -42,13 +42,13 @@ public abstract class PeriodicTaskBasePlugIn<TConfiguration, TState> : IPeriodic
 
         if (configuration is null && this is ISupportDefaultCustomConfiguration defaultConfigSupporter)
         {
-            logger.LogWarning("configuration is not set. Using default configuration.");
+            logger.LogWarning("{description} ({gameContext}):configuration is not set. Using default configuration.", state.Description, gameContext);
             this.Configuration = configuration = defaultConfigSupporter.CreateDefaultConfig() as TConfiguration;
         }
 
         if (configuration is null)
         {
-            logger.LogError("no configuration available; can't execute task plugin.");
+            logger.LogError("{description} ({gameContext}):no configuration available; can't execute task plugin.", state.Description, gameContext);
             return;
         }
 
@@ -68,7 +68,7 @@ public abstract class PeriodicTaskBasePlugIn<TConfiguration, TState> : IPeriodic
 
                     if (!string.IsNullOrWhiteSpace(state.Description))
                     {
-                        logger.LogInformation("{description} ({gameContext}): event prepared", state.Description, gameContext);
+                        logger.LogDebug("{description} ({gameContext}): event prepared", state.Description, gameContext);
                     }
 
                     break;
@@ -83,7 +83,7 @@ public abstract class PeriodicTaskBasePlugIn<TConfiguration, TState> : IPeriodic
 
                     if (!string.IsNullOrWhiteSpace(state.Description))
                     {
-                        logger.LogInformation("{description} ({gameContext}): event started", state.Description, gameContext);
+                        logger.LogDebug("{description} ({gameContext}): event started", state.Description, gameContext);
                     }
 
                     break;
@@ -97,7 +97,7 @@ public abstract class PeriodicTaskBasePlugIn<TConfiguration, TState> : IPeriodic
 
                     if (!string.IsNullOrWhiteSpace(state.Description))
                     {
-                        logger.LogInformation("{description} ({gameContext}): event finished", state.Description, gameContext);
+                        logger.LogDebug("{description} ({gameContext}): event finished", state.Description, gameContext);
                     }
 
                     break;
