@@ -62,5 +62,17 @@
         <div class="mu-item-move-arrow down rounded-bottom" @onclick="MoveDownAsync" alt="Press S to move down">
         </div>
     }
+    
+    @if (!CanMoveUp && CanJumpUp)
+    {
+        <div class="mu-item-move-arrow up rounded-top jump" @onclick="JumpUpAsync" alt="Press W to move up">
+        </div>
+    }
+
+    @if (!CanMoveDown && CanJumpDown)
+    {
+        <div class="mu-item-move-arrow down rounded-bottom jump" @onclick="JumpDownAsync" alt="Press S to move down">
+        </div>
+    }
     </div>
 }

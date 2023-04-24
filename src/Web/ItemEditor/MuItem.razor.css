@@ -136,6 +136,9 @@
     background-size: 100% 100%;
 }
 
+.jump {
+    background-size: 100% 50%;
+}
 
 div.h_1 {
     height: var(--boxSize);

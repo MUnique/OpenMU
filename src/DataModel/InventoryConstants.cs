@@ -113,8 +113,20 @@ public static class InventoryConstants
     /// Index of the first personal store slot.
     /// 12 = number of wearable item slots
     /// 64 = number of inventory slots
+    /// </summary>
+    public static readonly byte FirstExtensionItemSlotIndex = (byte)(
+        EquippableSlotsCount + // 12
+        (InventoryRows * RowSize)); // 64
+
+    /// <summary>
+    /// Index of the first personal store slot.
+    /// 12 = number of wearable item slots
+    /// 64 = number of inventory slots
     /// 128 = number of extended inventory slots (64 are hidden in game, S6E3).
     /// </summary>
+    /// <remarks>
+    /// TODO: This is only valid in season 6! Before, there are no extensions and the store begins earlier.
+    /// </remarks>
     public static readonly byte FirstStoreItemSlotIndex = (byte)(
         EquippableSlotsCount + // 12
         (InventoryRows * RowSize) + // 64
@@ -159,7 +171,7 @@ public static class InventoryConstants
     {
         var size = EquippableSlotsCount +
                    (InventoryRows * RowSize) +
-                   (RowsOfOneExtension * Math.Max(Math.Min(numberOfExtensions, MaximumNumberOfExtensions), 0));
+                   (RowsOfOneExtension * RowSize * Math.Max(Math.Min(numberOfExtensions, MaximumNumberOfExtensions), 0));
 
         return (byte)size;
     }

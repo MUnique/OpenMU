@@ -16,17 +16,55 @@ internal static class StorageViewModelFactory
     /// </summary>
     /// <param name="storage">The storage.</param>
     /// <param name="storageType">Type of the storage.</param>
-    /// <param name="inventoryExtensions">The inventory extensions.</param>
+    /// <param name="extensions">The storage extensions.</param>
     /// <returns>The created view model.</returns>
-    internal static StorageViewModel CreateViewModel(this ItemStorage storage, StorageType storageType, int inventoryExtensions = 0)
+    internal static StorageViewModel CreateViewModel(this ItemStorage storage, StorageType storageType, byte extensions = 0)
     {
-        return storageType switch
+        switch (storageType)
         {
-            StorageType.Inventory => new StorageViewModel(storage, InventoryConstants.InventoryRows, InventoryConstants.EquippableSlotsCount, (byte)(InventoryConstants.EquippableSlotsCount + InventoryConstants.GetInventorySize(inventoryExtensions))),
-            StorageType.PersonalStore => new StorageViewModel(storage, InventoryConstants.StoreRows, InventoryConstants.FirstStoreItemSlotIndex, (byte)(InventoryConstants.FirstStoreItemSlotIndex + InventoryConstants.StoreSize)),
-            StorageType.Vault => new StorageViewModel(storage, InventoryConstants.WarehouseRows, 0, InventoryConstants.WarehouseSize),
-            StorageType.Merchant => new StorageViewModel(storage, InventoryConstants.WarehouseRows, 0, InventoryConstants.WarehouseSize),
-            _ => throw new NotImplementedException()
-        };
+            case StorageType.Inventory:
+                return new StorageViewModel(
+                    storage,
+                    storageType,
+                    InventoryConstants.InventoryRows,
+                    InventoryConstants.EquippableSlotsCount,
+                    (byte)(InventoryConstants.GetInventorySize(0) - 1));
+            case StorageType.InventoryExtension:
+                var emptyRowsToPersonalStore = (byte)((InventoryConstants.MaximumNumberOfExtensions - extensions) * InventoryConstants.RowsOfOneExtension);
+                return new StorageViewModel(
+                    storage,
+                    storageType,
+                    extensions * InventoryConstants.RowsOfOneExtension,
+                    InventoryConstants.FirstExtensionItemSlotIndex,
+                    (byte)(InventoryConstants.GetInventorySize(extensions) - 1),
+                    emptyRowsToPersonalStore);
+            case StorageType.PersonalStore:
+                var emptyRowsToInventory = (byte)((InventoryConstants.MaximumNumberOfExtensions - extensions) * InventoryConstants.RowsOfOneExtension);
+                return new StorageViewModel(
+                    storage,
+                    storageType,
+                    InventoryConstants.StoreRows,
+                    InventoryConstants.FirstStoreItemSlotIndex,
+                    (byte)(InventoryConstants.FirstStoreItemSlotIndex + InventoryConstants.StoreSize),
+                    null,
+                    emptyRowsToInventory);
+            case StorageType.VaultExtension:
+                return new StorageViewModel(
+                    storage,
+                    storageType,
+                    InventoryConstants.WarehouseRows,
+                    InventoryConstants.WarehouseSize,
+                    (InventoryConstants.WarehouseSize * 2) - 1);
+            case StorageType.Vault:
+            case StorageType.Merchant:
+                return new StorageViewModel(
+                    storage,
+                    storageType,
+                    InventoryConstants.WarehouseRows,
+                    0,
+                    InventoryConstants.WarehouseSize - 1);
+            default:
+                throw new NotImplementedException();
+        }
     }
 }

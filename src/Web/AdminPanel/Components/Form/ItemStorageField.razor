@@ -1,5 +1,6 @@
 ﻿@using System.ComponentModel.DataAnnotations
 @using System.Diagnostics.CodeAnalysis
+@using MUnique.OpenMU.DataModel
 @using MUnique.OpenMU.DataModel.Configuration
 @using MUnique.OpenMU.DataModel.Entities
 @using MUnique.OpenMU.Persistence
@@ -8,6 +9,11 @@
 
 @inherits NotifyableInputBase<ItemStorage>
 
+@if (this.CurrentValue is null)
+{
+    return;
+}
+
 <div>
     @if (!this.HideLabel)
     {
@@ -15,50 +21,74 @@
     }
     <div class="container editor-container" id="@this.FieldIdentifier.FieldName">
         <div class="row editor-row">
-        <div class="col-4 left-column">
-            @if (this.StorageType == StorageType.Inventory)
-            {
-                <div class="equipped-box">
-                    <EquippedItems
+            <div class="col-4 left-column">
+                @if (this._storageType == StorageType.Inventory)
+                {
+                    <div class="equipped-box">
+                        <EquippedItems
+                            @bind-Value="@CurrentValue"
+                            SelectedItem="@this._selectedItem"
+                            SelectedItemChanged="this.OnSelectedItemChanged"/>
+                    </div>
+                }
+                <div>
+                    <MuItemStorage
                         @bind-Value="@CurrentValue"
+                        class="@CssClass"
+                        StorageType="@this._storageType"
                         SelectedItem="@this._selectedItem"
                         SelectedItemChanged="this.OnSelectedItemChanged"/>
                 </div>
-            }
-            <div>
-                <MuItemStorage
-                    @bind-Value="@CurrentValue"
-
-                    class="@CssClass"
-                    StorageType="@this.StorageType"
-                    SelectedItem="@this._selectedItem"
-                    SelectedItemChanged="this.OnSelectedItemChanged"/>
+                @if (this._numberOfExtensions > 0)
+                {
+                    <div class="extension-header">Extension</div>
+                    <MuItemStorage
+                        @bind-Value="@CurrentValue"
+                        StorageType="@(this._storageType == StorageType.Inventory ? StorageType.InventoryExtension : StorageType.VaultExtension)"
+                        NumberOfExtensions="@this._numberOfExtensions"
+                        SelectedItem="@this._selectedItem"
+                        SelectedItemChanged="this.OnSelectedItemChanged"/>
+                }
+                @if (this._storageType == StorageType.Inventory)
+                {
+                    <div class="extension-header">Personal Store</div>
+                    <MuItemStorage
+                        @bind-Value="@CurrentValue"
+                        StorageType="StorageType.PersonalStore"
+                        NumberOfExtensions="@this._numberOfExtensions"
+                        SelectedItem="@this._selectedItem"
+                        SelectedItemChanged="this.OnSelectedItemChanged"/>
+                }
             </div>
-        </div>
-        <div class="col-1 middle-column">
-            <button type="button" class="btn-info mb-1" @onclick="@this.OnCreateItemClickAsync" title="Create"><span class="oi oi-plus"></span></button>
-            @if (this._selectedItem is null)
-            {
-                <button type="button" class="btn-warning mb-1 disabled" title="Delete"><span class="oi oi-trash"></span></button>
-            }
-            else
-            {
-                <button type="button" class="btn-warning mb-1" @onclick="this.OnItemDeleteClickAsync" title="Delete"><span class="oi oi-trash"></span></button>
-            }
-        </div>
-        <div class="col-7 right-column">
-        @if (this._selectedItem is { })
-        {
-            <div class="alert alert-secondary item-edit">
-                <h3>@(this._selectedItem.Definition?.Name ?? @"<Please select a definition>")</h3>
-                <ItemEdit Item="@this._selectedItem" ItemChanged="this.StateHasChanged"></ItemEdit>
+            <div class="col-1 middle-column">
+                <button type="button" class="btn-info mb-1" @onclick="@this.OnCreateItemClickAsync" title="Create"><span class="oi oi-plus"></span></button>
+                @if (this._selectedItem is null)
+                {
+                    <button type="button" class="btn-warning mb-1 disabled" title="Delete"><span class="oi oi-trash"></span></button>
+                }
+                else
+                {
+                    <button type="button" class="btn-warning mb-1" @onclick="this.OnItemDeleteClickAsync" title="Delete"><span class="oi oi-trash"></span></button>
+                }
             </div>
-        }
-        </div>
+            <div class="col-7 right-column">
+                @if (this._selectedItem is { })
+                {
+                    <div class="alert alert-secondary item-edit">
+                        <h3>@(this._selectedItem.Definition?.Name ?? @"<Please select a definition>")</h3>
+                        <ItemEdit Item="@this._selectedItem" ItemChanged="this.StateHasChanged"></ItemEdit>
+                    </div>
+                }
+            </div>
         </div>
     </div>
+
     <ValidationMessage For=@this.ValueExpression/>
 </div>
+@if (this._storageType != StorageType.Merchant)
+{
+    <NumberField @bind-Value="@this.CurrentValue.Money" />
+}
 
 @code {
 
@@ -83,27 +113,31 @@
 
     private Item? _selectedItem;
 
-    private StorageType StorageType
+    private StorageType _storageType;
+
+    private byte _numberOfExtensions;
+
+    /// <inheritdoc />
+    protected override void OnParametersSet()
     {
-        get
+        base.OnParametersSet();
+        var model = this.EditContext.Model;
+        switch (model)
         {
-            var model = this.EditContext.Model;
-            if (model is Account)
-            {
-                return StorageType.Vault;
-            }
-
-            if (model is Character)
-            {
-                return StorageType.Inventory;
-            }
-
-            if (model is MonsterDefinition)
-            {
-                return StorageType.Merchant;
-            }
-
-            throw new NotImplementedException($"Unknown owner ({model}) of storage.");
+            case Account account:
+                this._storageType = StorageType.Vault;
+                this._numberOfExtensions = (byte)(account.IsVaultExtended ? 1 : 0);
+                break;
+            case Character character:
+                this._storageType = StorageType.Inventory;
+                this._numberOfExtensions = Math.Min((byte)character.InventoryExtensions, InventoryConstants.MaximumNumberOfExtensions);
+                break;
+            case MonsterDefinition:
+                this._storageType = StorageType.Merchant;
+                this._numberOfExtensions = 0;
+                break;
+            default:
+                throw new NotImplementedException($"Unknown owner ({model}) of storage.");
         }
     }
 

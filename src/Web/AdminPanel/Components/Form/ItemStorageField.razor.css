@@ -15,6 +15,15 @@
     height: max-content;
 }
 
+.extension-header {
+    width: 100%;
+    background-color: black;
+    color: wheat;
+    text-align: center;
+    border-top-color: wheat;
+    border-top-width: 1px;
+    border-top-style: dashed;
+}
 
 .equipped-box {
     background-color: black;

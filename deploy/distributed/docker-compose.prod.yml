@@ -1,5 +1,9 @@
 version: '3.4'
 
+volumes:
+  certificates:
+  certbot-www:
+
 services:
   nginx-80:
     restart: "unless-stopped"
@@ -9,7 +13,7 @@ services:
       - ./nginx.server_name.conf.template:/etc/nginx/templates/nginx.server_name.conf.template
       - ./nginx.prod80.conf:/etc/nginx/nginx.conf:ro
       - ./.htpasswd:/etc/nginx/.htpasswd
-      - ./certbot/www:/var/www/certbot/:ro
+      - certbot-www:/var/www/certbot/:ro
 
 # We add another nginx here, just for HTTPs.
 # The reason is, that it's not starting when we combine port 80 and 443 until
@@ -29,7 +33,7 @@ services:
       - ./nginx.prod.certificates.conf.template:/etc/nginx/templates/nginx.prod.certificates.conf.template
       - ./nginx.prod443.conf:/etc/nginx/nginx.conf:ro
       - ./.htpasswd:/etc/nginx/.htpasswd
-      - ./certbot/conf/:/etc/nginx/ssl/:ro
+      - certificates:/etc/nginx/ssl/:ro
     depends_on:
       - grafana
       - zipkin
@@ -38,8 +42,8 @@ services:
   certbot:
     image: certbot/certbot:latest
     volumes:
-      - ./certbot/www/:/var/www/certbot/:rw
-      - ./certbot/conf/:/etc/letsencrypt/:rw
+      - certbot-www:/var/www/certbot/:rw
+      - certificates:/etc/letsencrypt/:rw
 
   grafana:
     restart: "unless-stopped"

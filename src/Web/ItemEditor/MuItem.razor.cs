@@ -45,6 +45,8 @@ public partial class MuItem
     private bool CanMoveUp => this.Model.Row > 0;
     private bool CanMoveLeft => this.Model.Column > 0;
     private bool CanMoveRight => this.Model.Column + this.Width < 8;
+    private bool CanJumpDown => this.Model.Parent?.StorageType is StorageType.Inventory or StorageType.InventoryExtension;
+    private bool CanJumpUp => (this.Model.Parent?.StorageType is StorageType.InventoryExtension or StorageType.PersonalStore);
 
     private async Task OnKeyPressAsync(KeyboardEventArgs obj)
     {
@@ -60,6 +62,12 @@ public partial class MuItem
                 break;
             case "s" when this.CanMoveDown:
                 await this.MoveDownAsync().ConfigureAwait(true);
+                break;
+            case "w" when this.CanJumpUp:
+                await this.JumpUpAsync().ConfigureAwait(true);
+                break;
+            case "s" when this.CanJumpDown:
+                await this.JumpDownAsync().ConfigureAwait(true);
                 break;
             case "d" when this.CanMoveRight:
                 await this.MoveRightAsync().ConfigureAwait(true);
@@ -94,6 +102,31 @@ public partial class MuItem
     private async Task MoveDownAsync()
     {
         this.Model.Item.MoveDown();
+        await this.RaiseOnItemMovedAsync().ConfigureAwait(true);
+    }
+
+    private async Task JumpUpAsync()
+    {
+        var jumpRows = this.Model.Item.Definition?.Height ?? 1 + this.Model.Parent?.EmptyRowsToPreviousStorage ?? 0;
+
+        for (var i = 0; i < jumpRows; i++)
+        {
+            this.Model.Item.MoveUp();
+        }
+
+        await this.RaiseOnItemMovedAsync().ConfigureAwait(true);
+    }
+
+    private async Task JumpDownAsync()
+    {
+        var jumpRows = this.Model.Item.Definition?.Height ?? 1 + this.Model.Parent?.EmptyRowsToNextStorage ?? 0;
+
+        // depending on how many inventory extensions we have, we must move some more rows.
+        for (var i = 0; i < jumpRows; i++)
+        {
+            this.Model.Item.MoveDown();
+        }
+
         await this.RaiseOnItemMovedAsync().ConfigureAwait(true);
     }
 

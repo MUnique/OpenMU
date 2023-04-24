@@ -38,10 +38,6 @@ internal class EntityFrameworkContextBase : IContext
         this._isOwner = isOwner;
         this._changePublisher = changePublisher;
         this._logger = logger;
-        if (this._changePublisher is { })
-        {
-            this.Context.SavedChanges += this.OnSavedChanges;
-        }
     }
 
     /// <summary>
@@ -69,9 +65,22 @@ internal class EntityFrameworkContextBase : IContext
 
         // when we have a change publisher attached, we want to get the changed entries before accepting them.
         // Otherwise, we can accept them.
-        var acceptChanges = this._changePublisher is null;
+        var acceptChanges = true;
 
-        this.Context.SaveChanges(acceptChanges);
+        if (this._changePublisher is { })
+        {
+            this.Context.SavedChanges += this.OnSavedChanges;
+            acceptChanges = false;
+        }
+
+        try
+        {
+            this.Context.SaveChanges(acceptChanges);
+        }
+        finally
+        {
+            this.Context.SavedChanges -= this.OnSavedChanges;
+        }
 
         return true;
     }
@@ -83,9 +92,22 @@ internal class EntityFrameworkContextBase : IContext
 
         // when we have a change publisher attached, we want to get the changed entries before accepting them.
         // Otherwise, we can accept them.
-        var acceptChanges = this._changePublisher is null;
+        var acceptChanges = true;
 
-        await this.Context.SaveChangesAsync(acceptChanges).ConfigureAwait(false);
+        if (this._changePublisher is { })
+        {
+            this.Context.SavedChanges += this.OnSavedChanges;
+            acceptChanges = false;
+        }
+
+        try
+        {
+            await this.Context.SaveChangesAsync(acceptChanges).ConfigureAwait(false);
+        }
+        finally
+        {
+            this.Context.SavedChanges -= this.OnSavedChanges;
+        }
 
         return true;
     }
@@ -272,6 +294,12 @@ internal class EntityFrameworkContextBase : IContext
             if (this._changePublisher is null)
             {
                 // should never be the case
+                return;
+            }
+
+            if (e.EntitiesSavedCount == 0)
+            {
+                // why are we getting this event then anyway?
                 return;
             }
 
