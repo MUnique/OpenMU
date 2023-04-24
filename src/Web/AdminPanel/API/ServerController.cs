@@ -1,8 +1,11 @@
 ﻿namespace MUnique.OpenMU.Web.API
 {
     using Microsoft.AspNetCore.Mvc;
+    using MUnique.OpenMU.DataModel.Entities;
+    using MUnique.OpenMU.GameLogic;
     using MUnique.OpenMU.GameServer;
     using MUnique.OpenMU.Interfaces;
+    using MUnique.OpenMU.Persistence;
     using System.Text.Json;
 
     /// <summary>
@@ -45,18 +48,27 @@
         [Route("status")]
         public IActionResult ServerState()
         {
-            var server = (GameServer)_gameServers.First().Value;
-            if (server is not null)
+            int sum = 0;
+            var list = new List<string>();
+            _gameServers.Values.ForEach(item =>
             {
-                var item = new
+                var server = item as GameServer;
+                server.Context.ForEachPlayerAsync(player =>
                 {
-                    state = server.ServerState.ToString(),
-                    players = server.Context.PlayerCount,
-                };
-                return Ok(JsonSerializer.Serialize(item));
-            }
+                    list.Add(player.GetName());
+                    return Task.CompletedTask;
+                });
+                sum += server.Context.PlayerCount;
+            });
 
-            return Ok("Server not ready");
+            var item = new
+            {
+                state = "Online",
+                players = sum,
+                playersList = list
+            };
+
+            return Ok(JsonSerializer.Serialize(item));
         }
     }
 }
