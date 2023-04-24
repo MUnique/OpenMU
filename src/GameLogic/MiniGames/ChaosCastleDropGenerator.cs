@@ -64,10 +64,9 @@ public class ChaosCastleDropGenerator : IDropGenerator
     }
 
     /// <inheritdoc />
-    public IEnumerable<Item> GenerateItemDrops(MonsterDefinition monster, int gainedExperience, Player player, out uint? droppedMoney)
+    public async ValueTask<(IEnumerable<Item> Items, uint? Money)> GenerateItemDropsAsync(MonsterDefinition monster, int gainedExperience, Player player)
     {
         var killCount = Interlocked.Increment(ref this._killedMonsters);
-        droppedMoney = null;
         if (this._monsterDrops.TryGetValue(killCount, out var drop))
         {
             var item = new TemporaryItem
@@ -76,10 +75,10 @@ public class ChaosCastleDropGenerator : IDropGenerator
                 Durability = 1,
             };
 
-            return item.GetAsEnumerable();
+            return (item.GetAsEnumerable(), null);
         }
 
-        return Enumerable.Empty<Item>();
+        return (Enumerable.Empty<Item>(), null);
     }
 
     /// <inheritdoc />
@@ -89,8 +88,8 @@ public class ChaosCastleDropGenerator : IDropGenerator
     }
 
     /// <inheritdoc />
-    public Item? GenerateItemDrop(IEnumerable<DropItemGroup> groups, out ItemDropEffect? dropEffect, out uint? droppedMoney)
+    public (Item? Item, uint? Money, ItemDropEffect DropEffect) GenerateItemDrop(IEnumerable<DropItemGroup> groups)
     {
-        return this._gameContext.DropGenerator.GenerateItemDrop(groups, out dropEffect, out droppedMoney);
+        return this._gameContext.DropGenerator.GenerateItemDrop(groups);
     }
 }

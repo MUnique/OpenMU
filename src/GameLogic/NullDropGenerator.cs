@@ -24,10 +24,9 @@ public class NullDropGenerator : IDropGenerator
     public static IDropGenerator Instance => _instance ??= new NullDropGenerator();
 
     /// <inheritdoc />
-    public IEnumerable<Item> GenerateItemDrops(MonsterDefinition monster, int gainedExperience, Player player, out uint? droppedMoney)
+    public ValueTask<(IEnumerable<Item> Items, uint? Money)> GenerateItemDropsAsync(MonsterDefinition monster, int gainedExperience, Player player)
     {
-        droppedMoney = null;
-        return Enumerable.Empty<Item>();
+        return ValueTask.FromResult((Enumerable.Empty<Item>(), default(uint?)));
     }
 
     /// <inheritdoc />
@@ -37,10 +36,8 @@ public class NullDropGenerator : IDropGenerator
     }
 
     /// <inheritdoc />
-    public Item? GenerateItemDrop(IEnumerable<DropItemGroup> group, out ItemDropEffect? dropEffect, out uint? droppedMoney)
+    public (Item?, uint?, ItemDropEffect) GenerateItemDrop(IEnumerable<DropItemGroup> group)
     {
-        droppedMoney = null;
-        dropEffect = ItemDropEffect.Undefined;
-        return null;
+        return (null, null, ItemDropEffect.Undefined);
     }
 }
