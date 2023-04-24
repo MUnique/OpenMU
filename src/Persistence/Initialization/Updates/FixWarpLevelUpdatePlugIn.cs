@@ -47,12 +47,62 @@ public class FixWarpLevelUpdatePlugIn : UpdatePlugInBase
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
+        // warp requirement reduction
         var characterClasses = gameConfiguration.CharacterClasses
             .Where(cc => cc.LevelWarpRequirementReductionPercent == 33)
             .ToList();
         foreach (var cc in characterClasses)
         {
             cc.LevelWarpRequirementReductionPercent = 34;
+        }
+
+        // warp list
+        (string Name, string? NewName, int Costs, int Level)[] warps =
+        {
+            ("KanturuRuins", "KanturuRuins1", -1, 160),
+            ("KanturuRelics", null, 12000, -1),
+            ("Elbeland", "Elveland", -1, -1),
+            ("Elbeland2", "Elveland2", -1, -1),
+            ("Elbeland3", "Elveland3", -1, -1),
+            ("Vulcan", "Vulcanus", -1, -1),
+            ("KanturuRuins3", null, 15000, -1),
+            ("Karutan2", null, -1, 170),
+        };
+        foreach (var (name, newName, costs, level) in warps)
+        {
+            var warpInfo = gameConfiguration.WarpList.Where(w => w.Name == name).FirstOrDefault();
+            if (warpInfo is not null)
+            {
+                if (newName is not null)
+                {
+                    warpInfo.Name = newName;
+                }
+
+                if (costs > 0)
+                {
+                    warpInfo.Costs = costs;
+                }
+
+                if (level > 0)
+                {
+                    warpInfo.LevelRequirement = level;
+                }
+            }
+        }
+
+        // add LaCleon
+        var laCleon = gameConfiguration.WarpList.Where(w => w.Name == "LaCleon").FirstOrDefault();
+        if (laCleon is null)
+        {
+            laCleon = context.CreateNew<WarpInfo>();
+            laCleon.Index = 48;
+            laCleon.Name = "LaCleon";
+            laCleon.Costs = 15000;
+            laCleon.LevelRequirement = 280;
+            laCleon.Gate = gameConfiguration.Maps
+                    .Where(m => m.Name == "LaCleon").FirstOrDefault()?
+                    .ExitGates.Where(g => g.X1 == 222).FirstOrDefault();
+            gameConfiguration.WarpList.Add(laCleon);
         }
     }
 }
