@@ -50,15 +50,18 @@
         {
             int sum = 0;
             var list = new List<string>();
-            _gameServers.Values.ForEach(item =>
+            _gameServers.Values.ForEach(async item =>
             {
                 var server = item as GameServer;
-                server.Context.ForEachPlayerAsync(player =>
+                if(server is not null)
                 {
-                    list.Add(player.GetName());
-                    return Task.CompletedTask;
-                });
-                sum += server.Context.PlayerCount;
+                    await server.Context.ForEachPlayerAsync(player =>
+                    {
+                        list.Add(player.GetName());
+                        return Task.CompletedTask;
+                    }).ConfigureAwait(false);
+                    sum = sum + server.Context.PlayerCount;
+                }
             });
 
             var item = new
