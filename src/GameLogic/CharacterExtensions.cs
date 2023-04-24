@@ -96,7 +96,7 @@ public static class CharacterExtensions
 
         if (character.CharacterClass?.LevelWarpRequirementReductionPercent is { } reduction and > 0)
         {
-            levelRequirement -= levelRequirement * 100 / reduction;
+            levelRequirement = levelRequirement * (100 - reduction) / 100;
         }
 
         return levelRequirement;
