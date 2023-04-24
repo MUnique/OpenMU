@@ -476,7 +476,7 @@ public sealed class ChaosCastleContext : MiniGameContext
             return;
         }
 
-        this.Logger.LogInformation("Player {0} is at a blocked position, it will be killed instantly.", player);
+        this.Logger.LogDebug("Player {0} is at a blocked position, it will be killed instantly.", player);
         await player.KillInstantlyAsync().ConfigureAwait(false);
     }
 
@@ -616,7 +616,7 @@ public sealed class ChaosCastleContext : MiniGameContext
                     || MoveByY(dist, ref target)
                     || MoveByXandY(dist, ref target))
                 {
-                    this.Logger.LogInformation("Moving {monster} by {dist} steps to {target}", monster, dist, target);
+                    this.Logger.LogDebug("Moving {monster} by {dist} steps to {target}", monster, dist, target);
                     await monster.MoveAsync(target).ConfigureAwait(false);
                     moved = true;
                     break;
@@ -625,7 +625,7 @@ public sealed class ChaosCastleContext : MiniGameContext
 
             if (!moved)
             {
-                this.Logger.LogInformation("Couldn't move monster {monster} to valid coordinate.", monster);
+                this.Logger.LogDebug("Couldn't move monster {monster} to valid coordinate.", monster);
             }
         }
     }
