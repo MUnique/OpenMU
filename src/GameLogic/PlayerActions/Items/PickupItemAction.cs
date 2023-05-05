@@ -4,7 +4,10 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Items;
 
+using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Action to pick up an item from the floor.
@@ -23,7 +26,7 @@ public class PickupItemAction
         switch (droppedLocateable)
         {
             case DroppedMoney droppedMoney:
-                if (!await this.TryPickupMoneyAsync(player, droppedMoney).ConfigureAwait(false))
+                if (!await TryPickupMoneyAsync(player, droppedMoney).ConfigureAwait(false))
                 {
                     await player.InvokeViewPlugInAsync<IItemPickUpFailedPlugIn>(p => p.ItemPickUpFailedAsync(ItemPickFailReason.General)).ConfigureAwait(false);
                 }
@@ -31,7 +34,7 @@ public class PickupItemAction
                 break;
             case DroppedItem droppedItem:
             {
-                var (success, stackTarget) = await this.TryPickupItemAsync(player, droppedItem).ConfigureAwait(false);
+                var (success, stackTarget) = await TryPickupItemAsync(player, droppedItem).ConfigureAwait(false);
                 if (success)
                 {
                     if (stackTarget != null)
@@ -58,7 +61,7 @@ public class PickupItemAction
         }
     }
 
-    private bool CanPickup(Player player, ILocateable droppedLocateable)
+    private static bool CanPickup(Player player, ILocateable droppedLocateable)
     {
         if (!player.IsAlive)
         {
@@ -74,10 +77,35 @@ public class PickupItemAction
         return true;
     }
 
-    private async ValueTask<(bool Success, Item? StackTarget)> TryPickupItemAsync(Player player, DroppedItem droppedItem)
+    private static bool IsLimitReached(Player player, ItemDefinition? itemDefinition)
     {
-        if (!this.CanPickup(player, droppedItem))
+        if (itemDefinition is null)
         {
+            return true;
+        }
+
+        if (itemDefinition.StorageLimitPerCharacter == 0)
+        {
+            return false;
+        }
+
+        return player.Inventory?.Items.Count(item => item.Definition == itemDefinition) >= itemDefinition.StorageLimitPerCharacter;
+    }
+
+    private static async ValueTask<(bool Success, Item? StackTarget)> TryPickupItemAsync(Player player, DroppedItem droppedItem)
+    {
+        if (!CanPickup(player, droppedItem))
+        {
+            return (false, null);
+        }
+
+        if (IsLimitReached(player, droppedItem.Item.Definition))
+        {
+            var itemName = droppedItem.Item.Level > 0
+                ? $"{droppedItem.Item.Definition?.Name} +{droppedItem.Item.Level}"
+                : droppedItem.Item.Definition?.Name;
+
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync($"Limit reached for '{itemName}'.", MessageType.BlueNormal)).ConfigureAwait(false);
             return (false, null);
         }
 
@@ -96,8 +124,8 @@ public class PickupItemAction
         return result;
     }
 
-    private async ValueTask<bool> TryPickupMoneyAsync(Player player, DroppedMoney droppedMoney)
+    private static async ValueTask<bool> TryPickupMoneyAsync(Player player, DroppedMoney droppedMoney)
     {
-        return this.CanPickup(player, droppedMoney) && await droppedMoney.TryPickUpByAsync(player).ConfigureAwait(false);
+        return CanPickup(player, droppedMoney) && await droppedMoney.TryPickUpByAsync(player).ConfigureAwait(false);
     }
 }

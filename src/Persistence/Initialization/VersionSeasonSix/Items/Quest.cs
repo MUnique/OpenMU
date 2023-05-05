@@ -86,6 +86,7 @@ public class Quest : InitializerBase
         item.Name = name;
         item.DropLevel = dropLevel;
         item.IsBoundToCharacter = true;
+        item.StorageLimitPerCharacter = 1;
         item.DropsFromMonsters = false; // it'll be added explicitly to a DropItemGroup
         item.Durability = 1;
         item.MaximumItemLevel = maximumLevel;
