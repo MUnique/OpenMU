@@ -192,7 +192,7 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
         foreach (var update in updates)
         {
             var entry = this.Context.CreateNew<ConfigurationUpdate>();
-            entry.Version = update.Version;
+            entry.Version = (int)update.Version;
             entry.Name = update.Name;
             entry.Description = update.Description;
             entry.CreatedAt = update.CreatedAt;
@@ -201,7 +201,7 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
 
         var updateState = this.Context.CreateNew<ConfigurationUpdateState>();
         updateState.InitializationKey = this.Key;
-        updateState.CurrentInstalledVersion = updates.Max(u => u.Version);
+        updateState.CurrentInstalledVersion = updates.Max(u => (int)u.Version);
     }
 
     private async ValueTask CreateConnectServerDefinitionAsync()

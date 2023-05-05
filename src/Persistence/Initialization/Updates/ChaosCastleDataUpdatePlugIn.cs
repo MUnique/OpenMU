@@ -27,7 +27,7 @@ public class ChaosCastleDataUpdatePlugIn : UpdatePlugInBase
     internal const string PlugInDescription = "This update creates the configuration data for the chaos castle event.";
 
     /// <inheritdoc />
-    public override int Version => 1;
+    public override UpdateVersion Version => UpdateVersion.ChaosCastleDataUpdate;
 
     /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;

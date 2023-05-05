@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Updates;
 
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Configuration;
-using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -27,7 +26,7 @@ public class FixWarpLevelUpdatePlugIn : UpdatePlugInBase
     internal const string PlugInDescription = "This plugin updates the LevelWarpRequirementReductionPercent for MG, DL, and RF.";
 
     /// <inheritdoc />
-    public override int Version => 10;
+    public override UpdateVersion Version => UpdateVersion.FixWarpLevelUpdate;
 
     /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
@@ -70,7 +69,7 @@ public class FixWarpLevelUpdatePlugIn : UpdatePlugInBase
         };
         foreach (var (name, newName, costs, level) in warps)
         {
-            var warpInfo = gameConfiguration.WarpList.Where(w => w.Name == name).FirstOrDefault();
+            var warpInfo = gameConfiguration.WarpList.FirstOrDefault(w => w.Name == name);
             if (warpInfo is not null)
             {
                 if (newName is not null)
@@ -91,7 +90,7 @@ public class FixWarpLevelUpdatePlugIn : UpdatePlugInBase
         }
 
         // add LaCleon
-        var laCleon = gameConfiguration.WarpList.Where(w => w.Name == "LaCleon").FirstOrDefault();
+        var laCleon = gameConfiguration.WarpList.FirstOrDefault(w => w.Name == "LaCleon");
         if (laCleon is null)
         {
             laCleon = context.CreateNew<WarpInfo>();
@@ -100,8 +99,8 @@ public class FixWarpLevelUpdatePlugIn : UpdatePlugInBase
             laCleon.Costs = 15000;
             laCleon.LevelRequirement = 280;
             laCleon.Gate = gameConfiguration.Maps
-                    .Where(m => m.Name == "LaCleon").FirstOrDefault()?
-                    .ExitGates.Where(g => g.X1 == 222).FirstOrDefault();
+                .FirstOrDefault(m => m.Name == "LaCleon")
+                ?.ExitGates.FirstOrDefault(g => g.X1 == 222);
             gameConfiguration.WarpList.Add(laCleon);
         }
     }

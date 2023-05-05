@@ -31,7 +31,7 @@ public class SpawnFixesUpdatePlugIn : UpdatePlugInBase
     private const short ZyroNumber = 568;
 
     /// <inheritdoc />
-    public override int Version => 5;
+    public override UpdateVersion Version => UpdateVersion.SpawnFixesUpdate;
 
     /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;

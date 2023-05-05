@@ -55,7 +55,7 @@ public abstract class FixSetBonusesPlugIn : UpdatePlugInBase
     public class Season6 : FixSetBonusesPlugIn
     {
         /// <inheritdoc />
-        public override int Version => 7;
+        public override UpdateVersion Version => UpdateVersion.FixSetBonusesSeason6;
 
         /// <inheritdoc />
         public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
@@ -69,7 +69,7 @@ public abstract class FixSetBonusesPlugIn : UpdatePlugInBase
     public class V095d : FixSetBonusesPlugIn
     {
         /// <inheritdoc />
-        public override int Version => 8;
+        public override UpdateVersion Version => UpdateVersion.FixSetBonuses095d;
 
         /// <inheritdoc />
         public override string DataInitializationKey => Version095d.DataInitialization.Id;
@@ -83,7 +83,7 @@ public abstract class FixSetBonusesPlugIn : UpdatePlugInBase
     public class V075 : FixSetBonusesPlugIn
     {
         /// <inheritdoc />
-        public override int Version => 9;
+        public override UpdateVersion Version => UpdateVersion.FixSetBonuses075;
 
         /// <inheritdoc />
         public override string DataInitializationKey => Version075.DataInitialization.Id;

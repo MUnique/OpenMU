@@ -29,7 +29,7 @@ public class FixLevelDiv20ExcOptionUpdatePlugIn : UpdatePlugInBase
     internal const string PlugInDescription = "This update fixes the excellent option which adds level / 20 as wizardry damage";
 
     /// <inheritdoc />
-    public override int Version => 6;
+    public override UpdateVersion Version => UpdateVersion.FixLevelDiv20ExcOptionUpdate;
 
     /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;

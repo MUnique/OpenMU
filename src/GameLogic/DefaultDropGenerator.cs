@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic;
 
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
+using Nito.AsyncEx;
 
 /// <summary>
 /// The default drop generator.
@@ -18,6 +19,13 @@ public class DefaultDropGenerator : IDropGenerator
     public static readonly int BaseMoneyDrop = 7;
 
     private readonly IRandomizer _randomizer;
+
+    /// <summary>
+    /// A re-useable list of drop item groups.
+    /// </summary>
+    private readonly List<DropItemGroup> _dropGroups = new(64);
+
+    private readonly AsyncLock _lock = new();
 
     private readonly IList<ItemDefinition> _ancientItems;
 
@@ -47,29 +55,33 @@ public class DefaultDropGenerator : IDropGenerator
             return (Enumerable.Empty<Item>(), null);
         }
 
-        IEnumerable<DropItemGroup> dropGroups;
+        using var l = await this._lock.LockAsync();
+        this._dropGroups.Clear();
         if (monster.DropItemGroups.MaxBy(g => g.Chance) is { Chance: >= 1.0 } alwaysDrops)
         {
-            dropGroups = alwaysDrops.GetAsEnumerable();
+            this._dropGroups.Add(alwaysDrops);
+        }
+        else if (monster.ObjectKind == NpcObjectKind.Destructible)
+        {
+            this._dropGroups.AddRange(monster.DropItemGroups ?? Enumerable.Empty<DropItemGroup>());
         }
         else
         {
-            dropGroups = monster.ObjectKind == NpcObjectKind.Destructible
-                ? monster.DropItemGroups
-                : CombineDropGroups(
-                        monster.DropItemGroups,
-                        character.DropItemGroups,
-                        map.DropItemGroups,
-                        await GetQuestItemGroupsAsync(player).ConfigureAwait(false))
-                    .Where(group => IsGroupRelevant(monster, group))
-                    .OrderBy(group => group.Chance);
+            this._dropGroups.AddRange(monster.DropItemGroups ?? Enumerable.Empty<DropItemGroup>());
+            this._dropGroups.AddRange(character.DropItemGroups ?? Enumerable.Empty<DropItemGroup>());
+            this._dropGroups.AddRange(map.DropItemGroups ?? Enumerable.Empty<DropItemGroup>());
+            this._dropGroups.AddRange(await GetQuestItemGroupsAsync(player).ConfigureAwait(false) ?? Enumerable.Empty<DropItemGroup>());
+
+            this._dropGroups.RemoveAll(g => !IsGroupRelevant(monster, g));
+            this._dropGroups.Sort((x, y) => x.Chance.CompareTo(y.Chance));
         }
 
+        var totalChance = this._dropGroups.Sum(g => g.Chance);
         uint money = 0;
         IList<Item>? droppedItems = null;
         for (int i = 0; i < monster.NumberOfMaximumItemDrops; i++)
         {
-            var group = this.SelectRandomGroup(dropGroups);
+            var group = this.SelectRandomGroup(this._dropGroups, totalChance);
             if (group is null)
             {
                 continue;
@@ -88,6 +100,7 @@ public class DefaultDropGenerator : IDropGenerator
             }
         }
 
+        this._dropGroups.Clear();
         return (droppedItems ?? Enumerable.Empty<Item>(), money > 0 ? money : null);
     }
 
@@ -137,7 +150,7 @@ public class DefaultDropGenerator : IDropGenerator
     /// <inheritdoc/>
     public (Item? Item, uint? Money, ItemDropEffect DropEffect) GenerateItemDrop(IEnumerable<DropItemGroup> groups)
     {
-        var group = this.SelectRandomGroup(groups.OrderBy(group => group.Chance));
+        var group = this.SelectRandomGroup(groups.OrderBy(group => group.Chance), 1.0);
         if (group is null)
         {
             return (null, null, ItemDropEffect.Undefined);
@@ -253,36 +266,6 @@ public class DefaultDropGenerator : IDropGenerator
     private static byte GetItemLevelByMonsterLevel(ItemDefinition itemDefinition, int monsterLevel)
     {
         return Math.Min((byte)((monsterLevel - itemDefinition.DropLevel) / 3), itemDefinition.MaximumItemLevel);
-    }
-
-    private static IEnumerable<DropItemGroup> CombineDropGroups(
-        IEnumerable<DropItemGroup> monsterGroup,
-        IEnumerable<DropItemGroup> characterGroup,
-        IEnumerable<DropItemGroup> mapGroup,
-        IEnumerable<DropItemGroup> questsGroups)
-    {
-        IEnumerable<DropItemGroup> dropGroups = Enumerable.Empty<DropItemGroup>();
-        if (monsterGroup is not null)
-        {
-            dropGroups = dropGroups.Concat(monsterGroup);
-        }
-
-        if (characterGroup is not null)
-        {
-            dropGroups = dropGroups.Concat(characterGroup);
-        }
-
-        if (mapGroup is not null)
-        {
-            dropGroups = dropGroups.Concat(mapGroup);
-        }
-
-        if (questsGroups is not null)
-        {
-            dropGroups = dropGroups.Concat(questsGroups);
-        }
-
-        return dropGroups;
     }
 
     private static async ValueTask<IEnumerable<DropItemGroup>> GetQuestItemGroupsAsync(Player player)
@@ -420,10 +403,15 @@ public class DefaultDropGenerator : IDropGenerator
         }
     }
 
-    private DropItemGroup? SelectRandomGroup(IEnumerable<DropItemGroup> dropGroups)
+    private DropItemGroup? SelectRandomGroup(IEnumerable<DropItemGroup> groups, double totalChance)
     {
-        double lot = this._randomizer.NextDouble();
-        foreach (var group in dropGroups)
+        var lot = this._randomizer.NextDouble();
+        if (totalChance > 1.0)
+        {
+            lot *= totalChance;
+        }
+
+        foreach (var group in groups)
         {
             if (lot > group.Chance)
             {
@@ -440,12 +428,13 @@ public class DefaultDropGenerator : IDropGenerator
 
     private IList<ItemDefinition>? GetPossibleList(int monsterLevel, bool socketItems = false)
     {
-        if (monsterLevel < byte.MinValue || monsterLevel > byte.MaxValue)
+        if (monsterLevel is < byte.MinValue or > byte.MaxValue)
         {
             return null;
         }
 
-        return this._droppableItemsPerMonsterLevel[monsterLevel] ??= (from it in this._droppableItems
+        return this._droppableItemsPerMonsterLevel[monsterLevel]
+            ??= (from it in this._droppableItems
             where (it.DropLevel <= monsterLevel)
                   && (it.DropLevel > monsterLevel - 12)
                   && (!socketItems || it.MaximumSockets > 0)
