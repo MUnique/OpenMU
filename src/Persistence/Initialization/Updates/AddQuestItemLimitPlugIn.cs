@@ -48,7 +48,7 @@ public abstract class AddQuestItemLimitPlugIn : UpdatePlugInBase
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
-        var hashSet = new HashSet<short>()
+        var hashSet = new HashSet<short>
         {
             Quest.BrokenSwordNumber,
             Quest.EyeOfAbyssalNumber,
