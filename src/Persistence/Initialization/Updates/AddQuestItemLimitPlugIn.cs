@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [PlugIn(PlugInName, PlugInDescription)]
 [Guid("48D40F2E-2844-4058-B1FA-710EEE55157B")]
-public abstract class AddQuestItemLimitPlugIn : UpdatePlugInBase
+public class AddQuestItemLimitPlugIn : UpdatePlugInBase
 {
     /// <summary>
     /// The plug in name.
