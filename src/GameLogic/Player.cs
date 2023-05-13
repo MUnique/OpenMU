@@ -824,7 +824,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// On this event, the player enters the game map on the server side, and interacts with the other objects.
     /// </summary>
     /// <remarks>
-    /// this method is called after the client sent us the F3 12 packet.
+    /// This method is called after the client sent us the F3 12 packet, of after
+    /// the player entered the game.
     /// </remarks>
     public async ValueTask ClientReadyAfterMapChangeAsync()
     {
@@ -842,7 +843,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.EnteredWorld).ConfigureAwait(false);
         this.IsAlive = true;
+
         await this.CurrentMap!.AddAsync(this).ConfigureAwait(false);
+        if (!this.CurrentMap.Terrain.WalkMap[this.SelectedCharacter.PositionX, this.SelectedCharacter.PositionY])
+        {
+            await this.WarpToSafezoneAsync().ConfigureAwait(false);
+        }
 
         if (this.Summon?.Item1 is { IsAlive: true } summon)
         {
