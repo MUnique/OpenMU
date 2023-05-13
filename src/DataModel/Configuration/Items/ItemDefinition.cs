@@ -155,4 +155,24 @@ public class ItemDefinition
     {
         return $"{this.Name} ({this.Group}, {this.Number}) [{this.Width}x{this.Height}]";
     }
+
+    /// <summary>
+    /// Gets the name for level.
+    /// </summary>
+    /// <param name="itemLevel">The item level.</param>
+    /// <returns>The name of the item of a certain level.</returns>
+    public string GetNameForLevel(byte itemLevel)
+    {
+        var itemName = this.Name;
+        if (itemName?.Contains(';') ?? false)
+        {
+            var tokens = itemName.Split(';');
+            if (tokens.Length > itemLevel)
+            {
+                itemName = tokens[itemLevel];
+            }
+        }
+
+        return itemName ?? string.Empty;
+    }
 }

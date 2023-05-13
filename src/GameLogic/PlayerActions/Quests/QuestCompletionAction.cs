@@ -35,12 +35,17 @@ public class QuestCompletionAction
 
         foreach (var requiredItem in activeQuest.RequiredItems)
         {
-            if (requiredItem.MinimumNumber <= player.Inventory?.Items.Count(i => i.Definition == requiredItem.Item))
+            var requiredLevel = requiredItem.DropItemGroup?.ItemLevel;
+            var itemCount = player.Inventory?.Items
+                .Count(i => i.Definition == requiredItem.Item
+                            && (requiredLevel is null || requiredLevel == i.Level));
+
+            if (requiredItem.MinimumNumber <= itemCount)
             {
                 continue;
             }
 
-            player.Logger.LogDebug("Failed, required item not found: {0}", requiredItem.Item!.Name);
+            player.Logger.LogDebug("Failed, required item not found: {0}", requiredItem.Item!.GetNameForLevel(requiredLevel ?? 0));
             return;
         }
 
@@ -64,8 +69,10 @@ public class QuestCompletionAction
 
         foreach (var requiredItem in activeQuest.RequiredItems)
         {
+            var requiredLevel = requiredItem.DropItemGroup?.ItemLevel;
             var items = player.Inventory!.Items
-                .Where(item => item.Definition == requiredItem.Item)
+                .Where(item => item.Definition == requiredItem.Item
+                               && (requiredLevel is null || requiredLevel == item.Level))
                 .Take(requiredItem.MinimumNumber)
                 .ToList();
 

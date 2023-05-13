@@ -112,7 +112,9 @@ public class Item
             stringBuilder.Append(ancientSet.Name).Append(" ");
         }
 
-        stringBuilder.Append(this.Definition?.Name);
+        var itemName = this.Definition?.GetNameForLevel(this.Level);
+
+        stringBuilder.Append(itemName);
         if (this.Level > 0)
         {
             stringBuilder.Append("+").Append(this.Level);

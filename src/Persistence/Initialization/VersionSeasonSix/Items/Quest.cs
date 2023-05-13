@@ -65,8 +65,8 @@ public class Quest : InitializerBase
     /// <inheritdoc />
     public override void Initialize()
     {
-        this.CreateQuestItem(ScrollOfEmperorNumber, "Scroll of Emperor", 0, 1, 1); // Ring of Honor is level 1
-        this.CreateQuestItem(BrokenSwordNumber, "Broken Sword", 0, 2, 1); // Dark Stone is level 1
+        this.CreateQuestItem(ScrollOfEmperorNumber, "Scroll of Emperor;Ring of Honor", 0, 1, 1); // Ring of Honor is level 1
+        this.CreateQuestItem(BrokenSwordNumber, "Broken Sword;Dark Stone", 0, 2, 1); // Dark Stone is level 1
         this.CreateQuestItem(TearOfElfNumber, "Tear of Elf", 0, 1);
         this.CreateQuestItem(SoulShardOfWizardNumber, "Soul Shard of Wizard", 0, 1);
         this.CreateQuestItem(EyeOfAbyssalNumber, "Eye of Abyssal", 0, 2);
