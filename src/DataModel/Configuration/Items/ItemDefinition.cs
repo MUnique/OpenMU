@@ -48,6 +48,14 @@ public class ItemDefinition
     public bool IsBoundToCharacter { get; set; }
 
     /// <summary>
+    /// Gets or sets the storage limit per character which is checked on pick-up.
+    /// A value of 0 means, that there is no limit.
+    /// A value 'n' above 0 means, that the inventory of the character can store
+    /// at most 'n' items of this kind.
+    /// </summary>
+    public int StorageLimitPerCharacter { get; set; }
+
+    /// <summary>
     /// Gets or sets the name of the item.
     /// </summary>
     public string Name { get; set; } = string.Empty;
@@ -146,5 +154,25 @@ public class ItemDefinition
     public override string ToString()
     {
         return $"{this.Name} ({this.Group}, {this.Number}) [{this.Width}x{this.Height}]";
+    }
+
+    /// <summary>
+    /// Gets the name for level.
+    /// </summary>
+    /// <param name="itemLevel">The item level.</param>
+    /// <returns>The name of the item of a certain level.</returns>
+    public string GetNameForLevel(byte itemLevel)
+    {
+        var itemName = this.Name;
+        if (itemName?.Contains(';') ?? false)
+        {
+            var tokens = itemName.Split(';');
+            if (tokens.Length > itemLevel)
+            {
+                itemName = tokens[itemLevel];
+            }
+        }
+
+        return itemName ?? string.Empty;
     }
 }

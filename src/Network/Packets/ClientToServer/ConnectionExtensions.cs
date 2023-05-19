@@ -1272,11 +1272,12 @@ public static class ConnectionExtensions
     /// Sends a <see cref="RequestCharacterList" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
+    /// <param name="language">The language.</param>
     /// <remarks>
     /// Is sent by the client when: After a successful login or after the player decided to leave the game world to go back to the character selection screen.
     /// Causes reaction on server side: The server sends the character list with all available characters.
     /// </remarks>
-    public static async ValueTask SendRequestCharacterListAsync(this IConnection? connection)
+    public static async ValueTask SendRequestCharacterListAsync(this IConnection? connection, byte @language)
     {
         if (connection is null)
         {
@@ -1287,6 +1288,8 @@ public static class ConnectionExtensions
         {
             var length = RequestCharacterListRef.Length;
             var packet = new RequestCharacterListRef(connection.Output.GetSpan(length)[..length]);
+            packet.Language = @language;
+
             return packet.Header.Length;
         }
 

@@ -1,4 +1,4 @@
-﻿// <copyright file="Setup.razor.cs" company="MUnique">
+﻿// <copyright file="Updates.razor.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -54,7 +54,7 @@ public partial class Updates
     /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
-        await this.DetermineUpdatesAsync();
+        await this.DetermineUpdatesAsync().ConfigureAwait(true);
     }
 
     private async Task DetermineUpdatesAsync()
@@ -62,7 +62,7 @@ public partial class Updates
         this._isDataInitialized = await this.SetupService.IsDataInitializedAsync().ConfigureAwait(false);
         if (this._isDataInitialized)
         {
-            var updates = await this.UpdateService.DetermineAvailableUpdatesAsync();
+            var updates = await this.UpdateService.DetermineAvailableUpdatesAsync().ConfigureAwait(false);
             this._availableUpdates = updates.Select(up => new UpdateViewModel(up)).ToList();
         }
     }
@@ -73,9 +73,9 @@ public partial class Updates
         this._overallState = UpdateState.Started;
         this.StateHasChanged();
         var selectedUpdates = this._availableUpdates.Where(up => up.Selected).Select(up => up.UpdatePlugIn).ToList();
-        var progress = new Progress<(int CurrentUpdateVersion, bool IsCompleted)>();
+        var progress = new Progress<(UpdateVersion CurrentUpdateVersion, bool IsCompleted)>();
         progress.ProgressChanged += this.OnUpdateProgressChanged;
-        var currentUpdateVersion = -1;
+        var currentUpdateVersion = UpdateVersion.Undefined;
         progress.ProgressChanged += (_, args) => currentUpdateVersion = args.CurrentUpdateVersion;
 
         try
@@ -86,7 +86,7 @@ public partial class Updates
         }
         catch (Exception ex)
         {
-            _exception = ex;
+            this._exception = ex;
             this._overallState = UpdateState.Failed;
             if (this._availableUpdates.FirstOrDefault(up => up.Version == currentUpdateVersion) is { } failedUpdate)
             {
@@ -99,7 +99,7 @@ public partial class Updates
         }
     }
 
-    private void OnUpdateProgressChanged(object? sender, (int CurrentUpdateVersion, bool IsCompleted) e)
+    private void OnUpdateProgressChanged(object? sender, (UpdateVersion CurrentUpdateVersion, bool IsCompleted) e)
     {
         if (this._availableUpdates.FirstOrDefault(up => up.Version == e.CurrentUpdateVersion) is not { } updateViewModel)
         {
@@ -125,7 +125,7 @@ public partial class Updates
         /// <param name="updatePlugIn">The update plug in.</param>
         public UpdateViewModel(IConfigurationUpdatePlugIn updatePlugIn)
         {
-            _updatePlugIn = updatePlugIn;
+            this._updatePlugIn = updatePlugIn;
             this.Selected = true;
         }
 
@@ -135,10 +135,10 @@ public partial class Updates
 
         public bool Selected
         {
-            get => _selected;
+            get => this._selected;
             set
             {
-                if (_selected == value)
+                if (this._selected == value)
                 {
                     return;
                 }
@@ -153,7 +153,7 @@ public partial class Updates
 
         public UpdateState State
         {
-            get => _state;
+            get => this._state;
             set
             {
                 if (this.State == value)
@@ -161,7 +161,7 @@ public partial class Updates
                     return;
                 }
 
-                _state = value;
+                this._state = value;
                 if (this.StateChanged.HasDelegate)
                 {
                     _ = this.StateChanged.InvokeAsync(value);
@@ -171,7 +171,7 @@ public partial class Updates
 
         public string Name => this._updatePlugIn.Name;
 
-        public int Version => this._updatePlugIn.Version;
+        public UpdateVersion Version => this._updatePlugIn.Version;
 
         public string Description => this._updatePlugIn.Description;
 

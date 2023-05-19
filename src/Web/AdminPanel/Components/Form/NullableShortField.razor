@@ -1,0 +1,23 @@
+﻿@using System.Diagnostics.CodeAnalysis
+@inherits NotifyableInputBase<short?>
+
+<div>
+    <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
+    <InputNullableShort id="@this.FieldIdentifier.FieldName" @bind-Value="@CurrentValue" />
+    <ValidationMessage For=@this.ValueExpression />
+</div>
+
+@code {
+
+    /// <summary>
+    /// Gets or sets the label.
+    /// </summary>
+    [Parameter]
+    public string? Label { get; set; }
+
+    /// <inheritdoc />
+    protected override bool TryParseValueFromString(string? value, [MaybeNullWhen(false)] out short? result, [NotNullWhen(false)] out string? validationErrorMessage)
+    {
+        throw new NotImplementedException();
+    }
+}

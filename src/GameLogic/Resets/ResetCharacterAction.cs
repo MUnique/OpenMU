@@ -137,7 +137,7 @@ public class ResetCharacterAction
                 .ForEach(s => this._player.Attributes![s.Attribute] = s.BaseValue);
         }
 
-        this._player.SelectedCharacter!.LevelUpPoints = calculatedPointsPerReset;
+        this._player.SelectedCharacter!.LevelUpPoints = Math.Max(0, calculatedPointsPerReset);
     }
 
     private async ValueTask MoveHomeAsync()

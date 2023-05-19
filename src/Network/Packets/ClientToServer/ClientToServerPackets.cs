@@ -3954,12 +3954,21 @@ public readonly struct RequestCharacterList
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 4;
+    public static int Length => 5;
 
     /// <summary>
     /// Gets the header of this packet.
     /// </summary>
     public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the language.
+    /// </summary>
+    public byte Language
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
 
     /// <summary>
     /// Performs an implicit conversion from a Memory of bytes to a <see cref="RequestCharacterList"/>.

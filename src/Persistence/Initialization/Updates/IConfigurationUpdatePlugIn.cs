@@ -18,7 +18,7 @@ public interface IConfigurationUpdatePlugIn : IStrategyPlugIn<int>
     /// <summary>
     /// Gets the version number of the update. This must be unique over all <see cref="DataInitializationKey"/>s.
     /// </summary>
-    int Version { get; }
+    UpdateVersion Version { get; }
 
     /// <summary>
     /// Gets the <see cref="IDataInitializationPlugIn.Key"/> to which this update belongs to.

@@ -1477,6 +1477,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<Guid?>("SkillId")
                         .HasColumnType("uuid");
 
+                    b.Property<int>("StorageLimitPerCharacter")
+                        .HasColumnType("integer");
+
                     b.Property<int>("Value")
                         .HasColumnType("integer");
 

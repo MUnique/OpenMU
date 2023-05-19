@@ -12,10 +12,10 @@ using MUnique.OpenMU.DataModel.Configuration;
 public abstract class UpdatePlugInBase : IConfigurationUpdatePlugIn
 {
     /// <inheritdoc />
-    public int Key => this.Version;
+    public int Key => (int)this.Version;
 
     /// <inheritdoc />
-    public abstract int Version { get; }
+    public abstract UpdateVersion Version { get; }
 
     /// <inheritdoc />
     public abstract string DataInitializationKey { get; }
@@ -53,7 +53,7 @@ public abstract class UpdatePlugInBase : IConfigurationUpdatePlugIn
     private void AddUpdateEntry(IContext context)
     {
         var entry = context.CreateNew<ConfigurationUpdate>();
-        entry.Version = this.Version;
+        entry.Version = (int)this.Version;
         entry.Name = this.Name;
         entry.Description = this.Description;
         entry.CreatedAt = this.CreatedAt;

@@ -50,7 +50,7 @@ public class ItemViewModel
 
             if (this.Item.IsWearable())
             {
-                return LevelMapping[this.Item.Level];
+                return this.Item.Level < LevelMapping.Length ? LevelMapping[this.Item.Level] : 0;
             }
 
             return this.Item.Level;

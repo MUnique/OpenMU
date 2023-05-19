@@ -1109,11 +1109,17 @@
       <SubCode>00</SubCode>
       <Name>RequestCharacterList</Name>
       <Caption>Request Character List</Caption>
-      <Length>4</Length>
+      <Length>5</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>After a successful login or after the player decided to leave the game world to go back to the character selection screen.</SentWhen>
       <CausedReaction>The server sends the character list with all available characters.</CausedReaction>
-      <Fields/>
+			<Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Language</Name>
+        </Field>
+			</Fields>
     </Packet>
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>

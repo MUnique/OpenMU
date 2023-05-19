@@ -17,8 +17,16 @@ public class NumberFieldBuilder<TNumber> : BaseComponentBuilder, IComponentBuild
     where TNumber : struct
 {
     /// <inheritdoc/>
-    public int BuildComponent(object model, PropertyInfo propertyInfo, RenderTreeBuilder builder, int currentIndex, IChangeNotificationService notificationService) => this.BuildField<TNumber, NumberField<TNumber>>(model, propertyInfo, builder, currentIndex, notificationService);
+    public int BuildComponent(object model, PropertyInfo propertyInfo, RenderTreeBuilder builder, int currentIndex, IChangeNotificationService notificationService)
+    {
+        if (propertyInfo.PropertyType == typeof(TNumber))
+        {
+            return this.BuildField<TNumber, NumberField<TNumber>>(model, propertyInfo, builder, currentIndex, notificationService);
+        }
+
+        return this.BuildField<TNumber?, NullableNumberField<TNumber>>(model, propertyInfo, builder, currentIndex, notificationService);
+    }
 
     /// <inheritdoc/>
-    public bool CanBuildComponent(PropertyInfo propertyInfo) => propertyInfo.PropertyType == typeof(TNumber);
+    public bool CanBuildComponent(PropertyInfo propertyInfo) => propertyInfo.PropertyType == typeof(TNumber) || propertyInfo.PropertyType == typeof(TNumber?);
 }

@@ -68,19 +68,20 @@ public class Gates : InitializerBase
         this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(23, "Icarus", 10000, 170, gates[63]));
         this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(25, "Aida1", 8500, 150, gates[119]));
         this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(27, "Aida2", 8500, 150, gates[140]));
-        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(28, "KanturuRuins", 9000, 150, gates[138]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(28, "KanturuRuins1", 9000, 160, gates[138]));
         this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(29, "KanturuRuins2", 9000, 160, gates[141]));
-        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(30, "KanturuRelics", 15000, 230, gates[139]));
-        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(31, "Elbeland", 2000, 10, gates[267]));
-        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(32, "Elbeland2", 2500, 10, gates[268]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(30, "KanturuRelics", 12000, 230, gates[139]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(31, "Elveland", 2000, 10, gates[267]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(32, "Elveland2", 2500, 10, gates[268]));
         this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(33, "PeaceSwamp", 15000, 400, gates[273]));
         this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(34, "Raklion", 15000, 280, gates[287]));
-        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(37, "Vulcan", 15000, 30, gates[294]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(37, "Vulcanus", 15000, 30, gates[294]));
         this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(44, "LorenMarket", 18000, 200, gates[333]));
-        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(43, "Elbeland3", 3000, 10, gates[269]));
-        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(45, "KanturuRuins3", 9000, 160, gates[334]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(43, "Elveland3", 3000, 10, gates[269]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(45, "KanturuRuins3", 15000, 160, gates[334]));
         this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(46, "Karutan1", 13000, 170, gates[335]));
-        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(47, "Karutan2", 14000, 180, gates[344]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(47, "Karutan2", 14000, 170, gates[344]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(48, "LaCleon", 15000, 280, gates[287]));
     }
 
     private WarpInfo CreateWarpInfo(ushort index, string name, int costs, int levelRequirement, ExitGate gate)

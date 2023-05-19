@@ -34,7 +34,7 @@ public class WeatherUpdatePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
         this._isRunning = true;
         try
         {
-            foreach (var map in gameContext.Maps)
+            foreach (var map in await gameContext.GetMapsAsync())
             {
                 var weather = (byte)Rand.NextInt(0, 3);
                 var variation = (byte)Rand.NextInt(0, 10);

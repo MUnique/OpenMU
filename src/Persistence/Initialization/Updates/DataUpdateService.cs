@@ -44,7 +44,7 @@ public class DataUpdateService
         var initializationKey = await this.DetermineInitializationKeyAsync(context).ConfigureAwait(false);
         var installedUpdates = updates
             .Where(up => up.InstalledAt is not null)
-            .Select(up => up.Version)
+            .Select(up => (UpdateVersion)up.Version)
             .ToHashSet();
 
         var updateStrategyProvider = this._plugInManager.GetStrategyProvider<int, IConfigurationUpdatePlugIn>();
@@ -68,7 +68,7 @@ public class DataUpdateService
     /// </summary>
     /// <param name="updates">The updates.</param>
     /// <param name="progress">The progress provider. Reports the progress back to the caller.</param>
-    public async ValueTask ApplyUpdatesAsync(IReadOnlyList<IConfigurationUpdatePlugIn> updates, IProgress<(int CurrentUpdatingVersion, bool IsCompleted)> progress)
+    public async ValueTask ApplyUpdatesAsync(IReadOnlyList<IConfigurationUpdatePlugIn> updates, IProgress<(UpdateVersion CurrentUpdatingVersion, bool IsCompleted)> progress)
     {
         using var context = this._contextProvider.CreateNewContext();
         var updateStates = await context.GetAsync<ConfigurationUpdateState>().ConfigureAwait(false);
@@ -79,14 +79,14 @@ public class DataUpdateService
             progress.Report((update.Version, false));
             await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
 
-            updateState.CurrentInstalledVersion = Math.Max(update.Version, updateState.CurrentInstalledVersion);
+            updateState.CurrentInstalledVersion = Math.Max((int)update.Version, updateState.CurrentInstalledVersion);
             updateState.InitializationKey = update.DataInitializationKey;
 
             await context.SaveChangesAsync().ConfigureAwait(false);
             progress.Report((update.Version, true));
         }
 
-        progress.Report((-1, true));
+        progress.Report((UpdateVersion.Undefined, true));
         this.UpdatesInstalled?.SafeInvokeAsync();
     }
 

@@ -121,7 +121,7 @@ public static class QuestStructExtensions
     {
         condition.Type = ConditionType.Item;
         condition.RequiredCount = (uint)itemRequirement.MinimumNumber;
-        condition.CurrentCount = (uint)(player.Inventory?.Items.Count(item => item.Definition == itemRequirement.Item) ?? 0);
+        condition.CurrentCount = (uint)(player.Inventory?.Items.Count(item => Equals(item.Definition, itemRequirement.Item)) ?? 0);
         condition.RequirementId = itemRequirement.Item!.GetItemType();
         var temporaryItem = new TemporaryItem { Definition = itemRequirement.Item };
         temporaryItem.Durability = temporaryItem.GetMaximumDurabilityOfOnePiece();

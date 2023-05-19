@@ -2,14 +2,12 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.GameLogic;
-
 namespace MUnique.OpenMU.GameServer.RemoteView.Character;
 
 using System.Runtime.InteropServices;
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views.Character;
-using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.PlugIns;
@@ -45,7 +43,7 @@ public class UpdateCharacterStatsPlugIn075 : IUpdateCharacterStatsPlugIn
             (byte)this._player.SelectedCharacter!.CurrentMap!.Number,
             (uint)this._player.SelectedCharacter.Experience,
             (uint)this._player.GameServerContext.Configuration.ExperienceTable![(int)this._player.Attributes![Stats.Level] + 1],
-            (ushort)this._player.SelectedCharacter.LevelUpPoints,
+            (ushort)Math.Max(this._player.SelectedCharacter.LevelUpPoints, 0),
             (ushort)this._player.Attributes[Stats.BaseStrength],
             (ushort)this._player.Attributes[Stats.BaseAgility],
             (ushort)this._player.Attributes[Stats.BaseVitality],

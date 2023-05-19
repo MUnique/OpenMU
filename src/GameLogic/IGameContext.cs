@@ -78,7 +78,12 @@ public interface IGameContext
     /// <summary>
     /// Gets the initialized maps which are hosted on this context.
     /// </summary>
-    IEnumerable<GameMap> Maps { get; }
+    ValueTask<IEnumerable<GameMap>> GetMapsAsync();
+
+    /// <summary>
+    /// Gets the players.
+    /// </summary>
+    ValueTask<IList<Player>> GetPlayersAsync();
 
     /// <summary>
     /// Adds the player to the game.
@@ -110,7 +115,7 @@ public interface IGameContext
     /// Removes the mini game instance from the context.
     /// </summary>
     /// <param name="miniGameContext">The context of the mini game.</param>
-    void RemoveMiniGame(MiniGameContext miniGameContext);
+    ValueTask RemoveMiniGameAsync(MiniGameContext miniGameContext);
 
     /// <summary>
     /// Gets the player object by character name.
