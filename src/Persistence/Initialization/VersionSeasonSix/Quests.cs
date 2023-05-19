@@ -79,6 +79,7 @@ internal class Quests : InitializerBase
             questDefinition.QualifiedCharacter =
                 this.GameConfiguration.CharacterClasses.FirstOrDefault(c =>
                     c.Number == (byte)qualifiedCharacter.Value);
+            questDefinition.Name = name + $" ({questDefinition.QualifiedCharacter?.Name})";
         }
 
         return questDefinition;
@@ -222,12 +223,12 @@ internal class Quests : InitializerBase
         heroStatus.SetGuid(QuestConstants.LegacyQuestGroup, 2, (byte)characterClass);
         marlon.Quests.Add(heroStatus);
         heroStatus.QuestGiver = marlon;
-        heroStatus.Name = "Gain Hero Status";
         heroStatus.Group = QuestConstants.LegacyQuestGroup;
         heroStatus.Number = 2;
         heroStatus.RequiredStartMoney = 3000000;
         heroStatus.MinimumCharacterLevel = 220;
         heroStatus.QualifiedCharacter = this.GetCharacterClass(characterClass);
+        heroStatus.Name = $"Gain Hero Status ({heroStatus.QualifiedCharacter?.Name})";
         this.AddItemRequirement(heroStatus, 14, Quest.ScrollOfEmperorNumber, 1, 72, 108);
 
         // Rewards:
@@ -254,12 +255,12 @@ internal class Quests : InitializerBase
         treasuresOfMu.SetGuid(QuestConstants.LegacyQuestGroup, 1, (byte)characterClass);
         sebinaThePriestess.Quests.Add(treasuresOfMu);
         treasuresOfMu.QuestGiver = sebinaThePriestess;
-        treasuresOfMu.Name = "Treasures of MU";
         treasuresOfMu.Group = QuestConstants.LegacyQuestGroup;
         treasuresOfMu.Number = 1;
         treasuresOfMu.RequiredStartMoney = 2000000;
         treasuresOfMu.MinimumCharacterLevel = 150;
         treasuresOfMu.QualifiedCharacter = this.GetCharacterClass(characterClass);
+        treasuresOfMu.Name = $"Treasures of MU ({treasuresOfMu.QualifiedCharacter?.Name})";
         this.AddItemRequirement(treasuresOfMu, 14, itemNumber, 0, 62, 76);
 
         // Rewards:
@@ -280,12 +281,12 @@ internal class Quests : InitializerBase
         findScrollOfEmperor.SetGuid(QuestConstants.LegacyQuestGroup, 0, (byte)characterClass);
         sebinaThePriestess.Quests.Add(findScrollOfEmperor);
         findScrollOfEmperor.QuestGiver = sebinaThePriestess;
-        findScrollOfEmperor.Name = "Find the 'Scroll of Emperor'";
         findScrollOfEmperor.Group = QuestConstants.LegacyQuestGroup;
         findScrollOfEmperor.Number = 0;
         findScrollOfEmperor.RequiredStartMoney = 1000000;
         findScrollOfEmperor.MinimumCharacterLevel = 150;
         findScrollOfEmperor.QualifiedCharacter = this.GetCharacterClass(characterClass);
+        findScrollOfEmperor.Name = $"Find the 'Scroll of Emperor' ({findScrollOfEmperor.QualifiedCharacter?.Name})";
 
         this.AddItemRequirement(findScrollOfEmperor, 14, Quest.ScrollOfEmperorNumber, 0, 45, 60);
 

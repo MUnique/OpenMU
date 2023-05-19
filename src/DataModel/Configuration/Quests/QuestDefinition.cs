@@ -99,12 +99,6 @@ public class QuestDefinition
     /// <inheritdoc />
     public override string ToString()
     {
-        var result = this.Name;
-        if (this.QualifiedCharacter is { } characterClass)
-        {
-            result += $" ({characterClass.Name})";
-        }
-
-        return result;
+        return this.Name;
     }
 }

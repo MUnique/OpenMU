@@ -44,7 +44,9 @@ public static class PlayerQuestExtensions
     public static QuestDefinition? GetQuest(this Player player, short group, short number)
     {
         return player.OpenedNpc?.Definition.Quests
-            .FirstOrDefault(q => q.Group == group && (q.StartingNumber == number || q.Number == number) && (q.QualifiedCharacter is null || q.QualifiedCharacter == player.SelectedCharacter?.CharacterClass));
+            .FirstOrDefault(q => q.Group == group
+                                 && (q.StartingNumber == number || q.Number == number)
+                                 && (q.QualifiedCharacter is null || Equals(q.QualifiedCharacter, player.SelectedCharacter?.CharacterClass)));
     }
 
     /// <summary>
@@ -56,7 +58,7 @@ public static class PlayerQuestExtensions
     {
         return player.OpenedNpc?.Definition.Quests
                    .Where(q => q.QualifiedCharacter is null
-                               || q.QualifiedCharacter == player.SelectedCharacter?.CharacterClass)
+                               || Equals(q.QualifiedCharacter, player.SelectedCharacter?.CharacterClass))
                    .Where(q => q.MinimumCharacterLevel <= player.Level
                                && (q.MaximumCharacterLevel == default || q.MaximumCharacterLevel >= player.Level))
                ?? Enumerable.Empty<QuestDefinition>();

@@ -37,7 +37,7 @@ public class QuestCompletionAction
         {
             var requiredLevel = requiredItem.DropItemGroup?.ItemLevel;
             var itemCount = player.Inventory?.Items
-                .Count(i => i.Definition == requiredItem.Item
+                .Count(i => Equals(i.Definition, requiredItem.Item)
                             && (requiredLevel is null || requiredLevel == i.Level));
 
             if (requiredItem.MinimumNumber <= itemCount)
@@ -67,11 +67,12 @@ public class QuestCompletionAction
             return;
         }
 
+        questState!.LastFinishedQuest = activeQuest;
         foreach (var requiredItem in activeQuest.RequiredItems)
         {
             var requiredLevel = requiredItem.DropItemGroup?.ItemLevel;
             var items = player.Inventory!.Items
-                .Where(item => item.Definition == requiredItem.Item
+                .Where(item => Equals(item.Definition, requiredItem.Item)
                                && (requiredLevel is null || requiredLevel == item.Level))
                 .Take(requiredItem.MinimumNumber)
                 .ToList();
@@ -87,7 +88,6 @@ public class QuestCompletionAction
             await AddRewardAsync(player, reward).ConfigureAwait(false);
         }
 
-        questState!.LastFinishedQuest = activeQuest;
         await questState.ClearAsync(player.PersistenceContext).ConfigureAwait(false);
         await player.InvokeViewPlugInAsync<IQuestCompletionResponsePlugIn>(p => p.QuestCompletedAsync(activeQuest)).ConfigureAwait(false);
     }
