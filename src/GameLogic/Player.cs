@@ -1338,7 +1338,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <summary>
     /// Gets the size of the inventory of the specified player.
     /// </summary>
-    /// <param name="player">The player.</param>
     /// <returns>The size of the inventory.</returns>
     public byte GetInventorySize()
     {

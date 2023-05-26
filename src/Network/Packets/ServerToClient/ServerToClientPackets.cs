@@ -14203,12 +14203,12 @@ public readonly struct CharacterInformation
     }
 
     /// <summary>
-    /// Gets or sets the is vault extended.
+    /// Gets or sets the inventory extensions.
     /// </summary>
-    public bool IsVaultExtended
+    public byte InventoryExtensions
     {
-        get => this._data.Span[68..].GetBoolean();
-        set => this._data.Span[68..].SetBoolean(value);
+        get => this._data.Span[68];
+        set => this._data.Span[68] = value;
     }
 
     /// <summary>

@@ -10,7 +10,7 @@ using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.GameLogic.Views.Trade;
 using MUnique.OpenMU.Interfaces;
-using static OpenMU.DataModel.InventoryConstants;
+using static MUnique.OpenMU.DataModel.InventoryConstants;
 
 /// <summary>
 /// Action to move an item between <see cref="Storages"/> or the same storage.
@@ -134,6 +134,17 @@ public class MoveItemAction
         }
     }
 
+    /// <summary>
+    /// Gets the storage information.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="storageType">Type of the storage.</param>
+    /// <returns>The information about the requested storage for the specified player.</returns>
+    /// <remarks>
+    /// For extended inventories and vaults, this is simplified!
+    /// The client would prevent storing an item across boundaries, the
+    /// server wouldn't.
+    /// </remarks>
     private StorageInfo? GetStorageInfo(Player player, Storages storageType)
     {
         StorageInfo? result;
@@ -142,7 +153,7 @@ public class MoveItemAction
             case Storages.Inventory when player.Inventory is not null:
                 result = new StorageInfo(
                     player.Inventory,
-                    InventoryRows,
+                    (byte)(InventoryRows + (player.SelectedCharacter!.InventoryExtensions * RowsOfOneExtension)),
                     EquippableSlotsCount,
                     (byte)(EquippableSlotsCount + player.GetInventorySize()));
                 break;
@@ -154,7 +165,9 @@ public class MoveItemAction
                     (byte)(FirstStoreItemSlotIndex + StoreSize));
                 break;
             case Storages.Vault when player.Vault is not null:
-                result = new StorageInfo(player.Vault, WarehouseRows, 0, WarehouseSize);
+                var warehouseSize = player.Account!.IsVaultExtended ? WarehouseSize * 2 : WarehouseSize;
+                var warehouseRows = (byte)(WarehouseRows * 2);
+                result = new StorageInfo(player.Vault, warehouseRows, 0, (byte)warehouseSize);
                 break;
             case Storages.Trade:
             case Storages.ChaosMachine:

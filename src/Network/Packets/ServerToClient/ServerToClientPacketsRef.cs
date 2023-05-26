@@ -13469,12 +13469,12 @@ public readonly ref struct CharacterInformationRef
     }
 
     /// <summary>
-    /// Gets or sets the is vault extended.
+    /// Gets or sets the inventory extensions.
     /// </summary>
-    public bool IsVaultExtended
+    public byte InventoryExtensions
     {
-        get => this._data[68..].GetBoolean();
-        set => this._data[68..].SetBoolean(value);
+        get => this._data[68];
+        set => this._data[68] = value;
     }
 
     /// <summary>
