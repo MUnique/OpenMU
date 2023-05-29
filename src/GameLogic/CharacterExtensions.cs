@@ -111,10 +111,11 @@ public static class CharacterExtensions
     /// <returns>The quest drop item groups of a character.</returns>
     public static IEnumerable<DropItemGroup> GetQuestDropItemGroups(this Character character)
     {
-        return character.QuestStates
+        return character.QuestStates?
             .SelectMany(q => q.ActiveQuest?.RequiredItems ?? Enumerable.Empty<QuestItemRequirement>())
             .Select(i => i.DropItemGroup)
-            .WhereNotNull();
+            .WhereNotNull()
+            ?? Enumerable.Empty<DropItemGroup>();
     }
 
     private static IEnumerable<ushort> GetFruitPoints(int divisor)
