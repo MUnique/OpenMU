@@ -165,6 +165,11 @@ public class MapInitializer : IMapInitializer
             this._logger.LogDebug("Creating monster {spawn}", spawnArea);
             npc = new Monster(spawnArea, monsterDef, createdMap, dropGenerator ?? this._dropGenerator, intelligence ?? new BasicMonsterIntelligence(), this.PlugInManager, this.PathFinderPool,  eventStateProvider);
         }
+        else if (monsterDef.ObjectKind == NpcObjectKind.Guard)
+        {
+            this._logger.LogDebug("Creating guard {spawn}", spawnArea);
+            npc = new Monster(spawnArea, monsterDef, createdMap, NullDropGenerator.Instance, intelligence ?? new GuardIntelligence(), this.PlugInManager, this.PathFinderPool, eventStateProvider);
+        }
         else if (monsterDef.ObjectKind == NpcObjectKind.Trap)
         {
             this._logger.LogDebug("Creating trap {spawn}", spawnArea);
@@ -242,7 +247,15 @@ public class MapInitializer : IMapInitializer
                 return null;
             }
 
-            return Activator.CreateInstance(type, createdMap) as INpcIntelligence;
+            var constructorNeedsMap = type.GetConstructors().Any(c => c.GetParameters().Any(p => p.ParameterType == typeof(GameMap)));
+            if (constructorNeedsMap)
+            {
+                return Activator.CreateInstance(type, createdMap) as INpcIntelligence;
+            }
+            else
+            {
+                return Activator.CreateInstance(type) as INpcIntelligence;
+            }
         }
         catch (Exception ex)
         {

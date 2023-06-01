@@ -8,6 +8,7 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.MiniGames;
+using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
 
 /// <summary>
@@ -299,6 +300,25 @@ internal partial class NpcInitialization : Version095d.NpcInitialization
             def.Number = 220;
             def.Designation = "Guard";
             def.ObjectKind = NpcObjectKind.Guard;
+            def.MoveRange = 3;
+            def.AttackRange = 2;
+            def.ViewRange = 8;
+            def.IntelligenceTypeName = typeof(GuardIntelligence).FullName;
+            def.MoveDelay = new TimeSpan(400 * TimeSpan.TicksPerMillisecond);
+            def.AttackDelay = new TimeSpan(1500 * TimeSpan.TicksPerMillisecond);
+            def.RespawnDelay = new TimeSpan(3 * TimeSpan.TicksPerSecond);
+            def.NumberOfMaximumItemDrops = 0;
+            var attributes = new Dictionary<AttributeDefinition, float>
+            {
+                { Stats.Level, 2 },
+                { Stats.MaximumHealth, 500 },
+                { Stats.MinimumPhysBaseDmg, 15 },
+                { Stats.MaximumPhysBaseDmg, 30 },
+                { Stats.AttackRatePvm, 30 },
+                { Stats.DefenseRatePvm, 20 },
+                { Stats.DefenseBase, 70 },
+            };
+            def.AddAttributes(attributes, this.Context, this.GameConfiguration);
             this.GameConfiguration.Monsters.Add(def);
             def.SetGuid(def.Number);
         }
