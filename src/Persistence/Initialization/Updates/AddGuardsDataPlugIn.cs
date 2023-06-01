@@ -128,4 +128,5 @@ public class AddGuardsDataPlugIn : UpdatePlugInBase
             };
             berdyshGuard.AddAttributes(attributes, context, gameConfiguration);
         }
+    }
 }
