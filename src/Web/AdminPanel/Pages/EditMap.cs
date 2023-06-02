@@ -21,13 +21,19 @@ using MUnique.OpenMU.Web.AdminPanel.Components;
 /// A page, which shows an <see cref="MapEditor"/> for all <see cref="GameConfiguration.Maps"/>.
 /// </summary>
 [Route("/map-editor")]
+[Route("/map-editor/{SelectedMapId:guid}")]
 public sealed class EditMap : ComponentBase, IDisposable
 {
     private List<GameMapDefinition>? _maps;
     private CancellationTokenSource? _disposeCts;
     private IContext? _context;
     private IDisposable? _navigationLockDisposable;
-    private Guid _selectedMapId;
+
+    /// <summary>
+    /// Gets or sets the selected map identifier.
+    /// </summary>
+    [Parameter]
+    public Guid SelectedMapId { get; set; }
 
     /// <summary>
     /// Gets or sets the modal service.
@@ -79,7 +85,7 @@ public sealed class EditMap : ComponentBase, IDisposable
             {
                 builder2.OpenComponent(5, typeof(MapEditor));
                 builder2.AddAttribute(6, nameof(MapEditor.Maps), this._maps);
-                builder2.AddAttribute(7, nameof(MapEditor.SelectedMapId), this._selectedMapId);
+                builder2.AddAttribute(7, nameof(MapEditor.SelectedMapId), this.SelectedMapId);
                 builder2.AddAttribute(8, nameof(MapEditor.OnValidSubmit), EventCallback.Factory.Create(this, this.SaveChangesAsync));
                 builder2.AddAttribute(9, nameof(MapEditor.SelectedMapChanging), EventCallback.Factory.Create<MapEditor.MapChangingArgs>(this, this.OnSelectedMapChanging));
                 builder2.CloseComponent();
@@ -133,7 +139,7 @@ public sealed class EditMap : ComponentBase, IDisposable
         eventArgs.Cancel = !await this.AllowChangeAsync();
         if (!eventArgs.Cancel)
         {
-            this._selectedMapId = eventArgs.NextMap;
+            this.SelectedMapId = eventArgs.NextMap;
         }
     }
 
