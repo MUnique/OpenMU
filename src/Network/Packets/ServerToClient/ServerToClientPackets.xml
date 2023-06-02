@@ -5180,8 +5180,8 @@
         </Field>
         <Field>
           <Index>68</Index>
-          <Type>Boolean</Type>
-          <Name>IsVaultExtended</Name>
+          <Type>Byte</Type>
+          <Name>InventoryExtensions</Name>
         </Field>
       </Fields>
     </Packet>

@@ -100,6 +100,11 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
     /// <inheritdoc />
     public async ValueTask AttackByAsync(IAttacker attacker, SkillEntry? skill, bool isCombo)
     {
+        if (this.Definition.ObjectKind == NpcObjectKind.Guard)
+        {
+            return;
+        }
+
         var hitInfo = await attacker.CalculateDamageAsync(this, skill, isCombo).ConfigureAwait(false);
         await this.HitAsync(hitInfo, attacker, skill?.Skill).ConfigureAwait(false);
         if (hitInfo.HealthDamage > 0)

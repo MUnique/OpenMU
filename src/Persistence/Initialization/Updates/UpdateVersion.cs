@@ -69,4 +69,9 @@ public enum UpdateVersion
     /// The version of the <see cref="AddQuestItemLimitPlugIn"/>.
     /// </summary>
     AddQuestItemLimit = 11,
+
+    /// <summary>
+    /// The version of the <see cref="AddGuardsDataPlugIn"/>.
+    /// </summary>
+    AddGuardsData = 12,
 }
