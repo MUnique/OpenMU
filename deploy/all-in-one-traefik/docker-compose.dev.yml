@@ -1,0 +1,58 @@
+version: '3'
+
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    volumes:
+      - ./nginx.dev.conf:/etc/nginx/nginx.conf:ro
+      - ./.htpasswd:/etc/nginx/.htpasswd
+    depends_on:
+      - openmu-startup
+    networks:
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.openmu.rule=Host(`admin.docker.localhost`)"
+      - "traefik.http.routers.openmu.entrypoints=web"
+  
+  openmu-startup:
+    image: munique/openmu
+    container_name: openmu-startup
+    networks:
+      - proxy
+    ports:
+      - "55901:55901"
+      - "55902:55902"
+      - "55903:55903"
+      - "44405:44405"
+      - "55980:55980"
+    environment:
+      DB_HOST: database
+    working_dir: /app/
+    volumes:
+      - ./.htpasswd:/etc/nginx/.htpasswd
+    depends_on:
+      - database
+
+  database:
+    image: postgres
+    container_name: database
+    environment:
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: openmu
+      POSTGRES_USER: postgres
+    networks:
+      - proxy
+    ports:
+      - "5432:5432"
+    volumes:
+      - dbdata:/var/lib/postgresql/data #store data on volume
+
+networks:
+  proxy:
+    external: true
+
+volumes:
+  dbdata:
