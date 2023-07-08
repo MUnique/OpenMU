@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Chat;
 
 using MUnique.OpenMU.GameLogic.Views;
-using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Action to send chat messages.
@@ -71,20 +70,6 @@ public class ChatMessageAction
             return;
         }
 
-        // Check if player is chat banned
-        if (messageType != ChatMessageType.Command)
-        {
-            DateTime chatBanUntil = sender.Account?.ChatBanUntil ?? default;
-            DateTime currentDateTime = DateTime.UtcNow;
-
-            if (chatBanUntil > currentDateTime)
-            {
-                TimeSpan timeDifference = chatBanUntil - currentDateTime;
-                await this.SendMessageToPlayerAsync(sender, $"Chat Ban: {(int)timeDifference.TotalMinutes} minute(s) remaining.", MessageType.BlueNormal).ConfigureAwait(false);
-                return;
-            }
-        }
-
         await this._chatProcessMessages[messageType].ProcessMessageAsync(sender, (message, playerName)).ConfigureAwait(true);
     }
 
@@ -116,10 +101,5 @@ public class ChatMessageAction
         {
             return string.Compare(y, x, StringComparison.InvariantCultureIgnoreCase);
         }
-    }
-
-    private async ValueTask SendMessageToPlayerAsync(Player player, string message, MessageType type)
-    {
-        await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, type)).ConfigureAwait(false);
     }
 }
