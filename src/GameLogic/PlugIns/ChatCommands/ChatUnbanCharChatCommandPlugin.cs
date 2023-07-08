@@ -38,26 +38,12 @@ public class ChatUnbanCharChatCommandPlugIn : ChatCommandPlugInBase<ChatUnbanCha
             throw new ArgumentException($"character not found.");
         }
 
-        await this.UnbanAccountFromChattingAsync(gameMaster, player.Account);
+        await this.ChangeAccountChatBanUntilAsync(gameMaster, player.Account, null);
 
         // Send unban notice to Game Master
         await this.ShowMessageToAsync(gameMaster, $"[{this.Key}] The chat ban for the account from {arguments.CharacterName} has been removed.").ConfigureAwait(false);
 
         // Send unban notice to character
         await this.ShowMessageToAsync(player, $"Your chat ban has been removed by a gamemaster.").ConfigureAwait(false);
-    }
-
-    private async ValueTask UnbanAccountFromChattingAsync(Player gameMaster, Account? account)
-    {
-        if (account != null)
-        {
-            account.ChatBanUntil = null; // removes chat ban
-            using var context = gameMaster.GameContext.PersistenceContextProvider.CreateNewPlayerContext(gameMaster.GameContext.Configuration);
-            await context.SaveChangesAsync().ConfigureAwait(false);
-        }
-        else
-        {
-            throw new ArgumentException($"account not found.");
-        }
     }
 }

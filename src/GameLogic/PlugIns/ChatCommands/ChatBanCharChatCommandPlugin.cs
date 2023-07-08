@@ -43,26 +43,12 @@ public class ChatBanCharChatCommandPlugIn : ChatCommandPlugInBase<ChatBanCharCha
             throw new ArgumentException($"character not found.");
         }
 
-        await this.BanAccountFromChattingAsync(gameMaster, player.Account, arguments.DurationMinutes);
+        await this.ChangeAccountChatBanUntilAsync(gameMaster, player.Account, DateTime.UtcNow.AddMinutes(arguments.DurationMinutes));
 
         // Send ban notice to Game Master
         await this.ShowMessageToAsync(gameMaster, $"[{this.Key}] Account from {arguments.CharacterName} chat banned for {arguments.DurationMinutes} minutes").ConfigureAwait(false);
 
         // Send ban notice to character
         await this.ShowMessageToAsync(player, $"You are chat banned for {arguments.DurationMinutes} minutes").ConfigureAwait(false);
-    }
-
-    private async ValueTask BanAccountFromChattingAsync(Player gameMaster, Account? account, int duration)
-    {
-        if (account != null)
-        {
-            account.ChatBanUntil = DateTime.UtcNow.AddMinutes(duration);
-            using var context = gameMaster.GameContext.PersistenceContextProvider.CreateNewPlayerContext(gameMaster.GameContext.Configuration);
-            await context.SaveChangesAsync().ConfigureAwait(false);
-        }
-        else
-        {
-            throw new ArgumentException($"account not found.");
-        }
     }
 }
