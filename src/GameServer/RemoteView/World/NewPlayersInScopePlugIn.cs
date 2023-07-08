@@ -216,7 +216,7 @@ public class NewPlayersInScopePlugIn : INewPlayersInScopePlugIn
             playerBlock.HeroState = selectedCharacter.State.Convert();
 
             playerBlock.EffectCount = (byte)activeEffects.Count;
-            playerBlock.Skin = (ushort)this._player.Attributes![Stats.TransformationSkin];
+            playerBlock.Skin = (ushort)newPlayer.Attributes![Stats.TransformationSkin];
             for (int e = playerBlock.EffectCount - 1; e >= 0; e--)
             {
                 var effectBlock = playerBlock[e];
