@@ -9,7 +9,7 @@ using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.Arguments;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// A chat command plugin which handles chatban commands.
+/// A chat command plugin which handles chatban command.
 /// </summary>
 [Guid("287AE9A6-E434-4E52-A791-8AAD267A8E05")]
 [PlugIn("Chat Ban Character command", "Handles the chat command '/chatban <characterName> <durationMinutes>'. Bans the account of a character from chatting for the specified minutes.")]
