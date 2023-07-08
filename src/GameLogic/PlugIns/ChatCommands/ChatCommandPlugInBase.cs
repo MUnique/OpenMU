@@ -189,7 +189,7 @@ public abstract class ChatCommandPlugInBase<T> : IChatCommandPlugIn
         }
         else
         {
-            throw new ArgumentException($"account not found.");
+            throw new ArgumentException($"{nameof(account)} not found.");
         }
     }
 
