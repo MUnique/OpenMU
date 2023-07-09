@@ -35,7 +35,7 @@ public class NewPlayersInScopePlugIn : INewPlayersInScopePlugIn
     /// <param name="player">The player.</param>
     public NewPlayersInScopePlugIn(RemotePlayer player) => this._player = player;
 
-    private static readonly MagicEffectDefinition GMEffect = new GMMagicEffectDefinition()
+    private static readonly MagicEffectDefinition GMEffect = new GMMagicEffectDefinition
     {
         InformObservers = true,
         Name = "GM MARK",
