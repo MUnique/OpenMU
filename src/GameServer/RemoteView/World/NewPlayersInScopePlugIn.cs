@@ -5,6 +5,8 @@
 namespace MUnique.OpenMU.GameServer.RemoteView.World;
 
 using System.Runtime.InteropServices;
+using MUnique.OpenMU.DataModel.Attributes;
+using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views;
@@ -32,6 +34,14 @@ public class NewPlayersInScopePlugIn : INewPlayersInScopePlugIn
     /// </summary>
     /// <param name="player">The player.</param>
     public NewPlayersInScopePlugIn(RemotePlayer player) => this._player = player;
+
+    private static readonly MagicEffectDefinition GMEffect = new GMMagicEffectDefinition()
+    {
+        InformObservers = true,
+        Name = "GM MARK",
+        Number = 28,
+        StopByDeath = false,
+    };
 
     /// <inheritdoc/>
     public async ValueTask NewPlayersInScopeAsync(IEnumerable<Player> newPlayers, bool isSpawned = true)
@@ -103,6 +113,14 @@ public class NewPlayersInScopePlugIn : INewPlayersInScopePlugIn
         if (selectedCharacter is null)
         {
             return;
+        }
+
+        // Add GM mark (mu logo above character's head)
+        if (selectedCharacter.CharacterStatus == DataModel.Entities.CharacterStatus.GameMaster)
+        {
+            await newPlayer.MagicEffectList.AddEffectAsync(new MagicEffect(
+            TimeSpan.FromMilliseconds((double)int.MaxValue),
+            GMEffect)).ConfigureAwait(false);
         }
 
         int Write()
@@ -231,5 +249,13 @@ public class NewPlayersInScopePlugIn : INewPlayersInScopePlugIn
         }
 
         await connection.SendAsync(Write).ConfigureAwait(false);
+    }
+
+    private protected sealed class GMMagicEffectDefinition : MagicEffectDefinition
+    {
+        public GMMagicEffectDefinition()
+        {
+            this.PowerUpDefinitions = new List<PowerUpDefinition>(0);
+        }
     }
 }
