@@ -1730,7 +1730,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
 
         // Add GM mark (mu logo above character's head)
-        if (this.SelectedCharacter?.CharacterStatus == DataModel.Entities.CharacterStatus.GameMaster)
+        if (this.SelectedCharacter?.CharacterStatus == CharacterStatus.GameMaster)
         {
             await this.MagicEffectList.AddEffectAsync(new MagicEffect(
             TimeSpan.FromMilliseconds((double)int.MaxValue),
