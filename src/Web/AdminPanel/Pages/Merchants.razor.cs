@@ -149,10 +149,25 @@ public partial class Merchants : ComponentBase, IAsyncDisposable
 
     private async Task OnSaveButtonClickAsync()
     {
-        if (this._persistenceContext is { } persistenceContext)
+        string text;
+        try
         {
-            await persistenceContext.SaveChangesAsync().ConfigureAwait(true);
+            if (this._persistenceContext is { } context)
+            {
+                var success = await context.SaveChangesAsync().ConfigureAwait(true);
+                text = success ? "The changes have been saved." : "There were no changes to save.";
+            }
+            else
+            {
+                text = "Failed, context not initialized";
+            }
         }
+        catch (Exception ex)
+        {
+            text = $"An unexpected error occurred: {ex.Message}.";
+        }
+
+        await this.ModalService.ShowMessageAsync("Save", text).ConfigureAwait(true);
     }
 
     private async Task OnCancelButtonClickAsync()
