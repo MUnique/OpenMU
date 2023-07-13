@@ -184,7 +184,6 @@ public abstract class ChatCommandPlugInBase<T> : IChatCommandPlugIn
         if (player.Account != null)
         {
             player.Account.ChatBanUntil = chatBanUntil;
-            await player.PersistenceContext.SaveChangesAsync().ConfigureAwait(false);
         }
         else
         {
