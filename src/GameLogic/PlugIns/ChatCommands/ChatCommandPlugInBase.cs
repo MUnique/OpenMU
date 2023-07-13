@@ -179,6 +179,7 @@ public abstract class ChatCommandPlugInBase<T> : IChatCommandPlugIn
     /// </summary>
     /// <param name="gameMaster">GameMaster Player.</param>
     /// <param name="account">Account to be changed.</param>
+    /// <param name="chatBanUntil">Date and time until which the chat ban is in effect.</param>
     protected async ValueTask ChangeAccountChatBanUntilAsync(Player gameMaster, Account? account, DateTime? chatBanUntil)
     {
         if (account != null)
