@@ -175,7 +175,7 @@ public class EnterMiniGameAction
         }
 
         ticketItem = player.Inventory?.GetItem(gameTicketInventoryIndex);
-        return ticketItemDefinition == ticketItem?.Definition && ticketItem.Durability > 0 && ticketItem.Level == miniGameDefinition.TicketItemLevel;
+        return ticketItemDefinition.Equals(ticketItem?.Definition) && ticketItem.Durability > 0 && ticketItem.Level == miniGameDefinition.TicketItemLevel;
     }
 
     private bool CheckEntranceFee(MiniGameDefinition miniGameDefinition, Player player, out int entranceFee)

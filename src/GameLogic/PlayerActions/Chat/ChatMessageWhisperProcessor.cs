@@ -1,4 +1,4 @@
-﻿// <copyright file="ChatWhisperProcessorMessage.cs" company="MUnique">
+﻿// <copyright file="ChatMessageWhisperProcessor.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -11,10 +11,10 @@ using MUnique.OpenMU.GameLogic.Views;
 /// <summary>
 /// A chat message processor which sends the message to the whisper receiver.
 /// </summary>
-public class ChatMessageWhisperProcessor : IChatMessageProcessor
+public class ChatMessageWhisperProcessor : BannableChatMessageBaseProcessor
 {
     /// <inheritdoc />
-    public async ValueTask ProcessMessageAsync(Player sender, (string Message, string PlayerName) content)
+    public override async ValueTask SubclassProcessMessageAsync(Player sender, (string Message, string PlayerName) content)
     {
         var whisperReceiver = sender.GameContext.GetPlayerByCharacterName(content.PlayerName);
         if (whisperReceiver != null)
