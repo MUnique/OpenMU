@@ -174,6 +174,23 @@ public abstract class ChatCommandPlugInBase<T> : IChatCommandPlugIn
         return this.ChangeAccountStateAsync(gameMaster, (MUnique.OpenMU.Persistence.IPlayerContext context) => context.GetAccountByLoginNameAsync(loginName), accountState);
     }
 
+    /// <summary>
+    /// Changes ChatBanUntil value from Account.
+    /// </summary>
+    /// <param name="player">Player to be banned/unbanned.</param>
+    /// <param name="chatBanUntil">Date and time until which the chat ban is in effect.</param>
+    protected async ValueTask ChangeAccountChatBanUntilAsync(Player player, DateTime? chatBanUntil)
+    {
+        if (player.Account != null)
+        {
+            player.Account.ChatBanUntil = chatBanUntil;
+        }
+        else
+        {
+            throw new ArgumentException($"{nameof(player.Account)} not found.");
+        }
+    }
+
     private async ValueTask ChangeAccountStateAsync(Player gameMaster, Func<MUnique.OpenMU.Persistence.IPlayerContext, ValueTask<Account?>> accountSelector, AccountState accountState)
     {
         using var context = gameMaster.GameContext.PersistenceContextProvider.CreateNewPlayerContext(gameMaster.GameContext.Configuration);

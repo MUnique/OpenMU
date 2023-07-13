@@ -11,10 +11,10 @@ using MUnique.OpenMU.GameLogic.Views;
 /// <summary>
 /// A chat message processor which sends the message to the whisper receiver.
 /// </summary>
-public class ChatMessageWhisperProcessor : IChatMessageProcessor
+public class ChatMessageWhisperProcessor : BannableChatMessageBaseProcessor
 {
     /// <inheritdoc />
-    public async ValueTask ProcessMessageAsync(Player sender, (string Message, string PlayerName) content)
+    public override async ValueTask SubclassProcessMessageAsync(Player sender, (string Message, string PlayerName) content)
     {
         var whisperReceiver = sender.GameContext.GetPlayerByCharacterName(content.PlayerName);
         if (whisperReceiver != null)
