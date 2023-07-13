@@ -26,7 +26,8 @@ public sealed class GuardIntelligence : BasicMonsterIntelligence
         var currentMap = this.Npc.CurrentMap;
         var nextTarget = currentMap.GetAttackablesInRange(this.Npc.Position, this.Npc.Definition.ViewRange)
             .OfType<Player>()
-            .Where(o => o is { SelectedCharacter.State: >= HeroState.PlayerKiller1stStage, IsAlive: true })
+            .Where(o => o is { SelectedCharacter.State: >= HeroState.PlayerKiller1stStage, IsAlive: true }
+                && !o.IsAtSafezone())
             .MinBy(this.Npc.GetDistanceTo) as IAttackable;
 
         return nextTarget;
