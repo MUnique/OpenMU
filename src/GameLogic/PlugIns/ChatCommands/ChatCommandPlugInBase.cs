@@ -177,20 +177,18 @@ public abstract class ChatCommandPlugInBase<T> : IChatCommandPlugIn
     /// <summary>
     /// Changes ChatBanUntil value from Account.
     /// </summary>
-    /// <param name="gameMaster">GameMaster Player.</param>
-    /// <param name="account">Account to be changed.</param>
+    /// <param name="player">Player to be banned/unbanned.</param>
     /// <param name="chatBanUntil">Date and time until which the chat ban is in effect.</param>
-    protected async ValueTask ChangeAccountChatBanUntilAsync(Player gameMaster, Account? account, DateTime? chatBanUntil)
+    protected async ValueTask ChangeAccountChatBanUntilAsync(Player player, DateTime? chatBanUntil)
     {
-        if (account != null)
+        if (player.Account != null)
         {
-            account.ChatBanUntil = chatBanUntil;
-            using var context = gameMaster.GameContext.PersistenceContextProvider.CreateNewPlayerContext(gameMaster.GameContext.Configuration);
-            await context.SaveChangesAsync().ConfigureAwait(false);
+            player.Account.ChatBanUntil = chatBanUntil;
+            await player.PersistenceContext.SaveChangesAsync().ConfigureAwait(false);
         }
         else
         {
-            throw new ArgumentException($"{nameof(account)} not found.");
+            throw new ArgumentException($"{nameof(player.Account)} not found.");
         }
     }
 
