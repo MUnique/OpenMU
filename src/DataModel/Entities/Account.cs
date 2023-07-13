@@ -70,6 +70,11 @@ public class Account
     public string EMail { get; set; } = string.Empty;
 
     /// <summary>
+    /// Gets or sets the date and time until which the chat ban is in effect.
+    /// </summary>
+    public DateTime? ChatBanUntil { get; set; }
+
+    /// <summary>
     /// Gets or sets the unlocked character classes which are locked by default.
     /// </summary>
     /// <remarks>
