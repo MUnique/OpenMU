@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.ConnectServer;
 
+using System.Collections.Concurrent;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Network.PlugIns;
 
@@ -15,7 +16,7 @@ internal interface IConnectServer
     /// <summary>
     /// Gets the connect infos.
     /// </summary>
-    IDictionary<ushort, byte[]> ConnectInfos { get; }
+    ConcurrentDictionary<ushort, byte[]> ConnectInfos { get; }
 
     /// <summary>
     /// Gets the server list.

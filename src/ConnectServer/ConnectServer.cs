@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.ConnectServer;
 
+using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Net;
 using System.Runtime.CompilerServices;
@@ -36,7 +37,7 @@ public class ConnectServer : IConnectServer, OpenMU.Interfaces.IConnectServer
 
         this._logger = this._loggerFactory.CreateLogger<ConnectServer>();
 
-        this.ConnectInfos = new Dictionary<ushort, byte[]>();
+        this.ConnectInfos = new ConcurrentDictionary<ushort, byte[]>();
         this._serverList = new ServerList(this.ClientVersion);
 
         this.ClientListener = new ClientListener(this, loggerFactory);
@@ -77,7 +78,7 @@ public class ConnectServer : IConnectServer, OpenMU.Interfaces.IConnectServer
     public Guid ConfigurationId { get; }
 
     /// <inheritdoc/>
-    public IDictionary<ushort, byte[]> ConnectInfos { get; }
+    public ConcurrentDictionary<ushort, byte[]> ConnectInfos { get; }
 
     /// <inheritdoc/>
     ServerList IConnectServer.ServerList => this._serverList;
@@ -180,9 +181,11 @@ public class ConnectServer : IConnectServer, OpenMU.Interfaces.IConnectServer
                 CurrentConnections = gameServer.CurrentConnections,
             };
 
-            this.ConnectInfos.Add(serverListItem.ServerId, serverListItem.ConnectInfo);
-            this._serverList.Servers.Add(serverListItem);
-            this._serverList.InvalidateCache();
+            if (this.ConnectInfos.TryAdd(serverListItem.ServerId, serverListItem.ConnectInfo))
+            {
+                this._serverList.Servers.Add(serverListItem);
+                this._serverList.InvalidateCache();
+            }
         }
         catch (Exception ex)
         {
@@ -200,7 +203,7 @@ public class ConnectServer : IConnectServer, OpenMU.Interfaces.IConnectServer
         var serverListItem = this._serverList.Servers.FirstOrDefault(s => s.ServerId == gameServerId);
         if (serverListItem != null)
         {
-            this.ConnectInfos.Remove(serverListItem.ServerId);
+            this.ConnectInfos.Remove(serverListItem.ServerId, out _);
             this._serverList.Servers.Remove(serverListItem);
             this._serverList.InvalidateCache();
         }
