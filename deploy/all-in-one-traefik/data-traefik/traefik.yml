@@ -1,0 +1,47 @@
+api:
+  dashboard: true
+
+entryPoints:
+  web:
+    address: :80
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+
+  websecure:
+    address: :443
+    http:
+      middlewares:
+        - secureHeaders@file
+        - nofloc@file
+      tls:
+        certResolver: letsencrypt
+
+pilot:
+  dashboard: false
+
+providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    exposedByDefault: false
+  file:
+    filename: /configurations/dynamic.yml
+
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      email: admin@domain.com
+      storage: acme.json
+      keyType: EC384
+      httpChallenge:
+        entryPoint: web
+
+  buypass:
+    acme:
+      email: admin@domain.com
+      storage: acme.json
+      caServer: https://api.buypass.com/acme/directory
+      keyType: EC256
+      httpChallenge:
+        entryPoint: web
