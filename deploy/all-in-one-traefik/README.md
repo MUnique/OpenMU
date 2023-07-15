@@ -21,6 +21,8 @@ services:
       - "traefik.docker.network=proxy"
       - "traefik.http.routers.adm.entrypoints=websecure"
       - "traefik.http.routers.adm.rule=Host(`admin.domain.com`)"
+      - "traefik.http.routers.adm.middlewares=auth"
+      - "traefik.http.middlewares.auth.basicauth.usersfile=.htpasswd"
       
   muonline-website:
     ...
