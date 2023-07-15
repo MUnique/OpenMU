@@ -102,12 +102,12 @@ public class ConnectServer : IConnectServer, OpenMU.Interfaces.IConnectServer
     /// <summary>
     /// Gets the current game server connection count.
     /// </summary>
-    public int CurrentGameServerConnections => this._serverList.Servers.Sum(s => s.CurrentConnections);
+    public int CurrentGameServerConnections => this._serverList.TotalConnectionCount;
 
     /// <summary>
     /// Gets the registered game servers.
     /// </summary>
-    public IEnumerable<IGameServerEntry> RegisteredGameServers => this._serverList.Servers;
+    public IEnumerable<IGameServerEntry> RegisteredGameServers => this._serverList.Items;
 
     /// <summary>
     /// Gets the client listener.
@@ -183,8 +183,7 @@ public class ConnectServer : IConnectServer, OpenMU.Interfaces.IConnectServer
 
             if (this.ConnectInfos.TryAdd(serverListItem.ServerId, serverListItem.ConnectInfo))
             {
-                this._serverList.Servers.Add(serverListItem);
-                this._serverList.InvalidateCache();
+                this._serverList.Add(serverListItem);
             }
         }
         catch (Exception ex)
@@ -200,12 +199,11 @@ public class ConnectServer : IConnectServer, OpenMU.Interfaces.IConnectServer
     public void UnregisterGameServer(ushort gameServerId)
     {
         this._logger.LogInformation("GameServer {0} is unregistering", gameServerId);
-        var serverListItem = this._serverList.Servers.FirstOrDefault(s => s.ServerId == gameServerId);
+        var serverListItem = this._serverList.GetItem(gameServerId);
         if (serverListItem != null)
         {
             this.ConnectInfos.Remove(serverListItem.ServerId, out _);
-            this._serverList.Servers.Remove(serverListItem);
-            this._serverList.InvalidateCache();
+            this._serverList.Remove(serverListItem);
         }
 
         this._logger.LogInformation("GameServer {0} has unregistered", gameServerId);
@@ -214,7 +212,7 @@ public class ConnectServer : IConnectServer, OpenMU.Interfaces.IConnectServer
     /// <inheritdoc />
     public void CurrentConnectionsChanged(ushort serverId, int currentConnections)
     {
-        var serverListItem = this._serverList.Servers.FirstOrDefault(s => s.ServerId == serverId);
+        var serverListItem = this._serverList.GetItem(serverId);
         if (serverListItem is null)
         {
             return;
