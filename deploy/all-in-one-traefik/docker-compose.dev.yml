@@ -1,22 +1,6 @@
 version: '3'
 
 services:
-  nginx:
-    image: nginx:alpine
-    container_name: nginx
-    volumes:
-      - ./nginx.dev.conf:/etc/nginx/nginx.conf:ro
-      - ./.htpasswd:/etc/nginx/.htpasswd
-    depends_on:
-      - openmu-startup
-    networks:
-      - proxy
-    labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=proxy"
-      - "traefik.http.routers.openmu.rule=Host(`admin.docker.localhost`)"
-      - "traefik.http.routers.openmu.entrypoints=web"
-  
   openmu-startup:
     image: munique/openmu
     container_name: openmu-startup
@@ -35,6 +19,13 @@ services:
       - ./.htpasswd:/etc/nginx/.htpasswd
     depends_on:
       - database
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.openmu.entrypoints=web"
+      - "traefik.http.routers.openmu.rule=Host(`admin.docker.localhost`)"
+      - "traefik.http.routers.openmu.middlewares=auth"
+      - "traefik.http.middlewares.auth.basicauth.usersfile=.htpasswd"
 
   database:
     image: postgres
