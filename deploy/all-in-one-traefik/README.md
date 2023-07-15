@@ -125,6 +125,7 @@ docker compose -f docker-compose.prod.yml up -d
 ```
 
 #### Important
+
 Avoid editing the .htpasswd manually. Instead, access the admin panel
 and add a new user. If you are using the _all-in-one-traefik_ you
 need to restart Traefik after add a new user to it takes effect.
