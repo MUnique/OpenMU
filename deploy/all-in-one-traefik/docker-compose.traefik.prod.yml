@@ -16,6 +16,7 @@ services:
       - ./data-traefik/traefik.yml:/traefik.yml:ro
       - ./data-traefik/acme.json:/acme.json
       - ./data-traefik/configurations:/configurations
+      - "./.htpasswd:/.htpasswd"
     networks:
       - proxy
     labels:
