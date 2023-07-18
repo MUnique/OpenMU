@@ -10,10 +10,10 @@ using MUnique.OpenMU.GameLogic.PlugIns;
 /// <summary>
 /// A chat message processor for alliance chat.
 /// </summary>
-public class ChatMessageAllianceProcessor : IChatMessageProcessor
+public class ChatMessageAllianceProcessor : BannableChatMessageBaseProcessor
 {
     /// <inheritdoc />
-    public async ValueTask ProcessMessageAsync(Player sender, (string Message, string PlayerName) content)
+    public override async ValueTask SubclassProcessMessageAsync(Player sender, (string Message, string PlayerName) content)
     {
         var eventArgs = new CancelEventArgs();
         sender.GameContext.PlugInManager.GetPlugInPoint<IChatMessageReceivedPlugIn>()?.ChatMessageReceived(sender, content.Message, eventArgs);

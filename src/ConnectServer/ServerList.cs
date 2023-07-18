@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.ConnectServer;
 
+using System.Threading;
 using MUnique.OpenMU.Network.Packets.ConnectServer;
 using MUnique.OpenMU.Network.PlugIns;
 
@@ -12,6 +13,10 @@ using MUnique.OpenMU.Network.PlugIns;
 /// </summary>
 internal class ServerList
 {
+    private readonly ReaderWriterLockSlim _lock = new();
+
+    private readonly ICollection<ServerListItem> _servers = new SortedSet<ServerListItem>(new ServerListItemComparer());
+
     private readonly ClientVersion _clientVersion;
 
     /// <summary>
@@ -21,18 +26,104 @@ internal class ServerList
     public ServerList(ClientVersion clientVersion)
     {
         this._clientVersion = clientVersion;
-        this.Servers = new SortedSet<ServerListItem>(new ServerListItemComparer());
     }
 
     /// <summary>
-    /// Gets or sets the currently available servers.
+    /// Gets the total connection count.
     /// </summary>
-    public ICollection<ServerListItem> Servers { get; set; }
+    public int TotalConnectionCount
+    {
+        get
+        {
+            this._lock.EnterReadLock();
+            try
+            {
+                return this._servers.Sum(s => s.CurrentConnections);
+            }
+            finally
+            {
+                this._lock.ExitReadLock();
+            }
+        }
+    }
 
     /// <summary>
     /// Gets the cache of the available servers.
     /// </summary>
     public byte[]? Cache { get; private set; }
+
+    /// <summary>
+    /// Gets the <see cref="IGameServerEntry"/>s of this list.
+    /// </summary>
+    public IEnumerable<IGameServerEntry> Items
+    {
+        get
+        {
+            this._lock.EnterReadLock();
+            try
+            {
+                return this._servers.ToList();
+            }
+            finally
+            {
+                this._lock.ExitReadLock();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Adds the specified item to this instance.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    public void Add(ServerListItem item)
+    {
+        this._lock.EnterWriteLock();
+        try
+        {
+            this._servers.Add(item);
+            this.InvalidateCache();
+        }
+        finally
+        {
+            this._lock.ExitWriteLock();
+        }
+    }
+
+    /// <summary>
+    /// Removes the specified item from this instance.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    public void Remove(ServerListItem item)
+    {
+        this._lock.EnterWriteLock();
+        try
+        {
+            this._servers.Remove(item);
+            this.InvalidateCache();
+        }
+        finally
+        {
+            this._lock.ExitWriteLock();
+        }
+    }
+
+    /// <summary>
+    /// Gets the <see cref="ServerListItem"/> of the specified server id.
+    /// </summary>
+    /// <param name="gameServerId">The game server identifier.</param>
+    /// <returns>The found <see cref="ServerListItem"/>.</returns>
+    public ServerListItem? GetItem(ushort gameServerId)
+    {
+        this._lock.EnterReadLock();
+        try
+        {
+            return this._servers.FirstOrDefault(s => s.ServerId == gameServerId);
+        }
+        finally
+        {
+            this._lock.ExitReadLock();
+        }
+    }
 
     /// <summary>
     /// Serializes this instance to a server list packet, which can be sent to the client.
@@ -46,48 +137,62 @@ internal class ServerList
             return result;
         }
 
-        byte[] packet;
-        if (this._clientVersion.Season == 0)
+        this._lock.EnterReadLock();
+        try
         {
-            packet = new byte[ServerListResponseOld.GetRequiredSize(this.Servers.Count)];
-            var response = new ServerListResponseOld(packet)
+            result = this.Cache;
+            if (result != null)
             {
-                ServerCount = (byte)this.Servers.Count,
-            };
-            var i = 0;
-            foreach (var server in this.Servers)
-            {
-                var serverBlock = response[i];
-                serverBlock.ServerId = (byte)server.ServerId;
-                serverBlock.LoadPercentage = server.ServerLoadPercentage;
-                i++;
+                return result;
             }
-        }
-        else
-        {
-            packet = new byte[ServerListResponse.GetRequiredSize(this.Servers.Count)];
-            var response = new ServerListResponse(packet)
-            {
-                ServerCount = (ushort)this.Servers.Count,
-            };
-            var i = 0;
-            foreach (var server in this.Servers)
-            {
-                var serverBlock = response[i];
-                serverBlock.ServerId = server.ServerId;
-                serverBlock.LoadPercentage = server.ServerLoadPercentage;
-                i++;
-            }
-        }
 
-        this.Cache = packet;
-        return packet;
+            byte[] packet;
+            if (this._clientVersion.Season == 0)
+            {
+                packet = new byte[ServerListResponseOld.GetRequiredSize(this._servers.Count)];
+                var response = new ServerListResponseOld(packet)
+                {
+                    ServerCount = (byte)this._servers.Count,
+                };
+                var i = 0;
+                foreach (var server in this._servers)
+                {
+                    var serverBlock = response[i];
+                    serverBlock.ServerId = (byte)server.ServerId;
+                    serverBlock.LoadPercentage = server.ServerLoadPercentage;
+                    i++;
+                }
+            }
+            else
+            {
+                packet = new byte[ServerListResponse.GetRequiredSize(this._servers.Count)];
+                var response = new ServerListResponse(packet)
+                {
+                    ServerCount = (ushort)this._servers.Count,
+                };
+                var i = 0;
+                foreach (var server in this._servers)
+                {
+                    var serverBlock = response[i];
+                    serverBlock.ServerId = server.ServerId;
+                    serverBlock.LoadPercentage = server.ServerLoadPercentage;
+                    i++;
+                }
+            }
+
+            this.Cache = packet;
+            return packet;
+        }
+        finally
+        {
+            this._lock.ExitReadLock();
+        }
     }
 
     /// <summary>
     /// Invalidates the cache.
     /// </summary>
-    public void InvalidateCache()
+    private void InvalidateCache()
     {
         this.Cache = null;
     }

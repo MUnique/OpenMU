@@ -85,8 +85,8 @@ public class EnterMiniGameAction
         if (miniGameDefinition.MapCreationPolicy == MiniGameMapCreationPolicy.Shared)
         {
             var miniGameStrategy = player.GameContext.PlugInManager.GetStrategy<MiniGameType, IPeriodicMiniGameStartPlugIn>(miniGameDefinition.Type);
-            if (miniGameStrategy is null
-                || await miniGameStrategy.GetDurationUntilNextStartAsync(player.GameContext, miniGameDefinition).ConfigureAwait(false) != TimeSpan.Zero)
+            if (miniGameStrategy is not null
+                && await miniGameStrategy.GetDurationUntilNextStartAsync(player.GameContext, miniGameDefinition).ConfigureAwait(false) != TimeSpan.Zero)
             {
                 await player.InvokeViewPlugInAsync<IShowMiniGameEnterResultPlugIn>(p => p.ShowResultAsync(miniGameType, EnterResult.NotOpen)).ConfigureAwait(false);
                 return;
@@ -175,7 +175,7 @@ public class EnterMiniGameAction
         }
 
         ticketItem = player.Inventory?.GetItem(gameTicketInventoryIndex);
-        return ticketItemDefinition == ticketItem?.Definition && ticketItem.Durability > 0 && ticketItem.Level == miniGameDefinition.TicketItemLevel;
+        return ticketItemDefinition.Equals(ticketItem?.Definition) && ticketItem.Durability > 0 && ticketItem.Level == miniGameDefinition.TicketItemLevel;
     }
 
     private bool CheckEntranceFee(MiniGameDefinition miniGameDefinition, Player player, out int entranceFee)
