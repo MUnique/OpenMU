@@ -217,6 +217,10 @@ public class Character
     /// <summary>
     /// Gets or sets the stat attributes.
     /// </summary>
+    /// <remarks>
+    /// Please note, that it's not possible to add stat attribute with the same
+    /// attribute definition to the <see cref="Account.Attributes"/> and the <see cref="Character.Attributes"/>.
+    /// </remarks>
     [MemberOfAggregate]
     public virtual ICollection<StatAttribute> Attributes { get; protected set; } = null!;
 

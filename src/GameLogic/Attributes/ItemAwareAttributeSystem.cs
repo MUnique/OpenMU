@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.GameLogic.Attributes;
 
 using MUnique.OpenMU.AttributeSystem;
-using System.Globalization;
 
 /// <summary>
 /// An attribute system which considers items of a character.
@@ -13,11 +12,15 @@ using System.Globalization;
 public sealed class ItemAwareAttributeSystem : AttributeSystem, IDisposable
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="ItemAwareAttributeSystem"/> class.
+    /// Initializes a new instance of the <see cref="ItemAwareAttributeSystem" /> class.
     /// </summary>
+    /// <param name="account">The account.</param>
     /// <param name="character">The character.</param>
-    public ItemAwareAttributeSystem(Character character)
-        : base(character.Attributes, character.CharacterClass!.BaseAttributeValues, character.CharacterClass.AttributeCombinations)
+    public ItemAwareAttributeSystem(Account account, Character character)
+        : base(
+            character.Attributes.Concat(account.Attributes),
+            character.CharacterClass!.BaseAttributeValues,
+            character.CharacterClass.AttributeCombinations)
     {
         this.ItemPowerUps = new Dictionary<Item, IReadOnlyList<PowerUpWrapper>>();
     }

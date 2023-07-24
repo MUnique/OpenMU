@@ -1687,7 +1687,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     private async ValueTask OnPlayerEnteredWorldAsync()
     {
-        this.Attributes = new ItemAwareAttributeSystem(this.SelectedCharacter!);
+        this.Attributes = new ItemAwareAttributeSystem(this.Account!, this.SelectedCharacter!);
         this.Inventory = new InventoryStorage(this, this.GameContext);
         this.ShopStorage = new ShopStorage(this);
         this.TemporaryStorage = new Storage(InventoryConstants.TemporaryStorageSize, new TemporaryItemStorage());
