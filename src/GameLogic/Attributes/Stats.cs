@@ -895,6 +895,11 @@ public class Stats
     public static AttributeDefinition NovaStageDamage { get; } = new(new Guid("9185A46A-4C56-4FF1-A0D2-C0CD58CB17FB"), "Nova Stage Damage", "The currently reached nova stage bonus which depends on the duration of the skill.");
 
     /// <summary>
+    /// Gets the attribute for the VIP flag.
+    /// </summary>
+    public static AttributeDefinition IsVip { get; } = new(new Guid("195474D6-59A2-4033-9C30-8628ECC0097E"), "Is VIP", "The flag, if an account is a VIP.");
+
+    /// <summary>
     /// Gets the attributes which are regenerated in an interval.
     /// </summary>
     public static IEnumerable<Regeneration> IntervalRegenerationAttributes
