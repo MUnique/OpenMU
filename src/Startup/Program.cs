@@ -29,6 +29,7 @@ using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
 using MUnique.OpenMU.Web.AdminPanel;
 using MUnique.OpenMU.Web.AdminPanel.Services;
+using MUnique.OpenMU.Web.API;
 using MUnique.OpenMU.Web.Map.Map;
 using Nito.AsyncEx.Synchronous;
 using Serilog;
@@ -238,7 +239,9 @@ internal sealed class Program : IDisposable
             .AddSingleton<ICollection<PlugInConfiguration>>(this.PlugInConfigurationsFactory)
             .AddHostedService<ChatServerContainer>()
             .AddHostedService<GameServerContainer>()
-            .AddHostedService(provider => provider.GetService<ConnectServerContainer>()!);
+            .AddHostedService(provider => provider.GetService<ConnectServerContainer>()!)
+            .AddControllers().AddApplicationPart(typeof(ServerController).Assembly);
+
         var host = builder.Build();
 
         // NpgsqlLoggingConfiguration.InitializeLogging(host.Services.GetRequiredService<ILoggerFactory>())
