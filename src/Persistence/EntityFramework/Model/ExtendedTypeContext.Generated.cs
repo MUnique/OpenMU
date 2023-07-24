@@ -155,6 +155,7 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Entity<GameMapDefinition>().HasOne(entity => entity.RawBattleZone).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameMapDefinition>().HasMany(entity => entity.RawExitGates).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameMapDefinition>().HasMany(entity => entity.RawMapRequirements).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<GameMapDefinition>().HasMany(entity => entity.RawCharacterPowerUpDefinitions).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameServerDefinition>().HasMany(entity => entity.RawEndpoints).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<MagicEffectDefinition>().HasOne(entity => entity.RawDuration).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<MagicEffectDefinition>().HasMany(entity => entity.RawPowerUpDefinitions).WithOne().OnDelete(DeleteBehavior.Cascade);
