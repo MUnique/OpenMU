@@ -872,15 +872,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             this.CurrentMap = await this.GameContext.GetMapAsync(this.SelectedCharacter!.CurrentMap.Number.ToUnsigned()).ConfigureAwait(false);
         }
 
-        if (this.CurrentMap?.Definition.CharacterPowerUpDefinitions is { Count: > 0 } mapPowerUps)
-        {
-            foreach (var mapPowerUp in mapPowerUps)
-            {
-                var powerup = PowerUpWrapper.CreateByPowerUpDefinition(mapPowerUp, this.Attributes!);
-                
-            }
-        }
-
         await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.EnteredWorld).ConfigureAwait(false);
         this.IsAlive = true;
 
