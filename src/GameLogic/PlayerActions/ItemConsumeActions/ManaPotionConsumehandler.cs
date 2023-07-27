@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="ManaPotionConsumehandler.cs" company="MUnique">
+// <copyright file="ManaPotionConsumeHandler.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 // -----------------------------------------------------------------------
@@ -13,7 +13,7 @@ using MUnique.OpenMU.GameLogic.Views.Character;
 /// <summary>
 /// Consume handler for potions which refills the players attribute <see cref="Stats.CurrentMana"/>.
 /// </summary>
-public abstract class ManaPotionConsumehandler : RecoverConsumeHandlerPlugIn.ManaHealthConsumeHandlerPlugIn, IItemConsumeHandlerPlugIn
+public abstract class ManaPotionConsumeHandler : RecoverConsumeHandlerPlugIn.ManaHealthConsumeHandlerPlugIn, IItemConsumeHandlerPlugIn
 {
     /// <inheritdoc/>
     protected override AttributeDefinition MaximumAttribute => Stats.MaximumMana;
@@ -22,14 +22,8 @@ public abstract class ManaPotionConsumehandler : RecoverConsumeHandlerPlugIn.Man
     protected override AttributeDefinition CurrentAttribute => Stats.CurrentMana;
 
     /// <inheritdoc />
-    public override async ValueTask<bool> ConsumeItemAsync(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
+    protected override async ValueTask OnAfterRecoverAsync(Player player)
     {
-        if (await base.ConsumeItemAsync(player, item, targetItem, fruitUsage).ConfigureAwait(false))
-        {
-            await player.InvokeViewPlugInAsync<IUpdateCurrentManaPlugIn>(p => p.UpdateCurrentManaAsync()).ConfigureAwait(false);
-            return true;
-        }
-
-        return false;
+        await player.InvokeViewPlugInAsync<IUpdateCurrentManaPlugIn>(p => p.UpdateCurrentManaAsync()).ConfigureAwait(false);
     }
 }

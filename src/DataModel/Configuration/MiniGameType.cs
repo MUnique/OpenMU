@@ -28,4 +28,14 @@ public enum MiniGameType
     /// The chaos castle event.
     /// </summary>
     ChaosCastle,
+
+    /// <summary>
+    /// The illusion temple event.
+    /// </summary>
+    IllusionTemple,
+
+    /// <summary>
+    /// The doppelganger event.
+    /// </summary>
+    Doppelganger,
 }

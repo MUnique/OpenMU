@@ -15,6 +15,8 @@ using MUnique.OpenMU.Pathfinding;
 /// </summary>
 public class AreaSkillAttackAction
 {
+    private const int UndefinedTarget = 0xFFFF;
+
     /// <summary>
     /// Performs the skill by the player at the specified area. Additionally to the target area, a target object can be specified.
     /// </summary>
@@ -54,17 +56,17 @@ public class AreaSkillAttackAction
 
         if (attributes[Stats.IsStunned] > 0)
         {
-            player.Logger.LogWarning($"Probably Hacker - player {player} is attacking in stunned state");
+            player.Logger.LogWarning("Probably Hacker - player {player} is attacking in stunned state", player);
             return;
         }
 
         if (player.IsAtSafezone())
         {
-            player.Logger.LogWarning($"Probably Hacker - player {player} is attacking from safezone");
+            player.Logger.LogWarning("Probably Hacker - player {player} is attacking from safezone", player);
             return;
         }
 
-        bool isExtraTargetDefined = extraTargetId != 0xFFFF;
+        bool isExtraTargetDefined = extraTargetId != UndefinedTarget;
         var extraTarget = isExtraTargetDefined ? player.GetObject(extraTargetId) as IAttackable : null;
 
         var attackablesInRange =
@@ -97,11 +99,13 @@ public class AreaSkillAttackAction
             {
                 await this.ApplySkillAsync(player, skillEntry, target, targetAreaCenter, isCombo).ConfigureAwait(false);
 
-                if (target == extraTarget)
+                if (target != extraTarget)
                 {
-                    isExtraTargetDefined = false;
-                    extraTarget = null;
+                    continue;
                 }
+
+                isExtraTargetDefined = false;
+                extraTarget = null;
             }
         }
 

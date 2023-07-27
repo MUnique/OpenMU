@@ -40,31 +40,32 @@ Option B:
 If you want to share your server with the world, it's recommended to set up HTTPS
 for nginx. Otherwise, traffic from and to the admin panel is not encrypted.
 
-#### Adapt the config
+#### Set your domain name as environment variable
 
-In the nginx.prod.conf, change "example.org" to your domain name.
+Specify the environment variable ```DOMAIN_NAME``` for docker compose.
+This can be done in [various ways](https://docs.docker.com/compose/environment-variables/set-environment-variables/),
+e.g. by editing the ```docker-compose.prod.yml``` or
+[setting it in your shell](https://phoenixnap.com/kb/linux-set-environment-variable).
+
+This variable is replaced in the nginx template config files which get included
+in the other configuration files.
 
 #### Run it
 
-`docker-compose up -f docker-compose.yml docker-compose.prod.yml -d`
-
-> Hint: Here, docker-compose is used with the **docker-compose** command instead
-> of **docker compose**.
-> Reason: The -f parameter is only available through **docker-compose**.
-
+`docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d`
 
 #### Run certbot explicitly
 
 Hint: replace "example.org" with your domain.
 
-`docker compose run --rm  certbot certonly --webroot --webroot-path /var/www/certbot/ -d example.org`
+`docker compose -f docker-compose.yml -f docker-compose.prod.yml run --rm certbot certonly --webroot --webroot-path /var/www/certbot/ -d example.org`
 
 #### Set up certificate renewal
 
 Because your certificates expire after 3 months, it's recommended to renew them regularly.
 To renew it, run this command:
 
-`docker compose run --rm certbot renew`
+`docker compose -f docker-compose.yml -f docker-compose.prod.yml run --rm certbot renew`
 
 Of course, it would make sense to add a cron job (e.g. once a week) on your host
 machine for that.

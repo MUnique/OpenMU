@@ -35,21 +35,30 @@ public class QuestCompletionAction
 
         foreach (var requiredItem in activeQuest.RequiredItems)
         {
-            if (requiredItem.MinimumNumber > player.Inventory?.Items.Count(i => i.Definition == requiredItem.Item))
+            var requiredLevel = requiredItem.DropItemGroup?.ItemLevel;
+            var itemCount = player.Inventory?.Items
+                .Count(i => Equals(i.Definition, requiredItem.Item)
+                            && (requiredLevel is null || requiredLevel == i.Level));
+
+            if (requiredItem.MinimumNumber <= itemCount)
             {
-                player.Logger.LogDebug("Failed, required item not found: {0}", requiredItem.Item!.Name);
-                return;
+                continue;
             }
+
+            player.Logger.LogDebug("Failed, required item not found: {0}", requiredItem.Item!.GetNameForLevel(requiredLevel ?? 0));
+            return;
         }
 
         foreach (var requiredKills in activeQuest.RequiredMonsterKills)
         {
             var currentKillCount = questState!.RequirementStates.FirstOrDefault(r => r.Requirement == requiredKills)?.KillCount ?? 0;
-            if (currentKillCount < requiredKills.MinimumNumber)
+            if (currentKillCount >= requiredKills.MinimumNumber)
             {
-                player.Logger.LogDebug("Failed, required kills of monster {0}: {1}/{2};", requiredKills.Monster?.Designation, currentKillCount, requiredKills.MinimumNumber);
-                return;
+                continue;
             }
+
+            player.Logger.LogDebug("Failed, required kills of monster {0}: {1}/{2};", requiredKills.Monster?.Designation, currentKillCount, requiredKills.MinimumNumber);
+            return;
         }
 
         if (activeQuest.RequiresClientAction && !questState!.ClientActionPerformed)
@@ -58,10 +67,13 @@ public class QuestCompletionAction
             return;
         }
 
+        questState!.LastFinishedQuest = activeQuest;
         foreach (var requiredItem in activeQuest.RequiredItems)
         {
+            var requiredLevel = requiredItem.DropItemGroup?.ItemLevel;
             var items = player.Inventory!.Items
-                .Where(item => item.Definition == requiredItem.Item)
+                .Where(item => Equals(item.Definition, requiredItem.Item)
+                               && (requiredLevel is null || requiredLevel == item.Level))
                 .Take(requiredItem.MinimumNumber)
                 .ToList();
 
@@ -76,7 +88,6 @@ public class QuestCompletionAction
             await AddRewardAsync(player, reward).ConfigureAwait(false);
         }
 
-        questState!.LastFinishedQuest = activeQuest;
         await questState.ClearAsync(player.PersistenceContext).ConfigureAwait(false);
         await player.InvokeViewPlugInAsync<IQuestCompletionResponsePlugIn>(p => p.QuestCompletedAsync(activeQuest)).ConfigureAwait(false);
     }

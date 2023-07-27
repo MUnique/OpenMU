@@ -26,9 +26,9 @@ public class ObjectGotKilledPlugIn : JsViewPlugInBase, IObjectGotKilledPlugIn
     }
 
     /// <inheritdoc />
-    public async ValueTask ObjectGotKilledAsync(IAttackable killedObject, IAttacker killerObject)
+    public async ValueTask ObjectGotKilledAsync(IAttackable killedObject, IAttacker? killerObject)
     {
         // todo: maybe add the skill which led to the death, for special effects
-        await this.InvokeAsync(killedObject.Id, killerObject.Id).ConfigureAwait(false);
+        await this.InvokeAsync(killedObject.Id, killerObject?.Id ?? 0).ConfigureAwait(false);
     }
 }

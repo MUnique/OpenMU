@@ -38,7 +38,8 @@ public class Orbs : InitializerBase
         this.CreateOrb(8, SkillNumber.Heal, 1, "Orb of Healing", 8, 0, 100, 0, 0, 0, 800, 0, 0, 1, 0, 0, 0, 0);
         this.CreateOrb(9, SkillNumber.GreaterDefense, 1, "Orb of Greater Defense", 13, 0, 100, 0, 0, 0, 3000, 0, 0, 1, 0, 0, 0, 0);
         this.CreateOrb(10, SkillNumber.GreaterDamage, 1, "Orb of Greater Damage", 18, 0, 100, 0, 0, 0, 7000, 0, 0, 1, 0, 0, 0, 0);
-        this.CreateOrb(11, SkillNumber.SummonGoblin, 1, "Orb of Summoning", 3, 0, 0, 0, 0, 0, 150, 0, 0, 1, 0, 0, 0, 0);
+        var summonOrb = this.CreateOrb(11, SkillNumber.SummonGoblin, 1, "Orb of Summoning", 3, 0, 0, 0, 0, 0, 150, 0, 0, 1, 0, 0, 0, 0);
+        summonOrb.MaximumItemLevel = 6;
         this.CreateOrb(12, SkillNumber.RagefulBlow, 1, "Orb of Rageful Blow", 78, 170, 0, 0, 0, 0, 150000, 0, 2, 0, 0, 0, 0, 0);
         this.CreateOrb(13, SkillNumber.Impale, 1, "Orb of Impale", 20, 28, 0, 0, 0, 0, 10000, 0, 1, 0, 1, 0, 0, 0);
         this.CreateOrb(14, SkillNumber.SwellLife, 1, "Orb of Greater Fortitude", 60, 120, 0, 0, 0, 0, 43000, 0, 1, 0, 0, 0, 0, 0);
@@ -88,6 +89,7 @@ public class Orbs : InitializerBase
             orb.QualifiedCharacters.Add(characterClass);
         }
 
+        orb.SetGuid(orb.Group, orb.Number);
         return orb;
     }
 }

@@ -19,7 +19,6 @@ using MUnique.OpenMU.PlugIns;
 /// A game server listener that listens on a TCP port.
 /// To be visible in the server list, this listener also registers the game server at the connect server.
 /// </summary>
-/// <seealso cref="MUnique.OpenMU.GameServer.IGameServerListener" />
 public class DefaultTcpGameServerListener : IGameServerListener
 {
     private readonly ILogger<DefaultTcpGameServerListener> _logger;
@@ -89,6 +88,12 @@ public class DefaultTcpGameServerListener : IGameServerListener
         }
 
         this._stateObserver.RegisterGameServer(this._gameServerInfo, new IPEndPoint(await this._addressResolver.ResolveIPv4Async().ConfigureAwait(false), port));
+
+        if (this._addressResolver is ConfigurableIpResolver configurableIpResolver)
+        {
+            configurableIpResolver.ConfigurationChanged += this.OnResolverConfigurationChanged;
+        }
+
         this._listener.Start();
         this._logger.LogInformation("Server listener started.");
     }
@@ -96,6 +101,11 @@ public class DefaultTcpGameServerListener : IGameServerListener
     /// <inheritdoc/>
     public void Stop()
     {
+        if (this._addressResolver is ConfigurableIpResolver configurableIpResolver)
+        {
+            configurableIpResolver.ConfigurationChanged -= this.OnResolverConfigurationChanged;
+        }
+
         var port = this._endPoint.NetworkPort;
         this._stateObserver.UnregisterGameServer(this._gameServerInfo.Id);
         this._logger.LogInformation($"Stopping listener on port {port}.");
@@ -109,6 +119,29 @@ public class DefaultTcpGameServerListener : IGameServerListener
 
         this._logger.LogInformation($"Stopped listener on port {port}.");
         this.EncryptionFactoryPlugIn = null;
+    }
+
+#pragma warning disable VSTHRD100 Exceptions are handled.
+    private async void OnResolverConfigurationChanged(object? sender, EventArgs e)
+#pragma warning restore VSTHRD100
+    {
+        try
+        {
+            if (this._listener?.IsBound is not true)
+            {
+                return;
+            }
+
+            var newAddress = await this._addressResolver.ResolveIPv4Async().ConfigureAwait(false);
+
+            var port = this._endPoint.NetworkPort;
+            this._stateObserver.UnregisterGameServer(this._gameServerInfo.Id);
+            this._stateObserver.RegisterGameServer(this._gameServerInfo, new IPEndPoint(newAddress, port));
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, "Failed to re-register at game server state observer after the ip resolver has been changed. Error: {ex}", ex);
+        }
     }
 
     private IPipelinedEncryptor? CreateEncryptor(PipeWriter arg)

@@ -5,8 +5,8 @@
 namespace MUnique.OpenMU.GameServer.RemoteView.Pet;
 
 using System.Runtime.InteropServices;
+using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Entities;
-using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.PlayerActions.Items;
 using MUnique.OpenMU.GameLogic.Views.Pet;
 using MUnique.OpenMU.GameServer.RemoteView;

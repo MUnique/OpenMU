@@ -49,7 +49,7 @@ public class LoginAction
         {
             try
             {
-                using var context = await player.PlayerState.TryBeginAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
+                await using var context = await player.PlayerState.TryBeginAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
                 if (context.Allowed && player.GameContext is IGameServerContext gameServerContext &&
                     await gameServerContext.LoginServer.TryLoginAsync(username, gameServerContext.Id).ConfigureAwait(false))
                 {

@@ -26,4 +26,9 @@ public interface INpcIntelligence
     /// Starts the actions.
     /// </summary>
     void Start();
+
+    /// <summary>
+    /// Pauses the actions.
+    /// </summary>
+    void Pause();
 }

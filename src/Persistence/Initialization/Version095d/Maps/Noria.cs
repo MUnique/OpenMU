@@ -29,6 +29,6 @@ internal class Noria : Version075.Maps.Noria
             yield return npc;
         }
 
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[237], 171, 105, Direction.SouthEast); // Charon (Devil Square)
+        yield return this.CreateMonsterSpawn(7, this.NpcDictionary[237], 171, 105, Direction.SouthEast); // Charon (Devil Square)
     }
 }

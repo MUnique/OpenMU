@@ -32,8 +32,10 @@ internal partial class CharacterClassInitialization
     protected CharacterClass CreateMagicGladiator(CharacterClassNumber number, string name, bool isMaster, CharacterClass? nextGenerationClass, bool canGetCreated)
     {
         var result = this.Context.CreateNew<CharacterClass>();
+        result.SetGuid((byte)number);
         this.GameConfiguration.CharacterClasses.Add(result);
         result.CanGetCreated = canGetCreated;
+        result.LevelWarpRequirementReductionPercent = (int) Math.Ceiling(100.0 / 3);
         result.HomeMap = this.GameConfiguration.Maps.FirstOrDefault(map => map.Number == LorenciaMapId);
         result.Number = (byte)number;
         result.Name = name;

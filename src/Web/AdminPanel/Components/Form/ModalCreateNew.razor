@@ -1,16 +1,30 @@
 ﻿@using MUnique.OpenMU.Persistence
+@using MUnique.OpenMU.DataModel.Entities
+@using MUnique.OpenMU.Web.AdminPanel.Components.ItemEdit
+
 @typeparam TItem
 
-<EditForm Model="@Item">
-    <CascadingValue Value="@this.PersistenceContext">
-        <DataAnnotationsValidator />
-        <CreationAutoFields />
 
-        <ValidationSummary />
+@if (typeof(TItem) == typeof(Item))
+{
+    var item = (Item)(object)this.Item!;
+
+    <CascadingValue Value="@this.PersistenceContext">
+        <ItemEdit Item="@item" OnCancel="@this.CancelAsync" OnValidSubmit="@this.SubmitAsync" />
     </CascadingValue>
-    <button type="submit" @onclick="@SubmitAsync" class="btn-primary">Submit</button>
-    <button @onclick="@CancelAsync" class="btn-secondary">Cancel</button>
-</EditForm>
+}
+else
+{
+    <EditForm Model="@Item">
+        <CascadingValue Value="@this.PersistenceContext">
+            <DataAnnotationsValidator/>
+            <CreationAutoFields/>
+            <ValidationSummary/>
+        </CascadingValue>
+        <button type="submit" @onclick="@SubmitAsync" class="primary-button">Submit</button>
+        <button type="button" @onclick="@CancelAsync" class="cancel-button">Cancel</button>
+    </EditForm>
+}
 
 @code {
 

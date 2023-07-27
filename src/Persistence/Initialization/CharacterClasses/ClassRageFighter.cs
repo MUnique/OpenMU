@@ -23,6 +23,7 @@ internal partial class CharacterClassInitialization
     private CharacterClass CreateRageFighter(CharacterClassNumber number, string name, bool isMaster, CharacterClass? nextGenerationClass, bool canGetCreated)
     {
         var result = this.Context.CreateNew<CharacterClass>();
+        result.SetGuid((byte)number);
         this.GameConfiguration.CharacterClasses.Add(result);
         result.CanGetCreated = canGetCreated;
         result.HomeMap = this.GameConfiguration.Maps.FirstOrDefault(map => map.Number == LorenciaMapId);
@@ -32,6 +33,7 @@ internal partial class CharacterClassInitialization
         result.IsMasterClass = isMaster;
         result.LevelRequirementByCreation = 150;
         result.NextGenerationClass = nextGenerationClass;
+        result.LevelWarpRequirementReductionPercent = (int) Math.Ceiling(100.0 / 3);
         result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.Level, 1, false));
         result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.PointsPerLevelUp, 7, false));
         result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.BaseStrength, 32, true));

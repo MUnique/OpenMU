@@ -63,6 +63,12 @@ public class SimpleElement : IElement
         }
     }
 
+    /// <inheritdoc/>
+    public override string ToString()
+    {
+        return $"{this.Value} ({this.AggregateType})";
+    }
+
     /// <summary>
     /// Raises the value changed event.
     /// </summary>

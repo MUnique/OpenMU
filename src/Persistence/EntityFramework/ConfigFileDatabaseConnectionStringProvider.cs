@@ -42,12 +42,16 @@ public class ConfigFileDatabaseConnectionStringProvider : IDatabaseConnectionSet
         this._fileName = fileName;
     }
 
+    /// <inheritdoc />
+    public Task? Initialization { get; private set; }
+
     private IDictionary<Type, ConnectionSetting> Settings => this._settings ??= this.LoadSettings();
 
     /// <inheritdoc />
     public async Task InitializeAsync(CancellationToken cancellationToken)
     {
-        await Task.Run(() => this._settings = this.LoadSettings(), cancellationToken).ConfigureAwait(false);
+        this.Initialization = Task.Run(() => this._settings = this.LoadSettings(), cancellationToken);
+        await this.Initialization.ConfigureAwait(false);
         ConnectionConfigurator.Initialize(this);
     }
 

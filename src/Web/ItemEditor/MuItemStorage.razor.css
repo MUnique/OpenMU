@@ -1,0 +1,22 @@
+﻿
+.mu-item-storage {
+    --boxSize: 42px;
+    --storageColumns: 8;
+    background-image: url('/_content/MUnique.OpenMU.Web.ItemEditor/img/inventory_back.png');
+    background-size: 12.5%;
+    width: calc(var(--boxSize) * (var(--storageColumns)));
+    position: relative;
+    display: flex;
+}
+
+.storage-rows4 {
+    height: calc(var(--boxSize) * 4);
+}
+
+.storage-rows8 {
+    height: calc(var(--boxSize) * 8);
+}
+
+.storage-rows15 {
+    height: calc(var(--boxSize) * 15);
+}

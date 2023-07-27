@@ -22,7 +22,7 @@ public class SetPetBehaviourRequestAction
         if (player.Inventory?.GetItem(InventoryConstants.RightHandSlot) is not { } pet
             || !pet.IsTrainablePet())
         {
-            player.Logger.LogError("Player requested to change the pet command, but has no trainable pet equipped.");
+            player.Logger.LogDebug("Player {player} requested to change the pet command, but has no trainable pet equipped.", player);
             return;
         }
 

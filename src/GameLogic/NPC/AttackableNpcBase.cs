@@ -8,7 +8,6 @@ using System.Diagnostics;
 using System.Threading;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.Attributes;
-using MUnique.OpenMU.GameLogic.Pet;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Pathfinding;
@@ -101,6 +100,11 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
     /// <inheritdoc />
     public async ValueTask AttackByAsync(IAttacker attacker, SkillEntry? skill, bool isCombo)
     {
+        if (this.Definition.ObjectKind == NpcObjectKind.Guard)
+        {
+            return;
+        }
+
         var hitInfo = await attacker.CalculateDamageAsync(this, skill, isCombo).ConfigureAwait(false);
         await this.HitAsync(hitInfo, attacker, skill?.Skill).ConfigureAwait(false);
         if (hitInfo.HealthDamage > 0)
@@ -123,6 +127,12 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
 
     /// <inheritdoc />
     public abstract ValueTask ApplyPoisonDamageAsync(IAttacker initialAttacker, uint damage);
+
+    /// <inheritdoc/>
+    public ValueTask KillInstantlyAsync()
+    {
+        throw new NotImplementedException();
+    }
 
     /// <inheritdoc/>
     public override void Initialize()
@@ -284,7 +294,7 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
 
     private async ValueTask DropItemAsync(int exp, Player killer)
     {
-        var generatedItems = this._dropGenerator.GenerateItemDrops(this.Definition, exp, killer, out var droppedMoney);
+        var (generatedItems, droppedMoney) = await this._dropGenerator.GenerateItemDropsAsync(this.Definition, exp, killer).ConfigureAwait(false);
         if (droppedMoney > 0)
         {
             await this.HandleMoneyDropAsync(droppedMoney.Value, killer).ConfigureAwait(false);
@@ -331,7 +341,6 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
         if (player is { })
         {
             int exp = await ((player.Party?.DistributeExperienceAfterKillAsync(this, player) ?? player.AddExpAfterKillAsync(this)).ConfigureAwait(false));
-            await this.DropItemAsync(exp, player).ConfigureAwait(false);
             if (attacker == player)
             {
                 await player.AfterKilledMonsterAsync().ConfigureAwait(false);
@@ -342,6 +351,21 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
             {
                 player.SelectedCharacter.StateRemainingSeconds -= (int)this.Attributes[Stats.Level];
             }
+
+            _ = this.DropItemDelayedAsync(player, exp); // don't wait for completion.
+        }
+    }
+
+    private async ValueTask DropItemDelayedAsync(Player player, int gainedExp)
+    {
+        try
+        {
+            await Task.Delay(1000).ConfigureAwait(false);
+            await this.DropItemAsync(gainedExp, player).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            player.Logger.LogDebug(ex, "Dropping an item failed after killing '{this}': {ex}", this, ex);
         }
     }
 }

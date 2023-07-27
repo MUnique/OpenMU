@@ -4,8 +4,10 @@
 
 namespace MUnique.OpenMU.Startup;
 
+using Microsoft.Extensions.DependencyInjection;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Network;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -13,18 +15,15 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 public class ConfigurationChangeHandler : IConfigurationChangePublisher
 {
-    private readonly PlugInManager _plugInManager;
-    private readonly ConnectServerContainer _connectServerContainer;
+    private readonly IServiceProvider _serviceProvider;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ConfigurationChangeHandler"/> class.
+    /// Initializes a new instance of the <see cref="ConfigurationChangeHandler" /> class.
     /// </summary>
-    /// <param name="plugInManager">The plug in manager.</param>
-    /// <param name="connectServerContainer">The connect server.</param>
-    public ConfigurationChangeHandler(PlugInManager plugInManager, ConnectServerContainer connectServerContainer)
+    /// <param name="serviceProvider">The service provider.</param>
+    public ConfigurationChangeHandler(IServiceProvider serviceProvider)
     {
-        this._plugInManager = plugInManager;
-        this._connectServerContainer = connectServerContainer;
+        this._serviceProvider = serviceProvider;
     }
 
     /// <inheritdoc />
@@ -38,6 +37,11 @@ public class ConfigurationChangeHandler : IConfigurationChangePublisher
         if (configuration is ConnectServerDefinition connectServerDefinition)
         {
             await this.OnConnectServerDefinitionChangedAsync(id, connectServerDefinition).ConfigureAwait(false);
+        }
+
+        if (configuration is SystemConfiguration systemConfiguration)
+        {
+            this.OnSystemConfigurationChanged(id, systemConfiguration);
         }
     }
 
@@ -55,15 +59,30 @@ public class ConfigurationChangeHandler : IConfigurationChangePublisher
     /// <inheritdoc />
     public async Task ConfigurationRemovedAsync(Type type, Guid id)
     {
-        if (type.IsAssignableTo(typeof(PlugInConfiguration)))
+        if (type.IsAssignableTo(typeof(PlugInConfiguration)) && this._serviceProvider.GetService<PlugInManager>() is { } plugInManager)
         {
-            this._plugInManager.DeactivatePlugIn(id);
+            plugInManager.DeactivatePlugIn(id);
         }
+    }
+
+    private void OnSystemConfigurationChanged(Guid id, SystemConfiguration systemConfiguration)
+    {
+        if (this._serviceProvider.GetService<IIpAddressResolver>() is not ConfigurableIpResolver ipAddressResolver)
+        {
+            return;
+        }
+
+        ipAddressResolver.Configure(systemConfiguration.IpResolver, systemConfiguration.IpResolverParameter);
     }
 
     private async ValueTask OnConnectServerDefinitionChangedAsync(Guid id, ConnectServerDefinition connectServerDefinition)
     {
-        foreach (var connectServer in this._connectServerContainer)
+        if (this._serviceProvider.GetService<ConnectServerContainer>() is not { } connectServerContainer)
+        {
+            return;
+        }
+
+        foreach (var connectServer in connectServerContainer)
         {
             if (connectServer.ServerState == ServerState.Started)
             {
@@ -77,18 +96,23 @@ public class ConfigurationChangeHandler : IConfigurationChangePublisher
 
     private void OnPlugInConfigurationChanged(Guid id, PlugInConfiguration plugInConfiguration)
     {
-        var currentlyActive = this._plugInManager.IsPlugInActive(id);
+        if (this._serviceProvider.GetService<PlugInManager>() is not { } plugInManager)
+        {
+            return;
+        }
+
+        var currentlyActive = plugInManager.IsPlugInActive(id);
         if (currentlyActive && !plugInConfiguration.IsActive)
         {
-            this._plugInManager.DeactivatePlugIn(id);
+            plugInManager.DeactivatePlugIn(id);
         }
         else if (!currentlyActive && plugInConfiguration.IsActive)
         {
-            this._plugInManager.ActivatePlugIn(id);
+            plugInManager.ActivatePlugIn(id);
         }
         else
         {
-            this._plugInManager.ConfigurePlugIn(id, plugInConfiguration);
+            plugInManager.ConfigurePlugIn(id, plugInConfiguration);
         }
     }
 }

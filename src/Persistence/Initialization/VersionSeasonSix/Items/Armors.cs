@@ -4,26 +4,15 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
 
-using MUnique.OpenMU.AttributeSystem;
-using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
-using MUnique.OpenMU.GameLogic.Attributes;
-using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 using MUnique.OpenMU.Persistence.Initialization.Items;
 
 /// <summary>
 /// Initializer for armor data.
 /// </summary>
-public class Armors : InitializerBase
+public class Armors : ArmorInitializerBase
 {
-    private static readonly float[] DefenseIncreaseByLevel = { 0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 31, 36, 42, 49, 57, 66 };
-    private static readonly float[] ShieldDefenseIncreaseByLevel = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
-
-    private ItemLevelBonusTable? _defenseIncreaseTable;
-    private ItemLevelBonusTable? _shieldDefenseIncreaseTable;
-    private ItemLevelBonusTable? _shieldDefenseRateIncreaseTable;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="Armors"/> class.
     /// </summary>
@@ -34,6 +23,9 @@ public class Armors : InitializerBase
     {
     }
 
+    /// <inheritdoc />
+    protected override byte MaximumArmorLevel => 15;
+
     /// <summary>
     /// Initializes armor data.
     /// </summary>
@@ -43,9 +35,7 @@ public class Armors : InitializerBase
     /// </remarks>
     public override void Initialize()
     {
-        this._defenseIncreaseTable = this.CreateItemBonusTable(DefenseIncreaseByLevel, "Defense Increase (Armors)", "Defines the defense increase per item level for armors. It's 3 per item level until level 9, then it's always 1 more for each level.");
-        this._shieldDefenseIncreaseTable = this.CreateItemBonusTable(ShieldDefenseIncreaseByLevel, "Defense Increase (Shields)", "Defines the defense increase per item level for shields. It's always 1 per item level.");
-        this._shieldDefenseRateIncreaseTable = this.CreateItemBonusTable(DefenseIncreaseByLevel, "Defense Rate Increase (Shields)", "Defines the defense rate increase per item level for shields. It's 3 per item level until level 9, then it's always 1 more for each level.");
+        base.Initialize();
 
         // Shields:
         this.CreateShield(0, 1, 0, 2, 2, "Small Shield", 3, 1, 3, 22, 0, 70, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0);
@@ -383,143 +373,5 @@ public class Armors : InitializerBase
 
         var itemOption = this.GameConfiguration.ItemOptions.First(io => io.PossibleOptions.Any(po => po.OptionType == ItemOptionTypes.GuardianOption && po.Number == (int)itemGroup));
         armor.PossibleItemOptions.Add(itemOption);
-    }
-
-    private IncreasableItemOption BuildDefenseBonusOption(float bonus)
-    {
-        var defenseBonus = this.Context.CreateNew<IncreasableItemOption>();
-        defenseBonus.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
-        defenseBonus.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-        defenseBonus.PowerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
-        defenseBonus.PowerUpDefinition.Boost.ConstantValue.Value = bonus;
-        defenseBonus.PowerUpDefinition.TargetAttribute = Stats.DefenseBase.GetPersistent(this.GameConfiguration);
-        return defenseBonus;
-    }
-
-    private void CreateSetGroup(int setLevel, IncreasableItemOption option, ICollection<ItemDefinition> group)
-    {
-        var setForDefense = this.Context.CreateNew<ItemSetGroup>();
-        setForDefense.Name = $"{group.First().Name.Split(' ')[0]} Defense Bonus (Level {setLevel})";
-        setForDefense.MinimumItemCount = group.Count;
-        setForDefense.Options.Add(option);
-        setForDefense.SetLevel = (byte)setLevel;
-
-        foreach (var item in group)
-        {
-            var itemOfSet = this.Context.CreateNew<ItemOfItemSet>();
-            itemOfSet.ItemDefinition = item;
-            setForDefense.Items.Add(itemOfSet);
-        }
-    }
-
-    private void BuildSets()
-    {
-        var sets = this.GameConfiguration.Items.Where(item => item.Group is >= 7 and <= 11).GroupBy(item => item.Number);
-
-        var defenseRateBonus = this.Context.CreateNew<IncreasableItemOption>();
-        defenseRateBonus.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
-        defenseRateBonus.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-        defenseRateBonus.PowerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
-        defenseRateBonus.PowerUpDefinition.Boost.ConstantValue.Value = 1.1f;
-        defenseRateBonus.PowerUpDefinition.TargetAttribute = Stats.DefenseRatePvm.GetPersistent(this.GameConfiguration);
-
-        var defenseBonus = new Dictionary<int, IncreasableItemOption>
-        {
-            { 10, this.BuildDefenseBonusOption(1.05f) },
-            { 11, this.BuildDefenseBonusOption(1.10f) },
-            { 12, this.BuildDefenseBonusOption(1.15f) },
-            { 13, this.BuildDefenseBonusOption(1.20f) },
-            { 14, this.BuildDefenseBonusOption(1.25f) },
-            { 15, this.BuildDefenseBonusOption(1.30f) },
-        };
-
-        foreach (var group in sets)
-        {
-            var setForDefenseRate = this.Context.CreateNew<ItemSetGroup>();
-            setForDefenseRate.Name = group.First().Name.Split(' ')[0] + " Defense Rate Bonus";
-            setForDefenseRate.MinimumItemCount = group.Count();
-            setForDefenseRate.Options.Add(defenseRateBonus);
-            foreach (var item in group)
-            {
-                var itemOfSet = this.Context.CreateNew<ItemOfItemSet>();
-                itemOfSet.ItemDefinition = item;
-                setForDefenseRate.Items.Add(itemOfSet);
-            }
-
-            for (int setLevel = 10; setLevel <= 15; setLevel++)
-            {
-                this.CreateSetGroup(setLevel, defenseBonus[setLevel], group.ToList());
-            }
-        }
-    }
-
-    private void CreateShield(byte number, byte slot, byte skill, byte width, byte height, string name, byte dropLevel, int defense, int defenseRate, byte durability, int levelRequirement, int strengthRequirement, int agilityRequirement, int energyRequirement, int vitalityRequirement, int leadershipRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel, int ragefighterClassLevel)
-    {
-        var shield = this.CreateArmor(number, slot, width, height, name, dropLevel, 0, durability, levelRequirement, strengthRequirement, agilityRequirement, energyRequirement, vitalityRequirement, leadershipRequirement, darkWizardClassLevel, darkKnightClassLevel, elfClassLevel, magicGladiatorClassLevel, darkLordClassLevel, summonerClassLevel, ragefighterClassLevel);
-        if (skill != 0)
-        {
-            shield.Skill = this.GameConfiguration.Skills.First(s => s.Number == skill);
-        }
-
-        if (defense > 0)
-        {
-            var powerUp = this.CreateItemBasePowerUpDefinition(Stats.DefenseBase, defense);
-            powerUp.BonusPerLevelTable = this._shieldDefenseIncreaseTable;
-            shield.BasePowerUpAttributes.Add(powerUp);
-        }
-
-        if (defenseRate > 0)
-        {
-            var powerUp = this.CreateItemBasePowerUpDefinition(Stats.DefenseRatePvm, defenseRate);
-            powerUp.BonusPerLevelTable = this._shieldDefenseRateIncreaseTable;
-            shield.BasePowerUpAttributes.Add(powerUp);
-        }
-
-        var isShieldEquipped = this.Context.CreateNew<ItemBasePowerUpDefinition>();
-        isShieldEquipped.TargetAttribute = Stats.IsShieldEquipped.GetPersistent(this.GameConfiguration);
-        isShieldEquipped.BaseValue = 1;
-        shield.BasePowerUpAttributes.Add(isShieldEquipped);
-    }
-
-    private ItemDefinition CreateArmor(byte number, byte slot, byte width, byte height, string name, byte dropLevel, int defense, byte durability, int levelRequirement, int strengthRequirement, int agilityRequirement, int energyRequirement, int vitalityRequirement, int leadershipRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel, int ragefighterClassLevel)
-    {
-        var armor = this.Context.CreateNew<ItemDefinition>();
-        this.GameConfiguration.Items.Add(armor);
-        armor.Group = (byte)(slot + 5);
-        armor.Number = number;
-        armor.Width = width;
-        armor.Height = height;
-        armor.Name = name;
-        armor.DropLevel = dropLevel;
-        armor.MaximumItemLevel = 15;
-        armor.DropsFromMonsters = true;
-        armor.Durability = durability;
-        armor.ItemSlot = this.GameConfiguration.ItemSlotTypes.First(st => st.ItemSlots.Contains(slot));
-        this.CreateItemRequirementIfNeeded(armor, Stats.Level, levelRequirement);
-        this.CreateItemRequirementIfNeeded(armor, Stats.TotalStrengthRequirementValue, strengthRequirement);
-        this.CreateItemRequirementIfNeeded(armor, Stats.TotalAgilityRequirementValue, agilityRequirement);
-        this.CreateItemRequirementIfNeeded(armor, Stats.TotalEnergyRequirementValue, energyRequirement);
-        this.CreateItemRequirementIfNeeded(armor, Stats.TotalVitalityRequirementValue, vitalityRequirement);
-        this.CreateItemRequirementIfNeeded(armor, Stats.TotalLeadershipRequirementValue, leadershipRequirement);
-
-        if (defense > 0)
-        {
-            var powerUp = this.CreateItemBasePowerUpDefinition(Stats.DefenseBase, defense);
-            powerUp.BonusPerLevelTable = this._defenseIncreaseTable;
-            armor.BasePowerUpAttributes.Add(powerUp);
-        }
-
-        var classes = this.GameConfiguration.DetermineCharacterClasses(darkWizardClassLevel, darkKnightClassLevel, elfClassLevel, magicGladiatorClassLevel, darkLordClassLevel, summonerClassLevel, ragefighterClassLevel);
-        foreach (var characterClass in classes)
-        {
-            armor.QualifiedCharacters.Add(characterClass);
-        }
-
-        armor.PossibleItemOptions.Add(this.GameConfiguration.GetLuck());
-        armor.PossibleItemOptions.Add(this.GameConfiguration.GetDefenseOption());
-        armor.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.First(o => o.Name == ExcellentOptions.DefenseOptionsName));
-        armor.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.First(o => o.Name == HarmonyOptions.DefenseOptionsName));
-
-        return armor;
     }
 }

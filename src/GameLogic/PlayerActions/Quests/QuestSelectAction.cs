@@ -36,7 +36,7 @@ public class QuestSelectAction
             return;
         }
 
-        if (questState?.LastFinishedQuest == quest && !quest.Repeatable)
+        if (quest.Equals(questState?.LastFinishedQuest) && !quest.Repeatable)
         {
             player.Logger.LogDebug("The quest is not repeatable.");
             return;

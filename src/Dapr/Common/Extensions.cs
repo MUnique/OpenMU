@@ -5,23 +5,24 @@
 namespace MUnique.OpenMU.Dapr.Common;
 
 using System.Reflection;
+using System.Threading;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Nito.AsyncEx.Synchronous;
-using Npgsql;
-using OpenTelemetry.Metrics;
-using Serilog.Debugging;
-using Serilog.Events;
-using Serilog.Filters;
-using Serilog;
-using Serilog.Sinks.Grafana.Loki;
-
+using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.EntityFramework;
 using MUnique.OpenMU.PlugIns;
+using Nito.AsyncEx.Synchronous;
+using OpenTelemetry.Metrics;
+using Serilog;
+using Serilog.Debugging;
+using Serilog.Events;
+using Serilog.Filters;
+using Serilog.Sinks.Grafana.Loki;
 
 /// <summary>
 /// Common extensions for the building of daprized services.
@@ -55,29 +56,43 @@ public static class Extensions
     /// Adds the plug in manager.
     /// </summary>
     /// <param name="services">The services.</param>
+    /// <param name="plugInConfigurations">The plug in configurations.</param>
     /// <returns>The services.</returns>
-    public static IServiceCollection AddPlugInManager(this IServiceCollection services)
+    public static IServiceCollection AddPlugInManager(this IServiceCollection services, ICollection<PlugInConfiguration> plugInConfigurations)
     {
         return services
-            .AddSingleton<ICollection<PlugInConfiguration>>(s =>
-            {
-                try
-                {
-                    if (s.GetService<IPersistenceContextProvider>() is not { } persistenceContextProvider)
-                    {
-                        throw new Exception($"{nameof(IPersistenceContextProvider)} not registered.");
-                    }
-
-                    var configs = persistenceContextProvider.CreateNewTypedContext<PlugInConfiguration>().GetAsync<PlugInConfiguration>().AsTask().WaitAndUnwrapException();
-                    return configs.ToList();
-                }
-                catch (PostgresException)
-                {
-                    // If we can't load it yet, because the database is not initialized, we just return an empty list.
-                    return new List<PlugInConfiguration>();
-                }
-            })
+            .AddSingleton(plugInConfigurations)
             .AddSingleton<PlugInManager>();
+    }
+
+    /// <summary>
+    /// Tries to load the plug in configurations.
+    /// </summary>
+    /// <param name="serviceProvider">The service provider.</param>
+    /// <param name="plugInConfigurations">The list of plug in configurations, where the loaded configurations will be added.</param>
+    public static async ValueTask TryLoadPlugInConfigurationsAsync(this IServiceProvider serviceProvider, List<PlugInConfiguration> plugInConfigurations)
+    {
+        if (serviceProvider.GetService<IMigratableDatabaseContextProvider>() is not { } persistenceContextProvider)
+        {
+            throw new Exception($"{nameof(IPersistenceContextProvider)} not registered.");
+        }
+
+        try
+        {
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+            if (!await persistenceContextProvider.CanConnectToDatabaseAsync(cts.Token).ConfigureAwait(false)
+                || !await persistenceContextProvider.DatabaseExistsAsync(cts.Token).ConfigureAwait(false))
+            {
+                return;
+            }
+
+            var configs = await persistenceContextProvider.CreateNewTypedContext<PlugInConfiguration>(false).GetAsync<PlugInConfiguration>().ConfigureAwait(false);
+            plugInConfigurations.AddRange(configs);
+        }
+        catch
+        {
+            // If we can't load it yet, because the database is not initialized, we just return
+        }
     }
 
     /// <summary>
@@ -285,5 +300,38 @@ public static class Extensions
         await app.Services.GetService<IDatabaseConnectionSettingProvider>()!
             .InitializeAsync(default)
             .ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Adds the ip resolver to the collection, depending on the command line arguments
+    /// and the <see cref="SystemConfiguration"/> in the database.
+    /// </summary>
+    /// <param name="serviceCollection">The service collection.</param>
+    /// <param name="args">The arguments.</param>
+    /// <returns>The <paramref name="serviceCollection"/>.</returns>
+    public static IServiceCollection AddIpResolver(this IServiceCollection serviceCollection, string[] args)
+    {
+        return serviceCollection.AddSingleton(serviceProvider =>
+        {
+            (IpResolverType IpResolver, string? IpResolverParameter)? settings = default;
+            try
+            {
+                var persistenceContextProvider = serviceProvider.GetService<IPersistenceContextProvider>() ?? throw new Exception($"{nameof(IPersistenceContextProvider)} not registered.");
+                using var context = persistenceContextProvider.CreateNewTypedContext<SystemConfiguration>(false);
+
+                // TODO: this may lead to a deadlock?
+                var configuration = context.GetAsync<SystemConfiguration>().AsTask().WaitAndUnwrapException().FirstOrDefault();
+                if (configuration is not null)
+                {
+                    settings = (configuration.IpResolver, configuration.IpResolverParameter);
+                }
+            }
+            catch (Exception ex)
+            {
+                serviceProvider.GetService<ILogger<IIpAddressResolver>>()?.LogError(ex, "Unexpected error when trying to load the system configuration during ip resolver creation: {ex}", ex);
+            }
+
+            return IpAddressResolverFactory.CreateIpResolver(args, settings, serviceProvider.GetService<ILoggerFactory>()!);
+        });
     }
 }

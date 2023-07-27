@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlugIns;
 
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic.Views.World;
@@ -16,9 +17,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("3E702A15-653A-48EF-899C-4CDB2239A90C")]
 public class WeatherUpdatePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
 {
-    private readonly Random _random = new ();
-
-    private readonly IDictionary<GameMap, (byte, byte)> _weatherStates = new Dictionary<GameMap, (byte, byte)>();
+    private readonly IDictionary<GameMap, (byte, byte)> _weatherStates = new ConcurrentDictionary<GameMap, (byte, byte)>();
 
     private DateTime _nextRunUtc = DateTime.UtcNow;
 
@@ -35,10 +34,10 @@ public class WeatherUpdatePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
         this._isRunning = true;
         try
         {
-            foreach (var map in gameContext.Maps)
+            foreach (var map in await gameContext.GetMapsAsync())
             {
-                var weather = (byte)this._random.Next(0, 3);
-                var variation = (byte)this._random.Next(0, 10);
+                var weather = (byte)Rand.NextInt(0, 3);
+                var variation = (byte)Rand.NextInt(0, 10);
                 this._weatherStates[map] = (weather, variation);
             }
 
@@ -51,7 +50,7 @@ public class WeatherUpdatePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
         finally
         {
             this._isRunning = false;
-            this._nextRunUtc = DateTime.UtcNow.AddSeconds(this._random.Next(10, 20));
+            this._nextRunUtc = DateTime.UtcNow.AddSeconds(Rand.NextInt(10, 20));
         }
     }
 

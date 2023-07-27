@@ -21,7 +21,7 @@ steps:
 - bash: |
     #!/bin/sh
     echo 'tag is $TAG'
-    if (curl --silent -f -lSL https://index.docker.io/v1/repositories/munique/openmu/tags/$TAG > /dev/null) then
+    if (curl --silent -f -lSL https://hub.docker.com/v2/repositories/munique/openmu/tags/$TAG > /dev/null) then
       echo '##vso[task.setvariable variable=tagExists]true'
     else
       echo '##vso[task.setvariable variable=tagExists]false'
@@ -33,100 +33,107 @@ steps:
   inputs:
    containerRegistry: 'munique docker hub'
    command: 'login'
-
-- task: Docker@2
-  displayName: "Build and Push All-In-One Image (openmu)"
+- task: CmdLine@2
   condition: eq(variables.tagExists, 'false')
+  displayName: "Build and Push All-In-One Image (openmu)"
   inputs:
-    containerRegistry: 'munique docker hub'
-    command: 'buildAndPush'
-    Dockerfile: 'src/Startup/Dockerfile'
-    buildContext: 'src'
-    repository: 'munique/openmu'
-    tags: |
-      $(projectVersion)
-      latest
-- task: Docker@2
+    script: |
+      cd src
+      docker buildx create --use
+      docker buildx build --platform linux/amd64,linux/arm64/v8 \
+        --file Startup/Dockerfile \
+        -t munique/openmu:latest \
+        -t munique/openmu:$(projectVersion) \
+        --push \
+        .
+- task: CmdLine@2
   displayName: "Build and Push AdminPanel Image (openmu-admin)"
   condition: eq(variables.tagExists, 'false')
   inputs:
-    containerRegistry: 'munique docker hub'
-    command: 'buildAndPush'
-    Dockerfile: 'src/Dapr/AdminPanel.Host/Dockerfile'
-    buildContext: 'src'
-    repository: 'munique/openmu-admin'
-    tags: |
-      $(projectVersion)
-      latest
-- task: Docker@2
+    script: |
+      cd src
+      docker buildx create --use
+      docker buildx build --platform linux/amd64,linux/arm64/v8 \
+        --file Dapr/AdminPanel.Host/Dockerfile \
+        -t munique/openmu-admin:latest \
+        -t munique/openmu-admin:$(projectVersion) \
+        --push \
+        .
+- task: CmdLine@2
   displayName: "Build and Push ChatServer Image"
   condition: eq(variables.tagExists, 'false')
   inputs:
-    containerRegistry: 'munique docker hub'
-    command: 'buildAndPush'
-    Dockerfile: 'src/Dapr/ChatServer.Host/Dockerfile'
-    buildContext: 'src'
-    repository: 'munique/openmu-chat'
-    tags: |
-      $(projectVersion)
-      latest
-- task: Docker@2
+    script: |
+      cd src
+      docker buildx create --use
+      docker buildx build --platform linux/amd64,linux/arm64/v8 \
+        --file Dapr/ChatServer.Host/Dockerfile \
+        -t munique/openmu-chat:latest \
+        -t munique/openmu-chat:$(projectVersion) \
+        --push \
+        .
+- task: CmdLine@2
   displayName: "Build and Push ConnectServer Image (openmu-connect)"
   condition: eq(variables.tagExists, 'false')
   inputs:
-    containerRegistry: 'munique docker hub'
-    command: 'buildAndPush'
-    Dockerfile: 'src/Dapr/ConnectServer.Host/Dockerfile'
-    buildContext: 'src'
-    repository: 'munique/openmu-connect'
-    tags: |
-      $(projectVersion)
-      latest
-- task: Docker@2
+    script: |
+      cd src
+      docker buildx create --use
+      docker buildx build --platform linux/amd64,linux/arm64/v8 \
+        --file Dapr/ConnectServer.Host/Dockerfile \
+        -t munique/openmu-connect:latest \
+        -t munique/openmu-connect:$(projectVersion) \
+        --push \
+        .
+- task: CmdLine@2
   displayName: "Build and Push FriendServer Image (openmu-friend)"
   condition: eq(variables.tagExists, 'false')
   inputs:
-    containerRegistry: 'munique docker hub'
-    command: 'buildAndPush'
-    Dockerfile: 'src/Dapr/FriendServer.Host/Dockerfile'
-    buildContext: 'src'
-    repository: 'munique/openmu-friend'
-    tags: |
-      $(projectVersion)
-      latest
-- task: Docker@2
+    script: |
+      cd src
+      docker buildx create --use
+      docker buildx build --platform linux/amd64,linux/arm64/v8 \
+        --file Dapr/FriendServer.Host/Dockerfile \
+        -t munique/openmu-friend:latest \
+        -t munique/openmu-friend:$(projectVersion) \
+        --push \
+        .
+- task: CmdLine@2
   displayName: "Build and Push GameServer Image (openmu-game)"
   condition: eq(variables.tagExists, 'false')
   inputs:
-    containerRegistry: 'munique docker hub'
-    command: 'buildAndPush'
-    Dockerfile: 'src/Dapr/GameServer.Host/Dockerfile'
-    buildContext: 'src'
-    repository: 'munique/openmu-game'
-    tags: |
-      $(projectVersion)
-      latest
-- task: Docker@2
+    script: |
+      cd src
+      docker buildx create --use
+      docker buildx build --platform linux/amd64,linux/arm64/v8 \
+        --file Dapr/GameServer.Host/Dockerfile \
+        -t munique/openmu-game:latest \
+        -t munique/openmu-game:$(projectVersion) \
+        --push \
+        .
+- task: CmdLine@2
   displayName: "Build and Push GuildServer Image (openmu-guild)"
   condition: eq(variables.tagExists, 'false')
   inputs:
-    containerRegistry: 'munique docker hub'
-    command: 'buildAndPush'
-    Dockerfile: 'src/Dapr/GuildServer.Host/Dockerfile'
-    buildContext: 'src'
-    repository: 'munique/openmu-guild'
-    tags: |
-      $(projectVersion)
-      latest
-- task: Docker@2
+    script: |
+      cd src
+      docker buildx create --use
+      docker buildx build --platform linux/amd64,linux/arm64/v8 \
+        --file Dapr/GuildServer.Host/Dockerfile \
+        -t munique/openmu-guild:latest \
+        -t munique/openmu-guild:$(projectVersion) \
+        --push \
+        .
+- task: CmdLine@2
   displayName: "Build and Push LoginServer Image (openmu-login)"
   condition: eq(variables.tagExists, 'false')
   inputs:
-    containerRegistry: 'munique docker hub'
-    command: 'buildAndPush'
-    Dockerfile: 'src/Dapr/LoginServer.Host/Dockerfile'
-    buildContext: 'src'
-    repository: 'munique/openmu-login'
-    tags: |
-      $(projectVersion)
-      latest
+    script: |
+      cd src
+      docker buildx create --use
+      docker buildx build --platform linux/amd64,linux/arm64/v8 \
+        --file Dapr/LoginServer.Host/Dockerfile \
+        -t munique/openmu-login:latest \
+        -t munique/openmu-login:$(projectVersion) \
+        --push \
+        .

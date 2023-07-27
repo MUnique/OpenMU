@@ -13,6 +13,16 @@ using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Events;
 internal class DevilSquare6 : BaseMapInitializer
 {
     /// <summary>
+    /// The Number of the Map.
+    /// </summary>
+    internal const byte Number = 32;
+
+    /// <summary>
+    /// The Name of the Map.
+    /// </summary>
+    internal const string Name = "Devil Square 6";
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="DevilSquare6"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -23,13 +33,13 @@ internal class DevilSquare6 : BaseMapInitializer
     }
 
     /// <inheritdoc/>
-    protected override byte MapNumber => 32;
+    protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => "Devil Square 6";
+    protected override string MapName => Name;
 
     /// <inheritdoc/>
-    protected override int Discriminator => 6;
+    protected override byte Discriminator => 6;
 
     /// <inheritdoc/>
     protected override byte SafezoneMapNumber => Noria.Number;
@@ -43,15 +53,15 @@ internal class DevilSquare6 : BaseMapInitializer
         const byte y2 = 184;
         const byte quantity = 35;
 
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[290], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.FirstWaveNumber); // Lizard Warrior
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[57], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.FirstWaveNumber); // Iron Wheel
+        yield return this.CreateMonsterSpawn(1, this.NpcDictionary[290], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.FirstWaveNumber); // Lizard Warrior
+        yield return this.CreateMonsterSpawn(2, this.NpcDictionary[57], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.FirstWaveNumber); // Iron Wheel
 
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[70], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.SecondWaveNumber); // Queen Rainer
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[293], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.SecondWaveNumber); // Poison Golem
+        yield return this.CreateMonsterSpawn(3, this.NpcDictionary[70], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.SecondWaveNumber); // Queen Rainer
+        yield return this.CreateMonsterSpawn(4, this.NpcDictionary[293], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.SecondWaveNumber); // Poison Golem
 
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[74], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.ThirdWaveNumber); // Alpha Crust
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[292], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.ThirdWaveNumber); // Queen Bee
+        yield return this.CreateMonsterSpawn(5, this.NpcDictionary[74], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.ThirdWaveNumber); // Alpha Crust
+        yield return this.CreateMonsterSpawn(6, this.NpcDictionary[292], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.ThirdWaveNumber); // Queen Bee
 
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[197], x1, x2, y1, y2, 5, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, DevilSquareInitializer.BossWaveNumber); // Shadow of Kundun
+        yield return this.CreateMonsterSpawn(7, this.NpcDictionary[197], x1, x2, y1, y2, 5, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, DevilSquareInitializer.BossWaveNumber); // Shadow of Kundun
     }
 }

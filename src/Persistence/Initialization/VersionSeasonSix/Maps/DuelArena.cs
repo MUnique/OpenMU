@@ -12,6 +12,16 @@ using MUnique.OpenMU.DataModel.Configuration;
 internal class DuelArena : BaseMapInitializer
 {
     /// <summary>
+    /// The Number of the Map.
+    /// </summary>
+    internal const byte Number = 64;
+
+    /// <summary>
+    /// The Name of the Map.
+    /// </summary>
+    internal const string Name = "Duel Arena";
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="DuelArena"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -22,8 +32,8 @@ internal class DuelArena : BaseMapInitializer
     }
 
     /// <inheritdoc/>
-    protected override byte MapNumber => 64;
+    protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => "Duel Arena";
+    protected override string MapName => Name;
 }

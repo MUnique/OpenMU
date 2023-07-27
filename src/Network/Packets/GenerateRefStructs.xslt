@@ -705,18 +705,30 @@ using static System.Buffers.Binary.BinaryPrimitives;</xsl:text>
       <xsl:text>, value);</xsl:text>
     </xsl:template>
 
-    <!-- Floats can be optimized I think-->
     <xsl:template match="pd:Field[pd:Type = 'Float']"  mode="get">
       <xsl:value-of select="$newline"/>
-      <xsl:text>        get =&gt; BitConverter.ToSingle(</xsl:text>
+      <xsl:text>        get =&gt; ReadSingleLittleEndian(</xsl:text>
       <xsl:call-template name="SliceData"/>
       <xsl:text>);</xsl:text>
     </xsl:template>
     <xsl:template match="pd:Field[pd:Type = 'Float']"  mode="set">
       <xsl:value-of select="$newline"/>
-      <xsl:text>        set =&gt; BitConverter.GetBytes(value).CopyTo(</xsl:text>
+      <xsl:text>        set =&gt; WriteSingleLittleEndian(</xsl:text>
       <xsl:call-template name="SliceData"/>
-      <xsl:text>);</xsl:text>
+      <xsl:text>, value);</xsl:text>
+    </xsl:template>
+
+    <xsl:template match="pd:Field[pd:Type = 'Double']"  mode="get">
+	  <xsl:value-of select="$newline"/>
+	  <xsl:text>        get =&gt; ReadDoubleLittleEndian(</xsl:text>
+	  <xsl:call-template name="SliceData"/>
+	  <xsl:text>);</xsl:text>
+    </xsl:template>
+    <xsl:template match="pd:Field[pd:Type = 'Double']"  mode="set">
+	  <xsl:value-of select="$newline"/>
+	  <xsl:text>        set =&gt; WriteDoubleLittleEndian(</xsl:text>
+	  <xsl:call-template name="SliceData"/>
+	  <xsl:text>, value);</xsl:text>
     </xsl:template>
 
     <xsl:template match="pd:Field[pd:Type = 'String']"  mode="get">

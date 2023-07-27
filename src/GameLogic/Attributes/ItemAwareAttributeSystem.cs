@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.Attributes;
 
 using MUnique.OpenMU.AttributeSystem;
+using System.Globalization;
 
 /// <summary>
 /// An attribute system which considers items of a character.
@@ -50,5 +51,32 @@ public sealed class ItemAwareAttributeSystem : AttributeSystem, IDisposable
 
             this.ItemSetPowerUps = null;
         }
+    }
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        var stringBuilder = new StringBuilder();
+        stringBuilder.Append(base.ToString());
+        stringBuilder.AppendLine("Item Power Ups:");
+        foreach (var (item, powerUps) in this.ItemPowerUps)
+        {
+            stringBuilder.Append(" ").AppendLine(item.ToString());
+            foreach (var powerUp in powerUps)
+            {
+                stringBuilder.Append("  ").AppendLine(powerUp.ToString());
+            }
+        }
+
+        if (this.ItemSetPowerUps != null)
+        {
+            stringBuilder.AppendLine("Item Set Power Ups:");
+            foreach (var attribute in this.ItemSetPowerUps)
+            {
+                stringBuilder.Append(" ").AppendLine(attribute.ToString());
+            }
+        }
+
+        return stringBuilder.ToString();
     }
 }

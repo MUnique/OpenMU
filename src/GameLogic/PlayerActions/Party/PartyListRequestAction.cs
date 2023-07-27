@@ -18,9 +18,11 @@ public class PartyListRequestAction
     /// <param name="player">The player who is requesting the list.</param>
     public async ValueTask RequestPartyListAsync(Player player)
     {
-        if (player.Party != null)
+        if (player.Party is null)
         {
-            await player.InvokeViewPlugInAsync<IUpdatePartyListPlugIn>(p => p.UpdatePartyListAsync()).ConfigureAwait(false);
+            return;
         }
+
+        await player.InvokeViewPlugInAsync<IUpdatePartyListPlugIn>(p => p.UpdatePartyListAsync()).ConfigureAwait(false);
     }
 }

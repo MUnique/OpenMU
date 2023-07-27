@@ -34,9 +34,11 @@ public class WarpAction
     private bool CheckRequirements(Player player, WarpInfo warpInfo, [MaybeNullWhen(true)] out string errorMessage)
     {
         errorMessage = null;
-        if (!this.CheckLevelRequirement(player, warpInfo))
+
+        var requirement = player.SelectedCharacter?.GetEffectiveMoveLevelRequirement(warpInfo.LevelRequirement);
+        if (requirement > player.Attributes?[Stats.Level])
         {
-            errorMessage = $"You need to be level {warpInfo.LevelRequirement} in order to warp";
+            errorMessage = $"You need to be level {requirement} in order to warp";
             return false;
         }
 
@@ -65,16 +67,6 @@ public class WarpAction
     private bool CheckMoneyRequirement(Player player, WarpInfo warpInfo)
     {
         if (player.TryRemoveMoney(warpInfo.Costs))
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    private bool CheckLevelRequirement(Player player, WarpInfo warpInfo)
-    {
-        if (warpInfo.LevelRequirement <= player.Attributes?[Stats.Level])
         {
             return true;
         }

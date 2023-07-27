@@ -26,6 +26,7 @@
   <xsl:template match="pd:Type[. = 'IntegerLittleEndian' or . = 'IntegerBigEndian']" mode="type">uint</xsl:template>
   <xsl:template match="pd:Type[. = 'LongLittleEndian' or . = 'LongBigEndian']" mode="type">ulong</xsl:template>
   <xsl:template match="pd:Type[. = 'Float']" mode="type">float</xsl:template>
+  <xsl:template match="pd:Type[. = 'Double']" mode="type">double</xsl:template>
   <xsl:template match="pd:Type[. = 'String']" mode="type">string</xsl:template>
   <xsl:template match="pd:Type[. = 'Binary']" mode="type">Span&lt;byte&gt;</xsl:template>
   <xsl:template match="pd:Type[. = 'Enum']" mode="type">

@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameServer.MessageHandler.MiniGames;
 
 using System.Runtime.InteropServices;
+using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.PlayerActions.MiniGames;
@@ -12,7 +13,7 @@ using MUnique.OpenMU.Network.Packets.ClientToServer;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// Handler for animation packets.
+/// Handler for devil square enter request packets.
 /// </summary>
 [PlugIn(nameof(DevilSquareEnterHandlerPlugIn), "Handler for devil square enter packets.")]
 [Guid("550FFF1B-E31C-44BA-8CC9-100D5649CC87")]

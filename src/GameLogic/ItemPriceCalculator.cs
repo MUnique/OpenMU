@@ -37,15 +37,6 @@ public class ItemPriceCalculator
         { 15, 365 },
     };
 
-    private static readonly HashSet<short> WingIds = new ()
-    {
-        0, 1, 2, 3, 4, 5, 6,
-        36, 37, 38, 39, 40,
-        41, 42, 43, // sum wings
-        49, 50, // Rf Capes
-        130, 131, 132, 133, 134, 135, // mini wings? -> All worth 240, remove here!
-    };
-
     private static readonly IDictionary<int, Func<Item, long>> SpecialItemDictionary = new Dictionary<int, Func<Item, long>>
     {
         {
@@ -378,7 +369,7 @@ public class ItemPriceCalculator
             }
 
             // Wings
-            if (IsWing(item))
+            if (item.IsWing())
             {
                 // maybe we have to exclude small wings here
                 price = ((dropLevel + 40) * dropLevel * dropLevel * 11) + 40000000;
@@ -456,12 +447,6 @@ public class ItemPriceCalculator
         }
 
         return RoundPrice(price);
-    }
-
-    private static bool IsWing(Item item)
-    {
-        return (item.Definition?.Group == 12 && WingIds.Contains(item.Definition.Number))
-               || (item.Definition?.Group == 13 && item.Definition.Number == 30); // DL 1st Cape
     }
 
     private static int GetId(byte group, int id)

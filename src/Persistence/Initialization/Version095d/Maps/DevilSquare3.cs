@@ -16,6 +16,17 @@ using MUnique.OpenMU.Persistence.Initialization.Version095d.Events;
 /// </summary>
 internal class DevilSquare3 : BaseMapInitializer
 {
+
+    /// <summary>
+    /// The default number of the map.
+    /// </summary>
+    internal const byte Number = 9;
+
+    /// <summary>
+    /// The default name of the map.
+    /// </summary>
+    internal const string Name = "Devil Square 3";
+
     /// <summary>
     /// Initializes a new instance of the <see cref="DevilSquare3"/> class.
     /// </summary>
@@ -27,13 +38,13 @@ internal class DevilSquare3 : BaseMapInitializer
     }
 
     /// <inheritdoc/>
-    protected override byte MapNumber => 9;
+    protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => "Devil Square 3";
+    protected override string MapName => Name;
 
     /// <inheritdoc/>
-    protected override int Discriminator => 3;
+    protected override byte Discriminator => 3;
 
     /// <inheritdoc/>
     protected override byte SafezoneMapNumber => Noria.Number;
@@ -47,24 +58,24 @@ internal class DevilSquare3 : BaseMapInitializer
         const byte y2 = 173;
         const byte quantity = 35;
 
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[41], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.FirstWaveNumber); // Death Cow
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[37], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.FirstWaveNumber); // Devil
+        yield return this.CreateMonsterSpawn(1, this.NpcDictionary[41], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.FirstWaveNumber); // Death Cow
+        yield return this.CreateMonsterSpawn(2, this.NpcDictionary[37], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.FirstWaveNumber); // Devil
 
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[35], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.SecondWaveNumber); // Death Gorgon
+        yield return this.CreateMonsterSpawn(3, this.NpcDictionary[35], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.SecondWaveNumber); // Death Gorgon
         if (this.NpcDictionary.TryGetValue(180, out var shriker))
         {
-            yield return this.CreateMonsterSpawn(shriker, x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.SecondWaveNumber); // Shriker
+            yield return this.CreateMonsterSpawn(4, shriker, x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.SecondWaveNumber); // Shriker
         }
         else
         {
             // In lower versions without Kalima, there is no Shriker, but a Cursed Wizard, which is of comparable strength
-            yield return this.CreateMonsterSpawn(this.NpcDictionary[34], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.SecondWaveNumber); // Cursed Wizard
+            yield return this.CreateMonsterSpawn(5, this.NpcDictionary[34], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.SecondWaveNumber); // Cursed Wizard
         }
 
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[64], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.ThirdWaveNumber); // Orc Archer
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[65], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.ThirdWaveNumber); // Elite Orc
+        yield return this.CreateMonsterSpawn(6, this.NpcDictionary[64], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.ThirdWaveNumber); // Orc Archer
+        yield return this.CreateMonsterSpawn(7, this.NpcDictionary[65], x1, x2, y1, y2, quantity, Direction.Undefined, SpawnTrigger.AutomaticDuringWave, DevilSquareInitializer.ThirdWaveNumber); // Elite Orc
 
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[67], x1, x2, y1, y2, 5, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, DevilSquareInitializer.BossWaveNumber); // Metal Balrog
+        yield return this.CreateMonsterSpawn(8, this.NpcDictionary[67], x1, x2, y1, y2, 5, Direction.Undefined, SpawnTrigger.OnceAtWaveStart, DevilSquareInitializer.BossWaveNumber); // Metal Balrog
     }
 
     /// <inheritdoc/>
@@ -99,6 +110,7 @@ internal class DevilSquare3 : BaseMapInitializer
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -131,6 +143,7 @@ internal class DevilSquare3 : BaseMapInitializer
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -163,6 +176,7 @@ internal class DevilSquare3 : BaseMapInitializer
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
     }
 }

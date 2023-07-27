@@ -13,7 +13,7 @@
 .valid.modified {
     @extend .is-valid;
     @extend .was-validated;
-    @extend .form-control:valid;
+    @extend .form-control, :valid;
 }
 
 .validation-message {
@@ -24,6 +24,12 @@
 .primary-button {
     @extend .btn;
     @extend .btn-primary;
+}
+
+.cancel-button {
+    @extend .btn;
+    @extend .btn-secondary;
+    @extend .ml-3;
 }
 
 form > div {
@@ -41,14 +47,74 @@ form > div > div > div:first-of-type {
 
 form > div > div > div:first-of-type > span {
     @extend .input-group-text;
+    height: 38px;
 }
 
 form > div > div > input {
-    @extend .input-group-append;
+    @extend .form-control;
+}
+
+.blazored-modal {
+    max-height: 95%;
 }
 
 .blazored-modal-content {
-    max-height: 700px;
     overflow-y: auto;
     padding-right: 10px;
+}
+
+.modal-edit-item {
+    width: 80%;
+    height: 80%;
+}
+
+details > summary {
+    list-style-type: '🛈';
+}
+
+details[open] > summary {
+    list-style-type: '✖';
+}
+
+label > details {
+    @extend .ml-2;
+    position: absolute;
+    display: inline;
+    z-index: 0;
+}
+
+label > details[open] {
+    z-index: 1;
+}
+
+label > details > div {
+    @extend .alert;
+    @extend .alert-secondary;
+    @extend .shadow;
+    @extend .mr-3;
+}
+
+.blazored-typeahead:valid {
+    padding: 0px 0px 0px 0px !important;
+}
+
+ul.socket {
+    @extend .list-group;
+    @extend .mb-3;
+   
+    //display: flex;
+}
+
+ul.socket > li {
+    @extend .list-group-item;
+    @extend .d-flex;
+}
+
+ul.socket > li > div {
+    @extend .flex-fill;
+    @extend .w-50;
+}
+
+ul.socket > li > div:last-of-type {
+    @extend .ml-3;
 }

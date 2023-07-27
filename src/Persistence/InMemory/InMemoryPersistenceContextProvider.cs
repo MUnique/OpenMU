@@ -2,9 +2,13 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using Nito.Disposables;
+
 namespace MUnique.OpenMU.Persistence.InMemory;
 
 using System.Threading;
+using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// A context provider which uses in-memory repositories to hold its data, e.g. for testing or demo purposes.
@@ -12,64 +16,98 @@ using System.Threading;
 /// </summary>
 public class InMemoryPersistenceContextProvider : IMigratableDatabaseContextProvider
 {
-    private InMemoryRepositoryManager _repositoryManager = new ();
+    private readonly IConfigurationChangePublisher? _changePublisher;
+    private InMemoryRepositoryProvider _repositoryProvider = new ();
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="InMemoryPersistenceContextProvider"/> class.
+    /// </summary>
+    /// <param name="changePublisher">The change publisher.</param>
+    public InMemoryPersistenceContextProvider(IConfigurationChangePublisher? changePublisher = null)
+    {
+        this._changePublisher = changePublisher;
+    }
 
     /// <inheritdoc/>
     public IContext CreateNewContext()
     {
-        return new InMemoryContext(this._repositoryManager);
+        return new InMemoryContext(this._repositoryProvider);
     }
 
     /// <inheritdoc/>
-    public IContext CreateNewContext(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    public IContext CreateNewContext(GameConfiguration gameConfiguration)
     {
-        return new InMemoryContext(this._repositoryManager);
+        return new InMemoryContext(this._repositoryProvider);
     }
 
     /// <inheritdoc/>
     public IContext CreateNewTradeContext()
     {
-        return new InMemoryContext(this._repositoryManager);
+        return new InMemoryContext(this._repositoryProvider);
     }
 
     /// <inheritdoc/>
-    public IPlayerContext CreateNewPlayerContext(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    public IPlayerContext CreateNewPlayerContext(GameConfiguration gameConfiguration)
     {
-        return new PlayerInMemoryContext(this._repositoryManager);
+        return new PlayerInMemoryContext(this._repositoryProvider);
     }
 
     /// <inheritdoc/>
     public IConfigurationContext CreateNewConfigurationContext()
     {
-        return new ConfigurationInMemoryContext(this._repositoryManager);
+        return new ConfigurationInMemoryContext(this._repositoryProvider);
     }
 
     /// <inheritdoc />
     public IFriendServerContext CreateNewFriendServerContext()
     {
-        return new FriendServerInMemoryContext(this._repositoryManager);
+        return new FriendServerInMemoryContext(this._repositoryProvider);
     }
 
     /// <inheritdoc/>
     public IGuildServerContext CreateNewGuildContext()
     {
-        return new GuildServerInMemoryContext(this._repositoryManager);
+        return new GuildServerInMemoryContext(this._repositoryProvider);
     }
 
     /// <inheritdoc />
-    public IContext CreateNewTypedContext<T>()
+    public IContext CreateNewTypedContext<T>(bool useCache, GameConfiguration? gameConfiguration = null)
     {
-        return new InMemoryContext(this._repositoryManager);
+        var context = new InMemoryContext(this._repositoryProvider);
+        if (this._changePublisher is { })
+        {
+#pragma warning disable VSTHRD100
+            async void OnContextOnSavedChanges(object? o, EventArgs e)
+#pragma warning restore VSTHRD100
+            {
+                try
+                {
+                    foreach (var obj in await context.GetAsync(typeof(T)).ConfigureAwait(false))
+                    {
+                        await this._changePublisher.ConfigurationChangedAsync(typeof(T), obj.GetId(), obj).ConfigureAwait(false);
+                    }
+                }
+                catch
+                {
+                    // ignore all errors.
+                }
+            }
+
+            context.SavedChanges += OnContextOnSavedChanges;
+
+        }
+
+        return context;
     }
 
     /// <inheritdoc />
-    public Task<bool> DatabaseExistsAsync()
+    public Task<bool> DatabaseExistsAsync(CancellationToken cancellationToken)
     {
         return Task.FromResult(true);
     }
 
     /// <inheritdoc />
-    public Task<bool> IsDatabaseUpToDateAsync()
+    public Task<bool> IsDatabaseUpToDateAsync(CancellationToken cancellationToken)
     {
         return Task.FromResult(true);
     }
@@ -88,15 +126,15 @@ public class InMemoryPersistenceContextProvider : IMigratableDatabaseContextProv
     }
 
     /// <inheritdoc />
-    public Task<bool> CanConnectToDatabaseAsync()
+    public Task<bool> CanConnectToDatabaseAsync(CancellationToken cancellationToken)
     {
         return Task.FromResult(true);
     }
 
     /// <inheritdoc />
-    public Task ReCreateDatabaseAsync()
+    public Task<IDisposable> ReCreateDatabaseAsync()
     {
-        this._repositoryManager = new();
-        return Task.CompletedTask;
+        this._repositoryProvider = new();
+        return Task.FromResult<IDisposable>(new Disposable(() => { }));
     }
 }

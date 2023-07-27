@@ -22,6 +22,12 @@
                 <input @bind="CurrentValueAsString" id="@this.FieldIdentifier.FieldName" class="@CssClass" />
             }
         }
+        else
+        {
+            <p><input @bind="CurrentValueAsString" id="@this.FieldIdentifier.FieldName" class="@CssClass" placeholder="It's currently empty. Either type in the value as hex string or upload a file." /></p>
+            <p>Load file: <BlazorInputFile.InputFile id="@this.FieldIdentifier.FieldName" OnChange="@this.OnSelectedFile" /></p>
+        }
+
     </div>
 
 @code {

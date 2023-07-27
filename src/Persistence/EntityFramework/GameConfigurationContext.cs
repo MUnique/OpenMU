@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
+using System.Threading;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Persistence.EntityFramework.Model;
@@ -13,14 +14,19 @@ using MUnique.OpenMU.Persistence.EntityFramework.Model;
 /// </summary>
 internal class GameConfigurationContext : CachingEntityFrameworkContext, IConfigurationContext
 {
-    public GameConfigurationContext(RepositoryManager repositoryManager, ILogger<CachingEntityFrameworkContext> logger)
-        : base(new ConfigurationContext(), repositoryManager, logger)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GameConfigurationContext"/> class.
+    /// </summary>
+    /// <param name="repositoryProvider">The repository provider.</param>
+    /// <param name="logger">The logger.</param>
+    public GameConfigurationContext(IContextAwareRepositoryProvider repositoryProvider, ILogger<GameConfigurationContext> logger)
+        : base(new ConfigurationContext(), repositoryProvider, null, logger)
     {
     }
 
     /// <inheritdoc />
-    public async ValueTask<Guid?> GetDefaultGameConfigurationIdAsync()
+    public async ValueTask<Guid?> GetDefaultGameConfigurationIdAsync(CancellationToken cancellationToken)
     {
-        return await this.Context.Set<GameConfiguration>().Select(g => g.Id).FirstOrDefaultAsync().ConfigureAwait(false);
+        return await this.Context.Set<GameConfiguration>().Select(g => g.Id).FirstOrDefaultAsync(cancellationToken).ConfigureAwait(false);
     }
 }

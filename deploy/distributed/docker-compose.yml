@@ -6,9 +6,9 @@ volumes:
   minio-data:
 
 services:
-  nginx:
+  nginx-80:
     image: nginx:alpine
-    container_name: nginx
+    container_name: nginx-80
     restart: always
     ports:
       - "80:80"

@@ -3,7 +3,7 @@ WORKDIR /app
 EXPOSE 80
 EXPOSE 44405
 
-FROM mcr.microsoft.com/dotnet/sdk:7.0-alpine AS build
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:7.0-alpine AS build
 WORKDIR /src
 COPY ["Dapr/ConnectServer.Host/MUnique.OpenMU.ConnectServer.Host.csproj", "Dapr/ConnectServer.Host/"]
 RUN dotnet restore "Dapr/ConnectServer.Host/MUnique.OpenMU.ConnectServer.Host.csproj"

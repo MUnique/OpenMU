@@ -39,6 +39,10 @@ public static class ObservableExtensions
             {
                 await action(plugIn).ConfigureAwait(false);
             }
+            catch (InvalidOperationException ex) when (ex.Message.StartsWith("Writing is not allowed after writer was completed"))
+            {
+                // we can ignore these exceptions. The player got disconnected in the mean time.
+            }
             catch (Exception ex)
             {
                 observer.Logger.LogError(ex, $"Error when invoking view action of {typeof(TViewPlugIn)}");

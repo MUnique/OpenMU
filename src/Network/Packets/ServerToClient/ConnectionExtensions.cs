@@ -2663,12 +2663,12 @@ public static class ConnectionExtensions
     /// <param name="leadership">The leadership.</param>
     /// <param name="usedNegativeFruitPoints">The used negative fruit points.</param>
     /// <param name="maxNegativeFruitPoints">The max negative fruit points.</param>
-    /// <param name="isVaultExtended">The is vault extended.</param>
+    /// <param name="inventoryExtensions">The inventory extensions.</param>
     /// <remarks>
     /// Is sent by the server when: After the character was selected by the player and entered the game.
     /// Causes reaction on client side: The characters enters the game world.
     /// </remarks>
-    public static async ValueTask SendCharacterInformationAsync(this IConnection? connection, byte @x, byte @y, ushort @mapId, ulong @currentExperience, ulong @experienceForNextLevel, ushort @levelUpPoints, ushort @strength, ushort @agility, ushort @vitality, ushort @energy, ushort @currentHealth, ushort @maximumHealth, ushort @currentMana, ushort @maximumMana, ushort @currentShield, ushort @maximumShield, ushort @currentAbility, ushort @maximumAbility, uint @money, CharacterHeroState @heroState, CharacterStatus @status, ushort @usedFruitPoints, ushort @maxFruitPoints, ushort @leadership, ushort @usedNegativeFruitPoints, ushort @maxNegativeFruitPoints, bool @isVaultExtended)
+    public static async ValueTask SendCharacterInformationAsync(this IConnection? connection, byte @x, byte @y, ushort @mapId, ulong @currentExperience, ulong @experienceForNextLevel, ushort @levelUpPoints, ushort @strength, ushort @agility, ushort @vitality, ushort @energy, ushort @currentHealth, ushort @maximumHealth, ushort @currentMana, ushort @maximumMana, ushort @currentShield, ushort @maximumShield, ushort @currentAbility, ushort @maximumAbility, uint @money, CharacterHeroState @heroState, CharacterStatus @status, ushort @usedFruitPoints, ushort @maxFruitPoints, ushort @leadership, ushort @usedNegativeFruitPoints, ushort @maxNegativeFruitPoints, byte @inventoryExtensions)
     {
         if (connection is null)
         {
@@ -2705,7 +2705,7 @@ public static class ConnectionExtensions
             packet.Leadership = @leadership;
             packet.UsedNegativeFruitPoints = @usedNegativeFruitPoints;
             packet.MaxNegativeFruitPoints = @maxNegativeFruitPoints;
-            packet.IsVaultExtended = @isVaultExtended;
+            packet.InventoryExtensions = @inventoryExtensions;
 
             return packet.Header.Length;
         }
@@ -4062,6 +4062,66 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="MuHelperStatusUpdate" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="consumeMoney">The flag, if money should be consumed. If this is 'true', setting PauseStatus to 'false' doesn't cause starting the helper.</param>
+    /// <param name="money">The money.</param>
+    /// <param name="pauseStatus">The pause status. A value of 'true' always works to stop the helper. However, it can only be started, with ConsumeMoney set to 'false'.</param>
+    /// <remarks>
+    /// Is sent by the server when: The server validated or changed the status of the MU Helper.
+    /// Causes reaction on client side: The client toggle the MU Helper status.
+    /// </remarks>
+    public static async ValueTask SendMuHelperStatusUpdateAsync(this IConnection? connection, bool @consumeMoney, uint @money, bool @pauseStatus)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = MuHelperStatusUpdateRef.Length;
+            var packet = new MuHelperStatusUpdateRef(connection.Output.GetSpan(length)[..length]);
+            packet.ConsumeMoney = @consumeMoney;
+            packet.Money = @money;
+            packet.PauseStatus = @pauseStatus;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="MuHelperConfigurationData" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="helperData">The helper data.</param>
+    /// <remarks>
+    /// Is sent by the server when: The server saved the users MU Helper data.
+    /// Causes reaction on client side: The user wants to save the MU Helper data.
+    /// </remarks>
+    public static async ValueTask SendMuHelperConfigurationDataAsync(this IConnection? connection, Memory<byte> @helperData)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = MuHelperConfigurationDataRef.Length;
+            var packet = new MuHelperConfigurationDataRef(connection.Output.GetSpan(length)[..length]);
+            @helperData.Span.CopyTo(packet.HelperData);
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="FriendAdded" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
@@ -4536,12 +4596,12 @@ public static class ConnectionExtensions
     /// <param name="gameType">The game type.</param>
     /// <param name="remainingEnteringTimeMinutes">The remaining entering time minutes.</param>
     /// <param name="userCount">The user count.</param>
-    /// <param name="remainingEnteringTimeMinutes2">The remaining entering time minutes 2.</param>
+    /// <param name="remainingEnteringTimeMinutesLow">Just used for Chaos Castle. In this case, this field contains the lower byte of the remaining minutes. For other event types, this field is not used.</param>
     /// <remarks>
     /// Is sent by the server when: The player requests to get the current opening state of a mini game event, by clicking on an ticket item.
     /// Causes reaction on client side: The opening state of the event (remaining entering time, etc.) is shown at the client.
     /// </remarks>
-    public static async ValueTask SendMiniGameOpeningStateAsync(this IConnection? connection, MiniGameType @gameType, byte @remainingEnteringTimeMinutes, byte @userCount, byte @remainingEnteringTimeMinutes2)
+    public static async ValueTask SendMiniGameOpeningStateAsync(this IConnection? connection, MiniGameType @gameType, byte @remainingEnteringTimeMinutes, byte @userCount, byte @remainingEnteringTimeMinutesLow)
     {
         if (connection is null)
         {
@@ -4555,7 +4615,7 @@ public static class ConnectionExtensions
             packet.GameType = @gameType;
             packet.RemainingEnteringTimeMinutes = @remainingEnteringTimeMinutes;
             packet.UserCount = @userCount;
-            packet.RemainingEnteringTimeMinutes2 = @remainingEnteringTimeMinutes2;
+            packet.RemainingEnteringTimeMinutesLow = @remainingEnteringTimeMinutesLow;
 
             return packet.Header.Length;
         }
@@ -4688,6 +4748,34 @@ public static class ConnectionExtensions
             packet.CurMonster = @curMonster;
             packet.ItemOwnerId = @itemOwnerId;
             packet.ItemLevel = @itemLevel;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ChaosCastleEnterResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <remarks>
+    /// Is sent by the server when: The player requested to enter the chaos castle mini game by using the 'Armor of Guardsman' item.
+    /// Causes reaction on client side: In case it failed, it shows the corresponding error message.
+    /// </remarks>
+    public static async ValueTask SendChaosCastleEnterResultAsync(this IConnection? connection, ChaosCastleEnterResult.EnterResult @result)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ChaosCastleEnterResultRef.Length;
+            var packet = new ChaosCastleEnterResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
 
             return packet.Header.Length;
         }

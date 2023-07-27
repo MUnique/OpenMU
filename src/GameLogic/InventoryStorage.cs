@@ -4,9 +4,10 @@
 
 namespace MUnique.OpenMU.GameLogic;
 
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.PlugIns;
-using static OpenMU.GameLogic.InventoryConstants;
+using static OpenMU.DataModel.InventoryConstants;
 
 /// <summary>
 /// The storage of an inventory of a player, which also contains equippable slots. This class also manages the powerups which get created by equipped items.
@@ -24,10 +25,10 @@ public class InventoryStorage : Storage, IInventoryStorage
     /// <param name="context">The game context.</param>
     public InventoryStorage(Player player, IGameContext context)
         : base(
-            GetInventorySize(player),
+            player.GetInventorySize(),
             EquippableSlotsCount,
             0,
-            new ItemStorageAdapter(player.SelectedCharacter?.Inventory ?? throw Error.NotInitializedProperty(player, "SelectedCharacter.Inventory"), FirstEquippableItemSlotIndex, GetInventorySize(player)))
+            new ItemStorageAdapter(player.SelectedCharacter?.Inventory ?? throw Error.NotInitializedProperty(player, "SelectedCharacter.Inventory"), FirstEquippableItemSlotIndex, player.GetInventorySize()))
     {
         this._player = player;
         this.EquippedItemsChanged += async eventArgs => await this.UpdateItemsOnChangeAsync(eventArgs.Item).ConfigureAwait(false);
@@ -50,6 +51,26 @@ public class InventoryStorage : Storage, IInventoryStorage
                     yield return this.ItemArray[i]!;
                 }
             }
+        }
+    }
+
+
+    /// <inheritdoc/>
+    public Item? EquippedAmmunitionItem
+    {
+        get
+        {
+            if (this.ItemArray[LeftHandSlot] is { } leftItem && (leftItem.Definition?.IsAmmunition ?? false))
+            {
+                return leftItem;
+            }
+
+            if (this.ItemArray[RightHandSlot] is { } rightItem && (rightItem.Definition?.IsAmmunition ?? false))
+            {
+                return rightItem;
+            }
+
+            return null;
         }
     }
 
@@ -128,6 +149,11 @@ public class InventoryStorage : Storage, IInventoryStorage
         {
             var factory = this._gameContext.ItemPowerUpFactory;
             this._player.Attributes.ItemPowerUps.Add(item, factory.GetPowerUps(item, this._player.Attributes).ToList());
+
+            // reset player equipped ammunition amount
+            if (this.EquippedAmmunitionItem is { } ammoItem) {
+                this._player.Attributes[Stats.AmmunitionAmount] = (float) ammoItem.Durability;
+            }
         }
     }
 

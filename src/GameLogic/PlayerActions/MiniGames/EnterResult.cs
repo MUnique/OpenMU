@@ -38,4 +38,14 @@ public enum EnterResult
     /// Entering the mini game failed, because it's full.
     /// </summary>
     Full,
+
+    /// <summary>
+    /// Entering the event failed, because the player doesn't have enough money for the entrance fee.
+    /// </summary>
+    NotEnoughMoney,
+
+    /// <summary>
+    /// Entering the event failed, because the player has a pk state.
+    /// </summary>
+    PlayerKillerCantEnter,
 }

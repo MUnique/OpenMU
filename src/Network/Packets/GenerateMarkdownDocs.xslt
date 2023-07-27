@@ -300,6 +300,7 @@
   <xsl:template match="d:Type[. = 'IntegerLittleEndian' or . = 'IntegerBigEndian']" mode="length">4</xsl:template>
   <xsl:template match="d:Type[. = 'LongLittleEndian' or . = 'LongBigEndian']" mode="length">8</xsl:template>
   <xsl:template match="d:Type[. = 'Float']" mode="length">4</xsl:template>
+  <xsl:template match="d:Type[. = 'Double']" mode="length">8</xsl:template>
   <xsl:template match="d:Type[. = 'String']" mode="length">
     <xsl:value-of select="../d:Length"/>
   </xsl:template>

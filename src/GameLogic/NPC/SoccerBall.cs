@@ -37,6 +37,9 @@ public sealed class SoccerBall : NonPlayerCharacter, IAttackable, IMovable
     public event AsyncEventHandler<(Point From, Point To)>? Moved;
 
     /// <inheritdoc />
+    public event EventHandler<DeathInformation>? Died;
+
+    /// <inheritdoc />
     public IAttributeSystem Attributes { get; }
 
     /// <inheritdoc />
@@ -70,6 +73,12 @@ public sealed class SoccerBall : NonPlayerCharacter, IAttackable, IMovable
     {
         // A ball doesn't take any damage
         return ValueTask.CompletedTask;
+    }
+
+    /// <inheritdoc />
+    public ValueTask KillInstantlyAsync()
+    {
+        throw new NotImplementedException();
     }
 
     /// <inheritdoc />

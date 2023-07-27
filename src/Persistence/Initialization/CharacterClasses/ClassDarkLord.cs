@@ -26,6 +26,7 @@ internal partial class CharacterClassInitialization
         this.GameConfiguration.Attributes.Add(energyMinus15);
 
         var result = this.Context.CreateNew<CharacterClass>();
+        result.SetGuid((byte)number);
         this.GameConfiguration.CharacterClasses.Add(result);
         result.CanGetCreated = canGetCreated;
         result.CreationAllowedFlag = 2;
@@ -35,6 +36,7 @@ internal partial class CharacterClassInitialization
         result.LevelRequirementByCreation = 250;
         result.IsMasterClass = isMaster;
         result.NextGenerationClass = nextGenerationClass;
+        result.LevelWarpRequirementReductionPercent = (int) Math.Ceiling(100.0 / 3);
         result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.Level, 1, false));
         result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.PointsPerLevelUp, 7, false));
         result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.BaseStrength, 26, true));

@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic;
 
+using System.Diagnostics.CodeAnalysis;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
@@ -37,20 +38,6 @@ public static class ItemExtensions
     };
 
     /// <summary>
-    /// Determines whether the item level can be upgraded by using jewels of bless or soul.
-    /// </summary>
-    /// <param name="item">The item.</param>
-    /// <returns>
-    ///   <c>true</c> if the item level can be upgraded by using jewels of bless or soul; otherwise, <c>false</c>.
-    /// </returns>
-    public static bool CanLevelBeUpgraded(this Item item)
-    {
-        return item.IsWearable()
-               && item.Definition!.ItemSlot!.ItemSlots.Any(slot => slot <= InventoryConstants.WingsSlot)
-               && item.Level < item.Definition.MaximumItemLevel;
-    }
-
-    /// <summary>
     /// Gets the maximum durability of the item.
     /// </summary>
     /// <param name="item">The item.</param>
@@ -67,12 +54,17 @@ public static class ItemExtensions
             return 1;
         }
 
+        if (item.IsTrainablePet())
+        {
+            return 255;
+        }
+
         var result = item.Definition!.Durability + AdditionalDurabilityPerLevel[item.Level];
-        if (item.ItemOptions.Any(link => link.ItemOption?.OptionType == ItemOptionTypes.AncientBonus))
+        if (item.IsAncient())
         {
             result += 20;
         }
-        else if (item.ItemOptions.Any(link => link.ItemOption?.OptionType == ItemOptionTypes.Excellent))
+        else if (item.IsExcellent())
         {
             // TODO: archangel weapons, but I guess it's not a big issue if we don't, because of their already high durability
             result += 15;
@@ -87,93 +79,27 @@ public static class ItemExtensions
     }
 
     /// <summary>
-    /// Determines whether this item can have a skill.
+    /// Determines whether this instance is ancient.
     /// </summary>
     /// <param name="item">The item.</param>
     /// <returns>
-    ///   <c>true</c> if the specified item can have a skill; otherwise, <c>false</c>.
+    ///   <c>true</c> if the specified item is ancient; otherwise, <c>false</c>.
     /// </returns>
-    public static bool CanHaveSkill(this Item item) => item.IsWearable() && item.Definition?.Skill != null && item.Definition.QualifiedCharacters.Any();
-
-    /// <summary>
-    /// Determines whether this item is wearable.
-    /// </summary>
-    /// <param name="item">The item.</param>
-    /// <returns>
-    ///   <c>true</c> if the specified item is wearable; otherwise, <c>false</c>.
-    /// </returns>
-    public static bool IsWearable(this Item item) => item.Definition?.ItemSlot != null;
-
-    /// <summary>
-    /// Determines whether this item is stackable.
-    /// </summary>
-    /// <param name="item">The item.</param>
-    /// <returns>
-    ///   <c>true</c> if the specified item is stackable; otherwise, <c>false</c>.
-    /// </returns>
-    public static bool IsStackable(this Item item) => !item.IsWearable() && item.Definition?.Durability > 1;
-
-    /// <summary>
-    /// Determines whether this item can be completely stacked on the specified other item.
-    /// After stacking, this item is destroyed.
-    /// </summary>
-    /// <param name="item">The item.</param>
-    /// <param name="otherItem">The other item.</param>
-    /// <returns>
-    ///   <c>true</c> if this item can be completely stacked on the specified other item; otherwise, <c>false</c>.
-    /// </returns>
-    public static bool CanCompletelyStackOn(this Item item, Item otherItem) => item.IsStackable() && item.IsSameItemAs(otherItem) && (item.Durability + otherItem.Durability) <= item.Definition?.Durability;
-
-    /// <summary>
-    /// Determines whether this item can be partially stacked on the specified other item.
-    /// After stacking, this item is left with the rest of its durability.
-    /// </summary>
-    /// <param name="item">The item.</param>
-    /// <param name="otherItem">The other item.</param>
-    /// <returns>
-    ///   <c>true</c> if this item can be partially stacked on the specified other item; otherwise, <c>false</c>.
-    /// </returns>
-    public static bool CanPartiallyStackOn(this Item item, Item otherItem) => item.IsStackable() && item.IsSameItemAs(otherItem) && otherItem.Durability < otherItem.Definition?.Durability;
-
-    /// <summary>
-    /// Determines whether this item is of the same type as the specified other item.
-    /// <see cref="Item.Definition"/> and <see cref="Item.Level"/> need to be equal to get considered as the same item.
-    /// </summary>
-    /// <param name="item">The item.</param>
-    /// <param name="otherItem">The other item.</param>
-    /// <returns>
-    ///   <c>true</c> if this item is of the same type as the specified other item; otherwise, <c>false</c>.
-    /// </returns>
-    public static bool IsSameItemAs(this Item item, Item otherItem) => item.Definition == otherItem.Definition && item.Level == otherItem.Level;
-
-    /// <summary>
-    /// Gets the <see cref="Item.Durability"/> as byte value, rounded off.
-    /// </summary>
-    /// <param name="item">The item.</param>
-    /// <returns>The durability.</returns>
-    public static byte Durability(this Item item) => (byte)Math.Floor(item.Durability);
-
-    /// <summary>
-    /// Decreases the durability of an item, and returns <see langword="true"/>, if the integral number changed.
-    /// </summary>
-    /// <param name="item">The item whose durability should be decreased.</param>
-    /// <param name="decrement">The decrement value.</param>
-    /// <returns><see langword="true"/>, if the integral number changed.</returns>
-    public static bool DecreaseDurability(this Item item, double decrement)
+    public static bool IsAncient(this Item item)
     {
-        var previous = item.Durability;
-        item.Durability = Math.Max(previous - decrement, 0.0);
-        return (byte)Math.Floor(item.Durability) != (byte)Math.Floor(previous);
+        return item.ItemOptions.Any(link => link.ItemOption?.OptionType == ItemOptionTypes.AncientBonus);
     }
 
     /// <summary>
-    /// Determines whether this item is a pet (Dark Raven, Dark Horse) which can gain levels itself.
+    /// Determines whether this instance is excellent.
     /// </summary>
     /// <param name="item">The item.</param>
-    /// <returns><see langword="true"/>, if the item is a pet.</returns>
-    public static bool IsTrainablePet(this Item item)
+    /// <returns>
+    ///   <c>true</c> if the specified item is excellent; otherwise, <c>false</c>.
+    /// </returns>
+    public static bool IsExcellent(this Item item)
     {
-        return item.Definition?.PetExperienceFormula is not null;
+        return item.ItemOptions.Any(link => link.ItemOption?.OptionType == ItemOptionTypes.Excellent);
     }
 
     /// <summary>
@@ -183,7 +109,61 @@ public static class ItemExtensions
     /// <returns><see langword="true"/>, if the item is defensive.</returns>
     public static bool IsDefensiveItem(this Item item)
     {
-        return InventoryConstants.IsDefenseItemSlot(item.ItemSlot) || item.Definition?.Group == ShieldItemGroup;
+        return InventoryConstants.IsDefenseItemSlot(item.ItemSlot) || item.IsShield();
+    }
+
+    /// <summary>
+    /// Determines whether this instance is a shield.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <returns>
+    ///   <c>true</c> if the specified item is a shield; otherwise, <c>false</c>.
+    /// </returns>
+    public static bool IsShield(this Item item)
+    {
+        return item.Definition?.Group == ShieldItemGroup;
+    }
+
+    /// <summary>
+    /// Determines whether this instance is a is weapon which deals physical damage.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <param name="minimumDmg">The minimum physical damage of the weapon.</param>
+    /// <returns>
+    ///   <c>true</c> if this instance is a is weapon which deals physical damage; otherwise, <c>false</c>.
+    /// </returns>
+    public static bool IsPhysicalWeapon(this Item item, [NotNullWhen(true)] out float? minimumDmg)
+    {
+        minimumDmg = item.Definition?.BasePowerUpAttributes.FirstOrDefault(a => a.TargetAttribute == Stats.MinimumPhysBaseDmg)?.BaseValue;
+        return minimumDmg is not null;
+    }
+
+    /// <summary>
+    /// Determines whether this instance is a weapon which deals wizardry damage.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <param name="staffRise">The staff rise percentage of the weapon.</param>
+    /// <returns>
+    ///   <c>true</c> if this instance is a is weapon which deals wizardry damage; otherwise, <c>false</c>.
+    /// </returns>
+    public static bool IsWizardryWeapon(this Item item, [NotNullWhen(true)] out float? staffRise)
+    {
+        staffRise = item.Definition?.BasePowerUpAttributes.FirstOrDefault(a => a.TargetAttribute == Stats.StaffRise)?.BaseValue;
+        return staffRise is not null;
+    }
+
+    /// <summary>
+    /// Determines whether this instance is a scepter which increases raven damage.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <param name="stickRise">The stick rise percentage of the weapon.</param>
+    /// <returns>
+    ///   <c>true</c> if this instance is a scepter which increases raven damage; otherwise, <c>false</c>.
+    /// </returns>
+    public static bool IsScepter(this Item item, [NotNullWhen(true)] out float? stickRise)
+    {
+        stickRise = item.Definition?.BasePowerUpAttributes.FirstOrDefault(a => a.TargetAttribute == Stats.ScepterRise)?.BaseValue;
+        return stickRise is not null;
     }
 
     /// <summary>
@@ -332,6 +312,44 @@ public static class ItemExtensions
         return persistent;
     }
 
+    /// <summary>
+    /// Calculates the drop level.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <param name="isAncient">A value indicating whether the item is ancient.</param>
+    /// <param name="isExcellent">A value indicating whether the item is excellent.</param>
+    /// <param name="itemLevel">The item level.</param>
+    /// <returns>The calculated drop level.</returns>
+    public static int CalculateDropLevel(this ItemDefinition item, bool isAncient, bool isExcellent, int itemLevel)
+    {
+        int dropLevel = item.DropLevel;
+        if (isAncient)
+        {
+            dropLevel += 30;
+        }
+        else if (isExcellent)
+        {
+            dropLevel += 25;
+        }
+        else
+        {
+            // nothing to add
+        }
+
+        dropLevel += 3 * itemLevel;
+        return dropLevel;
+    }
+
+    /// <summary>
+    /// Calculates the drop level of the item in the current state.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <returns>The calculated drop level.</returns>
+    public static int CalculateDropLevel(this Item item)
+    {
+        return item.Definition?.CalculateDropLevel(item.IsAncient(), item.IsExcellent(), item.Level) ?? 0;
+    }
+
     private static int CalculateRequirement(this Item item, int requirementValue, int multiplier)
     {
         if (requirementValue == 0)
@@ -339,22 +357,14 @@ public static class ItemExtensions
             return 0;
         }
 
-        var dropLevel = item.Definition!.DropLevel;
-        if (item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.Excellent || o.ItemOption?.OptionType == ItemOptionTypes.AncientOption))
-        {
-            dropLevel += 25;
-        }
+        var dropLevel = item.Definition!.CalculateDropLevel(item.IsAncient(), item.IsExcellent(), item.Level);
 
-        return (multiplier * ((3 * item.Level) + dropLevel) * requirementValue / 100) + 20;
+        return (multiplier * dropLevel * requirementValue / 100) + 20;
     }
 
     private static int CalculateBookEnergyRequirement(this Item item, int energyRequirementValue)
     {
-        var dropLevel = item.Definition!.DropLevel;
-        if (item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.Excellent))
-        {
-            dropLevel += 25;
-        }
+        var dropLevel = item.Definition!.CalculateDropLevel(item.IsAncient(), item.IsExcellent(), 0);
 
         return (((energyRequirementValue * (dropLevel + item.Level)) * 3) / 100) + 20;
     }

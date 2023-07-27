@@ -8,6 +8,7 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameServer.Host;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Network;
+using MUnique.OpenMU.PlugIns;
 using MUnique.OpenMU.ServerClients;
 using MUnique.OpenMU.Web.Map;
 using GameServer = MUnique.OpenMU.GameServer.GameServer;
@@ -19,6 +20,7 @@ _ = MUnique.OpenMU.GameServer.ClientVersionResolver.DefaultVersion;
 var gameServerId = byte.Parse(Environment.GetEnvironmentVariable("GS_ID") ?? "0");
 var serviceName = $"GameServer{gameServerId + 1}";
 var builder = DaprService.CreateBuilder(serviceName, args);
+var plugInConfigurations = new List<PlugInConfiguration>();
 
 // Add services to the container.
 var services = builder.Services;
@@ -35,7 +37,7 @@ services.AddSingleton<GameServer>()
     .AddSingleton<IObservableGameServer, ObservableGameServerAdapter>()
     .AddPersistentSingleton<GameServerDefinition>(def => def.ServerID == gameServerId)
     .AddPeristenceProvider()
-    .AddPlugInManager()
+    .AddPlugInManager(plugInConfigurations)
     .AddIpResolver(args)
     .AddHostedService<GameServerHostedServiceWrapper>()
     .PublishManageableServer<IGameServer>();
@@ -50,5 +52,7 @@ builder.AddOpenTelemetryMetrics(metricsRegistry);
 var app = builder.BuildAndConfigure(true);
 
 await app.WaitForUpdatedDatabaseAsync().ConfigureAwait(false);
+
+await app.Services.TryLoadPlugInConfigurationsAsync(plugInConfigurations).ConfigureAwait(false);
 
 app.Run();

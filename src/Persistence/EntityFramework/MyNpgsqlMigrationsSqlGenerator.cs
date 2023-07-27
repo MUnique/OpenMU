@@ -63,7 +63,10 @@ internal class MyNpgsqlMigrationsSqlGenerator : NpgsqlMigrationsSqlGenerator
     public MyNpgsqlMigrationsSqlGenerator(MigrationsSqlGeneratorDependencies dependencies, INpgsqlSingletonOptions npgsqlOptions)
         : base(dependencies, npgsqlOptions)
     {
-        ConnectionConfigurator.Initialize(new ConfigFileDatabaseConnectionStringProvider());
+        if (!ConnectionConfigurator.IsInitialized)
+        {
+            ConnectionConfigurator.Initialize(new ConfigFileDatabaseConnectionStringProvider());
+        }
     }
 
     /// <summary>
@@ -88,9 +91,18 @@ internal class MyNpgsqlMigrationsSqlGenerator : NpgsqlMigrationsSqlGenerator
             var roleName = ConnectionConfigurator.GetRoleName(databaseRole);
 
             builder
-                .AppendLine($"DROP ROLE IF EXISTS {roleName};")
-                .EndCommand()
-                .AppendLine($"CREATE ROLE {roleName} WITH LOGIN PASSWORD '{ConnectionConfigurator.GetRolePassword(databaseRole)}';")
+                .AppendLine($"""
+                    DO
+                    $do$
+                    BEGIN
+                       IF EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = '{roleName}') THEN 
+                          RAISE NOTICE 'Role "{roleName}" already exists. Skipping.';
+                       ELSE
+                          CREATE ROLE {roleName} WITH LOGIN PASSWORD '{ConnectionConfigurator.GetRolePassword(databaseRole)}';
+                       END IF;
+                    END
+                    $do$;
+                """)
                 .EndCommand()
                 .AppendLine($"GRANT SELECT, UPDATE, INSERT, DELETE ON ALL TABLES IN SCHEMA {schemaName} TO GROUP {roleName};")
                 .EndCommand()

@@ -33,7 +33,8 @@ internal class Orbs : InitializerBase
         this.CreateOrb(8, SkillNumber.Heal, 1, "Orb of Healing", 8, 0, 100, 0, 0, 800, CharacterClasses.FairyElf);
         this.CreateOrb(9, SkillNumber.GreaterDefense, 1, "Orb of Greater Defense", 13, 0, 100, 0, 0, 3000, CharacterClasses.FairyElf);
         this.CreateOrb(10, SkillNumber.GreaterDamage, 1, "Orb of Greater Damage", 18, 0, 100, 0, 0, 7000, CharacterClasses.FairyElf);
-        this.CreateOrb(11, SkillNumber.SummonGoblin, 1, "Orb of Summoning", 3, 0, 0, 0, 0, 150, CharacterClasses.FairyElf);
+        var summonOrb = this.CreateOrb(11, SkillNumber.SummonGoblin, 1, "Orb of Summoning", 3, 0, 0, 0, 0, 150, CharacterClasses.FairyElf);
+        summonOrb.MaximumItemLevel = 5;
     }
 
     /// <summary>
@@ -77,6 +78,7 @@ internal class Orbs : InitializerBase
             orb.QualifiedCharacters.Add(characterClass);
         }
 
+        orb.SetGuid(orb.Group, orb.Number);
         return orb;
     }
 }

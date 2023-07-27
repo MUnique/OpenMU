@@ -35,7 +35,7 @@ internal static class QuestStateExtensions
         }
 
         // The next one is obvious, too:
-        if (legacyQuestState.LastFinishedQuest is null)
+        if (legacyQuestState.LastFinishedQuest is null && legacyQuestState.ActiveQuest is null)
         {
             // In this case, it depends if we have an active quest
             return (byte)(0b1111_1100 | (legacyQuestState.ActiveQuest is { }
@@ -44,12 +44,19 @@ internal static class QuestStateExtensions
         }
 
         var quest = legacyQuestState.ActiveQuest ?? player.GetNextLegacyQuest() ?? legacyQuestState.LastFinishedQuest;
+        if (quest is null)
+        {
+            // Should never happen.
+            return 0xFF;
+        }
+
         var startOffset = (quest.Number / 4) * 4; // 4 quests per byte
         var result = 0;
         for (int i = 0; i < 4; i++)
         {
             var shift = i * 2;
-            if (legacyQuestState.LastFinishedQuest.Number >= i + startOffset)
+            if ((legacyQuestState.LastFinishedQuest?.Number >= i + startOffset)
+                || (legacyQuestState.ActiveQuest?.Number > i + startOffset))
             {
                 // This case is a bit simplified. There may be previous quests which are not meant for the character class.
                 // For the sake of simplicity, we leave it like that, for now.

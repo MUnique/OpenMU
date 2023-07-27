@@ -56,7 +56,7 @@ public class MountSeedSphereCrafting : SimpleItemCraftingHandler
             .SelectMany(o => o.PossibleOptions)
             .Single(o => o.OptionType == ItemOptionTypes.SocketOption
                          && o.Number == seedSphere.Level);
-        sphereOption.Level = seedSphere.Definition.DropLevel;
+        sphereOption.Level = seedSphere.Level;
         sphereOption.Index = socketSlot;
         socketItem.ItemOptions.Add(sphereOption);
 

@@ -309,3 +309,39 @@ using static System.Buffers.Binary.BinaryPrimitives;    /// <summary>
             BackToServerSelection = 2,
     }
 
+    /// <summary>
+    /// Defines the type of the mini game.
+    /// </summary>
+    public enum MiniGameType
+    {
+        /// <summary>
+        /// Undefined mini game type.
+        /// </summary>
+            Undefined = 0,
+
+        /// <summary>
+        /// The devil square mini game.
+        /// </summary>
+            DevilSquare = 1,
+
+        /// <summary>
+        /// The blood castle mini game.
+        /// </summary>
+            BloodCastle = 2,
+
+        /// <summary>
+        /// The chaos castle mini game.
+        /// </summary>
+            ChaosCastle = 4,
+
+        /// <summary>
+        /// The illusion temple mini game.
+        /// </summary>
+            IllusionTemple = 5,
+
+        /// <summary>
+        /// The doppelgänger mini game.
+        /// </summary>
+            Doppelganger = 6,
+    }
+

@@ -39,7 +39,7 @@ public class ObservableGameServerAdapter : Disposable, IObservableGameServer
     /// </summary>
     public async ValueTask InitializeAsync()
     {
-        foreach (var map in this._gameContext.Maps)
+        foreach (var map in await this._gameContext.GetMapsAsync().ConfigureAwait(false))
         {
             var mapAdapter = await this.CreateMapAdapterAsync(map).ConfigureAwait(false);
             this._gameMapInfos.Add(mapAdapter);
@@ -52,7 +52,8 @@ public class ObservableGameServerAdapter : Disposable, IObservableGameServer
     /// <inheritdoc/>
     public async ValueTask RegisterMapObserverAsync(Guid mapId, ILocateable worldObserver)
     {
-        var map = this._gameContext.Maps.FirstOrDefault(m => m.Id == mapId);
+        var maps = await this._gameContext.GetMapsAsync().ConfigureAwait(false);
+        var map = maps.FirstOrDefault(m => m.Id == mapId);
         if (map != null)
         {
             await map.AddAsync(worldObserver).ConfigureAwait(false);
@@ -67,7 +68,8 @@ public class ObservableGameServerAdapter : Disposable, IObservableGameServer
     /// <inheritdoc/>
     public async ValueTask UnregisterMapObserverAsync(Guid mapId, ushort worldObserverId)
     {
-        if (this._gameContext.Maps.FirstOrDefault(m => m.Id == mapId) is { } map
+        var maps = await this._gameContext.GetMapsAsync().ConfigureAwait(false);
+        if (maps.FirstOrDefault(m => m.Id == mapId) is { } map
             && map.GetObject(worldObserverId) is { } observer)
         {
             await map.RemoveAsync(observer).ConfigureAwait(false);

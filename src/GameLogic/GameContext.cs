@@ -99,11 +99,6 @@ public class GameContext : AsyncDisposable, IGameContext
     /// <inheritdoc />
     public virtual float ExperienceRate => this.Configuration.ExperienceRate;
 
-    /// <summary>
-    /// Gets the initialized maps which are hosted on this context.
-    /// </summary>
-    public IEnumerable<GameMap> Maps => this._mapList.Values.Concat(this._miniGames.Values.Select(g => g.Map));
-
     /// <inheritdoc/>
     public GameConfiguration Configuration { get; }
 
@@ -142,6 +137,15 @@ public class GameContext : AsyncDisposable, IGameContext
     /// Gets the name of the meter of this class.
     /// </summary>
     internal static string MeterName => typeof(GameContext).FullName ?? nameof(GameContext);
+
+    /// <summary>
+    /// Gets the initialized maps which are hosted on this context.
+    /// </summary>
+    public async ValueTask<IEnumerable<GameMap>> GetMapsAsync()
+    {
+        using var l = await this._mapInitializerLock.LockAsync();
+        return this._mapList.Values.Concat(this._miniGames.Values.Select(g => g.Map)).ToList();
+    }
 
     /// <inheritdoc/>
     public async ValueTask<GameMap?> GetMapAsync(ushort mapId, bool createIfNotExists = true)
@@ -206,7 +210,7 @@ public class GameContext : AsyncDisposable, IGameContext
             return miniGameContext;
         }
 
-        using (await this._mapInitializerLock.LockAsync())
+        using (await this._mapInitializerLock.LockAsync().ConfigureAwait(false))
         {
             if (this._miniGames.TryGetValue(miniGameKey, out miniGameContext))
             {
@@ -215,6 +219,9 @@ public class GameContext : AsyncDisposable, IGameContext
 
             switch (miniGameDefinition.Type)
             {
+                case MiniGameType.ChaosCastle:
+                    miniGameContext = new ChaosCastleContext(miniGameKey, miniGameDefinition, this, this._mapInitializer);
+                    break;
                 case MiniGameType.DevilSquare:
                     miniGameContext = new DevilSquareContext(miniGameKey, miniGameDefinition, this, this._mapInitializer);
                     break;
@@ -239,8 +246,9 @@ public class GameContext : AsyncDisposable, IGameContext
     }
 
     /// <inheritdoc />
-    public void RemoveMiniGame(MiniGameContext miniGameContext)
+    public async ValueTask RemoveMiniGameAsync(MiniGameContext miniGameContext)
     {
+        using var l = await this._mapInitializerLock.LockAsync().ConfigureAwait(false);
         MiniGameCounter.Add(-1);
         miniGameContext.Dispose();
         this._miniGames.Remove(miniGameContext.Key);
@@ -262,6 +270,18 @@ public class GameContext : AsyncDisposable, IGameContext
         }
 
         PlayerCounter.Add(1);
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<IList<Player>> GetPlayersAsync()
+    {
+        using var l = await this._playerListLock.ReaderLockAsync();
+        if (this._playerList.Count == 0)
+        {
+            return Array.Empty<Player>();
+        }
+
+        return this._playerList.ToList();
     }
 
     /// <summary>
@@ -307,10 +327,8 @@ public class GameContext : AsyncDisposable, IGameContext
             return;
         }
 
-        using (await this._playerListLock.ReaderLockAsync())
-        {
-            await this._playerList.Select(action).WhenAll().ConfigureAwait(false);
-        }
+        var playerList = await this.GetPlayersAsync().ConfigureAwait(false);
+        await playerList.Select(action).WhenAll().ConfigureAwait(false);
     }
 
     /// <inheritdoc/>

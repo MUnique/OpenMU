@@ -20,21 +20,29 @@ public class PartyRequestAction
     /// <param name="toRequest">The player which receives the request.</param>
     public async ValueTask HandlePartyRequestAsync(Player player, Player toRequest)
     {
+        var isPartyMember = player.Party != null && !Equals(player.Party.PartyMaster, player);
+        if (player.CurrentMiniGame?.Definition.AllowParty is false)
+        {
+            await this.SendMessageToPlayerAsync(player, "A party is not possible during this event.", MessageType.BlueNormal).ConfigureAwait(false);
+            return;
+        }
+
         if (toRequest.Party != null || toRequest.LastPartyRequester != null)
         {
-            await this.SendMessageToPlayerAsync(player, $"{player.Name} is already in a party.", MessageType.BlueNormal).ConfigureAwait(false);
+            await this.SendMessageToPlayerAsync(player, $"{toRequest.Name} is already in a party.", MessageType.BlueNormal).ConfigureAwait(false);
+            return;
         }
-        else if (player.Party is null || (player.Party != null && Equals(player.Party.PartyMaster, player)))
-        {
-            if (await toRequest.PlayerState.TryAdvanceToAsync(PlayerState.PartyRequest).ConfigureAwait(false))
-            {
-                await this.SendPartyRequestAsync(toRequest, player).ConfigureAwait(false);
-                await this.SendMessageToPlayerAsync(player, $"Requested {toRequest.Name} for Party.", MessageType.BlueNormal).ConfigureAwait(false);
-            }
-        }
-        else
+
+        if (isPartyMember)
         {
             await this.SendMessageToPlayerAsync(player, "You are not the Party Master.", MessageType.BlueNormal).ConfigureAwait(false);
+            return;
+        }
+
+        if (await toRequest.PlayerState.TryAdvanceToAsync(PlayerState.PartyRequest).ConfigureAwait(false))
+        {
+            await this.SendPartyRequestAsync(toRequest, player).ConfigureAwait(false);
+            await this.SendMessageToPlayerAsync(player, $"Requested {toRequest.Name} for Party.", MessageType.BlueNormal).ConfigureAwait(false);
         }
     }
 
@@ -51,9 +59,11 @@ public class PartyRequestAction
 
     private async ValueTask SendMessageToPlayerAsync(IPartyMember partyMember, string message, MessageType type)
     {
-        if (partyMember is Player player)
+        if (partyMember is not Player player)
         {
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, type)).ConfigureAwait(false);
+            return;
         }
+
+        await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, type)).ConfigureAwait(false);
     }
 }

@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("A55849BC-7BD7-4444-A35A-F1AC1D48F179")]
 [PlugIn(nameof(SmallManaPotionConsumeHandler), "Plugin which handles the small mana potion consumption.")]
-public class SmallManaPotionConsumeHandler : ManaPotionConsumehandler
+public class SmallManaPotionConsumeHandler : ManaPotionConsumeHandler
 {
     /// <inheritdoc />
     public override ItemIdentifier Key => ItemConstants.SmallManaPotion;

@@ -18,7 +18,7 @@ The opening state of the event (remaining entering time, etc.) is shown at the c
 | 3 | 1 | MiniGameType |  | GameType |
 | 4 | 1 | Byte |  | RemainingEnteringTimeMinutes |
 | 5 | 1 | Byte |  | UserCount |
-| 6 | 1 | Byte |  | RemainingEnteringTimeMinutes2 |
+| 6 | 1 | Byte |  | RemainingEnteringTimeMinutesLow; Just used for Chaos Castle. In this case, this field contains the lower byte of the remaining minutes. For other event types, this field is not used. |
 
 ### MiniGameType Enum
 

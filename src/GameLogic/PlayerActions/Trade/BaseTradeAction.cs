@@ -35,11 +35,10 @@ public class BaseTradeAction
     /// </summary>
     /// <param name="trader">The trader.</param>
     /// <param name="checkState">If set to <c>true</c>, the player state is checked. Otherwise, it's ignored.</param>
-    /// <returns></returns>
     protected async ValueTask CancelTradeAsync(ITrader trader, bool checkState = true)
     {
         CancelledTrades.Add(1);
-        using (var context = await trader.PlayerState.TryBeginAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false))
+        await using (var context = await trader.PlayerState.TryBeginAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false))
         {
             if (checkState && !context.Allowed)
             {

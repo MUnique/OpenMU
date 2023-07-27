@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization;
 
+using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Configuration.Quests;
@@ -24,12 +25,14 @@ internal static class QuestDefinitionExtensions
     /// <param name="context">The context.</param>
     /// <param name="gameConfiguration">The game configuration.</param>
     /// <returns>This quest definition.</returns>
-    public static QuestDefinition WithMonsterKillRequirement(this QuestDefinition questDefinition, int amount, int monsterNumber, IContext context, GameConfiguration gameConfiguration)
+    public static QuestDefinition WithMonsterKillRequirement(this QuestDefinition questDefinition, int amount, short monsterNumber, IContext context, GameConfiguration gameConfiguration)
     {
-        var spider = context.CreateNew<QuestMonsterKillRequirement>();
-        spider.MinimumNumber = amount;
-        spider.Monster = gameConfiguration.Monsters.First(m => m.Number == monsterNumber);
-        questDefinition.RequiredMonsterKills.Add(spider);
+        var killRequirement = context.CreateNew<QuestMonsterKillRequirement>();
+        var parentNumber = (ushort)((ushort)questDefinition.Number | (questDefinition.Group << 10));
+        killRequirement.SetGuid(parentNumber.ToSigned(), monsterNumber, questDefinition.QualifiedCharacter?.Number ?? 0);
+        killRequirement.MinimumNumber = amount;
+        killRequirement.Monster = gameConfiguration.Monsters.First(m => m.Number == monsterNumber);
+        questDefinition.RequiredMonsterKills.Add(killRequirement);
         return questDefinition;
     }
 

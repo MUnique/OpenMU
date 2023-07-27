@@ -4,7 +4,10 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.Version075;
 
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.Persistence.Initialization.Items;
 
 /// <summary>
@@ -45,6 +48,7 @@ internal partial class NpcInitialization : InitializerBase
             def.Designation = "Chaos Goblin";
             def.NpcWindow = NpcWindow.ChaosMachine;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
+            def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
         }
 
@@ -53,6 +57,7 @@ internal partial class NpcInitialization : InitializerBase
             def.Number = 239;
             def.Designation = "Arena Guard";
             def.ObjectKind = NpcObjectKind.PassiveNpc;
+            def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
         }
 
@@ -62,6 +67,7 @@ internal partial class NpcInitialization : InitializerBase
             def.Designation = "Baz The Vault Keeper";
             def.NpcWindow = NpcWindow.VaultStorage;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
+            def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
         }
 
@@ -71,6 +77,7 @@ internal partial class NpcInitialization : InitializerBase
             def.Designation = "Guild Master";
             def.NpcWindow = NpcWindow.GuildMaster;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
+            def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
         }
 
@@ -80,7 +87,8 @@ internal partial class NpcInitialization : InitializerBase
             def.Designation = "Elf Lala";
             def.NpcWindow = NpcWindow.Merchant;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
-            def.MerchantStore = this.CreateElfLalaStore();
+            def.MerchantStore = this.CreateElfLalaStore(def.Number);
+            def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
         }
 
@@ -90,7 +98,8 @@ internal partial class NpcInitialization : InitializerBase
             def.Designation = "Eo the Craftsman";
             def.NpcWindow = NpcWindow.Merchant;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
-            def.MerchantStore = this.CreateEoTheCraftsmanStore();
+            def.MerchantStore = this.CreateEoTheCraftsmanStore(def.Number);
+            def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
         }
 
@@ -100,7 +109,8 @@ internal partial class NpcInitialization : InitializerBase
             def.Designation = "Caren the Barmaid";
             def.NpcWindow = NpcWindow.Merchant;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
-            def.MerchantStore = this.CreateCarenTheBarmaidStore();
+            def.MerchantStore = this.CreateCarenTheBarmaidStore(def.Number);
+            def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
         }
 
@@ -110,7 +120,8 @@ internal partial class NpcInitialization : InitializerBase
             def.Designation = "Izabel The Wizard";
             def.NpcWindow = NpcWindow.Merchant;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
-            def.MerchantStore = this.CreateIzabelTheWizardStore();
+            def.MerchantStore = this.CreateIzabelTheWizardStore(def.Number);
+            def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
         }
 
@@ -120,43 +131,88 @@ internal partial class NpcInitialization : InitializerBase
             def.Designation = "Zienna The Weapons Merchant";
             def.NpcWindow = NpcWindow.Merchant;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
-            def.MerchantStore = this.CreateZiennaStore();
+            def.MerchantStore = this.CreateZiennaStore(def.Number);
+            def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
         }
 
         {
             var def = this.Context.CreateNew<MonsterDefinition>();
             def.Number = 247;
-            def.Designation = "Guard";
+            def.Designation = "Crossbow Guard";
             def.ObjectKind = NpcObjectKind.Guard;
+            def.MoveRange = 3;
+            def.AttackRange = 5;
+            def.ViewRange = 7;
+            def.IntelligenceTypeName = typeof(GuardIntelligence).FullName;
+            def.MoveDelay = new TimeSpan(400 * TimeSpan.TicksPerMillisecond);
+            def.AttackDelay = new TimeSpan(1500 * TimeSpan.TicksPerMillisecond);
+            def.RespawnDelay = new TimeSpan(3 * TimeSpan.TicksPerSecond);
+            def.NumberOfMaximumItemDrops = 0;
+            def.Attribute = 1;
+            var attributes = new Dictionary<AttributeDefinition, float>
+            {
+                { Stats.Level, 90 },
+                { Stats.MaximumHealth, 10000 },
+                { Stats.MinimumPhysBaseDmg, 180 },
+                { Stats.MaximumPhysBaseDmg, 195 },
+                { Stats.AttackRatePvm, 300 },
+                { Stats.DefenseRatePvm, 100 },
+                { Stats.DefenseBase, 70 },
+            };
+            def.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
         }
 
         {
             var def = this.Context.CreateNew<MonsterDefinition>();
             def.Number = 248;
-            def.Designation = "Wandering Merchant";
+            def.Designation = "Wandering Merchant Martin";
             def.NpcWindow = NpcWindow.Merchant;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
-            def.MerchantStore = this.CreateWanderingMerchant();
+            def.MerchantStore = this.CreateWanderingMerchant(def.Number);
+            def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
         }
 
         {
             var def = this.Context.CreateNew<MonsterDefinition>();
             def.Number = 249;
-            def.Designation = "Guard";
+            def.Designation = "Berdysh Guard";
             def.ObjectKind = NpcObjectKind.Guard;
+            def.MoveRange = 3;
+            def.AttackRange = 2;
+            def.ViewRange = 7;
+            def.IntelligenceTypeName = typeof(GuardIntelligence).FullName;
+            def.MoveDelay = new TimeSpan(400 * TimeSpan.TicksPerMillisecond);
+            def.AttackDelay = new TimeSpan(1500 * TimeSpan.TicksPerMillisecond);
+            def.RespawnDelay = new TimeSpan(3 * TimeSpan.TicksPerSecond);
+            def.NumberOfMaximumItemDrops = 0;
+            def.Attribute = 1;
+            var attributes = new Dictionary<AttributeDefinition, float>
+            {
+                { Stats.Level, 90 },
+                { Stats.MaximumHealth, 10000 },
+                { Stats.MinimumPhysBaseDmg, 180 },
+                { Stats.MaximumPhysBaseDmg, 195 },
+                { Stats.AttackRatePvm, 300 },
+                { Stats.DefenseRatePvm, 100 },
+                { Stats.DefenseBase, 70 },
+            };
+            def.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
         }
 
         {
             var def = this.Context.CreateNew<MonsterDefinition>();
             def.Number = 250;
-            def.Designation = "Wandering Merchant";
+            def.Designation = "Wandering Merchant Harold";
             def.NpcWindow = NpcWindow.Merchant;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
-            def.MerchantStore = this.CreateWanderingMerchant();
+            def.MerchantStore = this.CreateWanderingMerchant(def.Number);
+            def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
         }
 
@@ -166,17 +222,19 @@ internal partial class NpcInitialization : InitializerBase
             def.Designation = "Hanzo The Blacksmith";
             def.NpcWindow = NpcWindow.Merchant;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
-            def.MerchantStore = this.CreateHanzoTheBlacksmith();
+            def.MerchantStore = this.CreateHanzoTheBlacksmith(def.Number);
+            def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
         }
 
         {
             var def = this.Context.CreateNew<MonsterDefinition>();
             def.Number = 253;
-            def.Designation = "Potion Girl";
+            def.Designation = "Potion Girl Amy";
             def.NpcWindow = NpcWindow.Merchant;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
-            def.MerchantStore = this.CreatePotionGirlItemStorage();
+            def.MerchantStore = this.CreatePotionGirlItemStorage(def.Number);
+            def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
         }
 
@@ -186,7 +244,8 @@ internal partial class NpcInitialization : InitializerBase
             def.Designation = "Pasi The Mage";
             def.NpcWindow = NpcWindow.Merchant;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
-            def.MerchantStore = this.CreatePasiTheMageStore();
+            def.MerchantStore = this.CreatePasiTheMageStore(def.Number);
+            def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
         }
 
@@ -196,7 +255,8 @@ internal partial class NpcInitialization : InitializerBase
             def.Designation = "Lumen the Barmaid";
             def.NpcWindow = NpcWindow.Merchant;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
-            def.MerchantStore = this.CreateLumenTheBarmaidStore();
+            def.MerchantStore = this.CreateLumenTheBarmaidStore(def.Number);
+            def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
         }
 
@@ -205,6 +265,7 @@ internal partial class NpcInitialization : InitializerBase
             def.Number = 200;
             def.Designation = "Soccerball";
             def.ObjectKind = NpcObjectKind.SoccerBall;
+            def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
         }
     }

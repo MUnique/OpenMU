@@ -46,6 +46,7 @@ public class Jewels : InitializerBase
         itemDefinition.Width = 1;
         itemDefinition.Height = 1;
         itemDefinition.Value = 150;
+        itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
         return itemDefinition;
     }
 
@@ -65,6 +66,7 @@ public class Jewels : InitializerBase
         itemDefinition.Width = 1;
         itemDefinition.Height = 1;
         itemDefinition.Value = 150;
+        itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
         return itemDefinition;
     }
 
@@ -83,6 +85,7 @@ public class Jewels : InitializerBase
         itemDefinition.Durability = 1;
         itemDefinition.Width = 1;
         itemDefinition.Height = 1;
+        itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
         return itemDefinition;
     }
 }

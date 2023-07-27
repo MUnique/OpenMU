@@ -17,10 +17,10 @@ internal class GuildServerContext : CachingEntityFrameworkContext, IGuildServerC
     /// Initializes a new instance of the <see cref="GuildServerContext" /> class.
     /// </summary>
     /// <param name="guildContext">The guild context.</param>
-    /// <param name="repositoryManager">The repository manager.</param>
+    /// <param name="repositoryProvider">The repository provider.</param>
     /// <param name="logger">The logger.</param>
-    public GuildServerContext(GuildContext guildContext, RepositoryManager repositoryManager, ILogger<GuildServerContext> logger)
-        : base(guildContext, repositoryManager, logger)
+    public GuildServerContext(GuildContext guildContext, IContextAwareRepositoryProvider repositoryProvider, ILogger<GuildServerContext> logger)
+        : base(guildContext, repositoryProvider, null, logger)
     {
     }
 

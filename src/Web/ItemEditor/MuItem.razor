@@ -1,0 +1,78 @@
+﻿
+<div class=@($"mu-item c_{this.Model.Column} r_{this.Model.Row} w_{this.Width} h_{this.Height}")>
+    @if (this.Model.Item.Definition is null)
+    {
+        <div class="undefined-item"></div>
+    }
+    else
+    {
+        <img src=@($"_content/MUnique.OpenMU.Web.ItemEditor/img/items/item_{this.Model.Item.Definition.Group}_{this.Model.Item.Definition.Number}_{this.Model.EffectLevel}{this.Model.OptionSuffix}.png") alt=@this.Model.Item />
+        @if (this.Model.Item.IsStackable() && this.Model.Item.Durability > 1)
+        {
+            <span class="item-amount-label">@this.Model.Item.Durability</span>
+        }
+        @if (this.Model.IsAncient)
+        {
+            <span class="indicator anc"></span>
+        }
+        @if (this.Model.IsExcellent)
+        {
+            <span class="indicator exc"></span>
+        }
+        @for (int i = 0; i < this.Model.Item.SocketCount; i++)
+        {
+            var socketEquipped = this.Model.Item.ItemOptions.Any(io => io.Index == i && io.ItemOption?.OptionType == ItemOptionTypes.SocketOption);
+            <span class="indicator socket s@(i+1) @(socketEquipped ? "equipped" : "unequipped")"></span>
+        }
+    }
+</div>
+
+<div title=@this.Model.Item
+    class=@($"mu-item {(this.IsSelected ? "highlighted" : "")} mu-item-selector c_{this.Model.Column} r_{this.Model.Row} w_{this.Width} h_{this.Height}")
+     @onclick="this.OnClick"
+    tabindex="@(this.IsSelected ? 0 : -1)"
+    autofocus="@(this.IsSelected ? "true" : null)" 
+    @onkeydown="OnKeyPressAsync"></div>
+@if (this.IsSelected && this.TotalRows > 0)
+{
+    <div
+        class=@($"mu-item c_{this.Model.Column} r_{this.Model.Row} w_{this.Width} h_{this.Height}")
+        tabindex="0"
+        @onkeydown="OnKeyPressAsync">
+    @if (CanMoveLeft)
+    {
+        <div class="mu-item-move-arrow left rounded-left" @onclick="MoveLeftAsync" alt="Press A to move left">
+        </div>
+    }
+
+    @if (CanMoveRight)
+    {
+        <div class="mu-item-move-arrow right rounded-right" @onclick="MoveRightAsync" alt="Press D to move right">
+        </div>
+    }
+
+    @if (CanMoveUp)
+    {
+        <div class="mu-item-move-arrow up rounded-top" @onclick="MoveUpAsync" alt="Press W to move up">
+        </div>
+    }
+
+    @if (CanMoveDown)
+    {
+        <div class="mu-item-move-arrow down rounded-bottom" @onclick="MoveDownAsync" alt="Press S to move down">
+        </div>
+    }
+    
+    @if (!CanMoveUp && CanJumpUp)
+    {
+        <div class="mu-item-move-arrow up rounded-top jump" @onclick="JumpUpAsync" alt="Press W to move up">
+        </div>
+    }
+
+    @if (!CanMoveDown && CanJumpDown)
+    {
+        <div class="mu-item-move-arrow down rounded-bottom jump" @onclick="JumpDownAsync" alt="Press S to move down">
+        </div>
+    }
+    </div>
+}

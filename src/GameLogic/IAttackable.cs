@@ -22,6 +22,11 @@ public record DeathInformation(ushort KillerId, string KillerName, HitInfo Final
 public interface IAttackable : IIdentifiable, ILocateable
 {
     /// <summary>
+    /// Occurs when this instance died.
+    /// </summary>
+    event EventHandler<DeathInformation>? Died;
+
+    /// <summary>
     /// Gets the attributes.
     /// </summary>
     IAttributeSystem Attributes { get; }
@@ -74,4 +79,9 @@ public interface IAttackable : IIdentifiable, ILocateable
     /// <param name="initialAttacker">The initial attacker.</param>
     /// <param name="damage">The damage.</param>
     ValueTask ApplyPoisonDamageAsync(IAttacker initialAttacker, uint damage);
+
+    /// <summary>
+    /// Kills the attackable instantly.
+    /// </summary>
+    ValueTask KillInstantlyAsync();
 }

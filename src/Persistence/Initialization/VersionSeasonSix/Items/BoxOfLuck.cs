@@ -1368,6 +1368,7 @@ internal class BoxOfLuck : InitializerBase
         item.Durability = 1;
         item.DropsFromMonsters = false;
         item.MaximumItemLevel = maximumItemLevel;
+        item.SetGuid(item.Group, item.Number);
         return item;
     }
 

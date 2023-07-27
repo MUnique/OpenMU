@@ -27,7 +27,17 @@ public static class TypeHelper
     /// <returns>Extended ef core type of <typeparamref name="TBase"/>.</returns>
     public static Type GetPersistentTypeOf<TBase>(this Assembly origin)
     {
-        var baseType = typeof(TBase);
+        return origin.GetPersistentTypeOf(typeof(TBase));
+    }
+
+    /// <summary>
+    /// Gets the ef core type of the given base type.
+    /// </summary>
+    /// <param name="origin">The originating assembly of the persistent type of the base type.</param>
+    /// /// <param name="baseType">Base type of the data model.</param>
+    /// <returns>Extended ef core type of the base type.</returns>
+    public static Type GetPersistentTypeOf(this Assembly origin, Type baseType)
+    {
         if (baseType.Assembly == origin)
         {
             // TBase is already the persistent type

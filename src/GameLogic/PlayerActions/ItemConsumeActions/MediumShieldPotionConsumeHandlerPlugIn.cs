@@ -19,6 +19,6 @@ public class MediumShieldPotionConsumeHandlerPlugIn : ShieldPotionConsumeHandler
     /// <inheritdoc />
     public override ItemIdentifier Key => ItemConstants.MediumShieldPotion;
 
-    /// <inheritdoc/>
-    protected override int RecoverPercent => 40;
+    /// <inheritdoc />
+    protected override double RecoverPercentage => 40;
 }

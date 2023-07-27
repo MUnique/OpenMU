@@ -4,9 +4,9 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.TestAccounts;
 
+using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
-using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 using MUnique.OpenMU.Persistence.Initialization.Items;
@@ -86,9 +86,24 @@ internal class QuestBase : AccountInitializerBase
     }
 
     /// <inheritdoc/>
-    protected override Character? CreateWizard()
+    protected override Character CreateWizard()
     {
-        return null;
+        var character = this.CreateWizard(CharacterClassNumber.DarkWizard);
+        character.Attributes.First(a => a.Definition == Stats.BaseStrength).Value += 300;
+        character.Attributes.First(a => a.Definition == Stats.BaseAgility).Value += 200;
+        character.Attributes.First(a => a.Definition == Stats.BaseEnergy).Value += 700;
+        character.LevelUpPoints -= 1200; // for the added strength, agility, energy
+
+        character.Inventory!.Items.Add(this.CreateArmorItem(InventoryConstants.ArmorSlot, 7, 8, null, 13, 4, true));
+        character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.HelmSlot, 7, 7, null, 13, 4, true));
+        character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.PantsSlot, 7, 9, null, 13, 4, true));
+        character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.GlovesSlot, 7, 10, null, 13, 4, true));
+        character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.BootsSlot, 7, 11, null, 13, 4, true));
+
+        character.Inventory.Items.Add(this.CreateJewel(47, Items.Quest.ScrollOfEmperorNumber));
+        character.Inventory.Items.Add(this.CreateJewel(48, Items.Quest.SoulShardOfWizardNumber));
+
+        return character;
     }
 
     /// <inheritdoc/>

@@ -1,21 +1,49 @@
 version: '3.4'
 
+volumes:
+  certificates:
+  certbot-www:
+
 services:
-  nginx:
+  nginx-80:
+    restart: "unless-stopped"
+    environment:
+      DOMAIN_NAME: ${DOMAIN_NAME}
+    volumes:
+      - ./nginx.server_name.conf.template:/etc/nginx/templates/nginx.server_name.conf.template
+      - ./nginx.prod80.conf:/etc/nginx/nginx.conf:ro
+      - ./.htpasswd:/etc/nginx/.htpasswd
+      - certbot-www:/var/www/certbot/:ro
+
+# We add another nginx here, just for HTTPs.
+# The reason is, that it's not starting when we combine port 80 and 443 until
+# the certificates are created.
+# So, when running the certbot the first time, we need to be able to access
+# the port 80 - and we solve this by separating the server configs.
+  nginx-443:
+    image: nginx:alpine
+    container_name: nginx-443
     restart: "unless-stopped"
     ports:
-      - "80:80"
       - "443:443"
+    environment:
+      DOMAIN_NAME: ${DOMAIN_NAME}
     volumes:
-      - ./nginx.prod.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx.server_name.conf.template:/etc/nginx/templates/nginx.server_name.conf.template
+      - ./nginx.prod.certificates.conf.template:/etc/nginx/templates/nginx.prod.certificates.conf.template
+      - ./nginx.prod443.conf:/etc/nginx/nginx.conf:ro
       - ./.htpasswd:/etc/nginx/.htpasswd
-      - ./certbot/www:/var/www/certbot/:ro
-      - ./certbot/conf/:/etc/nginx/ssl/:ro
+      - certificates:/etc/nginx/ssl/:ro
+    depends_on:
+      - grafana
+      - zipkin
+      - prometheus 
+
   certbot:
     image: certbot/certbot:latest
     volumes:
-      - ./certbot/www/:/var/www/certbot/:rw
-      - ./certbot/conf/:/etc/letsencrypt/:rw
+      - certbot-www:/var/www/certbot/:rw
+      - certificates:/etc/letsencrypt/:rw
 
   grafana:
     restart: "unless-stopped"

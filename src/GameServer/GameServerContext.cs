@@ -90,6 +90,12 @@ public class GameServerContext : GameContext, IGameServerContext
     public override float ExperienceRate => base.ExperienceRate * this._gameServerDefinition.ExperienceRate;
 
     /// <inheritdoc />
+    public override string ToString()
+    {
+        return $"Game Server {this.Id}";
+    }
+
+    /// <inheritdoc />
     public async ValueTask ForEachGuildPlayerAsync(uint guildId, Func<Player, Task> action)
     {
         if (!this._playersByGuild.TryGetValue(guildId, out var playerList))
@@ -171,12 +177,19 @@ public class GameServerContext : GameContext, IGameServerContext
 
     private async ValueTask PlayerEnteredWorldAsync(Player player)
     {
-        if (player is not { SelectedCharacter: { } selectedCharacter })
+        try
         {
-            return;
-        }
+            if (player is not { SelectedCharacter: { } selectedCharacter })
+            {
+                return;
+            }
 
-        await this.EventPublisher.PlayerEnteredGameAsync(this.Id, selectedCharacter.Id, selectedCharacter.Name).ConfigureAwait(false);
+            await this.EventPublisher.PlayerEnteredGameAsync(this.Id, selectedCharacter.Id, selectedCharacter.Name).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            player.Logger.LogError(ex, "Unexpected error when notifying the event publisher (player entered world).");
+        }
     }
 
     private async ValueTask PlayerLeftWorldAsync(Player player)
@@ -186,7 +199,14 @@ public class GameServerContext : GameContext, IGameServerContext
             return;
         }
 
-        await this.EventPublisher.PlayerLeftGameAsync(this.Id, selectedCharacter.Id, selectedCharacter.Name, player.GuildStatus?.GuildId ?? 0).ConfigureAwait(false);
+        try
+        {
+            await this.EventPublisher.PlayerLeftGameAsync(this.Id, selectedCharacter.Id, selectedCharacter.Name, player.GuildStatus?.GuildId ?? 0).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            player.Logger.LogError(ex, "Unexpected error when notifying the event publisher (player left world).");
+        }
 
         if (player.GuildStatus is null)
         {

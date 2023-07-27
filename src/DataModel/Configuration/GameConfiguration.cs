@@ -246,4 +246,10 @@ public class GameConfiguration
     /// </summary>
     [MemberOfAggregate]
     public virtual ICollection<MiniGameDefinition> MiniGameDefinitions { get; protected set; } = null!;
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return "Default Game Configuration";
+    }
 }

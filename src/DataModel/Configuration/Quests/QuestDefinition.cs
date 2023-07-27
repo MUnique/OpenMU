@@ -95,4 +95,10 @@ public class QuestDefinition
     /// </summary>
     [MemberOfAggregate]
     public virtual ICollection<QuestReward> Rewards { get; protected set; } = null!;
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return this.Name;
+    }
 }

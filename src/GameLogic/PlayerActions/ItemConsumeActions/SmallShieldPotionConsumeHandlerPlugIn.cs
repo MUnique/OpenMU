@@ -19,6 +19,6 @@ public class SmallShieldPotionConsumeHandlerPlugIn : ShieldPotionConsumeHandlerP
     /// <inheritdoc />
     public override ItemIdentifier Key => ItemConstants.SmallShieldPotion;
 
-    /// <inheritdoc/>
-    protected override int RecoverPercent => 20;
+    /// <inheritdoc />
+    protected override double RecoverPercentage => 20;
 }

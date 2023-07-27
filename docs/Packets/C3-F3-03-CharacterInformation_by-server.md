@@ -42,7 +42,7 @@ The characters enters the game world.
 | 62 | 2 | ShortLittleEndian |  | Leadership |
 | 64 | 2 | ShortLittleEndian |  | UsedNegativeFruitPoints |
 | 66 | 2 | ShortLittleEndian |  | MaxNegativeFruitPoints |
-| 68 | 1 | Boolean |  | IsVaultExtended |
+| 68 | 1 | Byte |  | InventoryExtensions |
 
 ### CharacterHeroState Enum
 

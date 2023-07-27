@@ -1,0 +1,17 @@
+﻿@inherits Microsoft.AspNetCore.Components.Forms.InputBase<MUnique.OpenMU.DataModel.Entities.ItemStorage>
+
+<div class="equipped-container">
+    @for (byte slot = InventoryConstants.LeftHandSlot; slot < InventoryConstants.EquippableSlotsCount; slot++)
+    {
+        <div class=@ClassNames[slot]>
+            @if (this.GetViewItemOfSlot(slot) is { } viewItem)
+            {
+                <MuItem
+                    Model="viewItem"
+                    OnClick="async () => await this.SetSelectedItemAsync(viewItem)"
+                    OnItemMoved="this.OnItemMovedAsync"
+                    IsSelected="this.SelectedItem == viewItem.Item"/>
+            }
+        </div>
+    }
+</div>

@@ -20,6 +20,11 @@ internal class Devias : BaseMapInitializer
     internal const byte Number = 2;
 
     /// <summary>
+    /// The name of the map.
+    /// </summary>
+    internal const string Name = "Devias";
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="Devias"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -33,35 +38,35 @@ internal class Devias : BaseMapInitializer
     protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => "Devias";
+    protected override string MapName => Name;
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()
     {
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[244], 226, 25, Direction.SouthEast);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[245], 225, 41, Direction.SouthEast);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[246], 186, 47, Direction.SouthEast);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[247], 224, 79, Direction.NorthEast);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[247], 219, 79, Direction.NorthEast);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[247], 169, 45, Direction.NorthWest);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[247], 169, 39, Direction.NorthWest);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[241], 215, 45, Direction.SouthWest);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[240], 218, 63, Direction.South);
+        yield return this.CreateMonsterSpawn(1, this.NpcDictionary[244], 226, 25, Direction.SouthEast);
+        yield return this.CreateMonsterSpawn(2, this.NpcDictionary[245], 225, 41, Direction.SouthEast);
+        yield return this.CreateMonsterSpawn(3, this.NpcDictionary[246], 186, 47, Direction.SouthEast);
+        yield return this.CreateMonsterSpawn(4, this.NpcDictionary[247], 224, 79, Direction.NorthEast);
+        yield return this.CreateMonsterSpawn(5, this.NpcDictionary[247], 219, 79, Direction.NorthEast);
+        yield return this.CreateMonsterSpawn(6, this.NpcDictionary[247], 169, 45, Direction.NorthWest);
+        yield return this.CreateMonsterSpawn(7, this.NpcDictionary[247], 169, 39, Direction.NorthWest);
+        yield return this.CreateMonsterSpawn(8, this.NpcDictionary[241], 215, 45, Direction.SouthWest);
+        yield return this.CreateMonsterSpawn(9, this.NpcDictionary[240], 218, 63, Direction.South);
     }
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateMonsterSpawns()
     {
         // Monsters:
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[20], 194, 194, 165, 165, 10);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[20], 36, 36, 25, 25, 10);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[20], 210, 242, 210, 220, 15);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[20], 0, 251, 128, 245, 200);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[25], 0, 128, 128, 245, 75);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[23], 0, 128, 0, 128, 75);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[22], 0, 128, 0, 128, 75);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[24], 128, 251, 0, 128, 65);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[21], 128, 251, 0, 128, 35);
+        yield return this.CreateMonsterSpawn(100, this.NpcDictionary[20], 194, 194, 165, 165, 10);
+        yield return this.CreateMonsterSpawn(101, this.NpcDictionary[20], 36, 36, 25, 25, 10);
+        yield return this.CreateMonsterSpawn(102, this.NpcDictionary[20], 210, 242, 210, 220, 15);
+        yield return this.CreateMonsterSpawn(103, this.NpcDictionary[20], 0, 251, 128, 245, 200);
+        yield return this.CreateMonsterSpawn(104, this.NpcDictionary[25], 0, 128, 128, 245, 75);
+        yield return this.CreateMonsterSpawn(105, this.NpcDictionary[23], 0, 128, 0, 128, 75);
+        yield return this.CreateMonsterSpawn(106, this.NpcDictionary[22], 0, 128, 0, 128, 75);
+        yield return this.CreateMonsterSpawn(107, this.NpcDictionary[24], 128, 251, 0, 128, 65);
+        yield return this.CreateMonsterSpawn(108, this.NpcDictionary[21], 128, 251, 0, 128, 35);
     }
 
     /// <inheritdoc/>
@@ -94,6 +99,7 @@ internal class Devias : BaseMapInitializer
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -125,6 +131,7 @@ internal class Devias : BaseMapInitializer
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -152,6 +159,7 @@ internal class Devias : BaseMapInitializer
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -181,6 +189,7 @@ internal class Devias : BaseMapInitializer
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -209,6 +218,7 @@ internal class Devias : BaseMapInitializer
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -237,6 +247,7 @@ internal class Devias : BaseMapInitializer
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -269,6 +280,7 @@ internal class Devias : BaseMapInitializer
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
     }
 }

@@ -129,6 +129,7 @@ internal class DevilSquareInitializer : InitializerBase
     {
         var devilSquare = this.Context.CreateNew<MiniGameDefinition>();
         this.GameConfiguration.MiniGameDefinitions.Add(devilSquare);
+        devilSquare.SetGuid((short)MiniGameType.DevilSquare, level);
         devilSquare.Name = $"Devil Square {level}";
         devilSquare.Description = $"Event definition for devil square event, level {level}.";
         devilSquare.EnterDuration = TimeSpan.FromMinutes(1);
@@ -143,6 +144,7 @@ internal class DevilSquareInitializer : InitializerBase
         devilSquare.GameLevel = level;
         devilSquare.MapCreationPolicy = MiniGameMapCreationPolicy.OnePerParty;
         devilSquare.SaveRankingStatistics = true;
+        devilSquare.AllowParty = true;
 
         this.CreateRewards(level, devilSquare);
         this.CreateWaves(devilSquare);

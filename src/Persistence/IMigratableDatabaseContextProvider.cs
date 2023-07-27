@@ -14,16 +14,20 @@ public interface IMigratableDatabaseContextProvider : IPersistenceContextProvide
     /// <summary>
     /// Determines if the database exists already, by checking if any migration has been applied.
     /// </summary>
-    /// <returns><c>True</c>, if the database exists; Otherwise, <c>false</c>.</returns>
-    Task<bool> DatabaseExistsAsync();
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>
+    ///   <c>True</c>, if the database exists; Otherwise, <c>false</c>.
+    /// </returns>
+    Task<bool> DatabaseExistsAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Determines whether the database schema is up to date.
     /// </summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>
     ///   <c>true</c> if the database is up to date; otherwise, <c>false</c>.
     /// </returns>
-    Task<bool> IsDatabaseUpToDateAsync();
+    Task<bool> IsDatabaseUpToDateAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Applies all pending updates to the database schema.
@@ -39,13 +43,15 @@ public interface IMigratableDatabaseContextProvider : IPersistenceContextProvide
     /// <summary>
     /// Determines whether this instance can connect to the database.
     /// </summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>
     ///   <c>true</c> if this instance can connect to the database; otherwise, <c>false</c>.
     /// </returns>
-    Task<bool> CanConnectToDatabaseAsync();
+    Task<bool> CanConnectToDatabaseAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Recreates the database by deleting and creating it again.
     /// </summary>
-    Task ReCreateDatabaseAsync();
+    /// <returns>The disposable which should be disposed when the data creation process is finished.</returns>
+    Task<IDisposable> ReCreateDatabaseAsync();
 }

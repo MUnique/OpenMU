@@ -14,9 +14,14 @@ using MUnique.OpenMU.GameLogic.Attributes;
 internal class Noria : BaseMapInitializer
 {
     /// <summary>
-    /// The default number of the noria map.
+    /// The default number of the map.
     /// </summary>
-    public static readonly byte Number = 3;
+    internal const byte Number = 3;
+
+    /// <summary>
+    /// The default name of the map.
+    /// </summary>
+    internal const string Name = "Noria";
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Noria"/> class.
@@ -32,30 +37,30 @@ internal class Noria : BaseMapInitializer
     protected override byte MapNumber => Number;
 
     /// <inheritdoc/>
-    protected override string MapName => "Noria";
+    protected override string MapName => Name;
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()
     {
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[253], 169, 109, Direction.SouthEast);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[253], 193, 110, Direction.South);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[242], 173, 125, Direction.SouthWest);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[243], 195, 124, Direction.South);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[240], 172, 96, Direction.SouthEast);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[238], 180, 103, Direction.SouthWest);
+        yield return this.CreateMonsterSpawn(1, this.NpcDictionary[253], 169, 109, Direction.SouthEast);
+        yield return this.CreateMonsterSpawn(2, this.NpcDictionary[253], 193, 110, Direction.South);
+        yield return this.CreateMonsterSpawn(3, this.NpcDictionary[242], 173, 125, Direction.SouthWest);
+        yield return this.CreateMonsterSpawn(4, this.NpcDictionary[243], 195, 124, Direction.South);
+        yield return this.CreateMonsterSpawn(5, this.NpcDictionary[240], 172, 96, Direction.SouthEast);
+        yield return this.CreateMonsterSpawn(6, this.NpcDictionary[238], 180, 103, Direction.SouthWest);
     }
 
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateMonsterSpawns()
     {
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[26], 128, 251, 0, 128, 155);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[27], 128, 251, 0, 128, 125);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[28], 0, 128, 0, 128, 125);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[29], 0, 128, 0, 128, 125);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[30], 0, 251, 128, 245, 125);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[31], 0, 251, 128, 245, 125);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[32], 128, 251, 128, 245, 100);
-        yield return this.CreateMonsterSpawn(this.NpcDictionary[33], 0, 128, 128, 245, 125);
+        yield return this.CreateMonsterSpawn(21, this.NpcDictionary[26], 128, 251, 0, 128, 155);
+        yield return this.CreateMonsterSpawn(22, this.NpcDictionary[27], 128, 251, 0, 128, 125);
+        yield return this.CreateMonsterSpawn(23, this.NpcDictionary[28], 0, 128, 0, 128, 125);
+        yield return this.CreateMonsterSpawn(24, this.NpcDictionary[29], 0, 128, 0, 128, 125);
+        yield return this.CreateMonsterSpawn(25, this.NpcDictionary[30], 0, 251, 128, 245, 125);
+        yield return this.CreateMonsterSpawn(26, this.NpcDictionary[31], 0, 251, 128, 245, 125);
+        yield return this.CreateMonsterSpawn(27, this.NpcDictionary[32], 128, 251, 128, 245, 100);
+        yield return this.CreateMonsterSpawn(28, this.NpcDictionary[33], 0, 128, 128, 245, 125);
     }
 
     /// <inheritdoc/>
@@ -90,6 +95,7 @@ internal class Noria : BaseMapInitializer
                 { Stats.FireResistance, 0f / 255 },
             };
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -117,6 +123,7 @@ internal class Noria : BaseMapInitializer
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -143,6 +150,7 @@ internal class Noria : BaseMapInitializer
                 { Stats.DefenseRatePvm, 10 },
             };
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -170,6 +178,7 @@ internal class Noria : BaseMapInitializer
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -197,6 +206,7 @@ internal class Noria : BaseMapInitializer
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -224,6 +234,7 @@ internal class Noria : BaseMapInitializer
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -250,6 +261,7 @@ internal class Noria : BaseMapInitializer
                 { Stats.DefenseRatePvm, 20 },
             };
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
 
         {
@@ -277,6 +289,7 @@ internal class Noria : BaseMapInitializer
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+            monster.SetGuid(monster.Number);
         }
     }
 }

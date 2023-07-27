@@ -159,11 +159,11 @@ internal class ChatClient : IChatClient
     {
         if (this._connection is null)
         {
-            this._logger.LogDebug($"Client {this.Nickname} is already disconnected.");
+            this._logger.LogDebug("Client {Nickname} is already disconnected.", this.Nickname);
             return;
         }
 
-        this._logger.LogDebug($"Client {this._connection} is going to be disconnected.");
+        this._logger.LogDebug("Client {Connection} is going to be disconnected.", this._connection);
         if (this._room != null)
         {
             await this._room.LeaveAsync(this).ConfigureAwait(false);
@@ -200,7 +200,7 @@ internal class ChatClient : IChatClient
 
         sequence.CopyTo(this._packetBuffer);
         var packet = this._packetBuffer.AsMemory(0, (int)sequence.Length);
-        if (this._packetBuffer[0] != 0xC1)
+        if (this._packetBuffer[0] != Authenticate.HeaderType)
         {
             return;
         }
@@ -223,7 +223,7 @@ internal class ChatClient : IChatClient
                     var message = packet.Span.ExtractString(5, int.MaxValue, Encoding.UTF8);
                     if (this._logger.IsEnabled(LogLevel.Debug))
                     {
-                        this._logger.LogDebug($"Message received from {this.Index}: \"{message}\"");
+                        this._logger.LogDebug("Message received from {Index}: \"{message}\"", this.Index, message);
                     }
 
                     await this._room.SendMessageAsync(this.Index, message).ConfigureAwait(false);
@@ -238,7 +238,7 @@ internal class ChatClient : IChatClient
                 break;
 
             case var value:
-                this._logger.LogError($"Received unknown packet of type {value}: {packet.Span.AsString()}");
+                this._logger.LogError("Received unknown packet of type {PacketType}: {PacketSpan}",value,  packet.Span.AsString());
                 await this.LogOffAsync().ConfigureAwait(false);
                 break;
         }
@@ -255,7 +255,7 @@ internal class ChatClient : IChatClient
         var requestedRoom = this._manager.GetChatRoom(roomId);
         if (requestedRoom is null)
         {
-            this._logger.LogError($"Requested room {roomId} has not been registered before.");
+            this._logger.LogError("Requested room {RoomId} has not been registered before.", roomId);
             await this.LogOffAsync().ConfigureAwait(false);
             return;
         }
@@ -264,7 +264,7 @@ internal class ChatClient : IChatClient
         var tokenAsString = packet.Span.ExtractString(TokenOffset, 10, Encoding.UTF8);
         if (!uint.TryParse(tokenAsString, out uint _))
         {
-            this._logger.LogError($"Token '{tokenAsString}' is not a parseable integer.");
+            this._logger.LogError("Token '{TokenAsString}' is not a parseable integer.", tokenAsString);
             await this.LogOffAsync().ConfigureAwait(false);
             return;
         }
