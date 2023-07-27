@@ -154,14 +154,14 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
                 plugInConfiguration.SetConfiguration(PeriodicInvasionConfiguration.DefaultRedDragonInvasion);
             }
 
-            if (plugInType == typeof(MuHelperFeaturePlugIn))
-            {
-                plugInConfiguration.SetConfiguration(new MuHelperConfiguration());
-            }
-
             if (plugInType == typeof(HappyHourPlugIn))
             {
                 plugInConfiguration.SetConfiguration(HappyHourConfiguration.Default);
+            }
+
+            if (plugInType == typeof(MuHelperFeaturePlugIn))
+            {
+                plugInConfiguration.SetConfiguration(new MuHelperConfiguration());
             }
 
             // We don't move the player anymore by his request. This was usually requested after a player performed a skill.
