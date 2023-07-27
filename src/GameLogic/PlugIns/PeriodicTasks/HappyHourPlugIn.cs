@@ -14,33 +14,42 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [PlugIn(nameof(HappyHourPlugIn), "Handle Happy Hour event")]
 [Guid("6542E452-9780-45B8-85AE-4036422E9A6E")]
-public class HappyHourPlugIn : PeriodicTaskBasePlugIn<HappyHourConfiguration, HappyHourGameServerState>, ISupportDefaultCustomConfiguration, IObjectAddedToMapPlugIn
+public class HappyHourPlugIn : PeriodicTaskBasePlugIn<HappyHourConfiguration, HappyHourGameServerState>, ISupportDefaultCustomConfiguration, IPlayerStateChangedPlugIn
 {
     /// <inheritdoc />
     public object CreateDefaultConfig() => HappyHourConfiguration.Default;
 
     /// <inheritdoc />
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
-    public virtual async void ObjectAddedToMap(GameMap map, ILocateable addedObject)
+    public async ValueTask PlayerStateChangedAsync(Player player, State previousState, State currentState)
     {
+        if (previousState != PlayerState.CharacterSelection || currentState != PlayerState.EnteredWorld)
+        {
+            return;
+        }
+
         try
         {
-            if (addedObject is Player player)
+            var state = this.GetStateByGameContext(player.GameContext);
+            var isEnabled = state.State != PeriodicTaskState.NotStarted;
+            if (!isEnabled)
             {
-                var state = this.GetStateByGameContext(player.GameContext);
-                var isEnabled = state.State != PeriodicTaskState.NotStarted;
-                if (!isEnabled)
-                {
-                    return;
-                }
-
-                await this.TrySendStartMessageAsync(player).ConfigureAwait(false);
+                return;
             }
+
+            await this.TrySendStartMessageAsync(player).ConfigureAwait(false);
         }
         catch
         {
             // must be catched because it's an async void method.
         }
+    }
+
+    /// <inheritdoc/>
+    protected override HappyHourGameServerState CreateState(IGameContext gameContext)
+    {
+        var expMult = this.Configuration?.ExperienceMultiplier ?? 1;
+
+        return new HappyHourGameServerState(gameContext) { OldExperienceRate = gameContext.Configuration.ExperienceRate, NewExperienceRate = gameContext.Configuration.ExperienceRate * expMult };
     }
 
     /// <inheritdoc/>
@@ -56,25 +65,17 @@ public class HappyHourPlugIn : PeriodicTaskBasePlugIn<HappyHourConfiguration, Ha
     }
 
     /// <inheritdoc/>
-    protected override HappyHourGameServerState CreateState(IGameContext gameContext)
+    protected override ValueTask OnStartedAsync(HappyHourGameServerState state)
     {
-        var expMult = this.Configuration?.ExperienceMultiplier ?? 1;
+        state.Context.Configuration.ExperienceRate = state.NewExperienceRate;
 
-        return new HappyHourGameServerState(gameContext) { OldExperienceRate = gameContext.Configuration.ExperienceRate, NewExperienceRate = gameContext.Configuration.ExperienceRate * expMult };
+        return ValueTask.CompletedTask;
     }
 
     /// <inheritdoc/>
     protected override ValueTask OnFinishedAsync(HappyHourGameServerState state)
     {
         state.Context.Configuration.ExperienceRate = state.OldExperienceRate;
-
-        return ValueTask.CompletedTask;
-    }
-
-    /// <inheritdoc/>
-    protected override ValueTask OnStartedAsync(HappyHourGameServerState state)
-    {
-        state.Context.Configuration.ExperienceRate = state.NewExperienceRate;
 
         return ValueTask.CompletedTask;
     }
