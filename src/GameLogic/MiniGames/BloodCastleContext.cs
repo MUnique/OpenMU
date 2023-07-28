@@ -65,7 +65,7 @@ public sealed class BloodCastleContext : MiniGameContext
     /// <summary>
     /// Dialog category for the NPC interactions.
     /// </summary>
-    private const short DialogCategoryMain = 1;
+    private const byte DialogCategoryMain = 1;
 
     /// <summary>
     /// Dialog numbers for different interactions with the NPC.
