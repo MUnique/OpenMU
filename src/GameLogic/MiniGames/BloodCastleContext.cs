@@ -70,7 +70,7 @@ public sealed class BloodCastleContext : MiniGameContext
     /// <summary>
     /// Dialog numbers for different interactions with the NPC.
     /// </summary>
-    private enum DialogNumber
+    private enum DialogNumber : byte
     {
         EventWinner = 0x17,
         EventNotRunning = 0x18,
@@ -104,24 +104,24 @@ public sealed class BloodCastleContext : MiniGameContext
     {
         if (this._winner is not null)
         {
-            await player.InvokeViewPlugInAsync<IShowDialogPlugIn>(p => p.ShowDialogAsync(DialogCategoryMain, DialogNumber.EventFinished)).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<IShowDialogPlugIn>(p => p.ShowDialogAsync(DialogCategoryMain, (byte)DialogNumber.EventFinished)).ConfigureAwait(false);
             return;
         }
 
         if (!this.IsEventRunning)
         {
-            await player.InvokeViewPlugInAsync<IShowDialogPlugIn>(p => p.ShowDialogAsync(DialogCategoryMain, DialogNumber.EventNotRunning)).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<IShowDialogPlugIn>(p => p.ShowDialogAsync(DialogCategoryMain, (byte)DialogNumber.EventNotRunning)).ConfigureAwait(false);
             return;
         }
 
         if (!await this.TryRemoveQuestItemFromPlayerAsync(player).ConfigureAwait(false))
         {
-            await player.InvokeViewPlugInAsync<IShowDialogPlugIn>(p => p.ShowDialogAsync(DialogCategoryMain, DialogNumber.EventQuestItemMissing)).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<IShowDialogPlugIn>(p => p.ShowDialogAsync(DialogCategoryMain, (byte)DialogNumber.EventQuestItemMissing)).ConfigureAwait(false);
             return;
         }
 
         this._winner = player;
-        await player.InvokeViewPlugInAsync<IShowDialogPlugIn>(p => p.ShowDialogAsync(DialogCategoryMain, DialogNumber.EventWinner)).ConfigureAwait(false);
+        await player.InvokeViewPlugInAsync<IShowDialogPlugIn>(p => p.ShowDialogAsync(DialogCategoryMain, (byte)DialogNumber.EventWinner)).ConfigureAwait(false);
         this.FinishEvent();
     }
 
