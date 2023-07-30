@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration;
 
+using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 
 /// <summary>
@@ -97,6 +98,12 @@ public class GameMapDefinition
     /// </summary>
     [MemberOfAggregate]
     public virtual ICollection<AttributeRequirement> MapRequirements { get; protected set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the power ups which are applied to characters which are currently on this map.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<PowerUpDefinition> CharacterPowerUpDefinitions { get; protected set; } = null!;
 
     /// <inheritdoc/>
     public override string ToString()

@@ -70,6 +70,15 @@ internal partial class GameMapDefinition : MUnique.OpenMU.DataModel.Configuratio
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement> MapRequirements => base.MapRequirements ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement, AttributeRequirement>(this.RawMapRequirements);
 
     /// <summary>
+    /// Gets the raw collection of <see cref="CharacterPowerUpDefinitions" />.
+    /// </summary>
+    public ICollection<PowerUpDefinition> RawCharacterPowerUpDefinitions { get; } = new EntityFramework.List<PowerUpDefinition>();
+    
+    /// <inheritdoc/>
+    [NotMapped]
+    public override ICollection<MUnique.OpenMU.DataModel.Attributes.PowerUpDefinition> CharacterPowerUpDefinitions => base.CharacterPowerUpDefinitions ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Attributes.PowerUpDefinition, PowerUpDefinition>(this.RawCharacterPowerUpDefinitions);
+
+    /// <summary>
     /// Gets or sets the identifier of <see cref="SafezoneMap"/>.
     /// </summary>
     public Guid? SafezoneMapId { get; set; }

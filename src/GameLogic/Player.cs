@@ -99,6 +99,16 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public event AsyncEventHandler<Player>? PlayerLeftWorld;
 
     /// <summary>
+    /// Occurs when the player entered the map with his selected character.
+    /// </summary>
+    public event EventHandler<(Player, GameMap)>? PlayerEnteredMap;
+
+    /// <summary>
+    /// Occurs when the player left the map with his selected character.
+    /// </summary>
+    public event EventHandler<(Player, GameMap)>? PlayerLeftMap;
+
+    /// <summary>
     /// Occurs when the player picked up an item.
     /// </summary>
     public event AsyncEventHandler<(Player, ILocateable)>? PlayerPickedUpItem;
@@ -237,8 +247,18 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         {
             if (this._currentMap != value)
             {
+                if (this._currentMap is { } oldMap)
+                {
+                    this.RaisePlayerLeftMap(oldMap);
+                }
+
                 this._currentMap = value;
                 this.GameContext.PlugInManager?.GetPlugInPoint<IAttackableMovedPlugIn>()?.AttackableMoved(this);
+
+                if (this._currentMap is { } newMap)
+                {
+                    this.RaisePlayerEnteredMap(newMap);
+                }
             }
         }
     }
@@ -471,6 +491,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             this._comboStateLazy = null;
 
             this._appearanceData.RaiseAppearanceChanged();
+
             await this.PlayerLeftWorld.SafeInvokeAsync(this).ConfigureAwait(false);
             this._selectedCharacter = null;
             (this.SkillList as IDisposable)?.Dispose();
@@ -481,6 +502,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             this._selectedCharacter = character;
             await this.OnPlayerEnteredWorldAsync().ConfigureAwait(false);
             await this.PlayerEnteredWorld.SafeInvokeAsync(this).ConfigureAwait(false);
+
             this._appearanceData.RaiseAppearanceChanged();
         }
     }
@@ -1685,9 +1707,37 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         return null;
     }
 
+    private void RaisePlayerEnteredMap(GameMap map)
+    {
+        this.PlayerEnteredMap?.Invoke(this, (this, map));
+        if (map.Definition.CharacterPowerUpDefinitions is { Count: > 0 } powerUpDefinitions
+            && this.Attributes is { } attributes)
+        {
+            foreach (var powerUpDefinition in powerUpDefinitions)
+            {
+                if (powerUpDefinition.TargetAttribute is not { } targetAttribute)
+                {
+                    continue;
+                }
+
+                var powerUps = PowerUpWrapper.CreateByPowerUpDefinition(powerUpDefinition, attributes);
+                powerUps.ForEach(p =>
+                {
+                    this.Attributes?.AddElement(p, targetAttribute);
+                    this.PlayerLeftMap += (_, _) => attributes.RemoveElement(p, targetAttribute);
+                });
+            }
+        }
+    }
+
+    private void RaisePlayerLeftMap(GameMap map)
+    {
+        this.PlayerLeftMap?.Invoke(this, (this, map));
+    }
+
     private async ValueTask OnPlayerEnteredWorldAsync()
     {
-        this.Attributes = new ItemAwareAttributeSystem(this.SelectedCharacter!);
+        this.Attributes = new ItemAwareAttributeSystem(this.Account!, this.SelectedCharacter!);
         this.Inventory = new InventoryStorage(this, this.GameContext);
         this.ShopStorage = new ShopStorage(this);
         this.TemporaryStorage = new Storage(InventoryConstants.TemporaryStorageSize, new TemporaryItemStorage());

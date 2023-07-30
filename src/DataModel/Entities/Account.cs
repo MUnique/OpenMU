@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.DataModel.Entities;
 
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 
 /// <summary>
@@ -122,6 +123,16 @@ public class Account
     [MemberOfAggregate]
     [HiddenAtCreation]
     public virtual ICollection<Character> Characters { get; protected set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the stat attributes which are applied across all characters of the account.
+    /// </summary>
+    /// <remarks>
+    /// Please note, that it's not possible to add stat attribute with the same
+    /// attribute definition to the <see cref="Account.Attributes"/> and the <see cref="Character.Attributes"/>.
+    /// </remarks>
+    [MemberOfAggregate]
+    public virtual ICollection<StatAttribute> Attributes { get; protected set; } = null!;
 
     /// <inheritdoc />
     public override string ToString()

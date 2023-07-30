@@ -4,8 +4,6 @@
 
 namespace MUnique.OpenMU.AttributeSystem;
 
-using System.Globalization;
-
 /// <summary>
 /// The attribute system which holds all attributes of a character.
 /// </summary>
