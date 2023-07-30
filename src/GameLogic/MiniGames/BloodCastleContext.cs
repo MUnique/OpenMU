@@ -63,6 +63,22 @@ public sealed class BloodCastleContext : MiniGameContext
     private Item? _questItem;
 
     /// <summary>
+    /// Dialog category for the NPC interactions.
+    /// </summary>
+    private const byte DialogCategoryMain = 1;
+
+    /// <summary>
+    /// Dialog numbers for different interactions with the NPC.
+    /// </summary>
+    private enum DialogNumber : byte
+    {
+        EventWinner = 0x17,
+        EventNotRunning = 0x18,
+        EventQuestItemMissing = 0x18,
+        EventFinished = 0x2E
+    }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="BloodCastleContext"/> class.
     /// </summary>
     /// <param name="key">The key of this context.</param>
@@ -84,31 +100,28 @@ public sealed class BloodCastleContext : MiniGameContext
     /// Player interact with Archangel.
     /// </summary>
     /// <param name="player">The player who talks to Archangel.</param>
-    /// <remarks>
-    /// TODO: Replace magic values (category/dialog numbers) with constants or enums.
-    /// </remarks>
     public async ValueTask TalkToNpcArchangelAsync(Player player)
     {
         if (this._winner is not null)
         {
-            await player.InvokeViewPlugInAsync<IShowDialogPlugIn>(p => p.ShowDialogAsync(1, 0x2E)).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<IShowDialogPlugIn>(p => p.ShowDialogAsync(DialogCategoryMain, (byte)DialogNumber.EventFinished)).ConfigureAwait(false);
             return;
         }
 
         if (!this.IsEventRunning)
         {
-            await player.InvokeViewPlugInAsync<IShowDialogPlugIn>(p => p.ShowDialogAsync(1, 0x18)).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<IShowDialogPlugIn>(p => p.ShowDialogAsync(DialogCategoryMain, (byte)DialogNumber.EventNotRunning)).ConfigureAwait(false);
             return;
         }
 
         if (!await this.TryRemoveQuestItemFromPlayerAsync(player).ConfigureAwait(false))
         {
-            await player.InvokeViewPlugInAsync<IShowDialogPlugIn>(p => p.ShowDialogAsync(1, 0x18)).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<IShowDialogPlugIn>(p => p.ShowDialogAsync(DialogCategoryMain, (byte)DialogNumber.EventQuestItemMissing)).ConfigureAwait(false);
             return;
         }
 
         this._winner = player;
-        await player.InvokeViewPlugInAsync<IShowDialogPlugIn>(p => p.ShowDialogAsync(1, 0x17)).ConfigureAwait(false);
+        await player.InvokeViewPlugInAsync<IShowDialogPlugIn>(p => p.ShowDialogAsync(DialogCategoryMain, (byte)DialogNumber.EventWinner)).ConfigureAwait(false);
         this.FinishEvent();
     }
 
