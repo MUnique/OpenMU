@@ -392,6 +392,7 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
             }
 
             player.CurrentMiniGame = null;
+            player.PlayerPickedUpItem -= this.OnPlayerPickedUpItemAsync;
             bool cantGameProceed;
             using (await this._enterLock.WriterLockAsync().ConfigureAwait(false))
             {
