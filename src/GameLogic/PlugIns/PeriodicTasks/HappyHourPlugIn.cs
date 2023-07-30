@@ -2,10 +2,11 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic.PlugIns.InvasionEvents;
+namespace MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 
 using System.Runtime.InteropServices;
-using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
+using MUnique.OpenMU.AttributeSystem;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.PlugIns;
 
@@ -14,21 +15,35 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [PlugIn(nameof(HappyHourPlugIn), "Handle Happy Hour event")]
 [Guid("6542E452-9780-45B8-85AE-4036422E9A6E")]
-public class HappyHourPlugIn : PeriodicTaskBasePlugIn<HappyHourConfiguration, HappyHourGameServerState>, ISupportDefaultCustomConfiguration, IPlayerStateChangedPlugIn
+public class HappyHourPlugIn : PeriodicTaskBasePlugIn<HappyHourConfiguration, PeriodicTaskGameServerState>, ISupportDefaultCustomConfiguration, IPlayerStateChangedPlugIn
 {
+    /// <summary>
+    /// The happy hour extra multiplier which gets added to the players <see cref="Stats.ExperienceRate"/>
+    /// and <see cref="Stats.MasterExperienceRate"/>.
+    /// </summary>
+    private readonly SimpleElement _happyHourExtraMultiplier = new(1.0f, AggregateType.Multiplicate);
+
     /// <inheritdoc />
     public object CreateDefaultConfig() => HappyHourConfiguration.Default;
 
     /// <inheritdoc />
     public async ValueTask PlayerStateChangedAsync(Player player, State previousState, State currentState)
     {
-        if (previousState != PlayerState.CharacterSelection || currentState != PlayerState.EnteredWorld)
-        {
-            return;
-        }
-
         try
         {
+            if (currentState == PlayerState.Disconnected)
+            {
+                player.Attributes?.RemoveElement(this._happyHourExtraMultiplier, Stats.ExperienceRate);
+                player.Attributes?.RemoveElement(this._happyHourExtraMultiplier, Stats.MasterExperienceRate);
+            }
+
+            if (previousState != PlayerState.CharacterSelection || currentState != PlayerState.EnteredWorld)
+            {
+                return;
+            }
+
+            player.Attributes?.AddElement(this._happyHourExtraMultiplier, Stats.ExperienceRate);
+            player.Attributes?.AddElement(this._happyHourExtraMultiplier, Stats.MasterExperienceRate);
             var state = this.GetStateByGameContext(player.GameContext);
             var isEnabled = state.State != PeriodicTaskState.NotStarted;
             if (!isEnabled)
@@ -38,44 +53,42 @@ public class HappyHourPlugIn : PeriodicTaskBasePlugIn<HappyHourConfiguration, Ha
 
             await this.TrySendStartMessageAsync(player).ConfigureAwait(false);
         }
-        catch
+        catch (Exception ex)
         {
-            // must be catched because it's an async void method.
+            player.Logger.LogDebug(ex, "Unexpected error handling player state change.");
         }
     }
 
     /// <inheritdoc/>
-    protected override HappyHourGameServerState CreateState(IGameContext gameContext)
+    protected override PeriodicTaskGameServerState CreateState(IGameContext gameContext)
     {
-        var expMult = this.Configuration?.ExperienceMultiplier ?? 1;
-
-        return new HappyHourGameServerState(gameContext) { OldExperienceRate = gameContext.Configuration.ExperienceRate, NewExperienceRate = gameContext.Configuration.ExperienceRate * expMult };
+        return new PeriodicTaskGameServerState(gameContext);
     }
 
     /// <inheritdoc/>
-    protected override ValueTask OnPrepareEventAsync(HappyHourGameServerState state)
+    protected override ValueTask OnPrepareEventAsync(PeriodicTaskGameServerState state)
     {
         return ValueTask.CompletedTask;
     }
 
     /// <inheritdoc/>
-    protected override async ValueTask OnPreparedAsync(HappyHourGameServerState state)
+    protected override async ValueTask OnPreparedAsync(PeriodicTaskGameServerState state)
     {
         await state.Context.ForEachPlayerAsync(this.TrySendStartMessageAsync).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
-    protected override ValueTask OnStartedAsync(HappyHourGameServerState state)
+    protected override ValueTask OnStartedAsync(PeriodicTaskGameServerState state)
     {
-        state.Context.Configuration.ExperienceRate = state.NewExperienceRate;
+        this._happyHourExtraMultiplier.Value = this.Configuration?.ExperienceMultiplier ?? 1;
 
         return ValueTask.CompletedTask;
     }
 
     /// <inheritdoc/>
-    protected override ValueTask OnFinishedAsync(HappyHourGameServerState state)
+    protected override ValueTask OnFinishedAsync(PeriodicTaskGameServerState state)
     {
-        state.Context.Configuration.ExperienceRate = state.OldExperienceRate;
+        this._happyHourExtraMultiplier.Value = 1;
 
         return ValueTask.CompletedTask;
     }
@@ -86,7 +99,7 @@ public class HappyHourPlugIn : PeriodicTaskBasePlugIn<HappyHourConfiguration, Ha
     /// <param name="player">The player.</param>
     protected bool IsPlayerOnMap(Player player)
     {
-        return player.CurrentMap is { } map
+        return player.CurrentMap is not null
             && player.PlayerState.CurrentState != PlayerState.Disconnected
             && player.PlayerState.CurrentState != PlayerState.Finished;
     }
