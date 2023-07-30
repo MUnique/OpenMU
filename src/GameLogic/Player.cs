@@ -1724,7 +1724,13 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 powerUps.ForEach(p =>
                 {
                     this.Attributes?.AddElement(p, targetAttribute);
-                    this.PlayerLeftMap += (_, _) => attributes.RemoveElement(p, targetAttribute);
+                    this.PlayerLeftMap += OnPlayerLeftMap;
+
+                    void OnPlayerLeftMap(object? o, (Player, GameMap) args)
+                    {
+                        this.PlayerLeftMap -= OnPlayerLeftMap;
+                        attributes.RemoveElement(p, targetAttribute);
+                    }
                 });
             }
         }
