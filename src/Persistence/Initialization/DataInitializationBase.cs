@@ -154,6 +154,11 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
                 plugInConfiguration.SetConfiguration(PeriodicInvasionConfiguration.DefaultRedDragonInvasion);
             }
 
+            if (plugInType == typeof(HappyHourPlugIn))
+            {
+                plugInConfiguration.SetConfiguration(HappyHourConfiguration.Default);
+            }
+
             if (plugInType == typeof(MuHelperFeaturePlugIn))
             {
                 plugInConfiguration.SetConfiguration(new MuHelperConfiguration());
