@@ -112,6 +112,7 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         // All members which are marked with the MemberOfAggregateAttribute, should be defined with ON DELETE CASCADE.
         modelBuilder.Entity<Account>().HasOne(entity => entity.RawVault).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Account>().HasMany(entity => entity.RawCharacters).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<Account>().HasMany(entity => entity.RawAttributes).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<AppearanceData>().HasMany(entity => entity.RawEquippedItems).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Character>().HasMany(entity => entity.RawAttributes).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Character>().HasMany(entity => entity.RawLetters).WithOne().OnDelete(DeleteBehavior.Cascade);
@@ -154,6 +155,7 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Entity<GameMapDefinition>().HasOne(entity => entity.RawBattleZone).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameMapDefinition>().HasMany(entity => entity.RawExitGates).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameMapDefinition>().HasMany(entity => entity.RawMapRequirements).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<GameMapDefinition>().HasMany(entity => entity.RawCharacterPowerUpDefinitions).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameServerDefinition>().HasMany(entity => entity.RawEndpoints).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<MagicEffectDefinition>().HasOne(entity => entity.RawDuration).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<MagicEffectDefinition>().HasMany(entity => entity.RawPowerUpDefinitions).WithOne().OnDelete(DeleteBehavior.Cascade);

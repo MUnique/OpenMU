@@ -131,6 +131,27 @@ public partial class GameMapDefinition : MUnique.OpenMU.DataModel.Configuration.
     }
 
     /// <summary>
+    /// Gets the raw collection of <see cref="CharacterPowerUpDefinitions" />.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonPropertyName("characterPowerUpDefinitions")]
+    public ICollection<PowerUpDefinition> RawCharacterPowerUpDefinitions { get; } = new List<PowerUpDefinition>();
+    
+    /// <inheritdoc/>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override ICollection<MUnique.OpenMU.DataModel.Attributes.PowerUpDefinition> CharacterPowerUpDefinitions
+    {
+        get => base.CharacterPowerUpDefinitions ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Attributes.PowerUpDefinition, PowerUpDefinition>(this.RawCharacterPowerUpDefinitions);
+        protected set
+        {
+            this.CharacterPowerUpDefinitions.Clear();
+            foreach (var item in value)
+            {
+                this.CharacterPowerUpDefinitions.Add(item);
+            }
+        }
+    }
+
+    /// <summary>
     /// Gets the raw object of <see cref="SafezoneMap" />.
     /// </summary>
     [System.Text.Json.Serialization.JsonPropertyName("safezoneMap")]
