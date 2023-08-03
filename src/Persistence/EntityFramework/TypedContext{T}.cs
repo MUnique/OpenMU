@@ -124,7 +124,7 @@ internal class TypedContext<T> : EntityDataContext, ITypedContext
             {
                 yield return type;
             }
-            else if(navigation.Inverse?.IsMemberOfAggregate() is true)
+            else if (navigation.Inverse?.IsMemberOfAggregate() is true)
             {
                 BackReferenceTypes.Add(type.ClrType);
                 if (type.ClrType.BaseType is { } baseType && baseType != typeof(object))
