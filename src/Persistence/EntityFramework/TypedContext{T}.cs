@@ -131,6 +131,7 @@ internal class TypedContext<T> : EntityDataContext, ITypedContext
                 {
                     BackReferenceTypes.Add(baseType);
                 }
+
                 yield return type;
                 continue;
             }
