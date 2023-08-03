@@ -82,7 +82,7 @@ public class BaseRepositoryProvider
             {
                 break;
             }
-            
+
             if (this.Repositories.TryGetValue(currentSearchType, out var repository))
             {
                 return repository as IRepository;

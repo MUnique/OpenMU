@@ -82,7 +82,7 @@ internal abstract class GenericRepositoryBase<T> : IRepository<T>, ILoadByProper
     public virtual async ValueTask<T?> GetByIdAsync(Guid id)
     {
         using var context = this.GetContext();
-        
+
         var result = await context.Context.Set<T>().FindAsync(id).ConfigureAwait(false);
         if (result is null)
         {

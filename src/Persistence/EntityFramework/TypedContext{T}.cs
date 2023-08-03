@@ -119,7 +119,7 @@ internal class TypedContext<T> : EntityDataContext, ITypedContext
         foreach (var navigation in navigations)
         {
             var type = navigation.TargetEntityType;
-  
+
             if (navigation.IsMemberOfAggregate() || navigation.Name.StartsWith("Joined"))
             {
                 yield return type;
