@@ -121,7 +121,7 @@ public sealed class Bucket<T> : IEnumerable<T>
 
         public TEnumerated Current => this.Enumerator.Current;
 
-        object IEnumerator.Current => ((IEnumerator)this.Enumerator).Current!;
+        object IEnumerator.Current => this.Enumerator.Current!;
 
         public bool MoveNext()
         {
