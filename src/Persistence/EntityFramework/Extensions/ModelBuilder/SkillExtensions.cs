@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using MUnique.OpenMU.Persistence.EntityFramework.Model;
 
 /// <summary>
-/// Extensions for the <see cref="Skill"/>-related <see cref="EntityTypeBuilder"/>.s
+/// Extensions for the <see cref="Skill"/>-related <see cref="EntityTypeBuilder"/>.
 /// </summary>
 internal static class SkillExtensions
 {
