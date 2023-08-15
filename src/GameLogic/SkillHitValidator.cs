@@ -135,6 +135,20 @@ public class SkillHitValidator
 
         if (this._hits[animationCounter] is { } animationEntry)
         {
+            if (this._hits[hitCounter] is { } currentHitEntry && currentHitEntry.TimeStamp >= DateTime.UtcNow.AddSeconds(-1))
+            {
+                // probably speed too high to allow any check
+                this._hits[animationCounter] = animationEntry with
+                {
+                    Skill = skillId,
+                    IsAnimation = true,
+                    HitCount = animationEntry.HitCount + 1,
+                };
+                this._logger.LogDebug($"Hits are too fast, skipping validity check.");
+                this._hits[hitCounter] = new HitEntry(skillId, DateTime.UtcNow, false, 0);
+                return (true, true);
+            }
+
             if (!animationEntry.IsAnimation)
             {
                 this._logger.LogWarning("Possible Hacker - Skill Hit Invalid because the given animation counter wasn't registered as animation.");
