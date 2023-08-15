@@ -124,7 +124,9 @@ public static class TestHelper
             character.Attributes.Add(new StatAttribute(attributeDef.Attribute, attributeDef.BaseValue));
         }
 
-        var player = new TestPlayer(gameContext) { Account = new Account() };
+        var accountMock = new Mock<Account>();
+        accountMock.Setup(mock => mock.Attributes).Returns(new List<StatAttribute>());
+        var player = new TestPlayer(gameContext) { Account = accountMock.Object };
         await player.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
         await player.PlayerState.TryAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
         await player.PlayerState.TryAdvanceToAsync(PlayerState.CharacterSelection).ConfigureAwait(false);
