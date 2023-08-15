@@ -7,7 +7,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character;
 using System.Text.RegularExpressions;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.PlugIns;
+using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Character;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Action to create a new character in the character selection screen.
@@ -36,24 +38,23 @@ public class CreateCharacterAction
             if (character != null)
             {
                 await player.InvokeViewPlugInAsync<IShowCreatedCharacterPlugIn>(p => p.ShowCreatedCharacterAsync(character)).ConfigureAwait(false);
+                return;
             }
         }
-        else
-        {
-            await player.InvokeViewPlugInAsync<IShowCharacterCreationFailedPlugIn>(p => p.ShowCharacterCreationFailedAsync()).ConfigureAwait(false);
-        }
+
+        await player.InvokeViewPlugInAsync<IShowCharacterCreationFailedPlugIn>(p => p.ShowCharacterCreationFailedAsync()).ConfigureAwait(false);
     }
 
-    private async ValueTask<DataModel.Entities.Character?> CreateCharacterAsync(Player player, string name, CharacterClass charclass)
+    private async ValueTask<DataModel.Entities.Character?> CreateCharacterAsync(Player player, string name, CharacterClass characterClass)
     {
         var account = player.Account;
         if (account is null)
         {
             player.Logger.LogWarning("Account Object is null.");
-            throw new ArgumentNullException(nameof(player), "Account Object is null.");
+            throw new ArgumentNullException(nameof(player));
         }
 
-        player.Logger.LogDebug("Enter CreateCharacter: {0} {1} {2}", account.LoginName, name, charclass);
+        player.Logger.LogDebug("Enter CreateCharacter: {0} {1} {2}", account.LoginName, name, characterClass);
         var isValidName = string.IsNullOrWhiteSpace(player.GameContext.Configuration.CharacterNameRegex) || Regex.IsMatch(name, player.GameContext.Configuration.CharacterNameRegex);
         player.Logger.LogDebug("CreateCharacter: Character Name matches = {0}", isValidName);
         if (!isValidName)
@@ -67,20 +68,20 @@ public class CreateCharacterAction
             return null;
         }
 
-        if (!charclass.CanGetCreated || charclass.HomeMap is null)
+        if (!characterClass.CanGetCreated || characterClass.HomeMap is null)
         {
             return null;
         }
 
         var character = player.PersistenceContext.CreateNew<DataModel.Entities.Character>();
-        character.CharacterClass = charclass;
+        character.CharacterClass = characterClass;
         character.Name = name;
         character.CharacterSlot = freeSlot.Value;
         character.CreateDate = DateTime.UtcNow;
         character.KeyConfiguration = new byte[30];
         var attributes = character.CharacterClass.StatAttributes.Select(a => player.PersistenceContext.CreateNew<StatAttribute>(a.Attribute, a.BaseValue)).ToList();
         attributes.ForEach(character.Attributes.Add);
-        character.CurrentMap = charclass.HomeMap;
+        character.CurrentMap = characterClass.HomeMap;
         var randomSpawnGate = character.CurrentMap!.ExitGates.Where(g => g.IsSpawnGate).SelectRandom();
         if (randomSpawnGate is not null)
         {
@@ -93,7 +94,6 @@ public class CreateCharacterAction
         player.GameContext.PlugInManager.GetPlugInPoint<ICharacterCreatedPlugIn>()?.CharacterCreated(player, character);
         try
         {
-            // todo: test if character name exists, before doing all this
             await player.PersistenceContext.SaveChangesAsync().ConfigureAwait(false);
         }
         catch (Exception ex)
@@ -101,6 +101,12 @@ public class CreateCharacterAction
             account.Characters.Remove(character);
             player.PersistenceContext.Detach(character);
             player.Logger.LogError(ex, "Error when trying to create character '{0}'", name);
+            var message = ex.InnerException?.Message ?? ex.Message;
+            if (message.Contains("IX_Character_Name") || message.Contains("23505"))
+            {
+                await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("A character with the same name already exists.", MessageType.BlueNormal)).ConfigureAwait(false);
+            }
+
             return null;
         }
 
