@@ -153,6 +153,12 @@ internal sealed class Program : IDisposable
         this._serverHost?.Dispose();
     }
 
+    private static void DisplayCommands()
+    {
+        var commandList = "help, exit, gc, pid";
+        Console.WriteLine($"Commands available: {commandList}");
+    }
+
     private static async Task HandleConsoleInputAsync(CancellationTokenSource exitCts, CancellationToken exitToken)
     {
         Console.Write("> ");
@@ -175,15 +181,15 @@ internal sealed class Program : IDisposable
                 break;
             case "?":
             case "help":
-                var commandList = "help, exit, gc, pid";
-                Console.WriteLine($"Commands available: {commandList}");
+                DisplayCommands();
                 break;
             case "":
             case null:
                 break;
             default:
                 Console.WriteLine("Unknown command");
-                goto case "help";
+                DisplayCommands();
+                break;
         }
 
         if (_confirmExit && !string.IsNullOrWhiteSpace(input))

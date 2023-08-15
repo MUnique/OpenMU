@@ -33,7 +33,7 @@ internal class NonCachingRepositoryProvider : RepositoryProvider
     protected override void Initialize()
     {
         this.RegisterRepository(new GameConfigurationRepository(this._parent ?? this, this.LoggerFactory, this.ChangePublisher));
-        
+
         this.RegisterRepository(new AccountRepository(this._parent ?? this, this.LoggerFactory)); // never cache accounts, so we pass this
         this.RegisterRepository(new LetterBodyRepository(this._parent ?? this, this.LoggerFactory)); // never cache letters, so we pass this
 

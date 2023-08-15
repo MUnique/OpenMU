@@ -128,7 +128,7 @@ public static class ConnectionConfigurator
     {
         return role switch
         {
-            DatabaseRole.Account => typeof(AccountContext), 
+            DatabaseRole.Account => typeof(AccountContext),
             DatabaseRole.Admin => typeof(EntityDataContext),
             DatabaseRole.Configuration => typeof(ConfigurationContext),
             DatabaseRole.Guild => typeof(GuildContext),

@@ -119,18 +119,19 @@ internal class TypedContext<T> : EntityDataContext, ITypedContext
         foreach (var navigation in navigations)
         {
             var type = navigation.TargetEntityType;
-  
+
             if (navigation.IsMemberOfAggregate() || navigation.Name.StartsWith("Joined"))
             {
                 yield return type;
             }
-            else if(navigation.Inverse?.IsMemberOfAggregate() is true)
+            else if (navigation.Inverse?.IsMemberOfAggregate() is true)
             {
                 BackReferenceTypes.Add(type.ClrType);
                 if (type.ClrType.BaseType is { } baseType && baseType != typeof(object))
                 {
                     BackReferenceTypes.Add(baseType);
                 }
+
                 yield return type;
                 continue;
             }

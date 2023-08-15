@@ -16,7 +16,7 @@ internal abstract class KalimaBase : BaseMapInitializer
     /// </summary>
     /// <param name="context">The context.</param>
     /// <param name="gameConfiguration">The game configuration.</param>
-    public KalimaBase(IContext context, GameConfiguration gameConfiguration)
+    protected KalimaBase(IContext context, GameConfiguration gameConfiguration)
         : base(context, gameConfiguration)
     {
     }

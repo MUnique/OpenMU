@@ -20,7 +20,7 @@ public class ElfSoldierBuffRequestAction
 {
     private static readonly short ElfSoldierNumber = 257;
 
-    private static readonly MagicEffectDefinition BuffEffect = new SoldierBuffMagicEffectDefinition()
+    private static readonly MagicEffectDefinition BuffEffect = new SoldierBuffMagicEffectDefinition
     {
         InformObservers = true,
         Name = "Elf Soldier Buff",

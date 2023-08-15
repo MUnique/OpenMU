@@ -42,7 +42,7 @@ internal class CacheAwareRepositoryProvider : ICacheAwareRepositoryProvider, ICo
         {
             return _nonCachingRepositoryProvider.GetRepository(objectType);
         }
-        
+
         return this._cachingRepositoryProvider.GetRepository(objectType)
                ?? this._nonCachingRepositoryProvider.GetRepository(objectType);
     }
