@@ -66,7 +66,12 @@ public class StateMachine
 
         using var l = await this._asyncLock.LockAsync();
 
-        if (this.CurrentState.PossibleTransitions.Contains(nextState) && await this.OnStateChangingAsync(nextState).ConfigureAwait(false))
+        if (this.CurrentState?.PossibleTransitions is not { } possibleTransitions)
+        {
+            return false;
+        }
+
+        if (possibleTransitions.Contains(nextState) && await this.OnStateChangingAsync(nextState).ConfigureAwait(false))
         {
             var previousState = this.CurrentState;
             this.CurrentState = nextState;
