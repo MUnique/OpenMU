@@ -43,16 +43,13 @@ public class AddStatChatCommandPlugIn : IChatCommandPlugIn
             var arguments = command.ParseArguments<Arguments>();
             var attribute = this.GetAttribute(player, arguments.StatType);
             var selectedCharacter = player.SelectedCharacter;
-            for (var i = 0; i < arguments.Amount; i++)
-            {
-                if (!selectedCharacter.CanIncreaseStats())
-                {
-                    await player.ShowMessageAsync("Cancelled adding points. No more points available.").ConfigureAwait(false);
-                    break;
-                }
 
-                await this._action.IncreaseStatsAsync(player, attribute).ConfigureAwait(false);
+            if (!selectedCharacter.CanIncreaseStats(arguments.Amount))
+            {
+                return;
             }
+
+            await this._action.IncreaseStatsAsync(player, attribute, arguments.Amount).ConfigureAwait(false);
         }
         catch (ArgumentException e)
         {
@@ -85,6 +82,6 @@ public class AddStatChatCommandPlugIn : IChatCommandPlugIn
         [ValidValues("str", "agi", "vit", "ene", "cmd")]
         public string? StatType { get; set; }
 
-        public int Amount { get; set; }
+        public ushort Amount { get; set; }
     }
 }

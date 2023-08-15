@@ -70,6 +70,19 @@ public static class CharacterExtensions
     }
 
     /// <summary>
+    /// Determines whether the character is able to increase StatAttributes.
+    /// </summary>
+    /// <param name="character">The character.</param>
+    /// <param name="amount">The amount of points which should be added.</param>
+    /// <returns>
+    ///   <c>true</c> if the character can increase StatAttributes; otherwise, <c>false</c>.
+    /// </returns>
+    public static bool CanIncreaseStats(this Character character, ushort amount)
+    {
+        return character.CharacterStatus == CharacterStatus.GameMaster || character.LevelUpPoints >= amount;
+    }
+
+    /// <summary>
     /// Determines whether the character is a "special" character with reduced level requirements for maps and events.
     /// Special characters have a <see cref="CharacterClass.LevelWarpRequirementReductionPercent"/> of 33.
     /// Usually, this includes the classes Magic Gladiator, Dark Lord, Rage Fighter and Summoner.
