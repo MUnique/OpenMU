@@ -171,7 +171,7 @@ public class QuestCompletionAction
                     return;
                 }
 
-                if (skillList.ContainsSkill(skill.Number.ToUnsigned()))
+                if (!skillList.ContainsSkill(skill.Number.ToUnsigned()))
                 {
                     await skillList.AddLearnedSkillAsync(skill).ConfigureAwait(false);
                 }
