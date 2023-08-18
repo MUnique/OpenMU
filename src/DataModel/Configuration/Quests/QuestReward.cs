@@ -52,7 +52,7 @@ public class QuestReward
 
         if (this.RewardType == QuestRewardType.Skill)
         {
-            return $"Skill: {this.SkillReward}";
+            return $"Skill: {this.SkillReward?.Name}";
         }
 
         if (this.RewardType == QuestRewardType.Attribute)
