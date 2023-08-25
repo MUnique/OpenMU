@@ -43,4 +43,10 @@ public class MiniGameTerrainChange
     /// Gets or sets the end value of the Y-coordinate of the terrain area.
     /// </summary>
     public byte EndY { get; set; }
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return $"{(this.SetTerrainAttribute ? "Set" : "Remove")} Attribute '{this.TerrainAttribute}' from ({this.StartX}, {this.StartY}) to ({this.EndX}, {this.EndY}) {(this.IsClientUpdateRequired ? "with" : "without")} client update";
+    }
 }
