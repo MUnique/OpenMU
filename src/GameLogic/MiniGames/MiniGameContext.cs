@@ -584,7 +584,7 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     {
         try
         {
-            foreach (var spawnWave in this.Definition.SpawnWaves)
+            foreach (var spawnWave in this.Definition.SpawnWaves.OrderBy(wave => wave.WaveNumber))
             {
                 if (cancellationToken.IsCancellationRequested)
                 {
