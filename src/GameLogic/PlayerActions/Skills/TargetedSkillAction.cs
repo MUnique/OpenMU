@@ -152,7 +152,7 @@ public class TargetedSkillAction
         {
             if (skill.SkillType == SkillType.DirectHit || skill.SkillType == SkillType.CastleSiegeSkill)
             {
-                if (!target.IsAtSafezone() && !player.IsAtSafezone())
+                if (!target.IsAtSafezone() && !player.IsAtSafezone() && target != player)
                 {
                     await target.AttackByAsync(player, skillEntry, isCombo).ConfigureAwait(false);
                     player.LastAttackedTarget.SetTarget(target);
