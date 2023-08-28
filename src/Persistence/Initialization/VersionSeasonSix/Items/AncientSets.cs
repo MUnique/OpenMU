@@ -57,7 +57,7 @@ public class AncientSets : InitializerBase
             (5, ItemGroups.Helm, Stats.TotalVitality, 1),
             (5, ItemGroups.Pants, Stats.TotalVitality, 1),
             (5, ItemGroups.Armor, Stats.TotalVitality, 1),
-            (1, ItemGroups.Axes, Stats.TotalStrength, 1), // Morning Star
+            (1, ItemGroups.Scepters, Stats.TotalStrength, 1), // Morning Star
             (8, ItemGroups.Misc1, Stats.TotalAgility, 1)); // Ring of Ice
 
         var anonymous = this.AddAncientSet(
