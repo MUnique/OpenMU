@@ -1604,7 +1604,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         if (reflectPercentage > 0 && attacker is IAttackable attackableAttacker)
         {
             var reflectedDamage = (int)((hitInfo.HealthDamage + hitInfo.ShieldDamage) * reflectPercentage);
-            if (reflectedDamage == 0)
+            if (reflectedDamage <= 0)
             {
                 return;
             }
