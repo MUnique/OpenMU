@@ -37,9 +37,9 @@ public static class MiniGameDefinitionExtensions
     /// <returns><c>true</c> if the specified player is in level range; otherwise, <c>false</c>.</returns>
     public static bool IsInLevelRange(this MiniGameDefinition definition, Player player)
     {
-        if (definition.RequiresMasterClass && (player.SelectedCharacter?.CharacterClass?.IsMasterClass ?? false))
+        if (definition.RequiresMasterClass && player.SelectedCharacter?.CharacterClass?.IsMasterClass is not true)
         {
-            return true;
+            return false;
         }
 
         var isSpecialCharacter = player.SelectedCharacter!.IsSpecialCharacter();
