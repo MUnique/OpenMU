@@ -130,6 +130,23 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
         }
     }
 
+    /// <inheritdoc />
+    public async Task<bool> ShouldDoAutoSchemaUpdateAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            await using var installationContext = new EntityDataContext();
+            return await installationContext.Database.SqlQueryRaw<bool>(
+                """
+                   SELECT "AutoUpdateSchema" as "Value" FROM config."SystemConfiguration"
+                   """).FirstOrDefaultAsync(cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            return false;
+        }
+    }
+
     /// <summary>
     /// Recreates the database by deleting and creating it again.
     /// </summary>

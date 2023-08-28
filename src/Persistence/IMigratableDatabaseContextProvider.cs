@@ -50,6 +50,17 @@ public interface IMigratableDatabaseContextProvider : IPersistenceContextProvide
     Task<bool> CanConnectToDatabaseAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Determines whether this instance should do an automatic schema update
+    /// without asking the user.
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>
+    /// <c>true</c> if this instance should do an automatic schema update
+    /// without asking the user.; otherwise, <c>false</c>.
+    /// </returns>
+    Task<bool> ShouldDoAutoSchemaUpdateAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Recreates the database by deleting and creating it again.
     /// </summary>
     /// <returns>The disposable which should be disposed when the data creation process is finished.</returns>

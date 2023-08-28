@@ -132,6 +132,12 @@ public class InMemoryPersistenceContextProvider : IMigratableDatabaseContextProv
     }
 
     /// <inheritdoc />
+    public Task<bool> ShouldDoAutoSchemaUpdateAsync(CancellationToken cancellationToken = default)
+    {
+        return Task.FromResult(true);
+    }
+
+    /// <inheritdoc />
     public Task<IDisposable> ReCreateDatabaseAsync()
     {
         this._repositoryProvider = new();
