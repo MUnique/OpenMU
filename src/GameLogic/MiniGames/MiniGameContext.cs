@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.MiniGames;
 
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Threading;
 using MUnique.OpenMU.DataModel.Statistics;
 using MUnique.OpenMU.GameLogic.Attributes;
@@ -34,6 +35,8 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
 
     private readonly HashSet<byte> _currentSpawnWaves = new();
     private readonly List<ChangeEventContext> _remainingEvents = new();
+
+    private Stopwatch? _elapsedTimeSinceStart;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MiniGameContext"/> class.
@@ -250,6 +253,9 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     /// <param name="players">The player which started with the game.</param>
     protected virtual async ValueTask OnGameStartAsync(ICollection<Player> players)
     {
+        this._elapsedTimeSinceStart = new Stopwatch();
+        this._elapsedTimeSinceStart.Start();
+
         var startEvents = this.Definition.ChangeEvents
             .OrderBy(e => e.Index)
             .TakeWhile(e => e is { Index: <= 0, NumberOfKills: 0 })
@@ -609,9 +615,10 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
                 return;
             }
 
-            if (spawnWave.StartTime > TimeSpan.Zero)
+            var requiredDelay = spawnWave.StartTime - this._elapsedTimeSinceStart?.Elapsed;
+            if (requiredDelay > TimeSpan.Zero)
             {
-                await Task.Delay(spawnWave.StartTime, cancellationToken).ConfigureAwait(false);
+                await Task.Delay(requiredDelay.Value, cancellationToken).ConfigureAwait(false);
             }
 
             this.Logger.LogDebug("{context}: Starting next wave: {wave}", this, spawnWave.Description);
