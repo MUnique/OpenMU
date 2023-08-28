@@ -74,4 +74,14 @@ public enum UpdateVersion
     /// The version of the <see cref="AddGuardsDataPlugIn"/>.
     /// </summary>
     AddGuardsData = 12,
+
+    /// <summary>
+    /// The version of the <see cref="FixWarriorMorningStarPlugIn"/>.
+    /// </summary>
+    FixWarriorMorningStar = 13,
+
+    /// <summary>
+    /// The version of the <see cref="InfinityArrowSkillOnQuestCompletionPlugIn"/>.
+    /// </summary>
+    InfinityArrowSkillOnQuestCompletion = 14,
 }
