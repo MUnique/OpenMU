@@ -8,8 +8,8 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Quests;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameServer.MessageHandler.Quests;
-using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
+using MUnique.OpenMU.Persistence.Initialization.Skills;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
 
 /// <summary>
@@ -242,6 +242,14 @@ internal class Quests : InitializerBase
         attributeReward.Value = 1;
         attributeReward.AttributeReward = Stats.GainHeroStatusQuestCompleted.GetPersistent(this.GameConfiguration);
         attributeReward.RewardType = QuestRewardType.Attribute;
+
+        if (characterClass == CharacterClassNumber.MuseElf)
+        {
+            var skillReward = this.Context.CreateNew<QuestReward>();
+            skillReward.Value = 1;
+            skillReward.SkillReward = this.GameConfiguration.Skills.First(s => s.Number == (short)SkillNumber.InfinityArrow);
+            skillReward.RewardType = QuestRewardType.Skill;
+        }
 
         heroStatus.Rewards.Add(pointReward);
         heroStatus.Rewards.Add(attributeReward);
