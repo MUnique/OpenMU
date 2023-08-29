@@ -17,7 +17,6 @@ using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
 using Nito.AsyncEx;
-using Nito.AsyncEx.Synchronous;
 
 /// <summary>
 /// The context of a mini game.
@@ -212,16 +211,16 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore()
     {
-        this.Logger.LogDebug("{context}: Disposing mini game...", this);
-        await base.DisposeAsyncCore().ConfigureAwait(false);
-
-        using (await this._enterLock.WriterLockAsync().ConfigureAwait(false))
-        {
-            this.State = MiniGameState.Disposed;
-        }
-
         try
         {
+            this.Logger.LogDebug("{context}: Disposing mini game...", this);
+            await base.DisposeAsyncCore().ConfigureAwait(false);
+
+            using (await this._enterLock.WriterLockAsync().ConfigureAwait(false))
+            {
+                this.State = MiniGameState.Disposed;
+            }
+
             await this.MovePlayersToSafezoneAsync().ConfigureAwait(false);
 
             this.Map.ObjectAdded -= this.OnObjectAddedToMapAsync;
@@ -604,6 +603,10 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         {
             // game ended.
         }
+        catch (Exception ex)
+        {
+            this.Logger.LogError(ex, "Unexpected error during spawn waves: {0}", ex.Message);
+        }
     }
 
     private async ValueTask RunSpawnWaveAsync(MiniGameSpawnWave spawnWave, CancellationToken cancellationToken)
@@ -726,7 +729,7 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         }
         finally
         {
-            await this.DisposeAsync();
+            await this.DisposeAsync().ConfigureAwait(false);
         }
     }
 
@@ -801,7 +804,7 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     {
         await this.MovePlayersToSafezoneAsync().ConfigureAwait(false);
 
-        await this.DisposeAsync();
+        await this.DisposeAsync().ConfigureAwait(false);
     }
 
     private async ValueTask MovePlayersToSafezoneAsync()
@@ -966,7 +969,9 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
 
     private void UpdateNextEvent()
     {
-        this.NextEvent = this._remainingEvents.MinBy(e => e.Definition.Index);
+        this.NextEvent = this._remainingEvents.Count == 0
+            ? null
+            : this._remainingEvents.MinBy(e => e.Definition.Index);
     }
 
     private bool IsKillValid(IAttackable killedObject, MiniGameChangeEvent definition)
