@@ -87,6 +87,11 @@ public sealed class SkillList : ISkillList, IDisposable
         skillEntry.Skill = skill;
         skillEntry.Level = 0;
         await this.AddLearnedSkillAsync(skillEntry).ConfigureAwait(false);
+
+        if (skill.MasterDefinition?.ReplacedSkill is { } replacedSkill)
+        {
+            await this._player.InvokeViewPlugInAsync<ISkillListViewPlugIn>(p => p.RemoveSkillAsync(replacedSkill)).ConfigureAwait(false);
+        }
     }
 
     /// <inheritdoc/>
@@ -137,10 +142,13 @@ public sealed class SkillList : ISkillList, IDisposable
         this._availableSkills.Add(skill.Skill!.Number.ToUnsigned(), skill);
         this._learnedSkills.Add(skill);
 
-        await this._player.InvokeViewPlugInAsync<ISkillListViewPlugIn>(p => p.AddSkillAsync(skill.Skill)).ConfigureAwait(false);
         if (skill.Skill.SkillType == SkillType.PassiveBoost)
         {
             this.CreatePowerUpForPassiveSkill(skill);
+        }
+        else
+        {
+            await this._player.InvokeViewPlugInAsync<ISkillListViewPlugIn>(p => p.AddSkillAsync(skill.Skill)).ConfigureAwait(false);
         }
     }
 

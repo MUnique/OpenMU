@@ -138,6 +138,7 @@ public class SkillListViewPlugIn : ISkillListViewPlugIn
         {
             var replacedSkills = skills.Select(entry => entry.Skill?.MasterDefinition?.ReplacedSkill).Where(skill => skill != null);
             skills.RemoveAll(s => replacedSkills.Contains(s.Skill));
+            skills.RemoveAll(s => s.Skill?.SkillType == SkillType.PassiveBoost);
         }
 
         skills.RemoveAll(s => s.Skill?.Number == ForceWaveSkillId);
