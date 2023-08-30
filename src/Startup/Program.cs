@@ -54,6 +54,7 @@ internal sealed class Program : IDisposable
     /// </summary>
     public Program()
     {
+        AppDomain.CurrentDomain.UnhandledException += this.OnUnhandledException;
         SelfLog.Enable(Console.Error);
         var configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
@@ -195,6 +196,18 @@ internal sealed class Program : IDisposable
         if (_confirmExit && !string.IsNullOrWhiteSpace(input))
         {
             _confirmExit = false;
+        }
+    }
+
+    private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+    {
+        if (e.IsTerminating)
+        {
+            this._logger.Fatal(e.ExceptionObject as Exception, "Unhandled exception leading to terminating application: {0}", e.ExceptionObject);
+        }
+        else
+        {
+            this._logger.Error(e.ExceptionObject as Exception, "Unhandled exception: {0}", e.ExceptionObject);
         }
     }
 
