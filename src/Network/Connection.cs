@@ -31,6 +31,15 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
     private static readonly Counter<long> InvalidBlocksCounter = ConnectionMeter.CreateCounter<long>("InvalidBlocks");
     private static readonly Counter<long> ConnectionCounter = ConnectionMeter.CreateCounter<long>("ConnectionCount");
 
+    /// <summary>
+    /// The start of an RDP connection attempt.
+    /// </summary>
+    /// <remarks>
+    /// Some hackers try to break into servers.
+    /// The packet mostly contains the content "Cookie: mstshash=Administr".
+    /// </remarks>
+    private static readonly byte[] RdpConnectionAttemptHeader = { 0x03, 0x00, 0x00 };
+
     private readonly IPipelinedEncryptor? _encryptionPipe;
     private readonly ILogger<Connection> _logger;
     private readonly EndPoint _remoteEndPoint;
@@ -164,6 +173,11 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
             else if (exception is InvalidOperationException && exception.Message == "Reading is not allowed after reader was completed.")
             {
                 this._logger.LogInformation(exception, "Reader was completed.");
+            }
+            else if (exception is InvalidPacketHeaderException packetHeaderException
+                     && packetHeaderException.Header.Take(3).SequenceEqual(RdpConnectionAttemptHeader))
+            {
+                this._logger.LogWarning("Connection will be closed, RDP connection attempt by {endPoint}", this.EndPoint);
             }
             else
             {
