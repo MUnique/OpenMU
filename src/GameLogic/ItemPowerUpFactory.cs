@@ -8,6 +8,7 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Persistence;
 
 /// <summary>
 /// The implementation of the item power up factory.
@@ -194,7 +195,7 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
             var optionOfLevel = option.LevelDependentOptions?.FirstOrDefault(l => l.Level == level);
             if (optionOfLevel is null && level > 1)
             {
-                this._logger.LogWarning($"Item has {nameof(IncreasableItemOption)} with level > 1, but no definition in {nameof(IncreasableItemOption.LevelDependentOptions)}");
+                this._logger.LogWarning("Item {item} (id {itemId}) has IncreasableItemOption ({option}, id {optionId}) with level {level}, but no definition in LevelDependentOptions.", item, item.GetId(), option, option.GetId(), level);
                 continue;
             }
 
