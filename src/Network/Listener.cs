@@ -120,7 +120,7 @@ public class Listener
                 // this exception is expected when the clientListener got disposed. In this case we don't want to spam the log.
                 return;
             }
-            catch (SocketException ex) when (ex.ErrorCode == (int)SocketError.OperationAborted)
+            catch (SocketException ex) when (ex.SocketErrorCode == SocketError.OperationAborted)
             {
                 this._logger.LogDebug(ex, "The listener was stopped.");
                 return;
