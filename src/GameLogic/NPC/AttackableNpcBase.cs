@@ -330,8 +330,15 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
         {
             _ = Task.Run(async () =>
             {
-                await Task.Delay(this.Definition.RespawnDelay).ConfigureAwait(false);
-                await this.RespawnAsync().ConfigureAwait(false);
+                try
+                {
+                    await Task.Delay(this.Definition.RespawnDelay).ConfigureAwait(false);
+                    await this.RespawnAsync().ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    Debug.Fail($"Unexpected error during respawning the attackable npc {this}: {ex}", ex.StackTrace);
+                }
             });
         }
 

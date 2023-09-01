@@ -1640,20 +1640,30 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
 
         // TODO: Drop items
-
         async Task RespawnAsync(CancellationToken cancellationToken)
         {
-            await Task.Delay(3000, cancellationToken).ConfigureAwait(false);
-            if (this.Summon?.Item1 is { } summon)
+            try
             {
-                await summon.CurrentMap.RemoveAsync(summon).ConfigureAwait(false);
-                summon.Dispose();
-                this.Summon = null;
-            }
+                await Task.Delay(3000, cancellationToken).ConfigureAwait(false);
+                if (this.Summon?.Item1 is { } summon)
+                {
+                    await summon.CurrentMap.RemoveAsync(summon).ConfigureAwait(false);
+                    summon.Dispose();
+                    this.Summon = null;
+                }
 
-            await this.MagicEffectList.ClearEffectsAfterDeathAsync().ConfigureAwait(false);
-            this.SetReclaimableAttributesToMaximum();
-            await this.RespawnAtAsync(await this.GetSpawnGateOfCurrentMapAsync().ConfigureAwait(false)).ConfigureAwait(false);
+                await this.MagicEffectList.ClearEffectsAfterDeathAsync().ConfigureAwait(false);
+                this.SetReclaimableAttributesToMaximum();
+                await this.RespawnAtAsync(await this.GetSpawnGateOfCurrentMapAsync().ConfigureAwait(false)).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException)
+            {
+                // Intended exception, so no need to handle that.
+            }
+            catch (Exception ex)
+            {
+                this.Logger.LogError(ex, "Unexpected error during respawning the character {this}: {ex}", this, ex);
+            }
         }
 
         _ = RespawnAsync(this._respawnAfterDeathCts.Token);
