@@ -11,6 +11,8 @@ using MUnique.OpenMU.GameLogic.Views.NPC;
 /// </summary>
 public class CloseNpcDialogAction
 {
+    private const ushort ChaosGoblinId = 238;
+
     /// <summary>
     /// Closes the currently opened npc dialog.
     /// </summary>
@@ -25,6 +27,20 @@ public class CloseNpcDialogAction
             player.OpenedNpc = null;
             player.Vault = null;
             await player.InvokeViewPlugInAsync<INpcDialogClosedPlugIn>(p => p.DialogClosedAsync(npc.Definition)).ConfigureAwait(false);
+            if (npc.Id == ChaosGoblinId)
+            {
+                try
+                {
+                    await Task.Delay(1000).ConfigureAwait(false);
+                    player.Logger.LogInformation("Saving changes after closing the chaos goblin ...");
+                    await player.PersistenceContext.SaveChangesAsync().ConfigureAwait(false);
+                    player.Logger.LogInformation("Saved changes after closing the chaos goblin ...");
+                }
+                catch (Exception ex)
+                {
+                    player.Logger.LogError(ex, "Couldn't save changes after closing the chaos goblin for player {player}", player);
+                }
+            }
         }
         else
         {
