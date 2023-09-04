@@ -445,7 +445,7 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
         }
         catch (Exception ex)
         {
-            this._logger.LogError($"Couldn't Save at Disconnect. Player: {this}", ex);
+            this._logger.LogError(ex, "Couldn't Save at Disconnect. Player: {player}", this);
 
             // TODO: Log Character/Account values, to be able to restore players data if necessary.
         }

@@ -29,7 +29,7 @@ public class LogoutAction
         }
         catch (Exception ex)
         {
-            player.Logger.LogError($"Couldn't Save at Disconnect. Player: {player}", ex);
+            player.Logger.LogError(ex, "Couldn't Save at Disconnect. Player: {player}", player);
         }
 
         if (logoutType == LogoutType.CloseGame)
