@@ -330,6 +330,11 @@ using static System.Buffers.Binary.BinaryPrimitives;    /// <summary>
             BloodCastle = 2,
 
         /// <summary>
+        /// The cursed temple mini game.
+        /// </summary>
+            CursedTemple = 3,
+
+        /// <summary>
         /// The chaos castle mini game.
         /// </summary>
             ChaosCastle = 4,

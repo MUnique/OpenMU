@@ -18,4 +18,4 @@ If the quest is already active, it responds with the QuestProgress. If the quest
 | 3 | 1 |    Byte   | 0x0A  | Packet header - sub packet type identifier |
 | 4 | 2 | ShortLittleEndian |  | QuestNumber |
 | 6 | 2 | ShortLittleEndian |  | QuestGroup |
-| 8 | 1 | Byte |  | UnknownField; A value between 1 and 3, probably depending on how many quests are already running. Should not be trusted or considered. |
+| 8 | 1 | Byte |  | SelectedTextIndex; A 1-based index of the selected index in the dialog. It's 0 when no text has been selected. It's not clear yet, when we need that. |

@@ -16,3 +16,4 @@ If the sender accepts the request, it's added to the party.
 | 1 | 1 |    Byte   |   4   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0x41  | Packet header - packet type identifier |
 | 3 | 1 | Boolean |  | Accepted |
+| 4 | 2 | ShortBigEndian |  | RequesterId |

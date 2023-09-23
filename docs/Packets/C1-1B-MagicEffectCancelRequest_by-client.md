@@ -13,6 +13,7 @@ The effect is cancelled and an update is sent to the player and all surrounding 
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
 | 0 | 1 |   Byte   | 0xC1  | [Packet type](PacketTypes.md) |
-| 1 | 1 |    Byte   |   5   | Packet header - length of the packet |
+| 1 | 1 |    Byte   |   7   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0x1B  | Packet header - packet type identifier |
 | 3 | 2 | ShortBigEndian |  | SkillId |
+| 5 | 2 | ShortBigEndian |  | PlayerId |

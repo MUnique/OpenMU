@@ -320,6 +320,11 @@
           <Value>2</Value>
         </EnumValue>
         <EnumValue>
+          <Name>CursedTemple</Name>
+          <Description>The cursed temple mini game.</Description>
+          <Value>3</Value>
+        </EnumValue>
+        <EnumValue>
           <Name>ChaosCastle</Name>
           <Description>The chaos castle mini game.</Description>
           <Value>4</Value>

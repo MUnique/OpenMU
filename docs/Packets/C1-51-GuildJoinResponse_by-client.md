@@ -13,6 +13,7 @@ If the request was accepted by the guild master, the previously requesting playe
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
 | 0 | 1 |   Byte   | 0xC1  | [Packet type](PacketTypes.md) |
-| 1 | 1 |    Byte   |   4   | Packet header - length of the packet |
+| 1 | 1 |    Byte   |   6   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0x51  | Packet header - packet type identifier |
 | 3 | 1 | Boolean |  | Accepted |
+| 4 | 2 | ShortBigEndian |  | RequesterId |

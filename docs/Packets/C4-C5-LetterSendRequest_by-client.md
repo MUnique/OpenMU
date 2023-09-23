@@ -20,4 +20,5 @@ The letter is sent to the other character, if it exists and the player has the r
 | 18 | 60 | String |  | Title |
 | 78 | 1 | Byte |  | Rotation |
 | 79 | 1 | Byte |  | Animation |
+| 80 | 2 | ShortLittleEndian |  | MessageLength |
 | 82 |  | String |  | Message |
