@@ -4055,6 +4055,12 @@ public readonly ref struct ObjectMessageRef
     /// </summary>
     /// <param name="content">The content of the variable 'Message' field from which the size will be calculated.</param>
     public static int GetRequiredSize(string content) => System.Text.Encoding.UTF8.GetByteCount(content) + 1 + 5;
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified field content.
+    /// </summary>
+    /// <param name="contentLength">The content length in bytes of the variable 'Message' field from which the size will be calculated.</param>
+    public static int GetRequiredSize(int contentLength) => contentLength + 1 + 5;
 }
 
 
@@ -5704,6 +5710,12 @@ public readonly ref struct ChatMessageRef
     /// </summary>
     /// <param name="content">The content of the variable 'Message' field from which the size will be calculated.</param>
     public static int GetRequiredSize(string content) => System.Text.Encoding.UTF8.GetByteCount(content) + 1 + 13;
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified field content.
+    /// </summary>
+    /// <param name="contentLength">The content length in bytes of the variable 'Message' field from which the size will be calculated.</param>
+    public static int GetRequiredSize(int contentLength) => contentLength + 1 + 13;
 }
 
 
@@ -15673,6 +15685,12 @@ public readonly ref struct ServerMessageRef
     /// </summary>
     /// <param name="content">The content of the variable 'Message' field from which the size will be calculated.</param>
     public static int GetRequiredSize(string content) => System.Text.Encoding.UTF8.GetByteCount(content) + 1 + 4;
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified field content.
+    /// </summary>
+    /// <param name="contentLength">The content length in bytes of the variable 'Message' field from which the size will be calculated.</param>
+    public static int GetRequiredSize(int contentLength) => contentLength + 1 + 4;
 }
 
 
@@ -20051,6 +20069,12 @@ public readonly ref struct OpenLetterRef
     /// </summary>
     /// <param name="content">The content of the variable 'Message' field from which the size will be calculated.</param>
     public static int GetRequiredSize(string content) => System.Text.Encoding.UTF8.GetByteCount(content) + 1 + 28;
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified field content.
+    /// </summary>
+    /// <param name="contentLength">The content length in bytes of the variable 'Message' field from which the size will be calculated.</param>
+    public static int GetRequiredSize(int contentLength) => contentLength + 1 + 28;
 }
 
 

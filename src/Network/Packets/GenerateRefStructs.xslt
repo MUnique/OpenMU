@@ -387,6 +387,22 @@ using static System.Buffers.Binary.BinaryPrimitives;</xsl:text>
       <xsl:value-of select="$variableField/pd:Index"/>
       <xsl:text>;</xsl:text>
       <xsl:value-of select="$newline"/>
+      <xsl:if test="$variableField/pd:Type = 'String'">
+        <xsl:text>
+    /// &lt;summary&gt;
+    /// Calculates the size of the packet for the specified field content.
+    /// &lt;/summary&gt;
+    /// &lt;param name="contentLength"&gt;The content length in bytes of the variable '</xsl:text>
+        <xsl:apply-templates select="$variableField/pd:Name" />
+        <xsl:text>' field from which the size will be calculated.&lt;/param&gt;
+    public static int GetRequiredSize(int </xsl:text>
+        <xsl:value-of select="$paramName"/>
+        <xsl:text>Length) => </xsl:text>
+        <xsl:value-of select="$paramName"/><xsl:text>Length + 1 + </xsl:text>
+        <xsl:value-of select="$variableField/pd:Index"/>
+        <xsl:text>;</xsl:text>
+        <xsl:value-of select="$newline"/>
+      </xsl:if>
     </xsl:if>
   </xsl:template>
 

@@ -1046,4 +1046,10 @@ public readonly struct ClientNeedsPatch
     /// </summary>
     /// <param name="content">The content of the variable 'PatchAddress' field from which the size will be calculated.</param>
     public static int GetRequiredSize(string content) => System.Text.Encoding.UTF8.GetByteCount(content) + 1 + 6;
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified field content.
+    /// </summary>
+    /// <param name="contentLength">The content length in bytes of the variable 'PatchAddress' field from which the size will be calculated.</param>
+    public static int GetRequiredSize(int contentLength) => contentLength + 1 + 6;
 }

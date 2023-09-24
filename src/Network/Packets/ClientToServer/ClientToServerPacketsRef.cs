@@ -275,6 +275,12 @@ public readonly ref struct PublicChatMessageRef
     /// </summary>
     /// <param name="content">The content of the variable 'Message' field from which the size will be calculated.</param>
     public static int GetRequiredSize(string content) => System.Text.Encoding.UTF8.GetByteCount(content) + 1 + 13;
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified field content.
+    /// </summary>
+    /// <param name="contentLength">The content length in bytes of the variable 'Message' field from which the size will be calculated.</param>
+    public static int GetRequiredSize(int contentLength) => contentLength + 1 + 13;
 }
 
 
@@ -364,6 +370,12 @@ public readonly ref struct WhisperMessageRef
     /// </summary>
     /// <param name="content">The content of the variable 'Message' field from which the size will be calculated.</param>
     public static int GetRequiredSize(string content) => System.Text.Encoding.UTF8.GetByteCount(content) + 1 + 13;
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified field content.
+    /// </summary>
+    /// <param name="contentLength">The content length in bytes of the variable 'Message' field from which the size will be calculated.</param>
+    public static int GetRequiredSize(int contentLength) => contentLength + 1 + 13;
 }
 
 
@@ -8121,6 +8133,12 @@ public readonly ref struct DeleteCharacterRef
     /// </summary>
     /// <param name="content">The content of the variable 'SecurityCode' field from which the size will be calculated.</param>
     public static int GetRequiredSize(string content) => System.Text.Encoding.UTF8.GetByteCount(content) + 1 + 14;
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified field content.
+    /// </summary>
+    /// <param name="contentLength">The content length in bytes of the variable 'SecurityCode' field from which the size will be calculated.</param>
+    public static int GetRequiredSize(int contentLength) => contentLength + 1 + 14;
 }
 
 
@@ -10721,6 +10739,12 @@ public readonly ref struct LetterSendRequestRef
     /// </summary>
     /// <param name="content">The content of the variable 'Message' field from which the size will be calculated.</param>
     public static int GetRequiredSize(string content) => System.Text.Encoding.UTF8.GetByteCount(content) + 1 + 82;
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified field content.
+    /// </summary>
+    /// <param name="contentLength">The content length in bytes of the variable 'Message' field from which the size will be calculated.</param>
+    public static int GetRequiredSize(int contentLength) => contentLength + 1 + 82;
 }
 
 
@@ -10889,6 +10913,12 @@ public readonly ref struct GuildKickPlayerRequestRef
     /// </summary>
     /// <param name="content">The content of the variable 'SecurityCode' field from which the size will be calculated.</param>
     public static int GetRequiredSize(string content) => System.Text.Encoding.UTF8.GetByteCount(content) + 1 + 13;
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified field content.
+    /// </summary>
+    /// <param name="contentLength">The content length in bytes of the variable 'SecurityCode' field from which the size will be calculated.</param>
+    public static int GetRequiredSize(int contentLength) => contentLength + 1 + 13;
 }
 
 
@@ -12149,6 +12179,12 @@ public readonly ref struct RemoveAllianceGuildRequestRef
     /// </summary>
     /// <param name="content">The content of the variable 'GuildName' field from which the size will be calculated.</param>
     public static int GetRequiredSize(string content) => System.Text.Encoding.UTF8.GetByteCount(content) + 1 + 4;
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified field content.
+    /// </summary>
+    /// <param name="contentLength">The content length in bytes of the variable 'GuildName' field from which the size will be calculated.</param>
+    public static int GetRequiredSize(int contentLength) => contentLength + 1 + 4;
 }
 
 
@@ -16094,6 +16130,12 @@ public readonly ref struct ServerImmigrationRequestRef
     /// </summary>
     /// <param name="content">The content of the variable 'SecurityCode' field from which the size will be calculated.</param>
     public static int GetRequiredSize(string content) => System.Text.Encoding.UTF8.GetByteCount(content) + 1 + 3;
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified field content.
+    /// </summary>
+    /// <param name="contentLength">The content length in bytes of the variable 'SecurityCode' field from which the size will be calculated.</param>
+    public static int GetRequiredSize(int contentLength) => contentLength + 1 + 3;
 }
 
 
