@@ -16,8 +16,8 @@
     <PackageTags>MUnique OpenMU MUOnline Network Packets</PackageTags>
     <PackageId>MUnique.OpenMU.Network.Packets</PackageId>
     <Description>This package contains message structs for the MMORPG "MU Online", which are primarily focused on the english version of Season 6 Episode 3.</Description>
-    <PackageVersion>0.7.14</PackageVersion>
-    <Version>0.7.14</Version>
+    <PackageVersion>0.7.21</PackageVersion>
+    <Version>0.7.21</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -31,6 +31,14 @@
   
   <ItemGroup>
     <ProjectReference Include="..\MUnique.OpenMU.Network.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="**/*.xml" copyToOutput="true">
+      <IncludeInPackage>true</IncludeInPackage>
+      <CopyToOutput>true</CopyToOutput>
+      <BuildAction>Content</BuildAction>
+    </Content>
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent" Condition="'$(ci)'!='true'">
@@ -55,6 +63,7 @@
     <XslTransformation OutputPaths="ServerToClient\ConnectionExtensions.cs" XmlInputPaths="ServerToClient\ServerToClientPackets.xml" XslInputPath="GenerateExtensions.xslt" Parameters="&lt;Parameter Name='subNamespace' Value='ServerToClient'/&gt;" />
     <XslTransformation OutputPaths="ChatServer\ConnectionExtensions.cs" XmlInputPaths="ChatServer\ChatServerPackets.xml" XslInputPath="GenerateExtensions.xslt" Parameters="&lt;Parameter Name='subNamespace' Value='ChatServer'/&gt;" />
     <XslTransformation OutputPaths="ConnectServer\ConnectionExtensions.cs" XmlInputPaths="ConnectServer\ConnectServerPackets.xml" XslInputPath="GenerateExtensions.xslt" Parameters="&lt;Parameter Name='subNamespace' Value='ConnectServer'/&gt;" />
+
     <Exec Command="npx rimraf@3.0.2 ../../../docs/Packets/C*.md"></Exec>
     <Exec Command="npx xslt3 -xsl:GenerateMarkdownDocs.xslt -o:../../../docs/Packets/ClientToServer.md -s:ClientToServer/ClientToServerPackets.xml"></Exec>
     <Exec Command="npx xslt3 -xsl:GenerateMarkdownDocs.xslt -o:../../../docs/Packets/ServerToClient.md -s:ServerToClient/ServerToClientPackets.xml"></Exec>
