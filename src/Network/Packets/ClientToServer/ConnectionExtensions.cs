@@ -483,6 +483,36 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="PlayerShopCloseOther" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="playerId">The player id.</param>
+    /// <param name="playerName">The player name.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player closes the dialog of another players shop.
+    /// Causes reaction on server side: The server handles that by unsubscribing the player from changes of the shop.
+    /// </remarks>
+    public static async ValueTask SendPlayerShopCloseOtherAsync(this IConnection? connection, ushort @playerId, string @playerName)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = PlayerShopCloseOtherRef.Length;
+            var packet = new PlayerShopCloseOtherRef(connection.Output.GetSpan(length)[..length]);
+            packet.PlayerId = @playerId;
+            packet.PlayerName = @playerName;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="PickupItemRequest" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
@@ -1031,11 +1061,12 @@ public static class ConnectionExtensions
     /// Sends a <see cref="CastleSiegeUnregisterRequest" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
+    /// <param name="isGivingUp">The is giving up.</param>
     /// <remarks>
     /// Is sent by the client when: The player opened a castle siege npc to un-register his guild alliance.
     /// Causes reaction on server side: The server returns the result of the castle siege un-registration.
     /// </remarks>
-    public static async ValueTask SendCastleSiegeUnregisterRequestAsync(this IConnection? connection)
+    public static async ValueTask SendCastleSiegeUnregisterRequestAsync(this IConnection? connection, bool @isGivingUp = true)
     {
         if (connection is null)
         {
@@ -1046,6 +1077,8 @@ public static class ConnectionExtensions
         {
             var length = CastleSiegeUnregisterRequestRef.Length;
             var packet = new CastleSiegeUnregisterRequestRef(connection.Output.GetSpan(length)[..length]);
+            packet.IsGivingUp = @isGivingUp;
+
             return packet.Header.Length;
         }
 
@@ -2729,6 +2762,31 @@ public static class ConnectionExtensions
             var packet = new IncreaseCharacterStatPointRef(connection.Output.GetSpan(length)[..length]);
             packet.StatType = @statType;
 
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="InventoryRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player bought or sold an item through his personal shop.
+    /// Causes reaction on server side: The server sends the inventory list back to the client.
+    /// </remarks>
+    public static async ValueTask SendInventoryRequestAsync(this IConnection? connection)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = InventoryRequestRef.Length;
+            var packet = new InventoryRequestRef(connection.Output.GetSpan(length)[..length]);
             return packet.Header.Length;
         }
 

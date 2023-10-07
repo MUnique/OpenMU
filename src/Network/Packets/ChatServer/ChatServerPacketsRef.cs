@@ -199,6 +199,76 @@ public readonly ref struct ChatRoomClientJoinedRef
 
 
 /// <summary>
+/// Is sent by the client when: This packet is sent by the client when it leaves the chat room, before the connection closes.
+/// Causes reaction on server side: The server will remove the client from the chat room, notifying the remaining clients.
+/// </summary>
+public readonly ref struct LeaveChatRoomRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LeaveChatRoomRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public LeaveChatRoomRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LeaveChatRoomRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private LeaveChatRoomRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0x01;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 3;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderRef Header => new (this._data);
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="LeaveChatRoom"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator LeaveChatRoomRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="LeaveChatRoom"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(LeaveChatRoomRef packet) => packet._data; 
+}
+
+
+/// <summary>
 /// Is sent by the server when: This packet is sent by the server after a chat client left the chat room.
 /// Causes reaction on client side: The client will remove the client from its list, or mark its name in the title bar as offline.
 /// </summary>

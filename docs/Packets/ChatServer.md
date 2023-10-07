@@ -1,6 +1,7 @@
 # ChatServerPackets
 
   * [C1 00 - Authenticate (by client)](C1-00-Authenticate_by-client.md)
+  * [C1 01 - LeaveChatRoom (by client)](C1-01-LeaveChatRoom_by-client.md)
   * [C1 01 00 - ChatRoomClientJoined (by server)](C1-01-00-ChatRoomClientJoined_by-server.md)
   * [C1 01 01 - ChatRoomClientLeft (by server)](C1-01-01-ChatRoomClientLeft_by-server.md)
   * [C2 02 - ChatRoomClients (by server)](C2-02-ChatRoomClients_by-server.md)

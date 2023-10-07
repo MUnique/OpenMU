@@ -89,6 +89,31 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="LeaveChatRoom" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: This packet is sent by the client when it leaves the chat room, before the connection closes.
+    /// Causes reaction on server side: The server will remove the client from the chat room, notifying the remaining clients.
+    /// </remarks>
+    public static async ValueTask SendLeaveChatRoomAsync(this IConnection? connection)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = LeaveChatRoomRef.Length;
+            var packet = new LeaveChatRoomRef(connection.Output.GetSpan(length)[..length]);
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="ChatRoomClientLeft" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>

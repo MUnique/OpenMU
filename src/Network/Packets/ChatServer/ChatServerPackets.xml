@@ -51,6 +51,17 @@
       </Fields>
     </Packet>
     <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>01</Code>
+      <Name>LeaveChatRoom</Name>
+      <Length>3</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>This packet is sent by the client when it leaves the chat room, before the connection closes.</SentWhen>
+      <CausedReaction>The server will remove the client from the chat room, notifying the remaining clients.</CausedReaction>
+      <Fields>
+      </Fields>
+    </Packet>
+    <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>01</Code>
       <SubCode>01</SubCode>

@@ -374,6 +374,30 @@
       </Fields>
     </Packet>
     <Packet>
+      <HeaderType>C3HeaderWithSubCode</HeaderType>
+      <Code>3F</Code>
+      <SubCode>07</SubCode>
+      <Name>PlayerShopCloseOther</Name>
+      <Caption>Player Shop - close other shop</Caption>
+      <Length>16</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player closes the dialog of another players shop.</SentWhen>
+      <CausedReaction>The server handles that by unsubscribing the player from changes of the shop.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>PlayerId</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>String</Type>
+          <Name>PlayerName</Name>
+          <Length>10</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
       <HeaderType>C3Header</HeaderType>
       <Code>22</Code>
       <Name>PickupItemRequest</Name>
@@ -546,7 +570,7 @@
       <Code>30</Code>
       <Name>TalkToNpcRequest</Name>
       <Caption>Talk to NPC</Caption>
-      <Length>4</Length>
+      <Length>5</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A player wants to talk to an NPC.</SentWhen>
       <CausedReaction>Based on the NPC type, the server sends a response back to the game client. For example, if it's a merchant NPC, it sends back that a merchant dialog should be opened and which items are offered by this NPC.</CausedReaction>
@@ -821,11 +845,17 @@
       <Code>B2</Code>
       <SubCode>02</SubCode>
       <Name>CastleSiegeUnregisterRequest</Name>
-      <Length>4</Length>
+      <Length>5</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The player opened a castle siege npc to un-register his guild alliance.</SentWhen>
       <CausedReaction>The server returns the result of the castle siege un-registration.</CausedReaction>
       <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Boolean</Type>
+          <Name>IsGivingUp</Name>
+          <DefaultValue>true</DefaultValue>
+        </Field>
       </Fields>
     </Packet>
     <Packet>
@@ -2096,7 +2126,19 @@
         </Field>
       </Fields>
     </Packet>
-    
+    <Packet>
+      <HeaderType>C3HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
+      <SubCode>10</SubCode>
+      <Name>InventoryRequest</Name>
+      <Caption>Character - Inventory request</Caption>
+      <Length>4</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player bought or sold an item through his personal shop.</SentWhen>
+      <CausedReaction>The server sends the inventory list back to the client.</CausedReaction>
+      <Fields>
+      </Fields>
+    </Packet>
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>F3</Code>
