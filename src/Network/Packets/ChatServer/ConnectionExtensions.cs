@@ -154,7 +154,7 @@ public static class ConnectionExtensions
     /// Is sent by the server when: This packet is sent by the server after another chat client sent a message to the current chat room.
     /// Causes reaction on client side: The client will show the message.
     /// </remarks>
-    public static async ValueTask SendChatMessageAsync(this IConnection? connection, byte @senderIndex, byte @messageLength, string @message)
+    public static async ValueTask SendChatMessageAsync(this IConnection? connection, byte @senderIndex, byte @messageLength, Memory<byte> @message)
     {
         if (connection is null)
         {
@@ -163,11 +163,11 @@ public static class ConnectionExtensions
 
         int WritePacket()
         {
-            var length = ChatMessageRef.GetRequiredSize(message);
+            var length = ChatMessageRef.GetRequiredSize(message.Length);
             var packet = new ChatMessageRef(connection.Output.GetSpan(length)[..length]);
             packet.SenderIndex = @senderIndex;
             packet.MessageLength = @messageLength;
-            packet.Message = @message;
+            @message.Span.CopyTo(packet.Message);
 
             return packet.Header.Length;
         }

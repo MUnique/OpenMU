@@ -559,10 +559,9 @@ public readonly struct ChatMessage
     /// <summary>
     /// Gets or sets the message. It's "encrypted" with the 3-byte XOR key (FC CF AB).
     /// </summary>
-    public string Message
+    public Span<byte> Message
     {
-        get => this._data.Span.ExtractString(5, this._data.Length - 5, System.Text.Encoding.UTF8);
-        set => this._data.Slice(5).Span.WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.Slice(5).Span;
     }
 
     /// <summary>
@@ -580,16 +579,11 @@ public readonly struct ChatMessage
     public static implicit operator Memory<byte>(ChatMessage packet) => packet._data; 
 
     /// <summary>
-    /// Calculates the size of the packet for the specified field content.
+    /// Calculates the size of the packet for the specified length of <see cref="Message"/>.
     /// </summary>
-    /// <param name="content">The content of the variable 'Message' field from which the size will be calculated.</param>
-    public static int GetRequiredSize(string content) => System.Text.Encoding.UTF8.GetByteCount(content) + 1 + 5;
-
-    /// <summary>
-    /// Calculates the size of the packet for the specified field content.
-    /// </summary>
-    /// <param name="contentLength">The content length in bytes of the variable 'Message' field from which the size will be calculated.</param>
-    public static int GetRequiredSize(int contentLength) => contentLength + 1 + 5;
+    /// <param name="messageLength">The length in bytes of <see cref="Message"/> on which the required size depends.</param>
+        
+    public static int GetRequiredSize(int messageLength) => messageLength + 5;
 }
 
 

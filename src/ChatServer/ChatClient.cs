@@ -89,11 +89,12 @@ internal class ChatClient : IChatClient
 
         int WritePacket()
         {
-            var length = ChatMessageRef.GetRequiredSize(message);
+            var messageLength = (byte)Encoding.UTF8.GetByteCount(message);
+            var length = ChatMessageRef.GetRequiredSize(messageLength);
             var packet = new ChatMessageRef(connection.Output.GetSpan(length)[..length]);
             packet.SenderIndex = senderId;
-            packet.MessageLength = (byte)Encoding.UTF8.GetByteCount(message);
-            packet.Message = message;
+            packet.MessageLength = messageLength;
+            Encoding.UTF8.GetBytes(message, packet.Message);
             MessageEncryptor.Encrypt(packet);
             return length;
         }
@@ -246,7 +247,7 @@ internal class ChatClient : IChatClient
 
     private bool CheckMessage(Memory<byte> packet)
     {
-        return packet.Length > 4 && (packet.Span[4] + 5) == packet.Length;
+        return packet.Length > 4 && (packet.Span[4] + 5) <= packet.Length;
     }
 
     private async ValueTask AuthenticateAsync(Memory<byte> packet)

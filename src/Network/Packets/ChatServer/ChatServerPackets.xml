@@ -146,7 +146,7 @@
         </Field>
         <Field>
           <Index>5</Index>
-          <Type>String</Type>
+          <Type>Binary</Type>
           <Name>Message</Name>
           <Description>The message. It's "encrypted" with the 3-byte XOR key (FC CF AB).</Description>
         </Field>

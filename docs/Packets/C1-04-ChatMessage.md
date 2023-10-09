@@ -17,4 +17,4 @@ The client will show the message.
 | 2 | 1 |    Byte   | 0x04  | Packet header - packet type identifier |
 | 3 | 1 | Byte |  | SenderIndex |
 | 4 | 1 | Byte |  | MessageLength |
-| 5 |  | String |  | Message; The message. It's "encrypted" with the 3-byte XOR key (FC CF AB). |
+| 5 |  | Binary |  | Message; The message. It's "encrypted" with the 3-byte XOR key (FC CF AB). |
