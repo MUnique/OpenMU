@@ -255,7 +255,7 @@ public class FriendServer : IFriendServer
             try
             {
                 var friends = await context.GetFriendsAsync(characterId).ConfigureAwait(false);
-                this.AddSubscriptions(observer, friends);
+                this.AddSubscriptions(friends);
             }
             finally
             {
@@ -272,21 +272,23 @@ public class FriendServer : IFriendServer
         }
     }
 
-    private void AddSubscriptions(OnlineFriend observer, IEnumerable<FriendViewItem> friends)
+    private void AddSubscriptions(IEnumerable<FriendViewItem> friends)
     {
-        foreach (var friend in friends)
+        foreach (var friendConnection in friends)
         {
-            if (!friend.Accepted || friend.RequestOpen)
+            if (!friendConnection.Accepted || friendConnection.RequestOpen)
             {
                 continue;
             }
 
-            if (this.OnlineFriends.TryGetValue(friend.FriendName, out var onlineFriend))
+            if (this.OnlineFriends.TryGetValue(friendConnection.FriendName, out var onlineFriend)
+                && this.OnlineFriends.TryGetValue(friendConnection.CharacterName, out var characterFriend))
             {
-                observer.AddSubscription(onlineFriend.Subscribe(observer));
-                onlineFriend.AddSubscription(observer.Subscribe(onlineFriend));
+                characterFriend.AddSubscription(onlineFriend.Subscribe(characterFriend));
+                characterFriend.OnNext(onlineFriend);
 
-                observer.OnNext(onlineFriend);
+                onlineFriend.AddSubscription(characterFriend.Subscribe(onlineFriend));
+                onlineFriend.OnNext(characterFriend);
             }
         }
     }
