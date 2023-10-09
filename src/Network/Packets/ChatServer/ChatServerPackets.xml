@@ -20,9 +20,9 @@
         </Field>
         <Field>
           <Index>6</Index>
-          <Type>String</Type>
+          <Type>Binary</Type>
           <Name>Token</Name>
-          <Description>A token (integer number), formatted as string. This value is also "encrypted" with the 3-byte XOR key (FC CF AB).</Description>
+          <Description>A token (integer number), formatted as string and "encrypted" with the 3-byte XOR key (FC CF AB).</Description>
           <Length>10</Length>
         </Field>
       </Fields>

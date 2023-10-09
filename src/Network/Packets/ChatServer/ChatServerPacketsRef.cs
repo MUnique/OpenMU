@@ -79,12 +79,11 @@ public readonly ref struct AuthenticateRef
     }
 
     /// <summary>
-    /// Gets or sets a token (integer number), formatted as string. This value is also "encrypted" with the 3-byte XOR key (FC CF AB).
+    /// Gets or sets a token (integer number), formatted as string and "encrypted" with the 3-byte XOR key (FC CF AB).
     /// </summary>
-    public string Token
+    public Span<byte> Token
     {
-        get => this._data.ExtractString(6, 10, System.Text.Encoding.UTF8);
-        set => this._data.Slice(6, 10).WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.Slice(6, 10);
     }
 
     /// <summary>

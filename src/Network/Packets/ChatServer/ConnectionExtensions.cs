@@ -33,12 +33,12 @@ public static class ConnectionExtensions
     /// </summary>
     /// <param name="connection">The connection.</param>
     /// <param name="roomId">The room id.</param>
-    /// <param name="token">A token (integer number), formatted as string. This value is also "encrypted" with the 3-byte XOR key (FC CF AB).</param>
+    /// <param name="token">A token (integer number), formatted as string and "encrypted" with the 3-byte XOR key (FC CF AB).</param>
     /// <remarks>
     /// Is sent by the client when: This packet is sent by the client after it connected to the server, to authenticate itself.
     /// Causes reaction on server side: The server will check the token. If it's correct, the client gets added to the requested chat room.
     /// </remarks>
-    public static async ValueTask SendAuthenticateAsync(this IConnection? connection, ushort @roomId, string @token)
+    public static async ValueTask SendAuthenticateAsync(this IConnection? connection, ushort @roomId, Memory<byte> @token)
     {
         if (connection is null)
         {
@@ -50,7 +50,7 @@ public static class ConnectionExtensions
             var length = AuthenticateRef.Length;
             var packet = new AuthenticateRef(connection.Output.GetSpan(length)[..length]);
             packet.RoomId = @roomId;
-            packet.Token = @token;
+            @token.Span.CopyTo(packet.Token);
 
             return packet.Header.Length;
         }
