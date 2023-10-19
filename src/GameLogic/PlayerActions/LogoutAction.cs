@@ -34,6 +34,7 @@ public class LogoutAction
 
         if (logoutType == LogoutType.CloseGame)
         {
+            await player.InvokeViewPlugInAsync<ILogoutPlugIn>(p => p.LogoutAsync(logoutType)).ConfigureAwait(false);
             await player.DisconnectAsync().ConfigureAwait(false);
         }
         else
