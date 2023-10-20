@@ -49,6 +49,12 @@ public class AddStatChatCommandPlugIn : IChatCommandPlugIn
                 return;
             }
 
+            if (player.CurrentMiniGame is not null)
+            {
+                await player.ShowMessageAsync("Adding multiple points is not allowed when playing a mini game.").ConfigureAwait(false);
+                return;
+            }
+
             await this._action.IncreaseStatsAsync(player, attribute, arguments.Amount).ConfigureAwait(false);
         }
         catch (ArgumentException e)
