@@ -50,6 +50,12 @@ public class SelfDefensePlugIn : IPeriodicTaskPlugIn, IAttackableGotHitPlugIn
             return;
         }
 
+        if (attackerPlayer.CurrentMiniGame?.AllowPlayerKilling is true)
+        {
+            // e.g. during chaos castle
+            return;
+        }
+
         if (attackerPlayer.IsSelfDefenseActive(defender))
         {
             // Attacking during self defense period does not initiate another self defense.
