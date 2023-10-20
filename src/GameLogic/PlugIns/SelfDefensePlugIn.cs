@@ -2,12 +2,11 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.GameLogic.NPC;
-
 namespace MUnique.OpenMU.GameLogic.PlugIns;
 
 using System;
 using System.Runtime.InteropServices;
+using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.PlugIns;
@@ -17,14 +16,16 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [PlugIn(nameof(SelfDefensePlugIn), "Updates the state of the self defense system.")]
 [Guid("3E702A15-653A-48EF-899C-4CDB2239A90C")]
-public class SelfDefensePlugIn : IPeriodicTaskPlugIn, IAttackableGotHitPlugIn
+public class SelfDefensePlugIn : IPeriodicTaskPlugIn, IAttackableGotHitPlugIn, ISupportCustomConfiguration<SelfDefensePlugInConfiguration>, ISupportDefaultCustomConfiguration
 {
-    private readonly TimeSpan _selfDefenseTime = TimeSpan.FromSeconds(60);
+    /// <inheritdoc />
+    public SelfDefensePlugInConfiguration? Configuration { get; set; }
 
     /// <inheritdoc />
     public async ValueTask ExecuteTaskAsync(GameContext gameContext)
     {
-        var timedOut = gameContext.SelfDefenseState.Where(s => DateTime.UtcNow.Subtract(s.Value) >= _selfDefenseTime).ToList();
+        var configuration = this.Configuration ??= CreateDefaultConfiguration();
+        var timedOut = gameContext.SelfDefenseState.Where(s => DateTime.UtcNow.Subtract(s.Value) >= configuration.SelfDefenseTimeOut).ToList();
         foreach (var (pair, lastAttack) in timedOut)
         {
             if (gameContext.SelfDefenseState.Remove(pair, out _))
@@ -50,6 +51,12 @@ public class SelfDefensePlugIn : IPeriodicTaskPlugIn, IAttackableGotHitPlugIn
             return;
         }
 
+        if (attackerPlayer.CurrentMiniGame?.AllowPlayerKilling is true)
+        {
+            // e.g. during chaos castle
+            return;
+        }
+
         if (attackerPlayer.IsSelfDefenseActive(defender))
         {
             // Attacking during self defense period does not initiate another self defense.
@@ -70,11 +77,22 @@ public class SelfDefensePlugIn : IPeriodicTaskPlugIn, IAttackableGotHitPlugIn
         }, (tuple, time) => now);
     }
 
+    /// <inheritdoc />
+    public object CreateDefaultConfig()
+    {
+        return CreateDefaultConfiguration();
+    }
+
+    private static SelfDefensePlugInConfiguration CreateDefaultConfiguration()
+    {
+        return new SelfDefensePlugInConfiguration();
+    }
+
     private async ValueTask BeginSelfDefenseAsync(Player attacker, Player defender)
     {
         var message = $"Self defense is initiated by {attacker.Name}'s attack to {defender.Name}!";
-        await defender.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal));
-        await attacker.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal));
+        await defender.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal)).ConfigureAwait(false);
+        await attacker.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal)).ConfigureAwait(false);
     }
 
     private async ValueTask EndSelfDefenseAsync(Player attacker, Player defender)
