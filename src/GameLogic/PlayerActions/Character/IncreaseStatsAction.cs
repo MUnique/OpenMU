@@ -69,12 +69,11 @@ public class IncreaseStatsAction
                 X1 = player.Position.X,
                 X2 = player.Position.X,
                 Y1 = player.Position.Y,
-                Y2 = player.Position.Y
+                Y2 = player.Position.Y,
             };
 
             await player.WarpToAsync(currentGate).ConfigureAwait(false);
-            
-            
+
             return;
         }
 
