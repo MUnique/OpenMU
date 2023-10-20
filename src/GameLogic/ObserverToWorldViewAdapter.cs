@@ -147,7 +147,7 @@ public sealed class ObserverToWorldViewAdapter : AsyncDisposable, IBucketMapObse
             oldItems.ForEach(item => this._observingObjects.Remove(item));
         }
 
-        oldItems.ForEach(item => item.RemoveObserverAsync(this._adaptee));
+        await oldItems.ForEachAsync(item => item.RemoveObserverAsync(this._adaptee)).ConfigureAwait(false);
 
         if (this._adaptee is IHasBucketInformation { NewBucket: null })
         {
@@ -208,7 +208,7 @@ public sealed class ObserverToWorldViewAdapter : AsyncDisposable, IBucketMapObse
             await this._adaptee.InvokeViewPlugInAsync<IShowMoneyDropPlugIn>(p => p.ShowMoneyAsync(money.Id, false, money.Amount, money.Position)).ConfigureAwait(false);
         }
 
-        newItems.ForEach(item => item.AddObserverAsync(this._adaptee));
+        await newItems.ForEachAsync(item => item.AddObserverAsync(this._adaptee)).ConfigureAwait(false);
     }
 
     /// <summary>

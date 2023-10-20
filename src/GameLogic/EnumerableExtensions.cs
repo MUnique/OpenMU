@@ -30,6 +30,26 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
+    /// Executes the <paramref name="action"/> for each element of <paramref name="enumerable"/>.
+    /// </summary>
+    /// <typeparam name="T">The generic type of the enumerable.</typeparam>
+    /// <param name="enumerable">The enumerable.</param>
+    /// <param name="action">The action which should be executed for each element.</param>
+    /// <exception cref="System.ArgumentNullException">action.</exception>
+    public static async ValueTask ForEachAsync<T>(this IEnumerable<T> enumerable, Func<T, ValueTask> action)
+    {
+        if (action is null)
+        {
+            throw new ArgumentNullException(nameof(action));
+        }
+
+        foreach (var item in enumerable)
+        {
+            await action(item).ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
     /// Returns the enumerable as list, by either casting it or creating it.
     /// </summary>
     /// <typeparam name="T">The type of the list elements.</typeparam>
