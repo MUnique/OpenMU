@@ -534,6 +534,23 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         await this.OnDeathAsync(null).ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// Determines whether the self defense is active for the specified attacker.
+    /// </summary>
+    /// <param name="attacker">The attacker.</param>
+    /// <returns>
+    ///   <c>true</c> if the self defense is active for the specified attacker; otherwise, <c>false</c>.
+    /// </returns>
+    public bool IsSelfDefenseActive(Player attacker)
+    {
+        if (this.GameContext.SelfDefenseState.TryGetValue((attacker, this), out var timeout))
+        {
+            return timeout > DateTime.UtcNow;
+        }
+
+        return false;
+    }
+
     /// <inheritdoc/>
     public async ValueTask AttackByAsync(IAttacker attacker, SkillEntry? skill, bool isCombo)
     {
@@ -1636,7 +1653,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             && !(killerAfterKilled.GuildWarContext?.Score is { } score && score == this.GuildWarContext?.Score)
             && this.CurrentMiniGame?.AllowPlayerKilling is not true)
         {
-            await killerAfterKilled.AfterKilledPlayerAsync().ConfigureAwait(false);
+            await killerAfterKilled.AfterKilledPlayerAsync(this).ConfigureAwait(false);
         }
 
         // TODO: Drop items
@@ -1679,9 +1696,27 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// Is called after the player killed a <see cref="Player"/>.
     /// Increment PK Level.
     /// </summary>
-    private async ValueTask AfterKilledPlayerAsync()
+    private async ValueTask AfterKilledPlayerAsync(Player killedPlayer)
     {
-        // TODO: Self Defense System
+        var killedPlayerState = killedPlayer.SelectedCharacter?.State;
+        if (killedPlayerState is null)
+        {
+            return;
+        }
+
+        if (killedPlayerState >= HeroState.PlayerKiller1stStage)
+        {
+            // Killing PKs is allowed.
+            return;
+        }
+
+        if (killedPlayerState <= HeroState.PlayerKillWarning
+            && this.IsSelfDefenseActive(killedPlayer))
+        {
+            // Self defense is allowed.
+            return;
+        }
+
         if (this._selectedCharacter!.State != HeroState.PlayerKiller2ndStage)
         {
             if (this._selectedCharacter.State < HeroState.Normal)

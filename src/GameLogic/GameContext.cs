@@ -122,6 +122,11 @@ public class GameContext : AsyncDisposable, IGameContext
     /// </summary>
     public IDictionary<string, Player> PlayersByCharacterName { get; } = new ConcurrentDictionary<string, Player>();
 
+    /// <summary>
+    /// Gets the state of the active self defenses.
+    /// </summary>
+    public ConcurrentDictionary<(Player Attacker, Player Defender), DateTime> SelfDefenseState { get; } = new();
+
     /// <inheritdoc />
     public ILoggerFactory LoggerFactory { get; }
 

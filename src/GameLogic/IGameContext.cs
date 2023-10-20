@@ -9,6 +9,7 @@ using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
+using System.Collections.Concurrent;
 
 /// <summary>
 /// The context of the game.
@@ -74,6 +75,11 @@ public interface IGameContext
     /// Gets the object pool for path finders.
     /// </summary>
     IObjectPool<PathFinder> PathFinderPool { get; }
+
+    /// <summary>
+    /// Gets the state of the active self defenses.
+    /// </summary>
+    ConcurrentDictionary<(Player Attacker, Player Defender), DateTime> SelfDefenseState { get; }
 
     /// <summary>
     /// Gets the initialized maps which are hosted on this context.
