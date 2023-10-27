@@ -6,6 +6,7 @@
     <WarningsAsErrors>nullable;CS4014;VSTHRD110;VSTHRD100</WarningsAsErrors>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -22,10 +23,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Annotations\MUnique.OpenMU.Annotations.csproj" />
     <ProjectReference Include="..\AttributeSystem\MUnique.OpenMU.AttributeSystem.csproj" />
     <ProjectReference Include="..\Interfaces\MUnique.OpenMU.Interfaces.csproj" />
     <ProjectReference Include="..\Network\MUnique.OpenMU.Network.csproj" />
     <ProjectReference Include="..\PlugIns\MUnique.OpenMU.PlugIns.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+	  <Analyzer Include="..\SourceGenerators\bin\Debug\MUnique.OpenMU.Annotations.dll" />
+	  <Analyzer Include="..\SourceGenerators\bin\Debug\MUnique.OpenMU.SourceGenerators.dll" />
   </ItemGroup>
 
   <ItemGroup>

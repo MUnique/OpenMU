@@ -4,12 +4,14 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration.Items;
 
+using MUnique.OpenMU.Annotations;
 using MUnique.OpenMU.DataModel.Attributes;
 
 /// <summary>
 /// Defines the option of an item.
 /// </summary>
-public class ItemOption
+[Cloneable]
+public partial class ItemOption
 {
     /// <summary>
     /// Gets or sets the number.

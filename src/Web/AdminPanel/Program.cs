@@ -40,6 +40,8 @@ public class Program
 
     private class NullPersistenceContextProvider : IPersistenceContextProvider
     {
+        public IRepositoryProvider RepositoryProvider => throw new NotImplementedException();
+
         public IContext CreateNewContext()
         {
             throw new NotImplementedException();

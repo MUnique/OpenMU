@@ -25,6 +25,20 @@ public partial class ItemSlotType : MUnique.OpenMU.DataModel.Configuration.Items
     /// </summary>
     public Guid Id { get; set; }
     
+    /// <inheritdoc />
+    public override MUnique.OpenMU.DataModel.Configuration.Items.ItemSlotType Clone(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    {
+        var clone = new ItemSlotType();
+        clone.AssignValuesOf(this, gameConfiguration);
+        return clone;
+    }
+    
+    /// <inheritdoc />
+    public override void AssignValuesOf(MUnique.OpenMU.DataModel.Configuration.Items.ItemSlotType other, MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    {
+        base.AssignValuesOf(other, gameConfiguration);
+        this.Id = other.GetId();
+    }
 
     /// <inheritdoc/>
     public override bool Equals(object obj)

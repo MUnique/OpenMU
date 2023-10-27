@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Persistence.SourceGenerator;
 using System.Reflection;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
+using MUnique.OpenMU.Annotations;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Composition;
 
@@ -55,6 +56,7 @@ public class EfCoreModelGenerator : ModelGeneratorBase, IUnboundSourceGenerator
             var className = type.Name;
             var fullName = type.FullName;
             var standaloneCollectionProperties = this.GetStandaloneCollectionProperties(type).ToList();
+            var isCloneable = type.GetCustomAttribute<CloneableAttribute>(true) is not null;
 
             var classSource = $@"{string.Format(FileHeaderTemplate, className)}
 
@@ -72,7 +74,7 @@ internal partial class {className} : {fullName}, IIdentifiable
     {this.CreateConstructors(type, standaloneCollectionProperties.Any())}
     {this.CreateIdPropertyIfRequired(type)}
     {this.CreateNavigationProperties(type)}
-
+{(isCloneable ? this.OverrideClonable(type, className) : null)}
     /// <inheritdoc/>
     public override bool Equals(object obj)
     {{

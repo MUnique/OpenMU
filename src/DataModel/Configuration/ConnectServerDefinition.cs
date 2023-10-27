@@ -4,13 +4,15 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration;
 
+using MUnique.OpenMU.Annotations;
 using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// The definition of a connect server.
 /// </summary>
 [AggregateRoot]
-public class ConnectServerDefinition : IConnectServerSettings
+[Cloneable]
+public partial class ConnectServerDefinition : IConnectServerSettings
 {
     /// <summary>
     /// Gets or sets the id of this definition.

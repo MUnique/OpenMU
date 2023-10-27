@@ -75,6 +75,26 @@ public static class TypeHelper
     }
 
     /// <summary>
+    /// Creates a new object of the extended ef core type of the given type.
+    /// </summary>
+    /// <param name="origin">The originating assembly of the persistent type of <paramref name="type"/>.</param>
+    /// <param name="type">The type which should get created.</param>
+    /// <param name="args">The arguments.</param>
+    /// <returns>
+    /// A new object of the extended ef core type of the <paramref name="type" />.
+    /// </returns>
+    public static object CreateNew(this Assembly origin, Type type, params object?[] args)
+    {
+        var persistentType = origin.GetPersistentTypeOf(type);
+        if (args.Length == 0)
+        {
+            return Activator.CreateInstance(persistentType)!;
+        }
+
+        return Activator.CreateInstance(persistentType, args)!;
+    }
+
+    /// <summary>
     /// Determines whether the given type is a is configuration type.
     /// </summary>
     /// <param name="type">The type.</param>

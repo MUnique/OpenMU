@@ -5,12 +5,14 @@
 namespace MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
 
 using System.Globalization;
+using MUnique.OpenMU.Annotations;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 
 /// <summary>
 /// Describes an required item for a crafting.
 /// </summary>
-public class ItemCraftingRequiredItem
+[Cloneable]
+public partial class ItemCraftingRequiredItem
 {
     /// <summary>
     /// Gets or sets the collection of possible items which are valid for this requirement.

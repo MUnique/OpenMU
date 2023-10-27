@@ -63,6 +63,20 @@ internal partial class ItemOptionCombinationBonus : MUnique.OpenMU.DataModel.Con
         }
     }
 
+    /// <inheritdoc />
+    public override MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionCombinationBonus Clone(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    {
+        var clone = new ItemOptionCombinationBonus();
+        clone.AssignValuesOf(this, gameConfiguration);
+        return clone;
+    }
+    
+    /// <inheritdoc />
+    public override void AssignValuesOf(MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionCombinationBonus other, MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    {
+        base.AssignValuesOf(other, gameConfiguration);
+        this.Id = other.GetId();
+    }
 
     /// <inheritdoc/>
     public override bool Equals(object obj)

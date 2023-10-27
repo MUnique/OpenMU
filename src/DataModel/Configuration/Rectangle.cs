@@ -4,10 +4,13 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration;
 
+using MUnique.OpenMU.Annotations;
+
 /// <summary>
 /// Defines a rectangle.
 /// </summary>
-public class Rectangle
+[Cloneable]
+public partial class Rectangle
 {
     /// <summary>
     /// Gets or sets the upper left corner, x-coordinate.

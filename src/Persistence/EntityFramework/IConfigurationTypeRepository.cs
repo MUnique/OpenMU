@@ -13,4 +13,10 @@ internal interface IConfigurationTypeRepository
     /// Ensures the cache for the current configuration.
     /// </summary>
     void EnsureCacheForCurrentConfiguration();
+
+    /// <summary>
+    /// Updates the cached instance.
+    /// </summary>
+    /// <param name="changedInstance">The changed instance.</param>
+    void UpdateCachedInstances(object changedInstance);
 }

@@ -54,6 +54,20 @@ internal partial class QuestMonsterKillRequirement : MUnique.OpenMU.DataModel.Co
         }
     }
 
+    /// <inheritdoc />
+    public override MUnique.OpenMU.DataModel.Configuration.Quests.QuestMonsterKillRequirement Clone(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    {
+        var clone = new QuestMonsterKillRequirement();
+        clone.AssignValuesOf(this, gameConfiguration);
+        return clone;
+    }
+    
+    /// <inheritdoc />
+    public override void AssignValuesOf(MUnique.OpenMU.DataModel.Configuration.Quests.QuestMonsterKillRequirement other, MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    {
+        base.AssignValuesOf(other, gameConfiguration);
+        this.Id = other.GetId();
+    }
 
     /// <inheritdoc/>
     public override bool Equals(object obj)

@@ -89,6 +89,20 @@ internal partial class MiniGameChangeEvent : MUnique.OpenMU.DataModel.Configurat
         }
     }
 
+    /// <inheritdoc />
+    public override MUnique.OpenMU.DataModel.Configuration.MiniGameChangeEvent Clone(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    {
+        var clone = new MiniGameChangeEvent();
+        clone.AssignValuesOf(this, gameConfiguration);
+        return clone;
+    }
+    
+    /// <inheritdoc />
+    public override void AssignValuesOf(MUnique.OpenMU.DataModel.Configuration.MiniGameChangeEvent other, MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    {
+        base.AssignValuesOf(other, gameConfiguration);
+        this.Id = other.GetId();
+    }
 
     /// <inheritdoc/>
     public override bool Equals(object obj)

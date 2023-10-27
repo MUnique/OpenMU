@@ -47,6 +47,11 @@ public interface IGameContext
     GameConfiguration Configuration { get; }
 
     /// <summary>
+    /// Gets the configuration change mediator.
+    /// </summary>
+    IConfigurationChangeMediator ConfigurationChangeMediator { get; }
+
+    /// <summary>
     /// Gets the plug in manager.
     /// </summary>
     PlugInManager PlugInManager { get; }

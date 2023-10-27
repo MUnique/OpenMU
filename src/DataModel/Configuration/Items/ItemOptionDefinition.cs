@@ -4,10 +4,13 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration.Items;
 
+using MUnique.OpenMU.Annotations;
+
 /// <summary>
 /// The definition of an item option.
 /// </summary>
-public class ItemOptionDefinition
+[Cloneable]
+public partial class ItemOptionDefinition
 {
     /// <summary>
     /// Gets or sets the name of the option, for example "Luck", "Skill", "Normal Option".

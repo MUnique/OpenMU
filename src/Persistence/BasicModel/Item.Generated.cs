@@ -85,6 +85,20 @@ public partial class Item : MUnique.OpenMU.DataModel.Entities.Item, IIdentifiabl
         set => base.Definition = value;
     }
 
+    /// <inheritdoc />
+    public override MUnique.OpenMU.DataModel.Entities.Item Clone(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    {
+        var clone = new Item();
+        clone.AssignValuesOf(this, gameConfiguration);
+        return clone;
+    }
+    
+    /// <inheritdoc />
+    public override void AssignValuesOf(MUnique.OpenMU.DataModel.Entities.Item other, MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    {
+        base.AssignValuesOf(other, gameConfiguration);
+        this.Id = other.GetId();
+    }
 
     /// <inheritdoc/>
     public override bool Equals(object obj)

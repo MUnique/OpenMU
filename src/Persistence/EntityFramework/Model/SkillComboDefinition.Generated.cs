@@ -37,6 +37,20 @@ internal partial class SkillComboDefinition : MUnique.OpenMU.DataModel.Configura
     [NotMapped]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.SkillComboStep> Steps => base.Steps ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.SkillComboStep, SkillComboStep>(this.RawSteps);
 
+    /// <inheritdoc />
+    public override MUnique.OpenMU.DataModel.Configuration.SkillComboDefinition Clone(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    {
+        var clone = new SkillComboDefinition();
+        clone.AssignValuesOf(this, gameConfiguration);
+        return clone;
+    }
+    
+    /// <inheritdoc />
+    public override void AssignValuesOf(MUnique.OpenMU.DataModel.Configuration.SkillComboDefinition other, MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    {
+        base.AssignValuesOf(other, gameConfiguration);
+        this.Id = other.GetId();
+    }
 
     /// <inheritdoc/>
     public override bool Equals(object obj)

@@ -4,12 +4,14 @@
 
 namespace MUnique.OpenMU.DataModel.Entities;
 
+using MUnique.OpenMU.Annotations;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 
 /// <summary>
 /// The item.
 /// </summary>
-public class Item
+[Cloneable]
+public partial class Item
 {
     /// <summary>
     /// Gets or sets the item slot in the <see cref="ItemStorage"/>.

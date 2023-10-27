@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration;
 
+using MUnique.OpenMU.Annotations;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 
 /// <summary>
@@ -12,7 +13,8 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 /// <remarks>
 /// Each game level of a mini game has its own <see cref="MiniGameDefinition"/>.
 /// </remarks>
-public class MiniGameDefinition
+[Cloneable]
+public partial class MiniGameDefinition
 {
     /// <summary>
     /// Gets or sets the type of the mini game.

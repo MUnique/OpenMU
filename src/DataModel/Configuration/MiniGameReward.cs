@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration;
 
+using MUnique.OpenMU.Annotations;
+
 /// <summary>
 /// The success flags of a mini game player.
 /// </summary>
@@ -59,7 +61,8 @@ public enum MiniGameSuccessFlags
 /// <summary>
 /// Defines a reward of a <see cref="MiniGameDefinition"/>.
 /// </summary>
-public class MiniGameReward
+[Cloneable]
+public partial class MiniGameReward
 {
     /// <summary>
     /// Gets or sets the rank to which this reward is applicable.

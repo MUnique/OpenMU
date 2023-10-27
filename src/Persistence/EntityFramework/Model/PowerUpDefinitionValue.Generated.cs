@@ -37,6 +37,20 @@ internal partial class PowerUpDefinitionValue : MUnique.OpenMU.DataModel.Attribu
     [NotMapped]
     public override ICollection<MUnique.OpenMU.AttributeSystem.AttributeRelationship> RelatedValues => base.RelatedValues ??= new CollectionAdapter<MUnique.OpenMU.AttributeSystem.AttributeRelationship, AttributeRelationship>(this.RawRelatedValues);
 
+    /// <inheritdoc />
+    public override MUnique.OpenMU.DataModel.Attributes.PowerUpDefinitionValue Clone(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    {
+        var clone = new PowerUpDefinitionValue();
+        clone.AssignValuesOf(this, gameConfiguration);
+        return clone;
+    }
+    
+    /// <inheritdoc />
+    public override void AssignValuesOf(MUnique.OpenMU.DataModel.Attributes.PowerUpDefinitionValue other, MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    {
+        base.AssignValuesOf(other, gameConfiguration);
+        this.Id = other.GetId();
+    }
 
     /// <inheritdoc/>
     public override bool Equals(object obj)

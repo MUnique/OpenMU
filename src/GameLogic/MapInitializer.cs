@@ -4,7 +4,9 @@
 
 namespace MUnique.OpenMU.GameLogic;
 
+using System.Collections.Concurrent;
 using MUnique.OpenMU.GameLogic.NPC;
+using MUnique.OpenMU.GameLogic.Views.NPC;
 using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.PlugIns;
 
@@ -15,8 +17,11 @@ using MUnique.OpenMU.PlugIns;
 public class MapInitializer : IMapInitializer
 {
     private readonly IDropGenerator _dropGenerator;
+    private readonly IConfigurationChangeMediator? _configurationChangeMediator;
     private readonly GameConfiguration _configuration;
     private readonly ILogger<MapInitializer> _logger;
+
+    private readonly ConcurrentDictionary<MonsterSpawnArea, int> _spawnedMonsters = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MapInitializer" /> class.
@@ -24,9 +29,11 @@ public class MapInitializer : IMapInitializer
     /// <param name="configuration">The configuration.</param>
     /// <param name="logger">The logger.</param>
     /// <param name="dropGenerator">The drop generator.</param>
-    public MapInitializer(GameConfiguration configuration, ILogger<MapInitializer> logger, IDropGenerator dropGenerator)
+    /// <param name="configurationChangeMediator">The configuration change mediator.</param>
+    public MapInitializer(GameConfiguration configuration, ILogger<MapInitializer> logger, IDropGenerator dropGenerator, IConfigurationChangeMediator? configurationChangeMediator)
     {
         this._dropGenerator = dropGenerator;
+        this._configurationChangeMediator = configurationChangeMediator;
         this._configuration = configuration;
         this._logger = logger;
         this.ChunkSize = 8;
@@ -89,11 +96,82 @@ public class MapInitializer : IMapInitializer
         {
             for (int i = 0; i < spawnArea.Quantity; i++)
             {
-                await this.InitializeSpawnAsync(createdMap, spawnArea).ConfigureAwait(false);
+                await this.InitializeSpawnAsync(i, createdMap, spawnArea).ConfigureAwait(false);
             }
+
+            this._spawnedMonsters.AddOrUpdate(spawnArea, spawnArea.Quantity, (_, _) => spawnArea.Quantity);
         }
 
+        this._configurationChangeMediator?.RegisterForNew<MonsterSpawnArea, GameMap>(createdMap, async (spawnArea, map) =>
+        {
+            if (!Equals(spawnArea.GameMap, map.Definition))
+            {
+                return;
+            }
+
+            for (int i = 0; i < spawnArea.Quantity; i++)
+            {
+                await this.InitializeSpawnAsync(i, map, spawnArea).ConfigureAwait(false);
+            }
+
+            this._spawnedMonsters.AddOrUpdate(spawnArea, spawnArea.Quantity, (_, _) => spawnArea.Quantity);
+        });
+
         this._logger.LogDebug("Finished creating monster instances for map {createdMap}", createdMap);
+    }
+
+    private void RegisterForConfigChanges(GameMap createdMap, MonsterSpawnArea spawnArea, NonPlayerCharacter spawnedObject)
+    {
+        this._configurationChangeMediator?.RegisterObject(
+            spawnArea,
+            spawnedObject,
+            async (unregisterAction, area, o) =>
+            {
+                if (area.Quantity < o.SpawnIndex + 1)
+                {
+                    await o.DisposeAsync().ConfigureAwait(false);
+                    unregisterAction();
+                    this._spawnedMonsters.AddOrUpdate(spawnArea, spawnArea.Quantity, (_, _) => spawnArea.Quantity);
+                    return;
+                }
+
+                await createdMap.RemoveAsync(o).ConfigureAwait(false);
+                o.Initialize();
+                await createdMap.AddAsync(o).ConfigureAwait(false);
+
+                if (this._spawnedMonsters.TryGetValue(area, out var previousSpawnCount))
+                {
+                    for (int i = previousSpawnCount; i < area.Quantity; i++)
+                    {
+                        await this.InitializeSpawnAsync(i, createdMap, area).ConfigureAwait(false);
+                    }
+
+                    this._spawnedMonsters.AddOrUpdate(spawnArea, spawnArea.Quantity, (_, _) => spawnArea.Quantity);
+                }
+            },
+            async (_, o) =>
+            {
+                await o.DisposeAsync().ConfigureAwait(false);
+                this._spawnedMonsters.TryRemove(spawnArea, out var _);
+            });
+
+        if (spawnedObject.Definition.MerchantStore is { } merchantStore)
+        {
+            this._configurationChangeMediator?.RegisterObject(merchantStore, spawnedObject, async (_, itemStorage, o) =>
+            {
+                await o.ForEachObservingAsync<Player>(
+                    async player =>
+                    {
+                        if (player.OpenedNpc == o)
+                        {
+                            await player.InvokeViewPlugInAsync<IShowMerchantStoreItemListPlugIn>(
+                                    plugin => plugin.ShowMerchantStoreItemListAsync(itemStorage.Items, StoreKind.Normal))
+                                .ConfigureAwait(false);
+                        }
+                    },
+                    false).ConfigureAwait(false);
+            });
+        }
     }
 
     /// <summary>
@@ -115,7 +193,7 @@ public class MapInitializer : IMapInitializer
         {
             for (int i = 0; i < spawnArea.Quantity; i++)
             {
-                await this.InitializeSpawnAsync(createdMap, spawnArea, eventStateProvider).ConfigureAwait(false);
+                await this.InitializeSpawnAsync(i, createdMap, spawnArea, eventStateProvider).ConfigureAwait(false);
             }
         }
 
@@ -138,7 +216,7 @@ public class MapInitializer : IMapInitializer
         {
             for (int i = 0; i < spawnArea.Quantity; i++)
             {
-                await this.InitializeSpawnAsync(createdMap, spawnArea, eventStateProvider).ConfigureAwait(false);
+                await this.InitializeSpawnAsync(i, createdMap, spawnArea, eventStateProvider).ConfigureAwait(false);
             }
         }
 
@@ -147,6 +225,7 @@ public class MapInitializer : IMapInitializer
 
     /// <inheritdoc />
     public async ValueTask<NonPlayerCharacter?> InitializeSpawnAsync(
+        int spawnIndex,
         GameMap createdMap,
         MonsterSpawnArea spawnArea,
         IEventStateProvider? eventStateProvider = null,
@@ -193,8 +272,14 @@ public class MapInitializer : IMapInitializer
 
         try
         {
+            npc.SpawnIndex = spawnIndex;
             npc.Initialize();
             await createdMap.AddAsync(npc).ConfigureAwait(false);
+            if (spawnArea.SpawnTrigger is SpawnTrigger.Automatic or SpawnTrigger.Wandering)
+            {
+                this.RegisterForConfigChanges(createdMap, spawnArea, npc);
+            }
+
             return npc;
         }
         catch (Exception ex)

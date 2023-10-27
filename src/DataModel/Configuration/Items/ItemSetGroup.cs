@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration.Items;
 
+using MUnique.OpenMU.Annotations;
+
 /// <summary>
 /// Defines an item set group. With (partial) completion of the set, additional options are getting applied.
 /// </summary>
@@ -14,7 +16,8 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items;
 ///   - set bonus for defense, if level is greater than 9
 ///   - ancient sets.
 /// </remarks>
-public class ItemSetGroup
+[Cloneable]
+public partial class ItemSetGroup
 {
     /// <summary>
     /// Gets or sets the name.

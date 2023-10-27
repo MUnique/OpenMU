@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration.Items;
 
+using MUnique.OpenMU.Annotations;
 using System.Text.Json.Serialization;
 
 /// <summary>
@@ -12,7 +13,8 @@ using System.Text.Json.Serialization;
 /// <remarks>
 /// Here we can define additional bonus options, like the ancient options (e.g. +5 / +10 Str etc.).
 /// </remarks>
-public class ItemOfItemSet
+[Cloneable]
+public partial class ItemOfItemSet
 {
     /// <summary>
     /// Gets or sets the ancient set discriminator.
@@ -44,6 +46,23 @@ public class ItemOfItemSet
     /// </summary>
     [JsonIgnore]
     public string Name => $"{this.ItemSetGroup?.Name} {this.ItemDefinition?.Name}";
+
+    ///// <inheritdoc />
+    //public void AssignValuesOf(ItemOfItemSet other, GameConfiguration gameConfiguration)
+    //{
+    //    this.AncientSetDiscriminator = other.AncientSetDiscriminator;
+    //    this.ItemSetGroup = other.ItemSetGroup is null ? null : gameConfiguration.ItemSetGroups.FirstOrDefault(o => o == other.ItemSetGroup);
+    //    this.ItemDefinition = other.ItemDefinition is null ? null : gameConfiguration.Items.FirstOrDefault(o => o == other.ItemDefinition);
+    //    this.BonusOption = other.BonusOption is null ? null : gameConfiguration.ItemOptions.SelectMany(iod => iod.PossibleOptions).FirstOrDefault(o => o == other.BonusOption);
+    //}
+
+    ///// <inheritdoc />
+    //public virtual ItemOfItemSet Clone(GameConfiguration gameConfiguration)
+    //{
+    //    var clone = new ItemOfItemSet();
+    //    clone.AssignValuesOf(this, gameConfiguration);
+    //    return clone;
+    //}
 
     /// <inheritdoc/>
     public override string ToString()

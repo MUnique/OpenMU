@@ -4,10 +4,13 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration;
 
+using MUnique.OpenMU.Annotations;
+
 /// <summary>
 /// Definition for a skill combo sequence.
 /// </summary>
-public class SkillComboDefinition
+[Cloneable]
+public partial class SkillComboDefinition
 {
     /// <summary>
     /// Gets or sets the name of the combo sequence.

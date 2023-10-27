@@ -7,9 +7,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework;
 using System.Collections;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Composition;
-using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.DataModel.Configuration;
 using Nito.AsyncEx;
 
 /// <summary>
@@ -18,7 +20,7 @@ using Nito.AsyncEx;
 internal class EntityFrameworkContextBase : IContext
 {
     private readonly bool _isOwner;
-    private readonly IConfigurationChangePublisher? _changePublisher;
+    private readonly IConfigurationChangeListener? _changeListener;
     private readonly AsyncLock _lock = new();
     private readonly ILogger _logger;
     private bool _isDisposed;
@@ -29,14 +31,14 @@ internal class EntityFrameworkContextBase : IContext
     /// <param name="context">The db context.</param>
     /// <param name="repositoryProvider">The repository provider.</param>
     /// <param name="isOwner">If set to <c>true</c>, this instance owns the <see cref="Context" />. That means it will be disposed when this instance will be disposed.</param>
-    /// <param name="changePublisher">The change publisher.</param>
+    /// <param name="changeListener">The change listener.</param>
     /// <param name="logger">The logger.</param>
-    protected EntityFrameworkContextBase(DbContext context, IContextAwareRepositoryProvider repositoryProvider, bool isOwner, IConfigurationChangePublisher? changePublisher, ILogger logger)
+    protected EntityFrameworkContextBase(DbContext context, IContextAwareRepositoryProvider repositoryProvider, bool isOwner, IConfigurationChangeListener? changeListener, ILogger logger)
     {
         this.Context = context;
         this.RepositoryProvider = repositoryProvider;
         this._isOwner = isOwner;
-        this._changePublisher = changePublisher;
+        this._changeListener = changeListener;
         this._logger = logger;
     }
 
@@ -67,7 +69,7 @@ internal class EntityFrameworkContextBase : IContext
         // Otherwise, we can accept them.
         var acceptChanges = true;
 
-        if (this._changePublisher is { })
+        if (this._changeListener is { })
         {
             this.Context.SavedChanges += this.OnSavedChanges;
             acceptChanges = false;
@@ -94,7 +96,7 @@ internal class EntityFrameworkContextBase : IContext
         // Otherwise, we can accept them.
         var acceptChanges = true;
 
-        if (this._changePublisher is { })
+        if (this._changeListener is { })
         {
             this.Context.SavedChanges += this.OnSavedChanges;
             acceptChanges = false;
@@ -134,19 +136,21 @@ internal class EntityFrameworkContextBase : IContext
         this.Context.Attach(item);
     }
 
-    /// <summary>
-    /// Creates a new instance of <typeparamref name="T" />.
-    /// </summary>
-    /// <typeparam name="T">The type which should get created.</typeparam>
-    /// <param name="args">The arguments which are handed 1-to-1 to the constructor. If no arguments are given, the default constructor will be called.</param>
-    /// <returns>
-    /// A new instance of <typeparamref name="T" />.
-    /// </returns>
+    /// <inheritdoc />
     public T CreateNew<T>(params object?[] args)
         where T : class
     {
         using var l = this._lock.Lock();
         var instance = typeof(CachingEntityFrameworkContext).Assembly.CreateNew<T>(args);
+        this.Context.Add(instance);
+        return instance;
+    }
+
+    /// <inheritdoc />
+    public object CreateNew(Type type, params object?[] args)
+    {
+        using var l = this._lock.Lock();
+        var instance = typeof(CachingEntityFrameworkContext).Assembly.CreateNew(type, args);
         this.Context.Add(instance);
         return instance;
     }
@@ -291,7 +295,7 @@ internal class EntityFrameworkContextBase : IContext
     {
         try
         {
-            if (this._changePublisher is null)
+            if (this._changeListener is null)
             {
                 // should never be the case
                 return;
@@ -304,24 +308,30 @@ internal class EntityFrameworkContextBase : IContext
             }
 
             var changedEntries = this.Context.ChangeTracker.Entries()
-                .Where(entity => entity.State != EntityState.Unchanged
-                                 && entity.Metadata.ClrType.IsConfigurationType()).ToList();
+                .Where(entity => entity.State != EntityState.Unchanged).ToList();
             foreach (var entry in changedEntries)
             {
+                var (parent, parentCollectionNavigation) = this.GetParentInformation(entry);
+
                 switch (entry.State)
                 {
                     case EntityState.Added:
-                        await this._changePublisher.ConfigurationAddedAsync(entry.Metadata.ClrType, entry.Entity.GetId(), entry.Entity).ConfigureAwait(false);
+                        await this._changeListener.ConfigurationAddedAsync(entry.Metadata.ClrType, entry.Entity.GetId(), entry.Entity, parent, parentCollectionNavigation).ConfigureAwait(false);
                         break;
                     case EntityState.Deleted:
-                        await this._changePublisher.ConfigurationRemovedAsync(entry.Metadata.ClrType, entry.Entity.GetId()).ConfigureAwait(false);
+                        await this._changeListener.ConfigurationRemovedAsync(entry.Metadata.ClrType, entry.Entity.GetId(), parent, parentCollectionNavigation).ConfigureAwait(false);
                         break;
                     case EntityState.Modified:
-                        await this._changePublisher.ConfigurationChangedAsync(entry.Metadata.ClrType, entry.Entity.GetId(), entry.Entity).ConfigureAwait(false);
+                        await this._changeListener.ConfigurationChangedAsync(entry.Metadata.ClrType, entry.Entity.GetId(), entry.Entity, parent).ConfigureAwait(false);
                         break;
                     default:
                         // no change publishing required.
                         break;
+                }
+
+                if (parent is not null && parent is not GameConfiguration && parent is not Guid)
+                {
+                    await this._changeListener.ConfigurationChangedAsync(parent.GetType(), parent.GetId(), parent, null).ConfigureAwait(false);
                 }
             }
         }
@@ -340,5 +350,32 @@ internal class EntityFrameworkContextBase : IContext
                 this._logger.LogError(ex, "Unexpected error when accepting all saved changes.");
             }
         }
+    }
+
+    private (object? Parent, INavigationBase? ParentCollectionNavigation) GetParentInformation(EntityEntry entry)
+    {
+        var propertyToParent = entry.Properties
+            .FirstOrDefault(p => p.Metadata.IsForeignKey()
+                                 && (p.Metadata.IsShadowProperty() || p.Metadata.PropertyInfo?.GetCustomAttribute<IsLinkToParentAttribute>() is not null));
+
+        var parentId = (Guid?)(propertyToParent?.CurrentValue ?? propertyToParent?.OriginalValue);
+        if (parentId is null)
+        {
+            return (null, null);
+        }
+
+        object? parent = null;
+        INavigationBase? parentCollectionNavigation = null;
+        var parentEntry = this.Context.ChangeTracker.Entries().FirstOrDefault(e => e.Entity.GetId() == parentId);
+        if (parentEntry is not null && propertyToParent is not null)
+        {
+            parent = parentEntry.Entity;
+            var parentCollection = parentEntry.Collections
+                .FirstOrDefault(c => c.Metadata.IsCollection
+                                     && (c.Metadata as INavigation)?.ForeignKey == propertyToParent.Metadata.GetContainingForeignKeys().FirstOrDefault());
+            parentCollectionNavigation = parentCollection?.Metadata;
+        }
+
+        return (parent ?? parentId, parentCollectionNavigation);
     }
 }

@@ -63,6 +63,20 @@ internal partial class MagicEffectDefinition : MUnique.OpenMU.DataModel.Configur
         }
     }
 
+    /// <inheritdoc />
+    public override MUnique.OpenMU.DataModel.Configuration.MagicEffectDefinition Clone(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    {
+        var clone = new MagicEffectDefinition();
+        clone.AssignValuesOf(this, gameConfiguration);
+        return clone;
+    }
+    
+    /// <inheritdoc />
+    public override void AssignValuesOf(MUnique.OpenMU.DataModel.Configuration.MagicEffectDefinition other, MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    {
+        base.AssignValuesOf(other, gameConfiguration);
+        this.Id = other.GetId();
+    }
 
     /// <inheritdoc/>
     public override bool Equals(object obj)

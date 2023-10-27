@@ -19,18 +19,18 @@ using Npgsql;
 public class PersistenceContextProvider : IMigratableDatabaseContextProvider
 {
     private readonly ILoggerFactory _loggerFactory;
-    private IConfigurationChangePublisher? _changePublisher;
+    private IConfigurationChangeListener? _changeListener;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PersistenceContextProvider" /> class.
     /// </summary>
     /// <param name="loggerFactory">The logger factory.</param>
-    /// <param name="changePublisher">The change publisher.</param>
-    public PersistenceContextProvider(ILoggerFactory loggerFactory, IConfigurationChangePublisher? changePublisher)
+    /// <param name="changeListener">The change publisher.</param>
+    public PersistenceContextProvider(ILoggerFactory loggerFactory, IConfigurationChangeListener? changeListener)
     {
         this._loggerFactory = loggerFactory;
-        this._changePublisher = changePublisher;
-        this.RepositoryProvider = new CacheAwareRepositoryProvider(loggerFactory, changePublisher);
+        this._changeListener = changeListener;
+        this.RepositoryProvider = new CacheAwareRepositoryProvider(loggerFactory, changeListener);
     }
 
     /// <summary>
@@ -40,6 +40,9 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
     /// The repository provider.
     /// </value>
     internal CacheAwareRepositoryProvider RepositoryProvider { get; private set; }
+
+    /// <inheritdoc />
+    IRepositoryProvider IPersistenceContextProvider.RepositoryProvider => this.RepositoryProvider;
 
     /// <inheritdoc />
     public async Task<bool> IsDatabaseUpToDateAsync(CancellationToken cancellationToken = default)
@@ -153,8 +156,8 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
     /// <returns>The disposable which should be disposed when the data creation process is finished.</returns>
     public async Task<IDisposable> ReCreateDatabaseAsync()
     {
-        var changePublisher = this._changePublisher;
-        this._changePublisher = null;
+        var changePublisher = this._changeListener;
+        this._changeListener = null;
         try
         {
             try
@@ -174,20 +177,20 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
         }
         catch
         {
-            this._changePublisher = changePublisher;
+            this._changeListener = changePublisher;
         }
 
         return new Disposable(() =>
         {
-            this._changePublisher = changePublisher;
+            this._changeListener = changePublisher;
         });
     }
 
     /// <inheritdoc />
     public IContext CreateNewContext()
     {
-        var repositoryProvider = new NonCachingRepositoryProvider(this._loggerFactory, null, this._changePublisher, this.RepositoryProvider.ContextStack);
-        return new EntityFrameworkContext(new EntityDataContext(), this._loggerFactory, repositoryProvider, true, this._changePublisher);
+        var repositoryProvider = new NonCachingRepositoryProvider(this._loggerFactory, null, this._changeListener, this.RepositoryProvider.ContextStack);
+        return new EntityFrameworkContext(new EntityDataContext(), this._loggerFactory, repositoryProvider, true, this._changeListener);
     }
 
     /// <inheritdoc />
@@ -196,7 +199,7 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
         return new CachingEntityFrameworkContext(
             new EntityDataContext { CurrentGameConfiguration = gameConfiguration as GameConfiguration },
             this.RepositoryProvider,
-            this._changePublisher,
+            this._changeListener,
             this._loggerFactory.CreateLogger<CachingEntityFrameworkContext>());
     }
 
@@ -246,10 +249,10 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
         var dbContext = new TypedContext<T> { CurrentGameConfiguration = gameConfiguration as GameConfiguration };
         if (useCache)
         {
-            return new CachingEntityFrameworkContext(dbContext, this.RepositoryProvider, this._changePublisher, this._loggerFactory.CreateLogger<CachingEntityFrameworkContext>());
+            return new CachingEntityFrameworkContext(dbContext, this.RepositoryProvider, this._changeListener, this._loggerFactory.CreateLogger<CachingEntityFrameworkContext>());
         }
 
-        var repositoryProvider = new NonCachingRepositoryProvider(this._loggerFactory, null, this._changePublisher, this.RepositoryProvider.ContextStack);
-        return new EntityFrameworkContext(dbContext, this._loggerFactory, repositoryProvider, true, this._changePublisher);
+        var repositoryProvider = new NonCachingRepositoryProvider(this._loggerFactory, null, this._changeListener, this.RepositoryProvider.ContextStack);
+        return new EntityFrameworkContext(dbContext, this._loggerFactory, repositoryProvider, true, this._changeListener);
     }
 }

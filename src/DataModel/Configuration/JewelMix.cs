@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration;
 
+using MUnique.OpenMU.Annotations;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 
 /// <summary>
@@ -11,7 +12,8 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 /// Some <see cref="SingleJewel"/> can be mixed together to a single <see cref="MixedJewel"/> to save storage place.
 /// When single jewels are needed again, the client can unmix his <see cref="MixedJewel"/> back to several <see cref="SingleJewel"/>.
 /// </summary>
-public class JewelMix
+[Cloneable]
+public partial class JewelMix
 {
     /// <summary>
     /// Gets or sets gets the number of the mix.

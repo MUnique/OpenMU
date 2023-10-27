@@ -4,10 +4,13 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration;
 
+using MUnique.OpenMU.Annotations;
+
 /// <summary>
 /// Defines an endpoint of a game server.
 /// </summary>
-public class GameServerEndpoint : ServerEndpoint
+[Cloneable]
+public partial class GameServerEndpoint : ServerEndpoint
 {
     /// <summary>
     /// Gets or sets the alternative published network port. It's reported to the connect server instead of the <see cref="ServerEndpoint.NetworkPort"/>, if not <c>0</c>.

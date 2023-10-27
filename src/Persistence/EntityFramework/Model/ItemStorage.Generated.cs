@@ -37,6 +37,20 @@ internal partial class ItemStorage : MUnique.OpenMU.DataModel.Entities.ItemStora
     [NotMapped]
     public override ICollection<MUnique.OpenMU.DataModel.Entities.Item> Items => base.Items ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Entities.Item, Item>(this.RawItems);
 
+    /// <inheritdoc />
+    public override MUnique.OpenMU.DataModel.Entities.ItemStorage Clone(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    {
+        var clone = new ItemStorage();
+        clone.AssignValuesOf(this, gameConfiguration);
+        return clone;
+    }
+    
+    /// <inheritdoc />
+    public override void AssignValuesOf(MUnique.OpenMU.DataModel.Entities.ItemStorage other, MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    {
+        base.AssignValuesOf(other, gameConfiguration);
+        this.Id = other.GetId();
+    }
 
     /// <inheritdoc/>
     public override bool Equals(object obj)

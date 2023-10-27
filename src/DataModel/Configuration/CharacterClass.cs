@@ -4,13 +4,15 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration;
 
+using MUnique.OpenMU.Annotations;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Entities;
 
 /// <summary>
 /// Defines a character class.
 /// </summary>
-public class CharacterClass
+[Cloneable]
+public partial class CharacterClass
 {
     /// <summary>
     /// Gets or sets the id of a character class.

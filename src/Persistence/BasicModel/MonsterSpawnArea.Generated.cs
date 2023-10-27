@@ -61,6 +61,20 @@ public partial class MonsterSpawnArea : MUnique.OpenMU.DataModel.Configuration.M
         set => base.GameMap = value;
     }
 
+    /// <inheritdoc />
+    public override MUnique.OpenMU.DataModel.Configuration.MonsterSpawnArea Clone(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    {
+        var clone = new MonsterSpawnArea();
+        clone.AssignValuesOf(this, gameConfiguration);
+        return clone;
+    }
+    
+    /// <inheritdoc />
+    public override void AssignValuesOf(MUnique.OpenMU.DataModel.Configuration.MonsterSpawnArea other, MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    {
+        base.AssignValuesOf(other, gameConfiguration);
+        this.Id = other.GetId();
+    }
 
     /// <inheritdoc/>
     public override bool Equals(object obj)

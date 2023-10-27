@@ -4,10 +4,13 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration;
 
+using MUnique.OpenMU.Annotations;
+
 /// <summary>
 /// Defines a warp list entry.
 /// </summary>
-public class WarpInfo
+[Cloneable]
+public partial class WarpInfo
 {
     /// <summary>
     /// Gets or sets the index.

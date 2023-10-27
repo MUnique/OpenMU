@@ -4,10 +4,13 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration;
 
+using MUnique.OpenMU.Annotations;
+
 /// <summary>
 /// Defines a terrain change of the mini game map.
 /// </summary>
-public class MiniGameTerrainChange
+[Cloneable]
+public partial class MiniGameTerrainChange
 {
     /// <summary>
     /// Gets or sets the type of terrain attribute which should be added or removed to or from the terrain.

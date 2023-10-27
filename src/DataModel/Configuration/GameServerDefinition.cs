@@ -5,12 +5,14 @@
 namespace MUnique.OpenMU.DataModel.Configuration;
 
 using System.Globalization;
+using MUnique.OpenMU.Annotations;
 
 /// <summary>
 /// Defines the configuration of a game server.
 /// </summary>
 [AggregateRoot]
-public class GameServerDefinition
+[Cloneable]
+public partial class GameServerDefinition
 {
     /// <summary>
     /// Gets or sets the server identifier.

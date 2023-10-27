@@ -153,7 +153,7 @@ public class GuildActionTest : GuildTestBase
     {
         var gameConfiguration = new GameConfiguration();
         gameConfiguration.Maps.Add(new GameMapDefinition());
-        var mapInitializer = new MapInitializer(gameConfiguration, new NullLogger<MapInitializer>(), NullDropGenerator.Instance);
+        var mapInitializer = new MapInitializer(gameConfiguration, new NullLogger<MapInitializer>(), NullDropGenerator.Instance, null);
 
         var gameServer = new GameServerContext(
             new GameServerDefinition { GameConfiguration = gameConfiguration, ServerConfiguration = new DataModel.Configuration.GameServerConfiguration() },
@@ -165,7 +165,8 @@ public class GuildActionTest : GuildTestBase
             mapInitializer,
             new NullLoggerFactory(),
             new PlugInManager(new List<PlugIns.PlugInConfiguration>(), new NullLoggerFactory(), null),
-            NullDropGenerator.Instance);
+            NullDropGenerator.Instance,
+            new ConfigurationChangeMediator());
         mapInitializer.PlugInManager = gameServer.PlugInManager;
         mapInitializer.PathFinderPool = gameServer.PathFinderPool;
         return gameServer;

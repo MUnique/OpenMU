@@ -4,10 +4,13 @@
 
 namespace MUnique.OpenMU.DataModel.Entities;
 
+using MUnique.OpenMU.Annotations;
+
 /// <summary>
 /// A storage where items can be stored.
 /// </summary>
-public class ItemStorage
+[Cloneable]
+public partial class ItemStorage
 {
     /// <summary>
     /// Gets or sets the items which are stored.

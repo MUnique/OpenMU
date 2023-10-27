@@ -17,6 +17,7 @@ using MUnique.OpenMU.ChatServer;
 using MUnique.OpenMU.ConnectServer;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.FriendServer;
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GuildServer;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.LoginServer;
@@ -231,6 +232,10 @@ internal sealed class Program : IDisposable
 
         builder.Services.AddSingleton(this._servers)
             .AddSingleton<IConfigurationChangePublisher, ConfigurationChangeHandler>()
+            .AddSingleton<IConfigurationChangeListener, ConfigurationChangeListener>()
+            .AddSingleton<ConfigurationChangeMediator>()
+            .AddSingleton<IConfigurationChangeMediator>(s => s.GetRequiredService<ConfigurationChangeMediator>())
+            .AddSingleton<IConfigurationChangeMediatorListener>(s => s.GetRequiredService<ConfigurationChangeMediator>())
             .AddSingleton(s => this.CreateIpResolver(s, args))
             .AddSingleton(this._gameServers)
             .AddSingleton(this._gameServers.Values)
@@ -238,9 +243,10 @@ internal sealed class Program : IDisposable
                 this.DeterminePersistenceContextProviderAsync(
                     args,
                     s.GetService<ILoggerFactory>() ?? throw new Exception($"{nameof(ILoggerFactory)} not registered."),
-                    s.GetService<IConfigurationChangePublisher>() ?? throw new Exception($"{nameof(IConfigurationChangePublisher)} not registered."))
+                    s.GetService<IConfigurationChangeListener>() ?? throw new Exception($"{nameof(IConfigurationChangeListener)} not registered."))
                     .WaitAndUnwrapException())
             .AddSingleton<IPersistenceContextProvider>(s => s.GetService<IMigratableDatabaseContextProvider>()!)
+            .AddSingleton<Lazy<IPersistenceContextProvider>>(s => new(() => s.GetService<IMigratableDatabaseContextProvider>()!))
             .AddSingleton<ILoginServer, LoginServer>()
             .AddSingleton<IGuildServer, GuildServer>()
             .AddSingleton<IFriendServer, FriendServer>()
@@ -402,19 +408,19 @@ internal sealed class Program : IDisposable
         return parameter.Substring(parameter.IndexOf(':') + 1);
     }
 
-    private async Task<IMigratableDatabaseContextProvider> DeterminePersistenceContextProviderAsync(string[] args, ILoggerFactory loggerFactory, IConfigurationChangePublisher changePublisher)
+    private async Task<IMigratableDatabaseContextProvider> DeterminePersistenceContextProviderAsync(string[] args, ILoggerFactory loggerFactory, IConfigurationChangeListener changeListener)
     {
         var version = this.GetVersionParameter(args);
 
         IMigratableDatabaseContextProvider contextProvider;
         if (args.Contains("-demo"))
         {
-            contextProvider = new InMemoryPersistenceContextProvider(changePublisher);
+            contextProvider = new InMemoryPersistenceContextProvider(null); // TODO pass change mediator or whatever
             await this.InitializeDataAsync(version, loggerFactory, contextProvider).ConfigureAwait(false);
         }
         else
         {
-            contextProvider = await this.PrepareRepositoryProviderAsync(args.Contains("-reinit"), version, loggerFactory, changePublisher).ConfigureAwait(false);
+            contextProvider = await this.PrepareRepositoryProviderAsync(args.Contains("-reinit"), version, loggerFactory, changeListener).ConfigureAwait(false);
         }
 
         await this.ReadSystemConfigurationAsync(contextProvider).ConfigureAwait(false);
@@ -422,9 +428,9 @@ internal sealed class Program : IDisposable
         return contextProvider;
     }
 
-    private async Task<IMigratableDatabaseContextProvider> PrepareRepositoryProviderAsync(bool reinit, string version, ILoggerFactory loggerFactory, IConfigurationChangePublisher changePublisher)
+    private async Task<IMigratableDatabaseContextProvider> PrepareRepositoryProviderAsync(bool reinit, string version, ILoggerFactory loggerFactory, IConfigurationChangeListener changeListener)
     {
-        var contextProvider = new PersistenceContextProvider(loggerFactory, changePublisher);
+        var contextProvider = new PersistenceContextProvider(loggerFactory, changeListener);
         if (reinit || !await contextProvider.DatabaseExistsAsync().ConfigureAwait(false))
         {
             this._logger.Information("The database is getting (re-)initialized...");

@@ -4,10 +4,13 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration;
 
+using MUnique.OpenMU.Annotations;
+
 /// <summary>
 /// Defines a spawn wave of a <see cref="MiniGameDefinition"/>.
 /// </summary>
-public class MiniGameSpawnWave
+[Cloneable]
+public partial class MiniGameSpawnWave
 {
     /// <summary>
     /// Gets or sets the number of the wave, <seealso cref="MonsterSpawnArea.WaveNumber"/>.

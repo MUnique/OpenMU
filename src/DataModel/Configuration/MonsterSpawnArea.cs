@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration;
 
+using MUnique.OpenMU.Annotations;
+
 /// <summary>
 /// Defines the trigger when a monster spawns.
 /// </summary>
@@ -64,7 +66,8 @@ public enum SpawnTrigger
 /// <summary>
 /// Defines an monster spawn area.
 /// </summary>
-public class MonsterSpawnArea
+[Cloneable]
+public partial class MonsterSpawnArea
 {
     /// <summary>
     /// Gets or sets the monster definition.

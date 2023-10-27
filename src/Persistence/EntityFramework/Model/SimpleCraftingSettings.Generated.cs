@@ -46,6 +46,20 @@ internal partial class SimpleCraftingSettings : MUnique.OpenMU.DataModel.Configu
     [NotMapped]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCraftingResultItem> ResultItems => base.ResultItems ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCraftingResultItem, ItemCraftingResultItem>(this.RawResultItems);
 
+    /// <inheritdoc />
+    public override MUnique.OpenMU.DataModel.Configuration.ItemCrafting.SimpleCraftingSettings Clone(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    {
+        var clone = new SimpleCraftingSettings();
+        clone.AssignValuesOf(this, gameConfiguration);
+        return clone;
+    }
+    
+    /// <inheritdoc />
+    public override void AssignValuesOf(MUnique.OpenMU.DataModel.Configuration.ItemCrafting.SimpleCraftingSettings other, MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    {
+        base.AssignValuesOf(other, gameConfiguration);
+        this.Id = other.GetId();
+    }
 
     /// <inheritdoc/>
     public override bool Equals(object obj)

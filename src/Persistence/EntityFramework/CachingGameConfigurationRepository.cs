@@ -2,6 +2,9 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using Microsoft.Extensions.Logging.Abstractions;
+using MUnique.OpenMU.Interfaces;
+
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
 using Microsoft.EntityFrameworkCore;
@@ -71,6 +74,23 @@ internal class CachingGameConfigurationRepository : CachingGenericRepository<Gam
         {
             var configs = (await this._objectLoader.LoadAllObjectsAsync<GameConfiguration>(currentContext.Context).ConfigureAwait(false)).ToList();
             configs.ForEach(this.SetExperienceTables);
+
+            var oldConfig = ((EntityDataContext)currentContext.Context).CurrentGameConfiguration;
+            try
+            {
+                configs.ForEach(config =>
+                {
+                    //using var context = new CachingEntityFrameworkContext(currentContext.Context, this.RepositoryProvider, false, IConfigurationChangePublisher.None, NullLogger<CachingEntityFrameworkContext>.Instance);
+                    ((EntityDataContext)currentContext.Context).CurrentGameConfiguration = config;
+                    (this.RepositoryProvider as ICacheAwareRepositoryProvider)?.EnsureCachesForCurrentGameConfiguration();
+                });
+            }
+            finally
+            {
+
+                ((EntityDataContext)currentContext.Context).CurrentGameConfiguration = oldConfig;
+            }
+
             return configs;
         }
         finally

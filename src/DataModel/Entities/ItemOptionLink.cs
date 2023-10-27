@@ -4,12 +4,14 @@
 
 namespace MUnique.OpenMU.DataModel.Entities;
 
+using MUnique.OpenMU.Annotations;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 
 /// <summary>
 /// This class defines a link between the item and the concrete item option which the actual item instance possess.
 /// </summary>
-public class ItemOptionLink
+[Cloneable]
+public partial class ItemOptionLink
 {
     /// <summary>
     /// Gets or sets the item option.

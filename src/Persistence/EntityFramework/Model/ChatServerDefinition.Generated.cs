@@ -37,6 +37,20 @@ internal partial class ChatServerDefinition : MUnique.OpenMU.DataModel.Configura
     [NotMapped]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.ChatServerEndpoint> Endpoints => base.Endpoints ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.ChatServerEndpoint, ChatServerEndpoint>(this.RawEndpoints);
 
+    /// <inheritdoc />
+    public override MUnique.OpenMU.DataModel.Configuration.ChatServerDefinition Clone(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    {
+        var clone = new ChatServerDefinition();
+        clone.AssignValuesOf(this, gameConfiguration);
+        return clone;
+    }
+    
+    /// <inheritdoc />
+    public override void AssignValuesOf(MUnique.OpenMU.DataModel.Configuration.ChatServerDefinition other, MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    {
+        base.AssignValuesOf(other, gameConfiguration);
+        this.Id = other.GetId();
+    }
 
     /// <inheritdoc/>
     public override bool Equals(object obj)

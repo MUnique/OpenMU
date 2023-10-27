@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration;
 
+using MUnique.OpenMU.Annotations;
 using MUnique.OpenMU.DataModel.Properties;
 using MUnique.OpenMU.Network;
 
@@ -11,8 +12,9 @@ using MUnique.OpenMU.Network;
 /// System-wide configuration values.
 /// </summary>
 [AggregateRoot]
+[Cloneable]
 [Display(ResourceType = typeof(Resources), Name = nameof(Resources.SystemConfiguration_Name), Description = nameof(Resources.SystemConfiguration_Description))]
-public class SystemConfiguration
+public partial class SystemConfiguration
 {
     /// <summary>
     /// Gets or sets the type of the ip resolver.

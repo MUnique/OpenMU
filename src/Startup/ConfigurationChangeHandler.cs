@@ -6,29 +6,35 @@ namespace MUnique.OpenMU.Startup;
 
 using Microsoft.Extensions.DependencyInjection;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// An implementation of <see cref="IConfigurationChangePublisher"/> which directly handles the changes.
+/// An implementation of <see cref="IConfigurationChangePublisher"/> which directly handles the changes
+/// by updating some components and forwarding the events to the <see cref="IConfigurationChangeMediator"/>.
 /// </summary>
 public class ConfigurationChangeHandler : IConfigurationChangePublisher
 {
     private readonly IServiceProvider _serviceProvider;
+    private readonly IConfigurationChangeMediatorListener _changeMediator;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConfigurationChangeHandler" /> class.
     /// </summary>
     /// <param name="serviceProvider">The service provider.</param>
-    public ConfigurationChangeHandler(IServiceProvider serviceProvider)
+    /// <param name="changeMediator">The change mediator.</param>
+    public ConfigurationChangeHandler(IServiceProvider serviceProvider, IConfigurationChangeMediatorListener changeMediator)
     {
         this._serviceProvider = serviceProvider;
+        this._changeMediator = changeMediator;
     }
 
     /// <inheritdoc />
     public async Task ConfigurationChangedAsync(Type type, Guid id, object configuration)
     {
+        // TODO: subscribe these systems to the change mediator
         if (configuration is PlugInConfiguration plugInConfiguration)
         {
             this.OnPlugInConfigurationChanged(id, plugInConfiguration);
@@ -43,17 +49,19 @@ public class ConfigurationChangeHandler : IConfigurationChangePublisher
         {
             this.OnSystemConfigurationChanged(id, systemConfiguration);
         }
+
+        await this._changeMediator.HandleConfigurationChangedAsync(type, id, configuration).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
     public async Task ConfigurationAddedAsync(Type type, Guid id, object configuration)
     {
-        if (configuration is not PlugInConfiguration plugInConfiguration)
-        {
-            return;
-        }
+        await this._changeMediator.HandleConfigurationAddedAsync(type, id, configuration).ConfigureAwait(false);
 
-        // todo: find out what to do, because usually, plugin configs are not added during runtime.
+        if (type.IsAssignableTo(typeof(PlugInConfiguration)) && this._serviceProvider.GetService<PlugInManager>() is { } plugInManager)
+        {
+            // todo: find out what to do, because usually, plugin configs are not added during runtime.
+        }
     }
 
     /// <inheritdoc />
@@ -63,6 +71,8 @@ public class ConfigurationChangeHandler : IConfigurationChangePublisher
         {
             plugInManager.DeactivatePlugIn(id);
         }
+
+        await this._changeMediator.HandleConfigurationRemovedAsync(type, id).ConfigureAwait(false);
     }
 
     private void OnSystemConfigurationChanged(Guid id, SystemConfiguration systemConfiguration)

@@ -4,9 +4,11 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration;
 
+using MUnique.OpenMU.Annotations;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration.Quests;
 using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Type of the window which will be openend when talking to the npc.
@@ -214,7 +216,8 @@ public enum NpcObjectKind
 /// <summary>
 /// A definition for a monster (or NPC in general).
 /// </summary>
-public class MonsterDefinition
+[Cloneable]
+public partial class MonsterDefinition
 {
     /// <summary>
     /// Gets or sets the unique number of this monster.
@@ -337,6 +340,53 @@ public class MonsterDefinition
             return this.Attributes.First(a => a.AttributeDefinition == key).Value;
         }
     }
+
+    ///// <inheritdoc/>
+    //public void AssignValuesOf(object other, GameConfiguration gameConfiguration)
+    //{
+    //    if (other is MonsterDefinition typedOther)
+    //    {
+    //        this.AssignValuesOf(typedOther, gameConfiguration);
+    //    }
+    //}
+
+    ///// <inheritdoc/>
+    //public void AssignValuesOf(MonsterDefinition other, GameConfiguration gameConfiguration)
+    //{
+    //    this.AttackDelay = other.AttackDelay;
+    //    this.AttackRange = other.AttackRange;
+    //    this.Attribute = other.Attribute;
+    //    this.Designation = other.Designation;
+    //    this.IntelligenceTypeName = other.IntelligenceTypeName;
+    //    this.MoveDelay = other.MoveDelay;
+    //    this.MoveRange = other.MoveRange;
+    //    this.Number = other.Number;
+    //    this.ObjectKind = other.ObjectKind;
+    //    this.RespawnDelay = other.RespawnDelay;
+    //    this.ViewRange = other.ViewRange;
+    //    this.NpcWindow = other.NpcWindow;
+    //    this.NumberOfMaximumItemDrops = other.NumberOfMaximumItemDrops;
+
+    //    // Object references:
+    //    if (this.AttackSkill != other.AttackSkill)
+    //    {
+    //        this.AttackSkill = other.AttackSkill == null ? null : gameConfiguration.Skills.FirstOrDefault(s => s == other.AttackSkill);
+    //    }
+
+    //    if (this.MerchantStore is null && other.MerchantStore is not null)
+    //    {
+    //        // Implement cloning
+    //        //this.MerchantStore = other.MerchantStore.Clone();
+    //    }
+
+    //    //this.MerchantStore = other.MerchantStore;
+
+    //    // Collections: todo: compare collections; add new ones, remove old ones
+    //    //this.Attributes = other.Attributes;
+    //    //this.DropItemGroups = other.DropItemGroups;
+    //    //this.ItemCraftings = other.ItemCraftings;
+    //    //this.Quests = other.Quests;
+    //}
 
     /// <inheritdoc/>
     public override string ToString()

@@ -4,12 +4,14 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration.Items;
 
+using MUnique.OpenMU.Annotations;
 using MUnique.OpenMU.DataModel.Configuration;
 
 /// <summary>
 /// Defines an item.
 /// </summary>
-public class ItemDefinition
+[Cloneable]
+public partial class ItemDefinition
 {
     /// <summary>
     /// Gets or sets the (Sub-)Id of this item. Must be unique in an item group.

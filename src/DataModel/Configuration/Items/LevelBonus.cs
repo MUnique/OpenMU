@@ -4,12 +4,14 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration.Items;
 
+using MUnique.OpenMU.Annotations;
 using MUnique.OpenMU.AttributeSystem;
 
 /// <summary>
 /// Defines a constant bonus, depending on item level.
 /// </summary>
-public class LevelBonus
+[Cloneable]
+public partial class LevelBonus
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="LevelBonus"/> class.

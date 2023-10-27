@@ -92,8 +92,10 @@ internal partial class Item
     [NotMapped]
     private ItemStorage? _itemStorage;
 
+    [IsLinkToParent]
     public Guid? ItemStorageId { get; set; }
 
+    [IsLinkToParent]
     [ForeignKey("ItemStorageId")]
     public ItemStorage? RawItemStorage
     {

@@ -57,6 +57,11 @@ public class NonPlayerCharacter : AsyncDisposable, IObservable, IRotatable, ILoc
     /// </summary>
     public MonsterSpawnArea SpawnArea { get; protected set; }
 
+    /// <summary>
+    /// Gets or sets the index of the spawn within the <see cref="SpawnArea"/>.
+    /// </summary>
+    public int SpawnIndex { get; set; }
+
     /// <inheritdoc/>
     public Bucket<ILocateable>? NewBucket { get; set; }
 

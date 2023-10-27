@@ -4,10 +4,13 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration.Items;
 
+using MUnique.OpenMU.Annotations;
+
 /// <summary>
 /// Defines a requirement of existing item options on the equipped items of a character.
 /// </summary>
-public class CombinationBonusRequirement
+[Cloneable]
+public partial class CombinationBonusRequirement
 {
     /// <summary>
     /// Gets or sets the required <see cref="ItemOption.OptionType"/>.

@@ -25,6 +25,20 @@ public partial class Gate : MUnique.OpenMU.DataModel.Configuration.Gate, IIdenti
     /// </summary>
     public Guid Id { get; set; }
     
+    /// <inheritdoc />
+    public override MUnique.OpenMU.DataModel.Configuration.Gate Clone(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    {
+        var clone = new Gate();
+        clone.AssignValuesOf(this, gameConfiguration);
+        return clone;
+    }
+    
+    /// <inheritdoc />
+    public override void AssignValuesOf(MUnique.OpenMU.DataModel.Configuration.Gate other, MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    {
+        base.AssignValuesOf(other, gameConfiguration);
+        this.Id = other.GetId();
+    }
 
     /// <inheritdoc/>
     public override bool Equals(object obj)

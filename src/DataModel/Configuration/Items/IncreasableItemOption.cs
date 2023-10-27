@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration.Items;
 
+using MUnique.OpenMU.Annotations;
+
 /// <summary>
 /// Defines by which "level" the option is increased with <see cref="IncreasableItemOption.LevelDependentOptions"/>.
 /// </summary>
@@ -29,7 +31,8 @@ public enum LevelType
 /// <summary>
 /// Defines an item option which can be increased.
 /// </summary>
-public class IncreasableItemOption : ItemOption
+[Cloneable]
+public partial class IncreasableItemOption : ItemOption
 {
     /// <summary>
     /// Gets or sets a value which defines by which "level" the option is increased with <see cref="LevelDependentOptions"/>.

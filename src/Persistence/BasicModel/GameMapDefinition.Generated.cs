@@ -187,6 +187,20 @@ public partial class GameMapDefinition : MUnique.OpenMU.DataModel.Configuration.
         set => base.BattleZone = value;
     }
 
+    /// <inheritdoc />
+    public override MUnique.OpenMU.DataModel.Configuration.GameMapDefinition Clone(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    {
+        var clone = new GameMapDefinition();
+        clone.AssignValuesOf(this, gameConfiguration);
+        return clone;
+    }
+    
+    /// <inheritdoc />
+    public override void AssignValuesOf(MUnique.OpenMU.DataModel.Configuration.GameMapDefinition other, MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    {
+        base.AssignValuesOf(other, gameConfiguration);
+        this.Id = other.GetId();
+    }
 
     /// <inheritdoc/>
     public override bool Equals(object obj)

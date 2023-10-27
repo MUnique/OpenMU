@@ -64,6 +64,20 @@ public partial class DropItemGroup : MUnique.OpenMU.DataModel.Configuration.Drop
         set => base.Monster = value;
     }
 
+    /// <inheritdoc />
+    public override MUnique.OpenMU.DataModel.Configuration.DropItemGroup Clone(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    {
+        var clone = new DropItemGroup();
+        clone.AssignValuesOf(this, gameConfiguration);
+        return clone;
+    }
+    
+    /// <inheritdoc />
+    public override void AssignValuesOf(MUnique.OpenMU.DataModel.Configuration.DropItemGroup other, MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    {
+        base.AssignValuesOf(other, gameConfiguration);
+        this.Id = other.GetId();
+    }
 
     /// <inheritdoc/>
     public override bool Equals(object obj)

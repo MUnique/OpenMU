@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration.Items;
 
+using MUnique.OpenMU.Annotations;
 using MUnique.OpenMU.DataModel.Attributes;
 
 /// <summary>
@@ -13,7 +14,8 @@ using MUnique.OpenMU.DataModel.Attributes;
 /// <remarks>
 /// Usage example: The "Socket Package Options" when a character wears socket items with all kind of elemental options.
 /// </remarks>
-public class ItemOptionCombinationBonus
+[Cloneable]
+public partial class ItemOptionCombinationBonus
 {
     /// <summary>
     /// Gets or sets the description.

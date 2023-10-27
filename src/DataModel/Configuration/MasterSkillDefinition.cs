@@ -4,13 +4,15 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration;
 
+using MUnique.OpenMU.Annotations;
 using MUnique.OpenMU.AttributeSystem;
 
 /// <summary>
 /// The definition of a master skill. One skill can have 0-n master skill definitions,
 /// for example one skill can be used for different character classes at different Rank-Levels at different Roots.
 /// </summary>
-public class MasterSkillDefinition
+[Cloneable]
+public partial class MasterSkillDefinition
 {
     /// <summary>
     /// Gets or sets the root.

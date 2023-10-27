@@ -516,7 +516,7 @@ public sealed class ChaosCastleContext : MiniGameContext
         {
             var spawnArea = spawnAreas[i];
 
-            if (await this._mapInitializer.InitializeSpawnAsync(this.Map, spawnArea, this, this.DropGenerator).ConfigureAwait(false) is Monster monster)
+            if (await this._mapInitializer.InitializeSpawnAsync(i, this.Map, spawnArea, this, this.DropGenerator).ConfigureAwait(false) is Monster monster)
             {
                 this._monsters.TryAdd(monster, default);
             }

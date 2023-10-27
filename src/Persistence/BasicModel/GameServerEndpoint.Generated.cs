@@ -43,6 +43,20 @@ public partial class GameServerEndpoint : MUnique.OpenMU.DataModel.Configuration
         set => base.Client = value;
     }
 
+    /// <inheritdoc />
+    public override MUnique.OpenMU.DataModel.Configuration.GameServerEndpoint Clone(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    {
+        var clone = new GameServerEndpoint();
+        clone.AssignValuesOf(this, gameConfiguration);
+        return clone;
+    }
+    
+    /// <inheritdoc />
+    public override void AssignValuesOf(MUnique.OpenMU.DataModel.Configuration.GameServerEndpoint other, MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    {
+        base.AssignValuesOf(other, gameConfiguration);
+        this.Id = other.GetId();
+    }
 
     /// <inheritdoc/>
     public override bool Equals(object obj)

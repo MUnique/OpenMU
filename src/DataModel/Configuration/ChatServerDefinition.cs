@@ -4,11 +4,14 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration;
 
+using MUnique.OpenMU.Annotations;
+
 /// <summary>
 /// Settings for the chat server.
 /// </summary>
 [AggregateRoot]
-public class ChatServerDefinition
+[Cloneable]
+public partial class ChatServerDefinition
 {
     /// <summary>
     /// Gets or sets the server identifier.

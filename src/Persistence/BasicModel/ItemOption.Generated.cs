@@ -61,6 +61,20 @@ public partial class ItemOption : MUnique.OpenMU.DataModel.Configuration.Items.I
         set => base.PowerUpDefinition = value;
     }
 
+    /// <inheritdoc />
+    public override MUnique.OpenMU.DataModel.Configuration.Items.ItemOption Clone(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    {
+        var clone = new ItemOption();
+        clone.AssignValuesOf(this, gameConfiguration);
+        return clone;
+    }
+    
+    /// <inheritdoc />
+    public override void AssignValuesOf(MUnique.OpenMU.DataModel.Configuration.Items.ItemOption other, MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    {
+        base.AssignValuesOf(other, gameConfiguration);
+        this.Id = other.GetId();
+    }
 
     /// <inheritdoc/>
     public override bool Equals(object obj)

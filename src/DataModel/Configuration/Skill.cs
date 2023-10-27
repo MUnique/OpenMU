@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration;
 
+using MUnique.OpenMU.Annotations;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 
@@ -184,7 +185,8 @@ public enum SkillTargetRestriction
 /// <summary>
 /// Defines a skill.
 /// </summary>
-public class Skill
+[Cloneable]
+public partial class Skill
 {
     /// <summary>
     /// Gets or sets the skill number.

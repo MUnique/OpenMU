@@ -899,7 +899,7 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
             {
                 for (int i = 0; i < spawnArea.Quantity; i++)
                 {
-                    await this._mapInitializer.InitializeSpawnAsync(this.Map, spawnArea, this).ConfigureAwait(false);
+                    await this._mapInitializer.InitializeSpawnAsync(i, this.Map, spawnArea, this).ConfigureAwait(false);
                 }
             }
 

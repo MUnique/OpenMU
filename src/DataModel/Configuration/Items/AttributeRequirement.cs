@@ -4,12 +4,14 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration.Items;
 
+using MUnique.OpenMU.Annotations;
 using MUnique.OpenMU.AttributeSystem;
 
 /// <summary>
 /// Defines a requirement of an attribute with the specified value.
 /// </summary>
-public class AttributeRequirement
+[Cloneable]
+public partial class AttributeRequirement
 {
     /// <summary>
     /// Gets or sets the attribute which is required.

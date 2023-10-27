@@ -4,10 +4,13 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration;
 
+using MUnique.OpenMU.Annotations;
+
 /// <summary>
 /// The root of a master skill tree. One character can have more than one root.
 /// </summary>
-public class MasterSkillRoot
+[Cloneable]
+public partial class MasterSkillRoot
 {
     /// <summary>
     /// Gets or sets the identifier.

@@ -4,12 +4,14 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration;
 
+using MUnique.OpenMU.Annotations;
 using MUnique.OpenMU.DataModel.Attributes;
 
 /// <summary>
 /// Magic Effect Definition. It can be an effect from an consumed item, or by a buff.
 /// </summary>
-public class MagicEffectDefinition
+[Cloneable]
+public partial class MagicEffectDefinition
 {
     /// <summary>
     /// Gets or sets the number.
