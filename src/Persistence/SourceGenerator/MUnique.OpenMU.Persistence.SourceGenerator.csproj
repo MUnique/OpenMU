@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Annotations\MUnique.OpenMU.Annotations.csproj" />
     <ProjectReference Include="..\..\DataModel\MUnique.OpenMU.DataModel.csproj" />
   </ItemGroup>
 </Project>

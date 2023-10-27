@@ -7,8 +7,8 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <Nullable>enable</Nullable>
     <WarningsAsErrors>nullable;CS4014;VSTHRD110;VSTHRD100</WarningsAsErrors>
-	  <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-	  <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,13 +19,6 @@
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.7.0">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-  </ItemGroup>
-
-
-  <ItemGroup>
-    <Reference Include="MUnique.OpenMU.Annotations">
-      <HintPath>$(SolutionDir)\Annotations\bin\$(Configuration)\MUnique.OpenMU.Annotations.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>

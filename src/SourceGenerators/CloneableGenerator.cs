@@ -9,7 +9,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
-using MUnique.OpenMU.Annotations;
 
 /// <summary>
 /// A <see cref="ISourceGenerator"/> which implements <see cref="ICloneable{}"/>
@@ -18,6 +17,10 @@ using MUnique.OpenMU.Annotations;
 [Generator]
 public class CloneableGenerator : ISourceGenerator
 {
+    private const string CloneableAttributeFullName = "MUnique.OpenMU.Annotations.CloneableAttribute";
+
+    private const string CloneableAttributeName = "CloneableAttribute";
+
     /// <inheritdoc />
     public void Initialize(GeneratorInitializationContext context)
     {
@@ -27,7 +30,7 @@ public class CloneableGenerator : ISourceGenerator
     /// <inheritdoc />
     public void Execute(GeneratorExecutionContext context)
     {
-        var attributeSymbol = context.Compilation.GetTypeByMetadataName(typeof(CloneableAttribute).FullName);
+        var attributeSymbol = context.Compilation.GetTypeByMetadataName(CloneableAttributeFullName);
 
         var classWithAttributes = context.Compilation.SyntaxTrees.Where(st => st.GetRoot().DescendantNodes().OfType<ClassDeclarationSyntax>()
             .Any(p => p.DescendantNodes().OfType<AttributeSyntax>().Any()));
@@ -80,7 +83,7 @@ public class CloneableGenerator : ISourceGenerator
         var sb = new StringBuilder();
         var className = annotatedClass.Identifier.Text;
         var ns = declaredClassSymbol.ContainingNamespace?.ToString() ?? string.Empty;
-        var isInheritedClonable = declaredClassSymbol.BaseType?.GetAttributes().Any(a => a.AttributeClass?.Name == nameof(CloneableAttribute)) ?? false;
+        var isInheritedClonable = declaredClassSymbol.BaseType?.GetAttributes().Any(a => a.AttributeClass?.Name == CloneableAttributeName) ?? false;
 
         sb.AppendLine($"""
                         namespace {ns};
