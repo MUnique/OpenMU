@@ -30,8 +30,8 @@
     <ProjectReference Include="..\PlugIns\MUnique.OpenMU.PlugIns.csproj" />
   </ItemGroup>
   <ItemGroup>
-	  <Analyzer Include="..\SourceGenerators\bin\Debug\MUnique.OpenMU.Annotations.dll" />
-	  <Analyzer Include="..\SourceGenerators\bin\Debug\MUnique.OpenMU.SourceGenerators.dll" />
+    <Analyzer Include="..\SourceGenerators\bin\$(Configuration)\MUnique.OpenMU.Annotations.dll" />
+    <Analyzer Include="..\SourceGenerators\bin\$(Configuration)\MUnique.OpenMU.SourceGenerators.dll" />
   </ItemGroup>
 
   <ItemGroup>

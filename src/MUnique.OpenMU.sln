@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.GameServer", "GameServer\MUnique.OpenMU.GameServer.csproj", "{8EC9EBEE-56DD-4139-AA02-D154CA8536E6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.DataModel", "DataModel\MUnique.OpenMU.DataModel.csproj", "{5282F509-D758-4A42-994C-F71A4C631FDA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{338E0C94-5FA1-4F20-86EC-FCBA34CFB1E2} = {338E0C94-5FA1-4F20-86EC-FCBA34CFB1E2}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.GameLogic", "GameLogic\MUnique.OpenMU.GameLogic.csproj", "{7DEC119D-79EF-4E43-9A72-DB07A6CAE73E}"
 EndProject
@@ -110,8 +113,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.Persistence.SourceGenerator", "Persistence\SourceGenerator\MUnique.OpenMU.Persistence.SourceGenerator.csproj", "{3CFAFD8C-E881-45BA-98CE-653D33C95419}"
 	ProjectSection(ProjectDependencies) = postProject
 		{5282F509-D758-4A42-994C-F71A4C631FDA} = {5282F509-D758-4A42-994C-F71A4C631FDA}
-		{CB8A2C80-8ECD-44D6-98B7-AB35891B66FD} = {CB8A2C80-8ECD-44D6-98B7-AB35891B66FD}
 		{5AB17B80-021D-4898-9750-0C26B2AF1A39} = {5AB17B80-021D-4898-9750-0C26B2AF1A39}
+		{CB8A2C80-8ECD-44D6-98B7-AB35891B66FD} = {CB8A2C80-8ECD-44D6-98B7-AB35891B66FD}
 		{F4AFDE9B-6690-4D2B-83C6-DA7426479293} = {F4AFDE9B-6690-4D2B-83C6-DA7426479293}
 	EndProjectSection
 EndProject
@@ -152,9 +155,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.ClientErrorL
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.Web.ItemEditor", "Web\ItemEditor\MUnique.OpenMU.Web.ItemEditor.csproj", "{298D1A42-8958-4662-8A05-E6B6F16F7268}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MUnique.OpenMU.SourceGenerators", "SourceGenerators\MUnique.OpenMU.SourceGenerators.csproj", "{338E0C94-5FA1-4F20-86EC-FCBA34CFB1E2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.SourceGenerators", "SourceGenerators\MUnique.OpenMU.SourceGenerators.csproj", "{338E0C94-5FA1-4F20-86EC-FCBA34CFB1E2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MUnique.OpenMU.Annotations", "Annotations\MUnique.OpenMU.Annotations.csproj", "{49C1BAD6-13DC-4FB2-AD46-3D824C2CA74E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.Annotations", "Annotations\MUnique.OpenMU.Annotations.csproj", "{49C1BAD6-13DC-4FB2-AD46-3D824C2CA74E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

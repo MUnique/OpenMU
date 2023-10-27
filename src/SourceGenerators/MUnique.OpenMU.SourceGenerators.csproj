@@ -24,7 +24,7 @@
 
   <ItemGroup>
     <Reference Include="MUnique.OpenMU.Annotations">
-      <HintPath>..\Annotations\bin\Debug\MUnique.OpenMU.Annotations.dll</HintPath>
+      <HintPath>..\Annotations\bin\$(Configuration)\MUnique.OpenMU.Annotations.dll</HintPath>
     </Reference>
   </ItemGroup>
 
