@@ -106,8 +106,8 @@ public class ConfigurationChangeMediator : IConfigurationChangeMediator, IConfig
     {
         var registration = (CreateRegistration<TConfig>)this._createRegistrations.AddOrUpdate(
             typeof(TConfig),
-            key => new CreateRegistration<TConfig>(),
-            (key, value) => value);
+            _ => new CreateRegistration<TConfig>(),
+            (_, value) => value);
         registration.OnCreate += InvokeOnCreate;
 
         return registration;
