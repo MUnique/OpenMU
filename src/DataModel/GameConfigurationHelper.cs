@@ -117,6 +117,22 @@ public static class GameConfigurationHelper
     }
 
     /// <summary>
+    /// Gets the objects of the specified type.
+    /// </summary>
+    /// <param name="gameConfiguration">The game configuration.</param>
+    /// <param name="type">The type of the wanted objects.</param>
+    /// <returns>The objects of the specified type.</returns>
+    public static IEnumerable<object> GetObjectsOf(this GameConfiguration gameConfiguration, Type type)
+    {
+        if (Enumerables.TryGetValue(type, out var enumerableGetter))
+        {
+            return enumerableGetter(gameConfiguration).OfType<object>();
+        }
+
+        return Enumerable.Empty<object>();
+    }
+
+    /// <summary>
     /// Gets the instance of <paramref name="other"/> which is referenced within
     /// the <paramref name="gameConfiguration"/> based on their equality.
     /// </summary>
@@ -138,22 +154,6 @@ public static class GameConfigurationHelper
 
         var result = gameConfiguration.GetObjectsOf<T>().FirstOrDefault(o => object.Equals(o, other));
         return result;
-    }
-
-    /// <summary>
-    /// Gets the objects of the specified type.
-    /// </summary>
-    /// <param name="gameConfiguration">The game configuration.</param>
-    /// <param name="type">The type of the wanted objects.</param>
-    /// <returns>The objects of the specified type.</returns>
-    public static IEnumerable<object> GetObjectsOf(this GameConfiguration gameConfiguration, Type type)
-    {
-        if (Enumerables.TryGetValue(type, out var enumerableGetter))
-        {
-            return enumerableGetter(gameConfiguration).OfType<object>();
-        }
-
-        return Enumerable.Empty<object>();
     }
 
     /// <summary>
