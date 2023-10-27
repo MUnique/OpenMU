@@ -64,7 +64,6 @@ public class CloneableGenerator : ISourceGenerator
                     continue;
                 }
 
-                var attributeClass = semanticModel.GetTypeInfo(nodes.Last().Parent!);
                 var declaredClassSymbol = semanticModel.GetDeclaredSymbol(declaredClass);
                 if (declaredClassSymbol is null)
                 {
@@ -127,13 +126,13 @@ public class CloneableGenerator : ISourceGenerator
             sb.AppendLine("        base.AssignValuesOf(other, gameConfiguration);");
         }
 
-        this.GenerateAssignments(sb, annotatedClass, declaredClassSymbol);
+        this.GenerateAssignments(sb, declaredClassSymbol);
         sb.AppendLine("    }");
         sb.AppendLine("}");
         return sb;
     }
 
-    private void GenerateAssignments(StringBuilder sb, ClassDeclarationSyntax annotatedClass, INamedTypeSymbol declaredClassSymbol)
+    private void GenerateAssignments(StringBuilder sb, INamedTypeSymbol declaredClassSymbol)
     {
         foreach (var property in declaredClassSymbol.GetMembers().OfType<IPropertySymbol>().Where(p => p.SetMethod is not null))
         {

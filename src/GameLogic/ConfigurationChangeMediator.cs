@@ -52,8 +52,8 @@ public class ConfigurationChangeMediator : IConfigurationChangeMediator, IConfig
     {
         var registration = (ChangeRegistration<TConfig>)this._registrations.AddOrUpdate(
             config.GetId(),
-            key => new ChangeRegistration<TConfig>(config),
-            (key, value) => value);
+            _ => new ChangeRegistration<TConfig>(config),
+            (_, value) => value);
 
         if (onChange is not null)
         {
