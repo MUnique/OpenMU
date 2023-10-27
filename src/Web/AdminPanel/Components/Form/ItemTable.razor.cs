@@ -5,8 +5,11 @@
 namespace MUnique.OpenMU.Web.AdminPanel.Components.Form;
 
 using System.Diagnostics.CodeAnalysis;
+using System.Linq.Expressions;
+using System.Reflection;
 using Blazored.Modal;
 using Microsoft.AspNetCore.Components;
+using MUnique.OpenMU.DataModel.Composition;
 using MUnique.OpenMU.Persistence;
 
 /// <summary>
@@ -105,9 +108,8 @@ public partial class ItemTable<TItem>
     {
         this.Value?.Remove(item);
 
-        // use the MemberOfAggregateAttribute here!
-        if (!this.ValueExpression!.GetAccessedMemberType().IsConfigurationType()
-            && !typeof(TItem).IsConfigurationType())
+        if (this.ValueExpression?.Body is MemberExpression { Member: PropertyInfo propertyInfo }
+            && propertyInfo.GetCustomAttribute<MemberOfAggregateAttribute>() is not null)
         {
             await this.PersistenceContext.DeleteAsync(item).ConfigureAwait(false);
         }
