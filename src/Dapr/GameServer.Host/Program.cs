@@ -5,9 +5,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using MUnique.OpenMU.Dapr.Common;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameServer.Host;
 using MUnique.OpenMU.Interfaces;
-using MUnique.OpenMU.Network;
 using MUnique.OpenMU.PlugIns;
 using MUnique.OpenMU.ServerClients;
 using MUnique.OpenMU.Web.Map;
@@ -29,6 +29,9 @@ services.AddSingleton<GameServer>()
     .AddSingleton<IList<IManageableServer>>(s => new List<IManageableServer>() { s.GetService<GameServer>()! })
     .AddSingleton(s => s.GetService<GameServer>()!.Context)
     .AddSingleton<IGameServerStateObserver, GameServerStatePublisher>()
+    .AddSingleton<ConfigurationChangeMediator>()
+    .AddSingleton<IConfigurationChangeMediator>(s => s.GetRequiredService<ConfigurationChangeMediator>())
+    .AddSingleton<IConfigurationChangeMediatorListener>(s => s.GetRequiredService<ConfigurationChangeMediator>())
     .AddSingleton<ILoginServer, LoginServer>()
     .AddSingleton<IGuildServer, GuildServer>()
     .AddSingleton<IEventPublisher, EventPublisher>()

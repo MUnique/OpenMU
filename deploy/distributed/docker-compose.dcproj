@@ -7,7 +7,9 @@
     <DockerLaunchAction>None</DockerLaunchAction>
     <DockerServiceUrl>{Scheme}://localhost:{ServicePort}</DockerServiceUrl>
   </PropertyGroup>
-  <PropertyGroup />
+  <PropertyGroup>
+    <DockerServiceName>openmu-distributed</DockerServiceName>
+  </PropertyGroup>
   <ItemGroup>
     <None Include="dapr-components\config.yaml" />
     <None Include="dapr-components\localSecretStore.yaml" />

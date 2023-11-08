@@ -24,9 +24,8 @@
         "grafana": "StartWithoutDebugging",
         "loki": "StartWithoutDebugging",
         "minio": "StartWithoutDebugging",
-        "nginx": "StartWithoutDebugging",
+        "nginx-80": "StartWithoutDebugging",
         "prometheus": "StartWithoutDebugging",
-        "zipkin": "StartWithoutDebugging"
         "zipkin": "StartWithoutDebugging",
         "gameServer0": "StartWithoutDebugging",
         "gameServer0-dapr": "StartWithoutDebugging",
