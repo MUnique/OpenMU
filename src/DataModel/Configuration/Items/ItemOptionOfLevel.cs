@@ -4,12 +4,14 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration.Items;
 
+using MUnique.OpenMU.Annotations;
 using MUnique.OpenMU.DataModel.Attributes;
 
 /// <summary>
 /// The item option, depending on the specified item level.
 /// </summary>
-public class ItemOptionOfLevel
+[Cloneable]
+public partial class ItemOptionOfLevel
 {
     /// <summary>
     /// Gets or sets the level.

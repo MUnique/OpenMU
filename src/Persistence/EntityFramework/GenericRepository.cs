@@ -17,19 +17,19 @@ internal class GenericRepository<T> : GenericRepositoryBase<T>
     where T : class
 {
     private readonly ILoggerFactory _loggerFactory;
-    private readonly IConfigurationChangePublisher? _changePublisher;
+    private readonly IConfigurationChangeListener? _changeListener;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GenericRepository{T}" /> class.
     /// </summary>
     /// <param name="repositoryProvider">The repository provider.</param>
     /// <param name="loggerFactory">The logger factory.</param>
-    /// <param name="changePublisher">The change publisher.</param>
-    public GenericRepository(IContextAwareRepositoryProvider repositoryProvider, ILoggerFactory loggerFactory, IConfigurationChangePublisher? changePublisher)
+    /// <param name="changeListener">The change publisher.</param>
+    public GenericRepository(IContextAwareRepositoryProvider repositoryProvider, ILoggerFactory loggerFactory, IConfigurationChangeListener? changeListener)
         : base(repositoryProvider, loggerFactory.CreateLogger(MethodBase.GetCurrentMethod()?.DeclaringType ?? typeof(GenericRepository<T>)))
     {
         this._loggerFactory = loggerFactory;
-        this._changePublisher = changePublisher;
+        this._changeListener = changeListener;
     }
 
     /// <summary>
@@ -39,6 +39,6 @@ internal class GenericRepository<T> : GenericRepositoryBase<T>
     protected override EntityFrameworkContextBase GetContext()
     {
         var context = this.RepositoryProvider.ContextStack.GetCurrentContext() as EntityFrameworkContextBase;
-        return new EntityFrameworkContext(context?.Context ?? new TypedContext<T>(), this._loggerFactory, this.RepositoryProvider, context is null, this._changePublisher);
+        return new EntityFrameworkContext(context?.Context ?? new TypedContext<T>(), this._loggerFactory, this.RepositoryProvider, context is null, this._changeListener);
     }
 }

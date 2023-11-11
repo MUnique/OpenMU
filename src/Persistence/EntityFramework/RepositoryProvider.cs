@@ -16,12 +16,12 @@ internal class RepositoryProvider : BaseRepositoryProvider, IContextAwareReposit
     /// Initializes a new instance of the <see cref="RepositoryProvider" /> class.
     /// </summary>
     /// <param name="loggerFactory">The logger factory.</param>
-    /// <param name="changePublisher">The change publisher.</param>
+    /// <param name="changeListener">The change publisher.</param>
     /// <param name="contextStack">The context stack.</param>
-    public RepositoryProvider(ILoggerFactory loggerFactory, IConfigurationChangePublisher? changePublisher, IContextStack contextStack)
+    public RepositoryProvider(ILoggerFactory loggerFactory, IConfigurationChangeListener? changeListener, IContextStack contextStack)
     {
         this.LoggerFactory = loggerFactory;
-        this.ChangePublisher = changePublisher;
+        this.ChangeListener = changeListener;
         this.ContextStack = contextStack;
     }
 
@@ -38,7 +38,7 @@ internal class RepositoryProvider : BaseRepositoryProvider, IContextAwareReposit
     /// <summary>
     /// Gets the change publisher.
     /// </summary>
-    protected IConfigurationChangePublisher? ChangePublisher { get; }
+    protected IConfigurationChangeListener? ChangeListener { get; }
 
     /// <summary>
     /// Creates the generic repository for the specified type.
@@ -48,7 +48,7 @@ internal class RepositoryProvider : BaseRepositoryProvider, IContextAwareReposit
     protected virtual IRepository CreateGenericRepository(Type entityType, IContextAwareRepositoryProvider repositoryProvider)
     {
         var repositoryType = typeof(GenericRepository<>).MakeGenericType(entityType);
-        return (IRepository)Activator.CreateInstance(repositoryType, repositoryProvider, this.LoggerFactory, this.ChangePublisher)!;
+        return (IRepository)Activator.CreateInstance(repositoryType, repositoryProvider, this.LoggerFactory, this.ChangeListener)!;
     }
 
     /// <summary>

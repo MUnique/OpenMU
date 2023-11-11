@@ -19,10 +19,10 @@ internal class NonCachingRepositoryProvider : RepositoryProvider
     /// </summary>
     /// <param name="loggerFactory">The logger factory.</param>
     /// <param name="parent">The parent.</param>
-    /// <param name="changePublisher">The change publisher.</param>
+    /// <param name="changeListener">The change publisher.</param>
     /// <param name="contextStack">The context stack.</param>
-    public NonCachingRepositoryProvider(ILoggerFactory loggerFactory, IContextAwareRepositoryProvider? parent, IConfigurationChangePublisher? changePublisher, IContextStack contextStack)
-        : base(loggerFactory, changePublisher, contextStack)
+    public NonCachingRepositoryProvider(ILoggerFactory loggerFactory, IContextAwareRepositoryProvider? parent, IConfigurationChangeListener? changeListener, IContextStack contextStack)
+        : base(loggerFactory, changeListener, contextStack)
     {
         this._parent = parent;
     }
@@ -32,7 +32,7 @@ internal class NonCachingRepositoryProvider : RepositoryProvider
     /// </summary>
     protected override void Initialize()
     {
-        this.RegisterRepository(new GameConfigurationRepository(this._parent ?? this, this.LoggerFactory, this.ChangePublisher));
+        this.RegisterRepository(new GameConfigurationRepository(this._parent ?? this, this.LoggerFactory, this.ChangeListener));
 
         this.RegisterRepository(new AccountRepository(this._parent ?? this, this.LoggerFactory)); // never cache accounts, so we pass this
         this.RegisterRepository(new LetterBodyRepository(this._parent ?? this, this.LoggerFactory)); // never cache letters, so we pass this

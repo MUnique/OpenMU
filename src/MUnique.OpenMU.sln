@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.GameServer", "GameServer\MUnique.OpenMU.GameServer.csproj", "{8EC9EBEE-56DD-4139-AA02-D154CA8536E6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.DataModel", "DataModel\MUnique.OpenMU.DataModel.csproj", "{5282F509-D758-4A42-994C-F71A4C631FDA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{338E0C94-5FA1-4F20-86EC-FCBA34CFB1E2} = {338E0C94-5FA1-4F20-86EC-FCBA34CFB1E2}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.GameLogic", "GameLogic\MUnique.OpenMU.GameLogic.csproj", "{7DEC119D-79EF-4E43-9A72-DB07A6CAE73E}"
 EndProject
@@ -110,8 +113,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.Persistence.SourceGenerator", "Persistence\SourceGenerator\MUnique.OpenMU.Persistence.SourceGenerator.csproj", "{3CFAFD8C-E881-45BA-98CE-653D33C95419}"
 	ProjectSection(ProjectDependencies) = postProject
 		{5282F509-D758-4A42-994C-F71A4C631FDA} = {5282F509-D758-4A42-994C-F71A4C631FDA}
-		{CB8A2C80-8ECD-44D6-98B7-AB35891B66FD} = {CB8A2C80-8ECD-44D6-98B7-AB35891B66FD}
 		{5AB17B80-021D-4898-9750-0C26B2AF1A39} = {5AB17B80-021D-4898-9750-0C26B2AF1A39}
+		{CB8A2C80-8ECD-44D6-98B7-AB35891B66FD} = {CB8A2C80-8ECD-44D6-98B7-AB35891B66FD}
 		{F4AFDE9B-6690-4D2B-83C6-DA7426479293} = {F4AFDE9B-6690-4D2B-83C6-DA7426479293}
 	EndProjectSection
 EndProject
@@ -151,6 +154,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.ClientErrorLogDecryptor", "ClientErrorLogDecryptor\MUnique.OpenMU.ClientErrorLogDecryptor.csproj", "{54125AC8-D0CB-4EC8-98DD-BE63E69FD3D6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.Web.ItemEditor", "Web\ItemEditor\MUnique.OpenMU.Web.ItemEditor.csproj", "{298D1A42-8958-4662-8A05-E6B6F16F7268}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.SourceGenerators", "SourceGenerators\MUnique.OpenMU.SourceGenerators.csproj", "{338E0C94-5FA1-4F20-86EC-FCBA34CFB1E2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.Annotations", "Annotations\MUnique.OpenMU.Annotations.csproj", "{49C1BAD6-13DC-4FB2-AD46-3D824C2CA74E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -342,6 +349,14 @@ Global
 		{298D1A42-8958-4662-8A05-E6B6F16F7268}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{298D1A42-8958-4662-8A05-E6B6F16F7268}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{298D1A42-8958-4662-8A05-E6B6F16F7268}.Release|Any CPU.Build.0 = Release|Any CPU
+		{338E0C94-5FA1-4F20-86EC-FCBA34CFB1E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{338E0C94-5FA1-4F20-86EC-FCBA34CFB1E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{338E0C94-5FA1-4F20-86EC-FCBA34CFB1E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{338E0C94-5FA1-4F20-86EC-FCBA34CFB1E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49C1BAD6-13DC-4FB2-AD46-3D824C2CA74E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49C1BAD6-13DC-4FB2-AD46-3D824C2CA74E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49C1BAD6-13DC-4FB2-AD46-3D824C2CA74E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49C1BAD6-13DC-4FB2-AD46-3D824C2CA74E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -396,6 +411,8 @@ Global
 		{6518D58A-5F07-4341-87AF-FCF3715D2554} = {565BED68-B303-4A3D-A8C0-0088D2A50C46}
 		{54125AC8-D0CB-4EC8-98DD-BE63E69FD3D6} = {C814AC11-2CAD-44F2-80DF-B37FD785E80E}
 		{298D1A42-8958-4662-8A05-E6B6F16F7268} = {820453DE-DA7A-454C-A077-BED8F0FA9764}
+		{338E0C94-5FA1-4F20-86EC-FCBA34CFB1E2} = {09EAF85E-358B-4065-8C81-B0B1FF6C0A09}
+		{49C1BAD6-13DC-4FB2-AD46-3D824C2CA74E} = {09EAF85E-358B-4065-8C81-B0B1FF6C0A09}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {28C13837-B616-4790-84D6-4BDCB4A8166D}

@@ -80,6 +80,20 @@ internal partial class PowerUpDefinition : MUnique.OpenMU.DataModel.Attributes.P
         }
     }
 
+    /// <inheritdoc />
+    public override MUnique.OpenMU.DataModel.Attributes.PowerUpDefinition Clone(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    {
+        var clone = new PowerUpDefinition();
+        clone.AssignValuesOf(this, gameConfiguration);
+        return clone;
+    }
+    
+    /// <inheritdoc />
+    public override void AssignValuesOf(MUnique.OpenMU.DataModel.Attributes.PowerUpDefinition other, MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    {
+        base.AssignValuesOf(other, gameConfiguration);
+        this.Id = other.GetId();
+    }
 
     /// <inheritdoc/>
     public override bool Equals(object obj)

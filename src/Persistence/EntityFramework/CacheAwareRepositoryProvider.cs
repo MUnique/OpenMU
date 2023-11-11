@@ -2,9 +2,12 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using MUnique.OpenMU.DataModel.Configuration;
+
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
 using Microsoft.Extensions.Logging;
+using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.Interfaces;
 
 /// <summary>
@@ -16,19 +19,22 @@ using MUnique.OpenMU.Interfaces;
 /// </summary>
 internal class CacheAwareRepositoryProvider : ICacheAwareRepositoryProvider, IContextAwareRepositoryProvider
 {
-    private readonly CachingRepositoryProvider _cachingRepositoryProvider;
+    private readonly ILoggerFactory _loggerFactory;
 
     private readonly IRepositoryProvider _nonCachingRepositoryProvider;
+
+    private CachingRepositoryProvider _cachingRepositoryProvider;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CacheAwareRepositoryProvider"/> class.
     /// </summary>
     /// <param name="loggerFactory">The logger factory.</param>
     /// <param name="configurationChangePublisher">The configuration change publisher.</param>
-    public CacheAwareRepositoryProvider(ILoggerFactory loggerFactory, IConfigurationChangePublisher? configurationChangePublisher)
+    public CacheAwareRepositoryProvider(ILoggerFactory loggerFactory, IConfigurationChangeListener? configurationChangeListener)
     {
-        _cachingRepositoryProvider = new CachingRepositoryProvider(loggerFactory, this);
-        _nonCachingRepositoryProvider = new NonCachingRepositoryProvider(loggerFactory, this, configurationChangePublisher, this.ContextStack);
+        this._loggerFactory = loggerFactory;
+        this._cachingRepositoryProvider = new CachingRepositoryProvider(loggerFactory, this);
+        this._nonCachingRepositoryProvider = new NonCachingRepositoryProvider(loggerFactory, this, configurationChangeListener, this.ContextStack);
     }
 
     /// <inheritdoc />
@@ -40,7 +46,7 @@ internal class CacheAwareRepositoryProvider : ICacheAwareRepositoryProvider, ICo
         if (this.ContextStack.GetCurrentContext() is EntityFrameworkContextBase { Context: ITypedContext editContext }
             && editContext.IsIncluded(objectType))
         {
-            return _nonCachingRepositoryProvider.GetRepository(objectType);
+            return this._nonCachingRepositoryProvider.GetRepository(objectType);
         }
 
         return this._cachingRepositoryProvider.GetRepository(objectType)
@@ -54,7 +60,7 @@ internal class CacheAwareRepositoryProvider : ICacheAwareRepositoryProvider, ICo
         if (this.ContextStack.GetCurrentContext() is EntityFrameworkContextBase { Context: ITypedContext editContext }
             && (editContext.IsIncluded(typeof(T)) || editContext.IsIncluded(typeof(T).BaseType!)))
         {
-            return _nonCachingRepositoryProvider.GetRepository<T>();
+            return this._nonCachingRepositoryProvider.GetRepository<T>();
         }
 
         return this._cachingRepositoryProvider.GetRepository<T>()
@@ -69,7 +75,7 @@ internal class CacheAwareRepositoryProvider : ICacheAwareRepositoryProvider, ICo
         if (this.ContextStack.GetCurrentContext() is EntityFrameworkContextBase { Context: ITypedContext editContext }
             && (editContext.IsIncluded(typeof(T)) || editContext.IsIncluded(typeof(T).BaseType!)))
         {
-            return _nonCachingRepositoryProvider.GetRepository<T, TRepository>();
+            return this._nonCachingRepositoryProvider.GetRepository<T, TRepository>();
         }
 
         return this._cachingRepositoryProvider.GetRepository<T, TRepository>()
@@ -80,5 +86,35 @@ internal class CacheAwareRepositoryProvider : ICacheAwareRepositoryProvider, ICo
     public void EnsureCachesForCurrentGameConfiguration()
     {
         this._cachingRepositoryProvider.EnsureCachesForCurrentGameConfiguration();
+    }
+
+    /// <inheritdoc />
+    public void ResetCache()
+    {
+        this._cachingRepositoryProvider = new CachingRepositoryProvider(this._loggerFactory, this);
+    }
+
+    /// <inheritdoc />
+    public async ValueTask UpdateCachedInstanceAsync(object changedInstance)
+    {
+        if (this._cachingRepositoryProvider.GetRepository(changedInstance.GetType().BaseType ?? changedInstance.GetType()) is IConfigurationTypeRepository repository)
+        {
+            repository.UpdateCachedInstances(changedInstance);
+        }
+        else
+        {
+            // not all types have an own repository.
+            var gameConfigRepo = this._cachingRepositoryProvider.GetRepository<GameConfiguration>();
+            if (gameConfigRepo is null)
+            {
+                return;
+            }
+
+            foreach (var config in await gameConfigRepo.GetAllAsync().ConfigureAwait(false))
+            {
+                var obj = config.GetObjectOfConfig(changedInstance) as IAssignable;
+                obj?.AssignValuesOf(changedInstance, config);
+            }
+        }
     }
 }

@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Persistence.SourceGenerator;
 
 using System.Reflection;
 using Microsoft.CodeAnalysis;
+using MUnique.OpenMU.DataModel;
 
 /// <summary>
 /// Base class for the model class generator.
@@ -142,6 +143,34 @@ public abstract class ModelGeneratorBase : ISourceGenerator
         }
 
         return result.ToString();
+    }
+
+    /// <summary>
+    /// Overrides the <see cref="ICloneable{T}"/> implementation, so that the correct class instance
+    /// is created and the Id is assigned.
+    /// </summary>
+    /// <param name="type">The type.</param>
+    /// <param name="className">Name of the class.</param>
+    /// <returns>The implementation for <see cref="ICloneable{T}"/>.</returns>
+    protected string OverrideClonable(Type type, string className)
+    {
+        return $$"""
+                     /// <inheritdoc />
+                     public override {{type.Namespace}}.{{className}} Clone(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+                     {
+                         var clone = new {{className}}();
+                         clone.AssignValuesOf(this, gameConfiguration);
+                         return clone;
+                     }
+                     
+                     /// <inheritdoc />
+                     public override void AssignValuesOf({{type.Namespace}}.{{className}} other, MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+                     {
+                         base.AssignValuesOf(other, gameConfiguration);
+                         this.Id = other.GetId();
+                     }
+
+                 """;
     }
 
     /// <summary>

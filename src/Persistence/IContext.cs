@@ -62,6 +62,17 @@ public interface IContext : IDisposable
         where T : class;
 
     /// <summary>
+    /// Creates a new instance of the given type.
+    /// Attention: This operation needs a currently used context in the current thread!.
+    /// </summary>
+    /// <param name="type">The type which should get created.</param>
+    /// <param name="args">The arguments.</param>
+    /// <returns>
+    /// A new instance of <paramref name="type" />.
+    /// </returns>
+    object CreateNew(Type type, params object?[] args);
+
+    /// <summary>
     /// Deletes the specified object.
     /// </summary>
     /// <typeparam name="T">The type of the object.</typeparam>

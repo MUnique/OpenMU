@@ -4,10 +4,13 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration.Items;
 
+using MUnique.OpenMU.Annotations;
+
 /// <summary>
 /// The item slot type. Each of this may have one or more actual item slots.
 /// </summary>
-public class ItemSlotType
+[Cloneable]
+public partial class ItemSlotType
 {
     /// <summary>
     /// Gets or sets the description.

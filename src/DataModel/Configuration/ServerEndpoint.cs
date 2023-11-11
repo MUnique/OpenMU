@@ -4,10 +4,13 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration;
 
+using MUnique.OpenMU.Annotations;
+
 /// <summary>
 /// Defines an endpoint of a server.
 /// </summary>
-public class ServerEndpoint
+[Cloneable]
+public partial class ServerEndpoint
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="ServerEndpoint"/> class.

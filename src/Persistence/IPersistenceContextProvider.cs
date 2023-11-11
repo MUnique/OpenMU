@@ -14,6 +14,11 @@ using MUnique.OpenMU.Interfaces;
 public interface IPersistenceContextProvider
 {
     /// <summary>
+    /// Gets the repository provider.
+    /// </summary>
+    IRepositoryProvider RepositoryProvider { get; }
+
+    /// <summary>
     /// Creates a new context which doesn't use any caching.
     /// </summary>
     /// <returns>The newly created context.</returns>

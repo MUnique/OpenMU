@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration;
 
+using MUnique.OpenMU.Annotations;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 
 /// <summary>
@@ -47,7 +48,8 @@ public enum SpecialItemType
 /// In the drop generator sort all DropItemGroups by its chance.
 /// Classes which can have DropItemGroups: Maps, Monsters(for example the kundun drops), Players(for quest items).
 /// </summary>
-public class DropItemGroup
+[Cloneable]
+public partial class DropItemGroup
 {
     /// <summary>
     /// Gets or sets the description.

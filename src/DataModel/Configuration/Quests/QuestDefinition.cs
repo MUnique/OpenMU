@@ -4,10 +4,13 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration.Quests;
 
+using MUnique.OpenMU.Annotations;
+
 /// <summary>
 /// The definition of a quest.
 /// </summary>
-public class QuestDefinition
+[Cloneable]
+public partial class QuestDefinition
 {
     /// <summary>
     /// Gets or sets the NPC which gives the quest.

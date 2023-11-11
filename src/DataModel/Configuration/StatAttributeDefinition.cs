@@ -4,14 +4,16 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration;
 
+using MUnique.OpenMU.Annotations;
 using MUnique.OpenMU.AttributeSystem;
 
 /// <summary>
 /// Defines a stat attribute, which may be increasable by the player.
 /// </summary>
-public class StatAttributeDefinition
+[Cloneable]
+public partial class StatAttributeDefinition
 {
-    private AttributeDefinition attribute = null!;
+    private AttributeDefinition? attribute = null!;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="StatAttributeDefinition"/> class.
@@ -37,7 +39,7 @@ public class StatAttributeDefinition
     /// Gets or sets the attribute definition of this stat attribute.
     /// </summary>
 #pragma warning disable S2292 // When this would be an auto property, it would lead to a virtual member call in the constructor.
-    public virtual AttributeDefinition Attribute
+    public virtual AttributeDefinition? Attribute
 #pragma warning restore S2292
     {
         get { return this.attribute; }

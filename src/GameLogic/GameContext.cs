@@ -51,6 +51,8 @@ public class GameContext : AsyncDisposable, IGameContext
     /// </summary>
     private readonly List<Player> _playerList = new();
 
+    private readonly IDisposable _configChangeHandlerRegistration;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GameContext" /> class.
     /// </summary>
@@ -60,7 +62,7 @@ public class GameContext : AsyncDisposable, IGameContext
     /// <param name="loggerFactory">The logger factory.</param>
     /// <param name="plugInManager">The plug in manager.</param>
     /// <param name="dropGenerator">The drop generator.</param>
-    public GameContext(GameConfiguration configuration, IPersistenceContextProvider persistenceContextProvider, IMapInitializer mapInitializer, ILoggerFactory loggerFactory, PlugInManager plugInManager, IDropGenerator dropGenerator)
+    public GameContext(GameConfiguration configuration, IPersistenceContextProvider persistenceContextProvider, IMapInitializer mapInitializer, ILoggerFactory loggerFactory, PlugInManager plugInManager, IDropGenerator dropGenerator, IConfigurationChangeMediator changeMediator)
     {
         try
         {
@@ -70,10 +72,12 @@ public class GameContext : AsyncDisposable, IGameContext
             this._mapInitializer = mapInitializer;
             this.LoggerFactory = loggerFactory;
             this.DropGenerator = dropGenerator;
+            this.ConfigurationChangeMediator = changeMediator;
             this.ItemPowerUpFactory = new ItemPowerUpFactory(loggerFactory.CreateLogger<ItemPowerUpFactory>());
             this._recoverTimer = new Timer(this.RecoverTimerElapsed, null, this.Configuration.RecoveryInterval, this.Configuration.RecoveryInterval);
             this._tasksTimer = new Timer(this.ExecutePeriodicTasks, null, 1000, 1000);
             this.FeaturePlugIns = new FeaturePlugInContainer(this.PlugInManager);
+            this._configChangeHandlerRegistration = this.ConfigurationChangeMediator.RegisterObject(this.Configuration, this, this.OnGameConfigurationChangeAsync);
         }
         catch (Exception ex)
         {
@@ -101,6 +105,9 @@ public class GameContext : AsyncDisposable, IGameContext
 
     /// <inheritdoc/>
     public GameConfiguration Configuration { get; }
+
+    /// <inheritdoc/>
+    public IConfigurationChangeMediator ConfigurationChangeMediator { get; }
 
     /// <inheritdoc/>
     public PlugInManager PlugInManager { get; }
@@ -352,9 +359,17 @@ public class GameContext : AsyncDisposable, IGameContext
     /// <inheritdoc/>
     protected override async ValueTask DisposeAsyncCore()
     {
+        this._configChangeHandlerRegistration.Dispose();
         await this._recoverTimer.DisposeAsync().ConfigureAwait(false);
         await this._tasksTimer.DisposeAsync().ConfigureAwait(false);
         await base.DisposeAsyncCore().ConfigureAwait(false);
+    }
+
+#pragma warning disable CS1998
+    private async ValueTask OnGameConfigurationChangeAsync(Action unregisterAction, GameConfiguration gameConfiguration, GameContext context)
+#pragma warning restore CS1998
+    {
+        this._recoverTimer.Change(gameConfiguration.RecoveryInterval, gameConfiguration.RecoveryInterval);
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
@@ -387,7 +402,6 @@ public class GameContext : AsyncDisposable, IGameContext
 
                 return Task.CompletedTask;
             }).ConfigureAwait(false);
-
         }
         catch
         {

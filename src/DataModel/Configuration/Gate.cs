@@ -4,10 +4,13 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration;
 
+using MUnique.OpenMU.Annotations;
+
 /// <summary>
 /// Defines a gate through which a player can exit or enter to other maps.
 /// </summary>
-public class Gate
+[Cloneable]
+public partial class Gate
 {
     /// <summary>
     /// Gets or sets the upper left corner, x-coordinate.

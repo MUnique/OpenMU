@@ -4,11 +4,14 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration.Items;
 
+using MUnique.OpenMU.Annotations;
+
 /// <summary>
 /// Type of an item option.
 /// </summary>
 /// <remarks>For example excellent, option, socket, luck.</remarks>
-public class ItemOptionType
+[Cloneable]
+public partial class ItemOptionType
 {
     /// <summary>
     /// Gets or sets the identifier.

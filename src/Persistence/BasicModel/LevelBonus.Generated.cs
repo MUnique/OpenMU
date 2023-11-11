@@ -35,6 +35,20 @@ public partial class LevelBonus : MUnique.OpenMU.DataModel.Configuration.Items.L
     /// </summary>
     public Guid Id { get; set; }
     
+    /// <inheritdoc />
+    public override MUnique.OpenMU.DataModel.Configuration.Items.LevelBonus Clone(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    {
+        var clone = new LevelBonus();
+        clone.AssignValuesOf(this, gameConfiguration);
+        return clone;
+    }
+    
+    /// <inheritdoc />
+    public override void AssignValuesOf(MUnique.OpenMU.DataModel.Configuration.Items.LevelBonus other, MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    {
+        base.AssignValuesOf(other, gameConfiguration);
+        this.Id = other.GetId();
+    }
 
     /// <inheritdoc/>
     public override bool Equals(object obj)

@@ -5,12 +5,14 @@
 namespace MUnique.OpenMU.DataModel.Attributes;
 
 using System.Globalization;
+using MUnique.OpenMU.Annotations;
 using MUnique.OpenMU.AttributeSystem;
 
 /// <summary>
 /// The power up definition which describes the boost of an target attribute.
 /// </summary>
-public class PowerUpDefinition
+[Cloneable]
+public partial class PowerUpDefinition
 {
     /// <summary>
     /// Gets or sets the target attribute.

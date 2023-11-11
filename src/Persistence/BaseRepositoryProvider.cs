@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.Persistence;
 /// <summary>
 /// The base repository provider.
 /// </summary>
-public class BaseRepositoryProvider
+public class BaseRepositoryProvider : IRepositoryProvider
 {
     private bool _isInitialized;
 

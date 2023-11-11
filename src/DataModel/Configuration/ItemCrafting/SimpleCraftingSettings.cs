@@ -4,10 +4,13 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
 
+using MUnique.OpenMU.Annotations;
+
 /// <summary>
 /// Crafting settings for the simple item crafting handler.
 /// </summary>
-public class SimpleCraftingSettings
+[Cloneable]
+public partial class SimpleCraftingSettings
 {
     /// <summary>
     /// Gets or sets the price to do the crafting.

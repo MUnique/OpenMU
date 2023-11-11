@@ -33,6 +33,20 @@ internal partial class GameServerConfiguration : MUnique.OpenMU.DataModel.Config
     /// </summary>
     public Guid Id { get; set; }
     
+    /// <inheritdoc />
+    public override MUnique.OpenMU.DataModel.Configuration.GameServerConfiguration Clone(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    {
+        var clone = new GameServerConfiguration();
+        clone.AssignValuesOf(this, gameConfiguration);
+        return clone;
+    }
+    
+    /// <inheritdoc />
+    public override void AssignValuesOf(MUnique.OpenMU.DataModel.Configuration.GameServerConfiguration other, MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    {
+        base.AssignValuesOf(other, gameConfiguration);
+        this.Id = other.GetId();
+    }
 
     /// <inheritdoc/>
     public override bool Equals(object obj)

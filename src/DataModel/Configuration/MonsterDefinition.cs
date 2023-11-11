@@ -4,9 +4,11 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration;
 
+using MUnique.OpenMU.Annotations;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration.Quests;
 using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Type of the window which will be openend when talking to the npc.
@@ -214,7 +216,8 @@ public enum NpcObjectKind
 /// <summary>
 /// A definition for a monster (or NPC in general).
 /// </summary>
-public class MonsterDefinition
+[Cloneable]
+public partial class MonsterDefinition
 {
     /// <summary>
     /// Gets or sets the unique number of this monster.

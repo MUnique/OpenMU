@@ -4,12 +4,14 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
 
+using MUnique.OpenMU.Annotations;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 
 /// <summary>
 /// Defines the resulting item of a crafting.
 /// </summary>
-public class ItemCraftingResultItem
+[Cloneable]
+public partial class ItemCraftingResultItem
 {
     /// <summary>
     /// Gets or sets the item definition.

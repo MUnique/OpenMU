@@ -4,10 +4,13 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration.Quests;
 
+using MUnique.OpenMU.Annotations;
+
 /// <summary>
 /// The monster kill requirement of a <see cref="QuestDefinition"/>.
 /// </summary>
-public class QuestMonsterKillRequirement
+[Cloneable]
+public partial class QuestMonsterKillRequirement
 {
     /// <summary>
     /// Gets or sets the monster which must be killed.

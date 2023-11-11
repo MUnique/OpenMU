@@ -4,10 +4,13 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration;
 
+using MUnique.OpenMU.Annotations;
+
 /// <summary>
 /// Defines a battle zone.
 /// </summary>
-public class BattleZoneDefinition
+[Cloneable]
+public partial class BattleZoneDefinition
 {
     /// <summary>
     /// Gets or sets the battle type.

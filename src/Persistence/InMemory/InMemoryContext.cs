@@ -108,6 +108,24 @@ public class InMemoryContext : IContext
     }
 
     /// <inheritdoc/>
+    public object CreateNew(Type type, params object?[] args)
+    {
+        var newObject = typeof(Persistence.BasicModel.GameConfiguration).Assembly.CreateNew(type, args);
+        if (newObject is IIdentifiable identifiable)
+        {
+            if (identifiable.Id == Guid.Empty)
+            {
+                identifiable.Id = Guid.NewGuid();
+            }
+
+            var repository = this.Provider.GetRepository(type) as IMemoryRepository;
+            repository?.Add(identifiable.Id, newObject);
+        }
+
+        return newObject;
+    }
+
+    /// <inheritdoc/>
     public ValueTask<bool> DeleteAsync<T>(T obj)
         where T : class
     {

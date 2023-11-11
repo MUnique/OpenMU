@@ -45,14 +45,16 @@ public class GameServerContext : GameContext, IGameServerContext
         IMapInitializer mapInitializer,
         ILoggerFactory loggerFactory,
         PlugInManager plugInManager,
-        IDropGenerator dropGenerator)
+        IDropGenerator dropGenerator,
+        IConfigurationChangeMediator changeMediator)
         : base(
             gameServerDefinition.GameConfiguration ?? throw new InvalidOperationException("GameServerDefinition requires a GameConfiguration"),
             persistenceContextProvider,
             mapInitializer,
             loggerFactory,
             plugInManager,
-            dropGenerator)
+            dropGenerator,
+            changeMediator)
     {
         this._gameServerDefinition = gameServerDefinition;
         this.Id = gameServerDefinition.ServerID;

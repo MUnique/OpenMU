@@ -4,10 +4,13 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration;
 
+using MUnique.OpenMU.Annotations;
+
 /// <summary>
 /// Defines a gate through which a player enters a map.
 /// </summary>
-public class ExitGate : Gate
+[Cloneable]
+public partial class ExitGate : Gate
 {
     /// <summary>
     /// Gets or sets the direction to which the player looks when he enters the map.

@@ -54,6 +54,20 @@ internal partial class ItemOptionLink : MUnique.OpenMU.DataModel.Entities.ItemOp
         }
     }
 
+    /// <inheritdoc />
+    public override MUnique.OpenMU.DataModel.Entities.ItemOptionLink Clone(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    {
+        var clone = new ItemOptionLink();
+        clone.AssignValuesOf(this, gameConfiguration);
+        return clone;
+    }
+    
+    /// <inheritdoc />
+    public override void AssignValuesOf(MUnique.OpenMU.DataModel.Entities.ItemOptionLink other, MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    {
+        base.AssignValuesOf(other, gameConfiguration);
+        this.Id = other.GetId();
+    }
 
     /// <inheritdoc/>
     public override bool Equals(object obj)

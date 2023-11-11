@@ -32,7 +32,10 @@ public class ConfigurationChangePublisher : IConfigurationChangePublisher
     /// <param name="configuration">The changed configuration.</param>
     public Task ConfigurationChangedAsync(Type type, Guid id, object configuration)
     {
-        return this._daprClient.PublishEventAsync("pubsub", nameof(this.ConfigurationChangedAsync), configuration);
+        return this._daprClient.PublishEventAsync(
+            "pubsub",
+            nameof(this.ConfigurationChangedAsync),
+            new ConfigurationChangeArguments(type, id, configuration));
     }
 
     /// <summary>
@@ -43,7 +46,10 @@ public class ConfigurationChangePublisher : IConfigurationChangePublisher
     /// <param name="configuration">The added configuration.</param>
     public Task ConfigurationAddedAsync(Type type, Guid id, object configuration)
     {
-        return this._daprClient.PublishEventAsync("pubsub", nameof(this.ConfigurationAddedAsync), configuration);
+        return this._daprClient.PublishEventAsync(
+            "pubsub",
+            nameof(this.ConfigurationAddedAsync),
+            new ConfigurationChangeArguments(type, id, configuration));
     }
 
     /// <summary>
@@ -53,6 +59,9 @@ public class ConfigurationChangePublisher : IConfigurationChangePublisher
     /// <param name="id">The identifier of the removed configuration.</param>
     public Task ConfigurationRemovedAsync(Type type, Guid id)
     {
-        return this._daprClient.PublishEventAsync("pubsub", nameof(this.ConfigurationRemovedAsync), id);
+        return this._daprClient.PublishEventAsync(
+            "pubsub",
+            nameof(this.ConfigurationRemovedAsync),
+            new ConfigurationChangeArguments(type, id, null));
     }
 }

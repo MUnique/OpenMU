@@ -28,6 +28,20 @@ internal partial class MiniGameSpawnWave : MUnique.OpenMU.DataModel.Configuratio
     /// </summary>
     public Guid Id { get; set; }
     
+    /// <inheritdoc />
+    public override MUnique.OpenMU.DataModel.Configuration.MiniGameSpawnWave Clone(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    {
+        var clone = new MiniGameSpawnWave();
+        clone.AssignValuesOf(this, gameConfiguration);
+        return clone;
+    }
+    
+    /// <inheritdoc />
+    public override void AssignValuesOf(MUnique.OpenMU.DataModel.Configuration.MiniGameSpawnWave other, MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    {
+        base.AssignValuesOf(other, gameConfiguration);
+        this.Id = other.GetId();
+    }
 
     /// <inheritdoc/>
     public override bool Equals(object obj)

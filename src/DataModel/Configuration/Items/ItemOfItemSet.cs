@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration.Items;
 
+using MUnique.OpenMU.Annotations;
 using System.Text.Json.Serialization;
 
 /// <summary>
@@ -12,7 +13,8 @@ using System.Text.Json.Serialization;
 /// <remarks>
 /// Here we can define additional bonus options, like the ancient options (e.g. +5 / +10 Str etc.).
 /// </remarks>
-public class ItemOfItemSet
+[Cloneable]
+public partial class ItemOfItemSet
 {
     /// <summary>
     /// Gets or sets the ancient set discriminator.

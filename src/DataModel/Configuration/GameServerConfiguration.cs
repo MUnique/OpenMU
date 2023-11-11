@@ -4,11 +4,14 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration;
 
+using MUnique.OpenMU.Annotations;
+
 /// <summary>
 /// Defines the game server configuration.
 /// </summary>
 [AggregateRoot]
-public class GameServerConfiguration
+[Cloneable]
+public partial class GameServerConfiguration
 {
     /// <summary>
     /// Gets or sets the maximum number of players which can connect.

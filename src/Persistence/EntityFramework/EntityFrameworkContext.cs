@@ -20,9 +20,9 @@ internal class EntityFrameworkContext : EntityFrameworkContextBase
     /// <param name="loggerFactory">The logger factory.</param>
     /// <param name="repositoryProvider">The repository provider.</param>
     /// <param name="isOwner">If set to <c>true</c>, this instance owns the <see cref="EntityFrameworkContextBase.Context" />. That means it will be disposed when this instance will be disposed.</param>
-    /// <param name="changePublisher">The change publisher.</param>
-    public EntityFrameworkContext(DbContext context, ILoggerFactory loggerFactory, IContextAwareRepositoryProvider repositoryProvider, bool isOwner, IConfigurationChangePublisher? changePublisher)
-        : base(context, repositoryProvider, isOwner, changePublisher, loggerFactory.CreateLogger<EntityFrameworkContext>())
+    /// <param name="changeListener">The change listener.</param>
+    public EntityFrameworkContext(DbContext context, ILoggerFactory loggerFactory, IContextAwareRepositoryProvider repositoryProvider, bool isOwner, IConfigurationChangeListener? changeListener)
+        : base(context, repositoryProvider, isOwner, changeListener, loggerFactory.CreateLogger<EntityFrameworkContext>())
     {
     }
 }

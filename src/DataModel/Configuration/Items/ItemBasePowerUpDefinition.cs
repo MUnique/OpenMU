@@ -4,12 +4,14 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration.Items;
 
+using MUnique.OpenMU.Annotations;
 using MUnique.OpenMU.AttributeSystem;
 
 /// <summary>
 /// Defines an item base power up definition.
 /// </summary>
-public class ItemBasePowerUpDefinition
+[Cloneable]
+public partial class ItemBasePowerUpDefinition
 {
     /// <summary>
     /// Gets or sets the target attribute.

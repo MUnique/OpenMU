@@ -37,6 +37,7 @@ public static class Extensions
     /// <returns>The services.</returns>
     public static IServiceCollection AddPeristenceProvider(this IServiceCollection services, bool publishConfigChanges = false)
     {
+        services.AddSingleton<IConfigurationChangeListener, ConfigurationChangeListener>();
         if (publishConfigChanges)
         {
             services.AddSingleton<IConfigurationChangePublisher, ConfigurationChangePublisher>();
@@ -49,7 +50,8 @@ public static class Extensions
         return services
             .AddSingleton<IMigratableDatabaseContextProvider, PersistenceContextProvider>()
             .AddSingleton(s => (PersistenceContextProvider)s.GetService<IMigratableDatabaseContextProvider>()!)
-            .AddSingleton(s => (IPersistenceContextProvider)s.GetService<IMigratableDatabaseContextProvider>()!);
+            .AddSingleton(s => (IPersistenceContextProvider)s.GetService<IMigratableDatabaseContextProvider>()!)
+            .AddSingleton(s => new Lazy<IPersistenceContextProvider>(s.GetRequiredService<IPersistenceContextProvider>));
     }
 
     /// <summary>

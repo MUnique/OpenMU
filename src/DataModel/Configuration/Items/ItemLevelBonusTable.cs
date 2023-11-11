@@ -4,10 +4,13 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration.Items;
 
+using MUnique.OpenMU.Annotations;
+
 /// <summary>
 /// Defines a table of item level related bonus values for <see cref="ItemBasePowerUpDefinition"/>s.
 /// </summary>
-public class ItemLevelBonusTable
+[Cloneable]
+public partial class ItemLevelBonusTable
 {
     /// <summary>
     /// Gets or sets the name.

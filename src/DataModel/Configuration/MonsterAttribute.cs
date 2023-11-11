@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration;
 
+using MUnique.OpenMU.Annotations;
 using MUnique.OpenMU.AttributeSystem;
 
 /// <summary>
@@ -12,7 +13,8 @@ using MUnique.OpenMU.AttributeSystem;
 /// <remarks>
 /// Just needed for entity framework, because it does not support the mapping of dictionaries. May be removed in the future.
 /// </remarks>
-public class MonsterAttribute
+[Cloneable]
+public partial class MonsterAttribute
 {
     /// <summary>
     /// Gets or sets the attribute definition.

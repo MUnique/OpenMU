@@ -22,10 +22,10 @@ internal class CachingEntityFrameworkContext : EntityFrameworkContextBase
     /// </summary>
     /// <param name="context">The context.</param>
     /// <param name="repositoryProvider">The repository provider.</param>
-    /// <param name="changePublisher">The change publisher.</param>
+    /// <param name="changeListener">The change listener.</param>
     /// <param name="logger">The logger.</param>
-    public CachingEntityFrameworkContext(DbContext context, IContextAwareRepositoryProvider repositoryProvider, IConfigurationChangePublisher? changePublisher, ILogger<CachingEntityFrameworkContext> logger)
-        : base(context, repositoryProvider, true, changePublisher, logger)
+    public CachingEntityFrameworkContext(DbContext context, IContextAwareRepositoryProvider repositoryProvider, IConfigurationChangeListener? changeListener, ILogger<CachingEntityFrameworkContext> logger)
+        : base(context, repositoryProvider, true, changeListener, logger)
     {
     }
 
@@ -35,10 +35,10 @@ internal class CachingEntityFrameworkContext : EntityFrameworkContextBase
     /// <param name="context">The context.</param>
     /// <param name="repositoryProvider">The repository provider.</param>
     /// <param name="isOwner">if set to <c>true</c> this instance owns the <paramref name="context" />.</param>
-    /// <param name="changePublisher">The change publisher.</param>
+    /// <param name="changeListener">The change listener.</param>
     /// <param name="logger">The logger.</param>
-    public CachingEntityFrameworkContext(DbContext context, IContextAwareRepositoryProvider repositoryProvider, bool isOwner, IConfigurationChangePublisher? changePublisher, ILogger<CachingEntityFrameworkContext> logger)
-        : base(context, repositoryProvider, isOwner, changePublisher, logger)
+    public CachingEntityFrameworkContext(DbContext context, IContextAwareRepositoryProvider repositoryProvider, bool isOwner, IConfigurationChangeListener? changeListener, ILogger<CachingEntityFrameworkContext> logger)
+        : base(context, repositoryProvider, isOwner, changeListener, logger)
     {
     }
 }

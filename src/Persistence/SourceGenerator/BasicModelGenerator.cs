@@ -2,6 +2,9 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using MUnique.OpenMU.Annotations;
+using MUnique.OpenMU.DataModel;
+
 namespace MUnique.OpenMU.Persistence.SourceGenerator;
 
 using System.Reflection;
@@ -29,6 +32,7 @@ public class BasicModelGenerator : ModelGeneratorBase, IUnboundSourceGenerator
         {
             var className = type.Name;
             var fullName = type.FullName;
+            var isCloneable = type.GetCustomAttribute<CloneableAttribute>(true) is not null;
 
             var classSource = $@"{string.Format(FileHeaderTemplate, className)}
 
@@ -44,7 +48,7 @@ public partial class {className} : {fullName}, IIdentifiable, IConvertibleTo<{cl
     {this.CreateConstructors(type)}
     {this.CreateIdPropertyIfRequired(type)}
     {this.CreateNavigationProperties(type)}
-
+{(isCloneable ? this.OverrideClonable(type, className) : null)}
     /// <inheritdoc/>
     public override bool Equals(object obj)
     {{

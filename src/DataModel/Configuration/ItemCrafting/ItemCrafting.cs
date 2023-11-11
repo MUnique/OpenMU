@@ -4,10 +4,13 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
 
+using MUnique.OpenMU.Annotations;
+
 /// <summary>
 /// Description of IItemCrafting.
 /// </summary>
-public class ItemCrafting
+[Cloneable]
+public partial class ItemCrafting
 {
     /// <summary>
     /// Gets or sets the number.

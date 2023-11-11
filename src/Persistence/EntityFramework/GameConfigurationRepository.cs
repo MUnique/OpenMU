@@ -23,9 +23,9 @@ internal class GameConfigurationRepository : GenericRepository<GameConfiguration
     /// </summary>
     /// <param name="repositoryProvider">The repository provider.</param>
     /// <param name="loggerFactory">The logger factory.</param>
-    /// <param name="changePublisher">The change publisher.</param>
-    public GameConfigurationRepository(IContextAwareRepositoryProvider repositoryProvider, ILoggerFactory loggerFactory, IConfigurationChangePublisher? changePublisher)
-        : base(repositoryProvider, loggerFactory, changePublisher)
+    /// <param name="changeListener">The change publisher.</param>
+    public GameConfigurationRepository(IContextAwareRepositoryProvider repositoryProvider, ILoggerFactory loggerFactory, IConfigurationChangeListener? changeListener)
+        : base(repositoryProvider, loggerFactory, changeListener)
     {
         this._objectLoader = new GameConfigurationJsonObjectLoader();
     }

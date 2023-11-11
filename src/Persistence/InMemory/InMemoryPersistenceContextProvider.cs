@@ -28,6 +28,9 @@ public class InMemoryPersistenceContextProvider : IMigratableDatabaseContextProv
         this._changePublisher = changePublisher;
     }
 
+    /// <inheritdoc />
+    public IRepositoryProvider RepositoryProvider => this._repositoryProvider;
+
     /// <inheritdoc/>
     public IContext CreateNewContext()
     {

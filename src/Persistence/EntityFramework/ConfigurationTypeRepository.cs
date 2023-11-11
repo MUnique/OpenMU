@@ -2,12 +2,16 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using MUnique.OpenMU.DataModel;
+
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
 using System.Collections;
 using System.Collections.Concurrent;
 using System.IO;
+using Microsoft.Extensions.Logging;
 
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.EntityFramework.Json;
 using MUnique.OpenMU.Persistence.EntityFramework.Model;
 
@@ -29,15 +33,19 @@ internal class ConfigurationTypeRepository<T> : IRepository<T>, IConfigurationTy
     /// </summary>
     private readonly IDictionary<GameConfiguration, IDictionary<Guid, T>> _cache = new ConcurrentDictionary<GameConfiguration, IDictionary<Guid, T>>();
 
+    private readonly ILogger _logger;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ConfigurationTypeRepository{T}" /> class.
     /// </summary>
     /// <param name="repositoryProvider">The repository provider.</param>
+    /// <param name="loggerFactory">The logger factory.</param>
     /// <param name="collectionSelector">The collection selector which returns the collection of <typeparamref name="T" /> of a <see cref="GameConfiguration" />.</param>
-    public ConfigurationTypeRepository(IContextAwareRepositoryProvider repositoryProvider, Func<GameConfiguration, ICollection<T>> collectionSelector)
+    public ConfigurationTypeRepository(IContextAwareRepositoryProvider repositoryProvider, ILoggerFactory loggerFactory, Func<GameConfiguration, ICollection<T>> collectionSelector)
     {
         this._repositoryProvider = repositoryProvider;
         this._collectionSelector = collectionSelector;
+        this._logger = loggerFactory.CreateLogger(this.GetType());
     }
 
     /// <summary>
@@ -127,6 +135,29 @@ internal class ConfigurationTypeRepository<T> : IRepository<T>, IConfigurationTy
             {
                 ConfigurationIdReferenceResolver.Instance.AddReference((IIdentifiable)item);
             }
+        }
+    }
+
+    /// <inheritdoc />
+    public void UpdateCachedInstances(object changedInstance)
+    {
+        foreach (var (gameConfiguration, cache) in this._cache)
+        {
+            if (!cache.TryGetValue(changedInstance.GetId(), out var cachedInstance))
+            {
+                this._logger.LogDebug("Cached instance '{cachedInstance}' couldn't be updated because it wasn't found.", cachedInstance);
+                return;
+            }
+
+            if (cachedInstance is not IAssignable<T> assignable)
+            {
+                // todo: implement this for all types
+                this._logger.LogWarning("Cached instance '{cachedInstance}' couldn't be updated because it doesn't implement {IAssignable}.", cachedInstance, typeof(IAssignable<T>));
+                return;
+            }
+
+            assignable.AssignValuesOf((T)changedInstance, gameConfiguration);
+            this._logger.LogInformation("Updated cached instance '{cachedInstance}'.", cachedInstance);
         }
     }
 

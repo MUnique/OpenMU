@@ -4,13 +4,15 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration.Quests;
 
+using MUnique.OpenMU.Annotations;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 
 /// <summary>
 /// Defines the required item(s) which should be in the inventory of the character
 /// when the player requests to complete the quest.
 /// </summary>
-public class QuestItemRequirement
+[Cloneable]
+public partial class QuestItemRequirement
 {
     /// <summary>
     /// Gets or sets the required item.

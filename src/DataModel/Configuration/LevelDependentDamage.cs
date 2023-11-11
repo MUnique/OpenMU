@@ -4,10 +4,13 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration;
 
+using MUnique.OpenMU.Annotations;
+
 /// <summary>
 /// Defines a level dependent damage.
 /// </summary>
-public class LevelDependentDamage
+[Cloneable]
+public partial class LevelDependentDamage
 {
     /// <summary>
     /// Gets or sets the level belonging to this damage value.

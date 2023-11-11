@@ -4,10 +4,13 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration;
 
+using MUnique.OpenMU.Annotations;
+
 /// <summary>
 /// Defines a gate which a player can enter to move to another <see cref="ExitGate"/>.
 /// </summary>
-public class EnterGate : Gate
+[Cloneable]
+public partial class EnterGate : Gate
 {
     /// <summary>
     /// Gets or sets the target gate.

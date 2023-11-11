@@ -5,12 +5,14 @@
 namespace MUnique.OpenMU.DataModel.Attributes;
 
 using System.ComponentModel;
+using MUnique.OpenMU.Annotations;
 using MUnique.OpenMU.AttributeSystem;
 
 /// <summary>
 /// The power up definition value which can consist of a constant value and several related values which are all added together to get the result.
 /// </summary>
-public class PowerUpDefinitionValue
+[Cloneable]
+public partial class PowerUpDefinitionValue
 {
     /// <summary>
     /// Gets or sets the constant value part of the value.

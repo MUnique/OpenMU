@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration;
 
+using MUnique.OpenMU.Annotations;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
@@ -14,7 +15,8 @@ using MUnique.OpenMU.PlugIns;
 /// A game configuration contains the whole configuration of a game, directly or indirectly.
 /// </summary>
 [AggregateRoot]
-public class GameConfiguration
+[Cloneable]
+public partial class GameConfiguration
 {
     /// <summary>
     /// Gets or sets the maximum reachable level.
