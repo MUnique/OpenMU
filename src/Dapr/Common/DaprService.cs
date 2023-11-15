@@ -36,12 +36,12 @@ public static class DaprService
         services.AddControllers();
         services.AddDaprClient();
 
-        services.AddOpenTelemetryTracing(b => b
-            .SetResourceBuilder(ResourceBuilder
-                .CreateDefault()
-                .AddService(serviceName))
-            .AddAspNetCoreInstrumentation()
-            .AddZipkinExporter(o => o.Endpoint = new Uri("http://zipkin:9411/api/v2/spans")));
+        //services.AddOpenTelemetryTracing(b => b
+        //    .SetResourceBuilder(ResourceBuilder
+        //        .CreateDefault()
+        //        .AddService(serviceName))
+        //    .AddAspNetCoreInstrumentation()
+        //    .AddZipkinExporter(o => o.Endpoint = new Uri("http://zipkin:9411/api/v2/spans")));
 
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         services.AddEndpointsApiExplorer();

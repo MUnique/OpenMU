@@ -135,7 +135,7 @@ public sealed class Walker : IDisposable
 
         if (this._walkCts != null)
         {
-            this._walkCts.Cancel(false);
+            await this._walkCts.CancelAsync().ConfigureAwait(false);
             this._walkCts.Dispose();
             this._walkCts = null;
             this._nextSteps.Clear();

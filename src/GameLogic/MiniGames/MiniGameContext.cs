@@ -227,7 +227,7 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
             this.Map.ObjectRemoved -= this.OnObjectRemovedFromMapAsync;
 
             await this._gameContext.RemoveMiniGameAsync(this).ConfigureAwait(false);
-            this._gameEndedCts.Cancel();
+            await this._gameEndedCts.CancelAsync();
             this._gameEndedCts.Dispose();
         }
         catch (Exception ex)
@@ -408,7 +408,7 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
 
             if (cantGameProceed)
             {
-                this._gameEndedCts.Cancel();
+                await this._gameEndedCts.CancelAsync().ConfigureAwait(false);
             }
             else if (player.IsAlive)
             {
@@ -709,11 +709,11 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
             await this.StopAsync().ConfigureAwait(false);
 
             this.Logger.LogDebug("{context}: Waiting for the exit duration of {exitDuration}", this, exitDuration);
-            await Task.Delay(exitDuration, default).ConfigureAwait(false);
+            await Task.Delay(exitDuration, default(CancellationToken)).ConfigureAwait(false);
             await this.ShowCountdownMessageAsync().ConfigureAwait(false);
 
             this.Logger.LogDebug("{context}: Waiting for the exit countdown duration of {countdownMessageDuration}", this, countdownMessageDuration);
-            await Task.Delay(countdownMessageDuration, default).ConfigureAwait(false);
+            await Task.Delay(countdownMessageDuration, default(CancellationToken)).ConfigureAwait(false);
 
             this.Logger.LogDebug("{context}: Shutting down event", this);
             await this.ShutdownGameAsync().ConfigureAwait(false);
@@ -769,7 +769,7 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         using (await this._enterLock.WriterLockAsync().ConfigureAwait(false))
         {
             this.State = MiniGameState.Ended;
-            this._gameEndedCts.Cancel();
+            await this._gameEndedCts.CancelAsync().ConfigureAwait(false);
         }
 
         this._currentSpawnWaves.Clear();

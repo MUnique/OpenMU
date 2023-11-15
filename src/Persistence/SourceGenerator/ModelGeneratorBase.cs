@@ -189,7 +189,7 @@ public abstract class ModelGeneratorBase : ISourceGenerator
 
         var loadedTypes = typeof(DataModel.Attributes.PowerUpDefinition).Assembly.GetTypes()
             .Where(type => type.IsClass && type.IsPublic)
-            .Where(type => !type.IsSealed && !type.IsAbstract && type.GetConstructor(Array.Empty<Type>()) != null).ToList();
+            .Where(type => !type.IsSealed && !type.IsAbstract && type.GetConstructor([]) != null).ToList();
         result.AddRange(loadedTypes);
         result.Add(typeof(MUnique.OpenMU.AttributeSystem.AttributeDefinition));
         result.Add(typeof(MUnique.OpenMU.AttributeSystem.StatAttribute));

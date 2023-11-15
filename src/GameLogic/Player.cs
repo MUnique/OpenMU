@@ -637,7 +637,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.IsTeleporting = true;
         try
         {
-            this.NovaCancellationTokenSource?.Cancel();
+            await (this.NovaCancellationTokenSource?.CancelAsync() ?? Task.CompletedTask).ConfigureAwait(false);
 
             await this._walker.StopAsync().ConfigureAwait(false);
 
@@ -1435,7 +1435,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         var moveToNextSafezone = false;
         if (this._respawnAfterDeathCts is { IsCancellationRequested: false })
         {
-            this._respawnAfterDeathCts.Cancel();
+            await this._respawnAfterDeathCts.CancelAsync().ConfigureAwait(false);
             moveToNextSafezone = true;
         }
 

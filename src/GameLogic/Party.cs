@@ -199,7 +199,7 @@ public sealed class Party : Disposable
                                     && (p == killer || killer.Observers.Contains(p))));
             }
 
-            IList<DropItemGroup> result = Array.Empty<DropItemGroup>();
+            IList<DropItemGroup> result = [];
 
             var dropItemGroups = this._distributionList
                 .SelectMany(m => m.SelectedCharacter?.GetQuestDropItemGroups() ?? Enumerable.Empty<DropItemGroup>());

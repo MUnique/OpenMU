@@ -54,7 +54,7 @@ public static class ModelExtensions
     internal static T? GetClrValue<T>(this IReadOnlyNavigation navigation, object entity)
         where T : class
     {
-        return navigation.PropertyInfo?.GetMethod?.Invoke(entity, Array.Empty<object>()) as T;
+        return navigation.PropertyInfo?.GetMethod?.Invoke(entity, []) as T;
     }
 
     /// <summary>

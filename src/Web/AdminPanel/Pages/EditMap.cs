@@ -98,7 +98,7 @@ public sealed class EditMap : ComponentBase, IDisposable
     /// <inheritdoc />
     protected override async Task OnParametersSetAsync()
     {
-        this._disposeCts?.Cancel();
+        await (this._disposeCts?.CancelAsync() ?? Task.CompletedTask).ConfigureAwait(false);
         this._disposeCts?.Dispose();
         this._disposeCts = null;
 

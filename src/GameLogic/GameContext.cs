@@ -290,7 +290,7 @@ public class GameContext : AsyncDisposable, IGameContext
         using var l = await this._playerListLock.ReaderLockAsync();
         if (this._playerList.Count == 0)
         {
-            return Array.Empty<Player>();
+            return [];
         }
 
         return this._playerList.ToList();

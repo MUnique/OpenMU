@@ -531,7 +531,7 @@ public class PlugInManager
                 foreach (var plugInInterface in plugInInterfaces)
                 {
                     var genericMethod = this.GetType().GetMethods().FirstOrDefault(mi => mi.IsGenericMethod && mi.Name == nameof(this.RegisterPlugIn))?.MakeGenericMethod(plugInInterface, plugIn);
-                    genericMethod?.Invoke(this, Array.Empty<object>());
+                    genericMethod?.Invoke(this, []);
                 }
             }
             catch (Exception e)

@@ -119,7 +119,7 @@ public class GuildActionTest : GuildTestBase
     public async ValueTask GuildCreateAsync()
     {
         var action = new GuildCreateAction();
-        await action.CreateGuildAsync(this._player, "Foobar2", Array.Empty<byte>()).ConfigureAwait(false);
+        await action.CreateGuildAsync(this._player, "Foobar2", []).ConfigureAwait(false);
         Assert.That(this._player.GuildStatus, Is.Not.Null);
         Assert.That(this._player.GuildStatus!.Position, Is.EqualTo(GuildPosition.GuildMaster));
         var context = this.PersistenceContextProvider.CreateNewGuildContext();

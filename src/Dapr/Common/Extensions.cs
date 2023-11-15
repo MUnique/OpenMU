@@ -17,6 +17,8 @@ using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.EntityFramework;
 using MUnique.OpenMU.PlugIns;
 using Nito.AsyncEx.Synchronous;
+using OpenTelemetry.Exporter;
+using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using Serilog;
 using Serilog.Debugging;
@@ -201,25 +203,18 @@ public static class Extensions
     /// <returns>The web application builder.</returns>
     public static WebApplicationBuilder AddOpenTelemetryMetrics(this WebApplicationBuilder builder, MetricsRegistry registry)
     {
-        var meters = registry.Meters.ToArray();
-        if (meters.Length == 0)
-        {
-            return builder;
-        }
-
-        builder.Services.AddOpenTelemetryMetrics(opt =>
-            opt
-                .AddMeter(meters)
-                .AddPrometheusExporter(p =>
-                {
-                    p.StartHttpListener = true;
-
-                    // Workaround, see https://github.com/open-telemetry/opentelemetry-dotnet/issues/2840#issuecomment-1072977042
-                    p.GetType()
-                        ?.GetField("httpListenerPrefixes", BindingFlags.NonPublic | BindingFlags.Instance)
-                        ?.SetValue(p, new[] { "http://*:9464" });
-                }));
-
+        builder.AddOpenTelemetryMetrics(registry);
+        var meterProvider = Sdk.CreateMeterProviderBuilder()
+            .AddMeter(registry.Meters.ToArray())
+            .AddOtlpExporter((exporterOptions, metricReaderOptions) =>
+            {
+                exporterOptions.Endpoint = new Uri("http://localhost:9090/api/v1/otlp/v1/metrics");
+                exporterOptions.Protocol = OtlpExportProtocol.HttpProtobuf;
+                metricReaderOptions.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 1000;
+            })
+            .Build();
+        // todo: do something with meterProvider?!
+        builder.Services.AddSingleton<MeterProvider>(meterProvider!);
         return builder;
     }
 

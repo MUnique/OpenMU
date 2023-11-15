@@ -120,8 +120,7 @@ System.register("Types", [], function (exports_2, context_2) {
                 Direction[Direction["NorthEast"] = 6] = "NorthEast";
                 Direction[Direction["North"] = 7] = "North";
                 Direction[Direction["NorthWest"] = 8] = "NorthWest";
-            })(Direction || (Direction = {}));
-            exports_2("Direction", Direction);
+            })(Direction || (exports_2("Direction", Direction = {})));
         }
     };
 });

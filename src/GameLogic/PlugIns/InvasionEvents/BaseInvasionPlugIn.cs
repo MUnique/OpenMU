@@ -52,7 +52,7 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
     protected BaseInvasionPlugIn(MapEventType? mapEventType, (ushort MapId, ushort MonsterId, ushort Count)[]? mobs, (ushort MonsterId, ushort Count)[] mobsOnSelectedMap)
     {
         this._mapEventType = mapEventType;
-        this._mobs = mobs ?? Array.Empty<(ushort MapId, ushort MonsterId, ushort Count)>();
+        this._mobs = mobs ?? [];
         this._mobsOnSelectedMap = mobsOnSelectedMap;
     }
 

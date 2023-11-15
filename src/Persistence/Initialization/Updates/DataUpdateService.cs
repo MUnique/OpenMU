@@ -51,7 +51,7 @@ public class DataUpdateService
         if (updateStrategyProvider is null)
         {
             // it's null when there are no plugins yet ...
-            return Array.Empty<IConfigurationUpdatePlugIn>();
+            return [];
         }
 
         var availableUpdates = updateStrategyProvider.AvailableStrategies
