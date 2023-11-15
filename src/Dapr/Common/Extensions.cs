@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.Dapr.Common;
 
-using System.Reflection;
 using System.Threading;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,8 +17,8 @@ using MUnique.OpenMU.Persistence.EntityFramework;
 using MUnique.OpenMU.PlugIns;
 using Nito.AsyncEx.Synchronous;
 using OpenTelemetry.Exporter;
-using OpenTelemetry;
 using OpenTelemetry.Metrics;
+using Prometheus;
 using Serilog;
 using Serilog.Debugging;
 using Serilog.Events;
@@ -203,18 +202,19 @@ public static class Extensions
     /// <returns>The web application builder.</returns>
     public static WebApplicationBuilder AddOpenTelemetryMetrics(this WebApplicationBuilder builder, MetricsRegistry registry)
     {
-        builder.AddOpenTelemetryMetrics(registry);
-        var meterProvider = Sdk.CreateMeterProviderBuilder()
-            .AddMeter(registry.Meters.ToArray())
-            .AddOtlpExporter((exporterOptions, metricReaderOptions) =>
+        builder.Services.AddOpenTelemetry()
+            .WithMetrics(x =>
             {
-                exporterOptions.Endpoint = new Uri("http://localhost:9090/api/v1/otlp/v1/metrics");
-                exporterOptions.Protocol = OtlpExportProtocol.HttpProtobuf;
-                metricReaderOptions.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 1000;
-            })
-            .Build();
-        // todo: do something with meterProvider?!
-        builder.Services.AddSingleton<MeterProvider>(meterProvider!);
+                x.AddPrometheusExporter();
+                x.AddOtlpExporter(oltp =>
+                {
+                    oltp.Endpoint = new Uri("http://localhost:9090/api/v1/otlp/v1/metrics");
+                    oltp.Protocol = OtlpExportProtocol.HttpProtobuf;
+                });
+                x.AddMeter(registry.Meters.ToArray());
+            });
+        builder.Services.AddHealthChecks().ForwardToPrometheus();
+
         return builder;
     }
 
@@ -238,6 +238,7 @@ public static class Extensions
         }
 
         app.ConfigureDaprService(addBlazor);
+        app.MapPrometheusScrapingEndpoint();
 
         return app;
     }
