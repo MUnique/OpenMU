@@ -39,5 +39,5 @@ public static class Exports
     /// <summary>
     /// Gets the stylesheets.
     /// </summary>
-    public static ImmutableList<string> Stylesheets { get; } = [].ToImmutableList();
+    public static ImmutableList<string> Stylesheets { get; } = [];
 }
