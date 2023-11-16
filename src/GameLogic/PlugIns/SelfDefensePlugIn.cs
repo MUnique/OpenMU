@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// Updates the state of the active self defenses on every second and every hit.
 /// </summary>
 [PlugIn(nameof(SelfDefensePlugIn), "Updates the state of the self defense system.")]
-[Guid("3E702A15-653A-48EF-899C-4CDB2239A90C")]
+[Guid("BA4753EA-4D2B-488C-BB6B-4A127E28630A")]
 public class SelfDefensePlugIn : IPeriodicTaskPlugIn, IAttackableGotHitPlugIn, ISupportCustomConfiguration<SelfDefensePlugInConfiguration>, ISupportDefaultCustomConfiguration
 {
     /// <inheritdoc />
