@@ -40,7 +40,7 @@ steps:
     script: |
       cd src
       docker buildx create --use
-      docker buildx build --platform linux/amd64,linux/arm64/v8 \
+      docker buildx build --platform linux/amd64,linux/arm32/v7,linux/arm64/v8 \
         --file Startup/Dockerfile \
         -t munique/openmu:latest \
         -t munique/openmu:$(projectVersion) \
@@ -53,7 +53,7 @@ steps:
     script: |
       cd src
       docker buildx create --use
-      docker buildx build --platform linux/amd64,linux/arm64/v8 \
+      docker buildx build --platform linux/amd64,linux/arm32/v7,linux/arm64/v8 \
         --file Dapr/AdminPanel.Host/Dockerfile \
         -t munique/openmu-admin:latest \
         -t munique/openmu-admin:$(projectVersion) \
@@ -66,7 +66,7 @@ steps:
     script: |
       cd src
       docker buildx create --use
-      docker buildx build --platform linux/amd64,linux/arm64/v8 \
+      docker buildx build --platform linux/amd64,linux/arm32/v7,linux/arm64/v8 \
         --file Dapr/ChatServer.Host/Dockerfile \
         -t munique/openmu-chat:latest \
         -t munique/openmu-chat:$(projectVersion) \
@@ -79,7 +79,7 @@ steps:
     script: |
       cd src
       docker buildx create --use
-      docker buildx build --platform linux/amd64,linux/arm64/v8 \
+      docker buildx build --platform linux/amd64,linux/arm32/v7,linux/arm64/v8 \
         --file Dapr/ConnectServer.Host/Dockerfile \
         -t munique/openmu-connect:latest \
         -t munique/openmu-connect:$(projectVersion) \
@@ -92,7 +92,7 @@ steps:
     script: |
       cd src
       docker buildx create --use
-      docker buildx build --platform linux/amd64,linux/arm64/v8 \
+      docker buildx build --platform linux/amd64,linux/arm32/v7,linux/arm64/v8 \
         --file Dapr/FriendServer.Host/Dockerfile \
         -t munique/openmu-friend:latest \
         -t munique/openmu-friend:$(projectVersion) \
@@ -105,7 +105,7 @@ steps:
     script: |
       cd src
       docker buildx create --use
-      docker buildx build --platform linux/amd64,linux/arm64/v8 \
+      docker buildx build --platform linux/amd64,linux/arm32/v7,linux/arm64/v8 \
         --file Dapr/GameServer.Host/Dockerfile \
         -t munique/openmu-game:latest \
         -t munique/openmu-game:$(projectVersion) \
@@ -118,7 +118,7 @@ steps:
     script: |
       cd src
       docker buildx create --use
-      docker buildx build --platform linux/amd64,linux/arm64/v8 \
+      docker buildx build --platform linux/amd64,linux/arm32/v7,linux/arm64/v8 \
         --file Dapr/GuildServer.Host/Dockerfile \
         -t munique/openmu-guild:latest \
         -t munique/openmu-guild:$(projectVersion) \
@@ -131,7 +131,7 @@ steps:
     script: |
       cd src
       docker buildx create --use
-      docker buildx build --platform linux/amd64,linux/arm64/v8 \
+      docker buildx build --platform linux/amd64,linux/arm32/v7,linux/arm64/v8 \
         --file Dapr/LoginServer.Host/Dockerfile \
         -t munique/openmu-login:latest \
         -t munique/openmu-login:$(projectVersion) \
