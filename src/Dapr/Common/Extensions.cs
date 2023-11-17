@@ -205,13 +205,9 @@ public static class Extensions
         builder.Services.AddOpenTelemetry()
             .WithMetrics(x =>
             {
-                x.AddPrometheusExporter();
-                x.AddOtlpExporter(oltp =>
-                {
-                    oltp.Endpoint = new Uri("http://localhost:9090/api/v1/otlp/v1/metrics");
-                    oltp.Protocol = OtlpExportProtocol.HttpProtobuf;
-                });
                 x.AddMeter(registry.Meters.ToArray());
+                x.AddPrometheusExporter();
+                x.AddOtlpExporter();
             });
         builder.Services.AddHealthChecks().ForwardToPrometheus();
 
