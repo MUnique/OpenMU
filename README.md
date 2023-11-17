@@ -41,7 +41,7 @@ This project is released under the MIT license (see LICENSE file).
 
 ## Used technologies
 
-The project is mainly written in C# and targets .NET 7.0.
+The project is mainly written in C# and targets .NET 8.0.
 
 The servers admin panel is hosted on an embedded ASP.NET Core webserver (Kestrel)
 and implemented as Blazor Server App.
