@@ -32,7 +32,7 @@ public class SoulJewelConsumeHandlerPlugIn : ItemModifyConsumeHandlerPlugIn
     /// Initializes a new instance of the <see cref="SoulJewelConsumeHandlerPlugIn"/> class.
     /// </summary>
     /// <param name="randomizer">The randomizer.</param>
-    public SoulJewelConsumeHandlerPlugIn(IRandomizer randomizer)
+    internal SoulJewelConsumeHandlerPlugIn(IRandomizer randomizer)
     {
         this._randomizer = randomizer;
     }
