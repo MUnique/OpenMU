@@ -52,19 +52,22 @@ Use this way, if you want to develop or debug for OpenMU.
 
 Requirements:
 
-* Windows OS
+* Windows OS, 10 or higher
 
   * It runs under Linux and MacOS, too. However, this guide describes it for
     windows.
 
   * PostgreSQL installed
 
-  * Visual Studio 2022 (17.5+) installed
+  * Visual Studio 2022 (17.8+) installed, with workloads for ASP.NET Web development and .NET Desktop development.
+    * Please keep it up-to-date to prevent any issues.
 
-  * [.NET SDK 7](https://dotnet.microsoft.com/download/dotnet/7.0)
-    (it should be included in Visual Studio 17.5+)
+  * [.NET SDK 8](https://dotnet.microsoft.com/download/dotnet/8.0)
+    (it should be included in Visual Studio 17.8+)
+    * `winget install Microsoft.DotNet.SDK.8`
 
   * [NodeJS 16+](https://nodejs.org) installed
+    * `winget install OpenJS.NodeJS.LTS`
 
   * This repository cloned
 
