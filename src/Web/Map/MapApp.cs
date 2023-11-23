@@ -60,7 +60,11 @@ public sealed class MapApp : IHostedService, IDisposable
         app.Configuration["urls"] = $"http://*:{port}";
 
         // Configure the HTTP request pipeline.
-        if (!app.Environment.IsDevelopment())
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseDeveloperExceptionPage();
+        }
+        else
         {
             app.UseExceptionHandler("/Error");
         }

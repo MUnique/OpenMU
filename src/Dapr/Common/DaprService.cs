@@ -32,7 +32,7 @@ public static class DaprService
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        builder.WebHost.UseUrls($"http://*:80");
+        builder.WebHost.UseUrls($"http://*:8080");
 
         var services = builder.Services;
         services.AddControllers();

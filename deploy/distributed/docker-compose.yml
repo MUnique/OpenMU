@@ -21,7 +21,7 @@ services:
       - prometheus
 
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:9.5.14
     container_name: grafana
     volumes:
       - ./grafana.ini:/etc/grafana/grafana.ini
