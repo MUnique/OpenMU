@@ -66,7 +66,7 @@ public class ConfigurationChangeListener : IConfigurationChangeListener
                 }
                 else
                 {
-                    throw new InvalidOperationException("Configuration type {type} is not assignable.");
+                    throw new InvalidOperationException($"Configuration type {type} is not assignable.");
                 }
 
                 collectionAccessor.Add(cachedParent, cachedConfiguration, false);

@@ -65,11 +65,13 @@ public partial class GameConfiguration
     /// <summary>
     /// Gets or sets the experience table. Index is the player level, value the needed experience to reach that level.
     /// </summary>
+    [IgnoreWhenCloning]
     public long[]? ExperienceTable { get; set; }
 
     /// <summary>
     /// Gets or sets the master experience table. Index is the player level, value the needed experience to reach that level.
     /// </summary>
+    [IgnoreWhenCloning]
     public long[]? MasterExperienceTable { get; set; }
 
     /// <summary>

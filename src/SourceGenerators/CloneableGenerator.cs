@@ -21,6 +21,8 @@ public class CloneableGenerator : ISourceGenerator
 
     private const string CloneableAttributeName = "CloneableAttribute";
 
+    private const string IgnoreWhenCloningAttributeName = "IgnoreWhenCloningAttribute";
+
     /// <inheritdoc />
     public void Initialize(GeneratorInitializationContext context)
     {
@@ -134,7 +136,12 @@ public class CloneableGenerator : ISourceGenerator
 
     private void GenerateAssignments(StringBuilder sb, INamedTypeSymbol declaredClassSymbol)
     {
-        foreach (var property in declaredClassSymbol.GetMembers().OfType<IPropertySymbol>().Where(p => p.SetMethod is not null))
+        var properties = declaredClassSymbol
+            .GetMembers()
+            .OfType<IPropertySymbol>()
+            .Where(p => p.SetMethod is not null)
+            .Where(p => !p.GetAttributes().Any(a => a.AttributeClass?.Name != IgnoreWhenCloningAttributeName));
+        foreach (var property in properties)
         {
             if (property.SetMethod?.DeclaredAccessibility == Accessibility.Protected && property.IsVirtual)
             {
