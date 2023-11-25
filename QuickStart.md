@@ -59,8 +59,8 @@ Requirements:
 
   * PostgreSQL installed
 
-  * Visual Studio 2022 (17.8+) installed, with workloads for ASP.NET Web development and .NET Desktop development.
-    * Please keep it up-to-date to prevent any issues.
+  * Visual Studio 2022 (17.8+) installed, with workloads for ASP.NET Web development
+    and .NET Desktop development. Please keep it up-to-date to prevent any issues.
 
   * [.NET SDK 8](https://dotnet.microsoft.com/download/dotnet/8.0)
     (it should be included in Visual Studio 17.8+)
