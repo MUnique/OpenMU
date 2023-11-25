@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using MUnique.OpenMU.Dapr.Common;
 using MUnique.OpenMU.DataModel.Configuration;
@@ -53,9 +54,9 @@ metricsRegistry.AddMeters(MUnique.OpenMU.GameLogic.Metrics.Meters);
 builder.AddOpenTelemetryMetrics(metricsRegistry);
 
 var app = builder.BuildAndConfigure(true);
-
+app.UseStaticFiles();
 await app.WaitForUpdatedDatabaseAsync().ConfigureAwait(false);
 
 await app.Services.TryLoadPlugInConfigurationsAsync(plugInConfigurations).ConfigureAwait(false);
-
+await ((ObservableGameServerAdapter)app.Services.GetRequiredService<IObservableGameServer>()).InitializeAsync().ConfigureAwait(false);
 app.Run();

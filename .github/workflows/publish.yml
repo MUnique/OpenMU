@@ -12,7 +12,7 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 7.0.100
+          dotnet-version: 8.0.100
 
       - name: publish MUnique.OpenMU.PlugIns on version change
         uses: rohith/publish-nuget@5fdc86fb81a38b37521c9f153bfb60ac44e7ba93

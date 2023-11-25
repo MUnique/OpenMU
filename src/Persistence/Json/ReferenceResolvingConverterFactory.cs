@@ -21,7 +21,7 @@ public class ReferenceResolvingConverterFactory : JsonConverterFactory
     /// <summary>
     /// Gets or sets the types which are ignored during deserialization.
     /// </summary>
-    public Type[] IgnoredTypes { get; set; } = Array.Empty<Type>();
+    public Type[] IgnoredTypes { get; set; } = [];
 
     /// <inheritdoc />
     public override bool CanConvert(Type objectType) =>

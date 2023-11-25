@@ -51,7 +51,7 @@ public class RavenCommandManager : Disposable, IPetCommandManager
     /// <param name="target">The target.</param>
     public async ValueTask SetBehaviourAsync(PetBehaviour newBehaviour, IAttackable? target)
     {
-        this._attackCts?.Cancel();
+        await (this._attackCts?.CancelAsync() ?? Task.CompletedTask).ConfigureAwait(false);
         this._attackCts?.Dispose();
         this._attackCts = null;
 

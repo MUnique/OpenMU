@@ -21,7 +21,7 @@ services:
       - prometheus
 
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:9.5.14
     container_name: grafana
     volumes:
       - ./grafana.ini:/etc/grafana/grafana.ini
@@ -124,6 +124,7 @@ services:
       - "9464" # Prometheus
     environment:
       APPID: connectServer
+      ASPNETCORE_URLS: http://+:8080
     depends_on:
       - pubsub
       - zipkin
@@ -132,7 +133,7 @@ services:
   connectServer-dapr:
     image: "daprio/daprd:latest"
     container_name: connectServer_dapr
-    command: [ "./daprd", "-app-id", "connectServer", "-app-port", "80",
+    command: [ "./daprd", "-app-id", "connectServer", "-app-port", "8080",
                 "-components-path", "/components",
                 "-config", "/components/config.yaml",
                 "-placement-host-address", "dapr-placement:50006"  ]
@@ -148,6 +149,8 @@ services:
     ports:
       - "50001"
       - "9464" # Prometheus
+    environment:
+      ASPNETCORE_URLS: http://+:8080
     depends_on:
       - zipkin
       - database
@@ -155,7 +158,7 @@ services:
   loginServer-dapr:
     image: "daprio/daprd:latest"
     container_name: loginServer_dapr
-    command: [ "./daprd", "-app-id", "loginServer", "-app-port", "80",
+    command: [ "./daprd", "-app-id", "loginServer", "-app-port", "8080",
                 "-components-path", "/components",
                 "-config", "/components/config.yaml",
                 "-placement-host-address", "dapr-placement:50006"  ]
@@ -171,6 +174,8 @@ services:
     ports:
       - "50001"
       - "9464" # Prometheus
+    environment:
+      ASPNETCORE_URLS: http://+:8080
     depends_on:
       - chatServer-dapr
       - database
@@ -179,7 +184,7 @@ services:
   friendServer-dapr:
     image: "daprio/daprd:latest"
     container_name: friendServer_dapr
-    command: [ "./daprd", "-app-id", "friendServer", "-app-port", "80",
+    command: [ "./daprd", "-app-id", "friendServer", "-app-port", "8080",
                 "-components-path", "/components",
                 "-config", "/components/config.yaml",
                 "-placement-host-address", "dapr-placement:50006"  ]
@@ -195,6 +200,8 @@ services:
     ports:
       - "50001"
       - "9464" # Prometheus
+    environment:
+      ASPNETCORE_URLS: http://+:8080
     depends_on:
       - database
       - zipkin
@@ -202,7 +209,7 @@ services:
   guildServer-dapr:
     image: "daprio/daprd:latest"
     container_name: guildServer_dapr
-    command: [ "./daprd", "-app-id", "guildServer", "-app-port", "80",
+    command: [ "./daprd", "-app-id", "guildServer", "-app-port", "8080",
                 "-components-path", "/components",
                 "-config", "/components/config.yaml",
                 "-placement-host-address", "dapr-placement:50006"  ]
@@ -217,6 +224,7 @@ services:
     container_name: chatServer
     environment:
       APPID: chatServer
+      ASPNETCORE_URLS: http://+:8080
     ports:
       - "55980:55980"
       - "50001"
@@ -228,7 +236,7 @@ services:
   chatServer-dapr:
     image: "daprio/daprd:latest"
     container_name: chatServer_dapr
-    command: [ "./daprd", "-app-id", "chatServer", "-app-port", "80",
+    command: [ "./daprd", "-app-id", "chatServer", "-app-port", "8080",
                 "-components-path", "/components",
                 "-config", "/components/config.yaml",
                 "-placement-host-address", "dapr-placement:50006"  ]
@@ -245,10 +253,10 @@ services:
     depends_on:
       - database
     ports:
-      - "80"
+      - "8080"
       - "9464" # Prometheus
     environment:
-      ASPNETCORE_URLS: http://+:80
+      ASPNETCORE_URLS: http://+:8080
       PATH_BASE: /admin/
     volumes:
       - ./.htpasswd:/etc/nginx/.htpasswd
@@ -256,7 +264,7 @@ services:
   adminPanel-dapr:
     image: "daprio/daprd:latest"
     container_name: adminPanel_dapr
-    command: [ "./daprd", "-app-id", "adminPanel", "-app-port", "80",
+    command: [ "./daprd", "-app-id", "adminPanel", "-app-port", "8080",
                 "-components-path", "/components",
                 "-config", "/components/config.yaml",
                 "-placement-host-address", "dapr-placement:50006"  ]
@@ -274,7 +282,7 @@ services:
       context: ../../src
       dockerfile: Dapr/GameServer.Host/Dockerfile
     ports:
-      - "80"
+      - "8080"
       - "50001"
       - "55901:55901"
       - "9464" # Prometheus
@@ -282,6 +290,7 @@ services:
       GS_ID: 0
       APPID: gameServer0
       PATH_BASE: /gameServer/0/
+      ASPNETCORE_URLS: http://+:8080
     depends_on:
       - connectServer-dapr
       - loginServer-dapr
@@ -294,7 +303,7 @@ services:
   gameServer0-dapr:
     image: "daprio/daprd:latest"
     container_name: gameserver0_dapr
-    command: [ "./daprd", "-app-id", "gameServer0", "-app-port", "80",
+    command: [ "./daprd", "-app-id", "gameServer0", "-app-port", "8080",
                 "-components-path", "/components",
                 "-config", "/components/config.yaml",
                 "-placement-host-address", "dapr-placement:50006"  ]
@@ -311,7 +320,7 @@ services:
       context: ../../src
       dockerfile: Dapr/GameServer.Host/Dockerfile
     ports:
-      - "80"
+      - "8080"
       - "50001"
       - "55902:55902"
       - "9464" # Prometheus
@@ -319,6 +328,7 @@ services:
       GS_ID: 1
       APPID: gameServer1
       PATH_BASE: /gameServer/1/
+      ASPNETCORE_URLS: http://+:8080
     depends_on:
       - connectServer-dapr
       - loginServer-dapr
@@ -331,7 +341,7 @@ services:
   gameServer1-dapr:
     image: "daprio/daprd:latest"
     container_name: gameserver1_dapr
-    command: [ "./daprd", "-app-id", "gameServer1", "-app-port", "80",
+    command: [ "./daprd", "-app-id", "gameServer1", "-app-port", "8080",
                 "-components-path", "/components",
                 "-config", "/components/config.yaml",
                 "-placement-host-address", "dapr-placement:50006"  ]

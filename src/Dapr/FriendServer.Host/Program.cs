@@ -19,6 +19,10 @@ services.AddSingleton<IFriendServer, FriendServer>()
     .AddSingleton<IFriendNotifier, FriendNotifier>()
     .AddPeristenceProvider();
 
+var metricsRegistry = new MetricsRegistry();
+// todo: add some meaningful metrics
+builder.AddOpenTelemetryMetrics(metricsRegistry);
+
 var app = builder.BuildAndConfigure();
 
 await app.WaitForUpdatedDatabaseAsync().ConfigureAwait(false);

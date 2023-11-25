@@ -275,7 +275,7 @@ internal class EntityFrameworkContextBase : IContext
                         || p.Name.StartsWith("Joined"));
         foreach (var propertyInfo in aggregateProperties)
         {
-            var propertyValue = propertyInfo.GetMethod?.Invoke(obj, Array.Empty<object>());
+            var propertyValue = propertyInfo.GetMethod?.Invoke(obj, []);
             if (propertyValue is IEnumerable enumerable)
             {
                 foreach (var value in enumerable)

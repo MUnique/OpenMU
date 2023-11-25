@@ -264,6 +264,7 @@ public class GameContext : AsyncDisposable, IGameContext
         MiniGameCounter.Add(-1);
         miniGameContext.Dispose();
         this._miniGames.Remove(miniGameContext.Key);
+        this.GameMapRemoved?.Invoke(this, miniGameContext.Map);
     }
 
     /// <summary>
@@ -290,7 +291,7 @@ public class GameContext : AsyncDisposable, IGameContext
         using var l = await this._playerListLock.ReaderLockAsync();
         if (this._playerList.Count == 0)
         {
-            return Array.Empty<Player>();
+            return [];
         }
 
         return this._playerList.ToList();

@@ -68,7 +68,7 @@ public partial class Merchants : ComponentBase, IAsyncDisposable
         this._navigationLockDisposable?.Dispose();
         this._navigationLockDisposable = null;
 
-        this._disposeCts?.Cancel();
+        await (this._disposeCts?.CancelAsync() ?? Task.CompletedTask).ConfigureAwait(false);
         this._disposeCts?.Dispose();
         this._disposeCts = null;
 

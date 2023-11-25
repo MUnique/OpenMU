@@ -5,9 +5,11 @@
 namespace MUnique.OpenMU.Dapr.Common;
 
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
+using OpenTelemetry.Logs;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using MUnique.OpenMU.Persistence.EntityFramework;
@@ -30,18 +32,19 @@ public static class DaprService
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        builder.WebHost.UseUrls($"http://*:80");
+        builder.WebHost.UseUrls($"http://*:8080");
 
         var services = builder.Services;
         services.AddControllers();
         services.AddDaprClient();
 
-        services.AddOpenTelemetryTracing(b => b
-            .SetResourceBuilder(ResourceBuilder
-                .CreateDefault()
-                .AddService(serviceName))
-            .AddAspNetCoreInstrumentation()
-            .AddZipkinExporter(o => o.Endpoint = new Uri("http://zipkin:9411/api/v2/spans")));
+        services.AddOpenTelemetry()
+            .WithTracing(t =>
+            {
+                t.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(serviceName))
+                    .AddAspNetCoreInstrumentation()
+                    .AddZipkinExporter(o => o.Endpoint = new Uri("http://zipkin:9411/api/v2/spans"));
+            });
 
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         services.AddEndpointsApiExplorer();
@@ -52,7 +55,9 @@ public static class DaprService
 
         services.AddSingleton<IDatabaseConnectionSettingProvider, SecretStoreDatabaseConnectionSettingsProvider>();
 
+        // Logging:
         builder.UseLoki(serviceName);
+        builder.Logging.AddOpenTelemetry(options => options.AddOtlpExporter());
 
         return builder;
     }

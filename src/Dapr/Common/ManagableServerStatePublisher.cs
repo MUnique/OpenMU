@@ -83,7 +83,7 @@ public sealed class ManagableServerStatePublisher : IHostedService, IDisposable
     /// <inheritdoc />
     public async Task StopAsync(CancellationToken cancellationToken)
     {
-        this._heartbeatCancellationTokenSource?.Cancel();
+        await (this._heartbeatCancellationTokenSource?.CancelAsync() ?? Task.CompletedTask).ConfigureAwait(false);
         this._heartbeatCancellationTokenSource?.Dispose();
         if (this._heartbeatTask is { } heartbeatTask)
         {

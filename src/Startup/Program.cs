@@ -81,7 +81,9 @@ internal sealed class Program : IDisposable
         {
             if (_confirmExit)
             {
+#pragma warning disable VSTHRD103 // Call async methods when in an async method
                 exitCts.Cancel();
+#pragma warning restore VSTHRD103 // Call async methods when in an async method
                 Console.CancelKeyPress -= OnCancelKeyPress;
                 Console.WriteLine("\nBye! Press enter to finish");
             }
@@ -98,7 +100,9 @@ internal sealed class Program : IDisposable
         {
             if (!exitToken.IsCancellationRequested)
             {
+#pragma warning disable VSTHRD103 // Call async methods when in an async method
                 exitCts.Cancel();
+#pragma warning restore VSTHRD103 // Call async methods when in an async method
                 Debug.WriteLine("KILL");
             }
         };
@@ -170,7 +174,7 @@ internal sealed class Program : IDisposable
         {
             case "y" when _confirmExit:
             case "exit":
-                exitCts.Cancel();
+                await exitCts.CancelAsync().ConfigureAwait(false);
                 break;
             case "gc":
                 GC.Collect();

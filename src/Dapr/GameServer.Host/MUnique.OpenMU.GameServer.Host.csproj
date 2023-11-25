@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <Nullable>enable</Nullable>
@@ -13,11 +13,6 @@
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <DocumentationFile></DocumentationFile>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Content Include="..\..\Web\AdminPanel\wwwroot\css\site.css" Link="wwwroot\css\site.css" />
-    <Content Include="..\..\Web\AdminPanel\wwwroot\css\site.min.css" Link="wwwroot\css\site.min.css" />
-  </ItemGroup>
   
   <ItemGroup>
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.5" />

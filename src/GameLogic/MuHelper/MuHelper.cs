@@ -103,7 +103,7 @@ public class MuHelper : AsyncDisposable
         {
             this._player.Attributes?.RemoveElement(ActiveElement, Stats.IsMuHelperActive);
 
-            stopCts.Cancel();
+            await stopCts.CancelAsync().ConfigureAwait(false);
             await runTask.ConfigureAwait(false);
             this._runTask = null;
             stopCts.Dispose();

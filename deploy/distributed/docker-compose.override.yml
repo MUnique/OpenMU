@@ -19,13 +19,13 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
     ports:
-      - "81:80"
+      - "81:8080"
 
   gameServer1:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
     ports:
-      - "82:80"
+      - "82:8080"
 
   connectServer:
     build:
@@ -69,4 +69,4 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
     ports:
-      - "88:80"
+      - "88:8080"

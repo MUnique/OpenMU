@@ -116,7 +116,7 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
         this._navigationLockDisposable?.Dispose();
         this._navigationLockDisposable = null;
 
-        this._disposeCts?.Cancel();
+        await (this._disposeCts?.CancelAsync() ?? Task.CompletedTask).ConfigureAwait(false);
         this._disposeCts?.Dispose();
         this._disposeCts = null;
 
@@ -135,7 +135,7 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
     public override async Task SetParametersAsync(ParameterView parameters)
     {
         this._model = null;
-        this._disposeCts?.Cancel();
+        await (this._disposeCts?.CancelAsync() ?? Task.CompletedTask).ConfigureAwait(false);
         this._disposeCts?.Dispose();
         await (this._loadTask ?? Task.CompletedTask).ConfigureAwait(true);
         await base.SetParametersAsync(parameters).ConfigureAwait(true);

@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.Dapr.Common;
 
-using System.Reflection;
 using System.Threading;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,7 +16,9 @@ using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.EntityFramework;
 using MUnique.OpenMU.PlugIns;
 using Nito.AsyncEx.Synchronous;
+using OpenTelemetry.Exporter;
 using OpenTelemetry.Metrics;
+using Prometheus;
 using Serilog;
 using Serilog.Debugging;
 using Serilog.Events;
@@ -201,24 +202,14 @@ public static class Extensions
     /// <returns>The web application builder.</returns>
     public static WebApplicationBuilder AddOpenTelemetryMetrics(this WebApplicationBuilder builder, MetricsRegistry registry)
     {
-        var meters = registry.Meters.ToArray();
-        if (meters.Length == 0)
-        {
-            return builder;
-        }
-
-        builder.Services.AddOpenTelemetryMetrics(opt =>
-            opt
-                .AddMeter(meters)
-                .AddPrometheusExporter(p =>
-                {
-                    p.StartHttpListener = true;
-
-                    // Workaround, see https://github.com/open-telemetry/opentelemetry-dotnet/issues/2840#issuecomment-1072977042
-                    p.GetType()
-                        ?.GetField("httpListenerPrefixes", BindingFlags.NonPublic | BindingFlags.Instance)
-                        ?.SetValue(p, new[] { "http://*:9464" });
-                }));
+        builder.Services.AddOpenTelemetry()
+            .WithMetrics(x =>
+            {
+                x.AddMeter(registry.Meters.ToArray());
+                x.AddPrometheusExporter();
+                x.AddOtlpExporter();
+            });
+        builder.Services.AddHealthChecks().ForwardToPrometheus();
 
         return builder;
     }
@@ -243,6 +234,7 @@ public static class Extensions
         }
 
         app.ConfigureDaprService(addBlazor);
+        app.MapPrometheusScrapingEndpoint();
 
         return app;
     }
@@ -263,7 +255,11 @@ public static class Extensions
 
         if (addBlazor)
         {
-            if (!app.Environment.IsDevelopment())
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            else
             {
                 app.UseExceptionHandler("/Error");
             }

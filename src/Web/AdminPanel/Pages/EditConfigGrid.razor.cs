@@ -66,7 +66,7 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
     /// <inheritdoc />
     public async ValueTask DisposeAsync()
     {
-        this._disposeCts?.Cancel();
+        await (this._disposeCts?.CancelAsync() ?? Task.CompletedTask).ConfigureAwait(false);
         this._disposeCts?.Dispose();
         this._disposeCts = null;
 
