@@ -58,5 +58,5 @@ app.UseStaticFiles();
 await app.WaitForUpdatedDatabaseAsync().ConfigureAwait(false);
 
 await app.Services.TryLoadPlugInConfigurationsAsync(plugInConfigurations).ConfigureAwait(false);
-
+await ((ObservableGameServerAdapter)app.Services.GetRequiredService<IObservableGameServer>()).InitializeAsync().ConfigureAwait(false);
 app.Run();

@@ -264,6 +264,7 @@ public class GameContext : AsyncDisposable, IGameContext
         MiniGameCounter.Add(-1);
         miniGameContext.Dispose();
         this._miniGames.Remove(miniGameContext.Key);
+        this.GameMapRemoved?.Invoke(this, miniGameContext.Map);
     }
 
     /// <summary>
