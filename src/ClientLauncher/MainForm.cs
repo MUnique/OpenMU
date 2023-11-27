@@ -101,7 +101,7 @@ public partial class MainForm : Form
 
     private void SaveCurrentOptions()
     {
-        var settings = new LauncherSettings()
+        var settings = new LauncherSettings
         {
             Hosts = this._hostsBindingList.ToList(),
             MainExePath = this.MainExePathTextBox.Text,
