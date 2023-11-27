@@ -29,159 +29,179 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            this.LaunchButton = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
-            this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.MainExePathTextBox = new System.Windows.Forms.TextBox();
-            this.SearchMainExeButton = new System.Windows.Forms.Button();
-            this.label2 = new System.Windows.Forms.Label();
-            this.ServerAddressTextBox = new System.Windows.Forms.TextBox();
-            this.ServerPortControl = new System.Windows.Forms.NumericUpDown();
-            this.configurationDialogButton = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(this.ServerPortControl)).BeginInit();
-            this.SuspendLayout();
+            _launchButton = new System.Windows.Forms.Button();
+            label1 = new System.Windows.Forms.Label();
+            openFileDialog = new System.Windows.Forms.OpenFileDialog();
+            MainExePathTextBox = new System.Windows.Forms.TextBox();
+            SearchMainExeButton = new System.Windows.Forms.Button();
+            label2 = new System.Windows.Forms.Label();
+            configurationDialogButton = new System.Windows.Forms.Button();
+            _editHostButton = new System.Windows.Forms.Button();
+            _addHostButton = new System.Windows.Forms.Button();
+            _serversComboBox = new System.Windows.Forms.ComboBox();
+            _removeHostButton = new System.Windows.Forms.Button();
+            SuspendLayout();
             // 
-            // LaunchButton
+            // _launchButton
             // 
-            this.LaunchButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.LaunchButton.Location = new System.Drawing.Point(455, 42);
-            this.LaunchButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.LaunchButton.Name = "LaunchButton";
-            this.LaunchButton.Size = new System.Drawing.Size(147, 27);
-            this.LaunchButton.TabIndex = 0;
-            this.LaunchButton.Text = "Launch Client";
-            this.LaunchButton.UseVisualStyleBackColor = true;
-            this.LaunchButton.Click += new System.EventHandler(this.LaunchClick);
+            _launchButton.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            _launchButton.Location = new System.Drawing.Point(505, 45);
+            _launchButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            _launchButton.Name = "_launchButton";
+            _launchButton.Size = new System.Drawing.Size(147, 27);
+            _launchButton.TabIndex = 0;
+            _launchButton.Text = "Launch Client";
+            _launchButton.UseVisualStyleBackColor = true;
+            _launchButton.Click += LaunchClick;
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(14, 17);
-            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(85, 15);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "main.exe Path:";
+            label1.AutoSize = true;
+            label1.Location = new System.Drawing.Point(14, 17);
+            label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label1.Name = "label1";
+            label1.Size = new System.Drawing.Size(85, 15);
+            label1.TabIndex = 1;
+            label1.Text = "main.exe Path:";
             // 
             // openFileDialog
             // 
-            this.openFileDialog.FileName = "main.exe";
-            this.openFileDialog.Filter = "Executeables|*.exe";
+            openFileDialog.FileName = "main.exe";
+            openFileDialog.Filter = "Executeables|*.exe";
             // 
             // MainExePathTextBox
             // 
-            this.MainExePathTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.MainExePathTextBox.Location = new System.Drawing.Point(113, 14);
-            this.MainExePathTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.MainExePathTextBox.Name = "MainExePathTextBox";
-            this.MainExePathTextBox.Size = new System.Drawing.Size(446, 23);
-            this.MainExePathTextBox.TabIndex = 2;
-            this.MainExePathTextBox.Text = "main.exe";
+            MainExePathTextBox.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            MainExePathTextBox.Location = new System.Drawing.Point(107, 14);
+            MainExePathTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            MainExePathTextBox.Name = "MainExePathTextBox";
+            MainExePathTextBox.Size = new System.Drawing.Size(467, 23);
+            MainExePathTextBox.TabIndex = 2;
+            MainExePathTextBox.Text = "main.exe";
             // 
             // SearchMainExeButton
             // 
-            this.SearchMainExeButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.SearchMainExeButton.Location = new System.Drawing.Point(567, 12);
-            this.SearchMainExeButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.SearchMainExeButton.Name = "SearchMainExeButton";
-            this.SearchMainExeButton.Size = new System.Drawing.Size(35, 27);
-            this.SearchMainExeButton.TabIndex = 3;
-            this.SearchMainExeButton.Text = "...";
-            this.SearchMainExeButton.UseVisualStyleBackColor = true;
-            this.SearchMainExeButton.Click += new System.EventHandler(this.SearchMainExeButtonClick);
+            SearchMainExeButton.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            SearchMainExeButton.Location = new System.Drawing.Point(582, 12);
+            SearchMainExeButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            SearchMainExeButton.Name = "SearchMainExeButton";
+            SearchMainExeButton.Size = new System.Drawing.Size(35, 27);
+            SearchMainExeButton.TabIndex = 3;
+            SearchMainExeButton.Text = "...";
+            SearchMainExeButton.UseVisualStyleBackColor = true;
+            SearchMainExeButton.Click += SearchMainExeButtonClick;
             // 
             // label2
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(14, 47);
-            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(89, 15);
-            this.label2.TabIndex = 4;
-            this.label2.Text = "Server-Address:";
-            // 
-            // ServerAddressTextBox
-            // 
-            this.ServerAddressTextBox.Location = new System.Drawing.Point(113, 44);
-            this.ServerAddressTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.ServerAddressTextBox.Name = "ServerAddressTextBox";
-            this.ServerAddressTextBox.Size = new System.Drawing.Size(152, 23);
-            this.ServerAddressTextBox.TabIndex = 5;
-            this.ServerAddressTextBox.Text = "127.127.127.127";
-            // 
-            // ServerPortControl
-            // 
-            this.ServerPortControl.Location = new System.Drawing.Point(273, 44);
-            this.ServerPortControl.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.ServerPortControl.Maximum = new decimal(new int[] {
-            65535,
-            0,
-            0,
-            0});
-            this.ServerPortControl.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.ServerPortControl.Name = "ServerPortControl";
-            this.ServerPortControl.Size = new System.Drawing.Size(68, 23);
-            this.ServerPortControl.TabIndex = 7;
-            this.ServerPortControl.Value = new decimal(new int[] {
-            44405,
-            0,
-            0,
-            0});
+            label2.AutoSize = true;
+            label2.Location = new System.Drawing.Point(57, 54);
+            label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label2.Name = "label2";
+            label2.Size = new System.Drawing.Size(42, 15);
+            label2.TabIndex = 4;
+            label2.Text = "Server:";
             // 
             // configurationDialogButton
             // 
-            this.configurationDialogButton.AutoSize = true;
-            this.configurationDialogButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.configurationDialogButton.Image = global::MUnique.OpenMU.ClientLauncher.Properties.Resources.Settings_16x;
-            this.configurationDialogButton.Location = new System.Drawing.Point(348, 43);
-            this.configurationDialogButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.configurationDialogButton.Name = "configurationDialogButton";
-            this.configurationDialogButton.Size = new System.Drawing.Size(22, 22);
-            this.configurationDialogButton.TabIndex = 8;
-            this.configurationDialogButton.UseVisualStyleBackColor = true;
-            this.configurationDialogButton.Click += new System.EventHandler(this.ConfigurationDialogButtonClick);
+            configurationDialogButton.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            configurationDialogButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            configurationDialogButton.Image = Properties.Resources.Settings_16x;
+            configurationDialogButton.Location = new System.Drawing.Point(625, 12);
+            configurationDialogButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            configurationDialogButton.Name = "configurationDialogButton";
+            configurationDialogButton.Size = new System.Drawing.Size(27, 27);
+            configurationDialogButton.TabIndex = 4;
+            configurationDialogButton.UseVisualStyleBackColor = true;
+            configurationDialogButton.Click += ConfigurationDialogButtonClick;
+            // 
+            // _editHostButton
+            // 
+            _editHostButton.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            _editHostButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            _editHostButton.Image = Properties.Resources.Edit_16x;
+            _editHostButton.Location = new System.Drawing.Point(446, 47);
+            _editHostButton.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
+            _editHostButton.Name = "_editHostButton";
+            _editHostButton.Size = new System.Drawing.Size(23, 23);
+            _editHostButton.TabIndex = 7;
+            _editHostButton.UseVisualStyleBackColor = true;
+            _editHostButton.Click += OnEditHostButtonClick;
+            // 
+            // _addHostButton
+            // 
+            _addHostButton.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            _addHostButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            _addHostButton.Image = Properties.Resources.Add_16x;
+            _addHostButton.Location = new System.Drawing.Point(419, 47);
+            _addHostButton.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
+            _addHostButton.Name = "_addHostButton";
+            _addHostButton.Size = new System.Drawing.Size(23, 23);
+            _addHostButton.TabIndex = 6;
+            _addHostButton.UseVisualStyleBackColor = true;
+            _addHostButton.Click += OnAddHostButtonClick;
+            // 
+            // _serversComboBox
+            // 
+            _serversComboBox.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            _serversComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            _serversComboBox.FormattingEnabled = true;
+            _serversComboBox.Location = new System.Drawing.Point(107, 48);
+            _serversComboBox.Name = "_serversComboBox";
+            _serversComboBox.Size = new System.Drawing.Size(307, 23);
+            _serversComboBox.TabIndex = 5;
+            _serversComboBox.SelectedValueChanged += OnServersComboBoxSelectedIndexChanged;
+            // 
+            // _removeHostButton
+            // 
+            _removeHostButton.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            _removeHostButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            _removeHostButton.Image = Properties.Resources.Remove_16x;
+            _removeHostButton.Location = new System.Drawing.Point(473, 46);
+            _removeHostButton.Margin = new System.Windows.Forms.Padding(2, 3, 5, 3);
+            _removeHostButton.Name = "_removeHostButton";
+            _removeHostButton.Size = new System.Drawing.Size(23, 23);
+            _removeHostButton.TabIndex = 8;
+            _removeHostButton.UseVisualStyleBackColor = true;
+            _removeHostButton.Click += OnRemoveHostButtonClick;
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(616, 82);
-            this.Controls.Add(this.configurationDialogButton);
-            this.Controls.Add(this.ServerPortControl);
-            this.Controls.Add(this.ServerAddressTextBox);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.SearchMainExeButton);
-            this.Controls.Add(this.MainExePathTextBox);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.LaunchButton);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(1257, 121);
-            this.Name = "MainForm";
-            this.Text = "Game Client Launcher";
-            ((System.ComponentModel.ISupportInitialize)(this.ServerPortControl)).EndInit();
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            ClientSize = new System.Drawing.Size(665, 82);
+            Controls.Add(_removeHostButton);
+            Controls.Add(_serversComboBox);
+            Controls.Add(_addHostButton);
+            Controls.Add(_editHostButton);
+            Controls.Add(configurationDialogButton);
+            Controls.Add(label2);
+            Controls.Add(SearchMainExeButton);
+            Controls.Add(MainExePathTextBox);
+            Controls.Add(label1);
+            Controls.Add(_launchButton);
+            Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+            Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            MaximizeBox = false;
+            MaximumSize = new System.Drawing.Size(1257, 121);
+            Name = "MainForm";
+            Text = "MU Game Client Launcher";
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
 
-        private System.Windows.Forms.Button LaunchButton;
+        private System.Windows.Forms.Button _launchButton;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.OpenFileDialog openFileDialog;
         private System.Windows.Forms.TextBox MainExePathTextBox;
         private System.Windows.Forms.Button SearchMainExeButton;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox ServerAddressTextBox;
-        private System.Windows.Forms.NumericUpDown ServerPortControl;
         private System.Windows.Forms.Button configurationDialogButton;
+        private System.Windows.Forms.Button _editHostButton;
+        private System.Windows.Forms.Button _addHostButton;
+        private System.Windows.Forms.ComboBox _serversComboBox;
+        private System.Windows.Forms.Button _removeHostButton;
     }
 }
 
