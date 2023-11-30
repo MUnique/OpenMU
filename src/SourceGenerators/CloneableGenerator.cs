@@ -140,7 +140,7 @@ public class CloneableGenerator : ISourceGenerator
             .GetMembers()
             .OfType<IPropertySymbol>()
             .Where(p => p.SetMethod is not null)
-            .Where(p => !p.GetAttributes().Any(a => a.AttributeClass?.Name != IgnoreWhenCloningAttributeName));
+            .Where(p => !p.GetAttributes().Any(a => object.Equals(a.AttributeClass?.Name, IgnoreWhenCloningAttributeName)));
         foreach (var property in properties)
         {
             if (property.SetMethod?.DeclaredAccessibility == Accessibility.Protected && property.IsVirtual)
