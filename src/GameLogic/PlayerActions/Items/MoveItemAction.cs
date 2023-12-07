@@ -234,11 +234,18 @@ public class MoveItemAction
             if (itemDefinition.ItemSlot.ItemSlots.Contains(toSlot) &&
                 player.CompliesRequirements(item))
             {
-                if (itemDefinition.ItemSlot.ItemSlots.Contains(RightHandSlot)
-                    && itemDefinition.ItemSlot.ItemSlots.Contains(LeftHandSlot)
-                    && toSlot == RightHandSlot
-                    && storage.GetItem(LeftHandSlot)?.Definition!.Width >= 2)
+                static bool IsOneHandedOrShield(ItemDefinition definition) =>
+                    (definition.ItemSlot!.ItemSlots.Contains(RightHandSlot) && definition.ItemSlot.ItemSlots.Contains(LeftHandSlot)) || definition.Group == 6;
+
+                if ((toSlot == LeftHandSlot
+                    && itemDefinition.Width >= 2
+                    && IsOneHandedOrShield(storage.GetItem(RightHandSlot)?.Definition!))
+                    || (toSlot == RightHandSlot
+                    && IsOneHandedOrShield(itemDefinition)
+                    && storage.GetItem(LeftHandSlot)?.Definition!.Width >= 2))
                 {
+                    // Trying to equip a two-handed item to the left hand slot when the right hand slot has a one-handed item/shield,
+                    // or equip a one-handed weapon/shield to the right hand slot when the left hand slot has a two-handed item.
                     return Movement.None;
                 }
 
