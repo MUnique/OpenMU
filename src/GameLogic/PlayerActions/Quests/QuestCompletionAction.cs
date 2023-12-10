@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests;
 
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration.Quests;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.GameLogic.Views.Quest;
@@ -102,6 +103,12 @@ public class QuestCompletionAction
                 {
                     attribute = player.PersistenceContext.CreateNew<StatAttribute>(reward.AttributeReward, 0);
                     player.SelectedCharacter.Attributes.Add(attribute);
+                }
+
+                // Compensate level-up points when gaining Hero Status beyond level 220.
+                if (reward.AttributeReward?.Id == Stats.GainHeroStatusQuestCompleted.Id && attribute.Value == 0)
+                {
+                    player.SelectedCharacter!.LevelUpPoints += (int)player.Attributes![Stats.Level] - 220;
                 }
 
                 attribute.Value += reward.Value;
