@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Items;
 
 using System.ComponentModel;
+using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
@@ -234,11 +235,18 @@ public class MoveItemAction
             if (itemDefinition.ItemSlot.ItemSlots.Contains(toSlot) &&
                 player.CompliesRequirements(item))
             {
-                if (itemDefinition.ItemSlot.ItemSlots.Contains(RightHandSlot)
-                    && itemDefinition.ItemSlot.ItemSlots.Contains(LeftHandSlot)
-                    && toSlot == RightHandSlot
-                    && storage.GetItem(LeftHandSlot)?.Definition!.Width >= 2)
+                static bool IsOneHandedOrShield(ItemDefinition definition) =>
+                    (definition.ItemSlot!.ItemSlots.Contains(RightHandSlot) && definition.ItemSlot.ItemSlots.Contains(LeftHandSlot)) || definition.Group == 6;
+
+                if ((toSlot == LeftHandSlot
+                    && itemDefinition.Width >= 2
+                    && storage.GetItem(RightHandSlot)?.Definition!.Group == 6)
+                    || (toSlot == RightHandSlot
+                    && IsOneHandedOrShield(itemDefinition)
+                    && storage.GetItem(LeftHandSlot)?.Definition!.Width >= 2))
                 {
+                    // Attempting to equip a two-handed item to the left hand slot when a shield is in the right hand slot,
+                    // or trying to equip a one-handed weapon or shield to the right hand slot when a two-handed item is in the left hand slot.
                     return Movement.None;
                 }
 
