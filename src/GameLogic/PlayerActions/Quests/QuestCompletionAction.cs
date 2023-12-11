@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests;
 
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration.Quests;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.GameLogic.Views.Quest;
@@ -85,14 +86,14 @@ public class QuestCompletionAction
 
         foreach (var reward in activeQuest.Rewards)
         {
-            await AddRewardAsync(player, reward).ConfigureAwait(false);
+            await AddRewardAsync(player, reward, activeQuest).ConfigureAwait(false);
         }
 
         await questState.ClearAsync(player.PersistenceContext).ConfigureAwait(false);
         await player.InvokeViewPlugInAsync<IQuestCompletionResponsePlugIn>(p => p.QuestCompletedAsync(activeQuest)).ConfigureAwait(false);
     }
 
-    private static async ValueTask AddRewardAsync(Player player, QuestReward reward)
+    private static async ValueTask AddRewardAsync(Player player, QuestReward reward, QuestDefinition quest)
     {
         switch (reward.RewardType)
         {
@@ -105,6 +106,13 @@ public class QuestCompletionAction
                 }
 
                 attribute.Value += reward.Value;
+
+                // Compensate level-up points when doing a quest at a later level.
+                if (attribute.Definition == Stats.PointsPerLevelUp)
+                {
+                    var playerLevel = (int)player.Attributes![Stats.Level];
+                    player.SelectedCharacter.LevelUpPoints += (playerLevel - quest.MinimumCharacterLevel) * reward.Value;
+                }
 
                 await player.InvokeViewPlugInAsync<ILegacyQuestRewardPlugIn>(p => p.ShowAsync(player, QuestRewardType.Attribute, reward.Value, attribute.Definition)).ConfigureAwait(false);
                 break;
