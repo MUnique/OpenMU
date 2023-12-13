@@ -412,8 +412,10 @@ public class PlugInManager
             }
             else if (!string.IsNullOrEmpty(configuration.CustomPlugInSource))
             {
+                this._logger.LogWarning($"Custom plugin source found at plugin configuration: {configuration}");
+                /* TODO: Implement code signing, if we really need this feature.
                 Assembly customPlugInAssembly = this.CompileCustomPlugInAssembly(configuration);
-                this.DiscoverAndRegisterPlugIns(customPlugInAssembly);
+                this.DiscoverAndRegisterPlugIns(customPlugInAssembly);*/
             }
             else
             {
