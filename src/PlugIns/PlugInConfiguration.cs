@@ -70,15 +70,26 @@ public class PlugInConfiguration : INotifyPropertyChanged
         }
     }
 
+    /// <summary>
+    /// Gets the (display) name of this plugin.
+    /// </summary>
+    public string Name
+    {
+        get
+        {
+            var plugInType = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(assembly => assembly.DefinedTypes)
+                .FirstOrDefault(t => t.GUID == this.TypeId);
+            var plugInAttribute = plugInType?.GetCustomAttribute<PlugInAttribute>();
+
+            return plugInAttribute?.Name ?? this.TypeId.ToString();
+        }
+    }
+
     /// <inheritdoc/>
     public override string ToString()
     {
-        var plugInType = AppDomain.CurrentDomain.GetAssemblies()
-            .SelectMany(assembly => assembly.DefinedTypes)
-            .FirstOrDefault(t => t.GUID == this.TypeId);
-        var plugInAttribute = plugInType?.GetCustomAttribute<PlugInAttribute>();
-
-        return plugInAttribute?.Name ?? this.TypeId.ToString();
+        return this.Name;
     }
 
     /// <summary>
