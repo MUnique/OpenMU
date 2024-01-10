@@ -2,8 +2,6 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.Persistence.Initialization.Items;
-
 namespace MUnique.OpenMU.Persistence.Initialization.Version075.TestAccounts;
 
 using MUnique.OpenMU.AttributeSystem;
@@ -13,6 +11,7 @@ using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
+using MUnique.OpenMU.Persistence.Initialization.Items;
 
 /// <summary>
 /// Abstract base class for a test account initializer.
@@ -395,10 +394,11 @@ internal abstract class AccountInitializerBase : InitializerBase
     /// <returns>The created orb.</returns>
     protected Item CreateOrb(byte itemSlot, byte itemNumber)
     {
-        var potion = this.Context.CreateNew<Item>();
-        potion.Definition = this.GameConfiguration.Items.First(def => def.Group == (byte)ItemGroups.Orbs && def.Number == itemNumber);
-        potion.ItemSlot = itemSlot;
-        return potion;
+        var orb = this.Context.CreateNew<Item>();
+        orb.Definition = this.GameConfiguration.Items.First(def => def.Group == (byte)ItemGroups.Orbs && def.Number == itemNumber);
+        orb.ItemSlot = itemSlot;
+        orb.Durability = 1;
+        return orb;
     }
 
     /// <summary>
@@ -409,10 +409,11 @@ internal abstract class AccountInitializerBase : InitializerBase
     /// <returns>The created scroll.</returns>
     protected Item CreateScroll(byte itemSlot, byte itemNumber)
     {
-        var potion = this.Context.CreateNew<Item>();
-        potion.Definition = this.GameConfiguration.Items.First(def => def.Group == (byte)ItemGroups.Scrolls && def.Number == itemNumber);
-        potion.ItemSlot = itemSlot;
-        return potion;
+        var scroll = this.Context.CreateNew<Item>();
+        scroll.Definition = this.GameConfiguration.Items.First(def => def.Group == (byte)ItemGroups.Scrolls && def.Number == itemNumber);
+        scroll.ItemSlot = itemSlot;
+        scroll.Durability = 1;
+        return scroll;
     }
 
     /// <summary>
