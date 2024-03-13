@@ -44,6 +44,11 @@ public partial class ItemDefinition
     public bool IsAmmunition { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the item will be repaired or leveled up.
+    /// </summary>
+    public bool JewelOfBlessShouldRepair { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating whether items of this kind are bound to character.
     /// That means, it can't be traded, moved to the vault/personal shop or picked up from the ground by other players.
     /// </summary>

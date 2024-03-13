@@ -23,6 +23,12 @@ public class BlessJewelConsumeHandlerPlugIn : ItemModifyConsumeHandlerPlugIn
     /// <inheritdoc/>
     protected override bool ModifyItem(Item item, IContext persistenceContext)
     {
+        if (item.Definition!.JewelOfBlessShouldRepair && item.Durability < 255)
+        {
+            item.Durability = 255;
+            return true;
+        }
+
         if (!item.CanLevelBeUpgraded())
         {
             return false;
