@@ -48,7 +48,7 @@ public class PlugInProxyTypeGeneratorTest
     public void ProxyIsCreated()
     {
         var generator = new PlugInProxyTypeGenerator();
-        var proxy = generator.GenerateProxy<IExamplePlugIn>(new PlugInManager(null, new NullLoggerFactory(), null));
+        var proxy = generator.GenerateProxy<IExamplePlugIn>(new PlugInManager(null, new NullLoggerFactory(), null, null));
 
         Assert.That(proxy, Is.Not.Null);
     }
@@ -60,7 +60,7 @@ public class PlugInProxyTypeGeneratorTest
     public async ValueTask MultiplePlugInsAreExecutedAsync()
     {
         var generator = new PlugInProxyTypeGenerator();
-        var proxy = generator.GenerateProxy<IExamplePlugIn>(new PlugInManager(null, NullLoggerFactory.Instance, null));
+        var proxy = generator.GenerateProxy<IExamplePlugIn>(new PlugInManager(null, NullLoggerFactory.Instance, null, null));
 
         var player = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
         var command = "test";
@@ -86,7 +86,7 @@ public class PlugInProxyTypeGeneratorTest
     public async ValueTask MultipleAsyncPlugInsAreExecutedAsync()
     {
         var generator = new PlugInProxyTypeGenerator();
-        var proxy = generator.GenerateProxy<IAsyncPlugIn>(new PlugInManager(null, NullLoggerFactory.Instance, null));
+        var proxy = generator.GenerateProxy<IAsyncPlugIn>(new PlugInManager(null, NullLoggerFactory.Instance, null, null));
 
         // Forcing to load NitoEx
         _ = new AsyncReaderWriterLock();
@@ -113,7 +113,7 @@ public class PlugInProxyTypeGeneratorTest
     public async ValueTask InactivePlugInsAreNotExecutedAsync()
     {
         var generator = new PlugInProxyTypeGenerator();
-        var proxy = generator.GenerateProxy<IExamplePlugIn>(new PlugInManager(null, NullLoggerFactory.Instance, null));
+        var proxy = generator.GenerateProxy<IExamplePlugIn>(new PlugInManager(null, NullLoggerFactory.Instance, null, null));
 
         var player = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
         var command = "test";
@@ -140,7 +140,7 @@ public class PlugInProxyTypeGeneratorTest
     public async ValueTask CancelEventArgsAreRespectedAsync()
     {
         var generator = new PlugInProxyTypeGenerator();
-        var proxy = generator.GenerateProxy<IExamplePlugIn>(new PlugInManager(null, NullLoggerFactory.Instance, null));
+        var proxy = generator.GenerateProxy<IExamplePlugIn>(new PlugInManager(null, NullLoggerFactory.Instance, null, null));
 
         var player = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
         var command = "test";
@@ -165,7 +165,7 @@ public class PlugInProxyTypeGeneratorTest
     public void ErrorForClasses()
     {
         var generator = new PlugInProxyTypeGenerator();
-        Assert.Throws<ArgumentException>(() => generator.GenerateProxy<ExamplePlugIn>(new PlugInManager(null, new NullLoggerFactory(), null)));
+        Assert.Throws<ArgumentException>(() => generator.GenerateProxy<ExamplePlugIn>(new PlugInManager(null, new NullLoggerFactory(), null, null)));
     }
 
     /// <summary>
@@ -175,7 +175,7 @@ public class PlugInProxyTypeGeneratorTest
     public void ErrorForInterfaceWithoutAttribute()
     {
         var generator = new PlugInProxyTypeGenerator();
-        Assert.Throws<ArgumentException>(() => generator.GenerateProxy<ICloneable>(new PlugInManager(null, new NullLoggerFactory(), null)));
+        Assert.Throws<ArgumentException>(() => generator.GenerateProxy<ICloneable>(new PlugInManager(null, new NullLoggerFactory(), null, null)));
     }
 
     /// <summary>
@@ -185,6 +185,6 @@ public class PlugInProxyTypeGeneratorTest
     public void ErrorForInterfaceWithUnsupportedMethodSignature()
     {
         var generator = new PlugInProxyTypeGenerator();
-        Assert.Throws<ArgumentException>(() => generator.GenerateProxy<IUnsupportedPlugIn>(new PlugInManager(null, new NullLoggerFactory(), null)));
+        Assert.Throws<ArgumentException>(() => generator.GenerateProxy<IUnsupportedPlugIn>(new PlugInManager(null, new NullLoggerFactory(), null, null)));
     }
 }

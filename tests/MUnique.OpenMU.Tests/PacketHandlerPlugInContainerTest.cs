@@ -30,7 +30,7 @@ public class PacketHandlerPlugInContainerTest
     [Test]
     public void SelectPlugInOfCorrectVersionWhenExactVersionIsAvailable()
     {
-        var manager = new PlugInManager(null, new NullLoggerFactory(), null);
+        var manager = new PlugInManager(null, new NullLoggerFactory(), null, null);
         manager.RegisterPlugIn<IPacketHandlerPlugIn, PacketHandlerSeason1>();
         manager.RegisterPlugIn<IPacketHandlerPlugIn, PacketHandlerSeason6>();
         manager.RegisterPlugIn<IPacketHandlerPlugIn, PacketHandlerSeason9>();
@@ -48,7 +48,7 @@ public class PacketHandlerPlugInContainerTest
     [Test]
     public void SelectPlugInOfCorrectVersionWhenLowerVersionsAreAvailable()
     {
-        var manager = new PlugInManager(null, new NullLoggerFactory(), null);
+        var manager = new PlugInManager(null, new NullLoggerFactory(), null, null);
         manager.RegisterPlugIn<IPacketHandlerPlugIn, PacketHandlerSeason1>();
         manager.RegisterPlugIn<IPacketHandlerPlugIn, PacketHandlerSeason6>();
         var clientVersionProvider = new Mock<IClientVersionProvider>();
@@ -65,7 +65,7 @@ public class PacketHandlerPlugInContainerTest
     [Test]
     public void SelectPlugInOfCorrectLanguage()
     {
-        var manager = new PlugInManager(null, new NullLoggerFactory(), null);
+        var manager = new PlugInManager(null, new NullLoggerFactory(), null, null);
         manager.RegisterPlugIn<IPacketHandlerPlugIn, PacketHandlerSeason6Chinese>();
         manager.RegisterPlugIn<IPacketHandlerPlugIn, PacketHandlerSeason6>();
         var clientVersionProvider = new Mock<IClientVersionProvider>();
@@ -82,7 +82,7 @@ public class PacketHandlerPlugInContainerTest
     [Test]
     public void SelectInvariantPlugIn()
     {
-        var manager = new PlugInManager(null, new NullLoggerFactory(), null);
+        var manager = new PlugInManager(null, new NullLoggerFactory(), null, null);
         manager.RegisterPlugIn<IPacketHandlerPlugIn, PacketHandlerInvariant>();
         var clientVersionProvider = new Mock<IClientVersionProvider>();
         clientVersionProvider.Setup(p => p.ClientVersion).Returns(Season6E3English);
@@ -98,7 +98,7 @@ public class PacketHandlerPlugInContainerTest
     [Test]
     public void SelectPlugInAfterDeactivation()
     {
-        var manager = new PlugInManager(null, new NullLoggerFactory(), null);
+        var manager = new PlugInManager(null, new NullLoggerFactory(), null, null);
         manager.RegisterPlugIn<IPacketHandlerPlugIn, PacketHandlerSeason1>();
         manager.RegisterPlugIn<IPacketHandlerPlugIn, PacketHandlerSeason6>();
         var clientVersionProvider = new Mock<IClientVersionProvider>();
@@ -118,7 +118,7 @@ public class PacketHandlerPlugInContainerTest
     [Test]
     public void SelectLanguageSpecificOverInvariant()
     {
-        var manager = new PlugInManager(null, new NullLoggerFactory(), null);
+        var manager = new PlugInManager(null, new NullLoggerFactory(), null, null);
         manager.RegisterPlugIn<IPacketHandlerPlugIn, PacketHandlerSeason6>();
         manager.RegisterPlugIn<IPacketHandlerPlugIn, PacketHandlerSeason6Chinese>();
         manager.RegisterPlugIn<IPacketHandlerPlugIn, PacketHandlerSeason6English>();

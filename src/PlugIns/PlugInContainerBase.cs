@@ -207,7 +207,7 @@ public class PlugInContainerBase<TPlugIn> : IPlugInContainer<TPlugIn>
             is { } configSupportInterface)
         {
             var configType = configSupportInterface.GenericTypeArguments[0];
-            var typedCustomConfiguration = e.Configuration.GetConfiguration(configType);
+            var typedCustomConfiguration = e.Configuration.GetConfiguration(configType, this.Manager.CustomConfigReferenceHandler);
             configSupportInterface
                 .GetProperty(nameof(ISupportCustomConfiguration<object>.Configuration))
                 ?.SetMethod

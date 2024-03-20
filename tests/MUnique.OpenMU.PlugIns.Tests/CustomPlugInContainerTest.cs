@@ -20,7 +20,7 @@ public class CustomPlugInContainerTest
     [Test]
     public void CreatingContainerWithNonMarkedTypeThrowsException()
     {
-        var manager = new PlugInManager(null, new NullLoggerFactory(), null);
+        var manager = new PlugInManager(null, new NullLoggerFactory(), null, null);
         var mock = new Mock<CustomPlugInContainerBase<ITestCustomPlugIn>>(manager);
         var exception = Assert.Throws<TargetInvocationException>(() =>
         {
@@ -36,7 +36,7 @@ public class CustomPlugInContainerTest
     [Test]
     public void GetPlugInFromCustomContainerWithRegisteredPlugInAfterRegistration()
     {
-        var manager = new PlugInManager(null, new NullLoggerFactory(), null);
+        var manager = new PlugInManager(null, new NullLoggerFactory(), null, null);
         var container = new CustomTestPlugInContainer(manager);
         manager.RegisterPlugIn<ITestCustomPlugIn, TestCustomPlugIn>();
 
@@ -50,7 +50,7 @@ public class CustomPlugInContainerTest
     [Test]
     public void GetPlugInFromCustomContainerWithInitiallyRegisteredPlugIn()
     {
-        var manager = new PlugInManager(null, new NullLoggerFactory(), null);
+        var manager = new PlugInManager(null, new NullLoggerFactory(), null, null);
         manager.RegisterPlugIn<ITestCustomPlugIn, TestCustomPlugIn>();
         var container = new CustomTestPlugInContainer(manager);
         var plugIn = container.GetPlugIn<ITestCustomPlugIn>();
@@ -63,7 +63,7 @@ public class CustomPlugInContainerTest
     [Test]
     public void DontGetPlugInFromCustomContainerAfterDeactivation()
     {
-        var manager = new PlugInManager(null, new NullLoggerFactory(), null);
+        var manager = new PlugInManager(null, new NullLoggerFactory(), null, null);
         manager.RegisterPlugIn<ITestCustomPlugIn, TestCustomPlugIn>();
         var container = new CustomTestPlugInContainer(manager);
         manager.DeactivatePlugIn<TestCustomPlugIn>();
@@ -77,7 +77,7 @@ public class CustomPlugInContainerTest
     [Test]
     public void DontGetPlugInFromCustomContainerIfItDoesntSuit()
     {
-        var manager = new PlugInManager(null, new NullLoggerFactory(), null);
+        var manager = new PlugInManager(null, new NullLoggerFactory(), null, null);
         var container = new CustomTestPlugInContainer(manager) { CreateNewPlugIns = false };
         manager.RegisterPlugIn<ITestCustomPlugIn, TestCustomPlugIn>();
         var plugIn = container.GetPlugIn<ITestCustomPlugIn>();
@@ -90,7 +90,7 @@ public class CustomPlugInContainerTest
     [Test]
     public void ReplacePlugInAtCustomContainer()
     {
-        var manager = new PlugInManager(null, new NullLoggerFactory(), null);
+        var manager = new PlugInManager(null, new NullLoggerFactory(), null, null);
         manager.RegisterPlugIn<ITestCustomPlugIn, TestCustomPlugIn>();
         var container = new CustomTestPlugInContainer(manager);
         manager.RegisterPlugIn<ITestCustomPlugIn, TestCustomPlugIn2>();
@@ -104,7 +104,7 @@ public class CustomPlugInContainerTest
     [Test]
     public void ReactivatePlugInAtCustomContainer()
     {
-        var manager = new PlugInManager(null, new NullLoggerFactory(), null);
+        var manager = new PlugInManager(null, new NullLoggerFactory(), null, null);
         manager.RegisterPlugIn<ITestCustomPlugIn, TestCustomPlugIn>();
         var container = new CustomTestPlugInContainer(manager);
         manager.RegisterPlugIn<ITestCustomPlugIn, TestCustomPlugIn2>();
@@ -119,7 +119,7 @@ public class CustomPlugInContainerTest
     [Test]
     public void GetPlugInFromCustomContainerWithAllImplementedInterfaces()
     {
-        var manager = new PlugInManager(null, new NullLoggerFactory(), null);
+        var manager = new PlugInManager(null, new NullLoggerFactory(), null, null);
         var container = new CustomTestPlugInContainer(manager);
         container.AddPlugIn(new TestCustomPlugIn2(), true);
         Assert.That(container.GetPlugIn<ITestCustomPlugIn>(), Is.Not.Null);

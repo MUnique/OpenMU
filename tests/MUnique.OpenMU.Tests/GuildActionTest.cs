@@ -164,7 +164,7 @@ public class GuildActionTest : GuildTestBase
             new InMemoryPersistenceContextProvider(),
             mapInitializer,
             new NullLoggerFactory(),
-            new PlugInManager(new List<PlugIns.PlugInConfiguration>(), new NullLoggerFactory(), null),
+            new PlugInManager(new List<PlugIns.PlugInConfiguration>(), new NullLoggerFactory(), null, null),
             NullDropGenerator.Instance,
             new ConfigurationChangeMediator());
         mapInitializer.PlugInManager = gameServer.PlugInManager;

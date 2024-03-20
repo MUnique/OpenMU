@@ -7,10 +7,10 @@ namespace MUnique.OpenMU.Web.AdminPanel.Services;
 using System.Reflection;
 using Blazored.Modal;
 using Blazored.Modal.Services;
-using MUnique.OpenMU.Web.AdminPanel.Components.Form;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
+using MUnique.OpenMU.Web.AdminPanel.Components.Form;
 using MUnique.OpenMU.Web.AdminPanel.Models;
 
 /// <summary>
@@ -173,10 +173,13 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
             throw new ArgumentException($"{nameof(item.ConfigurationType)} must not be null.", nameof(item));
         }
 
-        var configuration = item.Configuration.GetConfiguration(item.ConfigurationType)
+        var referenceResolver = new ByDataSourceReferenceHandler(this._dataSource);
+
+        var configuration = item.Configuration.GetConfiguration(item.ConfigurationType, referenceResolver)
                             ?? Activator.CreateInstance(item.ConfigurationType);
         var parameters = new ModalParameters();
         parameters.Add(nameof(ModalCreateNew<object>.Item), configuration!);
+        parameters.Add(nameof(ModalCreateNew<object>.PersistenceContext), await this._dataSource.GetContextAsync());
         var options = new ModalOptions
         {
             DisableBackgroundCancel = true,
@@ -187,10 +190,11 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
             item.PlugInName ?? string.Empty,
             parameters,
             options);
+
         var result = await modal.Result.ConfigureAwait(false);
         if (!result.Cancelled)
         {
-            item.Configuration.SetConfiguration(configuration!);
+            item.Configuration.SetConfiguration(configuration!, referenceResolver);
             await (await this._dataSource.GetContextAsync().ConfigureAwait(false)).SaveChangesAsync().ConfigureAwait(false);
             this.DataChanged?.Invoke(this, EventArgs.Empty);
         }
