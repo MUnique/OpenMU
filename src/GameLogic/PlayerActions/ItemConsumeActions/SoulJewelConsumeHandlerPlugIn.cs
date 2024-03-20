@@ -62,6 +62,7 @@ public class SoulJewelConsumeHandlerPlugIn : ItemModifyConsumeHandlerPlugIn
         if (this._randomizer.NextRandomBool(percent))
         {
             item.Level++;
+            item.Durability = item.GetMaximumDurabilityOfOnePiece();
             return true; // true doesn't mean that it was successful, just that the consumption happened.
         }
 
