@@ -120,9 +120,10 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
             // should never happen, but the access to the GameServer type is a trick to load the assembly into the current domain.
         }
 
+        var referenceHandler = new ByDataSourceReferenceHandler(new GameConfigurationDataSource(this._loggerFactory.CreateLogger<GameConfigurationDataSource>(), this._persistenceContextProvider));
         var serviceContainer = new ServiceContainer();
         serviceContainer.AddService(typeof(IPersistenceContextProvider), this._persistenceContextProvider);
-        var plugInManager = new PlugInManager(null, this._loggerFactory, serviceContainer);
+        var plugInManager = new PlugInManager(null, this._loggerFactory, serviceContainer, referenceHandler);
         plugInManager.DiscoverAndRegisterPlugIns();
         plugInManager.KnownPlugInTypes.ForEach(plugInType =>
         {
@@ -136,32 +137,32 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
             if (plugInType == typeof(ResetFeaturePlugIn))
             {
                 plugInConfiguration.IsActive = false;
-                plugInConfiguration.SetConfiguration(new ResetConfiguration());
+                plugInConfiguration.SetConfiguration(new ResetConfiguration(), referenceHandler);
             }
 
             if (plugInType == typeof(ChaosCastleStartPlugIn))
             {
-                plugInConfiguration.SetConfiguration(ChaosCastleStartConfiguration.Default);
+                plugInConfiguration.SetConfiguration(ChaosCastleStartConfiguration.Default, referenceHandler);
             }
 
             if (plugInType == typeof(GoldenInvasionPlugIn))
             {
-                plugInConfiguration.SetConfiguration(PeriodicInvasionConfiguration.DefaultGoldenInvasion);
+                plugInConfiguration.SetConfiguration(PeriodicInvasionConfiguration.DefaultGoldenInvasion, referenceHandler);
             }
 
             if (plugInType == typeof(RedDragonInvasionPlugIn))
             {
-                plugInConfiguration.SetConfiguration(PeriodicInvasionConfiguration.DefaultRedDragonInvasion);
+                plugInConfiguration.SetConfiguration(PeriodicInvasionConfiguration.DefaultRedDragonInvasion, referenceHandler);
             }
 
             if (plugInType == typeof(HappyHourPlugIn))
             {
-                plugInConfiguration.SetConfiguration(HappyHourConfiguration.Default);
+                plugInConfiguration.SetConfiguration(HappyHourConfiguration.Default, referenceHandler);
             }
 
             if (plugInType == typeof(MuHelperFeaturePlugIn))
             {
-                plugInConfiguration.SetConfiguration(new MuHelperConfiguration());
+                plugInConfiguration.SetConfiguration(new MuHelperConfiguration(), referenceHandler);
             }
 
             // We don't move the player anymore by his request. This was usually requested after a player performed a skill.
