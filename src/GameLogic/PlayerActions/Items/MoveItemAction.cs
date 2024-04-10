@@ -238,9 +238,12 @@ public class MoveItemAction
                 static bool IsOneHandedOrShield(ItemDefinition definition) =>
                     (definition.ItemSlot!.ItemSlots.Contains(RightHandSlot) && definition.ItemSlot.ItemSlots.Contains(LeftHandSlot)) || definition.Group == 6;
 
+                var rightHandItemDefinition = storage.GetItem(RightHandSlot)?.Definition!;
+
                 if ((toSlot == LeftHandSlot
                     && itemDefinition.Width >= 2
-                    && storage.GetItem(RightHandSlot)?.Definition!.Group == 6)
+                    && rightHandItemDefinition != null
+                    && !rightHandItemDefinition.IsAmmunition)
                     || (toSlot == RightHandSlot
                     && IsOneHandedOrShield(itemDefinition)
                     && storage.GetItem(LeftHandSlot)?.Definition!.Width >= 2))
