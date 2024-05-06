@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic;
 
+using System.Numerics;
 using System.Threading;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Attributes;
@@ -1786,9 +1787,26 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.PlayerLeftMap?.Invoke(this, (this, map));
     }
 
+    /// <summary>
+    /// Adds the missing stat attributes, e.g. after the character class has been changed outside of the game.
+    /// </summary>
+    private void AddMissingStatAttributes()
+    {
+        if (this.SelectedCharacter is not { CharacterClass: { } characterClass } character)
+        {
+            return;
+        }
+
+        var missingStats = characterClass.StatAttributes.Where(a => this.SelectedCharacter.Attributes.All(c => c.Definition != a.Attribute));
+
+        var attributes = missingStats.Select(a => this.PersistenceContext.CreateNew<StatAttribute>(a.Attribute, a.BaseValue)).ToList();
+        attributes.ForEach(character.Attributes.Add);
+    }
+
     private async ValueTask OnPlayerEnteredWorldAsync()
     {
         this.Attributes = new ItemAwareAttributeSystem(this.Account!, this.SelectedCharacter!);
+        this.AddMissingStatAttributes();
         this.Inventory = new InventoryStorage(this, this.GameContext);
         this.ShopStorage = new ShopStorage(this);
         this.TemporaryStorage = new Storage(InventoryConstants.TemporaryStorageSize, new TemporaryItemStorage());
