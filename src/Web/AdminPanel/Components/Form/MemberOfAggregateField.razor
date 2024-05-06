@@ -9,7 +9,7 @@
             <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
         </h5>
         <div class="card-body card-text">
-            @if (this.Value is null)
+            @if (this.CurrentValue is null)
             {
                 <button type="button" class="btn-primary" @onclick="this.OnCreateClick">Create</button>
             }
@@ -46,6 +46,6 @@
 
     private void OnCreateClick()
     {
-        this.Value = this.PersistentContext.CreateNew<TObject>();
+        this.CurrentValue = this.PersistentContext.CreateNew<TObject>();
     }
 }
