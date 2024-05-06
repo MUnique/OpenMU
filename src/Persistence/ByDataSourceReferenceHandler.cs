@@ -15,7 +15,7 @@ public class ByDataSourceReferenceHandler : ReferenceHandler
     /// <summary>
     /// The data source.
     /// </summary>
-    private IDataSource<GameConfiguration> _dataSource;
+    private readonly IDataSource<GameConfiguration> _dataSource;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ByDataSourceReferenceHandler"/> class.

@@ -29,7 +29,7 @@ public class ByDataSourceReferenceResolver : ReferenceResolver
     /// <inheritdoc />
     public override void AddReference(string referenceId, object value)
     {
-        //throw new NotImplementedException();
+        // do nothing here, because the data source is the source of truth.
     }
 
     /// <inheritdoc />
