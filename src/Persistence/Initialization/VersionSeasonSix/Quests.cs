@@ -249,6 +249,7 @@ internal class Quests : InitializerBase
             skillReward.Value = 1;
             skillReward.SkillReward = this.GameConfiguration.Skills.First(s => s.Number == (short)SkillNumber.InfinityArrow);
             skillReward.RewardType = QuestRewardType.Skill;
+            heroStatus.Rewards.Add(skillReward);
         }
 
         heroStatus.Rewards.Add(pointReward);
