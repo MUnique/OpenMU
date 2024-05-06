@@ -62,5 +62,6 @@ public class InfinityArrowSkillOnQuestCompletionPlugIn : UpdatePlugInBase
         skillReward.Value = 1;
         skillReward.SkillReward = gameConfiguration.Skills.First(s => s.Number == (short)SkillNumber.InfinityArrow);
         skillReward.RewardType = QuestRewardType.Skill;
+        quest.Rewards.Add(skillReward);
     }
 }
