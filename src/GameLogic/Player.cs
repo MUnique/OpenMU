@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameLogic;
 
-using System.Numerics;
 using System.Threading;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Attributes;
