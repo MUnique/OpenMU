@@ -4,9 +4,11 @@
 
 namespace MUnique.OpenMU.Startup;
 
+using System;
 using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.IO;
+using System.Text.Json.Serialization;
 using System.Threading;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
@@ -266,6 +268,18 @@ internal sealed class Program : IDisposable
             .AddSingleton<PlugInManager>()
             .AddSingleton<IServerProvider, LocalServerProvider>()
             .AddSingleton<ICollection<PlugInConfiguration>>(this.PlugInConfigurationsFactory)
+            .AddTransient<ReferenceHandler, ByDataSourceReferenceHandler>(provider =>
+            {
+                var persistenceContextProvider = provider.GetService<IPersistenceContextProvider>();
+                var dataSource = new GameConfigurationDataSource(
+                    provider.GetService<ILogger<GameConfigurationDataSource>>()!,
+                    persistenceContextProvider!);
+                var configId = persistenceContextProvider!.CreateNewConfigurationContext().GetDefaultGameConfigurationIdAsync(default).AsTask().WaitAndUnwrapException();
+                dataSource.GetOwnerAsync(configId!.Value).AsTask().WaitAndUnwrapException();
+                var referenceHandler = new ByDataSourceReferenceHandler(dataSource);
+                return referenceHandler;
+            })
+            .AddTransient<IDataSource<GameConfiguration>, GameConfigurationDataSource>()
             .AddHostedService<ChatServerContainer>()
             .AddHostedService<GameServerContainer>()
             .AddHostedService(provider => provider.GetService<ConnectServerContainer>()!)
@@ -310,8 +324,11 @@ internal sealed class Program : IDisposable
 
         var configs = context.GetAsync<PlugInConfiguration>().AsTask().WaitAndUnwrapException().ToList();
 
+        var referenceHandler = new ByDataSourceReferenceHandler(
+            new GameConfigurationDataSource(serviceProvider.GetService<ILogger<GameConfigurationDataSource>>()!, persistenceContextProvider));
+
         // We check if we miss any plugin configurations in the database. If we do, we try to add them.
-        var pluginManager = new PlugInManager(null, serviceProvider.GetService<ILoggerFactory>()!, serviceProvider);
+        var pluginManager = new PlugInManager(null, serviceProvider.GetService<ILoggerFactory>()!, serviceProvider, referenceHandler);
         pluginManager.DiscoverAndRegisterPlugIns();
 
         var typesWithCustomConfig = pluginManager.KnownPlugInTypes.Where(t => t.GetInterfaces().Contains(typeof(ISupportDefaultCustomConfiguration))).ToDictionary(t => t.GUID, t => t);
@@ -319,7 +336,7 @@ internal sealed class Program : IDisposable
         var typesWithMissingCustomConfigs = configs.Where(c => string.IsNullOrWhiteSpace(c.CustomConfiguration) && typesWithCustomConfig.ContainsKey(c.TypeId)).ToList();
         if (typesWithMissingCustomConfigs.Any())
         {
-            typesWithMissingCustomConfigs.ForEach(c => this.CreateDefaultPlugInConfiguration(typesWithCustomConfig[c.TypeId]!, c));
+            typesWithMissingCustomConfigs.ForEach(c => this.CreateDefaultPlugInConfiguration(typesWithCustomConfig[c.TypeId]!, c, referenceHandler));
             context.SaveChanges();
         }
 
@@ -329,11 +346,11 @@ internal sealed class Program : IDisposable
             return configs;
         }
 
-        configs.AddRange(this.CreateMissingPlugInConfigurations(typesWithMissingConfigs, persistenceContextProvider));
+        configs.AddRange(this.CreateMissingPlugInConfigurations(typesWithMissingConfigs, persistenceContextProvider, referenceHandler));
         return configs;
     }
 
-    private IEnumerable<PlugInConfiguration> CreateMissingPlugInConfigurations(IEnumerable<Type> plugInTypes, IPersistenceContextProvider persistenceContextProvider)
+    private IEnumerable<PlugInConfiguration> CreateMissingPlugInConfigurations(IEnumerable<Type> plugInTypes, IPersistenceContextProvider persistenceContextProvider, ReferenceHandler referenceHandler)
     {
         GameConfiguration gameConfiguration;
 
@@ -352,7 +369,7 @@ internal sealed class Program : IDisposable
             gameConfiguration.PlugInConfigurations.Add(plugInConfiguration);
             if (plugInType.GetInterfaces().Contains(typeof(ISupportDefaultCustomConfiguration)))
             {
-                this.CreateDefaultPlugInConfiguration(plugInType, plugInConfiguration);
+                this.CreateDefaultPlugInConfiguration(plugInType, plugInConfiguration, referenceHandler);
             }
 
             yield return plugInConfiguration;
@@ -361,13 +378,13 @@ internal sealed class Program : IDisposable
         saveContext.SaveChanges();
     }
 
-    private void CreateDefaultPlugInConfiguration(Type plugInType, PlugInConfiguration plugInConfiguration)
+    private void CreateDefaultPlugInConfiguration(Type plugInType, PlugInConfiguration plugInConfiguration, ReferenceHandler referenceHandler)
     {
         try
         {
             var plugin = (ISupportDefaultCustomConfiguration)Activator.CreateInstance(plugInType)!;
             var defaultConfig = plugin.CreateDefaultConfig();
-            plugInConfiguration.SetConfiguration(defaultConfig);
+            plugInConfiguration.SetConfiguration(defaultConfig, referenceHandler);
         }
         catch (Exception ex)
         {
@@ -490,7 +507,10 @@ internal sealed class Program : IDisposable
         serviceContainer.AddService(typeof(ILoggerFactory), loggerFactory);
         serviceContainer.AddService(typeof(IPersistenceContextProvider), contextProvider);
 
-        var plugInManager = new PlugInManager(null, loggerFactory, serviceContainer);
+        var referenceHandler = new ByDataSourceReferenceHandler(
+            new GameConfigurationDataSource(serviceContainer.GetService<ILogger<GameConfigurationDataSource>>()!, contextProvider));
+
+        var plugInManager = new PlugInManager(null, loggerFactory, serviceContainer, referenceHandler);
         plugInManager.DiscoverAndRegisterPlugInsOf<IDataInitializationPlugIn>();
         var initialization = plugInManager.GetStrategy<IDataInitializationPlugIn>(version) ?? throw new Exception("Data initialization plugin not found");
         await initialization.CreateInitialDataAsync(3, true).ConfigureAwait(false);

@@ -83,5 +83,5 @@ public enum UpdateVersion
     /// <summary>
     /// The version of the <see cref="InfinityArrowSkillOnQuestCompletionPlugIn"/>.
     /// </summary>
-    InfinityArrowSkillOnQuestCompletion = 14,
+    InfinityArrowSkillOnQuestCompletion = 15,
 }
