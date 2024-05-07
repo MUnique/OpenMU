@@ -7,7 +7,7 @@ As stated in the project readme, the primary protocol is the ENG (english versio
 of Season 6 Episode 3.
 
 There is one file for each packet. The packet documentation is generated through
-XSLT. The source XML files are at [MUnique.OpenMU.Network.Packets](../../src/Network/Packets/).
+XSLT. The source XML files are at [MUnique.OpenMU.Network.Packets](https://github.com/MUnique/OpenMU/tree/master/src/Network/Packets).
 
 In case you want to contribute packet documentations, please extend these source
 files accordingly. If you want to build the markdown files as well,

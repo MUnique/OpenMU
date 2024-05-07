@@ -18,7 +18,7 @@
     <QuickGrid Items="@this.ViewModels" Pagination="@_pagination" Theme="none" >
         <PropertyColumn Property="@(c => c.Name)" Sortable="true">
             <HeaderTemplate>
-                <button class="col-title" onclick="@(() => context.Grid.SortByColumnAsync(context))">
+                <button type="button" class="col-title" onclick="@(() => context.Grid.SortByColumnAsync(context))">
                     <div class="col-title-text">@context.Title</div>
                     <div class="sort-indicator" aria-hidden="true"></div>
                 </button>

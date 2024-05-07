@@ -39,6 +39,7 @@ public abstract class GameConfigurationInitializerBase : InitializerBase
     {
         this.GameConfiguration.ExperienceRate = 1.0f;
         this.GameConfiguration.MaximumLevel = 400;
+        this.GameConfiguration.MaximumMasterLevel = 400;
         this.GameConfiguration.InfoRange = 12;
         this.GameConfiguration.AreaSkillHitsPlayer = false;
         this.GameConfiguration.MaximumInventoryMoney = int.MaxValue;
