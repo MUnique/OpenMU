@@ -32,7 +32,7 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
 
     private readonly CancellationTokenSource _gameEndedCts = new();
 
-    private readonly HashSet<byte> _currentSpawnWaves = new();
+    private readonly ConcurrentDictionary<byte, MiniGameSpawnWave> _currentSpawnWaves = new();
     private readonly List<ChangeEventContext> _remainingEvents = new();
 
     private Stopwatch? _elapsedTimeSinceStart;
@@ -177,7 +177,7 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     /// <inheritdoc />
     public bool IsSpawnWaveActive(byte waveNumber)
     {
-        return this._currentSpawnWaves.Contains(waveNumber);
+        return this._currentSpawnWaves.ContainsKey(waveNumber);
     }
 
     /// <summary>
@@ -588,15 +588,13 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     {
         try
         {
-            foreach (var spawnWave in this.Definition.SpawnWaves.OrderBy(wave => wave.WaveNumber))
-            {
-                if (cancellationToken.IsCancellationRequested)
-                {
-                    break;
-                }
-
-                await this.RunSpawnWaveAsync(spawnWave, cancellationToken).ConfigureAwait(false);
-            }
+            // We already need to start all tasks, because they may overlap.
+            // So it's not okay to run them one after another.
+            var waveTasks = this.Definition.SpawnWaves
+                .OrderBy(wave => wave.WaveNumber)
+                .Select(wave => this.RunSpawnWaveAsync(wave, cancellationToken))
+                .ToList();
+            await Task.WhenAll(waveTasks).ConfigureAwait(false);
         }
         catch (OperationCanceledException)
         {
@@ -608,19 +606,20 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         }
     }
 
-    private async ValueTask RunSpawnWaveAsync(MiniGameSpawnWave spawnWave, CancellationToken cancellationToken)
+    private async Task RunSpawnWaveAsync(MiniGameSpawnWave spawnWave, CancellationToken cancellationToken)
     {
         try
         {
-            if (cancellationToken.IsCancellationRequested)
+            while (spawnWave.StartTime > this._elapsedTimeSinceStart?.Elapsed)
             {
-                return;
-            }
+                cancellationToken.ThrowIfCancellationRequested();
 
-            var requiredDelay = spawnWave.StartTime - this._elapsedTimeSinceStart?.Elapsed;
-            if (requiredDelay > TimeSpan.Zero)
-            {
-                await Task.Delay(requiredDelay.Value, cancellationToken).ConfigureAwait(false);
+                // Wait at least a second (or half of the remaining time) to the next check
+                var timeUntilNextCheck = (spawnWave.StartTime - this._elapsedTimeSinceStart!.Elapsed) / 2;
+                var requiredDelay = timeUntilNextCheck > TimeSpan.FromSeconds(1)
+                    ? timeUntilNextCheck
+                    : TimeSpan.FromSeconds(1);
+                await Task.Delay(requiredDelay, cancellationToken).ConfigureAwait(false);
             }
 
             this.Logger.LogDebug("{context}: Starting next wave: {wave}", this, spawnWave.Description);
@@ -629,7 +628,11 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
                 await this.ShowMessageAsync(message).ConfigureAwait(false);
             }
 
-            this._currentSpawnWaves.Add(spawnWave.WaveNumber);
+            if (!this._currentSpawnWaves.TryAdd(spawnWave.WaveNumber, spawnWave))
+            {
+                this.Logger.LogWarning("{context}: Duplicate spawn wave number in event: {wave}. Check your configuration, every spawn wave needs a distinct number.", this, spawnWave.Description);
+            }
+
             await this._mapInitializer.InitializeNpcsOnWaveStartAsync(this.Map, this, spawnWave.WaveNumber).ConfigureAwait(false);
             await Task.Delay(spawnWave.EndTime - spawnWave.StartTime, cancellationToken).ConfigureAwait(false);
             this.Logger.LogDebug("{context}: Wave ended: {wave}", this, spawnWave.Description);
@@ -637,6 +640,7 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         catch (OperationCanceledException)
         {
             // do nothing, as it's expected when game ends ...
+            throw;
         }
         catch (Exception ex)
         {
@@ -644,7 +648,7 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         }
         finally
         {
-            this._currentSpawnWaves.Remove(spawnWave.WaveNumber);
+            this._currentSpawnWaves.Remove(spawnWave.WaveNumber, out _);
         }
     }
 

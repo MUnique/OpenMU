@@ -30,11 +30,11 @@ public class Pets : InitializerBase
     /// <inheritdoc />
     public override void Initialize()
     {
-        this.CreatePet(0, 0, "Guardian Angel", 23, true, (Stats.DamageReceiveDecrement, 0.2f), (Stats.MaximumHealth, 50f));
+        this.CreatePet(0, 0, "Guardian Angel", 23, true, (Stats.DamageReceiveDecrement, -0.2f), (Stats.MaximumHealth, 50f));
         this.CreatePet(1, 0, "Imp", 28, true, (Stats.AttackDamageIncrease, 0.3f));
         this.CreatePet(2, 0, "Horn of Uniria", 25, true);
 
-        var dinorant = this.CreatePet(3, SkillNumber.FireBreath, "Horn of Dinorant", 110, false, (Stats.DamageReceiveDecrement, 0.1f), (Stats.AttackDamageIncrease, 0.15f), (Stats.CanFly, 1.0f));
+        var dinorant = this.CreatePet(3, SkillNumber.FireBreath, "Horn of Dinorant", 110, false, (Stats.DamageReceiveDecrement, -0.1f), (Stats.AttackDamageIncrease, 0.15f), (Stats.CanFly, 1.0f));
         this.AddDinorantOptions(dinorant);
     }
 
