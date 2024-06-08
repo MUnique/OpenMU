@@ -51,9 +51,4 @@ public class ResetConfiguration
     /// Gets or sets the amount of points which will be set at the <see cref="Character.LevelUpPoints"/> when doing a reset.
     /// </summary>
     public int PointsPerReset { get; set; } = 1500;
-
-    /// <summary>
-    /// Gets or sets a value indicating whether the class specific <see cref="CharacterClass.PointsPerReset"/> should override <see cref="PointsPerReset"/>.
-    /// </summary>
-    public bool IsResetPointsByClass { get; set; }
 }

@@ -50,13 +50,6 @@ public partial class CharacterClass
     public byte CreationAllowedFlag { get; set; }
 
     /// <summary>
-    /// Gets or sets the amount of points which will be set at the <see cref="Character.LevelUpPoints"/> when doing a reset.
-    /// This one is specific for the class and has to be activated in the reset plugin.
-    /// <br/>Also, <c>-1</c> means deactivated.
-    /// </summary>
-    public int PointsPerReset { get; set; } = -1;
-
-    /// <summary>
     /// Gets or sets the next generation class, to which a character can upgrade after
     /// fulfilling certain requirements, like quests.
     /// </summary>
