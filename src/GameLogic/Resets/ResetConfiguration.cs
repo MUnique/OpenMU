@@ -55,5 +55,5 @@ public class ResetConfiguration
     /// <summary>
     /// Gets or sets a value indicating whether the class specific <see cref="CharacterClass.PointsPerReset"/> should override <see cref="PointsPerReset"/>.
     /// </summary>
-    public bool IsResetPointsByClass { get; set; } = false;
+    public bool IsResetPointsByClass { get; set; }
 }
