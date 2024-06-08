@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.Resets;
 
+using MUnique.OpenMU.DataModel.Composition;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlayerActions;
@@ -11,6 +12,7 @@ using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Login;
 using MUnique.OpenMU.GameLogic.Views.NPC;
 using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence;
 
 /// <summary>
 /// Action to reset a character.
@@ -124,7 +126,7 @@ public class ResetCharacterAction
 
     private void UpdateStats(ResetConfiguration configuration)
     {
-        var calculatedPointsPerReset = configuration.PointsPerReset;
+        var calculatedPointsPerReset = this.GetResetPoints(configuration);
         if (configuration.MultiplyPointsByResetCount)
         {
             calculatedPointsPerReset *= this.GetResetCount();
@@ -138,6 +140,22 @@ public class ResetCharacterAction
         }
 
         this._player.SelectedCharacter!.LevelUpPoints = Math.Max(0, calculatedPointsPerReset);
+    }
+
+    private int GetResetPoints(ResetConfiguration configuration)
+    {
+        int pointsPerReset = configuration.PointsPerReset;
+
+        if (configuration.IsResetPointsByClass)
+        {
+            var classPointsPerReset = this._player.SelectedCharacter!.CharacterClass!.PointsPerReset;
+            if (classPointsPerReset >= 0)
+            {
+                pointsPerReset = classPointsPerReset;
+            }
+        }
+
+        return pointsPerReset;
     }
 
     private async ValueTask MoveHomeAsync()
