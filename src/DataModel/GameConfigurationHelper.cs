@@ -34,7 +34,6 @@ public static class GameConfigurationHelper
         { typeof(ItemOptionDefinition), c => c.ItemOptions },
         {
             typeof(IncreasableItemOption), c => c.ItemOptions.SelectMany(o => o.PossibleOptions)
-                .Concat(c.ItemSetGroups.SelectMany(o => o.Options))
         },
         { typeof(ItemSetGroup), c => c.ItemSetGroups },
         { typeof(ItemOfItemSet), c => c.ItemSetGroups.SelectMany(o => o.Items) },

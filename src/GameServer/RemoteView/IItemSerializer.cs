@@ -305,7 +305,7 @@ public class ItemSerializer : IItemSerializer
         var bonusLevel = (ancientByte & AncientBonusLevelMask) >> 2;
         var setDiscriminator = ancientByte & AncientDiscriminatorMask;
         var ancientSets = item.Definition!.PossibleItemSetGroups
-            .Where(set => set.Options.Any(o => o.OptionType == ItemOptionTypes.AncientOption))
+            .Where(set => set.Options?.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.AncientOption) ?? false)
             .SelectMany(i => i.Items).Where(i => i.ItemDefinition == item.Definition)
             .Where(set => set.AncientSetDiscriminator == setDiscriminator).ToList();
         if (ancientSets.Count > 1)

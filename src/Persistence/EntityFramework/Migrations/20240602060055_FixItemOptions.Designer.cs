@@ -3,6 +3,7 @@ using System;
 using MUnique.OpenMU.Persistence.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 {
     [DbContext(typeof(EntityDataContext))]
-    partial class EntityDataContextModelSnapshot : ModelSnapshot
+    [Migration("20240602060055_FixItemOptions")]
+    partial class FixItemOptions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1138,6 +1141,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<Guid?>("ItemOptionDefinitionId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("ItemSetGroupId")
+                        .HasColumnType("uuid");
+
                     b.Property<int>("LevelType")
                         .HasColumnType("integer");
 
@@ -1156,6 +1162,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ItemOptionDefinitionId");
+
+                    b.HasIndex("ItemSetGroupId");
 
                     b.HasIndex("OptionTypeId");
 
@@ -1876,17 +1884,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("OptionsId")
-                        .HasColumnType("uuid");
-
                     b.Property<int>("SetLevel")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
 
                     b.HasIndex("GameConfigurationId");
-
-                    b.HasIndex("OptionsId");
 
                     b.ToTable("ItemSetGroup", "config");
                 });
@@ -3654,6 +3657,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasForeignKey("ItemOptionDefinitionId")
                         .OnDelete(DeleteBehavior.Cascade);
 
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemSetGroup", null)
+                        .WithMany("RawOptions")
+                        .HasForeignKey("ItemSetGroupId");
+
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemOptionType", "RawOptionType")
                         .WithMany()
                         .HasForeignKey("OptionTypeId");
@@ -4059,12 +4066,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .WithMany("RawItemSetGroups")
                         .HasForeignKey("GameConfigurationId")
                         .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemOptionDefinition", "RawOptions")
-                        .WithMany()
-                        .HasForeignKey("OptionsId");
-
-                    b.Navigation("RawOptions");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemSlotType", b =>
@@ -4793,6 +4794,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemSetGroup", b =>
                 {
                     b.Navigation("RawItems");
+
+                    b.Navigation("RawOptions");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemStorage", b =>
