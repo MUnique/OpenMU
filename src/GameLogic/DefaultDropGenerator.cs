@@ -42,7 +42,7 @@ public class DefaultDropGenerator : IDropGenerator
     {
         this._randomizer = randomizer;
         this._droppableItems = config.Items.Where(i => i.DropsFromMonsters).ToList();
-        this._ancientItems = this._droppableItems.Where(i => i.PossibleItemSetGroups.Any(o => o.Options.Any(o => o.OptionType == ItemOptionTypes.AncientOption))).ToList();
+        this._ancientItems = this._droppableItems.Where(i => i.PossibleItemSetGroups.Any(o => o.Options?.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.AncientOption) ?? false)).ToList();
     }
 
     /// <inheritdoc/>
@@ -327,7 +327,7 @@ public class DefaultDropGenerator : IDropGenerator
 
     private void ApplyRandomAncientOption(Item item)
     {
-        var ancientSet = item.Definition?.PossibleItemSetGroups.Where(g => g!.Options.Any(o => o.OptionType == ItemOptionTypes.AncientOption)).SelectRandom(this._randomizer);
+        var ancientSet = item.Definition?.PossibleItemSetGroups.Where(g => g!.Options?.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.AncientOption) ?? false).SelectRandom(this._randomizer);
         if (ancientSet is null)
         {
             return;

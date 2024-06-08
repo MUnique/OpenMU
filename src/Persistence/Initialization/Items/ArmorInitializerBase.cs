@@ -53,6 +53,13 @@ public abstract class ArmorInitializerBase : InitializerBase
     {
         var sets = this.GameConfiguration.Items.Where(item => item.Group is >= 7 and <= 11).GroupBy(item => item.Number);
 
+        var defenseRateBonusDef = this.Context.CreateNew<ItemOptionDefinition>();
+        defenseRateBonusDef.SetGuid(ItemOptionDefinitionNumbers.DefenseRateSetBonusOption);
+        defenseRateBonusDef.Name = "Complete Set Bonus (any level)";
+        defenseRateBonusDef.AddChance = 0;
+        defenseRateBonusDef.AddsRandomly = false;
+        this.GameConfiguration.ItemOptions.Add(defenseRateBonusDef);
+
         var defenseRateBonus = this.Context.CreateNew<IncreasableItemOption>();
         defenseRateBonus.SetGuid(ItemOptionDefinitionNumbers.DefenseRateSetBonusOption);
         defenseRateBonus.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
@@ -60,11 +67,16 @@ public abstract class ArmorInitializerBase : InitializerBase
         defenseRateBonus.PowerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
         defenseRateBonus.PowerUpDefinition.Boost.ConstantValue.Value = 1.1f;
         defenseRateBonus.PowerUpDefinition.TargetAttribute = Stats.DefenseRatePvm.GetPersistent(this.GameConfiguration);
+        defenseRateBonusDef.PossibleOptions.Add(defenseRateBonus);
 
-        var defenseBonus = new Dictionary<int, IncreasableItemOption>();
+        var defenseBonus = new Dictionary<int, ItemOptionDefinition>();
         for (byte setLevel = 10; setLevel <= this.MaximumArmorLevel; setLevel++)
         {
-            defenseBonus.Add(setLevel, this.BuildDefenseBonusOption(1 + (setLevel - 9) * 0.05f, setLevel));
+            var def = this.Context.CreateNew<ItemOptionDefinition>();
+            def.SetGuid(setLevel);
+            def.Name = $"Complete Set Bonus (Level {setLevel})";
+            def.PossibleOptions.Add(this.BuildDefenseBonusOption(1 + (setLevel - 9) * 0.05f, setLevel));
+            defenseBonus.Add(setLevel, def);
         }
 
         foreach (var group in sets)
@@ -73,9 +85,11 @@ public abstract class ArmorInitializerBase : InitializerBase
             this.GameConfiguration.ItemSetGroups.Add(setForDefenseRate);
             setForDefenseRate.Name = group.First().Name.Split(' ')[0] + " Defense Rate Bonus";
             setForDefenseRate.MinimumItemCount = group.Count();
-            setForDefenseRate.Options.Add(defenseRateBonus);
+            setForDefenseRate.Options = defenseRateBonusDef;
+            setForDefenseRate.AlwaysApplies = true;
             foreach (var item in group)
             {
+                item.PossibleItemSetGroups.Add(setForDefenseRate);
                 var itemOfSet = this.Context.CreateNew<ItemOfItemSet>();
                 itemOfSet.SetGuid(item.Group, item.Number, 0xFF);
                 itemOfSet.ItemDefinition = item;
@@ -197,13 +211,14 @@ public abstract class ArmorInitializerBase : InitializerBase
         return defenseBonus;
     }
 
-    private void CreateSetGroup(byte setLevel, IncreasableItemOption option, ICollection<ItemDefinition> group)
+    private void CreateSetGroup(byte setLevel, ItemOptionDefinition options, ICollection<ItemDefinition> group)
     {
         var setForDefense = this.Context.CreateNew<ItemSetGroup>();
         this.GameConfiguration.ItemSetGroups.Add(setForDefense);
         setForDefense.Name = $"{group.First().Name.Split(' ')[0]} Defense Bonus (Level {setLevel})";
         setForDefense.MinimumItemCount = group.Count;
-        setForDefense.Options.Add(option);
+        setForDefense.Options = options;
+        setForDefense.AlwaysApplies = true;
         setForDefense.SetLevel = setLevel;
 
         foreach (var item in group)
@@ -212,6 +227,7 @@ public abstract class ArmorInitializerBase : InitializerBase
             itemOfSet.SetGuid(item.Group, item.Number, setLevel);
             itemOfSet.ItemDefinition = item;
             setForDefense.Items.Add(itemOfSet);
+            item.PossibleItemSetGroups.Add(setForDefense);
         }
     }
 }

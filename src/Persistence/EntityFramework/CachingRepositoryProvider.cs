@@ -59,8 +59,9 @@ internal class CachingRepositoryProvider : RepositoryProvider
 
         this.RegisterRepository(new ConfigurationTypeRepository<ItemOptionDefinition>(this._parent, this.LoggerFactory, config => config.RawItemOptions));
         this.RegisterRepository(new ConfigurationTypeRepository<IncreasableItemOption>(
-            this._parent, this.LoggerFactory,
-            config => config.RawItemOptions.SelectMany(o => o.RawPossibleOptions).Concat(config.RawItemSetGroups.SelectMany(g => g.RawOptions)).Distinct().ToList()));
+            this._parent,
+            this.LoggerFactory,
+            config => config.RawItemOptions.SelectMany(o => o.RawPossibleOptions).Distinct().ToList()));
         this.RegisterRepository(new ConfigurationTypeRepository<AttributeDefinition>(this._parent, this.LoggerFactory, config => config.RawAttributes));
         this.RegisterRepository(new ConfigurationTypeRepository<DropItemGroup>(this._parent, this.LoggerFactory, config => config.RawDropItemGroups));
         this.RegisterRepository(new ConfigurationTypeRepository<CharacterClass>(this._parent, this.LoggerFactory, config => config.RawCharacterClasses));
