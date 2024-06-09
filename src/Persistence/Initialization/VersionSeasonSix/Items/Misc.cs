@@ -27,6 +27,39 @@ public class Misc : InitializerBase
     {
         this.CreateLifeStone();
         this.CreateGoldenCherryBlossomBranch();
+        this.CreateLostMap();
+        this.CreateSymbolOfKundun();
+    }
+
+    private void CreateLostMap()
+    {
+        var itemDefinition = this.Context.CreateNew<ItemDefinition>();
+        itemDefinition.Name = "Lost Map";
+        itemDefinition.Number = 28;
+        itemDefinition.Group = 14;
+        itemDefinition.DropsFromMonsters = false;
+        itemDefinition.Durability = 1;
+        itemDefinition.Width = 1;
+        itemDefinition.Height = 1;
+        itemDefinition.MaximumItemLevel = 7;
+        itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
+        this.GameConfiguration.Items.Add(itemDefinition);
+    }
+
+    private void CreateSymbolOfKundun()
+    {
+        var itemDefinition = this.Context.CreateNew<ItemDefinition>();
+        itemDefinition.Name = "Symbol of Kundun";
+        itemDefinition.Number = 29;
+        itemDefinition.Group = 14;
+        itemDefinition.DropLevel = 0;
+        itemDefinition.DropsFromMonsters = true;
+        itemDefinition.Durability = 5;
+        itemDefinition.Width = 1;
+        itemDefinition.Height = 1;
+        itemDefinition.MaximumItemLevel = 7;
+        itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
+        this.GameConfiguration.Items.Add(itemDefinition);
     }
 
     private void CreateLifeStone()
