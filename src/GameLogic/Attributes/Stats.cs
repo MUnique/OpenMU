@@ -902,7 +902,7 @@ public class Stats
     /// <summary>
     /// Gets the attribute for the number of points this class will receive for reset, overwrites the default <see cref="Resets.ResetConfiguration.PointsPerReset"/> value.
     /// </summary>
-    public static AttributeDefinition PointsPerResetByClass { get; } = new(new Guid("a34f4f57-b364-4cdb-9989-64cedd2cd831"), "Points Per Reset By Class", "The number of points this class will receive for reset, overwrites the default 'PointsPerReset' value.");
+    public static AttributeDefinition PointsPerReset { get; } = new(new Guid("a34f4f57-b364-4cdb-9989-64cedd2cd831"), "Points Per Reset", "The number of points the player will receive for reset, overwrites the default 'PointsPerReset' value of the reset configuration.");
 
     /// <summary>
     /// Gets the attributes which are regenerated in an interval.

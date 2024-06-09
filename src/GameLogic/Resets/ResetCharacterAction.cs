@@ -142,7 +142,7 @@ public class ResetCharacterAction
 
     private int GetResetPoints(ResetConfiguration configuration)
     {
-        var pointsPerReset = (int)this._player.Attributes![Stats.PointsPerResetByClass];
+        var pointsPerReset = (int)this._player.Attributes![Stats.PointsPerReset];
         if (pointsPerReset == 0)
         {
             pointsPerReset = configuration.PointsPerReset;
