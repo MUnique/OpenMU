@@ -3,6 +3,7 @@
 // </copyright>
 
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.GameLogic;
 
 namespace MUnique.OpenMU.Persistence.Initialization.Updates;
 
@@ -83,5 +84,20 @@ public class AddKalimaPlugIn : UpdatePlugInBase
         itemDefinition.MaximumItemLevel = 7;
         itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
         gameConfiguration.Items.Add(itemDefinition);
+
+        (byte, byte)[] dropLevels = [(25, 46), (47, 65), (66, 77), (78, 84), (85, 91), (92, 107), (108, 255)];
+        for (byte level = 1; level <= dropLevels.Length; level++)
+        {
+            var dropItemGroup = context.CreateNew<DropItemGroup>();
+            dropItemGroup.SetGuid(14, 29, level);
+            dropItemGroup.ItemLevel = level;
+            dropItemGroup.PossibleItems.Add(itemDefinition);
+            dropItemGroup.Chance = 0.003; // 0.3 Percent
+            dropItemGroup.Description = $"The drop item group for Symbol of Kundun (Level {level})";
+            (dropItemGroup.MinimumMonsterLevel, dropItemGroup.MaximumMonsterLevel) = dropLevels[level - 1];
+
+            gameConfiguration.DropItemGroups.Add(dropItemGroup);
+            gameConfiguration.Maps.ForEach(map => map.DropItemGroups.Add(dropItemGroup));
+        }
     }
 }
