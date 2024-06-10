@@ -38,8 +38,8 @@ public class NewNpcsInScopePlugIn : INewNpcsInScopePlugIn
             return;
         }
 
-        var summons = newObjects.OfType<Monster>().Where(m => m.SummonedBy is { }).ToList();
-        var npcs = newObjects.Except(summons).ToList();
+        var summons = newObjects.OfType<ISummonable>().Where(m => m.SummonedBy is { }).ToList();
+        var npcs = newObjects.Except(summons.OfType<NonPlayerCharacter>()).ToList();
 
         if (npcs.Any())
         {
@@ -100,7 +100,7 @@ public class NewNpcsInScopePlugIn : INewNpcsInScopePlugIn
         await connection.SendAsync(Write).ConfigureAwait(false);
     }
 
-    private static async ValueTask SummonedMonstersInScopeAsync(bool isSpawned, IConnection connection, ICollection<Monster> summons)
+    private static async ValueTask SummonedMonstersInScopeAsync(bool isSpawned, IConnection connection, ICollection<ISummonable> summons)
     {
         int Write()
         {
@@ -127,10 +127,10 @@ public class NewNpcsInScopePlugIn : INewNpcsInScopePlugIn
                 block.CurrentPositionX = summon.Position.X;
                 block.CurrentPositionY = summon.Position.Y;
 
-                if (summon.IsWalking)
+                if (summon is ISupportWalk walker && walker.IsWalking)
                 {
-                    block.TargetPositionX = summon.WalkTarget.X;
-                    block.TargetPositionY = summon.WalkTarget.Y;
+                    block.TargetPositionX = walker.WalkTarget.X;
+                    block.TargetPositionY = walker.WalkTarget.Y;
                 }
                 else
                 {
@@ -141,12 +141,19 @@ public class NewNpcsInScopePlugIn : INewNpcsInScopePlugIn
                 block.Rotation = summon.Rotation.ToPacketByte();
                 block.OwnerCharacterName = summon.SummonedBy?.Name ?? string.Empty;
 
-                var activeEffects = summon.MagicEffectList.VisibleEffects;
-                block.EffectCount = (byte)activeEffects.Count;
-                for (int e = block.EffectCount - 1; e >= 0; e--)
+                if (summon is IAttackable attackable)
                 {
-                    var effectBlock = block[e];
-                    effectBlock.Id = (byte)activeEffects[e].Id;
+                    var activeEffects = attackable.MagicEffectList.VisibleEffects;
+                    block.EffectCount = (byte)activeEffects.Count;
+                    for (int e = block.EffectCount - 1; e >= 0; e--)
+                    {
+                        var effectBlock = block[e];
+                        effectBlock.Id = (byte)activeEffects[e].Id;
+                    }
+                }
+                else
+                {
+                    block.EffectCount = 0;
                 }
 
                 i++;

@@ -124,6 +124,7 @@ internal partial class NpcInitialization : Version095d.NpcInitialization
             def.Number = 259;
             def.Designation = "Oracle Layla";
             def.ObjectKind = NpcObjectKind.PassiveNpc;
+            def.MerchantStore = this.CreatePotionGirlItemStorage(def.Number);
             this.GameConfiguration.Monsters.Add(def);
             def.SetGuid(def.Number);
         }

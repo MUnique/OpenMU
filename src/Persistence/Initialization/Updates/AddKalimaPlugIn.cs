@@ -2,13 +2,12 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.DataModel.Configuration.Items;
-using MUnique.OpenMU.GameLogic;
-
 namespace MUnique.OpenMU.Persistence.Initialization.Updates;
 
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -53,6 +52,16 @@ public class AddKalimaPlugIn : UpdatePlugInBase
     {
         this.CreateLostMap(context, gameConfiguration);
         this.CreateSymbolOfKundun(context, gameConfiguration);
+
+        // copy potion girl items to oracle layla:
+        var potionGirl = gameConfiguration.Monsters.First(m => m.Number == 253);
+        var oracleLayla = gameConfiguration.Monsters.First(m => m.Number == 259);
+        if (oracleLayla.NpcWindow is not NpcWindow.Merchant && oracleLayla.MerchantStore is null)
+        {
+            oracleLayla.NpcWindow = NpcWindow.Merchant;
+            oracleLayla.MerchantStore = potionGirl.MerchantStore!.Clone(gameConfiguration);
+            oracleLayla.MerchantStore.SetGuid(oracleLayla.Number);
+        }
     }
 
     private void CreateLostMap(IContext context, GameConfiguration gameConfiguration)

@@ -14,25 +14,20 @@ using MUnique.OpenMU.PlugIns;
 [Guid("F07A9CED-F43E-4824-9587-F5C3C3187A13")]
 public sealed class SymbolOfKundunStackedPlugIn : IItemStackedPlugIn
 {
-    private const byte SymbolOfKundunGroup = 14;
-    private const byte SymbolOfKundunNumber = 29;
-    private const byte LostMapGroup = 14;
-    private const byte LostMapNumber = 28;
-
     /// <inheritdoc />
     public async ValueTask ItemStackedAsync(Player player, Item sourceItem, Item targetItem)
     {
-        if (targetItem.Definition is not { Group: SymbolOfKundunGroup, Number: SymbolOfKundunNumber })
+        if (!targetItem.IsSymbolOfKundun())
         {
             return;
         }
 
-        if (targetItem.Durability() < targetItem.Definition.Durability)
+        if (targetItem.Durability() < targetItem.Definition?.Durability)
         {
             return;
         }
 
-        var lostMap = player.GameContext.Configuration.Items.FirstOrDefault(item => item is { Group: LostMapGroup, Number: LostMapNumber });
+        var lostMap = player.GameContext.Configuration.Items.FirstOrDefault(item => item.IsLostMap());
         if (lostMap is null)
         {
             player.Logger.LogWarning("Lost map definition not found.");
