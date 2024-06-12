@@ -15,7 +15,7 @@ using Nito.AsyncEx;
 /// <summary>
 /// The implementation of a monster, which can attack players.
 /// </summary>
-public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISupportWalk, IMovable
+public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISupportWalk, IMovable, ISummonable
 {
     private readonly AsyncLock _moveLock = new();
     private readonly INpcIntelligence _intelligence;

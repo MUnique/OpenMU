@@ -4,9 +4,10 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Items;
 
-using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.Pathfinding;
+using MUnique.OpenMU.GameLogic.PlugIns;
+using static MUnique.OpenMU.GameLogic.PlugIns.IItemDropPlugIn;
 
 /// <summary>
 /// Action to drop an item from the inventory to the floor.
@@ -23,70 +24,36 @@ public class DropItemAction
     {
         var item = player.Inventory?.GetItem(slot);
 
-        if (item is not null && (player.CurrentMap?.Terrain.WalkMap[target.X, target.Y] ?? false))
-        {
-            if (item.Definition!.DropItems.Count > 0
-                && item.Definition!.DropItems.Where(di => di.SourceItemLevel == item.Level) is { } itemDropGroups)
-            {
-                await this.DropRandomItemAsync(item, player, itemDropGroups).ConfigureAwait(false);
-            }
-            else
-            {
-                await this.DropItemAsync(player, item, target).ConfigureAwait(false);
-            }
-        }
-        else
+        if (item is null
+            || !(player.CurrentMap?.Terrain.WalkMap[target.X, target.Y] ?? false))
         {
             await player.InvokeViewPlugInAsync<IItemDropResultPlugIn>(p => p.ItemDropResultAsync(slot, false)).ConfigureAwait(false);
-        }
-    }
-
-    /// <summary>
-    /// Drops a random item of the given <see cref="DropItemGroup"/> at the players coordinates.
-    /// </summary>
-    /// <param name="sourceItem">The source item.</param>
-    /// <param name="player">The player.</param>
-    /// <param name="dropItemGroups">The <see cref="DropItemGroup"/> from which the random item is generated.</param>
-    private async ValueTask DropRandomItemAsync(Item sourceItem, Player player, IEnumerable<ItemDropItemGroup> dropItemGroups)
-    {
-        if (dropItemGroups.Any(g => g.RequiredCharacterLevel > player.Level))
-        {
-            await player.InvokeViewPlugInAsync<IItemDropResultPlugIn>(p => p.ItemDropResultAsync(sourceItem.ItemSlot, false)).ConfigureAwait(false);
             return;
         }
 
-        var (item, droppedMoneyAmount, dropEffect) = player.GameContext.DropGenerator.GenerateItemDrop(dropItemGroups);
-        if (droppedMoneyAmount is not null)
+        if (player.GameContext.PlugInManager.GetPlugInPoint<IItemDropPlugIn>() is { } plugInPoint)
         {
-            var droppedMoney = new DroppedMoney(droppedMoneyAmount.Value, player.Position, player.CurrentMap!);
-            await player.CurrentMap!.AddAsync(droppedMoney).ConfigureAwait(false);
+            var dropArguments = new ItemDropArguments();
+            await plugInPoint.HandleItemDropAsync(player, item, target, dropArguments).ConfigureAwait(false);
+            if (dropArguments.Cancel)
+            {
+                // If we're here, that means that a plugin has handled the drop request.
+                // Now, we have to decide if we should remove the item from the inventory or not.
+                if (dropArguments.Success)
+                {
+                    await this.RemoveItemFromInventoryAsync(player, item).ConfigureAwait(false);
+                    await player.PersistenceContext.DeleteAsync(item).ConfigureAwait(false);
+                }
+                else
+                {
+                    await player.InvokeViewPlugInAsync<IItemDropResultPlugIn>(p => p.ItemDropResultAsync(slot, false)).ConfigureAwait(false);
+                }
+
+                return;
+            }
         }
 
-        if (item is not null)
-        {
-            var droppedItem = new DroppedItem(item, player.Position, player.CurrentMap!, player);
-            await player.CurrentMap!.AddAsync(droppedItem).ConfigureAwait(false);
-        }
-
-        if (dropEffect is not ItemDropEffect.Undefined)
-        {
-            await this.ShowDropEffectAsync(player, dropEffect).ConfigureAwait(false);
-        }
-
-        await this.RemoveItemFromInventoryAsync(player, sourceItem).ConfigureAwait(false);
-        await player.PersistenceContext.DeleteAsync(sourceItem).ConfigureAwait(false);
-    }
-
-    private async ValueTask ShowDropEffectAsync(Player player, ItemDropEffect dropEffect)
-    {
-        if (dropEffect == ItemDropEffect.Swirl)
-        {
-            await player.InvokeViewPlugInAsync<IShowEffectPlugIn>(p => p.ShowEffectAsync(player, IShowEffectPlugIn.EffectType.Swirl)).ConfigureAwait(false);
-        }
-        else
-        {
-            await player.InvokeViewPlugInAsync<IShowItemDropEffectPlugIn>(p => p.ShowEffectAsync(dropEffect, player.Position)).ConfigureAwait(false);
-        }
+        await this.DropItemAsync(player, item, target).ConfigureAwait(false);
     }
 
     private async ValueTask DropItemAsync(Player player, Item item, Point target)

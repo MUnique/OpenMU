@@ -88,5 +88,10 @@ public enum UpdateVersion
     /// <summary>
     /// The version of the <see cref="AddPointsPerResetAttributePlugIn"/>.
     /// </summary>
-    AddPointsPerResetByClassAttribute = 16
+    AddPointsPerResetByClassAttribute = 16,
+
+    /// <summary>
+    /// The version of the <see cref="AddKalimaPlugIn"/>.
+    /// </summary>
+    AddKalima = 17,
 }
