@@ -47,6 +47,14 @@ public class GateNpc : NonPlayerCharacter, ISummonable
     public ExitGate TargetGate { get; }
 
     /// <inheritdoc />
+    protected override void Dispose(bool disposing)
+    {
+        this._cts.Cancel();
+        this._cts.Dispose();
+        base.Dispose(disposing);
+    }
+
+    /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore()
     {
         await this._cts.CancelAsync().ConfigureAwait(false);
@@ -77,11 +85,15 @@ public class GateNpc : NonPlayerCharacter, ISummonable
                 playersInRange.Clear();
                 if (this.SummonedBy.Party is { } party)
                 {
-                    playersInRange.AddRange(party.PartyList.OfType<Player>().Where(p => p.IsActive() && p.IsInRange(this, Range) && this.CurrentMap == p.CurrentMap));
+                    playersInRange.AddRange(party.PartyList.OfType<Player>().Where(this.IsPlayerInRange));
                 }
-                else if (this.SummonedBy.IsActive() && this.SummonedBy.IsInRange(this, Range) && this.CurrentMap == this.SummonedBy.CurrentMap)
+                else if (this.IsPlayerInRange(this.SummonedBy))
                 {
                     playersInRange.Add(this.SummonedBy);
+                }
+                else
+                {
+                    // do nothing.
                 }
 
                 foreach (var player in playersInRange)
@@ -109,5 +121,10 @@ public class GateNpc : NonPlayerCharacter, ISummonable
         {
             await this.DisposeAsync().ConfigureAwait(false);
         }
+    }
+
+    private bool IsPlayerInRange(Player player)
+    {
+        return player.IsActive() && player.IsInRange(this, Range) && this.CurrentMap == player.CurrentMap;
     }
 }
