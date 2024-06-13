@@ -58,7 +58,7 @@ public sealed class LostMapDroppedPlugIn : IItemDropPlugIn
             return;
         }
 
-        var gateNpcNumber = GateNpcStartNumber + item.Level;
+        var gateNpcNumber = GateNpcStartNumber + item.Level - 1;
         var gateNpcDef = player.GameContext.Configuration.Monsters.FirstOrDefault(def => def.Number == gateNpcNumber);
         if (gateNpcDef is null)
         {
