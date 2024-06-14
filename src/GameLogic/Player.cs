@@ -1793,7 +1793,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     {
         if (this.SelectedCharacter is not { CharacterClass: { } characterClass } character)
         {
-            return;
+            throw new InvalidOperationException($"The character {this.SelectedCharacter} has no assigned character class.");
         }
 
         var missingStats = characterClass.StatAttributes.Where(a => this.SelectedCharacter.Attributes.All(c => c.Definition != a.Attribute));
@@ -1804,8 +1804,29 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     private async ValueTask OnPlayerEnteredWorldAsync()
     {
-        this.Attributes = new ItemAwareAttributeSystem(this.Account!, this.SelectedCharacter!);
+        if (this.SelectedCharacter is null)
+        {
+            throw new InvalidOperationException($"The player has no selected character.");
+        }
+
+        if (this.SelectedCharacter?.CharacterClass is null)
+        {
+            throw new InvalidOperationException($"The character '{this.SelectedCharacter}' has no assigned character class.");
+        }
+
+        // For characters which got created on the database or with the admin panel,
+        // it's possible that they're missing the inventory. In this case, we create it here
+        // and initialize with default items.
+        if (this.SelectedCharacter!.Inventory is null)
+        {
+            this.SelectedCharacter.Inventory = this.PersistenceContext.CreateNew<ItemStorage>();
+            this.GameContext.PlugInManager.GetPlugInPoint<ICharacterCreatedPlugIn>()?.CharacterCreated(this, this.SelectedCharacter);
+        }
+
+        this.SelectedCharacter.CurrentMap ??= this.SelectedCharacter.CharacterClass?.HomeMap;
         this.AddMissingStatAttributes();
+
+        this.Attributes = new ItemAwareAttributeSystem(this.Account!, this.SelectedCharacter!);
         this.Inventory = new InventoryStorage(this, this.GameContext);
         this.ShopStorage = new ShopStorage(this);
         this.TemporaryStorage = new Storage(InventoryConstants.TemporaryStorageSize, new TemporaryItemStorage());

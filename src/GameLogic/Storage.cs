@@ -43,15 +43,36 @@ public class Storage : IStorage
         this._boxOffset = boxOffset;
 
         var lastSlot = numberOfSlots + slotOffset;
+        List<Item>? unfittingItems = null;
         this.ItemStorage.Items
             .Where(item => item.ItemSlot <= lastSlot && item.ItemSlot >= slotOffset)
             .ForEach(item =>
             {
                 if (!this.AddItemInternal((byte)(item.ItemSlot - slotOffset), item))
                 {
-                    throw new ArgumentException($"'{item}' did not fit into the storage at slot {item.ItemSlot}.");
+                    (unfittingItems ??= new()).Add(item);
                 }
             });
+
+        if (unfittingItems is null)
+        {
+            return;
+        }
+        
+        // we first try to add them.
+        for (var index = unfittingItems.Count - 1; index >= 0; index--)
+        {
+            var item = unfittingItems[index];
+            if (this.AddItem(item))
+            {
+                unfittingItems.RemoveAt(index);
+            }
+        }
+
+        if (unfittingItems.Count > 0)
+        {
+            throw new ArgumentException($"Some items do not fit into the storage: {string.Join(';', unfittingItems)}");
+        }
     }
 
     /// <inheritdoc/>
@@ -60,10 +81,7 @@ public class Storage : IStorage
     /// <inheritdoc/>
     public IEnumerable<Item> Items
     {
-        get
-        {
-            return this.ItemArray.Where(i => i is not null).Select(item => item!);
-        }
+        get { return this.ItemArray.Where(i => i is not null).Select(item => item!); }
     }
 
     /// <inheritdoc/>
@@ -96,26 +114,13 @@ public class Storage : IStorage
     /// <inheritdoc/>
     public virtual async ValueTask<bool> AddItemAsync(byte slot, Item item)
     {
-        var result = this.AddItemInternal((byte)(slot - this._slotOffset), item);
-        if (result)
-        {
-            this.ItemStorage.Items.Add(item);
-            item.ItemSlot = slot;
-        }
-
-        return result;
+        return this.AddItem(slot, item);
     }
 
     /// <inheritdoc/>
     public async ValueTask<bool> AddItemAsync(Item item)
     {
-        var freeSlot = this.CheckInvSpace(item);
-        if (freeSlot is null)
-        {
-            return false;
-        }
-
-        return await this.AddItemAsync((byte)freeSlot, item).ConfigureAwait(false);
+        return this.AddItem(item);
     }
 
     /// <inheritdoc/>
@@ -267,6 +272,29 @@ public class Storage : IStorage
         this.ItemArray[slot] = item;
         this.SetItemUsedSlots(item, columnIndex, rowIndex);
         return true;
+    }
+
+    private bool AddItem(Item item)
+    {
+        var freeSlot = this.CheckInvSpace(item);
+        if (freeSlot is null)
+        {
+            return false;
+        }
+
+        return this.AddItem((byte)freeSlot, item);
+    }
+
+    private bool AddItem(byte slot, Item item)
+    {
+        var result = this.AddItemInternal((byte)(slot - this._slotOffset), item);
+        if (result)
+        {
+            this.ItemStorage.Items.Add(item);
+            item.ItemSlot = slot;
+        }
+
+        return result;
     }
 
     private byte GetSlot(int column, int row)
