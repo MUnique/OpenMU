@@ -123,6 +123,7 @@ internal partial class NpcInitialization : Version095d.NpcInitialization
             var def = this.Context.CreateNew<MonsterDefinition>();
             def.Number = 259;
             def.Designation = "Oracle Layla";
+            def.NpcWindow = NpcWindow.Merchant;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
             def.MerchantStore = this.CreatePotionGirlItemStorage(def.Number);
             this.GameConfiguration.Monsters.Add(def);
