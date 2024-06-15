@@ -69,6 +69,15 @@ public static class LocateableExtensions
     public static bool IsInRange(this ILocateable obj, Point point, int range) => obj.IsInRange(point.X, point.Y, range);
 
     /// <summary>
+    /// Determines whether the specified coordinates are in the specified range of the object.
+    /// </summary>
+    /// <param name="obj">The object.</param>
+    /// <param name="obj2">The second object.</param>
+    /// <param name="range">The maximum range.</param>
+    /// <returns><c>True</c>, if the specified coordinate is in the specified range of the object; Otherwise, <c>false</c>.</returns>
+    public static bool IsInRange(this ILocateable obj, ILocateable obj2, int range) => obj.IsInRange(obj2.Position, range);
+
+    /// <summary>
     /// Determines whether the specified coordinate is in the specified range of the object.
     /// </summary>
     /// <param name="locatable">The object.</param>

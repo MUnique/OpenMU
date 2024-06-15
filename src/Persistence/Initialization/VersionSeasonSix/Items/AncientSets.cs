@@ -674,6 +674,10 @@ public class AncientSets : InitializerBase
         set.CountDistinct = true;
         set.MinimumItemCount = 2;
         int number = 1;
+        var options = this.Context.CreateNew<ItemOptionDefinition>();
+        options.SetGuid(ItemOptionDefinitionNumbers.AncientOption, setNumber, (byte)number);
+        options.Name = $"{name} (Ancient Set)";
+        set.Options = options;
         foreach (var optionTuple in ancientOptions)
         {
             var option = this.Context.CreateNew<IncreasableItemOption>();
@@ -684,7 +688,7 @@ public class AncientSets : InitializerBase
             option.PowerUpDefinition.TargetAttribute = optionTuple.Attribute.GetPersistent(this.GameConfiguration);
             option.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
             option.PowerUpDefinition.Boost.ConstantValue.Value = optionTuple.Value;
-            set.Options.Add(option);
+            options.PossibleOptions.Add(option);
         }
 
         this.GameConfiguration.ItemSetGroups.Add(set);

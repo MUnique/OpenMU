@@ -1786,8 +1786,46 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.PlayerLeftMap?.Invoke(this, (this, map));
     }
 
+    /// <summary>
+    /// Adds the missing stat attributes, e.g. after the character class has been changed outside of the game.
+    /// </summary>
+    private void AddMissingStatAttributes()
+    {
+        if (this.SelectedCharacter is not { CharacterClass: { } characterClass } character)
+        {
+            throw new InvalidOperationException($"The character {this.SelectedCharacter} has no assigned character class.");
+        }
+
+        var missingStats = characterClass.StatAttributes.Where(a => this.SelectedCharacter.Attributes.All(c => c.Definition != a.Attribute));
+
+        var attributes = missingStats.Select(a => this.PersistenceContext.CreateNew<StatAttribute>(a.Attribute, a.BaseValue)).ToList();
+        attributes.ForEach(character.Attributes.Add);
+    }
+
     private async ValueTask OnPlayerEnteredWorldAsync()
     {
+        if (this.SelectedCharacter is null)
+        {
+            throw new InvalidOperationException($"The player has no selected character.");
+        }
+
+        if (this.SelectedCharacter?.CharacterClass is null)
+        {
+            throw new InvalidOperationException($"The character '{this.SelectedCharacter}' has no assigned character class.");
+        }
+
+        // For characters which got created on the database or with the admin panel,
+        // it's possible that they're missing the inventory. In this case, we create it here
+        // and initialize with default items.
+        if (this.SelectedCharacter!.Inventory is null)
+        {
+            this.SelectedCharacter.Inventory = this.PersistenceContext.CreateNew<ItemStorage>();
+            this.GameContext.PlugInManager.GetPlugInPoint<ICharacterCreatedPlugIn>()?.CharacterCreated(this, this.SelectedCharacter);
+        }
+
+        this.SelectedCharacter.CurrentMap ??= this.SelectedCharacter.CharacterClass?.HomeMap;
+        this.AddMissingStatAttributes();
+
         this.Attributes = new ItemAwareAttributeSystem(this.Account!, this.SelectedCharacter!);
         this.Inventory = new InventoryStorage(this, this.GameContext);
         this.ShopStorage = new ShopStorage(this);

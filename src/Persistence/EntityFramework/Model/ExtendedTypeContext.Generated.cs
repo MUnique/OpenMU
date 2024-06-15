@@ -187,7 +187,6 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Entity<ItemOptionCombinationBonus>().HasOne(entity => entity.RawBonus).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<ItemOptionDefinition>().HasMany(entity => entity.RawPossibleOptions).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<ItemOptionOfLevel>().HasOne(entity => entity.RawPowerUpDefinition).WithOne().OnDelete(DeleteBehavior.Cascade);
-        modelBuilder.Entity<ItemSetGroup>().HasMany(entity => entity.RawOptions).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<ItemSetGroup>().HasMany(entity => entity.RawItems).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<ItemCrafting>().HasOne(entity => entity.RawSimpleCraftingSettings).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<SimpleCraftingSettings>().HasMany(entity => entity.RawRequiredItems).WithOne().OnDelete(DeleteBehavior.Cascade);

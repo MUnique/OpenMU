@@ -83,5 +83,15 @@ public enum UpdateVersion
     /// <summary>
     /// The version of the <see cref="InfinityArrowSkillOnQuestCompletionPlugIn"/>.
     /// </summary>
-    InfinityArrowSkillOnQuestCompletion = 14,
+    InfinityArrowSkillOnQuestCompletion = 15,
+
+    /// <summary>
+    /// The version of the <see cref="AddPointsPerResetAttributePlugIn"/>.
+    /// </summary>
+    AddPointsPerResetByClassAttribute = 16,
+
+    /// <summary>
+    /// The version of the <see cref="AddKalimaPlugIn"/>.
+    /// </summary>
+    AddKalima = 17,
 }

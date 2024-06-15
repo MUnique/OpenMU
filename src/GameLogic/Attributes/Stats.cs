@@ -900,6 +900,11 @@ public class Stats
     public static AttributeDefinition IsVip { get; } = new(new Guid("195474D6-59A2-4033-9C30-8628ECC0097E"), "Is VIP", "The flag, if an account is a VIP.");
 
     /// <summary>
+    /// Gets the attribute for the number of points this class will receive for reset, overwrites the default <see cref="Resets.ResetConfiguration.PointsPerReset"/> value.
+    /// </summary>
+    public static AttributeDefinition PointsPerReset { get; } = new(new Guid("a34f4f57-b364-4cdb-9989-64cedd2cd831"), "Points Per Reset", "The number of points the player will receive for reset, overwrites the default 'PointsPerReset' value of the reset configuration.");
+
+    /// <summary>
     /// Gets the attributes which are regenerated in an interval.
     /// </summary>
     public static IEnumerable<Regeneration> IntervalRegenerationAttributes

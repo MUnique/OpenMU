@@ -34,6 +34,7 @@ public class PostChatCommandPlugIn : IChatCommandPlugIn
             return;
         }
 
+        message = $"[POST] {player.SelectedCharacter?.Name}: {message}";
         await player.GameContext.SendGlobalMessageAsync(message, Interfaces.MessageType.BlueNormal).ConfigureAwait(false);
     }
 }

@@ -15,14 +15,26 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("E95A0292-B3B4-4E8C-AC5A-7F3DB4F01A37")]
 [PlugIn(nameof(BlessJewelConsumeHandlerPlugIn), "Plugin which handles the jewel of bless consumption.")]
-public class BlessJewelConsumeHandlerPlugIn : ItemModifyConsumeHandlerPlugIn
+public class BlessJewelConsumeHandlerPlugIn : ItemModifyConsumeHandlerPlugIn, ISupportCustomConfiguration<BlessJewelConsumeHandlerPlugInConfiguration>
 {
     /// <inheritdoc />
     public override ItemIdentifier Key => ItemConstants.JewelOfBless;
 
+    /// <summary>
+    /// Gets or sets the configuration.
+    /// </summary>
+    public BlessJewelConsumeHandlerPlugInConfiguration? Configuration { get; set; }
+
     /// <inheritdoc/>
     protected override bool ModifyItem(Item item, IContext persistenceContext)
     {
+        if (this.Configuration?.RepairTargetItems.Contains(item.Definition!) is true
+            && item.Durability < item.GetMaximumDurabilityOfOnePiece())
+        {
+            item.Durability = item.GetMaximumDurabilityOfOnePiece();
+            return true;
+        }
+
         if (!item.CanLevelBeUpgraded())
         {
             return false;
@@ -37,6 +49,7 @@ public class BlessJewelConsumeHandlerPlugIn : ItemModifyConsumeHandlerPlugIn
 
         level++;
         item.Level = level;
+        item.Durability = item.GetMaximumDurabilityOfOnePiece();
         return true;
     }
 }

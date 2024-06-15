@@ -80,10 +80,17 @@ public class MoveItemAction
                 break;
         }
 
-        if (movement != Movement.None
+        if (movement is not Movement.None
             && player.GameContext.PlugInManager.GetPlugInPoint<PlugIns.IItemMovedPlugIn>() is { } itemMovedPlugIn)
         {
             await itemMovedPlugIn.ItemMovedAsync(player, item).ConfigureAwait(false);
+        }
+
+        if (movement is not (Movement.None or Movement.Normal)
+            && toItemStorage?.GetItem(toSlot) is { } target
+            && player.GameContext.PlugInManager.GetPlugInPoint<PlugIns.IItemStackedPlugIn>() is { } itemStackedPlugIn)
+        {
+            await itemStackedPlugIn.ItemStackedAsync(player, item, target).ConfigureAwait(false);
         }
     }
 

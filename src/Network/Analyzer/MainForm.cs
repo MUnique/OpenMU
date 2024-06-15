@@ -49,7 +49,7 @@ public partial class MainForm : Form
         this.InitializeComponent();
         var serviceContainer = new ServiceContainer();
         serviceContainer.AddService(typeof(ILoggerFactory), new NullLoggerFactory());
-        this._plugInManager = new PlugInManager(null, new NullLoggerFactory(), serviceContainer);
+        this._plugInManager = new PlugInManager(null, new NullLoggerFactory(), serviceContainer, null);
         this._plugInManager.DiscoverAndRegisterPlugIns();
         this.clientBindingSource.DataSource = this._proxiedConnections;
         this.connectedClientsListBox.DisplayMember = nameof(ICapturedConnection.Name);
