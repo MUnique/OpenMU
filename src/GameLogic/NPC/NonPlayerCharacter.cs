@@ -96,6 +96,14 @@ public class NonPlayerCharacter : AsyncDisposable, IObservable, IRotatable, ILoc
         this.Rotation = GetSpawnDirection(this.SpawnArea.Direction);
     }
 
+    /// <summary>
+    /// Called when this instance spawned on the map.
+    /// </summary>
+    public virtual void OnSpawn()
+    {
+        // can be overwritten
+    }
+
     /// <inheritdoc/>
     public async ValueTask AddObserverAsync(IWorldObserver observer)
     {

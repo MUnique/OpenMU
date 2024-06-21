@@ -41,6 +41,8 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
 
     private bool _isCalculatingPath;
 
+    private bool _isReadyToWalk;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Monster" /> class.
     /// </summary>
@@ -77,7 +79,6 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
     /// </summary>
     public Player? SummonedBy => (this._intelligence as SummonedMonsterIntelligence)?.Owner;
 
-    /// <inheritdoc/>
     public Point WalkTarget => this._walker.CurrentTarget;
 
     /// <inheritdoc/>
@@ -104,13 +105,20 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
         }
     }
 
+    /// <inheritdoc />
+    public override void OnSpawn()
+    {
+        base.OnSpawn();
+        this._isReadyToWalk = true;
+    }
+
     /// <summary>
     /// Walks to the target coordinates.
     /// </summary>
     /// <param name="target">The target object.</param>
     public async ValueTask<bool> WalkToAsync(Point target)
     {
-        if (this._isCalculatingPath || this.IsWalking)
+        if (this._isCalculatingPath || this.IsWalking || !this._isReadyToWalk)
         {
             return false;
         }
@@ -215,6 +223,11 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
     /// </summary>
     internal async ValueTask RandomMoveAsync()
     {
+        if (!this._isReadyToWalk)
+        {
+            return;
+        }
+
         byte randx = (byte)GameLogic.Rand.NextInt(Math.Max(0, this.Position.X - 1), Math.Min(0xFF, this.Position.X + 2));
         byte randy = (byte)GameLogic.Rand.NextInt(Math.Max(0, this.Position.Y - 1), Math.Min(0xFF, this.Position.Y + 2));
         if (this.CurrentMap.Terrain.AIgrid[randx, randy] == 1)
