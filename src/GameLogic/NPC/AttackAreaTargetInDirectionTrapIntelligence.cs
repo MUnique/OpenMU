@@ -29,7 +29,7 @@ public class AttackAreaTargetInDirectionTrapIntelligence : TrapIntelligenceBase
         }
 
         var targetsInRange = this.PossibleTargets.Where(target => this.Trap.GetDirectionTo(target) == this.Trap.Rotation)
-            .Where(target => this.Trap.IsInRange(target.Position, this.Trap.Definition.AttackRange + 1))
+            .Where(target => this.Trap.IsInRange(target.Position, this.Trap.Definition.AttackRange))
             .Where(target => !this.Map.Terrain.SafezoneMap[target.Position.X, target.Position.Y]);
 
         bool hasAttacked = false;
