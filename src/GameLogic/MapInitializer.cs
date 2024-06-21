@@ -138,6 +138,7 @@ public class MapInitializer : IMapInitializer
                 await createdMap.RemoveAsync(o).ConfigureAwait(false);
                 o.Initialize();
                 await createdMap.AddAsync(o).ConfigureAwait(false);
+                o.OnSpawn();
 
                 if (this._spawnedMonsters.TryGetValue(area, out var previousSpawnCount))
                 {
@@ -275,6 +276,7 @@ public class MapInitializer : IMapInitializer
             npc.SpawnIndex = spawnIndex;
             npc.Initialize();
             await createdMap.AddAsync(npc).ConfigureAwait(false);
+            npc.OnSpawn();
             if (spawnArea.SpawnTrigger is SpawnTrigger.Automatic or SpawnTrigger.Wandering)
             {
                 this.RegisterForConfigChanges(createdMap, spawnArea, npc);

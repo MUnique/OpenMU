@@ -901,6 +901,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         if (this.Summon?.Item1 is { IsAlive: true } summon)
         {
             await this.CurrentMap.AddAsync(summon).ConfigureAwait(false);
+            summon.OnSpawn();
         }
     }
 
@@ -1321,6 +1322,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.Summon = (monster, intelligence);
         monster.Initialize();
         await gameMap.AddAsync(monster).ConfigureAwait(false);
+        monster.OnSpawn();
     }
 
     /// <summary>

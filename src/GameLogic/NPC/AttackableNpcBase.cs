@@ -237,6 +237,7 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
 
             this.Initialize();
             await this.CurrentMap.RespawnAsync(this).ConfigureAwait(false);
+            this.OnSpawn();
         }
         catch (Exception ex)
         {
