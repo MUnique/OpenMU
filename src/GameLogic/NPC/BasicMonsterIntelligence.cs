@@ -239,7 +239,7 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
         }
 
         // Target in Attack Range?
-        if (target.IsInRange(this.Monster.Position, this.Monster.Definition.AttackRange + 1) && !this.Monster.IsAtSafezone())
+        if (target.IsInRange(this.Monster.Position, this.Monster.Definition.AttackRange) && !this.Monster.IsAtSafezone())
         {
             await this.Monster.AttackAsync(target).ConfigureAwait(false);  // yes, attack
             return;

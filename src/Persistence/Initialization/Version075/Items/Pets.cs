@@ -29,7 +29,7 @@ public class Pets : InitializerBase
     /// <inheritdoc />
     public override void Initialize()
     {
-        this.CreatePet(0, "Guardian Angel", 23, (Stats.DamageReceiveDecrement, 0.2f), (Stats.MaximumHealth, 50f));
+        this.CreatePet(0, "Guardian Angel", 23, (Stats.DamageReceiveDecrement, -0.2f), (Stats.MaximumHealth, 50f));
         this.CreatePet(1, "Imp", 28, (Stats.AttackDamageIncrease, 0.3f));
         this.CreatePet(2, "Horn of Uniria", 25);
     }

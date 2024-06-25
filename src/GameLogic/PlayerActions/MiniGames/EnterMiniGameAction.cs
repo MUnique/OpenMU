@@ -44,7 +44,8 @@ public class EnterMiniGameAction
         var characterLevel = player.Attributes![Stats.Level];
         var minLevel = isSpecialCharacter ? miniGameDefinition.MinimumSpecialCharacterLevel : miniGameDefinition.MinimumCharacterLevel;
         var maxLevel = isSpecialCharacter ? miniGameDefinition.MaximumSpecialCharacterLevel : miniGameDefinition.MaximumCharacterLevel;
-        if (characterLevel < minLevel)
+        var requiresMasterLevel = miniGameDefinition.RequiresMasterClass;
+        if (characterLevel < minLevel || (requiresMasterLevel && player.SelectedCharacter?.CharacterClass?.IsMasterClass is not true))
         {
             await player.InvokeViewPlugInAsync<IShowMiniGameEnterResultPlugIn>(p => p.ShowResultAsync(miniGameType, EnterResult.CharacterLevelTooLow)).ConfigureAwait(false);
             return;

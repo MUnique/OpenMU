@@ -17,7 +17,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.3")
+                .HasAnnotation("ProductVersion", "8.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -1138,9 +1138,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<Guid?>("ItemOptionDefinitionId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("ItemSetGroupId")
-                        .HasColumnType("uuid");
-
                     b.Property<int>("LevelType")
                         .HasColumnType("integer");
 
@@ -1159,8 +1156,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ItemOptionDefinitionId");
-
-                    b.HasIndex("ItemSetGroupId");
 
                     b.HasIndex("OptionTypeId");
 
@@ -1881,12 +1876,17 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("OptionsId")
+                        .HasColumnType("uuid");
+
                     b.Property<int>("SetLevel")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
 
                     b.HasIndex("GameConfigurationId");
+
+                    b.HasIndex("OptionsId");
 
                     b.ToTable("ItemSetGroup", "config");
                 });
@@ -3654,11 +3654,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasForeignKey("ItemOptionDefinitionId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemSetGroup", null)
-                        .WithMany("RawOptions")
-                        .HasForeignKey("ItemSetGroupId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemOptionType", "RawOptionType")
                         .WithMany()
                         .HasForeignKey("OptionTypeId");
@@ -4064,6 +4059,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .WithMany("RawItemSetGroups")
                         .HasForeignKey("GameConfigurationId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemOptionDefinition", "RawOptions")
+                        .WithMany()
+                        .HasForeignKey("OptionsId");
+
+                    b.Navigation("RawOptions");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemSlotType", b =>
@@ -4792,8 +4793,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemSetGroup", b =>
                 {
                     b.Navigation("RawItems");
-
-                    b.Navigation("RawOptions");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemStorage", b =>

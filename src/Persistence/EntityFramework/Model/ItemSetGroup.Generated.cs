@@ -29,15 +29,6 @@ internal partial class ItemSetGroup : MUnique.OpenMU.DataModel.Configuration.Ite
     public Guid Id { get; set; }
     
     /// <summary>
-    /// Gets the raw collection of <see cref="Options" />.
-    /// </summary>
-    public ICollection<IncreasableItemOption> RawOptions { get; } = new EntityFramework.List<IncreasableItemOption>();
-    
-    /// <inheritdoc/>
-    [NotMapped]
-    public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.IncreasableItemOption> Options => base.Options ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.IncreasableItemOption, IncreasableItemOption>(this.RawOptions);
-
-    /// <summary>
     /// Gets the raw collection of <see cref="Items" />.
     /// </summary>
     public ICollection<ItemOfItemSet> RawItems { get; } = new EntityFramework.List<ItemOfItemSet>();
@@ -45,6 +36,32 @@ internal partial class ItemSetGroup : MUnique.OpenMU.DataModel.Configuration.Ite
     /// <inheritdoc/>
     [NotMapped]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemOfItemSet> Items => base.Items ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.ItemOfItemSet, ItemOfItemSet>(this.RawItems);
+
+    /// <summary>
+    /// Gets or sets the identifier of <see cref="Options"/>.
+    /// </summary>
+    public Guid? OptionsId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="Options" />.
+    /// </summary>
+    [ForeignKey(nameof(OptionsId))]
+    public ItemOptionDefinition RawOptions
+    {
+        get => base.Options as ItemOptionDefinition;
+        set => base.Options = value;
+    }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionDefinition Options
+    {
+        get => base.Options;set
+        {
+            base.Options = value;
+            this.OptionsId = this.RawOptions?.Id;
+        }
+    }
 
     /// <inheritdoc />
     public override MUnique.OpenMU.DataModel.Configuration.Items.ItemSetGroup Clone(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)

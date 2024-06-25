@@ -34,6 +34,7 @@ public class EfCoreModelGenerator : ModelGeneratorBase, IUnboundSourceGenerator
     {
         ("MUnique.OpenMU.DataModel.Configuration.CharacterClass", false),
         ("MUnique.OpenMU.DataModel.Configuration.DropItemGroup", false),
+        ("MUnique.OpenMU.DataModel.Configuration.Items.IncreasableItemOption", false),
         ("MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition", false),
         ("MUnique.OpenMU.DataModel.Configuration.Items.ItemOption", false),
         ("MUnique.OpenMU.DataModel.Configuration.Items.ItemOptionType", false),
@@ -226,6 +227,7 @@ public static class MapsterConfigurator
             .SelectMany(t => t.GetProperties().Where(p =>
                 p.PropertyType.IsGenericType &&
                 p.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>) &&
+                !IsMemberOfAggregate(p) &&
                 IsStandaloneType(p.PropertyType.GenericTypeArguments[0].FullName, t))).ToList();
 
         foreach (PropertyInfo propertyInfo in allStandaloneCollectionProperties)
@@ -324,6 +326,7 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
             .Where(p => type.FullName == GameConfigurationFullName ||
                         !(p.PropertyType.IsGenericType
                           && p.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>)
+                          && !IsMemberOfAggregate(p)
                           && IsStandaloneType(p.PropertyType.GenericTypeArguments[0].FullName, type)))
             .ToList();
 
@@ -473,7 +476,10 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
     private IEnumerable<PropertyInfo> GetStandaloneCollectionProperties(Type type)
     {
         return type.FullName != GameConfigurationFullName ?
-            type.GetProperties().Where(p => p.PropertyType.IsGenericType && p.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>) && IsStandaloneType(p.PropertyType.GenericTypeArguments[0].FullName, type)).ToList() :
+            type.GetProperties().Where(p => p.PropertyType.IsGenericType
+                                            && p.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>)
+                                            && !IsMemberOfAggregate(p)
+                                            && IsStandaloneType(p.PropertyType.GenericTypeArguments[0].FullName, type)).ToList() :
             Enumerable.Empty<PropertyInfo>();
     }
 

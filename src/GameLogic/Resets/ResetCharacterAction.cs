@@ -124,7 +124,7 @@ public class ResetCharacterAction
 
     private void UpdateStats(ResetConfiguration configuration)
     {
-        var calculatedPointsPerReset = configuration.PointsPerReset;
+        var calculatedPointsPerReset = this.GetResetPoints(configuration);
         if (configuration.MultiplyPointsByResetCount)
         {
             calculatedPointsPerReset *= this.GetResetCount();
@@ -138,6 +138,17 @@ public class ResetCharacterAction
         }
 
         this._player.SelectedCharacter!.LevelUpPoints = Math.Max(0, calculatedPointsPerReset);
+    }
+
+    private int GetResetPoints(ResetConfiguration configuration)
+    {
+        var pointsPerReset = (int)this._player.Attributes![Stats.PointsPerReset];
+        if (pointsPerReset == 0)
+        {
+            pointsPerReset = configuration.PointsPerReset;
+        }
+
+        return pointsPerReset;
     }
 
     private async ValueTask MoveHomeAsync()

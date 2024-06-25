@@ -30,7 +30,7 @@ If you just want to play around with the server, you can find the newest docker
 all-in-one image on the Docker Hub: <https://hub.docker.com/r/munique/openmu>
 
 To pull and run the latest docker image, run this command:
-`docker run --name openmu -d -p 80:80 -p 44405:44405 -p 55901:55901 -p 55902:55902 -p 55903:55903 -p 55980:55980 munique/openmu:latest -demo`
+`docker run --name openmu -d -p 80:8080 -p 44405:44405 -p 55901:55901 -p 55902:55902 -p 55903:55903 -p 55980:55980 munique/openmu:latest -demo`
 
 The last argument is there to start the server in demo mode, without a
 database. To use a postgres database, you can use docker-compose.

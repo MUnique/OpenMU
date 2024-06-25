@@ -46,7 +46,13 @@ public class DeleteCharacterAction
             return CharacterDeleteResult.Unsuccessful;
         }
 
-        if (player.Account.SecurityCode != null && player.Account.SecurityCode != securityCode)
+        var checkAsPassword = string.IsNullOrEmpty(player.Account.SecurityCode);
+        if (checkAsPassword && !BCrypt.Net.BCrypt.Verify(securityCode, player.Account.PasswordHash))
+        {
+            return CharacterDeleteResult.WrongSecurityCode;
+        }
+
+        if (!checkAsPassword && player.Account.SecurityCode != securityCode)
         {
             return CharacterDeleteResult.WrongSecurityCode;
         }
