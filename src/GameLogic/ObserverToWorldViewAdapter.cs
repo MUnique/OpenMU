@@ -140,14 +140,19 @@ public sealed class ObserverToWorldViewAdapter : AsyncDisposable, IBucketMapObse
             return;
         }
 
-        IEnumerable<IObservable> oldItems;
+        IEnumerable<ILocateable> oldItems;
         using (await this._observingLock.WriterLockAsync())
         {
-            oldItems = oldObjects.OfType<IObservable>().Where(item => this._observingObjects.Contains(item) && this.ObjectWillBeOutOfScope(item)).ToList();
-            oldItems.ForEach(item => this._observingObjects.Remove(item));
+            oldItems = oldObjects.Where(this.ObjectWillBeOutOfScope).ToList();
+            oldItems
+                .OfType<IObservable>()
+                .ForEach(item => this._observingObjects.Remove(item));
         }
 
-        await oldItems.ForEachAsync(item => item.RemoveObserverAsync(this._adaptee)).ConfigureAwait(false);
+        await oldItems
+            .OfType<IObservable>()
+            .ForEachAsync(item => item.RemoveObserverAsync(this._adaptee))
+            .ConfigureAwait(false);
 
         if (this._adaptee is IHasBucketInformation { NewBucket: null })
         {
@@ -155,8 +160,8 @@ public sealed class ObserverToWorldViewAdapter : AsyncDisposable, IBucketMapObse
         }
         else
         {
-            var droppedItems = oldItems.OfType<ILocateable>().Where(item => item is DroppedItem || item is DroppedMoney);
-            var nonItems = oldItems.OfType<ILocateable>().Except(droppedItems).WhereActive();
+            var droppedItems = oldItems.Where(item => item is DroppedItem || item is DroppedMoney);
+            var nonItems = oldItems.Except(droppedItems).WhereActive();
             if (nonItems.Any())
             {
                 await this._adaptee.InvokeViewPlugInAsync<IObjectsOutOfScopePlugIn>(p => p.ObjectsOutOfScopeAsync(nonItems)).ConfigureAwait(false);
@@ -239,7 +244,7 @@ public sealed class ObserverToWorldViewAdapter : AsyncDisposable, IBucketMapObse
         await base.DisposeAsyncCore().ConfigureAwait(false);
     }
 
-    private bool ObjectWillBeOutOfScope(IObservable observable)
+    private bool ObjectWillBeOutOfScope(ILocateable locateable)
     {
         var myBucketInformations = this._adaptee as IHasBucketInformation;
         if (myBucketInformations is null)
@@ -253,20 +258,21 @@ public sealed class ObserverToWorldViewAdapter : AsyncDisposable, IBucketMapObse
             return true;
         }
 
-        var locateableBucketInformations = observable as IHasBucketInformation;
-        if (locateableBucketInformations is null)
+        if (locateable is IHasBucketInformation locateableBucketInformations)
         {
-            // We have to assume that this observable will be out of scope since it can't tell us where it goes
-            return true;
+            if (locateableBucketInformations.NewBucket is null)
+            {
+                // It's leaving the map, so will be out of scope
+                return true;
+            }
+
+            // If we observe the target bucket of the observable, it will be in our range
+            return !this.ObservingBuckets.Contains(locateableBucketInformations.NewBucket);
         }
 
-        if (locateableBucketInformations.NewBucket is null)
-        {
-            // It's leaving the map, so will be out of scope
-            return true;
-        }
-
-        // If we observe the target bucket of the observable, it will be in our range
-        return !this.ObservingBuckets.Contains(locateableBucketInformations.NewBucket);
+        // We have to assume that this observable will be
+        // out of scope since it can't tell us where it goes.
+        // That's okay, because otherwise, we wouldn't get here.
+        return true;
     }
 }
