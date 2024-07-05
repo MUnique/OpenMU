@@ -230,20 +230,35 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
 
         byte randx = (byte)GameLogic.Rand.NextInt(Math.Max(0, this.Position.X - 1), Math.Min(0xFF, this.Position.X + 2));
         byte randy = (byte)GameLogic.Rand.NextInt(Math.Max(0, this.Position.Y - 1), Math.Min(0xFF, this.Position.Y + 2));
-        if (this.CurrentMap.Terrain.AIgrid[randx, randy] == 1)
+
+        switch(this.Definition.ObjectKind)
         {
-            var target = new Point(randx, randy);
-            var current = this.Position;
-            using var stepsRent = MemoryPool<WalkingStep>.Shared.Rent(1);
-            var steps = stepsRent.Memory.Slice(0, 1);
-            steps.Span[0] = new WalkingStep
-            {
-                From = current,
-                To = target,
-                Direction = current.GetDirectionTo(target),
-            };
-            await this.WalkToAsync(target, steps).ConfigureAwait(false);
+        case NpcObjectKind.Guard:
+                if (this.CurrentMap.Terrain.WalkMap[randx, randy] != true)
+                {
+                    return;
+                }
+                break;
+
+        default:
+                if (this.CurrentMap.Terrain.AIgrid[randx, randy] != 1)
+                {
+                    return;
+                }
+        break;
         }
+
+        var target = new Point(randx, randy);
+        var current = this.Position;
+        using var stepsRent = MemoryPool<WalkingStep>.Shared.Rent(1);
+        var steps = stepsRent.Memory.Slice(0, 1);
+        steps.Span[0] = new WalkingStep
+        {
+            From = current,
+            To = target,
+            Direction = current.GetDirectionTo(target),
+        };
+        await this.WalkToAsync(target, steps).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
