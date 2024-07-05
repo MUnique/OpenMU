@@ -135,6 +135,7 @@ public class SkillHitValidator
 
         if (this._hits[animationCounter] is { } animationEntry)
         {
+            /*
             if (this._hits[hitCounter] is { } currentHitEntry && currentHitEntry.TimeStamp >= DateTime.UtcNow.AddSeconds(-1))
             {
                 // probably speed too high to allow any check
@@ -179,7 +180,7 @@ public class SkillHitValidator
                 this._logger.LogWarning("Possible Hacker - Skill Hit Invalid because of too high time difference between animation and hit");
                 return (false, true);
             }
-
+            */
             return (true, true);
         }
         else
@@ -188,6 +189,7 @@ public class SkillHitValidator
             return (false, false);
         }
     }
+
 
     private record struct HitEntry(ushort Skill, DateTime TimeStamp, bool IsAnimation, int HitCount);
 }
