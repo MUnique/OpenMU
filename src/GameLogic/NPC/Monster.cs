@@ -227,9 +227,9 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
         {
             return;
         }
-
-        byte randx = (byte)GameLogic.Rand.NextInt(Math.Max(0, this.Position.X - 1), Math.Min(0xFF, this.Position.X + 2));
-        byte randy = (byte)GameLogic.Rand.NextInt(Math.Max(0, this.Position.Y - 1), Math.Min(0xFF, this.Position.Y + 2));
+        
+        byte randx = (byte)GameLogic.Rand.NextInt(Math.Max(0, this.Position.X - 1), Math.Min(0xFF, this.Position.X + this.Definition.MoveRange));
+        byte randy = (byte)GameLogic.Rand.NextInt(Math.Max(0, this.Position.Y - 1), Math.Min(0xFF, this.Position.Y + this.Definition.MoveRange));
 
         switch(this.Definition.ObjectKind)
         {
