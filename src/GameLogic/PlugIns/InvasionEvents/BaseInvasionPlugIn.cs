@@ -122,8 +122,8 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
             var monster = new Monster(area, monsterDefinition, gameMap, gameContext.DropGenerator, intelligence, gameContext.PlugInManager, gameContext.PathFinderPool);
 
             monster.Initialize();
-
             await gameMap.AddAsync(monster).ConfigureAwait(false);
+            monster.OnSpawn();
 
             this.Finished += CleanUpOnFinish;
             monster.Died += (_, _) => this.Finished -= CleanUpOnFinish;
