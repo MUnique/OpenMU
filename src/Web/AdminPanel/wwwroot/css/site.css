@@ -48,6 +48,8 @@ html {
   line-height: 1.15;
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  height:100%;
+  float:left;
 }
 
 article, aside, figcaption, figure, footer, header, hgroup, main, nav, section {
@@ -55,14 +57,16 @@ article, aside, figcaption, figure, footer, header, hgroup, main, nav, section {
 }
 
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  font-size: 1rem;
-  font-weight: 400;
-  line-height: 1.5;
-  color: #212529;
-  text-align: left;
-  background-color: #fff;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #212529;
+    text-align: left;
+    background-color: #fff;
+    height: 100%;
+    float: left;
 }
 
 [tabindex="-1"]:focus:not(:focus-visible) {
@@ -2822,23 +2826,21 @@ input[type=button].btn-block {
 }
 
 .dropdown-menu, app > nav > div > ul > li.dropdown > div {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  z-index: 1000;
-  display: none;
-  float: left;
-  min-width: 10rem;
-  padding: 0.5rem 0;
-  margin: 0.125rem 0 0;
-  font-size: 1rem;
-  color: #212529;
-  text-align: left;
-  list-style: none;
-  background-color: #fff;
-  background-clip: padding-box;
-  border: 1px solid rgba(0, 0, 0, 0.15);
-  border-radius: 0.25rem;
+    position: relative;
+    top: 100%;
+    left: 0;
+    float: left;
+    min-width: 10rem;
+    padding: 0.5rem 0;
+    margin: 0.125rem 0 0;
+    font-size: 1rem;
+    color: #212529;
+    text-align: left;
+    list-style: none;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 0.25rem;
 }
 
 .dropdown-menu-left {
@@ -9716,12 +9718,10 @@ app > nav > div:first-child {
 }
 
 @media (min-width: 768px) {
-  app > nav {
-    width: 250px;
-    height: 100vh;
-    position: sticky;
-    top: 0;
-  }
+    app > nav {
+        width: 250px;
+        float: left;
+    }
   app > nav > div:first-child > button {
     display: none;
   }
@@ -9778,7 +9778,6 @@ app > nav > div > ul > li > a.hover {
 
 app > nav > div > ul > li.dropdown > div {
   display: block;
-  position: relative;
   width: 100%;
 }
 
@@ -9959,7 +9958,9 @@ mark {
   }
 }
 .main {
-  flex: 1;
+    flex: 1;
+    float: left;
+    display: block;
 }
 
 .main .top-row, .main app > nav > div:first-child {
@@ -10700,12 +10701,17 @@ app {
 }
 
 @media (min-width: 768px) {
-  app {
-    flex-direction: row;
-  }
+    app {
+        flex-direction: row;
+        height: 100% !important;
+    }
 }
 html, body {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    display: table;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    float: left;
+    height: 100% !important;
+    width: 100%;
 }
 
 a, .btn-link {
