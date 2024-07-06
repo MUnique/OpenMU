@@ -227,12 +227,13 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
         {
             return;
         }
-        Random rnd = new Random();
-        int max = rnd.Next(0, this.Definition.MoveRange);
-        byte randx = (byte)GameLogic.Rand.NextInt(Math.Max(0, this.Position.X - 1), Math.Min(0xFF, this.Position.X + max));
-        byte randy = (byte)GameLogic.Rand.NextInt(Math.Max(0, this.Position.Y - 1), Math.Min(0xFF, this.Position.Y + max));
 
-        switch(this.Definition.ObjectKind)
+        var moveByMaxX = GameLogic.Rand.NextInt(1, this.Definition.MoveRange + 1);
+        var moveByMaxY = GameLogic.Rand.NextInt(1, this.Definition.MoveRange + 1);
+        byte randx = (byte)GameLogic.Rand.NextInt(Math.Max(0, this.Position.X - moveByMaxX), Math.Min(0xFF, this.Position.X + moveByMaxX + 1));
+        byte randy = (byte)GameLogic.Rand.NextInt(Math.Max(0, this.Position.Y - moveByMaxY), Math.Min(0xFF, this.Position.Y + moveByMaxY + 1));
+
+        switch (this.Definition.ObjectKind)
         {
         case NpcObjectKind.Guard:
                 if (this.CurrentMap.Terrain.WalkMap[randx, randy] != true)
