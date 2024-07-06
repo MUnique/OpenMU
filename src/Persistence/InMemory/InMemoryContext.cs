@@ -157,4 +157,10 @@ public class InMemoryContext : IContext
     {
         return this.Provider.GetRepository(type).GetAllAsync();
     }
+
+    /// <inheritdoc/>
+    public bool IsSupporting(Type type)
+    {
+        return true;
+    }
 }

@@ -220,6 +220,34 @@ internal class EntityFrameworkContextBase : IContext
     }
 
     /// <inheritdoc/>
+    public bool IsSupporting(Type type)
+    {
+        var currentSearchType = type;
+        do
+        {
+            if (currentSearchType is null)
+            {
+                break;
+            }
+
+            if (this.Context.Model.FindLeastDerivedEntityTypes(currentSearchType).FirstOrDefault() is not null)
+            {
+                return true;
+            }
+
+            if (currentSearchType.Name != currentSearchType.BaseType?.Name)
+            {
+                break;
+            }
+
+            currentSearchType = currentSearchType.BaseType;
+        }
+        while (currentSearchType != typeof(object));
+
+        return false;
+    }
+
+    /// <inheritdoc/>
     public void Dispose()
     {
         if (!this._isDisposed)

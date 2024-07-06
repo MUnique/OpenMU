@@ -3,8 +3,10 @@
 @inject IModalService _modalService;
 
 <EditForm Model="@this">
+  <CascadingValue Value="@this.PersistenceContext">
     <LookupField TObject="TItem" @bind-Value="@Item" Label="@typeof(TItem).Name"/>
+  </CascadingValue>
 
-    <button type="submit" @onclick="@SubmitAsync" class="btn-primary">OK</button>
-    <button @onclick="@CancelAsync" class="btn-secondary">Cancel</button>
+  <button type="submit" @onclick="@SubmitAsync" class="btn-primary">OK</button>
+  <button @onclick="@CancelAsync" class="btn-secondary">Cancel</button>
 </EditForm>
