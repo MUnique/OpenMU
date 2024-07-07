@@ -46,6 +46,8 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.ConfigurationUpdateState>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.ConnectServerDefinition>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.DropItemGroup>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.DuelArea>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.DuelConfiguration>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.EnterGate>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.ExitGate>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.GameClientDefinition>();
@@ -131,6 +133,8 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Entity<CharacterClass>().HasMany(entity => entity.RawBaseAttributeValues).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<CharacterClass>().HasOne(entity => entity.RawComboDefinition).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<ChatServerDefinition>().HasMany(entity => entity.RawEndpoints).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<DuelConfiguration>().HasMany(entity => entity.RawDuelAreas).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<GameConfiguration>().HasOne(entity => entity.RawDuelConfiguration).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameConfiguration>().HasMany(entity => entity.RawJewelMixes).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameConfiguration>().HasMany(entity => entity.RawWarpList).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameConfiguration>().HasMany(entity => entity.RawDropItemGroups).WithOne().OnDelete(DeleteBehavior.Cascade);

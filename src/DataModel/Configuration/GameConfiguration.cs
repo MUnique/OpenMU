@@ -138,6 +138,12 @@ public partial class GameConfiguration
     public double HitsPerOneItemDurability { get; set; }
 
     /// <summary>
+    /// Gets or sets the duel configuration.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual DuelConfiguration? DuelConfiguration { get; set; }
+
+    /// <summary>
     /// Gets or sets the possible jewel mixes.
     /// </summary>
     [MemberOfAggregate]

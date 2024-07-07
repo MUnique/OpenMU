@@ -199,6 +199,32 @@ internal partial class GameConfiguration : MUnique.OpenMU.DataModel.Configuratio
     [NotMapped]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.MiniGameDefinition> MiniGameDefinitions => base.MiniGameDefinitions ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.MiniGameDefinition, MiniGameDefinition>(this.RawMiniGameDefinitions);
 
+    /// <summary>
+    /// Gets or sets the identifier of <see cref="DuelConfiguration"/>.
+    /// </summary>
+    public Guid? DuelConfigurationId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="DuelConfiguration" />.
+    /// </summary>
+    [ForeignKey(nameof(DuelConfigurationId))]
+    public DuelConfiguration RawDuelConfiguration
+    {
+        get => base.DuelConfiguration as DuelConfiguration;
+        set => base.DuelConfiguration = value;
+    }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Configuration.DuelConfiguration DuelConfiguration
+    {
+        get => base.DuelConfiguration;set
+        {
+            base.DuelConfiguration = value;
+            this.DuelConfigurationId = this.RawDuelConfiguration?.Id;
+        }
+    }
+
     /// <inheritdoc />
     public override MUnique.OpenMU.DataModel.Configuration.GameConfiguration Clone(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
     {
