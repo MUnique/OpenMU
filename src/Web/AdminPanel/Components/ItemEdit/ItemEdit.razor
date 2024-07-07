@@ -158,7 +158,7 @@
                 <LookupField
                     Label="@socket.Caption"
                 @bind-Value="@socket.Option"
-                ExplicitLookupController="new EnumerableLookupController(this._viewModel.PossibleSocketOptions)"></LookupField>
+                ExplicitLookupController=@(new EnumerableLookupController(this._viewModel.PossibleSocketOptions))></LookupField>
             @if (socket.Option is { } socketOption)
             {
                 <NumberField
