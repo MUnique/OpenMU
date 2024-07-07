@@ -134,6 +134,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public Point WalkTarget => this._walker.CurrentTarget;
 
     /// <summary>
+    /// Gets a value indicating whether this instance is invisible to other players.
+    /// </summary>
+    public bool IsInvisible => this.Attributes?[Stats.IsInvisible] > 0;
+
+    /// <summary>
     /// Gets the skill hit validator.
     /// </summary>
     public SkillHitValidator SkillHitValidator => this._skillHitValidator ??= new SkillHitValidator(this.Logger);
@@ -800,6 +805,47 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         return true;
     }
 
+    public async ValueTask AddInvisibleEffectAsync()
+    {
+        var invisibleEffect = this.GameContext.Configuration.MagicEffects.FirstOrDefault(e => e.PowerUpDefinitions.Any(e => e.TargetAttribute == Stats.IsInvisible));
+        if (invisibleEffect is null)
+        {
+            this.Logger.LogError("Invisible effect not found!");
+        }
+        else
+        {
+            var (duration, powerUps) = this.CreateMagicEffectPowerUp(invisibleEffect);
+            var magicEffect = new MagicEffect(TimeSpan.FromSeconds(duration.Value), invisibleEffect, powerUps.Select(p => new MagicEffect.ElementWithTarget(p.BuffPowerUp, p.Target)).ToArray());
+            await this.MagicEffectList.AddEffectAsync(magicEffect).ConfigureAwait(false);
+
+            if (this._currentMap is { } currentMap)
+            {
+                await currentMap.RespawnAsync(this).ConfigureAwait(false);
+            }
+        }
+    }
+
+    public async ValueTask RemoveInvisibleEffectAsync()
+    {
+        var invisibleEffect = this.GameContext.Configuration.MagicEffects.FirstOrDefault(e => e.PowerUpDefinitions.Any(e => e.TargetAttribute == Stats.IsInvisible));
+        if (invisibleEffect is null)
+        {
+            return;
+        }
+
+        var activeEffect = this.MagicEffectList.ActiveEffects.Values.FirstOrDefault(e => e.Definition == invisibleEffect);
+        if (activeEffect is null)
+        {
+            return;
+        }
+
+        await activeEffect.DisposeAsync().ConfigureAwait(false);
+        if (this._currentMap is { } currentMap)
+        {
+            await currentMap.RespawnAsync(this).ConfigureAwait(false);
+        }
+    }
+
     /// <summary>
     /// Moves the player to the specified gate.
     /// </summary>
@@ -1175,6 +1221,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <inheritdoc/>
     public async ValueTask AddObserverAsync(IWorldObserver observer)
     {
+        if (this.IsInvisible && observer != this)
+        {
+            return;
+        }
+
         using var _ = await this.ObserverLock.WriterLockAsync();
         this.Observers.Add(observer);
     }
@@ -1289,6 +1340,38 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         skillEntry.PowerUpDuration = this.Attributes!.CreateElement(skill.MagicEffectDef.Duration);
         skillEntry.PowerUps = result;
+    }
+
+    /// <summary>
+    /// Creates the magic effect power up for the given definition.
+    /// </summary>
+    /// <param name="magicEffectDefinition">The definition for a magic effect.</param>
+    /// <returns></returns>
+    public (IElement DurationInSeconds, (AttributeDefinition Target, IElement BuffPowerUp)[] PowerUps) CreateMagicEffectPowerUp(MagicEffectDefinition magicEffectDefinition)
+    {
+        ArgumentNullException.ThrowIfNull(magicEffectDefinition);
+
+        if (magicEffectDefinition.PowerUpDefinitions.Any(d => d.Boost is null))
+        {
+            throw new InvalidOperationException($"Magic effect definition {magicEffectDefinition.Name} ({magicEffectDefinition.Number}) is without a PowerUpDefinition.");
+        }
+
+        if (magicEffectDefinition.Duration is null)
+        {
+            throw new InvalidOperationException($"Magic effect definition {magicEffectDefinition.Name} ({magicEffectDefinition.Number}) has no duration.");
+        }
+
+        int i = 0;
+        var result = new (AttributeDefinition Target, IElement BuffPowerUp)[magicEffectDefinition.PowerUpDefinitions.Count];
+        foreach (var powerUpDef in magicEffectDefinition.PowerUpDefinitions)
+        {
+            IElement powerUp = this.Attributes!.CreateElement(powerUpDef.Boost!);
+
+            result[i] = (powerUpDef.TargetAttribute!, powerUp);
+            i++;
+        }
+
+        return (this.Attributes!.CreateElement(magicEffectDefinition.Duration), result);
     }
 
     /// <summary>

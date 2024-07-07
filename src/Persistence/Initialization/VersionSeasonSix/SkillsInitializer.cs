@@ -563,6 +563,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         new ShieldRecoverEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         new InfiniteArrowEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         new DefenseReductionEffectInitializer(this.Context, this.GameConfiguration).Initialize();
+        new InvisibleEffectInitializer(this.Context, this.GameConfiguration).Initialize();
     }
 
     private void MapSkillsToEffects()
