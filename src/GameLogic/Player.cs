@@ -1770,7 +1770,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         _ = RespawnAsync(this._respawnAfterDeathCts.Token);
 
-        this.GameContext.PlugInManager.GetPlugInPoint<IAttackableGotKilledPlugIn>()?.AttackableGotKilled(this, killer);
+        if (this.GameContext.PlugInManager.GetPlugInPoint<IAttackableGotKilledPlugIn>() is { } plugInPoint)
+        {
+            await plugInPoint.AttackableGotKilledAsync(this, killer);
+        }
+
         if (this.LastDeath is { } deathInformation)
         {
             this.Died?.Invoke(this, deathInformation);

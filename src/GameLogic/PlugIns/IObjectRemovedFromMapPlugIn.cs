@@ -19,5 +19,5 @@ public interface IObjectRemovedFromMapPlugIn
     /// </summary>
     /// <param name="map">The map.</param>
     /// <param name="removedObject">The removed object.</param>
-    void ObjectRemovedFromMap(GameMap map, ILocateable removedObject);
+    ValueTask ObjectRemovedFromMapAsync(GameMap map, ILocateable removedObject);
 }

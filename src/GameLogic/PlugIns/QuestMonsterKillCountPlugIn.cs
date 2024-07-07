@@ -20,7 +20,7 @@ public class QuestMonsterKillCountPlugIn : IAttackableGotKilledPlugIn
     /// </summary>
     /// <param name="killed">The killed <see cref="IAttackable" />.</param>
     /// <param name="killer">The killer.</param>
-    public void AttackableGotKilled(IAttackable killed, IAttacker? killer)
+    public async ValueTask AttackableGotKilledAsync(IAttackable killed, IAttacker? killer)
     {
         if (!(killer is Player player && killed is Monster monster)
             || player.SelectedCharacter?.QuestStates is null)

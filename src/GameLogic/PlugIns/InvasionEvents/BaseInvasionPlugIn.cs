@@ -67,26 +67,18 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
     protected virtual ushort[] PossibleMaps { get; } = { LorenciaId, NoriaId, DeviasId };
 
     /// <inheritdoc />
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
-    public virtual async void ObjectAddedToMap(GameMap map, ILocateable addedObject)
+    public virtual async ValueTask ObjectAddedToMapAsync(GameMap map, ILocateable addedObject)
     {
-        try
+        if (this._mapEventType is null)
         {
-            if (this._mapEventType is null)
-            {
-                return;
-            }
-
-            if (addedObject is Player player)
-            {
-                var state = this.GetStateByGameContext(player.GameContext);
-                var isEnabled = state.State != PeriodicTaskState.NotStarted;
-                await this.TrySendMapEventStateUpdateAsync(player, isEnabled).ConfigureAwait(false);
-            }
+            return;
         }
-        catch
+
+        if (addedObject is Player player)
         {
-            // must be catched because it's an async void method.
+            var state = this.GetStateByGameContext(player.GameContext);
+            var isEnabled = state.State != PeriodicTaskState.NotStarted;
+            await this.TrySendMapEventStateUpdateAsync(player, isEnabled).ConfigureAwait(false);
         }
     }
 

@@ -19,5 +19,5 @@ public interface IObjectAddedToMapPlugIn
     /// </summary>
     /// <param name="map">The map.</param>
     /// <param name="addedObject">The added object.</param>
-    void ObjectAddedToMap(GameMap map, ILocateable addedObject);
+    ValueTask ObjectAddedToMapAsync(GameMap map, ILocateable addedObject);
 }

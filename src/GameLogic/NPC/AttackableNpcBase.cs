@@ -354,7 +354,11 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
                 await player.AfterKilledMonsterAsync().ConfigureAwait(false);
             }
 
-            player.GameContext.PlugInManager.GetPlugInPoint<IAttackableGotKilledPlugIn>()?.AttackableGotKilled(this, attacker);
+            if (player.GameContext.PlugInManager.GetPlugInPoint<IAttackableGotKilledPlugIn>() is { } plugInPoint)
+            {
+                await plugInPoint.AttackableGotKilledAsync(this, attacker);
+            }
+
             if (player.SelectedCharacter!.State > HeroState.Normal)
             {
                 player.SelectedCharacter.StateRemainingSeconds -= (int)this.Attributes[Stats.Level];

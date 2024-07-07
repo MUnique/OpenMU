@@ -187,15 +187,19 @@ public class GameContext : AsyncDisposable, IGameContext
             }
 
             this._mapList.Add(mapId, createdMap);
-            createdMap.ObjectAdded += args =>
+            createdMap.ObjectAdded += async args =>
             {
-                this.PlugInManager.GetPlugInPoint<IObjectAddedToMapPlugIn>()?.ObjectAddedToMap(args.Map, args.Object);
-                return ValueTask.CompletedTask;
+                if (this.PlugInManager.GetPlugInPoint<IObjectAddedToMapPlugIn>() is { } plugInPoint)
+                {
+                    await plugInPoint.ObjectAddedToMapAsync(args.Map, args.Object).ConfigureAwait(false);
+                }
             };
-            createdMap.ObjectRemoved += args =>
+            createdMap.ObjectRemoved += async args =>
             {
-                this.PlugInManager.GetPlugInPoint<IObjectRemovedFromMapPlugIn>()?.ObjectRemovedFromMap(args.Map, args.Object);
-                return ValueTask.CompletedTask;
+                if (this.PlugInManager.GetPlugInPoint<IObjectRemovedFromMapPlugIn>() is { } plugInPoint)
+                {
+                    await plugInPoint.ObjectRemovedFromMapAsync(args.Map, args.Object).ConfigureAwait(false);
+                }
             };
         }
 

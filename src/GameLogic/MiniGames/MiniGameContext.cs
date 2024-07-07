@@ -360,7 +360,11 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     /// <param name="args">The event parameters.</param>
     protected virtual async ValueTask OnObjectAddedToMapAsync((GameMap Map, ILocateable Object) args)
     {
-        this._gameContext.PlugInManager.GetPlugInPoint<IObjectAddedToMapPlugIn>()?.ObjectAddedToMap(args.Map, args.Object);
+        if (this._gameContext.PlugInManager.GetPlugInPoint<IObjectAddedToMapPlugIn>() is { } plugInPoint)
+        {
+            await plugInPoint.ObjectAddedToMapAsync(args.Map, args.Object).ConfigureAwait(false);
+        }
+
         if (args.Object is Monster monster)
         {
             monster.Died += this.OnMonsterDied;
@@ -390,7 +394,11 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     {
         try
         {
-            this._gameContext.PlugInManager.GetPlugInPoint<IObjectRemovedFromMapPlugIn>()?.ObjectRemovedFromMap(args.Map, args.Object);
+            if (this._gameContext.PlugInManager.GetPlugInPoint<IObjectRemovedFromMapPlugIn>() is { } plugInPoint)
+            {
+                await plugInPoint.ObjectRemovedFromMapAsync(args.Map, args.Object).ConfigureAwait(false);
+            }
+
             if (args.Object is not Player player)
             {
                 return;
