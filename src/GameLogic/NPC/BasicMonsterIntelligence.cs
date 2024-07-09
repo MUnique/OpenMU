@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic.NPC;
 using System.Diagnostics;
 using System.Threading;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Pathfinding;
 
 /// <summary>
 /// A basic monster AI which is pretty basic.
@@ -263,5 +264,13 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
 
         // we move around randomly, so the monster does not look dead when watched from distance.
         await this.Monster.RandomMoveAsync().ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// CanWalkOn?
+    /// </summary>
+    public virtual bool CanWalkOn(Point target)
+    {
+        return this.Monster.CurrentMap.Terrain.AIgrid[target.X, target.Y] == 1;
     }
 }

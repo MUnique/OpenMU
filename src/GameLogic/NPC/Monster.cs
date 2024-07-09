@@ -228,39 +228,26 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
             return;
         }
 
-        var moveByMaxX = GameLogic.Rand.NextInt(1, this.Definition.MoveRange + 1);
-        var moveByMaxY = GameLogic.Rand.NextInt(1, this.Definition.MoveRange + 1);
-        byte randx = (byte)GameLogic.Rand.NextInt(Math.Max(0, this.Position.X - moveByMaxX), Math.Min(0xFF, this.Position.X + moveByMaxX + 1));
-        byte randy = (byte)GameLogic.Rand.NextInt(Math.Max(0, this.Position.Y - moveByMaxY), Math.Min(0xFF, this.Position.Y + moveByMaxY + 1));
+        var moveByMaxX = Rand.NextInt(1, this.Definition.MoveRange + 1);
+        var moveByMaxY = Rand.NextInt(1, this.Definition.MoveRange + 1);
 
-        switch (this.Definition.ObjectKind)
-        {
-        case NpcObjectKind.Guard:
-                if (this.CurrentMap.Terrain.WalkMap[randx, randy] != true)
-                {
-                    return;
-                }
-                break;
-
-        default:
-                if (this.CurrentMap.Terrain.AIgrid[randx, randy] != 1)
-                {
-                    return;
-                }
-        break;
-        }
+        byte randx = (byte)Rand.NextInt(Math.Max(0, this.Position.X - moveByMaxX), Math.Min(0xFF, this.Position.X + moveByMaxX + 1));
+        byte randy = (byte)Rand.NextInt(Math.Max(0, this.Position.Y - moveByMaxY), Math.Min(0xFF, this.Position.Y + moveByMaxY + 1));
 
         var target = new Point(randx, randy);
-        var current = this.Position;
-        using var stepsRent = MemoryPool<WalkingStep>.Shared.Rent(1);
-        var steps = stepsRent.Memory.Slice(0, 1);
-        steps.Span[0] = new WalkingStep
+        if (this._intelligence.CanWalkOn(target))
         {
-            From = current,
-            To = target,
-            Direction = current.GetDirectionTo(target),
-        };
-        await this.WalkToAsync(target, steps).ConfigureAwait(false);
+            var current = this.Position;
+            using var stepsRent = MemoryPool<WalkingStep>.Shared.Rent(1);
+            var steps = stepsRent.Memory.Slice(0, 1);
+            steps.Span[0] = new WalkingStep
+            {
+                From = current,
+                To = target,
+                Direction = current.GetDirectionTo(target),
+            };
+            await this.WalkToAsync(target, steps).ConfigureAwait(false);
+        }
     }
 
     /// <inheritdoc/>
