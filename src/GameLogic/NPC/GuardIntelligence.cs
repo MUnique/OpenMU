@@ -68,4 +68,12 @@ public sealed class GuardIntelligence : BasicMonsterIntelligence
             await this.Monster.RandomMoveAsync().ConfigureAwait(false);
         }
     }
+
+    /// <summary>
+    /// CanWalkOn?
+    /// </summary>
+    public override bool CanWalkOn(Point target)
+    {
+        return this.Monster.CurrentMap.Terrain.WalkMap[target.X, target.Y];
+    }
 }
