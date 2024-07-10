@@ -78,6 +78,7 @@ public class GameContext : AsyncDisposable, IGameContext
             this._tasksTimer = new Timer(this.ExecutePeriodicTasks, null, 1000, 1000);
             this.FeaturePlugIns = new FeaturePlugInContainer(this.PlugInManager);
             this._configChangeHandlerRegistration = this.ConfigurationChangeMediator.RegisterObject(this.Configuration, this, this.OnGameConfigurationChangeAsync);
+            this.DuelRoomManager = new DuelRoomManager(this.Configuration.DuelConfiguration!);
         }
         catch (Exception ex)
         {
@@ -128,6 +129,9 @@ public class GameContext : AsyncDisposable, IGameContext
     /// Gets the players by character name dictionary.
     /// </summary>
     public IDictionary<string, Player> PlayersByCharacterName { get; } = new ConcurrentDictionary<string, Player>();
+
+    /// <inheritdoc />
+    public DuelRoomManager DuelRoomManager { get; set; }
 
     /// <summary>
     /// Gets the state of the active self defenses.

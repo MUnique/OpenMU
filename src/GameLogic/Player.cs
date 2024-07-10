@@ -243,6 +243,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <inheritdoc/>
     public int TradingMoney { get; set; }
 
+    /// <summary>
+    /// Gets or sets the duel room in which the player is currently fighting or spectating.
+    /// </summary>
+    public DuelRoom? DuelRoom { get; set; }
+
     /// <inheritdoc/>
     public GameMap? CurrentMap
     {
@@ -501,6 +506,17 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             this._selectedCharacter = null;
             (this.SkillList as IDisposable)?.Dispose();
             this.SkillList = null;
+
+            if (this.DuelRoom is { State: DuelState.DuelStarted } duelRoom)
+            {
+                await duelRoom.CancelDuelAsync().ConfigureAwait(false);
+                if (this.GameContext.Configuration.DuelConfiguration?.Exit is { } exit)
+                {
+                    this.PlaceAtGate(exit);
+                }
+            }
+
+            this.DuelRoom = null;
         }
         else
         {
@@ -554,6 +570,20 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
 
         return false;
+    }
+
+    /// <summary>
+    /// Determines whether the self defense is active for any attacker.
+    /// </summary>
+    /// <returns>
+    ///   <c>true</c> if any self defense is active; otherwise, <c>false</c>.
+    /// </returns>
+    public bool IsAnySelfDefenseActive()
+    {
+        var selfDefenses = this.GameContext.SelfDefenseState.Keys.Where(c => c.Attacker == this).ToList();
+        return selfDefenses.Any(sd =>
+            this.GameContext.SelfDefenseState.TryGetValue(sd, out var timeout)
+            && timeout >= DateTime.UtcNow);
     }
 
     /// <inheritdoc/>
@@ -805,6 +835,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         return true;
     }
 
+    /// <summary>
+    /// Adds the invisible effect.
+    /// </summary>
     public async ValueTask AddInvisibleEffectAsync()
     {
         var invisibleEffect = this.GameContext.Configuration.MagicEffects.FirstOrDefault(e => e.PowerUpDefinitions.Any(e => e.TargetAttribute == Stats.IsInvisible));
@@ -825,6 +858,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
     }
 
+    /// <summary>
+    /// Removes the invisible effect.
+    /// </summary>
     public async ValueTask RemoveInvisibleEffectAsync()
     {
         var invisibleEffect = this.GameContext.Configuration.MagicEffects.FirstOrDefault(e => e.PowerUpDefinitions.Any(e => e.TargetAttribute == Stats.IsInvisible));
@@ -1482,6 +1518,17 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         return (byte)InventoryConstants.GetInventorySize(selectedCharacter.InventoryExtensions);
     }
 
+    /// <summary>
+    /// Resets the pet behavior.
+    /// </summary>
+    public async ValueTask ResetPetBehaviorAsync()
+    {
+        if (this.PetCommandManager is { } petCommandManager)
+        {
+            await petCommandManager.SetBehaviourAsync(PetBehaviour.Idle, null).ConfigureAwait(false);
+        }
+    }
+
     /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore()
     {
@@ -1525,6 +1572,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
 
         if (this.CurrentMiniGame is { })
+        {
+            moveToNextSafezone = true;
+        }
+
+        if (this.DuelRoom is { })
         {
             moveToNextSafezone = true;
         }
@@ -1580,7 +1632,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         if (this.Summon?.Item1 is { IsAlive: true } summon)
         {
-            summon.Position = new Point((byte)Rand.NextInt(gate.X1, gate.X2), (byte)Rand.NextInt(gate.Y1, gate.Y2));
+            summon.Position = gate.GetRandomPoint();
             summon.Rotation = gate.Direction;
         }
     }
@@ -1642,6 +1694,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         if (this.CurrentMap is null)
         {
             throw new InvalidOperationException("CurrentMap is not set. Can't determine spawn gate.");
+        }
+
+        if (this.DuelRoom is { State: DuelState.DuelAccepted or DuelState.DuelStarted } duelRoom
+            && duelRoom.GetSpawnGate(this) is { } duelExitGate)
+        {
+            return duelExitGate;
         }
 
         if (this.GuildWarContext?.WarType == GuildWarType.Soccer
@@ -1757,6 +1815,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 await this.MagicEffectList.ClearEffectsAfterDeathAsync().ConfigureAwait(false);
                 this.SetReclaimableAttributesToMaximum();
                 await this.RespawnAtAsync(await this.GetSpawnGateOfCurrentMapAsync().ConfigureAwait(false)).ConfigureAwait(false);
+                await this.RespawnOfDuelPartnerIfInDuelAsync().ConfigureAwait(false);
             }
             catch (OperationCanceledException)
             {
@@ -1782,11 +1841,34 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <summary>
+    /// Called when this player is in a duel and was killed.
+    /// Sets the player back to its starting position and reclaims the attributes,
+    /// so that they're ready for the next round.
+    /// </summary>
+    private async ValueTask RespawnOfDuelPartnerIfInDuelAsync()
+    {
+        if (this.DuelRoom is { State: DuelState.DuelStarted } duelRoom
+            && duelRoom.IsDuelist(this)
+            && (duelRoom.Requester == this ? duelRoom.Opponent : duelRoom.Requester) is { IsAlive: true, CurrentMap: not null } duelPartner
+            && duelRoom.GetSpawnGate(duelPartner) is { } partnerSpawnGate)
+        {
+            duelPartner.IsAlive = false; // Avoid ending the duel...
+            duelPartner.SetReclaimableAttributesToMaximum();
+            await duelPartner.RespawnAtAsync(partnerSpawnGate).ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
     /// Is called after the player killed a <see cref="Player"/>.
     /// Increment PK Level.
     /// </summary>
     private async ValueTask AfterKilledPlayerAsync(Player killedPlayer)
     {
+        if (this.DuelRoom?.State == DuelState.DuelStarted)
+        {
+            return;
+        }
+
         var killedPlayerState = killedPlayer.SelectedCharacter?.State;
         if (killedPlayerState is null)
         {
@@ -1947,10 +2029,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         await this.ClientReadyAfterMapChangeAsync().ConfigureAwait(false);
 
         await this.InvokeViewPlugInAsync<IUpdateRotationPlugIn>(p => p.UpdateRotationAsync()).ConfigureAwait(false);
-        if (this.PetCommandManager is { } petCommandManager)
-        {
-            await petCommandManager.SetBehaviourAsync(PetBehaviour.Idle, null).ConfigureAwait(false);
-        }
+        await this.ResetPetBehaviorAsync().ConfigureAwait(false);
 
         if (this.SelectedCharacter?.MuHelperConfiguration is { } muHelperConfiguration)
         {
@@ -2123,10 +2202,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             {
                 var minimumExp = pet.Definition!.GetExperienceOfPetLevel(pet.Level, pet.Definition!.MaximumItemLevel);
                 pet.PetExperience = (int)Math.Max((int)(pet.PetExperience * 0.9), minimumExp);
-                if (this.PetCommandManager is { } petCommandManager)
-                {
-                    await petCommandManager.SetBehaviourAsync(PetBehaviour.Idle, null).ConfigureAwait(false);
-                }
+                await this.ResetPetBehaviorAsync().ConfigureAwait(false);
             }
         }
     }
