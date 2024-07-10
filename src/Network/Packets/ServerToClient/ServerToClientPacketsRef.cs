@@ -19046,8 +19046,8 @@ public readonly ref struct DuelStartResultRef
     /// </summary>
     public ushort OpponentId
     {
-        get => ReadUInt16LittleEndian(this._data[5..]);
-        set => WriteUInt16LittleEndian(this._data[5..], value);
+        get => ReadUInt16BigEndian(this._data[5..]);
+        set => WriteUInt16BigEndian(this._data[5..], value);
     }
 
     /// <summary>
@@ -19202,6 +19202,7 @@ public readonly ref struct DuelEndRef
             header.Code = Code;
             header.Length = (byte)Math.Min(data.Length, Length);
             header.SubCode = SubCode;
+            this.Result = 0;
         }
     }
 
@@ -19224,12 +19225,39 @@ public readonly ref struct DuelEndRef
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 4;
+    public static int Length => 17;
 
     /// <summary>
     /// Gets the header of this packet.
     /// </summary>
     public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public byte Result
+    {
+        get => this._data[4];
+        set => this._data[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the opponent id.
+    /// </summary>
+    public ushort OpponentId
+    {
+        get => ReadUInt16BigEndian(this._data[5..]);
+        set => WriteUInt16BigEndian(this._data[5..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the opponent name.
+    /// </summary>
+    public string OpponentName
+    {
+        get => this._data.ExtractString(7, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(7, 10).WriteString(value, System.Text.Encoding.UTF8);
+    }
 
     /// <summary>
     /// Performs an implicit conversion from a Span of bytes to a <see cref="DuelEnd"/>.
@@ -19313,8 +19341,8 @@ public readonly ref struct DuelScoreRef
     /// </summary>
     public ushort Player1Id
     {
-        get => ReadUInt16LittleEndian(this._data[4..]);
-        set => WriteUInt16LittleEndian(this._data[4..], value);
+        get => ReadUInt16BigEndian(this._data[4..]);
+        set => WriteUInt16BigEndian(this._data[4..], value);
     }
 
     /// <summary>
@@ -19322,8 +19350,8 @@ public readonly ref struct DuelScoreRef
     /// </summary>
     public ushort Player2Id
     {
-        get => ReadUInt16LittleEndian(this._data[6..]);
-        set => WriteUInt16LittleEndian(this._data[6..], value);
+        get => ReadUInt16BigEndian(this._data[6..]);
+        set => WriteUInt16BigEndian(this._data[6..], value);
     }
 
     /// <summary>
@@ -19426,8 +19454,8 @@ public readonly ref struct DuelHealthUpdateRef
     /// </summary>
     public ushort Player1Id
     {
-        get => ReadUInt16LittleEndian(this._data[4..]);
-        set => WriteUInt16LittleEndian(this._data[4..], value);
+        get => ReadUInt16BigEndian(this._data[4..]);
+        set => WriteUInt16BigEndian(this._data[4..], value);
     }
 
     /// <summary>
@@ -19435,8 +19463,8 @@ public readonly ref struct DuelHealthUpdateRef
     /// </summary>
     public ushort Player2Id
     {
-        get => ReadUInt16LittleEndian(this._data[6..]);
-        set => WriteUInt16LittleEndian(this._data[6..], value);
+        get => ReadUInt16BigEndian(this._data[6..]);
+        set => WriteUInt16BigEndian(this._data[6..], value);
     }
 
     /// <summary>
@@ -19686,7 +19714,7 @@ public readonly ref struct DuelInitRef
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 29;
+    public static int Length => 30;
 
     /// <summary>
     /// Gets the header of this packet.
@@ -19694,12 +19722,21 @@ public readonly ref struct DuelInitRef
     public C1HeaderWithSubCodeRef Header => new (this._data);
 
     /// <summary>
-    /// Gets or sets the type.
+    /// Gets or sets the result.
     /// </summary>
-    public byte Type
+    public byte Result
     {
         get => this._data[4];
         set => this._data[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the room index.
+    /// </summary>
+    public byte RoomIndex
+    {
+        get => this._data[5];
+        set => this._data[5] = value;
     }
 
     /// <summary>
@@ -19707,8 +19744,8 @@ public readonly ref struct DuelInitRef
     /// </summary>
     public string Player1Name
     {
-        get => this._data.ExtractString(5, 10, System.Text.Encoding.UTF8);
-        set => this._data.Slice(5, 10).WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.ExtractString(6, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(6, 10).WriteString(value, System.Text.Encoding.UTF8);
     }
 
     /// <summary>
@@ -19716,8 +19753,8 @@ public readonly ref struct DuelInitRef
     /// </summary>
     public string Player2Name
     {
-        get => this._data.ExtractString(15, 10, System.Text.Encoding.UTF8);
-        set => this._data.Slice(15, 10).WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.ExtractString(16, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(16, 10).WriteString(value, System.Text.Encoding.UTF8);
     }
 
     /// <summary>
@@ -19725,8 +19762,8 @@ public readonly ref struct DuelInitRef
     /// </summary>
     public ushort Player1Id
     {
-        get => ReadUInt16LittleEndian(this._data[25..]);
-        set => WriteUInt16LittleEndian(this._data[25..], value);
+        get => ReadUInt16BigEndian(this._data[26..]);
+        set => WriteUInt16BigEndian(this._data[26..], value);
     }
 
     /// <summary>
@@ -19734,8 +19771,8 @@ public readonly ref struct DuelInitRef
     /// </summary>
     public ushort Player2Id
     {
-        get => ReadUInt16LittleEndian(this._data[27..]);
-        set => WriteUInt16LittleEndian(this._data[27..], value);
+        get => ReadUInt16BigEndian(this._data[28..]);
+        set => WriteUInt16BigEndian(this._data[28..], value);
     }
 
     /// <summary>

@@ -7246,7 +7246,7 @@
         </Field>
         <Field>
           <Index>5</Index>
-          <Type>ShortLittleEndian</Type>
+          <Type>ShortBigEndian</Type>
           <Name>OpponentId</Name>
         </Field>
         <Field>
@@ -7328,11 +7328,28 @@
       <Code>AA</Code>
       <SubCode>03</SubCode>
       <Name>DuelEnd</Name>
-      <Length>4</Length>
+      <Length>17</Length>
       <Direction>ServerToClient</Direction>
       <SentWhen>After a duel ended.</SentWhen>
       <CausedReaction>The client updates its state.</CausedReaction>
       <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Result</Name>
+          <DefaultValue>0</DefaultValue>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>OpponentId</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>String</Type>
+          <Name>OpponentName</Name>
+          <Length>10</Length>
+        </Field>
       </Fields>
     </Packet>
     <Packet>
@@ -7347,12 +7364,12 @@
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>ShortLittleEndian</Type>
+          <Type>ShortBigEndian</Type>
           <Name>Player1Id</Name>
         </Field>
         <Field>
           <Index>6</Index>
-          <Type>ShortLittleEndian</Type>
+          <Type>ShortBigEndian</Type>
           <Name>Player2Id</Name>
         </Field>
         <Field>
@@ -7379,12 +7396,12 @@
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>ShortLittleEndian</Type>
+          <Type>ShortBigEndian</Type>
           <Name>Player1Id</Name>
         </Field>
         <Field>
           <Index>6</Index>
-          <Type>ShortLittleEndian</Type>
+          <Type>ShortBigEndian</Type>
           <Name>Player2Id</Name>
         </Field>
         <Field>
@@ -7464,7 +7481,7 @@
       <Code>AA</Code>
       <SubCode>07</SubCode>
       <Name>DuelInit</Name>
-      <Length>29</Length>
+      <Length>30</Length>
       <Direction>ServerToClient</Direction>
       <SentWhen>When the duel starts.</SentWhen>
       <CausedReaction>The client initializes the duel state.</CausedReaction>
@@ -7472,28 +7489,33 @@
         <Field>
           <Index>4</Index>
           <Type>Byte</Type>
-          <Name>Type</Name>
+          <Name>Result</Name>
         </Field>
         <Field>
           <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>RoomIndex</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
           <Type>String</Type>
           <Name>Player1Name</Name>
           <Length>10</Length>
         </Field>
         <Field>
-          <Index>15</Index>
+          <Index>16</Index>
           <Type>String</Type>
           <Name>Player2Name</Name>
           <Length>10</Length>
         </Field>
         <Field>
-          <Index>25</Index>
-          <Type>ShortLittleEndian</Type>
+          <Index>26</Index>
+          <Type>ShortBigEndian</Type>
           <Name>Player1Id</Name>
         </Field>
         <Field>
-          <Index>27</Index>
-          <Type>ShortLittleEndian</Type>
+          <Index>28</Index>
+          <Type>ShortBigEndian</Type>
           <Name>Player2Id</Name>
         </Field>
       </Fields>

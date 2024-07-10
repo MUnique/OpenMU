@@ -1,4 +1,7 @@
-﻿namespace MUnique.OpenMU.GameServer.RemoteView.Duel;
+﻿using MUnique.OpenMU.GameServer.RemoteView.World;
+using MUnique.OpenMU.Persistence;
+
+namespace MUnique.OpenMU.GameServer.RemoteView.Duel;
 
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic;
@@ -16,6 +19,7 @@ using MUnique.OpenMU.PlugIns;
 [MinimumClient(4, 0, ClientLanguage.Invariant)]
 public class InitializeDuelPlugIn : IInitializeDuelPlugIn
 {
+    
     private readonly RemotePlayer _player;
 
     /// <summary>
@@ -25,15 +29,22 @@ public class InitializeDuelPlugIn : IInitializeDuelPlugIn
     public InitializeDuelPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc />
-    public async ValueTask InitializeDuelAsync(DuelContext duelContext)
+    public async ValueTask InitializeDuelAsync(DuelRoom duelRoom)
     {
+        var player1 = this._player == duelRoom.Opponent ? duelRoom.Opponent : duelRoom.Requester;
+        var player2 = this._player == duelRoom.Opponent ? duelRoom.Requester : duelRoom.Opponent;
         await this._player.Connection.SendDuelInitAsync(
                 0,
-                duelContext.Requester.Name,
-                duelContext.Opponent.Name,
-                duelContext.Requester.GetId(this._player),
-                duelContext.Opponent.GetId(this._player))
+                (byte)duelRoom.Index,
+                player1.Name,
+                player2.Name,
+                player1.GetId(this._player),
+                player2.GetId(this._player))
             .ConfigureAwait(false);
-        await this._player.Connection.SendDuelHealthBarInitAsync().ConfigureAwait(false);
+        if (!duelRoom.IsDuelist(this._player))
+        {
+            await this._player.Connection.SendDuelHealthBarInitAsync().ConfigureAwait(false);
+            await this._player.Connection.SendMagicEffectStatusAsync(true, this._player.GetId(this._player), EffectNumbers.DuelSpectatorHealthBar).ConfigureAwait(false);
+        }
     }
 }

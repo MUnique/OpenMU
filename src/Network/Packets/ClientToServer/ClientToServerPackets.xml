@@ -4166,7 +4166,7 @@
         </Field>
         <Field>
           <Index>5</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>PlayerId</Name>
         </Field>
         <Field>

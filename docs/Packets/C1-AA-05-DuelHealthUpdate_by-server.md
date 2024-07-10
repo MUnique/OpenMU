@@ -16,8 +16,8 @@ The client updates the displayed health and shield bars.
 | 1 | 1 |    Byte   |   12   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0xAA  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0x05  | Packet header - sub packet type identifier |
-| 4 | 2 | ShortLittleEndian |  | Player1Id |
-| 6 | 2 | ShortLittleEndian |  | Player2Id |
+| 4 | 2 | ShortBigEndian |  | Player1Id |
+| 6 | 2 | ShortBigEndian |  | Player2Id |
 | 8 | 1 | Byte |  | Player1HealthPercentage |
 | 9 | 1 | Byte |  | Player2HealthPercentage |
 | 10 | 1 | Byte |  | Player1ShieldPercentage |

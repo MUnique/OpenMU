@@ -17152,8 +17152,8 @@ public readonly struct DuelStartResponse
     /// </summary>
     public ushort PlayerId
     {
-        get => ReadUInt16BigEndian(this._data.Span[5..]);
-        set => WriteUInt16BigEndian(this._data.Span[5..], value);
+        get => ReadUInt16LittleEndian(this._data.Span[5..]);
+        set => WriteUInt16LittleEndian(this._data.Span[5..], value);
     }
 
     /// <summary>

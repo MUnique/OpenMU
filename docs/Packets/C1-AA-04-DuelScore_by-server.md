@@ -16,7 +16,7 @@ The client updates the displayed duel score.
 | 1 | 1 |    Byte   |   10   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0xAA  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0x04  | Packet header - sub packet type identifier |
-| 4 | 2 | ShortLittleEndian |  | Player1Id |
-| 6 | 2 | ShortLittleEndian |  | Player2Id |
+| 4 | 2 | ShortBigEndian |  | Player1Id |
+| 6 | 2 | ShortBigEndian |  | Player2Id |
 | 8 | 1 | Byte |  | Player1Score |
 | 9 | 1 | Byte |  | Player2Score |

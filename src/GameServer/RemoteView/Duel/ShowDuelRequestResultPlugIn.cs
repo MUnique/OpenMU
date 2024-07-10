@@ -27,21 +27,21 @@ public class ShowDuelRequestResultPlugIn : IShowDuelRequestResultPlugIn
     public ShowDuelRequestResultPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public async ValueTask ShowDuelRequestResultAsync(GameLogic.DuelStartResult result, Player? opponent)
+    public async ValueTask ShowDuelRequestResultAsync(GameLogic.Views.Duel.DuelStartResult result, Player opponent)
     {
-        await this._player.Connection.SendDuelStartResultAsync(Convert(result), opponent?.GetId(this._player) ?? 0, opponent?.Name ?? string.Empty).ConfigureAwait(false);
+        await this._player.Connection.SendDuelStartResultAsync(Convert(result), opponent.GetId(this._player), opponent.Name).ConfigureAwait(false);
     }
 
-    private static Network.Packets.ServerToClient.DuelStartResult.DuelStartResultType Convert(GameLogic.DuelStartResult result)
+    private static Network.Packets.ServerToClient.DuelStartResult.DuelStartResultType Convert(GameLogic.Views.Duel.DuelStartResult result)
     {
         return result switch
         {
-            GameLogic.DuelStartResult.Success => Network.Packets.ServerToClient.DuelStartResult.DuelStartResultType.Success,
-            GameLogic.DuelStartResult.Refused => Network.Packets.ServerToClient.DuelStartResult.DuelStartResultType.Refused,
-            GameLogic.DuelStartResult.FailedByError => Network.Packets.ServerToClient.DuelStartResult.DuelStartResultType.FailedByError,
-            GameLogic.DuelStartResult.FailedByNoFreeRoom => Network.Packets.ServerToClient.DuelStartResult.DuelStartResultType.FailedByNoFreeRoom,
-            GameLogic.DuelStartResult.FailedByNotEnoughMoney => Network.Packets.ServerToClient.DuelStartResult.DuelStartResultType.FailedByNotEnoughMoney,
-            GameLogic.DuelStartResult.FailedByTooLowLevel => Network.Packets.ServerToClient.DuelStartResult.DuelStartResultType.FailedByTooLowLevel,
+            GameLogic.Views.Duel.DuelStartResult.Success => Network.Packets.ServerToClient.DuelStartResult.DuelStartResultType.Success,
+            GameLogic.Views.Duel.DuelStartResult.Refused => Network.Packets.ServerToClient.DuelStartResult.DuelStartResultType.Refused,
+            GameLogic.Views.Duel.DuelStartResult.FailedByError => Network.Packets.ServerToClient.DuelStartResult.DuelStartResultType.FailedByError,
+            GameLogic.Views.Duel.DuelStartResult.FailedByNoFreeRoom => Network.Packets.ServerToClient.DuelStartResult.DuelStartResultType.FailedByNoFreeRoom,
+            GameLogic.Views.Duel.DuelStartResult.FailedByNotEnoughMoney => Network.Packets.ServerToClient.DuelStartResult.DuelStartResultType.FailedByNotEnoughMoney,
+            GameLogic.Views.Duel.DuelStartResult.FailedByTooLowLevel => Network.Packets.ServerToClient.DuelStartResult.DuelStartResultType.FailedByTooLowLevel,
             _ => throw new ArgumentOutOfRangeException(nameof(result)),
         };
     }

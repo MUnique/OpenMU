@@ -8,5 +8,6 @@ public interface IShowDuelScoreUpdatePlugIn : IViewPlugIn
     /// <summary>
     /// The score of the duel has been changed and needs to be updated.
     /// </summary>
-    ValueTask UpdateScoreAsync(Player player1, byte player1Score, Player player2, byte player2Score);
+    /// <param name="duelRoom">The duel room.</param>
+    ValueTask UpdateScoreAsync(DuelRoom duelRoom);
 }

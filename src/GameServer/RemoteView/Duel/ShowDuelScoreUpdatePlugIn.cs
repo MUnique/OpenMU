@@ -25,8 +25,15 @@ public class ShowDuelScoreUpdatePlugIn : IShowDuelScoreUpdatePlugIn
     public ShowDuelScoreUpdatePlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc />
-    public async ValueTask UpdateScoreAsync(Player player1, byte player1Score, Player player2, byte player2Score)
+    public async ValueTask UpdateScoreAsync(DuelRoom duelRoom)
     {
-        await this._player.Connection.SendDuelScoreAsync(player1.GetId(this._player), player2.GetId(this._player), player1Score, player2Score).ConfigureAwait(false);
+        if (this._player == duelRoom.Opponent)
+        {
+            await this._player.Connection.SendDuelScoreAsync(duelRoom.Opponent.GetId(this._player), duelRoom.Requester.GetId(this._player), duelRoom.ScoreOpponent, duelRoom.ScoreRequester).ConfigureAwait(false);
+        }
+        else
+        {
+            await this._player.Connection.SendDuelScoreAsync(duelRoom.Requester.GetId(this._player), duelRoom.Opponent.GetId(this._player), duelRoom.ScoreRequester, duelRoom.ScoreOpponent).ConfigureAwait(false);
+        }
     }
 }

@@ -26,8 +26,11 @@ public class DuelHealthUpdatePlugIn : IDuelHealthUpdatePlugIn
     public DuelHealthUpdatePlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc />
-    public async ValueTask UpdateHealthAsync(Player player1, Player player2)
+    public async ValueTask UpdateHealthAsync(DuelRoom duelRoom)
     {
+        var player1 = this._player == duelRoom.Opponent ? duelRoom.Opponent : duelRoom.Requester;
+        var player2 = this._player == duelRoom.Opponent ? duelRoom.Requester : duelRoom.Opponent;
+
         var player1Health = player1.Attributes![Stats.CurrentHealth] / (player1.Attributes[Stats.MaximumHealth] / 100f);
         var player1Shield = player1.Attributes[Stats.CurrentShield] / (player1.Attributes[Stats.MaximumShield] / 100f);
         var player2Health = player2.Attributes![Stats.CurrentHealth] / (player1.Attributes[Stats.MaximumHealth] / 100f);

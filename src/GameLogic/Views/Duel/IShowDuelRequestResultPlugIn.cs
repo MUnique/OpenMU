@@ -14,5 +14,5 @@ public interface IShowDuelRequestResultPlugIn : IViewPlugIn
     /// </summary>
     /// <param name="result">if set to <c>true</c> the trade has been accepted and will be opened.</param>
     /// <param name="opponent">The opponent.</param>
-    ValueTask ShowDuelRequestResultAsync(DuelStartResult result, Player? opponent);
+    ValueTask ShowDuelRequestResultAsync(DuelStartResult result, Player opponent);
 }

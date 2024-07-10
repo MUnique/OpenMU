@@ -17,5 +17,5 @@ Depending on the response, the server starts the duel, or not.
 | 2 | 1 |    Byte   | 0xAA  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0x02  | Packet header - sub packet type identifier |
 | 4 | 1 | Boolean |  | Response |
-| 5 | 2 | ShortBigEndian |  | PlayerId |
+| 5 | 2 | ShortLittleEndian |  | PlayerId |
 | 7 | 10 | String |  | PlayerName |

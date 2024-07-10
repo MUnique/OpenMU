@@ -42,10 +42,10 @@ public class DuelStatusUpdatePlugIn : IDuelStatusUpdatePlugIn
                 var duelStatus = packet[i];
                 if (duelRoom is not null)
                 {
-                    duelStatus.Player1Name = duelRoom.Player1?.Name ?? string.Empty;
-                    duelStatus.Player2Name = duelRoom.Player2?.Name ?? string.Empty;
-                    duelStatus.DuelRunning = duelStatus.DuelRunning;
-                    duelStatus.DuelOpen = duelStatus.DuelOpen;
+                    duelStatus.Player1Name = duelRoom.Requester.Name;
+                    duelStatus.Player2Name = duelRoom.Opponent.Name;
+                    duelStatus.DuelRunning = duelRoom.State == DuelState.DuelStarted;
+                    duelStatus.DuelOpen = duelRoom.IsOpen;
                 }
             }
 

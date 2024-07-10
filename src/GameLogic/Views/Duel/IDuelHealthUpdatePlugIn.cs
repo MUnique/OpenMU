@@ -8,7 +8,6 @@ public interface IDuelHealthUpdatePlugIn : IViewPlugIn
     /// <summary>
     /// Updates the health of both players.
     /// </summary>
-    /// <param name="player1">The player1.</param>
-    /// <param name="player2">The player2.</param>
-    ValueTask UpdateHealthAsync(Player player1, Player player2);
+    /// <param name="duelRoom">The duel room.</param>
+    ValueTask UpdateHealthAsync(DuelRoom duelRoom);
 }

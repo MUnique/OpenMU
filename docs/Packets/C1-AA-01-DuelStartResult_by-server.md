@@ -17,7 +17,7 @@ The client shows the started or aborted duel.
 | 2 | 1 |    Byte   | 0xAA  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0x01  | Packet header - sub packet type identifier |
 | 4 | 1 | DuelStartResultType |  | Result |
-| 5 | 2 | ShortLittleEndian |  | OpponentId |
+| 5 | 2 | ShortBigEndian |  | OpponentId |
 | 7 | 10 | String |  | OpponentName |
 
 ### DuelStartResultType Enum

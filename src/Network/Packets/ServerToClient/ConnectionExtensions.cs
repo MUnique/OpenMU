@@ -4095,11 +4095,14 @@ public static class ConnectionExtensions
     /// Sends a <see cref="DuelEnd" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
+    /// <param name="opponentId">The opponent id.</param>
+    /// <param name="opponentName">The opponent name.</param>
+    /// <param name="result">The result.</param>
     /// <remarks>
     /// Is sent by the server when: After a duel ended.
     /// Causes reaction on client side: The client updates its state.
     /// </remarks>
-    public static async ValueTask SendDuelEndAsync(this IConnection? connection)
+    public static async ValueTask SendDuelEndAsync(this IConnection? connection, ushort @opponentId, string @opponentName, byte @result = 0)
     {
         if (connection is null)
         {
@@ -4110,6 +4113,10 @@ public static class ConnectionExtensions
         {
             var length = DuelEndRef.Length;
             var packet = new DuelEndRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+            packet.OpponentId = @opponentId;
+            packet.OpponentName = @opponentName;
+
             return packet.Header.Length;
         }
 
@@ -4192,7 +4199,8 @@ public static class ConnectionExtensions
     /// Sends a <see cref="DuelInit" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
-    /// <param name="type">The type.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="roomIndex">The room index.</param>
     /// <param name="player1Name">The player 1 name.</param>
     /// <param name="player2Name">The player 2 name.</param>
     /// <param name="player1Id">The player 1 id.</param>
@@ -4201,7 +4209,7 @@ public static class ConnectionExtensions
     /// Is sent by the server when: When the duel starts.
     /// Causes reaction on client side: The client initializes the duel state.
     /// </remarks>
-    public static async ValueTask SendDuelInitAsync(this IConnection? connection, byte @type, string @player1Name, string @player2Name, ushort @player1Id, ushort @player2Id)
+    public static async ValueTask SendDuelInitAsync(this IConnection? connection, byte @result, byte @roomIndex, string @player1Name, string @player2Name, ushort @player1Id, ushort @player2Id)
     {
         if (connection is null)
         {
@@ -4212,7 +4220,8 @@ public static class ConnectionExtensions
         {
             var length = DuelInitRef.Length;
             var packet = new DuelInitRef(connection.Output.GetSpan(length)[..length]);
-            packet.Type = @type;
+            packet.Result = @result;
+            packet.RoomIndex = @roomIndex;
             packet.Player1Name = @player1Name;
             packet.Player2Name = @player2Name;
             packet.Player1Id = @player1Id;

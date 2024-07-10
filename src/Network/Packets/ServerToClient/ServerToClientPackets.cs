@@ -20151,8 +20151,8 @@ public readonly struct DuelStartResult
     /// </summary>
     public ushort OpponentId
     {
-        get => ReadUInt16LittleEndian(this._data.Span[5..]);
-        set => WriteUInt16LittleEndian(this._data.Span[5..], value);
+        get => ReadUInt16BigEndian(this._data.Span[5..]);
+        set => WriteUInt16BigEndian(this._data.Span[5..], value);
     }
 
     /// <summary>
@@ -20307,6 +20307,7 @@ public readonly struct DuelEnd
             header.Code = Code;
             header.Length = (byte)Math.Min(data.Length, Length);
             header.SubCode = SubCode;
+            this.Result = 0;
         }
     }
 
@@ -20329,12 +20330,39 @@ public readonly struct DuelEnd
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 4;
+    public static int Length => 17;
 
     /// <summary>
     /// Gets the header of this packet.
     /// </summary>
     public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public byte Result
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the opponent id.
+    /// </summary>
+    public ushort OpponentId
+    {
+        get => ReadUInt16BigEndian(this._data.Span[5..]);
+        set => WriteUInt16BigEndian(this._data.Span[5..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the opponent name.
+    /// </summary>
+    public string OpponentName
+    {
+        get => this._data.Span.ExtractString(7, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(7, 10).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
 
     /// <summary>
     /// Performs an implicit conversion from a Memory of bytes to a <see cref="DuelEnd"/>.
@@ -20418,8 +20446,8 @@ public readonly struct DuelScore
     /// </summary>
     public ushort Player1Id
     {
-        get => ReadUInt16LittleEndian(this._data.Span[4..]);
-        set => WriteUInt16LittleEndian(this._data.Span[4..], value);
+        get => ReadUInt16BigEndian(this._data.Span[4..]);
+        set => WriteUInt16BigEndian(this._data.Span[4..], value);
     }
 
     /// <summary>
@@ -20427,8 +20455,8 @@ public readonly struct DuelScore
     /// </summary>
     public ushort Player2Id
     {
-        get => ReadUInt16LittleEndian(this._data.Span[6..]);
-        set => WriteUInt16LittleEndian(this._data.Span[6..], value);
+        get => ReadUInt16BigEndian(this._data.Span[6..]);
+        set => WriteUInt16BigEndian(this._data.Span[6..], value);
     }
 
     /// <summary>
@@ -20531,8 +20559,8 @@ public readonly struct DuelHealthUpdate
     /// </summary>
     public ushort Player1Id
     {
-        get => ReadUInt16LittleEndian(this._data.Span[4..]);
-        set => WriteUInt16LittleEndian(this._data.Span[4..], value);
+        get => ReadUInt16BigEndian(this._data.Span[4..]);
+        set => WriteUInt16BigEndian(this._data.Span[4..], value);
     }
 
     /// <summary>
@@ -20540,8 +20568,8 @@ public readonly struct DuelHealthUpdate
     /// </summary>
     public ushort Player2Id
     {
-        get => ReadUInt16LittleEndian(this._data.Span[6..]);
-        set => WriteUInt16LittleEndian(this._data.Span[6..], value);
+        get => ReadUInt16BigEndian(this._data.Span[6..]);
+        set => WriteUInt16BigEndian(this._data.Span[6..], value);
     }
 
     /// <summary>
@@ -20791,7 +20819,7 @@ public readonly struct DuelInit
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 29;
+    public static int Length => 30;
 
     /// <summary>
     /// Gets the header of this packet.
@@ -20799,12 +20827,21 @@ public readonly struct DuelInit
     public C1HeaderWithSubCode Header => new (this._data);
 
     /// <summary>
-    /// Gets or sets the type.
+    /// Gets or sets the result.
     /// </summary>
-    public byte Type
+    public byte Result
     {
         get => this._data.Span[4];
         set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the room index.
+    /// </summary>
+    public byte RoomIndex
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
     }
 
     /// <summary>
@@ -20812,8 +20849,8 @@ public readonly struct DuelInit
     /// </summary>
     public string Player1Name
     {
-        get => this._data.Span.ExtractString(5, 10, System.Text.Encoding.UTF8);
-        set => this._data.Slice(5, 10).Span.WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.Span.ExtractString(6, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(6, 10).Span.WriteString(value, System.Text.Encoding.UTF8);
     }
 
     /// <summary>
@@ -20821,8 +20858,8 @@ public readonly struct DuelInit
     /// </summary>
     public string Player2Name
     {
-        get => this._data.Span.ExtractString(15, 10, System.Text.Encoding.UTF8);
-        set => this._data.Slice(15, 10).Span.WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.Span.ExtractString(16, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(16, 10).Span.WriteString(value, System.Text.Encoding.UTF8);
     }
 
     /// <summary>
@@ -20830,8 +20867,8 @@ public readonly struct DuelInit
     /// </summary>
     public ushort Player1Id
     {
-        get => ReadUInt16LittleEndian(this._data.Span[25..]);
-        set => WriteUInt16LittleEndian(this._data.Span[25..], value);
+        get => ReadUInt16BigEndian(this._data.Span[26..]);
+        set => WriteUInt16BigEndian(this._data.Span[26..], value);
     }
 
     /// <summary>
@@ -20839,8 +20876,8 @@ public readonly struct DuelInit
     /// </summary>
     public ushort Player2Id
     {
-        get => ReadUInt16LittleEndian(this._data.Span[27..]);
-        set => WriteUInt16LittleEndian(this._data.Span[27..], value);
+        get => ReadUInt16BigEndian(this._data.Span[28..]);
+        set => WriteUInt16BigEndian(this._data.Span[28..], value);
     }
 
     /// <summary>
