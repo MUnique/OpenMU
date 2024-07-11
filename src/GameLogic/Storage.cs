@@ -46,6 +46,7 @@ public class Storage : IStorage
         List<Item>? unfittingItems = null;
         this.ItemStorage.Items
             .Where(item => item.ItemSlot <= lastSlot && item.ItemSlot >= slotOffset)
+            .Where(item => item.Definition is not null)
             .ForEach(item =>
             {
                 if (!this.AddItemInternal((byte)(item.ItemSlot - slotOffset), item))
@@ -58,7 +59,7 @@ public class Storage : IStorage
         {
             return;
         }
-        
+
         // we first try to add them.
         for (var index = unfittingItems.Count - 1; index >= 0; index--)
         {
