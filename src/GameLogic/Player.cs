@@ -213,6 +213,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 this._accountLoggingScope?.Dispose();
                 this._accountLoggingScope = this.Logger.BeginScope("Account: {Name}", this._account!.LoginName);
                 this.IsVaultLocked = !string.IsNullOrWhiteSpace(this._account.VaultPassword);
+                this.LogInvalidVaultItems();
             }
         }
     }
@@ -1829,6 +1830,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.AddMissingStatAttributes();
 
         this.Attributes = new ItemAwareAttributeSystem(this.Account!, this.SelectedCharacter!);
+        this.LogInvalidInventoryItems();
+
         this.Inventory = new InventoryStorage(this, this.GameContext);
         this.ShopStorage = new ShopStorage(this);
         this.TemporaryStorage = new Storage(InventoryConstants.TemporaryStorageSize, new TemporaryItemStorage());
@@ -1876,6 +1879,34 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             await this.MagicEffectList.AddEffectAsync(new MagicEffect(
             TimeSpan.FromMilliseconds((double)int.MaxValue),
             GMEffect)).ConfigureAwait(false);
+        }
+    }
+
+    private void LogInvalidVaultItems()
+    {
+        var invalidItems = this.Account?.Vault?.Items.Where(i => i.Definition is null);
+        if (invalidItems is null)
+        {
+            return;
+        }
+
+        foreach (var item in invalidItems)
+        {
+            this.Logger.LogWarning("Account {name} has item without definition in vault, Slot: {slot}, ID: {id}", this.Account?.LoginName, item.ItemSlot, item.GetId());
+        }
+    }
+
+    private void LogInvalidInventoryItems()
+    {
+        var invalidItems = this.SelectedCharacter?.Inventory?.Items.Where(i => i.Definition is null);
+        if (invalidItems is null)
+        {
+            return;
+        }
+
+        foreach (var item in invalidItems)
+        {
+            this.Logger.LogWarning("Character {name} has item without definition in inventory, Slot: {slot}, ID: {id}", this.SelectedCharacter?.Name, item.ItemSlot, item.GetId());
         }
     }
 
