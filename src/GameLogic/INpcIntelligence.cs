@@ -34,7 +34,11 @@ public interface INpcIntelligence
     void Pause();
 
     /// <summary>
-    /// Can walk?
+    /// Determines whether the monster can walk on the specified target.
     /// </summary>
+    /// <param name="target">The target.</param>
+    /// <returns>
+    ///   <c>true</c> if this instance can walk on the specified target; otherwise, <c>false</c>.
+    /// </returns>
     bool CanWalkOn(Point target);
 }

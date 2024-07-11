@@ -20,6 +20,12 @@ public sealed class GuardIntelligence : BasicMonsterIntelligence
 {
     private Point _spawnPoint;
 
+    /// <inheritdoc/>
+    public override bool CanWalkOn(Point target)
+    {
+        return this.Monster.CurrentMap.Terrain.WalkMap[target.X, target.Y];
+    }
+
     /// <inheritdoc />
     protected override async ValueTask<IAttackable?> SearchNextTargetAsync()
     {
@@ -67,13 +73,5 @@ public sealed class GuardIntelligence : BasicMonsterIntelligence
         {
             await this.Monster.RandomMoveAsync().ConfigureAwait(false);
         }
-    }
-
-    /// <summary>
-    /// CanWalkOn?
-    /// </summary>
-    public override bool CanWalkOn(Point target)
-    {
-        return this.Monster.CurrentMap.Terrain.WalkMap[target.X, target.Y];
     }
 }

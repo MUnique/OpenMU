@@ -77,6 +77,12 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
         }
     }
 
+    /// <inheritdoc/>
+    public virtual bool CanWalkOn(Point target)
+    {
+        return this.Monster.CurrentMap.Terrain.AIgrid[target.X, target.Y] == 1;
+    }
+
     /// <summary>
     /// Called when the intelligence starts.
     /// </summary>
@@ -264,13 +270,5 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
 
         // we move around randomly, so the monster does not look dead when watched from distance.
         await this.Monster.RandomMoveAsync().ConfigureAwait(false);
-    }
-
-    /// <summary>
-    /// CanWalkOn?
-    /// </summary>
-    public virtual bool CanWalkOn(Point target)
-    {
-        return this.Monster.CurrentMap.Terrain.AIgrid[target.X, target.Y] == 1;
     }
 }
