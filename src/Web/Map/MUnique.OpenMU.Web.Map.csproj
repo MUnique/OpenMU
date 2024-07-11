@@ -23,7 +23,7 @@
     <!-- We only run the transformation locally on our dev environment with visual studio.
         The CI environment is identified by the parameter 'ci'. It's set in the azure pipelines and Dockerfile.
         If you run into errors here under Linux/Mac OS, it might help to add this parameter, too. -->
-    <PackageReference Include="BuildWebCompiler" Version="1.12.405" />
+    <PackageReference Include="BuildWebCompiler2022" Version="1.14.10" />
     <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="5.4.5">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
