@@ -10,7 +10,7 @@
     <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
     <BlazoredTypeahead TItem="TObject" TValue="TObject"
                        @bind-Value="@this.CurrentValue"
-                       SearchMethod="@(text => this.EffectiveLookupController.GetSuggestionsAsync<TObject>(text, null))"
+                       SearchMethod="@(text => this.EffectiveLookupController.GetSuggestionsAsync<TObject>(text, this.PersistenceContext))"
                        EnableDropDown="true"
                        MaximumSuggestions="20"
                        placeholder="Search ..."

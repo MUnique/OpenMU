@@ -68,7 +68,9 @@ public partial class ItemTable<TItem>
 
     private async Task OnAddClickAsync()
     {
-        var modal = this._modal.Show<ModalObjectSelection<TItem>>($"Select {typeof(TItem).Name}");
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(ModalCreateNew<TItem>.PersistenceContext), this.PersistenceContext);
+        var modal = this._modal.Show<ModalObjectSelection<TItem>>($"Select {typeof(TItem).Name}", parameters);
         var result = await modal.Result.ConfigureAwait(false);
         if (!result.Cancelled && result.Data is TItem item)
         {

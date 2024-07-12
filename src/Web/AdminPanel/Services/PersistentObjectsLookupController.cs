@@ -49,7 +49,8 @@ public class PersistentObjectsLookupController : ILookupController
 
             var owner = await this._gameConfigurationSource.GetOwnerAsync();
             IEnumerable<T> values;
-            if (this._gameConfigurationSource.IsSupporting(typeof(T)))
+            if (this._gameConfigurationSource.IsSupporting(typeof(T))
+                && persistenceContext?.IsSupporting(typeof(T)) is not true)
             {
                 values = this._gameConfigurationSource.GetAll<T>();
             }
