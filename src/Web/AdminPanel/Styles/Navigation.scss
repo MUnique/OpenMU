@@ -20,6 +20,7 @@ app > nav > div:first-child {
     height: 100%;
     position: sticky;
     top: 0;
+    min-height: inherit;
   }
 
     app > nav > div:first-child > button {
