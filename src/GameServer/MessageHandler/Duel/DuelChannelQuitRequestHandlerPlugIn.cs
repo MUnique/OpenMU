@@ -31,7 +31,6 @@ internal class DuelChannelQuitRequestHandlerPlugIn : ISubPacketHandlerPlugIn
     /// <inheritdoc/>
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
-        DuelChannelQuitRequest request = packet;
         await this._action.HandleDuelChannelQuitRequestAsync(player).ConfigureAwait(false);
     }
 }

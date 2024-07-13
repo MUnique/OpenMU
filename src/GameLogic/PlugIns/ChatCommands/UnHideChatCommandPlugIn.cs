@@ -1,7 +1,11 @@
-﻿using System.Runtime.InteropServices;
-using MUnique.OpenMU.PlugIns;
+﻿// <copyright file="UnHideChatCommandPlugIn.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
 
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
+
+using System.Runtime.InteropServices;
+using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// A chat command plugin which handles unhide commands.
