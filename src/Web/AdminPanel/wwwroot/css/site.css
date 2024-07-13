@@ -6379,7 +6379,7 @@ button.bg-dark:focus {
   border-bottom-right-radius: 0.25rem !important;
 }
 
-.rounded-bottom {
+.rounded-bottom, app > nav {
   border-bottom-right-radius: 0.25rem !important;
   border-bottom-left-radius: 0.25rem !important;
 }
@@ -7334,7 +7334,7 @@ button.bg-dark:focus {
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
 }
 
-.shadow-lg {
+.shadow-lg, app > nav {
   box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175) !important;
 }
 
@@ -9540,6 +9540,7 @@ app {
 @media (min-width: 768px) {
   app {
     flex-direction: row;
+    min-height: 100vh;
   }
 }
 html, body {
@@ -9718,9 +9719,10 @@ app > nav > div:first-child {
 @media (min-width: 768px) {
   app > nav {
     width: 250px;
-    height: 100vh;
+    height: 100%;
     position: sticky;
     top: 0;
+    min-height: inherit;
   }
   app > nav > div:first-child > button {
     display: none;
@@ -9791,6 +9793,7 @@ app {
 @media (min-width: 768px) {
   app {
     flex-direction: row;
+    min-height: 100vh;
   }
 }
 html, body {
@@ -10462,6 +10465,7 @@ app {
 @media (min-width: 768px) {
   app {
     flex-direction: row;
+    min-height: 100vh;
   }
 }
 html, body {
@@ -10702,6 +10706,7 @@ app {
 @media (min-width: 768px) {
   app {
     flex-direction: row;
+    min-height: 100vh;
   }
 }
 html, body {

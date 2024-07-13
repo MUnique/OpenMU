@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using MUnique.OpenMU.Pathfinding;
+
 namespace MUnique.OpenMU.GameLogic.NPC;
 
 /// <summary>
@@ -34,5 +36,13 @@ public sealed class NullMonsterIntelligence : INpcIntelligence
     public void Pause()
     {
         // do nothing
+    }
+
+    /// <summary>
+    /// CanWalkOn?
+    /// </summary>
+    public bool CanWalkOn(Point target)
+    {
+        return false;
     }
 }

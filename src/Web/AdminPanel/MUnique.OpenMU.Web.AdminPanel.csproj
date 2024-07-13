@@ -54,6 +54,11 @@
     <ProjectReference Include="..\Map\MUnique.OpenMU.Web.Map.csproj" />
   </ItemGroup>
 
+
+  <ItemGroup Condition="'$(ci)'!='true'">
+    <PackageReference Include="BuildWebCompiler2022" Version="1.14.10" />
+  </ItemGroup>
+
   <ItemGroup>
     <Content Update="wwwroot\css\open-iconic\font\css\open-iconic-bootstrap.min.css">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

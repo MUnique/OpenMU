@@ -89,7 +89,7 @@ public sealed class ChaosCastleContext : MiniGameContext
     protected override TimeSpan RemainingTime => this._remainingTime;
 
     /// <inheritdoc />
-    protected override int MinimumPlayerCount => 2;
+    protected override int MinimumPlayerCount => 1;
 
     /// <inheritdoc />
     public override bool IsItemAllowedToEquip(Item item)

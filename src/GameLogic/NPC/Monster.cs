@@ -228,11 +228,15 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
             return;
         }
 
-        byte randx = (byte)GameLogic.Rand.NextInt(Math.Max(0, this.Position.X - 1), Math.Min(0xFF, this.Position.X + 2));
-        byte randy = (byte)GameLogic.Rand.NextInt(Math.Max(0, this.Position.Y - 1), Math.Min(0xFF, this.Position.Y + 2));
-        if (this.CurrentMap.Terrain.AIgrid[randx, randy] == 1)
+        var moveByMaxX = Rand.NextInt(1, this.Definition.MoveRange + 1);
+        var moveByMaxY = Rand.NextInt(1, this.Definition.MoveRange + 1);
+
+        byte randx = (byte)Rand.NextInt(Math.Max(0, this.Position.X - moveByMaxX), Math.Min(0xFF, this.Position.X + moveByMaxX + 1));
+        byte randy = (byte)Rand.NextInt(Math.Max(0, this.Position.Y - moveByMaxY), Math.Min(0xFF, this.Position.Y + moveByMaxY + 1));
+
+        var target = new Point(randx, randy);
+        if (this._intelligence.CanWalkOn(target))
         {
-            var target = new Point(randx, randy);
             var current = this.Position;
             using var stepsRent = MemoryPool<WalkingStep>.Shared.Rent(1);
             var steps = stepsRent.Memory.Slice(0, 1);

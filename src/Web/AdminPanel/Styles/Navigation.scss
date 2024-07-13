@@ -1,7 +1,9 @@
 ﻿@import "Common";
 
 app > nav {
-    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+  @extend .rounded-bottom;
+  @extend .shadow-lg;
+  background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
 }
 
 app > nav > div:first-child {
@@ -13,12 +15,13 @@ app > nav > div:first-child {
 }
 
 @media (min-width: $widthThreshold) {
-    app > nav {
-        width: 250px;
-        height: 100vh;
-        position: sticky;
-        top: 0;
-    }
+  app > nav {
+    width: 250px;
+    height: 100%;
+    position: sticky;
+    top: 0;
+    min-height: inherit;
+  }
 
     app > nav > div:first-child > button {
         display: none;
