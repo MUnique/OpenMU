@@ -30,6 +30,7 @@ public class Gates : InitializerBase
         var targetGates = this.CreateTargetGates(maps);
         this.CreateEnterGates(maps, targetGates);
         this.CreateWarpEntries(targetGates);
+        this.GameConfiguration.DuelConfiguration = this.CreateDuelConfiguration(targetGates);
     }
 
     /// <summary>
@@ -441,6 +442,36 @@ public class Gates : InitializerBase
         targetGates.Add(341, this.CreateExitGate(maps[81], 162, 12, 164, 14, 5));
 
         return targetGates;
+    }
+
+    private DuelConfiguration CreateDuelConfiguration(IDictionary<short, ExitGate> targetGates)
+    {
+        var duelConfig = this.Context.CreateNew<DuelConfiguration>();
+        duelConfig.MaximumScore = 10;
+        duelConfig.MinimumCharacterLevel = 30;
+        duelConfig.EntranceFee = 30000;
+        duelConfig.Exit = targetGates[294]; // Vulcanus, see above
+
+        List<(short FirstPlayerGate, short SecondPlayerGate, short SpectatorGate)> duelGateNumbers =
+        [
+            (295, 296, 303),
+            (297, 298, 304),
+            (299, 300, 305),
+            (301, 302, 306),
+        ];
+
+        for (short i = 0; i < duelGateNumbers.Count; i++)
+        {
+            var indices = duelGateNumbers[i];
+            var duelArea = this.Context.CreateNew<DuelArea>();
+            duelArea.Index = i;
+            duelArea.FirstPlayerGate = targetGates[indices.FirstPlayerGate];
+            duelArea.SecondPlayerGate = targetGates[indices.SecondPlayerGate];
+            duelArea.SpectatorsGate = targetGates[indices.SpectatorGate];
+            duelConfig.DuelAreas.Add(duelArea);
+        }
+
+        return duelConfig;
     }
 
     private EnterGate CreateEnterGate(short number, ExitGate targetGate, byte x1, byte y1, byte x2, byte y2, short levelRequirement)

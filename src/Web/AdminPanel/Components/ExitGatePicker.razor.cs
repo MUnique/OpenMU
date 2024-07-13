@@ -110,6 +110,15 @@ public partial class ExitGatePicker
         }
     }
 
+    private async Task OnGateSelectedAsync(ChangeEventArgs args)
+    {
+        if (Guid.TryParse(args.Value as string, out var gateId)
+            && this.Map?.ExitGates.FirstOrDefault(g => g.GetId() == gateId) is { } gate)
+        {
+            await this.OnSelectedAsync(gate);
+        }
+    }
+
     private async Task OnMapSelectedAsync(ChangeEventArgs args)
     {
         if (Guid.TryParse(args.Value as string, out var mapId))

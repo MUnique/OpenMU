@@ -19,5 +19,5 @@ public interface IAttackableGotKilledPlugIn
     /// </summary>
     /// <param name="killed">The killed <see cref="IAttackable"/>.</param>
     /// <param name="killer">The killer.</param>
-    void AttackableGotKilled(IAttackable killed, IAttacker? killer);
+    ValueTask AttackableGotKilledAsync(IAttackable killed, IAttacker? killer);
 }

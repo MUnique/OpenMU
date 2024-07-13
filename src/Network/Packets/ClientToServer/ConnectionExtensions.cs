@@ -5494,12 +5494,11 @@ public static class ConnectionExtensions
     /// Sends a <see cref="DuelChannelQuitRequest" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
-    /// <param name="channelId">The channel id.</param>
     /// <remarks>
     /// Is sent by the client when: A player requested to quit the duel as a spectator.
     /// Causes reaction on server side: The server will remove the player as spectator.
     /// </remarks>
-    public static async ValueTask SendDuelChannelQuitRequestAsync(this IConnection? connection, byte @channelId)
+    public static async ValueTask SendDuelChannelQuitRequestAsync(this IConnection? connection)
     {
         if (connection is null)
         {
@@ -5510,8 +5509,6 @@ public static class ConnectionExtensions
         {
             var length = DuelChannelQuitRequestRef.Length;
             var packet = new DuelChannelQuitRequestRef(connection.Output.GetSpan(length)[..length]);
-            packet.ChannelId = @channelId;
-
             return packet.Header.Length;
         }
 

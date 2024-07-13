@@ -7228,6 +7228,409 @@
         </Field>
       </Fields>
     </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>AA</Code>
+      <SubCode>01</SubCode>
+      <Name>DuelStartResult</Name>
+      <Length>17</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the client sent a DuelStartRequest, and it either failed or the requested player sent a response.</SentWhen>
+      <CausedReaction>The client shows the started or aborted duel.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>DuelStartResultType</TypeName>
+          <Name>Result</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>OpponentId</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>String</Type>
+          <Name>OpponentName</Name>
+          <Length>10</Length>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>DuelStartResultType</Name>
+          <Description>Describes the type of the duel result.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Success</Name>
+              <Description>The duel has been started.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>FailedByTooLowLevel</Name>
+              <Description>The duel couldn't be started, because one of the players has not the minimum level, usually 30.</Description>
+              <Value>12</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>FailedByError</Name>
+              <Description>The duel couldn't be started, because of an unexpected error.</Description>
+              <Value>14</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Refused</Name>
+              <Description>The duel couldn't be started, because the opponent refused.</Description>
+              <Value>15</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>FailedByNoFreeRoom</Name>
+              <Description>The duel couldn't be started, because no duel room is free.</Description>
+              <Value>16</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>FailedBy_</Name>
+              <Description>The duel couldn't be started, because ...</Description>
+              <Value>28</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>FailedByNotEnoughMoney</Name>
+              <Description>The duel couldn't be started, because one of the players has not enough money, usually 30000. </Description>
+              <Value>30</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>AA</Code>
+      <SubCode>02</SubCode>
+      <Name>DuelStartRequest</Name>
+      <Length>16</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After another client sent a DuelStartRequest, to ask the requested player for a response.</SentWhen>
+      <CausedReaction>The client shows the duel request.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>RequesterId</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>String</Type>
+          <Name>RequesterName</Name>
+          <Length>10</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>AA</Code>
+      <SubCode>03</SubCode>
+      <Name>DuelEnd</Name>
+      <Length>17</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a duel ended.</SentWhen>
+      <CausedReaction>The client updates its state.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Result</Name>
+          <DefaultValue>0</DefaultValue>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>OpponentId</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>String</Type>
+          <Name>OpponentName</Name>
+          <Length>10</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>AA</Code>
+      <SubCode>04</SubCode>
+      <Name>DuelScore</Name>
+      <Length>10</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>When the score of the duel has been changed.</SentWhen>
+      <CausedReaction>The client updates the displayed duel score.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>Player1Id</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>Player2Id</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Byte</Type>
+          <Name>Player1Score</Name>
+        </Field>
+        <Field>
+          <Index>9</Index>
+          <Type>Byte</Type>
+          <Name>Player2Score</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>AA</Code>
+      <SubCode>05</SubCode>
+      <Name>DuelHealthUpdate</Name>
+      <Length>12</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>When the health/shield of the duel players has been changed.</SentWhen>
+      <CausedReaction>The client updates the displayed health and shield bars.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>Player1Id</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>Player2Id</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Byte</Type>
+          <Name>Player1HealthPercentage</Name>
+        </Field>
+        <Field>
+          <Index>9</Index>
+          <Type>Byte</Type>
+          <Name>Player2HealthPercentage</Name>
+        </Field>
+        <Field>
+          <Index>10</Index>
+          <Type>Byte</Type>
+          <Name>Player1ShieldPercentage</Name>
+        </Field>
+        <Field>
+          <Index>11</Index>
+          <Type>Byte</Type>
+          <Name>Player2ShieldPercentage</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>AA</Code>
+      <SubCode>06</SubCode>
+      <Name>DuelStatus</Name>
+      <Length>92</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>When the client requested the list of the current duel rooms.</SentWhen>
+      <CausedReaction>The client shows the list of duel rooms.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Structure[]</Type>
+          <TypeName>DuelRoomStatus</TypeName>
+          <Name>Rooms</Name>
+          <Length>4</Length>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>DuelRoomStatus</Name>
+          <Description>Structure for a duel room entry.</Description>
+          <Length>22</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>String</Type>
+              <Name>Player1Name</Name>
+              <Length>10</Length>
+            </Field>
+            <Field>
+              <Index>10</Index>
+              <Type>String</Type>
+              <Name>Player2Name</Name>
+              <Length>10</Length>
+            </Field>
+            <Field>
+              <Index>20</Index>
+              <Type>Boolean</Type>
+              <Name>DuelRunning</Name>
+            </Field>
+            <Field>
+              <Index>21</Index>
+              <Type>Boolean</Type>
+              <Name>DuelOpen</Name>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>AA</Code>
+      <SubCode>07</SubCode>
+      <Name>DuelInit</Name>
+      <Length>30</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>When the duel starts.</SentWhen>
+      <CausedReaction>The client initializes the duel state.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Result</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>RoomIndex</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>String</Type>
+          <Name>Player1Name</Name>
+          <Length>10</Length>
+        </Field>
+        <Field>
+          <Index>16</Index>
+          <Type>String</Type>
+          <Name>Player2Name</Name>
+          <Length>10</Length>
+        </Field>
+        <Field>
+          <Index>26</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>Player1Id</Name>
+        </Field>
+        <Field>
+          <Index>28</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>Player2Id</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>AA</Code>
+      <SubCode>0D</SubCode>
+      <Name>DuelHealthBarInit</Name>
+      <Length>4</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>When the duel starts, after the DuelInit message.</SentWhen>
+      <CausedReaction>The client updates the displayed health and shield bars.</CausedReaction>
+      <Fields>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>AA</Code>
+      <SubCode>08</SubCode>
+      <Name>DuelSpectatorAdded</Name>
+      <Length>14</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>When a spectator joins a duel.</SentWhen>
+      <CausedReaction>The client updates the list of spectators.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>String</Type>
+          <Name>Name</Name>
+          <Length>10</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>AA</Code>
+      <SubCode>0A</SubCode>
+      <Name>DuelSpectatorRemoved</Name>
+      <Length>14</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>When a spectator joins a duel.</SentWhen>
+      <CausedReaction>The client updates the list of spectators.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>String</Type>
+          <Name>Name</Name>
+          <Length>10</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>AA</Code>
+      <SubCode>0B</SubCode>
+      <Name>DuelSpectatorList</Name>
+      <Length>105</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>When a spectator joins or leaves a duel.</SentWhen>
+      <CausedReaction>The client updates the list of spectators.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Count</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Structure[]</Type>
+          <TypeName>DuelSpectator</TypeName>
+          <Name>Spectators</Name>
+          <Length>10</Length>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>DuelSpectator</Name>
+          <Description>Structure for a duel room entry.</Description>
+          <Length>10</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>String</Type>
+              <Name>Name</Name>
+              <Length>10</Length>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>AA</Code>
+      <SubCode>0C</SubCode>
+      <Name>DuelFinished</Name>
+      <Length>24</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>When the duel finished.</SentWhen>
+      <CausedReaction>The client shows the winner and loser names.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>String</Type>
+          <Name>Winner</Name>
+          <Length>10</Length>
+        </Field>
+        <Field>
+          <Index>14</Index>
+          <Type>String</Type>
+          <Name>Loser</Name>
+          <Length>10</Length>
+        </Field>
+      </Fields>
+    </Packet>
 		<Packet>
 			<HeaderType>C1Header</HeaderType>
 			<Code>BA</Code>

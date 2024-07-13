@@ -4166,7 +4166,7 @@
         </Field>
         <Field>
           <Index>5</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>PlayerId</Name>
         </Field>
         <Field>
@@ -4209,18 +4209,13 @@
     <Packet>
       <HeaderType>C3HeaderWithSubCode</HeaderType>
       <Code>AA</Code>
-      <SubCode>07</SubCode>
+      <SubCode>09</SubCode>
       <Name>DuelChannelQuitRequest</Name>
-      <Length>5</Length>
+      <Length>4</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A player requested to quit the duel as a spectator.</SentWhen>
       <CausedReaction>The server will remove the player as spectator.</CausedReaction>
       <Fields>
-        <Field>
-          <Index>4</Index>
-          <Type>Byte</Type>
-          <Name>ChannelId</Name>
-        </Field>
       </Fields>
     </Packet>
   </Packets>

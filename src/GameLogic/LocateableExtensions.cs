@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic;
 
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Pathfinding;
 
 /// <summary>
@@ -23,6 +24,20 @@ public static class LocateableExtensions
         where T : ILocateable
     {
         return locateables.Where(l => l.IsActive());
+    }
+
+    /// <summary>
+    /// Filters out invisible locateables.
+    /// </summary>
+    /// <typeparam name="T">Type of elements.</typeparam>
+    /// <param name="locateables">The locateables.</param>
+    /// <returns>
+    /// All visible locateables of the given enumeration.
+    /// </returns>
+    public static IEnumerable<T> WhereNotInvisible<T>(this IEnumerable<T> locateables)
+        where T : IAttackable
+    {
+        return locateables.Where(l => l.Attributes[Stats.IsInvisible] == 0);
     }
 
     /// <summary>

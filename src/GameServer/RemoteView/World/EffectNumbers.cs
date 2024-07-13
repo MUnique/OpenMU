@@ -33,4 +33,9 @@ internal static class EffectNumbers
     /// The object is iced.
     /// </summary>
     public const int Iced = 0x38;
+
+    /// <summary>
+    /// Shows the health bar for duel spectators.
+    /// </summary>
+    public const int DuelSpectatorHealthBar = 0x62;
 }

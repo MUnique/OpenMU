@@ -54,7 +54,7 @@ public sealed class ObserverToWorldViewAdapter : AsyncDisposable, IBucketMapObse
             return;
         }
 
-        if (item is Player player)
+        if (item is Player { IsInvisible: false } player)
         {
             await this._adaptee.InvokeViewPlugInAsync<INewPlayersInScopePlugIn>(p => p.NewPlayersInScopeAsync(player.GetAsEnumerable())).ConfigureAwait(false);
         }
@@ -75,7 +75,7 @@ public sealed class ObserverToWorldViewAdapter : AsyncDisposable, IBucketMapObse
             // no action required.
         }
 
-        if (item is IObservable observable)
+        if (item is IObservable observable and not Player { IsInvisible: true })
         {
             using (await this._observingLock.WriterLockAsync())
             {
@@ -189,7 +189,7 @@ public sealed class ObserverToWorldViewAdapter : AsyncDisposable, IBucketMapObse
             newItems.ForEach(item => this._observingObjects.Add(item));
         }
 
-        var players = newItems.OfType<Player>().WhereActive();
+        var players = newItems.OfType<Player>().WhereActive().WhereNotInvisible();
         if (players.Any())
         {
             await this._adaptee.InvokeViewPlugInAsync<INewPlayersInScopePlugIn>(p => p.NewPlayersInScopeAsync(players, false)).ConfigureAwait(false);

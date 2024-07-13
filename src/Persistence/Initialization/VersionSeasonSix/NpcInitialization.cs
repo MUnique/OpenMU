@@ -695,6 +695,7 @@ internal partial class NpcInitialization : Version095d.NpcInitialization
             def.Number = 479;
             def.Designation = "Gatekeeper Titus";
             def.ObjectKind = NpcObjectKind.PassiveNpc;
+            def.NpcWindow = NpcWindow.DoorkeeperTitusDuelWatch;
             this.GameConfiguration.Monsters.Add(def);
             def.SetGuid(def.Number);
         }

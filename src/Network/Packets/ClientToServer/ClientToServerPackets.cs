@@ -17152,8 +17152,8 @@ public readonly struct DuelStartResponse
     /// </summary>
     public ushort PlayerId
     {
-        get => ReadUInt16BigEndian(this._data.Span[5..]);
-        set => WriteUInt16BigEndian(this._data.Span[5..], value);
+        get => ReadUInt16LittleEndian(this._data.Span[5..]);
+        set => WriteUInt16LittleEndian(this._data.Span[5..], value);
     }
 
     /// <summary>
@@ -17393,26 +17393,17 @@ public readonly struct DuelChannelQuitRequest
     /// Gets the operation sub-code of this data packet.
     /// The <see cref="Code" /> is used as a grouping key.
     /// </summary>
-    public static byte SubCode => 0x07;
+    public static byte SubCode => 0x09;
 
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 5;
+    public static int Length => 4;
 
     /// <summary>
     /// Gets the header of this packet.
     /// </summary>
     public C3HeaderWithSubCode Header => new (this._data);
-
-    /// <summary>
-    /// Gets or sets the channel id.
-    /// </summary>
-    public byte ChannelId
-    {
-        get => this._data.Span[4];
-        set => this._data.Span[4] = value;
-    }
 
     /// <summary>
     /// Performs an implicit conversion from a Memory of bytes to a <see cref="DuelChannelQuitRequest"/>.

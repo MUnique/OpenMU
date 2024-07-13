@@ -47,7 +47,13 @@ public class SelfDefensePlugIn : IPeriodicTaskPlugIn, IAttackableGotHitPlugIn, I
 
         if (defender.SelectedCharacter?.State >= HeroState.PlayerKiller1stStage)
         {
-            // PKs have no right to self defense.
+            // PKs have no right to self-defense.
+            return;
+        }
+
+        if (attackerPlayer.DuelRoom is not null || defender.DuelRoom is not null)
+        {
+            // No self-defense during a duel.
             return;
         }
 

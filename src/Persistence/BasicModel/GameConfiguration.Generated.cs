@@ -424,6 +424,24 @@ public partial class GameConfiguration : MUnique.OpenMU.DataModel.Configuration.
         }
     }
 
+    /// <summary>
+    /// Gets the raw object of <see cref="DuelConfiguration" />.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonPropertyName("duelConfiguration")]
+    public DuelConfiguration RawDuelConfiguration
+    {
+        get => base.DuelConfiguration as DuelConfiguration;
+        set => base.DuelConfiguration = value;
+    }
+
+    /// <inheritdoc/>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Configuration.DuelConfiguration DuelConfiguration
+    {
+        get => base.DuelConfiguration;
+        set => base.DuelConfiguration = value;
+    }
+
     /// <inheritdoc />
     public override MUnique.OpenMU.DataModel.Configuration.GameConfiguration Clone(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
     {

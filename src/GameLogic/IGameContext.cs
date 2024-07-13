@@ -82,6 +82,11 @@ public interface IGameContext
     IObjectPool<PathFinder> PathFinderPool { get; }
 
     /// <summary>
+    /// Gets the duel room manager.
+    /// </summary>
+    DuelRoomManager DuelRoomManager { get; }
+
+    /// <summary>
     /// Gets the state of the active self defenses.
     /// </summary>
     ConcurrentDictionary<(Player Attacker, Player Defender), DateTime> SelfDefenseState { get; }

@@ -845,6 +845,12 @@ public class Stats
     public static AttributeDefinition TransformationSkin { get; } = new (new Guid("E5B886B0-B1A6-4EA2-8EF9-08D27AADB7C3"), "Character to Monster transformation", "This value is > 0, when the character got transformed into a monster, by wearing a transformation ring. The value specifies the type of monster (skin).");
 
     /// <summary>
+    /// Gets the <see cref="IsInvisible"/> attribute which defines if the player is invisible.
+    /// This value is > 0, when the character is either a game master which used the hide-command, or when a player is spectating a duel.
+    /// </summary>
+    public static AttributeDefinition IsInvisible { get; } = new(new Guid("8B0721BC-7AC6-4677-B488-ED4319AE9A56"), "Is invisible", "This value is > 0, when the character is either a game master which used the hide-command, or when a player is spectating a duel.");
+
+    /// <summary>
     /// Gets the attribute for a strength requirement reduction. Items with this option require less strength, according to the option's value.
     /// </summary>
     /// <remarks>

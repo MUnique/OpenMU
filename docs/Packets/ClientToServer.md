@@ -85,7 +85,7 @@
   * [C3 AA 02 - DuelStartResponse (by client)](C3-AA-02-DuelStartResponse_by-client.md)
   * [C3 AA 03 - DuelStopRequest (by client)](C3-AA-03-DuelStopRequest_by-client.md)
   * [C3 AA 07 - DuelChannelJoinRequest (by client)](C3-AA-07-DuelChannelJoinRequest_by-client.md)
-  * [C3 AA 07 - DuelChannelQuitRequest (by client)](C3-AA-07-DuelChannelQuitRequest_by-client.md)
+  * [C3 AA 09 - DuelChannelQuitRequest (by client)](C3-AA-09-DuelChannelQuitRequest_by-client.md)
   * [C2 AE - MuHelperSaveDataRequest (by client)](C2-AE-MuHelperSaveDataRequest_by-client.md)
   * [C1 AF 01 - ChaosCastleEnterRequest (by client)](C1-AF-01-ChaosCastleEnterRequest_by-client.md)
   * [C1 AF 02 - ChaosCastlePositionSet (by client)](C1-AF-02-ChaosCastlePositionSet_by-client.md)

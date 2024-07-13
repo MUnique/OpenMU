@@ -119,7 +119,7 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
         }
 
         var possibleTargets = tempObservers.OfType<IAttackable>()
-            .Where(a => a.IsActive() && !a.IsAtSafezone())
+            .Where(a => a.IsActive() && !a.IsAtSafezone() && a is not Player { IsInvisible: true })
             .ToList();
         var summons = possibleTargets.OfType<Player>()
             .Select(p => p.Summon?.Item1)
@@ -225,6 +225,7 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
         {
             // Old Target out of Range?
             if (!target.IsAlive
+                || target is Player { IsInvisible: true }
                 || target.IsTeleporting
                 || target.IsAtSafezone()
                 || !target.IsInRange(this.Monster.Position, this.Npc.Definition.ViewRange)
