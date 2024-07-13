@@ -94,4 +94,9 @@ public enum UpdateVersion
     /// The version of the <see cref="AddKalimaPlugIn"/>.
     /// </summary>
     AddKalima = 17,
+
+    /// <summary>
+    /// The version of the <see cref="AddDuelConfiguration"/>.
+    /// </summary>
+    AddDuelConfiguration = 18,
 }
