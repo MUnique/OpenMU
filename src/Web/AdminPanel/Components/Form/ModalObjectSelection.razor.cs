@@ -8,6 +8,7 @@ using System.ComponentModel.DataAnnotations;
 using Blazored.Modal;
 using Blazored.Modal.Services;
 using Microsoft.AspNetCore.Components;
+using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Web.AdminPanel.Services;
 
 /// <summary>
@@ -29,6 +30,12 @@ public partial class ModalObjectSelection<TItem>
     /// </summary>
     [CascadingParameter]
     public BlazoredModalInstance BlazoredModal { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the persistence context which should be used. It's required for lookups.
+    /// </summary>
+    [Parameter]
+    public IContext PersistenceContext { get; set; } = null!;
 
     private Task SubmitAsync()
     {

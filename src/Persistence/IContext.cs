@@ -112,4 +112,14 @@ public interface IContext : IDisposable
     /// <param name="type">The type.</param>
     /// <returns>All objects of the specified type.</returns>
     ValueTask<IEnumerable> GetAsync(Type type);
+
+    /// <summary>
+    /// Determines whether the specified type is supported by this instance.
+    /// This is usually the case for a type of the object tree of the owner.
+    /// </summary>
+    /// <param name="type">The type.</param>
+    /// <returns>
+    ///   <c>true</c> if the specified type is supported; otherwise, <c>false</c>.
+    /// </returns>
+    bool IsSupporting(Type type);
 }
