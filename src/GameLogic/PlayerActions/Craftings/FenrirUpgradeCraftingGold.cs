@@ -1,4 +1,4 @@
-﻿// <copyright file="FenrirUpgradeCrafting.cs" company="MUnique">
+﻿// <copyright file="FenrirUpgradeCraftingGold.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -11,9 +11,10 @@ using MUnique.OpenMU.GameLogic.PlayerActions.Items;
 using MUnique.OpenMU.GameLogic.Views.NPC;
 
 /// <summary>
-/// A crafting to upgrade a Red Fenrir to a Blue or Black one.
+/// A crafting to upgrade a Red Fenrir to a Blue, Black or Golden one.
+/// A golden can be crafted by adding only excellent items to the mix.
 /// </summary>
-public class FenrirUpgradeCrafting : BaseItemCraftingHandler
+public class FenrirUpgradeCraftingGold : BaseItemCraftingHandler
 {
     private readonly ItemPriceCalculator _priceCalculator = new();
 
@@ -29,19 +30,33 @@ public class FenrirUpgradeCrafting : BaseItemCraftingHandler
         successRateByItems = 0;
         items = new List<CraftingRequiredItemLink>(4);
         var inputItems = player.TemporaryStorage!.Items.ToList();
+        var itemsLevelAndOption4gold = inputItems
+                    .Where(item => item.Level >= 11
+                                   && item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.Option)
+                           && item.ItemOptions.Any(e => e.ItemOption?.OptionType == ItemOptionTypes.Excellent))
+                    .ToList();
         var itemsLevelAndOption4 = inputItems
-            .Where(item => item.Level >= 4
-                           && item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.Option))
-            .ToList();
+                    .Where(item => (item.Level >= 11 && !item.ItemOptions.Any(e => e.ItemOption?.OptionType == ItemOptionTypes.Excellent)
+                                   && item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.Option))
+                                   || (item.Level >= 4 && item.Level <= 10 && item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.Option)))
+                    .ToList();
         var randomWeapons = itemsLevelAndOption4
             .Where(item => item.IsWearable()
                            && item.Definition!.BasePowerUpAttributes.Any(a =>
-                               a.TargetAttribute == Stats.MinimumPhysBaseDmg
-                               || a.TargetAttribute == Stats.MinimumCurseBaseDmg
-                               || a.TargetAttribute == Stats.MinimumWizBaseDmg))
+                               a.TargetAttribute == Stats.MaximumPhysBaseDmgByWeapon))
             .ToList();
 
         var randomArmors = itemsLevelAndOption4
+           .Where(item => item.IsWearable() && item.Definition!.BasePowerUpAttributes.Any(a => a.TargetAttribute == Stats.DefenseBase))
+           .ToList();
+
+        var randomWeaponsGold = itemsLevelAndOption4gold
+            .Where(item => item.IsWearable()
+                           && item.Definition!.BasePowerUpAttributes.Any(a =>
+                               a.TargetAttribute == Stats.MaximumPhysBaseDmgByWeapon))
+            .ToList();
+
+        var randomArmorsGold = itemsLevelAndOption4gold
             .Where(item => item.IsWearable() && item.Definition!.BasePowerUpAttributes.Any(a => a.TargetAttribute == Stats.DefenseBase))
             .ToList();
 
@@ -51,7 +66,37 @@ public class FenrirUpgradeCrafting : BaseItemCraftingHandler
             return CraftingResult.IncorrectMixItems;
         }
 
-        if (!randomArmors.Any() && !randomWeapons.Any())
+        if (randomArmors.Any() && randomWeaponsGold.Any())
+        {
+            // Either Weapons or Armors, not both
+            return CraftingResult.IncorrectMixItems;
+        }
+
+        if (randomArmors.Any() && randomArmorsGold.Any())
+        {
+            // Either Weapons or Armors, not both
+            return CraftingResult.IncorrectMixItems;
+        }
+
+        if (randomWeapons.Any() && randomWeaponsGold.Any())
+        {
+            // Either Weapons or Armors, not both
+            return CraftingResult.IncorrectMixItems;
+        }
+
+        if (randomWeapons.Any() && randomArmorsGold.Any())
+        {
+            // Either Weapons or Armors, not both
+            return CraftingResult.IncorrectMixItems;
+        }
+
+        if (randomArmorsGold.Any() && randomWeaponsGold.Any())
+        {
+            // Either Weapons or Armors, not both
+            return CraftingResult.IncorrectMixItems;
+        }
+
+        if (!(randomArmors.Any() || randomWeapons.Any() || randomArmorsGold.Any() || randomWeaponsGold.Any()))
         {
             return CraftingResult.LackingMixItems;
         }
@@ -72,6 +117,8 @@ public class FenrirUpgradeCrafting : BaseItemCraftingHandler
         jewelsOfLife.ForEach(item => inputItems.Remove(item));
         randomWeapons.ForEach(item => inputItems.Remove(item));
         randomArmors.ForEach(item => inputItems.Remove(item));
+        randomWeaponsGold.ForEach(item => inputItems.Remove(item));
+        randomArmorsGold.ForEach(item => inputItems.Remove(item));
 
         if (inputItems.Any())
         {
@@ -93,6 +140,18 @@ public class FenrirUpgradeCrafting : BaseItemCraftingHandler
             successRateByItems = (byte)Math.Min(79, randomArmors.Sum(this._priceCalculator.CalculateBuyingPrice) * 100 / 1_000_000);
         }
 
+        if (randomWeaponsGold.Any())
+        {
+            items.Add(new CraftingRequiredItemLink(randomWeaponsGold, new TransientItemCraftingRequiredItem { MinimumAmount = 1, MaximumAmount = 1, Reference = 4 }));
+            successRateByItems = (byte)Math.Min(79, randomWeaponsGold.Sum(this._priceCalculator.CalculateBuyingPrice) * 100 / 1_000_000);
+        }
+
+        if (randomArmorsGold.Any())
+        {
+            items.Add(new CraftingRequiredItemLink(randomArmorsGold, new TransientItemCraftingRequiredItem { MinimumAmount = 1, MaximumAmount = 1, Reference = 4 }));
+            successRateByItems = (byte)Math.Min(79, randomArmorsGold.Sum(this._priceCalculator.CalculateBuyingPrice) * 100 / 1_000_000);
+        }
+
         return null;
     }
 
@@ -107,10 +166,15 @@ public class FenrirUpgradeCrafting : BaseItemCraftingHandler
             fenrirOptions = fenrir.Definition!.PossibleItemOptions.SelectMany(opt =>
                 opt.PossibleOptions.Where(o => o.OptionType == ItemOptionTypes.BlackFenrir));
         }
-        else
+        else if (requiredItems.Any(i => i.ItemRequirement.Reference == 3))
         {
             fenrirOptions = fenrir.Definition!.PossibleItemOptions.SelectMany(opt =>
                 opt.PossibleOptions.Where(o => o.OptionType == ItemOptionTypes.BlueFenrir));
+        }
+        else
+        {
+            fenrirOptions = fenrir.Definition!.PossibleItemOptions.SelectMany(opt =>
+                opt.PossibleOptions.Where(o => o.OptionType == ItemOptionTypes.GoldFenrir));
         }
 
         foreach (var option in fenrirOptions)

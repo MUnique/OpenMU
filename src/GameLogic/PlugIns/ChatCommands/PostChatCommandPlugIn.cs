@@ -21,7 +21,7 @@ public class PostChatCommandPlugIn : IChatCommandPlugIn
     public string Key => CommandKey;
 
     /// <inheritdoc />
-    public CharacterStatus MinCharacterStatusRequirement => CharacterStatus.GameMaster;
+    public CharacterStatus MinCharacterStatusRequirement => CharacterStatus.Normal;
 
     /// <inheritdoc />
     public async ValueTask HandleCommandAsync(Player player, string command)

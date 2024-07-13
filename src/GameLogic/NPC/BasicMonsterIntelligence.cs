@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic.NPC;
 using System.Diagnostics;
 using System.Threading;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Pathfinding;
 
 /// <summary>
 /// A basic monster AI which is pretty basic.
@@ -48,7 +49,7 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
     /// <inheritdoc/>
     public void Start()
     {
-        var startDelay = this.Npc.Definition.AttackDelay + TimeSpan.FromMilliseconds(Rand.NextInt(0, 1000));
+        var startDelay = this.Npc.Definition.AttackDelay + TimeSpan.FromMilliseconds(Rand.NextInt(0, 100));
         this.OnStart();
         this._aiTimer ??= new Timer(_ => this.SafeTick(), null, startDelay, this.Npc.Definition.AttackDelay);
     }
@@ -74,6 +75,12 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
         {
             this.CurrentTarget = attackable;
         }
+    }
+
+    /// <inheritdoc/>
+    public virtual bool CanWalkOn(Point target)
+    {
+        return this.Monster.CurrentMap.Terrain.AIgrid[target.X, target.Y] == 1;
     }
 
     /// <summary>

@@ -8,7 +8,8 @@ app {
 
 @media (min-width: $widthThreshold) {
     app {
-        flex-direction: row;
+      flex-direction: row;
+      min-height: 100vh;
     }
 }
 
