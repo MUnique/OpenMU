@@ -18,7 +18,8 @@ using MUnique.OpenMU.PlugIns;
 [PlugIn(nameof(EnterOnGatekeeperHandlerPlugIn), "Handler for EnterOnGatekeeperRequest packets.")]
 [Guid("9133CB87-6776-48B8-987B-93806531B60C")]
 [MinimumClient(3, 0, ClientLanguage.Invariant)]
-internal class EnterOnGatekeeperHandlerPlugIn : IPacketHandlerPlugIn
+[BelongsToGroup(NpcActionGroupHandlerPlugIn.GroupKey)]
+internal class EnterOnGatekeeperHandlerPlugIn : ISubPacketHandlerPlugIn
 {
     /// <summary>
     /// The enter action.
@@ -29,7 +30,7 @@ internal class EnterOnGatekeeperHandlerPlugIn : IPacketHandlerPlugIn
     public bool IsEncryptionExpected => false;
 
     /// <inheritdoc/>
-    public byte Key => EnterOnGatekeeperRequest.Code;
+    public byte Key => EnterOnGatekeeperRequest.SubCode;
 
     /// <inheritdoc/>
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)

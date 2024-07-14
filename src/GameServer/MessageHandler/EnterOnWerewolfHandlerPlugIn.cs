@@ -18,7 +18,8 @@ using MUnique.OpenMU.PlugIns;
 [PlugIn(nameof(EnterOnWerewolfHandlerPlugIn), "Handler for EnterOnWerewolfRequest packets.")]
 [Guid("3ECA37DE-2D8E-4617-8A44-B1A616B7C74C")]
 [MinimumClient(3, 0, ClientLanguage.Invariant)]
-internal class EnterOnWerewolfHandlerPlugIn : IPacketHandlerPlugIn
+[BelongsToGroup(NpcActionGroupHandlerPlugIn.GroupKey)]
+internal class EnterOnWerewolfHandlerPlugIn : ISubPacketHandlerPlugIn
 {
     /// <summary>
     /// The enter action.
@@ -29,7 +30,7 @@ internal class EnterOnWerewolfHandlerPlugIn : IPacketHandlerPlugIn
     public bool IsEncryptionExpected => false;
 
     /// <inheritdoc/>
-    public byte Key => EnterOnWerewolfRequest.Code;
+    public byte Key => EnterOnWerewolfRequest.SubCode;
 
     /// <inheritdoc/>
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
