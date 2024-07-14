@@ -77,6 +77,7 @@ public abstract class ArmorInitializerBase : InitializerBase
             def.Name = $"Complete Set Bonus (Level {setLevel})";
             def.PossibleOptions.Add(this.BuildDefenseBonusOption(1 + (setLevel - 9) * 0.05f, setLevel));
             defenseBonus.Add(setLevel, def);
+            this.GameConfiguration.ItemOptions.Add(def);
         }
 
         foreach (var group in sets)

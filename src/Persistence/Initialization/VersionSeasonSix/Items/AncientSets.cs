@@ -692,6 +692,7 @@ public class AncientSets : InitializerBase
         }
 
         this.GameConfiguration.ItemSetGroups.Add(set);
+        this.GameConfiguration.ItemOptions.Add(options);
         return set;
     }
 
