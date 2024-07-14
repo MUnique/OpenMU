@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.MuHelper;
+using MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
 using MUnique.OpenMU.GameLogic.PlugIns.InvasionEvents;
 using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 using MUnique.OpenMU.GameLogic.Resets;
@@ -163,6 +164,25 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
             if (plugInType == typeof(MuHelperFeaturePlugIn))
             {
                 plugInConfiguration.SetConfiguration(new MuHelperConfiguration(), referenceHandler);
+            }
+
+            if (plugInType == typeof(BlessJewelConsumeHandlerPlugIn))
+            {
+                var config = new BlessJewelConsumeHandlerPlugInConfiguration
+                {
+                    MaximumLevel = 5,
+                    MinimumLevel = 0,
+                    SuccessRatePercentage = 100,
+                    SuccessRateBonusWithLuckPercentage = 0,
+                    ResetToLevel0WhenFailMinLevel = 0,
+                };
+
+                if (this.GameConfiguration.Items.FirstOrDefault(item => item.Group == 13 && item.Number == 37) is { } fenrir)
+                {
+                    config.RepairTargetItems.Add(fenrir);
+                }
+
+                plugInConfiguration.SetConfiguration(config, referenceHandler);
             }
 
             // We don't move the player anymore by his request. This was usually requested after a player performed a skill.
