@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.Skills;
 
+using System;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
@@ -36,6 +37,12 @@ public class InvisibleEffectInitializer : InitializerBase
         magicEffect.StopByDeath = false;
         magicEffect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.Duration.ConstantValue.Value = (float)TimeSpan.FromDays(1).TotalSeconds;
+
+        if (this.GameConfiguration.Attributes.All(a => Stats.IsInvisible.Id != a.Id))
+        {
+            var invisibleStat = this.Context.CreateNew<AttributeDefinition>(Stats.IsInvisible.Id, Stats.IsInvisible.Designation, Stats.IsInvisible.Description);
+            this.GameConfiguration.Attributes.Add(invisibleStat);
+        }
 
         var invisibleEffect = this.Context.CreateNew<PowerUpDefinition>();
         magicEffect.PowerUpDefinitions.Add(invisibleEffect);
