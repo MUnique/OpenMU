@@ -9,7 +9,7 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 /// <summary>
 /// The configuration for the <see cref="BlessJewelConsumeHandlerPlugIn"/>.
 /// </summary>
-public class BlessJewelConsumeHandlerPlugInConfiguration
+public class BlessJewelConsumeHandlerPlugInConfiguration : UpgradeItemLevelConfiguration
 {
     /// <summary>
     /// Gets or sets the items which can be repaired by consuming a bless on them.
