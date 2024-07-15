@@ -36,9 +36,7 @@ public class FenrirUpgradeCrafting : BaseItemCraftingHandler
         var randomWeapons = itemsLevelAndOption4
             .Where(item => item.IsWearable()
                            && item.Definition!.BasePowerUpAttributes.Any(a =>
-                               a.TargetAttribute == Stats.MinimumPhysBaseDmg
-                               || a.TargetAttribute == Stats.MinimumCurseBaseDmg
-                               || a.TargetAttribute == Stats.MinimumWizBaseDmg))
+                               a.TargetAttribute == Stats.MaximumPhysBaseDmgByWeapon))
             .ToList();
 
         var randomArmors = itemsLevelAndOption4
