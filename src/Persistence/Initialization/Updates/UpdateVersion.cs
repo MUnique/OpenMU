@@ -96,7 +96,12 @@ public enum UpdateVersion
     AddKalima = 17,
 
     /// <summary>
-    /// The version of the <see cref="AddDuelConfiguration"/>.
+    /// The version of the <see cref="AddDuelConfigurationPlugIn"/>.
     /// </summary>
     AddDuelConfiguration = 18,
+
+    /// <summary>
+    /// The version of the <see cref="ChainLightningUpdatePlugIn"/>.
+    /// </summary>
+    ChainLightningUpdate = 19,
 }

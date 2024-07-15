@@ -4377,6 +4377,224 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="IllusionTempleEnterResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <remarks>
+    /// Is sent by the server when: The player requested to enter the illusion temple event.
+    /// Causes reaction on client side: The client shows the result.
+    /// </remarks>
+    public static async ValueTask SendIllusionTempleEnterResultAsync(this IConnection? connection, byte @result)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = IllusionTempleEnterResultRef.Length;
+            var packet = new IllusionTempleEnterResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="IllusionTempleSkillUsageResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="skillNumber">The skill number.</param>
+    /// <param name="sourceObjectId">The source object id.</param>
+    /// <param name="targetObjectId">The target object id.</param>
+    /// <remarks>
+    /// Is sent by the server when: A player requested to use a specific skill in the illusion temple event.
+    /// Causes reaction on client side: The client shows the result.
+    /// </remarks>
+    public static async ValueTask SendIllusionTempleSkillUsageResultAsync(this IConnection? connection, byte @result, ushort @skillNumber, ushort @sourceObjectId, ushort @targetObjectId)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = IllusionTempleSkillUsageResultRef.Length;
+            var packet = new IllusionTempleSkillUsageResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+            packet.SkillNumber = @skillNumber;
+            packet.SourceObjectId = @sourceObjectId;
+            packet.TargetObjectId = @targetObjectId;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="IllusionTempleUserCount" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="userCount1">The user count 1.</param>
+    /// <param name="userCount2">The user count 2.</param>
+    /// <param name="userCount3">The user count 3.</param>
+    /// <param name="userCount4">The user count 4.</param>
+    /// <param name="userCount5">The user count 5.</param>
+    /// <param name="userCount6">The user count 6.</param>
+    /// <remarks>
+    /// Is sent by the server when: ?
+    /// Causes reaction on client side: The client shows the counts.
+    /// </remarks>
+    public static async ValueTask SendIllusionTempleUserCountAsync(this IConnection? connection, byte @userCount1, byte @userCount2, byte @userCount3, byte @userCount4, byte @userCount5, byte @userCount6)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = IllusionTempleUserCountRef.Length;
+            var packet = new IllusionTempleUserCountRef(connection.Output.GetSpan(length)[..length]);
+            packet.UserCount1 = @userCount1;
+            packet.UserCount2 = @userCount2;
+            packet.UserCount3 = @userCount3;
+            packet.UserCount4 = @userCount4;
+            packet.UserCount5 = @userCount5;
+            packet.UserCount6 = @userCount6;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="IllusionTempleSkillPointUpdate" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="skillPoints">The skill points.</param>
+    /// <remarks>
+    /// Is sent by the server when: ?
+    /// Causes reaction on client side: The client shows the skill points.
+    /// </remarks>
+    public static async ValueTask SendIllusionTempleSkillPointUpdateAsync(this IConnection? connection, byte @skillPoints)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = IllusionTempleSkillPointUpdateRef.Length;
+            var packet = new IllusionTempleSkillPointUpdateRef(connection.Output.GetSpan(length)[..length]);
+            packet.SkillPoints = @skillPoints;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="IllusionTempleSkillEnded" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="skillNumber">The skill number.</param>
+    /// <param name="objectIndex">The object index.</param>
+    /// <remarks>
+    /// Is sent by the server when: ?
+    /// Causes reaction on client side: The client shows the skill points.
+    /// </remarks>
+    public static async ValueTask SendIllusionTempleSkillEndedAsync(this IConnection? connection, ushort @skillNumber, ushort @objectIndex)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = IllusionTempleSkillEndedRef.Length;
+            var packet = new IllusionTempleSkillEndedRef(connection.Output.GetSpan(length)[..length]);
+            packet.SkillNumber = @skillNumber;
+            packet.ObjectIndex = @objectIndex;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="IllusionTempleHolyItemRelics" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="userIndex">The user index.</param>
+    /// <param name="name">The name.</param>
+    /// <remarks>
+    /// Is sent by the server when: ?
+    /// Causes reaction on client side: ?.
+    /// </remarks>
+    public static async ValueTask SendIllusionTempleHolyItemRelicsAsync(this IConnection? connection, ushort @userIndex, string @name)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = IllusionTempleHolyItemRelicsRef.Length;
+            var packet = new IllusionTempleHolyItemRelicsRef(connection.Output.GetSpan(length)[..length]);
+            packet.UserIndex = @userIndex;
+            packet.Name = @name;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="IllusionTempleSkillEnd" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="templeNumber">The temple number.</param>
+    /// <param name="state">The state.</param>
+    /// <remarks>
+    /// Is sent by the server when: ?
+    /// Causes reaction on client side: The client shows the skill points.
+    /// </remarks>
+    public static async ValueTask SendIllusionTempleSkillEndAsync(this IConnection? connection, byte @templeNumber, byte @state)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = IllusionTempleSkillEndRef.Length;
+            var packet = new IllusionTempleSkillEndRef(connection.Output.GetSpan(length)[..length]);
+            packet.TempleNumber = @templeNumber;
+            packet.State = @state;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="MuHelperStatusUpdate" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>

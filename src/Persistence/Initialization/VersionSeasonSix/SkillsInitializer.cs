@@ -168,7 +168,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.CreateSkill(SkillNumber.SpellofPursuit, "Spell of Pursuit", CharacterClasses.All, manaConsumption: 30, elementalModifier: ElementalType.Ice, cooldownMinutes: 10);
         this.CreateSkill(SkillNumber.ShieldBurn, "Shield-Burn", CharacterClasses.All, distance: 3, manaConsumption: 30, elementalModifier: ElementalType.Ice, cooldownMinutes: 5);
         this.CreateSkill(SkillNumber.DrainLife, "Drain Life", CharacterClasses.AllSummoners, DamageType.Curse, 35, 6, manaConsumption: 50, energyRequirement: 150);
-        this.CreateSkill(SkillNumber.ChainLightning, "Chain Lightning", CharacterClasses.AllSummoners, DamageType.Curse, 70, 6, manaConsumption: 85, energyRequirement: 245, elementalModifier: ElementalType.Lightning);
+        this.CreateSkill(SkillNumber.ChainLightning, "Chain Lightning", CharacterClasses.AllSummoners, DamageType.Curse, 70, 6, manaConsumption: 85, energyRequirement: 245, skillType: SkillType.AreaSkillExplicitTarget, skillTarget: SkillTarget.Explicit);
         this.CreateSkill(SkillNumber.DamageReflection, "Damage Reflection", CharacterClasses.AllSummoners, distance: 5, abilityConsumption: 10, manaConsumption: 40, energyRequirement: 375);
         this.CreateSkill(SkillNumber.Berserker, "Berserker", CharacterClasses.AllSummoners, DamageType.Curse, distance: 5, abilityConsumption: 50, manaConsumption: 100, energyRequirement: 620);
         this.CreateSkill(SkillNumber.Sleep, "Sleep", CharacterClasses.AllSummoners, distance: 6, abilityConsumption: 3, manaConsumption: 20, energyRequirement: 180);
@@ -303,7 +303,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.CreateSkill(SkillNumber.WindTomeMastery, "Wind Tome Mastery", CharacterClasses.DimensionMaster, damage: 1, skillType: SkillType.PassiveBoost);
         this.CreateSkill(SkillNumber.LightningTomeMastery, "Lightning Tome Mastery", CharacterClasses.DimensionMaster, DamageType.Curse, 7, elementalModifier: ElementalType.Lightning, skillType: SkillType.PassiveBoost);
         this.CreateSkill(SkillNumber.SleepStrengthener, "Sleep Strengthener", CharacterClasses.DimensionMaster, damage: 1, distance: 6, abilityConsumption: 7, manaConsumption: 30, levelRequirement: 40, energyRequirement: 100);
-        this.CreateSkill(SkillNumber.ChainLightningStr, "Chain Lightning Str", CharacterClasses.DimensionMaster, DamageType.Curse, 22, 6, manaConsumption: 103, levelRequirement: 75, energyRequirement: 75, elementalModifier: ElementalType.Lightning);
+        this.CreateSkill(SkillNumber.ChainLightningStr, "Chain Lightning Str", CharacterClasses.DimensionMaster, DamageType.Curse, 22, 6, manaConsumption: 103, levelRequirement: 75, energyRequirement: 75, skillTarget: SkillTarget.Explicit, skillType: SkillType.AreaSkillExplicitTarget);
         this.CreateSkill(SkillNumber.LightningShockStr, "Lightning Shock Str", CharacterClasses.DimensionMaster, DamageType.Curse, 22, 6, 10, 125, 93, 216, elementalModifier: ElementalType.Lightning);
         this.CreateSkill(SkillNumber.MagicMasterySummoner, "Magic Mastery", CharacterClasses.DimensionMaster, DamageType.Curse, 22, skillType: SkillType.PassiveBoost);
         this.CreateSkill(SkillNumber.DrainLifeStrengthener, "Drain Life Strengthener", CharacterClasses.DimensionMaster, DamageType.Curse, 22, 6, manaConsumption: 57, levelRequirement: 35, energyRequirement: 93);

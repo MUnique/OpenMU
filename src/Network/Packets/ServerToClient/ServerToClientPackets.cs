@@ -21462,6 +21462,1268 @@ public readonly struct SkillStageUpdate
 
 
 /// <summary>
+/// Is sent by the server when: The player requested to enter the illusion temple event.
+/// Causes reaction on client side: The client shows the result.
+/// </summary>
+public readonly struct IllusionTempleEnterResult
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="IllusionTempleEnterResult"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public IllusionTempleEnterResult(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="IllusionTempleEnterResult"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private IllusionTempleEnterResult(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xBF;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x00;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 5;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public byte Result
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="IllusionTempleEnterResult"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator IllusionTempleEnterResult(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="IllusionTempleEnterResult"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(IllusionTempleEnterResult packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: The player is in the illusion temple event and the server sends a cyclic update.
+/// Causes reaction on client side: The client shows the state in the user interface.
+/// </summary>
+public readonly struct IllusionTempleState
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="IllusionTempleState"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public IllusionTempleState(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="IllusionTempleState"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private IllusionTempleState(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)data.Length;
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xBF;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x01;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the remaining seconds.
+    /// </summary>
+    public ushort RemainingSeconds
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[4..]);
+        set => WriteUInt16LittleEndian(this._data.Span[4..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the player index.
+    /// </summary>
+    public ushort PlayerIndex
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[4..]);
+        set => WriteUInt16LittleEndian(this._data.Span[4..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the position x.
+    /// </summary>
+    public byte PositionX
+    {
+        get => this._data.Span[6];
+        set => this._data.Span[6] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the position y.
+    /// </summary>
+    public byte PositionY
+    {
+        get => this._data.Span[7];
+        set => this._data.Span[7] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the team 1 points.
+    /// </summary>
+    public byte Team1Points
+    {
+        get => this._data.Span[8];
+        set => this._data.Span[8] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the team 2 points.
+    /// </summary>
+    public byte Team2Points
+    {
+        get => this._data.Span[9];
+        set => this._data.Span[9] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the my team.
+    /// </summary>
+    public byte MyTeam
+    {
+        get => this._data.Span[10];
+        set => this._data.Span[10] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the party count.
+    /// </summary>
+    public byte PartyCount
+    {
+        get => this._data.Span[11];
+        set => this._data.Span[11] = value;
+    }
+
+    /// <summary>
+    /// Gets the <see cref="IllusionTemplePartyEntry"/> of the specified index.
+    /// </summary>
+        public IllusionTemplePartyEntry this[int index] => new (this._data.Slice(12 + index * IllusionTemplePartyEntry.Length));
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="IllusionTempleState"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator IllusionTempleState(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="IllusionTempleState"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(IllusionTempleState packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="IllusionTemplePartyEntry"/>.
+    /// </summary>
+    /// <param name="partyMembersCount">The count of <see cref="IllusionTemplePartyEntry"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int partyMembersCount) => partyMembersCount * IllusionTemplePartyEntry.Length + 12;
+
+
+/// <summary>
+/// Contains the info about a party member in illusion temple..
+/// </summary>
+public readonly struct IllusionTemplePartyEntry
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="IllusionTemplePartyEntry"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public IllusionTemplePartyEntry(Memory<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 5;
+
+    /// <summary>
+    /// Gets or sets the player id.
+    /// </summary>
+    public ushort PlayerId
+    {
+        get => ReadUInt16LittleEndian(this._data.Span);
+        set => WriteUInt16LittleEndian(this._data.Span, value);
+    }
+
+    /// <summary>
+    /// Gets or sets the map number.
+    /// </summary>
+    public ushort MapNumber
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[2..]);
+        set => WriteUInt16LittleEndian(this._data.Span[2..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the position x.
+    /// </summary>
+    public byte PositionX
+    {
+        get => this._data.Span[3];
+        set => this._data.Span[3] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the position y.
+    /// </summary>
+    public byte PositionY
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+}
+}
+
+
+/// <summary>
+/// Is sent by the server when: A player requested to use a specific skill in the illusion temple event.
+/// Causes reaction on client side: The client shows the result.
+/// </summary>
+public readonly struct IllusionTempleSkillUsageResult
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="IllusionTempleSkillUsageResult"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public IllusionTempleSkillUsageResult(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="IllusionTempleSkillUsageResult"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private IllusionTempleSkillUsageResult(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xBF;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x02;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 11;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public byte Result
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the skill number.
+    /// </summary>
+    public ushort SkillNumber
+    {
+        get => ReadUInt16BigEndian(this._data.Span[5..]);
+        set => WriteUInt16BigEndian(this._data.Span[5..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the source object id.
+    /// </summary>
+    public ushort SourceObjectId
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[7..]);
+        set => WriteUInt16LittleEndian(this._data.Span[7..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the target object id.
+    /// </summary>
+    public ushort TargetObjectId
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[9..]);
+        set => WriteUInt16LittleEndian(this._data.Span[9..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="IllusionTempleSkillUsageResult"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator IllusionTempleSkillUsageResult(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="IllusionTempleSkillUsageResult"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(IllusionTempleSkillUsageResult packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: ?
+/// Causes reaction on client side: The client shows the counts.
+/// </summary>
+public readonly struct IllusionTempleUserCount
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="IllusionTempleUserCount"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public IllusionTempleUserCount(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="IllusionTempleUserCount"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private IllusionTempleUserCount(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xBF;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x03;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 10;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the user count 1.
+    /// </summary>
+    public byte UserCount1
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the user count 2.
+    /// </summary>
+    public byte UserCount2
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the user count 3.
+    /// </summary>
+    public byte UserCount3
+    {
+        get => this._data.Span[6];
+        set => this._data.Span[6] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the user count 4.
+    /// </summary>
+    public byte UserCount4
+    {
+        get => this._data.Span[7];
+        set => this._data.Span[7] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the user count 5.
+    /// </summary>
+    public byte UserCount5
+    {
+        get => this._data.Span[8];
+        set => this._data.Span[8] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the user count 6.
+    /// </summary>
+    public byte UserCount6
+    {
+        get => this._data.Span[9];
+        set => this._data.Span[9] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="IllusionTempleUserCount"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator IllusionTempleUserCount(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="IllusionTempleUserCount"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(IllusionTempleUserCount packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: The illusion temple event ended.
+/// Causes reaction on client side: The client shows the results.
+/// </summary>
+public readonly struct IllusionTempleResult
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="IllusionTempleResult"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public IllusionTempleResult(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="IllusionTempleResult"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private IllusionTempleResult(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)data.Length;
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xBF;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x04;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the team 1 points.
+    /// </summary>
+    public byte Team1Points
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the team 2 points.
+    /// </summary>
+    public byte Team2Points
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the player count.
+    /// </summary>
+    public byte PlayerCount
+    {
+        get => this._data.Span[6];
+        set => this._data.Span[6] = value;
+    }
+
+    /// <summary>
+    /// Gets the <see cref="PlayerResult"/> of the specified index.
+    /// </summary>
+        public PlayerResult this[int index] => new (this._data.Slice(10 + index * PlayerResult.Length));
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="IllusionTempleResult"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator IllusionTempleResult(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="IllusionTempleResult"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(IllusionTempleResult packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="PlayerResult"/>.
+    /// </summary>
+    /// <param name="playersCount">The count of <see cref="PlayerResult"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int playersCount) => playersCount * PlayerResult.Length + 10;
+
+
+/// <summary>
+/// Contains the result of a player in the event..
+/// </summary>
+public readonly struct PlayerResult
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PlayerResult"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public PlayerResult(Memory<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 17;
+
+    /// <summary>
+    /// Gets or sets the name.
+    /// </summary>
+    public string Name
+    {
+        get => this._data.Span.ExtractString(0, this._data.Length - 0, System.Text.Encoding.UTF8);
+        set => this._data.Slice(0).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets or sets the map number.
+    /// </summary>
+    public byte MapNumber
+    {
+        get => this._data.Span[10];
+        set => this._data.Span[10] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the team.
+    /// </summary>
+    public byte Team
+    {
+        get => this._data.Span[11];
+        set => this._data.Span[11] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the class.
+    /// </summary>
+    public byte Class
+    {
+        get => this._data.Span[12];
+        set => this._data.Span[12] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the added experience.
+    /// </summary>
+    public uint AddedExperience
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[13..]);
+        set => WriteUInt32LittleEndian(this._data.Span[13..], value);
+    }
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified field content.
+    /// </summary>
+    /// <param name="content">The content of the variable 'Name' field from which the size will be calculated.</param>
+    public static int GetRequiredSize(string content) => System.Text.Encoding.UTF8.GetByteCount(content) + 1 + 0;
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified field content.
+    /// </summary>
+    /// <param name="contentLength">The content length in bytes of the variable 'Name' field from which the size will be calculated.</param>
+    public static int GetRequiredSize(int contentLength) => contentLength + 1 + 0;
+}
+}
+
+
+/// <summary>
+/// Is sent by the server when: ?
+/// Causes reaction on client side: The client shows the skill points.
+/// </summary>
+public readonly struct IllusionTempleSkillPointUpdate
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="IllusionTempleSkillPointUpdate"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public IllusionTempleSkillPointUpdate(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="IllusionTempleSkillPointUpdate"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private IllusionTempleSkillPointUpdate(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xBF;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x06;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 5;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the skill points.
+    /// </summary>
+    public byte SkillPoints
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="IllusionTempleSkillPointUpdate"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator IllusionTempleSkillPointUpdate(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="IllusionTempleSkillPointUpdate"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(IllusionTempleSkillPointUpdate packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: ?
+/// Causes reaction on client side: The client shows the skill points.
+/// </summary>
+public readonly struct IllusionTempleSkillEnded
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="IllusionTempleSkillEnded"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public IllusionTempleSkillEnded(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="IllusionTempleSkillEnded"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private IllusionTempleSkillEnded(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xBF;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x07;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 8;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the skill number.
+    /// </summary>
+    public ushort SkillNumber
+    {
+        get => ReadUInt16BigEndian(this._data.Span[4..]);
+        set => WriteUInt16BigEndian(this._data.Span[4..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the object index.
+    /// </summary>
+    public ushort ObjectIndex
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[6..]);
+        set => WriteUInt16LittleEndian(this._data.Span[6..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="IllusionTempleSkillEnded"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator IllusionTempleSkillEnded(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="IllusionTempleSkillEnded"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(IllusionTempleSkillEnded packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: ?
+/// Causes reaction on client side: ?.
+/// </summary>
+public readonly struct IllusionTempleHolyItemRelics
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="IllusionTempleHolyItemRelics"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public IllusionTempleHolyItemRelics(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="IllusionTempleHolyItemRelics"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private IllusionTempleHolyItemRelics(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xBF;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x08;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 16;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the user index.
+    /// </summary>
+    public ushort UserIndex
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[4..]);
+        set => WriteUInt16LittleEndian(this._data.Span[4..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the name.
+    /// </summary>
+    public string Name
+    {
+        get => this._data.Span.ExtractString(6, this._data.Length - 6, System.Text.Encoding.UTF8);
+        set => this._data.Slice(6).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="IllusionTempleHolyItemRelics"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator IllusionTempleHolyItemRelics(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="IllusionTempleHolyItemRelics"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(IllusionTempleHolyItemRelics packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified field content.
+    /// </summary>
+    /// <param name="content">The content of the variable 'Name' field from which the size will be calculated.</param>
+    public static int GetRequiredSize(string content) => System.Text.Encoding.UTF8.GetByteCount(content) + 1 + 6;
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified field content.
+    /// </summary>
+    /// <param name="contentLength">The content length in bytes of the variable 'Name' field from which the size will be calculated.</param>
+    public static int GetRequiredSize(int contentLength) => contentLength + 1 + 6;
+}
+
+
+/// <summary>
+/// Is sent by the server when: ?
+/// Causes reaction on client side: The client shows the skill points.
+/// </summary>
+public readonly struct IllusionTempleSkillEnd
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="IllusionTempleSkillEnd"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public IllusionTempleSkillEnd(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="IllusionTempleSkillEnd"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private IllusionTempleSkillEnd(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xBF;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x07;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 6;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the temple number.
+    /// </summary>
+    public byte TempleNumber
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the state.
+    /// </summary>
+    public byte State
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="IllusionTempleSkillEnd"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator IllusionTempleSkillEnd(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="IllusionTempleSkillEnd"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(IllusionTempleSkillEnd packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: The player applied chain lightning to a target and the server calculated the hits.
+/// Causes reaction on client side: The client shows the chain lightning effect.
+/// </summary>
+public readonly struct ChainLightningHitInfo
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ChainLightningHitInfo"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public ChainLightningHitInfo(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ChainLightningHitInfo"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private ChainLightningHitInfo(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)data.Length;
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xBF;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x0A;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the skill number.
+    /// </summary>
+    public ushort SkillNumber
+    {
+        get => ReadUInt16BigEndian(this._data.Span[4..]);
+        set => WriteUInt16BigEndian(this._data.Span[4..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the player id.
+    /// </summary>
+    public ushort PlayerId
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[6..]);
+        set => WriteUInt16LittleEndian(this._data.Span[6..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the target count.
+    /// </summary>
+    public byte TargetCount
+    {
+        get => this._data.Span[8];
+        set => this._data.Span[8] = value;
+    }
+
+    /// <summary>
+    /// Gets the <see cref="ChainTarget"/> of the specified index.
+    /// </summary>
+        public ChainTarget this[int index] => new (this._data.Slice(10 + index * ChainTarget.Length));
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="ChainLightningHitInfo"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator ChainLightningHitInfo(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="ChainLightningHitInfo"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(ChainLightningHitInfo packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="ChainTarget"/>.
+    /// </summary>
+    /// <param name="targetsCount">The count of <see cref="ChainTarget"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int targetsCount) => targetsCount * ChainTarget.Length + 10;
+
+
+/// <summary>
+/// Contains the target identifier..
+/// </summary>
+public readonly struct ChainTarget
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ChainTarget"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public ChainTarget(Memory<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 2;
+
+    /// <summary>
+    /// Gets or sets the target id.
+    /// </summary>
+    public ushort TargetId
+    {
+        get => ReadUInt16LittleEndian(this._data.Span);
+        set => WriteUInt16LittleEndian(this._data.Span, value);
+    }
+}
+}
+
+
+/// <summary>
 /// Is sent by the server when: The server validated or changed the status of the MU Helper.
 /// Causes reaction on client side: The client toggle the MU Helper status.
 /// </summary>
