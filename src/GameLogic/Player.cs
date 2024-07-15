@@ -588,14 +588,14 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <inheritdoc/>
-    public async ValueTask AttackByAsync(IAttacker attacker, SkillEntry? skill, bool isCombo)
+    public async ValueTask AttackByAsync(IAttacker attacker, SkillEntry? skill, bool isCombo, double damageFactor = 1.0)
     {
         if (this.Attributes is null)
         {
             throw new InvalidOperationException("AttributeSystem not set.");
         }
 
-        var hitInfo = await attacker.CalculateDamageAsync(this, skill, isCombo).ConfigureAwait(false);
+        var hitInfo = await attacker.CalculateDamageAsync(this, skill, isCombo, damageFactor).ConfigureAwait(false);
 
         if (hitInfo.HealthDamage == 0)
         {

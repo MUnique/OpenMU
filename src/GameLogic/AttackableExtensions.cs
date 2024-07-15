@@ -31,8 +31,12 @@ public static class AttackableExtensions
     /// <param name="attacker">The object which is attacking.</param>
     /// <param name="defender">The object which is defending.</param>
     /// <param name="skill">The skill which is used.</param>
-    /// <returns>The hit information.</returns>
-    public static async ValueTask<HitInfo> CalculateDamageAsync(this IAttacker attacker, IAttackable defender, SkillEntry? skill, bool isCombo)
+    /// <param name="isCombo">If set to <c>true</c>, the damage gets increased by a combo bonus.</param>
+    /// <param name="damageFactor">The damage factor.</param>
+    /// <returns>
+    /// The hit information.
+    /// </returns>
+    public static async ValueTask<HitInfo> CalculateDamageAsync(this IAttacker attacker, IAttackable defender, SkillEntry? skill, bool isCombo, double damageFactor = 1.0)
     {
         if (!attacker.IsAttackSuccessfulTo(defender))
         {
@@ -109,6 +113,8 @@ public static class AttackableExtensions
             attributes |= DamageAttributes.Double;
         }
 
+        dmg = (int)(dmg * damageFactor);
+
         var minimumDamage = attacker.Attributes[Stats.Level] / 10;
         return defender.GetHitInfo(Math.Max((uint)dmg, (uint)minimumDamage), attributes, attacker);
     }
@@ -143,14 +149,14 @@ public static class AttackableExtensions
     /// <param name="target">The target.</param>
     /// <param name="player">The player.</param>
     /// <param name="skillEntry">The skill entry.</param>
-    public static async ValueTask ApplyMagicEffectAsync(this IAttackable target, Player player, SkillEntry skillEntry)
+    public static async ValueTask ApplyMagicEffectAsync(this IAttackable target, IAttacker attacker, SkillEntry skillEntry)
     {
-        if (skillEntry.PowerUps is null)
+        if (skillEntry.PowerUps is null && attacker is Player player)
         {
             player.CreateMagicEffectPowerUp(skillEntry);
         }
 
-        await target.ApplyMagicEffectAsync(player, skillEntry.Skill!.MagicEffectDef!, skillEntry.PowerUpDuration!, skillEntry.PowerUps!).ConfigureAwait(false);
+        await target.ApplyMagicEffectAsync(attacker, skillEntry.Skill!.MagicEffectDef!, skillEntry.PowerUpDuration!, skillEntry.PowerUps!).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -209,10 +215,10 @@ public static class AttackableExtensions
     /// Applies the elemental effects of a players skill to the target.
     /// </summary>
     /// <param name="target">The target.</param>
-    /// <param name="player">The player.</param>
+    /// <param name="attacker">The attacker.</param>
     /// <param name="skillEntry">The skill entry.</param>
     /// <returns>The success of the appliance.</returns>
-    public static async ValueTask<bool> TryApplyElementalEffectsAsync(this IAttackable target, Player player, SkillEntry skillEntry)
+    public static async ValueTask<bool> TryApplyElementalEffectsAsync(this IAttackable target, IAttacker attacker, SkillEntry skillEntry)
     {
         skillEntry.ThrowNotInitializedProperty(skillEntry.Skill is null, nameof(skillEntry.Skill));
         var modifier = skillEntry.Skill.ElementalModifierTarget;
@@ -233,7 +239,7 @@ public static class AttackableExtensions
             && !target.MagicEffectList.ActiveEffects.ContainsKey(effectDefinition.Number))
         {
             // power-up is the wrong term here... it's more like a power-down ;-)
-            await target.ApplyMagicEffectAsync(player, skillEntry).ConfigureAwait(false);
+            await target.ApplyMagicEffectAsync(attacker, skillEntry).ConfigureAwait(false);
             applied = true;
         }
 
