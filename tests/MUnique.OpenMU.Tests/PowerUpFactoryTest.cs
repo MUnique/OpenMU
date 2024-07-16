@@ -237,7 +237,7 @@ public class PowerUpFactoryTest
     public void AncientSetComplete()
     {
         var factory = this.GetPowerUpFactory();
-        var items = this.GetAncientSet(6, 5);
+        var items = this.GetAncientSet(6, 5).ToList();
         var result = factory.GetSetPowerUps(items, this.GetAttributeSystem(), new GameConfiguration());
         Assert.That(result.Count(), Is.EqualTo(6));
         var bonusOptions = items.SelectMany(item => factory.GetPowerUps(item, this.GetAttributeSystem()));
@@ -324,7 +324,8 @@ public class PowerUpFactoryTest
 
         var armorSet = new Mock<ItemSetGroup>();
         armorSet.Setup(a => a.Items).Returns(new List<ItemOfItemSet>());
-        armorSet.Object.Options = itemOptionDef.Object;
+        armorSet.Setup(a => a.Options).Returns(itemOptionDef.Object);
+
         armorSet.Object.MinimumItemCount = levels.Length;
         armorSet.Object.SetLevel = minimumLevel;
         
@@ -346,8 +347,8 @@ public class PowerUpFactoryTest
         itemOptionDef.Setup(a => a.PossibleOptions).Returns(new List<IncreasableItemOption>());
         var ancientSet = new Mock<ItemSetGroup>();
         ancientSet.Setup(a => a.Items).Returns(new List<ItemOfItemSet>());
+        ancientSet.Setup(a => a.Options).Returns(itemOptionDef.Object);
 
-        ancientSet.Object.Options = itemOptionDef.Object;
         ancientSet.Object.MinimumItemCount = 2;
         for (int i = 0; i < ancientOptionCount; i++)
         {

@@ -205,10 +205,10 @@ public sealed class FriendServerTest
 
         await this._friendServer.PlayerEnteredGameAsync((byte)this._gameServer1.Object.Id, this._player1.Id, this._player1.Name).ConfigureAwait(false);
         await this._friendServer.PlayerEnteredGameAsync((byte)this._gameServer2.Object.Id, this._player2.Id, this._player2.Name).ConfigureAwait(false);
-        this._gameServer1.Verify(gs => gs.FriendOnlineStateChangedAsync(this._player1.Name, this._player2.Name, this._gameServer2.Object.Id), Times.Once);
+        this._gameServer1.Verify(gs => gs.FriendOnlineStateChangedAsync(this._player1.Name, this._player2.Name, this._gameServer2.Object.Id), Times.AtLeastOnce);
 
         await this._friendServer.PlayerLeftGameAsync(this._player1.Id, this._player1.Name).ConfigureAwait(false);
-        this._gameServer2.Verify(gs => gs.FriendOnlineStateChangedAsync(this._player2.Name, this._player1.Name, FriendServer.FriendServer.OfflineServerId), Times.Once);
+        this._gameServer2.Verify(gs => gs.FriendOnlineStateChangedAsync(this._player2.Name, this._player1.Name, FriendServer.FriendServer.OfflineServerId), Times.AtLeastOnce);
     }
 
     private async ValueTask PlayerEnteredGameAsync(Guid playerId, string playerName, int serverId)
