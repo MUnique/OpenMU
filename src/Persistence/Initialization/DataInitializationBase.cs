@@ -121,7 +121,9 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
             // should never happen, but the access to the GameServer type is a trick to load the assembly into the current domain.
         }
 
-        var referenceHandler = new ByDataSourceReferenceHandler(new GameConfigurationDataSource(this._loggerFactory.CreateLogger<GameConfigurationDataSource>(), this._persistenceContextProvider));
+        var dataSource = new GameConfigurationDataSource(this._loggerFactory.CreateLogger<GameConfigurationDataSource>(), this._persistenceContextProvider);
+        await dataSource.GetOwnerAsync(this.GameConfiguration.GetId());
+        var referenceHandler = new ByDataSourceReferenceHandler(dataSource);
         var serviceContainer = new ServiceContainer();
         serviceContainer.AddService(typeof(IPersistenceContextProvider), this._persistenceContextProvider);
         var plugInManager = new PlugInManager(null, this._loggerFactory, serviceContainer, referenceHandler);
