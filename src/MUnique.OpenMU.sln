@@ -161,6 +161,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.SourceGenera
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.Annotations", "Annotations\MUnique.OpenMU.Annotations.csproj", "{49C1BAD6-13DC-4FB2-AD46-3D824C2CA74E}"
 EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose-all-in-one-traefik", "..\deploy\all-in-one-traefik\docker-compose-all-in-one-traefik.dcproj", "{4430D6A8-54B5-412B-9DBA-07B3E3580AF7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -361,6 +363,10 @@ Global
 		{49C1BAD6-13DC-4FB2-AD46-3D824C2CA74E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{49C1BAD6-13DC-4FB2-AD46-3D824C2CA74E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{49C1BAD6-13DC-4FB2-AD46-3D824C2CA74E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4430D6A8-54B5-412B-9DBA-07B3E3580AF7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4430D6A8-54B5-412B-9DBA-07B3E3580AF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4430D6A8-54B5-412B-9DBA-07B3E3580AF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4430D6A8-54B5-412B-9DBA-07B3E3580AF7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -417,6 +423,7 @@ Global
 		{298D1A42-8958-4662-8A05-E6B6F16F7268} = {820453DE-DA7A-454C-A077-BED8F0FA9764}
 		{338E0C94-5FA1-4F20-86EC-FCBA34CFB1E2} = {09EAF85E-358B-4065-8C81-B0B1FF6C0A09}
 		{49C1BAD6-13DC-4FB2-AD46-3D824C2CA74E} = {09EAF85E-358B-4065-8C81-B0B1FF6C0A09}
+		{4430D6A8-54B5-412B-9DBA-07B3E3580AF7} = {565BED68-B303-4A3D-A8C0-0088D2A50C46}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {28C13837-B616-4790-84D6-4BDCB4A8166D}

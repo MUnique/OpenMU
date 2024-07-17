@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   openmu-startup:
     image: munique/openmu
@@ -40,6 +38,24 @@ services:
       - "5432:5432"
     volumes:
       - dbdata:/var/lib/postgresql/data #store data on volume
+
+  traefik:
+    image: "traefik"
+    container_name: "traefik"
+    restart: always
+    command:
+      - "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./.htpasswd:/.htpasswd"
+    networks:
+      - proxy
 
 networks:
   proxy:
