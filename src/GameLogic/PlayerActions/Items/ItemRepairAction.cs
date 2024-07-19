@@ -45,6 +45,10 @@ public class ItemRepairAction
             item.Durability = item.GetMaximumDurabilityOfOnePiece();
             await player.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(item, false)).ConfigureAwait(false);
         }
+        else
+        {
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("You don't have enough money to repair.", MessageType.BlueNormal)).ConfigureAwait(false);
+        }
     }
 
     /// <summary>
@@ -87,6 +91,11 @@ public class ItemRepairAction
             {
                 item.Durability = item.GetMaximumDurabilityOfOnePiece();
                 await player.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(item, false)).ConfigureAwait(false);
+            }
+            else
+            {
+                await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("You don't have enough money to repair.", MessageType.BlueNormal)).ConfigureAwait(false);
+                break;
             }
         }
     }
