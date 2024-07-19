@@ -16,6 +16,7 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Web.AdminPanel;
 using MUnique.OpenMU.Web.AdminPanel.Services;
+using Nito.AsyncEx;
 
 /// <summary>
 /// Abstract common base class for an edit page.
@@ -303,6 +304,8 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
 
     private async Task LoadDataAsync(CancellationToken cancellationToken)
     {
+        try
+    {
         cancellationToken.ThrowIfCancellationRequested();
         if (this.Type is null)
         {
@@ -324,8 +327,6 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
             this._persistenceContext = (IContext)createContextMethod.Invoke(this.PersistenceContextProvider, new object[] { true, gameConfiguration})!;
         }
 
-        try
-        {
             cancellationToken.ThrowIfCancellationRequested();
 
             try
