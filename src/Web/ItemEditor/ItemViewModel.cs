@@ -60,7 +60,7 @@ public class ItemViewModel
     /// <summary>
     /// Gets a value indicating whether this instance is excellent.
     /// </summary>
-    public bool IsExcellent => this.Item.ItemOptions.Any(o => o.ItemOption!.OptionType == ItemOptionTypes.Excellent);
+    public bool IsExcellent => this.Item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.Excellent);
 
     /// <summary>
     /// Gets a value indicating whether this instance is ancient.

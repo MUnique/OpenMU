@@ -31,7 +31,8 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
     {
         if (item.Definition is null)
         {
-            throw new ArgumentException($"Item of slot {item.ItemSlot} got no Definition.", nameof(item));
+            this._logger.LogWarning("Item of slot {itemSlot} ({itemId}) has no definition.", item.ItemSlot, item.GetId());
+            yield break;
         }
 
         if (item.Durability <= 0)
@@ -194,7 +195,13 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
 
         foreach (var optionLink in options)
         {
-            var option = optionLink.ItemOption ?? throw Error.NotInitializedProperty(optionLink, nameof(optionLink.ItemOption));
+            var option = optionLink.ItemOption;
+            if (option is null)
+            {
+                this._logger.LogWarning("Item {item} (id {itemId}) has ItemOptionLink ({optionLinkId}) without option.", item, item.GetId(), optionLink.GetId());
+                continue;
+            }
+
             var level = option.LevelType == LevelType.ItemLevel ? item.Level : optionLink.Level;
 
             var optionOfLevel = option.LevelDependentOptions?.FirstOrDefault(l => l.Level == level);

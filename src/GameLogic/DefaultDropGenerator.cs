@@ -351,13 +351,20 @@ public class DefaultDropGenerator : IDropGenerator
             return;
         }
 
-        for (int i = item.ItemOptions.Count(o => o.ItemOption?.OptionType == ItemOptionTypes.Excellent); i < excellentOptions.MaximumOptionsPerItem; i++)
+        var existingOptionCount = item.ItemOptions.Count(o => o.ItemOption?.OptionType == ItemOptionTypes.Excellent);
+        for (int i = existingOptionCount; i < excellentOptions.MaximumOptionsPerItem; i++)
         {
             if (i == 0)
             {
+                // The first option is always added without a chance
                 var itemOptionLink = new ItemOptionLink();
                 itemOptionLink.ItemOption = excellentOptions.PossibleOptions.SelectRandom(this._randomizer);
-                item.ItemOptions.Add(itemOptionLink);
+                if (itemOptionLink.ItemOption is not null)
+                {
+                    item.ItemOptions.Add(itemOptionLink);
+                    existingOptionCount++;
+                }
+
                 continue;
             }
 
@@ -369,9 +376,12 @@ public class DefaultDropGenerator : IDropGenerator
                     option = excellentOptions.PossibleOptions.SelectRandom(this._randomizer);
                 }
 
-                var itemOptionLink = new ItemOptionLink();
-                itemOptionLink.ItemOption = option;
-                item.ItemOptions.Add(itemOptionLink);
+                if (option is not null)
+                {
+                    var itemOptionLink = new ItemOptionLink();
+                    itemOptionLink.ItemOption = option;
+                    item.ItemOptions.Add(itemOptionLink);
+                }
             }
         }
     }
