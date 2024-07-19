@@ -12876,8 +12876,8 @@ public readonly struct SkillEntry
     /// </summary>
     public byte SkillLevel
     {
-        get => this._data.Span[2];
-        set => this._data.Span[2] = value;
+        get => this._data.Span[3];
+        set => this._data.Span[3] = value;
     }
 }
 }

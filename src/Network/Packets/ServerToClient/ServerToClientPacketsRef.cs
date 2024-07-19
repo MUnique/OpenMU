@@ -12163,8 +12163,8 @@ public readonly ref struct SkillEntryRef
     /// </summary>
     public byte SkillLevel
     {
-        get => this._data[2];
-        set => this._data[2] = value;
+        get => this._data[3];
+        set => this._data[3] = value;
     }
 }
 }

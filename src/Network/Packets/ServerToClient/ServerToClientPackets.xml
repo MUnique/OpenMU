@@ -4712,7 +4712,7 @@
               <Name>SkillNumber</Name>
             </Field>
             <Field>
-              <Index>2</Index>
+              <Index>3</Index>
               <Type>Byte</Type>
               <Name>SkillLevel</Name>
             </Field>

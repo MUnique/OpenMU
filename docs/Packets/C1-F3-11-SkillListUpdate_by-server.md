@@ -29,4 +29,4 @@ Length: 4 Bytes
 |-------|--------|-----------|-------|-------------|
 | 0 | 1 | Byte |  | SkillIndex |
 | 1 | 2 | ShortLittleEndian |  | SkillNumber |
-| 2 | 1 | Byte |  | SkillLevel |
+| 3 | 1 | Byte |  | SkillLevel |
