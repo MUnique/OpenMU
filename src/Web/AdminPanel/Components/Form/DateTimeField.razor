@@ -4,7 +4,7 @@
 
     <div>
         <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
-        <input type="datetime" @bind="CurrentValue" id="@this.FieldIdentifier.FieldName" class="@CssClass" />
+        <input type="datetime-local" @bind="CurrentValue" id="@this.FieldIdentifier.FieldName" class="@CssClass" />
         <ValidationMessage For=@this.ValueExpression />
     </div>
 
