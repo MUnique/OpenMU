@@ -50,6 +50,11 @@ public class AddPointsPerResetAttributePlugIn : UpdatePlugInBase
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
+        if (gameConfiguration.Attributes.Contains(Stats.PointsPerReset))
+        {
+            return;
+        }
+
         var attribute = Stats.PointsPerReset;
         var persistentAttribute = context.CreateNew<AttributeDefinition>(attribute.Id, attribute.Designation, attribute.Description);
         gameConfiguration.Attributes.Add(persistentAttribute);
