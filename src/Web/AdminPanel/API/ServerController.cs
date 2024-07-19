@@ -41,6 +41,30 @@
         }
 
         /// <summary>
+        /// Gets a flag, if the specified account is currently online.
+        /// </summary>
+        /// <param name="accountName">Name of the account.</param>
+        /// <returns>True, when online.</returns>
+        [HttpGet]
+        [Route("is-online/{accountName=0}")]
+        public async Task<bool> GetIsOnlineAsync(string accountName)
+        {
+            var isOnline = false;
+
+            foreach (var server in this._gameServers.Values.OfType<GameServer>())
+            {
+                var players = await server.Context.GetPlayersAsync().ConfigureAwait(false);
+                if (players.Any(p => p.Account?.LoginName == accountName))
+                {
+                    isOnline = true;
+                    break;
+                }
+            }
+
+            return isOnline;
+        }
+
+        /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
