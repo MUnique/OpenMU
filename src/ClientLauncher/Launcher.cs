@@ -12,7 +12,10 @@ using System.Windows.Forms;
 using Microsoft.Win32;
 
 /// <summary>
-/// The default launcher, which writes host and port into the registry before starting the main.exe.
+/// The default launcher, which writes
+/// * host and port into the registry (official way until season 6 at the global server)
+/// * adds parameters /u and /p (works in some other versions of the game client)
+/// before starting the main.exe.
 /// </summary>
 public class Launcher : ILauncher
 {
@@ -74,7 +77,7 @@ public class Launcher : ILauncher
         }
 
         var info = new DirectoryInfo(this.MainExePath!);
-        var startInfo = new ProcessStartInfo(this.MainExePath, "connect")
+        var startInfo = new ProcessStartInfo(this.MainExePath, ["connect", $"/u{ipAddress}", $"/p{this.HostPort}"])
         {
             WorkingDirectory = info.Parent!.FullName,
             UseShellExecute = true,
