@@ -79,6 +79,8 @@ public class AddMasterPointAction
         {
             player.Logger.LogDebug("Adding {0} points to skill, skillId: {1}, player {2}", requiredPoints, learnedSkill.Skill.Number, player);
             learnedSkill.Level += requiredPoints;
+            learnedSkill.PowerUpDuration = null;
+            learnedSkill.PowerUps = null;
             player.SelectedCharacter.MasterLevelUpPoints -= requiredPoints;
             await player.InvokeViewPlugInAsync<IMasterSkillLevelChangedPlugIn>(p => p.MasterSkillLevelChangedAsync(learnedSkill)).ConfigureAwait(false);
         }
