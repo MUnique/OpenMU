@@ -154,6 +154,11 @@ public enum SkillTarget
     /// The primary target is stated explicitly, additional targets are all objects in the <see cref="Skill.ImplicitTargetRange"/> of the primary target.
     /// </summary>
     ExplicitWithImplicitInRange = 6,
+
+    /// <summary>
+    /// The skill target is only the own player implicitly.
+    /// </summary>
+    ImplicitPlayer = 7,
 }
 
 /// <summary>
