@@ -255,6 +255,31 @@ internal enum MagicEffectNumber : short
     /// </summary>
     WizEnhance = 0x52,
 
+    /// <summary>
+    /// The ignore defense effect of the rage fighter.
+    /// </summary>
+    IgnoreDefense = 129,
+
+    /// <summary>
+    /// The increase health effect of the rage fighter.
+    /// </summary>
+    IncreaseHealth = 130,
+
+    /// <summary>
+    /// The increase block effect of the rage fighter.
+    /// </summary>
+    IncreaseBlock = 131,
+
+    /// <summary>
+    /// The wiz enhance strengthener effect.
+    /// </summary>
+    WizEnhance2 = 138,
+
+    /// <summary>
+    /// The wiz enhance mastery effect.
+    /// </summary>
+    WizEnhance3 = 139,
+
     #region Artificial effects which are not sent to the client, starting at 200.
 
     /// <summary>
