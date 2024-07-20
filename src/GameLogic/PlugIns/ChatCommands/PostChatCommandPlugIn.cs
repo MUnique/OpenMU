@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using MUnique.OpenMU.PlugIns;
+using MUnique.OpenMU.GameLogic.Views;
 
 /// <summary>
 /// A chat command plugin which handles post commands by sending a blue system message to all players.
@@ -34,7 +35,7 @@ public class PostChatCommandPlugIn : IChatCommandPlugIn
             return;
         }
 
-        message = $"[POST] {player.SelectedCharacter?.Name}: {message}";
-        await player.GameContext.SendGlobalMessageAsync(message, Interfaces.MessageType.BlueNormal).ConfigureAwait(false);
+        message = $"{player.SelectedCharacter?.Name}: {message}";
+        await player.GameContext.SendGlobalChatMessageAsync("[POST]", message, ChatMessageType.Gens).ConfigureAwait(false);
     }
 }

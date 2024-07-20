@@ -353,9 +353,15 @@ public class GameContext : AsyncDisposable, IGameContext
     }
 
     /// <inheritdoc/>
-    public ValueTask SendGlobalMessageAsync(string message, MessageType messageType)
+    public async ValueTask SendGlobalMessageAsync(string message, MessageType messageType)
     {
-        return this.ForEachPlayerAsync(player => player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, messageType)).AsTask());
+        await this.ForEachPlayerAsync(player => player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, messageType)).AsTask()).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    public async ValueTask SendGlobalChatMessageAsync(string sender, string message, ChatMessageType messageType)
+    {
+        await this.ForEachPlayerAsync(player => player.InvokeViewPlugInAsync<IChatViewPlugIn>(p => p.ChatMessageAsync(message, sender, messageType)).AsTask()).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>

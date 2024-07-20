@@ -4,12 +4,13 @@
 
 namespace MUnique.OpenMU.GameLogic;
 
+using System.Collections.Concurrent;
 using MUnique.OpenMU.GameLogic.MiniGames;
+using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
-using System.Collections.Concurrent;
 
 /// <summary>
 /// The context of the game.
@@ -146,6 +147,14 @@ public interface IGameContext
     /// <param name="message">The message.</param>
     /// <param name="messageType">Type of the message.</param>
     ValueTask SendGlobalMessageAsync(string message, MessageType messageType);
+
+    /// <summary>
+    /// Sends a global chat message to all players of the game with the specified message type.
+    /// </summary>
+    /// <param name="sender">The sender.</param>
+    /// <param name="message">The message.</param>
+    /// <param name="messageType">Type of the message.</param>
+    ValueTask SendGlobalChatMessageAsync(string sender, string message, ChatMessageType messageType);
 
     /// <summary>
     /// Sends a golden global notification to all players of the game.
