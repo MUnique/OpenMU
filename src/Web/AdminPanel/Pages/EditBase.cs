@@ -16,7 +16,6 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Web.AdminPanel;
 using MUnique.OpenMU.Web.AdminPanel.Services;
-using Nito.AsyncEx;
 
 /// <summary>
 /// Abstract common base class for an edit page.
@@ -305,27 +304,27 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
     private async Task LoadDataAsync(CancellationToken cancellationToken)
     {
         try
-    {
-        cancellationToken.ThrowIfCancellationRequested();
-        if (this.Type is null)
         {
-            throw new InvalidOperationException($"Only types of namespace {nameof(MUnique)} can be edited on this page.");
-        }
+            cancellationToken.ThrowIfCancellationRequested();
+            if (this.Type is null)
+            {
+                throw new InvalidOperationException($"Only types of namespace {nameof(MUnique)} can be edited on this page.");
+            }
 
-        await this.LoadOwnerAsync().ConfigureAwait(true);
-        cancellationToken.ThrowIfCancellationRequested();
-        if (this.EditDataSource.IsSupporting(this.Type))
-        {
-            this._isOwningContext = false;
-            this._persistenceContext = await this.EditDataSource.GetContextAsync().ConfigureAwait(true);
-        }
-        else
-        {
-            this._isOwningContext = true;
-            var gameConfiguration = await this.ConfigDataSource.GetOwnerAsync(Guid.Empty).ConfigureAwait(true);
-            var createContextMethod = typeof(IPersistenceContextProvider).GetMethod(nameof(IPersistenceContextProvider.CreateNewTypedContext))!.MakeGenericMethod(this.Type);
-            this._persistenceContext = (IContext)createContextMethod.Invoke(this.PersistenceContextProvider, new object[] { true, gameConfiguration})!;
-        }
+            await this.LoadOwnerAsync().ConfigureAwait(true);
+            cancellationToken.ThrowIfCancellationRequested();
+            if (this.EditDataSource.IsSupporting(this.Type))
+            {
+                this._isOwningContext = false;
+                this._persistenceContext = await this.EditDataSource.GetContextAsync().ConfigureAwait(true);
+            }
+            else
+            {
+                this._isOwningContext = true;
+                var gameConfiguration = await this.ConfigDataSource.GetOwnerAsync(Guid.Empty).ConfigureAwait(true);
+                var createContextMethod = typeof(IPersistenceContextProvider).GetMethod(nameof(IPersistenceContextProvider.CreateNewTypedContext))!.MakeGenericMethod(this.Type);
+                this._persistenceContext = (IContext)createContextMethod.Invoke(this.PersistenceContextProvider, new object[] { true, gameConfiguration})!;
+            }
 
             cancellationToken.ThrowIfCancellationRequested();
 

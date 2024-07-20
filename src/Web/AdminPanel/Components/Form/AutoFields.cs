@@ -28,6 +28,7 @@ public class AutoFields : ComponentBase
     /// </summary>
     static AutoFields()
     {
+        Builders.Add(new PasswordHashFieldBuilder());
         Builders.Add(new TextFieldBuilder());
         Builders.Add(new NumberFieldBuilder<long>());
         Builders.Add(new NumberFieldBuilder<int>());
