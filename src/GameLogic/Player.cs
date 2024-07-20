@@ -1349,34 +1349,61 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         int i = 0;
         var result = new (AttributeDefinition Target, IElement BuffPowerUp)[skill.MagicEffectDef.PowerUpDefinitions.Count];
-        foreach (var powerUpDef in skill.MagicEffectDef.PowerUpDefinitions)
-        {
-            IElement powerUp;
-            if (skillEntry.Level > 0)
-            {
-                powerUp = this.Attributes!.CreateElement(powerUpDef.Boost!);
-
-                // Apply either for all, or just for the specified TargetAttribute of the master skill
-                if (skillEntry.Skill.MasterDefinition?.TargetAttribute is not { } masterSkillTargetAttribute
-                    || masterSkillTargetAttribute == powerUpDef.TargetAttribute)
-                {
-                    var additionalValue = new SimpleElement(skillEntry.CalculateValue(), skillEntry.Skill.MasterDefinition?.Aggregation ?? powerUp.AggregateType);
-                    powerUp = new CombinedElement(powerUp, additionalValue);
-                }
-
-                // todo: add values of previous master skill as well. E.g. swell life strengthener, swell life proficiency
-            }
-            else
-            {
-                powerUp = this.Attributes!.CreateElement(powerUpDef.Boost!);
-            }
-
-            result[i] = (powerUpDef.TargetAttribute!, powerUp);
-            i++;
-        }
-
+        AddSkillPowersToResult(skill);
         skillEntry.PowerUpDuration = this.Attributes!.CreateElement(skill.MagicEffectDef.Duration);
         skillEntry.PowerUps = result;
+
+        void AddSkillPowersToResult(Skill skill)
+        {
+            foreach (var powerUpDef in skill.MagicEffectDef!.PowerUpDefinitions)
+            {
+                IElement powerUp;
+                if (skillEntry.Level > 0)
+                {
+                    powerUp = this.Attributes!.CreateElement(powerUpDef.Boost!);
+
+                    foreach (var masterSkillDefinition in GetMasterSkillDefinitions(skill.MasterDefinition))
+                    {
+                        // Apply either for all, or just for the specified TargetAttribute of the master skill
+                        powerUp = AppedMasterSkillPowerUp(masterSkillDefinition, powerUpDef, powerUp);
+                    }
+                }
+                else
+                {
+                    powerUp = this.Attributes!.CreateElement(powerUpDef.Boost!);
+                }
+
+                result[i] = (powerUpDef.TargetAttribute!, powerUp);
+                i++;
+            }
+        }
+
+        IEnumerable<MasterSkillDefinition> GetMasterSkillDefinitions(MasterSkillDefinition? masterSkillDefinition)
+        {
+            var current = masterSkillDefinition;
+            while (current is not null)
+            {
+                yield return current;
+                current = current.ReplacedSkill?.MasterDefinition;
+            }
+        }
+
+        IElement AppedMasterSkillPowerUp(MasterSkillDefinition? masterSkillDefinition, PowerUpDefinition powerUpDef, IElement powerUp)
+        {
+            if (masterSkillDefinition is null)
+            {
+                return powerUp;
+            }
+
+            if (masterSkillDefinition?.TargetAttribute is not { } masterSkillTargetAttribute
+                || masterSkillTargetAttribute == powerUpDef.TargetAttribute)
+            {
+                var additionalValue = new SimpleElement(skillEntry.CalculateValue(), skillEntry.Skill.MasterDefinition?.Aggregation ?? powerUp.AggregateType);
+                powerUp = new CombinedElement(powerUp, additionalValue);
+            }
+
+            return powerUp;
+        }
     }
 
     /// <summary>
