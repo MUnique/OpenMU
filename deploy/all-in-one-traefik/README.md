@@ -78,12 +78,12 @@ docker network create proxy
 To run the official docker image on your local traefik server, just run:
 
 ``` bash
-docker compose -f docker-compose.dev.yml up -d
+docker compose -f docker-compose.yml up -d
 ```
 
 And that's it. It's then available on your local computer through a loopback
 ip. Your AdminPanel URL is `http://admin.docker.localhost`. You can change it
-in `docker-compose.dev.yml` file
+in the `docker-compose.yml` file.
 
 However, if you want to make it available through the internet, you should choose
 Option B:
@@ -96,7 +96,7 @@ panel is not encrypted.
 
 #### Set your domain name as environment variable
 
-Make a copy of `.env.example` called .env and edit the .env file with your
+Make a copy of `.env.example` called `.env` and edit the `.env` file with your
 domain/subdomain to the AdminPanel URL.
 
 ``` bash
