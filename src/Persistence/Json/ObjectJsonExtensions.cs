@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Persistence.Json;
 
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Threading;
 
 /// <summary>
 /// Generic extension methods for the (de)serialization of objects.
@@ -33,13 +34,14 @@ public static class ObjectJsonExtensions
     /// </summary>
     /// <typeparam name="T">The type of the object.</typeparam>
     /// <param name="obj">The object.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>
     /// The json document string which contains all data of this instance.
     /// </returns>
-    public static string ToJson<T>(this T obj)
+    public static async ValueTask<string> ToJsonAsync<T>(this T obj, CancellationToken cancellationToken = default)
     {
         using var stream = new MemoryStream();
-        obj.ToJson(stream);
+        await obj.ToJsonAsync(stream, cancellationToken).ConfigureAwait(false);
 
         return Encoding.UTF8.GetString(stream.GetBuffer(), 0, (int)stream.Length);
     }
@@ -50,9 +52,10 @@ public static class ObjectJsonExtensions
     /// <typeparam name="T">The type of the object.</typeparam>
     /// <param name="obj">The object.</param>
     /// <param name="textWriter">The target text writer, e.g. a <see cref="StringWriter" />.</param>
-    public static void ToJson<T>(this T obj, Stream textWriter)
+    /// <param name="cancellationToken">The cancellation token.</param>
+    public static async ValueTask ToJsonAsync<T>(this T obj, Stream textWriter, CancellationToken cancellationToken = default)
     {
         var serializer = new JsonObjectSerializer();
-        serializer.Serialize(obj, textWriter);
+        await serializer.SerializeAsync(obj, textWriter, cancellationToken).ConfigureAwait(false);
     }
 }

@@ -11,7 +11,10 @@ using System.Text.Json.Serialization;
 /// </summary>
 public class IdReferenceResolver : ReferenceResolver
 {
-    private readonly IDictionary<Guid, IIdentifiable> _objects = new Dictionary<Guid, IIdentifiable>();
+    private readonly Dictionary<Guid, IIdentifiable> _objects = new();
+
+    private readonly Dictionary<object, string> _objectToReferenceIdMap = new();
+    private uint _referenceCount;
 
     /// <inheritdoc />
     public override object ResolveReference(string referenceId)
@@ -40,7 +43,19 @@ public class IdReferenceResolver : ReferenceResolver
             return identifiable.Id.ToString();
         }
 
-        throw new InvalidOperationException("value must implement IIdentifiable");
+        if (this._objectToReferenceIdMap.TryGetValue(value, out string? referenceId))
+        {
+            alreadyExists = true;
+        }
+        else
+        {
+            this._referenceCount++;
+            referenceId = this._referenceCount.ToString();
+            this._objectToReferenceIdMap.Add(value, referenceId);
+            alreadyExists = false;
+        }
+
+        return referenceId;
     }
 
     /// <inheritdoc/>
