@@ -35,9 +35,9 @@ public class QuestMonsterKillCountPlugIn : IAttackableGotKilledPlugIn
                 continue;
             }
 
-            foreach (var killRequirement in questState.ActiveQuest.RequiredMonsterKills.Where(r => r.Monster == monster.Definition))
+            foreach (var killRequirement in questState.ActiveQuest.RequiredMonsterKills.Where(r => object.Equals(r.Monster, monster.Definition)))
             {
-                if (questState.RequirementStates.FirstOrDefault(s => s.Requirement == killRequirement)
+                if (questState.RequirementStates.FirstOrDefault(s => object.Equals(s.Requirement, killRequirement))
                     is not { } requirementState)
                 {
                     requirementState = player.PersistenceContext.CreateNew<QuestMonsterKillRequirementState>();
