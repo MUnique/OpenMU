@@ -25,4 +25,10 @@ public interface ILoginServer
     /// <param name="accountName">Name of the account.</param>
     /// <param name="serverId">The server identifier.</param>
     ValueTask LogOffAsync(string accountName, byte serverId);
+
+    /// <summary>
+    /// Gets a snapshot of the currently logged in accounts and their corresponding server ids.
+    /// </summary>
+    /// <returns>A snapshot of the currently logged in accounts and their corresponding server ids.</returns>
+    ValueTask<Dictionary<string, byte>> GetSnapshotAsync();
 }

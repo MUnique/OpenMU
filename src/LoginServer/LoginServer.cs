@@ -12,9 +12,16 @@ using MUnique.OpenMU.Interfaces;
 /// </summary>
 public class LoginServer : ILoginServer
 {
-    private readonly IDictionary<string, byte> _connectedAccounts = new Dictionary<string, byte>();
+    private readonly Dictionary<string, byte> _connectedAccounts = new();
 
     private readonly AsyncLock _syncRoot = new ();
+
+    /// <inheritdoc/>
+    public async ValueTask<Dictionary<string, byte>> GetSnapshotAsync()
+    {
+        using var l = await this._syncRoot.LockAsync();
+        return new(this._connectedAccounts);
+    }
 
     /// <inheritdoc/>
     public async Task<bool> TryLoginAsync(string accountName, byte serverId)
