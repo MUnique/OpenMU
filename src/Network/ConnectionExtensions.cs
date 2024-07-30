@@ -16,6 +16,11 @@ public static class ConnectionExtensions
     /// <param name="packetBuilder">The packet builder which writes to the <see cref="IConnection.Output"/> and returns the length of the packet in bytes.</param>
     public static async ValueTask SendAsync(this IConnection connection, Func<int> packetBuilder)
     {
+        if (!connection.Connected)
+        {
+            return;
+        }
+
         using var l = await connection.OutputLock.LockAsync().ConfigureAwait(false);
         var length = packetBuilder();
         connection.Output.Advance(length);
