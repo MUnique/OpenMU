@@ -49,7 +49,8 @@ export class Attacks extends THREE.Points {
             return;
         }
 
-        if (target === undefined || target === null) {
+        if (target === undefined || target === null
+          || attacker === undefined || attacker === null) {
             return;
         }
 

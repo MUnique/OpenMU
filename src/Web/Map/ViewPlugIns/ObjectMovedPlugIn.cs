@@ -59,7 +59,7 @@ public class ObjectMovedPlugIn : JsViewPlugInBase, IObjectMovedPlugIn
                 .Select(step => new { x = step.To.X, y = step.To.Y, direction = step.Direction }).ToList();
 
             var lastStep = walkSteps.LastOrDefault();
-            if (lastStep != null)
+            if (lastStep != default)
             {
                 var lastPoint = new Point(lastStep.x, lastStep.y);
                 var lastDirection = lastPoint.GetDirectionTo(targetPoint);
