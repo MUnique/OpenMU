@@ -48,6 +48,16 @@ public interface IGameContext
     GameConfiguration Configuration { get; }
 
     /// <summary>
+    /// Gets the experience table. Index is the player level, value the needed experience to reach that level.
+    /// </summary>
+    long[] ExperienceTable { get; }
+
+    /// <summary>
+    /// Gets the master experience table. Index is the player level, value the needed experience to reach that level.
+    /// </summary>
+    long[] MasterExperienceTable { get; }
+
+    /// <summary>
     /// Gets the configuration change mediator.
     /// </summary>
     IConfigurationChangeMediator ConfigurationChangeMediator { get; }

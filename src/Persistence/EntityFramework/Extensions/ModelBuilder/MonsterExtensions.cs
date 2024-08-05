@@ -28,6 +28,6 @@ internal static class MonsterExtensions
     public static void Apply(this EntityTypeBuilder<MonsterSpawnArea> builder)
     {
         builder.HasOne(spawn => spawn.RawMonsterDefinition);
-        builder.HasOne(spawn => spawn.RawGameMap);
+        builder.HasOne(spawn => spawn.RawGameMap).WithMany(map => map.RawMonsterSpawns);
     }
 }
