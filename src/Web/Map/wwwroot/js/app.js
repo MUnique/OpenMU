@@ -187,7 +187,8 @@ System.register("Attack", ["three", "tween", "Queue"], function (exports_4, cont
                     if (this.freeAttackIndexes.peek() === null) {
                         return;
                     }
-                    if (target === undefined || target === null) {
+                    if (target === undefined || target === null
+                        || attacker === undefined || attacker === null) {
                         return;
                     }
                     var newIndex = this.freeAttackIndexes.dequeue();
@@ -624,6 +625,9 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
                 };
                 World.prototype.removeObject = function (objectId) {
                     var mesh = this.objects[objectId];
+                    if (mesh === undefined || mesh === null) {
+                        return;
+                    }
                     console.debug("Removing object", mesh.data);
                     this.remove(mesh);
                     delete this.objects[objectId];

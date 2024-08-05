@@ -67,6 +67,9 @@ public static class WebApplicationExtensions
         services.AddScoped<IUserService, NginxHtpasswdFileUserService>();
         services.AddScoped<IChangeNotificationService, ChangeNotificationService>();
 
+        services.AddScoped<LoggedInAccountService>();
+        services.AddScoped<IDataService<LoggedInAccount>>(serviceProvider => serviceProvider.GetService<LoggedInAccountService>()!);
+
         StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configuration);
         return builder;
     }

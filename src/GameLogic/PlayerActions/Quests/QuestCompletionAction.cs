@@ -52,7 +52,7 @@ public class QuestCompletionAction
 
         foreach (var requiredKills in activeQuest.RequiredMonsterKills)
         {
-            var currentKillCount = questState!.RequirementStates.FirstOrDefault(r => r.Requirement == requiredKills)?.KillCount ?? 0;
+            var currentKillCount = questState!.RequirementStates.FirstOrDefault(r => object.Equals(r.Requirement, requiredKills))?.KillCount ?? 0;
             if (currentKillCount >= requiredKills.MinimumNumber)
             {
                 continue;
@@ -98,7 +98,7 @@ public class QuestCompletionAction
         switch (reward.RewardType)
         {
             case QuestRewardType.Attribute:
-                var attribute = player.SelectedCharacter!.Attributes.FirstOrDefault(a => a.Definition == reward.AttributeReward);
+                var attribute = player.SelectedCharacter!.Attributes.FirstOrDefault(a => object.Equals(a.Definition, reward.AttributeReward));
                 if (attribute is null)
                 {
                     attribute = player.PersistenceContext.CreateNew<StatAttribute>(reward.AttributeReward, 0);

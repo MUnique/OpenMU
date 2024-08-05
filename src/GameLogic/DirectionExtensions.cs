@@ -43,6 +43,11 @@ public static class DirectionExtensions
     /// <returns>The direction from the origin to the target.</returns>
     public static Direction GetDirectionTo(this Point from, Point to)
     {
+        if (from == to)
+        {
+            return Direction.Undefined;
+        }
+
         double angle = Math.Atan2(to.Y - from.Y, to.X - from.X);
         angle += Math.PI;
         angle /= Math.PI / 4;

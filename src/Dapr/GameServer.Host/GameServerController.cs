@@ -154,6 +154,17 @@ public class GameServerController : ControllerBase
     }
 
     /// <summary>
+    /// Disconnects the account from the game.
+    /// </summary>
+    /// <param name="accountName">Name of the account.</param>
+    /// <returns>True, if the player has been disconnected; False, otherwise.</returns>
+    [HttpPost(nameof(IGameServer.DisconnectPlayerAsync))]
+    public ValueTask<bool> DisconnectAccountAsync([FromBody] string accountName)
+    {
+        return this._gameServer.DisconnectAccountAsync(accountName);
+    }
+
+    /// <summary>
     /// Bans the player from the game.
     /// </summary>
     /// <param name="playerName">Name of the player.</param>

@@ -103,6 +103,29 @@ public sealed class PersistentLoginServer : ILoginServer
         }
     }
 
+    /// <inheritdoc />
+    public async ValueTask<Dictionary<string, byte>> GetSnapshotAsync()
+    {
+        var result = new Dictionary<string, byte>();
+        for (int i = 0; i < 20; i++)
+        {
+            var indexName = $"serverindex-{i}";
+
+            var (serverIndex, eTag) = await this._daprClient.GetStateAndETagAsync<HashSet<string>>(StoreName, indexName, ConsistencyMode.Strong).ConfigureAwait(false);
+            if (serverIndex is null)
+            {
+                continue;
+            }
+
+            foreach (var accountName in serverIndex)
+            {
+                result[accountName] = (byte)i;
+            }
+        }
+
+        return result;
+    }
+
     private async Task AddToIndexAsync(string accountName, byte serverId)
     {
         var indexName = $"serverindex-{serverId}";

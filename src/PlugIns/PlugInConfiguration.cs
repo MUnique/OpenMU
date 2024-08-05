@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.PlugIns;
 using System.ComponentModel;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Text.Json.Serialization;
 
 /// <summary>
 /// Configuration for plugins.
@@ -73,6 +74,7 @@ public class PlugInConfiguration : INotifyPropertyChanged
     /// <summary>
     /// Gets the (display) name of this plugin.
     /// </summary>
+    [JsonIgnore]
     public string Name
     {
         get

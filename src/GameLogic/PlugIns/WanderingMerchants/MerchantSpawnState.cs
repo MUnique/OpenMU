@@ -20,6 +20,7 @@ public class MerchantSpawnState
     {
         this.MerchantDefinition = merchantDefinition;
         this.PossibleSpawns = possibleSpawns;
+        this.NextWanderingAt = DateTime.UtcNow.AddSeconds(10);
     }
 
     /// <summary>

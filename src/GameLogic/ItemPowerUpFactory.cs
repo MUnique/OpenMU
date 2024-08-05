@@ -140,7 +140,15 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
             var remainingOptions = activeItemOptions.ToList<ItemOption>();
             while (this.AreRequiredOptionsFound(combinationBonus, remainingOptions))
             {
-                yield return combinationBonus.Bonus ?? throw Error.NotInitializedProperty(combinationBonus, nameof(combinationBonus.Bonus));
+                if (combinationBonus.Bonus is not null)
+                {
+                    yield return combinationBonus.Bonus;
+                }
+                else
+                {
+                    this._logger.LogWarning("Bonus of ItemOptionCombinationBonus '{combinationBonusName}' is not initialized, id: {id}", combinationBonus.Description, combinationBonus.GetId());
+                }
+
                 if (!combinationBonus.AppliesMultipleTimes)
                 {
                     break;
@@ -155,6 +163,7 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
         foreach (var requirement in bonus.Requirements)
         {
             var matches = itemOptions
+                .Where(o => o.OptionType is not null)
                 .Where(o => o.OptionType == requirement.OptionType && o.SubOptionType == requirement.SubOptionType)
                 .Take(requirement.MinimumCount)
                 .ToList();

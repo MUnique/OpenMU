@@ -55,4 +55,19 @@ public class LoginServer : ILoginServer
             this._logger.LogError(ex, "Unexpected error when trying to call LogOff on the login server.");
         }
     }
+
+    /// <inheritdoc />
+    public async ValueTask<Dictionary<string, byte>> GetSnapshotAsync()
+    {
+        try
+        {
+            return await this._daprClient.InvokeMethodAsync<Dictionary<string, byte>>(this._targetAppId, nameof(this.GetSnapshotAsync)).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, "Unexpected error when trying to call GetSnapshotAsync on the login server.");
+        }
+
+        return [];
+    }
 }

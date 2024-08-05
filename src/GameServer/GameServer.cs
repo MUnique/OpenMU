@@ -278,6 +278,21 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
     }
 
     /// <inheritdoc />
+    public async ValueTask<bool> DisconnectAccountAsync(string accountName)
+    {
+        var players = await this._gameContext.GetPlayersAsync().ConfigureAwait(false);
+        var player = players.FirstOrDefault(p => p.Account?.LoginName == accountName);
+        if (player != null)
+        {
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("You got disconnected by an administrator.", MessageType.BlueNormal)).ConfigureAwait(false);
+            await player.DisconnectAsync().ConfigureAwait(false);
+            return true;
+        }
+
+        return false;
+    }
+
+    /// <inheritdoc />
     public async ValueTask<bool> BanPlayerAsync(string playerName)
     {
         var player = this._gameContext.GetPlayerByCharacterName(playerName);

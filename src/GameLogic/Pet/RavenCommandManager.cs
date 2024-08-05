@@ -292,8 +292,9 @@ public class RavenCommandManager : Disposable, IPetCommandManager
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private bool IsValidTarget([NotNullWhen(true)] IAttackable? target)
     {
-        return target is not null
-            && target.IsActive()
-            && target.IsInRange(this._owner.Position, AttackRange);
+        return target is not null 
+               && target is not Monster { Definition.ObjectKind: NpcObjectKind.Guard }
+               && target.IsActive()
+               && target.IsInRange(this._owner.Position, AttackRange);
     }
 }

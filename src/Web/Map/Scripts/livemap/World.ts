@@ -188,6 +188,10 @@ export class World extends THREE.Object3D {
      */
     public removeObject(objectId: number): void {
         const mesh = this.objects[objectId];
+        if (mesh === undefined || mesh === null) {
+            return;
+        }
+
         console.debug("Removing object", mesh.data);
         this.remove(mesh as THREE.Object3D);
         delete this.objects[objectId];

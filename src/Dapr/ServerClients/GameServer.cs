@@ -162,6 +162,12 @@ public class GameServer : IGameServer
     }
 
     /// <inheritdoc />
+    public async ValueTask<bool> DisconnectAccountAsync(string playerName)
+    {
+        return await this._client.InvokeMethodAsync<string, bool>(this._targetAppId, nameof(this.DisconnectAccountAsync), playerName).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
     public async ValueTask<bool> BanPlayerAsync(string playerName)
     {
         return await this._client.InvokeMethodAsync<string, bool>(this._targetAppId, nameof(this.BanPlayerAsync), playerName).ConfigureAwait(false);

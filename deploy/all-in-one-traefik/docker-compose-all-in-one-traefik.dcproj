@@ -12,7 +12,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include=".env.example" />
-    <None Include="docker-compose.dev.yml">
+    <None Include="docker-compose.yml">
     </None>
     <None Include="docker-compose.prod.yml">
     </None>
