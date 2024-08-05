@@ -39,7 +39,7 @@ public class UpdateMasterStatsPlugIn : IUpdateMasterStatsPlugIn
         await connection.SendMasterStatsUpdateAsync(
             (ushort)this._player.Attributes[Stats.MasterLevel],
             (ulong)character.MasterExperience,
-            (ulong)this._player.GameServerContext.Configuration.MasterExperienceTable![(int)this._player.Attributes[Stats.MasterLevel] + 1],
+            (ulong)this._player.GameServerContext.MasterExperienceTable[(int)this._player.Attributes[Stats.MasterLevel] + 1],
             (ushort)character.MasterLevelUpPoints,
             (ushort)this._player.Attributes[Stats.MaximumHealth],
             (ushort)this._player.Attributes[Stats.MaximumMana],

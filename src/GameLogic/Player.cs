@@ -1048,7 +1048,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         // Add the Exp
         bool lvlup = false;
-        var expTable = this.GameContext.Configuration.MasterExperienceTable ?? throw Error.NotInitializedProperty(this.GameContext.Configuration, nameof(GameConfiguration.MasterExperienceTable));
+        var expTable = this.GameContext.MasterExperienceTable;
         if (expTable[(int)this.Attributes[Stats.MasterLevel] + 1] - this.SelectedCharacter!.MasterExperience < exp)
         {
             exp = expTable[(int)this.Attributes[Stats.MasterLevel] + 1] - this.SelectedCharacter.MasterExperience;
@@ -1087,7 +1087,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         long exp = experience;
         bool isLevelUp = false;
-        var expTable = this.GameContext.Configuration.ExperienceTable ?? throw Error.NotInitializedProperty(this.GameContext.Configuration, nameof(GameConfiguration.ExperienceTable));
+        var expTable = this.GameContext.ExperienceTable;
         var expForNextLevel = expTable[(int)this.Attributes[Stats.Level] + 1];
         if (expForNextLevel - this.SelectedCharacter!.Experience < exp)
         {

@@ -16,12 +16,16 @@ using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
 using Nito.AsyncEx;
+using org.mariuszgromada.math.mxparser;
 
 /// <summary>
 /// The game context which holds all data of the game together.
 /// </summary>
 public class GameContext : AsyncDisposable, IGameContext
 {
+    private const string DefaultExperienceFormula = "if(level == 0, 0, if(level < 256, 10 * (level + 8) * (level - 1) * (level - 1), (10 * (level + 8) * (level - 1) * (level - 1)) + (1000 * (level - 247) * (level - 256) * (level - 256))))";
+    private const string DefaultMasterExperienceFormula = "(505 * level * level * level) + (35278500 * level) + (228045 * level * level)";
+
     private static readonly Meter Meter = new(MeterName);
 
     private static readonly Counter<int> PlayerCounter = Meter.CreateCounter<int>("PlayerCount");
@@ -79,6 +83,8 @@ public class GameContext : AsyncDisposable, IGameContext
             this.FeaturePlugIns = new FeaturePlugInContainer(this.PlugInManager);
             this._configChangeHandlerRegistration = this.ConfigurationChangeMediator.RegisterObject(this.Configuration, this, this.OnGameConfigurationChangeAsync);
             this.DuelRoomManager = new DuelRoomManager(this.Configuration.DuelConfiguration!);
+            this.ExperienceTable = CreateExpTable(this.Configuration.ExperienceFormula ?? DefaultExperienceFormula, this.Configuration.MaximumLevel);
+            this.MasterExperienceTable = CreateExpTable(this.Configuration.MasterExperienceFormula ?? DefaultMasterExperienceFormula, this.Configuration.MaximumMasterLevel);
         }
         catch (Exception ex)
         {
@@ -106,6 +112,12 @@ public class GameContext : AsyncDisposable, IGameContext
 
     /// <inheritdoc/>
     public GameConfiguration Configuration { get; }
+
+    /// <inheritdoc/>
+    public long[] ExperienceTable { get; private set; }
+
+    /// <inheritdoc/>
+    public long[] MasterExperienceTable { get; private set; }
 
     /// <inheritdoc/>
     public IConfigurationChangeMediator ConfigurationChangeMediator { get; }
@@ -380,11 +392,28 @@ public class GameContext : AsyncDisposable, IGameContext
         await base.DisposeAsyncCore().ConfigureAwait(false);
     }
 
+    private static long[] CreateExpTable(string experienceFormula, short maximumLevel)
+    {
+        var argument = new Argument("level");
+        var expression = new Expression(experienceFormula);
+        expression.addArguments(argument);
+
+        return Enumerable.Range(0, maximumLevel + 2)
+            .Select(level =>
+            {
+                argument.setArgumentValue(level);
+                return (long)expression.calculate();
+            })
+            .ToArray();
+    }
+
 #pragma warning disable CS1998
     private async ValueTask OnGameConfigurationChangeAsync(Action unregisterAction, GameConfiguration gameConfiguration, GameContext context)
 #pragma warning restore CS1998
     {
         this._recoverTimer.Change(gameConfiguration.RecoveryInterval, gameConfiguration.RecoveryInterval);
+        this.ExperienceTable = CreateExpTable(gameConfiguration.ExperienceFormula ?? DefaultExperienceFormula, gameConfiguration.MaximumLevel);
+        this.MasterExperienceTable = CreateExpTable(gameConfiguration.MasterExperienceFormula ?? DefaultMasterExperienceFormula, gameConfiguration.MaximumMasterLevel);
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
