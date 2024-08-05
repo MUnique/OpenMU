@@ -63,16 +63,14 @@ public partial class GameConfiguration
     public int MaximumVaultMoney { get; set; }
 
     /// <summary>
-    /// Gets or sets the experience table. Index is the player level, value the needed experience to reach that level.
+    /// Gets or sets the experience formula per level. The variable name for the level is "level".
     /// </summary>
-    [IgnoreWhenCloning]
-    public long[]? ExperienceTable { get; set; }
+    public string? ExperienceFormula { get; set; }
 
     /// <summary>
-    /// Gets or sets the master experience table. Index is the player level, value the needed experience to reach that level.
+    /// Gets or sets the experience formula per master level. The variable name for the level is "level".
     /// </summary>
-    [IgnoreWhenCloning]
-    public long[]? MasterExperienceTable { get; set; }
+    public string? MasterExperienceFormula { get; set; }
 
     /// <summary>
     /// Gets or sets the interval for attribute recoveries. See also MUnique.OpenMU.GameLogic.Attributes.Stats.Regeneration.

@@ -12,13 +12,10 @@ using MUnique.OpenMU.Persistence.EntityFramework.Model;
 /// <summary>
 /// The game configuration repository, which loads the configuration by using the
 /// <see cref="JsonObjectLoader"/>, to speed up loading the whole object graph.
-/// Additionally it fills the experience table, because the entity framework can't map arrays.
 /// </summary>
 internal class CachingGameConfigurationRepository : CachingGenericRepository<GameConfiguration>
 {
     private readonly JsonObjectLoader _objectLoader;
-    private const long MinLevel = 0;
-    private const long MaxLevel = 256;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CachingGameConfigurationRepository" /> class.
@@ -43,13 +40,7 @@ internal class CachingGameConfigurationRepository : CachingGenericRepository<Gam
         await database.OpenConnectionAsync().ConfigureAwait(false);
         try
         {
-            if (await this._objectLoader.LoadObjectAsync<GameConfiguration>(id, currentContext.Context).ConfigureAwait(false) is { } config)
-            {
-                this.SetExperienceTables(config);
-                return config;
-            }
-
-            return null;
+            return await this._objectLoader.LoadObjectAsync<GameConfiguration>(id, currentContext.Context).ConfigureAwait(false);
         }
         finally
         {
@@ -70,7 +61,6 @@ internal class CachingGameConfigurationRepository : CachingGenericRepository<Gam
         try
         {
             var configs = (await this._objectLoader.LoadAllObjectsAsync<GameConfiguration>(currentContext.Context).ConfigureAwait(false)).ToList();
-            configs.ForEach(this.SetExperienceTables);
 
             var oldConfig = ((EntityDataContext)currentContext.Context).CurrentGameConfiguration;
             try
@@ -92,41 +82,5 @@ internal class CachingGameConfigurationRepository : CachingGenericRepository<Gam
         {
             await database.CloseConnectionAsync().ConfigureAwait(false);
         }
-    }
-
-    private void SetExperienceTables(GameConfiguration gameConfiguration)
-    {
-        gameConfiguration.ExperienceTable =
-            Enumerable.Range(0, gameConfiguration.MaximumLevel + 2)
-                .Select(level => this.CalculateNeededExperience(level))
-                .ToArray();
-        gameConfiguration.MasterExperienceTable =
-            Enumerable.Range(0, 201).Select(level => this.CalcNeededMasterExp(level)).ToArray();
-    }
-
-    /// <summary>
-    /// The equation
-    ///  f(x) = 505 * x^3 + 35278500 * x + 228045 * x^2
-    /// </summary>
-    /// <param name="lvl"></param>
-    /// <returns> long. </returns>
-    private long CalcNeededMasterExp(long lvl)
-    {
-        return (505 * lvl * lvl * lvl) + (35278500 * lvl) + (228045 * lvl * lvl);
-    }
-
-    /// <summary>
-    /// The equation for calculate needed experience.
-    /// </summary>
-    /// <param name="level"></param>
-    /// <returns> long. </returns>
-    private long CalculateNeededExperience(long level)
-    {
-        return level switch
-        {
-            MinLevel => 0,
-            < MaxLevel => 10 * (level + 8) * (level - 1) * (level - 1),
-            _ => (10 * (level + 8) * (level - 1) * (level - 1)) + (1000 * (level - 247) * (level - 256) * (level - 256)),
-        };
     }
 }

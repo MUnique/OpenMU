@@ -38,8 +38,9 @@ public abstract class GameConfigurationInitializerBase : InitializerBase
     public override void Initialize()
     {
         this.GameConfiguration.ExperienceRate = 1.0f;
+        this.GameConfiguration.MinimumMonsterLevelForMasterExperience = 95;
         this.GameConfiguration.MaximumLevel = 400;
-        this.GameConfiguration.MaximumMasterLevel = 400;
+        this.GameConfiguration.MaximumMasterLevel = 200;
         this.GameConfiguration.InfoRange = 12;
         this.GameConfiguration.AreaSkillHitsPlayer = false;
         this.GameConfiguration.MaximumInventoryMoney = int.MaxValue;
@@ -57,15 +58,8 @@ public abstract class GameConfigurationInitializerBase : InitializerBase
         this.GameConfiguration.DamagePerOnePetDurability = 100000;
         this.GameConfiguration.HitsPerOneItemDurability = 10000;
 
-        // TODO: Instead of saving the table in the database, save the formula.
-        //       The table has been used because we had no formula parser back then.
-        this.GameConfiguration.ExperienceTable =
-            Enumerable.Range(0, this.GameConfiguration.MaximumLevel + 2)
-                .Select(level => CalculateNeededExperience(level))
-                .ToArray();
-        this.GameConfiguration.MasterExperienceTable =
-            Enumerable.Range(0, 201).Select(level => this.CalcNeededMasterExp(level))
-                .ToArray();
+        this.GameConfiguration.ExperienceFormula = "if(level == 0, 0, if(level < 256, 10 * (level + 8) * (level - 1) * (level - 1), (10 * (level + 8) * (level - 1) * (level - 1)) + (1000 * (level - 247) * (level - 256) * (level - 256))))";
+        this.GameConfiguration.MasterExperienceFormula = "(505 * level * level * level) + (35278500 * level) + (228045 * level * level)";
 
         this.AddItemDropGroups();
 
@@ -77,7 +71,6 @@ public abstract class GameConfigurationInitializerBase : InitializerBase
         this.GameConfiguration.ItemOptions.Add(this.CreateOptionDefinition(Stats.DefenseBase, ItemOptionDefinitionNumbers.DefenseOption));
         this.GameConfiguration.ItemOptions.Add(this.CreateOptionDefinition(Stats.MaximumPhysBaseDmg, ItemOptionDefinitionNumbers.PhysicalAttack));
         this.GameConfiguration.ItemOptions.Add(this.CreateOptionDefinition(Stats.MaximumWizBaseDmg, ItemOptionDefinitionNumbers.WizardryAttack));
-        //// TODO: ItemSetGroups for set bonus
     }
 
     protected ItemOptionDefinition CreateOptionDefinition(AttributeDefinition attributeDefinition, short number)
