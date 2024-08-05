@@ -266,8 +266,8 @@ public sealed class Party : Disposable
         var totalLevel = this._distributionList.Sum(p => (int)p.Attributes![Stats.Level] + p.Attributes![Stats.MasterLevel]);
         var averageLevel = totalLevel / count;
         var averageExperience = killedObject.CalculateBaseExperience(averageLevel);
-        var totalAverageExperience = averageExperience * count * Math.Pow(1.2, count - 1);
-        totalAverageExperience *= killedObject.CurrentMap?.Definition.ExpMultiplier ?? 0;
+        var totalAverageExperience = averageExperience * count * Math.Pow(1.05, count - 1);
+        totalAverageExperience *= killedObject.CurrentMap?.Definition.ExpMultiplier ?? 1;
         totalAverageExperience *= this._distributionList.First().GameContext.ExperienceRate;
 
         var randomizedTotalExperience = Rand.NextInt((int)(totalAverageExperience * 0.8), (int)(totalAverageExperience * 1.2));
