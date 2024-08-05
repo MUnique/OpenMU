@@ -494,7 +494,7 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         try
         {
             using var context = this._gameContext.PersistenceContextProvider.CreateNewTypedContext<MiniGameRankingEntry>(false);
-            var instanceId = Guid.NewGuid();
+            var instanceId = GuidV7.NewGuid();
             var timestamp = DateTime.UtcNow;
             foreach (var score in scoreEntries)
             {
