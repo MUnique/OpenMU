@@ -59,7 +59,7 @@ public class InMemoryContext : IContext
     }
 
     /// <inheritdoc/>
-    public async ValueTask<bool> SaveChangesAsync(CancellationToken cancellationToken = default)
+    public async ValueTask<bool> SaveChangesAsync()
     {
         var result = this.SaveChanges();
         if (result)
