@@ -200,6 +200,11 @@ public class TargetedSkillAction
 
     private IEnumerable<IAttackable> DetermineTargets(Player player, IAttackable targetedTarget, Skill skill)
     {
+        if (skill.Target == SkillTarget.ImplicitPlayer)
+        {
+            return player.GetAsEnumerable();
+        }
+
         if (skill.Target == SkillTarget.ImplicitParty)
         {
             if (player.Party != null)

@@ -104,4 +104,9 @@ public enum UpdateVersion
     /// The version of the <see cref="ChainLightningUpdatePlugIn"/>.
     /// </summary>
     ChainLightningUpdate = 19,
+
+    /// <summary>
+    /// The version of the <see cref="WizEnhanceAndRagefighterSkillsUpdatePlugIn"/>.
+    /// </summary>
+    WizEnhanceAndRagefighterSkills = 20,
 }

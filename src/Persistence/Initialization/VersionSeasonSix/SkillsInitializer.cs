@@ -16,38 +16,38 @@ using MUnique.OpenMU.Persistence.Initialization.Skills;
 /// </summary>
 internal class SkillsInitializer : SkillsInitializerBase
 {
-    private const string Formula1204 = "(1 + (((((((level - 30) ^ 3) + 25000) / 499) / 6)))) * 10"; // 17
-    private const string Formula61408 = "(1 + (((((((level - 30) ^ 3) + 25000) / 499) / 50) * 100) / 12)) * 85 * 6"; // 12
-    private const string Formula51173 = "(1 + (((((((level - 30) ^ 3) + 25000) / 499) / 50) * 100) / 12)) * 85 * 5"; // 13
-    private const string Formula181 = "(1 + (((((((level - 30) ^ 3) + 25000) / 499) / 6)))) * 1.5"; // 7
-    private const string FormulaRecoveryIncrease181 = "(1 + (((((((level - 30) ^ 3) + 25000) / 499) / 6)))) * 1.5 * 0.01"; // 7
-    private const string Formula120 = "(1 + (((((((level - 30) ^ 3) + 25000) / 499) / 50) * 100) / 12))"; // 1    // about 1.2 to 9.0
-    private const string Formula120Value = "(1 + (((((((level - 30) ^ 3) + 25000) / 499) / 50) * 100) / 12)) * 0.01"; // 1    // about 0.012 to 0.09
-    private const string FormulaRecoveryIncrease120 = "(1 + (((((((level - 30) ^ 3) + 25000) / 499) / 50) * 100) / 12)) / 100"; // 1
-    private const string FormulaIncreaseMultiplicator120 = "(101 + (((((((level - 30) ^ 3) + 25000) / 499) / 50) * 100) / 12)) / 100"; // 1
-    private const string Formula6020 = "(1 + (((((((level - 30) ^ 3) + 25000) / 499) / 6)))) * 50"; // 16
-    private const string Formula6020Value = "(1 + (((((((level - 30) ^ 3) + 25000) / 499) / 6)))) * 50 / 100"; // 16
-    private const string Formula502 = "(0.8 + (((((((level - 30) ^ 3) + 25000) / 499) / 6)))) * 5";
-    private const string Formula632 = "(0.85 + (((((((level - 30) ^ 3) + 25000) / 499) / 6)))) * 6"; // 3
-    private const string Formula883 = "(0.9 + (((((((level - 30) ^ 3) + 25000) / 499) / 6)))) * 8"; // 4
-    private const string Formula10235 = "(1 + (((((((level - 30) ^ 3) + 25000) / 499) / 50) * 100) / 12)) * 85"; // 9
-    private const string Formula81877 = "(1 + (((((((level - 30) ^ 3) + 25000) / 499) / 50) * 100) / 12)) * 85 * 8"; // 14
-    private const string Formula1154 = "(0.95 + (((((((level - 30) ^ 3) + 25000) / 499) / 6)))) * 10"; // 5
-    private const string Formula803 = "(0.8 + (((((((level - 30) ^ 3) + 25000) / 499) / 50) * 100) / 12)) * 8"; // 10
-    private const string Formula1 = "1 * level";
-    private const string Formula1WhenComplete = "if(level < 10; 0; 1)";
-    private const string Formula722 = "(1 + (((((((level - 30) ^ 3) + 25000) / 499) / 6)))) * 6"; // 18 // 7.22 to 54.09
-    private const string Formula722Value = "((1 + (((((((level - 30) ^ 3) + 25000) / 499) / 6)))) * 6) * 0.01"; // 18   // 0.0722 to 0.5409
-    private const string Formula4319 = "52 / (1 + (((((((level - 30) ^ 3) + 25000) / 499) / 6))))"; // 6
-    private const string Formula914 = "11 / (1 + (((((((level - 30) ^ 3) + 25000) / 499) / 50) * 100) / 12))"; // 11
-    private const string Formula3822 = "40 / (1 + (((((((level - 30) ^ 3) + 25000) / 499) / 6)))) + 5"; // 20
-    private const string Formula25587 = "(1 + ( ( ( ( ( ( (level - 30) ^ 3) + 25000) / 499) / 50) * 100) / 12)) * 85 * 2.5"; // 29
-    private const string Formula30704 = "(1 + ( ( ( ( ( ((level - 30) ^ 3) + 25000) / 499) / 50) * 100) / 12)) * 85 * 3"; // 33
-    private const string Formula3371 = "(1 + ( ( ( ( ( ( (level - 30) ^ 3) + 25000) / 499) / 6) ) ) ) * 28"; // 35
-    private const string Formula20469 = "(1 + ( ( ( ( ( ( (level - 30) ^ 3) + 25000) / 499) / 50) * 100) / 12) ) * 85 * 2"; // 30
-    private const string Formula1806 = "(1 + (((((((level - 30) ^ 3) + 25000) / 499) / 6)))) * 15"; // 15
-    private const string Formula32751 = "(1 + ( ( ( ( ( ( (level - 30) ^ 3) + 25000) / 499) / 50) * 100) / 12)) * 85 * 3.2"; // 31
-    private const string Formula5418 = "(1 + ( ( ( ( ( ( (level - 30) ^ 3) + 25000) / 499) / 50) * 100) / 12)) * 45"; // 34
+    internal const string Formula1204 = "(1 + (((((((level - 30) ^ 3) + 25000) / 499) / 6)))) * 10"; // 17
+    internal const string Formula61408 = "(1 + (((((((level - 30) ^ 3) + 25000) / 499) / 50) * 100) / 12)) * 85 * 6"; // 12
+    internal const string Formula51173 = "(1 + (((((((level - 30) ^ 3) + 25000) / 499) / 50) * 100) / 12)) * 85 * 5"; // 13
+    internal const string Formula181 = "(1 + (((((((level - 30) ^ 3) + 25000) / 499) / 6)))) * 1.5"; // 7
+    internal const string FormulaRecoveryIncrease181 = "(1 + (((((((level - 30) ^ 3) + 25000) / 499) / 6)))) * 1.5 * 0.01"; // 7
+    internal const string Formula120 = "(1 + (((((((level - 30) ^ 3) + 25000) / 499) / 50) * 100) / 12))"; // 1    // about 1.2 to 9.0
+    internal const string Formula120Value = "(1 + (((((((level - 30) ^ 3) + 25000) / 499) / 50) * 100) / 12)) * 0.01"; // 1    // about 0.012 to 0.09
+    internal const string FormulaRecoveryIncrease120 = "(1 + (((((((level - 30) ^ 3) + 25000) / 499) / 50) * 100) / 12)) / 100"; // 1
+    internal const string FormulaIncreaseMultiplicator120 = "(101 + (((((((level - 30) ^ 3) + 25000) / 499) / 50) * 100) / 12)) / 100"; // 1
+    internal const string Formula6020 = "(1 + (((((((level - 30) ^ 3) + 25000) / 499) / 6)))) * 50"; // 16
+    internal const string Formula6020Value = "(1 + (((((((level - 30) ^ 3) + 25000) / 499) / 6)))) * 50 / 100"; // 16
+    internal const string Formula502 = "(0.8 + (((((((level - 30) ^ 3) + 25000) / 499) / 6)))) * 5";
+    internal const string Formula632 = "(0.85 + (((((((level - 30) ^ 3) + 25000) / 499) / 6)))) * 6"; // 3
+    internal const string Formula883 = "(0.9 + (((((((level - 30) ^ 3) + 25000) / 499) / 6)))) * 8"; // 4
+    internal const string Formula10235 = "(1 + (((((((level - 30) ^ 3) + 25000) / 499) / 50) * 100) / 12)) * 85"; // 9
+    internal const string Formula81877 = "(1 + (((((((level - 30) ^ 3) + 25000) / 499) / 50) * 100) / 12)) * 85 * 8"; // 14
+    internal const string Formula1154 = "(0.95 + (((((((level - 30) ^ 3) + 25000) / 499) / 6)))) * 10"; // 5
+    internal const string Formula803 = "(0.8 + (((((((level - 30) ^ 3) + 25000) / 499) / 50) * 100) / 12)) * 8"; // 10
+    internal const string Formula1 = "1 * level";
+    internal const string Formula1WhenComplete = "if(level < 10; 0; 1)";
+    internal const string Formula722 = "(1 + (((((((level - 30) ^ 3) + 25000) / 499) / 6)))) * 6"; // 18 // 7.22 to 54.09
+    internal const string Formula722Value = "((1 + (((((((level - 30) ^ 3) + 25000) / 499) / 6)))) * 6) * 0.01"; // 18   // 0.0722 to 0.5409
+    internal const string Formula4319 = "52 / (1 + (((((((level - 30) ^ 3) + 25000) / 499) / 6))))"; // 6
+    internal const string Formula914 = "11 / (1 + (((((((level - 30) ^ 3) + 25000) / 499) / 50) * 100) / 12))"; // 11
+    internal const string Formula3822 = "40 / (1 + (((((((level - 30) ^ 3) + 25000) / 499) / 6)))) + 5"; // 20
+    internal const string Formula25587 = "(1 + ( ( ( ( ( ( (level - 30) ^ 3) + 25000) / 499) / 50) * 100) / 12)) * 85 * 2.5"; // 29
+    internal const string Formula30704 = "(1 + ( ( ( ( ( ((level - 30) ^ 3) + 25000) / 499) / 50) * 100) / 12)) * 85 * 3"; // 33
+    internal const string Formula3371 = "(1 + ( ( ( ( ( ( (level - 30) ^ 3) + 25000) / 499) / 6) ) ) ) * 28"; // 35
+    internal const string Formula20469 = "(1 + ( ( ( ( ( ( (level - 30) ^ 3) + 25000) / 499) / 50) * 100) / 12) ) * 85 * 2"; // 30
+    internal const string Formula1806 = "(1 + (((((((level - 30) ^ 3) + 25000) / 499) / 6)))) * 15"; // 15
+    internal const string Formula32751 = "(1 + ( ( ( ( ( ( (level - 30) ^ 3) + 25000) / 499) / 50) * 100) / 12)) * 85 * 3.2"; // 31
+    internal const string Formula5418 = "(1 + ( ( ( ( ( ( (level - 30) ^ 3) + 25000) / 499) / 50) * 100) / 12)) * 45"; // 34
 
     private static readonly IDictionary<SkillNumber, MagicEffectNumber> EffectsOfSkills = new Dictionary<SkillNumber, MagicEffectNumber>
     {
@@ -62,6 +62,10 @@ internal class SkillsInitializer : SkillsInitializerBase
         { SkillNumber.InfinityArrow, MagicEffectNumber.InfiniteArrow },
         { SkillNumber.InfinityArrowStr, MagicEffectNumber.InfiniteArrow },
         { SkillNumber.FireSlash, MagicEffectNumber.DefenseReduction },
+        { SkillNumber.IgnoreDefense, MagicEffectNumber.IgnoreDefense },
+        { SkillNumber.IncreaseHealth, MagicEffectNumber.IncreaseHealth },
+        { SkillNumber.IncreaseBlock, MagicEffectNumber.IncreaseBlock },
+        { SkillNumber.ExpansionofWizardry, MagicEffectNumber.WizEnhance },
     };
 
     private readonly IDictionary<byte, MasterSkillRoot> _masterSkillRoots;
@@ -179,7 +183,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.CreateSkill(SkillNumber.Pollution, "Pollution", CharacterClasses.AllSummoners, DamageType.Curse, 80, 6, 15, 120, energyRequirement: 115, elementalModifier: ElementalType.Lightning);
         this.CreateSkill(SkillNumber.LightningShock, "Lightning Shock", CharacterClasses.AllSummoners, DamageType.Curse, 95, 6, 7, 115, energyRequirement: 823, elementalModifier: ElementalType.Lightning);
         this.CreateSkill(SkillNumber.StrikeofDestruction, "Strike of Destruction", CharacterClasses.BladeKnightAndBladeMaster, DamageType.Physical, 110, 5, 24, 30, 100, elementalModifier: ElementalType.Ice, skillType: SkillType.AreaSkillAutomaticHits);
-        this.CreateSkill(SkillNumber.ExpansionofWizardry, "Expansion of Wizardry", CharacterClasses.SoulMasterAndGrandMaster, distance: 6, abilityConsumption: 50, manaConsumption: 200, levelRequirement: 220, energyRequirement: 118);
+        this.CreateSkill(SkillNumber.ExpansionofWizardry, "Expansion of Wizardry", CharacterClasses.SoulMasterAndGrandMaster, distance: 6, abilityConsumption: 50, manaConsumption: 200, levelRequirement: 220, energyRequirement: 118, skillType: SkillType.Buff, targetRestriction: SkillTargetRestriction.Player, skillTarget: SkillTarget.ImplicitPlayer);
         this.CreateSkill(SkillNumber.Recovery, "Recovery", CharacterClasses.MuseElfAndHighElf, distance: 6, abilityConsumption: 10, manaConsumption: 40, levelRequirement: 100, energyRequirement: 37, skillType: SkillType.Regeneration, targetRestriction: SkillTargetRestriction.Player);
         this.CreateSkill(SkillNumber.MultiShot, "Multi-Shot", CharacterClasses.MuseElfAndHighElf, DamageType.Physical, 40, 6, 7, 10, 100, skillType: SkillType.AreaSkillExplicitHits);
         this.CreateSkill(SkillNumber.FlameStrike, "Flame Strike", CharacterClasses.AllMGs, DamageType.Physical, 140, 3, 25, 20, 100, elementalModifier: ElementalType.Fire, skillType: SkillType.AreaSkillAutomaticHits);
@@ -192,9 +196,9 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.CreateSkill(SkillNumber.DarkSide, "Dark Side", CharacterClasses.AllFighters, DamageType.Physical, distance: 4, manaConsumption: 70, levelRequirement: 180, elementalModifier: ElementalType.Wind);
         this.CreateSkill(SkillNumber.DragonRoar, "Dragon Roar", CharacterClasses.AllFighters, DamageType.Physical, distance: 3, abilityConsumption: 30, manaConsumption: 50, levelRequirement: 150, elementalModifier: ElementalType.Earth, skillType: SkillType.AreaSkillAutomaticHits);
         this.CreateSkill(SkillNumber.DragonSlasher, "Dragon Slasher", CharacterClasses.AllFighters, DamageType.Physical, distance: 4, abilityConsumption: 100, manaConsumption: 100, levelRequirement: 200, elementalModifier: ElementalType.Wind);
-        this.CreateSkill(SkillNumber.IgnoreDefense, "Ignore Defense", CharacterClasses.AllFighters, DamageType.Physical, distance: 3, abilityConsumption: 10, manaConsumption: 50, levelRequirement: 120, energyRequirement: 404);
-        this.CreateSkill(SkillNumber.IncreaseHealth, "Increase Health", CharacterClasses.AllFighters, DamageType.Physical, distance: 7, abilityConsumption: 10, manaConsumption: 50, levelRequirement: 80, energyRequirement: 132);
-        this.CreateSkill(SkillNumber.IncreaseBlock, "Increase Block", CharacterClasses.AllFighters, DamageType.Physical, distance: 7, abilityConsumption: 10, manaConsumption: 50, levelRequirement: 50, energyRequirement: 80);
+        this.CreateSkill(SkillNumber.IgnoreDefense, "Ignore Defense", CharacterClasses.AllFighters, DamageType.Physical, distance: 3, abilityConsumption: 10, manaConsumption: 50, levelRequirement: 120, energyRequirement: 404, skillType: SkillType.Buff, skillTarget: SkillTarget.ImplicitPlayer);
+        this.CreateSkill(SkillNumber.IncreaseHealth, "Increase Health", CharacterClasses.AllFighters, DamageType.Physical, distance: 7, abilityConsumption: 10, manaConsumption: 50, levelRequirement: 80, energyRequirement: 132, skillType: SkillType.Buff, skillTarget: SkillTarget.ImplicitParty);
+        this.CreateSkill(SkillNumber.IncreaseBlock, "Increase Block", CharacterClasses.AllFighters, DamageType.Physical, distance: 7, abilityConsumption: 10, manaConsumption: 50, levelRequirement: 50, energyRequirement: 80, skillType: SkillType.Buff, skillTarget: SkillTarget.ImplicitParty);
         this.CreateSkill(SkillNumber.Charge, "Charge", CharacterClasses.AllFighters, DamageType.Physical, 90, 4, 15, 20);
         this.CreateSkill(SkillNumber.PhoenixShot, "Phoenix Shot", CharacterClasses.AllFighters, DamageType.Physical, distance: 4, manaConsumption: 30, elementalModifier: ElementalType.Earth, skillType: SkillType.AreaSkillExplicitTarget);
 
@@ -564,6 +568,10 @@ internal class SkillsInitializer : SkillsInitializerBase
         new InfiniteArrowEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         new DefenseReductionEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         new InvisibleEffectInitializer(this.Context, this.GameConfiguration).Initialize();
+        new IgnoreDefenseEffectInitializer(this.Context, this.GameConfiguration).Initialize();
+        new IncreaseHealthEffectInitializer(this.Context, this.GameConfiguration).Initialize();
+        new IncreaseBlockEffectInitializer(this.Context, this.GameConfiguration).Initialize();
+        new WizardryEnhanceEffectInitializer(this.Context, this.GameConfiguration).Initialize();
     }
 
     private void MapSkillsToEffects()
@@ -651,10 +659,10 @@ internal class SkillsInitializer : SkillsInitializerBase
         // DW
         this.AddMasterSkillDefinition(SkillNumber.FlameStrengthener, SkillNumber.Flame, SkillNumber.Undefined, 2, 2, SkillNumber.Flame, 20, Formula632);
         this.AddMasterSkillDefinition(SkillNumber.LightningStrengthener, SkillNumber.Lightning, SkillNumber.Undefined, 2, 2, SkillNumber.Lightning, 20, Formula632);
-        this.AddMasterSkillDefinition(SkillNumber.ExpansionofWizStreng, SkillNumber.ExpansionofWizardry, SkillNumber.Undefined, 2, 2, SkillNumber.ExpansionofWizardry, 20, Formula120);
+        this.AddMasterSkillDefinition(SkillNumber.ExpansionofWizStreng, SkillNumber.ExpansionofWizardry, SkillNumber.Undefined, 2, 2, SkillNumber.ExpansionofWizardry, 20, Formula120Value, Formula120, Stats.MaximumWizBaseDmg, AggregateType.Multiplicate);
         this.AddMasterSkillDefinition(SkillNumber.InfernoStrengthener, SkillNumber.Inferno, SkillNumber.FlameStrengthener, 2, 3, SkillNumber.Inferno, 20, Formula502);
         this.AddMasterSkillDefinition(SkillNumber.BlastStrengthener, SkillNumber.Cometfall, SkillNumber.LightningStrengthener, 2, 3, SkillNumber.Cometfall, 20, Formula502);
-        this.AddMasterSkillDefinition(SkillNumber.ExpansionofWizMas, SkillNumber.ExpansionofWizStreng, SkillNumber.Undefined, 2, 3, SkillNumber.ExpansionofWizardry, 20, Formula120);
+        this.AddMasterSkillDefinition(SkillNumber.ExpansionofWizMas, SkillNumber.ExpansionofWizStreng, SkillNumber.Undefined, 2, 3, SkillNumber.ExpansionofWizardry, 20, Formula120Value, Formula120, targetAttribute: Stats.CriticalDamageChance, AggregateType.Multiplicate);
         this.AddMasterSkillDefinition(SkillNumber.PoisonStrengthener, SkillNumber.Poison, SkillNumber.Undefined, 2, 3, SkillNumber.Poison, 20, Formula632);
         this.AddMasterSkillDefinition(SkillNumber.EvilSpiritStreng, SkillNumber.EvilSpirit, SkillNumber.Undefined, 2, 4, SkillNumber.EvilSpirit, 20, Formula502);
         this.AddPassiveMasterSkillDefinition(SkillNumber.MagicMasteryGrandMaster, Stats.WizardryBaseDmg, AggregateType.AddRaw, Formula502, 4, 2, SkillNumber.EvilSpiritStreng);

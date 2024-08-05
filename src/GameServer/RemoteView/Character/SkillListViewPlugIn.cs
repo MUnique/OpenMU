@@ -70,8 +70,11 @@ public class SkillListViewPlugIn : ISkillListViewPlugIn
         }
 
         var skillIndex = this.SkillList.IndexOf(skill);
-        await this._player.Connection.SendSkillRemovedAsync((byte)skillIndex, (ushort)skill.Number).ConfigureAwait(false);
-        this.SkillList[skillIndex] = null;
+        if (skillIndex >= 0)
+        {
+            await this._player.Connection.SendSkillRemovedAsync((byte)skillIndex, (ushort)skill.Number).ConfigureAwait(false);
+            this.SkillList[skillIndex] = null;
+        }
     }
 
     /// <inheritdoc/>
