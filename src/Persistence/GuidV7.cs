@@ -1,4 +1,4 @@
-﻿// <copyright file="GuidHelper.cs" company="MUnique">
+﻿// <copyright file="GuidV7.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -14,8 +14,16 @@ using System.Security.Cryptography;
 /// </summary>
 public static class GuidV7
 {
+    /// <summary>
+    /// Creates a new random guid.
+    /// </summary>
+    /// <returns>The new guid.</returns>
     public static Guid NewGuid() => NewGuid(DateTimeOffset.UtcNow);
 
+    /// <summary>
+    /// Creates a new random guid for the specified date.
+    /// </summary>
+    /// <returns>The new guid.</returns>
     public static Guid NewGuid(DateTimeOffset dateTimeOffset)
     {
         // We create a buffer which is two bytes bigger than the Guid,
@@ -23,7 +31,7 @@ public static class GuidV7
         Span<byte> buffer = stackalloc byte[18];
         var uuidAsBytes = buffer[2..];
         var currentTimestamp = dateTimeOffset.ToUnixTimeMilliseconds();
-        Span<byte> timestampBytes = stackalloc byte[sizeof(long)];
+
         if (!BitConverter.TryWriteBytes(buffer, currentTimestamp))
         {
             throw new InvalidOperationException("Could not convert the timestamp to bytes.");
