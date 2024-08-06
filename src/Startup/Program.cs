@@ -340,6 +340,7 @@ internal sealed class Program : IDisposable
         if (typesWithMissingCustomConfigs.Any())
         {
             typesWithMissingCustomConfigs.ForEach(c => this.CreateDefaultPlugInConfiguration(typesWithCustomConfig[c.TypeId]!, c, referenceHandler));
+            using var notificationSuspension = context.SuspendChangeNotifications();
             _ = context.SaveChangesAsync().AsTask().WaitAndUnwrapException();
         }
 
@@ -378,6 +379,7 @@ internal sealed class Program : IDisposable
             yield return plugInConfiguration;
         }
 
+        using var notificationSuspension = saveContext.SuspendChangeNotifications();
         _ = saveContext.SaveChangesAsync().AsTask().WaitAndUnwrapException();
     }
 

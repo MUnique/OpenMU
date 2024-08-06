@@ -27,6 +27,14 @@ public interface IContext : IDisposable
     ValueTask<bool> SaveChangesAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Suspends the change notifications.
+    /// The notifications are re-enabled when the returned disposable is disposed,
+    /// but the notifications are not triggered for the changes which happened during the suspension.
+    /// </summary>
+    /// <returns>A disposable, which must be disposed to re-enable notifications.</returns>
+    IDisposable SuspendChangeNotifications();
+
+    /// <summary>
     /// Detaches the specified item from the context, if required.
     /// All reachable navigation properties are recursively detached from the context, too.
     /// </summary>

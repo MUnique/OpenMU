@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Persistence.InMemory;
 using System.Collections;
 using System.Threading;
 using Nito.AsyncEx.Synchronous;
+using Nito.Disposables;
 
 /// <summary>
 /// An in-memory context which get it's data from the repositories of the <see cref="InMemoryPersistenceContextProvider"/>.
@@ -68,6 +69,12 @@ public class InMemoryContext : IContext
         }
 
         return result;
+    }
+
+    /// <inheritdoc />
+    public IDisposable SuspendChangeNotifications()
+    {
+        return new Disposable(() => { });
     }
 
     /// <inheritdoc/>
