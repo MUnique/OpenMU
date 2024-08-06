@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using System.Threading;
+
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
 using System.Collections;
@@ -61,34 +63,7 @@ internal class EntityFrameworkContextBase : IContext
     protected IContextAwareRepositoryProvider RepositoryProvider { get; }
 
     /// <inheritdoc/>
-    public bool SaveChanges()
-    {
-        using var l = this._lock.Lock();
-
-        // when we have a change publisher attached, we want to get the changed entries before accepting them.
-        // Otherwise, we can accept them.
-        var acceptChanges = true;
-
-        if (this._changeListener is { })
-        {
-            this.Context.SavedChanges += this.OnSavedChanges;
-            acceptChanges = false;
-        }
-
-        try
-        {
-            this.Context.SaveChanges(acceptChanges);
-        }
-        finally
-        {
-            this.Context.SavedChanges -= this.OnSavedChanges;
-        }
-
-        return true;
-    }
-
-    /// <inheritdoc/>
-    public async ValueTask<bool> SaveChangesAsync()
+    public async ValueTask<bool> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         using var l = await this._lock.LockAsync();
 
@@ -96,22 +71,35 @@ internal class EntityFrameworkContextBase : IContext
         // Otherwise, we can accept them.
         var acceptChanges = true;
 
+        object? sender = null;
+        SavedChangesEventArgs? args = null;
         if (this._changeListener is { })
         {
-            this.Context.SavedChanges += this.OnSavedChanges;
+            this.Context.SavedChanges += OnSavedChanges;
             acceptChanges = false;
         }
 
         try
         {
-            await this.Context.SaveChangesAsync(acceptChanges).ConfigureAwait(false);
+            await this.Context.SaveChangesAsync(acceptChanges, cancellationToken).ConfigureAwait(false);
+
+            if (args is not null)
+            {
+                await this.OnSavedChangesAsync(sender, args).ConfigureAwait(false);
+            }
         }
         finally
         {
-            this.Context.SavedChanges -= this.OnSavedChanges;
+            this.Context.SavedChanges -= OnSavedChanges;
         }
 
         return true;
+
+        void OnSavedChanges(object? s, SavedChangesEventArgs e)
+        {
+            sender = s;
+            args = e;
+        }
     }
 
     /// <inheritdoc />
@@ -270,7 +258,6 @@ internal class EntityFrameworkContextBase : IContext
             return;
         }
 
-        this.Context.SavedChanges -= this.OnSavedChanges;
         this.Context.Dispose();
     }
 
@@ -319,7 +306,7 @@ internal class EntityFrameworkContextBase : IContext
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
-    private async void OnSavedChanges(object? sender, SavedChangesEventArgs e)
+    private async ValueTask OnSavedChangesAsync(object? sender, SavedChangesEventArgs e)
     {
         try
         {

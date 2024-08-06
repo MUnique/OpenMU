@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Persistence;
 
 using System.Collections;
+using System.Threading;
 
 /// <summary>
 /// The context for repository actions.
@@ -19,14 +20,11 @@ public interface IContext : IDisposable
     /// <summary>
     /// Saves the changes of the context.
     /// </summary>
-    /// <returns><c>True</c>, if the saving was successful; <c>false</c>, otherwise.</returns>
-    bool SaveChanges();
-
-    /// <summary>
-    /// Saves the changes of the context.
-    /// </summary>
-    /// <returns><c>True</c>, if the saving was successful; <c>false</c>, otherwise.</returns>
-    ValueTask<bool> SaveChangesAsync();
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>
+    ///   <c>True</c>, if the saving was successful; <c>false</c>, otherwise.
+    /// </returns>
+    ValueTask<bool> SaveChangesAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Detaches the specified item from the context, if required.
@@ -35,7 +33,7 @@ public interface IContext : IDisposable
     /// <param name="item">The item which should be detached.</param>
     /// <returns><c>true</c>, if the object was persisted.</returns>
     /// <remarks>
-    /// When calling this method, be sure to clear a back reference property before. Otherwise you might detach more than you intended.
+    /// When calling this method, be sure to clear a back reference property before. Otherwise, you might detach more than you intended.
     /// </remarks>
     bool Detach(object item);
 
@@ -45,7 +43,7 @@ public interface IContext : IDisposable
     /// </summary>
     /// <param name="item">The item which should be attached.</param>
     /// <remarks>
-    /// When calling this method, be sure to clear a previous back reference property before. Otherwise you might attach more than you intended.
+    /// When calling this method, be sure to clear a previous back reference property before. Otherwise, you might attach more than you intended.
     /// </remarks>
     void Attach(object item);
 
