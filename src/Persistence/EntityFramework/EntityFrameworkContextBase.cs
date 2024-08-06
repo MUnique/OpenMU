@@ -3,6 +3,7 @@
 // </copyright>
 
 using System.Threading;
+using Nito.Disposables;
 
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
@@ -26,6 +27,7 @@ internal class EntityFrameworkContextBase : IContext
     private readonly AsyncLock _lock = new();
     private readonly ILogger _logger;
     private bool _isDisposed;
+    private int _notificationSuspensions;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="EntityFrameworkContextBase" /> class.
@@ -100,6 +102,13 @@ internal class EntityFrameworkContextBase : IContext
             sender = s;
             args = e;
         }
+    }
+
+    /// <inheritdoc />
+    public IDisposable SuspendChangeNotifications()
+    {
+        Interlocked.Increment(ref this._notificationSuspensions);
+        return new Disposable(() => Interlocked.Decrement(ref this._notificationSuspensions));
     }
 
     /// <inheritdoc />
@@ -310,7 +319,7 @@ internal class EntityFrameworkContextBase : IContext
     {
         try
         {
-            if (this._changeListener is null)
+            if (this._changeListener is null || this._notificationSuspensions > 0)
             {
                 // should never be the case
                 return;
