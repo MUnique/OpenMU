@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Persistence.InMemory;
 
 using System.Collections;
+using System.Threading;
 using Nito.AsyncEx.Synchronous;
 
 /// <summary>
@@ -55,7 +56,7 @@ public class InMemoryContext : IContext
     }
 
     /// <inheritdoc/>
-    public async ValueTask<bool> SaveChangesAsync()
+    public async ValueTask<bool> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         var result = this.SaveChanges();
         if (result)
