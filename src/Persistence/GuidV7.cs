@@ -23,6 +23,7 @@ public static class GuidV7
     /// <summary>
     /// Creates a new random guid for the specified date.
     /// </summary>
+    /// <param name="dateTimeOffset">The date time offset which is the prefix of the id.</param>
     /// <returns>The new guid.</returns>
     public static Guid NewGuid(DateTimeOffset dateTimeOffset)
     {
