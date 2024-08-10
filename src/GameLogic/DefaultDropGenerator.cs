@@ -42,7 +42,11 @@ public class DefaultDropGenerator : IDropGenerator
     {
         this._randomizer = randomizer;
         this._droppableItems = config.Items.Where(i => i.DropsFromMonsters).ToList();
-        this._ancientItems = this._droppableItems.Where(i => i.PossibleItemSetGroups.Any(o => o.Options?.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.AncientOption) ?? false)).ToList();
+        this._ancientItems = this._droppableItems.Where(
+            i => i.PossibleItemSetGroups.Any(
+                o => o.Options?.PossibleOptions.Any(
+                    o => object.Equals(o.OptionType, ItemOptionTypes.AncientOption)) ?? false))
+            .ToList();
     }
 
     /// <inheritdoc/>
@@ -52,7 +56,7 @@ public class DefaultDropGenerator : IDropGenerator
         var map = player.CurrentMap?.Definition;
         if (map is null || character is null)
         {
-            return (Enumerable.Empty<Item>(), null);
+            return ([], null);
         }
 
         using var l = await this._lock.LockAsync();
@@ -63,14 +67,14 @@ public class DefaultDropGenerator : IDropGenerator
         }
         else if (monster.ObjectKind == NpcObjectKind.Destructible)
         {
-            this._dropGroups.AddRange(monster.DropItemGroups ?? Enumerable.Empty<DropItemGroup>());
+            this._dropGroups.AddRange(monster.DropItemGroups ?? []);
         }
         else
         {
-            this._dropGroups.AddRange(monster.DropItemGroups ?? Enumerable.Empty<DropItemGroup>());
-            this._dropGroups.AddRange(character.DropItemGroups ?? Enumerable.Empty<DropItemGroup>());
-            this._dropGroups.AddRange(map.DropItemGroups ?? Enumerable.Empty<DropItemGroup>());
-            this._dropGroups.AddRange(await GetQuestItemGroupsAsync(player).ConfigureAwait(false) ?? Enumerable.Empty<DropItemGroup>());
+            this._dropGroups.AddRange(monster.DropItemGroups ?? []);
+            this._dropGroups.AddRange(character.DropItemGroups ?? []);
+            this._dropGroups.AddRange(map.DropItemGroups ?? []);
+            this._dropGroups.AddRange(await GetQuestItemGroupsAsync(player).ConfigureAwait(false) ?? []);
 
             this._dropGroups.RemoveAll(g => !IsGroupRelevant(monster, g));
             this._dropGroups.Sort((x, y) => x.Chance.CompareTo(y.Chance));
@@ -195,18 +199,7 @@ public class DefaultDropGenerator : IDropGenerator
         item.Durability = item.GetMaximumDurabilityOfOnePiece();
         foreach (var option in item.Definition!.PossibleItemOptions.Where(o => o.AddsRandomly))
         {
-            for (int i = 0; i < option.MaximumOptionsPerItem; i++)
-            {
-                if (this._randomizer.NextRandomBool(option.AddChance))
-                {
-                    var remainingOptions = option.PossibleOptions.Where(possibleOption => item.ItemOptions.All(link => link.ItemOption != possibleOption));
-                    var newOption = remainingOptions.SelectRandom(this._randomizer);
-                    var itemOptionLink = new ItemOptionLink();
-                    itemOptionLink.ItemOption = newOption;
-                    itemOptionLink.Level = newOption?.LevelDependentOptions.Select(l => l.Level).SelectRandom() ?? 0;
-                    item.ItemOptions.Add(itemOptionLink);
-                }
-            }
+            this.ApplyOption(item, option);
         }
 
         if (item.Definition.MaximumSockets > 0)
@@ -272,7 +265,7 @@ public class DefaultDropGenerator : IDropGenerator
     {
         if (player.SelectedCharacter is not { } character)
         {
-            return Enumerable.Empty<DropItemGroup>();
+            return [];
         }
 
         if (player.Party is { } party)
@@ -308,6 +301,29 @@ public class DefaultDropGenerator : IDropGenerator
         return true;
     }
 
+    private void ApplyOption(Item item, ItemOptionDefinition option)
+    {
+        for (int i = 0; i < option.MaximumOptionsPerItem; i++)
+        {
+            if (this._randomizer.NextRandomBool(option.AddChance))
+            {
+                var remainingOptions = option.PossibleOptions.Where(possibleOption => item.ItemOptions.All(link => link.ItemOption != possibleOption));
+                var newOption = remainingOptions.SelectRandom(this._randomizer);
+                if (newOption is null)
+                {
+                    break;
+                }
+
+                var itemOptionLink = new ItemOptionLink
+                {
+                    ItemOption = newOption,
+                    Level = newOption?.LevelDependentOptions.Select(l => l.Level).SelectRandom() ?? 0
+                };
+                item.ItemOptions.Add(itemOptionLink);
+            }
+        }
+    }
+
     private Item? GenerateRandomItem(ICollection<ItemDefinition>? possibleItems)
     {
         if (possibleItems is null || !possibleItems.Any())
@@ -327,13 +343,13 @@ public class DefaultDropGenerator : IDropGenerator
 
     private void ApplyRandomAncientOption(Item item)
     {
-        var ancientSet = item.Definition?.PossibleItemSetGroups.Where(g => g!.Options?.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.AncientOption) ?? false).SelectRandom(this._randomizer);
+        var ancientSet = item.Definition?.PossibleItemSetGroups.Where(g => g!.Options?.PossibleOptions.Any(o => object.Equals(o.OptionType, ItemOptionTypes.AncientOption)) ?? false).SelectRandom(this._randomizer);
         if (ancientSet is null)
         {
             return;
         }
 
-        var itemOfSet = ancientSet.Items.First(i => i.ItemDefinition == item.Definition);
+        var itemOfSet = ancientSet.Items.First(i => object.Equals(i.ItemDefinition, item.Definition));
         item.ItemSetGroups.Add(itemOfSet);
         var bonusOption = itemOfSet.BonusOption ?? throw Error.NotInitializedProperty(itemOfSet, nameof(itemOfSet.BonusOption)); // for example: +5str or +10str
         var bonusOptionLink = new ItemOptionLink();
@@ -345,13 +361,14 @@ public class DefaultDropGenerator : IDropGenerator
     private void AddRandomExcOptions(Item item)
     {
         var possibleItemOptions = item.Definition!.PossibleItemOptions;
-        var excellentOptions = possibleItemOptions.FirstOrDefault(o => o.PossibleOptions.Any(p => p.OptionType == ItemOptionTypes.Excellent));
+        var excellentOptions = possibleItemOptions.FirstOrDefault(
+            o => o.PossibleOptions.Any(p => object.Equals(p.OptionType, ItemOptionTypes.Excellent)));
         if (excellentOptions is null)
         {
             return;
         }
 
-        var existingOptionCount = item.ItemOptions.Count(o => o.ItemOption?.OptionType == ItemOptionTypes.Excellent);
+        var existingOptionCount = item.ItemOptions.Count(o => object.Equals(o.ItemOption?.OptionType, ItemOptionTypes.Excellent));
         for (int i = existingOptionCount; i < excellentOptions.MaximumOptionsPerItem; i++)
         {
             if (i == 0)
@@ -371,7 +388,7 @@ public class DefaultDropGenerator : IDropGenerator
             if (this._randomizer.NextRandomBool(excellentOptions.AddChance))
             {
                 var option = excellentOptions.PossibleOptions.SelectRandom(this._randomizer);
-                while (item.ItemOptions.Any(o => o.ItemOption == option))
+                while (item.ItemOptions.Any(o => object.Equals(o.ItemOption, option)))
                 {
                     option = excellentOptions.PossibleOptions.SelectRandom(this._randomizer);
                 }
