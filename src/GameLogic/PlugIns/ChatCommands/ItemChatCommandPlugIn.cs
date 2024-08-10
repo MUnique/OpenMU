@@ -109,7 +109,7 @@ public class ItemChatCommandPlugIn : ChatCommandPlugInBase<ItemChatCommandArgs>
             var excellentOptions = item.Definition.PossibleItemOptions
                 .SelectMany(o => o.PossibleOptions)
                 .Where(o => o.OptionType == ItemOptionTypes.Excellent)
-                .Where(o => (o.Number & arguments.ExcellentNumber) > default(byte))
+                .Where(o => ((1 << o.Number) & arguments.ExcellentNumber) > default(byte))
                 .ToList();
 
             ushort appliedOptions = default;
