@@ -110,13 +110,11 @@ public interface IStorage
 
     /// <summary>
     /// Gets the extensions of an inventory.
-    /// TODO: Use or remove it?
-    ///       -> Use it. Current Storage implementation has an error... e.g. you could place a 2x2 item on the last row of the regular inventory.
     /// </summary>
     IEnumerable<IStorage> Extensions { get; }
 
     /// <summary>
-    /// Adds the item to the storage.
+    /// Adds the item to the storage or its <see cref="Extensions"/>.
     /// </summary>
     /// <param name="slot">The slot where the items should be put in.</param>
     /// <param name="item">The item.</param>
@@ -124,7 +122,7 @@ public interface IStorage
     ValueTask<bool> AddItemAsync(byte slot, Item item);
 
     /// <summary>
-    /// Adds the item to the next free slot of the storage.
+    /// Adds the item to the next free slot of the storage or its <see cref="Extensions"/>.
     /// </summary>
     /// <param name="item">The item.</param>
     /// <returns>True, if successful.</returns>
@@ -149,10 +147,10 @@ public interface IStorage
     /// </summary>
     /// <param name="item">The item.</param>
     /// <returns>The index of a slot in which the item would fit.</returns>
-    int? CheckInvSpace(Item item);
+    byte? CheckInvSpace(Item item);
 
     /// <summary>
-    /// Checks if the items of this Storage will fit into another storage, and adds them if possible.
+    /// Checks if the items of another storage will fit into this storage (including extensions), and adds them if possible.
     /// </summary>
     /// <param name="anotherStorage">The other storage.</param>
     /// <returns>If it was successful.</returns>
@@ -176,6 +174,17 @@ public interface IStorage
     /// Clears this storage from all of its items.
     /// </summary>
     void Clear();
+
+    /// <summary>
+    /// Determines whether the slot belongs to this storage, or not.
+    /// Extensions are not considered here, so that this function can be used to determine to which extension
+    /// a slot belongs to.
+    /// </summary>
+    /// <param name="slot">The slot.</param>
+    /// <returns>
+    ///   <c>true</c> if the slot belongs to this storage; otherwise, <c>false</c>.
+    /// </returns>
+    bool ContainsSlot(byte slot);
 }
 
 /// <summary>

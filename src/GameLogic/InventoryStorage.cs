@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic;
 
+using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.PlugIns;
@@ -24,8 +25,7 @@ public class InventoryStorage : Storage, IInventoryStorage
     /// <param name="player">The player.</param>
     /// <param name="context">The game context.</param>
     public InventoryStorage(Player player, IGameContext context)
-        : base(
-            player.GetInventorySize(),
+        : base(GetInventorySize(0),
             EquippableSlotsCount,
             0,
             new ItemStorageAdapter(player.SelectedCharacter?.Inventory ?? throw Error.NotInitializedProperty(player, "SelectedCharacter.Inventory"), FirstEquippableItemSlotIndex, player.GetInventorySize()))
@@ -33,6 +33,22 @@ public class InventoryStorage : Storage, IInventoryStorage
         this._player = player;
         this.EquippedItemsChanged += async eventArgs => await this.UpdateItemsOnChangeAsync(eventArgs.Item).ConfigureAwait(false);
         this._gameContext = context;
+
+        if (player.SelectedCharacter.InventoryExtensions > 0)
+        {
+            var extensions = new List<Storage>(player.SelectedCharacter.InventoryExtensions);
+
+            var sizePerExtension = RowsOfOneExtension * RowSize;
+            for (int i = 0; i < player.SelectedCharacter.InventoryExtensions; i++)
+            {
+                var offset = FirstExtensionItemSlotIndex + (i * sizePerExtension);
+                var extension = new Storage(sizePerExtension, 0, offset, this.ItemStorage);
+                extensions.Add(extension);
+            }
+
+            this.Extensions = extensions;
+        }
+
         this.InitializePowerUps();
     }
 
@@ -53,7 +69,6 @@ public class InventoryStorage : Storage, IInventoryStorage
             }
         }
     }
-
 
     /// <inheritdoc/>
     public Item? EquippedAmmunitionItem
