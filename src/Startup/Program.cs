@@ -35,7 +35,6 @@ using MUnique.OpenMU.Web.AdminPanel.Services;
 using MUnique.OpenMU.Web.API;
 using MUnique.OpenMU.Web.Map.Map;
 using Nito.AsyncEx.Synchronous;
-using org.mariuszgromada.math.mxparser;
 using Serilog;
 using Serilog.Debugging;
 
@@ -225,8 +224,6 @@ internal sealed class Program : IDisposable
         _ = GameLogic.Rand.NextInt(1, 2);
         _ = DataInitialization.Id;
         _ = OpenMU.GameServer.ClientVersionResolver.DefaultVersion;
-
-        License.iConfirmNonCommercialUse("OpenMU");
 
         var addAdminPanel = this.IsAdminPanelEnabled(args);
         await new ConfigFileDatabaseConnectionStringProvider().InitializeAsync(default).ConfigureAwait(false);
