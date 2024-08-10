@@ -17,6 +17,7 @@ services:
       - ./nginx.prod80.conf:/etc/nginx/nginx.conf:ro
       - ./.htpasswd:/etc/nginx/.htpasswd
       - ./certbot/www:/var/www/certbot/:ro
+      - ./nginx.server_name.conf.template:/etc/nginx/conf.d/nginx.server_name.conf:ro
 
 # We add another nginx here, just for HTTPs.
 # The reason is, that it's not starting when we combine port 80 and 443 until
@@ -35,6 +36,7 @@ services:
       - ./nginx.prod443.conf:/etc/nginx/nginx.conf:ro
       - ./.htpasswd:/etc/nginx/.htpasswd
       - ./certbot/conf/:/etc/nginx/ssl/:ro
+      - ./nginx.server_name.conf.template:/etc/nginx/conf.d/nginx.server_name.conf:ro
     depends_on:
       - openmu-startup
 
