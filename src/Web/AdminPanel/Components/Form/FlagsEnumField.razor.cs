@@ -49,12 +49,12 @@ public partial class FlagsEnumField<TValue> : NotifyableInputBase<TValue>
     {
         if (flags.Count == 0)
         {
-            this.Value = default;
+            this.CurrentValue = default;
         }
         else
         {
             var result = flags.Cast<int>().Aggregate((a, b) => a | b);
-            this.Value = (TValue)(object)result;
+            this.CurrentValue = (TValue)(object)result;
         }
     }
 
