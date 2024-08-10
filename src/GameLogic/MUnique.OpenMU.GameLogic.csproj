@@ -23,7 +23,7 @@
 
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
-    <PackageReference Include="MathParser.org-mXparser" Version="5.2.1" />
+    <PackageReference Include="MathParser.org-mXparser" Version="4.4.2" />
     <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="8.0.6" />
     <PackageReference Include="Nito.AsyncEx" Version="5.1.2" />
     <PackageReference Include="System.Memory" Version="4.5.5" />

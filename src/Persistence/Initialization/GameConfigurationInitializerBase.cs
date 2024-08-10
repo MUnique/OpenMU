@@ -153,6 +153,7 @@ public abstract class GameConfigurationInitializerBase : InitializerBase
             excellentItemDropItemGroup.SetGuid(3);
             excellentItemDropItemGroup.Chance = 0.0001;
             excellentItemDropItemGroup.ItemType = SpecialItemType.Excellent;
+            excellentItemDropItemGroup.ItemLevel = 0;
             excellentItemDropItemGroup.Description =
                 "The common drop item group for random excellent items (0.01 % drop chance)";
             this.GameConfiguration.DropItemGroups.Add(excellentItemDropItemGroup);

@@ -35,7 +35,6 @@ using MUnique.OpenMU.Web.AdminPanel.Services;
 using MUnique.OpenMU.Web.API;
 using MUnique.OpenMU.Web.Map.Map;
 using Nito.AsyncEx.Synchronous;
-using org.mariuszgromada.math.mxparser;
 using Serilog;
 using Serilog.Debugging;
 
@@ -226,8 +225,6 @@ internal sealed class Program : IDisposable
         _ = DataInitialization.Id;
         _ = OpenMU.GameServer.ClientVersionResolver.DefaultVersion;
 
-        License.iConfirmNonCommercialUse("OpenMU");
-
         var addAdminPanel = this.IsAdminPanelEnabled(args);
         await new ConfigFileDatabaseConnectionStringProvider().InitializeAsync(default).ConfigureAwait(false);
 
@@ -340,6 +337,7 @@ internal sealed class Program : IDisposable
         if (typesWithMissingCustomConfigs.Any())
         {
             typesWithMissingCustomConfigs.ForEach(c => this.CreateDefaultPlugInConfiguration(typesWithCustomConfig[c.TypeId]!, c, referenceHandler));
+            using var notificationSuspension = context.SuspendChangeNotifications();
             _ = context.SaveChangesAsync().AsTask().WaitAndUnwrapException();
         }
 
@@ -378,6 +376,7 @@ internal sealed class Program : IDisposable
             yield return plugInConfiguration;
         }
 
+        using var notificationSuspension = saveContext.SuspendChangeNotifications();
         _ = saveContext.SaveChangesAsync().AsTask().WaitAndUnwrapException();
     }
 

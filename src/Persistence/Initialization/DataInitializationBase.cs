@@ -95,10 +95,12 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
             this.GameConfiguration = temporaryContext.CreateNew<GameConfiguration>();
             this.GameConfiguration.SetGuid(1);
             this.CreateSystemConfiguration(temporaryContext);
+            using var tempSuspension = temporaryContext.SuspendChangeNotifications();
             await temporaryContext.SaveChangesAsync().ConfigureAwait(false);
         }
 
         using var contextWithConfiguration = this._persistenceContextProvider.CreateNewContext(this.GameConfiguration);
+        using var notificationSuspension = contextWithConfiguration.SuspendChangeNotifications();
         this.Context = contextWithConfiguration;
         this.CreateGameClientDefinition();
         await this.CreateChatServerDefinitionAsync().ConfigureAwait(false);
