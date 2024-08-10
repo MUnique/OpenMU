@@ -6,10 +6,10 @@ namespace MUnique.OpenMU.Persistence.Initialization.Updates;
 
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.AttributeSystem;
-using MUnique.OpenMU.GameLogic.Attributes;
-using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
+using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -72,6 +72,7 @@ public class WizEnhanceAndRagefighterSkillsUpdatePlugIn : UpdatePlugInBase
         var skill = gameConfiguration.Skills.First(s => s.Number == (int)SkillNumber.IgnoreDefense);
         skill.SkillType = SkillType.Buff;
         skill.Target = SkillTarget.ImplicitPlayer;
+        skill.MagicEffectDef = gameConfiguration.MagicEffects.First(m => m.Number == (int)MagicEffectNumber.IgnoreDefense);
     }
 
     private void UpdateIncreaseBlock(GameConfiguration gameConfiguration)

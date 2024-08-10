@@ -109,4 +109,9 @@ public enum UpdateVersion
     /// The version of the <see cref="WizEnhanceAndRagefighterSkillsUpdatePlugIn"/>.
     /// </summary>
     WizEnhanceAndRagefighterSkills = 20,
+
+    /// <summary>
+    /// The version of the <see cref="FixIgnoreDefenseSkillUpdatePlugIn"/>.
+    /// </summary>
+    FixIgnoreDefenseSkill = 21,
 }
