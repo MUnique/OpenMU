@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
 using Microsoft.EntityFrameworkCore;
+using MUnique.OpenMU.Persistence.EntityFramework.Extensions;
 using MUnique.OpenMU.Persistence.EntityFramework.Model;
 
 /// <summary>
@@ -46,5 +47,7 @@ public class GuildContext : DbContext
         ConfigureModel(modelBuilder);
         modelBuilder.Entity<GuildMember>().Ignore(m => m.Character);
         modelBuilder.Entity<CharacterName>().HasKey(f => f.Id);
+
+        modelBuilder.UseGuidV7Ids();
     }
 }

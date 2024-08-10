@@ -2,12 +2,12 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.Persistence.EntityFramework.Extensions.ModelBuilder;
-
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
 using Microsoft.EntityFrameworkCore;
 using MUnique.OpenMU.AttributeSystem;
+using MUnique.OpenMU.Persistence.EntityFramework.Extensions;
+using MUnique.OpenMU.Persistence.EntityFramework.Extensions.ModelBuilder;
 using MUnique.OpenMU.Persistence.EntityFramework.Model;
 
 /// <summary>
@@ -71,17 +71,7 @@ public class EntityDataContext : ExtendedTypeContext
         // join entity keys:
         this.AddJoinDefinitions(modelBuilder);
 
-        var types = modelBuilder.Model.GetEntityTypes();
-        foreach (var t in types)
-        {
-            var entity = modelBuilder.Entity(t.ClrType);
-            var key = entity.Metadata.FindProperty("Id");
-            if (key != null)
-            {
-                key.ValueGenerated = Microsoft.EntityFrameworkCore.Metadata.ValueGenerated.OnAdd;
-                key.SetValueGeneratorFactory((_, _) => new GuidV7ValueGenerator());
-            }
-        }
+        modelBuilder.UseGuidV7Ids();
 
         GuildContext.ConfigureModel(modelBuilder);
         FriendContext.ConfigureModel(modelBuilder);
