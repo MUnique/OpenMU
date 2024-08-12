@@ -42,7 +42,7 @@ public class Storage : IStorage
         this._slotOffset = slotOffset;
         this._boxOffset = boxOffset;
 
-        var lastSlot = numberOfSlots + slotOffset;
+        var lastSlot = numberOfSlots + slotOffset - 1;
         List<Item>? unfittingItems = null;
         this.ItemStorage.Items
             .Where(item => item.ItemSlot <= lastSlot && item.ItemSlot >= slotOffset)
@@ -64,7 +64,9 @@ public class Storage : IStorage
         for (var index = unfittingItems.Count - 1; index >= 0; index--)
         {
             var item = unfittingItems[index];
-            if (this.AddItem(item))
+            var freeSlot = this.CheckInvSpace(item);
+
+            if (freeSlot is not null && this.ContainsSlot(freeSlot.Value) && this.AddItem(freeSlot.Value, item))
             {
                 unfittingItems.RemoveAt(index);
             }
@@ -82,7 +84,7 @@ public class Storage : IStorage
     /// <inheritdoc/>
     public IEnumerable<Item> Items
     {
-        get { return this.ItemArray.Where(i => i is not null).Select(item => item!); }
+        get { return this.ItemArray.Where(i => i is not null).Select(item => item!).Concat(this.Extensions.SelectMany(ext => ext.Items)); }
     }
 
     /// <inheritdoc/>
@@ -101,11 +103,16 @@ public class Storage : IStorage
                     }
                 }
             }
+
+            foreach (var extensionSlot in this.Extensions.SelectMany(e => e.FreeSlots))
+            {
+                yield return extensionSlot;
+            }
         }
     }
 
     /// <inheritdoc/>
-    public IEnumerable<IStorage> Extensions { get; set; } = Enumerable.Empty<IStorage>();
+    public IEnumerable<IStorage> Extensions { get; protected set; } = [];
 
     /// <summary>
     /// Gets the item array with the <see cref="Item.ItemSlot"/> minus <see cref="_slotOffset"/> as index.
@@ -115,13 +122,42 @@ public class Storage : IStorage
     /// <inheritdoc/>
     public virtual async ValueTask<bool> AddItemAsync(byte slot, Item item)
     {
-        return this.AddItem(slot, item);
+        if (this.ContainsSlot(slot))
+        {
+            return this.AddItem(slot, item);
+        }
+
+        if (this.Extensions.FirstOrDefault(ext => ext.ContainsSlot(slot)) is { } extension)
+        {
+            return await extension.AddItemAsync(slot, item).ConfigureAwait(false);
+        }
+
+        return false;
     }
 
     /// <inheritdoc/>
     public async ValueTask<bool> AddItemAsync(Item item)
     {
-        return this.AddItem(item);
+        var freeSlot = this.CheckInvSpace(item);
+        if (freeSlot is null)
+        {
+            return false;
+        }
+
+        if (this.ContainsSlot((byte)freeSlot))
+        {
+            return this.AddItem((byte)freeSlot, item);
+        }
+
+        foreach (var extension in this.Extensions)
+        {
+            if (await extension.AddItemAsync(item).ConfigureAwait(false))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /// <inheritdoc/>
@@ -149,7 +185,7 @@ public class Storage : IStorage
     }
 
     /// <inheritdoc/>
-    public int? CheckInvSpace(Item item)
+    public byte? CheckInvSpace(Item item)
     {
         item.ThrowNotInitializedProperty(item.Definition is null, nameof(item.Definition));
 
@@ -161,8 +197,16 @@ public class Storage : IStorage
             {
                 if (this.FitsInside(row, column, item.Definition.Width, item.Definition.Height))
                 {
-                    return (row * InventoryConstants.RowSize) + column + this._boxOffset + this._slotOffset;
+                    return (byte)((row * InventoryConstants.RowSize) + column + this._boxOffset + this._slotOffset);
                 }
+            }
+        }
+
+        foreach (var extension in this.Extensions)
+        {
+            if (extension.CheckInvSpace(item) is { } slot)
+            {
+                return slot;
             }
         }
 
@@ -204,28 +248,43 @@ public class Storage : IStorage
     /// <inheritdoc/>
     public Item? GetItem(byte inventorySlot)
     {
-        var index = inventorySlot - this._slotOffset;
-        if (index < this.ItemArray.Length)
+        if (this.ContainsSlot(inventorySlot))
         {
-            return this.ItemArray[index];
+            var index = inventorySlot - this._slotOffset;
+            if (index < this.ItemArray.Length)
+            {
+                return this.ItemArray[index];
+            }
         }
 
-        return null;
+        var extension = this.Extensions.FirstOrDefault(ext => ext.ContainsSlot(inventorySlot));
+        return extension?.GetItem(inventorySlot);
     }
 
     /// <inheritdoc/>
     public virtual async ValueTask RemoveItemAsync(Item item)
     {
-        var slot = item.ItemSlot - this._slotOffset;
-        this.ItemArray[slot] = null;
-        if (slot >= this._boxOffset)
+        if (this.ContainsSlot(item.ItemSlot))
         {
-            var columnIndex = this.GetColumnIndex(slot);
-            var rowIndex = this.GetRowIndex(slot);
-            this.SetItemUsedSlots(item, columnIndex, rowIndex, false);
-        }
+            var slot = item.ItemSlot - this._slotOffset;
+            this.ItemArray[slot] = null;
+            if (slot >= this._boxOffset)
+            {
+                var columnIndex = this.GetColumnIndex(slot);
+                var rowIndex = this.GetRowIndex(slot);
+                this.SetItemUsedSlots(item, columnIndex, rowIndex, false);
+            }
 
-        this.ItemStorage.Items.Remove(item);
+            this.ItemStorage.Items.Remove(item);
+        }
+        else if (this.Extensions.FirstOrDefault(ext => ext.ContainsSlot(item.ItemSlot)) is { } extension)
+        {
+            await extension.RemoveItemAsync(item).ConfigureAwait(false);
+        }
+        else
+        {
+            // ignore it.
+        }
     }
 
     /// <inheritdoc/>
@@ -234,6 +293,34 @@ public class Storage : IStorage
         this.ItemStorage.Items.Clear();
         this.ItemArray.ClearToDefaults();
         this._usedSlots.ClearToDefaults();
+
+        foreach (var extension in this.Extensions)
+        {
+            extension.Clear();
+        }
+    }
+
+    /// <summary>
+    /// Determines whether the slot belongs to this storage, or not.
+    /// Extensions are not considered here.
+    /// </summary>
+    /// <param name="slot">The slot.</param>
+    /// <returns>
+    ///   <c>true</c> if the slot belongs to this storage; otherwise, <c>false</c>.
+    /// </returns>
+    public bool ContainsSlot(byte slot)
+    {
+        if (slot < this._slotOffset)
+        {
+            return false;
+        }
+
+        if (slot >= this._slotOffset + this.ItemArray.Length)
+        {
+            return false;
+        }
+
+        return true;
     }
 
     /// <summary>
@@ -273,17 +360,6 @@ public class Storage : IStorage
         this.ItemArray[slot] = item;
         this.SetItemUsedSlots(item, columnIndex, rowIndex);
         return true;
-    }
-
-    private bool AddItem(Item item)
-    {
-        var freeSlot = this.CheckInvSpace(item);
-        if (freeSlot is null)
-        {
-            return false;
-        }
-
-        return this.AddItem((byte)freeSlot, item);
     }
 
     private bool AddItem(byte slot, Item item)

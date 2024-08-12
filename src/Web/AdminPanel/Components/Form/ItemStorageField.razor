@@ -31,21 +31,24 @@
                             SelectedItemChanged="this.OnSelectedItemChanged"/>
                     </div>
                 }
+                
                 <div>
                     <MuItemStorage
                         @bind-Value="@CurrentValue"
                         class="@CssClass"
                         StorageType="@this._storageType"
+                                   NumberOfExtensions="@this._numberOfExtensions"
                         SelectedItem="@this._selectedItem"
                         SelectedItemChanged="this.OnSelectedItemChanged"/>
                 </div>
-                @if (this._numberOfExtensions > 0)
+                @for (byte i = 0; i < this._numberOfExtensions; i++)
                 {
-                    <div class="extension-header">Extension</div>
+                    <div class="extension-header">Extension @(i+1)</div>
                     <MuItemStorage
                         @bind-Value="@CurrentValue"
                         StorageType="@(this._storageType == StorageType.Inventory ? StorageType.InventoryExtension : StorageType.VaultExtension)"
                         NumberOfExtensions="@this._numberOfExtensions"
+                        ExtensionIndex="@i"
                         SelectedItem="@this._selectedItem"
                         SelectedItemChanged="this.OnSelectedItemChanged"/>
                 }

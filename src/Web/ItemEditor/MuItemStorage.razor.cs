@@ -41,6 +41,12 @@ public partial class MuItemStorage
     public byte NumberOfExtensions { get; set; }
 
     /// <summary>
+    /// Gets or sets the index of the extension.
+    /// </summary>
+    [Parameter]
+    public byte ExtensionIndex { get; set; }
+
+    /// <summary>
     /// Gets or sets the callback when the selected item changed.
     /// </summary>
     [Parameter]
@@ -65,7 +71,7 @@ public partial class MuItemStorage
         base.OnParametersSet();
         if (this.Value is { } value)
         {
-            this._viewModel = value.CreateViewModel(this.StorageType, this.NumberOfExtensions);
+            this._viewModel ??= value.CreateViewModel(this.StorageType, this.NumberOfExtensions, this.ExtensionIndex);
         }
     }
 
