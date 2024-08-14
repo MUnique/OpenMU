@@ -114,4 +114,9 @@ public enum UpdateVersion
     /// The version of the <see cref="FixIgnoreDefenseSkillUpdatePlugIn"/>.
     /// </summary>
     FixIgnoreDefenseSkill = 21,
+
+    /// <summary>
+    /// The version of the <see cref="FixWingsAndCapesCraftingsUpdatePlugIn"/>.
+    /// </summary>
+    FixWingsAndCapesCraftings = 22,
 }
