@@ -305,7 +305,7 @@ public class ChaosMixes : InitializerBase
         firstWing.PossibleItems.Add(this.GameConfiguration.Items.First(item => item.Group == 12 && item.Number == 41));
         firstWing.MinimumAmount = 1;
         firstWing.MaximumAmount = 1;
-        firstWing.MinimumItemLevel = 4;
+        firstWing.MinimumItemLevel = 0;
         firstWing.MaximumItemLevel = 15;
         firstWing.NpcPriceDivisor = 4_000_000;
         firstWing.FailResult = MixResult.DowngradedRandom;
@@ -385,6 +385,8 @@ public class ChaosMixes : InitializerBase
         secondWing.PossibleItems.Add(this.GameConfiguration.Items.First(item => item.Group == 12 && item.Number == 5));
         secondWing.PossibleItems.Add(this.GameConfiguration.Items.First(item => item.Group == 12 && item.Number == 6));
         secondWing.PossibleItems.Add(this.GameConfiguration.Items.First(item => item.Group == 12 && item.Number == 42));
+        secondWing.PossibleItems.Add(this.GameConfiguration.Items.First(item => item.Group == 12 && item.Number == 49)); // Cape of Fighter
+        secondWing.PossibleItems.Add(this.GameConfiguration.Items.First(item => item.Group == 13 && item.Number == 30)); // Cape of Lord
         secondWing.MinimumAmount = 1;
         secondWing.MaximumAmount = 1;
         secondWing.MinimumItemLevel = 9;
@@ -613,7 +615,7 @@ public class ChaosMixes : InitializerBase
         craftingSettings.ResultItems.Add(capeOfLord);
 
         var capeOfFighter = this.Context.CreateNew<ItemCraftingResultItem>();
-        capeOfFighter.ItemDefinition = this.GameConfiguration.Items.First(i => i.Group == 13 && i.Number == 49);
+        capeOfFighter.ItemDefinition = this.GameConfiguration.Items.First(i => i.Group == 12 && i.Number == 49);
         craftingSettings.ResultItems.Add(capeOfFighter);
 
         return crafting;
