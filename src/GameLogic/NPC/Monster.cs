@@ -237,16 +237,7 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
         var target = new Point(randx, randy);
         if (this._intelligence.CanWalkOn(target))
         {
-            var current = this.Position;
-            using var stepsRent = MemoryPool<WalkingStep>.Shared.Rent(1);
-            var steps = stepsRent.Memory.Slice(0, 1);
-            steps.Span[0] = new WalkingStep
-            {
-                From = current,
-                To = target,
-                Direction = current.GetDirectionTo(target),
-            };
-            await this.WalkToAsync(target, steps).ConfigureAwait(false);
+            await this.WalkToAsync(target).ConfigureAwait(false);
         }
     }
 
