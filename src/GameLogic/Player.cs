@@ -897,7 +897,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.PlaceAtGate(gate);
         this.CurrentMap = null; // Will be set again, when the client acknowledged the map change by F3 12 packet.
 
-        if (this.PlayerState.CurrentState != GameLogic.PlayerState.Disconnected)
+        if (!this.PlayerState.CurrentState.IsDisconnectedOrFinished())
         {
             await this.InvokeViewPlugInAsync<IMapChangePlugIn>(p => p.MapChangeAsync()).ConfigureAwait(false);
         }
@@ -1557,6 +1557,52 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
     }
 
+    /// <summary>
+    /// Removes the player from the game and saves its state.
+    /// </summary>
+    public async ValueTask RemoveFromGameAsync()
+    {
+        var moveToNextSafezone = false;
+        if (this._respawnAfterDeathCts is { IsCancellationRequested: false })
+        {
+            await this._respawnAfterDeathCts.CancelAsync().ConfigureAwait(false);
+            moveToNextSafezone = true;
+        }
+
+        if (this.CurrentMiniGame is { })
+        {
+            moveToNextSafezone = true;
+        }
+
+        if (this.DuelRoom is { })
+        {
+            moveToNextSafezone = true;
+        }
+
+        if (moveToNextSafezone)
+        {
+            await this.WarpToSafezoneAsync().ConfigureAwait(false);
+        }
+
+        await this.RemoveFromCurrentMapAsync().ConfigureAwait(false);
+        if (this.Party is { } party)
+        {
+            await party.KickMySelfAsync(this).ConfigureAwait(false);
+        }
+
+        await this.SetSelectedCharacterAsync(null).ConfigureAwait(false);
+        await this.MagicEffectList.ClearAllEffectsAsync().ConfigureAwait(false);
+
+        try
+        {
+            await this.PersistenceContext.SaveChangesAsync().ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this.Logger.LogError(ex, "Couldn't save when leaving the game. Player: {player}", this);
+        }
+    }
+
     /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore()
     {
@@ -1592,33 +1638,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// </summary>
     protected virtual async ValueTask InternalDisconnectAsync()
     {
-        var moveToNextSafezone = false;
-        if (this._respawnAfterDeathCts is { IsCancellationRequested: false })
-        {
-            await this._respawnAfterDeathCts.CancelAsync().ConfigureAwait(false);
-            moveToNextSafezone = true;
-        }
-
-        if (this.CurrentMiniGame is { })
-        {
-            moveToNextSafezone = true;
-        }
-
-        if (this.DuelRoom is { })
-        {
-            moveToNextSafezone = true;
-        }
-
-        if (moveToNextSafezone)
-        {
-            await this.WarpToSafezoneAsync().ConfigureAwait(false);
-        }
-
-        await this.RemoveFromCurrentMapAsync().ConfigureAwait(false);
-        if (this.Party is { } party)
-        {
-            await party.KickMySelfAsync(this).ConfigureAwait(false);
-        }
+        await this.RemoveFromGameAsync().ConfigureAwait(false);
     }
 
     /// <summary>

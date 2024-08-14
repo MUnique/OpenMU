@@ -31,8 +31,18 @@ public class TradeAcceptAction : BaseTradeAction
             }
             else
             {
-                await this.OpenTradeAsync(tradeAccepter).ConfigureAwait(false);
-                await this.OpenTradeAsync(tradePartner).ConfigureAwait(false);
+                try
+                {
+                    await this.OpenTradeAsync(tradeAccepter).ConfigureAwait(false);
+                    await this.OpenTradeAsync(tradePartner).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    tradeAccepter.Logger.LogError(ex, "Error while opening a trade between {tradeAccepter} and {tradePartner}", tradeAccepter, tradePartner);
+                    await this.CancelTradeAsync(tradeAccepter).ConfigureAwait(false);
+                    await this.CancelTradeAsync(tradePartner).ConfigureAwait(false);
+                }
+                
             }
         }
         else

@@ -31,7 +31,7 @@ public class HappyHourPlugIn : PeriodicTaskBasePlugIn<HappyHourConfiguration, Pe
     {
         try
         {
-            if (currentState == PlayerState.Disconnected)
+            if (currentState.IsDisconnectedOrFinished())
             {
                 player.Attributes?.RemoveElement(this._happyHourExtraMultiplier, Stats.ExperienceRate);
                 player.Attributes?.RemoveElement(this._happyHourExtraMultiplier, Stats.MasterExperienceRate);
@@ -100,8 +100,7 @@ public class HappyHourPlugIn : PeriodicTaskBasePlugIn<HappyHourConfiguration, Pe
     protected bool IsPlayerOnMap(Player player)
     {
         return player.CurrentMap is not null
-            && player.PlayerState.CurrentState != PlayerState.Disconnected
-            && player.PlayerState.CurrentState != PlayerState.Finished;
+               && !player.PlayerState.CurrentState.IsDisconnectedOrFinished();
     }
 
     /// <summary>
