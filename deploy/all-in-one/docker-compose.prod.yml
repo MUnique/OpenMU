@@ -14,9 +14,10 @@ services:
     environment:
       DOMAIN_NAME: ${DOMAIN_NAME}
     volumes:
-      - ./nginx.prod80.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/nginx.prod80.conf:/etc/nginx/nginx.conf:ro
       - ./.htpasswd:/etc/nginx/.htpasswd
       - ./certbot/www:/var/www/certbot/:ro
+      - ./nginx/templates/nginx.server_name.conf.template:/etc/nginx/templates/nginx.server_name.conf.template:ro
 
 # We add another nginx here, just for HTTPs.
 # The reason is, that it's not starting when we combine port 80 and 443 until
@@ -32,9 +33,11 @@ services:
     ports:
       - "443:443"
     volumes:
-      - ./nginx.prod443.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/nginx.prod443.conf:/etc/nginx/nginx.conf:ro
       - ./.htpasswd:/etc/nginx/.htpasswd
       - ./certbot/conf/:/etc/nginx/ssl/:ro
+      - ./nginx/templates/nginx.server_name.conf.template:/etc/nginx/templates/nginx.server_name.conf.template:ro
+      - ./nginx/templates/nginx.prod.certificates.conf.template:/etc/nginx/templates/nginx.prod.certificates.conf.template:ro
     depends_on:
       - openmu-startup
 
