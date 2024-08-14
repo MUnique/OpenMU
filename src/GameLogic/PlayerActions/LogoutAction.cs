@@ -18,19 +18,7 @@ public class LogoutAction
     /// <param name="logoutType">Type of the logout.</param>
     public async ValueTask LogoutAsync(Player player, LogoutType logoutType)
     {
-        player.CurrentMap?.RemoveAsync(player);
-        player.Party?.KickMySelfAsync(player);
-        await player.SetSelectedCharacterAsync(null).ConfigureAwait(false);
-        await player.MagicEffectList.ClearAllEffectsAsync().ConfigureAwait(false);
-
-        try
-        {
-            await player.PersistenceContext.SaveChangesAsync().ConfigureAwait(false);
-        }
-        catch (Exception ex)
-        {
-            player.Logger.LogError(ex, "Couldn't Save at Disconnect. Player: {player}", player);
-        }
+        await player.RemoveFromGameAsync().ConfigureAwait(false);
 
         if (logoutType == LogoutType.CloseGame)
         {

@@ -192,8 +192,7 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
         var state = this.GetStateByGameContext(player.GameContext);
 
         return player.CurrentMap is { } map
-            && player.PlayerState.CurrentState != PlayerState.Disconnected
-            && player.PlayerState.CurrentState != PlayerState.Finished
+            && !player.PlayerState.CurrentState.IsDisconnectedOrFinished()
             && (!checkForCurrentMap || map.MapId == state.MapId);
     }
 

@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.GameLogic;
 /// <summary>
 /// The states of a player, used by the <see cref="ITrader.PlayerState"/>.
 /// </summary>
-public class PlayerState
+public static class PlayerState
 {
     static PlayerState()
     {
@@ -80,6 +80,18 @@ public class PlayerState
     }
 
     /// <summary>
+    /// Determines whether the state is <see cref="Disconnected"/> or <see cref="Finished"/>.
+    /// </summary>
+    /// <param name="state">The state.</param>
+    /// <returns>
+    ///   <c>true</c> if the state is <see cref="Disconnected"/> or <see cref="Finished"/>; otherwise, <c>false</c>.
+    /// </returns>
+    public static bool IsDisconnectedOrFinished(this State state)
+    {
+        return state == Disconnected || state == Finished;
+    }
+
+     /// <summary>
     /// Gets the finished state. When this state is active, the player session was saved and the player object can be safely removed from the game.
     /// </summary>
     public static State Finished { get; } = new (new Guid("AB24C7C4-4F37-40ED-B874-0F6C7984C471"))

@@ -439,7 +439,7 @@ public class GameContext : AsyncDisposable, IGameContext
         {
             await this.ForEachPlayerAsync(player =>
             {
-                if (player.SelectedCharacter != null && player.PlayerState.CurrentState == PlayerState.EnteredWorld)
+                if (player.SelectedCharacter != null && !player.PlayerState.CurrentState.IsDisconnectedOrFinished())
                 {
                     return player.RegenerateAsync();
                 }
