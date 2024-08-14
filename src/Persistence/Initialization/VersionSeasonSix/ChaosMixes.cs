@@ -615,7 +615,7 @@ public class ChaosMixes : InitializerBase
         craftingSettings.ResultItems.Add(capeOfLord);
 
         var capeOfFighter = this.Context.CreateNew<ItemCraftingResultItem>();
-        capeOfFighter.ItemDefinition = this.GameConfiguration.Items.First(i => i.Group == 13 && i.Number == 49);
+        capeOfFighter.ItemDefinition = this.GameConfiguration.Items.First(i => i.Group == 12 && i.Number == 49);
         craftingSettings.ResultItems.Add(capeOfFighter);
 
         return crafting;
