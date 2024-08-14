@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [PlugInPoint("Periodic Mini Game Start Plugins", "Plugin Container for mini game start plugins, e.g. for chaos castle.")]
 [Guid("D88FFCCF-5C57-49E0-8E05-1C75A95A9AF2")]
-public interface IPeriodicMiniGameStartPlugIn : IStrategyPlugIn<MiniGameType>
+public interface IPeriodicMiniGameStartPlugIn : IStrategyPlugIn<MiniGameType>, IPeriodicTaskPlugIn
 {
     /// <summary>
     /// Gets the duration until next start.

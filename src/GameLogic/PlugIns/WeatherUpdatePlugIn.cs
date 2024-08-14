@@ -55,6 +55,12 @@ public class WeatherUpdatePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
     }
 
     /// <inheritdoc />
+    public void ForceStart()
+    {
+        this._nextRunUtc = DateTime.UtcNow;
+    }
+
+    /// <inheritdoc />
     public async ValueTask ObjectAddedToMapAsync(GameMap map, ILocateable addedObject)
     {
         if (addedObject is not Player player)
@@ -75,8 +81,7 @@ public class WeatherUpdatePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
     private async Task TrySendPlayerUpdateAsync(Player player)
     {
         if (player.CurrentMap is { } map
-            && player.PlayerState.CurrentState != PlayerState.Disconnected
-            && player.PlayerState.CurrentState != PlayerState.Finished
+            && !player.PlayerState.CurrentState.IsDisconnectedOrFinished()
             && this._weatherStates.TryGetValue(map, out var weather))
         {
             try

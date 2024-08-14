@@ -20,4 +20,9 @@ public interface IPeriodicTaskPlugIn
     /// </summary>
     /// <param name="gameContext">The game context.</param>
     ValueTask ExecuteTaskAsync(GameContext gameContext);
+
+    /// <summary>
+    /// Forces to start the task on the next start check.
+    /// </summary>
+    void ForceStart();
 }
