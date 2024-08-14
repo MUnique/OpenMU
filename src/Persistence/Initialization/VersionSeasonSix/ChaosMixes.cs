@@ -385,6 +385,8 @@ public class ChaosMixes : InitializerBase
         secondWing.PossibleItems.Add(this.GameConfiguration.Items.First(item => item.Group == 12 && item.Number == 5));
         secondWing.PossibleItems.Add(this.GameConfiguration.Items.First(item => item.Group == 12 && item.Number == 6));
         secondWing.PossibleItems.Add(this.GameConfiguration.Items.First(item => item.Group == 12 && item.Number == 42));
+        secondWing.PossibleItems.Add(this.GameConfiguration.Items.First(item => item.Group == 12 && item.Number == 49)); // Cape of Fighter
+        secondWing.PossibleItems.Add(this.GameConfiguration.Items.First(item => item.Group == 13 && item.Number == 30)); // Cape of Lord
         secondWing.MinimumAmount = 1;
         secondWing.MaximumAmount = 1;
         secondWing.MinimumItemLevel = 9;
