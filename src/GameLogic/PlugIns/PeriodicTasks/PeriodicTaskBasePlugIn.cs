@@ -20,10 +20,20 @@ public abstract class PeriodicTaskBasePlugIn<TConfiguration, TState> : IPeriodic
 {
     private static readonly ConcurrentDictionary<Type, ConcurrentDictionary<IGameContext, TState>> States = new();
 
+    private bool _isStartForced = false;
+
     /// <summary>
     /// Gets or sets configuration for periodic invasion.
     /// </summary>
     public TConfiguration? Configuration { get; set; }
+
+    /// <summary>
+    /// Forces to start the task on the next start check.
+    /// </summary>
+    public void ForceStart()
+    {
+        this._isStartForced = true;
+    }
 
     /// <inheritdoc />
     public async ValueTask ExecuteTaskAsync(GameContext gameContext)
@@ -61,6 +71,7 @@ public abstract class PeriodicTaskBasePlugIn<TConfiguration, TState> : IPeriodic
                         return;
                     }
 
+                    this._isStartForced = false;
                     state.NextRunUtc = DateTime.UtcNow.Add(configuration.PreStartMessageDelay);
                     await this.OnPrepareEventAsync(state).ConfigureAwait(false);
                     state.State = PeriodicTaskState.Prepared;
@@ -115,7 +126,10 @@ public abstract class PeriodicTaskBasePlugIn<TConfiguration, TState> : IPeriodic
     /// <returns>
     ///   <c>true</c> if it's the right time to start the task; otherwise, <c>false</c>.
     /// </returns>
-    protected virtual bool IsItTimeToStart(IGameContext gameContext) => this.Configuration?.IsItTimeToStart() ?? false;
+    protected virtual bool IsItTimeToStart(IGameContext gameContext)
+    {
+        return this._isStartForced || (this.Configuration?.IsItTimeToStart() ?? false);
+    }
 
     /// <summary>
     /// Called when the task should be prepared before starting it.

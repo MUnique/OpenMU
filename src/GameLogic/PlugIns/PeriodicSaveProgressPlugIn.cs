@@ -67,6 +67,12 @@ public class PeriodicSaveProgressPlugIn : IPeriodicTaskPlugIn, ISupportCustomCon
     }
 
     /// <inheritdoc />
+    public void ForceStart()
+    {
+        this._nextRunUtc = DateTime.UtcNow;
+    }
+
+    /// <inheritdoc />
     public object CreateDefaultConfig()
     {
         return CreateDefaultConfiguration();
