@@ -305,7 +305,7 @@ public class ChaosMixes : InitializerBase
         firstWing.PossibleItems.Add(this.GameConfiguration.Items.First(item => item.Group == 12 && item.Number == 41));
         firstWing.MinimumAmount = 1;
         firstWing.MaximumAmount = 1;
-        firstWing.MinimumItemLevel = 4;
+        firstWing.MinimumItemLevel = 0;
         firstWing.MaximumItemLevel = 15;
         firstWing.NpcPriceDivisor = 4_000_000;
         firstWing.FailResult = MixResult.DowngradedRandom;
