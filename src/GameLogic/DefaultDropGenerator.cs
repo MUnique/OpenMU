@@ -135,17 +135,9 @@ public class DefaultDropGenerator : IDropGenerator
 
         item.Level = Math.Min(item.Level, item.Definition!.MaximumItemLevel);
 
-        if (selectedGroup.ItemType == SpecialItemType.Ancient)
-        {
-            this.ApplyRandomAncientOption(item);
-        }
-        else if (selectedGroup.ItemType == SpecialItemType.Excellent)
+        if (selectedGroup.ItemType == SpecialItemType.Excellent)
         {
             this.AddRandomExcOptions(item);
-        }
-        else
-        {
-            // nothing to add, others make no sense here.
         }
 
         return item;
