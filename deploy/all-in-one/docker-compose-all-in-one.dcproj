@@ -20,11 +20,11 @@
     <None Include="docker-compose.yml" />
     <None Include=".dockerignore" />
     <None Include=".htpasswd" />
-    <None Include="nginx.prod.certificates.conf.template" />
-    <None Include="nginx.prod80.conf" />
-    <None Include="nginx.dev.conf" />
-    <None Include="nginx.prod443.conf" />
-    <None Include="nginx.server_name.conf.template" />
+    <None Include="nginx\nginx.dev.conf" />
+    <None Include="nginx\nginx.prod443.conf" />
+    <None Include="nginx\nginx.prod80.conf" />
+    <None Include="nginx\templates\nginx.prod.certificates.conf.template" />
+    <None Include="nginx\templates\nginx.server_name.conf.template" />
     <None Include="README.md" />
   </ItemGroup>
 </Project>
