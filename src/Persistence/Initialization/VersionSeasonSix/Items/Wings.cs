@@ -159,14 +159,14 @@ public class Wings : WingsInitializerBase
 
         if (damageAbsorbInitial > 0)
         {
-            var powerUp = this.CreateItemBasePowerUpDefinition(Stats.DamageReceiveDecrement, 0f - (damageAbsorbInitial / 100f));
+            var powerUp = this.CreateItemBasePowerUpDefinition(Stats.DamageReceiveDecrement, 1f - (damageAbsorbInitial / 100f), AggregateType.Multiplicate);
             powerUp.BonusPerLevelTable = this._absorbByLevelTable;
             wing.BasePowerUpAttributes.Add(powerUp);
         }
 
         if (damageIncreaseInitial > 0)
         {
-            var powerUp = this.CreateItemBasePowerUpDefinition(Stats.AttackDamageIncrease, damageIncreaseInitial / 100f);
+            var powerUp = this.CreateItemBasePowerUpDefinition(Stats.AttackDamageIncrease, 1f + damageIncreaseInitial / 100f, AggregateType.Multiplicate);
             powerUp.BonusPerLevelTable = damageIncreasePerLevel;
             wing.BasePowerUpAttributes.Add(powerUp);
         }
@@ -174,7 +174,7 @@ public class Wings : WingsInitializerBase
         var optionDefinition = this.Context.CreateNew<ItemOptionDefinition>();
         optionDefinition.SetGuid(wing.GetItemId());
         this.GameConfiguration.ItemOptions.Add(optionDefinition);
-        
+
         optionDefinition.Name = $"{name} Options";
         optionDefinition.AddChance = 0.25f;
         optionDefinition.AddsRandomly = true;
@@ -213,7 +213,7 @@ public class Wings : WingsInitializerBase
 
         if (defense > 0)
         {
-            var powerUp = this.CreateItemBasePowerUpDefinition(Stats.DefenseBase, defense);
+            var powerUp = this.CreateItemBasePowerUpDefinition(Stats.DefenseBase, defense, AggregateType.AddRaw);
             wing.BasePowerUpAttributes.Add(powerUp);
             powerUp.BonusPerLevelTable = levelRequirement == 300 ? this._defenseBonusByLevelTableThird : this._defenseBonusByLevelTable;
         }

@@ -162,7 +162,7 @@ internal class Jewelery : InitializerBase
 
         if (resistanceAttribute != null)
         {
-            var powerUp = this.CreateItemBasePowerUpDefinition(resistanceAttribute, 0.1f);
+            var powerUp = this.CreateItemBasePowerUpDefinition(resistanceAttribute, 0.1f, AggregateType.AddRaw);
             powerUp.BonusPerLevelTable = this._resistancesBonusTable;
         }
 

@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.Version095d.Items;
 
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
@@ -51,14 +52,14 @@ public class Wings : WingsInitializerBase
 
         if (damageAbsorbInitial > 0)
         {
-            var powerUp = this.CreateItemBasePowerUpDefinition(Stats.DamageReceiveDecrement, 0f - (damageAbsorbInitial / 100f));
+            var powerUp = this.CreateItemBasePowerUpDefinition(Stats.DamageReceiveDecrement, 1f - (damageAbsorbInitial / 100f), AggregateType.Multiplicate);
             powerUp.BonusPerLevelTable = this._absorbByLevelTable;
             wing.BasePowerUpAttributes.Add(powerUp);
         }
 
         if (damageIncreaseInitial > 0)
         {
-            var powerUp = this.CreateItemBasePowerUpDefinition(Stats.AttackDamageIncrease, damageIncreaseInitial / 100f);
+            var powerUp = this.CreateItemBasePowerUpDefinition(Stats.AttackDamageIncrease, 1f + damageIncreaseInitial / 100f, AggregateType.Multiplicate);
             powerUp.BonusPerLevelTable = this._damageIncreaseByLevelTable;
             wing.BasePowerUpAttributes.Add(powerUp);
         }
@@ -99,7 +100,7 @@ public class Wings : WingsInitializerBase
 
         if (defense > 0)
         {
-            var powerUp = this.CreateItemBasePowerUpDefinition(Stats.DefenseBase, defense);
+            var powerUp = this.CreateItemBasePowerUpDefinition(Stats.DefenseBase, defense, AggregateType.AddRaw);
             wing.BasePowerUpAttributes.Add(powerUp);
             powerUp.BonusPerLevelTable = this._defenseBonusByLevelTable;
         }

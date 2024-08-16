@@ -114,16 +114,20 @@ public abstract class InitializerBase : IInitializer
     }
 
     /// <summary>
-    /// Creates the <see cref="ItemBasePowerUpDefinition"/>.
+    /// Creates the <see cref="ItemBasePowerUpDefinition" />.
     /// </summary>
     /// <param name="attributeDefinition">The attribute definition.</param>
     /// <param name="value">The value.</param>
-    /// <returns>The created <see cref="ItemBasePowerUpDefinition"/>.</returns>
-    protected ItemBasePowerUpDefinition CreateItemBasePowerUpDefinition(AttributeDefinition attributeDefinition, float value)
+    /// <param name="aggregateType">Type of the aggregate.</param>
+    /// <returns>
+    /// The created <see cref="ItemBasePowerUpDefinition" />.
+    /// </returns>
+    protected ItemBasePowerUpDefinition CreateItemBasePowerUpDefinition(AttributeDefinition attributeDefinition, float value, AggregateType aggregateType)
     {
         var powerUpDefinition = this.Context.CreateNew<ItemBasePowerUpDefinition>();
         powerUpDefinition.TargetAttribute = attributeDefinition.GetPersistent(this.GameConfiguration);
         powerUpDefinition.BaseValue = value;
+        powerUpDefinition.AggregateType = aggregateType;
         return powerUpDefinition;
     }
 

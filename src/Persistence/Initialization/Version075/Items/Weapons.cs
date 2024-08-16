@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.Version075.Items;
 
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
@@ -262,15 +263,15 @@ internal class Weapons : InitializerBase
         var qualifiedCharacterClasses = this.GameConfiguration.DetermineCharacterClasses(wizardClass == 1, knightClass == 1, elfClass == 1);
         qualifiedCharacterClasses.ToList().ForEach(item.QualifiedCharacters.Add);
 
-        var minDamagePowerUp = this.CreateItemBasePowerUpDefinition(Stats.MinimumPhysBaseDmgByWeapon, minimumDamage);
+        var minDamagePowerUp = this.CreateItemBasePowerUpDefinition(Stats.MinimumPhysBaseDmgByWeapon, minimumDamage, AggregateType.AddRaw);
         minDamagePowerUp.BonusPerLevelTable = this._weaponDamageIncreaseTable;
         item.BasePowerUpAttributes.Add(minDamagePowerUp);
 
-        var maxDamagePowerUp = this.CreateItemBasePowerUpDefinition(Stats.MaximumPhysBaseDmgByWeapon, maximumDamage);
+        var maxDamagePowerUp = this.CreateItemBasePowerUpDefinition(Stats.MaximumPhysBaseDmgByWeapon, maximumDamage, AggregateType.AddRaw);
         maxDamagePowerUp.BonusPerLevelTable = this._weaponDamageIncreaseTable;
         item.BasePowerUpAttributes.Add(maxDamagePowerUp);
 
-        var speedPowerUp = this.CreateItemBasePowerUpDefinition(Stats.AttackSpeed, attackSpeed);
+        var speedPowerUp = this.CreateItemBasePowerUpDefinition(Stats.AttackSpeed, attackSpeed, AggregateType.AddRaw);
         item.BasePowerUpAttributes.Add(speedPowerUp);
 
         this.CreateItemRequirementIfNeeded(item, Stats.Level, levelRequirement);
@@ -289,7 +290,7 @@ internal class Weapons : InitializerBase
         {
             item.PossibleItemOptions.Add(this.WizardryDamageOption);
 
-            var staffRisePowerUp = this.CreateItemBasePowerUpDefinition(Stats.StaffRise, staffRise);
+            var staffRisePowerUp = this.CreateItemBasePowerUpDefinition(Stats.StaffRise, staffRise, AggregateType.AddRaw);
             staffRisePowerUp.BonusPerLevelTable = this._staffRiseTable;
             item.BasePowerUpAttributes.Add(staffRisePowerUp);
         }
