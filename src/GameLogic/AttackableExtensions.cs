@@ -182,7 +182,7 @@ public static class AttackableExtensions
             var regeneration = Stats.IntervalRegenerationAttributes.FirstOrDefault(r => r.CurrentAttribute == powerUpDefinition.TargetAttribute);
             if (regeneration != null)
             {
-                var regenerationValue = player.Attributes.CreateElement(powerUpDefinition.Boost ?? throw Error.NotInitializedProperty(powerUpDefinition, nameof(powerUpDefinition.Boost)));
+                var regenerationValue = player.Attributes.CreateElement(powerUpDefinition);
                 var value = skillEntry.Level == 0 ? regenerationValue.Value : regenerationValue.Value + skillEntry.CalculateValue();
                 target.Attributes[regeneration.CurrentAttribute] = Math.Min(
                     target.Attributes[regeneration.CurrentAttribute] + value,

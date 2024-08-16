@@ -62,6 +62,23 @@ public class AttributeRelationshipElementTests
     }
 
     /// <summary>
+    /// Tests if a relationship between two elements with the <see cref="InputOperator.ExponentiateByAttribute"/> is handled correctly.
+    /// Both element values should be summed up, and according to the <see cref="InputOperator.ExponentiateByAttribute"/> the input operand should be raised by the power of the sum.
+    /// </summary>
+    [Test]
+    public void InputOperatorPowerByAttribute()
+    {
+        const int element1Value = 1;
+        const int element2Value = 2;
+        const int inputOperand = 10;
+        var element1 = new SimpleElement { Value = element1Value };
+        var element2 = new SimpleElement { Value = element2Value };
+        var operandElement = new ConstantElement(inputOperand);
+        var relationshipElement = new AttributeRelationshipElement(new[] { element1, element2 }, operandElement, InputOperator.ExponentiateByAttribute);
+        Assert.That(relationshipElement.Value, Is.EqualTo(Math.Pow(inputOperand, element1Value + element2Value)));
+    }
+
+    /// <summary>
     /// Tests if the <see cref="AttributeRelationshipElement.Value"/> is updated correctly when one of the elements value changed.
     /// </summary>
     [Test]

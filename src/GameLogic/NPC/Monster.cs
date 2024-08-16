@@ -339,6 +339,6 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
             throw new InvalidOperationException($"Skill {skill.Name} ({skill.Number}) has no magic effect definition or is without a PowerUpDefinition.");
         }
 
-        return (this.Attributes.CreateElement(powerUpDefinition.Boost), this.Attributes.CreateElement(duration), powerUpDefinition.TargetAttribute);
+        return (this.Attributes.CreateElement(powerUpDefinition), this.Attributes.CreateDurationElement(duration), powerUpDefinition.TargetAttribute);
     }
 }

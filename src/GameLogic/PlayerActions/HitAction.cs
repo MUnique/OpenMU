@@ -87,8 +87,8 @@ public class HitAction
             && !target.MagicEffectList.ActiveEffects.ContainsKey(effectDefinition.Number)
             && effectDefinition.PowerUpDefinitions.FirstOrDefault() is { Boost: not null } powerUpDef)
         {
-            var powerUp = target.Attributes.CreateElement(powerUpDef.Boost!);
-            var powerUpDuration = target.Attributes.CreateElement(effectDefinition.Duration!);
+            var powerUp = target.Attributes.CreateElement(powerUpDef);
+            var powerUpDuration = target.Attributes.CreateDurationElement(effectDefinition.Duration);
             var magicEffect = powerUpDef.TargetAttribute == Stats.IsPoisoned
                 ? new PoisonMagicEffect(powerUp, effectDefinition, TimeSpan.FromSeconds(powerUpDuration.Value), player, target)
                 : new MagicEffect(powerUp, effectDefinition, TimeSpan.FromSeconds(powerUpDuration.Value));

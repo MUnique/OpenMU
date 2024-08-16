@@ -25,6 +25,11 @@ public enum InputOperator
     /// The <see cref="AttributeRelationship.InputAttribute"/> is exponentiated by the <see cref="AttributeRelationship.InputOperand"/> before adding to the <see cref="AttributeRelationship.TargetAttribute"/>.
     /// </summary>
     Exponentiate,
+
+    /// <summary>
+    /// The <see cref="AttributeRelationship.InputOperand"/> is exponentiated by the <see cref="AttributeRelationship.InputAttribute"/> before adding to the <see cref="AttributeRelationship.TargetAttribute"/>.
+    /// </summary>
+    ExponentiateByAttribute,
 }
 
 /// <summary>
@@ -126,6 +131,11 @@ public class AttributeRelationship
         if (this.TargetAttribute is null)
         {
             return $"{this.InputAttribute} {this.InputOperator.AsString()} {this.OperandAttribute?.ToString() ?? this.InputOperand.ToString(CultureInfo.InvariantCulture)}";
+        }
+
+        if (this.InputOperator == InputOperator.ExponentiateByAttribute)
+        {
+            return $"{this.TargetAttribute} += {this.OperandAttribute?.ToString() ?? this.InputOperand.ToString(CultureInfo.InvariantCulture)} {this.InputOperator.AsString()} {this.InputAttribute}";
         }
 
         return $"{this.TargetAttribute} += {this.InputAttribute} {this.InputOperator.AsString()} {this.OperandAttribute?.ToString() ?? this.InputOperand.ToString(CultureInfo.InvariantCulture)}";

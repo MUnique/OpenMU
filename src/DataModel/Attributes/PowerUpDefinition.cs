@@ -36,7 +36,15 @@ public partial class PowerUpDefinition
         else if (this.Boost?.RelatedValues != null && this.Boost.RelatedValues.Any())
         {
             var relation = this.Boost.RelatedValues.First();
-            value = relation.InputAttribute?.Designation + relation.InputOperator.AsString() + relation.InputOperand;
+            if (relation.InputOperator == InputOperator.ExponentiateByAttribute)
+            {
+                value = relation.InputOperand + relation.InputOperator.AsString() + relation.InputAttribute?.Designation;
+            }
+            else
+            {
+                value = relation.InputAttribute?.Designation + relation.InputOperator.AsString() + relation.InputOperand;
+            }
+            
         }
         else
         {
