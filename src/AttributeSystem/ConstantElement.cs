@@ -10,12 +10,14 @@ namespace MUnique.OpenMU.AttributeSystem;
 public class ConstantElement : IElement
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="ConstantElement"/> class.
+    /// Initializes a new instance of the <see cref="ConstantElement" /> class.
     /// </summary>
     /// <param name="value">The constant value.</param>
-    public ConstantElement(float value)
+    /// <param name="aggregateType">Type of the aggregate.</param>
+    public ConstantElement(float value, AggregateType aggregateType = AggregateType.AddRaw)
     {
         this.Value = value;
+        this.AggregateType = aggregateType;
     }
 
     /// <summary>
@@ -38,7 +40,7 @@ public class ConstantElement : IElement
     public float Value { get; }
 
     /// <inheritdoc/>
-    public AggregateType AggregateType { get; } = AggregateType.AddRaw;
+    public AggregateType AggregateType { get; }
 
     /// <inheritdoc/>
     public override string ToString()
