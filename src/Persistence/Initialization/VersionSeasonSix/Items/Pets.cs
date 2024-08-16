@@ -35,7 +35,6 @@ public class Pets : InitializerBase
     public override void Initialize()
     {
         this.CreatePet(0, 0, 1, 1, "Guardian Angel", 23, true, true, (Stats.DamageReceiveDecrement, 0.8f, AggregateType.Multiplicate), (Stats.MaximumHealth, 50f, AggregateType.AddRaw));
-        //todo:
         this.CreatePet(1, 0, 1, 1, "Imp", 28, true, true, (Stats.AttackDamageIncrease, 1.3f, AggregateType.Multiplicate));
         this.CreatePet(2, 0, 1, 1, "Horn of Uniria", 25, true, true);
         var dinorant = this.CreatePet(3, SkillNumber.FireBreath, 1, 1, "Horn of Dinorant", 110, false, true, (Stats.DamageReceiveDecrement, 0.9f, AggregateType.Multiplicate), (Stats.AttackDamageIncrease, 1.15f, AggregateType.Multiplicate), (Stats.CanFly, 1.0f, AggregateType.AddRaw));
@@ -204,6 +203,7 @@ public class Pets : InitializerBase
                 var powerUpDefinition = this.Context.CreateNew<ItemBasePowerUpDefinition>();
                 powerUpDefinition.TargetAttribute = basePowerUp.Item1.GetPersistent(this.GameConfiguration);
                 powerUpDefinition.BaseValue = basePowerUp.Item2;
+                powerUpDefinition.AggregateType = basePowerUp.Item3;
                 pet.BasePowerUpAttributes.Add(powerUpDefinition);
             }
         }

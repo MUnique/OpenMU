@@ -29,12 +29,12 @@ public class Pets : InitializerBase
     /// <inheritdoc />
     public override void Initialize()
     {
-        this.CreatePet(0, "Guardian Angel", 23, (Stats.DamageReceiveDecrement, -0.2f), (Stats.MaximumHealth, 50f));
-        this.CreatePet(1, "Imp", 28, (Stats.AttackDamageIncrease, 0.3f));
+        this.CreatePet(0, "Guardian Angel", 23, (Stats.DamageReceiveDecrement, 0.8f, AggregateType.Multiplicate), (Stats.MaximumHealth, 50f, AggregateType.AddRaw));
+        this.CreatePet(1, "Imp", 28, (Stats.AttackDamageIncrease, 1.3f, AggregateType.Multiplicate));
         this.CreatePet(2, "Horn of Uniria", 25);
     }
 
-    private ItemDefinition CreatePet(byte number, string name, int dropLevelAndLevelRequirement, params (AttributeDefinition, float)[] basePowerUps)
+    private ItemDefinition CreatePet(byte number, string name, int dropLevelAndLevelRequirement, params (AttributeDefinition, float, AggregateType)[] basePowerUps)
     {
         var pet = this.Context.CreateNew<ItemDefinition>();
         this.GameConfiguration.Items.Add(pet);
@@ -58,6 +58,7 @@ public class Pets : InitializerBase
                 var powerUpDefinition = this.Context.CreateNew<ItemBasePowerUpDefinition>();
                 powerUpDefinition.TargetAttribute = basePowerUp.Item1.GetPersistent(this.GameConfiguration);
                 powerUpDefinition.BaseValue = basePowerUp.Item2;
+                powerUpDefinition.AggregateType = basePowerUp.Item3;
                 pet.BasePowerUpAttributes.Add(powerUpDefinition);
             }
         }
