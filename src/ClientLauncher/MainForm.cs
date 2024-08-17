@@ -74,6 +74,7 @@ public partial class MainForm : Form
 
     private void LoadOptions()
     {
+        this._serversComboBox.DataSource = this.Hosts;
         if (!File.Exists(ConfigFileName))
         {
             return;
