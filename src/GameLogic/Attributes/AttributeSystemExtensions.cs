@@ -24,11 +24,9 @@ public static class AttributeSystemExtensions
     /// <param name="attributeSystem">The attribute system.</param>
     /// <param name="powerUpDefinition">The power up definition.</param>
     /// <returns>The added element.</returns>
-    public static IElement CreateElement(this IAttributeSystem attributeSystem, PowerUpDefinition powerUpDefinition)
+    public static IElement CreateDurationElement(this IAttributeSystem attributeSystem, PowerUpDefinitionValue powerUpDefinition)
     {
-        var value = powerUpDefinition.Boost ?? throw Error.NotInitializedProperty(powerUpDefinition, nameof(powerUpDefinition.Boost));
-        var targetDefinition = powerUpDefinition.TargetAttribute ?? throw Error.NotInitializedProperty(powerUpDefinition, nameof(powerUpDefinition.TargetAttribute));
-        return attributeSystem.CreateElement(value, targetDefinition);
+        return attributeSystem.CreateElement(powerUpDefinition, DurationDummy);
     }
 
     /// <summary>
@@ -37,9 +35,11 @@ public static class AttributeSystemExtensions
     /// <param name="attributeSystem">The attribute system.</param>
     /// <param name="powerUpDefinition">The power up definition.</param>
     /// <returns>The added element.</returns>
-    public static IElement CreateDurationElement(this IAttributeSystem attributeSystem, PowerUpDefinitionValue powerUpDefinition)
+    public static IElement CreateElement(this IAttributeSystem attributeSystem, PowerUpDefinition powerUpDefinition)
     {
-        return attributeSystem.CreateElement(powerUpDefinition, DurationDummy);
+        var value = powerUpDefinition.Boost ?? throw Error.NotInitializedProperty(powerUpDefinition, nameof(powerUpDefinition.Boost));
+        var targetDefinition = powerUpDefinition.TargetAttribute ?? throw Error.NotInitializedProperty(powerUpDefinition, nameof(powerUpDefinition.TargetAttribute));
+        return attributeSystem.CreateElement(value, targetDefinition);
     }
 
     /// <summary>

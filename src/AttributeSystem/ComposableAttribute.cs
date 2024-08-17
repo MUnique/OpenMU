@@ -70,6 +70,10 @@ public class ComposableAttribute : BaseAttribute, IComposableAttribute
         {
             rawValues = 1;
         }
+        else
+        {
+            // nothing to do
+        }
 
         this._cachedValue = (rawValues * multiValues + finalValues);
 
