@@ -32,7 +32,7 @@ public class MiniGameOpeningStateRequestAction
                 playerCount = miniGameContext.PlayerCount;
             }
 
-            await player.InvokeViewPlugInAsync<IShowMiniGameOpeningStatePlugIn>(p => p.ShowOpeningStateAsync(MiniGameType.ChaosCastle, timeUntilOpening, playerCount)).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<IShowMiniGameOpeningStatePlugIn>(p => p.ShowOpeningStateAsync(miniGameType, timeUntilOpening, playerCount)).ConfigureAwait(false);
             return;
         }
 

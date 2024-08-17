@@ -135,14 +135,14 @@ internal class DevilSquareInitializer : InitializerBase
         devilSquare.EnterDuration = TimeSpan.FromMinutes(1);
         devilSquare.GameDuration = TimeSpan.FromMinutes(20);
         devilSquare.ExitDuration = TimeSpan.FromMinutes(3);
-        devilSquare.MaximumPlayerCount = 5;
+        devilSquare.MaximumPlayerCount = 10;
         var mapNumber = level < 5 ? DevilSquare1To4Number : DevilSquare5To7Number;
         devilSquare.Entrance = this.GameConfiguration.Maps.First(m => m.Number == mapNumber && m.Discriminator == level).ExitGates.Single();
         devilSquare.Type = MiniGameType.DevilSquare;
         devilSquare.TicketItem = this.GameConfiguration.Items.Single(item => item.Group == 14 && item.Number == 19);
         devilSquare.TicketItemLevel = level;
         devilSquare.GameLevel = level;
-        devilSquare.MapCreationPolicy = MiniGameMapCreationPolicy.OnePerParty;
+        devilSquare.MapCreationPolicy = MiniGameMapCreationPolicy.Shared;
         devilSquare.SaveRankingStatistics = true;
         devilSquare.AllowParty = true;
 

@@ -42,12 +42,24 @@ public class ShowMiniGameOpeningStateViewPlugIn : IShowMiniGameOpeningStatePlugI
             }
         }
 
-        await this._player.Connection.SendMiniGameOpeningStateAsync(
-                Convert(miniGameType),
-                (byte)(minutesUntilNextStart / 0x100),
-                (byte)playerCount,
-                (byte)(minutesUntilNextStart % 0x100))
-            .ConfigureAwait(false);
+        if (miniGameType == MiniGameType.ChaosCastle)
+        {
+            await this._player.Connection.SendMiniGameOpeningStateAsync(
+               Convert(miniGameType),
+               (byte)(minutesUntilNextStart / 0x100),
+               (byte)playerCount,
+               (byte)(minutesUntilNextStart % 0x100))
+           .ConfigureAwait(false);
+        }
+        else
+        {
+            await this._player.Connection.SendMiniGameOpeningStateAsync(
+               Convert(miniGameType),
+               (byte)(minutesUntilNextStart % 0x100),
+               (byte)playerCount,
+               0)
+           .ConfigureAwait(false);
+        }
     }
 
     private static Network.Packets.MiniGameType Convert(MiniGameType miniGameType)
