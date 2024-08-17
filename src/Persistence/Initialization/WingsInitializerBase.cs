@@ -109,10 +109,10 @@ public abstract class WingsInitializerBase : InitializerBase
     {
         IEnumerable<float> Generate()
         {
-            yield return 0;
+            yield return 1;
             for (int level = 1; level <= this.MaximumItemLevel; level++)
             {
-                yield return 0.01f * level;
+                yield return 1 + (0.01f * level);
             }
         }
 
