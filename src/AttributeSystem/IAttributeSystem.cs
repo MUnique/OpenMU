@@ -42,7 +42,8 @@ public interface IAttributeSystem
     /// </summary>
     /// <param name="relationship">The relationship.</param>
     /// <param name="sourceAttributeHolder">The source attribute holder. May be the attribute system of another player.</param>
-    void AddAttributeRelationship(AttributeRelationship relationship, IAttributeSystem sourceAttributeHolder);
+    /// <param name="aggregateType">Type of the aggregate.</param>
+    void AddAttributeRelationship(AttributeRelationship relationship, IAttributeSystem sourceAttributeHolder, AggregateType aggregateType);
 
     /// <summary>
     /// Gets or creates the element with the specified attribute.

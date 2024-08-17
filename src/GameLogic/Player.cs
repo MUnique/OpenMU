@@ -1350,7 +1350,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         int i = 0;
         var result = new (AttributeDefinition Target, IElement BuffPowerUp)[skill.MagicEffectDef.PowerUpDefinitions.Count];
         AddSkillPowersToResult(skill);
-        skillEntry.PowerUpDuration = this.Attributes!.CreateElement(skill.MagicEffectDef.Duration);
+        skillEntry.PowerUpDuration = this.Attributes!.CreateDurationElement(skill.MagicEffectDef.Duration);
         skillEntry.PowerUps = result;
 
         void AddSkillPowersToResult(Skill skill)
@@ -1360,7 +1360,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 IElement powerUp;
                 if (skillEntry.Level > 0)
                 {
-                    powerUp = this.Attributes!.CreateElement(powerUpDef.Boost!);
+                    powerUp = this.Attributes!.CreateElement(powerUpDef);
 
                     foreach (var masterSkillDefinition in GetMasterSkillDefinitions(skill.MasterDefinition))
                     {
@@ -1370,7 +1370,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 }
                 else
                 {
-                    powerUp = this.Attributes!.CreateElement(powerUpDef.Boost!);
+                    powerUp = this.Attributes!.CreateElement(powerUpDef);
                 }
 
                 result[i] = (powerUpDef.TargetAttribute!, powerUp);
@@ -1429,13 +1429,13 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         var result = new (AttributeDefinition Target, IElement BuffPowerUp)[magicEffectDefinition.PowerUpDefinitions.Count];
         foreach (var powerUpDef in magicEffectDefinition.PowerUpDefinitions)
         {
-            IElement powerUp = this.Attributes!.CreateElement(powerUpDef.Boost!);
+            IElement powerUp = this.Attributes!.CreateElement(powerUpDef);
 
             result[i] = (powerUpDef.TargetAttribute!, powerUp);
             i++;
         }
 
-        return (this.Attributes!.CreateElement(magicEffectDefinition.Duration), result);
+        return (this.Attributes!.CreateDurationElement(magicEffectDefinition.Duration), result);
     }
 
     /// <summary>

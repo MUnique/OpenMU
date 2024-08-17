@@ -73,6 +73,9 @@ public class AttributeRelationshipElement : SimpleElement
             InputOperator.Exponentiate => (float)Math.Pow(
                 this.InputElements.Sum(a => a.Value),
                 this.InputOperand.Value),
+            InputOperator.ExponentiateByAttribute => (float)Math.Pow(
+                this.InputOperand.Value,
+                this.InputElements.Sum(a => a.Value)),
             _ => throw new InvalidOperationException($"Input operator {this.InputOperator} unknown")
         };
     }

@@ -44,11 +44,11 @@ public class AttributeSystem : IAttributeSystem
     }
 
     /// <inheritdoc/>
-    public void AddAttributeRelationship(AttributeRelationship relationship, IAttributeSystem sourceAttributeHolder)
+    public void AddAttributeRelationship(AttributeRelationship relationship, IAttributeSystem sourceAttributeHolder, AggregateType aggregateType)
     {
         if (this.GetOrCreateAttribute(relationship.GetTargetAttribute()) is IComposableAttribute targetAttribute)
         {
-            var relatedElement = this.CreateRelatedAttribute(relationship, sourceAttributeHolder);
+            var relatedElement = this.CreateRelatedAttribute(relationship, sourceAttributeHolder, aggregateType);
             targetAttribute.AddElement(relatedElement);
         }
     }
@@ -57,12 +57,18 @@ public class AttributeSystem : IAttributeSystem
     /// Creates the related attribute.
     /// </summary>
     /// <param name="relationship">The relationship.</param>
-    /// <param name="sourceAttributeHolder">The source attribute holder. May be the attribute system of another player.</param>
-    /// <returns>The newly created relationship element.</returns>
-    public IElement CreateRelatedAttribute(AttributeRelationship relationship, IAttributeSystem sourceAttributeHolder)
+    /// <param name="sourceAttributeHolder">The source attribute holder. This may be the attribute system of another player.</param>
+    /// <param name="aggregateType">Type of the aggregate.</param>
+    /// <returns>
+    /// The newly created relationship element.
+    /// </returns>
+    public IElement CreateRelatedAttribute(AttributeRelationship relationship, IAttributeSystem sourceAttributeHolder, AggregateType aggregateType)
     {
         var inputElements = new[] { sourceAttributeHolder.GetOrCreateAttribute(relationship.GetInputAttribute()) };
-        return new AttributeRelationshipElement(inputElements, relationship.GetOperandElement(sourceAttributeHolder), relationship.InputOperator);
+        return new AttributeRelationshipElement(inputElements, relationship.GetOperandElement(sourceAttributeHolder), relationship.InputOperator)
+        {
+            AggregateType = aggregateType,
+        };
     }
 
     /// <summary>
@@ -193,7 +199,7 @@ public class AttributeSystem : IAttributeSystem
     /// <param name="combination">The combination.</param>
     private void AddAttributeRelationship(AttributeRelationship combination)
     {
-        this.AddAttributeRelationship(combination, this);
+        this.AddAttributeRelationship(combination, this, AggregateType.AddRaw);
     }
 
     private IElement? GetAttribute(AttributeDefinition? attributeDefinition)

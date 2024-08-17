@@ -119,14 +119,14 @@ public abstract class ArmorInitializerBase : InitializerBase
 
         if (defense > 0)
         {
-            var powerUp = this.CreateItemBasePowerUpDefinition(Stats.DefenseBase, defense);
+            var powerUp = this.CreateItemBasePowerUpDefinition(Stats.DefenseBase, defense, AggregateType.AddRaw);
             powerUp.BonusPerLevelTable = this._shieldDefenseIncreaseTable;
             shield.BasePowerUpAttributes.Add(powerUp);
         }
 
         if (defenseRate > 0)
         {
-            var powerUp = this.CreateItemBasePowerUpDefinition(Stats.DefenseRatePvm, defenseRate);
+            var powerUp = this.CreateItemBasePowerUpDefinition(Stats.DefenseRatePvm, defenseRate, AggregateType.AddRaw);
             powerUp.BonusPerLevelTable = this._shieldDefenseRateIncreaseTable;
             shield.BasePowerUpAttributes.Add(powerUp);
         }
@@ -173,7 +173,7 @@ public abstract class ArmorInitializerBase : InitializerBase
 
         if (defense > 0)
         {
-            var powerUp = this.CreateItemBasePowerUpDefinition(Stats.DefenseBase, defense);
+            var powerUp = this.CreateItemBasePowerUpDefinition(Stats.DefenseBase, defense, AggregateType.AddRaw);
             powerUp.BonusPerLevelTable = this._defenseIncreaseTable;
             armor.BasePowerUpAttributes.Add(powerUp);
         }

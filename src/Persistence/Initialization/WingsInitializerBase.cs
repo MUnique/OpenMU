@@ -81,10 +81,10 @@ public abstract class WingsInitializerBase : InitializerBase
     {
         IEnumerable<float> Generate()
         {
-            yield return 0;
+            yield return 1f;
             for (int level = 1; level <= this.MaximumItemLevel; level++)
             {
-                yield return 0f - (0.02f * level);
+                yield return 1f - (0.02f * level);
             }
         }
 
@@ -95,10 +95,10 @@ public abstract class WingsInitializerBase : InitializerBase
     {
         IEnumerable<float> Generate()
         {
-            yield return 0;
+            yield return 1f;
             for (int level = 1; level <= this.MaximumItemLevel; level++)
             {
-                yield return 0.02f * level;
+                yield return 1f + (0.02f * level);
             }
         }
 
@@ -109,10 +109,10 @@ public abstract class WingsInitializerBase : InitializerBase
     {
         IEnumerable<float> Generate()
         {
-            yield return 0;
+            yield return 1;
             for (int level = 1; level <= this.MaximumItemLevel; level++)
             {
-                yield return 0.01f * level;
+                yield return 1 + (0.01f * level);
             }
         }
 

@@ -14,12 +14,41 @@ using MUnique.OpenMU.Persistence;
 public static class AttributeSystemExtensions
 {
     /// <summary>
+    /// Gets the attribute for a dummy attribute to be used internally for durations.
+    /// </summary>
+    private static AttributeDefinition DurationDummy { get; } = new(new Guid("23D069C3-24D8-4277-8FDC-D82F0AF64037"), "Duration Dummy", "A dummy attribute to be used internally for durations.");
+
+    /// <summary>
+    /// Creates a new element on this attribute system with the specified power up value.
+    /// </summary>
+    /// <param name="attributeSystem">The attribute system.</param>
+    /// <param name="powerUpDefinition">The power up definition.</param>
+    /// <returns>The added element.</returns>
+    public static IElement CreateDurationElement(this IAttributeSystem attributeSystem, PowerUpDefinitionValue powerUpDefinition)
+    {
+        return attributeSystem.CreateElement(powerUpDefinition, DurationDummy);
+    }
+
+    /// <summary>
+    /// Creates a new element on this attribute system with the specified power up value.
+    /// </summary>
+    /// <param name="attributeSystem">The attribute system.</param>
+    /// <param name="powerUpDefinition">The power up definition.</param>
+    /// <returns>The added element.</returns>
+    public static IElement CreateElement(this IAttributeSystem attributeSystem, PowerUpDefinition powerUpDefinition)
+    {
+        var value = powerUpDefinition.Boost ?? throw Error.NotInitializedProperty(powerUpDefinition, nameof(powerUpDefinition.Boost));
+        var targetDefinition = powerUpDefinition.TargetAttribute ?? throw Error.NotInitializedProperty(powerUpDefinition, nameof(powerUpDefinition.TargetAttribute));
+        return attributeSystem.CreateElement(value, targetDefinition);
+    }
+
+    /// <summary>
     /// Creates a new element on this attribute system with the specified power up value.
     /// </summary>
     /// <param name="attributeSystem">The attribute system.</param>
     /// <param name="value">The value.</param>
     /// <returns>The added element.</returns>
-    public static IElement CreateElement(this IAttributeSystem attributeSystem, PowerUpDefinitionValue value)
+    public static IElement CreateElement(this IAttributeSystem attributeSystem, PowerUpDefinitionValue value, AttributeDefinition targetDefinition)
     {
         var relations = value.RelatedValues;
         var result = value.ConstantValue;
@@ -29,14 +58,22 @@ public static class AttributeSystemExtensions
                 .Select(r => new AttributeRelationshipElement(
                     new[] { attributeSystem.GetOrCreateAttribute(r.InputAttribute ?? throw new InvalidOperationException($"InputAttribute value not set for AttributeRelationship {r.GetId()}.")) },
                     r.GetOperandElement(attributeSystem),
-                    r.InputOperator))
+                    r.InputOperator)
+                {
+                    AggregateType = result.AggregateType,
+                })
                 .Cast<IElement>();
-            if (value.ConstantValue != null)
+            
+            if (value.ConstantValue is not null)
             {
                 elements = elements.Concat(value.ConstantValue.GetAsEnumerable());
             }
 
-            result = new AttributeRelationshipElement(elements.ToList(), new ConstantElement(1.0F), InputOperator.Multiply);
+            var composableResult = new ComposableAttribute(targetDefinition, result.AggregateType);
+
+
+            elements.ForEach(element => composableResult.AddElement(element));
+            return composableResult;
         }
 
         if (result is null)

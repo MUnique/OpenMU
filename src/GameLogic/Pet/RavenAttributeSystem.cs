@@ -89,7 +89,7 @@ public class RavenAttributeSystem : IAttributeSystem
     }
 
     /// <inheritdoc />
-    public void AddAttributeRelationship(AttributeRelationship relationship, IAttributeSystem sourceAttributeHolder)
+    public void AddAttributeRelationship(AttributeRelationship relationship, IAttributeSystem sourceAttributeHolder, AggregateType aggregateType)
     {
         throw new NotImplementedException();
     }

@@ -48,18 +48,19 @@ public class SoulBarrierEffectInitializer : InitializerBase
         // one percent per 200 energy
         var boostPerEnergy = this.Context.CreateNew<AttributeRelationship>();
         boostPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
-        boostPerEnergy.InputOperator = InputOperator.Multiply;
-        boostPerEnergy.InputOperand = -0.01f / 200f;
+        boostPerEnergy.InputOperator = InputOperator.ExponentiateByAttribute;
+        boostPerEnergy.InputOperand = 1 - (0.01f / 200f);
 
         // one percent per 50 agility
         var boostPerAgility = this.Context.CreateNew<AttributeRelationship>();
         boostPerAgility.InputAttribute = Stats.TotalAgility.GetPersistent(this.GameConfiguration);
-        boostPerAgility.InputOperator = InputOperator.Multiply;
-        boostPerAgility.InputOperand = -0.01f / 50f;
+        boostPerAgility.InputOperator = InputOperator.ExponentiateByAttribute;
+        boostPerAgility.InputOperand = 1 - (0.01f / 50f);
 
         // Soul barrier % = 10 + (Agility/50) + (Energy/200)
         powerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-        powerUpDefinition.Boost.ConstantValue.Value = -0.10f;
+        powerUpDefinition.Boost.ConstantValue.Value = 0.9f;
+        powerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
         powerUpDefinition.Boost.RelatedValues.Add(boostPerEnergy);
         powerUpDefinition.Boost.RelatedValues.Add(boostPerAgility);
     }

@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
 
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
@@ -312,15 +313,15 @@ internal class Weapons : InitializerBase
         var qualifiedCharacterClasses = this.GameConfiguration.DetermineCharacterClasses(wizardClass, knightClass, elfClass, magicGladiatorClass, darkLordClass, summonerClass, ragefighterClass);
         qualifiedCharacterClasses.ToList().ForEach(item.QualifiedCharacters.Add);
 
-        var minDamagePowerUp = this.CreateItemBasePowerUpDefinition(Stats.MinimumPhysBaseDmgByWeapon, minimumDamage);
+        var minDamagePowerUp = this.CreateItemBasePowerUpDefinition(Stats.MinimumPhysBaseDmgByWeapon, minimumDamage, AggregateType.AddRaw);
         minDamagePowerUp.BonusPerLevelTable = this._weaponDamageIncreaseTable;
         item.BasePowerUpAttributes.Add(minDamagePowerUp);
 
-        var maxDamagePowerUp = this.CreateItemBasePowerUpDefinition(Stats.MaximumPhysBaseDmgByWeapon, maximumDamage);
+        var maxDamagePowerUp = this.CreateItemBasePowerUpDefinition(Stats.MaximumPhysBaseDmgByWeapon, maximumDamage, AggregateType.AddRaw);
         maxDamagePowerUp.BonusPerLevelTable = this._weaponDamageIncreaseTable;
         item.BasePowerUpAttributes.Add(maxDamagePowerUp);
 
-        var speedPowerUp = this.CreateItemBasePowerUpDefinition(Stats.AttackSpeed, attackSpeed);
+        var speedPowerUp = this.CreateItemBasePowerUpDefinition(Stats.AttackSpeed, attackSpeed, AggregateType.AddRaw);
         item.BasePowerUpAttributes.Add(speedPowerUp);
 
         this.CreateItemRequirementIfNeeded(item, Stats.Level, levelRequirement);
@@ -354,13 +355,13 @@ internal class Weapons : InitializerBase
 
                 if (darkLordClass > 0)
                 {
-                    var scepterRisePowerUp = this.CreateItemBasePowerUpDefinition(Stats.ScepterRise, staffRise);
+                    var scepterRisePowerUp = this.CreateItemBasePowerUpDefinition(Stats.ScepterRise, staffRise, AggregateType.AddRaw);
                     scepterRisePowerUp.BonusPerLevelTable = this._scepterRiseTable;
                     item.BasePowerUpAttributes.Add(scepterRisePowerUp);
                 }
                 else
                 {
-                    var staffRisePowerUp = this.CreateItemBasePowerUpDefinition(Stats.StaffRise, staffRise);
+                    var staffRisePowerUp = this.CreateItemBasePowerUpDefinition(Stats.StaffRise, staffRise, AggregateType.AddRaw);
                     staffRisePowerUp.BonusPerLevelTable = this._staffRiseTable;
                     item.BasePowerUpAttributes.Add(staffRisePowerUp);
                 }
@@ -369,14 +370,14 @@ internal class Weapons : InitializerBase
 
         if (group == (int)ItemGroups.Bows && height > 1)
         {
-            item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.AmmunitionConsumptionRate, 1));
+            item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.AmmunitionConsumptionRate, 1, AggregateType.AddRaw));
         }
 
         item.IsAmmunition = group == (int)ItemGroups.Bows && height == 1;
 
         if (group != (int)ItemGroups.Bows && width == 2)
         {
-            item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsTwoHandedWeaponEquipped, 1));
+            item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsTwoHandedWeaponEquipped, 1, AggregateType.AddRaw));
         }
 
         if (group == (int)ItemGroups.Swords)
@@ -385,33 +386,33 @@ internal class Weapons : InitializerBase
             {
                 if (width == 1)
                 {
-                    item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsOneHandedSwordEquipped, 1));
+                    item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsOneHandedSwordEquipped, 1, AggregateType.AddRaw));
                 }
                 else
                 {
-                    item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsTwoHandedSwordEquipped, 1));
+                    item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsTwoHandedSwordEquipped, 1, AggregateType.AddRaw));
                 }
             }
             else
             {
-                item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsGloveWeaponEquipped, 1));
+                item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsGloveWeaponEquipped, 1, AggregateType.AddRaw));
             }
         }
 
         if (group == (int)ItemGroups.Spears)
         {
-            item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsSpearEquipped, 1));
+            item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsSpearEquipped, 1, AggregateType.AddRaw));
         }
 
         if (group == (int)ItemGroups.Scepters)
         {
             if (skillNumber == (int)SkillNumber.ForceWave)
             {
-                item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsScepterEquipped, 1));
+                item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsScepterEquipped, 1, AggregateType.AddRaw));
             }
             else if (knightClass > 0 && (skillNumber == (int)SkillNumber.FallingSlash || number < 5))
             {
-                item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsMaceEquipped, 1));
+                item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsMaceEquipped, 1, AggregateType.AddRaw));
             }
             else
             {
@@ -423,17 +424,17 @@ internal class Weapons : InitializerBase
         {
             if (wizardClass == 0 && summonerClass > 0)
             {
-                item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsStickEquipped, 1));
+                item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsStickEquipped, 1, AggregateType.AddRaw));
             }
             else
             {
-                item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(width == 1 ? Stats.IsOneHandedStaffEquipped : Stats.IsTwoHandedStaffEquipped, 1));
+                item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(width == 1 ? Stats.IsOneHandedStaffEquipped : Stats.IsTwoHandedStaffEquipped, 1, AggregateType.AddRaw));
             }
         }
 
         if (group == (int)ItemGroups.Bows && !item.IsAmmunition)
         {
-            item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(slot == 0 ? Stats.IsCrossBowEquipped : Stats.IsBowEquipped, 1));
+            item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(slot == 0 ? Stats.IsCrossBowEquipped : Stats.IsBowEquipped, 1, AggregateType.AddRaw));
         }
     }
 

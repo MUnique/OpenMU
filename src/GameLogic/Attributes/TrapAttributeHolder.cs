@@ -76,7 +76,7 @@ public class TrapAttributeHolder : IAttributeSystem
     }
 
     /// <inheritdoc/>
-    public void AddAttributeRelationship(AttributeRelationship combination, IAttributeSystem sourceAttributeHolder)
+    public void AddAttributeRelationship(AttributeRelationship combination, IAttributeSystem sourceAttributeHolder, AggregateType aggregateType)
     {
         throw new NotImplementedException();
     }

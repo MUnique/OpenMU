@@ -14,11 +14,12 @@ public class ComposableAttribute : BaseAttribute, IComposableAttribute
     private float? _cachedValue;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ComposableAttribute"/> class.
+    /// Initializes a new instance of the <see cref="ComposableAttribute" /> class.
     /// </summary>
     /// <param name="definition">The definition.</param>
-    public ComposableAttribute(AttributeDefinition definition)
-        : base(definition, AggregateType.AddRaw)
+    /// <param name="aggregateType">Type of the aggregate.</param>
+    public ComposableAttribute(AttributeDefinition definition, AggregateType aggregateType = AggregateType.AddRaw)
+        : base(definition, aggregateType)
     {
         this._elementList = new List<IElement>();
     }
@@ -51,9 +52,30 @@ public class ComposableAttribute : BaseAttribute, IComposableAttribute
 
     private float GetAndCacheValue()
     {
-        this._cachedValue = (this.Elements.Where(e => e.AggregateType == AggregateType.AddRaw).Sum(e => e.Value)
-                            * this.Elements.Where(e => e.AggregateType == AggregateType.Multiplicate).Select(e => e.Value).Concat(Enumerable.Repeat(1.0F, 1)).Aggregate((a, b) => a * b))
-                           + this.Elements.Where(e => e.AggregateType == AggregateType.AddFinal).Sum(e => e.Value);
+        if (this._elementList.Count == 0)
+        {
+            this._cachedValue = 0;
+            return 0;
+        }
+
+        var rawValues = this.Elements.Where(e => e.AggregateType == AggregateType.AddRaw).Sum(e => e.Value);
+        var multiValues = this.Elements.Where(e => e.AggregateType == AggregateType.Multiplicate).Select(e => e.Value).Concat(Enumerable.Repeat(1.0F, 1)).Aggregate((a, b) => a * b);
+        var finalValues = this.Elements.Where(e => e.AggregateType == AggregateType.AddFinal).Sum(e => e.Value);
+
+        if (multiValues == 0 && this.Elements.All(e => e.AggregateType != AggregateType.Multiplicate))
+        {
+            multiValues = 1;
+        }
+        else if (rawValues == 0 && multiValues != 0 && this.Elements.All(e => e.AggregateType != AggregateType.AddRaw))
+        {
+            rawValues = 1;
+        }
+        else
+        {
+            // nothing to do
+        }
+
+        this._cachedValue = (rawValues * multiValues + finalValues);
 
         return this._cachedValue.Value;
     }

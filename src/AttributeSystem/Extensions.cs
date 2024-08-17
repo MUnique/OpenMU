@@ -21,7 +21,8 @@ public static class Extensions
             InputOperator.Add => "+",
             InputOperator.Multiply => "*",
             InputOperator.Exponentiate => "^",
-            _ => string.Empty
+            InputOperator.ExponentiateByAttribute => "^",
+            _ => string.Empty,
         };
     }
 }

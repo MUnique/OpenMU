@@ -291,7 +291,7 @@ public class PowerUpFactoryTest
         var bonusTableMock = new Mock<ItemLevelBonusTable>();
         bonusTableMock.Setup(r => r.BonusPerLevel).Returns(new List<LevelBonus>());
         var result = resultMock.Object;
-        result.BaseValueElement = new ConstantElement(PowerUpStrength);
+        result.BaseValue = PowerUpStrength;
         result.TargetAttribute = Stats.MaximumPhysBaseDmg;
         var bonusTable = bonusTableMock.Object;
         result.BonusPerLevelTable = bonusTable;

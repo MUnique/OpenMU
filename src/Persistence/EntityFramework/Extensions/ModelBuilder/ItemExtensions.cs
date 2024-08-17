@@ -45,6 +45,5 @@ internal static class ItemExtensions
     /// <param name="builder">The builder.</param>
     public static void Apply(this EntityTypeBuilder<LevelBonus> builder)
     {
-        builder.Ignore(l => l.AdditionalValueElement);
     }
 }

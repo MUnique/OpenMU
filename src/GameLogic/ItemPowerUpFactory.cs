@@ -187,10 +187,9 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
         yield return new PowerUpWrapper(attribute.BaseValueElement, attribute.TargetAttribute, attributeHolder);
 
         var levelBonus = (attribute.BonusPerLevelTable?.BonusPerLevel ?? Enumerable.Empty<LevelBonus>()).FirstOrDefault(bonus => bonus.Level == item.Level);
-        if (levelBonus != null)
+        if (levelBonus is not null)
         {
-            levelBonus.ThrowNotInitializedProperty(levelBonus.AdditionalValueElement is null, nameof(levelBonus.AdditionalValueElement));
-            yield return new PowerUpWrapper(levelBonus.AdditionalValueElement, attribute.TargetAttribute, attributeHolder);
+            yield return new PowerUpWrapper(levelBonus.GetAdditionalValueElement(attribute.AggregateType), attribute.TargetAttribute, attributeHolder);
         }
     }
 

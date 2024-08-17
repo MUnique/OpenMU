@@ -34,7 +34,7 @@ public class SkinChatCommandPlugIn : ChatCommandPlugInBase<SkinChatCommandArgs>
             && attributes.GetComposableAttribute(Stats.TransformationSkin) is { } attribute)
         {
             attribute.Elements.ToList().ForEach(attribute.RemoveElement);
-            attribute.AddElement(attributes.CreateElement(new PowerUpDefinitionValue { AggregateType = AggregateType.AddRaw, Value = arguments.SkinNumber }));
+            attribute.AddElement(attributes.CreateElement(new PowerUpDefinitionValue { AggregateType = AggregateType.AddRaw, Value = arguments.SkinNumber }, Stats.TransformationSkin));
 
             attributes[Stats.TransformationSkin] = arguments.SkinNumber;
         }

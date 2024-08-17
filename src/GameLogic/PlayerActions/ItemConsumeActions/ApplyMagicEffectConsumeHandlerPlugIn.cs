@@ -37,7 +37,7 @@ public class ApplyMagicEffectConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn
 
         var boosts = effectDefinition.PowerUpDefinitions
             .Where(def => def.Boost is not null && def.TargetAttribute is not null)
-            .Select(def => new MagicEffect.ElementWithTarget(player.Attributes!.CreateElement(def.Boost!), def.TargetAttribute!))
+            .Select(def => new MagicEffect.ElementWithTarget(player.Attributes!.CreateElement(def), def.TargetAttribute!))
             .ToArray();
         if (boosts.Length == 0)
         {

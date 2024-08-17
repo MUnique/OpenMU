@@ -13,16 +13,20 @@ using MUnique.OpenMU.AttributeSystem;
 [Cloneable]
 public partial class ItemBasePowerUpDefinition
 {
+    private ConstantElement? _baseValueElement;
+    private float _baseValue;
+    private AggregateType _aggregateType;
+
     /// <summary>
     /// Gets or sets the target attribute.
     /// </summary>
     public virtual AttributeDefinition? TargetAttribute { get; set; }
 
     /// <summary>
-    /// Gets or sets the base value.
+    /// Gets the base value.
     /// </summary>
     [Transient]
-    public ConstantElement? BaseValueElement { get; set; }
+    public ConstantElement BaseValueElement => this._baseValueElement ??= new ConstantElement(this.BaseValue, this.AggregateType);
 
     /// <summary>
     /// Gets or sets the bonus per level.
@@ -34,13 +38,30 @@ public partial class ItemBasePowerUpDefinition
     /// </summary>
     public float BaseValue
     {
-        get => this.BaseValueElement?.Value ?? 0;
-        set => this.BaseValueElement = new ConstantElement(value);
+        get => this._baseValue;
+        set
+        {
+            this._baseValue = value;
+            this._baseValueElement = null;
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the type of the aggregate.
+    /// </summary>
+    public AggregateType AggregateType
+    {
+        get => this._aggregateType;
+        set
+        {
+            this._aggregateType = value;
+            this._baseValueElement = null;
+        }
     }
 
     /// <inheritdoc />
     public override string ToString()
     {
-        return $"{this.BaseValue} {this.TargetAttribute}";
+        return $"{this.BaseValue} {this.TargetAttribute} {this.AggregateType}";
     }
 }
