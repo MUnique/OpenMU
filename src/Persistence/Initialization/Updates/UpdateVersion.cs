@@ -121,7 +121,7 @@ public enum UpdateVersion
     FixWingsAndCapesCraftings = 22,
 
     /// <summary>
-    /// The version of the <see cref="FixDamageAbsorbItems"/>.
+    /// The version of the <see cref="FixDamageAbsorbItemsUpdatePlugIn"/>.
     /// </summary>
-    FixDamageAbsorbItems = 22,
+    FixDamageAbsorbItems = 23,
 }
