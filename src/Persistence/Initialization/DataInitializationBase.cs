@@ -155,6 +155,11 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
                 plugInConfiguration.SetConfiguration(DevilSquareStartConfiguration.Default, referenceHandler);
             }
 
+            if (plugInType == typeof(BloodCastleStartPlugIn))
+            {
+                plugInConfiguration.SetConfiguration(BloodCastleStartConfiguration.Default, referenceHandler);
+            }
+
             if (plugInType == typeof(GoldenInvasionPlugIn))
             {
                 plugInConfiguration.SetConfiguration(PeriodicInvasionConfiguration.DefaultGoldenInvasion, referenceHandler);
