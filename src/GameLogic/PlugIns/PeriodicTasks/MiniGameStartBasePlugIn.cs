@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 
-using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.PlugIns;
 
