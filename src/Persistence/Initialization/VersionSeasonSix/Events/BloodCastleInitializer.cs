@@ -209,7 +209,7 @@ internal class BloodCastleInitializer : InitializerBase
         bloodCastle.EnterDuration = TimeSpan.FromMinutes(1);
         bloodCastle.GameDuration = TimeSpan.FromMinutes(20);
         bloodCastle.ExitDuration = TimeSpan.FromMinutes(1);
-        bloodCastle.MaximumPlayerCount = 5;
+        bloodCastle.MaximumPlayerCount = 10;
         bloodCastle.Entrance = this.GameConfiguration.Maps.First(m => m.Number == mapNumber).ExitGates.Single();
         bloodCastle.Type = MiniGameType.BloodCastle;
         bloodCastle.TicketItem = this.GameConfiguration.Items.Single(item => item.Group == 13 && item.Number == 18);

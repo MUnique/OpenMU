@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 /// <summary>
 /// The chaos castle start configuration.
 /// </summary>
-public class ChaosCastleStartConfiguration : PeriodicTaskConfiguration
+public class ChaosCastleStartConfiguration : MiniGameStartConfiguration
 {
     /// <summary>
     /// Gets the default configuration for chaos castle.
@@ -21,14 +21,4 @@ public class ChaosCastleStartConfiguration : PeriodicTaskConfiguration
             TaskDuration = TimeSpan.FromMinutes(15),
             Timetable = PeriodicTaskConfiguration.GenerateTimeSequence(TimeSpan.FromMinutes(60)).ToList(),
         };
-
-    /// <summary>
-    /// Gets or sets the entrance opened message.
-    /// </summary>
-    public string? EntranceOpenedMessage { get; set; }
-
-    /// <summary>
-    /// Gets or sets the entrance closed message.
-    /// </summary>
-    public string? EntranceClosedMessage { get; set; }
 }

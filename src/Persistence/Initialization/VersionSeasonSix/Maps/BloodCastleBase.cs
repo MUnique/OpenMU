@@ -32,7 +32,7 @@ internal abstract class BloodCastleBase : BaseMapInitializer
     }
 
     /// <inheritdoc/>
-    protected override byte SafezoneMapNumber => Lorencia.Number;
+    protected override byte SafezoneMapNumber => Devias.Number;
 
     /// <inheritdoc />
     protected override string MapName => $"Blood Castle {this.CastleLevel}";
