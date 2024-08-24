@@ -127,7 +127,7 @@ public static class AttackableExtensions
     /// <param name="attributes">The attributes.</param>
     /// <param name="attacker">The attacker.</param>
     /// <returns>The calculated hit info.</returns>
-    public static HitInfo GetHitInfo(this IAttackable defender, uint damage, DamageAttributes attributes,  IAttacker attacker)
+    public static HitInfo GetHitInfo(this IAttackable defender, uint damage, DamageAttributes attributes, IAttacker attacker)
     {
         var shieldBypass = Rand.NextRandomBool(attacker.Attributes[Stats.ShieldBypassChance]);
         if (shieldBypass || defender.Attributes[Stats.CurrentShield] < 1)
@@ -486,7 +486,7 @@ public static class AttackableExtensions
 
             var skillDamage = skill.GetDamage();
             minimumBaseDamage += skillDamage;
-            maximumBaseDamage += skillDamage;
+            maximumBaseDamage += skillDamage + (skillDamage / 2);
 
             if (skill.Skill.SkillType == SkillType.Nova)
             {
@@ -561,7 +561,7 @@ public static class AttackableExtensions
             // coordinates, we simply update the position on the client side.
             if (walkSupporter is IObservable observable)
             {
-                await observable.ForEachWorldObserverAsync<IObjectMovedPlugIn> (p => p.ObjectMovedAsync(walkSupporter, MoveType.Instant), true).ConfigureAwait(false);
+                await observable.ForEachWorldObserverAsync<IObjectMovedPlugIn>(p => p.ObjectMovedAsync(walkSupporter, MoveType.Instant), true).ConfigureAwait(false);
             }
         }
     }
