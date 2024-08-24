@@ -188,13 +188,13 @@ internal class Weapons : InitializerBase
         this.CreateWeapon(3, 10, 0, 22, 2, 4, true, "Dragon Spear", 92, 112, 140, 35, 85, 0, 0, 170, 60, 0, 0, 0, 2, 0, 0, 0, 0, 0);
         this.CreateWeapon(3, 11, 0, 22, 2, 4, false, "Beuroba", 147, 190, 226, 40, 90, 0, 0, 152, 25, 0, 0, 0, 2, 0, 1, 0, 0, 0);
 
-        this.CreateWeapon(4, 0, 1, 24, 2, 3, true, "Short Bow", 2, 3, 5, 30, 20, 0, 0, 20, 80, 0, 0, 0, 0, 1, 0, 0, 0, 0);
-        this.CreateWeapon(4, 1, 1, 24, 2, 3, true, "Bow", 8, 9, 13, 30, 24, 0, 0, 30, 90, 0, 0, 0, 0, 1, 0, 0, 0, 0);
-        this.CreateWeapon(4, 2, 1, 24, 2, 3, true, "Elven Bow", 16, 17, 24, 30, 28, 0, 0, 30, 90, 0, 0, 0, 0, 1, 0, 0, 0, 0);
-        this.CreateWeapon(4, 3, 1, 24, 2, 3, true, "Battle Bow", 26, 28, 37, 30, 36, 0, 0, 30, 90, 0, 0, 0, 0, 1, 0, 0, 0, 0);
-        this.CreateWeapon(4, 4, 1, 24, 2, 4, true, "Tiger Bow", 40, 42, 52, 30, 43, 0, 0, 30, 100, 0, 0, 0, 0, 1, 0, 0, 0, 0);
-        this.CreateWeapon(4, 5, 1, 24, 2, 4, true, "Silver Bow", 56, 59, 71, 40, 48, 0, 0, 30, 100, 0, 0, 0, 0, 1, 0, 0, 0, 0);
-        this.CreateWeapon(4, 6, 1, 24, 2, 4, false, "Chaos Nature Bow", 75, 88, 106, 35, 68, 0, 0, 40, 150, 0, 0, 0, 0, 1, 0, 0, 0, 0);
+        this.CreateWeapon(4, 0, 1, 24, 2, 3, true, "Short Bow", 2, 3, 5, 30, 20, 0, 0, 21, 24, 0, 0, 0, 0, 1, 0, 0, 0, 0);
+        this.CreateWeapon(4, 1, 1, 24, 2, 3, true, "Bow", 8, 9, 13, 30, 24, 0, 0, 27, 41, 0, 0, 0, 0, 1, 0, 0, 0, 0);
+        this.CreateWeapon(4, 2, 1, 24, 2, 3, true, "Elven Bow", 16, 17, 24, 30, 28, 0, 0, 34, 63, 0, 0, 0, 0, 1, 0, 0, 0, 0);
+        this.CreateWeapon(4, 3, 1, 24, 2, 3, true, "Battle Bow", 26, 28, 37, 30, 36, 0, 0, 43, 90, 0, 0, 0, 0, 1, 0, 0, 0, 0);
+        this.CreateWeapon(4, 4, 1, 24, 2, 4, true, "Tiger Bow", 40, 42, 52, 30, 43, 0, 0, 56, 140, 0, 0, 0, 0, 1, 0, 0, 0, 0);
+        this.CreateWeapon(4, 5, 1, 24, 2, 4, true, "Silver Bow", 56, 59, 71, 40, 48, 0, 0, 70, 188, 0, 0, 0, 0, 1, 0, 0, 0, 0);
+        this.CreateWeapon(4, 6, 1, 24, 2, 4, false, "Chaos Nature Bow", 75, 88, 106, 35, 68, 0, 0, 110, 357, 0, 0, 0, 0, 1, 0, 0, 0, 0);
         this.CreateWeapon(4, 7, 1, 0, 1, 1, false, "Bolt", 0, 0, 0, 0, 255, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0);
         this.CreateWeapon(4, 8, 0, 24, 2, 2, true, "Crossbow", 4, 5, 8, 40, 22, 0, 0, 20, 90, 0, 0, 0, 0, 1, 0, 0, 0, 0);
         this.CreateWeapon(4, 9, 0, 24, 2, 2, true, "Golden Crossbow", 12, 13, 19, 40, 26, 0, 0, 30, 90, 0, 0, 0, 0, 1, 0, 0, 0, 0);
