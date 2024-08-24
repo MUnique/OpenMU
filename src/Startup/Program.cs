@@ -279,7 +279,7 @@ internal sealed class Program : IDisposable
                 var referenceHandler = new ByDataSourceReferenceHandler(dataSource);
                 return referenceHandler;
             })
-            .AddTransient<IDataSource<GameConfiguration>, GameConfigurationDataSource>()
+            .AddSingleton<IDataSource<GameConfiguration>, GameConfigurationDataSource>()
             .AddHostedService<ChatServerContainer>()
             .AddHostedService<GameServerContainer>()
             .AddHostedService(provider => provider.GetService<ConnectServerContainer>()!)
