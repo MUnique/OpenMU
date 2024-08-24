@@ -21,7 +21,7 @@ public class EarthShakeSkillPlugIn : IAreaSkillPlugIn
     public short Key => 62;
 
     /// <inheritdoc />
-    public async ValueTask AfterTargetGotAttackedAsync(IAttacker attacker, IAttackable target, SkillEntry skillEntry, Point targetAreaCenter)
+    public async ValueTask AfterTargetGotAttackedAsync(IAttacker attacker, IAttackable target, SkillEntry skillEntry, Point targetAreaCenter, HitInfo? hitInfo)
     {
         if (!target.IsAlive || target is not IMovable movableTarget || target.CurrentMap is not { } currentMap)
         {

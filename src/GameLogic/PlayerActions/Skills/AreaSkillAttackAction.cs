@@ -129,13 +129,13 @@ public class AreaSkillAttackAction
 
         if (target.CheckSkillTargetRestrictions(player, skillEntry.Skill))
         {
-            await target.AttackByAsync(player, skillEntry, isCombo).ConfigureAwait(false);
+            var hitInfo = await target.AttackByAsync(player, skillEntry, isCombo).ConfigureAwait(false);
             await target.TryApplyElementalEffectsAsync(player, skillEntry).ConfigureAwait(false);
             var baseSkill = skillEntry.GetBaseSkill();
 
             if (player.GameContext.PlugInManager.GetStrategy<short, IAreaSkillPlugIn>(baseSkill.Number) is { } strategy)
             {
-                await strategy.AfterTargetGotAttackedAsync(player, target, skillEntry, targetAreaCenter).ConfigureAwait(false);
+                await strategy.AfterTargetGotAttackedAsync(player, target, skillEntry, targetAreaCenter, hitInfo).ConfigureAwait(false);
             }
         }
     }
