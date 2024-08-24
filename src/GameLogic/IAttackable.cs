@@ -65,6 +65,7 @@ public interface IAttackable : IIdentifiable, ILocateable
     /// <param name="skill">The skill.</param>
     /// <param name="isCombo">If set to <c>true</c>, the attacker did a combination of skills.</param>
     /// <param name="damageFactor">The damage factor.</param>
+    /// <returns>Returns information about the damage inflicted.</returns>
     ValueTask<HitInfo?> AttackByAsync(IAttacker attacker, SkillEntry? skill, bool isCombo, double damageFactor = 1.0);
 
     /// <summary>
