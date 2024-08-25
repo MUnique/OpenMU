@@ -4818,7 +4818,7 @@ public readonly ref struct TradeButtonStateChangedRef
     /// <summary>
     /// Gets the operation code of this data packet.
     /// </summary>
-    public static byte Code => 0xC3;
+    public static byte Code => 0x3C;
 
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
