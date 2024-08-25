@@ -73,7 +73,7 @@ public class AncientSets : InitializerBase
             (5, ItemGroups.Boots, Stats.TotalVitality, 2),
             (5, ItemGroups.Helm, Stats.TotalVitality, 2),
             (5, ItemGroups.Pants, Stats.TotalVitality, 2),
-            (0, ItemGroups.Shields, Stats.TotalVitality, 2)); // Small Shield
+            (0, ItemGroups.Shields, Stats.TotalVitality, 1)); // Small Shield
 
         var hyperion = this.AddAncientSet(
             "Hyperion", // Bronze
@@ -99,9 +99,9 @@ public class AncientSets : InitializerBase
         mist.SetGuid(0, 2);
         this.AddItems(
             mist,
-            (0, ItemGroups.Gloves, Stats.TotalVitality, 2),
+            (0, ItemGroups.Gloves, Stats.TotalVitality, 1),
             (0, ItemGroups.Pants, Stats.TotalVitality, 2),
-            (0, ItemGroups.Helm, Stats.TotalVitality, 2));
+            (0, ItemGroups.Helm, Stats.TotalVitality, 1));
 
         var eplete = this.AddAncientSet(
             "Eplete", // Scale
@@ -137,8 +137,8 @@ public class AncientSets : InitializerBase
             (6, ItemGroups.Pants, Stats.TotalVitality, 2),
             (6, ItemGroups.Armor, Stats.TotalVitality, 2),
             (6, ItemGroups.Helm, Stats.TotalVitality, 2),
-            (6, ItemGroups.Gloves, Stats.TotalVitality, 2),
-            (6, ItemGroups.Boots, Stats.TotalVitality, 2));
+            (6, ItemGroups.Gloves, Stats.TotalVitality, 1),
+            (6, ItemGroups.Boots, Stats.TotalVitality, 1));
 
         var garuda = this.AddAncientSet(
             "Garuda", // Brass
@@ -167,7 +167,7 @@ public class AncientSets : InitializerBase
         this.AddItems(
             cloud,
             (8, ItemGroups.Pants, Stats.TotalVitality, 2),
-            (8, ItemGroups.Helm, Stats.TotalVitality, 2));
+            (8, ItemGroups.Helm, Stats.TotalVitality, 1));
 
         var kantata = this.AddAncientSet(
             "Kantata", // Plate
@@ -198,8 +198,8 @@ public class AncientSets : InitializerBase
         rave.SetGuid(9, 2);
         this.AddItems(
             rave,
-            (9, ItemGroups.Helm, Stats.TotalVitality, 2),
-            (9, ItemGroups.Pants, Stats.TotalVitality, 2),
+            (9, ItemGroups.Helm, Stats.TotalVitality, 1),
+            (9, ItemGroups.Pants, Stats.TotalVitality, 1),
             (9, ItemGroups.Armor, Stats.TotalVitality, 2));
 
         var hyon = this.AddAncientSet(
@@ -272,7 +272,7 @@ public class AncientSets : InitializerBase
             barnake,
             (2, ItemGroups.Helm, Stats.TotalVitality, 2),
             (2, ItemGroups.Pants, Stats.TotalVitality, 2),
-            (2, ItemGroups.Boots, Stats.TotalVitality, 2));
+            (2, ItemGroups.Boots, Stats.TotalVitality, 1));
 
         var evis = this.AddAncientSet(
             "Evis", // Bone
@@ -305,9 +305,9 @@ public class AncientSets : InitializerBase
         this.AddItems(
             sylion,
             (4, ItemGroups.Armor, Stats.TotalVitality, 2),
-            (4, ItemGroups.Gloves, Stats.TotalVitality, 2),
+            (4, ItemGroups.Gloves, Stats.TotalVitality, 1),
             (4, ItemGroups.Boots, Stats.TotalVitality, 2),
-            (4, ItemGroups.Helm, Stats.TotalVitality, 2));
+            (4, ItemGroups.Helm, Stats.TotalVitality, 1));
 
         var heras = this.AddAncientSet(
             "Heras", // Sphinx
@@ -411,7 +411,7 @@ public class AncientSets : InitializerBase
         this.AddItems(
             drake,
             (10, ItemGroups.Boots, Stats.TotalVitality, 2),
-            (10, ItemGroups.Armor, Stats.TotalVitality, 2),
+            (10, ItemGroups.Armor, Stats.TotalVitality, 1),
             (10, ItemGroups.Helm, Stats.TotalVitality, 2),
             (10, ItemGroups.Pants, Stats.TotalVitality, 2));
 
@@ -445,7 +445,7 @@ public class AncientSets : InitializerBase
             fase,
             (11, ItemGroups.Gloves, Stats.TotalVitality, 2),
             (11, ItemGroups.Pants, Stats.TotalVitality, 2),
-            (11, ItemGroups.Boots, Stats.TotalVitality, 2));
+            (11, ItemGroups.Boots, Stats.TotalVitality, 1));
 
         var odin = this.AddAncientSet(
             "Odin", // Wind

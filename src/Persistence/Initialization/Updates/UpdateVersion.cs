@@ -134,4 +134,9 @@ public enum UpdateVersion
     /// The version of the <see cref="FixLifeSwellEffectUpdatePlugIn"/>.
     /// </summary>
     FixLifeSwellEffect = 25,
+
+    /// <summary>
+    /// The version of the <see cref="FixAncientDiscriminatorsUpdatePlugIn"/>.
+    /// </summary>
+    FixAncientDiscriminators = 26,
 }
