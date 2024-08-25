@@ -124,4 +124,9 @@ public enum UpdateVersion
     /// The version of the <see cref="FixDamageAbsorbItemsUpdatePlugIn"/>.
     /// </summary>
     FixDamageAbsorbItems = 23,
+
+    /// <summary>
+    /// The version of the <see cref="FixSocketSeedCraftingUpdatePlugIn"/>.
+    /// </summary>
+    FixSocketSeedCrafting = 24,
 }

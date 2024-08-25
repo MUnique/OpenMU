@@ -543,7 +543,6 @@ public class SocketSystem : InitializerBase
         randomExcItem.MaximumItemLevel = 15;
         randomExcItem.NpcPriceDivisor = 2_000_000;
         randomExcItem.RequiredItemOptions.Add(this.GameConfiguration.ItemOptionTypes.First(o => o == ItemOptionTypes.Excellent));
-        randomExcItem.RequiredItemOptions.Add(this.GameConfiguration.ItemOptionTypes.First(o => o == ItemOptionTypes.Option));
         craftingSettings.RequiredItems.Add(randomExcItem);
 
         var randomAncientItem = this.Context.CreateNew<ItemCraftingRequiredItem>();
@@ -553,7 +552,6 @@ public class SocketSystem : InitializerBase
         randomAncientItem.MaximumItemLevel = 15;
         randomAncientItem.NpcPriceDivisor = 2_000_000;
         randomAncientItem.RequiredItemOptions.Add(this.GameConfiguration.ItemOptionTypes.First(o => o == ItemOptionTypes.AncientBonus));
-        randomAncientItem.RequiredItemOptions.Add(this.GameConfiguration.ItemOptionTypes.First(o => o == ItemOptionTypes.Option));
         craftingSettings.RequiredItems.Add(randomAncientItem);
 
         var chaos = this.Context.CreateNew<ItemCraftingRequiredItem>();

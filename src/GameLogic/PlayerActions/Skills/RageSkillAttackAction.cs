@@ -41,6 +41,7 @@ public class RageSkillAttackAction
             player.CurrentMap!
                 .GetAttackablesInRange(player.Position, skill.Skill!.Range)
                 .Where(t => t != explicitTarget && t != player)
+                .Where(t => t is not Player)
                 .OrderBy(t => t.GetDistanceTo(player))
                 .Take(MaximumTargetsPerAttack - targets.Count));
 
