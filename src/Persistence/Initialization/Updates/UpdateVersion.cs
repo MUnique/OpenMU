@@ -129,4 +129,9 @@ public enum UpdateVersion
     /// The version of the <see cref="FixSocketSeedCraftingUpdatePlugIn"/>.
     /// </summary>
     FixSocketSeedCrafting = 24,
+
+    /// <summary>
+    /// The version of the <see cref="FixLifeSwellEffectUpdatePlugIn"/>.
+    /// </summary>
+    FixLifeSwellEffect = 25,
 }

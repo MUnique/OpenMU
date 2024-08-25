@@ -50,13 +50,13 @@ public class LifeSwellEffectInitializer : InitializerBase
         // one percent per 20 energy
         var boostPerEnergy = this.Context.CreateNew<AttributeRelationship>();
         boostPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
-        boostPerEnergy.InputOperator = InputOperator.Multiply;
+        boostPerEnergy.InputOperator = InputOperator.ExponentiateByAttribute;
         boostPerEnergy.InputOperand = 1f + (0.01f / 20f);
 
         // one percent per 100 vitality
         var boostPerVitality = this.Context.CreateNew<AttributeRelationship>();
         boostPerVitality.InputAttribute = Stats.TotalVitality.GetPersistent(this.GameConfiguration);
-        boostPerVitality.InputOperator = InputOperator.Multiply;
+        boostPerVitality.InputOperator = InputOperator.ExponentiateByAttribute;
         boostPerVitality.InputOperand = 1f + (0.01f / 100f);
 
         powerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
