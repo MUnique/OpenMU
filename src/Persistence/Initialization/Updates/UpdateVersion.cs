@@ -139,4 +139,19 @@ public enum UpdateVersion
     /// The version of the <see cref="FixAncientDiscriminatorsUpdatePlugIn"/>.
     /// </summary>
     FixAncientDiscriminators = 26,
+
+    /// <summary>
+    /// The version of the <see cref="AddItemDropGroupForJewels075Update"/>.
+    /// </summary>
+    AddItemDropGroupForJewels075 = 27,
+
+    /// <summary>
+    /// The version of the <see cref="AddItemDropGroupForJewels095dUpdate"/>.
+    /// </summary>
+    AddItemDropGroupForJewels095d = 28,
+
+    /// <summary>
+    /// The version of the <see cref="AddItemDropGroupForJewelsSeason6Update"/>.
+    /// </summary>
+    AddItemDropGroupForJewelsSeason6 = 29,
 }
