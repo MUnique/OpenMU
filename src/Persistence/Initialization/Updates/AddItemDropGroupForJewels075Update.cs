@@ -107,9 +107,9 @@ public class AddItemDropGroupForJewels075Update : UpdatePlugInBase
 
         var jewelsDropItemGroup = context.CreateNew<DropItemGroup>();
         jewelsDropItemGroup.SetGuid(4);
-        jewelsDropItemGroup.Chance = 0.05;
+        jewelsDropItemGroup.Chance = 0.001;
         jewelsDropItemGroup.ItemType = SpecialItemType.RandomItem;
-        jewelsDropItemGroup.Description = "The jewels drop item group (5 % drop chance)";
+        jewelsDropItemGroup.Description = "The jewels drop item group (0.1 % drop chance)";
         gameConfiguration.DropItemGroups.Add(jewelsDropItemGroup);
     }
 }
