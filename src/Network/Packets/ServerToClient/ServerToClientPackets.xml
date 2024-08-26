@@ -1750,7 +1750,7 @@
     </Packet>
     <Packet>
       <HeaderType>C1Header</HeaderType>
-      <Code>C3</Code>
+      <Code>3C</Code>
       <Name>TradeButtonStateChanged</Name>
       <Length>4</Length>
       <Direction>ServerToClient</Direction>
