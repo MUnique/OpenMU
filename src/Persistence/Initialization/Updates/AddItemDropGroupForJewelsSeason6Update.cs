@@ -1,10 +1,9 @@
-﻿// <copyright file="AddItemDropGroupForJewelsSeason6.cs" company="MUnique">
+﻿// <copyright file="AddItemDropGroupForJewelsSeason6Update.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
 namespace MUnique.OpenMU.Persistence.Initialization.Updates;
 
-using System;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using MUnique.OpenMU.DataModel.Configuration;
