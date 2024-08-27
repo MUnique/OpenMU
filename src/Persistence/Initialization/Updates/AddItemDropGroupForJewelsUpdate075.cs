@@ -1,4 +1,4 @@
-﻿// <copyright file="AddItemDropGroupForJewels075Update.cs" company="MUnique">
+﻿// <copyright file="AddItemDropGroupForJewelsUpdate075.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [PlugIn(PlugInName, PlugInDescription)]
 [Guid("DCF14924-BB19-4CA2-93EC-397A89AA3EB3")]
-public class AddItemDropGroupForJewels075Update : UpdatePlugInBase
+public class AddItemDropGroupForJewelsUpdate075 : UpdatePlugInBase
 {
     /// <summary>
     /// The plug in name.
