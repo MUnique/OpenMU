@@ -80,8 +80,8 @@ public class PipelinedSimpleModulusDecryptor : PipelinedSimpleModulusBase, IPipe
     /// Decrypts the packet and writes it into our pipe.
     /// </summary>
     /// <param name="packet">The mu online packet.</param>
-    /// <returns>The async task.</returns>
-    protected override async ValueTask ReadPacketAsync(ReadOnlySequence<byte> packet)
+    /// <returns><see langword="true" />, if the flush was successful or not required.<see langword="false" />, if the pipe reader is completed and no longer reading data.</returns>
+    protected override async ValueTask<bool> ReadPacketAsync(ReadOnlySequence<byte> packet)
     {
         // The next line is getting a span from the writer which is at least as big as the packet.
         // As I found out, it's initially about 2 kb in size and gets smaller within further
@@ -92,7 +92,7 @@ public class PipelinedSimpleModulusDecryptor : PipelinedSimpleModulusBase, IPipe
         {
             // we just have to write-through
             this.CopyDataIntoWriter(this.Pipe.Writer, packet);
-            await this.Pipe.Writer.FlushAsync().ConfigureAwait(false);
+            return await this.TryFlushWriterAsync(this.Pipe.Writer).ConfigureAwait(false);
         }
         else
         {
@@ -105,7 +105,7 @@ public class PipelinedSimpleModulusDecryptor : PipelinedSimpleModulusBase, IPipe
             }
 
             this.DecryptAndWrite(packet);
-            await this.Pipe.Writer.FlushAsync().ConfigureAwait(false);
+            return await this.TryFlushWriterAsync(this.Pipe.Writer).ConfigureAwait(false);
         }
     }
 
