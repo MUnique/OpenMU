@@ -1,4 +1,4 @@
-# C1 C3 - TradeButtonStateChanged (by server)
+# C1 3C - TradeButtonStateChanged (by server)
 
 ## Is sent when
 
@@ -14,7 +14,7 @@ The game client updates the trade button state accordingly.
 |-------|--------|-----------|-------|-------------|
 | 0 | 1 |   Byte   | 0xC1  | [Packet type](PacketTypes.md) |
 | 1 | 1 |    Byte   |   4   | Packet header - length of the packet |
-| 2 | 1 |    Byte   | 0xC3  | Packet header - packet type identifier |
+| 2 | 1 |    Byte   | 0x3C  | Packet header - packet type identifier |
 | 3 | 1 | TradeButtonState |  | State |
 
 ### TradeButtonState Enum
