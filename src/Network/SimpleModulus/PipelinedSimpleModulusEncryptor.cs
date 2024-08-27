@@ -73,7 +73,7 @@ public class PipelinedSimpleModulusEncryptor : PipelinedSimpleModulusBase, IPipe
     }
 
     /// <inheritdoc />
-    protected override async ValueTask ReadPacketAsync(ReadOnlySequence<byte> packet)
+    protected override async ValueTask<bool> ReadPacketAsync(ReadOnlySequence<byte> packet)
     {
         packet.Slice(0, this.HeaderBuffer.Length).CopyTo(this.HeaderBuffer);
 
@@ -81,12 +81,11 @@ public class PipelinedSimpleModulusEncryptor : PipelinedSimpleModulusBase, IPipe
         {
             // we just have to write-through
             this.CopyDataIntoWriter(this._target, packet);
-            await this._target.FlushAsync().ConfigureAwait(false);
-            return;
+            return await this.TryFlushWriterAsync(this._target).ConfigureAwait(false);
         }
 
         this.EncryptAndWrite(packet);
-        await this._target.FlushAsync().ConfigureAwait(false);
+        return await this.TryFlushWriterAsync(this._target).ConfigureAwait(false);
     }
 
     /// <summary>

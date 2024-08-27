@@ -56,11 +56,11 @@ public class PipelinedXor32Decryptor : PacketPipeReaderBase, IPipelinedDecryptor
     /// Decrypts the packet and writes it into our pipe.
     /// </summary>
     /// <param name="packet">The mu online packet.</param>
-    /// <returns>The async task.</returns>
-    protected override async ValueTask ReadPacketAsync(ReadOnlySequence<byte> packet)
+    /// <returns><see langword="true" />, if the flush was successful or not required.<see langword="false" />, if the pipe reader is completed and no longer reading data.</returns>
+    protected override async ValueTask<bool> ReadPacketAsync(ReadOnlySequence<byte> packet)
     {
         this.DecryptAndWrite(packet);
-        await this._pipe.Writer.FlushAsync().ConfigureAwait(false);
+        return await this.TryFlushWriterAsync(this._pipe.Writer).ConfigureAwait(false);
     }
 
     private void DecryptAndWrite(ReadOnlySequence<byte> packet)

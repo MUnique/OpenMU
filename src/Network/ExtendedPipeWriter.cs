@@ -9,7 +9,7 @@ using System.IO.Pipelines;
 using System.Threading;
 
 /// <summary>
-/// A wrapper for an existing <see cref="PipeWriter"/>, which flushes the advanced bytes automatically.
+/// A wrapper for an existing <see cref="PipeWriter"/>, which has metrics about the written bytes.
 /// </summary>
 public class ExtendedPipeWriter : PipeWriter
 {
