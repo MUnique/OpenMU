@@ -141,7 +141,7 @@ public enum UpdateVersion
     FixAncientDiscriminators = 26,
 
     /// <summary>
-    /// The version of the <see cref="AddItemDropGroupForJewels075Update"/>.
+    /// The version of the <see cref="AddItemDropGroupForJewelsUpdate075"/>.
     /// </summary>
     AddItemDropGroupForJewels075 = 27,
 
@@ -151,7 +151,7 @@ public enum UpdateVersion
     AddItemDropGroupForJewels095d = 28,
 
     /// <summary>
-    /// The version of the <see cref="AddItemDropGroupForJewelsSeason6Update"/>.
+    /// The version of the <see cref="AddItemDropGroupForJewelsUpdateSeason6"/>.
     /// </summary>
     AddItemDropGroupForJewelsSeason6 = 29,
 }
