@@ -61,12 +61,12 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.CreateSkill(SkillNumber.Heal, "Heal", CharacterClasses.FairyElf, distance: 6, manaConsumption: 20, energyRequirement: 52, skillType: SkillType.Regeneration, targetRestriction: SkillTargetRestriction.Player);
         this.CreateSkill(SkillNumber.GreaterDefense, "Greater Defense", CharacterClasses.FairyElf, distance: 6, manaConsumption: 30, energyRequirement: 72, skillType: SkillType.Buff, targetRestriction: SkillTargetRestriction.Player);
         this.CreateSkill(SkillNumber.GreaterDamage, "Greater Damage", CharacterClasses.FairyElf, distance: 6, manaConsumption: 40, energyRequirement: 92, skillType: SkillType.Buff, targetRestriction: SkillTargetRestriction.Player);
-        this.CreateSkill(SkillNumber.SummonGoblin, "Summon Goblin", CharacterClasses.FairyElf, manaConsumption: 40, energyRequirement: 90, skillType: SkillType.SummonMonster);
-        this.CreateSkill(SkillNumber.SummonStoneGolem, "Summon Stone Golem", CharacterClasses.FairyElf, manaConsumption: 70, energyRequirement: 170, skillType: SkillType.SummonMonster);
-        this.CreateSkill(SkillNumber.SummonAssassin, "Summon Assassin", CharacterClasses.FairyElf, manaConsumption: 110, energyRequirement: 190, skillType: SkillType.SummonMonster);
-        this.CreateSkill(SkillNumber.SummonEliteYeti, "Summon Elite Yeti", CharacterClasses.FairyElf, manaConsumption: 160, energyRequirement: 230, skillType: SkillType.SummonMonster);
-        this.CreateSkill(SkillNumber.SummonDarkKnight, "Summon Dark Knight", CharacterClasses.FairyElf, manaConsumption: 200, energyRequirement: 250, skillType: SkillType.SummonMonster);
-        this.CreateSkill(SkillNumber.SummonBali, "Summon Bali", CharacterClasses.FairyElf, manaConsumption: 250, energyRequirement: 260, skillType: SkillType.SummonMonster);
+        this.CreateSkill(SkillNumber.SummonGoblin, "Summon Goblin", CharacterClasses.FairyElf, manaConsumption: 40, energyRequirement: 30, skillType: SkillType.SummonMonster);
+        this.CreateSkill(SkillNumber.SummonStoneGolem, "Summon Stone Golem", CharacterClasses.FairyElf, manaConsumption: 70, energyRequirement: 60, skillType: SkillType.SummonMonster);
+        this.CreateSkill(SkillNumber.SummonAssassin, "Summon Assassin", CharacterClasses.FairyElf, manaConsumption: 110, energyRequirement: 90, skillType: SkillType.SummonMonster);
+        this.CreateSkill(SkillNumber.SummonEliteYeti, "Summon Elite Yeti", CharacterClasses.FairyElf, manaConsumption: 160, energyRequirement: 130, skillType: SkillType.SummonMonster);
+        this.CreateSkill(SkillNumber.SummonDarkKnight, "Summon Dark Knight", CharacterClasses.FairyElf, manaConsumption: 200, energyRequirement: 170, skillType: SkillType.SummonMonster);
+        this.CreateSkill(SkillNumber.SummonBali, "Summon Bali", CharacterClasses.FairyElf, manaConsumption: 250, energyRequirement: 210, skillType: SkillType.SummonMonster);
         this.CreateSkill(SkillNumber.FlameofEvil, "Flame of Evil (Monster)", damage: 120, manaConsumption: 160, levelRequirement: 60, energyRequirement: 100);
 
         this.InitializeEffects();

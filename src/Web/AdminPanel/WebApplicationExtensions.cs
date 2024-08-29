@@ -56,8 +56,8 @@ public static class WebApplicationExtensions
 
         services.AddScoped<ILookupController, PersistentObjectsLookupController>();
 
-        services.AddScoped<IDataSource<GameConfiguration>, GameConfigurationDataSource>();
-        services.AddScoped<IDataSource<Account>, AccountDataSource>();
+        services.AddSingleton<IDataSource<GameConfiguration>, GameConfigurationDataSource>();
+        services.AddSingleton<IDataSource<Account>, AccountDataSource>();
         services.AddScoped<SetupService>();
         services.AddScoped<DataUpdateService>();
         services.AddScoped<AccountService>();

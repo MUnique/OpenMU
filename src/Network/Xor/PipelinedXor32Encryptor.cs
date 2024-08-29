@@ -58,11 +58,11 @@ public class PipelinedXor32Encryptor : PacketPipeReaderBase, IPipelinedEncryptor
     /// Encrypts the packet and writes it into the target.
     /// </summary>
     /// <param name="packet">The mu online packet.</param>
-    /// <returns>The async task.</returns>
-    protected override async ValueTask ReadPacketAsync(ReadOnlySequence<byte> packet)
+    /// <returns><see langword="true" />, if the flush was successful or not required.<see langword="false" />, if the pipe reader is completed and no longer reading data.</returns>
+    protected override async ValueTask<bool> ReadPacketAsync(ReadOnlySequence<byte> packet)
     {
         this.EncryptAndWrite(packet);
-        await this._target.FlushAsync().ConfigureAwait(false);
+        return await this.TryFlushWriterAsync(this._target).ConfigureAwait(false);
     }
 
     private void EncryptAndWrite(ReadOnlySequence<byte> packet)
