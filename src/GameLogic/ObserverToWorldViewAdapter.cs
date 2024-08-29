@@ -14,7 +14,7 @@ using MUnique.OpenMU.GameLogic.Views.World;
 /// </summary>
 public sealed class ObserverToWorldViewAdapter : AsyncDisposable, IBucketMapObserver
 {
-    private readonly AsyncReaderWriterLock _observingLock = new ();
+    private readonly AsyncReaderWriterLock _observingLock = new();
     private readonly ISet<IObservable> _observingObjects = new HashSet<IObservable>();
     private readonly IWorldObserver _adaptee;
 
@@ -54,38 +54,38 @@ public sealed class ObserverToWorldViewAdapter : AsyncDisposable, IBucketMapObse
             return;
         }
 
-        if (item is Player { IsInvisible: false } player)
+        using (await this._observingLock.WriterLockAsync())
         {
-            await this._adaptee.InvokeViewPlugInAsync<INewPlayersInScopePlugIn>(p => p.NewPlayersInScopeAsync(player.GetAsEnumerable())).ConfigureAwait(false);
-        }
-        else if (item is NonPlayerCharacter npc)
-        {
-            await this._adaptee.InvokeViewPlugInAsync<INewNpcsInScopePlugIn>(p => p.NewNpcsInScopeAsync(npc.GetAsEnumerable())).ConfigureAwait(false);
-        }
-        else if (item is DroppedItem droppedItem)
-        {
-            await this._adaptee.InvokeViewPlugInAsync<IShowDroppedItemsPlugIn>(p => p.ShowDroppedItemsAsync(droppedItem.GetAsEnumerable(), true)).ConfigureAwait(false);
-        }
-        else if (item is DroppedMoney droppedMoney)
-        {
-            await this._adaptee.InvokeViewPlugInAsync<IShowMoneyDropPlugIn>(p => p.ShowMoneyAsync(droppedMoney.Id, true, droppedMoney.Amount, droppedMoney.Position)).ConfigureAwait(false);
-        }
-        else
-        {
-            // no action required.
-        }
+            if (item is Player { IsInvisible: false } player)
+            {
+                await this._adaptee.InvokeViewPlugInAsync<INewPlayersInScopePlugIn>(p => p.NewPlayersInScopeAsync(player.GetAsEnumerable())).ConfigureAwait(false);
+            }
+            else if (item is NonPlayerCharacter npc)
+            {
+                await this._adaptee.InvokeViewPlugInAsync<INewNpcsInScopePlugIn>(p => p.NewNpcsInScopeAsync(npc.GetAsEnumerable())).ConfigureAwait(false);
+            }
+            else if (item is DroppedItem droppedItem)
+            {
+                await this._adaptee.InvokeViewPlugInAsync<IShowDroppedItemsPlugIn>(p => p.ShowDroppedItemsAsync(droppedItem.GetAsEnumerable(), true)).ConfigureAwait(false);
+            }
+            else if (item is DroppedMoney droppedMoney)
+            {
+                await this._adaptee.InvokeViewPlugInAsync<IShowMoneyDropPlugIn>(p => p.ShowMoneyAsync(droppedMoney.Id, true, droppedMoney.Amount, droppedMoney.Position)).ConfigureAwait(false);
+            }
+            else
+            {
+                // no action required.
+            }
 
-        if (item is IObservable observable and not Player { IsInvisible: true })
-        {
-            using (await this._observingLock.WriterLockAsync())
+            if (item is IObservable observable and not Player { IsInvisible: true })
             {
                 if (!this._observingObjects.Contains(observable))
                 {
                     this._observingObjects.Add(observable);
                 }
-            }
 
-            await observable.AddObserverAsync(this._adaptee).ConfigureAwait(false);
+                await observable.AddObserverAsync(this._adaptee).ConfigureAwait(false);
+            }
         }
     }
 
@@ -109,25 +109,25 @@ public sealed class ObserverToWorldViewAdapter : AsyncDisposable, IBucketMapObse
             return;
         }
 
-        if (item is IObservable observable)
+        using (await this._observingLock.WriterLockAsync())
         {
-            using (await this._observingLock.WriterLockAsync())
+            if (item is IObservable observable)
             {
                 this._observingObjects.Remove(observable);
+
+                await observable.RemoveObserverAsync(this._adaptee).ConfigureAwait(false);
             }
 
-            await observable.RemoveObserverAsync(this._adaptee).ConfigureAwait(false);
-        }
-
-        if (item is DroppedItem || item is DroppedMoney)
-        {
-            await this._adaptee.InvokeViewPlugInAsync<IDroppedItemsDisappearedPlugIn>(p => p.DroppedItemsDisappearedAsync(item.GetAsEnumerable().Select(i => i.Id))).ConfigureAwait(false);
-        }
-        else
-        {
-            if (item.IsActive())
+            if (item is DroppedItem || item is DroppedMoney)
             {
-                await this._adaptee.InvokeViewPlugInAsync<IObjectsOutOfScopePlugIn>(p => p.ObjectsOutOfScopeAsync(item.GetAsEnumerable())).ConfigureAwait(false);
+                await this._adaptee.InvokeViewPlugInAsync<IDroppedItemsDisappearedPlugIn>(p => p.DroppedItemsDisappearedAsync(item.GetAsEnumerable().Select(i => i.Id))).ConfigureAwait(false);
+            }
+            else
+            {
+                if (item.IsActive())
+                {
+                    await this._adaptee.InvokeViewPlugInAsync<IObjectsOutOfScopePlugIn>(p => p.ObjectsOutOfScopeAsync(item.GetAsEnumerable())).ConfigureAwait(false);
+                }
             }
         }
     }
@@ -147,29 +147,29 @@ public sealed class ObserverToWorldViewAdapter : AsyncDisposable, IBucketMapObse
             oldItems
                 .OfType<IObservable>()
                 .ForEach(item => this._observingObjects.Remove(item));
-        }
 
-        await oldItems
-            .OfType<IObservable>()
-            .ForEachAsync(item => item.RemoveObserverAsync(this._adaptee))
-            .ConfigureAwait(false);
+            await oldItems
+                .OfType<IObservable>()
+                .ForEachAsync(item => item.RemoveObserverAsync(this._adaptee))
+                .ConfigureAwait(false);
 
-        if (this._adaptee is IHasBucketInformation { NewBucket: null })
-        {
-            // adaptee (player) left the map or disconnected; it's not required to update the view
-        }
-        else
-        {
-            var droppedItems = oldItems.Where(item => item is DroppedItem || item is DroppedMoney);
-            var nonItems = oldItems.Except(droppedItems).WhereActive();
-            if (nonItems.Any())
+            if (this._adaptee is IHasBucketInformation { NewBucket: null })
             {
-                await this._adaptee.InvokeViewPlugInAsync<IObjectsOutOfScopePlugIn>(p => p.ObjectsOutOfScopeAsync(nonItems)).ConfigureAwait(false);
+                // adaptee (player) left the map or disconnected; it's not required to update the view
             }
-
-            if (droppedItems.Any())
+            else
             {
-                await this._adaptee.InvokeViewPlugInAsync<IDroppedItemsDisappearedPlugIn>(p => p.DroppedItemsDisappearedAsync(droppedItems.Select(item => item.Id))).ConfigureAwait(false);
+                var droppedItems = oldItems.Where(item => item is DroppedItem || item is DroppedMoney);
+                var nonItems = oldItems.Except(droppedItems).WhereActive();
+                if (nonItems.Any())
+                {
+                    await this._adaptee.InvokeViewPlugInAsync<IObjectsOutOfScopePlugIn>(p => p.ObjectsOutOfScopeAsync(nonItems)).ConfigureAwait(false);
+                }
+
+                if (droppedItems.Any())
+                {
+                    await this._adaptee.InvokeViewPlugInAsync<IDroppedItemsDisappearedPlugIn>(p => p.DroppedItemsDisappearedAsync(droppedItems.Select(item => item.Id))).ConfigureAwait(false);
+                }
             }
         }
     }
@@ -196,6 +196,7 @@ public sealed class ObserverToWorldViewAdapter : AsyncDisposable, IBucketMapObse
         }
 
         var npcs = newItems.OfType<NonPlayerCharacter>().WhereActive();
+
         if (npcs.Any())
         {
             await this._adaptee.InvokeViewPlugInAsync<INewNpcsInScopePlugIn>(p => p.NewNpcsInScopeAsync(npcs, false)).ConfigureAwait(false);
