@@ -110,7 +110,16 @@ public class AddItemDropGroupForJewelsUpdate075 : UpdatePlugInBase
         }
 
         var jewelsDropItemGroup = context.CreateNew<DropItemGroup>();
-        jewelsDropItemGroup.SetGuid(dropId);
+
+        if (mapNumber != null)
+        {
+            jewelsDropItemGroup.SetGuid(mapNumber.Value, dropId);
+        }
+        else
+        {
+            jewelsDropItemGroup.SetGuid(dropId);
+        }
+
         jewelsDropItemGroup.Chance = 0.001;
         jewelsDropItemGroup.ItemType = SpecialItemType.RandomItem;
         jewelsDropItemGroup.Description = name;
