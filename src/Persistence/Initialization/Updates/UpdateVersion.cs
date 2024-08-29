@@ -140,6 +140,7 @@ public enum UpdateVersion
     /// </summary>
     FixAncientDiscriminators = 26,
 
+    /// <summary>
     /// The version of the <see cref="FixDrainLifeSkillUpdate"/>.
     /// </summary>
     FixDrainLifeSkill = 27,
