@@ -140,18 +140,22 @@ public enum UpdateVersion
     /// </summary>
     FixAncientDiscriminators = 26,
 
+    /// The version of the <see cref="FixDrainLifeSkillUpdate"/>.
+    /// </summary>
+    FixDrainLifeSkill = 27,
+
     /// <summary>
     /// The version of the <see cref="AddItemDropGroupForJewelsUpdate075"/>.
     /// </summary>
-    AddItemDropGroupForJewels075 = 27,
+    AddItemDropGroupForJewels075 = 28,
 
     /// <summary>
     /// The version of the <see cref="AddItemDropGroupForJewelsUpdate095D"/>.
     /// </summary>
-    AddItemDropGroupForJewels095d = 28,
+    AddItemDropGroupForJewels095d = 29,
 
     /// <summary>
     /// The version of the <see cref="AddItemDropGroupForJewelsUpdateSeason6"/>.
     /// </summary>
-    AddItemDropGroupForJewelsSeason6 = 29,
+    AddItemDropGroupForJewelsSeason6 = 30,
 }

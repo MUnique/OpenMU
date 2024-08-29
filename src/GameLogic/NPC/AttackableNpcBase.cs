@@ -98,11 +98,11 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
                                   || (this.SpawnArea.SpawnTrigger == SpawnTrigger.AutomaticDuringWave && (this._eventStateProvider?.IsSpawnWaveActive(this.SpawnArea.WaveNumber) ?? false));
 
     /// <inheritdoc />
-    public async ValueTask AttackByAsync(IAttacker attacker, SkillEntry? skill, bool isCombo, double damageFactor = 1.0)
+    public async ValueTask<HitInfo?> AttackByAsync(IAttacker attacker, SkillEntry? skill, bool isCombo, double damageFactor = 1.0)
     {
         if (this.Definition.ObjectKind == NpcObjectKind.Guard)
         {
-            return;
+            return null;
         }
 
         var hitInfo = await attacker.CalculateDamageAsync(this, skill, isCombo, damageFactor).ConfigureAwait(false);
@@ -120,6 +120,8 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
                 await playerSurrogate.Owner.AfterHitTargetAsync().ConfigureAwait(false);
             }
         }
+
+        return hitInfo;
     }
 
     /// <inheritdoc />
