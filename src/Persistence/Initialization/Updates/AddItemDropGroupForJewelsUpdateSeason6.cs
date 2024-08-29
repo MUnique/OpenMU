@@ -25,8 +25,10 @@ public class AddItemDropGroupForJewelsUpdateSeason6 : AddItemDropGroupForJewelsU
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
+        this.CreateDropItemGroupForJewels(context, gameConfiguration, 5, VersionSeasonSix.Maps.LandOfTrials.Number, "Jewel of Guardian");
+
         await base.ApplyAsync(context, gameConfiguration).ConfigureAwait(false);
-        this.AddJewelToItemDrop(gameConfiguration, "Jewel of Creation");
-        this.AddJewelToItemDrop(gameConfiguration, "Jewel of Guardian");
+        this.AddJewelToItemDrop(gameConfiguration, 4, null, "Jewel of Creation");
+        this.AddJewelToItemDrop(gameConfiguration, 1, VersionSeasonSix.Maps.LandOfTrials.Number, "Jewel of Guardian");
     }
 }

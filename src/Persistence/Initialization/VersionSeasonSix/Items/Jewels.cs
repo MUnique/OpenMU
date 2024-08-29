@@ -50,7 +50,7 @@ public class Jewels : Version097d.Items.Jewels
         itemDefinition.Width = 1;
         itemDefinition.Height = 1;
         itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
-        this.AddItemToJewelItemDrop(itemDefinition);
+
         return itemDefinition;
     }
 

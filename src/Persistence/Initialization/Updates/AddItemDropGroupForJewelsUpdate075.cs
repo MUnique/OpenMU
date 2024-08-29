@@ -48,21 +48,23 @@ public class AddItemDropGroupForJewelsUpdate075 : UpdatePlugInBase
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
-        this.CreateDropItemGroupForJewels(context, gameConfiguration);
+        this.CreateDropItemGroupForJewels(context, gameConfiguration, 4, null, "The jewels drop item group (0.1 % drop chance)");
 
-        this.AddJewelToItemDrop(gameConfiguration, "Jewel of Bless");
-        this.AddJewelToItemDrop(gameConfiguration, "Jewel of Soul");
-        this.AddJewelToItemDrop(gameConfiguration, "Jewel of Chaos");
+        this.AddJewelToItemDrop(gameConfiguration, 4, null, "Jewel of Bless");
+        this.AddJewelToItemDrop(gameConfiguration, 4, null, "Jewel of Soul");
+        this.AddJewelToItemDrop(gameConfiguration, 4, null, "Jewel of Chaos");
     }
 
     /// <summary>
-    /// Add jewel to specific drop item group
+    /// Add jewel to specific drop item group.
     /// </summary>
     /// <param name="gameConfiguration">Game configuration context to update.</param>
+    /// <param name="dropId">Drop to which the jewel will be associated.</param>
+    /// <param name="mapNumber">Optionally the map number to asociate drop group item.</param>
     /// <param name="jewelName">Jewel name to add into specific drop item group.</param>
-    protected void AddJewelToItemDrop(GameConfiguration gameConfiguration, string jewelName)
+    protected void AddJewelToItemDrop(GameConfiguration gameConfiguration, short dropId, short? mapNumber, string jewelName)
     {
-        var jewelsItemDrop = this.GetJewelsDropItemGroup(gameConfiguration);
+        var jewelsItemDrop = GetJewelsDropItemGroup(gameConfiguration, dropId, mapNumber);
 
         if (jewelsItemDrop == null)
         {
@@ -89,27 +91,47 @@ public class AddItemDropGroupForJewelsUpdate075 : UpdatePlugInBase
         }
     }
 
-    private DropItemGroup? GetJewelsDropItemGroup(GameConfiguration gameConfiguration)
+    /// <summary>
+    /// Create drop item group for jewels.
+    /// </summary>
+    /// <param name="context">The persistence context.</param>
+    /// <param name="gameConfiguration">Game configuration context to update.</param>
+    /// <param name="dropId">New drop id.</param>
+    /// <param name="mapNumber">Optionally the map number to asociate drop group item.</param>
+    /// <param name="name">Description of drop,</param>
+    /// <returns>Returns new drop item group.</returns>
+    protected DropItemGroup CreateDropItemGroupForJewels(IContext context, GameConfiguration gameConfiguration, short dropId, short? mapNumber, string name)
     {
-        var id = GuidHelper.CreateGuid<DropItemGroup>(4);
-        var jewelsItemDrop = gameConfiguration.DropItemGroups.FirstOrDefault(x => x.GetId() == id);
-        return jewelsItemDrop;
-    }
-
-    private void CreateDropItemGroupForJewels(IContext context, GameConfiguration gameConfiguration)
-    {
-        var jewelsItemDrop = this.GetJewelsDropItemGroup(gameConfiguration);
+        var jewelsItemDrop = GetJewelsDropItemGroup(gameConfiguration, dropId, mapNumber);
 
         if (jewelsItemDrop != null)
         {
-            return;
+            return jewelsItemDrop;
         }
 
         var jewelsDropItemGroup = context.CreateNew<DropItemGroup>();
-        jewelsDropItemGroup.SetGuid(4);
+        jewelsDropItemGroup.SetGuid(dropId);
         jewelsDropItemGroup.Chance = 0.001;
         jewelsDropItemGroup.ItemType = SpecialItemType.RandomItem;
-        jewelsDropItemGroup.Description = "The jewels drop item group (0.1 % drop chance)";
+        jewelsDropItemGroup.Description = name;
         gameConfiguration.DropItemGroups.Add(jewelsDropItemGroup);
+
+        if (mapNumber != null)
+        {
+            var map = gameConfiguration.Maps.First(x => x.Number == mapNumber);
+            map.DropItemGroups.Add(jewelsDropItemGroup);
+        }
+
+        return jewelsDropItemGroup;
+    }
+
+    private static DropItemGroup? GetJewelsDropItemGroup(GameConfiguration gameConfiguration, short dropId, short? mapNumber)
+    {
+        var id = mapNumber != null
+            ? GuidHelper.CreateGuid<DropItemGroup>(mapNumber ?? 0, dropId)
+            : GuidHelper.CreateGuid<DropItemGroup>(dropId);
+
+        var jewelsItemDrop = gameConfiguration.DropItemGroups.FirstOrDefault(x => x.GetId() == id);
+        return jewelsItemDrop;
     }
 }

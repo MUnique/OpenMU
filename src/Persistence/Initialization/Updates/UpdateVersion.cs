@@ -146,7 +146,7 @@ public enum UpdateVersion
     AddItemDropGroupForJewels075 = 27,
 
     /// <summary>
-    /// The version of the <see cref="AddItemDropGroupForJewels095dUpdate"/>.
+    /// The version of the <see cref="AddItemDropGroupForJewelsUpdate095D"/>.
     /// </summary>
     AddItemDropGroupForJewels095d = 28,
 

@@ -26,6 +26,6 @@ public class AddItemDropGroupForJewelsUpdate095D : AddItemDropGroupForJewelsUpda
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
         await base.ApplyAsync(context, gameConfiguration).ConfigureAwait(false);
-        this.AddJewelToItemDrop(gameConfiguration, "Jewel of Life");
+        this.AddJewelToItemDrop(gameConfiguration, 4, null, "Jewel of Life");
     }
 }
