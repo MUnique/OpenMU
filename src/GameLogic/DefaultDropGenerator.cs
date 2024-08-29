@@ -111,36 +111,7 @@ public class DefaultDropGenerator : IDropGenerator
     /// <inheritdoc/>
     public Item? GenerateItemDrop(DropItemGroup selectedGroup)
     {
-        var item = selectedGroup.ItemType == SpecialItemType.Ancient
-            ? this.GenerateRandomAncient()
-            : this.GenerateRandomItem(selectedGroup.PossibleItems);
-
-        if (item is null)
-        {
-            return null;
-        }
-
-        if (selectedGroup is ItemDropItemGroup itemDropItemGroup)
-        {
-            item.Level = (byte)this._randomizer.NextInt(itemDropItemGroup.MinimumLevel, itemDropItemGroup.MaximumLevel + 1);
-        }
-        else if (selectedGroup.ItemLevel is { } itemLevel)
-        {
-            item.Level = itemLevel;
-        }
-        else
-        {
-            // no level defined, so it stays at 0.
-        }
-
-        item.Level = Math.Min(item.Level, item.Definition!.MaximumItemLevel);
-
-        if (selectedGroup.ItemType == SpecialItemType.Excellent)
-        {
-            this.AddRandomExcOptions(item);
-        }
-
-        return item;
+        return this.GenerateItemDrop(selectedGroup, selectedGroup.PossibleItems);
     }
 
     /// <inheritdoc/>
@@ -293,6 +264,40 @@ public class DefaultDropGenerator : IDropGenerator
         return true;
     }
 
+    private Item? GenerateItemDrop(DropItemGroup selectedGroup, ICollection<ItemDefinition> possibleItems)
+    {
+        var item = selectedGroup.ItemType == SpecialItemType.Ancient
+            ? this.GenerateRandomAncient()
+            : this.GenerateRandomItem(possibleItems);
+
+        if (item is null)
+        {
+            return null;
+        }
+
+        if (selectedGroup is ItemDropItemGroup itemDropItemGroup)
+        {
+            item.Level = (byte)this._randomizer.NextInt(itemDropItemGroup.MinimumLevel, itemDropItemGroup.MaximumLevel + 1);
+        }
+        else if (selectedGroup.ItemLevel is { } itemLevel)
+        {
+            item.Level = itemLevel;
+        }
+        else
+        {
+            // no level defined, so it stays at 0.
+        }
+
+        item.Level = Math.Min(item.Level, item.Definition!.MaximumItemLevel);
+
+        if (selectedGroup.ItemType == SpecialItemType.Excellent)
+        {
+            this.AddRandomExcOptions(item);
+        }
+
+        return item;
+    }
+
     private void ApplyOption(Item item, ItemOptionDefinition option)
     {
         for (int i = 0; i < option.MaximumOptionsPerItem; i++)
@@ -318,7 +323,7 @@ public class DefaultDropGenerator : IDropGenerator
 
     private Item? GenerateRandomItem(ICollection<ItemDefinition>? possibleItems)
     {
-        if (possibleItems is null || !possibleItems.Any())
+        if (possibleItems is null || possibleItems.Count == 0)
         {
             return null;
         }
@@ -398,9 +403,12 @@ public class DefaultDropGenerator : IDropGenerator
     private Item? GenerateItemDropOrMoney(MonsterDefinition monster, DropItemGroup selectedGroup, int gainedExperience, out uint? droppedMoney)
     {
         droppedMoney = null;
+
         if (selectedGroup.PossibleItems?.Count > 0)
         {
-            return this.GenerateItemDrop(selectedGroup);
+            var monsterLevel = (int)monster[Stats.Level];
+            var filteredPossibleItems = selectedGroup.PossibleItems.Where(it => it.DropLevel == 0 || ((it.DropLevel <= monsterLevel) && (it.DropLevel > monsterLevel - 12))).ToArray();
+            return this.GenerateItemDrop(selectedGroup, filteredPossibleItems);
         }
 
         switch (selectedGroup.ItemType)
@@ -454,9 +462,9 @@ public class DefaultDropGenerator : IDropGenerator
 
         return this._droppableItemsPerMonsterLevel[monsterLevel]
             ??= (from it in this._droppableItems
-            where (it.DropLevel <= monsterLevel)
-                  && (it.DropLevel > monsterLevel - 12)
-                  && (!socketItems || it.MaximumSockets > 0)
-            select it).ToList();
+                 where (it.DropLevel <= monsterLevel)
+                       && (it.DropLevel > monsterLevel - 12)
+                       && (!socketItems || it.MaximumSockets > 0)
+                 select it).ToList();
     }
 }

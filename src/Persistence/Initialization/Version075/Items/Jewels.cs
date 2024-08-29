@@ -31,6 +31,17 @@ public class Jewels : InitializerBase
     }
 
     /// <summary>
+    /// Register the jewel in the drop item group for jewels.
+    /// </summary>
+    /// <param name="item">The jewel you want to register.</param>
+    protected void AddItemToJewelItemDrop(ItemDefinition item)
+    {
+        var id = GuidHelper.CreateGuid<DropItemGroup>(4);
+        var jewelsItemDrop = this.GameConfiguration.DropItemGroups.First(x => x.GetId() == id);
+        jewelsItemDrop.PossibleItems.Add(item);
+    }
+
+    /// <summary>
     /// Creates an <see cref="ItemDefinition"/> for the 'Jewel of Bless'.
     /// </summary>
     /// <returns><see cref="ItemDefinition"/> for the 'Jewel of Bless'.</returns>
@@ -40,13 +51,14 @@ public class Jewels : InitializerBase
         itemDefinition.Name = "Jewel of Bless";
         itemDefinition.Number = 13;
         itemDefinition.Group = 14;
-        itemDefinition.DropsFromMonsters = true;
+        itemDefinition.DropsFromMonsters = false;
         itemDefinition.DropLevel = 25;
         itemDefinition.Durability = 1;
         itemDefinition.Width = 1;
         itemDefinition.Height = 1;
         itemDefinition.Value = 150;
         itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
+        this.AddItemToJewelItemDrop(itemDefinition);
         return itemDefinition;
     }
 
@@ -60,13 +72,14 @@ public class Jewels : InitializerBase
         itemDefinition.Name = "Jewel of Soul";
         itemDefinition.Number = 14;
         itemDefinition.Group = 14;
-        itemDefinition.DropsFromMonsters = true;
+        itemDefinition.DropsFromMonsters = false;
         itemDefinition.DropLevel = 30;
         itemDefinition.Durability = 1;
         itemDefinition.Width = 1;
         itemDefinition.Height = 1;
         itemDefinition.Value = 150;
         itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
+        this.AddItemToJewelItemDrop(itemDefinition);
         return itemDefinition;
     }
 
@@ -80,12 +93,13 @@ public class Jewels : InitializerBase
         itemDefinition.Name = "Jewel of Chaos";
         itemDefinition.Number = 15;
         itemDefinition.Group = 12;
-        itemDefinition.DropsFromMonsters = true;
+        itemDefinition.DropsFromMonsters = false;
         itemDefinition.DropLevel = 12;
         itemDefinition.Durability = 1;
         itemDefinition.Width = 1;
         itemDefinition.Height = 1;
         itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
+        this.AddItemToJewelItemDrop(itemDefinition);
         return itemDefinition;
     }
 }

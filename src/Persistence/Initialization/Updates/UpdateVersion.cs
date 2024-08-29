@@ -144,4 +144,19 @@ public enum UpdateVersion
     /// The version of the <see cref="FixDrainLifeSkillUpdate"/>.
     /// </summary>
     FixDrainLifeSkill = 27,
+
+    /// <summary>
+    /// The version of the <see cref="AddItemDropGroupForJewelsUpdate075"/>.
+    /// </summary>
+    AddItemDropGroupForJewels075 = 28,
+
+    /// <summary>
+    /// The version of the <see cref="AddItemDropGroupForJewelsUpdate095D"/>.
+    /// </summary>
+    AddItemDropGroupForJewels095d = 29,
+
+    /// <summary>
+    /// The version of the <see cref="AddItemDropGroupForJewelsUpdateSeason6"/>.
+    /// </summary>
+    AddItemDropGroupForJewelsSeason6 = 30,
 }

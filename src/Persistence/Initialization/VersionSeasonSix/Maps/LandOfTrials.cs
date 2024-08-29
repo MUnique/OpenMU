@@ -448,4 +448,22 @@ internal class LandOfTrials : BaseMapInitializer
             monster.SetGuid(monster.Number);
         }
     }
+
+    /// <inheritdoc/>
+    protected override void InitializeDropItemGroups()
+    {
+        base.InitializeDropItemGroups();
+
+        var jewelsDropItemGroup = this.Context.CreateNew<DropItemGroup>();
+        jewelsDropItemGroup.SetGuid(this.MapNumber, 1);
+        jewelsDropItemGroup.Chance = 0.001;
+        jewelsDropItemGroup.ItemType = SpecialItemType.RandomItem;
+        jewelsDropItemGroup.Description = "Jewel of Guardian";
+
+        var jewelOfGuardian = this.GameConfiguration.Items.First(y => y.Group == 14 && y.Number == 31);
+        jewelsDropItemGroup.PossibleItems.Add(jewelOfGuardian);
+
+        this.MapDefinition!.DropItemGroups.Add(jewelsDropItemGroup);
+        this.GameConfiguration.DropItemGroups.Add(jewelsDropItemGroup);
+    }
 }

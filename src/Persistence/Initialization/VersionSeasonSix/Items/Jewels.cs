@@ -44,12 +44,13 @@ public class Jewels : Version097d.Items.Jewels
         itemDefinition.Name = "Jewel of Guardian";
         itemDefinition.Number = 31;
         itemDefinition.Group = 14;
-        itemDefinition.DropsFromMonsters = true;
+        itemDefinition.DropsFromMonsters = false;
         itemDefinition.DropLevel = 75;
         itemDefinition.Durability = 1;
         itemDefinition.Width = 1;
         itemDefinition.Height = 1;
         itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
+
         return itemDefinition;
     }
 
