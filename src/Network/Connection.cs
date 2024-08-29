@@ -193,8 +193,8 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
     /// Reads the mu online packet by raising <see cref="PacketReceived" />.
     /// </summary>
     /// <param name="packet">The mu online packet.</param>
-    /// <returns>The async task.</returns>
-    protected override async ValueTask ReadPacketAsync(ReadOnlySequence<byte> packet)
+    /// <returns><see langword="true" />, if the flush was successful or not required.<see langword="false" />, if the pipe reader is completed and no longer reading data.</returns>
+    protected override async ValueTask<bool> ReadPacketAsync(ReadOnlySequence<byte> packet)
     {
         IncomingBytesCounter.Add(packet.Length);
 
@@ -205,6 +205,7 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
         try
         {
             await this.PacketReceived.SafeInvokeAsync(packet).ConfigureAwait(false);
+            return true;
         }
         finally
         {
