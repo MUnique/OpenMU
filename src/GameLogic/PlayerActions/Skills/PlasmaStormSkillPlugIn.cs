@@ -21,7 +21,7 @@ public class PlasmaStormSkillPlugIn : IAreaSkillPlugIn
     public short Key => 76;
 
     /// <inheritdoc />
-    public async ValueTask AfterTargetGotAttackedAsync(IAttacker attacker, IAttackable target, SkillEntry skillEntry, Point targetAreaCenter)
+    public async ValueTask AfterTargetGotAttackedAsync(IAttacker attacker, IAttackable target, SkillEntry skillEntry, Point targetAreaCenter, HitInfo? hitInfo)
     {
         if (target is Player targetPlayer
             && Rand.NextRandomBool(25)

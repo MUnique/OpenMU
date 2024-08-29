@@ -24,7 +24,7 @@ public class ChainLightningSkillPlugIn : IAreaSkillPlugIn
     public short Key => 215;
 
     /// <inheritdoc />
-    public async ValueTask AfterTargetGotAttackedAsync(IAttacker attacker, IAttackable target, SkillEntry skillEntry, Point targetAreaCenter)
+    public async ValueTask AfterTargetGotAttackedAsync(IAttacker attacker, IAttackable target, SkillEntry skillEntry, Point targetAreaCenter, HitInfo? hitInfo)
     {
         bool FilterTarget(IAttackable attackable)
         {

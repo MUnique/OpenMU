@@ -588,7 +588,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <inheritdoc/>
-    public async ValueTask AttackByAsync(IAttacker attacker, SkillEntry? skill, bool isCombo, double damageFactor = 1.0)
+    public async ValueTask<HitInfo?> AttackByAsync(IAttacker attacker, SkillEntry? skill, bool isCombo, double damageFactor = 1.0)
     {
         if (this.Attributes is null)
         {
@@ -605,7 +605,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 await observer.InvokeViewPlugInAsync<IShowHitPlugIn>(p => p.ShowHitAsync(this, hitInfo)).ConfigureAwait(false);
             }
 
-            return;
+            return hitInfo;
         }
 
         attacker.ApplyAmmunitionConsumption(hitInfo);
@@ -634,6 +634,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         {
             await attackerPlayer.AfterHitTargetAsync().ConfigureAwait(false);
         }
+
+        return hitInfo;
     }
 
     /// <summary>
