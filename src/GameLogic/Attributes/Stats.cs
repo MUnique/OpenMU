@@ -550,7 +550,7 @@ public class Stats
     /// <summary>
     /// Gets the attribute definition, which defines if a player has stun effect applied.
     /// </summary>
-    public static AttributeDefinition IsStunned { get; } = new (new Guid("22C86BAF-7F27-478D-8075-E4465C2859DD"), "Is stunned", "The player is poisoned and loses health");
+    public static AttributeDefinition IsStunned { get; } = new (new Guid("22C86BAF-7F27-478D-8075-E4465C2859DD"), "Is stunned", "The player is stunned and can't move.");
 
     /// <summary>
     /// Gets the ice resistance attribute definition. Value range from 0 to 1.
