@@ -7,8 +7,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Updates;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
-using MUnique.OpenMU.DataModel.Configuration.Items;
-using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
 using MUnique.OpenMU.PlugIns;
@@ -55,12 +53,11 @@ public class FixSleepSkillUpdate : UpdatePlugInBase
 
         if (sleepAttribute == null)
         {
-            gameConfiguration.Attributes.Add(new AttributeSystem.AttributeDefinition
-            {
-                Id = Stats.IsAsleep.Id,
-                Designation = Stats.IsAsleep.Designation,
-                Description = Stats.IsAsleep.Description,
-            });
+            var attr = context.CreateNew<AttributeSystem.AttributeDefinition>();
+            attr.Id = Stats.IsAsleep.Id;
+            attr.Designation = Stats.IsAsleep.Designation;
+            attr.Description = Stats.IsAsleep.Description;
+            gameConfiguration.Attributes.Add(attr);
         }
 
         var magicEffectSleep = gameConfiguration.MagicEffects.FirstOrDefault(e => e.Number == (short)MagicEffectNumber.Sleep);
