@@ -210,7 +210,7 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
             return;
         }
 
-        if (this.Monster.Attributes[Stats.IsStunned] > 0)
+        if (this.Monster.Attributes[Stats.IsStunned] > 0 || this.Monster.Attributes[Stats.IsAsleep] > 0)
         {
             return;
         }

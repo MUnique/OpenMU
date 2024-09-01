@@ -234,7 +234,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public NonPlayerCharacter? OpenedNpc { get; set; }
 
     /// <inheritdoc/>
-    public StateMachine PlayerState { get; } = new (GameLogic.PlayerState.Initial);
+    public StateMachine PlayerState { get; } = new(GameLogic.PlayerState.Initial);
 
     // TODO: TradeContext-object?
 
@@ -278,7 +278,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public ISet<IWorldObserver> Observers { get; } = new HashSet<IWorldObserver>();
 
     /// <inheritdoc/>
-    public AsyncReaderWriterLock ObserverLock { get; } = new ();
+    public AsyncReaderWriterLock ObserverLock { get; } = new();
 
     /// <inheritdoc/>
     public IPartyMember? LastPartyRequester { get; set; }
@@ -327,7 +327,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <inheritdoc/>
     public Point Position
     {
-        get => new (this.SelectedCharacter?.PositionX ?? 0, this.SelectedCharacter?.PositionY ?? 0);
+        get => new(this.SelectedCharacter?.PositionX ?? 0, this.SelectedCharacter?.PositionY ?? 0);
 
         set
         {
@@ -1153,7 +1153,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return;
         }
 
-        if (attributes[Stats.IsFrozen] > 0 || attributes[Stats.IsStunned] > 0)
+        if (attributes[Stats.IsFrozen] > 0 || attributes[Stats.IsStunned] > 0 || attributes[Stats.IsAsleep] > 0)
         {
             return;
         }

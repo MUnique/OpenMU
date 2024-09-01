@@ -32,6 +32,12 @@ public class HitAction
             return;
         }
 
+        if (attributes[Stats.IsAsleep] > 0)
+        {
+            player.Logger.LogWarning($"Probably Hacker - player {player} is attacking in asleep state");
+            return;
+        }
+
         if (player.IsAtSafezone())
         {
             player.Logger.LogWarning($"Probably Hacker - player {player} is attacking from safezone");
