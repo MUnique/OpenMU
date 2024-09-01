@@ -51,6 +51,13 @@ public class FixSleepSkillUpdate : UpdatePlugInBase
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
+        var sleepAttribute = gameConfiguration.Attributes.FirstOrDefault(a => a.Id == Stats.IsAsleep.Id);
+
+        if (sleepAttribute == null)
+        {
+            gameConfiguration.Attributes.Add(Stats.IsAsleep);
+        }
+
         var magicEffectSleep = gameConfiguration.MagicEffects.FirstOrDefault(e => e.Number == (short)MagicEffectNumber.Sleep);
 
         if (magicEffectSleep == null)
