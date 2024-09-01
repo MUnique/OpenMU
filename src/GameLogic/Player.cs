@@ -234,7 +234,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public NonPlayerCharacter? OpenedNpc { get; set; }
 
     /// <inheritdoc/>
-    public StateMachine PlayerState { get; } = new (GameLogic.PlayerState.Initial);
+    public StateMachine PlayerState { get; } = new(GameLogic.PlayerState.Initial);
 
     // TODO: TradeContext-object?
 
@@ -278,7 +278,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public ISet<IWorldObserver> Observers { get; } = new HashSet<IWorldObserver>();
 
     /// <inheritdoc/>
-    public AsyncReaderWriterLock ObserverLock { get; } = new ();
+    public AsyncReaderWriterLock ObserverLock { get; } = new();
 
     /// <inheritdoc/>
     public IPartyMember? LastPartyRequester { get; set; }
@@ -327,7 +327,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <inheritdoc/>
     public Point Position
     {
-        get => new (this.SelectedCharacter?.PositionX ?? 0, this.SelectedCharacter?.PositionY ?? 0);
+        get => new(this.SelectedCharacter?.PositionX ?? 0, this.SelectedCharacter?.PositionY ?? 0);
 
         set
         {
@@ -2255,7 +2255,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         var damageDivisor = targetItem.IsTrainablePet() ? this.GameContext.Configuration.DamagePerOnePetDurability : this.GameContext.Configuration.DamagePerOneItemDurability;
         if (itemDurationIncrease.HasValue)
         {
-            damageDivisor /= (double)itemDurationIncrease;
+            damageDivisor *= (double)itemDurationIncrease;
         }
 
         var decrement = hitInfo.HealthDamage / damageDivisor;
