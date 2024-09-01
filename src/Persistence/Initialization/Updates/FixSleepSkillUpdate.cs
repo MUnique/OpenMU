@@ -55,7 +55,12 @@ public class FixSleepSkillUpdate : UpdatePlugInBase
 
         if (sleepAttribute == null)
         {
-            gameConfiguration.Attributes.Add(Stats.IsAsleep);
+            gameConfiguration.Attributes.Add(new AttributeSystem.AttributeDefinition
+            {
+                Id = Stats.IsAsleep.Id,
+                Designation = Stats.IsAsleep.Designation,
+                Description = Stats.IsAsleep.Description,
+            });
         }
 
         var magicEffectSleep = gameConfiguration.MagicEffects.FirstOrDefault(e => e.Number == (short)MagicEffectNumber.Sleep);
