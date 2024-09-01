@@ -159,4 +159,9 @@ public enum UpdateVersion
     /// The version of the <see cref="AddItemDropGroupForJewelsUpdateSeason6"/>.
     /// </summary>
     AddItemDropGroupForJewelsSeason6 = 30,
+
+    /// <summary>
+    /// The version of the <see cref="FixSleepSkillUpdate"/>.
+    /// </summary>
+    FixSleepSkillSeason6 = 31,
 }
