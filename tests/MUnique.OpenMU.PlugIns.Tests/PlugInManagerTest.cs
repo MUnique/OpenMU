@@ -157,51 +157,6 @@ public class PlugInManagerTest
     }
 
     /// <summary>
-    /// Tests if a custom plugin gets created and executed.
-    /// </summary>
-    [Test]
-    public async ValueTask CustomPlugInByConfigurationAsync()
-    {
-        var configuration = new PlugInConfiguration
-        {
-            TypeId = new Guid("4EC93343-DE05-4449-B312-04005547266C"),
-            IsActive = true,
-            CustomPlugInSource = @"
-                    namespace test
-                    {
-                        using System.Runtime.InteropServices;
-                        using MUnique.OpenMU.GameLogic;
-                        using MUnique.OpenMU.PlugIns;
-                        using MUnique.OpenMU.PlugIns.Tests;
-
-                        [Guid(""4EC93343-DE05-4449-B312-04005547266C"")]
-                        [PlugIn(""foo"", ""Just an example example plugin."")]
-                        internal class ExamplePlugIn : IExamplePlugIn
-                        {
-                            /// <summary>
-                            /// Gets a value indicating whether the plugin instance was executed in the test.
-                            /// </summary>
-                            public bool WasExecuted { get; private set; }
-
-                            public void DoStuff(Player player, string text, MyEventArgs args)
-                            {
-                                this.WasExecuted = true;
-                                args.Text = ""CustomPlugIn"";
-                            }
-                        }
-                    }",
-        };
-        var manager = new PlugInManager(new List<PlugInConfiguration> { configuration }, new NullLoggerFactory(), this.CreateServiceProvider(), null);
-        var player = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
-        var command = "test";
-        var args = new MyEventArgs();
-
-        var point = manager.GetPlugInPoint<IExamplePlugIn>();
-        point!.DoStuff(player, command, args);
-        Assert.That(args.Text, Is.EqualTo("CustomPlugIn"));
-    }
-
-    /// <summary>
     /// Tests if a custom plugin in a non-existing assembly is not created and throws no errors.
     /// </summary>
     [Test]

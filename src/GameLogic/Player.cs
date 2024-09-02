@@ -2255,7 +2255,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         var damageDivisor = targetItem.IsTrainablePet() ? this.GameContext.Configuration.DamagePerOnePetDurability : this.GameContext.Configuration.DamagePerOneItemDurability;
         if (itemDurationIncrease.HasValue)
         {
-            damageDivisor /= (double)itemDurationIncrease;
+            damageDivisor *= (double)itemDurationIncrease;
         }
 
         var decrement = hitInfo.HealthDamage / damageDivisor;
