@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Web.AdminPanel.Pages;
 
+using System.Threading;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using MUnique.OpenMU.DataModel.Entities;
@@ -33,9 +34,9 @@ public partial class EditAccount : EditBase
     protected override IDataSource EditDataSource => this.AccountData;
 
     /// <inheritdoc />
-    protected override async ValueTask LoadOwnerAsync()
+    protected override async ValueTask LoadOwnerAsync(CancellationToken cancellationToken)
     {
-        await this.AccountData.GetOwnerAsync(this.AccountId).ConfigureAwait(true);
+        await this.AccountData.GetOwnerAsync(this.AccountId, cancellationToken).ConfigureAwait(true);
     }
 
     /// <inheritdoc />

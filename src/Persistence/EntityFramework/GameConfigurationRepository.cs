@@ -6,9 +6,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.EntityFramework.Json;
 using MUnique.OpenMU.Persistence.EntityFramework.Model;
+using System.Threading;
 
 /// <summary>
 /// The game configuration repository, which loads the configuration by using the
@@ -31,7 +31,7 @@ internal class GameConfigurationRepository : GenericRepository<GameConfiguration
     }
 
     /// <inheritdoc />
-    public override async ValueTask<GameConfiguration?> GetByIdAsync(Guid id)
+    public override async ValueTask<GameConfiguration?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var currentContext = this.RepositoryProvider.ContextStack.GetCurrentContext() as EntityFrameworkContextBase;
         if (currentContext is null)
@@ -40,10 +40,10 @@ internal class GameConfigurationRepository : GenericRepository<GameConfiguration
         }
 
         var database = currentContext.Context.Database;
-        await database.OpenConnectionAsync().ConfigureAwait(false);
+        await database.OpenConnectionAsync(cancellationToken).ConfigureAwait(false);
         try
         {
-            if (await this._objectLoader.LoadObjectAsync<GameConfiguration>(id, currentContext.Context).ConfigureAwait(false) is { } config)
+            if (await this._objectLoader.LoadObjectAsync<GameConfiguration>(id, currentContext.Context, cancellationToken).ConfigureAwait(false) is { } config)
             {
                 currentContext.Attach(config);
                 return config;
@@ -58,7 +58,7 @@ internal class GameConfigurationRepository : GenericRepository<GameConfiguration
     }
 
     /// <inheritdoc />
-    public override async ValueTask<IEnumerable<GameConfiguration>> GetAllAsync()
+    public override async ValueTask<IEnumerable<GameConfiguration>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         var currentContext = this.RepositoryProvider.ContextStack.GetCurrentContext() as EntityFrameworkContextBase;
         if (currentContext is null)
@@ -67,10 +67,10 @@ internal class GameConfigurationRepository : GenericRepository<GameConfiguration
         }
 
         var database = currentContext.Context.Database;
-        await database.OpenConnectionAsync().ConfigureAwait(false);
+        await database.OpenConnectionAsync(cancellationToken).ConfigureAwait(false);
         try
         {
-            var configs = (await this._objectLoader.LoadAllObjectsAsync<GameConfiguration>(currentContext.Context).ConfigureAwait(false)).ToList();
+            var configs = (await this._objectLoader.LoadAllObjectsAsync<GameConfiguration>(currentContext.Context, cancellationToken).ConfigureAwait(false)).ToList();
             configs.ForEach(currentContext.Attach);
             return configs;
         }
