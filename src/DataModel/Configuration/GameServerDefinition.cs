@@ -33,7 +33,7 @@ public partial class GameServerDefinition
     /// <summary>
     /// Gets or sets a value indicating whether PVP is enabled on this server.
     /// </summary>
-    public bool PvpEnabled { get; set; }
+    public bool PvpEnabled { get; set; } = true;
 
     /// <summary>
     /// Gets or sets the server configuration.
