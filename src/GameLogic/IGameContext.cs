@@ -31,6 +31,11 @@ public interface IGameContext
     /// Gets the global experience rate.
     /// </summary>
     float ExperienceRate { get; }
+    
+    /// <summary>
+    /// Gets a value indicating whether PVP is enabled.
+    /// </summary>
+    bool PvpEnabled { get; }
 
     /// <summary>
     /// Gets the repository provider. Used to retrieve data, e.g. from a database.
