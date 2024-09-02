@@ -406,9 +406,18 @@ public class DefaultDropGenerator : IDropGenerator
 
         if (selectedGroup.PossibleItems?.Count > 0)
         {
-            var monsterLevel = (int)monster[Stats.Level];
-            var filteredPossibleItems = selectedGroup.PossibleItems.Where(it => it.DropLevel == 0 || ((it.DropLevel <= monsterLevel) && (it.DropLevel > monsterLevel - 12))).ToArray();
-            return this.GenerateItemDrop(selectedGroup, filteredPossibleItems);
+            var isDropSpecificForMonster = monster.DropItemGroups.Contains(selectedGroup);
+
+            if (isDropSpecificForMonster)
+            {
+                return this.GenerateItemDrop(selectedGroup, selectedGroup.PossibleItems);
+            }
+            else
+            {
+                var monsterLevel = (int)monster[Stats.Level];
+                var filteredPossibleItems = selectedGroup.PossibleItems.Where(it => it.DropLevel == 0 || ((it.DropLevel <= monsterLevel) && (it.DropLevel > monsterLevel - 12))).ToArray();
+                return this.GenerateItemDrop(selectedGroup, filteredPossibleItems);
+            }
         }
 
         switch (selectedGroup.ItemType)
