@@ -110,6 +110,7 @@ public class GameContext : AsyncDisposable, IGameContext
     /// <inheritdoc />
     public virtual float ExperienceRate => this.Configuration.ExperienceRate;
 
+    /// <inheritdoc />
     public virtual bool PvpEnabled { get; }
 
     /// <inheritdoc/>
