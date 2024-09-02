@@ -70,21 +70,28 @@
 }
 
 .slot-wings {
-    width: calc(var(--boxSize) * 4);
-    height: calc(var(--boxSize) * 3);
+    width: calc(var(--boxSize) * 3);
+    height: calc(var(--boxSize) * 2);
     left: 208px;
     top: 2px;
 }
 
-    .slot-wings ::deep > .h_3 {
-        top: calc(var(--boxSize) * -0.5);
-    }
-    .slot-wings ::deep > .w_4 {
-        left: calc(var(--boxSize) * -0.5);
-    }
-    .slot-wings ::deep > .w_5 {
-        left: calc(var(--boxSize) * -1);
-    }
+  .slot-wings ::deep .mu-item img {
+    top: 0;
+    left: 0;
+    max-width: 120%;
+    max-height: 150%;
+  }
+
+  .slot-wings ::deep > .h_3 {
+    top: calc(var(--boxSize) * -0.5);
+  }
+  .slot-wings ::deep > .w_4 {
+    width: calc(var(--boxSize) * 3);
+  }
+  .slot-wings ::deep > .w_5 {
+    width: calc(var(--boxSize) * 3);
+  }
 
 .slot-pet {
     width: calc(var(--boxSize) * 1);
