@@ -48,13 +48,13 @@ public class ReflectionEffectInitializer : InitializerBase
         // one percent per 42 energy
         var boostPerEnergy = this.Context.CreateNew<AttributeRelationship>();
         boostPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
-        boostPerEnergy.InputOperator = InputOperator.ExponentiateByAttribute;
-        boostPerEnergy.InputOperand = 1 - (0.01f / 42f);
+        boostPerEnergy.InputOperator = InputOperator.Multiply;
+        boostPerEnergy.InputOperand = 1 - (0.01f / 40f);
 
         // Reflection % = 30 + (Energi / 42)
         powerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
         powerUpDefinition.Boost.ConstantValue.Value = 0.29f;
-        powerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
+        powerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.AddRaw;
         powerUpDefinition.Boost.RelatedValues.Add(boostPerEnergy);
     }
 }
