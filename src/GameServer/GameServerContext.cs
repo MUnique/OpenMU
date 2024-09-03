@@ -92,6 +92,9 @@ public class GameServerContext : GameContext, IGameServerContext
     public override float ExperienceRate => base.ExperienceRate * this._gameServerDefinition.ExperienceRate;
 
     /// <inheritdoc />
+    public override bool PvpEnabled => this._gameServerDefinition.PvpEnabled;
+
+    /// <inheritdoc />
     public override string ToString()
     {
         return $"Game Server {this.Id}";

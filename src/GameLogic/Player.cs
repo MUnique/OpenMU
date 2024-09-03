@@ -595,6 +595,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             throw new InvalidOperationException("AttributeSystem not set.");
         }
 
+        if (!this.GameContext.PvpEnabled && this.CurrentMap?.Definition.BattleZone == null &&
+            this.CurrentMiniGame?.AllowPlayerKilling is false)
+        {
+            return null;
+        }
+
         var hitInfo = await attacker.CalculateDamageAsync(this, skill, isCombo, damageFactor).ConfigureAwait(false);
 
         if (hitInfo.HealthDamage == 0)
