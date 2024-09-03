@@ -91,15 +91,15 @@ public class ItemViewModel
     /// <summary>
     /// Gets the column.
     /// </summary>
-    public int Column => this.EffectiveIndex % InventoryConstants.RowSize;
+    public int Column => this.EffectiveIndex < 0 ? -1 : this.EffectiveIndex % InventoryConstants.RowSize;
 
     /// <summary>
     /// Gets the row.
     /// </summary>
-    public int Row => this.EffectiveIndex / InventoryConstants.RowSize;
+    public int Row => this.EffectiveIndex < 0 ? -1 : this.EffectiveIndex / InventoryConstants.RowSize;
 
     /// <summary>
     /// Gets the effective index of the item in the box.
     /// </summary>
-    private int EffectiveIndex => this.Item.ItemSlot - this.Parent?.StartIndex ?? 0;
+    private int EffectiveIndex => this.Item.ItemSlot - this.Parent?.StartIndex ?? -InventoryConstants.LastEquippableItemSlotIndex;
 }
