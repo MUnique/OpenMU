@@ -44,18 +44,22 @@ internal class ServerInfoRequestHandler : IPacketHandler<Client>
         // First we look, if we can just use the IP address which the client connected to.
         // If the game server is running on the same ip as the connect server, we can use that.
         // This way, we can be sure, that the client can connect to it, too.
-        if (this._connectServer.ServerList.GetItem(serverId) is { } serverItem
-            && this._localIpAddresses.Contains(serverItem.EndPoint.Address)
-            && client.Connection.LocalEndPoint is IPEndPoint localIpEndPoint
-            && !object.Equals(client.Address, localIpEndPoint.Address)) // only if we can't use the cached data
+        var localIpEndPoint = client.Connection.LocalEndPoint as IPEndPoint;
+        var serverItem = this._connectServer.ServerList.GetItem(serverId);
+        var isGameServerOnSameMachineAsConnectServer = serverItem is not null
+                                                       && this._localIpAddresses.Contains(serverItem.EndPoint.Address);
+        var isClientConnectedOnNonRegisteredAddress = localIpEndPoint is not null
+                                                      && !object.Equals(client.Address, localIpEndPoint.Address);
+        if (isGameServerOnSameMachineAsConnectServer
+            && isClientConnectedOnNonRegisteredAddress) // only if we can't use the cached data
         {
             int WritePacket()
             {
                 var data = client.Connection.Output.GetSpan(ConnectionInfoRef.Length)[..ConnectionInfoRef.Length];
                 _ = new ConnectionInfoRef(data)
                 {
-                    IpAddress = localIpEndPoint.Address.ToString(),
-                    Port = (ushort)serverItem.EndPoint.Port
+                    IpAddress = localIpEndPoint!.Address.ToString(),
+                    Port = (ushort)serverItem!.EndPoint.Port
                 };
                 return data.Length;
             }
