@@ -144,29 +144,29 @@ public class InMemoryContext : IContext
     }
 
     /// <inheritdoc/>
-    public async Task<T?> GetByIdAsync<T>(Guid id)
+    public async Task<T?> GetByIdAsync<T>(Guid id, CancellationToken cancellationToken)
         where T : class
     {
-        return await this.Provider.GetRepository<T>().GetByIdAsync(id).ConfigureAwait(false);
+        return await this.Provider.GetRepository<T>().GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
-    public async Task<object?> GetByIdAsync(Guid id, Type type)
+    public async Task<object?> GetByIdAsync(Guid id, Type type, CancellationToken cancellationToken)
     {
-        return await this.Provider.GetRepository(type).GetByIdAsync(id).ConfigureAwait(false);
+        return await this.Provider.GetRepository(type).GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
-    public ValueTask<IEnumerable<T>> GetAsync<T>()
+    public ValueTask<IEnumerable<T>> GetAsync<T>(CancellationToken cancellationToken)
         where T : class
     {
-        return this.Provider.GetRepository<T>().GetAllAsync();
+        return this.Provider.GetRepository<T>().GetAllAsync(cancellationToken);
     }
 
     /// <inheritdoc/>
-    public ValueTask<IEnumerable> GetAsync(Type type)
+    public ValueTask<IEnumerable> GetAsync(Type type, CancellationToken cancellationToken)
     {
-        return this.Provider.GetRepository(type).GetAllAsync();
+        return this.Provider.GetRepository(type).GetAllAsync(cancellationToken);
     }
 
     /// <inheritdoc/>

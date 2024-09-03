@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using System.Threading;
+
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
 using Microsoft.EntityFrameworkCore;
@@ -29,18 +31,20 @@ internal class CachingGameConfigurationRepository : CachingGenericRepository<Gam
     }
 
     /// <inheritdoc />
-    public override async ValueTask<GameConfiguration?> GetByIdAsync(Guid id)
+    public override async ValueTask<GameConfiguration?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         if (this.RepositoryProvider.ContextStack.GetCurrentContext() is not EntityFrameworkContextBase currentContext)
         {
             throw new InvalidOperationException("There is no current context set.");
         }
 
         var database = currentContext.Context.Database;
-        await database.OpenConnectionAsync().ConfigureAwait(false);
+        await database.OpenConnectionAsync(cancellationToken).ConfigureAwait(false);
         try
         {
-            return await this._objectLoader.LoadObjectAsync<GameConfiguration>(id, currentContext.Context).ConfigureAwait(false);
+            return await this._objectLoader.LoadObjectAsync<GameConfiguration>(id, currentContext.Context, cancellationToken).ConfigureAwait(false);
         }
         finally
         {
@@ -49,7 +53,7 @@ internal class CachingGameConfigurationRepository : CachingGenericRepository<Gam
     }
 
     /// <inheritdoc />
-    public override async ValueTask<IEnumerable<GameConfiguration>> GetAllAsync()
+    public override async ValueTask<IEnumerable<GameConfiguration>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         if (this.RepositoryProvider.ContextStack.GetCurrentContext() is not EntityFrameworkContextBase currentContext)
         {
@@ -57,10 +61,10 @@ internal class CachingGameConfigurationRepository : CachingGenericRepository<Gam
         }
 
         var database = currentContext.Context.Database;
-        await database.OpenConnectionAsync().ConfigureAwait(false);
+        await database.OpenConnectionAsync(cancellationToken).ConfigureAwait(false);
         try
         {
-            var configs = (await this._objectLoader.LoadAllObjectsAsync<GameConfiguration>(currentContext.Context).ConfigureAwait(false)).ToList();
+            var configs = (await this._objectLoader.LoadAllObjectsAsync<GameConfiguration>(currentContext.Context, cancellationToken).ConfigureAwait(false)).ToList();
 
             var oldConfig = ((EntityDataContext)currentContext.Context).CurrentGameConfiguration;
             try

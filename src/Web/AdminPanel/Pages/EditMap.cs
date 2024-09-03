@@ -100,11 +100,11 @@ public sealed class EditMap : ComponentBase, IDisposable
     {
         await (this._disposeCts?.CancelAsync() ?? Task.CompletedTask).ConfigureAwait(false);
         this._disposeCts?.Dispose();
-        this._disposeCts = null;
+        this._disposeCts = new CancellationTokenSource();
 
-        this._context = await this.GameConfigurationSource.GetContextAsync().ConfigureAwait(false);
+        this._context = await this.GameConfigurationSource.GetContextAsync(this._disposeCts.Token).ConfigureAwait(false);
 
-        await base.OnParametersSetAsync();
+        await base.OnParametersSetAsync().ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -113,7 +113,7 @@ public sealed class EditMap : ComponentBase, IDisposable
         await base.OnAfterRenderAsync(firstRender).ConfigureAwait(false);
         if (this._maps is null)
         {
-            this._disposeCts = new CancellationTokenSource();
+            this._disposeCts ??= new CancellationTokenSource();
             var cts = this._disposeCts.Token;
             _ = Task.Run(() => this.LoadDataAsync(cts), cts);
         }
@@ -128,7 +128,7 @@ public sealed class EditMap : ComponentBase, IDisposable
 
     private async ValueTask OnBeforeInternalNavigation(LocationChangingContext context)
     {
-        if (! await this.AllowChangeAsync())
+        if (!await this.AllowChangeAsync().ConfigureAwait(false))
         {
             context.PreventNavigation();
         }
@@ -136,7 +136,7 @@ public sealed class EditMap : ComponentBase, IDisposable
 
     private async Task OnSelectedMapChanging(MapEditor.MapChangingArgs eventArgs)
     {
-        eventArgs.Cancel = !await this.AllowChangeAsync();
+        eventArgs.Cancel = !await this.AllowChangeAsync().ConfigureAwait(true);
         if (!eventArgs.Cancel)
         {
             this.SelectedMapId = eventArgs.NextMap;
@@ -145,21 +145,25 @@ public sealed class EditMap : ComponentBase, IDisposable
 
     private async ValueTask<bool> AllowChangeAsync()
     {
-        var persistenceContext = await this.GameConfigurationSource.GetContextAsync();
+        var cancellationToken = this._disposeCts?.Token ?? default;
+        var persistenceContext = await this.GameConfigurationSource.GetContextAsync(cancellationToken).ConfigureAwait(true);
         if (persistenceContext?.HasChanges is not true)
         {
             return true;
         }
 
-        var isConfirmed = await JavaScript.InvokeAsync<bool>("window.confirm",
-            "There are unsaved changes. Are you sure you want to discard them?");
+        var isConfirmed = await this.JavaScript.InvokeAsync<bool>(
+                "window.confirm",
+                cancellationToken,
+                "There are unsaved changes. Are you sure you want to discard them?")
+            .ConfigureAwait(true);
 
         if (!isConfirmed)
         {
             return false;
         }
 
-        await this.GameConfigurationSource.DiscardChangesAsync();
+        await this.GameConfigurationSource.DiscardChangesAsync().ConfigureAwait(true);
         this._maps = null;
 
         // OnAfterRender will load the maps again ...
@@ -175,7 +179,7 @@ public sealed class EditMap : ComponentBase, IDisposable
         {
             if (!cancellationToken.IsCancellationRequested)
             {
-                var gameConfig = await this.GameConfigurationSource.GetOwnerAsync(Guid.Empty);
+                var gameConfig = await this.GameConfigurationSource.GetOwnerAsync(Guid.Empty, cancellationToken).ConfigureAwait(false);
                 try
                 {
                     this._maps = gameConfig.Maps.OrderBy(c => c.Number).ToList();
@@ -218,6 +222,6 @@ public sealed class EditMap : ComponentBase, IDisposable
             text = $"An unexpected error occured: {ex.Message}.";
         }
 
-        await this.ModalService.ShowMessageAsync("Save", text);
+        await this.ModalService.ShowMessageAsync("Save", text).ConfigureAwait(true);
     }
 }
