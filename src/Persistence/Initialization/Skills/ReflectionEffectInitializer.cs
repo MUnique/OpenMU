@@ -38,18 +38,18 @@ public class ReflectionEffectInitializer : InitializerBase
         magicEffect.PowerUpDefinitions.Add(powerUpDefinition);
         powerUpDefinition.TargetAttribute = Stats.DamageReflection.GetPersistent(this.GameConfiguration);
         magicEffect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
-        magicEffect.Duration.ConstantValue.Value = 60;
+        magicEffect.Duration.ConstantValue.Value = 30;
         var durationPerEnergy = this.Context.CreateNew<AttributeRelationship>();
         durationPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
         durationPerEnergy.InputOperator = InputOperator.Multiply;
-        durationPerEnergy.InputOperand = 1f / 5f; // 5 energy adds 1 second duration
+        durationPerEnergy.InputOperand = 1f / 25f; // 25 energy adds 1 second duration
         magicEffect.Duration.RelatedValues.Add(durationPerEnergy);
 
         // one percent per 42 energy
         var boostPerEnergy = this.Context.CreateNew<AttributeRelationship>();
         boostPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
         boostPerEnergy.InputOperator = InputOperator.Multiply;
-        boostPerEnergy.InputOperand = 1 - (0.01f / 40f);
+        boostPerEnergy.InputOperand = 0.01f / 42f;
 
         // Reflection % = 30 + (Energi / 42)
         powerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
