@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.ConnectServer.PacketHandler;
 
+using System.Net;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets.ConnectServer;
@@ -15,6 +16,7 @@ internal class ServerInfoRequestHandler : IPacketHandler<Client>
 {
     private readonly IConnectServer _connectServer;
     private readonly ILogger<ServerInfoRequestHandler> _logger;
+    private readonly HashSet<IPAddress> _localIpAddresses;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ServerInfoRequestHandler" /> class.
@@ -25,6 +27,7 @@ internal class ServerInfoRequestHandler : IPacketHandler<Client>
     {
         this._connectServer = connectServer;
         this._logger = logger;
+        this._localIpAddresses = Dns.GetHostAddresses(Dns.GetHostName()).ToHashSet();
     }
 
     /// <inheritdoc/>
@@ -38,8 +41,35 @@ internal class ServerInfoRequestHandler : IPacketHandler<Client>
             await client.Connection.DisconnectAsync().ConfigureAwait(false);
         }
 
-        if (this._connectServer.ConnectInfos.TryGetValue(serverId, out var connectInfo))
+        // First we look, if we can just use the IP address which the client connected to.
+        // If the game server is running on the same ip as the connect server, we can use that.
+        // This way, we can be sure, that the client can connect to it, too.
+        var localIpEndPoint = client.Connection.LocalEndPoint as IPEndPoint;
+        var serverItem = this._connectServer.ServerList.GetItem(serverId);
+        var isGameServerOnSameMachineAsConnectServer = serverItem is not null
+                                                       && this._localIpAddresses.Contains(serverItem.EndPoint.Address);
+        var isClientConnectedOnNonRegisteredAddress = localIpEndPoint is not null
+                                                      && !object.Equals(client.Address, localIpEndPoint.Address);
+        if (isGameServerOnSameMachineAsConnectServer
+            && isClientConnectedOnNonRegisteredAddress) // only if we can't use the cached data
         {
+            int WritePacket()
+            {
+                var data = client.Connection.Output.GetSpan(ConnectionInfoRef.Length)[..ConnectionInfoRef.Length];
+                _ = new ConnectionInfoRef(data)
+                {
+                    IpAddress = localIpEndPoint!.Address.ToString(),
+                    Port = (ushort)serverItem!.EndPoint.Port
+                };
+                return data.Length;
+            }
+
+            await client.Connection.SendAsync(WritePacket).ConfigureAwait(false);
+        }
+        else if (this._connectServer.ConnectInfos.TryGetValue(serverId, out var connectInfo))
+        {
+            // more optimal way, because the serialized data was cached.
+
             int WritePacket()
             {
                 var span = client.Connection.Output.GetSpan(connectInfo.Length)[..connectInfo.Length];

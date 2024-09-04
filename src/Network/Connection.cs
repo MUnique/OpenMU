@@ -62,6 +62,7 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
         this._logger = logger;
         this.Source = decryptionPipe?.Reader ?? this._duplexPipe!.Input;
         this._remoteEndPoint = this.SocketConnection?.Socket.RemoteEndPoint ?? new IPEndPoint(IPAddress.Any, 0);
+        this.LocalEndPoint = this.SocketConnection?.Socket.LocalEndPoint;
         this.OutputLock = new();
     }
 
@@ -76,6 +77,9 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
 
     /// <inheritdoc />
     public EndPoint? EndPoint => this._remoteEndPoint;
+
+    /// <inheritdoc />
+    public EndPoint? LocalEndPoint { get; }
 
     /// <inheritdoc />
     public PipeWriter Output => this._outputWriter ??= new ExtendedPipeWriter(this._encryptionPipe?.Writer ?? this._duplexPipe!.Output, OutgoingBytesCounter);
