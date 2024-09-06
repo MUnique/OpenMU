@@ -16,7 +16,6 @@ internal class ServerInfoRequestHandler : IPacketHandler<Client>
 {
     private readonly IConnectServer _connectServer;
     private readonly ILogger<ServerInfoRequestHandler> _logger;
-    private readonly HashSet<IPAddress> _localIpAddresses;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ServerInfoRequestHandler" /> class.
@@ -27,7 +26,6 @@ internal class ServerInfoRequestHandler : IPacketHandler<Client>
     {
         this._connectServer = connectServer;
         this._logger = logger;
-        this._localIpAddresses = Dns.GetHostAddresses(Dns.GetHostName()).ToHashSet();
     }
 
     /// <inheritdoc/>
@@ -46,10 +44,9 @@ internal class ServerInfoRequestHandler : IPacketHandler<Client>
         // This way, we can be sure, that the client can connect to it, too.
         var localIpEndPoint = client.Connection.LocalEndPoint as IPEndPoint;
         var serverItem = this._connectServer.ServerList.GetItem(serverId);
-        var isGameServerOnSameMachineAsConnectServer = serverItem is not null
-                                                       && this._localIpAddresses.Contains(serverItem.EndPoint.Address);
-        var isClientConnectedOnNonRegisteredAddress = localIpEndPoint is not null
-                                                      && !object.Equals(client.Address, localIpEndPoint.Address);
+        var isGameServerOnSameMachineAsConnectServer = (serverItem?.EndPoint.Address).IsOnSameHost();
+        var isClientConnectedOnNonRegisteredAddress = !object.Equals(serverItem?.EndPoint.Address, localIpEndPoint?.Address);
+
         if (isGameServerOnSameMachineAsConnectServer
             && isClientConnectedOnNonRegisteredAddress) // only if we can't use the cached data
         {
