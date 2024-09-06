@@ -16,6 +16,9 @@ public abstract class TrapIntelligenceBase : INpcIntelligence, IDisposable
     private Timer? _aiTimer;
     private Trap? _trap;
 
+    /// <inheritdoc />
+    public bool CanWalkOnSafezone => false;
+
     /// <summary>
     /// CanWalkOn?
     /// </summary>

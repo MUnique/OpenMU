@@ -21,6 +21,9 @@ public sealed class NullMonsterIntelligence : INpcIntelligence
     }
 
     /// <inheritdoc />
+    public bool CanWalkOnSafezone => false;
+
+    /// <inheritdoc />
     public void RegisterHit(IAttacker attacker)
     {
         // do nothing

@@ -56,7 +56,7 @@ public sealed class ScopedGridNetwork : BaseGridNetwork
     }
 
     /// <inheritdoc/>
-    public override bool Prepare(Point start, Point end, byte[,] grid)
+    public override bool Prepare(Point start, Point end, byte[,] grid, bool includeSafezone)
     {
         var diffX = Math.Abs(end.X - start.X);
         var diffY = Math.Abs(end.Y - start.Y);
@@ -96,7 +96,7 @@ public sealed class ScopedGridNetwork : BaseGridNetwork
             }
         }
 
-        return base.Prepare(start, end, grid);
+        return base.Prepare(start, end, grid, includeSafezone);
 
         byte GetOffset(byte avgValue, int gridSize)
         {

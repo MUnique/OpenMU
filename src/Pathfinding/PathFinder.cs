@@ -71,13 +71,13 @@ public class PathFinder : IPathFinder
     public IHeuristic Heuristic { get; set; } = new NoHeuristic();
 
     /// <inheritdoc/>
-    public IList<PathResultNode>? FindPath(Point start, Point end, byte[,] terrain, CancellationToken cancellationToken = default)
+    public IList<PathResultNode>? FindPath(Point start, Point end, byte[,] terrain, bool includeSafezone, CancellationToken cancellationToken = default)
     {
         CurrentSearches.Add(1);
         try
         {
             var stopwatch = Stopwatch.StartNew();
-            var result = this.FindPathInner(start, end, terrain, cancellationToken);
+            var result = this.FindPathInner(start, end, terrain, includeSafezone, cancellationToken);
             var elapsedMs = (double)stopwatch.ElapsedTicks / TimeSpan.TicksPerMillisecond;
             if (result is null)
             {
@@ -98,7 +98,7 @@ public class PathFinder : IPathFinder
         }
     }
 
-    private IList<PathResultNode>? FindPathInner(Point start, Point end, byte[,] terrain, CancellationToken cancellationToken)
+    private IList<PathResultNode>? FindPathInner(Point start, Point end, byte[,] terrain, bool includeSafezone, CancellationToken cancellationToken)
     {
         if (this.MaximumDistanceExceeded(start, end))
         {
@@ -107,7 +107,7 @@ public class PathFinder : IPathFinder
 
         var pathFound = false;
         this._openList.Clear();
-        if (!this._network.Prepare(start, end, terrain))
+        if (!this._network.Prepare(start, end, terrain, includeSafezone))
         {
             return null;
         }

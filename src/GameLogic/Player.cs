@@ -125,6 +125,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public ILogger<Player> Logger { get; }
 
     /// <inheritdoc />
+    public bool CanWalkOnSafezone => true;
+
+    /// <inheritdoc />
     public bool IsWalking => this._walker.CurrentTarget != default;
 
     /// <inheritdoc />
