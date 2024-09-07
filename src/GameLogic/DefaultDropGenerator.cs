@@ -348,11 +348,13 @@ public class DefaultDropGenerator : IDropGenerator
 
         var itemOfSet = ancientSet.Items.First(i => object.Equals(i.ItemDefinition, item.Definition));
         item.ItemSetGroups.Add(itemOfSet);
-        var bonusOption = itemOfSet.BonusOption ?? throw Error.NotInitializedProperty(itemOfSet, nameof(itemOfSet.BonusOption)); // for example: +5str or +10str
-        var bonusOptionLink = new ItemOptionLink();
-        bonusOptionLink.ItemOption = bonusOption;
-        bonusOptionLink.Level = bonusOption.LevelDependentOptions.Select(o => o.Level).SelectRandom();
-        item.ItemOptions.Add(bonusOptionLink);
+        if (itemOfSet.BonusOption is { } bonusOption) // for example: +5str or +10str
+        {
+            var bonusOptionLink = new ItemOptionLink();
+            bonusOptionLink.ItemOption = bonusOption;
+            bonusOptionLink.Level = bonusOption.LevelDependentOptions.Select(o => o.Level).SelectRandom();
+            item.ItemOptions.Add(bonusOptionLink);
+        }
     }
 
     private void AddRandomExcOptions(Item item)
