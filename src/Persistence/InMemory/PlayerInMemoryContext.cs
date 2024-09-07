@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using System.Threading;
+
 namespace MUnique.OpenMU.Persistence.InMemory;
 
 using MUnique.OpenMU.Persistence.BasicModel;
@@ -21,43 +23,43 @@ public class PlayerInMemoryContext : InMemoryContext, IPlayerContext
     }
 
     /// <inheritdoc/>
-    public async ValueTask<MUnique.OpenMU.DataModel.Entities.LetterBody?> GetLetterBodyByHeaderIdAsync(Guid headerId)
+    public async ValueTask<MUnique.OpenMU.DataModel.Entities.LetterBody?> GetLetterBodyByHeaderIdAsync(Guid headerId, CancellationToken cancellationToken = default)
     {
-        var allLetters = await this.Provider.GetRepository<LetterBody>().GetAllAsync().ConfigureAwait(false);
+        var allLetters = await this.Provider.GetRepository<LetterBody>().GetAllAsync(cancellationToken).ConfigureAwait(false);
         return allLetters.FirstOrDefault(body => body.Header.Id == headerId);
     }
 
     /// <inheritdoc/>
-    public async ValueTask<MUnique.OpenMU.DataModel.Entities.Account?> GetAccountByLoginNameAsync(string loginName, string password)
+    public async ValueTask<MUnique.OpenMU.DataModel.Entities.Account?> GetAccountByLoginNameAsync(string loginName, string password, CancellationToken cancellationToken = default)
     {
-        var allAccounts = await this.Provider.GetRepository<Account>().GetAllAsync().ConfigureAwait(false);
+        var allAccounts = await this.Provider.GetRepository<Account>().GetAllAsync(cancellationToken).ConfigureAwait(false);
         return allAccounts.FirstOrDefault(account => account.LoginName == loginName && BCrypt.Net.BCrypt.Verify(password, account.PasswordHash));
     }
 
     /// <inheritdoc/>
-    public async ValueTask<MUnique.OpenMU.DataModel.Entities.Account?> GetAccountByLoginNameAsync(string loginName)
+    public async ValueTask<MUnique.OpenMU.DataModel.Entities.Account?> GetAccountByLoginNameAsync(string loginName, CancellationToken cancellationToken = default)
     {
-        var allAccounts = await this.Provider.GetRepository<Account>().GetAllAsync().ConfigureAwait(false);
+        var allAccounts = await this.Provider.GetRepository<Account>().GetAllAsync(cancellationToken).ConfigureAwait(false);
         return allAccounts.FirstOrDefault(account => account.LoginName == loginName);
     }
 
     /// <inheritdoc/>
-    public async ValueTask<IEnumerable<MUnique.OpenMU.DataModel.Entities.Account>> GetAccountsOrderedByLoginNameAsync(int skip, int count)
+    public async ValueTask<IEnumerable<MUnique.OpenMU.DataModel.Entities.Account>> GetAccountsOrderedByLoginNameAsync(int skip, int count, CancellationToken cancellationToken = default)
     {
-        var allAccounts = await this.Provider.GetRepository<Account>().GetAllAsync().ConfigureAwait(false);
+        var allAccounts = await this.Provider.GetRepository<Account>().GetAllAsync(cancellationToken).ConfigureAwait(false);
         return allAccounts.OrderBy(a => a.LoginName).Skip(skip).Take(count);
     }
 
     /// <inheritdoc/>
-    public async ValueTask<bool> CanSaveLetterAsync(Interfaces.LetterHeader letterHeader)
+    public async ValueTask<bool> CanSaveLetterAsync(Interfaces.LetterHeader letterHeader, CancellationToken cancellationToken = default)
     {
         return true;
     }
 
     /// <inheritdoc />
-    public async ValueTask<DataModel.Entities.Account?> GetAccountByCharacterNameAsync(string characterName)
+    public async ValueTask<DataModel.Entities.Account?> GetAccountByCharacterNameAsync(string characterName, CancellationToken cancellationToken = default)
     {
-        var allAccounts = await this.Provider.GetRepository<Account>().GetAllAsync().ConfigureAwait(false);
+        var allAccounts = await this.Provider.GetRepository<Account>().GetAllAsync(cancellationToken).ConfigureAwait(false);
         return allAccounts.FirstOrDefault(account => account.Characters.Any(c => c.Name == characterName));
     }
 }

@@ -85,7 +85,7 @@ public class InMemoryPersistenceContextProvider : IMigratableDatabaseContextProv
             {
                 try
                 {
-                    foreach (var obj in await context.GetAsync(typeof(T)).ConfigureAwait(false))
+                    foreach (var obj in await context.GetAsync(typeof(T), default).ConfigureAwait(false))
                     {
                         await this._changePublisher.ConfigurationChangedAsync(typeof(T), obj.GetId(), obj).ConfigureAwait(false);
                     }

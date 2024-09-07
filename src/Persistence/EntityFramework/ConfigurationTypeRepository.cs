@@ -2,15 +2,15 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.DataModel;
-
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
 using System.Collections;
 using System.Collections.Concurrent;
 using System.IO;
+using System.Threading;
 using Microsoft.Extensions.Logging;
 
+using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.EntityFramework.Json;
 using MUnique.OpenMU.Persistence.EntityFramework.Model;
@@ -52,20 +52,22 @@ internal class ConfigurationTypeRepository<T> : IRepository<T>, IConfigurationTy
     /// Gets all objects by using the <see cref="_collectionSelector"/> to the current <see cref="GameConfiguration"/>.
     /// </summary>
     /// <returns>All objects of the repository.</returns>
-    public ValueTask<IEnumerable<T>> GetAllAsync()
+    public ValueTask<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         return ValueTask.FromResult<IEnumerable<T>>(this._collectionSelector(this.GetCurrentGameConfiguration()));
     }
 
     /// <inheritdoc/>
-    async ValueTask<IEnumerable> IRepository.GetAllAsync()
+    async ValueTask<IEnumerable> IRepository.GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return await this.GetAllAsync().ConfigureAwait(false);
+        cancellationToken.ThrowIfCancellationRequested();
+        return await this.GetAllAsync(cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
-    public ValueTask<T?> GetByIdAsync(Guid id)
+    public ValueTask<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         this.EnsureCacheForCurrentConfiguration();
 
         var dictionary = this._cache[this.GetCurrentGameConfiguration()];
@@ -103,9 +105,9 @@ internal class ConfigurationTypeRepository<T> : IRepository<T>, IConfigurationTy
     }
 
     /// <inheritdoc />
-    async ValueTask<object?> IRepository.GetByIdAsync(Guid id)
+    async ValueTask<object?> IRepository.GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await this.GetByIdAsync(id).ConfigureAwait(false);
+        return await this.GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
     }
 
     /// <summary>

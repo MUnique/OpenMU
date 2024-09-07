@@ -63,7 +63,7 @@ public class PreCalculator
                     continue;
                 }
 
-                var nodes = pathFinder.FindPath(new Point(x, y), start, aiGrid);
+                var nodes = pathFinder.FindPath(new Point(x, y), start, aiGrid, false);
                 if (nodes is { Count: > 0 })
                 {
                     var firstNode = nodes[0];

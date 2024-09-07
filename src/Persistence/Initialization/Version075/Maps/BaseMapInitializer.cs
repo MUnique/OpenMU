@@ -22,7 +22,7 @@ internal abstract class BaseMapInitializer : Initialization.BaseMapInitializer
     }
 
     /// <summary>
-    /// Gets the version prefix for Terrain ressources.
+    /// Gets the version prefix for Terrain resources.
     /// </summary>
     protected override string TerrainVersionPrefix => "075_";
 }

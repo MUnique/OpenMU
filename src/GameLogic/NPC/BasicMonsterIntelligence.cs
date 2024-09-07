@@ -25,6 +25,14 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
         this.Dispose();
     }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether this instance can walk on safezone.
+    /// </summary>
+    /// <value>
+    ///   <c>true</c> if this instance can walk on safezone; otherwise, <c>false</c>.
+    /// </value>
+    public bool CanWalkOnSafezone { get; protected set; }
+
     /// <inheritdoc/>
     public NonPlayerCharacter Npc
     {

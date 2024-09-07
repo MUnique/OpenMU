@@ -313,3 +313,6 @@ src/AdminPanel/wwwroot/content/js/app.js.map
 # Data
 .data/
 /out/
+
+# Mac OS filesystem files
+.DS_Store
