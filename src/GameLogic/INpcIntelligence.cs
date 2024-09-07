@@ -18,6 +18,14 @@ public interface INpcIntelligence
     NonPlayerCharacter Npc { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether this instance can walk on safezone.
+    /// </summary>
+    /// <value>
+    ///   <c>true</c> if this instance can walk on safezone; otherwise, <c>false</c>.
+    /// </value>
+    bool CanWalkOnSafezone { get; }
+
+    /// <summary>
     /// Registers a hit from an attacker.
     /// </summary>
     /// <param name="attacker">The attacker.</param>

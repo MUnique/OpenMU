@@ -38,14 +38,14 @@ public class FullGridNetwork : BaseGridNetwork
     }
 
     /// <inheritdoc/>
-    public override bool Prepare(Point start, Point end, byte[,] grid)
+    public override bool Prepare(Point start, Point end, byte[,] grid, bool includeSafezone)
     {
         foreach (var node in this._nodes.Where(n => n != null))
         {
             node.Status = NodeStatus.Undefined;
         }
 
-        return base.Prepare(start, end, grid);
+        return base.Prepare(start, end, grid, includeSafezone);
     }
 
     private int GetIndexOfPoint(Point position)

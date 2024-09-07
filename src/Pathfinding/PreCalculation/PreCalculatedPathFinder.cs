@@ -23,7 +23,7 @@ public class PreCalculatedPathFinder : IPathFinder
     }
 
     /// <inheritdoc/>
-    public IList<PathResultNode>? FindPath(Point start, Point end, byte[,] terrain, CancellationToken cancellationToken = default)
+    public IList<PathResultNode>? FindPath(Point start, Point end, byte[,] terrain, bool includeSafezone, CancellationToken cancellationToken = default)
     {
         var result = new List<PathResultNode>();
         Point nextStep;

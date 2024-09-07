@@ -91,7 +91,7 @@ public class GameMapTerrain
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void UpdateAiGridValue(byte x, byte y)
     {
-        this.AIgrid[x, y] = Convert.ToByte(this.WalkMap[x, y] && !this.SafezoneMap[x, y]);
+        this.AIgrid[x, y] = (byte)((this.WalkMap[x, y] ? 1 : 0) | (this.SafezoneMap[x, y] ? 0b1000_0000 : 0));
     }
 
     /// <summary>

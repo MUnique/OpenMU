@@ -74,11 +74,15 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
     /// </value>
     public bool IsWalking => this.WalkTarget != default;
 
+    /// <inheritdoc />
+    public bool CanWalkOnSafezone => this._intelligence.CanWalkOnSafezone;
+
     /// <summary>
     /// Gets the target by which this instance was summoned by.
     /// </summary>
     public Player? SummonedBy => (this._intelligence as SummonedMonsterIntelligence)?.Owner;
 
+    /// <inheritdoc />
     public Point WalkTarget => this._walker.CurrentTarget;
 
     /// <inheritdoc/>
@@ -130,7 +134,7 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
         {
             pathFinder = await this._pathFinderPool.GetAsync().ConfigureAwait(false);
             pathFinder.ResetPathFinder();
-            calculatedPath = pathFinder.FindPath(this.Position, target, this.CurrentMap.Terrain.AIgrid);
+            calculatedPath = pathFinder.FindPath(this.Position, target, this.CurrentMap.Terrain.AIgrid, this.CanWalkOnSafezone);
             if (calculatedPath is null)
             {
                 return false;
@@ -228,11 +232,13 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
             return;
         }
 
-        var moveByMaxX = Rand.NextInt(1, this.Definition.MoveRange + 1);
-        var moveByMaxY = Rand.NextInt(1, this.Definition.MoveRange + 1);
+        var moveByX = Rand.NextInt(-this.Definition.MoveRange, this.Definition.MoveRange + 1);
+        var moveByY = Rand.NextInt(-this.Definition.MoveRange, this.Definition.MoveRange + 1);
 
-        byte randx = (byte)Rand.NextInt(Math.Max(0, this.Position.X - moveByMaxX), Math.Min(0xFF, this.Position.X + moveByMaxX + 1));
-        byte randy = (byte)Rand.NextInt(Math.Max(0, this.Position.Y - moveByMaxY), Math.Min(0xFF, this.Position.Y + moveByMaxY + 1));
+        var newX = this.Position.X + moveByX;
+        var newY = this.Position.Y + moveByY;
+        byte randx = (byte)Math.Min(0xFF, Math.Max(0, newX));
+        byte randy = (byte)Math.Min(0xFF, Math.Max(0, newY));
 
         var target = new Point(randx, randy);
         if (this._intelligence.CanWalkOn(target))

@@ -15,6 +15,21 @@ IndexedLinkedList working faster under real circumstances.
 The reason is, that it's pretty hard to get the index fast under all conditions,
 because the expected open list lengths and estimated costs are always different.
 
+## Scoped
+
+The implementation can be used in a scoped way, which means that the pathfinder
+is only used for a scoped area of the map. This is useful if you want to calculate
+paths very quickly and you know that the path is only needed in a small area.
+You can read about that on my blog post: [Optimized Pathfinding](https://munique.net/optimizing-pathfinding/).
+
+## Safezones
+
+Safezones are areas on the map where usually no path should be calculated, except
+for special NPCs like guards. By default, the pathfinder will not calculate paths
+on the safezone tiles. You can change this behavior by passing the parameter
+`includeSafezone`. The safezones are encoded into the grid cost values as the
+highest bit.
+
 ## Pre-Calculation
 
 In the sub-folder PreCalculation includes a pathfinder which makes use of
