@@ -24,7 +24,7 @@ public class MemoryRepository<TValue> : IRepository<TValue>, IMemoryRepository
     /// <param name="obj">The item.</param>
     public void Add(Guid key, TValue obj)
     {
-        this._values.Add(key, obj);
+        this._values.TryAdd(key, obj);
         this._createdObjects.Add(key);
     }
 
