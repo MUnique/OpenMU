@@ -4,9 +4,11 @@
 
 namespace MUnique.OpenMU.GameServer.RemoteView.Messenger;
 
+using System.Net;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic.Views.Messenger;
 using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.PlugIns;
 
@@ -28,8 +30,16 @@ public class ChatRoomCreatedPlugIn : IChatRoomCreatedPlugIn
     /// <inheritdoc/>
     public async ValueTask ChatRoomCreatedAsync(ChatServerAuthenticationInfo authenticationInfo, string friendName, bool success)
     {
+        var hostAddress = authenticationInfo.HostAddress;
+        if (IPAddress.TryParse(authenticationInfo.HostAddress, out var chatServerAddress)
+            && chatServerAddress.IsOnSameHost()
+            && this._player.Connection?.LocalEndPoint is IPEndPoint localEndPoint)
+        {
+            hostAddress = localEndPoint.Address.ToString();
+        }
+
         await this._player.Connection.SendChatRoomConnectionInfoAsync(
-            authenticationInfo.HostAddress,
+            hostAddress,
             authenticationInfo.RoomId,
             uint.Parse(authenticationInfo.AuthenticationToken),
             friendName,
