@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Persistence;
 
 using System.Collections;
+using System.Threading;
 
 /// <summary>
 /// Interface for a class which allows an easier access to the whole object tree
@@ -15,8 +16,11 @@ public interface IDataSource : IDisposable
     /// <summary>
     /// Gets the context which was used to load the owner.
     /// </summary>
-    /// <returns>The context.</returns>
-    ValueTask<IContext> GetContextAsync();
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>
+    /// The context.
+    /// </returns>
+    ValueTask<IContext> GetContextAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets the owner with the specified id.
@@ -24,8 +28,11 @@ public interface IDataSource : IDisposable
     /// </summary>
     /// <param name="ownerId">The unique identifier of the owner. If none is provided,
     /// it loads the first instance of the owner type.</param>
-    /// <returns>The owner.</returns>
-    ValueTask<object> GetOwnerAsync(Guid ownerId = default);
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>
+    /// The owner.
+    /// </returns>
+    ValueTask<object> GetOwnerAsync(Guid ownerId = default, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Determines whether the specified type is supported by this instance.
@@ -76,6 +83,9 @@ public interface IDataSource<TOwner> : IDataSource
     /// Loads it from the current context, if not loaded yet.
     /// </summary>
     /// <param name="ownerId">The unique identifier.</param>
-    /// <returns>The owner.</returns>
-    new ValueTask<TOwner> GetOwnerAsync(Guid ownerId = default);
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>
+    /// The owner.
+    /// </returns>
+    new ValueTask<TOwner> GetOwnerAsync(Guid ownerId = default, CancellationToken cancellationToken = default);
 }

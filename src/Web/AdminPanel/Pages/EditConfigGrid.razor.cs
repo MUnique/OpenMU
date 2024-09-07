@@ -103,7 +103,7 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
             throw new InvalidOperationException($"Only types of namespace {nameof(MUnique)} can be edited on this page.");
         }
 
-        await this.DataSource.GetOwnerAsync().ConfigureAwait(true);
+        await this.DataSource.GetOwnerAsync(default, cancellationToken).ConfigureAwait(true);
         cancellationToken.ThrowIfCancellationRequested();
         var data = this.DataSource.GetAll(this.Type!);
         this._viewModels = data.OfType<object>()

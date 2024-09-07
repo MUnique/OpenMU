@@ -92,8 +92,11 @@ public interface IContext : IDisposable
     /// </summary>
     /// <typeparam name="T">The type of the requested object.</typeparam>
     /// <param name="id">The identifier.</param>
-    /// <returns>The object of the specified type by its identifier.</returns>
-    Task<T?> GetByIdAsync<T>(Guid id)
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>
+    /// The object of the specified type by its identifier.
+    /// </returns>
+    Task<T?> GetByIdAsync<T>(Guid id, CancellationToken cancellationToken = default)
         where T : class;
 
     /// <summary>
@@ -101,23 +104,32 @@ public interface IContext : IDisposable
     /// </summary>
     /// <param name="id">The identifier.</param>
     /// <param name="type">The type of the requested object.</param>
-    /// <returns>The object of the specified type by its identifier.</returns>
-    Task<object?> GetByIdAsync(Guid id, Type type);
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>
+    /// The object of the specified type by its identifier.
+    /// </returns>
+    Task<object?> GetByIdAsync(Guid id, Type type, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gets all objects of the specified type. Use with caution!.
     /// </summary>
     /// <typeparam name="T">The type of the requested objects.</typeparam>
-    /// <returns>All objects of the specified type.</returns>
-    ValueTask<IEnumerable<T>> GetAsync<T>()
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>
+    /// All objects of the specified type.
+    /// </returns>
+    ValueTask<IEnumerable<T>> GetAsync<T>(CancellationToken cancellationToken = default)
         where T : class;
 
     /// <summary>
     /// Gets all objects of the specified type. Use with caution!.
     /// </summary>
     /// <param name="type">The type.</param>
-    /// <returns>All objects of the specified type.</returns>
-    ValueTask<IEnumerable> GetAsync(Type type);
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>
+    /// All objects of the specified type.
+    /// </returns>
+    ValueTask<IEnumerable> GetAsync(Type type, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Determines whether the specified type is supported by this instance.

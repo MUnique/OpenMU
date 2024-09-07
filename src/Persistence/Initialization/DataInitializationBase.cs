@@ -5,13 +5,11 @@
 namespace MUnique.OpenMU.Persistence.Initialization;
 
 using System.ComponentModel.Design;
+using System.Text.Json.Serialization;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
-using MUnique.OpenMU.GameLogic.MuHelper;
 using MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
-using MUnique.OpenMU.GameLogic.PlugIns.InvasionEvents;
-using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 using MUnique.OpenMU.GameLogic.Resets;
 using MUnique.OpenMU.GameServer.MessageHandler;
 using MUnique.OpenMU.Network;
@@ -138,46 +136,9 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
             plugInConfiguration.IsActive = true;
             this.GameConfiguration.PlugInConfigurations.Add(plugInConfiguration);
 
-            // Resets are disabled by default.
-            if (plugInType == typeof(ResetFeaturePlugIn))
+            if (plugInType.GetInterfaces().Contains(typeof(ISupportDefaultCustomConfiguration)))
             {
-                plugInConfiguration.IsActive = false;
-                plugInConfiguration.SetConfiguration(new ResetConfiguration(), referenceHandler);
-            }
-
-            if (plugInType == typeof(ChaosCastleStartPlugIn))
-            {
-                plugInConfiguration.SetConfiguration(ChaosCastleStartConfiguration.Default, referenceHandler);
-            }
-
-            if (plugInType == typeof(DevilSquareStartPlugIn))
-            {
-                plugInConfiguration.SetConfiguration(DevilSquareStartConfiguration.Default, referenceHandler);
-            }
-
-            if (plugInType == typeof(BloodCastleStartPlugIn))
-            {
-                plugInConfiguration.SetConfiguration(BloodCastleStartConfiguration.Default, referenceHandler);
-            }
-
-            if (plugInType == typeof(GoldenInvasionPlugIn))
-            {
-                plugInConfiguration.SetConfiguration(PeriodicInvasionConfiguration.DefaultGoldenInvasion, referenceHandler);
-            }
-
-            if (plugInType == typeof(RedDragonInvasionPlugIn))
-            {
-                plugInConfiguration.SetConfiguration(PeriodicInvasionConfiguration.DefaultRedDragonInvasion, referenceHandler);
-            }
-
-            if (plugInType == typeof(HappyHourPlugIn))
-            {
-                plugInConfiguration.SetConfiguration(HappyHourConfiguration.Default, referenceHandler);
-            }
-
-            if (plugInType == typeof(MuHelperFeaturePlugIn))
-            {
-                plugInConfiguration.SetConfiguration(new MuHelperConfiguration(), referenceHandler);
+                this.CreateDefaultPlugInConfiguration(plugInType, plugInConfiguration, referenceHandler);
             }
 
             if (plugInType == typeof(BlessJewelConsumeHandlerPlugIn))
@@ -191,7 +152,7 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
                     ResetToLevel0WhenFailMinLevel = 0,
                 };
 
-                if (this.GameConfiguration.Items.FirstOrDefault(item => item.Group == 13 && item.Number == 37) is { } fenrir)
+                if (this.GameConfiguration.Items.FirstOrDefault(item => item is { Group: 13, Number: 37 }) is { } fenrir)
                 {
                     config.RepairTargetItems.Add(fenrir);
                 }
@@ -206,6 +167,12 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
             {
                 plugInConfiguration.IsActive = false;
             }
+
+            // Resets are disabled by default.
+            if (plugInType == typeof(ResetFeaturePlugIn))
+            {
+                plugInConfiguration.IsActive = false;
+            }
         });
 
         this.AddAllUpdateEntries(plugInManager);
@@ -217,6 +184,20 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
     /// Creates the game client definition.
     /// </summary>
     protected abstract void CreateGameClientDefinition();
+
+    private void CreateDefaultPlugInConfiguration(Type plugInType, PlugInConfiguration plugInConfiguration, ReferenceHandler referenceHandler)
+    {
+        try
+        {
+            var plugin = (ISupportDefaultCustomConfiguration)Activator.CreateInstance(plugInType)!;
+            var defaultConfig = plugin.CreateDefaultConfig();
+            plugInConfiguration.SetConfiguration(defaultConfig, referenceHandler);
+        }
+        catch (Exception ex)
+        {
+            this._loggerFactory.CreateLogger(this.GetType()).LogWarning(ex, "Could not create custom default configuration for plugin type {plugInType}", plugInType);
+        }
+    }
 
     private void AddAllUpdateEntries(PlugInManager plugInManager)
     {

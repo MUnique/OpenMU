@@ -183,37 +183,37 @@ internal class EntityFrameworkContextBase : IContext
     }
 
     /// <inheritdoc/>
-    public async Task<T?> GetByIdAsync<T>(Guid id)
+    public async Task<T?> GetByIdAsync<T>(Guid id, CancellationToken cancellationToken)
         where T : class
     {
-        using var l = await this._lock.LockAsync();
+        using var l = await this._lock.LockAsync(cancellationToken);
         using var context = this.RepositoryProvider.ContextStack.UseContext(this);
-        return await this.GetRepository<T>().GetByIdAsync(id).ConfigureAwait(false);
+        return await this.GetRepository<T>().GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
-    public async Task<object?> GetByIdAsync(Guid id, Type type)
+    public async Task<object?> GetByIdAsync(Guid id, Type type, CancellationToken cancellationToken)
     {
-        using var l = await this._lock.LockAsync();
+        using var l = await this._lock.LockAsync(cancellationToken).ConfigureAwait(false);
         using var context = this.RepositoryProvider.ContextStack.UseContext(this);
-        return await this.GetRepository(type).GetByIdAsync(id).ConfigureAwait(false);
+        return await this.GetRepository(type).GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
-    public async ValueTask<IEnumerable<T>> GetAsync<T>()
+    public async ValueTask<IEnumerable<T>> GetAsync<T>(CancellationToken cancellationToken)
         where T : class
     {
-        using var l = await this._lock.LockAsync();
+        using var l = await this._lock.LockAsync(cancellationToken).ConfigureAwait(false);
         using var context = this.RepositoryProvider.ContextStack.UseContext(this);
-        return await this.GetRepository<T>().GetAllAsync().ConfigureAwait(false);
+        return await this.GetRepository<T>().GetAllAsync(cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
-    public async ValueTask<IEnumerable> GetAsync(Type type)
+    public async ValueTask<IEnumerable> GetAsync(Type type, CancellationToken cancellationToken)
     {
-        using var l = await this._lock.LockAsync();
+        using var l = await this._lock.LockAsync(cancellationToken).ConfigureAwait(false);
         using var context = this.RepositoryProvider.ContextStack.UseContext(this);
-        return await this.GetRepository(type).GetAllAsync().ConfigureAwait(false);
+        return await this.GetRepository(type).GetAllAsync(cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>

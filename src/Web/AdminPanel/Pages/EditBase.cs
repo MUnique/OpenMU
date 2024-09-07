@@ -179,7 +179,7 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
     /// <inheritdoc />
     protected override Task OnInitializedAsync()
     {
-        this._navigationLockDisposable = this.NavigationManager.RegisterLocationChangingHandler(this.OnBeforeInternalNavigation);
+        this._navigationLockDisposable = this.NavigationManager.RegisterLocationChangingHandler(this.OnBeforeInternalNavigationAsync);
         return base.OnInitializedAsync();
     }
 
@@ -253,14 +253,15 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
     }
 
     /// <summary>
-    /// It loads the owner of the <see cref="EditDataSource"/>.
+    /// It loads the owner of the <see cref="EditDataSource" />.
     /// </summary>
-    protected virtual async ValueTask LoadOwnerAsync()
+    /// <param name="cancellationToken">The cancellation token.</param>
+    protected virtual async ValueTask LoadOwnerAsync(CancellationToken cancellationToken)
     {
-        await this.EditDataSource.GetOwnerAsync(Guid.Empty).ConfigureAwait(true);
+        await this.EditDataSource.GetOwnerAsync(Guid.Empty, cancellationToken).ConfigureAwait(true);
     }
 
-    private async ValueTask OnBeforeInternalNavigation(LocationChangingContext context)
+    private async ValueTask OnBeforeInternalNavigationAsync(LocationChangingContext context)
     {
         if (this._persistenceContext?.HasChanges is true)
         {
@@ -311,17 +312,17 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
                 throw new InvalidOperationException($"Only types of namespace {nameof(MUnique)} can be edited on this page.");
             }
 
-            await this.LoadOwnerAsync().ConfigureAwait(true);
+            await this.LoadOwnerAsync(cancellationToken).ConfigureAwait(true);
             cancellationToken.ThrowIfCancellationRequested();
             if (this.EditDataSource.IsSupporting(this.Type))
             {
                 this._isOwningContext = false;
-                this._persistenceContext = await this.EditDataSource.GetContextAsync().ConfigureAwait(true);
+                this._persistenceContext = await this.EditDataSource.GetContextAsync(cancellationToken).ConfigureAwait(true);
             }
             else
             {
                 this._isOwningContext = true;
-                var gameConfiguration = await this.ConfigDataSource.GetOwnerAsync(Guid.Empty).ConfigureAwait(true);
+                var gameConfiguration = await this.ConfigDataSource.GetOwnerAsync(Guid.Empty, cancellationToken).ConfigureAwait(true);
                 var createContextMethod = typeof(IPersistenceContextProvider).GetMethod(nameof(IPersistenceContextProvider.CreateNewTypedContext))!.MakeGenericMethod(this.Type);
                 this._persistenceContext = (IContext)createContextMethod.Invoke(this.PersistenceContextProvider, new object[] { true, gameConfiguration})!;
             }
@@ -339,8 +340,8 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
                 else
                 {
                     this._model = this.Id == default
-                        ? (await this._persistenceContext.GetAsync(this.Type).ConfigureAwait(true)).OfType<object>().FirstOrDefault()
-                        : await this._persistenceContext.GetByIdAsync(this.Id, this.Type).ConfigureAwait(true);
+                        ? (await this._persistenceContext.GetAsync(this.Type, cancellationToken).ConfigureAwait(true)).OfType<object>().FirstOrDefault()
+                        : await this._persistenceContext.GetByIdAsync(this.Id, this.Type, cancellationToken).ConfigureAwait(true);
                 }
 
                 this._loadingState = this.Model is not null

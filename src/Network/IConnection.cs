@@ -43,6 +43,11 @@ public interface IConnection : IDisposable
     EndPoint? EndPoint { get; }
 
     /// <summary>
+    /// Gets the local endpoint of the connection.
+    /// </summary>
+    EndPoint? LocalEndPoint { get; }
+
+    /// <summary>
     /// Gets the pipe writer to send data.
     /// </summary>
     /// <value>

@@ -125,6 +125,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public ILogger<Player> Logger { get; }
 
     /// <inheritdoc />
+    public bool CanWalkOnSafezone => true;
+
+    /// <inheritdoc />
     public bool IsWalking => this._walker.CurrentTarget != default;
 
     /// <inheritdoc />
@@ -593,6 +596,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         if (this.Attributes is null)
         {
             throw new InvalidOperationException("AttributeSystem not set.");
+        }
+
+        if (!this.GameContext.PvpEnabled && this.CurrentMap?.Definition.BattleZone == null &&
+            this.CurrentMiniGame?.AllowPlayerKilling is false)
+        {
+            return null;
         }
 
         var hitInfo = await attacker.CalculateDamageAsync(this, skill, isCombo, damageFactor).ConfigureAwait(false);

@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
 using System.Collections;
+using System.Threading;
 using Microsoft.EntityFrameworkCore.Metadata;
 
 /// <summary>
@@ -17,6 +18,9 @@ internal interface ILoadByProperty
     /// </summary>
     /// <param name="property">The property of the object which should be compared.</param>
     /// <param name="propertyValue">The value of the property.</param>
-    /// <returns>The enumeration of the loaded objects.</returns>
-    ValueTask<IEnumerable> LoadByPropertyAsync(IProperty property, object propertyValue);
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>
+    /// The enumeration of the loaded objects.
+    /// </returns>
+    ValueTask<IEnumerable> LoadByPropertyAsync(IProperty property, object propertyValue, CancellationToken cancellationToken = default);
 }

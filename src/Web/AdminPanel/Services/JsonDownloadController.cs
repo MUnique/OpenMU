@@ -28,10 +28,10 @@ public class JsonDownloadController<T, TSerializable> : ControllerBase
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonDownloadController{T,TSerializable}" /> class.
     /// </summary>
-    /// <param name="_dataSource">The data source.</param>
-    public JsonDownloadController(IDataSource<T> _dataSource)
+    /// <param name="dataSource">The data source.</param>
+    public JsonDownloadController(IDataSource<T> dataSource)
     {
-        this._dataSource = _dataSource;
+        this._dataSource = dataSource;
     }
 
     /// <summary>
@@ -48,7 +48,7 @@ public class JsonDownloadController<T, TSerializable> : ControllerBase
     public async ValueTask<IActionResult> GetConfigurationByIdAsync(Guid objectId, CancellationToken cancellationToken)
     {
         await this._dataSource.DiscardChangesAsync().ConfigureAwait(false);
-        var owner = await this._dataSource.GetOwnerAsync(objectId).ConfigureAwait(false);
+        var owner = await this._dataSource.GetOwnerAsync(objectId, cancellationToken).ConfigureAwait(false);
 
         if (owner is IConvertibleTo<TSerializable> convertibleTo)
         {

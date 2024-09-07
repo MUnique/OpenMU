@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
 using System.Collections;
+using System.Threading;
 
 /// <summary>
 /// A repository which caches all of its data in memory.
@@ -35,13 +36,13 @@ public class CachedRepository<T> : IRepository<T>
     protected IRepository<T> BaseRepository { get; }
 
     /// <inheritdoc/>
-    async ValueTask<IEnumerable> IRepository.GetAllAsync()
+    async ValueTask<IEnumerable> IRepository.GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return await this.GetAllAsync().ConfigureAwait(false);
+        return await this.GetAllAsync(cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
-    public async ValueTask<IEnumerable<T>> GetAllAsync()
+    public async ValueTask<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         if (this._allLoaded)
         {
@@ -52,7 +53,7 @@ public class CachedRepository<T> : IRepository<T>
         {
             while (this._loading)
             {
-                await Task.Delay(10).ConfigureAwait(false);
+                await Task.Delay(10, cancellationToken).ConfigureAwait(false);
             }
 
             return this._cache.Values;
@@ -61,7 +62,7 @@ public class CachedRepository<T> : IRepository<T>
         this._loading = true;
         try
         {
-            IEnumerable<T> values = await this.BaseRepository.GetAllAsync().ConfigureAwait(false);
+            IEnumerable<T> values = await this.BaseRepository.GetAllAsync(cancellationToken).ConfigureAwait(false);
             foreach (var obj in values)
             {
                 if (!this._cache.ContainsKey(obj.Id))
@@ -81,17 +82,17 @@ public class CachedRepository<T> : IRepository<T>
     }
 
     /// <inheritdoc/>
-    public async ValueTask<T?> GetByIdAsync(Guid id)
+    public async ValueTask<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        await this.GetAllAsync().ConfigureAwait(false);
+        await this.GetAllAsync(cancellationToken).ConfigureAwait(false);
         this._cache.TryGetValue(id, out var result);
         return result;
     }
 
     /// <inheritdoc/>
-    async ValueTask<object?> IRepository.GetByIdAsync(Guid id)
+    async ValueTask<object?> IRepository.GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await this.GetByIdAsync(id).ConfigureAwait(false);
+        return await this.GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>

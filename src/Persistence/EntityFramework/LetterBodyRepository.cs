@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Persistence.EntityFramework.Model;
+using System.Threading;
 
 /// <summary>
 /// Repository which is able to load <see cref="LetterBody"/>s for a specific letter header.
@@ -27,14 +28,17 @@ internal class LetterBodyRepository : CachingGenericRepository<LetterBody>
     /// Gets the letter body by the id of its header.
     /// </summary>
     /// <param name="headerId">The id of its header.</param>
-    /// <returns>The body of the header.</returns>
-    public async ValueTask<LetterBody?> GetBodyByHeaderIdAsync(Guid headerId)
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>
+    /// The body of the header.
+    /// </returns>
+    public async ValueTask<LetterBody?> GetBodyByHeaderIdAsync(Guid headerId, CancellationToken cancellationToken = default)
     {
         using var context = this.GetContext();
-        var letterBody = await context.Context.Set<LetterBody>().FirstOrDefaultAsync(body => body.HeaderId == headerId).ConfigureAwait(false);
-        if (letterBody != null)
+        var letterBody = await context.Context.Set<LetterBody>().FirstOrDefaultAsync(body => body.HeaderId == headerId, cancellationToken).ConfigureAwait(false);
+        if (letterBody is not null)
         {
-            await this.LoadDependentDataAsync(letterBody, context.Context).ConfigureAwait(false);
+            await this.LoadDependentDataAsync(letterBody, context.Context, cancellationToken).ConfigureAwait(false);
         }
 
         return letterBody;
