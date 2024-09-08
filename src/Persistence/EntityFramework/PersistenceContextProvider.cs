@@ -8,7 +8,6 @@ using System.Diagnostics;
 using System.Threading;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.EntityFramework.Model;
 using Nito.Disposables;
 using Npgsql;
@@ -173,7 +172,7 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
             await this.ApplyAllPendingUpdatesAsync().ConfigureAwait(false);
 
             // We create a new repository provider, so that the previously loaded data is not effective anymore.
-            this.RepositoryProvider = new CacheAwareRepositoryProvider(this._loggerFactory, changePublisher);
+            this.ResetCache();
         }
         catch
         {
@@ -184,6 +183,14 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
         {
             this._changeListener = changePublisher;
         });
+    }
+
+    /// <summary>
+    /// Resets the cache of this instance.
+    /// </summary>
+    public void ResetCache()
+    {
+        this.RepositoryProvider = new CacheAwareRepositoryProvider(this._loggerFactory, this._changeListener);
     }
 
     /// <inheritdoc />

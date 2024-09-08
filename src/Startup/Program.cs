@@ -260,6 +260,8 @@ internal sealed class Program : IDisposable
             .AddSingleton<IChatServer>(s => s.GetService<ChatServer>()!)
             .AddSingleton<ConnectServerFactory>()
             .AddSingleton<ConnectServerContainer>()
+            .AddSingleton<GameServerContainer>()
+            .AddSingleton<ISupportServerRestart>(provider => provider.GetService<GameServerContainer>()!)
             .AddScoped<IMapFactory, JavascriptMapFactory>()
             .AddSingleton<SetupService>()
             .AddSingleton<IEnumerable<IConnectServer>>(provider => provider.GetService<ConnectServerContainer>() ?? throw new Exception($"{nameof(ConnectServerContainer)} not registered."))
@@ -282,6 +284,7 @@ internal sealed class Program : IDisposable
             .AddSingleton<IDataSource<GameConfiguration>, GameConfigurationDataSource>()
             .AddHostedService<ChatServerContainer>()
             .AddHostedService<GameServerContainer>()
+            .AddHostedService(provider => provider.GetService<GameServerContainer>()!)
             .AddHostedService(provider => provider.GetService<ConnectServerContainer>()!)
             .AddControllers().AddApplicationPart(typeof(ServerController).Assembly);
 
