@@ -92,6 +92,16 @@ public sealed class GameServerContainer : ServerContainerBase, IDisposable
     }
 
     /// <inheritdoc />
+    protected override async ValueTask BeforeStartAsync(bool onDatabaseInit, CancellationToken cancellationToken)
+    {
+        await base.BeforeStartAsync(onDatabaseInit, cancellationToken);
+        if (!onDatabaseInit)
+        {
+            (this._persistenceContextProvider as IMigratableDatabaseContextProvider)?.ResetCache();
+        }
+    }
+
+    /// <inheritdoc />
     protected override async Task StartInnerAsync(CancellationToken cancellationToken)
     {
         using var persistenceContext = this._persistenceContextProvider.CreateNewConfigurationContext();

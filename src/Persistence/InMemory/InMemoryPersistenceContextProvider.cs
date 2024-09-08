@@ -146,4 +146,10 @@ public class InMemoryPersistenceContextProvider : IMigratableDatabaseContextProv
         this._repositoryProvider = new();
         return Task.FromResult<IDisposable>(new Disposable(() => { }));
     }
+
+    /// <inheritdoc />
+    public void ResetCache()
+    {
+        // do nothing here
+    }
 }

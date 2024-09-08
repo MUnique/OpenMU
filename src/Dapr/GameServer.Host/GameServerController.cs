@@ -28,6 +28,17 @@ public class GameServerController : ControllerBase
     }
 
     /// <summary>
+    /// Shuts down the server gracefully.
+    /// </summary>
+    /// <returns></returns>
+    [HttpPost(nameof(IGameServer.ShutdownAsync))]
+    public async ValueTask ShutdownAsync()
+    {
+        await this._gameServer.ShutdownAsync().ConfigureAwait(false);
+        Environment.Exit(0);
+    }
+
+    /// <summary>
     /// Sends a chat message to all connected guild members.
     /// </summary>
     /// <param name="data">The message arguments.</param>
