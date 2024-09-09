@@ -1,4 +1,4 @@
-﻿// <copyright file="Merchants.razor.cs" company="MUnique">
+﻿// <copyright file="CreateGameServerConfig.razor.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -23,8 +23,6 @@ public partial class CreateGameServerConfig : ComponentBase, IAsyncDisposable
 
     private GameServerViewModel? _viewModel;
     private string? _initState;
-
-    //private IList<GameServerDefinition> _existingServerDefinitions;
 
     /// <summary>
     /// Gets or sets the context provider.
