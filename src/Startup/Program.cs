@@ -261,7 +261,7 @@ internal sealed class Program : IDisposable
             .AddSingleton<ConnectServerFactory>()
             .AddSingleton<ConnectServerContainer>()
             .AddSingleton<GameServerContainer>()
-            .AddSingleton<ISupportServerRestart>(provider => provider.GetService<GameServerContainer>()!)
+            .AddSingleton<IGameServerInstanceManager>(provider => provider.GetService<GameServerContainer>()!)
             .AddScoped<IMapFactory, JavascriptMapFactory>()
             .AddSingleton<SetupService>()
             .AddSingleton<IEnumerable<IConnectServer>>(provider => provider.GetService<ConnectServerContainer>() ?? throw new Exception($"{nameof(ConnectServerContainer)} not registered."))

@@ -7,13 +7,12 @@ namespace MUnique.OpenMU.Startup;
 using System.Threading;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Web.AdminPanel.Services;
 
 /// <summary>
 /// Base class for a server container, which reacts on database recreations.
 /// </summary>
-public abstract class ServerContainerBase : IHostedService, ISupportServerRestart
+public abstract class ServerContainerBase : IHostedService
 {
     private readonly SetupService _setupService;
     private readonly ILogger _logger;

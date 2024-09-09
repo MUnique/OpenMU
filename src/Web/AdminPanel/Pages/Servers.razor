@@ -29,28 +29,40 @@ else
     <tbody>
     @foreach (var server in this._servers.OrderBy(s => s.Type).ThenBy(s => s.Description))
     {
-      <ServerItem Server=@server />
+      <ServerItem Server=@server/>
     }
+    
+    <tr>
+      <td></td>
+      <td>
+        <NavLink class="btn btn-primary" href="create-game-server">
+          <span class="oi oi-plus"></span> Game Server
+        </NavLink>
+      </td>
+      <td></td>
+      <td></td>
+      <td>
+        @if (this.ServerInstanceManager is not null)
+        {
+          @if (this._isRestarting)
+          {
+            <button type="button" class="btn-warning" disabled="disabled">
+              <div class="spinner-border text-secondary" role="status">
+              </div>
+            </button>
+          }
+          else
+          {
+            <button type="button" class="btn-warning" @onclick="this.OnReloadAndRestartClickAsync">
+              <span class="oi oi-reload"></span>
+              Reload configuration and restart all Game Servers
+            </button>
+          }
+        }
+      </td>
+    </tr>
     </tbody>
   </table>
-  <hr/>
-  @if (this.ServerRestartSupporter is not null)
-  {
-    @if (this._isRestarting)
-    {
-      <button type="button" class="btn-warning" disabled="disabled">
-      <div class="spinner-border text-secondary" role="status">
-      </div>
-      </button>
-    }
-    else
-    {
-      <button type="button" class="btn-warning" @onclick="this.OnReloadAndRestartClickAsync">
-        <span class="oi oi-reload"></span>
-        Reload configuration and restart all Game Servers
-      </button>
-    }
-  }
 </div>
 }
 
@@ -66,10 +78,10 @@ else
     public IServerProvider ServerProvider { get; set; } = null!;
 
     /// <summary>
-    /// Gets or sets the <see cref="ISupportServerRestart"/>.
+    /// Gets or sets the <see cref="IGameServerInstanceManager"/>.
     /// </summary>
-    [Inject] // TODO: Allow Default
-    public ISupportServerRestart? ServerRestartSupporter { get; set; }
+    [Inject]
+    public IGameServerInstanceManager? ServerInstanceManager { get; set; }
 
     /// <inheritdoc />
     public void Dispose()
@@ -99,7 +111,7 @@ else
       this._isRestarting = true;
       try
       {
-            await this.ServerRestartSupporter!.RestartAllAsync(false);
+            await this.ServerInstanceManager!.RestartAllAsync(false);
       }
       finally
       {
