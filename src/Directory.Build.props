@@ -19,16 +19,20 @@
             <ItemGroup>
                 <Compile Include="..\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
                 <Compile Include="..\SharedGlobalUsings.cs" Link="SharedGlobalUsings.cs" />
-                <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
                 <None Include="..\.editorconfig" Link=".editorconfig" />
+            </ItemGroup>
+            <ItemGroup>
+                <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
             </ItemGroup>
         </When>
         <Otherwise>
             <ItemGroup>
                 <Compile Include="..\..\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
                 <Compile Include="..\..\SharedGlobalUsings.cs" Link="SharedGlobalUsings.cs" />
-                <AdditionalFiles Include="..\..\stylecop.json" Link="stylecop.json" />
                 <None Include="..\..\.editorconfig" Link=".editorconfig" />
+            </ItemGroup>
+            <ItemGroup>
+                <AdditionalFiles Include="..\..\stylecop.json" Link="stylecop.json" />
             </ItemGroup>
         </Otherwise>
     </Choose>
