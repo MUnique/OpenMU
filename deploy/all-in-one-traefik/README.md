@@ -4,15 +4,13 @@ The all in one (with traefik) deployment is recommended, if you want to host
 on a small machine with a low amount of players and want to host your
 MuOnline Website on the same machine.
 
-Once Traefik works as a Reverse Proxy, you can handle miltiple website
-without change the default port to HTTP/HTTPS connections.
+Once Traefik works as a Reverse Proxy, you can handle multiple websites
+without changing the default port to HTTP/HTTPS connections.
 
-Addin a few labels to your container, you will tell Traefik how to
-handle incoming requests and he will redirect to the correct website.
+Adding a few labels to your container, you will tell Traefik how to
+handle incoming requests and it will redirect to the correct website.
 
-``` yml
-version: '3'
-
+```yaml
 services:
   admin-panel:
     ...
@@ -35,7 +33,7 @@ services:
 
 You can even add multiple domains and/or subdomains to your host label
 
-``` yml
+``` yaml
 - "traefik.http.routers.muonline.rule=Host(`www.domain1.com`,`domain1.com`,`sub.domain1.com`)"
 ```
 
