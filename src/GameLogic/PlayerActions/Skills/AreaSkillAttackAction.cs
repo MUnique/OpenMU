@@ -60,6 +60,12 @@ public class AreaSkillAttackAction
             return;
         }
 
+        if (attributes[Stats.IsAsleep] > 0)
+        {
+            player.Logger.LogWarning("Probably Hacker - player {player} is attacking in sleep state", player);
+            return;
+        }
+
         if (player.IsAtSafezone())
         {
             player.Logger.LogWarning("Probably Hacker - player {player} is attacking from safezone", player);

@@ -550,7 +550,12 @@ public class Stats
     /// <summary>
     /// Gets the attribute definition, which defines if a player has stun effect applied.
     /// </summary>
-    public static AttributeDefinition IsStunned { get; } = new (new Guid("22C86BAF-7F27-478D-8075-E4465C2859DD"), "Is stunned", "The player is poisoned and loses health");
+    public static AttributeDefinition IsStunned { get; } = new (new Guid("22C86BAF-7F27-478D-8075-E4465C2859DD"), "Is stunned", "The player is stunned and can't move.");
+
+    /// <summary>
+    /// Gets the attribute definition, which defines if a player has asleep effect applied.
+    /// </summary>
+    public static AttributeDefinition IsAsleep { get; } = new(new Guid("0518F532-7A8F-4491-8A23-98B620608CB3"), "Is asleep", "The player is asleep and can't move until hit.");
 
     /// <summary>
     /// Gets the ice resistance attribute definition. Value range from 0 to 1.

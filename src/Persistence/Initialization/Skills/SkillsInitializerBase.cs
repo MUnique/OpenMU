@@ -112,6 +112,12 @@ internal abstract class SkillsInitializerBase : InitializerBase
             return;
         }
 
+        if ((SkillNumber)skill.Number is SkillNumber.Sleep)
+        {
+            skill.MagicEffectDef = this.CreateEffect(ElementalType.Undefined, MagicEffectNumber.Sleep, Stats.IsAsleep, 5);
+            return;
+        }
+
         switch (elementalModifier)
         {
             case ElementalType.Ice:

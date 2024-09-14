@@ -14,7 +14,7 @@ using MUnique.OpenMU.GameLogic.Views.World;
 /// </summary>
 public class TargetedSkillAction
 {
-    private static readonly Dictionary<short, short> SummonSkillToMonsterMapping = new ()
+    private static readonly Dictionary<short, short> SummonSkillToMonsterMapping = new()
     {
         { 30, 26 }, // Goblin
         { 31, 32 }, // Stone Golem
@@ -48,6 +48,12 @@ public class TargetedSkillAction
         if (attributes[Stats.IsStunned] > 0)
         {
             player.Logger.LogWarning($"Probably Hacker - player {player} is attacking in stunned state");
+            return;
+        }
+
+        if (attributes[Stats.IsAsleep] > 0)
+        {
+            player.Logger.LogWarning($"Probably Hacker - player {player} is attacking in asleep state");
             return;
         }
 

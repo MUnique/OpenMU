@@ -105,6 +105,11 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
             return null;
         }
 
+        if (this.Attributes[Stats.IsAsleep] > 0)
+        {
+            await this.MagicEffectList.ClearAllEffectsProducingSpecificStatAsync(Stats.IsAsleep).ConfigureAwait(false);
+        }
+
         var hitInfo = await attacker.CalculateDamageAsync(this, skill, isCombo, damageFactor).ConfigureAwait(false);
         await this.HitAsync(hitInfo, attacker, skill?.Skill).ConfigureAwait(false);
         if (hitInfo.HealthDamage > 0)

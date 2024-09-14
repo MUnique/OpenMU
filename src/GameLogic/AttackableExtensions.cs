@@ -553,7 +553,7 @@ public static class AttackableExtensions
         await target.MagicEffectList.AddEffectAsync(magicEffect).ConfigureAwait(false);
         if (target is ISupportWalk walkSupporter
             && walkSupporter.IsWalking
-            && magicEffectDefinition.PowerUpDefinitions.Any(e => e.TargetAttribute == Stats.IsFrozen || e.TargetAttribute == Stats.IsStunned))
+            && magicEffectDefinition.PowerUpDefinitions.Any(e => e.TargetAttribute == Stats.IsFrozen || e.TargetAttribute == Stats.IsStunned || e.TargetAttribute == Stats.IsAsleep))
         {
             await walkSupporter.StopWalkingAsync().ConfigureAwait(false);
 

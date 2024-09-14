@@ -1162,7 +1162,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return;
         }
 
-        if (attributes[Stats.IsFrozen] > 0 || attributes[Stats.IsStunned] > 0)
+        if (attributes[Stats.IsFrozen] > 0 || attributes[Stats.IsStunned] > 0 || attributes[Stats.IsAsleep] > 0)
         {
             return;
         }
