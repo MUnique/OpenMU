@@ -1,11 +1,15 @@
-﻿using System.Runtime.InteropServices;
+﻿// <copyright file="UpdateMaximumHealthExtendedPlugIn.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.GameServer.RemoteView.Character;
+
+using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.PlugIns;
-
-namespace MUnique.OpenMU.GameServer.RemoteView.Character;
 
 /// <summary>
 /// The extended implementation of the <see cref="IUpdateMaximumHealthPlugIn"/> which is forwarding everything to the game client with specific data packets.
