@@ -296,6 +296,10 @@ public class InventoryStorage : Storage, IInventoryStorage
                 }
             }
         }
+        else
+        {
+            // Continue
+        }
 
         return false;
     }
