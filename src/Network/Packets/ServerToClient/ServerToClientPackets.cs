@@ -6580,6 +6580,11 @@ public readonly struct ExperienceGainedExtended
     public enum AddResult
     {
         /// <summary>
+        /// Undefined, no experience is added.
+        /// </summary>
+            Undefined = 0,
+
+        /// <summary>
         /// The normal experience is added.
         /// </summary>
             Normal = 1,

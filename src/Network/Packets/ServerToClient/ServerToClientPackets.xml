@@ -2393,6 +2393,11 @@
           <Description>Defines the result and type of experience which is added.</Description>
           <Values>
             <EnumValue>
+              <Name>Undefined</Name>
+              <Description>Undefined, no experience is added.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
               <Name>Normal</Name>
               <Description>The normal experience is added.</Description>
               <Value>1</Value>

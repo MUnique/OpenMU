@@ -27,6 +27,7 @@ Defines the result and type of experience which is added.
 
 | Value | Name | Description |
 |-------|------|-------------|
+| 0 | Undefined | Undefined, no experience is added. |
 | 1 | Normal | The normal experience is added. |
 | 2 | Master | The master experience is added. |
 | 0x10 | MaxLevelReached | The maximum level has been reached, no experience is added. |
