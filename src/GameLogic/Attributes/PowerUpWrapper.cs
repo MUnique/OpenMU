@@ -45,6 +45,11 @@ public sealed class PowerUpWrapper : IElement, IDisposable
     public AggregateType AggregateType => this._element.AggregateType;
 
     /// <summary>
+    /// Gets the parent attribute.
+    /// </summary>
+    public ComposableAttribute? ParentAttribute => this._parentAttribute;
+
+    /// <summary>
     /// Creates elements by a <see cref="PowerUpDefinition"/>.
     /// </summary>
     /// <param name="powerUpDef">The power up definition.</param>

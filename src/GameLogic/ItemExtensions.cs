@@ -125,12 +125,24 @@ public static class ItemExtensions
     }
 
     /// <summary>
+    /// Determines whether this item is a jewelry (pendant or ring) item.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <returns>
+    ///   <c>true</c> if the specified item is jewelry; otherwise, <c>false</c>.
+    /// </returns>
+    public static bool IsJewelry(this Item item)
+    {
+        return item.ItemSlot >= InventoryConstants.PendantSlot && item.ItemSlot <= InventoryConstants.Ring2Slot;
+    }
+
+    /// <summary>
     /// Determines whether this instance is a is weapon which deals physical damage.
     /// </summary>
     /// <param name="item">The item.</param>
     /// <param name="minimumDmg">The minimum physical damage of the weapon.</param>
     /// <returns>
-    ///   <c>true</c> if this instance is a is weapon which deals physical damage; otherwise, <c>false</c>.
+    ///   <c>true</c> if this instance is a weapon which deals physical damage; otherwise, <c>false</c>.
     /// </returns>
     public static bool IsPhysicalWeapon(this Item item, [NotNullWhen(true)] out float? minimumDmg)
     {
@@ -144,7 +156,7 @@ public static class ItemExtensions
     /// <param name="item">The item.</param>
     /// <param name="staffRise">The staff rise percentage of the weapon.</param>
     /// <returns>
-    ///   <c>true</c> if this instance is a is weapon which deals wizardry damage; otherwise, <c>false</c>.
+    ///   <c>true</c> if this instance is a weapon which deals wizardry damage; otherwise, <c>false</c>.
     /// </returns>
     public static bool IsWizardryWeapon(this Item item, [NotNullWhen(true)] out float? staffRise)
     {

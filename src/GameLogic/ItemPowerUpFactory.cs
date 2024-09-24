@@ -27,7 +27,7 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
     }
 
     /// <inheritdoc/>
-    public IEnumerable<PowerUpWrapper> GetPowerUps(Item item, AttributeSystem attributeHolder)
+    public IEnumerable<PowerUpWrapper> GetPowerUps(Item item, AttributeSystem attributeHolder, bool skipBasePowerUps = false, bool skipOptionPowerUps = false)
     {
         if (item.Definition is null)
         {
@@ -45,17 +45,23 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
             yield break;
         }
 
-        foreach (var attribute in item.Definition.BasePowerUpAttributes)
+        if (!skipBasePowerUps)
         {
-            foreach (var powerUp in this.GetBasePowerUpWrappers(item, attributeHolder, attribute))
+            foreach (var attribute in item.Definition.BasePowerUpAttributes)
             {
-                yield return powerUp;
+                foreach (var powerUp in this.GetBasePowerUpWrappers(item, attributeHolder, attribute))
+                {
+                    yield return powerUp;
+                }
             }
         }
 
-        foreach (var powerUp in this.GetPowerUpsOfItemOptions(item, attributeHolder))
+        if (!skipOptionPowerUps)
         {
-            yield return powerUp;
+            foreach (var powerUp in this.GetPowerUpsOfItemOptions(item, attributeHolder))
+            {
+                yield return powerUp;
+            }
         }
 
         if (this.GetPetLevel(item, attributeHolder) is { } petLevel)
@@ -253,7 +259,7 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
         var baseDropLevel = item.Definition!.DropLevel;
         var ancientDropLevel = item.Definition!.CalculateDropLevel(true, false, 0);
 
-        if (InventoryConstants.IsDefenseItemSlot(item.ItemSlot))
+        if (InventoryConstants.IsDefenseItemSlot(item.ItemSlot) && !item.IsJewelry())
         {
             var baseDefense = (int)(item.Definition?.BasePowerUpAttributes.FirstOrDefault(a => a.TargetAttribute == Stats.DefenseBase)?.BaseValue ?? 0);
             var additionalDefense = (baseDefense * 12 / baseDropLevel) + (baseDropLevel / 5) + 4;
