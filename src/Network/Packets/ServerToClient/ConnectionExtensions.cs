@@ -966,7 +966,7 @@ public static class ConnectionExtensions
     /// Is sent by the server when: An object got hit in two cases: 1. When the own player is hit; 2. When the own player attacked some other object which got hit.
     /// Causes reaction on client side: The damage is shown at the object which received the hit.
     /// </remarks>
-    public static async ValueTask SendObjectHitAsync(this IConnection? connection, byte @headerCode, ushort @objectId, ushort @healthDamage, ObjectHit.DamageKind @kind, bool @isDoubleDamage, bool @isTripleDamage, ushort @shieldDamage)
+    public static async ValueTask SendObjectHitAsync(this IConnection? connection, byte @headerCode, ushort @objectId, ushort @healthDamage, DamageKind @kind, bool @isDoubleDamage, bool @isTripleDamage, ushort @shieldDamage)
     {
         if (connection is null)
         {
@@ -983,6 +983,44 @@ public static class ConnectionExtensions
             packet.Kind = @kind;
             packet.IsDoubleDamage = @isDoubleDamage;
             packet.IsTripleDamage = @isTripleDamage;
+            packet.ShieldDamage = @shieldDamage;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ObjectHitExtended" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="kind">The kind.</param>
+    /// <param name="isDoubleDamage">The is double damage.</param>
+    /// <param name="isTripleDamage">The is triple damage.</param>
+    /// <param name="objectId">The object id.</param>
+    /// <param name="healthDamage">The health damage.</param>
+    /// <param name="shieldDamage">The shield damage.</param>
+    /// <remarks>
+    /// Is sent by the server when: An object got hit in two cases: 1. When the own player is hit; 2. When the own player attacked some other object which got hit.
+    /// Causes reaction on client side: The damage is shown at the object which received the hit.
+    /// </remarks>
+    public static async ValueTask SendObjectHitExtendedAsync(this IConnection? connection, DamageKind @kind, bool @isDoubleDamage, bool @isTripleDamage, ushort @objectId, uint @healthDamage, uint @shieldDamage)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ObjectHitExtendedRef.Length;
+            var packet = new ObjectHitExtendedRef(connection.Output.GetSpan(length)[..length]);
+            packet.Kind = @kind;
+            packet.IsDoubleDamage = @isDoubleDamage;
+            packet.IsTripleDamage = @isTripleDamage;
+            packet.ObjectId = @objectId;
+            packet.HealthDamage = @healthDamage;
             packet.ShieldDamage = @shieldDamage;
 
             return packet.Header.Length;
@@ -1124,6 +1162,42 @@ public static class ConnectionExtensions
             packet.KilledObjectId = @killedObjectId;
             packet.AddedExperience = @addedExperience;
             packet.DamageOfLastHit = @damageOfLastHit;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ExperienceGainedExtended" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="type">The type.</param>
+    /// <param name="addedExperience">The added experience.</param>
+    /// <param name="damageOfLastHit">The damage of last hit.</param>
+    /// <param name="killedObjectId">The killed object id.</param>
+    /// <param name="killerObjectId">The killer object id.</param>
+    /// <remarks>
+    /// Is sent by the server when: A player gained experience.
+    /// Causes reaction on client side: The experience is added to the experience counter and bar.
+    /// </remarks>
+    public static async ValueTask SendExperienceGainedExtendedAsync(this IConnection? connection, ExperienceGainedExtended.AddResult @type, uint @addedExperience, uint @damageOfLastHit, ushort @killedObjectId, ushort @killerObjectId)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ExperienceGainedExtendedRef.Length;
+            var packet = new ExperienceGainedExtendedRef(connection.Output.GetSpan(length)[..length]);
+            packet.Type = @type;
+            packet.AddedExperience = @addedExperience;
+            packet.DamageOfLastHit = @damageOfLastHit;
+            packet.KilledObjectId = @killedObjectId;
+            packet.KillerObjectId = @killerObjectId;
 
             return packet.Header.Length;
         }
@@ -1522,6 +1596,36 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="CurrentHealthAndShieldExtended" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="health">The health.</param>
+    /// <param name="shield">The shield.</param>
+    /// <remarks>
+    /// Is sent by the server when: Periodically, or if the current health or shield changed on the server side, e.g. by hits.
+    /// Causes reaction on client side: The health and shield bar is updated on the game client user interface.
+    /// </remarks>
+    public static async ValueTask SendCurrentHealthAndShieldExtendedAsync(this IConnection? connection, uint @health, uint @shield)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CurrentHealthAndShieldExtendedRef.Length;
+            var packet = new CurrentHealthAndShieldExtendedRef(connection.Output.GetSpan(length)[..length]);
+            packet.Health = @health;
+            packet.Shield = @shield;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="MaximumHealthAndShield" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
@@ -1542,6 +1646,36 @@ public static class ConnectionExtensions
         {
             var length = MaximumHealthAndShieldRef.Length;
             var packet = new MaximumHealthAndShieldRef(connection.Output.GetSpan(length)[..length]);
+            packet.Health = @health;
+            packet.Shield = @shield;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="MaximumHealthAndShieldExtended" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="health">The health.</param>
+    /// <param name="shield">The shield.</param>
+    /// <remarks>
+    /// Is sent by the server when: When the maximum health changed, e.g. by adding stat points or changed items.
+    /// Causes reaction on client side: The health and shield bar is updated on the game client user interface.
+    /// </remarks>
+    public static async ValueTask SendMaximumHealthAndShieldExtendedAsync(this IConnection? connection, uint @health, uint @shield)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = MaximumHealthAndShieldExtendedRef.Length;
+            var packet = new MaximumHealthAndShieldExtendedRef(connection.Output.GetSpan(length)[..length]);
             packet.Health = @health;
             packet.Shield = @shield;
 
@@ -1582,6 +1716,36 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="ItemConsumptionFailedExtended" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="health">The health.</param>
+    /// <param name="shield">The shield.</param>
+    /// <remarks>
+    /// Is sent by the server when: When the consumption of an item failed.
+    /// Causes reaction on client side: The game client gets a feedback about a failed consumption, and allows for do further consumption requests.
+    /// </remarks>
+    public static async ValueTask SendItemConsumptionFailedExtendedAsync(this IConnection? connection, uint @health, uint @shield)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ItemConsumptionFailedExtendedRef.Length;
+            var packet = new ItemConsumptionFailedExtendedRef(connection.Output.GetSpan(length)[..length]);
+            packet.Health = @health;
+            packet.Shield = @shield;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="CurrentManaAndAbility" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
@@ -1612,6 +1776,36 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="CurrentManaAndAbilityExtended" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="mana">The mana.</param>
+    /// <param name="ability">The ability.</param>
+    /// <remarks>
+    /// Is sent by the server when: The currently available mana or ability has changed, e.g. by using a skill.
+    /// Causes reaction on client side: The mana and ability bar is updated on the game client user interface.
+    /// </remarks>
+    public static async ValueTask SendCurrentManaAndAbilityExtendedAsync(this IConnection? connection, uint @mana, uint @ability)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CurrentManaAndAbilityExtendedRef.Length;
+            var packet = new CurrentManaAndAbilityExtendedRef(connection.Output.GetSpan(length)[..length]);
+            packet.Mana = @mana;
+            packet.Ability = @ability;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="MaximumManaAndAbility" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
@@ -1632,6 +1826,36 @@ public static class ConnectionExtensions
         {
             var length = MaximumManaAndAbilityRef.Length;
             var packet = new MaximumManaAndAbilityRef(connection.Output.GetSpan(length)[..length]);
+            packet.Mana = @mana;
+            packet.Ability = @ability;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="MaximumManaAndAbilityExtended" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="mana">The mana.</param>
+    /// <param name="ability">The ability.</param>
+    /// <remarks>
+    /// Is sent by the server when: The maximum available mana or ability has changed, e.g. by adding stat points.
+    /// Causes reaction on client side: The mana and ability bar is updated on the game client user interface.
+    /// </remarks>
+    public static async ValueTask SendMaximumManaAndAbilityExtendedAsync(this IConnection? connection, uint @mana, uint @ability)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = MaximumManaAndAbilityExtendedRef.Length;
+            var packet = new MaximumManaAndAbilityExtendedRef(connection.Output.GetSpan(length)[..length]);
             packet.Mana = @mana;
             packet.Ability = @ability;
 
@@ -2560,6 +2784,44 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="CharacterStatIncreaseResponseExtended" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="attribute">The attribute.</param>
+    /// <param name="addedAmount">The added amount.</param>
+    /// <param name="updatedMaximumHealth">The updated maximum health.</param>
+    /// <param name="updatedMaximumMana">The updated maximum mana.</param>
+    /// <param name="updatedMaximumShield">The updated maximum shield.</param>
+    /// <param name="updatedMaximumAbility">The updated maximum ability.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the server processed a character stat increase request packet.
+    /// Causes reaction on client side: If it was successful, adds a point to the requested stat type.
+    /// </remarks>
+    public static async ValueTask SendCharacterStatIncreaseResponseExtendedAsync(this IConnection? connection, CharacterStatAttribute @attribute, ushort @addedAmount, uint @updatedMaximumHealth, uint @updatedMaximumMana, uint @updatedMaximumShield, uint @updatedMaximumAbility)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CharacterStatIncreaseResponseExtendedRef.Length;
+            var packet = new CharacterStatIncreaseResponseExtendedRef(connection.Output.GetSpan(length)[..length]);
+            packet.Attribute = @attribute;
+            packet.AddedAmount = @addedAmount;
+            packet.UpdatedMaximumHealth = @updatedMaximumHealth;
+            packet.UpdatedMaximumMana = @updatedMaximumMana;
+            packet.UpdatedMaximumShield = @updatedMaximumShield;
+            packet.UpdatedMaximumAbility = @updatedMaximumAbility;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="CharacterDeleteResponse" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
@@ -2703,6 +2965,132 @@ public static class ConnectionExtensions
             packet.UsedFruitPoints = @usedFruitPoints;
             packet.MaxFruitPoints = @maxFruitPoints;
             packet.Leadership = @leadership;
+            packet.UsedNegativeFruitPoints = @usedNegativeFruitPoints;
+            packet.MaxNegativeFruitPoints = @maxNegativeFruitPoints;
+            packet.InventoryExtensions = @inventoryExtensions;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CharacterLevelUpdateExtended" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="level">The level.</param>
+    /// <param name="levelUpPoints">The level up points.</param>
+    /// <param name="maximumHealth">The maximum health.</param>
+    /// <param name="maximumMana">The maximum mana.</param>
+    /// <param name="maximumShield">The maximum shield.</param>
+    /// <param name="maximumAbility">The maximum ability.</param>
+    /// <param name="fruitPoints">The fruit points.</param>
+    /// <param name="maximumFruitPoints">The maximum fruit points.</param>
+    /// <param name="negativeFruitPoints">The negative fruit points.</param>
+    /// <param name="maximumNegativeFruitPoints">The maximum negative fruit points.</param>
+    /// <remarks>
+    /// Is sent by the server when: After a character leveled up.
+    /// Causes reaction on client side: Updates the level (and other related stats) in the game client and shows an effect.
+    /// </remarks>
+    public static async ValueTask SendCharacterLevelUpdateExtendedAsync(this IConnection? connection, ushort @level, ushort @levelUpPoints, uint @maximumHealth, uint @maximumMana, uint @maximumShield, uint @maximumAbility, ushort @fruitPoints, ushort @maximumFruitPoints, ushort @negativeFruitPoints, ushort @maximumNegativeFruitPoints)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CharacterLevelUpdateExtendedRef.Length;
+            var packet = new CharacterLevelUpdateExtendedRef(connection.Output.GetSpan(length)[..length]);
+            packet.Level = @level;
+            packet.LevelUpPoints = @levelUpPoints;
+            packet.MaximumHealth = @maximumHealth;
+            packet.MaximumMana = @maximumMana;
+            packet.MaximumShield = @maximumShield;
+            packet.MaximumAbility = @maximumAbility;
+            packet.FruitPoints = @fruitPoints;
+            packet.MaximumFruitPoints = @maximumFruitPoints;
+            packet.NegativeFruitPoints = @negativeFruitPoints;
+            packet.MaximumNegativeFruitPoints = @maximumNegativeFruitPoints;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CharacterInformationExtended" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="x">The x.</param>
+    /// <param name="y">The y.</param>
+    /// <param name="mapId">The map id.</param>
+    /// <param name="currentExperience">The current experience.</param>
+    /// <param name="experienceForNextLevel">The experience for next level.</param>
+    /// <param name="levelUpPoints">The level up points.</param>
+    /// <param name="strength">The strength.</param>
+    /// <param name="agility">The agility.</param>
+    /// <param name="vitality">The vitality.</param>
+    /// <param name="energy">The energy.</param>
+    /// <param name="leadership">The leadership.</param>
+    /// <param name="currentHealth">The current health.</param>
+    /// <param name="maximumHealth">The maximum health.</param>
+    /// <param name="currentMana">The current mana.</param>
+    /// <param name="maximumMana">The maximum mana.</param>
+    /// <param name="currentShield">The current shield.</param>
+    /// <param name="maximumShield">The maximum shield.</param>
+    /// <param name="currentAbility">The current ability.</param>
+    /// <param name="maximumAbility">The maximum ability.</param>
+    /// <param name="money">The money.</param>
+    /// <param name="heroState">The hero state.</param>
+    /// <param name="status">The status.</param>
+    /// <param name="usedFruitPoints">The used fruit points.</param>
+    /// <param name="maxFruitPoints">The max fruit points.</param>
+    /// <param name="usedNegativeFruitPoints">The used negative fruit points.</param>
+    /// <param name="maxNegativeFruitPoints">The max negative fruit points.</param>
+    /// <param name="inventoryExtensions">The inventory extensions.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the character was selected by the player and entered the game.
+    /// Causes reaction on client side: The characters enters the game world.
+    /// </remarks>
+    public static async ValueTask SendCharacterInformationExtendedAsync(this IConnection? connection, byte @x, byte @y, ushort @mapId, ulong @currentExperience, ulong @experienceForNextLevel, ushort @levelUpPoints, ushort @strength, ushort @agility, ushort @vitality, ushort @energy, ushort @leadership, uint @currentHealth, uint @maximumHealth, uint @currentMana, uint @maximumMana, uint @currentShield, uint @maximumShield, uint @currentAbility, uint @maximumAbility, uint @money, CharacterHeroState @heroState, CharacterStatus @status, ushort @usedFruitPoints, ushort @maxFruitPoints, ushort @usedNegativeFruitPoints, ushort @maxNegativeFruitPoints, byte @inventoryExtensions)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CharacterInformationExtendedRef.Length;
+            var packet = new CharacterInformationExtendedRef(connection.Output.GetSpan(length)[..length]);
+            packet.X = @x;
+            packet.Y = @y;
+            packet.MapId = @mapId;
+            packet.CurrentExperience = @currentExperience;
+            packet.ExperienceForNextLevel = @experienceForNextLevel;
+            packet.LevelUpPoints = @levelUpPoints;
+            packet.Strength = @strength;
+            packet.Agility = @agility;
+            packet.Vitality = @vitality;
+            packet.Energy = @energy;
+            packet.Leadership = @leadership;
+            packet.CurrentHealth = @currentHealth;
+            packet.MaximumHealth = @maximumHealth;
+            packet.CurrentMana = @currentMana;
+            packet.MaximumMana = @maximumMana;
+            packet.CurrentShield = @currentShield;
+            packet.MaximumShield = @maximumShield;
+            packet.CurrentAbility = @currentAbility;
+            packet.MaximumAbility = @maximumAbility;
+            packet.Money = @money;
+            packet.HeroState = @heroState;
+            packet.Status = @status;
+            packet.UsedFruitPoints = @usedFruitPoints;
+            packet.MaxFruitPoints = @maxFruitPoints;
             packet.UsedNegativeFruitPoints = @usedNegativeFruitPoints;
             packet.MaxNegativeFruitPoints = @maxNegativeFruitPoints;
             packet.InventoryExtensions = @inventoryExtensions;
@@ -3166,6 +3554,48 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="MasterStatsUpdateExtended" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="masterLevel">The master level.</param>
+    /// <param name="masterExperience">The master experience.</param>
+    /// <param name="masterExperienceOfNextLevel">The master experience of next level.</param>
+    /// <param name="masterLevelUpPoints">The master level up points.</param>
+    /// <param name="maximumHealth">The maximum health.</param>
+    /// <param name="maximumMana">The maximum mana.</param>
+    /// <param name="maximumShield">The maximum shield.</param>
+    /// <param name="maximumAbility">The maximum ability.</param>
+    /// <remarks>
+    /// Is sent by the server when: After entering the game with a master class character.
+    /// Causes reaction on client side: The master related data is available.
+    /// </remarks>
+    public static async ValueTask SendMasterStatsUpdateExtendedAsync(this IConnection? connection, ushort @masterLevel, ulong @masterExperience, ulong @masterExperienceOfNextLevel, ushort @masterLevelUpPoints, uint @maximumHealth, uint @maximumMana, uint @maximumShield, uint @maximumAbility)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = MasterStatsUpdateExtendedRef.Length;
+            var packet = new MasterStatsUpdateExtendedRef(connection.Output.GetSpan(length)[..length]);
+            packet.MasterLevel = @masterLevel;
+            packet.MasterExperience = @masterExperience;
+            packet.MasterExperienceOfNextLevel = @masterExperienceOfNextLevel;
+            packet.MasterLevelUpPoints = @masterLevelUpPoints;
+            packet.MaximumHealth = @maximumHealth;
+            packet.MaximumMana = @maximumMana;
+            packet.MaximumShield = @maximumShield;
+            packet.MaximumAbility = @maximumAbility;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="MasterCharacterLevelUpdate" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
@@ -3192,6 +3622,48 @@ public static class ConnectionExtensions
         {
             var length = MasterCharacterLevelUpdateRef.Length;
             var packet = new MasterCharacterLevelUpdateRef(connection.Output.GetSpan(length)[..length]);
+            packet.MasterLevel = @masterLevel;
+            packet.GainedMasterPoints = @gainedMasterPoints;
+            packet.CurrentMasterPoints = @currentMasterPoints;
+            packet.MaximumMasterPoints = @maximumMasterPoints;
+            packet.MaximumHealth = @maximumHealth;
+            packet.MaximumMana = @maximumMana;
+            packet.MaximumShield = @maximumShield;
+            packet.MaximumAbility = @maximumAbility;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="MasterCharacterLevelUpdateExtended" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="masterLevel">The master level.</param>
+    /// <param name="gainedMasterPoints">The gained master points.</param>
+    /// <param name="currentMasterPoints">The current master points.</param>
+    /// <param name="maximumMasterPoints">The maximum master points.</param>
+    /// <param name="maximumHealth">The maximum health.</param>
+    /// <param name="maximumMana">The maximum mana.</param>
+    /// <param name="maximumShield">The maximum shield.</param>
+    /// <param name="maximumAbility">The maximum ability.</param>
+    /// <remarks>
+    /// Is sent by the server when: After a master character leveled up.
+    /// Causes reaction on client side: Updates the master level (and other related stats) in the game client and shows an effect.
+    /// </remarks>
+    public static async ValueTask SendMasterCharacterLevelUpdateExtendedAsync(this IConnection? connection, ushort @masterLevel, ushort @gainedMasterPoints, ushort @currentMasterPoints, ushort @maximumMasterPoints, uint @maximumHealth, uint @maximumMana, uint @maximumShield, uint @maximumAbility)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = MasterCharacterLevelUpdateExtendedRef.Length;
+            var packet = new MasterCharacterLevelUpdateExtendedRef(connection.Output.GetSpan(length)[..length]);
             packet.MasterLevel = @masterLevel;
             packet.GainedMasterPoints = @gainedMasterPoints;
             packet.CurrentMasterPoints = @currentMasterPoints;

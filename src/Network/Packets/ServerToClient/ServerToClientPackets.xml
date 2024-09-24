@@ -2164,54 +2164,53 @@
           <Name>ShieldDamage</Name>
         </Field>
       </Fields>
-      <Enums>
-        <Enum>
-          <Name>DamageKind</Name>
-          <Description>Defines the kind of the damage.</Description>
-          <Values>
-            <EnumValue>
-              <Name>NormalRed</Name>
-              <Description>Red color, used by normal damage.</Description>
-              <Value>0</Value>
-            </EnumValue>
-            <EnumValue>
-              <Name>IgnoreDefenseCyan</Name>
-              <Description>Cyan color, usually used by ignore defense damage.</Description>
-              <Value>1</Value>
-            </EnumValue>
-            <EnumValue>
-              <Name>ExcellentLightGreen</Name>
-              <Description>Light green color, usually used by excellent damage.</Description>
-              <Value>2</Value>
-            </EnumValue>
-            <EnumValue>
-              <Name>CriticalBlue</Name>
-              <Description>Blue color, usually used by critical damage.</Description>
-              <Value>3</Value>
-            </EnumValue>
-            <EnumValue>
-              <Name>LightPink</Name>
-              <Description>Light pink color.</Description>
-              <Value>4</Value>
-            </EnumValue>
-            <EnumValue>
-              <Name>PoisonDarkGreen</Name>
-              <Description>Dark green color, usually used by poison damage.</Description>
-              <Value>5</Value>
-            </EnumValue>
-            <EnumValue>
-              <Name>ReflectedDarkPink</Name>
-              <Description>Dark pink color, usually used by reflected damage.</Description>
-              <Value>6</Value>
-            </EnumValue>
-            <EnumValue>
-              <Name>White</Name>
-              <Description>White color.</Description>
-              <Value>7</Value>
-            </EnumValue>
-          </Values>
-        </Enum>
-      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>11</Code>
+      <Name>ObjectHitExtended</Name>
+      <Length>16</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>An object got hit in two cases: 1. When the own player is hit; 2. When the own player attacked some other object which got hit.</SentWhen>
+      <CausedReaction>The damage is shown at the object which received the hit.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <LeftShifted>0</LeftShifted>
+          <Type>Enum</Type>
+          <TypeName>DamageKind</TypeName>
+          <Name>Kind</Name>
+          <Length>4</Length>
+        </Field>
+        <Field>
+          <Index>3</Index>
+          <LeftShifted>6</LeftShifted>
+          <Type>Boolean</Type>
+          <Name>IsDoubleDamage</Name>
+        </Field>
+        <Field>
+          <Index>3</Index>
+          <LeftShifted>7</LeftShifted>
+          <Type>Boolean</Type>
+          <Name>IsTripleDamage</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>ObjectId</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>HealthDamage</Name>
+        </Field>
+
+        <Field>
+          <Index>12</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>ShieldDamage</Name>
+        </Field>
+      </Fields>
     </Packet>
     <Packet>
       <HeaderType>C1Header</HeaderType>
@@ -2351,6 +2350,76 @@
           <Name>DamageOfLastHit</Name>
         </Field>
       </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3Header</HeaderType>
+      <Code>16</Code>
+      <Name>ExperienceGainedExtended</Name>
+      <Length>16</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>A player gained experience.</SentWhen>
+      <CausedReaction>The experience is added to the experience counter and bar.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Enum</Type>
+          <TypeName>AddResult</TypeName>
+          <Name>Type</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>AddedExperience</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>DamageOfLastHit</Name>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>KilledObjectId</Name>
+        </Field>
+        <Field>
+          <Index>14</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>KillerObjectId</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>AddResult</Name>
+          <Description>Defines the result and type of experience which is added.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Normal</Name>
+              <Description>The normal experience is added.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Master</Name>
+              <Description>The master experience is added.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>MaxLevelReached</Name>
+              <Description>The maximum level has been reached, no experience is added.</Description>
+              <Value>0x10</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>MaxMasterLevelReached</Name>
+              <Description>The maximum master level has been reached, no master experience is added.</Description>
+              <Value>0x20</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>MonsterLevelTooLowForMasterExperience</Name>
+              <Description>The monster level is too low for master experience, no master experience is added.</Description>
+              <Value>0x21</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
     </Packet>
     <Packet>
       <HeaderType>C3HeaderWithSubCode</HeaderType>
@@ -2823,6 +2892,28 @@
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>26</Code>
+      <SubCode>FF</SubCode>
+      <Name>CurrentHealthAndShieldExtended</Name>
+      <Length>12</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>Periodically, or if the current health or shield changed on the server side, e.g. by hits.</SentWhen>
+      <CausedReaction>The health and shield bar is updated on the game client user interface.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Health</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Shield</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>26</Code>
       <SubCode>FE</SubCode>
       <Name>MaximumHealthAndShield</Name>
       <Length>9</Length>
@@ -2845,6 +2936,28 @@
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>26</Code>
+      <SubCode>FE</SubCode>
+      <Name>MaximumHealthAndShieldExtended</Name>
+      <Length>12</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>When the maximum health changed, e.g. by adding stat points or changed items.</SentWhen>
+      <CausedReaction>The health and shield bar is updated on the game client user interface.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Health</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Shield</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>26</Code>
       <SubCode>FD</SubCode>
       <Name>ItemConsumptionFailed</Name>
       <Length>9</Length>
@@ -2860,6 +2973,28 @@
         <Field>
           <Index>7</Index>
           <Type>ShortBigEndian</Type>
+          <Name>Shield</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>26</Code>
+      <SubCode>FD</SubCode>
+      <Name>ItemConsumptionFailedExtended</Name>
+      <Length>12</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>When the consumption of an item failed.</SentWhen>
+      <CausedReaction>The game client gets a feedback about a failed consumption, and allows for do further consumption requests.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Health</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
           <Name>Shield</Name>
         </Field>
       </Fields>
@@ -2889,6 +3024,28 @@
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>27</Code>
+      <SubCode>FF</SubCode>
+      <Name>CurrentManaAndAbilityExtended</Name>
+      <Length>12</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The currently available mana or ability has changed, e.g. by using a skill.</SentWhen>
+      <CausedReaction>The mana and ability bar is updated on the game client user interface.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Mana</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Ability</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>27</Code>
       <SubCode>FE</SubCode>
       <Name>MaximumManaAndAbility</Name>
       <Length>8</Length>
@@ -2904,6 +3061,28 @@
         <Field>
           <Index>6</Index>
           <Type>ShortBigEndian</Type>
+          <Name>Ability</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>27</Code>
+      <SubCode>FE</SubCode>
+      <Name>MaximumManaAndAbilityExtended</Name>
+      <Length>12</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The maximum available mana or ability has changed, e.g. by adding stat points.</SentWhen>
+      <CausedReaction>The mana and ability bar is updated on the game client user interface.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Mana</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
           <Name>Ability</Name>
         </Field>
       </Fields>
@@ -4936,6 +5115,49 @@
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>F3</Code>
+      <SubCode>06</SubCode>
+      <Name>CharacterStatIncreaseResponseExtended</Name>
+      <Length>24</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the server processed a character stat increase request packet.</SentWhen>
+      <CausedReaction>If it was successful, adds a point to the requested stat type.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>CharacterStatAttribute</TypeName>
+          <Name>Attribute</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>AddedAmount</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>UpdatedMaximumHealth</Name>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>UpdatedMaximumMana</Name>
+        </Field>
+        <Field>
+          <Index>16</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>UpdatedMaximumShield</Name>
+        </Field>
+        <Field>
+          <Index>20</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>UpdatedMaximumAbility</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
       <SubCode>02</SubCode>
       <Name>CharacterDeleteResponse</Name>
       <Length>5</Length>
@@ -5180,6 +5402,217 @@
         </Field>
         <Field>
           <Index>68</Index>
+          <Type>Byte</Type>
+          <Name>InventoryExtensions</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
+      <SubCode>05</SubCode>
+      <Name>CharacterLevelUpdateExtended</Name>
+      <Length>32</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a character leveled up.</SentWhen>
+      <CausedReaction>Updates the level (and other related stats) in the game client and shows an effect.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Level</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>LevelUpPoints</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>MaximumHealth</Name>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>MaximumMana</Name>
+        </Field>
+        <Field>
+          <Index>16</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>MaximumShield</Name>
+        </Field>
+        <Field>
+          <Index>20</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>MaximumAbility</Name>
+        </Field>
+        <Field>
+          <Index>24</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>FruitPoints</Name>
+        </Field>
+        <Field>
+          <Index>26</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MaximumFruitPoints</Name>
+        </Field>
+        <Field>
+          <Index>28</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>NegativeFruitPoints</Name>
+        </Field>
+        <Field>
+          <Index>30</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MaximumNegativeFruitPoints</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
+      <SubCode>03</SubCode>
+      <Name>CharacterInformationExtended</Name>
+      <Length>84</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the character was selected by the player and entered the game.</SentWhen>
+      <CausedReaction>The characters enters the game world.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>X</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Y</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MapId</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>LongBigEndian</Type>
+          <Name>CurrentExperience</Name>
+        </Field>
+        <Field>
+          <Index>16</Index>
+          <Type>LongBigEndian</Type>
+          <Name>ExperienceForNextLevel</Name>
+        </Field>
+        <Field>
+          <Index>24</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>LevelUpPoints</Name>
+        </Field>
+        <Field>
+          <Index>26</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Strength</Name>
+        </Field>
+        <Field>
+          <Index>28</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Agility</Name>
+        </Field>
+        <Field>
+          <Index>30</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Vitality</Name>
+        </Field>
+        <Field>
+          <Index>32</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Energy</Name>
+        </Field>
+        <Field>
+          <Index>34</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Leadership</Name>
+        </Field>
+        <Field>
+          <Index>36</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>CurrentHealth</Name>
+        </Field>
+        <Field>
+          <Index>40</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>MaximumHealth</Name>
+        </Field>
+        <Field>
+          <Index>44</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>CurrentMana</Name>
+        </Field>
+        <Field>
+          <Index>48</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>MaximumMana</Name>
+        </Field>
+        <Field>
+          <Index>52</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>CurrentShield</Name>
+        </Field>
+        <Field>
+          <Index>56</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>MaximumShield</Name>
+        </Field>
+        <Field>
+          <Index>60</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>CurrentAbility</Name>
+        </Field>
+        <Field>
+          <Index>64</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>MaximumAbility</Name>
+        </Field>
+        <Field>
+          <Index>68</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Money</Name>
+        </Field>
+        <Field>
+          <Index>72</Index>
+          <Type>Enum</Type>
+          <TypeName>CharacterHeroState</TypeName>
+          <Name>HeroState</Name>
+        </Field>
+        <Field>
+          <Index>73</Index>
+          <Type>Enum</Type>
+          <TypeName>CharacterStatus</TypeName>
+          <Name>Status</Name>
+        </Field>
+        <Field>
+          <Index>74</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>UsedFruitPoints</Name>
+        </Field>
+        <Field>
+          <Index>76</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MaxFruitPoints</Name>
+        </Field>
+        <Field>
+          <Index>78</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>UsedNegativeFruitPoints</Name>
+        </Field>
+        <Field>
+          <Index>80</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MaxNegativeFruitPoints</Name>
+        </Field>
+        <Field>
+          <Index>81</Index>
           <Type>Byte</Type>
           <Name>InventoryExtensions</Name>
         </Field>
@@ -5714,6 +6147,58 @@
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>F3</Code>
+      <SubCode>50</SubCode>
+      <Name>MasterStatsUpdateExtended</Name>
+      <Length>40</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After entering the game with a master class character.</SentWhen>
+      <CausedReaction>The master related data is available.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MasterLevel</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>LongBigEndian</Type>
+          <Name>MasterExperience</Name>
+        </Field>
+        <Field>
+          <Index>14</Index>
+          <Type>LongBigEndian</Type>
+          <Name>MasterExperienceOfNextLevel</Name>
+        </Field>
+        <Field>
+          <Index>22</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MasterLevelUpPoints</Name>
+        </Field>
+        <Field>
+          <Index>24</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>MaximumHealth</Name>
+        </Field>
+        <Field>
+          <Index>28</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>MaximumMana</Name>
+        </Field>
+        <Field>
+          <Index>32</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>MaximumShield</Name>
+        </Field>
+        <Field>
+          <Index>36</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>MaximumAbility</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
       <SubCode>51</SubCode>
       <Name>MasterCharacterLevelUpdate</Name>
       <Length>20</Length>
@@ -5759,6 +6244,58 @@
         <Field>
           <Index>18</Index>
           <Type>ShortLittleEndian</Type>
+          <Name>MaximumAbility</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
+      <SubCode>51</SubCode>
+      <Name>MasterCharacterLevelUpdateExtended</Name>
+      <Length>28</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a master character leveled up.</SentWhen>
+      <CausedReaction>Updates the master level (and other related stats) in the game client and shows an effect.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MasterLevel</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>GainedMasterPoints</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>CurrentMasterPoints</Name>
+        </Field>
+        <Field>
+          <Index>10</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MaximumMasterPoints</Name>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>MaximumHealth</Name>
+        </Field>
+        <Field>
+          <Index>16</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>MaximumMana</Name>
+        </Field>
+        <Field>
+          <Index>20</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>MaximumShield</Name>
+        </Field>
+        <Field>
+          <Index>24</Index>
+          <Type>IntegerLittleEndian</Type>
           <Name>MaximumAbility</Name>
         </Field>
       </Fields>
@@ -9570,6 +10107,52 @@
           <Name>RageFighter</Name>
           <Description>Unlocks the rage fighter class.</Description>
           <Value>8</Value>
+        </EnumValue>
+      </Values>
+    </Enum>
+    <Enum>
+      <Name>DamageKind</Name>
+      <Description>Defines the kind of the damage.</Description>
+      <Values>
+        <EnumValue>
+          <Name>NormalRed</Name>
+          <Description>Red color, used by normal damage.</Description>
+          <Value>0</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>IgnoreDefenseCyan</Name>
+          <Description>Cyan color, usually used by ignore defense damage.</Description>
+          <Value>1</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>ExcellentLightGreen</Name>
+          <Description>Light green color, usually used by excellent damage.</Description>
+          <Value>2</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>CriticalBlue</Name>
+          <Description>Blue color, usually used by critical damage.</Description>
+          <Value>3</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>LightPink</Name>
+          <Description>Light pink color.</Description>
+          <Value>4</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>PoisonDarkGreen</Name>
+          <Description>Dark green color, usually used by poison damage.</Description>
+          <Value>5</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>ReflectedDarkPink</Name>
+          <Description>Dark pink color, usually used by reflected damage.</Description>
+          <Value>6</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>White</Name>
+          <Description>White color.</Description>
+          <Value>7</Value>
         </EnumValue>
       </Values>
     </Enum>
