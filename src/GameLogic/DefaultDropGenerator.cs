@@ -304,6 +304,8 @@ public class DefaultDropGenerator : IDropGenerator
         {
             if (this._randomizer.NextRandomBool(option.AddChance))
             {
+                if (option.AddChance == 0.001)
+                    Console.WriteLine("Uh-oh! Exc option applied!");
                 var remainingOptions = option.PossibleOptions.Where(possibleOption => item.ItemOptions.All(link => link.ItemOption != possibleOption));
                 var newOption = remainingOptions.SelectRandom(this._randomizer);
                 if (newOption is null)
@@ -429,7 +431,7 @@ public class DefaultDropGenerator : IDropGenerator
             case SpecialItemType.Excellent:
                 return this.GenerateRandomExcellentItem((int)monster[Stats.Level]);
             case SpecialItemType.RandomItem:
-                return this.GenerateRandomItem((int)monster[Stats.Level], false);
+                return this.GenerateRandomItem((int)monster[Stats.Level], false); // to-do. Exc options are being applied via this route
             case SpecialItemType.SocketItem:
                 return this.GenerateRandomItem((int)monster[Stats.Level], true);
             case SpecialItemType.Money:

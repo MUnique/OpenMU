@@ -64,7 +64,7 @@ public static class ItemExtensions
         {
             result += 20;
         }
-        else if (item.IsExcellent())
+        else if (item.IsExcellent()) // To-do: no Exc options added at this point
         {
             // TODO: archangel weapons, but I guess it's not a big issue if we don't, because of their already high durability
             result += 15;
