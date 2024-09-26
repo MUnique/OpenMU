@@ -64,6 +64,9 @@ public class UpdateCharacterStatsExtendedPlugIn : IUpdateCharacterStatsPlugIn
                 this._player.SelectedCharacter.GetMaximumFruitPoints(),
                 (ushort)this._player.SelectedCharacter.UsedNegFruitPoints,
                 this._player.SelectedCharacter.GetMaximumFruitPoints(),
+                (ushort)this._player.Attributes[Stats.AttackSpeed],
+                (ushort)this._player.Attributes[Stats.AttackSpeed], // todo: implement MagicSpeed
+                200, // todo: This is the maximum attack speed, make configurable.
                 (byte)this._player.SelectedCharacter.InventoryExtensions)
             .ConfigureAwait(false);
 

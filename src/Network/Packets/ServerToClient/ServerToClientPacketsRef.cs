@@ -14571,7 +14571,7 @@ public readonly ref struct CharacterInformationExtendedRef
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 84;
+    public static int Length => 96;
 
     /// <summary>
     /// Gets the header of this packet.
@@ -14813,12 +14813,39 @@ public readonly ref struct CharacterInformationExtendedRef
     }
 
     /// <summary>
+    /// Gets or sets the attack speed.
+    /// </summary>
+    public ushort AttackSpeed
+    {
+        get => ReadUInt16LittleEndian(this._data[82..]);
+        set => WriteUInt16LittleEndian(this._data[82..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the magic speed.
+    /// </summary>
+    public ushort MagicSpeed
+    {
+        get => ReadUInt16LittleEndian(this._data[84..]);
+        set => WriteUInt16LittleEndian(this._data[84..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the maximum attack speed.
+    /// </summary>
+    public ushort MaximumAttackSpeed
+    {
+        get => ReadUInt16LittleEndian(this._data[86..]);
+        set => WriteUInt16LittleEndian(this._data[86..], value);
+    }
+
+    /// <summary>
     /// Gets or sets the inventory extensions.
     /// </summary>
     public byte InventoryExtensions
     {
-        get => this._data[81];
-        set => this._data[81] = value;
+        get => this._data[88];
+        set => this._data[88] = value;
     }
 
     /// <summary>

@@ -15295,7 +15295,7 @@ public readonly struct CharacterInformationExtended
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 84;
+    public static int Length => 96;
 
     /// <summary>
     /// Gets the header of this packet.
@@ -15537,12 +15537,39 @@ public readonly struct CharacterInformationExtended
     }
 
     /// <summary>
+    /// Gets or sets the attack speed.
+    /// </summary>
+    public ushort AttackSpeed
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[82..]);
+        set => WriteUInt16LittleEndian(this._data.Span[82..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the magic speed.
+    /// </summary>
+    public ushort MagicSpeed
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[84..]);
+        set => WriteUInt16LittleEndian(this._data.Span[84..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the maximum attack speed.
+    /// </summary>
+    public ushort MaximumAttackSpeed
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[86..]);
+        set => WriteUInt16LittleEndian(this._data.Span[86..], value);
+    }
+
+    /// <summary>
     /// Gets or sets the inventory extensions.
     /// </summary>
     public byte InventoryExtensions
     {
-        get => this._data.Span[81];
-        set => this._data.Span[81] = value;
+        get => this._data.Span[88];
+        set => this._data.Span[88] = value;
     }
 
     /// <summary>

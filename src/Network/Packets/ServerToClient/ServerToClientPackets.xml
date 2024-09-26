@@ -5479,7 +5479,7 @@
       <Code>F3</Code>
       <SubCode>03</SubCode>
       <Name>CharacterInformationExtended</Name>
-      <Length>84</Length>
+      <Length>96</Length>
       <Direction>ServerToClient</Direction>
       <SentWhen>After the character was selected by the player and entered the game.</SentWhen>
       <CausedReaction>The characters enters the game world.</CausedReaction>
@@ -5617,7 +5617,22 @@
           <Name>MaxNegativeFruitPoints</Name>
         </Field>
         <Field>
-          <Index>81</Index>
+          <Index>82</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>AttackSpeed</Name>
+        </Field>
+        <Field>
+          <Index>84</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MagicSpeed</Name>
+        </Field>
+        <Field>
+          <Index>86</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MaximumAttackSpeed</Name>
+        </Field>
+        <Field>
+          <Index>88</Index>
           <Type>Byte</Type>
           <Name>InventoryExtensions</Name>
         </Field>

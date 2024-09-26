@@ -13,7 +13,7 @@ The characters enters the game world.
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
 | 0 | 1 |   Byte   | 0xC3  | [Packet type](PacketTypes.md) |
-| 1 | 1 |    Byte   |   84   | Packet header - length of the packet |
+| 1 | 1 |    Byte   |   96   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0xF3  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0x03  | Packet header - sub packet type identifier |
 | 4 | 1 | Byte |  | X |
@@ -42,7 +42,10 @@ The characters enters the game world.
 | 76 | 2 | ShortLittleEndian |  | MaxFruitPoints |
 | 78 | 2 | ShortLittleEndian |  | UsedNegativeFruitPoints |
 | 80 | 2 | ShortLittleEndian |  | MaxNegativeFruitPoints |
-| 81 | 1 | Byte |  | InventoryExtensions |
+| 82 | 2 | ShortLittleEndian |  | AttackSpeed |
+| 84 | 2 | ShortLittleEndian |  | MagicSpeed |
+| 86 | 2 | ShortLittleEndian |  | MaximumAttackSpeed |
+| 88 | 1 | Byte |  | InventoryExtensions |
 
 ### CharacterHeroState Enum
 
