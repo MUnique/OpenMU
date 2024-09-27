@@ -48,8 +48,8 @@ public class FixMaxManaAndAbilityJewelryOptionsUpdateSeason6 : UpdatePlugInBase
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
-        var itemOptions = gameConfiguration.ItemOptions
-            .Where(io => io.Name == "Jewelery option Maximum Mana" || io.Name == "Jewelery option Maximum Ability");
+        var itemOptionGuids = new List<Guid> { new("00000083-d018-8826-0000-000000000000"), new("00000083-d01c-bbba-0000-000000000000") };
+        var itemOptions = gameConfiguration.ItemOptions.Where(io => itemOptionGuids.Contains(io.GetId()));
 
         foreach (var itemOption in itemOptions)
         {
