@@ -189,7 +189,7 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
             .GetAdditionalValueElement(attribute.AggregateType);
 
         if (item.IsJewelry() && levelBonusElmt is not null)
-        {
+        { // Combine element resistance for jewelry so that the highest value from one single item can be sorted out
             yield return new PowerUpWrapper(
                 new CombinedElement(attribute.BaseValueElement, levelBonusElmt),
                 attribute.TargetAttribute,

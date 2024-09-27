@@ -148,7 +148,6 @@ public class InventoryStorage : Storage, IInventoryStorage
         if (this._player.Attributes.ItemPowerUps.TryGetValue(item, out var itemPowerUps))
         {
             this._player.Attributes.ItemPowerUps.Remove(item);
-
             foreach (var powerUp in itemPowerUps)
             {
                 powerUp.Dispose();
@@ -163,7 +162,8 @@ public class InventoryStorage : Storage, IInventoryStorage
         var itemAdded = this.EquippedItems.Contains(item);
         if (itemAdded)
         {
-            this._player.Attributes.ItemPowerUps.Add(item, this._gameContext.ItemPowerUpFactory.GetPowerUps(item, this._player.Attributes).ToList());
+            var factory = this._gameContext.ItemPowerUpFactory;
+            this._player.Attributes.ItemPowerUps.Add(item, factory.GetPowerUps(item, this._player.Attributes).ToList());
 
             // reset player equipped ammunition amount
             if (this.EquippedAmmunitionItem is { } ammoItem)
