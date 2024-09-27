@@ -31,22 +31,6 @@ public sealed class PowerUpWrapper : IElement, IDisposable
         }
 
         this._element = element;
-        // if (element.AggregateType == AggregateType.Maximum && this._parentAttribute.Elements.Any())
-        // {
-        //     foreach (var parentElmt in this._parentAttribute.Elements)
-        //     {
-        //         if (parentElmt.AggregateType == AggregateType.Maximum && element.Value > parentElmt.Value)
-        //         { // Only one element with AggregateType.Maximum should exist
-        //             this._parentAttribute.RemoveElement(parentElmt);
-        //             this._parentAttribute.AddElement(element);
-        //             break;
-        //         }
-        //     }
-        // }
-        // else
-        // {
-        //     this._parentAttribute.AddElement(this);
-        // }
         this._parentAttribute.AddElement(this);
         this._element.ValueChanged += this.OnValueChanged;
     }

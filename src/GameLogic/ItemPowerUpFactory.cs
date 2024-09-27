@@ -27,7 +27,7 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
     }
 
     /// <inheritdoc/>
-    public IEnumerable<PowerUpWrapper> GetPowerUps(Item item, AttributeSystem attributeHolder, bool skipBasePowerUps = false, bool skipOptionPowerUps = false)
+    public IEnumerable<PowerUpWrapper> GetPowerUps(Item item, AttributeSystem attributeHolder)
     {
         if (item.Definition is null)
         {
@@ -45,23 +45,17 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
             yield break;
         }
 
-        if (!skipBasePowerUps)
+        foreach (var attribute in item.Definition.BasePowerUpAttributes)
         {
-            foreach (var attribute in item.Definition.BasePowerUpAttributes)
-            {
-                foreach (var powerUp in this.GetBasePowerUpWrappers(item, attributeHolder, attribute))
-                {
-                    yield return powerUp;
-                }
-            }
-        }
-
-        if (!skipOptionPowerUps)
-        {
-            foreach (var powerUp in this.GetPowerUpsOfItemOptions(item, attributeHolder))
+            foreach (var powerUp in this.GetBasePowerUpWrappers(item, attributeHolder, attribute))
             {
                 yield return powerUp;
             }
+        }
+
+        foreach (var powerUp in this.GetPowerUpsOfItemOptions(item, attributeHolder))
+        {
+            yield return powerUp;
         }
 
         if (this.GetPetLevel(item, attributeHolder) is { } petLevel)

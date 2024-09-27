@@ -19,10 +19,8 @@ public interface IItemPowerUpFactory
     /// </summary>
     /// <param name="item">The item.</param>
     /// <param name="attributeSystem">The attribute system of the player who equipped the item.</param>
-    /// <param name="skipBasePowerUps">If only the item base power ups should be built.</param>
-    /// <param name="skipOptionPowerUps">If only the item option power ups should be built.</param>
     /// <returns>The created power ups.</returns>
-    IEnumerable<PowerUpWrapper> GetPowerUps(Item item, AttributeSystem attributeSystem, bool skipBasePowerUps = false, bool skipOptionPowerUps = false);
+    IEnumerable<PowerUpWrapper> GetPowerUps(Item item, AttributeSystem attributeSystem);
 
     /// <summary>
     /// Gets the set power ups, which are created for existing <see cref="ItemSetGroup"/>s in the equipped items.
