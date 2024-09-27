@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameLogic;
 
-using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views.World;
