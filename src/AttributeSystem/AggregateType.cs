@@ -23,4 +23,9 @@ public enum AggregateType
     /// Adds the value to the final value.
     /// </summary>
     AddFinal,
+
+    /// <summary>
+    /// Only the highest available value from all items takes effect (jewelry element resistance).
+    /// </summary>
+    Maximum,
 }

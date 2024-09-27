@@ -148,14 +148,14 @@ public class InventoryStorage : Storage, IInventoryStorage
 
         var attributes = this._player.Attributes;
         var factory = this._gameContext.ItemPowerUpFactory;
-        bool itemIsJewelry = item.IsJewelry();
+        // bool itemIsJewelry = item.IsJewelry();
 
         if (attributes.ItemPowerUps.TryGetValue(item, out var itemPowerUps))
         {
-            if (itemIsJewelry)
-            { // Run this before remmoving power ups
-                this.HandleJewelryBasePowerUps(item, true);
-            }
+            // if (itemIsJewelry)
+            // { // Run this before remmoving power ups
+            //     this.HandleJewelryBasePowerUps(item, true);
+            // }
 
             attributes.ItemPowerUps.Remove(item);
 
@@ -173,13 +173,13 @@ public class InventoryStorage : Storage, IInventoryStorage
         var itemAdded = this.EquippedItems.Contains(item);
         if (itemAdded)
         {
-            bool skipBasePowerUps = false;
-            if (itemIsJewelry)
-            {
-                skipBasePowerUps = this.HandleJewelryBasePowerUps(item);
-            }
+            // bool skipBasePowerUps = false;
+            // if (itemIsJewelry)
+            // {
+            //     skipBasePowerUps = this.HandleJewelryBasePowerUps(item);
+            // }
 
-            attributes.ItemPowerUps.Add(item, factory.GetPowerUps(item, attributes, skipBasePowerUps, false).ToList());
+            attributes.ItemPowerUps.Add(item, factory.GetPowerUps(item, attributes/*, skipBasePowerUps, false*/).ToList());
 
             // reset player equipped ammunition amount
             if (this.EquippedAmmunitionItem is { } ammoItem)
@@ -206,13 +206,13 @@ public class InventoryStorage : Storage, IInventoryStorage
         {
             foreach (var item in this.EquippedItems)
             {
-                bool skipBasePowerUps = false;
-                if (item.IsJewelry())
-                {
-                    skipBasePowerUps = this.HandleJewelryBasePowerUps(item);
-                }
+                // bool skipBasePowerUps = false;
+                // if (item.IsJewelry())
+                // {
+                //     skipBasePowerUps = this.HandleJewelryBasePowerUps(item);
+                // }
 
-                this._player.Attributes.ItemPowerUps.Add(item, factory.GetPowerUps(item, this._player.Attributes, skipBasePowerUps, false).ToList());
+                this._player.Attributes.ItemPowerUps.Add(item, factory.GetPowerUps(item, this._player.Attributes/*, skipBasePowerUps, false*/).ToList());
             }
 
             this.UpdateSetPowerUps();
@@ -249,58 +249,58 @@ public class InventoryStorage : Storage, IInventoryStorage
     /// <param name="onItemUnequip"><c>true</c> if the item is being unequipped; <c>false</c> if it is being equipped.</param>
     /// <returns><c>true</c> if the jewelry item's base power up should be skipped (on item equip); <c>false</c> otherwise.</returns>
     /// <remarks>All jewelry base power up attributes are comprised of one single element resistance. Only the highest resistance value applies (no stacking).</remarks>
-    private bool HandleJewelryBasePowerUps(Item item, bool onItemUnequip = false)
-    {
-        var baseAttribute = item.Definition!.BasePowerUpAttributes.FirstOrDefault()?.TargetAttribute;
-        if (baseAttribute is null) // Ring of Magic and Pendant of Ability have no base attributes
-        {
-            return true;
-        }
+    // private bool HandleJewelryBasePowerUps(Item item, bool onItemUnequip = false)
+    // {
+    //     var baseAttribute = item.Definition!.BasePowerUpAttributes.FirstOrDefault()?.TargetAttribute;
+    //     if (baseAttribute is null) // Ring of Magic and Pendant of Ability have no base attributes
+    //     {
+    //         return true;
+    //     }
 
-        var attributes = this._player.Attributes;
-        var jewelrySharingAttribute = this.EquippedItems
-            .Where(eqItem => eqItem.IsJewelry() && eqItem != item && eqItem.Definition!.BasePowerUpAttributes.FirstOrDefault()?.TargetAttribute == baseAttribute);
-        var highestItem = jewelrySharingAttribute.MaxBy(jsa => jsa.Level);
+    //     var attributes = this._player.Attributes;
+    //     var jewelrySharingAttribute = this.EquippedItems
+    //         .Where(eqItem => eqItem.IsJewelry() && eqItem != item && eqItem.Definition!.BasePowerUpAttributes.FirstOrDefault()?.TargetAttribute == baseAttribute);
+    //     var highestItem = jewelrySharingAttribute.MaxBy(jsa => jsa.Level);
 
-        if (onItemUnequip)
-        {
-            if (highestItem is not null && attributes!.ItemPowerUps[item].Any(powerUp => powerUp.ParentAttribute!.Definition == baseAttribute))
-            { // Unequipped item had the resistance base power up active => load the new highest jewelry item's
-                var factory = this._gameContext.ItemPowerUpFactory;
-                attributes!.ItemPowerUps[highestItem] = attributes!.ItemPowerUps[highestItem].Concat(factory.GetPowerUps(highestItem, attributes, false, true).ToList()).ToList();
-            }
-        }
-        else if (attributes!.GetComposableAttribute(baseAttribute!) is ComposableAttribute compAttr)
-        {
-            if (item.Level < highestItem?.Level || (item.Level == highestItem?.Level && compAttr.Elements.Any()))
-            { // There is a ring or pendant with higher or equal resistance/level
-                return true;
-            }
+    //     if (onItemUnequip)
+    //     {
+    //         if (highestItem is not null && attributes!.ItemPowerUps[item].Any(powerUp => powerUp.ParentAttribute!.Definition == baseAttribute))
+    //         { // Unequipped item had the resistance base power up active => load the new highest jewelry item's
+    //             var factory = this._gameContext.ItemPowerUpFactory;
+    //             attributes!.ItemPowerUps[highestItem] = attributes!.ItemPowerUps[highestItem].Concat(factory.GetPowerUps(highestItem, attributes, false, true).ToList()).ToList();
+    //         }
+    //     }
+    //     else if (attributes!.GetComposableAttribute(baseAttribute!) is ComposableAttribute compAttr)
+    //     {
+    //         if (item.Level < highestItem?.Level || (item.Level == highestItem?.Level && compAttr.Elements.Any()))
+    //         { // There is a ring or pendant with higher or equal resistance/level
+    //             return true;
+    //         }
 
-            if (item.Level > highestItem?.Level)
-            { // Equipped item has highest resistance
-                // Remove all existing elements under the resistance composable attribute
-                while (compAttr.Elements.Any())
-                {
-                    compAttr.RemoveElement(compAttr.Elements.Last());
-                }
+    //         if (item.Level > highestItem?.Level)
+    //         { // Equipped item has highest resistance
+    //             // Remove all existing elements under the resistance composable attribute
+    //             while (compAttr.Elements.Any())
+    //             {
+    //                 compAttr.RemoveElement(compAttr.Elements.Last());
+    //             }
 
-                // Remove active resistance base power up for previous highest jewelry item
-                foreach (var jewelryItem in jewelrySharingAttribute)
-                {
-                    if (attributes!.ItemPowerUps.TryGetValue(jewelryItem, out IReadOnlyList<PowerUpWrapper>? powerUps) && powerUps.Any(pu => pu.ParentAttribute!.Definition == baseAttribute))
-                    {
-                        attributes!.ItemPowerUps[jewelryItem] = powerUps.Where(pu => pu.ParentAttribute!.Definition != baseAttribute).ToList();
-                        break;
-                    }
-                }
-            }
-        }
-        else
-        {
-            // Continue
-        }
+    //             // Remove active resistance base power up for previous highest jewelry item
+    //             foreach (var jewelryItem in jewelrySharingAttribute)
+    //             {
+    //                 if (attributes!.ItemPowerUps.TryGetValue(jewelryItem, out IReadOnlyList<PowerUpWrapper>? powerUps) && powerUps.Any(pu => pu.ParentAttribute!.Definition == baseAttribute))
+    //                 {
+    //                     attributes!.ItemPowerUps[jewelryItem] = powerUps.Where(pu => pu.ParentAttribute!.Definition != baseAttribute).ToList();
+    //                     break;
+    //                 }
+    //             }
+    //         }
+    //     }
+    //     else
+    //     {
+    //         // Continue
+    //     }
 
-        return false;
-    }
+    //     return false;
+    // }
 }

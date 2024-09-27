@@ -190,12 +190,25 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
         attribute.ThrowNotInitializedProperty(attribute.BaseValueElement is null, nameof(attribute.BaseValueElement));
         attribute.ThrowNotInitializedProperty(attribute.TargetAttribute is null, nameof(attribute.TargetAttribute));
 
-        yield return new PowerUpWrapper(attribute.BaseValueElement, attribute.TargetAttribute, attributeHolder);
+        var levelBonusElmt = (attribute.BonusPerLevelTable?.BonusPerLevel ?? Enumerable.Empty<LevelBonus>())
+            .FirstOrDefault(bonus => bonus.Level == item.Level)?
+            .GetAdditionalValueElement(attribute.AggregateType);
 
-        var levelBonus = (attribute.BonusPerLevelTable?.BonusPerLevel ?? Enumerable.Empty<LevelBonus>()).FirstOrDefault(bonus => bonus.Level == item.Level);
-        if (levelBonus is not null)
+        if (item.IsJewelry() && levelBonusElmt is not null)
         {
-            yield return new PowerUpWrapper(levelBonus.GetAdditionalValueElement(attribute.AggregateType), attribute.TargetAttribute, attributeHolder);
+            yield return new PowerUpWrapper(
+                new CombinedElement(attribute.BaseValueElement, levelBonusElmt),
+                attribute.TargetAttribute,
+                attributeHolder);
+        }
+        else
+        {
+            yield return new PowerUpWrapper(attribute.BaseValueElement, attribute.TargetAttribute, attributeHolder);
+
+            if (levelBonusElmt is not null)
+            {
+                yield return new PowerUpWrapper(levelBonusElmt, attribute.TargetAttribute, attributeHolder);
+            }
         }
     }
 

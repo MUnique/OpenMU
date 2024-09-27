@@ -553,37 +553,37 @@ public class Stats
     public static AttributeDefinition IsStunned { get; } = new (new Guid("22C86BAF-7F27-478D-8075-E4465C2859DD"), "Is stunned", "The player is poisoned and loses health");
 
     /// <summary>
-    /// Gets the ice resistance attribute definition. Value range from 0 to 0.5.
+    /// Gets the ice resistance attribute definition. Value range from 0 to 1.
     /// </summary>
     public static AttributeDefinition IceResistance { get; } = new (new Guid("47235C36-41BB-44B4-8823-6FC415709F59"), "Ice Resistance", string.Empty);
 
     /// <summary>
-    /// Gets the fire resistance attribute definition. Value range from 0 to 0.5.
+    /// Gets the fire resistance attribute definition. Value range from 0 to 1.
     /// </summary>
     public static AttributeDefinition FireResistance { get; } = new (new Guid("9AE4D80D-5706-48B9-AD11-EAC4FE088A81"), "Fire Resistance", string.Empty);
 
     /// <summary>
-    /// Gets the water resistance attribute definition. Value range from 0 to 0.5.
+    /// Gets the water resistance attribute definition. Value range from 0 to 1.
     /// </summary>
     public static AttributeDefinition WaterResistance { get; } = new (new Guid("3AF88672-D8DB-44E1-937A-7E6484134C39"), "Water Resistance", string.Empty);
 
     /// <summary>
-    /// Gets the earth resistance attribute definition. Value range from 0 to 0.5.
+    /// Gets the earth resistance attribute definition. Value range from 0 to 1.
     /// </summary>
     public static AttributeDefinition EarthResistance { get; } = new (new Guid("4470890F-00CE-44A6-BADB-203684B6014D"), "Earth Resistance", string.Empty);
 
     /// <summary>
-    /// Gets the wind resistance attribute definition. Value range from 0 to 0.5.
+    /// Gets the wind resistance attribute definition. Value range from 0 to 1.
     /// </summary>
     public static AttributeDefinition WindResistance { get; } = new (new Guid("03A29C46-7B7E-424D-8325-8390692570C3"), "Wind Resistance", string.Empty);
 
     /// <summary>
-    /// Gets the poison resistance attribute definition. Value range from 0 to 0.5.
+    /// Gets the poison resistance attribute definition. Value range from 0 to 1.
     /// </summary>
     public static AttributeDefinition PoisonResistance { get; } = new (new Guid("3D50D0B7-63A2-4DA9-8855-12173EAE6B39"), "Poison Resistance", string.Empty);
 
     /// <summary>
-    /// Gets the lightning resistance attribute definition. Value range from 0 to 0.5.
+    /// Gets the lightning resistance attribute definition. Value range from 0 to 1.
     /// </summary>
     public static AttributeDefinition LightningResistance { get; } = new (new Guid("3E339393-2D17-452E-81D9-3987947A407F"), "Lightning Resistance", string.Empty);
 
