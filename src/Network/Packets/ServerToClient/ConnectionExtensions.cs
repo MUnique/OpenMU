@@ -521,6 +521,48 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="AppearanceChangedExtended" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="changedPlayerId">The changed player id.</param>
+    /// <param name="itemSlot">The item slot.</param>
+    /// <param name="itemGroup">The item group.</param>
+    /// <param name="itemNumber">The item number.</param>
+    /// <param name="itemLevel">The item level.</param>
+    /// <param name="isExcellent">The is excellent.</param>
+    /// <param name="isAncient">The is ancient.</param>
+    /// <param name="isAncientSetComplete">The is ancient set complete.</param>
+    /// <remarks>
+    /// Is sent by the server when: The appearance of a player changed, all surrounding players are informed about it.
+    /// Causes reaction on client side: The appearance of the player is updated.
+    /// </remarks>
+    public static async ValueTask SendAppearanceChangedExtendedAsync(this IConnection? connection, ushort @changedPlayerId, byte @itemSlot, byte @itemGroup, ushort @itemNumber, byte @itemLevel, bool @isExcellent, bool @isAncient, bool @isAncientSetComplete)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = AppearanceChangedExtendedRef.Length;
+            var packet = new AppearanceChangedExtendedRef(connection.Output.GetSpan(length)[..length]);
+            packet.ChangedPlayerId = @changedPlayerId;
+            packet.ItemSlot = @itemSlot;
+            packet.ItemGroup = @itemGroup;
+            packet.ItemNumber = @itemNumber;
+            packet.ItemLevel = @itemLevel;
+            packet.IsExcellent = @isExcellent;
+            packet.IsAncient = @isAncient;
+            packet.IsAncientSetComplete = @isAncientSetComplete;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="ObjectMessage" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>

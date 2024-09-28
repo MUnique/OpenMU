@@ -44,9 +44,9 @@ public class ItemAppearPlugIn : IItemAppearPlugIn
             {
                 InventorySlot = newItem.ItemSlot,
             };
-            itemSerializer.SerializeItem(packet.ItemData, newItem);
+            var itemSize = itemSerializer.SerializeItem(packet.ItemData, newItem);
 
-            return size;
+            return ItemAddedToInventoryRef.GetRequiredSize(itemSize);
         }
 
         await connection.SendAsync(Write).ConfigureAwait(false);

@@ -18,7 +18,20 @@ using MUnique.OpenMU.Persistence.InMemory;
 /// Unit tests for the <see cref="ItemSerializer"/>.
 /// </summary>
 [TestFixture]
-public class ItemSerializerTests
+public class ItemSerializerTests : ItemSerializerTests<ItemSerializer>;
+
+/// <summary>
+/// Unit tests for the <see cref="ItemSerializerExtended"/>.
+/// </summary>
+[TestFixture]
+public class ItemSerializerExtendedTests : ItemSerializerTests<ItemSerializerExtended>;
+
+/// <summary>
+/// Generic unit tests for the <see cref="IItemSerializer"/>s.
+/// </summary>
+[Ignore("Generic test")]
+public class ItemSerializerTests<T>
+    where T: IItemSerializer, new()
 {
     private GameConfiguration _gameConfiguration = null!;
     private IPersistenceContextProvider _contextProvider = null!;
@@ -33,7 +46,7 @@ public class ItemSerializerTests
         this._contextProvider = new InMemoryPersistenceContextProvider();
         await new DataInitialization(this._contextProvider, new NullLoggerFactory()).CreateInitialDataAsync(3, true).ConfigureAwait(false);
         this._gameConfiguration = (await this._contextProvider.CreateNewConfigurationContext().GetAsync<GameConfiguration>().ConfigureAwait(false)).First();
-        this._itemSerializer = new ItemSerializer();
+        this._itemSerializer = new T();
     }
 
     /// <summary>

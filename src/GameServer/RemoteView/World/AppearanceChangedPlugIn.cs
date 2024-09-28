@@ -75,3 +75,40 @@ public class AppearanceChangedPlugIn : IAppearanceChangedPlugIn
         await connection.SendAsync(Write).ConfigureAwait(false);
     }
 }
+
+/// <summary>
+/// The extended implementation of the <see cref="IAppearanceChangedPlugIn"/> which is forwarding appearance changes of other players to the game client with specific data packets.
+/// </summary>
+[PlugIn(nameof(AppearanceChangedExtendedPlugIn), "The extended implementation of the IAppearanceChangedPlugIn which is forwarding appearance changes of other players to the game client with specific data packets.")]
+[Guid("A2F298E4-9F48-402A-B30D-9BC2BA8DEB2E")]
+public class AppearanceChangedExtendedPlugIn : IAppearanceChangedPlugIn
+{
+    private readonly RemotePlayer _player;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AppearanceChangedExtendedPlugIn"/> class.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    public AppearanceChangedExtendedPlugIn(RemotePlayer player) => this._player = player;
+
+    /// <inheritdoc/>
+    public async ValueTask AppearanceChangedAsync(Player changedPlayer, Item item)
+    {
+        var connection = this._player.Connection;
+        if (connection is null || changedPlayer.Inventory is not { } inventory)
+        {
+            return;
+        }
+
+        await connection.SendAppearanceChangedExtendedAsync(
+            changedPlayer.GetId(this._player),
+            item.ItemSlot,
+            (byte)(item.Definition?.Group ?? 0xFF),
+            (ushort)(item.Definition?.Number ?? 0xFFFF),
+            item.Level,
+            item.IsExcellent(),
+            item.IsAncient(),
+            changedPlayer.SelectedCharacter?.HasFullAncientSetEquipped() is true)
+            .ConfigureAwait(false);
+    }
+}

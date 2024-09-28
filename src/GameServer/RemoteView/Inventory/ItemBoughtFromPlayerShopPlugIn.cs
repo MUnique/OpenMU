@@ -44,9 +44,9 @@ public class ItemBoughtFromPlayerShopPlugIn : IItemBoughtFromPlayerShopPlugIn
             {
                 InventorySlot = item.ItemSlot,
             };
-            itemSerializer.SerializeItem(packet.ItemData, item);
+            var itemSize = itemSerializer.SerializeItem(packet.ItemData, item);
 
-            return size;
+            return ItemBoughtRef.GetRequiredSize(itemSize);
         }
 
         await connection.SendAsync(Write).ConfigureAwait(false);

@@ -42,6 +42,39 @@
       </Fields>
     </Structure>
     <Structure>
+      <Name>PlayerShopItemExtended</Name>
+      <Description>Data of an item in a player shop, which allows for dynamic item sizes and trades for specific kind of items (e.g. jewels), too.</Description>
+      <Fields>
+        <Field>
+          <Index>0</Index>
+          <Type>Byte</Type>
+          <Name>ItemSlot</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>MoneyPrice</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>PriceItemType</Name>
+          <Description>Contains the item group in the highest 4 bits, and the item number in the remaining ones.</Description>
+        </Field>
+        <Field>
+          <Index>9</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>RequiredItemAmount</Name>
+        </Field>
+        <Field>
+          <Index>11</Index>
+          <Type>Binary</Type>
+          <Name>ItemData</Name>
+          <!-- Dynamic length, therefore it's placed at the end.-->
+        </Field>
+      </Fields>
+    </Structure>
+    <Structure>
       <Name>QuestIdentification</Name>
       <Description>Defines the information which identifies a quest.</Description>
       <Length>4</Length>
@@ -1503,6 +1536,64 @@
           <Index>5</Index>
           <Type>Binary</Type>
           <Name>ItemData</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>25</Code>
+      <Name>AppearanceChangedExtended</Name>
+      <Length>10</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The appearance of a player changed, all surrounding players are informed about it.</SentWhen>
+      <CausedReaction>The appearance of the player is updated.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>ChangedPlayerId</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <LeftShifted>0</LeftShifted>
+          <Name>ItemSlot</Name>
+          <Length>4</Length>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <LeftShifted>4</LeftShifted>
+          <Name>ItemGroup</Name>
+          <Length>4</Length>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>ItemNumber</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Byte</Type>
+          <Name>ItemLevel</Name>
+        </Field>
+        <Field>
+          <Index>9</Index>
+          <LeftShifted>0</LeftShifted>
+          <Type>Boolean</Type>
+          <Name>IsExcellent</Name>
+        </Field>
+        <Field>
+          <Index>9</Index>
+          <LeftShifted>1</LeftShifted>
+          <Type>Boolean</Type>
+          <Name>IsAncient</Name>
+        </Field>
+        <Field>
+          <Index>9</Index>
+          <LeftShifted>2</LeftShifted>
+          <Type>Boolean</Type>
+          <Name>IsAncientSetComplete</Name>
         </Field>
       </Fields>
     </Packet>
@@ -3903,6 +3994,76 @@
           <Index>55</Index>
           <Type>Structure[]</Type>
           <TypeName>PlayerShopItem</TypeName>
+          <Name>Items</Name>
+          <ItemCountField>ItemCount</ItemCountField>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>ActionKind</Name>
+          <Description>The kind of action which led to the list message.</Description>
+          <Values>
+            <EnumValue>
+              <Name>ByRequest</Name>
+              <Description>The list was requested.</Description>
+              <Value>5</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>UpdateAfterItemChange</Name>
+              <Description>The list was changed, e.g. because an item was sold.</Description>
+              <Value>19</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C2HeaderWithSubCode</HeaderType>
+      <Code>3F</Code>
+      <SubCode>05</SubCode>
+      <Name>PlayerShopItemListExtended</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the player requested to open a shop of another player.</SentWhen>
+      <CausedReaction>The player shop dialog is shown with the provided item data.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>ActionKind</TypeName>
+          <Name>Action</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Boolean</Type>
+          <Name>Success</Name>
+          <DefaultValue>true</DefaultValue>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>PlayerId</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>String</Type>
+          <Name>PlayerName</Name>
+          <Length>10</Length>
+        </Field>
+        <Field>
+          <Index>18</Index>
+          <Type>String</Type>
+          <Name>ShopName</Name>
+          <Length>36</Length>
+        </Field>
+        <Field>
+          <Index>54</Index>
+          <Type>Byte</Type>
+          <Name>ItemCount</Name>
+        </Field>
+        <Field>
+          <Index>55</Index>
+          <Type>Structure[]</Type>
+          <TypeName>PlayerShopItemExtended</TypeName>
           <Name>Items</Name>
           <ItemCountField>ItemCount</ItemCountField>
         </Field>
