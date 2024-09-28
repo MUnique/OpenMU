@@ -173,6 +173,7 @@
   * [C1 F1 01 - LoginResponse (by server)](C1-F1-01-LoginResponse_by-server.md)
   * [C3 F1 02 - LogoutResponse (by server)](C3-F1-02-LogoutResponse_by-server.md)
   * [C1 F3 00 - CharacterList (by server)](C1-F3-00-CharacterList_by-server.md)
+  * [C1 F3 00 - CharacterListExtended (by server)](C1-F3-00-CharacterListExtended_by-server.md)
   * [C1 F3 00 - CharacterList075 (by server)](C1-F3-00-CharacterList075_by-server.md)
   * [C1 F3 00 - CharacterList095 (by server)](C1-F3-00-CharacterList095_by-server.md)
   * [C1 F3 01 - CharacterCreationSuccessful (by server)](C1-F3-01-CharacterCreationSuccessful_by-server.md)

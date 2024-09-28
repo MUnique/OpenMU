@@ -12081,6 +12081,211 @@ public readonly struct CharacterData
 
 
 /// <summary>
+/// Is sent by the server when: After the game client requested it, usually after a successful login.
+/// Causes reaction on client side: The game client shows the available characters of the account.
+/// </summary>
+public readonly struct CharacterListExtended
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CharacterListExtended"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CharacterListExtended(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CharacterListExtended"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CharacterListExtended(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)data.Length;
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xF3;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x00;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the unlock flags.
+    /// </summary>
+    public CharacterCreationUnlockFlags UnlockFlags
+    {
+        get => (CharacterCreationUnlockFlags)this._data.Span[4];
+        set => this._data.Span[4] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the move cnt.
+    /// </summary>
+    public byte MoveCnt
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the character count.
+    /// </summary>
+    public byte CharacterCount
+    {
+        get => this._data.Span[6];
+        set => this._data.Span[6] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the is vault extended.
+    /// </summary>
+    public bool IsVaultExtended
+    {
+        get => this._data.Span[7..].GetBoolean();
+        set => this._data.Span[7..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets the <see cref="CharacterData"/> of the specified index.
+    /// </summary>
+        public CharacterData this[int index] => new (this._data.Slice(8 + index * CharacterData.Length));
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CharacterListExtended"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CharacterListExtended(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CharacterListExtended"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CharacterListExtended packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="CharacterData"/>.
+    /// </summary>
+    /// <param name="charactersCount">The count of <see cref="CharacterData"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int charactersCount) => charactersCount * CharacterData.Length + 8;
+
+
+/// <summary>
+/// Data of one character in the list..
+/// </summary>
+public readonly struct CharacterData
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CharacterData"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CharacterData(Memory<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 44;
+
+    /// <summary>
+    /// Gets or sets the slot index.
+    /// </summary>
+    public byte SlotIndex
+    {
+        get => this._data.Span[0];
+        set => this._data.Span[0] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the name.
+    /// </summary>
+    public string Name
+    {
+        get => this._data.Span.ExtractString(1, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(1, 10).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets or sets the level.
+    /// </summary>
+    public ushort Level
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[12..]);
+        set => WriteUInt16LittleEndian(this._data.Span[12..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the status.
+    /// </summary>
+    public CharacterStatus Status
+    {
+        get => (CharacterStatus)this._data.Span[14..].GetByteValue(4, 0);
+        set => this._data.Span[14..].SetByteValue((byte)value, 4, 0);
+    }
+
+    /// <summary>
+    /// Gets or sets the is item block active.
+    /// </summary>
+    public bool IsItemBlockActive
+    {
+        get => this._data.Span[14..].GetBoolean(4);
+        set => this._data.Span[14..].SetBoolean(value, 4);
+    }
+
+    /// <summary>
+    /// Gets or sets the appearance.
+    /// </summary>
+    public Span<byte> Appearance
+    {
+        get => this._data.Slice(15, 27).Span;
+    }
+
+    /// <summary>
+    /// Gets or sets the guild position.
+    /// </summary>
+    public GuildMemberRole GuildPosition
+    {
+        get => (GuildMemberRole)this._data.Span[42];
+        set => this._data.Span[42] = (byte)value;
+    }
+}
+}
+
+
+/// <summary>
 /// Is sent by the server when: It's send right after the CharacterList, in the character selection screen, if the account has any unlocked character classes.
 /// Causes reaction on client side: The client unlocks the specified character classes, so they can be created.
 /// </summary>

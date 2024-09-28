@@ -2381,6 +2381,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         public CharacterClass? CharacterClass => this._player.SelectedCharacter?.CharacterClass;
 
+        public CharacterStatus CharacterStatus => this._player.SelectedCharacter?.CharacterStatus ?? default;
+
         public CharacterPose Pose => this._player.SelectedCharacter?.Pose ?? default;
 
         public bool FullAncientSetEquipped => (this._fullAncientSetEquipped ??= this._player.SelectedCharacter?.HasFullAncientSetEquipped()) ?? false;

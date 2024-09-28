@@ -38,6 +38,7 @@ public class EntityDataContext : ExtendedTypeContext
     {
         base.OnModelCreating(modelBuilder);
 
+        modelBuilder.Entity<AppearanceData>(o => o.Ignore(p => p.CharacterStatus)); // todo
         modelBuilder.Ignore<ConstantElement>();
         modelBuilder.Ignore<SimpleElement>();
         modelBuilder.Entity<Model.AttributeDefinition>();
