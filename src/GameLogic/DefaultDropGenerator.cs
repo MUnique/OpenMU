@@ -150,6 +150,7 @@ public class DefaultDropGenerator : IDropGenerator
         }
 
         item.Level = GetItemLevelByMonsterLevel(item.Definition!, monsterLvl);
+        item.Durability = item.GetMaximumDurabilityOfOnePiece();
         return item;
     }
 
@@ -159,8 +160,9 @@ public class DefaultDropGenerator : IDropGenerator
     /// <param name="item">The item.</param>
     protected void ApplyRandomOptions(Item item)
     {
-        item.Durability = item.GetMaximumDurabilityOfOnePiece();
-        foreach (var option in item.Definition!.PossibleItemOptions.Where(o => o.AddsRandomly))
+        foreach (var option in item.Definition!.PossibleItemOptions.Where(o =>
+            o.AddsRandomly &&
+            !o.PossibleOptions.Any(po => object.Equals(po.OptionType, ItemOptionTypes.Excellent))))
         {
             this.ApplyOption(item, option);
         }
@@ -198,6 +200,7 @@ public class DefaultDropGenerator : IDropGenerator
         item.HasSkill = item.CanHaveSkill(); // every excellent item got skill
 
         this.AddRandomExcOptions(item);
+        item.Durability = item.GetMaximumDurabilityOfOnePiece();
         return item;
     }
 
@@ -216,6 +219,7 @@ public class DefaultDropGenerator : IDropGenerator
         item.HasSkill = item.CanHaveSkill(); // every ancient item got skill
 
         this.ApplyRandomAncientOption(item);
+        item.Durability = item.GetMaximumDurabilityOfOnePiece();
         return item;
     }
 
@@ -295,6 +299,7 @@ public class DefaultDropGenerator : IDropGenerator
             this.AddRandomExcOptions(item);
         }
 
+        item.Durability = item.GetMaximumDurabilityOfOnePiece();
         return item;
     }
 
@@ -304,8 +309,6 @@ public class DefaultDropGenerator : IDropGenerator
         {
             if (this._randomizer.NextRandomBool(option.AddChance))
             {
-                if (option.AddChance == 0.001)
-                    Console.WriteLine("Uh-oh! Exc option applied!");
                 var remainingOptions = option.PossibleOptions.Where(possibleOption => item.ItemOptions.All(link => link.ItemOption != possibleOption));
                 var newOption = remainingOptions.SelectRandom(this._randomizer);
                 if (newOption is null)
@@ -316,7 +319,7 @@ public class DefaultDropGenerator : IDropGenerator
                 var itemOptionLink = new ItemOptionLink
                 {
                     ItemOption = newOption,
-                    Level = newOption?.LevelDependentOptions.Select(l => l.Level).SelectRandom() ?? 0
+                    Level = newOption?.LevelDependentOptions.Select(l => l.Level).SelectRandom() ?? 0,
                 };
                 item.ItemOptions.Add(itemOptionLink);
             }
@@ -431,7 +434,7 @@ public class DefaultDropGenerator : IDropGenerator
             case SpecialItemType.Excellent:
                 return this.GenerateRandomExcellentItem((int)monster[Stats.Level]);
             case SpecialItemType.RandomItem:
-                return this.GenerateRandomItem((int)monster[Stats.Level], false); // to-do. Exc options are being applied via this route
+                return this.GenerateRandomItem((int)monster[Stats.Level], false);
             case SpecialItemType.SocketItem:
                 return this.GenerateRandomItem((int)monster[Stats.Level], true);
             case SpecialItemType.Money:
