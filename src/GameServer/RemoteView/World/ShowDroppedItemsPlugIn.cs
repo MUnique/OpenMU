@@ -66,7 +66,8 @@ public class ShowDroppedItemsPlugIn : IShowDroppedItemsPlugIn
                 i++;
             }
 
-            return size;
+            span.Slice(0, actualSize).SetPacketSize();
+            return actualSize;
         }
 
         await connection.SendAsync(Write).ConfigureAwait(false);

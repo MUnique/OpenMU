@@ -5,7 +5,9 @@
 namespace MUnique.OpenMU.GameServer.RemoteView.World;
 
 using System.Runtime.InteropServices;
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
@@ -45,15 +47,36 @@ public class ShowHitExtendedPlugIn : IShowHitPlugIn
             return;
         }
 
+        var healthStatus = CalcStatStatus(target, Stats.CurrentHealth, Stats.MaximumHealth);
+        var shieldStatus = CalcStatStatus(target, Stats.CurrentShield, Stats.MaximumShield);
         var targetId = target.GetId(this._player);
         await connection.SendObjectHitExtendedAsync(
             this.GetDamageKind(hitInfo.Attributes),
-
             hitInfo.Attributes.HasFlag(DamageAttributes.Double),
             hitInfo.Attributes.HasFlag(DamageAttributes.Triple),
             targetId,
+            healthStatus,
+            shieldStatus,
             hitInfo.HealthDamage,
             hitInfo.ShieldDamage).ConfigureAwait(false);
+    }
+
+    private byte CalcStatStatus(IAttackable target, AttributeDefinition currentStat, AttributeDefinition maximumStat)
+    {
+        var current = target.Attributes[currentStat];
+        var maximum = target.Attributes[maximumStat];
+
+        if (maximum == 0 || float.IsNaN(maximum))
+        {
+            return 0xFF;
+        }
+
+        if (current <= 0)
+        {
+            return 0;
+        }
+
+        return (byte)Math.Round(current / maximum * 250, MidpointRounding.AwayFromZero);
     }
 
     private DamageKind GetDamageKind(DamageAttributes attributes)

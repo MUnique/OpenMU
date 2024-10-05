@@ -13,13 +13,13 @@ The appearance of the player is updated.
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
 | 0 | 1 |   Byte   | 0xC1  | [Packet type](PacketTypes.md) |
-| 1 | 1 |    Byte   |   10   | Packet header - length of the packet |
+| 1 | 1 |    Byte   |   14   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0x25  | Packet header - packet type identifier |
-| 3 | 2 | ShortLittleEndian |  | ChangedPlayerId |
-| 5 | 4 bit | Byte |  | ItemSlot |
-| 5 | 4 bit | Byte |  | ItemGroup |
-| 6 | 2 | ShortLittleEndian |  | ItemNumber |
-| 8 | 1 | Byte |  | ItemLevel |
-| 9 << 0 | 1 bit | Boolean |  | IsExcellent |
-| 9 << 1 | 1 bit | Boolean |  | IsAncient |
-| 9 << 2 | 1 bit | Boolean |  | IsAncientSetComplete |
+| 4 | 2 | ShortLittleEndian |  | ChangedPlayerId |
+| 6 | 1 | Byte |  | ItemSlot |
+| 7 | 1 | Byte |  | ItemGroup |
+| 8 | 2 | ShortLittleEndian |  | ItemNumber |
+| 10 | 1 | Byte |  | ItemLevel |
+| 11 | 1 | Byte |  | ExcellentFlags |
+| 12 | 1 | Byte |  | AncientDiscriminator |
+| 13 | 1 | Boolean |  | IsAncientSetComplete |

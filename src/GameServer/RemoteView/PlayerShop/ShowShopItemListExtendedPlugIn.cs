@@ -70,6 +70,7 @@ public class ShowShopItemListExtendedPlugIn : IShowShopItemListPlugIn
                 i++;
             }
 
+            span.Slice(0, actualSize).SetPacketSize();
             return actualSize;
         }
 

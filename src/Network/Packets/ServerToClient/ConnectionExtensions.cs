@@ -125,6 +125,54 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="AddCharacterToScopeExtended" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="id">The id.</param>
+    /// <param name="currentPositionX">The current position x.</param>
+    /// <param name="currentPositionY">The current position y.</param>
+    /// <param name="targetPositionX">The target position x.</param>
+    /// <param name="targetPositionY">The target position y.</param>
+    /// <param name="rotation">The rotation.</param>
+    /// <param name="heroState">The hero state.</param>
+    /// <param name="attackSpeed">The attack speed.</param>
+    /// <param name="magicSpeed">The magic speed.</param>
+    /// <param name="name">The name.</param>
+    /// <param name="appearanceAndEffects">The appearance and effects.</param>
+    /// <remarks>
+    /// Is sent by the server when: One or more character got into the observed scope of the player.
+    /// Causes reaction on client side: The client adds the character to the shown map.
+    /// </remarks>
+    public static async ValueTask SendAddCharacterToScopeExtendedAsync(this IConnection? connection, ushort @id, byte @currentPositionX, byte @currentPositionY, byte @targetPositionX, byte @targetPositionY, byte @rotation, CharacterHeroState @heroState, ushort @attackSpeed, ushort @magicSpeed, string @name, Memory<byte> @appearanceAndEffects)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = AddCharacterToScopeExtendedRef.GetRequiredSize(appearanceAndEffects.Length);
+            var packet = new AddCharacterToScopeExtendedRef(connection.Output.GetSpan(length)[..length]);
+            packet.Id = @id;
+            packet.CurrentPositionX = @currentPositionX;
+            packet.CurrentPositionY = @currentPositionY;
+            packet.TargetPositionX = @targetPositionX;
+            packet.TargetPositionY = @targetPositionY;
+            packet.Rotation = @rotation;
+            packet.HeroState = @heroState;
+            packet.AttackSpeed = @attackSpeed;
+            packet.MagicSpeed = @magicSpeed;
+            packet.Name = @name;
+            @appearanceAndEffects.Span.CopyTo(packet.AppearanceAndEffects);
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="ObjectGotKilled" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
@@ -529,14 +577,14 @@ public static class ConnectionExtensions
     /// <param name="itemGroup">The item group.</param>
     /// <param name="itemNumber">The item number.</param>
     /// <param name="itemLevel">The item level.</param>
-    /// <param name="isExcellent">The is excellent.</param>
-    /// <param name="isAncient">The is ancient.</param>
+    /// <param name="excellentFlags">The excellent flags.</param>
+    /// <param name="ancientDiscriminator">The ancient discriminator.</param>
     /// <param name="isAncientSetComplete">The is ancient set complete.</param>
     /// <remarks>
     /// Is sent by the server when: The appearance of a player changed, all surrounding players are informed about it.
     /// Causes reaction on client side: The appearance of the player is updated.
     /// </remarks>
-    public static async ValueTask SendAppearanceChangedExtendedAsync(this IConnection? connection, ushort @changedPlayerId, byte @itemSlot, byte @itemGroup, ushort @itemNumber, byte @itemLevel, bool @isExcellent, bool @isAncient, bool @isAncientSetComplete)
+    public static async ValueTask SendAppearanceChangedExtendedAsync(this IConnection? connection, ushort @changedPlayerId, byte @itemSlot, byte @itemGroup, ushort @itemNumber, byte @itemLevel, byte @excellentFlags, byte @ancientDiscriminator, bool @isAncientSetComplete)
     {
         if (connection is null)
         {
@@ -552,8 +600,8 @@ public static class ConnectionExtensions
             packet.ItemGroup = @itemGroup;
             packet.ItemNumber = @itemNumber;
             packet.ItemLevel = @itemLevel;
-            packet.IsExcellent = @isExcellent;
-            packet.IsAncient = @isAncient;
+            packet.ExcellentFlags = @excellentFlags;
+            packet.AncientDiscriminator = @ancientDiscriminator;
             packet.IsAncientSetComplete = @isAncientSetComplete;
 
             return packet.Header.Length;
@@ -1041,13 +1089,15 @@ public static class ConnectionExtensions
     /// <param name="isDoubleDamage">The is double damage.</param>
     /// <param name="isTripleDamage">The is triple damage.</param>
     /// <param name="objectId">The object id.</param>
+    /// <param name="healthStatus">Gets or sets the status of the remaining health in fractions of 1/250.</param>
+    /// <param name="shieldStatus">Gets or sets the status of the remaining shield in fractions of 1/250.</param>
     /// <param name="healthDamage">The health damage.</param>
     /// <param name="shieldDamage">The shield damage.</param>
     /// <remarks>
     /// Is sent by the server when: An object got hit in two cases: 1. When the own player is hit; 2. When the own player attacked some other object which got hit.
     /// Causes reaction on client side: The damage is shown at the object which received the hit.
     /// </remarks>
-    public static async ValueTask SendObjectHitExtendedAsync(this IConnection? connection, DamageKind @kind, bool @isDoubleDamage, bool @isTripleDamage, ushort @objectId, uint @healthDamage, uint @shieldDamage)
+    public static async ValueTask SendObjectHitExtendedAsync(this IConnection? connection, DamageKind @kind, bool @isDoubleDamage, bool @isTripleDamage, ushort @objectId, byte @healthStatus, byte @shieldStatus, uint @healthDamage, uint @shieldDamage)
     {
         if (connection is null)
         {
@@ -1062,6 +1112,8 @@ public static class ConnectionExtensions
             packet.IsDoubleDamage = @isDoubleDamage;
             packet.IsTripleDamage = @isTripleDamage;
             packet.ObjectId = @objectId;
+            packet.HealthStatus = @healthStatus;
+            packet.ShieldStatus = @shieldStatus;
             packet.HealthDamage = @healthDamage;
             packet.ShieldDamage = @shieldDamage;
 
@@ -1382,6 +1434,42 @@ public static class ConnectionExtensions
             packet.MoneyNumber = @moneyNumber;
             packet.Amount = @amount;
             packet.MoneyGroup = @moneyGroup;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="MoneyDroppedExtended" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="isFreshDrop">If this flag is set, the money is added to the map with an animation and sound. Otherwise, it's just added like it was already on the ground before.</param>
+    /// <param name="id">The id.</param>
+    /// <param name="positionX">The position x.</param>
+    /// <param name="positionY">The position y.</param>
+    /// <param name="amount">The amount.</param>
+    /// <remarks>
+    /// Is sent by the server when: Money dropped on the ground.
+    /// Causes reaction on client side: The client adds the money to the ground.
+    /// </remarks>
+    public static async ValueTask SendMoneyDroppedExtendedAsync(this IConnection? connection, bool @isFreshDrop, ushort @id, byte @positionX, byte @positionY, uint @amount)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = MoneyDroppedExtendedRef.Length;
+            var packet = new MoneyDroppedExtendedRef(connection.Output.GetSpan(length)[..length]);
+            packet.IsFreshDrop = @isFreshDrop;
+            packet.Id = @id;
+            packet.PositionX = @positionX;
+            packet.PositionY = @positionY;
+            packet.Amount = @amount;
 
             return packet.Header.Length;
         }
@@ -2291,6 +2379,74 @@ public static class ConnectionExtensions
             var length = ClosePlayerShopDialogRef.Length;
             var packet = new ClosePlayerShopDialogRef(connection.Output.GetSpan(length)[..length]);
             packet.PlayerId = @playerId;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="PlayerShopBuyResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="sellerId">The seller id.</param>
+    /// <param name="itemData">The item data.</param>
+    /// <param name="itemSlot">The item slot.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the player requested to buy an item of a shop of another player.
+    /// Causes reaction on client side: The result is shown to the player. If successful, the item is added to the inventory.
+    /// </remarks>
+    public static async ValueTask SendPlayerShopBuyResultAsync(this IConnection? connection, PlayerShopBuyResult.ResultKind @result, ushort @sellerId, Memory<byte> @itemData, byte @itemSlot)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = PlayerShopBuyResultRef.Length;
+            var packet = new PlayerShopBuyResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+            packet.SellerId = @sellerId;
+            @itemData.Span.CopyTo(packet.ItemData);
+            packet.ItemSlot = @itemSlot;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="PlayerShopBuyResultExtended" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="sellerId">The seller id.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="itemSlot">The item slot.</param>
+    /// <param name="itemData">The item data.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the player requested to buy an item of a shop of another player.
+    /// Causes reaction on client side: The result is shown to the player. If successful, the item is added to the inventory.
+    /// </remarks>
+    public static async ValueTask SendPlayerShopBuyResultExtendedAsync(this IConnection? connection, ushort @sellerId, PlayerShopBuyResultExtended.ResultKind @result, byte @itemSlot, Memory<byte> @itemData)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = PlayerShopBuyResultExtendedRef.GetRequiredSize(itemData.Length);
+            var packet = new PlayerShopBuyResultExtendedRef(connection.Output.GetSpan(length)[..length]);
+            packet.SellerId = @sellerId;
+            packet.Result = @result;
+            packet.ItemSlot = @itemSlot;
+            @itemData.Span.CopyTo(packet.ItemData);
 
             return packet.Header.Length;
         }

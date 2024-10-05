@@ -46,7 +46,9 @@ public class ItemAppearPlugIn : IItemAppearPlugIn
             };
             var itemSize = itemSerializer.SerializeItem(packet.ItemData, newItem);
 
-            return ItemAddedToInventoryRef.GetRequiredSize(itemSize);
+            var actualSize = ItemAddedToInventoryRef.GetRequiredSize(itemSize);
+            span.Slice(0, actualSize).SetPacketSize();
+            return actualSize;
         }
 
         await connection.SendAsync(Write).ConfigureAwait(false);

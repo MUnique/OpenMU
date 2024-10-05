@@ -11,6 +11,7 @@ using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
+using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -81,6 +82,7 @@ public class AppearanceChangedPlugIn : IAppearanceChangedPlugIn
 /// </summary>
 [PlugIn(nameof(AppearanceChangedExtendedPlugIn), "The extended implementation of the IAppearanceChangedPlugIn which is forwarding appearance changes of other players to the game client with specific data packets.")]
 [Guid("A2F298E4-9F48-402A-B30D-9BC2BA8DEB2E")]
+[MinimumClient(106, 3, ClientLanguage.Invariant)]
 public class AppearanceChangedExtendedPlugIn : IAppearanceChangedPlugIn
 {
     private readonly RemotePlayer _player;
@@ -106,8 +108,8 @@ public class AppearanceChangedExtendedPlugIn : IAppearanceChangedPlugIn
             (byte)(item.Definition?.Group ?? 0xFF),
             (ushort)(item.Definition?.Number ?? 0xFFFF),
             item.Level,
-            item.IsExcellent(),
-            item.IsAncient(),
+            (byte)(ItemSerializerHelper.GetExcellentByte(item) | ItemSerializerHelper.GetFenrirByte(item)),
+            (byte)(item.ItemSetGroups.FirstOrDefault(set => set.AncientSetDiscriminator != 0)?.AncientSetDiscriminator ?? 0),
             changedPlayer.SelectedCharacter?.HasFullAncientSetEquipped() is true)
             .ConfigureAwait(false);
     }

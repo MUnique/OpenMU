@@ -59,6 +59,7 @@ public class ShowMerchantStoreItemListPlugIn : IShowMerchantStoreItemListPlugIn
                 i++;
             }
 
+            span.Slice(0, actualSize).SetPacketSize();
             return actualSize;
         }
 

@@ -30,11 +30,11 @@ Data of an item in a player shop, which allows for dynamic item sizes and trades
 
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
-| 0 | 1 | Byte |  | ItemSlot |
-| 4 | 4 | IntegerLittleEndian |  | MoneyPrice |
-| 8 | 2 | ShortLittleEndian |  | PriceItemType; Contains the item group in the highest 4 bits, and the item number in the remaining ones. |
-| 9 | 2 | ShortLittleEndian |  | RequiredItemAmount |
-| 11 |  | Binary |  | ItemData |
+| 0 | 4 | IntegerLittleEndian |  | MoneyPrice |
+| 4 | 2 | ShortLittleEndian |  | PriceItemType; Contains the item group in the highest 4 bits, and the item number in the remaining ones. |
+| 6 | 2 | ShortLittleEndian |  | RequiredItemAmount |
+| 8 | 1 | Byte |  | ItemSlot |
+| 9 |  | Binary |  | ItemData |
 
 ### ActionKind Enum
 

@@ -1,4 +1,4 @@
-# C1 F6 0C - QuestProgress (by server)
+# C1 F6 0C - QuestProgressExtended (by server)
 
 ## Is sent when
 
@@ -13,29 +13,30 @@ The client shows the quest progress accordingly.
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
 | 0 | 1 |   Byte   | 0xC1  | [Packet type](PacketTypes.md) |
-| 1 | 1 |    Byte   |   251   | Packet header - length of the packet |
+| 1 | 1 |    Byte   |   272   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0xF6  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0x0C  | Packet header - sub packet type identifier |
-| 4 | 2 | ShortLittleEndian |  | QuestNumber |
-| 6 | 2 | ShortLittleEndian |  | QuestGroup |
-| 8 | 1 | Byte |  | ConditionCount |
-| 9 | 1 | Byte |  | RewardCount |
-| 11 | QuestCondition.Length * ConditionCount | Array of QuestCondition |  | Conditions |
-| 141 | QuestReward.Length * RewardCount | Array of QuestReward |  | Rewards |
+| 5 | 1 | Byte |  | ConditionCount |
+| 6 | 1 | Byte |  | RewardCount |
+| 7 | 1 | Byte |  | RandomRewardCount |
+| 8 | 2 | ShortLittleEndian |  | QuestNumber |
+| 10 | 2 | ShortLittleEndian |  | QuestGroup |
+| 12 | QuestConditionExtended.Length * ConditionCount | Array of QuestConditionExtended |  | Conditions |
+| 152 | QuestRewardExtended.Length * RewardCount | Array of QuestRewardExtended |  | Rewards |
 
-### QuestCondition Structure
+### QuestConditionExtended Structure
 
 Defines a condition which must be fulfilled to complete the quest.
 
-Length: 26 Bytes
+Length: 28 Bytes
 
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
 | 0 | 1 | ConditionType |  | Type |
-| 4 | 2 | ShortLittleEndian |  | RequirementId; Depending on the condition type, this field contains the identifier of the required thing, e.g. Monster Number, Item Id, Level. |
-| 6 | 4 | IntegerLittleEndian |  | RequiredCount |
-| 10 | 4 | IntegerLittleEndian |  | CurrentCount |
-| 14 | 12 | Binary |  | RequiredItemData; If the condition type is 'Item', this field contains the item data, excluding the item id. The item id can be found in the RequirementId field. |
+| 2 | 2 | ShortLittleEndian |  | RequirementId; Depending on the condition type, this field contains the identifier of the required thing, e.g. Monster Number, Item Id, Level. |
+| 4 | 4 | IntegerLittleEndian |  | RequiredCount |
+| 8 | 4 | IntegerLittleEndian |  | CurrentCount |
+| 12 | 15 | Binary |  | RequiredItemData; If the condition type is 'Item', this field contains the item data, excluding the item id. The item id can be found in the RequirementId field. |
 
 ### ConditionType Enum
 
@@ -62,18 +63,18 @@ Defines the type of the condition.
 | 262 | PvpPoints | The condition is to reach a specific amount of PVP points. |
 | 263 | NpcTalk | The condition is to talk to a specific NPC. |
 
-### QuestReward Structure
+### QuestRewardExtended Structure
 
 Defines a reward which is given when the quest is completed.
 
-Length: 22 Bytes
+Length: 24 Bytes
 
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
 | 0 | 1 | RewardType |  | Type |
-| 4 | 2 | ShortLittleEndian |  | RewardId; Depending on the condition type, this field contains the identifier of the required thing, e.g. Monster Number, Item Id, Level. |
-| 6 | 4 | IntegerLittleEndian |  | RewardCount |
-| 10 | 12 | Binary |  | RewardedItemData; If the reward type is 'Item', this field contains its item data. |
+| 2 | 2 | ShortLittleEndian |  | RewardId; Depending on the condition type, this field contains the identifier of the required thing, e.g. Monster Number, Item Id, Level. |
+| 4 | 4 | IntegerLittleEndian |  | RewardCount |
+| 8 | 15 | Binary |  | RewardedItemData; If the reward type is 'Item', this field contains its item data. |
 
 ### RewardType Enum
 

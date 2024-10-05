@@ -45,7 +45,9 @@ public class ItemMoveFailedPlugIn : IItemMoveFailedPlugIn
             {
 
                 var itemSize = itemSerializer.SerializeItem(packet.ItemData, item);
-                return ItemMoveRequestFailedRef.GetRequiredSize(itemSize);
+                var actualSize = ItemMoveRequestFailedRef.GetRequiredSize(itemSize);
+                span.Slice(0, actualSize).SetPacketSize();
+                return actualSize;
             }
 
             return size;

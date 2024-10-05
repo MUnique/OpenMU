@@ -123,21 +123,12 @@ public readonly struct PlayerShopItemExtended
     }
 
     /// <summary>
-    /// Gets or sets the item slot.
-    /// </summary>
-    public byte ItemSlot
-    {
-        get => this._data.Span[0];
-        set => this._data.Span[0] = value;
-    }
-
-    /// <summary>
     /// Gets or sets the money price.
     /// </summary>
     public uint MoneyPrice
     {
-        get => ReadUInt32LittleEndian(this._data.Span[4..]);
-        set => WriteUInt32LittleEndian(this._data.Span[4..], value);
+        get => ReadUInt32LittleEndian(this._data.Span);
+        set => WriteUInt32LittleEndian(this._data.Span, value);
     }
 
     /// <summary>
@@ -145,8 +136,8 @@ public readonly struct PlayerShopItemExtended
     /// </summary>
     public ushort PriceItemType
     {
-        get => ReadUInt16LittleEndian(this._data.Span[8..]);
-        set => WriteUInt16LittleEndian(this._data.Span[8..], value);
+        get => ReadUInt16LittleEndian(this._data.Span[4..]);
+        set => WriteUInt16LittleEndian(this._data.Span[4..], value);
     }
 
     /// <summary>
@@ -154,8 +145,17 @@ public readonly struct PlayerShopItemExtended
     /// </summary>
     public ushort RequiredItemAmount
     {
-        get => ReadUInt16LittleEndian(this._data.Span[9..]);
-        set => WriteUInt16LittleEndian(this._data.Span[9..], value);
+        get => ReadUInt16LittleEndian(this._data.Span[6..]);
+        set => WriteUInt16LittleEndian(this._data.Span[6..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the item slot.
+    /// </summary>
+    public byte ItemSlot
+    {
+        get => this._data.Span[8];
+        set => this._data.Span[8] = value;
     }
 
     /// <summary>
@@ -163,7 +163,7 @@ public readonly struct PlayerShopItemExtended
     /// </summary>
     public Span<byte> ItemData
     {
-        get => this._data.Slice(11).Span;
+        get => this._data.Slice(9).Span;
     }
 
     /// <summary>
@@ -171,7 +171,7 @@ public readonly struct PlayerShopItemExtended
     /// </summary>
     /// <param name="itemDataLength">The length in bytes of <see cref="ItemData"/> on which the required size depends.</param>
         
-    public static int GetRequiredSize(int itemDataLength) => itemDataLength + 11;
+    public static int GetRequiredSize(int itemDataLength) => itemDataLength + 9;
 }
 
 
@@ -337,6 +337,131 @@ public readonly struct QuestReward
     public Span<byte> RewardedItemData
     {
         get => this._data.Slice(10, 12).Span;
+    }
+}
+
+
+/// <summary>
+/// Defines a condition which must be fulfilled to complete the quest..
+/// </summary>
+public readonly struct QuestConditionExtended
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="QuestConditionExtended"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public QuestConditionExtended(Memory<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 28;
+
+    /// <summary>
+    /// Gets or sets the type.
+    /// </summary>
+    public ConditionType Type
+    {
+        get => (ConditionType)this._data.Span[0];
+        set => this._data.Span[0] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets depending on the condition type, this field contains the identifier of the required thing, e.g. Monster Number, Item Id, Level.
+    /// </summary>
+    public ushort RequirementId
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[2..]);
+        set => WriteUInt16LittleEndian(this._data.Span[2..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the required count.
+    /// </summary>
+    public uint RequiredCount
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[4..]);
+        set => WriteUInt32LittleEndian(this._data.Span[4..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the current count.
+    /// </summary>
+    public uint CurrentCount
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[8..]);
+        set => WriteUInt32LittleEndian(this._data.Span[8..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets if the condition type is 'Item', this field contains the item data, excluding the item id. The item id can be found in the RequirementId field.
+    /// </summary>
+    public Span<byte> RequiredItemData
+    {
+        get => this._data.Slice(12, 15).Span;
+    }
+}
+
+
+/// <summary>
+/// Defines a reward which is given when the quest is completed..
+/// </summary>
+public readonly struct QuestRewardExtended
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="QuestRewardExtended"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public QuestRewardExtended(Memory<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 24;
+
+    /// <summary>
+    /// Gets or sets the type.
+    /// </summary>
+    public RewardType Type
+    {
+        get => (RewardType)this._data.Span[0];
+        set => this._data.Span[0] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets depending on the condition type, this field contains the identifier of the required thing, e.g. Monster Number, Item Id, Level.
+    /// </summary>
+    public ushort RewardId
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[2..]);
+        set => WriteUInt16LittleEndian(this._data.Span[2..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the reward count.
+    /// </summary>
+    public uint RewardCount
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[4..]);
+        set => WriteUInt32LittleEndian(this._data.Span[4..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets if the reward type is 'Item', this field contains its item data.
+    /// </summary>
+    public Span<byte> RewardedItemData
+    {
+        get => this._data.Slice(8, 15).Span;
     }
 }
 
@@ -636,6 +761,176 @@ public readonly struct WeatherStatusUpdate
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
     public static implicit operator Memory<byte>(WeatherStatusUpdate packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: One or more character got into the observed scope of the player.
+/// Causes reaction on client side: The client adds the character to the shown map.
+/// </summary>
+public readonly struct AddCharacterToScopeExtended
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AddCharacterToScopeExtended"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public AddCharacterToScopeExtended(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AddCharacterToScopeExtended"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private AddCharacterToScopeExtended(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (ushort)data.Length;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC2;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0x12;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C2Header Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the id.
+    /// </summary>
+    public ushort Id
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[4..]);
+        set => WriteUInt16LittleEndian(this._data.Span[4..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the current position x.
+    /// </summary>
+    public byte CurrentPositionX
+    {
+        get => this._data.Span[6];
+        set => this._data.Span[6] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the current position y.
+    /// </summary>
+    public byte CurrentPositionY
+    {
+        get => this._data.Span[7];
+        set => this._data.Span[7] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the target position x.
+    /// </summary>
+    public byte TargetPositionX
+    {
+        get => this._data.Span[8];
+        set => this._data.Span[8] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the target position y.
+    /// </summary>
+    public byte TargetPositionY
+    {
+        get => this._data.Span[9];
+        set => this._data.Span[9] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the rotation.
+    /// </summary>
+    public byte Rotation
+    {
+        get => this._data.Span[10..].GetByteValue(4, 4);
+        set => this._data.Span[10..].SetByteValue(value, 4, 4);
+    }
+
+    /// <summary>
+    /// Gets or sets the hero state.
+    /// </summary>
+    public CharacterHeroState HeroState
+    {
+        get => (CharacterHeroState)this._data.Span[10..].GetByteValue(4, 0);
+        set => this._data.Span[10..].SetByteValue((byte)value, 4, 0);
+    }
+
+    /// <summary>
+    /// Gets or sets the attack speed.
+    /// </summary>
+    public ushort AttackSpeed
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[12..]);
+        set => WriteUInt16LittleEndian(this._data.Span[12..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the magic speed.
+    /// </summary>
+    public ushort MagicSpeed
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[14..]);
+        set => WriteUInt16LittleEndian(this._data.Span[14..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the name.
+    /// </summary>
+    public string Name
+    {
+        get => this._data.Span.ExtractString(16, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(16, 10).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets or sets the appearance and effects.
+    /// </summary>
+    public Span<byte> AppearanceAndEffects
+    {
+        get => this._data.Slice(26).Span;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="AddCharacterToScopeExtended"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator AddCharacterToScopeExtended(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="AddCharacterToScopeExtended"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(AddCharacterToScopeExtended packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified length of <see cref="AppearanceAndEffects"/>.
+    /// </summary>
+    /// <param name="appearanceAndEffectsLength">The length in bytes of <see cref="AppearanceAndEffects"/> on which the required size depends.</param>
+        
+    public static int GetRequiredSize(int appearanceAndEffectsLength) => appearanceAndEffectsLength + 26;
 }
 
 
@@ -4085,7 +4380,7 @@ public readonly struct AppearanceChangedExtended
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 10;
+    public static int Length => 14;
 
     /// <summary>
     /// Gets the header of this packet.
@@ -4097,8 +4392,8 @@ public readonly struct AppearanceChangedExtended
     /// </summary>
     public ushort ChangedPlayerId
     {
-        get => ReadUInt16LittleEndian(this._data.Span[3..]);
-        set => WriteUInt16LittleEndian(this._data.Span[3..], value);
+        get => ReadUInt16LittleEndian(this._data.Span[4..]);
+        set => WriteUInt16LittleEndian(this._data.Span[4..], value);
     }
 
     /// <summary>
@@ -4106,8 +4401,8 @@ public readonly struct AppearanceChangedExtended
     /// </summary>
     public byte ItemSlot
     {
-        get => this._data.Span[5..].GetByteValue(4, 0);
-        set => this._data.Span[5..].SetByteValue(value, 4, 0);
+        get => this._data.Span[6];
+        set => this._data.Span[6] = value;
     }
 
     /// <summary>
@@ -4115,8 +4410,8 @@ public readonly struct AppearanceChangedExtended
     /// </summary>
     public byte ItemGroup
     {
-        get => this._data.Span[5..].GetByteValue(4, 4);
-        set => this._data.Span[5..].SetByteValue(value, 4, 4);
+        get => this._data.Span[7];
+        set => this._data.Span[7] = value;
     }
 
     /// <summary>
@@ -4124,8 +4419,8 @@ public readonly struct AppearanceChangedExtended
     /// </summary>
     public ushort ItemNumber
     {
-        get => ReadUInt16LittleEndian(this._data.Span[6..]);
-        set => WriteUInt16LittleEndian(this._data.Span[6..], value);
+        get => ReadUInt16LittleEndian(this._data.Span[8..]);
+        set => WriteUInt16LittleEndian(this._data.Span[8..], value);
     }
 
     /// <summary>
@@ -4133,26 +4428,26 @@ public readonly struct AppearanceChangedExtended
     /// </summary>
     public byte ItemLevel
     {
-        get => this._data.Span[8];
-        set => this._data.Span[8] = value;
+        get => this._data.Span[10];
+        set => this._data.Span[10] = value;
     }
 
     /// <summary>
-    /// Gets or sets the is excellent.
+    /// Gets or sets the excellent flags.
     /// </summary>
-    public bool IsExcellent
+    public byte ExcellentFlags
     {
-        get => this._data.Span[9..].GetBoolean(0);
-        set => this._data.Span[9..].SetBoolean(value, 0);
+        get => this._data.Span[11];
+        set => this._data.Span[11] = value;
     }
 
     /// <summary>
-    /// Gets or sets the is ancient.
+    /// Gets or sets the ancient discriminator.
     /// </summary>
-    public bool IsAncient
+    public byte AncientDiscriminator
     {
-        get => this._data.Span[9..].GetBoolean(1);
-        set => this._data.Span[9..].SetBoolean(value, 1);
+        get => this._data.Span[12];
+        set => this._data.Span[12] = value;
     }
 
     /// <summary>
@@ -4160,8 +4455,8 @@ public readonly struct AppearanceChangedExtended
     /// </summary>
     public bool IsAncientSetComplete
     {
-        get => this._data.Span[9..].GetBoolean(2);
-        set => this._data.Span[9..].SetBoolean(value, 2);
+        get => this._data.Span[13..].GetBoolean();
+        set => this._data.Span[13..].SetBoolean(value);
     }
 
     /// <summary>
@@ -6303,6 +6598,24 @@ public readonly struct ObjectHitExtended
     }
 
     /// <summary>
+    /// Gets or sets gets or sets the status of the remaining health in fractions of 1/250.
+    /// </summary>
+    public byte HealthStatus
+    {
+        get => this._data.Span[6];
+        set => this._data.Span[6] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets gets or sets the status of the remaining shield in fractions of 1/250.
+    /// </summary>
+    public byte ShieldStatus
+    {
+        get => this._data.Span[7];
+        set => this._data.Span[7] = value;
+    }
+
+    /// <summary>
     /// Gets or sets the health damage.
     /// </summary>
     public uint HealthDamage
@@ -6808,17 +7121,17 @@ public readonly struct ExperienceGainedExtended
         /// <summary>
         /// The maximum level has been reached, no experience is added.
         /// </summary>
-            MaxLevelReached = 0x10,
+            MaxLevelReached = 16,
 
         /// <summary>
         /// The maximum master level has been reached, no master experience is added.
         /// </summary>
-            MaxMasterLevelReached = 0x20,
+            MaxMasterLevelReached = 32,
 
         /// <summary>
         /// The monster level is too low for master experience, no master experience is added.
         /// </summary>
-            MonsterLevelTooLowForMasterExperience = 0x21,
+            MonsterLevelTooLowForMasterExperience = 33,
     }
 
     private readonly Memory<byte> _data;
@@ -7545,6 +7858,121 @@ public readonly partial struct MoneyDropped
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
     public static implicit operator Memory<byte>(MoneyDropped packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: Money dropped on the ground.
+/// Causes reaction on client side: The client adds the money to the ground.
+/// </summary>
+public readonly struct MoneyDroppedExtended
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MoneyDroppedExtended"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public MoneyDroppedExtended(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MoneyDroppedExtended"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private MoneyDroppedExtended(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (ushort)Math.Min(data.Length, Length);
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC2;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0x2F;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 12;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C2Header Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets if this flag is set, the money is added to the map with an animation and sound. Otherwise, it's just added like it was already on the ground before.
+    /// </summary>
+    public bool IsFreshDrop
+    {
+        get => this._data.Span[3..].GetBoolean();
+        set => this._data.Span[3..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the id.
+    /// </summary>
+    public ushort Id
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[4..]);
+        set => WriteUInt16LittleEndian(this._data.Span[4..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the position x.
+    /// </summary>
+    public byte PositionX
+    {
+        get => this._data.Span[6];
+        set => this._data.Span[6] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the position y.
+    /// </summary>
+    public byte PositionY
+    {
+        get => this._data.Span[7];
+        set => this._data.Span[7] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the amount.
+    /// </summary>
+    public uint Amount
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[8..]);
+        set => WriteUInt32LittleEndian(this._data.Span[8..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="MoneyDroppedExtended"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator MoneyDroppedExtended(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="MoneyDroppedExtended"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(MoneyDroppedExtended packet) => packet._data; 
 }
 
 
@@ -11168,6 +11596,344 @@ public readonly struct PlayerShopItemList
     /// <param name="itemsCount">The count of <see cref="PlayerShopItem"/> from which the size will be calculated.</param>
         
     public static int GetRequiredSize(int itemsCount) => itemsCount * PlayerShopItem.Length + 55;
+}
+
+
+/// <summary>
+/// Is sent by the server when: After the player requested to buy an item of a shop of another player.
+/// Causes reaction on client side: The result is shown to the player. If successful, the item is added to the inventory.
+/// </summary>
+public readonly struct PlayerShopBuyResult
+{
+    /// <summary>
+    /// The kind of result.
+    /// </summary>
+    public enum ResultKind
+    {
+        /// <summary>
+        /// Undefined result.
+        /// </summary>
+            Undefined = 0,
+
+        /// <summary>
+        /// The item has been bought successfully.
+        /// </summary>
+            Success = 1,
+
+        /// <summary>
+        /// The seller is not available.
+        /// </summary>
+            NotAvailable = 2,
+
+        /// <summary>
+        /// The requested player has no open shop.
+        /// </summary>
+            ShopNotOpened = 3,
+
+        /// <summary>
+        /// The requested player is already in a transaction with another player.
+        /// </summary>
+            InTransaction = 4,
+
+        /// <summary>
+        /// The requested item slot is invalid.
+        /// </summary>
+            InvalidShopSlot = 5,
+
+        /// <summary>
+        /// The requested player with the specified id has a different name or price is missing.
+        /// </summary>
+            NameMismatchOrPriceMissing = 6,
+
+        /// <summary>
+        /// The player has not enough money to buy the item from the seller.
+        /// </summary>
+            LackOfMoney = 7,
+
+        /// <summary>
+        /// The selling player cannot sell the item, because the sale would overflow his money amount in the inventory. Another possibility is that the inventory of the buyer cannot take the item.
+        /// </summary>
+            MoneyOverflowOrNotEnoughSpace = 8,
+
+        /// <summary>
+        /// The requested player has item block active.
+        /// </summary>
+            ItemBlock = 9,
+    }
+
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PlayerShopBuyResult"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public PlayerShopBuyResult(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PlayerShopBuyResult"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private PlayerShopBuyResult(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0x3F;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x06;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 21;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public PlayerShopBuyResult.ResultKind Result
+    {
+        get => (ResultKind)this._data.Span[4];
+        set => this._data.Span[4] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the seller id.
+    /// </summary>
+    public ushort SellerId
+    {
+        get => ReadUInt16BigEndian(this._data.Span[5..]);
+        set => WriteUInt16BigEndian(this._data.Span[5..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the item data.
+    /// </summary>
+    public Span<byte> ItemData
+    {
+        get => this._data.Slice(8, 13).Span;
+    }
+
+    /// <summary>
+    /// Gets or sets the item slot.
+    /// </summary>
+    public byte ItemSlot
+    {
+        get => this._data.Span[20];
+        set => this._data.Span[20] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="PlayerShopBuyResult"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator PlayerShopBuyResult(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="PlayerShopBuyResult"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(PlayerShopBuyResult packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: After the player requested to buy an item of a shop of another player.
+/// Causes reaction on client side: The result is shown to the player. If successful, the item is added to the inventory.
+/// </summary>
+public readonly struct PlayerShopBuyResultExtended
+{
+    /// <summary>
+    /// The kind of result.
+    /// </summary>
+    public enum ResultKind
+    {
+        /// <summary>
+        /// Undefined result.
+        /// </summary>
+            Undefined = 0,
+
+        /// <summary>
+        /// The item has been bought successfully.
+        /// </summary>
+            Success = 1,
+
+        /// <summary>
+        /// The seller is not available.
+        /// </summary>
+            NotAvailable = 2,
+
+        /// <summary>
+        /// The requested player has no open shop.
+        /// </summary>
+            ShopNotOpened = 3,
+
+        /// <summary>
+        /// The requested player is already in a transaction with another player.
+        /// </summary>
+            InTransaction = 4,
+
+        /// <summary>
+        /// The requested item slot is invalid.
+        /// </summary>
+            InvalidShopSlot = 5,
+
+        /// <summary>
+        /// The requested player with the specified id has a different name or price is missing.
+        /// </summary>
+            NameMismatchOrPriceMissing = 6,
+
+        /// <summary>
+        /// The player has not enough money to buy the item from the seller.
+        /// </summary>
+            LackOfMoney = 7,
+
+        /// <summary>
+        /// The selling player cannot sell the item, because the sale would overflow his money amount in the inventory. Another possibility is that the inventory of the buyer cannot take the item.
+        /// </summary>
+            MoneyOverflowOrNotEnoughSpace = 8,
+
+        /// <summary>
+        /// The requested player has item block active.
+        /// </summary>
+            ItemBlock = 9,
+    }
+
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PlayerShopBuyResultExtended"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public PlayerShopBuyResultExtended(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PlayerShopBuyResultExtended"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private PlayerShopBuyResultExtended(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)data.Length;
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0x3F;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x06;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the seller id.
+    /// </summary>
+    public ushort SellerId
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[4..]);
+        set => WriteUInt16LittleEndian(this._data.Span[4..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public PlayerShopBuyResultExtended.ResultKind Result
+    {
+        get => (ResultKind)this._data.Span[6];
+        set => this._data.Span[6] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the item slot.
+    /// </summary>
+    public byte ItemSlot
+    {
+        get => this._data.Span[8];
+        set => this._data.Span[8] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the item data.
+    /// </summary>
+    public Span<byte> ItemData
+    {
+        get => this._data.Slice(9).Span;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="PlayerShopBuyResultExtended"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator PlayerShopBuyResultExtended(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="PlayerShopBuyResultExtended"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(PlayerShopBuyResultExtended packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified length of <see cref="ItemData"/>.
+    /// </summary>
+    /// <param name="itemDataLength">The length in bytes of <see cref="ItemData"/> on which the required size depends.</param>
+        
+    public static int GetRequiredSize(int itemDataLength) => itemDataLength + 9;
 }
 
 
@@ -26720,6 +27486,145 @@ public readonly struct QuestProgress
 
 
 /// <summary>
+/// Is sent by the server when: First, after the game client requested to initialize a quest and the quest is already active. Second, after the game client requested the next quest step.
+/// Causes reaction on client side: The client shows the quest progress accordingly.
+/// </summary>
+public readonly struct QuestProgressExtended
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="QuestProgressExtended"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public QuestProgressExtended(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="QuestProgressExtended"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private QuestProgressExtended(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xF6;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x0C;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 272;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the condition count.
+    /// </summary>
+    public byte ConditionCount
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the reward count.
+    /// </summary>
+    public byte RewardCount
+    {
+        get => this._data.Span[6];
+        set => this._data.Span[6] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the random reward count.
+    /// </summary>
+    public byte RandomRewardCount
+    {
+        get => this._data.Span[7];
+        set => this._data.Span[7] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the quest number.
+    /// </summary>
+    public ushort QuestNumber
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[8..]);
+        set => WriteUInt16LittleEndian(this._data.Span[8..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the quest group.
+    /// </summary>
+    public ushort QuestGroup
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[10..]);
+        set => WriteUInt16LittleEndian(this._data.Span[10..], value);
+    }
+
+    /// <summary>
+    /// Gets the <see cref="QuestConditionExtended"/> of the specified index.
+    /// </summary>
+    public QuestConditionExtended GetQuestConditionExtended(int index) => new (this._data.Slice(12 + index * QuestConditionExtendedRef.Length));
+
+    /// <summary>
+    /// Gets the <see cref="QuestRewardExtended"/> of the specified index.
+    /// </summary>
+    public QuestRewardExtended GetQuestRewardExtended(int index) => new (this._data.Slice(152 + index * QuestRewardExtendedRef.Length));
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="QuestProgressExtended"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator QuestProgressExtended(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="QuestProgressExtended"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(QuestProgressExtended packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="QuestConditionExtended"/>.
+    /// </summary>
+    /// <param name="conditionsCount">The count of <see cref="QuestConditionExtended"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int conditionsCount) => conditionsCount * QuestConditionExtended.Length + 12;
+}
+
+
+/// <summary>
 /// Is sent by the server when: The server acknowledges the completion of a quest.
 /// Causes reaction on client side: The client shows the success and possibly requests for the next available quests.
 /// </summary>
@@ -27147,6 +28052,145 @@ public readonly struct QuestState
     /// <param name="conditionsCount">The count of <see cref="QuestCondition"/> from which the size will be calculated.</param>
         
     public static int GetRequiredSize(int conditionsCount) => conditionsCount * QuestCondition.Length + 11;
+}
+
+
+/// <summary>
+/// Is sent by the server when: After the game client requested it, when the player opened the quest menu and clicked on a quest.
+/// Causes reaction on client side: The client shows the quest progress accordingly.
+/// </summary>
+public readonly struct QuestStateExtended
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="QuestStateExtended"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public QuestStateExtended(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="QuestStateExtended"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private QuestStateExtended(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (ushort)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC2;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xF6;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x1B;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 272;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C2HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the condition count.
+    /// </summary>
+    public byte ConditionCount
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the reward count.
+    /// </summary>
+    public byte RewardCount
+    {
+        get => this._data.Span[6];
+        set => this._data.Span[6] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the random reward count.
+    /// </summary>
+    public byte RandomRewardCount
+    {
+        get => this._data.Span[7];
+        set => this._data.Span[7] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the quest number.
+    /// </summary>
+    public ushort QuestNumber
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[8..]);
+        set => WriteUInt16LittleEndian(this._data.Span[8..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the quest group.
+    /// </summary>
+    public ushort QuestGroup
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[10..]);
+        set => WriteUInt16LittleEndian(this._data.Span[10..], value);
+    }
+
+    /// <summary>
+    /// Gets the <see cref="QuestConditionExtended"/> of the specified index.
+    /// </summary>
+    public QuestConditionExtended GetQuestConditionExtended(int index) => new (this._data.Slice(12 + index * QuestConditionExtendedRef.Length));
+
+    /// <summary>
+    /// Gets the <see cref="QuestRewardExtended"/> of the specified index.
+    /// </summary>
+    public QuestRewardExtended GetQuestRewardExtended(int index) => new (this._data.Slice(152 + index * QuestRewardExtendedRef.Length));
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="QuestStateExtended"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator QuestStateExtended(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="QuestStateExtended"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(QuestStateExtended packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="QuestConditionExtended"/>.
+    /// </summary>
+    /// <param name="conditionsCount">The count of <see cref="QuestConditionExtended"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int conditionsCount) => conditionsCount * QuestConditionExtended.Length + 12;
 }
 
 
@@ -28511,6 +29555,157 @@ public readonly struct MapEventState
         /// The condition is to request a buff from an NPC.
         /// </summary>
             RequestBuff = 32,
+
+        /// <summary>
+        /// The condition is to kill a specific amount of players in an event.
+        /// </summary>
+            EventMapPlayerKills = 64,
+
+        /// <summary>
+        /// The condition is to kill a specific amount of monsters in an event.
+        /// </summary>
+            EventMapMonsterKills = 65,
+
+        /// <summary>
+        /// The condition is to destroy the blood castle gate.
+        /// </summary>
+            BloodCastleGate = 66,
+
+        /// <summary>
+        /// The condition is to win the blood castle event.
+        /// </summary>
+            WinBloodCastle = 256,
+
+        /// <summary>
+        /// The condition is to win the chaos castle.
+        /// </summary>
+            WinChaosCastle = 257,
+
+        /// <summary>
+        /// The condition is to win the devil square event.
+        /// </summary>
+            WinDevilSquare = 258,
+
+        /// <summary>
+        /// The condition is to win the illusion temple event.
+        /// </summary>
+            WinIllusionTemple = 259,
+
+        /// <summary>
+        /// The condition is to reach a specific amount of points in the devil square event.
+        /// </summary>
+            DevilSquarePoints = 260,
+
+        /// <summary>
+        /// The condition is to give a specific amount of zen.
+        /// </summary>
+            Money = 261,
+
+        /// <summary>
+        /// The condition is to reach a specific amount of PVP points.
+        /// </summary>
+            PvpPoints = 262,
+
+        /// <summary>
+        /// The condition is to talk to a specific NPC.
+        /// </summary>
+            NpcTalk = 263,
+    }
+
+    /// <summary>
+    /// Defines the type of the condition.
+    /// </summary>
+    public enum ConditionTypeExtended
+    {
+        /// <summary>
+        /// No condition is defined.
+        /// </summary>
+            None = 0,
+
+        /// <summary>
+        /// The condition is to kill a specified amount of specified monsters.
+        /// </summary>
+            MonsterKills = 1,
+
+        /// <summary>
+        /// The condition is to learn a specified skill.
+        /// </summary>
+            Skill = 2,
+
+        /// <summary>
+        /// The condition is to find a specified item and to have it in the inventory.
+        /// </summary>
+            Item = 3,
+
+        /// <summary>
+        /// The condition is to reach the specified character level.
+        /// </summary>
+            Level = 4,
+
+        /// <summary>
+        /// The condition is a client action. For example, this may be the completion of a tutorial.
+        /// </summary>
+            ClientAction = 5,
+
+        /// <summary>
+        /// The condition is to request a buff from an NPC.
+        /// </summary>
+            RequestBuff = 6,
+
+        /// <summary>
+        /// The condition is to kill a specific amount of players in an event.
+        /// </summary>
+            EventMapPlayerKills = 7,
+
+        /// <summary>
+        /// The condition is to kill a specific amount of monsters in an event.
+        /// </summary>
+            EventMapMonsterKills = 8,
+
+        /// <summary>
+        /// The condition is to destroy the blood castle gate.
+        /// </summary>
+            BloodCastleGate = 9,
+
+        /// <summary>
+        /// The condition is to win the blood castle event.
+        /// </summary>
+            WinBloodCastle = 10,
+
+        /// <summary>
+        /// The condition is to win the chaos castle.
+        /// </summary>
+            WinChaosCastle = 11,
+
+        /// <summary>
+        /// The condition is to win the devil square event.
+        /// </summary>
+            WinDevilSquare = 12,
+
+        /// <summary>
+        /// The condition is to win the illusion temple event.
+        /// </summary>
+            WinIllusionTemple = 13,
+
+        /// <summary>
+        /// The condition is to reach a specific amount of points in the devil square event.
+        /// </summary>
+            DevilSquarePoints = 14,
+
+        /// <summary>
+        /// The condition is to give a specific amount of zen.
+        /// </summary>
+            Money = 15,
+
+        /// <summary>
+        /// The condition is to reach a specific amount of PVP points.
+        /// </summary>
+            PvpPoints = 16,
+
+        /// <summary>
+        /// The condition is to talk to a specific NPC.
+        /// </summary>
+            NpcTalk = 17,
     }
 
     /// <summary>
@@ -28542,6 +29737,11 @@ public readonly struct MapEventState
         /// The reward is added gens contribution points.
         /// </summary>
             GensContribution = 16,
+
+        /// <summary>
+        /// The reward is random?.
+        /// </summary>
+            Random = 32,
     }
 
     /// <summary>

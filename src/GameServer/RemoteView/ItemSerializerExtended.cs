@@ -211,39 +211,39 @@ public class ItemSerializerExtended : IItemSerializer
         return result;
     }
 
-    private static byte GetExcellentByte(Item item)
-    {
-        byte result = 0;
-        var excellentOptions = item.ItemOptions.Where(o => o.ItemOption?.OptionType == ItemOptionTypes.Excellent || o.ItemOption?.OptionType == ItemOptionTypes.Wing);
+    //private static byte GetExcellentByte(Item item)
+    //{
+    //    byte result = 0;
+    //    var excellentOptions = item.ItemOptions.Where(o => o.ItemOption?.OptionType == ItemOptionTypes.Excellent || o.ItemOption?.OptionType == ItemOptionTypes.Wing);
 
-        foreach (var option in excellentOptions)
-        {
-            result |= (byte)(1 << (option.ItemOption!.Number - 1));
-        }
+    //    foreach (var option in excellentOptions)
+    //    {
+    //        result |= (byte)(1 << (option.ItemOption!.Number - 1));
+    //    }
 
-        return result;
-    }
+    //    return result;
+    //}
 
-    private static byte GetFenrirByte(Item item)
-    {
-        byte result = 0;
-        if (item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.BlackFenrir))
-        {
-            result |= BlackFenrirFlag;
-        }
+    //private static byte GetFenrirByte(Item item)
+    //{
+    //    byte result = 0;
+    //    if (item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.BlackFenrir))
+    //    {
+    //        result |= BlackFenrirFlag;
+    //    }
 
-        if (item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.BlueFenrir))
-        {
-            result |= BlueFenrirFlag;
-        }
+    //    if (item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.BlueFenrir))
+    //    {
+    //        result |= BlueFenrirFlag;
+    //    }
 
-        if (item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.GoldFenrir))
-        {
-            result |= GoldFenrirFlag;
-        }
+    //    if (item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.GoldFenrir))
+    //    {
+    //        result |= GoldFenrirFlag;
+    //    }
 
-        return result;
-    }
+    //    return result;
+    //}
 
     private static byte GetHarmonyByte(Item item)
     {
@@ -457,7 +457,40 @@ public class ItemSerializerExtended : IItemSerializer
             ? this._data.Slice(this.SocketStartIndex + 1, this.SocketCount)
             : [];
 
-        public int Length => this.SocketStartIndex + 1 + this.SocketCount;
+        public int Length
+        {
+            get
+            {
+                int size = 5;
+                if (this.Options.HasFlag(OptionFlags.HasOption))
+                {
+                    size++;
+                }
+
+                if (this.Options.HasFlag(OptionFlags.HasExcellent))
+                {
+                    size++;
+                }
+
+                if (this.Options.HasFlag(OptionFlags.HasAncient))
+                {
+                    size++;
+                }
+
+                if (this.Options.HasFlag(OptionFlags.HasHarmony))
+                {
+                    size++;
+                }
+
+                if (this.Options.HasFlag(OptionFlags.HasSockets))
+                {
+                    size++;
+                    size += this.SocketCount;
+                }
+
+                return size;
+            }
+        }
 
         private int ExcellentIndex => this.Options.HasFlag(OptionFlags.HasOption) ? 6 : 5;
 

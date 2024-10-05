@@ -45,7 +45,9 @@ public class ItemUpgradedPlugIn : IItemUpgradedPlugIn
                 InventorySlot = item.ItemSlot,
             };
             var itemSize = itemSerializer.SerializeItem(packet.ItemData, item);
-            return InventoryItemUpgradedRef.GetRequiredSize(itemSize);
+            var actualSize = InventoryItemUpgradedRef.GetRequiredSize(itemSize);
+            span.Slice(0, actualSize).SetPacketSize();
+            return actualSize;
         }
 
         await connection.SendAsync(Write).ConfigureAwait(false);

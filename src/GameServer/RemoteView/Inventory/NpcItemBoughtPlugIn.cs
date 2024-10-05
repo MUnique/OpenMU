@@ -46,7 +46,9 @@ public class NpcItemBoughtPlugIn : INpcItemBoughtPlugIn
                 InventorySlot = newItem.ItemSlot,
             };
             var itemSize = itemSerializer.SerializeItem(packet.ItemData, newItem);
-            return ItemBoughtRef.GetRequiredSize(itemSize);
+            var actualSize = ItemBoughtRef.GetRequiredSize(itemSize);
+            span.Slice(0, actualSize).SetPacketSize();
+            return actualSize;
         }
 
         await connection.SendAsync(Write).ConfigureAwait(false);

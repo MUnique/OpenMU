@@ -19,6 +19,8 @@ The damage is shown at the object which received the hit.
 | 3 << 6 | 1 bit | Boolean |  | IsDoubleDamage |
 | 3 << 7 | 1 bit | Boolean |  | IsTripleDamage |
 | 4 | 2 | ShortLittleEndian |  | ObjectId |
+| 6 | 1 | Byte |  | HealthStatus; Gets or sets the status of the remaining health in fractions of 1/250. |
+| 7 | 1 | Byte |  | ShieldStatus; Gets or sets the status of the remaining shield in fractions of 1/250. |
 | 8 | 4 | IntegerLittleEndian |  | HealthDamage |
 | 12 | 4 | IntegerLittleEndian |  | ShieldDamage |
 

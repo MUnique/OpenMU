@@ -59,6 +59,7 @@ public class UpdateInventoryListPlugIn : IUpdateInventoryListPlugIn
                 i++;
             }
 
+            span.Slice(0, actualSize).SetPacketSize();
             return actualSize;
         }
 

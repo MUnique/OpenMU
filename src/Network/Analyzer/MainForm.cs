@@ -25,6 +25,7 @@ public partial class MainForm : Form
 
     private readonly Dictionary<ClientVersion, string> _clientVersions = new ()
     {
+        { new ClientVersion(106, 3, ClientLanguage.English), "Extended Open Source (2.04d)" },
         { new ClientVersion(6, 3, ClientLanguage.English), "S6E3 (1.04d)" },
         { new ClientVersion(1, 0, ClientLanguage.Invariant), "Season 1 - 6" },
         { new ClientVersion(0, 97, ClientLanguage.Invariant), "0.97" },

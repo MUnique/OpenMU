@@ -243,7 +243,7 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
 
     private async ValueTask CreateGameServerDefinitionsAsync(GameServerConfiguration gameServerConfiguration, int numberOfServers)
     {
-        var port = 50901;
+        var port = 55901;
         for (int i = 0; i < numberOfServers; i++)
         {
             var server = this.Context!.CreateNew<GameServerDefinition>();

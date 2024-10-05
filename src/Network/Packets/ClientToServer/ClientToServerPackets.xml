@@ -496,6 +496,39 @@
     </Packet>
     <Packet>
       <HeaderType>C3Header</HeaderType>
+      <Code>24</Code>
+      <Name>ItemMoveRequestExtended</Name>
+      <Length>7</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player requests to move an item within or between his available item storage, such as inventory, vault, trade or chaos machine.</SentWhen>
+      <CausedReaction></CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Enum</Type>
+          <TypeName>ItemStorageKind</TypeName>
+          <Name>FromStorage</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>FromSlot</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Enum</Type>
+          <TypeName>ItemStorageKind</TypeName>
+          <Name>ToStorage</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>ToSlot</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3Header</HeaderType>
       <Code>26</Code>
       <Name>ConsumeItemRequest</Name>
       <Length>6</Length>

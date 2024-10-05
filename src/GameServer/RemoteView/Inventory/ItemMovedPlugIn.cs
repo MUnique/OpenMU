@@ -55,7 +55,9 @@ public class ItemMovedPlugIn : IItemMovedPlugIn
             };
             var itemSize = itemSerializer.SerializeItem(message.ItemData, item);
 
-            return ItemMovedRef.GetRequiredSize(itemSize);
+            var actualSize = ItemMovedRef.GetRequiredSize(itemSize);
+            span.Slice(0, actualSize).SetPacketSize();
+            return actualSize;
         }
 
         await connection.SendAsync(Write).ConfigureAwait(false);

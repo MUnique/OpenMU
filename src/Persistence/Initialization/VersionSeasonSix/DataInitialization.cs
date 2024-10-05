@@ -65,7 +65,7 @@ public class DataInitialization : DataInitializationBase
         season6OpenSource.Season = 106;
         season6OpenSource.Episode = 3;
         season6OpenSource.Language = ClientLanguage.English;
-        season6OpenSource.Version = new byte[] { 0x32, 0x30, 0x34, 0x30, 0x34 };
+        season6OpenSource.Version = [0x32, 0x30, 0x34, 0x30, 0x34];
         season6OpenSource.Serial = "k1Pk2jcET48mxL3b"u8.ToArray();
         season6OpenSource.Description = "Season 6 Episode 3 Open Source Client";
     }
