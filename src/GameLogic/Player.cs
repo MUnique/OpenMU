@@ -1045,13 +1045,13 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     {
         if (this.Attributes![Stats.MasterLevel] >= this.GameContext.Configuration.MaximumMasterLevel)
         {
-            await this.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("You already reached maximum master Level.", MessageType.BlueNormal)).ConfigureAwait(false);
+            await this.InvokeViewPlugInAsync<IAddExperiencePlugIn>(p => p.AddExperienceAsync(0, killedObject, ExperienceType.MaxMasterLevelReached)).ConfigureAwait(false);
             return;
         }
 
         if (killedObject is not null && killedObject.Attributes[Stats.Level] < this.GameContext.Configuration.MinimumMonsterLevelForMasterExperience)
         {
-            await this.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("You need to kill stronger monsters to gain master experience.", MessageType.BlueNormal)).ConfigureAwait(false);
+            await this.InvokeViewPlugInAsync<IAddExperiencePlugIn>(p => p.AddExperienceAsync(0, killedObject, ExperienceType.MonsterLevelTooLowForMasterExperience)).ConfigureAwait(false);
             return;
         }
 
@@ -1069,7 +1069,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.SelectedCharacter.MasterExperience += exp;
 
         // Tell it to the Player
-        await this.InvokeViewPlugInAsync<IAddExperiencePlugIn>(p => p.AddExperienceAsync((int)exp, killedObject)).ConfigureAwait(false);
+        await this.InvokeViewPlugInAsync<IAddExperiencePlugIn>(p => p.AddExperienceAsync((int)exp, killedObject, ExperienceType.Master)).ConfigureAwait(false);
 
         // Check the lvl up
         if (lvlup)
@@ -1092,7 +1092,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     {
         if (this.Attributes![Stats.Level] >= this.GameContext.Configuration.MaximumLevel)
         {
-            await this.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("You already reached maximum Level.", MessageType.BlueNormal)).ConfigureAwait(false);
+            await this.InvokeViewPlugInAsync<IAddExperiencePlugIn>(p => p.AddExperienceAsync(0, killedObject, ExperienceType.MaxLevelReached)).ConfigureAwait(false);
             return;
         }
 
@@ -1109,7 +1109,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.SelectedCharacter.Experience += exp;
 
         // Tell it to the Player
-        await this.InvokeViewPlugInAsync<IAddExperiencePlugIn>(p => p.AddExperienceAsync((int)exp, killedObject)).ConfigureAwait(false);
+        await this.InvokeViewPlugInAsync<IAddExperiencePlugIn>(p => p.AddExperienceAsync((int)exp, killedObject, ExperienceType.Normal)).ConfigureAwait(false);
 
         // Check the lvl up
         if (isLevelUp)
@@ -2380,6 +2380,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         public event EventHandler? AppearanceChanged;
 
         public CharacterClass? CharacterClass => this._player.SelectedCharacter?.CharacterClass;
+
+        public CharacterStatus CharacterStatus => this._player.SelectedCharacter?.CharacterStatus ?? default;
 
         public CharacterPose Pose => this._player.SelectedCharacter?.Pose ?? default;
 

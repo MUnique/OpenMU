@@ -23,6 +23,7 @@
   * [C1 22 - PickupItemRequest075 (by client)](C1-22-PickupItemRequest075_by-client.md)
   * [C3 23 - DropItemRequest (by client)](C3-23-DropItemRequest_by-client.md)
   * [C3 24 - ItemMoveRequest (by client)](C3-24-ItemMoveRequest_by-client.md)
+  * [C3 24 - ItemMoveRequestExtended (by client)](C3-24-ItemMoveRequestExtended_by-client.md)
   * [C3 26 - ConsumeItemRequest (by client)](C3-26-ConsumeItemRequest_by-client.md)
   * [C1 26 - ConsumeItemRequest075 (by client)](C1-26-ConsumeItemRequest075_by-client.md)
   * [C3 30 - TalkToNpcRequest (by client)](C3-30-TalkToNpcRequest_by-client.md)

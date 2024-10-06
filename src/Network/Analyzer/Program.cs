@@ -17,8 +17,14 @@ internal static class Program
     [STAThread]
     internal static void Main()
     {
+        AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
         Application.Run(new MainForm());
+    }
+
+    private static void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+    {
+        // todo
     }
 }

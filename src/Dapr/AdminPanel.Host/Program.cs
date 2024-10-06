@@ -3,7 +3,10 @@
 // </copyright>
 
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using MUnique.OpenMU.AdminPanel.Host;
 using MUnique.OpenMU.Dapr.Common;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.PlugIns;
 using MUnique.OpenMU.Web.AdminPanel;
 
@@ -15,7 +18,9 @@ var services = builder.Services;
 
 services.AddPeristenceProvider(true)
     .AddPlugInManager(plugInConfigurations)
-    .AddManageableServerRegistry();
+    .AddManageableServerRegistry()
+    .AddSingleton<IGameServerInstanceManager, DockerGameServerInstanceManager>()
+    .AddSingleton<IConnectServerInstanceManager, DockerConnectServerInstanceManager>();
 
 builder.AddAdminPanel();
 

@@ -27,7 +27,7 @@ public class AddExperiencePlugIn : IAddExperiencePlugIn
     public AddExperiencePlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public async ValueTask AddExperienceAsync(int exp, IAttackable? obj)
+    public async ValueTask AddExperienceAsync(int exp, IAttackable? obj, ExperienceType experienceType)
     {
         var remainingExperience = exp;
         ushort damage = 0;
