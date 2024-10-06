@@ -211,40 +211,6 @@ public class ItemSerializerExtended : IItemSerializer
         return result;
     }
 
-    //private static byte GetExcellentByte(Item item)
-    //{
-    //    byte result = 0;
-    //    var excellentOptions = item.ItemOptions.Where(o => o.ItemOption?.OptionType == ItemOptionTypes.Excellent || o.ItemOption?.OptionType == ItemOptionTypes.Wing);
-
-    //    foreach (var option in excellentOptions)
-    //    {
-    //        result |= (byte)(1 << (option.ItemOption!.Number - 1));
-    //    }
-
-    //    return result;
-    //}
-
-    //private static byte GetFenrirByte(Item item)
-    //{
-    //    byte result = 0;
-    //    if (item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.BlackFenrir))
-    //    {
-    //        result |= BlackFenrirFlag;
-    //    }
-
-    //    if (item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.BlueFenrir))
-    //    {
-    //        result |= BlueFenrirFlag;
-    //    }
-
-    //    if (item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.GoldFenrir))
-    //    {
-    //        result |= GoldFenrirFlag;
-    //    }
-
-    //    return result;
-    //}
-
     private static byte GetHarmonyByte(Item item)
     {
         byte result = 0;
@@ -430,12 +396,6 @@ public class ItemSerializerExtended : IItemSerializer
             set => this._data[this.HarmonyIndex] = value;
         }
 
-        //public byte Guardian
-        //{
-        //    get => this.Options.HasFlag(OptionFlags.HasGuardian) ? this._data[this.GuardianIndex] : default;
-        //    set => this._data[this.GuardianIndex] = value;
-        //}
-
         public byte SocketBonus
         {
             get => this.Options.HasFlag(OptionFlags.HasSockets) ? (byte)((this._data[this.SocketStartIndex] & 0xF0) >> 4) : default;
@@ -497,8 +457,6 @@ public class ItemSerializerExtended : IItemSerializer
         private int AncientIndex => this.Options.HasFlag(OptionFlags.HasAncient) ? this.ExcellentIndex + 1 : this.ExcellentIndex;
 
         private int HarmonyIndex => this.Options.HasFlag(OptionFlags.HasHarmony) ? this.AncientIndex + 1 : this.AncientIndex;
-
-        //private int GuardianIndex => this.Options.HasFlag(OptionFlags.HasGuardian) ? this.HarmonyIndex + 1 : this.HarmonyIndex;
 
         private int SocketStartIndex => this.Options.HasFlag(OptionFlags.HasSockets) ? this.HarmonyIndex + 1 : this.HarmonyIndex;
     }
