@@ -34,7 +34,7 @@ public class QuestStateResponsePlugIn : IQuestStateResponsePlugIn
     {
         if (questState is null || questState.Group == QuestConstants.LegacyQuestGroup)
         {
-            await this.ShowLegacyQuestStateAsync(questState ??= this._player.SelectedCharacter?.QuestStates.FirstOrDefault(state => state.Group == QuestConstants.LegacyQuestGroup)).ConfigureAwait(false);
+            await this.ShowLegacyQuestStateAsync(this._player.SelectedCharacter?.QuestStates.FirstOrDefault(state => state.Group == QuestConstants.LegacyQuestGroup)).ConfigureAwait(false);
             return;
         }
 

@@ -44,7 +44,7 @@ public class ShowShopItemListExtendedPlugIn : IShowShopItemListPlugIn
         {
             var size = PlayerShopItemListExtendedRef.GetRequiredSize(items.Count, PlayerShopItemExtendedRef.GetRequiredSize(itemSerializer.NeededSpace));
             var span = connection.Output.GetSpan(size)[..size];
-            var packet = new PlayerShopItemListExtendedRef(span)
+            _ = new PlayerShopItemListExtendedRef(span)
             {
                 Action = isUpdate 
                     ? PlayerShopItemListExtended.ActionKind.UpdateAfterItemChange

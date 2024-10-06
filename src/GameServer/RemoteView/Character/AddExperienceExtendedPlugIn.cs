@@ -48,7 +48,7 @@ public class AddExperienceExtendedPlugIn : IAddExperiencePlugIn
         await this._player.Connection.SendExperienceGainedExtendedAsync(
                 Convert(experienceType),
                 (uint)exp,
-                (uint)damage,
+                damage,
                 killedId,
                 killerId)
             .ConfigureAwait(false);

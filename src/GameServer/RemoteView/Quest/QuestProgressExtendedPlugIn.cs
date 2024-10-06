@@ -44,7 +44,7 @@ public class QuestProgressExtendedPlugIn : IQuestProgressPlugIn
         {
             var size = QuestProgressExtendedRef.Length;
             var span = connection.Output.GetSpan(size)[..size];
-            var packet = new QuestProgressExtendedRef(span)
+            _ = new QuestProgressExtendedRef(span)
             {
                 QuestGroup = (ushort)quest.Group,
             };

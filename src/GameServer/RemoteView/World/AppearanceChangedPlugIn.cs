@@ -97,7 +97,7 @@ public class AppearanceChangedExtendedPlugIn : IAppearanceChangedPlugIn
     public async ValueTask AppearanceChangedAsync(Player changedPlayer, Item item)
     {
         var connection = this._player.Connection;
-        if (connection is null || changedPlayer.Inventory is not { } inventory)
+        if (connection is null || changedPlayer.Inventory is null)
         {
             return;
         }

@@ -70,7 +70,6 @@ public class BuyRequestAction
             if (!requestedPlayer.ShopStorage.StoreOpen)
             {
                 player.Logger.LogDebug("Store not open anymore, Character {0}", requestedPlayer.SelectedCharacter?.Name);
-                //await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Player's Store not open anymore.", MessageType.BlueNormal)).ConfigureAwait(false);
                 await player.InvokeViewPlugInAsync<IPlayerShopBuyRequestResultPlugIn>(p => p.ShowResultAsync(requestedPlayer, ItemBuyResult.ShopNotOpened, null)).ConfigureAwait(false);
                 return;
             }
@@ -79,7 +78,6 @@ public class BuyRequestAction
             if (item is null)
             {
                 await player.InvokeViewPlugInAsync<IPlayerShopBuyRequestResultPlugIn>(p => p.ShowResultAsync(requestedPlayer, ItemBuyResult.InvalidShopSlot, null)).ConfigureAwait(false);
-                // await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Sorry, Item was sold in the meantime.", MessageType.BlueNormal)).ConfigureAwait(false);
                 return;
             }
 
