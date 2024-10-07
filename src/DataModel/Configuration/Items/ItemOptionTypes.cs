@@ -22,7 +22,7 @@ public static class ItemOptionTypes
     /// <summary>
     /// Gets the luck option type.
     /// </summary>
-    public static ItemOptionType Luck { get; } = new () { Name = "Luck (Critical Damage Chance 10%)", Id = new Guid("{3E3E9BE8-4E16-4F27-A7CF-986D48454D76}") };
+    public static ItemOptionType Luck { get; } = new () { Name = "Luck (Critical Damage Chance 5%)", Id = new Guid("{3E3E9BE8-4E16-4F27-A7CF-986D48454D76}") };
 
     /// <summary>
     /// Gets the standard option option type.

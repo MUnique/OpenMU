@@ -258,7 +258,7 @@ public class AncientSets : InitializerBase
             (2, ItemGroups.Pants, Stats.TotalVitality, 1),
             (2, ItemGroups.Gloves, Stats.TotalVitality, 1),
             (25, ItemGroups.Misc1, Stats.TotalStrength, 1), // Pendant of Ice
-            (24, ItemGroups.Misc1, Stats.BaseEnergy, 1)); // Ring of Magic
+            (24, ItemGroups.Misc1, Stats.TotalEnergy, 1)); // Ring of Magic
 
         var barnake = this.AddAncientSet(
             "Barnake", // Pad
@@ -432,7 +432,7 @@ public class AncientSets : InitializerBase
             (11, ItemGroups.Gloves, Stats.TotalVitality, 1),
             (11, ItemGroups.Helm, Stats.TotalVitality, 1),
             (11, ItemGroups.Pants, Stats.TotalVitality, 1),
-            (9, ItemGroups.Bows, Stats.TotalStrength, 1)); // Golden Crossbow
+            (9, ItemGroups.Bows, Stats.TotalAgility, 1)); // Golden Crossbow
 
         var fase = this.AddAncientSet(
             "Fase", // Silk
