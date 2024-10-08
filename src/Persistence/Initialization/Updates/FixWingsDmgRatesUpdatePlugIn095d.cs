@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [PlugIn(PlugInName, PlugInDescription)]
 [Guid("F45FA4D0-B19B-48E2-9592-A37F3B36348A")]
-public class FixWingsDmgRatesUpdatePlugIn095d : FixWingsDmgRatesUpdatePlugInBase
+public class FixWingsDmgRatesUpdatePlugIn095D : FixWingsDmgRatesUpdatePlugInBase
 {
     /// <inheritdoc />
     public override string DataInitializationKey => Version095d.DataInitialization.Id;

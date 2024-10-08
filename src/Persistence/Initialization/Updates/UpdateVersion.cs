@@ -171,7 +171,7 @@ public enum UpdateVersion
     FixWingsDmgRatesPlugIn075 = 32,
 
     /// <summary>
-    /// The version of the <see cref="FixWingsDmgRatesUpdatePlugIn095d"/>.
+    /// The version of the <see cref="FixWingsDmgRatesUpdatePlugIn095D"/>.
     /// </summary>
     FixWingsDmgRatesPlugIn095d = 33,
 
