@@ -188,21 +188,16 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
             .FirstOrDefault(bonus => bonus.Level == item.Level)?
             .GetAdditionalValueElement(attribute.AggregateType);
 
-        if (item.IsJewelry() && levelBonusElmt is not null)
-        { // Combine element resistance for jewelry so that the highest value from one single item can be sorted out
+        if (levelBonusElmt is null)
+        {
+            yield return new PowerUpWrapper(attribute.BaseValueElement, attribute.TargetAttribute, attributeHolder);
+        }
+        else
+        {
             yield return new PowerUpWrapper(
                 new CombinedElement(attribute.BaseValueElement, levelBonusElmt),
                 attribute.TargetAttribute,
                 attributeHolder);
-        }
-        else
-        {
-            yield return new PowerUpWrapper(attribute.BaseValueElement, attribute.TargetAttribute, attributeHolder);
-
-            if (levelBonusElmt is not null)
-            {
-                yield return new PowerUpWrapper(levelBonusElmt, attribute.TargetAttribute, attributeHolder);
-            }
         }
     }
 
