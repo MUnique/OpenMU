@@ -150,6 +150,7 @@ public class DefaultDropGenerator : IDropGenerator
         }
 
         item.Level = GetItemLevelByMonsterLevel(item.Definition!, monsterLvl);
+        item.Durability = item.GetMaximumDurabilityOfOnePiece();
         return item;
     }
 
@@ -159,8 +160,9 @@ public class DefaultDropGenerator : IDropGenerator
     /// <param name="item">The item.</param>
     protected void ApplyRandomOptions(Item item)
     {
-        item.Durability = item.GetMaximumDurabilityOfOnePiece();
-        foreach (var option in item.Definition!.PossibleItemOptions.Where(o => o.AddsRandomly))
+        foreach (var option in item.Definition!.PossibleItemOptions.Where(o =>
+            o.AddsRandomly &&
+            !o.PossibleOptions.Any(po => object.Equals(po.OptionType, ItemOptionTypes.Excellent))))
         {
             this.ApplyOption(item, option);
         }
@@ -198,6 +200,7 @@ public class DefaultDropGenerator : IDropGenerator
         item.HasSkill = item.CanHaveSkill(); // every excellent item got skill
 
         this.AddRandomExcOptions(item);
+        item.Durability = item.GetMaximumDurabilityOfOnePiece();
         return item;
     }
 
@@ -216,6 +219,7 @@ public class DefaultDropGenerator : IDropGenerator
         item.HasSkill = item.CanHaveSkill(); // every ancient item got skill
 
         this.ApplyRandomAncientOption(item);
+        item.Durability = item.GetMaximumDurabilityOfOnePiece();
         return item;
     }
 
@@ -295,6 +299,7 @@ public class DefaultDropGenerator : IDropGenerator
             this.AddRandomExcOptions(item);
         }
 
+        item.Durability = item.GetMaximumDurabilityOfOnePiece();
         return item;
     }
 
@@ -314,7 +319,7 @@ public class DefaultDropGenerator : IDropGenerator
                 var itemOptionLink = new ItemOptionLink
                 {
                     ItemOption = newOption,
-                    Level = newOption?.LevelDependentOptions.Select(l => l.Level).SelectRandom() ?? 0
+                    Level = newOption?.LevelDependentOptions.Select(l => l.Level).SelectRandom() ?? 0,
                 };
                 item.ItemOptions.Add(itemOptionLink);
             }
