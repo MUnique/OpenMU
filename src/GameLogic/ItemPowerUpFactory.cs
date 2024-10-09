@@ -184,12 +184,20 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
         attribute.ThrowNotInitializedProperty(attribute.BaseValueElement is null, nameof(attribute.BaseValueElement));
         attribute.ThrowNotInitializedProperty(attribute.TargetAttribute is null, nameof(attribute.TargetAttribute));
 
-        yield return new PowerUpWrapper(attribute.BaseValueElement, attribute.TargetAttribute, attributeHolder);
+        var levelBonusElmt = (attribute.BonusPerLevelTable?.BonusPerLevel ?? Enumerable.Empty<LevelBonus>())
+            .FirstOrDefault(bonus => bonus.Level == item.Level)?
+            .GetAdditionalValueElement(attribute.AggregateType);
 
-        var levelBonus = (attribute.BonusPerLevelTable?.BonusPerLevel ?? Enumerable.Empty<LevelBonus>()).FirstOrDefault(bonus => bonus.Level == item.Level);
-        if (levelBonus is not null)
+        if (levelBonusElmt is null)
         {
-            yield return new PowerUpWrapper(levelBonus.GetAdditionalValueElement(attribute.AggregateType), attribute.TargetAttribute, attributeHolder);
+            yield return new PowerUpWrapper(attribute.BaseValueElement, attribute.TargetAttribute, attributeHolder);
+        }
+        else
+        {
+            yield return new PowerUpWrapper(
+                new CombinedElement(attribute.BaseValueElement, levelBonusElmt),
+                attribute.TargetAttribute,
+                attributeHolder);
         }
     }
 
@@ -253,7 +261,7 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
         var baseDropLevel = item.Definition!.DropLevel;
         var ancientDropLevel = item.Definition!.CalculateDropLevel(true, false, 0);
 
-        if (InventoryConstants.IsDefenseItemSlot(item.ItemSlot))
+        if (InventoryConstants.IsDefenseItemSlot(item.ItemSlot) && !item.IsJewelry())
         {
             var baseDefense = (int)(item.Definition?.BasePowerUpAttributes.FirstOrDefault(a => a.TargetAttribute == Stats.DefenseBase)?.BaseValue ?? 0);
             var additionalDefense = (baseDefense * 12 / baseDropLevel) + (baseDropLevel / 5) + 4;

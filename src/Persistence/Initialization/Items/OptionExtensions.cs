@@ -80,6 +80,6 @@ public static class OptionExtensions
     /// <returns>The excellent wizardry attack options.</returns>
     public static ItemOptionDefinition ExcellentWizardryAttackOptions(this GameConfiguration gameConfiguration)
     {
-        return gameConfiguration.ItemOptions.First(o => o.Name == ExcellentOptions.PhysicalAttackOptionsName);
+        return gameConfiguration.ItemOptions.First(o => o.Name == ExcellentOptions.WizardryAttackOptionsName);
     }
 }
