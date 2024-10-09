@@ -137,8 +137,10 @@ public abstract class ItemUpgradeConsumeHandlerPlugIn : ItemModifyConsumeHandler
             var optionLink = persistenceContext.CreateNew<ItemOptionLink>();
             optionLink.ItemOption = possibleOptions.SelectRandom()!;
             optionLink.Level = optionLink.ItemOption.LevelDependentOptions.Any()
-                ? optionLink.ItemOption.LevelDependentOptions.Select(ol => ol.Level).Append(1).Min() // For base def/dmg opts level 1 is not an ItemOptionOfLevel entry
-                : 1;  // To do not working for JOH
+                ? optionLink.ItemOption.LevelDependentOptions.Select(ldo => ldo.Level)
+                    .Concat(this.Configuration.OptionType == ItemOptionTypes.Option ? [1] : []) // For base def/dmg opts level 1 is not an ItemOptionOfLevel entry
+                    .Min()
+                : 1;
             item.ItemOptions.Add(optionLink);
         }
 

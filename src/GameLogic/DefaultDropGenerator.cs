@@ -43,7 +43,11 @@ public class DefaultDropGenerator : IDropGenerator
     public DefaultDropGenerator(GameConfiguration config, IRandomizer randomizer)
     {
         this._randomizer = randomizer;
-        this._maxItemOptionLevelDrop = config.MaximumItemOptionLevelDrop > 4 ? (byte)4 : config.MaximumItemOptionLevelDrop;
+        this._maxItemOptionLevelDrop = config.MaximumItemOptionLevelDrop switch
+        {
+            < 1 or > 4 => 3,
+            _ => config.MaximumItemOptionLevelDrop,
+        };
         this._droppableItems = config.Items.Where(i => i.DropsFromMonsters).ToList();
         this._ancientItems = this._droppableItems.Where(
             i => i.PossibleItemSetGroups.Any(
@@ -323,8 +327,8 @@ public class DefaultDropGenerator : IDropGenerator
                 {
                     ItemOption = newOption,
                     Level = newOption?.LevelDependentOptions.Select(ldo => ldo.Level)
-                        .Concat(newOption.LevelDependentOptions.Count > 0 ? [1] : []).Distinct() // For base def/dmg opts level 1 is not an ItemOptionOfLevel entry
-                        .Where(l => l <= this._maxItemOptionLevelDrop).SelectRandom() ?? 0,
+                        .Concat(newOption.LevelDependentOptions.Count > 0 ? [1] : []) // For base def/dmg opts level 1 is not an ItemOptionOfLevel entry
+                        .Distinct().Where(l => l <= this._maxItemOptionLevelDrop).SelectRandom() ?? 0,
                 };
                 item.ItemOptions.Add(itemOptionLink);
             }
