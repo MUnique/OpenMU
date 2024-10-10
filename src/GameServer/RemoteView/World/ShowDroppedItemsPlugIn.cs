@@ -47,10 +47,12 @@ public class ShowDroppedItemsPlugIn : IShowDroppedItemsPlugIn
                 ItemCount = (byte)itemCount,
             };
 
+            int headerSize = ItemsDroppedRef.GetRequiredSize(0, 0);
+            int actualSize = headerSize;
             int i = 0;
             foreach (var item in droppedItems)
             {
-                var itemBlock = packet[i, droppedItemLength];
+                var itemBlock = new ItemsDroppedRef.DroppedItemRef(span[actualSize..]);
                 itemBlock.Id = item.Id;
                 if (freshDrops)
                 {
@@ -59,12 +61,13 @@ public class ShowDroppedItemsPlugIn : IShowDroppedItemsPlugIn
 
                 itemBlock.PositionX = item.Position.X;
                 itemBlock.PositionY = item.Position.Y;
-                itemSerializer.SerializeItem(itemBlock.ItemData, item.Item);
-
+                var itemSize = itemSerializer.SerializeItem(itemBlock.ItemData, item.Item);
+                actualSize += ItemsDroppedRef.DroppedItemRef.GetRequiredSize(itemSize);
                 i++;
             }
 
-            return size;
+            span.Slice(0, actualSize).SetPacketSize();
+            return actualSize;
         }
 
         await connection.SendAsync(Write).ConfigureAwait(false);

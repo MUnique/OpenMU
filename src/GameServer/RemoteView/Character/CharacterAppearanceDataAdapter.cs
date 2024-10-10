@@ -34,6 +34,9 @@ internal class CharacterAppearanceDataAdapter : IAppearanceData
     /// <inheritdoc/>
     public CharacterClass? CharacterClass => this._character?.CharacterClass;
 
+    /// <inheritdoc/>
+    public CharacterStatus CharacterStatus => this._character?.CharacterStatus ?? default;
+
     /// <inheritdoc />
     public CharacterPose Pose => CharacterPose.Standing;
 

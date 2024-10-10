@@ -53,7 +53,8 @@ public static class ClientVersionResolver
     /// <returns>The resolved client version.</returns>
     public static ClientVersion Resolve(Span<byte> version)
     {
-        if (Versions.TryGetValue(CalculateVersionValue(version), out var clientVersion))
+        var versionValue = CalculateVersionValue(version);
+        if (Versions.TryGetValue(versionValue, out var clientVersion))
         {
             return clientVersion;
         }
@@ -61,5 +62,5 @@ public static class ClientVersionResolver
         return DefaultVersion;
     }
 
-    private static long CalculateVersionValue(Span<byte> versionBytes) => (versionBytes.MakeDwordSmallEndian(0) * 0x100) + versionBytes[4];
+    private static long CalculateVersionValue(Span<byte> versionBytes) => (versionBytes.MakeDwordSmallEndian(0) * 0x100L) + versionBytes[4];
 }

@@ -16,13 +16,13 @@ using MUnique.OpenMU.Web.AdminPanel.Services;
 /// <summary>
 /// A container which keeps all <see cref="Interfaces.IConnectServer"/>s in one <see cref="IHostedService"/>.
 /// </summary>
-public class ConnectServerContainer : ServerContainerBase, IEnumerable<IConnectServer>
+public class ConnectServerContainer : ServerContainerBase, IEnumerable<IConnectServer>, IConnectServerInstanceManager
 {
     private readonly IList<IManageableServer> _servers;
     private readonly IPersistenceContextProvider _persistenceContextProvider;
     private readonly ConnectServerFactory _connectServerFactory;
     private readonly IList<IConnectServer> _connectServers = new List<IConnectServer>();
-    private readonly IDictionary<GameClientDefinition, IGameServerStateObserver> _observers = new Dictionary<GameClientDefinition, IGameServerStateObserver>();
+    private readonly Dictionary<GameClientDefinition, MulticastConnectionServerStateObserver> _observers = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConnectServerContainer" /> class.
@@ -40,6 +40,31 @@ public class ConnectServerContainer : ServerContainerBase, IEnumerable<IConnectS
         this._connectServerFactory = connectServerFactory;
     }
 
+    /// <inheritdoc />
+    public async ValueTask InitializeConnectServerAsync(Guid connectServerDefinitionId)
+    {
+        using var persistenceContext = this._persistenceContextProvider.CreateNewConfigurationContext();
+        var definition = await persistenceContext
+            .GetByIdAsync<ConnectServerDefinition>(connectServerDefinitionId)
+            .ConfigureAwait(false);
+
+        var newConnectServer = this.InitializeConnectServer(definition ?? throw new InvalidOperationException($"ConnectServerDefinition with id {connectServerDefinitionId} was not found."));
+        if(this._observers.TryGetValue(definition.Client!, out var observer))
+        {
+            observer.PullRegistrations(newConnectServer);
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask RemoveConnectServerAsync(Guid connectServerDefinitionId)
+    {
+        var connectServer = this._connectServers
+            .FirstOrDefault(server => server.ConfigurationId == connectServerDefinitionId)
+                            ?? throw new InvalidOperationException($"ConnectServer with Definition with id {connectServerDefinitionId} was not found.");
+        await connectServer.StopAsync(default).ConfigureAwait(false);
+        this._servers.Remove(connectServer);
+    }
+
     /// <summary>
     /// Gets the observer.
     /// </summary>
@@ -50,7 +75,6 @@ public class ConnectServerContainer : ServerContainerBase, IEnumerable<IConnectS
         if (!this._observers.TryGetValue(gameClient, out var observer))
         {
             // In this case, most probably the game server gets started before the connection server.
-            // As a workaround, we just create a new multicast observer, on which the connect server will be added later.
             observer = new MulticastConnectionServerStateObserver();
             this._observers[gameClient] = observer;
         }
@@ -83,27 +107,9 @@ public class ConnectServerContainer : ServerContainerBase, IEnumerable<IConnectS
     protected override async Task StartInnerAsync(CancellationToken cancellationToken)
     {
         using var persistenceContext = this._persistenceContextProvider.CreateNewConfigurationContext();
-        foreach (var connectServerDefinition in await persistenceContext.GetAsync<ConnectServerDefinition>().ConfigureAwait(false))
+        foreach (var connectServerDefinition in await persistenceContext.GetAsync<ConnectServerDefinition>(cancellationToken).ConfigureAwait(false))
         {
-            var connectServer = this._connectServerFactory.CreateConnectServer(connectServerDefinition);
-            this._servers.Add(connectServer);
-            this._connectServers.Add(connectServer);
-            var client = connectServerDefinition.Client!;
-            if (this._observers.TryGetValue(client, out var observer))
-            {
-                if (observer is not MulticastConnectionServerStateObserver multicastObserver)
-                {
-                    multicastObserver = new MulticastConnectionServerStateObserver();
-                    multicastObserver.AddObserver(observer);
-                    this._observers[client] = multicastObserver;
-                }
-
-                multicastObserver.AddObserver(connectServer);
-            }
-            else
-            {
-                this._observers[client] = connectServer;
-            }
+            this.InitializeConnectServer(connectServerDefinition);
         }
     }
 
@@ -117,5 +123,23 @@ public class ConnectServerContainer : ServerContainerBase, IEnumerable<IConnectS
         }
 
         this._connectServers.Clear();
+    }
+
+    private IConnectServer InitializeConnectServer(ConnectServerDefinition connectServerDefinition)
+    {
+        var connectServer = this._connectServerFactory.CreateConnectServer(connectServerDefinition);
+        this._servers.Add(connectServer);
+        this._connectServers.Add(connectServer);
+        var client = connectServerDefinition.Client!;
+        if (!this._observers.TryGetValue(client, out var observer))
+        {
+            // we're now always creating a multicast observer, because we want to support
+            // creation of connect servers during runtime.
+            observer = new MulticastConnectionServerStateObserver();
+            this._observers[client] = observer;
+        }
+
+        observer.AddObserver(connectServer);
+        return connectServer;
     }
 }

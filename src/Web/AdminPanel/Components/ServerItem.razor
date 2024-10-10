@@ -50,7 +50,7 @@
         <button type="button" class="btn-warning" title="Stop" @onclick="this.OnPauseClickAsync">
           <span class="oi oi-media-pause"></span>
         </button>
-        @if (this.Server.Type == ServerType.GameServer)
+        @if (this.Server.Type is ServerType.GameServer or ServerType.ConnectServer)
         {
           <button type="button" class="btn-secondary" title="Remove" disabled>
             <span class="oi oi-trash"></span>
@@ -65,9 +65,9 @@
         <button type="button" class="btn-secondary" title="Stop" disabled>
           <span class="oi oi-media-pause"></span>
         </button>
-        @if (this.Server.Type == ServerType.GameServer)
+        @if (this.Server.Type is ServerType.GameServer or ServerType.ConnectServer)
         {
-          <button type="button" class="btn-danger" title="Remove" @onclick="this.OnDeleteClickAsync">
+          <button type="button" class="btn-danger" title="Remove" @onclick="this.OnDeleteServerClickAsync">
             <span class="oi oi-trash"></span>
           </button>
         }
@@ -80,7 +80,7 @@
         <button type="button" class="btn-secondary" title="Stop" disabled>
           <span class="oi oi-media-pause"></span>
         </button>
-        @if (this.Server.Type == ServerType.GameServer)
+        @if (this.Server.Type is ServerType.GameServer or ServerType.ConnectServer)
         {
                   <button type="button" class="btn-secondary" title="Remove" disabled>
             <span class="oi oi-trash"></span>
@@ -106,7 +106,13 @@
     /// Gets or sets the <see cref="IGameServerInstanceManager"/>.
     /// </summary>
     [Inject]
-    public IGameServerInstanceManager InstanceManager { get; set; } = null!;
+    public IGameServerInstanceManager GameServerInstanceManager { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the <see cref="IConnectServerInstanceManager"/>.
+    /// </summary>
+    [Inject]
+    public IConnectServerInstanceManager ConnectServerInstanceManager { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the <see cref="IPersistenceContextProvider"/>.
@@ -178,10 +184,15 @@
       await this.Server.StartAsync(default);
     }
 
-    private async Task OnDeleteClickAsync()
+    private async Task OnDeleteServerClickAsync()
     {
+      if (this.Server.Type is not (ServerType.GameServer or ServerType.ConnectServer))
+      {
+        return;
+      }
+
       var dialogResult = await this.ModalService.ShowQuestionAsync(
-        "Remove Game Server",
+        "Remove Server",
         "The server will be deleted from the database. Are you sure to proceed?");
       if (!dialogResult)
       {
@@ -189,12 +200,26 @@
       }
 
       await this.Server.StopAsync(default);
-      await this.InstanceManager.RemoveGameServerAsync((byte)this.Server.Id);
+      if (this.Server.Type == ServerType.GameServer)
+      {
+        await this.GameServerInstanceManager.RemoveGameServerAsync((byte)this.Server.Id);
+        await this.DeleteAsync<GameServerDefinition>(s => s.ServerID == this.Server.Id);
+      }
+      else
+      {
+        await this.ConnectServerInstanceManager.RemoveConnectServerAsync(this.Server.ConfigurationId);
+        await this.DeleteAsync<ConnectServerDefinition>(s => s.ConfigurationId == this.Server.ConfigurationId);
+      }
+    }
 
+    private async ValueTask DeleteAsync<T>(Predicate<T> predicate)
+      where T : class
+    {
       var gameConfiguration = await this.DataSource.GetOwnerAsync().ConfigureAwait(false);
-      using var context = this.ContextProvider.CreateNewTypedContext<GameServerDefinition>(true, gameConfiguration);
-      var definitions = await context.GetAsync<GameServerDefinition>().ConfigureAwait(false);
-      var definition = definitions.FirstOrDefault(def => def.ServerID == this.Server.Id);
+      using var context = this.ContextProvider.CreateNewTypedContext<T>(true, gameConfiguration);
+      var definitions = await context.GetAsync<T>().ConfigureAwait(false);
+      var definition = definitions.FirstOrDefault(def => predicate(def));
+
       if (definition is not null)
       {
         await context.DeleteAsync(definition).ConfigureAwait(false);

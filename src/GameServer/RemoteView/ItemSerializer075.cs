@@ -33,7 +33,7 @@ public class ItemSerializer075 : IItemSerializer
     public int NeededSpace => 3;
 
     /// <inheritdoc/>
-    public void SerializeItem(Span<byte> target, Item item)
+    public int SerializeItem(Span<byte> target, Item item)
     {
         item.ThrowNotInitializedProperty(item.Definition is null, nameof(item.Definition));
         target[0] = (byte)(item.Definition.Number & 0x0F);
@@ -58,6 +58,8 @@ public class ItemSerializer075 : IItemSerializer
         }
 
         target[2] = item.Durability();
+
+        return this.NeededSpace;
     }
 
     /// <inheritdoc />

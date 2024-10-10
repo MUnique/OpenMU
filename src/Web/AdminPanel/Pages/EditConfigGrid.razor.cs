@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Web.AdminPanel.Pages;
 
+using System.Collections;
 using System.ComponentModel;
 using System.Threading;
 using Microsoft.AspNetCore.Components;
@@ -40,6 +41,12 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
     /// </summary>
     [Inject]
     public NavigationManager NavigationManager { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the persistence context provider which loads and saves the object.
+    /// </summary>
+    [Inject]
+    public IPersistenceContextProvider PersistenceContextProvider { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the type.
@@ -103,9 +110,20 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
             throw new InvalidOperationException($"Only types of namespace {nameof(MUnique)} can be edited on this page.");
         }
 
-        await this.DataSource.GetOwnerAsync(default, cancellationToken).ConfigureAwait(true);
-        cancellationToken.ThrowIfCancellationRequested();
-        var data = this.DataSource.GetAll(this.Type!);
+        IEnumerable data;
+        var gameConfiguration = await this.DataSource.GetOwnerAsync(default, cancellationToken).ConfigureAwait(true);
+        if (this.DataSource.IsSupporting(this.Type))
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            data = this.DataSource.GetAll(this.Type!);
+        }
+        else
+        {
+            var createContextMethod = typeof(IPersistenceContextProvider).GetMethod(nameof(IPersistenceContextProvider.CreateNewTypedContext))!.MakeGenericMethod(this.Type);
+            using var context = (IContext)createContextMethod.Invoke(this.PersistenceContextProvider, new object[] { true, gameConfiguration })!;
+            data = await context.GetAsync(this.Type, cancellationToken);
+        }
+
         this._viewModels = data.OfType<object>()
             .Select(o => new ViewModel(o))
             .OrderBy(o => o.Name)

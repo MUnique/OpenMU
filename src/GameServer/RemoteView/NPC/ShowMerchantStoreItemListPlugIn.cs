@@ -47,16 +47,20 @@ public class ShowMerchantStoreItemListPlugIn : IShowMerchantStoreItemListPlugIn
                 Type = Convert(storeKind),
             };
 
+            int headerSize = StoreItemListRef.GetRequiredSize(0, 0);
+            int actualSize = headerSize;
             int i = 0;
             foreach (var item in storeItems)
             {
-                var storedItem = packet[i, sizePerItem];
+                var storedItem = new StoredItemRef(span[actualSize..]);
                 storedItem.ItemSlot = item.ItemSlot;
-                itemSerializer.SerializeItem(storedItem.ItemData, item);
+                var itemSize = itemSerializer.SerializeItem(storedItem.ItemData, item);
+                actualSize += StoredItemRef.GetRequiredSize(itemSize);
                 i++;
             }
 
-            return size;
+            span.Slice(0, actualSize).SetPacketSize();
+            return actualSize;
         }
 
         await connection.SendAsync(Write).ConfigureAwait(false);

@@ -50,6 +50,17 @@ Defines the type of the condition.
 | 8 | Level | The condition is to reach the specified character level. |
 | 16 | ClientAction | The condition is a client action. For example, this may be the completion of a tutorial. |
 | 32 | RequestBuff | The condition is to request a buff from an NPC. |
+| 64 | EventMapPlayerKills | The condition is to kill a specific amount of players in an event. |
+| 65 | EventMapMonsterKills | The condition is to kill a specific amount of monsters in an event. |
+| 66 | BloodCastleGate | The condition is to destroy the blood castle gate. |
+| 256 | WinBloodCastle | The condition is to win the blood castle event. |
+| 257 | WinChaosCastle | The condition is to win the chaos castle. |
+| 258 | WinDevilSquare | The condition is to win the devil square event. |
+| 259 | WinIllusionTemple | The condition is to win the illusion temple event. |
+| 260 | DevilSquarePoints | The condition is to reach a specific amount of points in the devil square event. |
+| 261 | Money | The condition is to give a specific amount of zen. |
+| 262 | PvpPoints | The condition is to reach a specific amount of PVP points. |
+| 263 | NpcTalk | The condition is to talk to a specific NPC. |
 
 ### QuestReward Structure
 
@@ -75,3 +86,4 @@ Defines the reward which is given when the quest is completed.
 | 2 | Money | The reward is added money to the inventory. |
 | 4 | Item | The reward is an item which is added to the inventory. |
 | 16 | GensContribution | The reward is added gens contribution points. |
+| 32 | Random | The reward is random?. |

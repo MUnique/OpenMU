@@ -51,13 +51,22 @@ public class DataInitialization : DataInitializationBase
     /// <inheritdoc />
     protected override void CreateGameClientDefinition()
     {
-        var clientDefinition = this.Context.CreateNew<GameClientDefinition>();
-        clientDefinition.SetGuid(0x104D);
-        clientDefinition.Season = 6;
-        clientDefinition.Episode = 3;
-        clientDefinition.Language = ClientLanguage.English;
-        clientDefinition.Version = new byte[] { 0x31, 0x30, 0x34, 0x30, 0x34 };
-        clientDefinition.Serial = Encoding.ASCII.GetBytes("k1Pk2jcET48mxL3b");
-        clientDefinition.Description = "Season 6 Episode 3 GMO Client";
+        var season6GmoClient = this.Context.CreateNew<GameClientDefinition>();
+        season6GmoClient.SetGuid(0x104D);
+        season6GmoClient.Season = 6;
+        season6GmoClient.Episode = 3;
+        season6GmoClient.Language = ClientLanguage.English;
+        season6GmoClient.Version = [0x31, 0x30, 0x34, 0x30, 0x34];
+        season6GmoClient.Serial = "k1Pk2jcET48mxL3b"u8.ToArray();
+        season6GmoClient.Description = "Season 6 Episode 3 GMO Client";
+
+        var season6OpenSource = this.Context.CreateNew<GameClientDefinition>();
+        season6OpenSource.SetGuid(0x204D);
+        season6OpenSource.Season = 106;
+        season6OpenSource.Episode = 3;
+        season6OpenSource.Language = ClientLanguage.English;
+        season6OpenSource.Version = [0x32, 0x30, 0x34, 0x30, 0x34];
+        season6OpenSource.Serial = "k1Pk2jcET48mxL3b"u8.ToArray();
+        season6OpenSource.Description = "Season 6 Episode 3 Open Source Client";
     }
 }

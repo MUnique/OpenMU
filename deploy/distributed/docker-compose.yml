@@ -285,6 +285,7 @@ services:
       - "8080"
       - "50001"
       - "55901:55901"
+      - "55902:55902"
       - "9464" # Prometheus
     environment:
       GS_ID: 0
@@ -322,7 +323,8 @@ services:
     ports:
       - "8080"
       - "50001"
-      - "55902:55902"
+      - "55903:55903"
+      - "55904:55904"
       - "9464" # Prometheus
     environment:
       GS_ID: 1
