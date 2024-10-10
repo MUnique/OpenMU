@@ -21,7 +21,7 @@ public class LifeJewelConsumeHandlerPlugIn : ItemUpgradeConsumeHandlerPlugIn
     /// Initializes a new instance of the <see cref="LifeJewelConsumeHandlerPlugIn" /> class.
     /// </summary>
     public LifeJewelConsumeHandlerPlugIn()
-        : base(new ItemUpgradeConfiguration(ItemOptionTypes.Option, true, true, 0.5, ItemFailResult.DecreaseOptionByOneOrRemove))
+        : base(new ItemUpgradeConfiguration(ItemOptionTypes.Option, true, true, 0.5, ItemFailResult.RemoveOption))
     {
     }
 

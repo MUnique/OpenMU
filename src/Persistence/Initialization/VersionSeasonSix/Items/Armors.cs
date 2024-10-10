@@ -55,10 +55,10 @@ public class Armors : ArmorInitializerBase
         this.CreateShield(14, 1, 0, 2, 3, "Legendary Shield", 48, 7, 48, 50, 0, 90, 25, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0);
         this.CreateShield(15, 1, 0, 2, 3, "Grand Soul Shield", 74, 12, 55, 55, 0, 70, 23, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0);
         this.CreateShield(16, 1, 0, 2, 2, "Elemental Shield", 66, 11, 28, 51, 0, 30, 60, 30, 0, 0, 0, 0, 2, 0, 0, 0, 0);
-        this.CreateShield(17, 1, 18, 2, 2, "CrimsonGlory", 104, 19, 90, 51, 0, 95, 48, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0);
+        this.CreateShield(17, 1, 18, 2, 2, "Crimson Glory", 104, 19, 90, 51, 0, 95, 48, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0);
         this.CreateShield(18, 1, 18, 2, 2, "Salamander Shield", 102, 20, 96, 51, 0, 80, 61, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0);
         this.CreateShield(19, 1, 0, 2, 2, "Frost Barrier", 99, 14, 58, 51, 0, 26, 53, 26, 0, 0, 0, 0, 2, 0, 0, 0, 0);
-        this.CreateShield(20, 1, 18, 2, 2, "Guardian Shiled", 106, 12, 30, 51, 0, 54, 18, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0);
+        this.CreateShield(20, 1, 0, 2, 2, "Guardian Shield", 106, 12, 30, 51, 0, 54, 18, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0);
         this.CreateShield(21, 1, 18, 2, 2, "Cross Shield", 70, 16, 75, 65, 0, 140, 55, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0);
 
         // Helmets:
