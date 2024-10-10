@@ -18,7 +18,9 @@
 This project aims to create an easy to use, extendable and customizable server
 for a MMORPG called "MU Online".
 The server supports multiple versions of the game, but the main focus is
-version of Season 6 Episode 3 using the ENG (english) protocol.
+version of Season 6 Episode 3 using the ENG (english) protocol. Additionally,
+the long-term focus is on the [open source client](https://github.com/sven-n/MuMain)
+which supports a slightly extended network protocol.
 However, parts of the software can also be suitable for the development of
 other games, even for other kind of games.
 

@@ -24,6 +24,11 @@ public class AppearanceData : IAppearanceData
     /// </summary>
     public virtual CharacterClass? CharacterClass { get; set; }
 
+    /// <summary>
+    /// Gets the character status.
+    /// </summary>
+    public CharacterStatus CharacterStatus { get; set; }
+
     /// <inheritdoc />
     public CharacterPose Pose { get; set; }
 

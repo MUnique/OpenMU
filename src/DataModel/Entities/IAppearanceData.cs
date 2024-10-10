@@ -22,6 +22,11 @@ public interface IAppearanceData
     CharacterClass? CharacterClass { get; }
 
     /// <summary>
+    /// Gets the character status.
+    /// </summary>
+    CharacterStatus CharacterStatus { get; }
+
+    /// <summary>
     /// Gets the current pose.
     /// </summary>
     CharacterPose Pose { get; }

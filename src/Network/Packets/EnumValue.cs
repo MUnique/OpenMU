@@ -27,5 +27,5 @@ public class EnumValue
     /// <summary>
     /// Gets or sets the numerical value of this enum value.
     /// </summary>
-    public byte Value { get; set; }
+    public int Value { get; set; }
 }

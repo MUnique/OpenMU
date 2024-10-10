@@ -637,6 +637,40 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="ItemMoveRequestExtended" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="fromStorage">The from storage.</param>
+    /// <param name="fromSlot">The from slot.</param>
+    /// <param name="toStorage">The to storage.</param>
+    /// <param name="toSlot">The to slot.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player requests to move an item within or between his available item storage, such as inventory, vault, trade or chaos machine.
+    /// Causes reaction on server side: 
+    /// </remarks>
+    public static async ValueTask SendItemMoveRequestExtendedAsync(this IConnection? connection, ItemStorageKind @fromStorage, byte @fromSlot, ItemStorageKind @toStorage, byte @toSlot)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ItemMoveRequestExtendedRef.Length;
+            var packet = new ItemMoveRequestExtendedRef(connection.Output.GetSpan(length)[..length]);
+            packet.FromStorage = @fromStorage;
+            packet.FromSlot = @fromSlot;
+            packet.ToStorage = @toStorage;
+            packet.ToSlot = @toSlot;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="ConsumeItemRequest" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>

@@ -42,6 +42,39 @@
       </Fields>
     </Structure>
     <Structure>
+      <Name>PlayerShopItemExtended</Name>
+      <Description>Data of an item in a player shop, which allows for dynamic item sizes and trades for specific kind of items (e.g. jewels), too.</Description>
+      <Fields>
+        <Field>
+          <Index>0</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>MoneyPrice</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>PriceItemType</Name>
+          <Description>Contains the item group in the highest 4 bits, and the item number in the remaining ones.</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>RequiredItemAmount</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Byte</Type>
+          <Name>ItemSlot</Name>
+        </Field>
+        <Field>
+          <Index>9</Index>
+          <Type>Binary</Type>
+          <Name>ItemData</Name>
+          <!-- Dynamic length, therefore it's placed at the end.-->
+        </Field>
+      </Fields>
+    </Structure>
+    <Structure>
       <Name>QuestIdentification</Name>
       <Description>Defines the information which identifies a quest.</Description>
       <Length>4</Length>
@@ -122,6 +155,73 @@
           <Name>RewardedItemData</Name>
           <Description>If the reward type is 'Item', this field contains its item data.</Description>
           <Length>12</Length>
+        </Field>
+      </Fields>
+    </Structure>
+    <Structure>
+      <Name>QuestConditionExtended</Name>
+      <Description>Defines a condition which must be fulfilled to complete the quest.</Description>
+      <Length>28</Length>
+      <Fields>
+        <Field>
+          <Index>0</Index>
+          <Type>Enum</Type>
+          <TypeName>ConditionType</TypeName>
+          <Name>Type</Name>
+        </Field>
+        <Field>
+          <Index>2</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>RequirementId</Name>
+          <Description>Depending on the condition type, this field contains the identifier of the required thing, e.g. Monster Number, Item Id, Level.</Description>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>RequiredCount</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>CurrentCount</Name>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>Binary</Type>
+          <Name>RequiredItemData</Name>
+          <Description>If the condition type is 'Item', this field contains the item data, excluding the item id. The item id can be found in the RequirementId field.</Description>
+          <Length>15</Length>
+        </Field>
+      </Fields>
+    </Structure>
+    <Structure>
+      <Name>QuestRewardExtended</Name>
+      <Description>Defines a reward which is given when the quest is completed.</Description>
+      <Length>24</Length>
+      <Fields>
+        <Field>
+          <Index>0</Index>
+          <Type>Enum</Type>
+          <TypeName>RewardType</TypeName>
+          <Name>Type</Name>
+        </Field>
+        <Field>
+          <Index>2</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>RewardId</Name>
+          <Description>Depending on the condition type, this field contains the identifier of the required thing, e.g. Monster Number, Item Id, Level.</Description>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>RewardCount</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Binary</Type>
+          <Name>RewardedItemData</Name>
+          <Description>If the reward type is 'Item', this field contains its item data.</Description>
+          <Length>15</Length>
         </Field>
       </Fields>
     </Structure>
@@ -212,6 +312,77 @@
           <Name>Variation</Name>
           <Description>A random value between 0 and 9 (inclusive).</Description>
           <Length>4</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C2Header</HeaderType>
+      <Code>12</Code>
+      <Name>AddCharacterToScopeExtended</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>One or more character got into the observed scope of the player.</SentWhen>
+      <CausedReaction>The client adds the character to the shown map.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Id</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>CurrentPositionX</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>CurrentPositionY</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Byte</Type>
+          <Name>TargetPositionX</Name>
+        </Field>
+        <Field>
+          <Index>9</Index>
+          <Type>Byte</Type>
+          <Name>TargetPositionY</Name>
+        </Field>
+        <Field>
+          <Index>10</Index>
+          <LeftShifted>4</LeftShifted>
+          <Type>Byte</Type>
+          <Name>Rotation</Name>
+          <Length>4</Length>
+        </Field>
+        <Field>
+          <Index>10</Index>
+          <LeftShifted>0</LeftShifted>
+          <Type>Enum</Type>
+          <TypeName>CharacterHeroState</TypeName>
+          <Name>HeroState</Name>
+          <Length>4</Length>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>AttackSpeed</Name>
+        </Field>
+        <Field>
+          <Index>14</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MagicSpeed</Name>
+        </Field>
+        <Field>
+          <Index>16</Index>
+          <Type>String</Type>
+          <Name>Name</Name>
+          <Length>10</Length>
+        </Field>
+        <Field>
+          <Index>26</Index>
+          <Type>Binary</Type>
+          <Name>AppearanceAndEffects</Name>
         </Field>
       </Fields>
     </Packet>
@@ -1508,6 +1679,57 @@
     </Packet>
     <Packet>
       <HeaderType>C1Header</HeaderType>
+      <Code>25</Code>
+      <Name>AppearanceChangedExtended</Name>
+      <Length>14</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The appearance of a player changed, all surrounding players are informed about it.</SentWhen>
+      <CausedReaction>The appearance of the player is updated.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>ChangedPlayerId</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>ItemSlot</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>ItemGroup</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>ItemNumber</Name>
+        </Field>
+        <Field>
+          <Index>10</Index>
+          <Type>Byte</Type>
+          <Name>ItemLevel</Name>
+        </Field>
+        <Field>
+          <Index>11</Index>
+          <Type>Byte</Type>
+          <Name>ExcellentFlags</Name>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>Byte</Type>
+          <Name>AncientDiscriminator</Name>
+        </Field>
+        <Field>
+          <Index>13</Index>
+          <Type>Boolean</Type>
+          <Name>IsAncientSetComplete</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
       <Code>01</Code>
       <Name>ObjectMessage</Name>
       <Direction>ServerToClient</Direction>
@@ -2164,54 +2386,65 @@
           <Name>ShieldDamage</Name>
         </Field>
       </Fields>
-      <Enums>
-        <Enum>
-          <Name>DamageKind</Name>
-          <Description>Defines the kind of the damage.</Description>
-          <Values>
-            <EnumValue>
-              <Name>NormalRed</Name>
-              <Description>Red color, used by normal damage.</Description>
-              <Value>0</Value>
-            </EnumValue>
-            <EnumValue>
-              <Name>IgnoreDefenseCyan</Name>
-              <Description>Cyan color, usually used by ignore defense damage.</Description>
-              <Value>1</Value>
-            </EnumValue>
-            <EnumValue>
-              <Name>ExcellentLightGreen</Name>
-              <Description>Light green color, usually used by excellent damage.</Description>
-              <Value>2</Value>
-            </EnumValue>
-            <EnumValue>
-              <Name>CriticalBlue</Name>
-              <Description>Blue color, usually used by critical damage.</Description>
-              <Value>3</Value>
-            </EnumValue>
-            <EnumValue>
-              <Name>LightPink</Name>
-              <Description>Light pink color.</Description>
-              <Value>4</Value>
-            </EnumValue>
-            <EnumValue>
-              <Name>PoisonDarkGreen</Name>
-              <Description>Dark green color, usually used by poison damage.</Description>
-              <Value>5</Value>
-            </EnumValue>
-            <EnumValue>
-              <Name>ReflectedDarkPink</Name>
-              <Description>Dark pink color, usually used by reflected damage.</Description>
-              <Value>6</Value>
-            </EnumValue>
-            <EnumValue>
-              <Name>White</Name>
-              <Description>White color.</Description>
-              <Value>7</Value>
-            </EnumValue>
-          </Values>
-        </Enum>
-      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>11</Code>
+      <Name>ObjectHitExtended</Name>
+      <Length>16</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>An object got hit in two cases: 1. When the own player is hit; 2. When the own player attacked some other object which got hit.</SentWhen>
+      <CausedReaction>The damage is shown at the object which received the hit.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <LeftShifted>0</LeftShifted>
+          <Type>Enum</Type>
+          <TypeName>DamageKind</TypeName>
+          <Name>Kind</Name>
+          <Length>4</Length>
+        </Field>
+        <Field>
+          <Index>3</Index>
+          <LeftShifted>6</LeftShifted>
+          <Type>Boolean</Type>
+          <Name>IsDoubleDamage</Name>
+        </Field>
+        <Field>
+          <Index>3</Index>
+          <LeftShifted>7</LeftShifted>
+          <Type>Boolean</Type>
+          <Name>IsTripleDamage</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>ObjectId</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>HealthStatus</Name>
+          <Description>Gets or sets the status of the remaining health in fractions of 1/250.</Description>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>ShieldStatus</Name>
+          <Description>Gets or sets the status of the remaining shield in fractions of 1/250.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>HealthDamage</Name>
+        </Field>
+
+        <Field>
+          <Index>12</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>ShieldDamage</Name>
+        </Field>
+      </Fields>
     </Packet>
     <Packet>
       <HeaderType>C1Header</HeaderType>
@@ -2351,6 +2584,81 @@
           <Name>DamageOfLastHit</Name>
         </Field>
       </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3Header</HeaderType>
+      <Code>16</Code>
+      <Name>ExperienceGainedExtended</Name>
+      <Length>16</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>A player gained experience.</SentWhen>
+      <CausedReaction>The experience is added to the experience counter and bar.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Enum</Type>
+          <TypeName>AddResult</TypeName>
+          <Name>Type</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>AddedExperience</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>DamageOfLastHit</Name>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>KilledObjectId</Name>
+        </Field>
+        <Field>
+          <Index>14</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>KillerObjectId</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>AddResult</Name>
+          <Description>Defines the result and type of experience which is added.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Undefined</Name>
+              <Description>Undefined, no experience is added.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Normal</Name>
+              <Description>The normal experience is added.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Master</Name>
+              <Description>The master experience is added.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>MaxLevelReached</Name>
+              <Description>The maximum level has been reached, no experience is added.</Description>
+              <Value>16</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>MaxMasterLevelReached</Name>
+              <Description>The maximum master level has been reached, no master experience is added.</Description>
+              <Value>32</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>MonsterLevelTooLowForMasterExperience</Name>
+              <Description>The monster level is too low for master experience, no master experience is added.</Description>
+              <Value>33</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
     </Packet>
     <Packet>
       <HeaderType>C3HeaderWithSubCode</HeaderType>
@@ -2558,6 +2866,43 @@
           <Type>Byte</Type>
           <Name>MoneyGroup</Name>
           <DefaultValue>14</DefaultValue>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C2Header</HeaderType>
+      <Code>2F</Code>
+      <Name>MoneyDroppedExtended</Name>
+      <Length>12</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>Money dropped on the ground.</SentWhen>
+      <CausedReaction>The client adds the money to the ground.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Boolean</Type>
+          <Name>IsFreshDrop</Name>
+          <Description>If this flag is set, the money is added to the map with an animation and sound. Otherwise, it's just added like it was already on the ground before.</Description>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Id</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>PositionX</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>PositionY</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Amount</Name>
         </Field>
       </Fields>
     </Packet>
@@ -2823,6 +3168,28 @@
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>26</Code>
+      <SubCode>FF</SubCode>
+      <Name>CurrentHealthAndShieldExtended</Name>
+      <Length>12</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>Periodically, or if the current health or shield changed on the server side, e.g. by hits.</SentWhen>
+      <CausedReaction>The health and shield bar is updated on the game client user interface.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Health</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Shield</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>26</Code>
       <SubCode>FE</SubCode>
       <Name>MaximumHealthAndShield</Name>
       <Length>9</Length>
@@ -2845,6 +3212,28 @@
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>26</Code>
+      <SubCode>FE</SubCode>
+      <Name>MaximumHealthAndShieldExtended</Name>
+      <Length>12</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>When the maximum health changed, e.g. by adding stat points or changed items.</SentWhen>
+      <CausedReaction>The health and shield bar is updated on the game client user interface.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Health</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Shield</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>26</Code>
       <SubCode>FD</SubCode>
       <Name>ItemConsumptionFailed</Name>
       <Length>9</Length>
@@ -2860,6 +3249,28 @@
         <Field>
           <Index>7</Index>
           <Type>ShortBigEndian</Type>
+          <Name>Shield</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>26</Code>
+      <SubCode>FD</SubCode>
+      <Name>ItemConsumptionFailedExtended</Name>
+      <Length>12</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>When the consumption of an item failed.</SentWhen>
+      <CausedReaction>The game client gets a feedback about a failed consumption, and allows for do further consumption requests.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Health</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
           <Name>Shield</Name>
         </Field>
       </Fields>
@@ -2889,6 +3300,28 @@
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>27</Code>
+      <SubCode>FF</SubCode>
+      <Name>CurrentManaAndAbilityExtended</Name>
+      <Length>12</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The currently available mana or ability has changed, e.g. by using a skill.</SentWhen>
+      <CausedReaction>The mana and ability bar is updated on the game client user interface.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Mana</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Ability</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>27</Code>
       <SubCode>FE</SubCode>
       <Name>MaximumManaAndAbility</Name>
       <Length>8</Length>
@@ -2904,6 +3337,28 @@
         <Field>
           <Index>6</Index>
           <Type>ShortBigEndian</Type>
+          <Name>Ability</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>27</Code>
+      <SubCode>FE</SubCode>
+      <Name>MaximumManaAndAbilityExtended</Name>
+      <Length>12</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The maximum available mana or ability has changed, e.g. by adding stat points.</SentWhen>
+      <CausedReaction>The mana and ability bar is updated on the game client user interface.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Mana</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
           <Name>Ability</Name>
         </Field>
       </Fields>
@@ -3743,6 +4198,258 @@
       </Enums>
     </Packet>
     <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>3F</Code>
+      <SubCode>06</SubCode>
+      <Length>21</Length>
+      <Name>PlayerShopBuyResult</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the player requested to buy an item of a shop of another player.</SentWhen>
+      <CausedReaction>The result is shown to the player. If successful, the item is added to the inventory.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>ResultKind</TypeName>
+          <Name>Result</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>SellerId</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Binary</Type>
+          <Name>ItemData</Name>
+          <Length>13</Length>
+        </Field>
+        <Field>
+          <Index>20</Index>
+          <Type>Byte</Type>
+          <Name>ItemSlot</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>ResultKind</Name>
+          <Description>The kind of result.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Undefined</Name>
+              <Description>Undefined result.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Success</Name>
+              <Description>The item has been bought successfully.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>NotAvailable</Name>
+              <Description>The seller is not available.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>ShopNotOpened</Name>
+              <Description>The requested player has no open shop.</Description>
+              <Value>3</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>InTransaction</Name>
+              <Description>The requested player is already in a transaction with another player.</Description>
+              <Value>4</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>InvalidShopSlot</Name>
+              <Description>The requested item slot is invalid.</Description>
+              <Value>5</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>NameMismatchOrPriceMissing</Name>
+              <Description>The requested player with the specified id has a different name or price is missing.</Description>
+              <Value>6</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>LackOfMoney</Name>
+              <Description>The player has not enough money to buy the item from the seller.</Description>
+              <Value>7</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>MoneyOverflowOrNotEnoughSpace</Name>
+              <Description>The selling player cannot sell the item, because the sale would overflow his money amount in the inventory. Another possibility is that the inventory of the buyer cannot take the item.</Description>
+              <Value>8</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>ItemBlock</Name>
+              <Description>The requested player has item block active.</Description>
+              <Value>9</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>3F</Code>
+      <SubCode>06</SubCode>
+      <Name>PlayerShopBuyResultExtended</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the player requested to buy an item of a shop of another player.</SentWhen>
+      <CausedReaction>The result is shown to the player. If successful, the item is added to the inventory.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>SellerId</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Enum</Type>
+          <TypeName>ResultKind</TypeName>
+          <Name>Result</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Byte</Type>
+          <Name>ItemSlot</Name>
+        </Field>
+        <Field>
+          <Index>9</Index>
+          <Type>Binary</Type>
+          <Name>ItemData</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>ResultKind</Name>
+          <Description>The kind of result.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Undefined</Name>
+              <Description>Undefined result.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Success</Name>
+              <Description>The item has been bought successfully.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>NotAvailable</Name>
+              <Description>The seller is not available.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>ShopNotOpened</Name>
+              <Description>The requested player has no open shop.</Description>
+              <Value>3</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>InTransaction</Name>
+              <Description>The requested player is already in a transaction with another player.</Description>
+              <Value>4</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>InvalidShopSlot</Name>
+              <Description>The requested item slot is invalid.</Description>
+              <Value>5</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>NameMismatchOrPriceMissing</Name>
+              <Description>The requested player with the specified id has a different name or price is missing.</Description>
+              <Value>6</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>LackOfMoney</Name>
+              <Description>The player has not enough money to buy the item from the seller.</Description>
+              <Value>7</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>MoneyOverflowOrNotEnoughSpace</Name>
+              <Description>The selling player cannot sell the item, because the sale would overflow his money amount in the inventory. Another possibility is that the inventory of the buyer cannot take the item.</Description>
+              <Value>8</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>ItemBlock</Name>
+              <Description>The requested player has item block active.</Description>
+              <Value>9</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C2HeaderWithSubCode</HeaderType>
+      <Code>3F</Code>
+      <SubCode>05</SubCode>
+      <Name>PlayerShopItemListExtended</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the player requested to open a shop of another player.</SentWhen>
+      <CausedReaction>The player shop dialog is shown with the provided item data.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>ActionKind</TypeName>
+          <Name>Action</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Boolean</Type>
+          <Name>Success</Name>
+          <DefaultValue>true</DefaultValue>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>PlayerId</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>String</Type>
+          <Name>PlayerName</Name>
+          <Length>10</Length>
+        </Field>
+        <Field>
+          <Index>18</Index>
+          <Type>String</Type>
+          <Name>ShopName</Name>
+          <Length>36</Length>
+        </Field>
+        <Field>
+          <Index>54</Index>
+          <Type>Byte</Type>
+          <Name>ItemCount</Name>
+        </Field>
+        <Field>
+          <Index>55</Index>
+          <Type>Structure[]</Type>
+          <TypeName>PlayerShopItemExtended</TypeName>
+          <Name>Items</Name>
+          <ItemCountField>ItemCount</ItemCountField>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>ActionKind</Name>
+          <Description>The kind of action which led to the list message.</Description>
+          <Values>
+            <EnumValue>
+              <Name>ByRequest</Name>
+              <Description>The list was requested.</Description>
+              <Value>5</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>UpdateAfterItemChange</Name>
+              <Description>The list was changed, e.g. because an item was sold.</Description>
+              <Value>19</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
       <HeaderType>C2HeaderWithSubCode</HeaderType>
       <Code>3F</Code>
       <SubCode>00</SubCode>
@@ -4233,6 +4940,96 @@
             </Field>
             <Field>
               <Index>33</Index>
+              <Type>Enum</Type>
+              <TypeName>GuildMemberRole</TypeName>
+              <Name>GuildPosition</Name>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
+      <SubCode>00</SubCode>
+      <Name>CharacterListExtended</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the game client requested it, usually after a successful login.</SentWhen>
+      <CausedReaction>The game client shows the available characters of the account.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>CharacterCreationUnlockFlags</TypeName>
+          <Name>UnlockFlags</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>MoveCnt</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>CharacterCount</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Boolean</Type>
+          <Name>IsVaultExtended</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Structure[]</Type>
+          <TypeName>CharacterData</TypeName>
+          <Name>Characters</Name>
+          <ItemCountField>CharacterCount</ItemCountField>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>CharacterData</Name>
+          <Description>Data of one character in the list.</Description>
+          <Length>44</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>Byte</Type>
+              <Name>SlotIndex</Name>
+            </Field>
+            <Field>
+              <Index>1</Index>
+              <Type>String</Type>
+              <Name>Name</Name>
+              <Length>10</Length>
+            </Field>
+            <Field>
+              <Index>12</Index>
+              <Type>ShortLittleEndian</Type>
+              <Name>Level</Name>
+            </Field>
+            <Field>
+              <Index>14</Index>
+              <Type>Enum</Type>
+              <TypeName>CharacterStatus</TypeName>
+              <Name>Status</Name>
+              <Length>4</Length>
+            </Field>
+            <Field>
+              <Index>14</Index>
+              <LeftShifted>4</LeftShifted>
+              <Type>Boolean</Type>
+              <Name>IsItemBlockActive</Name>
+              <Length>4</Length>
+            </Field>
+            <Field>
+              <Index>15</Index>
+              <Type>Binary</Type>
+              <Name>Appearance</Name>
+              <Length>27</Length>
+            </Field>
+            <Field>
+              <Index>42</Index>
               <Type>Enum</Type>
               <TypeName>GuildMemberRole</TypeName>
               <Name>GuildPosition</Name>
@@ -4936,6 +5733,49 @@
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>F3</Code>
+      <SubCode>06</SubCode>
+      <Name>CharacterStatIncreaseResponseExtended</Name>
+      <Length>24</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the server processed a character stat increase request packet.</SentWhen>
+      <CausedReaction>If it was successful, adds a point to the requested stat type.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>CharacterStatAttribute</TypeName>
+          <Name>Attribute</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>AddedAmount</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>UpdatedMaximumHealth</Name>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>UpdatedMaximumMana</Name>
+        </Field>
+        <Field>
+          <Index>16</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>UpdatedMaximumShield</Name>
+        </Field>
+        <Field>
+          <Index>20</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>UpdatedMaximumAbility</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
       <SubCode>02</SubCode>
       <Name>CharacterDeleteResponse</Name>
       <Length>5</Length>
@@ -5180,6 +6020,232 @@
         </Field>
         <Field>
           <Index>68</Index>
+          <Type>Byte</Type>
+          <Name>InventoryExtensions</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
+      <SubCode>05</SubCode>
+      <Name>CharacterLevelUpdateExtended</Name>
+      <Length>32</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a character leveled up.</SentWhen>
+      <CausedReaction>Updates the level (and other related stats) in the game client and shows an effect.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Level</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>LevelUpPoints</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>MaximumHealth</Name>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>MaximumMana</Name>
+        </Field>
+        <Field>
+          <Index>16</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>MaximumShield</Name>
+        </Field>
+        <Field>
+          <Index>20</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>MaximumAbility</Name>
+        </Field>
+        <Field>
+          <Index>24</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>FruitPoints</Name>
+        </Field>
+        <Field>
+          <Index>26</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MaximumFruitPoints</Name>
+        </Field>
+        <Field>
+          <Index>28</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>NegativeFruitPoints</Name>
+        </Field>
+        <Field>
+          <Index>30</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MaximumNegativeFruitPoints</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
+      <SubCode>03</SubCode>
+      <Name>CharacterInformationExtended</Name>
+      <Length>96</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the character was selected by the player and entered the game.</SentWhen>
+      <CausedReaction>The characters enters the game world.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>X</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Y</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MapId</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>LongBigEndian</Type>
+          <Name>CurrentExperience</Name>
+        </Field>
+        <Field>
+          <Index>16</Index>
+          <Type>LongBigEndian</Type>
+          <Name>ExperienceForNextLevel</Name>
+        </Field>
+        <Field>
+          <Index>24</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>LevelUpPoints</Name>
+        </Field>
+        <Field>
+          <Index>26</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Strength</Name>
+        </Field>
+        <Field>
+          <Index>28</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Agility</Name>
+        </Field>
+        <Field>
+          <Index>30</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Vitality</Name>
+        </Field>
+        <Field>
+          <Index>32</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Energy</Name>
+        </Field>
+        <Field>
+          <Index>34</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Leadership</Name>
+        </Field>
+        <Field>
+          <Index>36</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>CurrentHealth</Name>
+        </Field>
+        <Field>
+          <Index>40</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>MaximumHealth</Name>
+        </Field>
+        <Field>
+          <Index>44</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>CurrentMana</Name>
+        </Field>
+        <Field>
+          <Index>48</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>MaximumMana</Name>
+        </Field>
+        <Field>
+          <Index>52</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>CurrentShield</Name>
+        </Field>
+        <Field>
+          <Index>56</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>MaximumShield</Name>
+        </Field>
+        <Field>
+          <Index>60</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>CurrentAbility</Name>
+        </Field>
+        <Field>
+          <Index>64</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>MaximumAbility</Name>
+        </Field>
+        <Field>
+          <Index>68</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Money</Name>
+        </Field>
+        <Field>
+          <Index>72</Index>
+          <Type>Enum</Type>
+          <TypeName>CharacterHeroState</TypeName>
+          <Name>HeroState</Name>
+        </Field>
+        <Field>
+          <Index>73</Index>
+          <Type>Enum</Type>
+          <TypeName>CharacterStatus</TypeName>
+          <Name>Status</Name>
+        </Field>
+        <Field>
+          <Index>74</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>UsedFruitPoints</Name>
+        </Field>
+        <Field>
+          <Index>76</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MaxFruitPoints</Name>
+        </Field>
+        <Field>
+          <Index>78</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>UsedNegativeFruitPoints</Name>
+        </Field>
+        <Field>
+          <Index>80</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MaxNegativeFruitPoints</Name>
+        </Field>
+        <Field>
+          <Index>82</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>AttackSpeed</Name>
+        </Field>
+        <Field>
+          <Index>84</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MagicSpeed</Name>
+        </Field>
+        <Field>
+          <Index>86</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MaximumAttackSpeed</Name>
+        </Field>
+        <Field>
+          <Index>88</Index>
           <Type>Byte</Type>
           <Name>InventoryExtensions</Name>
         </Field>
@@ -5714,6 +6780,58 @@
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>F3</Code>
+      <SubCode>50</SubCode>
+      <Name>MasterStatsUpdateExtended</Name>
+      <Length>40</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After entering the game with a master class character.</SentWhen>
+      <CausedReaction>The master related data is available.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MasterLevel</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>LongBigEndian</Type>
+          <Name>MasterExperience</Name>
+        </Field>
+        <Field>
+          <Index>14</Index>
+          <Type>LongBigEndian</Type>
+          <Name>MasterExperienceOfNextLevel</Name>
+        </Field>
+        <Field>
+          <Index>22</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MasterLevelUpPoints</Name>
+        </Field>
+        <Field>
+          <Index>24</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>MaximumHealth</Name>
+        </Field>
+        <Field>
+          <Index>28</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>MaximumMana</Name>
+        </Field>
+        <Field>
+          <Index>32</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>MaximumShield</Name>
+        </Field>
+        <Field>
+          <Index>36</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>MaximumAbility</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
       <SubCode>51</SubCode>
       <Name>MasterCharacterLevelUpdate</Name>
       <Length>20</Length>
@@ -5759,6 +6877,58 @@
         <Field>
           <Index>18</Index>
           <Type>ShortLittleEndian</Type>
+          <Name>MaximumAbility</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
+      <SubCode>51</SubCode>
+      <Name>MasterCharacterLevelUpdateExtended</Name>
+      <Length>28</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a master character leveled up.</SentWhen>
+      <CausedReaction>Updates the master level (and other related stats) in the game client and shows an effect.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MasterLevel</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>GainedMasterPoints</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>CurrentMasterPoints</Name>
+        </Field>
+        <Field>
+          <Index>10</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MaximumMasterPoints</Name>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>MaximumHealth</Name>
+        </Field>
+        <Field>
+          <Index>16</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>MaximumMana</Name>
+        </Field>
+        <Field>
+          <Index>20</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>MaximumShield</Name>
+        </Field>
+        <Field>
+          <Index>24</Index>
+          <Type>IntegerLittleEndian</Type>
           <Name>MaximumAbility</Name>
         </Field>
       </Fields>
@@ -8587,6 +9757,59 @@
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>F6</Code>
+      <SubCode>0C</SubCode>
+      <Name>QuestProgressExtended</Name>
+      <Length>272</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>First, after the game client requested to initialize a quest and the quest is already active. Second, after the game client requested the next quest step.</SentWhen>
+      <CausedReaction>The client shows the quest progress accordingly.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>ConditionCount</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>RewardCount</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>RandomRewardCount</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>QuestNumber</Name>
+        </Field>
+        <Field>
+          <Index>10</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>QuestGroup</Name>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>Structure[]</Type>
+          <TypeName>QuestConditionExtended</TypeName>
+          <!-- Each 28 bytes -->
+          <Name>Conditions</Name>
+          <ItemCountField>ConditionCount</ItemCountField>
+        </Field>
+        <Field>
+          <Index>152</Index>
+          <Type>Structure[]</Type>
+          <TypeName>QuestRewardExtended</TypeName>
+          <!-- Each 24 bytes -->
+          <Name>Rewards</Name>
+          <ItemCountField>RewardCount</ItemCountField>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F6</Code>
       <SubCode>0D</SubCode>
       <Name>QuestCompletionResponse</Name>
       <Length>9</Length>
@@ -8703,6 +9926,57 @@
           <Index>141</Index>
           <Type>Structure[]</Type>
           <TypeName>QuestReward</TypeName>
+          <Name>Rewards</Name>
+          <ItemCountField>RewardCount</ItemCountField>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C2HeaderWithSubCode</HeaderType>
+      <Code>F6</Code>
+      <SubCode>1B</SubCode>
+      <Name>QuestStateExtended</Name>
+      <Length>272</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the game client requested it, when the player opened the quest menu and clicked on a quest.</SentWhen>
+      <CausedReaction>The client shows the quest progress accordingly.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>ConditionCount</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>RewardCount</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>RandomRewardCount</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>QuestNumber</Name>
+        </Field>
+        <Field>
+          <Index>10</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>QuestGroup</Name>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>Structure[]</Type>
+          <TypeName>QuestConditionExtended</TypeName>
+          <Name>Conditions</Name>
+          <ItemCountField>ConditionCount</ItemCountField>
+        </Field>
+        <Field>
+          <Index>152</Index>
+          <Type>Structure[]</Type>
+          <TypeName>QuestRewardExtended</TypeName>
           <Name>Rewards</Name>
           <ItemCountField>RewardCount</ItemCountField>
         </Field>
@@ -9358,6 +10632,157 @@
           <Description>The condition is to request a buff from an NPC.</Description>
           <Value>32</Value>
         </EnumValue>
+        <EnumValue>
+          <Name>EventMapPlayerKills</Name>
+          <Description>The condition is to kill a specific amount of players in an event.</Description>
+          <Value>64</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>EventMapMonsterKills</Name>
+          <Description>The condition is to kill a specific amount of monsters in an event.</Description>
+          <Value>65</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>BloodCastleGate</Name>
+          <Description>The condition is to destroy the blood castle gate.</Description>
+          <Value>66</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>WinBloodCastle</Name>
+          <Description>The condition is to win the blood castle event.</Description>
+          <Value>256</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>WinChaosCastle</Name>
+          <Description>The condition is to win the chaos castle.</Description>
+          <Value>257</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>WinDevilSquare</Name>
+          <Description>The condition is to win the devil square event.</Description>
+          <Value>258</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>WinIllusionTemple</Name>
+          <Description>The condition is to win the illusion temple event.</Description>
+          <Value>259</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>DevilSquarePoints</Name>
+          <Description>The condition is to reach a specific amount of points in the devil square event.</Description>
+          <Value>260</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Money</Name>
+          <Description>The condition is to give a specific amount of zen.</Description>
+          <Value>261</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>PvpPoints</Name>
+          <Description>The condition is to reach a specific amount of PVP points.</Description>
+          <Value>262</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>NpcTalk</Name>
+          <Description>The condition is to talk to a specific NPC.</Description>
+          <Value>263</Value>
+        </EnumValue>
+      </Values>
+    </Enum>
+    <Enum>
+      <Name>ConditionTypeExtended</Name>
+      <Description>Defines the type of the condition.</Description>
+      <Values>
+        <EnumValue>
+          <Name>None</Name>
+          <Description>No condition is defined.</Description>
+          <Value>0</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>MonsterKills</Name>
+          <Description>The condition is to kill a specified amount of specified monsters.</Description>
+          <Value>1</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Skill</Name>
+          <Description>The condition is to learn a specified skill.</Description>
+          <Value>2</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Item</Name>
+          <Description>The condition is to find a specified item and to have it in the inventory.</Description>
+          <Value>3</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Level</Name>
+          <Description>The condition is to reach the specified character level.</Description>
+          <Value>4</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>ClientAction</Name>
+          <Description>The condition is a client action. For example, this may be the completion of a tutorial.</Description>
+          <Value>5</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>RequestBuff</Name>
+          <Description>The condition is to request a buff from an NPC.</Description>
+          <Value>6</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>EventMapPlayerKills</Name>
+          <Description>The condition is to kill a specific amount of players in an event.</Description>
+          <Value>7</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>EventMapMonsterKills</Name>
+          <Description>The condition is to kill a specific amount of monsters in an event.</Description>
+          <Value>8</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>BloodCastleGate</Name>
+          <Description>The condition is to destroy the blood castle gate.</Description>
+          <Value>9</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>WinBloodCastle</Name>
+          <Description>The condition is to win the blood castle event.</Description>
+          <Value>10</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>WinChaosCastle</Name>
+          <Description>The condition is to win the chaos castle.</Description>
+          <Value>11</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>WinDevilSquare</Name>
+          <Description>The condition is to win the devil square event.</Description>
+          <Value>12</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>WinIllusionTemple</Name>
+          <Description>The condition is to win the illusion temple event.</Description>
+          <Value>13</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>DevilSquarePoints</Name>
+          <Description>The condition is to reach a specific amount of points in the devil square event.</Description>
+          <Value>14</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Money</Name>
+          <Description>The condition is to give a specific amount of zen.</Description>
+          <Value>15</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>PvpPoints</Name>
+          <Description>The condition is to reach a specific amount of PVP points.</Description>
+          <Value>16</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>NpcTalk</Name>
+          <Description>The condition is to talk to a specific NPC.</Description>
+          <Value>17</Value>
+        </EnumValue>
       </Values>
     </Enum>
     <Enum>
@@ -9388,6 +10813,11 @@
           <Name>GensContribution</Name>
           <Description>The reward is added gens contribution points.</Description>
           <Value>16</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Random</Name>
+          <Description>The reward is random?.</Description>
+          <Value>32</Value>
         </EnumValue>
       </Values>
     </Enum>
@@ -9570,6 +11000,52 @@
           <Name>RageFighter</Name>
           <Description>Unlocks the rage fighter class.</Description>
           <Value>8</Value>
+        </EnumValue>
+      </Values>
+    </Enum>
+    <Enum>
+      <Name>DamageKind</Name>
+      <Description>Defines the kind of the damage.</Description>
+      <Values>
+        <EnumValue>
+          <Name>NormalRed</Name>
+          <Description>Red color, used by normal damage.</Description>
+          <Value>0</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>IgnoreDefenseCyan</Name>
+          <Description>Cyan color, usually used by ignore defense damage.</Description>
+          <Value>1</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>ExcellentLightGreen</Name>
+          <Description>Light green color, usually used by excellent damage.</Description>
+          <Value>2</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>CriticalBlue</Name>
+          <Description>Blue color, usually used by critical damage.</Description>
+          <Value>3</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>LightPink</Name>
+          <Description>Light pink color.</Description>
+          <Value>4</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>PoisonDarkGreen</Name>
+          <Description>Dark green color, usually used by poison damage.</Description>
+          <Value>5</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>ReflectedDarkPink</Name>
+          <Description>Dark pink color, usually used by reflected damage.</Description>
+          <Value>6</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>White</Name>
+          <Description>White color.</Description>
+          <Value>7</Value>
         </EnumValue>
       </Values>
     </Enum>
