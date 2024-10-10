@@ -16,7 +16,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 table: "GameConfiguration",
                 type: "smallint",
                 nullable: false,
-                defaultValue: (byte)0);
+                defaultValue: (byte)3);
         }
 
         /// <inheritdoc />
