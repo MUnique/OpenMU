@@ -19,7 +19,7 @@ public class HarmonyJewelConsumeHandlerPlugIn : ItemUpgradeConsumeHandlerPlugIn
     /// Initializes a new instance of the <see cref="HarmonyJewelConsumeHandlerPlugIn" /> class.
     /// </summary>
     public HarmonyJewelConsumeHandlerPlugIn()
-        : base(new ItemUpgradeConfiguration(ItemOptionTypes.HarmonyOption, true, false, 0.5, ItemFailResult.None))
+        : base(new ItemUpgradeConfiguration(ItemOptionTypes.HarmonyOption, true, false, 0.6, ItemFailResult.None))
     {
     }
 

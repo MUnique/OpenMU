@@ -34,14 +34,9 @@ public abstract class ItemUpgradeConsumeHandlerPlugIn : ItemModifyConsumeHandler
         None,
 
         /// <summary>
-        /// Sets the option to level one.
+        /// Sets the option to the base level.
         /// </summary>
-        SetOptionToLevelOne,
-
-        /// <summary>
-        /// Decreases the option by one level.
-        /// </summary>
-        DecreaseOptionByOne,
+        SetOptionToBaseLevel,
 
         /// <summary>
         /// Removes the option.
@@ -101,14 +96,11 @@ public abstract class ItemUpgradeConsumeHandlerPlugIn : ItemModifyConsumeHandler
     {
         switch (this.Configuration.FailResult)
         {
-            case ItemFailResult.DecreaseOptionByOne:
-                itemOption.Level = Math.Max(itemOption.Level - 1, 1);
-                break;
             case ItemFailResult.RemoveOption:
                 item.ItemOptions.Remove(itemOption);
                 break;
-            case ItemFailResult.SetOptionToLevelOne:
-                itemOption.Level = 1;
+            case ItemFailResult.SetOptionToBaseLevel:
+                itemOption.Level = itemOption.ItemOption?.LevelDependentOptions.Min(ldo => ldo.Level) ?? itemOption.Level;
                 break;
             default:
                 // do nothing

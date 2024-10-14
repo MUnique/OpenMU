@@ -19,7 +19,7 @@ public class LowerRefineStoneConsumeHandlerPlugIn : ItemUpgradeConsumeHandlerPlu
     /// Initializes a new instance of the <see cref="LowerRefineStoneConsumeHandlerPlugIn" /> class.
     /// </summary>
     public LowerRefineStoneConsumeHandlerPlugIn()
-        : base(new ItemUpgradeConfiguration(ItemOptionTypes.HarmonyOption, false, true, 0.2, ItemFailResult.SetOptionToLevelOne))
+        : base(new ItemUpgradeConfiguration(ItemOptionTypes.HarmonyOption, false, true, 0.2, ItemFailResult.SetOptionToBaseLevel))
     {
     }
 
