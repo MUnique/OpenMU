@@ -100,6 +100,11 @@ public class GameConfigurationViewModel
     public bool ShouldDropMoney { get; set; }
 
     /// <summary>
+    /// Gets or sets the maximum droppable item option level.
+    /// </summary>
+    public byte MaximumItemOptionLevelDrop { get; set; }
+
+    /// <summary>
     /// Gets or sets the accumulated damage which needs to be done to decrease <see cref="Item.Durability"/> of a defending item by 1.
     /// </summary>
     public double DamagePerOneItemDurability { get; set; }
