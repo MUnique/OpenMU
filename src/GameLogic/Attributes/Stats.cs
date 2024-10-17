@@ -287,6 +287,16 @@ public class Stats
     public static AttributeDefinition AttackSpeed { get; } = new (new Guid("BACC1115-1E8B-4E62-B952-8F8DDB58A949"), "Attack Speed", string.Empty);
 
     /// <summary>
+    /// Gets the magic speed attribute definition which is used for some skills.
+    /// </summary>
+    public static AttributeDefinition MagicSpeed { get; } = new(new Guid("AE32AA45-9C18-43B3-9F7B-648FD7F4B0AD"), "Magic Speed", string.Empty);
+
+    /// <summary>
+    /// Gets the walk speed attribute definition.
+    /// </summary>
+    public static AttributeDefinition WalkSpeed { get; } = new(new Guid("9CDDC598-E5F3-4372-9294-505455E4A40B"), "Walk Speed", string.Empty);
+
+    /// <summary>
     /// Gets the attack damage increase attribute definition.
     /// </summary>
     public static AttributeDefinition AttackDamageIncrease { get; } = new (new Guid("0765CCD2-C70A-4338-BF49-0D652364C223"), "Attack Damage Increase Multiplier", string.Empty);
