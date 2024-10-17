@@ -65,7 +65,12 @@ public abstract class ItemUpgradeConsumeHandlerPlugIn : ItemModifyConsumeHandler
         return this.TryAddItemOption(item, persistenceContext);
     }
 
-    private bool TryUpgradeItemOption(Item item)
+    /// <summary>
+    /// Tries to upgrade the item option.
+    /// </summary>
+    /// <param name="item">The item to upgrade.</param>
+    /// <returns>Flag indicating whether the item option was upgraded.</returns>
+    protected virtual bool TryUpgradeItemOption(Item item)
     {
         if (!this.Configuration.IncreasesOption)
         {
@@ -74,7 +79,7 @@ public abstract class ItemUpgradeConsumeHandlerPlugIn : ItemModifyConsumeHandler
 
         var itemOption = item.ItemOptions.First(o => o.ItemOption?.OptionType == this.Configuration.OptionType);
         var increasableOption = itemOption.ItemOption;
-        var higherOptionPossible = increasableOption?.LevelDependentOptions.Any(o => o.Level > itemOption.Level) ?? false;
+        var higherOptionPossible = increasableOption?.LevelDependentOptions.Any(o => o.Level > itemOption.Level && o.RequiredItemLevel <= item.Level) ?? false;
         if (!higherOptionPossible)
         {
             return false;
