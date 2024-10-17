@@ -26,6 +26,7 @@ public class AlcoholConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn
         if (await base.ConsumeItemAsync(player, item, targetItem, fruitUsage).ConfigureAwait(false))
         {
             await player.InvokeViewPlugInAsync<IDrinkAlcoholPlugIn>(p => p.DrinkAlcoholAsync()).ConfigureAwait(false);
+            // todo: add magic effect to update stat
             return true;
         }
 
