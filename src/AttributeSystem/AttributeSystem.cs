@@ -111,6 +111,11 @@ public class AttributeSystem : IAttributeSystem
         var element = this.GetAttribute(attributeDefinition);
         if (element != null)
         {
+            if (attributeDefinition?.MaximumValue is { } maximumValue && element.Value > maximumValue)
+            {
+                return maximumValue;
+            }
+
             return element.Value;
         }
 
