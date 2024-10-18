@@ -9543,8 +9543,8 @@ public readonly ref struct ConsumeItemWithEffectRef
     /// </summary>
     public ushort EffectTimeInSeconds
     {
-        get => ReadUInt16BigEndian(this._data[4..]);
-        set => WriteUInt16BigEndian(this._data[4..], value);
+        get => ReadUInt16LittleEndian(this._data[4..]);
+        set => WriteUInt16LittleEndian(this._data[4..], value);
     }
 
     /// <summary>

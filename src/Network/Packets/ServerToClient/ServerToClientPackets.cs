@@ -9770,8 +9770,8 @@ public readonly struct ConsumeItemWithEffect
     /// </summary>
     public ushort EffectTimeInSeconds
     {
-        get => ReadUInt16BigEndian(this._data.Span[4..]);
-        set => WriteUInt16BigEndian(this._data.Span[4..], value);
+        get => ReadUInt16LittleEndian(this._data.Span[4..]);
+        set => WriteUInt16LittleEndian(this._data.Span[4..], value);
     }
 
     /// <summary>
