@@ -284,7 +284,28 @@ public class Stats
     /// <summary>
     /// Gets the attack speed attribute definition.
     /// </summary>
-    public static AttributeDefinition AttackSpeed { get; } = new (new Guid("BACC1115-1E8B-4E62-B952-8F8DDB58A949"), "Attack Speed", string.Empty);
+    public static AttributeDefinition AttackSpeed { get; } = new(new Guid("BACC1115-1E8B-4E62-B952-8F8DDB58A949"), "Attack Speed", string.Empty)
+    {
+        MaximumValue = 200,
+    };
+
+    /// <summary>
+    /// Gets the attack speed by weapon attribute definition.
+    /// </summary>
+    public static AttributeDefinition AttackSpeedByWeapon { get; } = new(new Guid("45EEEDEE-C76B-40E6-A0BC-2B493E10B140"), "Attack Speed by Weapons", string.Empty);
+
+    /// <summary>
+    /// Gets the attribute which says, if two weapons are equipped.
+    /// </summary>
+    public static AttributeDefinition AreTwoWeaponsEquipped { get; } = new(new Guid("56DA895D-BAFD-4A5C-9864-B17AB8369998"), "Are two weapons equipped", string.Empty)
+    {
+        MaximumValue = 1,
+    };
+
+    /// <summary>
+    /// Gets the attribute which counts the equipped weapons.
+    /// </summary>
+    public static AttributeDefinition EquippedWeaponCount { get; } = new(new Guid("15D6493F-549D-455F-9FFF-A0D589FD7DA2"), "Equipped Weapon Count", string.Empty);
 
     /// <summary>
     /// Gets the magic speed attribute definition which is used for some skills.
