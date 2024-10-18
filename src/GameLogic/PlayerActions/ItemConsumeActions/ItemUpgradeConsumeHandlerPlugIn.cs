@@ -66,6 +66,16 @@ public abstract class ItemUpgradeConsumeHandlerPlugIn : ItemModifyConsumeHandler
     }
 
     /// <summary>
+    /// Checks if an item can have the configured option.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <returns>Flag indicating whether the item can have the option.</returns>
+    protected virtual bool ItemCanHaveOption(Item item)
+    {
+        return item.Definition?.PossibleItemOptions.Any(o => o.PossibleOptions.Any(p => p.OptionType == this.Configuration.OptionType)) ?? false;
+    }
+
+    /// <summary>
     /// Tries to upgrade the item option.
     /// </summary>
     /// <param name="item">The item to upgrade.</param>
@@ -147,11 +157,6 @@ public abstract class ItemUpgradeConsumeHandlerPlugIn : ItemModifyConsumeHandler
     private bool ItemHasOptionAlready(Item item)
     {
         return item.ItemOptions.Any(o => o.ItemOption?.OptionType == this.Configuration.OptionType);
-    }
-
-    private bool ItemCanHaveOption(Item item)
-    {
-        return item.Definition?.PossibleItemOptions.Any(o => o.PossibleOptions.Any(p => p.OptionType == this.Configuration.OptionType)) ?? false;
     }
 
     /// <summary>

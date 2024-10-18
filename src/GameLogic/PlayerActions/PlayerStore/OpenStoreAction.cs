@@ -28,7 +28,7 @@ public class OpenStoreAction
 
         if (player.ShopStorage?.Items.Any(i => i.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.HarmonyOption)) ?? true)
         {
-            player.Logger.LogWarning("OpenStore request failed: There are store items with harmony option. Player: [{0}], StoreName: [{1}]", player.SelectedCharacter?.Name, player.ShopStorage?.StoreName);
+            player.Logger.LogWarning("OpenStore request failed: Items with an harmony option can't be traded. Player: [{0}], StoreName: [{1}]", player.SelectedCharacter?.Name, player.ShopStorage?.StoreName);
             return;
         }
 

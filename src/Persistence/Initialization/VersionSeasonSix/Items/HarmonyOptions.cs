@@ -86,7 +86,7 @@ public class HarmonyOptions : InitializerBase
         definition.PossibleOptions.Add(this.CreateHarmonyOptions(6, ItemOptionDefinitionNumbers.HarmonyWizardry, Stats.ShieldDecreaseRateIncrease, AggregateType.AddRaw, 9, 4, 6, 8, 10, 13));
         definition.PossibleOptions.Add(this.CreateHarmonyOptions(7, ItemOptionDefinitionNumbers.HarmonyWizardry, Stats.AttackRatePvp, AggregateType.AddRaw, 9, 5, 7, 9, 11, 14));
         definition.PossibleOptions.Add(this.CreateHarmonyOptions(8, ItemOptionDefinitionNumbers.HarmonyWizardry, Stats.ShieldBypassChance, AggregateType.AddRaw, 13, 0.15f));
-    }   
+    }
 
     private void CreatePhysicalAttackOptions()
     {

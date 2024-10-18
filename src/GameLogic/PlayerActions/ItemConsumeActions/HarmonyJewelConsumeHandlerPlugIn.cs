@@ -25,4 +25,16 @@ public class HarmonyJewelConsumeHandlerPlugIn : ItemUpgradeConsumeHandlerPlugIn
 
     /// <inheritdoc />
     public override ItemIdentifier Key => ItemConstants.JewelOfHarmony;
+
+    /// <inheritdoc />
+    protected override bool ItemCanHaveOption(Item item)
+    {
+        if (item.IsAncient())
+        {
+            // Until S16E2 ancient and socket items couldn't have harmony options: https://muonline.webzen.com/en/gameinfo/guide/detail/117
+            return false;
+        }
+
+        return base.ItemCanHaveOption(item);
+    }
 }
