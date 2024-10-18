@@ -166,7 +166,7 @@ public class Wings : WingsInitializerBase
 
         if (damageIncreaseInitial > 0)
         {
-            var powerUp = this.CreateItemBasePowerUpDefinition(Stats.AttackDamageIncrease, 1f + damageIncreaseInitial / 100f, AggregateType.Multiplicate);
+            var powerUp = this.CreateItemBasePowerUpDefinition(Stats.AttackDamageIncrease, 1f + (damageIncreaseInitial / 100f), AggregateType.Multiplicate);
             powerUp.BonusPerLevelTable = damageIncreasePerLevel;
             wing.BasePowerUpAttributes.Add(powerUp);
         }
