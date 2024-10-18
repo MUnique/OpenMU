@@ -8,7 +8,7 @@ using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.PlugIns;
-using static OpenMU.DataModel.InventoryConstants;
+using static MUnique.OpenMU.DataModel.InventoryConstants;
 
 /// <summary>
 /// The storage of an inventory of a player, which also contains equippable slots. This class also manages the powerups which get created by equipped items.
@@ -166,8 +166,9 @@ public class InventoryStorage : Storage, IInventoryStorage
             this._player.Attributes.ItemPowerUps.Add(item, factory.GetPowerUps(item, this._player.Attributes).ToList());
 
             // reset player equipped ammunition amount
-            if (this.EquippedAmmunitionItem is { } ammoItem) {
-                this._player.Attributes[Stats.AmmunitionAmount] = (float) ammoItem.Durability;
+            if (this.EquippedAmmunitionItem is { } ammoItem)
+            {
+                this._player.Attributes[Stats.AmmunitionAmount] = (float)ammoItem.Durability;
             }
         }
     }

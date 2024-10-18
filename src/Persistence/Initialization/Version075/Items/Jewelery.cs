@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.Persistence.Initialization.Version075.Items;
 
 using MUnique.OpenMU.AttributeSystem;
-using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
@@ -28,6 +27,9 @@ internal class Jewelery : InitializerBase
         : base(context, gameConfiguration)
     {
     }
+
+    /// <inheritdoc/>
+    protected override int MaximumOptionLevel => 3;
 
     /// <inheritdoc/>
     public sealed override void Initialize()
@@ -162,8 +164,9 @@ internal class Jewelery : InitializerBase
 
         if (resistanceAttribute != null)
         {
-            var powerUp = this.CreateItemBasePowerUpDefinition(resistanceAttribute, 0.1f, AggregateType.AddRaw);
+            var powerUp = this.CreateItemBasePowerUpDefinition(resistanceAttribute, 0.1f, AggregateType.Maximum);
             powerUp.BonusPerLevelTable = this._resistancesBonusTable;
+            item.BasePowerUpAttributes.Add(powerUp);
         }
 
         foreach (var characterClass in this.GameConfiguration.CharacterClasses)

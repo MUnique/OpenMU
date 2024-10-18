@@ -164,4 +164,19 @@ public enum UpdateVersion
     /// The version of the <see cref="FixMaxManaAndAbilityJewelryOptionsUpdateSeason6"/>.
     /// </summary>
     FixMaxManaAndAbilityJewelryOptionsSeason6 = 31,
+
+    /// <summary>
+    /// The version of the <see cref="FixWingsDmgRatesUpdatePlugIn075"/>.
+    /// </summary>
+    FixWingsDmgRatesPlugIn075 = 32,
+
+    /// <summary>
+    /// The version of the <see cref="FixWingsDmgRatesUpdatePlugIn095D"/>.
+    /// </summary>
+    FixWingsDmgRatesPlugIn095d = 33,
+
+    /// <summary>
+    /// The version of the <see cref="FixWingsDmgRatesUpdatePlugInSeason6"/>.
+    /// </summary>
+    FixWingsDmgRatesPlugInSeason6 = 34,
 }
