@@ -44,9 +44,9 @@ public abstract class ItemUpgradeConsumeHandlerPlugIn : ItemModifyConsumeHandler
         DecreaseOptionByOne,
 
         /// <summary>
-        /// Decreases the option by one level, or removes the option if the level would reach 0.
+        /// Removes the option.
         /// </summary>
-        DecreaseOptionByOneOrRemove,
+        RemoveOption,
     }
 
     /// <summary>
@@ -104,13 +104,8 @@ public abstract class ItemUpgradeConsumeHandlerPlugIn : ItemModifyConsumeHandler
             case ItemFailResult.DecreaseOptionByOne:
                 itemOption.Level = Math.Max(itemOption.Level - 1, 1);
                 break;
-            case ItemFailResult.DecreaseOptionByOneOrRemove:
-                itemOption.Level -= 1;
-                if (itemOption.Level == 0)
-                {
-                    item.ItemOptions.Remove(itemOption);
-                }
-
+            case ItemFailResult.RemoveOption:
+                item.ItemOptions.Remove(itemOption);
                 break;
             case ItemFailResult.SetOptionToLevelOne:
                 itemOption.Level = 1;
@@ -142,7 +137,9 @@ public abstract class ItemUpgradeConsumeHandlerPlugIn : ItemModifyConsumeHandler
             var optionLink = persistenceContext.CreateNew<ItemOptionLink>();
             optionLink.ItemOption = possibleOptions.SelectRandom()!;
             optionLink.Level = optionLink.ItemOption.LevelDependentOptions.Any()
-                ? optionLink.ItemOption.LevelDependentOptions.Min(l => l.Level)
+                ? optionLink.ItemOption.LevelDependentOptions.Select(ldo => ldo.Level)
+                    .Concat(this.Configuration.OptionType == ItemOptionTypes.Option ? [1] : []) // For base def/dmg opts level 1 is not an ItemOptionOfLevel entry
+                    .Min()
                 : 1;
             item.ItemOptions.Add(optionLink);
         }
