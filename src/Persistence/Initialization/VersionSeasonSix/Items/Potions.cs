@@ -74,6 +74,7 @@ public class Potions : InitializerBase
         alcohol.Width = 1;
         alcohol.Height = 2;
         alcohol.SetGuid(alcohol.Group, alcohol.Number);
+        alcohol.ConsumeEffect = this.GameConfiguration.MagicEffects.First(effect => effect.Number == (short)MagicEffectNumber.Alcohol);
         return alcohol;
     }
 
