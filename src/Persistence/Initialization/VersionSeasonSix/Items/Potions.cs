@@ -381,10 +381,11 @@ public class Potions : InitializerBase
     private ItemDefinition CreateSiegePotion()
     {
         var definition = this.Context.CreateNew<ItemDefinition>();
-        definition.Name = "Siege Potion";
+        definition.Name = "Potion of Bless;Potion of Soul";
         definition.Number = 7;
         definition.Group = 14;
-        definition.Durability = 1;
+        definition.Durability = 10;
+        definition.MaximumItemLevel = 1;
         definition.Value = 30;
         definition.Width = 1;
         definition.Height = 1;

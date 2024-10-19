@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.PlayerActions.Craftings;
 
 /// <summary>
@@ -682,7 +683,8 @@ public class ChaosMixes : InitializerBase
 
         // Result:
         var potion = this.Context.CreateNew<ItemCraftingResultItem>();
-        potion.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Siege Potion");
+
+        potion.ItemDefinition = this.GameConfiguration.Items.First(i => i.Number == ItemConstants.SiegePotion.Number && i.Group == ItemConstants.SiegePotion.Group);
         potion.Durability = 10;
         craftingSettings.ResultItems.Add(potion);
 
@@ -712,7 +714,7 @@ public class ChaosMixes : InitializerBase
 
         // Result:
         var potion = this.Context.CreateNew<ItemCraftingResultItem>();
-        potion.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Siege Potion");
+        potion.ItemDefinition = this.GameConfiguration.Items.First(i => i.Number == ItemConstants.SiegePotion.Number && i.Group == ItemConstants.SiegePotion.Group);
         potion.Durability = 10;
         potion.RandomMinimumLevel = 1;
         potion.RandomMaximumLevel = 1;
