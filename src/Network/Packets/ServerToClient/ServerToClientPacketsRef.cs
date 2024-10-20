@@ -8668,101 +8668,6 @@ public readonly ref struct CurrentHealthAndShieldRef
 
 
 /// <summary>
-/// Is sent by the server when: Periodically, or if the current health or shield changed on the server side, e.g. by hits.
-/// Causes reaction on client side: The health and shield bar is updated on the game client user interface.
-/// </summary>
-public readonly ref struct CurrentHealthAndShieldExtendedRef
-{
-    private readonly Span<byte> _data;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="CurrentHealthAndShieldExtendedRef"/> struct.
-    /// </summary>
-    /// <param name="data">The underlying data.</param>
-    public CurrentHealthAndShieldExtendedRef(Span<byte> data)
-        : this(data, true)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="CurrentHealthAndShieldExtendedRef"/> struct.
-    /// </summary>
-    /// <param name="data">The underlying data.</param>
-    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private CurrentHealthAndShieldExtendedRef(Span<byte> data, bool initialize)
-    {
-        this._data = data;
-        if (initialize)
-        {
-            var header = this.Header;
-            header.Type = HeaderType;
-            header.Code = Code;
-            header.Length = (byte)Math.Min(data.Length, Length);
-            header.SubCode = SubCode;
-        }
-    }
-
-    /// <summary>
-    /// Gets the header type of this data packet.
-    /// </summary>
-    public static byte HeaderType => 0xC1;
-
-    /// <summary>
-    /// Gets the operation code of this data packet.
-    /// </summary>
-    public static byte Code => 0x26;
-
-    /// <summary>
-    /// Gets the operation sub-code of this data packet.
-    /// The <see cref="Code" /> is used as a grouping key.
-    /// </summary>
-    public static byte SubCode => 0xFF;
-
-    /// <summary>
-    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
-    /// </summary>
-    public static int Length => 12;
-
-    /// <summary>
-    /// Gets the header of this packet.
-    /// </summary>
-    public C1HeaderWithSubCodeRef Header => new (this._data);
-
-    /// <summary>
-    /// Gets or sets the health.
-    /// </summary>
-    public uint Health
-    {
-        get => ReadUInt32LittleEndian(this._data[4..]);
-        set => WriteUInt32LittleEndian(this._data[4..], value);
-    }
-
-    /// <summary>
-    /// Gets or sets the shield.
-    /// </summary>
-    public uint Shield
-    {
-        get => ReadUInt32LittleEndian(this._data[8..]);
-        set => WriteUInt32LittleEndian(this._data[8..], value);
-    }
-
-    /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="CurrentHealthAndShieldExtended"/>.
-    /// </summary>
-    /// <param name="packet">The packet as span.</param>
-    /// <returns>The packet as struct.</returns>
-    public static implicit operator CurrentHealthAndShieldExtendedRef(Span<byte> packet) => new (packet, false);
-
-    /// <summary>
-    /// Performs an implicit conversion from <see cref="CurrentHealthAndShieldExtended"/> to a Span of bytes.
-    /// </summary>
-    /// <param name="packet">The packet as struct.</param>
-    /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(CurrentHealthAndShieldExtendedRef packet) => packet._data; 
-}
-
-
-/// <summary>
 /// Is sent by the server when: When the maximum health changed, e.g. by adding stat points or changed items.
 /// Causes reaction on client side: The health and shield bar is updated on the game client user interface.
 /// </summary>
@@ -8858,28 +8763,159 @@ public readonly ref struct MaximumHealthAndShieldRef
 
 
 /// <summary>
-/// Is sent by the server when: When the maximum health changed, e.g. by adding stat points or changed items.
-/// Causes reaction on client side: The health and shield bar is updated on the game client user interface.
+/// Is sent by the server when: Periodically, or if the current stats, like health, shield, mana or attack speed changed on the server side, e.g. by hits.
+/// Causes reaction on client side: The values are updated on the game client user interface.
 /// </summary>
-public readonly ref struct MaximumHealthAndShieldExtendedRef
+public readonly ref struct CurrentStatsExtendedRef
 {
     private readonly Span<byte> _data;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="MaximumHealthAndShieldExtendedRef"/> struct.
+    /// Initializes a new instance of the <see cref="CurrentStatsExtendedRef"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public MaximumHealthAndShieldExtendedRef(Span<byte> data)
+    public CurrentStatsExtendedRef(Span<byte> data)
         : this(data, true)
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="MaximumHealthAndShieldExtendedRef"/> struct.
+    /// Initializes a new instance of the <see cref="CurrentStatsExtendedRef"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private MaximumHealthAndShieldExtendedRef(Span<byte> data, bool initialize)
+    private CurrentStatsExtendedRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0x26;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0xFF;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 24;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the health.
+    /// </summary>
+    public uint Health
+    {
+        get => ReadUInt32LittleEndian(this._data[4..]);
+        set => WriteUInt32LittleEndian(this._data[4..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the shield.
+    /// </summary>
+    public uint Shield
+    {
+        get => ReadUInt32LittleEndian(this._data[8..]);
+        set => WriteUInt32LittleEndian(this._data[8..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the mana.
+    /// </summary>
+    public uint Mana
+    {
+        get => ReadUInt32LittleEndian(this._data[12..]);
+        set => WriteUInt32LittleEndian(this._data[12..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the ability.
+    /// </summary>
+    public uint Ability
+    {
+        get => ReadUInt32LittleEndian(this._data[16..]);
+        set => WriteUInt32LittleEndian(this._data[16..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the attack speed.
+    /// </summary>
+    public ushort AttackSpeed
+    {
+        get => ReadUInt16LittleEndian(this._data[20..]);
+        set => WriteUInt16LittleEndian(this._data[20..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the magic speed.
+    /// </summary>
+    public ushort MagicSpeed
+    {
+        get => ReadUInt16LittleEndian(this._data[22..]);
+        set => WriteUInt16LittleEndian(this._data[22..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="CurrentStatsExtended"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CurrentStatsExtendedRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CurrentStatsExtended"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(CurrentStatsExtendedRef packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: When the maximum stats, like health, shield, mana or attack speed changed on the server side, e.g. by adding stat points or changed items.
+/// Causes reaction on client side: The values are updated on the game client user interface.
+/// </summary>
+public readonly ref struct MaximumStatsExtendedRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MaximumStatsExtendedRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public MaximumStatsExtendedRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MaximumStatsExtendedRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private MaximumStatsExtendedRef(Span<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -8911,7 +8947,7 @@ public readonly ref struct MaximumHealthAndShieldExtendedRef
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 12;
+    public static int Length => 20;
 
     /// <summary>
     /// Gets the header of this packet.
@@ -8937,18 +8973,36 @@ public readonly ref struct MaximumHealthAndShieldExtendedRef
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="MaximumHealthAndShieldExtended"/>.
+    /// Gets or sets the mana.
+    /// </summary>
+    public uint Mana
+    {
+        get => ReadUInt32LittleEndian(this._data[12..]);
+        set => WriteUInt32LittleEndian(this._data[12..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the ability.
+    /// </summary>
+    public uint Ability
+    {
+        get => ReadUInt32LittleEndian(this._data[16..]);
+        set => WriteUInt32LittleEndian(this._data[16..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="MaximumStatsExtended"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator MaximumHealthAndShieldExtendedRef(Span<byte> packet) => new (packet, false);
+    public static implicit operator MaximumStatsExtendedRef(Span<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="MaximumHealthAndShieldExtended"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="MaximumStatsExtended"/> to a Span of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(MaximumHealthAndShieldExtendedRef packet) => packet._data; 
+    public static implicit operator Span<byte>(MaximumStatsExtendedRef packet) => packet._data; 
 }
 
 
@@ -9238,101 +9292,6 @@ public readonly ref struct CurrentManaAndAbilityRef
 
 
 /// <summary>
-/// Is sent by the server when: The currently available mana or ability has changed, e.g. by using a skill.
-/// Causes reaction on client side: The mana and ability bar is updated on the game client user interface.
-/// </summary>
-public readonly ref struct CurrentManaAndAbilityExtendedRef
-{
-    private readonly Span<byte> _data;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="CurrentManaAndAbilityExtendedRef"/> struct.
-    /// </summary>
-    /// <param name="data">The underlying data.</param>
-    public CurrentManaAndAbilityExtendedRef(Span<byte> data)
-        : this(data, true)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="CurrentManaAndAbilityExtendedRef"/> struct.
-    /// </summary>
-    /// <param name="data">The underlying data.</param>
-    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private CurrentManaAndAbilityExtendedRef(Span<byte> data, bool initialize)
-    {
-        this._data = data;
-        if (initialize)
-        {
-            var header = this.Header;
-            header.Type = HeaderType;
-            header.Code = Code;
-            header.Length = (byte)Math.Min(data.Length, Length);
-            header.SubCode = SubCode;
-        }
-    }
-
-    /// <summary>
-    /// Gets the header type of this data packet.
-    /// </summary>
-    public static byte HeaderType => 0xC1;
-
-    /// <summary>
-    /// Gets the operation code of this data packet.
-    /// </summary>
-    public static byte Code => 0x27;
-
-    /// <summary>
-    /// Gets the operation sub-code of this data packet.
-    /// The <see cref="Code" /> is used as a grouping key.
-    /// </summary>
-    public static byte SubCode => 0xFF;
-
-    /// <summary>
-    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
-    /// </summary>
-    public static int Length => 12;
-
-    /// <summary>
-    /// Gets the header of this packet.
-    /// </summary>
-    public C1HeaderWithSubCodeRef Header => new (this._data);
-
-    /// <summary>
-    /// Gets or sets the mana.
-    /// </summary>
-    public uint Mana
-    {
-        get => ReadUInt32LittleEndian(this._data[4..]);
-        set => WriteUInt32LittleEndian(this._data[4..], value);
-    }
-
-    /// <summary>
-    /// Gets or sets the ability.
-    /// </summary>
-    public uint Ability
-    {
-        get => ReadUInt32LittleEndian(this._data[8..]);
-        set => WriteUInt32LittleEndian(this._data[8..], value);
-    }
-
-    /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="CurrentManaAndAbilityExtended"/>.
-    /// </summary>
-    /// <param name="packet">The packet as span.</param>
-    /// <returns>The packet as struct.</returns>
-    public static implicit operator CurrentManaAndAbilityExtendedRef(Span<byte> packet) => new (packet, false);
-
-    /// <summary>
-    /// Performs an implicit conversion from <see cref="CurrentManaAndAbilityExtended"/> to a Span of bytes.
-    /// </summary>
-    /// <param name="packet">The packet as struct.</param>
-    /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(CurrentManaAndAbilityExtendedRef packet) => packet._data; 
-}
-
-
-/// <summary>
 /// Is sent by the server when: The maximum available mana or ability has changed, e.g. by adding stat points.
 /// Causes reaction on client side: The mana and ability bar is updated on the game client user interface.
 /// </summary>
@@ -9424,101 +9383,6 @@ public readonly ref struct MaximumManaAndAbilityRef
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
     public static implicit operator Span<byte>(MaximumManaAndAbilityRef packet) => packet._data; 
-}
-
-
-/// <summary>
-/// Is sent by the server when: The maximum available mana or ability has changed, e.g. by adding stat points.
-/// Causes reaction on client side: The mana and ability bar is updated on the game client user interface.
-/// </summary>
-public readonly ref struct MaximumManaAndAbilityExtendedRef
-{
-    private readonly Span<byte> _data;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="MaximumManaAndAbilityExtendedRef"/> struct.
-    /// </summary>
-    /// <param name="data">The underlying data.</param>
-    public MaximumManaAndAbilityExtendedRef(Span<byte> data)
-        : this(data, true)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="MaximumManaAndAbilityExtendedRef"/> struct.
-    /// </summary>
-    /// <param name="data">The underlying data.</param>
-    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private MaximumManaAndAbilityExtendedRef(Span<byte> data, bool initialize)
-    {
-        this._data = data;
-        if (initialize)
-        {
-            var header = this.Header;
-            header.Type = HeaderType;
-            header.Code = Code;
-            header.Length = (byte)Math.Min(data.Length, Length);
-            header.SubCode = SubCode;
-        }
-    }
-
-    /// <summary>
-    /// Gets the header type of this data packet.
-    /// </summary>
-    public static byte HeaderType => 0xC1;
-
-    /// <summary>
-    /// Gets the operation code of this data packet.
-    /// </summary>
-    public static byte Code => 0x27;
-
-    /// <summary>
-    /// Gets the operation sub-code of this data packet.
-    /// The <see cref="Code" /> is used as a grouping key.
-    /// </summary>
-    public static byte SubCode => 0xFE;
-
-    /// <summary>
-    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
-    /// </summary>
-    public static int Length => 12;
-
-    /// <summary>
-    /// Gets the header of this packet.
-    /// </summary>
-    public C1HeaderWithSubCodeRef Header => new (this._data);
-
-    /// <summary>
-    /// Gets or sets the mana.
-    /// </summary>
-    public uint Mana
-    {
-        get => ReadUInt32LittleEndian(this._data[4..]);
-        set => WriteUInt32LittleEndian(this._data[4..], value);
-    }
-
-    /// <summary>
-    /// Gets or sets the ability.
-    /// </summary>
-    public uint Ability
-    {
-        get => ReadUInt32LittleEndian(this._data[8..]);
-        set => WriteUInt32LittleEndian(this._data[8..], value);
-    }
-
-    /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="MaximumManaAndAbilityExtended"/>.
-    /// </summary>
-    /// <param name="packet">The packet as span.</param>
-    /// <returns>The packet as struct.</returns>
-    public static implicit operator MaximumManaAndAbilityExtendedRef(Span<byte> packet) => new (packet, false);
-
-    /// <summary>
-    /// Performs an implicit conversion from <see cref="MaximumManaAndAbilityExtended"/> to a Span of bytes.
-    /// </summary>
-    /// <param name="packet">The packet as struct.</param>
-    /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(MaximumManaAndAbilityExtendedRef packet) => packet._data; 
 }
 
 
@@ -9679,8 +9543,8 @@ public readonly ref struct ConsumeItemWithEffectRef
     /// </summary>
     public ushort EffectTimeInSeconds
     {
-        get => ReadUInt16BigEndian(this._data[4..]);
-        set => WriteUInt16BigEndian(this._data[4..], value);
+        get => ReadUInt16LittleEndian(this._data[4..]);
+        set => WriteUInt16LittleEndian(this._data[4..], value);
     }
 
     /// <summary>

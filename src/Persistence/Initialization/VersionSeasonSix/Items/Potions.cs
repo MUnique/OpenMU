@@ -74,6 +74,7 @@ public class Potions : InitializerBase
         alcohol.Width = 1;
         alcohol.Height = 2;
         alcohol.SetGuid(alcohol.Group, alcohol.Number);
+        alcohol.ConsumeEffect = this.GameConfiguration.MagicEffects.First(effect => effect.Number == (short)MagicEffectNumber.Alcohol);
         return alcohol;
     }
 
@@ -380,10 +381,11 @@ public class Potions : InitializerBase
     private ItemDefinition CreateSiegePotion()
     {
         var definition = this.Context.CreateNew<ItemDefinition>();
-        definition.Name = "Siege Potion";
+        definition.Name = "Potion of Bless;Potion of Soul";
         definition.Number = 7;
         definition.Group = 14;
-        definition.Durability = 1;
+        definition.Durability = 10;
+        definition.MaximumItemLevel = 1;
         definition.Value = 30;
         definition.Width = 1;
         definition.Height = 1;
@@ -419,7 +421,7 @@ public class Potions : InitializerBase
         item.Width = 1;
         item.Height = 2;
         item.SetGuid(item.Group, item.Number);
-        this.CreateConsumeEffect(item, 16, MagicEffectNumber.JackOlanternBlessing, Stats.AttackSpeed, 10, TimeSpan.FromMinutes(32));
+        this.CreateConsumeEffect(item, 16, MagicEffectNumber.JackOlanternBlessing, TimeSpan.FromMinutes(32), (Stats.AttackSpeed, 10), (Stats.MagicSpeed, 10));
         return item;
     }
 
@@ -433,7 +435,7 @@ public class Potions : InitializerBase
         item.Width = 1;
         item.Height = 2;
         item.SetGuid(item.Group, item.Number);
-        this.CreateConsumeEffect(item, 16, MagicEffectNumber.JackOlanternWrath, Stats.BaseDamageBonus, 25, TimeSpan.FromMinutes(30));
+        this.CreateConsumeEffect(item, 16, MagicEffectNumber.JackOlanternWrath, TimeSpan.FromMinutes(30), (Stats.BaseDamageBonus, 25));
         return item;
     }
 
@@ -447,7 +449,7 @@ public class Potions : InitializerBase
         item.Width = 1;
         item.Height = 2;
         item.SetGuid(item.Group, item.Number);
-        this.CreateConsumeEffect(item, 16, MagicEffectNumber.JackOlanternCry, Stats.DefenseBase, 100, TimeSpan.FromMinutes(30));
+        this.CreateConsumeEffect(item, 16, MagicEffectNumber.JackOlanternCry, TimeSpan.FromMinutes(30), (Stats.DefenseBase, 100));
         return item;
     }
 
@@ -461,7 +463,7 @@ public class Potions : InitializerBase
         item.Width = 1;
         item.Height = 1;
         item.SetGuid(item.Group, item.Number);
-        this.CreateConsumeEffect(item, 16, MagicEffectNumber.JackOlanternFood, Stats.MaximumHealth, 500, TimeSpan.FromMinutes(30));
+        this.CreateConsumeEffect(item, 16, MagicEffectNumber.JackOlanternFood, TimeSpan.FromMinutes(30), (Stats.MaximumHealth, 500));
         return item;
     }
 
@@ -475,7 +477,7 @@ public class Potions : InitializerBase
         item.Width = 1;
         item.Height = 1;
         item.SetGuid(item.Group, item.Number);
-        this.CreateConsumeEffect(item, 16, MagicEffectNumber.JackOlanternDrink, Stats.MaximumMana, 500, TimeSpan.FromMinutes(30));
+        this.CreateConsumeEffect(item, 16, MagicEffectNumber.JackOlanternDrink, TimeSpan.FromMinutes(30), (Stats.MaximumMana, 500));
         return item;
     }
 
@@ -489,7 +491,7 @@ public class Potions : InitializerBase
         item.Width = 1;
         item.Height = 2;
         item.SetGuid(item.Group, item.Number);
-        this.CreateConsumeEffect(item, 16, MagicEffectNumber.CherryBlossomWine, Stats.MaximumMana, 700, TimeSpan.FromMinutes(30));
+        this.CreateConsumeEffect(item, 16, MagicEffectNumber.CherryBlossomWine, TimeSpan.FromMinutes(30), (Stats.MaximumMana, 700));
         return item;
     }
 
@@ -503,7 +505,7 @@ public class Potions : InitializerBase
         item.Width = 1;
         item.Height = 1;
         item.SetGuid(item.Group, item.Number);
-        this.CreateConsumeEffect(item, 16, MagicEffectNumber.CherryBlossomRiceCake, Stats.MaximumHealth, 700, TimeSpan.FromMinutes(30));
+        this.CreateConsumeEffect(item, 16, MagicEffectNumber.CherryBlossomRiceCake, TimeSpan.FromMinutes(30), (Stats.MaximumHealth, 700));
         return item;
     }
 
@@ -517,11 +519,11 @@ public class Potions : InitializerBase
         item.Width = 1;
         item.Height = 1;
         item.SetGuid(item.Group, item.Number);
-        this.CreateConsumeEffect(item, 16, MagicEffectNumber.CherryBlossomFlowerPetal, Stats.BaseDamageBonus, 40, TimeSpan.FromMinutes(30));
+        this.CreateConsumeEffect(item, 16, MagicEffectNumber.CherryBlossomFlowerPetal, TimeSpan.FromMinutes(30), (Stats.BaseDamageBonus, 40));
         return item;
     }
 
-    private MagicEffectDefinition CreateConsumeEffect(ItemDefinition item, byte subType, MagicEffectNumber effectNumber, AttributeDefinition targetAttribute, float boostValue, TimeSpan duration)
+    private MagicEffectDefinition CreateConsumeEffect(ItemDefinition item, byte subType, MagicEffectNumber effectNumber, TimeSpan duration, params (AttributeDefinition targetAttribute, float boostValue)[] boosts)
     {
         var effect = this.Context.CreateNew<MagicEffectDefinition>();
         effect.SetGuid(item.Number, (short)effectNumber);
@@ -536,11 +538,15 @@ public class Potions : InitializerBase
         effect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
         effect.Duration.ConstantValue.Value = (float)duration.TotalSeconds;
 
-        var powerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
-        effect.PowerUpDefinitions.Add(powerUpDefinition);
-        powerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-        powerUpDefinition.Boost.ConstantValue.Value = boostValue;
-        powerUpDefinition.TargetAttribute = targetAttribute.GetPersistent(this.GameConfiguration);
+        foreach (var (targetAttribute, boostValue) in boosts)
+        {
+            var powerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
+            effect.PowerUpDefinitions.Add(powerUpDefinition);
+            powerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+            powerUpDefinition.Boost.ConstantValue.Value = boostValue;
+            powerUpDefinition.TargetAttribute = targetAttribute.GetPersistent(this.GameConfiguration);
+        }
+
         return effect;
     }
 }

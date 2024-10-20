@@ -199,14 +199,13 @@ public static class AttackableExtensions
 
         if (target is IWorldObserver observer)
         {
-            if (isHealthUpdated)
-            {
-                await observer.InvokeViewPlugInAsync<IUpdateCurrentHealthPlugIn>(p => p.UpdateCurrentHealthAsync()).ConfigureAwait(false);
-            }
+            var updatedStats =
+                (isHealthUpdated ? IUpdateStatsPlugIn.UpdatedStats.Health : IUpdateStatsPlugIn.UpdatedStats.Undefined)
+                | (isManaUpdated ? IUpdateStatsPlugIn.UpdatedStats.Mana : IUpdateStatsPlugIn.UpdatedStats.Undefined);
 
-            if (isManaUpdated)
+            if (updatedStats != IUpdateStatsPlugIn.UpdatedStats.Undefined)
             {
-                await observer.InvokeViewPlugInAsync<IUpdateCurrentManaPlugIn>(p => p.UpdateCurrentManaAsync()).ConfigureAwait(false);
+                await observer.InvokeViewPlugInAsync<IUpdateStatsPlugIn>(p => p.UpdateCurrentStatsAsync(updatedStats)).ConfigureAwait(false);
             }
         }
     }

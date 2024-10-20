@@ -221,6 +221,7 @@ public abstract class GameConfigurationInitializerBase : InitializerBase
         foreach (var attribute in attributes)
         {
             var persistentAttribute = this.Context.CreateNew<AttributeDefinition>(attribute.Id, attribute.Designation, attribute.Description);
+            persistentAttribute.MaximumValue = attribute.MaximumValue;
             this.GameConfiguration.Attributes.Add(persistentAttribute);
         }
     }

@@ -31,7 +31,7 @@ public class DrainLifeSkillPlugIn : IAreaSkillPlugIn
             if (playerAttributes != null)
             {
                 playerAttributes[Stats.CurrentHealth] = (uint)Math.Min(playerAttributes[Stats.MaximumHealth], playerAttributes[Stats.CurrentHealth] + hitInfo.Value.HealthDamage);
-                await attackerPlayer.InvokeViewPlugInAsync<IUpdateCurrentHealthPlugIn>(p => p.UpdateCurrentHealthAsync()).ConfigureAwait(false);
+                await attackerPlayer.InvokeViewPlugInAsync<IUpdateStatsPlugIn>(p => p.UpdateCurrentStatsAsync(IUpdateStatsPlugIn.UpdatedStats.Health)).ConfigureAwait(false);
             }
         }
     }
