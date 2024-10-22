@@ -18,7 +18,7 @@ public abstract class RefineStoneUpgradeConsumeHandlerPlugIn : ItemUpgradeConsum
     /// Initializes a new instance of the <see cref="RefineStoneUpgradeConsumeHandlerPlugIn"/> class.
     /// </summary>
     /// <param name="configuration">The configuration.</param>
-    internal RefineStoneUpgradeConsumeHandlerPlugIn(ItemUpgradeConfiguration configuration)
+    private protected RefineStoneUpgradeConsumeHandlerPlugIn(ItemUpgradeConfiguration configuration)
         : base(configuration)
     {
     }

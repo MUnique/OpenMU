@@ -7,6 +7,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
 
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Persistence;
 
 /// <summary>
@@ -142,12 +143,33 @@ public abstract class ItemUpgradeConsumeHandlerPlugIn : ItemModifyConsumeHandler
             }
 
             var optionLink = persistenceContext.CreateNew<ItemOptionLink>();
-            optionLink.ItemOption = possibleOptions.SelectRandom()!;
-            optionLink.Level = optionLink.ItemOption.LevelDependentOptions.Any()
-                ? optionLink.ItemOption.LevelDependentOptions.Select(ldo => ldo.Level)
-                    .Concat(this.Configuration.OptionType == ItemOptionTypes.Option ? [1] : []) // For base def/dmg opts level 1 is not an ItemOptionOfLevel entry
-                    .Min()
-                : 1;
+            if (this.Configuration.OptionType == ItemOptionTypes.HarmonyOption)
+            {
+                // Str and agi reduction options are not always applicable, and so should be removed from the pool
+                if (!item.Definition.Requirements.Any(r => r.Attribute == Stats.TotalStrengthRequirementValue)
+                    && possibleOptions.FirstOrDefault(po => po.LevelDependentOptions
+                        .Any(ldo => ldo.PowerUpDefinition?.TargetAttribute == Stats.RequiredStrengthReduction)) is { } strReductOpt)
+                {
+                    possibleOptions.Remove(strReductOpt);
+                }
+
+                if (!item.Definition.Requirements.Any(r => r.Attribute == Stats.TotalAgilityRequirementValue)
+                    && possibleOptions.FirstOrDefault(po => po.LevelDependentOptions
+                        .Any(ldo => ldo.PowerUpDefinition?.TargetAttribute == Stats.RequiredAgilityReduction)) is { } agiReductOpt)
+                {
+                    possibleOptions.Remove(agiReductOpt);
+                }
+
+                optionLink.ItemOption = possibleOptions.SelectWeightedRandom(possibleOptions.Select(po => (int)po.Weight));
+                optionLink.Level = optionLink.ItemOption?.LevelDependentOptions.Select(ldo => ldo.Level).Min() ?? 0;
+            }
+            else
+            {
+                // ItemOptionTypes.Option
+                optionLink.ItemOption = possibleOptions.First();
+                optionLink.Level = 1;
+            }
+
             item.ItemOptions.Add(optionLink);
         }
 
