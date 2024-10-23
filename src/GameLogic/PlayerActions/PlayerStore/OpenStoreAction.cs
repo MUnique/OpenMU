@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore;
 
+using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Views.PlayerShop;
 
 /// <summary>
@@ -22,6 +23,12 @@ public class OpenStoreAction
         if (player.ShopStorage?.Items.Any(i => !i.StorePrice.HasValue) ?? true)
         {
             player.Logger.LogWarning("OpenStore request failed: Not all store items have a price assigned. Player: [{0}], StoreName: [{1}]", player.SelectedCharacter?.Name, player.ShopStorage?.StoreName);
+            return;
+        }
+
+        if (player.ShopStorage?.Items.Any(i => i.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.HarmonyOption)) ?? true)
+        {
+            player.Logger.LogWarning("OpenStore request failed: Items with an harmony option can't be traded. Player: [{0}], StoreName: [{1}]", player.SelectedCharacter?.Name, player.ShopStorage?.StoreName);
             return;
         }
 

@@ -34,14 +34,9 @@ public abstract class ItemUpgradeConsumeHandlerPlugIn : ItemModifyConsumeHandler
         None,
 
         /// <summary>
-        /// Sets the option to level one.
+        /// Sets the option to the base level.
         /// </summary>
-        SetOptionToLevelOne,
-
-        /// <summary>
-        /// Decreases the option by one level.
-        /// </summary>
-        DecreaseOptionByOne,
+        SetOptionToBaseLevel,
 
         /// <summary>
         /// Removes the option.
@@ -70,7 +65,22 @@ public abstract class ItemUpgradeConsumeHandlerPlugIn : ItemModifyConsumeHandler
         return this.TryAddItemOption(item, persistenceContext);
     }
 
-    private bool TryUpgradeItemOption(Item item)
+    /// <summary>
+    /// Checks if an item can have the configured option.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <returns>Flag indicating whether the item can have the option.</returns>
+    protected virtual bool ItemCanHaveOption(Item item)
+    {
+        return item.Definition?.PossibleItemOptions.Any(o => o.PossibleOptions.Any(p => p.OptionType == this.Configuration.OptionType)) ?? false;
+    }
+
+    /// <summary>
+    /// Tries to upgrade the item option.
+    /// </summary>
+    /// <param name="item">The item to upgrade.</param>
+    /// <returns>Flag indicating whether the item option was upgraded.</returns>
+    protected virtual bool TryUpgradeItemOption(Item item)
     {
         if (!this.Configuration.IncreasesOption)
         {
@@ -79,7 +89,7 @@ public abstract class ItemUpgradeConsumeHandlerPlugIn : ItemModifyConsumeHandler
 
         var itemOption = item.ItemOptions.First(o => o.ItemOption?.OptionType == this.Configuration.OptionType);
         var increasableOption = itemOption.ItemOption;
-        var higherOptionPossible = increasableOption?.LevelDependentOptions.Any(o => o.Level > itemOption.Level) ?? false;
+        var higherOptionPossible = increasableOption?.LevelDependentOptions.Any(o => o.Level > itemOption.Level && o.RequiredItemLevel <= item.Level) ?? false;
         if (!higherOptionPossible)
         {
             return false;
@@ -101,14 +111,11 @@ public abstract class ItemUpgradeConsumeHandlerPlugIn : ItemModifyConsumeHandler
     {
         switch (this.Configuration.FailResult)
         {
-            case ItemFailResult.DecreaseOptionByOne:
-                itemOption.Level = Math.Max(itemOption.Level - 1, 1);
-                break;
             case ItemFailResult.RemoveOption:
                 item.ItemOptions.Remove(itemOption);
                 break;
-            case ItemFailResult.SetOptionToLevelOne:
-                itemOption.Level = 1;
+            case ItemFailResult.SetOptionToBaseLevel:
+                itemOption.Level = itemOption.ItemOption?.LevelDependentOptions.Min(ldo => ldo.Level) ?? itemOption.Level;
                 break;
             default:
                 // do nothing
@@ -150,11 +157,6 @@ public abstract class ItemUpgradeConsumeHandlerPlugIn : ItemModifyConsumeHandler
     private bool ItemHasOptionAlready(Item item)
     {
         return item.ItemOptions.Any(o => o.ItemOption?.OptionType == this.Configuration.OptionType);
-    }
-
-    private bool ItemCanHaveOption(Item item)
-    {
-        return item.Definition?.PossibleItemOptions.Any(o => o.PossibleOptions.Any(p => p.OptionType == this.Configuration.OptionType)) ?? false;
     }
 
     /// <summary>
