@@ -71,30 +71,22 @@ internal partial class CharacterClassInitialization : InitializerBase
 
     private AttributeRelationship CreateAttributeRelationship(AttributeDefinition targetAttribute, float multiplier, AttributeDefinition sourceAttribute, InputOperator inputOperator = InputOperator.Multiply)
     {
-        return this.Context.CreateNew<AttributeRelationship>(targetAttribute.GetPersistent(this.GameConfiguration) ?? targetAttribute, multiplier, sourceAttribute.GetPersistent(this.GameConfiguration) ?? sourceAttribute, inputOperator, default(AttributeDefinition?));
+        return CharacterClassHelper.CreateAttributeRelationship(this.Context, this.GameConfiguration, targetAttribute, multiplier, sourceAttribute, inputOperator);
     }
 
     private AttributeRelationship CreateAttributeRelationship(AttributeDefinition targetAttribute, AttributeDefinition multiplierAttribute, AttributeDefinition sourceAttribute, InputOperator inputOperator = InputOperator.Multiply)
     {
-        return this.Context.CreateNew<AttributeRelationship>(
-            targetAttribute.GetPersistent(this.GameConfiguration) ?? targetAttribute,
-            0f,
-            sourceAttribute.GetPersistent(this.GameConfiguration) ?? sourceAttribute,
-            inputOperator,
-            multiplierAttribute.GetPersistent(this.GameConfiguration) ?? multiplierAttribute);
+        return CharacterClassHelper.CreateAttributeRelationship(this.Context, this.GameConfiguration, targetAttribute, multiplierAttribute, sourceAttribute, inputOperator);
     }
 
     private AttributeRelationship CreateConditionalRelationship(AttributeDefinition targetAttribute, AttributeDefinition conditionalAttribute, AttributeDefinition sourceAttribute)
     {
-        return this.Context.CreateNew<AttributeRelationship>(
-            targetAttribute.GetPersistent(this.GameConfiguration) ?? targetAttribute,
-            conditionalAttribute.GetPersistent(this.GameConfiguration) ?? conditionalAttribute,
-            sourceAttribute.GetPersistent(this.GameConfiguration) ?? sourceAttribute);
+        return CharacterClassHelper.CreateConditionalRelationship(this.Context, this.GameConfiguration, targetAttribute, conditionalAttribute, sourceAttribute);
     }
 
     private ConstValueAttribute CreateConstValueAttribute(float value, AttributeDefinition attribute)
     {
-        return this.Context.CreateNew<ConstValueAttribute>(value, attribute.GetPersistent(this.GameConfiguration));
+        return CharacterClassHelper.CreateConstValueAttribute(this.Context, this.GameConfiguration, value, attribute);
     }
 
     private void AddCommonAttributeRelationships(ICollection<AttributeRelationship> attributeRelationships)
