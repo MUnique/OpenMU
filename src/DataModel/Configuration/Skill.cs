@@ -207,6 +207,11 @@ public partial class Skill
     public string Name { get; set; } = string.Empty;
 
     /// <summary>
+    /// Gets or sets the attack damage. Only relevant for attack skills.
+    /// </summary>
+    public int AttackDamage { get; set; }
+
+    /// <summary>
     /// Gets or sets the requirements to execute the skill.
     /// </summary>
     [MemberOfAggregate]
@@ -291,7 +296,8 @@ public partial class Skill
     public virtual MasterSkillDefinition? MasterDefinition { get; set; }
 
     /// <summary>
-    /// Gets or sets the attack damage. Only relevant for attack skills.
+    /// Gets or sets the area skill settings.
     /// </summary>
-    public int AttackDamage { get; set; }
+    [MemberOfAggregate]
+    public virtual AreaSkillSettings? AreaSkillSettings { get; set; }
 }

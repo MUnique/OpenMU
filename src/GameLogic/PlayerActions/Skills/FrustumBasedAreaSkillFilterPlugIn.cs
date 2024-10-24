@@ -1,4 +1,4 @@
-﻿// <copyright file="FrustrumBasedAreaSkillFilterPlugIn.cs" company="MUnique">
+﻿// <copyright file="FrustumBasedAreaSkillFilterPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -9,9 +9,9 @@ using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.Pathfinding;
 
 /// <summary>
-/// A <see cref="IAreaSkillTargetFilter"/> based on a frustrum.
+/// A <see cref="IAreaSkillTargetFilter"/> based on a frustum.
 /// </summary>
-public abstract class FrustrumBasedAreaSkillFilterPlugIn : IAreaSkillTargetFilter
+public abstract class FrustumBasedAreaSkillFilterPlugIn : IAreaSkillTargetFilter
 {
     private readonly Vector2[][] _rotationVectors;
 
@@ -22,12 +22,12 @@ public abstract class FrustrumBasedAreaSkillFilterPlugIn : IAreaSkillTargetFilte
     private readonly float _startWidth;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="FrustrumBasedAreaSkillFilterPlugIn"/> class.
+    /// Initializes a new instance of the <see cref="FrustumBasedAreaSkillFilterPlugIn"/> class.
     /// </summary>
-    /// <param name="startWidth">The width of the frustrum at the start.</param>
-    /// <param name="endWidth">The width of the frustrum at the end.</param>
+    /// <param name="startWidth">The width of the frustum at the start.</param>
+    /// <param name="endWidth">The width of the frustum at the end.</param>
     /// <param name="distance">The distance.</param>
-    protected FrustrumBasedAreaSkillFilterPlugIn(float startWidth, float endWidth, float distance)
+    protected FrustumBasedAreaSkillFilterPlugIn(float startWidth, float endWidth, float distance)
     {
         this._endWidth = endWidth;
         this._distance = distance;
@@ -41,16 +41,16 @@ public abstract class FrustrumBasedAreaSkillFilterPlugIn : IAreaSkillTargetFilte
     /// <inheritdoc />
     public bool IsTargetWithinBounds(ILocateable attacker, ILocateable target, Point targetAreaCenter, byte rotation)
     {
-        var frustrum = this.GetFrustrum(attacker.Position, rotation);
-        return IsWithinFrustrum(frustrum, target.Position);
+        var frustum = this.GetFrustum(attacker.Position, rotation);
+        return IsWithinFrustum(frustum, target.Position);
     }
 
-    private static bool IsWithinFrustrum((Vector4 X, Vector4 Y) frustrum, Point target)
+    private static bool IsWithinFrustum((Vector4 X, Vector4 Y) frustum, Point target)
     {
-        var isOutOfRange = (((frustrum.X.X - target.X) * (frustrum.Y.W - target.Y)) - ((frustrum.X.W - target.X) * (frustrum.Y.X - target.Y))) < 0.0f
-                           || (((frustrum.X.Y - target.X) * (frustrum.Y.X - target.Y)) - ((frustrum.X.X - target.X) * (frustrum.Y.Y - target.Y))) < 0.0f
-                           || (((frustrum.X.Z - target.X) * (frustrum.Y.Y - target.Y)) - ((frustrum.X.Y - target.X) * (frustrum.Y.Z - target.Y))) < 0.0f
-                           || (((frustrum.X.W - target.X) * (frustrum.Y.Z - target.Y)) - ((frustrum.X.Z - target.X) * (frustrum.Y.W - target.Y))) < 0.0f;
+        var isOutOfRange = (((frustum.X.X - target.X) * (frustum.Y.W - target.Y)) - ((frustum.X.W - target.X) * (frustum.Y.X - target.Y))) < 0.0f
+                           || (((frustum.X.Y - target.X) * (frustum.Y.X - target.Y)) - ((frustum.X.X - target.X) * (frustum.Y.Y - target.Y))) < 0.0f
+                           || (((frustum.X.Z - target.X) * (frustum.Y.Y - target.Y)) - ((frustum.X.Y - target.X) * (frustum.Y.Z - target.Y))) < 0.0f
+                           || (((frustum.X.W - target.X) * (frustum.Y.Z - target.Y)) - ((frustum.X.Z - target.X) * (frustum.Y.W - target.Y))) < 0.0f;
 
         return !isOutOfRange;
     }
@@ -121,7 +121,7 @@ public abstract class FrustrumBasedAreaSkillFilterPlugIn : IAreaSkillTargetFilte
         return result;
     }
 
-    private (Vector4 X, Vector4 Y) GetFrustrum(Point attackerPosition, byte rotation)
+    private (Vector4 X, Vector4 Y) GetFrustum(Point attackerPosition, byte rotation)
     {
         var rotationVectors = this._rotationVectors[rotation];
 

@@ -12,7 +12,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("250E194E-F9AA-48DB-8F5F-9A15DC8E0706")]
 [PlugIn(nameof(FlameStrikeTargetFilterPlugIn), "Filters the targets for the flame strike skill.")]
-public class FlameStrikeTargetFilterPlugIn : FrustrumBasedAreaSkillFilterPlugIn
+public class FlameStrikeTargetFilterPlugIn : FrustumBasedAreaSkillFilterPlugIn
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="FlameStrikeTargetFilterPlugIn"/> class.

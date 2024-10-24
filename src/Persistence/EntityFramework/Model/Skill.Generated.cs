@@ -129,6 +129,32 @@ internal partial class Skill : MUnique.OpenMU.DataModel.Configuration.Skill, IId
         }
     }
 
+    /// <summary>
+    /// Gets or sets the identifier of <see cref="AreaSkillSettings"/>.
+    /// </summary>
+    public Guid? AreaSkillSettingsId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="AreaSkillSettings" />.
+    /// </summary>
+    [ForeignKey(nameof(AreaSkillSettingsId))]
+    public AreaSkillSettings RawAreaSkillSettings
+    {
+        get => base.AreaSkillSettings as AreaSkillSettings;
+        set => base.AreaSkillSettings = value;
+    }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Configuration.AreaSkillSettings AreaSkillSettings
+    {
+        get => base.AreaSkillSettings;set
+        {
+            base.AreaSkillSettings = value;
+            this.AreaSkillSettingsId = this.RawAreaSkillSettings?.Id;
+        }
+    }
+
     /// <inheritdoc />
     public override MUnique.OpenMU.DataModel.Configuration.Skill Clone(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
     {

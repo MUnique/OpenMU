@@ -103,6 +103,40 @@ internal abstract class SkillsInitializerBase : InitializerBase
         skill.SetGuid(skill.Number);
     }
 
+    protected void AddAreaSkillSettings(
+        SkillNumber skillNumber,
+        bool useFrustumFilter,
+        float frustumStartWidth,
+        float frustumEndWidth,
+        float frustumDistance,
+        bool useDeferredHits = false,
+        TimeSpan delayPerOneDistance = default,
+        TimeSpan delayBetweenHits = default,
+        int minimumHitsPerTarget = 1,
+        int maximumHitsPerTarget = 1,
+        int maximumHitsPerAttack = default,
+        float hitChancePerDistanceMultiplier = 1.0f,
+        bool useTargetAreaFilter = false,
+        float targetAreaDiameter = default)
+    {
+        var skill = this.GameConfiguration.Skills.First(s => s.Number == (short)skillNumber);
+        var areaSkillSettings = this.Context.CreateNew<AreaSkillSettings>();
+        skill.AreaSkillSettings = areaSkillSettings;
+
+        areaSkillSettings.UseFrustumFilter = useFrustumFilter;
+        areaSkillSettings.FrustumStartWidth = frustumStartWidth;
+        areaSkillSettings.FrustumEndWidth = frustumEndWidth;
+        areaSkillSettings.FrustumDistance = frustumDistance;
+        areaSkillSettings.UseTargetAreaFilter = useTargetAreaFilter;
+        areaSkillSettings.TargetAreaDiameter = targetAreaDiameter;
+        areaSkillSettings.UseDeferredHits = useDeferredHits;
+        areaSkillSettings.DelayPerOneDistance = delayPerOneDistance;
+        areaSkillSettings.DelayBetweenHits = delayBetweenHits;
+        areaSkillSettings.MinimumNumberOfHitsPerTarget = minimumHitsPerTarget;
+        areaSkillSettings.MaximumNumberOfHitsPerTarget = maximumHitsPerTarget;
+        areaSkillSettings.MaximumNumberOfHitsPerAttack = maximumHitsPerAttack;
+        areaSkillSettings.HitChancePerDistanceMultiplier = hitChancePerDistanceMultiplier;
+    }
     private void ApplyElementalModifier(ElementalType elementalModifier, Skill skill)
     {
         if ((SkillNumber)skill.Number is SkillNumber.IceArrow or SkillNumber.IceArrowStrengthener)
