@@ -101,38 +101,38 @@ public class Armors : ArmorInitializerBase
         this.CreateArmor(14, 4, 2, 2, "Guardian Pants", 54, 25, 45, 40, 80, 0, 0, 1);
 
         // Gloves:
-        this.CreateArmor(0, 5, 2, 2, "Bronze Gloves", 13, 4, 34, 80, 20, 0, 1, 0);
-        this.CreateArmor(1, 5, 2, 2, "Dragon Gloves", 52, 14, 68, 120, 30, 0, 1, 0);
-        this.CreateArmor(2, 5, 2, 2, "Pad Gloves", 3, 2, 28, 20, 0, 1, 0, 0);
-        this.CreateArmor(3, 5, 2, 2, "Legendary Gloves", 44, 11, 42, 20, 0, 1, 0, 0);
-        this.CreateArmor(4, 5, 2, 2, "Bone Gloves", 14, 5, 30, 20, 0, 1, 0, 0);
-        this.CreateArmor(5, 5, 2, 2, "Leather Gloves", 4, 2, 30, 80, 0, 0, 1, 0);
-        this.CreateArmor(6, 5, 2, 2, "Scale Gloves", 22, 7, 40, 110, 0, 0, 1, 0);
-        this.CreateArmor(7, 5, 2, 2, "Sphinx Gloves", 28, 8, 36, 20, 0, 1, 0, 0);
-        this.CreateArmor(8, 5, 2, 2, "Brass Gloves", 32, 9, 44, 100, 30, 0, 1, 0);
-        this.CreateArmor(9, 5, 2, 2, "Plate Gloves", 42, 12, 50, 130, 0, 0, 1, 0);
-        this.CreateArmor(10, 5, 2, 2, "Vine Gloves", 4, 2, 22, 30, 60, 0, 0, 1);
-        this.CreateArmor(11, 5, 2, 2, "Silk Gloves", 14, 4, 26, 30, 70, 0, 0, 1);
-        this.CreateArmor(12, 5, 2, 2, "Wind Gloves", 26, 6, 32, 30, 80, 0, 0, 1);
-        this.CreateArmor(13, 5, 2, 2, "Spirit Gloves", 38, 9, 38, 40, 80, 0, 0, 1);
-        this.CreateArmor(14, 5, 2, 2, "Guardian Gloves", 50, 15, 45, 40, 80, 0, 0, 1);
+        this.CreateGloves(0, "Bronze Gloves", 13, 4, 4, 34, 80, 20, 0, 1, 0);
+        this.CreateGloves(1, "Dragon Gloves", 52, 14, 6, 68, 120, 30, 0, 1, 0);
+        this.CreateGloves(2, "Pad Gloves", 3, 2, 0, 28, 20, 0, 1, 0, 0);
+        this.CreateGloves(3, "Legendary Gloves", 44, 11, 0, 42, 20, 0, 1, 0, 0);
+        this.CreateGloves(4, "Bone Gloves", 14, 5, 0, 30, 20, 0, 1, 0, 0);
+        this.CreateGloves(5, "Leather Gloves", 4, 2, 8, 30, 80, 0, 0, 1, 0);
+        this.CreateGloves(6, "Scale Gloves", 22, 7, 10, 40, 110, 0, 0, 1, 0);
+        this.CreateGloves(7, "Sphinx Gloves", 28, 8, 0, 36, 20, 0, 1, 0, 0);
+        this.CreateGloves(8, "Brass Gloves", 32, 9, 8, 44, 100, 30, 0, 1, 0);
+        this.CreateGloves(9, "Plate Gloves", 42, 12, 4, 50, 130, 0, 0, 1, 0);
+        this.CreateGloves(10, "Vine Gloves", 4, 2, 4, 22, 30, 60, 0, 0, 1);
+        this.CreateGloves(11, "Silk Gloves", 14, 4, 8, 26, 30, 70, 0, 0, 1);
+        this.CreateGloves(12, "Wind Gloves", 26, 6, 10, 32, 30, 80, 0, 0, 1);
+        this.CreateGloves(13, "Spirit Gloves", 38, 9, 4, 38, 40, 80, 0, 0, 1);
+        this.CreateGloves(14, "Guardian Gloves", 50, 15, 6, 45, 40, 80, 0, 0, 1);
 
         // Boots:
-        this.CreateArmor(0, 6, 2, 2, "Bronze Boots", 12, 4, 34, 80, 20, 0, 1, 0);
-        this.CreateArmor(1, 6, 2, 2, "Dragon Boots", 54, 15, 68, 120, 30, 0, 1, 0);
-        this.CreateArmor(2, 6, 2, 2, "Pad Boots", 4, 3, 28, 20, 0, 1, 0, 0);
-        this.CreateArmor(3, 6, 2, 2, "Legendary Boots", 46, 12, 42, 30, 0, 1, 0, 0);
-        this.CreateArmor(4, 6, 2, 2, "Bone Boots", 16, 6, 30, 30, 0, 1, 0, 0);
-        this.CreateArmor(5, 6, 2, 2, "Leather Boots", 5, 2, 30, 80, 0, 0, 1, 0);
-        this.CreateArmor(6, 6, 2, 2, "Scale Boots", 22, 8, 40, 110, 0, 0, 1, 0);
-        this.CreateArmor(7, 6, 2, 2, "Sphinx Boots", 30, 9, 36, 30, 0, 1, 0, 0);
-        this.CreateArmor(8, 6, 2, 2, "Brass Boots", 32, 10, 44, 100, 30, 0, 1, 0);
-        this.CreateArmor(9, 6, 2, 2, "Plate Boots", 42, 12, 50, 130, 0, 0, 1, 0);
-        this.CreateArmor(10, 6, 2, 2, "Vine Boots", 5, 2, 22, 30, 60, 0, 0, 1);
-        this.CreateArmor(11, 6, 2, 2, "Silk Boots", 15, 4, 26, 30, 70, 0, 0, 1);
-        this.CreateArmor(12, 6, 2, 2, "Wind Boots", 27, 7, 32, 30, 80, 0, 0, 1);
-        this.CreateArmor(13, 6, 2, 2, "Spirit Boots", 40, 10, 38, 40, 80, 0, 0, 1);
-        this.CreateArmor(14, 6, 2, 2, "Guardian Boots", 52, 16, 45, 40, 80, 0, 0, 1);
+        this.CreateBoots(0, 6, 2, 2, "Bronze Boots", 12, 4, 10, 34, 80, 20, 0, 1, 0);
+        this.CreateBoots(1, 6, 2, 2, "Dragon Boots", 54, 15, 2, 68, 120, 30, 0, 1, 0);
+        this.CreateBoots(2, 6, 2, 2, "Pad Boots", 4, 3, 10, 28, 20, 0, 1, 0, 0);
+        this.CreateBoots(3, 6, 2, 2, "Legendary Boots", 46, 12, 0, 42, 30, 0, 1, 0, 0);
+        this.CreateBoots(4, 6, 2, 2, "Bone Boots", 16, 6, 6, 30, 30, 0, 1, 0, 0);
+        this.CreateBoots(5, 6, 2, 2, "Leather Boots", 5, 2, 12, 30, 80, 0, 0, 1, 0);
+        this.CreateBoots(6, 6, 2, 2, "Scale Boots", 22, 8, 8, 40, 110, 0, 0, 1, 0);
+        this.CreateBoots(7, 6, 2, 2, "Sphinx Boots", 30, 9, 8, 36, 30, 0, 1, 0, 0);
+        this.CreateBoots(8, 6, 2, 2, "Brass Boots", 32, 10, 6, 44, 100, 30, 0, 1, 0);
+        this.CreateBoots(9, 6, 2, 2, "Plate Boots", 42, 12, 4, 50, 130, 0, 0, 1, 0);
+        this.CreateBoots(10, 6, 2, 2, "Vine Boots", 5, 2, 0, 22, 30, 60, 0, 0, 1);
+        this.CreateBoots(11, 6, 2, 2, "Silk Boots", 15, 4, 0, 26, 30, 70, 0, 0, 1);
+        this.CreateBoots(12, 6, 2, 2, "Wind Boots", 27, 7, 0, 32, 30, 80, 0, 0, 1);
+        this.CreateBoots(13, 6, 2, 2, "Spirit Boots", 40, 10, 0, 38, 40, 80, 0, 0, 1);
+        this.CreateBoots(14, 6, 2, 2, "Guardian Boots", 52, 16, 0, 45, 40, 80, 0, 0, 1);
 
         this.BuildSets();
     }

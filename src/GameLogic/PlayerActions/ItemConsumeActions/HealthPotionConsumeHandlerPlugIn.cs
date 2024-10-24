@@ -25,6 +25,6 @@ public abstract class HealthPotionConsumeHandlerPlugIn : RecoverConsumeHandlerPl
     protected override async ValueTask OnAfterRecoverAsync(Player player)
     {
         // maybe instead of calling UpdateCurrentHealth etc. provide a more general method where we pass this.CurrentAttribute. The view can then decide what to do with it.
-        await player.InvokeViewPlugInAsync<IUpdateCurrentHealthPlugIn>(p => p.UpdateCurrentHealthAsync()).ConfigureAwait(false);
+        await player.InvokeViewPlugInAsync<IUpdateStatsPlugIn>(p => p.UpdateCurrentStatsAsync(IUpdateStatsPlugIn.UpdatedStats.Health)).ConfigureAwait(false);
     }
 }

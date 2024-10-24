@@ -77,7 +77,13 @@ public class ComposableAttribute : BaseAttribute, IComposableAttribute
             // nothing to do
         }
 
-        this._cachedValue = (rawValues * multiValues) + finalValues;
+        var newValue = (rawValues * multiValues) + finalValues;
+        if (this.Definition.MaximumValue.HasValue)
+        {
+            newValue = Math.Min(this.Definition.MaximumValue.Value, newValue);
+        }
+
+        this._cachedValue = newValue;
 
         return this._cachedValue.Value;
     }

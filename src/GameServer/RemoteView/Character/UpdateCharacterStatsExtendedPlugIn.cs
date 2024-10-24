@@ -37,6 +37,7 @@ public class UpdateCharacterStatsExtendedPlugIn : IUpdateCharacterStatsPlugIn
             return;
         }
 
+        var maxAttackSpeed = this._player.GameContext.Configuration.Attributes.FirstOrDefault(a => a == Stats.AttackSpeed)?.MaximumValue ?? 200;
         await connection.SendCharacterInformationExtendedAsync(
                 this._player.Position.X,
                 this._player.Position.Y,
@@ -65,8 +66,8 @@ public class UpdateCharacterStatsExtendedPlugIn : IUpdateCharacterStatsPlugIn
                 (ushort)this._player.SelectedCharacter.UsedNegFruitPoints,
                 this._player.SelectedCharacter.GetMaximumFruitPoints(),
                 (ushort)this._player.Attributes[Stats.AttackSpeed],
-                (ushort)this._player.Attributes[Stats.AttackSpeed], // todo: implement MagicSpeed
-                200, // todo: This is the maximum attack speed, make configurable.
+                (ushort)this._player.Attributes[Stats.MagicSpeed],
+                (ushort)maxAttackSpeed,
                 (byte)this._player.SelectedCharacter.InventoryExtensions)
             .ConfigureAwait(false);
 
