@@ -30,7 +30,7 @@ public class AppearanceChangedPlugIn : IAppearanceChangedPlugIn
     public AppearanceChangedPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public async ValueTask AppearanceChangedAsync(Player changedPlayer, Item item)
+    public async ValueTask AppearanceChangedAsync(Player changedPlayer, Item item, bool isEquipped)
     {
         var connection = this._player.Connection;
         if (connection is null || changedPlayer.Inventory is not { } inventory)
@@ -94,7 +94,7 @@ public class AppearanceChangedExtendedPlugIn : IAppearanceChangedPlugIn
     public AppearanceChangedExtendedPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public async ValueTask AppearanceChangedAsync(Player changedPlayer, Item item)
+    public async ValueTask AppearanceChangedAsync(Player changedPlayer, Item item, bool isEquipped)
     {
         var connection = this._player.Connection;
         if (connection is null || changedPlayer.Inventory is null)
@@ -105,7 +105,7 @@ public class AppearanceChangedExtendedPlugIn : IAppearanceChangedPlugIn
         await connection.SendAppearanceChangedExtendedAsync(
             changedPlayer.GetId(this._player),
             item.ItemSlot,
-            (byte)(item.Definition?.Group ?? 0xFF),
+            (byte)((isEquipped? item.Definition?.Group : 0xFF) ?? 0xFF),
             (ushort)(item.Definition?.Number ?? 0xFFFF),
             item.Level,
             (byte)(ItemSerializerHelper.GetExcellentByte(item) | ItemSerializerHelper.GetFenrirByte(item)),

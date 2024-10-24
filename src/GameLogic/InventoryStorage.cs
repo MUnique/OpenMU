@@ -31,7 +31,7 @@ public class InventoryStorage : Storage, IInventoryStorage
             new ItemStorageAdapter(player.SelectedCharacter?.Inventory ?? throw Error.NotInitializedProperty(player, "SelectedCharacter.Inventory"), FirstEquippableItemSlotIndex, player.GetInventorySize()))
     {
         this._player = player;
-        this.EquippedItemsChanged += async eventArgs => await this.UpdateItemsOnChangeAsync(eventArgs.Item).ConfigureAwait(false);
+        this.EquippedItemsChanged += async eventArgs => await this.UpdateItemsOnChangeAsync(eventArgs.Item, eventArgs.IsEquipped).ConfigureAwait(false);
         this._gameContext = context;
 
         if (player.SelectedCharacter.InventoryExtensions > 0)
@@ -110,7 +110,7 @@ public class InventoryStorage : Storage, IInventoryStorage
             var isEquippedItem = this.IsWearingSlot(slot);
             if (isEquippedItem && this.EquippedItemsChanged is { } eventHandler)
             {
-                await eventHandler(new ItemEventArgs(convertedItem ?? item)).ConfigureAwait(false);
+                await eventHandler(new ItemEventArgs(convertedItem ?? item, true)).ConfigureAwait(false);
             }
         }
 
@@ -124,7 +124,7 @@ public class InventoryStorage : Storage, IInventoryStorage
         await base.RemoveItemAsync(item).ConfigureAwait(false);
         if (isEquippedItem && this.EquippedItemsChanged is { } eventHandler)
         {
-            await eventHandler(new ItemEventArgs(item)).ConfigureAwait(false);
+            await eventHandler(new ItemEventArgs(item, false)).ConfigureAwait(false);
         }
     }
 
@@ -133,11 +133,12 @@ public class InventoryStorage : Storage, IInventoryStorage
         return slot >= FirstEquippableItemSlotIndex && slot <= LastEquippableItemSlotIndex;
     }
 
-    private async ValueTask UpdateItemsOnChangeAsync(Item item)
+    private async ValueTask UpdateItemsOnChangeAsync(Item item, bool isEquipped)
     {
         this._player.OnAppearanceChanged();
+
         await this._player.ForEachWorldObserverAsync<IAppearanceChangedPlugIn>(
-            p => p.AppearanceChangedAsync(this._player, item),
+            p => p.AppearanceChangedAsync(this._player, item, isEquipped),
             false).ConfigureAwait(false); // in my tests it was not needed to send the appearance to the own players client.
 
         if (this._player.Attributes is null)
