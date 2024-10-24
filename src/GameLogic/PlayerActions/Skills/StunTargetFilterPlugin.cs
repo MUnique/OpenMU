@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 /// </remarks>
 [Guid("4E53F211-B225-4807-9FC7-1D65C1E1456A")]
 [PlugIn(nameof(StunTargetFilterPlugin), "Filters the targets for the stun skill.")]
-public class StunTargetFilterPlugin : FrustrumBasedAreaSkillFilterPlugIn
+public class StunTargetFilterPlugin : FrustumBasedAreaSkillFilterPlugIn
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="StunTargetFilterPlugin"/> class.

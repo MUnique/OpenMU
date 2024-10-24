@@ -12,7 +12,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("DCC9E368-541E-4BA1-8863-AF9798BC4377")]
 [PlugIn(nameof(PowerSlashTargetFilterPlugin), "Filters the targets for the power slash skill.")]
-public class PowerSlashTargetFilterPlugin : FrustrumBasedAreaSkillFilterPlugIn
+public class PowerSlashTargetFilterPlugin : FrustumBasedAreaSkillFilterPlugIn
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="PowerSlashTargetFilterPlugin"/> class.

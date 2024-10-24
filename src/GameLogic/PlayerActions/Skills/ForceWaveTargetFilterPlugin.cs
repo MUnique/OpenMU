@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 /// </remarks>
 [Guid("87D19A8A-B656-43D8-87A4-F05BFE12D691")]
 [PlugIn(nameof(ForceWaveTargetFilterPlugin), "Filters the targets for the force wave skill.")]
-public class ForceWaveTargetFilterPlugin : FrustrumBasedAreaSkillFilterPlugIn
+public class ForceWaveTargetFilterPlugin : FrustumBasedAreaSkillFilterPlugIn
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="ForceWaveTargetFilterPlugin"/> class.

@@ -12,7 +12,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("5DDE3499-BD4A-48F1-98A6-A99E8CC347CA")]
 [PlugIn(nameof(ChaoticDiseierTargetFilterPlugin), "Filters the targets for the chaotic diseier skill.")]
-public class ChaoticDiseierTargetFilterPlugin : FrustrumBasedAreaSkillFilterPlugIn
+public class ChaoticDiseierTargetFilterPlugin : FrustumBasedAreaSkillFilterPlugIn
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="ChaoticDiseierTargetFilterPlugin"/> class.

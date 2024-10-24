@@ -12,7 +12,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("6A863656-973C-414C-BBA0-FC3B79DF97E0")]
 [PlugIn(nameof(MultiShotTargetFilterPlugin), "Filters the targets for the multi shot skill.")]
-public class MultiShotTargetFilterPlugin : FrustrumBasedAreaSkillFilterPlugIn
+public class MultiShotTargetFilterPlugin : FrustumBasedAreaSkillFilterPlugIn
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="MultiShotTargetFilterPlugin"/> class.

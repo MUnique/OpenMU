@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 /// </remarks>
 [Guid("67D30451-83EA-4C1F-A419-E720D1CF9484")]
 [PlugIn(nameof(ElectricSpikeTargetFilterPlugin), "Filters the targets for the electric spike skill.")]
-public class ElectricSpikeTargetFilterPlugin : FrustrumBasedAreaSkillFilterPlugIn
+public class ElectricSpikeTargetFilterPlugin : FrustumBasedAreaSkillFilterPlugIn
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="ElectricSpikeTargetFilterPlugin"/> class.
