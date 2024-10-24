@@ -77,6 +77,9 @@ public static class MapsterConfigurator
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Entities.SkillEntry, MUnique.OpenMU.DataModel.Entities.SkillEntry>()
             .Include<SkillEntry, BasicModel.SkillEntry>();
 
+        Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.AreaSkillSettings, MUnique.OpenMU.DataModel.Configuration.AreaSkillSettings>()
+            .Include<AreaSkillSettings, BasicModel.AreaSkillSettings>();
+
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.BattleZoneDefinition, MUnique.OpenMU.DataModel.Configuration.BattleZoneDefinition>()
             .Include<BattleZoneDefinition, BasicModel.BattleZoneDefinition>();
 
@@ -178,9 +181,6 @@ public static class MapsterConfigurator
 
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.Rectangle, MUnique.OpenMU.DataModel.Configuration.Rectangle>()
             .Include<Rectangle, BasicModel.Rectangle>();
-
-        Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.AreaSkillSettings, MUnique.OpenMU.DataModel.Configuration.AreaSkillSettings>()
-            .Include<AreaSkillSettings, BasicModel.AreaSkillSettings>();
 
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.Skill, MUnique.OpenMU.DataModel.Configuration.Skill>()
             .Include<Skill, BasicModel.Skill>();

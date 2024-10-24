@@ -38,6 +38,7 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.LetterBody>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.QuestMonsterKillRequirementState>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.SkillEntry>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.AreaSkillSettings>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.BattleZoneDefinition>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.CharacterClass>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.ChatServerDefinition>();
@@ -72,7 +73,6 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.MonsterDefinition>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.MonsterSpawnArea>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Rectangle>();
-        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.AreaSkillSettings>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Skill>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.SkillComboDefinition>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.SkillComboStep>();
