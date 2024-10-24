@@ -87,7 +87,7 @@ public static class ItemExtensions
     /// </returns>
     public static bool IsAncient(this Item item)
     {
-        return item.ItemOptions.Any(link => link.ItemOption?.OptionType == ItemOptionTypes.AncientBonus);
+        return item.ItemSetGroups.Any(itemSet => itemSet.AncientSetDiscriminator > 0);
     }
 
     /// <summary>
@@ -305,6 +305,13 @@ public static class ItemExtensions
             .Select(option => option.ItemOption!.OptionType!)
             .Distinct()
             .ForEach(appearance.VisibleOptions.Add);
+        if (item.IsAncient())
+        {
+            // 1. The ancient option is not included in the item.ItemOptions.
+            // 2. The bonus option is not always existing for ancient items. And it's not marked as visible.
+            // -> we check it based on the item set group.
+            appearance.VisibleOptions.Add(ItemOptionTypes.AncientOption);
+        }
         return appearance;
     }
 
