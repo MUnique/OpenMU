@@ -13,7 +13,7 @@ using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// This update adds Jewel of Harmony option weights used for option assignment, fixes item restore mix and wizardry attack damage increase option.
+/// This update adds Jewel of Harmony option weights used for option assignment, fixes some options, and fixes item restore mix.
 /// </summary>
 [PlugIn(PlugInName, PlugInDescription)]
 [Guid("E94DE59E-5B3A-4498-A4AF-E7F4F173B754")]
@@ -27,7 +27,7 @@ public class AddHarmonyOptionWeightsUpdateSeason6 : UpdatePlugInBase
     /// <summary>
     /// The plug in description.
     /// </summary>
-    internal const string PlugInDescription = "This update adds Jewel of Harmony option weights used for option assignment, fixes item restore mix and wizardry attack damage increase option";
+    internal const string PlugInDescription = "This update adds Jewel of Harmony option weights used for option assignment, fixes some options, and fixes item restore mix";
 
     /// <inheritdoc />
     public override string Name => PlugInName;
@@ -107,13 +107,28 @@ public class AddHarmonyOptionWeightsUpdateSeason6 : UpdatePlugInBase
             }
         }
 
-        // Fix wiz/curse dmg increase option values and attribute
-        float[] magicAtkDmgIncValues = [6, 8, 10, 12, 14, 16, 17, 18, 19, 21, 23, 25, 27, 31];
-        var wizBaseDmgAttr = gameConfiguration.Attributes.Single(a => a.Id == new Guid("7F4F3646-33A6-40AC-8DA6-29A0A0F46016"));
+        // Fix physical base dmg attribute
+        var baseDmgBonusOpt = physAttackOptions?.Single(o => o.Number == 5);
+        var physBaseDmgAttr = gameConfiguration.Attributes.Single(a => a.Id == new Guid("DD1E13E4-BFFD-45B5-9B91-9080710324B2"));
 
+        if (baseDmgBonusOpt?.LevelDependentOptions is ICollection<ItemOptionOfLevel> baseDmgOptLvls)
+        {
+            foreach (var level in baseDmgOptLvls)
+            {
+                if (level.PowerUpDefinition is PowerUpDefinition pud)
+                {
+                    pud.TargetAttribute = physBaseDmgAttr;
+                }
+            }
+        }
+
+        // Fix wiz/curse dmg increase option values and attribute
         var wizAtkDmgIncOpt = wizAttackOptions?.Single(o => o.Number == 1);
         var curseAtkDmgIncOpt = curseAttackOptions?.Single(o => o.Number == 1);
         List<IncreasableItemOption?> magicAtkDmgIncOpts = [wizAtkDmgIncOpt, curseAtkDmgIncOpt];
+
+        var wizBaseDmgAttr = gameConfiguration.Attributes.Single(a => a.Id == new Guid("7F4F3646-33A6-40AC-8DA6-29A0A0F46016"));
+        float[] magicAtkDmgIncValues = [6, 8, 10, 12, 14, 16, 17, 18, 19, 21, 23, 25, 27, 31];
 
         foreach (var opt in magicAtkDmgIncOpts)
         {

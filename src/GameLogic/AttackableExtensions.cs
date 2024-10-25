@@ -56,7 +56,7 @@ public static class AttackableExtensions
         }
         else if (isCriticalHit)
         {
-            dmg = baseMaxDamage;
+            dmg = baseMaxDamage + (int)attacker.Attributes[Stats.CriticalDamageBonus];
             attributes |= DamageAttributes.Critical;
         }
         else if (baseMaxDamage <= baseMinDamage)
