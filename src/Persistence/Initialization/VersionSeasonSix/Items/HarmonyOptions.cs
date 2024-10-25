@@ -78,7 +78,7 @@ public class HarmonyOptions : InitializerBase
         definition.Name = WizardryAttackOptionsName;
         definition.MaximumOptionsPerItem = 1;
 
-        definition.PossibleOptions.Add(this.CreateHarmonyOptions(1, ItemOptionDefinitionNumbers.HarmonyWizardry, 40, Stats.WizardryAttackDamageIncrease, AggregateType.AddRaw, 0, 0.06f, 0.08f, 0.10f, 0.12f, 0.14f, 0.16f, 0.17f, 0.18f, 0.19f, 0.21f, 0.23f, 0.25f, 0.27f, 0.31f));
+        definition.PossibleOptions.Add(this.CreateHarmonyOptions(1, ItemOptionDefinitionNumbers.HarmonyWizardry, 40, Stats.WizardryBaseDmg, AggregateType.AddRaw, 0, 6, 8, 10, 12, 14, 16, 17, 18, 19, 21, 23, 25, 27, 31));
         definition.PossibleOptions.Add(this.CreateHarmonyOptions(2, ItemOptionDefinitionNumbers.HarmonyWizardry, 40, Stats.RequiredStrengthReduction, AggregateType.AddRaw, 0, 6, 8, 10, 12, 14, 16, 20, 23, 26, 29, 32, 35, 37, 40));
         definition.PossibleOptions.Add(this.CreateHarmonyOptions(3, ItemOptionDefinitionNumbers.HarmonyWizardry, 40, Stats.RequiredAgilityReduction, AggregateType.AddRaw, 0, 6, 8, 10, 12, 14, 16, 20, 23, 26, 29, 32, 35, 37, 40));
         definition.PossibleOptions.Add(this.CreateHarmonyOptions(4, ItemOptionDefinitionNumbers.HarmonyWizardry, 30, Stats.SkillDamageBonus, AggregateType.AddRaw, 6, 7, 10, 13, 16, 19, 22, 25, 30));

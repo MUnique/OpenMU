@@ -116,6 +116,8 @@ public static class EnumerableExtensions
                     return list[i];
                 }
             }
+
+            return SelectRandom(enumerable, randomizer);  // Fallback in case there are no weights assigned (>0)
         }
 
         return default;
