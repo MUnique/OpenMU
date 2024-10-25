@@ -13,7 +13,7 @@ using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// This update adds Jewel of Harmony option weights used for option assignment.
+/// This update adds Jewel of Harmony option weights used for option assignment, fixes item restore mix and wizardry attack damage increase option.
 /// </summary>
 [PlugIn(PlugInName, PlugInDescription)]
 [Guid("E94DE59E-5B3A-4498-A4AF-E7F4F173B754")]
@@ -27,7 +27,7 @@ public class AddHarmonyOptionWeightsUpdateSeason6 : UpdatePlugInBase
     /// <summary>
     /// The plug in description.
     /// </summary>
-    internal const string PlugInDescription = "This update adds Jewel of Harmony option weights used for option assignment";
+    internal const string PlugInDescription = "This update adds Jewel of Harmony option weights used for option assignment, fixes item restore mix and wizardry attack damage increase option";
 
     /// <inheritdoc />
     public override string Name => PlugInName;
