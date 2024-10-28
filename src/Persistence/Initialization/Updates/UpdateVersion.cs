@@ -179,4 +179,9 @@ public enum UpdateVersion
     /// The version of the <see cref="FixWingsDmgRatesUpdatePlugInSeason6"/>.
     /// </summary>
     FixWingsDmgRatesPlugInSeason6 = 34,
+
+    /// <summary>
+    /// The version of the <see cref="AddHarmonyOptionWeightsUpdateSeason6"/>.
+    /// </summary>
+    AddHarmonyOptionWeightsSeason6 = 35,
 }

@@ -14,13 +14,20 @@ public class ItemEventArgs : EventArgs
     /// Initializes a new instance of the <see cref="ItemEventArgs"/> class.
     /// </summary>
     /// <param name="item">The item.</param>
-    public ItemEventArgs(Item item)
+    /// <param name="isEquipped">Whether equipped or not</param>
+    public ItemEventArgs(Item item, bool isEquipped)
     {
         this.Item = item;
+        this.IsEquipped = isEquipped;
     }
 
     /// <summary>
     /// Gets the item which is involved at the event.
     /// </summary>
     public Item Item { get; }
+
+    /// <summary>
+    /// Gets a value indicating whether the item is equipped at the event.
+    /// </summary>
+    public bool IsEquipped { get; }
 }

@@ -465,7 +465,9 @@ public class ItemSerializerExtended : IItemSerializer
             }
         }
 
-        private int ExcellentIndex => this.Options.HasFlag(OptionFlags.HasOption) ? 6 : 5;
+        private int AdditionalOptionIndex => this.Options.HasFlag(OptionFlags.HasOption) ? 5 : 4;
+
+        private int ExcellentIndex => this.Options.HasFlag(OptionFlags.HasExcellent) ? this.AdditionalOptionIndex + 1 : this.AdditionalOptionIndex;
 
         private int AncientIndex => this.Options.HasFlag(OptionFlags.HasAncient) ? this.ExcellentIndex + 1 : this.ExcellentIndex;
 

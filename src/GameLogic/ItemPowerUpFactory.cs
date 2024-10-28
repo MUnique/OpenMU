@@ -227,6 +227,12 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
                 continue;
             }
 
+            if (optionOfLevel?.RequiredItemLevel > item.Level)
+            {
+                // Some options (like harmony) although on the item can be inactive.
+                continue;
+            }
+
             var powerUp = optionOfLevel?.PowerUpDefinition ?? option.PowerUpDefinition;
 
             if (powerUp?.Boost is null)
