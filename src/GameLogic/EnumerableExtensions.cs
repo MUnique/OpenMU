@@ -91,4 +91,44 @@ public static class EnumerableExtensions
     /// <param name="enumerable">The enumerable.</param>
     /// <returns>The randomly selected element.</returns>
     public static T? SelectRandom<T>(this IEnumerable<T> enumerable) => SelectRandom(enumerable, Rand.GetRandomizer());
+
+    /// <summary>
+    /// Selects a random weighted element of an enumerable.
+    /// </summary>
+    /// <typeparam name="T">The generic type of the enumerable.</typeparam>
+    /// <param name="enumerable">The enumerable.</param>
+    /// <param name="weights">The weights associated with <paramref name="enumerable" />, respectively.</param>
+    /// <param name="randomizer">The randomizer.</param>
+    /// <returns>The randomly selected weighted element.</returns>
+    public static T? SelectWeightedRandom<T>(this IEnumerable<T> enumerable, IEnumerable<int> weights, IRandomizer randomizer)
+    {
+        var list = enumerable as IList<T> ?? enumerable.ToList();
+        var weightList = weights as IList<int> ?? weights.ToList();
+        if (list.Count > 0 && weightList.Count == list.Count)
+        {
+            var roll = randomizer.NextInt(0, weights.Sum());
+            int inc = 0;
+            for (int i = 0; i < weightList.Count; i++)
+            {
+                inc += weightList[i];
+                if (roll < inc)
+                {
+                    return list[i];
+                }
+            }
+
+            return SelectRandom(enumerable, randomizer);  // Fallback in case there are no weights assigned (>0)
+        }
+
+        return default;
+    }
+
+    /// <summary>
+    /// Selects a random weighted element of an enumerable.
+    /// </summary>
+    /// <typeparam name="T">The generic type of the enumerable.</typeparam>
+    /// <param name="enumerable">The enumerable.</param>
+    /// <param name="weights">The weights associated with <paramref name="enumerable" />, respectively.</param>
+    /// <returns>The randomly selected weighted element.</returns>
+    public static T? SelectWeightedRandom<T>(this IEnumerable<T> enumerable, IEnumerable<int> weights) => SelectWeightedRandom(enumerable, weights, Rand.GetRandomizer());
 }

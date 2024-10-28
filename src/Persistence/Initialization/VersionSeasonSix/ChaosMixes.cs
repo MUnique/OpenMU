@@ -90,7 +90,7 @@ public class ChaosMixes : InitializerBase
 
         crafting.SimpleCraftingSettings = craftingSettings;
         craftingSettings.Money = money;
-        craftingSettings.SuccessPercent = (byte)(60 - (((targetLevel - 10) / 2) * 5));
+        craftingSettings.SuccessPercent = (byte)(60 - ((targetLevel - 10) / 2 * 5));
         craftingSettings.SuccessPercentageAdditionForExcellentItem = -10;
         craftingSettings.SuccessPercentageAdditionForAncientItem = -15;
         craftingSettings.SuccessPercentageAdditionForSocketItem = -20;
@@ -1186,7 +1186,8 @@ public class ChaosMixes : InitializerBase
 
         var randomItem = this.Context.CreateNew<ItemCraftingRequiredItem>();
         randomItem.MinimumAmount = 1;
-        randomItem.MinimumAmount = 1;
+        randomItem.MaximumAmount = 1;
+        randomItem.MaximumItemLevel = 15;
         randomItem.RequiredItemOptions.Add(this.GameConfiguration.ItemOptionTypes.First(o => o == ItemOptionTypes.HarmonyOption));
         randomItem.FailResult = MixResult.StaysAsIs; // It's never failing, but we set it just in case.
         randomItem.SuccessResult = MixResult.StaysAsIs;
