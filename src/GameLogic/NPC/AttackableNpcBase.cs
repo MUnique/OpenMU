@@ -217,6 +217,53 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
         // can be overwritten
     }
 
+    /// <summary>
+    /// Called when this instance died.
+    /// </summary>
+    /// <param name="attacker">The attacker which killed this instance.</param>
+    protected virtual async ValueTask OnDeathAsync(IAttacker attacker)
+    {
+        if (this.ShouldRespawn)
+        {
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await Task.Delay(this.Definition.RespawnDelay).ConfigureAwait(false);
+                    await this.RespawnAsync().ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    Debug.Fail($"Unexpected error during respawning the attackable npc {this}: {ex}", ex.StackTrace);
+                }
+            });
+        }
+
+        await this.ForEachWorldObserverAsync<IObjectGotKilledPlugIn>(p => p.ObjectGotKilledAsync(this, attacker), true).ConfigureAwait(false);
+
+        var player = this.GetHitNotificationTarget(attacker);
+        if (player is { })
+        {
+            int exp = await (player.Party?.DistributeExperienceAfterKillAsync(this, player) ?? player.AddExpAfterKillAsync(this)).ConfigureAwait(false);
+            if (attacker == player)
+            {
+                await player.AfterKilledMonsterAsync().ConfigureAwait(false);
+            }
+
+            if (player.GameContext.PlugInManager.GetPlugInPoint<IAttackableGotKilledPlugIn>() is { } plugInPoint)
+            {
+                await plugInPoint.AttackableGotKilledAsync(this, attacker).ConfigureAwait(false);
+            }
+
+            if (player.SelectedCharacter!.State > HeroState.Normal)
+            {
+                player.SelectedCharacter.StateRemainingSeconds -= (int)this.Attributes[Stats.Level];
+            }
+
+            _ = this.DropItemDelayedAsync(player, exp); // don't wait for completion.
+        }
+    }
+
     private async ValueTask RemoveFromMapAndDisposeAsync()
     {
         await this.CurrentMap.RemoveAsync(this).ConfigureAwait(false);
@@ -320,53 +367,6 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
             var owners = killer.Party?.PartyList.AsEnumerable() ?? killer.GetAsEnumerable();
             var droppedItem = new DroppedItem(item, dropCoordinates, this.CurrentMap, null, owners);
             await this.CurrentMap.AddAsync(droppedItem).ConfigureAwait(false);
-        }
-    }
-
-    /// <summary>
-    /// Called when this instance died.
-    /// </summary>
-    /// <param name="attacker">The attacker which killed this instance.</param>
-    protected virtual async ValueTask OnDeathAsync(IAttacker attacker)
-    {
-        if (this.ShouldRespawn)
-        {
-            _ = Task.Run(async () =>
-            {
-                try
-                {
-                    await Task.Delay(this.Definition.RespawnDelay).ConfigureAwait(false);
-                    await this.RespawnAsync().ConfigureAwait(false);
-                }
-                catch (Exception ex)
-                {
-                    Debug.Fail($"Unexpected error during respawning the attackable npc {this}: {ex}", ex.StackTrace);
-                }
-            });
-        }
-
-        await this.ForEachWorldObserverAsync<IObjectGotKilledPlugIn>(p => p.ObjectGotKilledAsync(this, attacker), true).ConfigureAwait(false);
-
-        var player = this.GetHitNotificationTarget(attacker);
-        if (player is { })
-        {
-            int exp = await ((player.Party?.DistributeExperienceAfterKillAsync(this, player) ?? player.AddExpAfterKillAsync(this)).ConfigureAwait(false));
-            if (attacker == player)
-            {
-                await player.AfterKilledMonsterAsync().ConfigureAwait(false);
-            }
-
-            if (player.GameContext.PlugInManager.GetPlugInPoint<IAttackableGotKilledPlugIn>() is { } plugInPoint)
-            {
-                await plugInPoint.AttackableGotKilledAsync(this, attacker);
-            }
-
-            if (player.SelectedCharacter!.State > HeroState.Normal)
-            {
-                player.SelectedCharacter.StateRemainingSeconds -= (int)this.Attributes[Stats.Level];
-            }
-
-            _ = this.DropItemDelayedAsync(player, exp); // don't wait for completion.
         }
     }
 

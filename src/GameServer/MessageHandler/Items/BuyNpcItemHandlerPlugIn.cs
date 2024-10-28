@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("7c7a0944-341b-4cdf-a9b2-010c0c95fa41")]
 internal class BuyNpcItemHandlerPlugIn : IPacketHandlerPlugIn
 {
-    private readonly BuyNpcItemAction _buyAction = new ();
+    private readonly BuyNpcItemAction _buyAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;

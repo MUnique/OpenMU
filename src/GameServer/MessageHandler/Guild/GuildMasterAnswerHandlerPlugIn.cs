@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("3715c03e-9c77-4e43-9f6b-c1db3a2c3233")]
 internal class GuildMasterAnswerHandlerPlugIn : IPacketHandlerPlugIn
 {
-    private readonly GuildMasterAnswerAction _answerAction = new ();
+    private readonly GuildMasterAnswerAction _answerAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;

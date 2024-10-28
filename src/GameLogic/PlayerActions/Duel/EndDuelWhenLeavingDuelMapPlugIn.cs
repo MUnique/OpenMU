@@ -17,6 +17,12 @@ public class EndDuelWhenLeavingDuelMapPlugIn : IObjectRemovedFromMapPlugIn
 {
     private readonly DuelActions _duelActions = new();
 
+    /// <summary>
+    /// Handles the logic for when a player leaves the duel map.
+    /// </summary>
+    /// <param name="map">The game map.</param>
+    /// <param name="removedObject">The player who left.</param>
+    /// <returns>The value task with the result.</returns>
     public async ValueTask ObjectRemovedFromMapAsync(GameMap map, ILocateable removedObject)
     {
         if (removedObject is not Player player)

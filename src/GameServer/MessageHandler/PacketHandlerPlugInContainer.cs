@@ -25,7 +25,7 @@ public class PacketHandlerPlugInContainer<THandler> : StrategyPlugInProvider<byt
     /// <summary>
     /// Since packet handler plugins are not holding any player state, they can be kept as singleton instances to save some memory.
     /// </summary>
-    private static readonly ConcurrentDictionary<Type, THandler> HandlerCache = new ();
+    private static readonly ConcurrentDictionary<Type, THandler> HandlerCache = new();
 
     private readonly IClientVersionProvider _clientVersionProvider;
 

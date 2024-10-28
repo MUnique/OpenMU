@@ -69,7 +69,7 @@ public static class CommandExtensions
     /// <param name="argumentsType">Type of the arguments.</param>
     /// <param name="commandName">The command name.</param>
     /// <returns>
-    /// Returns the usage string.
+    /// The usage string.
     /// </returns>
     public static string CreateUsage(Type argumentsType, string commandName)
     {
@@ -99,6 +99,11 @@ public static class CommandExtensions
         return stringBuilder.ToString();
     }
 
+    /// <summary>
+    /// Gets the parameters for an argument class.
+    /// </summary>
+    /// <param name="argumentsType">Type of the arguments.</param>
+    /// <returns>A list of parameters with name, type, and valid values.</returns>
     public static IEnumerable<(string Name, string Type, string ValidValues)> GetParameters(Type argumentsType)
     {
         var properties = argumentsType.GetProperties().Where(p => p.CanWrite);
@@ -117,7 +122,7 @@ public static class CommandExtensions
             else if (property.PropertyType == typeof(byte) || property.PropertyType == typeof(ushort) || property.PropertyType == typeof(uint))
             {
                 // todo: ranges in ParameterAttribute
-                //validValues = "";
+                // validValues = "";
             }
 
             yield return (property.Name, property.PropertyType.Name, validValues);

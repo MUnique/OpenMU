@@ -22,7 +22,7 @@ public class UpdateMaximumHealthExtendedPlugIn : IUpdateMaximumHealthPlugIn
     private readonly RemotePlayer _player;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="UpdateMaximumHealthPlugIn"/> class.
+    /// Initializes a new instance of the <see cref="UpdateMaximumHealthExtendedPlugIn"/> class.
     /// </summary>
     /// <param name="player">The player.</param>
     public UpdateMaximumHealthExtendedPlugIn(RemotePlayer player) => this._player = player;

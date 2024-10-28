@@ -18,7 +18,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("d6067475-a910-488d-8450-9310ae394c47")]
 internal class JewelMixHandlerPlugIn : IPacketHandlerPlugIn
 {
-    private readonly ItemStackAction _mixAction = new ();
+    private readonly ItemStackAction _mixAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => LahapJewelMixRequest.HeaderType >= 0xC3;

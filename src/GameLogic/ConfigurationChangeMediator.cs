@@ -57,45 +57,45 @@ public class ConfigurationChangeMediator : IConfigurationChangeMediator, IConfig
 
         if (onChange is not null)
         {
-            registration.OnChange += InvokeOnChange;
+            registration.OnChange += InvokeOnChangeAsync;
         }
 
         if (onDelete is not null)
         {
-            registration.OnDelete += InvokeOnDelete;
+            registration.OnDelete += InvokeOnDeleteAsync;
         }
 
         var disposable = new Nito.Disposables.Disposable(() =>
         {
             if (onChange is not null)
             {
-                registration.OnChange -= InvokeOnChange;
+                registration.OnChange -= InvokeOnChangeAsync;
             }
 
             if (onDelete is not null)
             {
-                registration.OnDelete -= InvokeOnDelete;
+                registration.OnDelete -= InvokeOnDeleteAsync;
             }
         });
 
         return disposable;
 
-        async ValueTask InvokeOnChange(TConfig changedConfig)
+        async ValueTask InvokeOnChangeAsync(TConfig changedConfig)
         {
             await onChange(
                 () =>
                 {
-                    registration.OnChange -= InvokeOnChange;
+                    registration.OnChange -= InvokeOnChangeAsync;
                     if (onDelete is not null)
                     {
-                        registration.OnDelete -= InvokeOnDelete;
+                        registration.OnDelete -= InvokeOnDeleteAsync;
                     }
                 },
                 changedConfig,
                 obj).ConfigureAwait(false);
         }
 
-        async ValueTask InvokeOnDelete(TConfig changedConfig)
+        async ValueTask InvokeOnDeleteAsync(TConfig changedConfig)
         {
             await onDelete(changedConfig, obj).ConfigureAwait(false);
         }
@@ -108,10 +108,10 @@ public class ConfigurationChangeMediator : IConfigurationChangeMediator, IConfig
             typeof(TConfig),
             _ => new CreateRegistration<TConfig>(),
             (_, value) => value);
-        registration.OnCreate += InvokeOnCreate;
+        registration.OnCreate += InvokeOnCreateAsync;
 
         return registration;
-        async ValueTask InvokeOnCreate(TConfig config)
+        async ValueTask InvokeOnCreateAsync(TConfig config)
         {
             await onNewConfig(config, obj).ConfigureAwait(false);
         }
@@ -205,7 +205,7 @@ public class ConfigurationChangeMediator : IConfigurationChangeMediator, IConfig
     private class CreateRegistration<TConfig> : Disposable, ICreateRegistration
     {
         /// <summary>
-        /// Occurs when a new config of <see cref="TConfig"/> is created.
+        /// Occurs when a new config of <typeparamref name="TConfig"/> is created.
         /// </summary>
         public event AsyncEventHandler<TConfig>? OnCreate;
 

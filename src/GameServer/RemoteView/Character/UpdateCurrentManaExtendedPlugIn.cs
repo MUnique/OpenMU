@@ -22,7 +22,7 @@ public class UpdateCurrentManaExtendedPlugIn : IUpdateCurrentManaPlugIn
     private readonly RemotePlayer _player;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="UpdateCurrentManaPlugIn"/> class.
+    /// Initializes a new instance of the <see cref="UpdateCurrentManaExtendedPlugIn"/> class.
     /// </summary>
     /// <param name="player">The player.</param>
     public UpdateCurrentManaExtendedPlugIn(RemotePlayer player) => this._player = player;

@@ -18,7 +18,7 @@ using MUnique.OpenMU.PlugIns;
 [BelongsToGroup(CharacterGroupHandlerPlugIn.GroupKey)]
 internal class CharacterFocusPacketHandlerPlugIn : ISubPacketHandlerPlugIn
 {
-    private readonly FocusCharacterAction _focusCharacterAction = new ();
+    private readonly FocusCharacterAction _focusCharacterAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;

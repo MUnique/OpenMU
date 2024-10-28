@@ -5,8 +5,8 @@
 namespace MUnique.OpenMU.GameLogic;
 
 using System.Collections;
-using Nito.AsyncEx;
 using MUnique.OpenMU.GameLogic.Views.World;
+using Nito.AsyncEx;
 
 /// <summary>
 /// The list of magic effects of a player instance. Automatically applies the power-ups of the effects to the player.
@@ -14,9 +14,9 @@ using MUnique.OpenMU.GameLogic.Views.World;
 public class MagicEffectsList : AsyncDisposable
 {
     private const byte InvisibleEffectStartIndex = 200;
-    private readonly BitArray _contains = new (0x100);
+    private readonly BitArray _contains = new(0x100);
     private readonly IAttackable _owner;
-    private readonly AsyncLock _addLock = new ();
+    private readonly AsyncLock _addLock = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MagicEffectsList"/> class.

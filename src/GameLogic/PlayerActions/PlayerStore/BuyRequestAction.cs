@@ -14,7 +14,7 @@ using MUnique.OpenMU.Interfaces;
 /// </summary>
 public class BuyRequestAction
 {
-    private readonly CloseStoreAction _closeStoreAction = new ();
+    private readonly CloseStoreAction _closeStoreAction = new();
 
     /// <summary>
     /// Buys the item from another player shop.

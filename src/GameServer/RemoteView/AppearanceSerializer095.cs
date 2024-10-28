@@ -1,4 +1,4 @@
-﻿// <copyright file="AppearanceSerializer099.cs" company="MUnique">
+﻿// <copyright file="AppearanceSerializer095.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -23,7 +23,7 @@ public class AppearanceSerializer095 : IAppearanceSerializer
     /// <summary>
     /// A cache which holds the results of the serializer.
     /// </summary>
-    private static readonly ConcurrentDictionary<IAppearanceData, byte[]> Cache = new ();
+    private static readonly ConcurrentDictionary<IAppearanceData, byte[]> Cache = new();
 
     private enum Pets
     {

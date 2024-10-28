@@ -18,7 +18,7 @@ using MUnique.OpenMU.PlugIns;
 [BelongsToGroup(StoreHandlerGroupPlugIn.GroupKey)]
 internal class PlayerShopOpenPacketHandlerPlugIn : ISubPacketHandlerPlugIn
 {
-    private readonly OpenStoreAction _openStoreAction = new ();
+    private readonly OpenStoreAction _openStoreAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => true;

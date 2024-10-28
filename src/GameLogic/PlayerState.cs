@@ -79,22 +79,10 @@ public static class PlayerState
         EnteredWorld.PossibleTransitions.Add(PlayerState.CharacterSelection);
     }
 
-    /// <summary>
-    /// Determines whether the state is <see cref="Disconnected"/> or <see cref="Finished"/>.
-    /// </summary>
-    /// <param name="state">The state.</param>
-    /// <returns>
-    ///   <c>true</c> if the state is <see cref="Disconnected"/> or <see cref="Finished"/>; otherwise, <c>false</c>.
-    /// </returns>
-    public static bool IsDisconnectedOrFinished(this State state)
-    {
-        return state == Disconnected || state == Finished;
-    }
-
      /// <summary>
     /// Gets the finished state. When this state is active, the player session was saved and the player object can be safely removed from the game.
     /// </summary>
-    public static State Finished { get; } = new (new Guid("AB24C7C4-4F37-40ED-B874-0F6C7984C471"))
+    public static State Finished { get; } = new(new Guid("AB24C7C4-4F37-40ED-B874-0F6C7984C471"))
     {
         Name = "Finished",
     };
@@ -102,7 +90,7 @@ public static class PlayerState
     /// <summary>
     /// Gets the disconnected state. When this state is active, the player disconnected from the game, but his session is not saved yet.
     /// </summary>
-    public static State Disconnected { get; } = new (new Guid("DE145F30-9A3A-4895-8B15-4F34F7D203F0"))
+    public static State Disconnected { get; } = new(new Guid("DE145F30-9A3A-4895-8B15-4F34F7D203F0"))
     {
         Name = "Disconnected",
         PossibleTransitions = new List<State>
@@ -114,7 +102,7 @@ public static class PlayerState
     /// <summary>
     /// Gets the entered world state. When this state is active, the player entered the world with one of his characters.
     /// </summary>
-    public static State EnteredWorld { get; } = new (new Guid("83005EA6-7398-4D21-A51E-1E77B85CF6F0"))
+    public static State EnteredWorld { get; } = new(new Guid("83005EA6-7398-4D21-A51E-1E77B85CF6F0"))
     {
         Name = "Entered World",
         PossibleTransitions = new List<State>
@@ -126,7 +114,7 @@ public static class PlayerState
     /// <summary>
     /// Gets the dead state. When this state is active, the player has been killed with one of his characters.
     /// </summary>
-    public static State Dead { get; } = new (new Guid("171CBF68-EE19-4C99-8B89-AA8A51AE9876"))
+    public static State Dead { get; } = new(new Guid("171CBF68-EE19-4C99-8B89-AA8A51AE9876"))
     {
         Name = "Dead",
         PossibleTransitions = new List<State>
@@ -139,7 +127,7 @@ public static class PlayerState
     /// <summary>
     /// Gets the character selection state. When this state is active, the character selection screen is shown.
     /// </summary>
-    public static State CharacterSelection { get; } = new (new Guid("6EB2A8EA-1B86-4622-A513-18EB8F3FE512"))
+    public static State CharacterSelection { get; } = new(new Guid("6EB2A8EA-1B86-4622-A513-18EB8F3FE512"))
     {
         Name = "Character Selection Screen",
         PossibleTransitions = new List<State>
@@ -152,7 +140,7 @@ public static class PlayerState
     /// <summary>
     /// Gets the authenticated state. When this state is active, the player has been successfully authenticated.
     /// </summary>
-    public static State Authenticated { get; } = new (new Guid("4D1D2157-E2BB-48EF-9F19-E1892AC49E84"))
+    public static State Authenticated { get; } = new(new Guid("4D1D2157-E2BB-48EF-9F19-E1892AC49E84"))
     {
         Name = "Authenticated",
         PossibleTransitions = new List<State>
@@ -165,7 +153,7 @@ public static class PlayerState
     /// <summary>
     /// Gets the login screen state. When this state is active, the login screen is shown to the player.
     /// </summary>
-    public static State LoginScreen { get; } = new (new Guid("C59E7072-306F-47BF-A5A0-1C9DA38143C3"))
+    public static State LoginScreen { get; } = new(new Guid("C59E7072-306F-47BF-A5A0-1C9DA38143C3"))
     {
         Name = "Login Screen",
         PossibleTransitions = new List<State>
@@ -178,7 +166,7 @@ public static class PlayerState
     /// <summary>
     /// Gets the initial state.
     /// </summary>
-    public static State Initial { get; } = new (new Guid("D93BC463-810F-46B9-A9F3-8592A055705D"))
+    public static State Initial { get; } = new(new Guid("D93BC463-810F-46B9-A9F3-8592A055705D"))
     {
         Name = "Initial State",
         PossibleTransitions = new List<State>
@@ -190,7 +178,7 @@ public static class PlayerState
     /// <summary>
     /// Gets the changing map state.
     /// </summary>
-    public static State ChangingMap { get; } = new (new Guid("FF660582-460C-4B69-9D99-F5EB156E83B9"))
+    public static State ChangingMap { get; } = new(new Guid("FF660582-460C-4B69-9D99-F5EB156E83B9"))
     {
         Name = "Changing Map",
         PossibleTransitions = new List<State>
@@ -230,4 +218,16 @@ public static class PlayerState
     /// TODO: set this state.
     /// </summary>
     public static State GuildRequest { get; }
+
+    /// <summary>
+    /// Determines whether the state is <see cref="Disconnected"/> or <see cref="Finished"/>.
+    /// </summary>
+    /// <param name="state">The state.</param>
+    /// <returns>
+    ///   <c>true</c> if the state is <see cref="Disconnected"/> or <see cref="Finished"/>; otherwise, <c>false</c>.
+    /// </returns>
+    public static bool IsDisconnectedOrFinished(this State state)
+    {
+        return state == Disconnected || state == Finished;
+    }
 }

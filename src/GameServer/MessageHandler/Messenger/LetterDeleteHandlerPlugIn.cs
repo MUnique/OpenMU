@@ -19,7 +19,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("3334483b-2de2-47ff-8d74-7407d3ddf15f")]
 internal class LetterDeleteHandlerPlugIn : IPacketHandlerPlugIn
 {
-    private readonly LetterDeleteAction _deleteAction = new ();
+    private readonly LetterDeleteAction _deleteAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;

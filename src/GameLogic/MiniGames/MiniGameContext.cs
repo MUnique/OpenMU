@@ -903,7 +903,7 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
                 await this.OnTerrainChangingAsync(changeEvent).ConfigureAwait(false);
                 await this.UpdateClientTerrainAsync(changeEvent.TerrainChanges).ConfigureAwait(false);
                 this.UpdateServerTerrain(changeEvent.TerrainChanges);
-                await this.Map.ClearDropsOnInvalidTerrain().ConfigureAwait(false);
+                await this.Map.ClearDropsOnInvalidTerrainAsync().ConfigureAwait(false);
                 await this.OnTerrainChangedAsync(changeEvent).ConfigureAwait(false);
             }
 

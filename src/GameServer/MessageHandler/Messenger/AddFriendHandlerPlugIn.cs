@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("302870db-59cc-4cf8-b5ed-b0efa9f6ccbc")]
 internal class AddFriendHandlerPlugIn : IPacketHandlerPlugIn
 {
-    private readonly AddFriendAction _addAction = new ();
+    private readonly AddFriendAction _addAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;

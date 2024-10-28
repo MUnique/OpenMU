@@ -12,8 +12,8 @@ public interface IChatMessageProcessor
     /// <summary>
     /// Sends a chat message from the player to other players.
     /// </summary>
-    /// <param name="sender" cref="Player"></param>
-    /// <param name="content"></param>
-    /// <returns></returns>
+    /// <param name="sender" cref="Player">The sending Player.</param>
+    /// <param name="content">The chat message's content.</param>
+    /// <returns>The value task with the result.</returns>
     ValueTask ProcessMessageAsync(Player sender, (string Message, string PlayerName) content);
 }

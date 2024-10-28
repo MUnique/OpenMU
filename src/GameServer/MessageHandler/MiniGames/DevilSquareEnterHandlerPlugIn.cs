@@ -22,7 +22,7 @@ internal class DevilSquareEnterHandlerPlugIn : IPacketHandlerPlugIn
     /// <summary>
     /// The game action which contains the logic to enter the mini game.
     /// </summary>
-    private readonly EnterMiniGameAction _enterAction = new ();
+    private readonly EnterMiniGameAction _enterAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;

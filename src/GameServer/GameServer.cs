@@ -2,8 +2,6 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using Nito.AsyncEx;
-
 namespace MUnique.OpenMU.GameServer;
 
 using System.ComponentModel;
@@ -21,6 +19,7 @@ using MUnique.OpenMU.GameLogic.Views.Messenger;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
+using Nito.AsyncEx;
 
 /// <summary>
 /// The game server to which game clients can connect.
@@ -46,6 +45,7 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
     /// <param name="friendServer">The friend server.</param>
     /// <param name="loggerFactory">The logger factory.</param>
     /// <param name="plugInManager">The plug in manager.</param>
+    /// <param name="changeMediator"> The change mediatior.</param>
     public GameServer(
         GameServerDefinition gameServerDefinition,
         IGuildServer guildServer,
@@ -388,7 +388,7 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
     /// Creates an instance of <see cref="ServerInfo"/> with the data of this instance.
     /// </summary>
     /// <returns>The created <see cref="ServerInfo"/>.</returns>
-    public ServerInfo CreateServerInfo() => new (this.Id, this.Description, this.CurrentConnections, this.MaximumConnections);
+    public ServerInfo CreateServerInfo() => new(this.Id, this.Description, this.CurrentConnections, this.MaximumConnections);
 
     /// <inheritdoc/>
     public override string ToString()

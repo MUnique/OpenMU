@@ -30,7 +30,7 @@ public enum TradeResult
     TimedOut,
 
     /// <summary>
-    /// The trade failed because one or more items were not allowed to trade
+    /// The trade failed because one or more items were not allowed to trade.
     /// </summary>
     FailedByItemsNotAllowedToTrade,
 }

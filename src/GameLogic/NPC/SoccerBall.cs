@@ -16,7 +16,7 @@ using Nito.AsyncEx;
 /// </summary>
 public sealed class SoccerBall : NonPlayerCharacter, IAttackable, IMovable
 {
-    private readonly AsyncLock _moveLock = new ();
+    private readonly AsyncLock _moveLock = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SoccerBall"/> class.

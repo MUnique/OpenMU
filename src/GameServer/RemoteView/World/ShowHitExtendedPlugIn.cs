@@ -25,7 +25,7 @@ public class ShowHitExtendedPlugIn : IShowHitPlugIn
     private readonly RemotePlayer _player;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ShowHitPlugIn"/> class.
+    /// Initializes a new instance of the <see cref="ShowHitExtendedPlugIn"/> class.
     /// </summary>
     /// <param name="player">The player.</param>
     public ShowHitExtendedPlugIn(RemotePlayer player)
@@ -47,8 +47,8 @@ public class ShowHitExtendedPlugIn : IShowHitPlugIn
             return;
         }
 
-        var healthStatus = CalcStatStatus(target, Stats.CurrentHealth, Stats.MaximumHealth);
-        var shieldStatus = CalcStatStatus(target, Stats.CurrentShield, Stats.MaximumShield);
+        var healthStatus = this.CalcStatStatus(target, Stats.CurrentHealth, Stats.MaximumHealth);
+        var shieldStatus = this.CalcStatStatus(target, Stats.CurrentShield, Stats.MaximumShield);
         var targetId = target.GetId(this._player);
         await connection.SendObjectHitExtendedAsync(
             this.GetDamageKind(hitInfo.Attributes),

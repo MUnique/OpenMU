@@ -18,7 +18,7 @@ using TradeButtonState = MUnique.OpenMU.GameLogic.Views.Trade.TradeButtonState;
 [Guid("4e70bdec-c890-4e7d-93a9-1801f821f322")]
 internal class TradeButtonHandlerPlugIn : IPacketHandlerPlugIn
 {
-    private readonly TradeButtonAction _buttonAction = new ();
+    private readonly TradeButtonAction _buttonAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;

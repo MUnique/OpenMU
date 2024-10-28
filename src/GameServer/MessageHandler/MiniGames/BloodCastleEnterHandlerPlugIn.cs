@@ -4,13 +4,13 @@
 
 namespace MUnique.OpenMU.GameServer.MessageHandler.MiniGames;
 
+using System;
+using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.PlayerActions.MiniGames;
 using MUnique.OpenMU.Network.Packets.ClientToServer;
 using MUnique.OpenMU.PlugIns;
-using System;
-using System.Runtime.InteropServices;
 
 /// <summary>
 /// Handler for blood castle enter request packets.
@@ -22,7 +22,7 @@ internal class BloodCastleEnterHandlerPlugIn : IPacketHandlerPlugIn
     /// <summary>
     /// The game action which contains the logic to enter the mini game.
     /// </summary>
-    private readonly EnterMiniGameAction _enterAction = new ();
+    private readonly EnterMiniGameAction _enterAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;

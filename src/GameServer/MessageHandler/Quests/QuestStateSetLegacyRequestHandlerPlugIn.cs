@@ -19,9 +19,9 @@ using MUnique.OpenMU.PlugIns;
 [Guid("3D8D1510-E92C-4D0E-9282-1A932B1B8195")]
 public class QuestStateSetLegacyRequestHandlerPlugIn : IPacketHandlerPlugIn
 {
-    private readonly QuestStartAction _questStartAction = new ();
-    private readonly QuestCompletionAction _questCompletionAction = new ();
-    private readonly QuestCancelAction _questCancelAction = new ();
+    private readonly QuestStartAction _questStartAction = new();
+    private readonly QuestCompletionAction _questCompletionAction = new();
+    private readonly QuestCancelAction _questCancelAction = new();
 
     /// <inheritdoc />
     public byte Key => LegacyQuestStateSetRequest.Code;

@@ -37,7 +37,7 @@ public class RavenAttributeSystem : IAttributeSystem
             { Stats.AttackRatePvp, player => player.Attributes?[Stats.RavenAttackRate] ?? 0 },
             { Stats.CriticalDamageChance, player => player.Attributes?[Stats.CriticalDamageChance] + player.Attributes?[Stats.RavenCriticalDamageChanceBonus] ?? 0 },
             { Stats.CriticalDamageBonus, player => player.Attributes?[Stats.CriticalDamageBonus] ?? 0 },
-            { Stats.ExcellentDamageChance, player => player.Attributes?[Stats.ExcellentDamageChance] ?? 0 + player.Attributes?[Stats.RavenExcDamageChanceBonus] ?? 0},
+            { Stats.ExcellentDamageChance, player => player.Attributes?[Stats.ExcellentDamageChance] ?? 0 + player.Attributes?[Stats.RavenExcDamageChanceBonus] ?? 0 },
             { Stats.ExcellentDamageBonus, player => player.Attributes?[Stats.ExcellentDamageBonus] ?? 0 },
             { Stats.DefenseIgnoreChance, player => player.Attributes?[Stats.DefenseIgnoreChance] ?? 0 },
             { Stats.DoubleDamageChance, player => player.Attributes?[Stats.DoubleDamageChance] ?? 0 },

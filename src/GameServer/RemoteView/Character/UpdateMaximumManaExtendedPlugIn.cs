@@ -22,7 +22,7 @@ public class UpdateMaximumManaExtendedPlugIn : IUpdateMaximumManaPlugIn
     private readonly RemotePlayer _player;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="UpdateMaximumManaPlugIn"/> class.
+    /// Initializes a new instance of the <see cref="UpdateMaximumManaExtendedPlugIn"/> class.
     /// </summary>
     /// <param name="player">The player.</param>
     public UpdateMaximumManaExtendedPlugIn(RemotePlayer player) => this._player = player;

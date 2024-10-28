@@ -4,9 +4,9 @@
 
 namespace MUnique.OpenMU.GameLogic;
 
-using Nito.Disposables.Internals;
 using MUnique.OpenMU.DataModel.Configuration.Quests;
 using MUnique.OpenMU.GameLogic.Attributes;
+using Nito.Disposables.Internals;
 
 /// <summary>
 /// Extensions for <see cref="Character"/>.
@@ -30,7 +30,7 @@ public static class CharacterExtensions
         {
             FruitCalculationStrategy.DarkLord => FruitPointsPerLevelDarkLord[index],
             FruitCalculationStrategy.MagicGladiator => FruitPointsPerLevelMagicGladiator[index],
-            _ => FruitPointsPerLevel[index]
+            _ => FruitPointsPerLevel[index],
         };
     }
 

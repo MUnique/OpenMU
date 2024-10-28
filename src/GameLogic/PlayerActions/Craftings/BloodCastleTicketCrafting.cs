@@ -34,7 +34,7 @@ public class BloodCastleTicketCrafting : BaseEventTicketCrafting
             6 => 600_000,
             7 => 850_000,
             8 => 1_050_000,
-            _ => 50_000
+            _ => 50_000,
         };
     }
 

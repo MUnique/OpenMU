@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("6605E425-F1D5-44AA-864D-EA42B25BB17F")]
 internal class GuildCreateHandlerPlugIn075 : IPacketHandlerPlugIn
 {
-    private readonly GuildCreateAction _createAction = new ();
+    private readonly GuildCreateAction _createAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;

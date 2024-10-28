@@ -23,7 +23,7 @@ public class UpdateCharacterStatsExtendedPlugIn : IUpdateCharacterStatsPlugIn
     private readonly RemotePlayer _player;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="UpdateCharacterStatsPlugIn"/> class.
+    /// Initializes a new instance of the <see cref="UpdateCharacterStatsExtendedPlugIn"/> class.
     /// </summary>
     /// <param name="player">The player.</param>
     public UpdateCharacterStatsExtendedPlugIn(RemotePlayer player) => this._player = player;

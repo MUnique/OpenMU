@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("79014c54-17a3-4e5e-85be-3e9c6051dbef")]
 internal class TradeAcceptHandlerPlugIn : IPacketHandlerPlugIn
 {
-    private readonly TradeAcceptAction _acceptAction = new ();
+    private readonly TradeAcceptAction _acceptAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;

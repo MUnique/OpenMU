@@ -19,7 +19,7 @@ using MUnique.OpenMU.PlugIns;
 [BelongsToGroup(LogInOutGroup.GroupKey)]
 public class LogOutHandlerPlugIn : ISubPacketHandlerPlugIn
 {
-    private readonly LogoutAction _logoutAction = new ();
+    private readonly LogoutAction _logoutAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;

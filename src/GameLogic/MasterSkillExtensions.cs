@@ -12,7 +12,7 @@ using org.mariuszgromada.math.mxparser;
 /// </summary>
 public static class MasterSkillExtensions
 {
-    private static readonly ConcurrentDictionary<string, float[]> ValueResultCache = new ();
+    private static readonly ConcurrentDictionary<string, float[]> ValueResultCache = new();
 
     /// <summary>
     /// Calculates the effective value of the specified skill, depending on its formula and level.
@@ -39,6 +39,11 @@ public static class MasterSkillExtensions
         return skillEntry.Skill?.MasterDefinition.CalculateDisplayValue(level) ?? 0;
     }
 
+    /// <summary>
+    /// Gets the base <see cref="Skill"/> of a <see cref="SkillEntry"/>.
+    /// </summary>
+    /// <param name="skillEntry">The <see cref="SkillEntry"/>.</param>
+    /// <returns>The base <see cref="Skill"/>.</returns>
     public static Skill GetBaseSkill(this SkillEntry skillEntry)
     {
         var skill = skillEntry.Skill!;

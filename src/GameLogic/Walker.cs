@@ -6,9 +6,9 @@ namespace MUnique.OpenMU.GameLogic;
 
 using System.Diagnostics;
 using System.Threading;
+using MUnique.OpenMU.Pathfinding;
 using Nito.AsyncEx;
 using Nito.AsyncEx.Synchronous;
-using MUnique.OpenMU.Pathfinding;
 
 /// <summary>
 /// Class which manages walking for instances of <see cref="ISupportWalk"/>.
@@ -17,7 +17,7 @@ public sealed class Walker : IDisposable
 {
     private readonly ISupportWalk _walkSupporter;
     private readonly Func<TimeSpan> _stepDelay;
-    private readonly Queue<WalkingStep> _nextSteps = new (5);
+    private readonly Queue<WalkingStep> _nextSteps = new(5);
 
     /// <summary>
     /// This array keeps all steps of the current walk.
@@ -117,7 +117,7 @@ public sealed class Walker : IDisposable
     {
         var count = 0;
         using var readerLock = await this._walkLock.ReaderLockAsync();
-        foreach (var direction in this._currentWalkSteps[.._currentWalkStepCount])
+        foreach (var direction in this._currentWalkSteps[..this._currentWalkStepCount])
         {
             steps.Span[count] = direction;
             count++;

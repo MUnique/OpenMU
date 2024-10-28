@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("82d21573-64bd-439e-9368-8fc227475942")]
 internal class DeleteFriendHandlerPlugIn : IPacketHandlerPlugIn
 {
-    private readonly DeleteFriendAction _deleteAction = new ();
+    private readonly DeleteFriendAction _deleteAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;

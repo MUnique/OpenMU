@@ -19,7 +19,7 @@ public class GuildBattleSoccerChatCommandPlugIn : ChatCommandPlugInBase<GuildWar
 {
     private const string Command = "/battlesoccer";
 
-    private readonly GuildWarRequestAction _action = new ();
+    private readonly GuildWarRequestAction _action = new();
 
     /// <inheritdoc />
     public override string Key => Command;

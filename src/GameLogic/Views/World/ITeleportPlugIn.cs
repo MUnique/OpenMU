@@ -10,7 +10,7 @@ namespace MUnique.OpenMU.GameLogic.Views.World;
 public interface ITeleportPlugIn : IViewPlugIn
 {
     /// <summary>
-    /// Will be called then the player teleported or failed to teleport to another location of the same map.
+    /// Will be called when the player teleported or failed to teleport to another location of the same map.
     /// </summary>
     ValueTask ShowTeleportedAsync();
 }

@@ -22,7 +22,7 @@ public class ItemPriceCalculator
     private const float DestroyedPetPenalty = 2.0f;
     private const float DestroyedItemPenalty = 1.4f;
 
-    private static readonly Dictionary<byte, int> DropLevelIncreaseByLevel = new ()
+    private static readonly Dictionary<byte, int> DropLevelIncreaseByLevel = new()
     {
         { 5, 4 },
         { 6, 10 },

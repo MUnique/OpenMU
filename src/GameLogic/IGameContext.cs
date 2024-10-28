@@ -31,7 +31,7 @@ public interface IGameContext
     /// Gets the global experience rate.
     /// </summary>
     float ExperienceRate { get; }
-    
+
     /// <summary>
     /// Gets a value indicating whether PVP is enabled.
     /// </summary>
