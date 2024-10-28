@@ -33,10 +33,11 @@ public class EndDuelWhenLeavingDuelMapPlugIn : IObjectRemovedFromMapPlugIn
         var removedFromDuelMap = duelRoom.Area.FirstPlayerGate?.Map == map.Definition;
         if (removedFromDuelMap
             && duelRoom.IsDuelist(player)
-            && duelRoom.State is DuelState.DuelStarted
+            && duelRoom.State is (DuelState.DuelStarted or DuelState.DuelAccepted)
             && player.IsAlive)
         {
             await duelRoom.CancelDuelAsync().ConfigureAwait(false);
+            
             return;
         }
 
