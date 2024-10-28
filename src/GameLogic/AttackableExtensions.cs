@@ -56,7 +56,7 @@ public static class AttackableExtensions
         }
         else if (isCriticalHit)
         {
-            dmg = baseMaxDamage;
+            dmg = baseMaxDamage + (int)attacker.Attributes[Stats.CriticalDamageBonus];
             attributes |= DamageAttributes.Critical;
         }
         else if (baseMaxDamage <= baseMinDamage)
@@ -144,10 +144,10 @@ public static class AttackableExtensions
     }
 
     /// <summary>
-    /// Applies the magic effect of the players skill to the target.
+    /// Applies the magic effect of the player's skill to the target.
     /// </summary>
     /// <param name="target">The target.</param>
-    /// <param name="player">The player.</param>
+    /// <param name="attacker">The attacker.</param>
     /// <param name="skillEntry">The skill entry.</param>
     public static async ValueTask ApplyMagicEffectAsync(this IAttackable target, IAttacker attacker, SkillEntry skillEntry)
     {
@@ -160,7 +160,7 @@ public static class AttackableExtensions
     }
 
     /// <summary>
-    /// Applies the regeneration of the players skill to the target.
+    /// Applies the regeneration of the player's skill to the target.
     /// </summary>
     /// <param name="target">The target.</param>
     /// <param name="player">The player.</param>
@@ -467,7 +467,7 @@ public static class AttackableExtensions
     }
 
     /// <summary>
-    /// Returns the base damage if the attacker, using a specific skill.
+    /// Returns the base damage of the attacker, using a specific skill.
     /// </summary>
     /// <param name="attacker">The attacker.</param>
     /// <param name="skill">Skill which is used.</param>

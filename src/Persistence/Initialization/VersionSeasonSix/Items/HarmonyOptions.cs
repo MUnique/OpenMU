@@ -61,14 +61,14 @@ public class HarmonyOptions : InitializerBase
         definition.Name = CurseAttackOptionsName;
         definition.MaximumOptionsPerItem = 1;
 
-        definition.PossibleOptions.Add(this.CreateHarmonyOptions(1, ItemOptionDefinitionNumbers.HarmonyCurse, Stats.CurseAttackDamageIncrease, AggregateType.AddRaw, 0, 0.06f, 0.08f, 0.10f, 0.12f, 0.14f, 0.16f, 0.17f, 0.18f, 0.19f, 0.21f, 0.23f, 0.25f, 0.27f, 0.31f)); // todo
-        definition.PossibleOptions.Add(this.CreateHarmonyOptions(2, ItemOptionDefinitionNumbers.HarmonyCurse, Stats.RequiredStrengthReduction, AggregateType.AddRaw, 0, 6, 8, 10, 12, 14, 16, 20, 23, 26, 29, 32, 35, 37, 40));
-        definition.PossibleOptions.Add(this.CreateHarmonyOptions(3, ItemOptionDefinitionNumbers.HarmonyCurse, Stats.RequiredAgilityReduction, AggregateType.AddRaw, 0, 6, 8, 10, 12, 14, 16, 20, 23, 26, 29, 32, 35, 37, 40));
-        definition.PossibleOptions.Add(this.CreateHarmonyOptions(4, ItemOptionDefinitionNumbers.HarmonyCurse, Stats.SkillDamageBonus, AggregateType.AddRaw, 6, 7, 10, 13, 16, 19, 22, 25, 30));
-        definition.PossibleOptions.Add(this.CreateHarmonyOptions(5, ItemOptionDefinitionNumbers.HarmonyCurse, Stats.CriticalDamageBonus, AggregateType.AddRaw, 6, 10, 12, 14, 16, 18, 20, 22, 28));
-        definition.PossibleOptions.Add(this.CreateHarmonyOptions(6, ItemOptionDefinitionNumbers.HarmonyCurse, Stats.ShieldDecreaseRateIncrease, AggregateType.AddRaw, 9, 3, 5, 7, 9, 10));
-        definition.PossibleOptions.Add(this.CreateHarmonyOptions(7, ItemOptionDefinitionNumbers.HarmonyCurse, Stats.AttackRatePvp, AggregateType.AddRaw, 9, 5, 7, 9, 11, 14));
-        definition.PossibleOptions.Add(this.CreateHarmonyOptions(8, ItemOptionDefinitionNumbers.HarmonyCurse, Stats.ShieldBypassChance, AggregateType.AddRaw, 13, 0.15f));
+        definition.PossibleOptions.Add(this.CreateHarmonyOptions(1, ItemOptionDefinitionNumbers.HarmonyCurse, 40, Stats.WizardryBaseDmg, AggregateType.AddRaw, 0, 6, 8, 10, 12, 14, 16, 17, 18, 19, 21, 23, 25, 27, 31));
+        definition.PossibleOptions.Add(this.CreateHarmonyOptions(2, ItemOptionDefinitionNumbers.HarmonyCurse, 40, Stats.RequiredStrengthReduction, AggregateType.AddRaw, 0, 6, 8, 10, 12, 14, 16, 20, 23, 26, 29, 32, 35, 37, 40));
+        definition.PossibleOptions.Add(this.CreateHarmonyOptions(3, ItemOptionDefinitionNumbers.HarmonyCurse, 40, Stats.RequiredAgilityReduction, AggregateType.AddRaw, 0, 6, 8, 10, 12, 14, 16, 20, 23, 26, 29, 32, 35, 37, 40));
+        definition.PossibleOptions.Add(this.CreateHarmonyOptions(4, ItemOptionDefinitionNumbers.HarmonyCurse, 30, Stats.SkillDamageBonus, AggregateType.AddRaw, 6, 7, 10, 13, 16, 19, 22, 25, 30));
+        definition.PossibleOptions.Add(this.CreateHarmonyOptions(5, ItemOptionDefinitionNumbers.HarmonyCurse, 30, Stats.CriticalDamageBonus, AggregateType.AddRaw, 6, 10, 12, 14, 16, 18, 20, 22, 28));
+        definition.PossibleOptions.Add(this.CreateHarmonyOptions(6, ItemOptionDefinitionNumbers.HarmonyCurse, 20, Stats.ShieldDecreaseRateIncrease, AggregateType.AddRaw, 9, 4, 6, 8, 10, 13));
+        definition.PossibleOptions.Add(this.CreateHarmonyOptions(7, ItemOptionDefinitionNumbers.HarmonyCurse, 20, Stats.AttackRatePvp, AggregateType.AddRaw, 9, 5, 7, 9, 11, 14));
+        definition.PossibleOptions.Add(this.CreateHarmonyOptions(8, ItemOptionDefinitionNumbers.HarmonyCurse, 10, Stats.ShieldBypassChance, AggregateType.AddRaw, 13, 0.15f));
     }
 
     private void CreateWizardryAttackOptions()
@@ -78,15 +78,15 @@ public class HarmonyOptions : InitializerBase
         definition.Name = WizardryAttackOptionsName;
         definition.MaximumOptionsPerItem = 1;
 
-        definition.PossibleOptions.Add(this.CreateHarmonyOptions(1, ItemOptionDefinitionNumbers.HarmonyWizardry, Stats.WizardryAttackDamageIncrease, AggregateType.AddRaw, 0, 0.06f, 0.08f, 0.10f, 0.12f, 0.14f, 0.16f, 0.17f, 0.18f, 0.19f, 0.21f, 0.23f, 0.25f, 0.27f, 0.31f));
-        definition.PossibleOptions.Add(this.CreateHarmonyOptions(2, ItemOptionDefinitionNumbers.HarmonyWizardry, Stats.RequiredStrengthReduction, AggregateType.AddRaw, 0, 6, 8, 10, 12, 14, 16, 20, 23, 26, 29, 32, 35, 37, 40));
-        definition.PossibleOptions.Add(this.CreateHarmonyOptions(3, ItemOptionDefinitionNumbers.HarmonyWizardry, Stats.RequiredAgilityReduction, AggregateType.AddRaw, 0, 6, 8, 10, 12, 14, 16, 20, 23, 26, 29, 32, 35, 37, 40));
-        definition.PossibleOptions.Add(this.CreateHarmonyOptions(4, ItemOptionDefinitionNumbers.HarmonyWizardry, Stats.SkillDamageBonus, AggregateType.AddRaw, 6, 7, 10, 13, 16, 19, 22, 25, 30));
-        definition.PossibleOptions.Add(this.CreateHarmonyOptions(5, ItemOptionDefinitionNumbers.HarmonyWizardry, Stats.CriticalDamageBonus, AggregateType.AddRaw, 6, 10, 12, 14, 16, 18, 20, 22, 28));
-        definition.PossibleOptions.Add(this.CreateHarmonyOptions(6, ItemOptionDefinitionNumbers.HarmonyWizardry, Stats.ShieldDecreaseRateIncrease, AggregateType.AddRaw, 9, 3, 5, 7, 9, 10));
-        definition.PossibleOptions.Add(this.CreateHarmonyOptions(7, ItemOptionDefinitionNumbers.HarmonyWizardry, Stats.AttackRatePvp, AggregateType.AddRaw, 11, 5, 7, 9, 11, 14));
-        definition.PossibleOptions.Add(this.CreateHarmonyOptions(8, ItemOptionDefinitionNumbers.HarmonyWizardry, Stats.ShieldBypassChance, AggregateType.AddRaw, 13, 0.15f));
-    }   
+        definition.PossibleOptions.Add(this.CreateHarmonyOptions(1, ItemOptionDefinitionNumbers.HarmonyWizardry, 40, Stats.WizardryBaseDmg, AggregateType.AddRaw, 0, 6, 8, 10, 12, 14, 16, 17, 18, 19, 21, 23, 25, 27, 31));
+        definition.PossibleOptions.Add(this.CreateHarmonyOptions(2, ItemOptionDefinitionNumbers.HarmonyWizardry, 40, Stats.RequiredStrengthReduction, AggregateType.AddRaw, 0, 6, 8, 10, 12, 14, 16, 20, 23, 26, 29, 32, 35, 37, 40));
+        definition.PossibleOptions.Add(this.CreateHarmonyOptions(3, ItemOptionDefinitionNumbers.HarmonyWizardry, 40, Stats.RequiredAgilityReduction, AggregateType.AddRaw, 0, 6, 8, 10, 12, 14, 16, 20, 23, 26, 29, 32, 35, 37, 40));
+        definition.PossibleOptions.Add(this.CreateHarmonyOptions(4, ItemOptionDefinitionNumbers.HarmonyWizardry, 30, Stats.SkillDamageBonus, AggregateType.AddRaw, 6, 7, 10, 13, 16, 19, 22, 25, 30));
+        definition.PossibleOptions.Add(this.CreateHarmonyOptions(5, ItemOptionDefinitionNumbers.HarmonyWizardry, 30, Stats.CriticalDamageBonus, AggregateType.AddRaw, 6, 10, 12, 14, 16, 18, 20, 22, 28));
+        definition.PossibleOptions.Add(this.CreateHarmonyOptions(6, ItemOptionDefinitionNumbers.HarmonyWizardry, 20, Stats.ShieldDecreaseRateIncrease, AggregateType.AddRaw, 9, 4, 6, 8, 10, 13));
+        definition.PossibleOptions.Add(this.CreateHarmonyOptions(7, ItemOptionDefinitionNumbers.HarmonyWizardry, 20, Stats.AttackRatePvp, AggregateType.AddRaw, 9, 5, 7, 9, 11, 14));
+        definition.PossibleOptions.Add(this.CreateHarmonyOptions(8, ItemOptionDefinitionNumbers.HarmonyWizardry, 10, Stats.ShieldBypassChance, AggregateType.AddRaw, 13, 0.15f));
+    }
 
     private void CreatePhysicalAttackOptions()
     {
@@ -95,16 +95,16 @@ public class HarmonyOptions : InitializerBase
         definition.Name = PhysicalAttackOptionsName;
         definition.MaximumOptionsPerItem = 1;
 
-        definition.PossibleOptions.Add(this.CreateHarmonyOptions(1, ItemOptionDefinitionNumbers.HarmonyPhysical, Stats.MinimumPhysBaseDmg, AggregateType.AddRaw, 0, 2, 3, 4, 5, 6, 7, 9, 11, 12, 14, 15, 16, 17, 20));
-        definition.PossibleOptions.Add(this.CreateHarmonyOptions(2, ItemOptionDefinitionNumbers.HarmonyPhysical, Stats.MaximumPhysBaseDmg, AggregateType.AddRaw, 0, 3, 4, 5, 6, 7, 8, 10, 12, 14, 17, 20, 23, 26, 29));
-        definition.PossibleOptions.Add(this.CreateHarmonyOptions(3, ItemOptionDefinitionNumbers.HarmonyPhysical, Stats.RequiredStrengthReduction, AggregateType.AddRaw, 0, 6, 8, 10, 12, 14, 16, 20, 23, 26, 29, 32, 35, 37, 40));
-        definition.PossibleOptions.Add(this.CreateHarmonyOptions(4, ItemOptionDefinitionNumbers.HarmonyPhysical, Stats.RequiredAgilityReduction, AggregateType.AddRaw, 0, 6, 8, 10, 12, 14, 16, 20, 23, 26, 29, 32, 35, 37, 40));
-        definition.PossibleOptions.Add(this.CreateHarmonyOptions(5, ItemOptionDefinitionNumbers.HarmonyPhysical, Stats.BaseDamageBonus, AggregateType.AddRaw, 6, 7, 8, 9, 11, 12, 14, 16, 19));
-        definition.PossibleOptions.Add(this.CreateHarmonyOptions(6, ItemOptionDefinitionNumbers.HarmonyPhysical, Stats.CriticalDamageBonus, AggregateType.AddRaw, 6, 12, 14, 16, 18, 20, 22, 24, 30));
-        definition.PossibleOptions.Add(this.CreateHarmonyOptions(7, ItemOptionDefinitionNumbers.HarmonyPhysical, Stats.SkillDamageBonus, AggregateType.AddRaw, 9, 12, 14, 16, 18, 22));
-        definition.PossibleOptions.Add(this.CreateHarmonyOptions(8, ItemOptionDefinitionNumbers.HarmonyPhysical, Stats.AttackRatePvp, AggregateType.AddRaw, 9, 5, 7, 9, 11, 14));
-        definition.PossibleOptions.Add(this.CreateHarmonyOptions(9, ItemOptionDefinitionNumbers.HarmonyPhysical, Stats.ShieldDecreaseRateIncrease, AggregateType.AddRaw, 9, 3, 5, 7, 9, 10));
-        definition.PossibleOptions.Add(this.CreateHarmonyOptions(10, ItemOptionDefinitionNumbers.HarmonyPhysical, Stats.ShieldBypassChance, AggregateType.AddRaw, 13, 0.10f));
+        definition.PossibleOptions.Add(this.CreateHarmonyOptions(1, ItemOptionDefinitionNumbers.HarmonyPhysical, 40, Stats.MinimumPhysBaseDmg, AggregateType.AddRaw, 0, 2, 3, 4, 5, 6, 7, 9, 11, 12, 14, 15, 16, 17, 20));
+        definition.PossibleOptions.Add(this.CreateHarmonyOptions(2, ItemOptionDefinitionNumbers.HarmonyPhysical, 40, Stats.MaximumPhysBaseDmg, AggregateType.AddRaw, 0, 3, 4, 5, 6, 7, 8, 10, 12, 14, 17, 20, 23, 26, 29));
+        definition.PossibleOptions.Add(this.CreateHarmonyOptions(3, ItemOptionDefinitionNumbers.HarmonyPhysical, 40, Stats.RequiredStrengthReduction, AggregateType.AddRaw, 0, 6, 8, 10, 12, 14, 16, 20, 23, 26, 29, 32, 35, 37, 40));
+        definition.PossibleOptions.Add(this.CreateHarmonyOptions(4, ItemOptionDefinitionNumbers.HarmonyPhysical, 40, Stats.RequiredAgilityReduction, AggregateType.AddRaw, 0, 6, 8, 10, 12, 14, 16, 20, 23, 26, 29, 32, 35, 37, 40));
+        definition.PossibleOptions.Add(this.CreateHarmonyOptions(5, ItemOptionDefinitionNumbers.HarmonyPhysical, 30, Stats.PhysicalBaseDmg, AggregateType.AddRaw, 6, 7, 8, 9, 11, 12, 14, 16, 19));
+        definition.PossibleOptions.Add(this.CreateHarmonyOptions(6, ItemOptionDefinitionNumbers.HarmonyPhysical, 30, Stats.CriticalDamageBonus, AggregateType.AddRaw, 6, 12, 14, 16, 18, 20, 22, 24, 30));
+        definition.PossibleOptions.Add(this.CreateHarmonyOptions(7, ItemOptionDefinitionNumbers.HarmonyPhysical, 20, Stats.SkillDamageBonus, AggregateType.AddRaw, 9, 12, 14, 16, 18, 22));
+        definition.PossibleOptions.Add(this.CreateHarmonyOptions(8, ItemOptionDefinitionNumbers.HarmonyPhysical, 20, Stats.AttackRatePvp, AggregateType.AddRaw, 9, 5, 7, 9, 11, 14));
+        definition.PossibleOptions.Add(this.CreateHarmonyOptions(9, ItemOptionDefinitionNumbers.HarmonyPhysical, 20, Stats.ShieldDecreaseRateIncrease, AggregateType.AddRaw, 9, 3, 5, 7, 9, 10));
+        definition.PossibleOptions.Add(this.CreateHarmonyOptions(10, ItemOptionDefinitionNumbers.HarmonyPhysical, 10, Stats.ShieldBypassChance, AggregateType.AddRaw, 13, 0.10f));
     }
 
     private void CreateDefenseOptions()
@@ -114,22 +114,23 @@ public class HarmonyOptions : InitializerBase
         definition.Name = DefenseOptionsName;
         definition.MaximumOptionsPerItem = 1;
 
-        definition.PossibleOptions.Add(this.CreateHarmonyOptions(1, ItemOptionDefinitionNumbers.HarmonyDefense, Stats.DefenseBase, AggregateType.AddRaw, 0, 3, 4, 5, 6, 7, 8, 10, 12, 14, 16, 18, 20, 22, 25));
-        definition.PossibleOptions.Add(this.CreateHarmonyOptions(2, ItemOptionDefinitionNumbers.HarmonyDefense, Stats.MaximumAbility, AggregateType.AddRaw, 3, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 25));
-        definition.PossibleOptions.Add(this.CreateHarmonyOptions(3, ItemOptionDefinitionNumbers.HarmonyDefense, Stats.MaximumHealth, AggregateType.AddRaw, 3, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 30));
-        definition.PossibleOptions.Add(this.CreateHarmonyOptions(4, ItemOptionDefinitionNumbers.HarmonyDefense, Stats.HealthRecoveryAbsolute, AggregateType.AddRaw, 6, 1, 2, 3, 4, 5, 6, 7, 8));
-        definition.PossibleOptions.Add(this.CreateHarmonyOptions(5, ItemOptionDefinitionNumbers.HarmonyDefense, Stats.ManaRecoveryAbsolute, AggregateType.AddRaw, 9, 1, 2, 3, 4, 5));
-        definition.PossibleOptions.Add(this.CreateHarmonyOptions(6, ItemOptionDefinitionNumbers.HarmonyDefense, Stats.DefenseRatePvp, AggregateType.AddRaw, 9, 3, 4, 5, 6, 8));
-        definition.PossibleOptions.Add(this.CreateHarmonyOptions(7, ItemOptionDefinitionNumbers.HarmonyDefense, Stats.DamageReceiveDecrement, AggregateType.Multiplicate, 9, 0.97f, 0.96f, 0.95f, 0.94f, 0.93f));
-        definition.PossibleOptions.Add(this.CreateHarmonyOptions(8, ItemOptionDefinitionNumbers.HarmonyDefense, Stats.ShieldRateIncrease, AggregateType.AddRaw, 13, 0.05f));
+        definition.PossibleOptions.Add(this.CreateHarmonyOptions(1, ItemOptionDefinitionNumbers.HarmonyDefense, 50, Stats.DefenseBase, AggregateType.AddRaw, 0, 3, 4, 5, 6, 7, 8, 10, 12, 14, 16, 18, 20, 22, 25));
+        definition.PossibleOptions.Add(this.CreateHarmonyOptions(2, ItemOptionDefinitionNumbers.HarmonyDefense, 40, Stats.MaximumAbility, AggregateType.AddRaw, 3, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 25));
+        definition.PossibleOptions.Add(this.CreateHarmonyOptions(3, ItemOptionDefinitionNumbers.HarmonyDefense, 40, Stats.MaximumHealth, AggregateType.AddRaw, 3, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 30));
+        definition.PossibleOptions.Add(this.CreateHarmonyOptions(4, ItemOptionDefinitionNumbers.HarmonyDefense, 30, Stats.HealthRecoveryAbsolute, AggregateType.AddRaw, 6, 1, 2, 3, 4, 5, 6, 7, 8));
+        definition.PossibleOptions.Add(this.CreateHarmonyOptions(5, ItemOptionDefinitionNumbers.HarmonyDefense, 20, Stats.ManaRecoveryAbsolute, AggregateType.AddRaw, 9, 1, 2, 3, 4, 5));
+        definition.PossibleOptions.Add(this.CreateHarmonyOptions(6, ItemOptionDefinitionNumbers.HarmonyDefense, 20, Stats.DefenseRatePvp, AggregateType.AddRaw, 9, 3, 4, 5, 6, 8));
+        definition.PossibleOptions.Add(this.CreateHarmonyOptions(7, ItemOptionDefinitionNumbers.HarmonyDefense, 20, Stats.DamageReceiveDecrement, AggregateType.Multiplicate, 9, 0.97f, 0.96f, 0.95f, 0.94f, 0.93f));
+        definition.PossibleOptions.Add(this.CreateHarmonyOptions(8, ItemOptionDefinitionNumbers.HarmonyDefense, 10, Stats.ShieldRateIncrease, AggregateType.AddRaw, 13, 0.05f));
     }
 
-    private IncreasableItemOption CreateHarmonyOptions(short number, short parentNumber, AttributeDefinition attributeDefinition, AggregateType aggregateType, byte minimumItemLevel, params float[] values)
+    private IncreasableItemOption CreateHarmonyOptions(short number, short parentNumber, byte weight, AttributeDefinition attributeDefinition, AggregateType aggregateType, byte minimumItemLevel, params float[] values)
     {
         var itemOption = this.Context.CreateNew<IncreasableItemOption>();
         itemOption.SetGuid(parentNumber, number);
         itemOption.OptionType = this.GameConfiguration.ItemOptionTypes.First(t => t == ItemOptionTypes.HarmonyOption);
         itemOption.Number = number;
+        itemOption.Weight = weight;
         foreach (var value in values)
         {
             var optionOfLevel = this.Context.CreateNew<ItemOptionOfLevel>();
