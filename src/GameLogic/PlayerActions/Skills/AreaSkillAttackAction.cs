@@ -179,7 +179,7 @@ public class AreaSkillAttackAction
                && settings.MinimumNumberOfHitsPerTarget == 1
                && settings.MaximumNumberOfHitsPerTarget == 1
                && settings.MaximumNumberOfHitsPerAttack == 0
-               && !(Math.Abs(settings.HitChancePerDistanceMultiplier - 1.0) > 0.00001f);
+               && Math.Abs(settings.HitChancePerDistanceMultiplier - 1.0) <= 0.00001f;
     }
 
     private static IEnumerable<IAttackable> GetTargets(Player player, Point targetAreaCenter, Skill skill, byte rotation, ushort extraTargetId)

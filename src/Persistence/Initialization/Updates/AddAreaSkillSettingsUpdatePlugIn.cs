@@ -105,6 +105,11 @@ public class AddAreaSkillSettingsUpdatePlugIn : UpdatePlugInBase
         skill.AreaSkillSettings = areaSkillSettings;
         skill.SkillType = SkillType.AreaSkillAutomaticHits;
 
+        if (newRange.HasValue)
+        {
+            skill.Range = newRange.Value;
+        }
+
         areaSkillSettings.UseFrustumFilter = useFrustumFilter;
         areaSkillSettings.FrustumStartWidth = frustumStartWidth;
         areaSkillSettings.FrustumEndWidth = frustumEndWidth;
