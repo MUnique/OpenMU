@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic;
 
+using System;
 using System.Threading;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Attributes;
@@ -18,6 +19,7 @@ using MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Character;
+using MUnique.OpenMU.GameLogic.Views.Duel;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.GameLogic.Views.MuHelper;
 using MUnique.OpenMU.GameLogic.Views.Pet;
@@ -28,6 +30,7 @@ using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
 using Nito.AsyncEx;
+using static MUnique.OpenMU.GameLogic.Views.Character.IUpdateStatsPlugIn;
 
 /// <summary>
 /// The base implementation of a player.
@@ -507,7 +510,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             this._appearanceData.RaiseAppearanceChanged();
 
             await this.PlayerLeftWorld.SafeInvokeAsync(this).ConfigureAwait(false);
-            this._selectedCharacter = null;
+            
             (this.SkillList as IDisposable)?.Dispose();
             this.SkillList = null;
 
@@ -521,6 +524,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             }
 
             this.DuelRoom = null;
+            this._selectedCharacter = null;
         }
         else
         {
@@ -622,13 +626,13 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         if (Rand.NextRandomBool(this.Attributes[Stats.FullyRecoverHealthAfterHitChance]))
         {
             this.Attributes[Stats.CurrentHealth] = this.Attributes[Stats.MaximumHealth];
-            await this.InvokeViewPlugInAsync<IUpdateCurrentHealthPlugIn>(p => p.UpdateCurrentHealthAsync()).ConfigureAwait(false);
+            await this.InvokeViewPlugInAsync<IUpdateStatsPlugIn>(p => p.UpdateCurrentStatsAsync(UpdatedStats.Health)).ConfigureAwait(false);
         }
 
         if (Rand.NextRandomBool(this.Attributes[Stats.FullyRecoverManaAfterHitChance]))
         {
             this.Attributes[Stats.CurrentMana] = this.Attributes[Stats.MaximumMana];
-            await this.InvokeViewPlugInAsync<IUpdateCurrentManaPlugIn>(p => p.UpdateCurrentManaAsync()).ConfigureAwait(false);
+            await this.InvokeViewPlugInAsync<IUpdateStatsPlugIn>(p => p.UpdateCurrentStatsAsync(UpdatedStats.Mana)).ConfigureAwait(false);
         }
 
         await this.HitAsync(hitInfo, attacker, skill?.Skill).ConfigureAwait(false);
@@ -731,8 +735,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             this.Attributes[recoverAfterMonsterKill.CurrentAttribute] = (uint)Math.Min(this.Attributes[recoverAfterMonsterKill.MaximumAttribute], this.Attributes[recoverAfterMonsterKill.CurrentAttribute] + additionalValue);
         }
 
-        await this.InvokeViewPlugInAsync<IUpdateCurrentManaPlugIn>(p => p.UpdateCurrentManaAsync()).ConfigureAwait(false);
-        await this.InvokeViewPlugInAsync<IUpdateCurrentHealthPlugIn>(p => p.UpdateCurrentHealthAsync()).ConfigureAwait(false);
+        await this.InvokeViewPlugInAsync<IUpdateStatsPlugIn>(p => p.UpdateCurrentStatsAsync()).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -900,7 +903,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <param name="gate">The gate to which the player should be moved.</param>
     public async ValueTask WarpToAsync(ExitGate gate)
     {
-        if (!await this.TryRemoveFromCurrentMapAsync().ConfigureAwait(false))
+        var isRespawnOnSameMap = object.Equals(this.CurrentMap?.Definition, gate.Map);
+        if (!await this.TryRemoveFromCurrentMapAsync(isRespawnOnSameMap).ConfigureAwait(false))
         {
             return;
         }
@@ -929,7 +933,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <param name="gate">The gate at which the player should be respawned.</param>
     public async ValueTask RespawnAtAsync(ExitGate gate)
     {
-        if (!await this.TryRemoveFromCurrentMapAsync().ConfigureAwait(false))
+        var isRespawnOnSameMap = object.Equals(this.CurrentMap?.Definition, gate.Map);
+
+        if (!await this.TryRemoveFromCurrentMapAsync(isRespawnOnSameMap).ConfigureAwait(false))
         {
             return;
         }
@@ -1224,8 +1230,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                     attributes[r.MaximumAttribute]);
             }
 
-            await this.InvokeViewPlugInAsync<IUpdateCurrentHealthPlugIn>(p => p.UpdateCurrentHealthAsync()).ConfigureAwait(false);
-            await this.InvokeViewPlugInAsync<IUpdateCurrentManaPlugIn>(p => p.UpdateCurrentManaAsync()).ConfigureAwait(false);
+            await this.InvokeViewPlugInAsync<IUpdateStatsPlugIn>(p => p.UpdateCurrentStatsAsync()).ConfigureAwait(false);
 
             await this.RegenerateHeroStateAsync().ConfigureAwait(false);
         }
@@ -1334,7 +1339,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             this.Attributes![requirement.Attribute] -= this.GetRequiredValue(requirement);
         }
 
-        await this.InvokeViewPlugInAsync<IUpdateCurrentManaPlugIn>(p => p.UpdateCurrentManaAsync()).ConfigureAwait(false);
+        await this.InvokeViewPlugInAsync<IUpdateStatsPlugIn>(p => p.UpdateCurrentStatsAsync(UpdatedStats.Mana)).ConfigureAwait(false);
+
         return true;
     }
 
@@ -1661,7 +1667,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         throw new NotImplementedException("CreateViewPlugInContainer must be overwritten in derived classes.");
     }
 
-    private async ValueTask<bool> TryRemoveFromCurrentMapAsync()
+    private async ValueTask<bool> TryRemoveFromCurrentMapAsync(bool willRespawnOnSameMap)
     {
         var currentMap = this.CurrentMap;
         if (currentMap is null)
@@ -1669,7 +1675,15 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return false;
         }
 
-        await currentMap.RemoveAsync(this).ConfigureAwait(false);
+        if (willRespawnOnSameMap)
+        {
+            await currentMap.InitRespawnAsync(this).ConfigureAwait(false);
+        }
+        else
+        {
+            await currentMap.RemoveAsync(this).ConfigureAwait(false);
+        }
+
         this.IsAlive = false;
         this.IsTeleporting = false;
         await this._walker.StopAsync().ConfigureAwait(false);
@@ -2082,6 +2096,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.Attributes.GetOrCreateAttribute(Stats.MaximumHealth).ValueChanged += this.OnMaximumHealthOrShieldChanged;
         this.Attributes.GetOrCreateAttribute(Stats.MaximumShield).ValueChanged += this.OnMaximumHealthOrShieldChanged;
         this.Attributes.GetOrCreateAttribute(Stats.TransformationSkin).ValueChanged += this.OnTransformationSkinChanged;
+        this.Attributes.GetOrCreateAttribute(Stats.AttackSpeed).ValueChanged += this.OnAttackSpeedChanged;
 
         var ammoAttribute = this.Attributes.GetOrCreateAttribute(Stats.AmmunitionAmount);
         this.Attributes[Stats.AmmunitionAmount] = (float)(this.Inventory?.EquippedAmmunitionItem?.Durability ?? 0);
@@ -2176,8 +2191,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         {
             this.Attributes![Stats.CurrentHealth] = Math.Min(this.Attributes[Stats.CurrentHealth], this.Attributes[Stats.MaximumHealth]);
             this.Attributes[Stats.CurrentShield] = Math.Min(this.Attributes[Stats.CurrentShield], this.Attributes[Stats.MaximumShield]);
-            await this.InvokeViewPlugInAsync<IUpdateMaximumHealthPlugIn>(p => p.UpdateMaximumHealthAsync()).ConfigureAwait(false);
-            await this.InvokeViewPlugInAsync<IUpdateCurrentHealthPlugIn>(p => p.UpdateCurrentHealthAsync()).ConfigureAwait(false);
+
+            await this.InvokeViewPlugInAsync<IUpdateStatsPlugIn>(p => p.UpdateMaximumStatsAsync(UpdatedStats.Health)).ConfigureAwait(false);
+            await this.InvokeViewPlugInAsync<IUpdateStatsPlugIn>(p => p.UpdateCurrentStatsAsync(UpdatedStats.Health)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -2218,8 +2234,21 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         {
             this.Attributes![Stats.CurrentMana] = Math.Min(this.Attributes[Stats.CurrentMana], this.Attributes[Stats.MaximumMana]);
             this.Attributes[Stats.CurrentAbility] = Math.Min(this.Attributes[Stats.CurrentAbility], this.Attributes[Stats.MaximumAbility]);
-            await this.InvokeViewPlugInAsync<IUpdateMaximumManaPlugIn>(p => p.UpdateMaximumManaAsync()).ConfigureAwait(false);
-            await this.InvokeViewPlugInAsync<IUpdateCurrentManaPlugIn>(p => p.UpdateCurrentManaAsync()).ConfigureAwait(false);
+            await this.InvokeViewPlugInAsync<IUpdateStatsPlugIn>(p => p.UpdateMaximumStatsAsync(UpdatedStats.Mana)).ConfigureAwait(false);
+            await this.InvokeViewPlugInAsync<IUpdateStatsPlugIn>(p => p.UpdateCurrentStatsAsync(UpdatedStats.Mana)).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this.Logger.LogError(ex, nameof(this.OnMaximumManaOrAbilityChanged));
+        }
+    }
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
+    private async void OnAttackSpeedChanged(object? sender, EventArgs args)
+    {
+        try
+        {
+            await this.InvokeViewPlugInAsync<IUpdateStatsPlugIn>(p => p.UpdateCurrentStatsAsync(UpdatedStats.Speed)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {

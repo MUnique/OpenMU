@@ -137,6 +137,52 @@ public abstract class ArmorInitializerBase : InitializerBase
         shield.BasePowerUpAttributes.Add(isShieldEquipped);
     }
 
+    protected ItemDefinition CreateGloves(byte number, string name, byte dropLevel, int defense, int attackSpeed, byte durability, int strengthRequirement, int agilityRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel)
+    {
+        var gloves = this.CreateArmor(number, 5, 2, 2, name, dropLevel, defense, durability, strengthRequirement, agilityRequirement, darkWizardClassLevel, darkKnightClassLevel, elfClassLevel);
+        if (attackSpeed > 0)
+        {
+            gloves.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.AttackSpeed, attackSpeed, AggregateType.AddRaw));
+            gloves.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.MagicSpeed, attackSpeed, AggregateType.AddRaw));
+        }
+
+        return gloves;
+    }
+
+    protected ItemDefinition CreateGloves(byte number, string name, byte dropLevel, int defense, int attackSpeed, byte durability, int levelRequirement, int strengthRequirement, int agilityRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel)
+    {
+        var gloves = this.CreateArmor(number, 5, 2, 2, name, dropLevel, defense, durability, levelRequirement, strengthRequirement, agilityRequirement, 0, 0, 0, darkWizardClassLevel, darkKnightClassLevel, elfClassLevel, magicGladiatorClassLevel, darkLordClassLevel, summonerClassLevel, 0);
+        if (attackSpeed > 0)
+        {
+            gloves.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.AttackSpeed, attackSpeed, AggregateType.AddRaw));
+            gloves.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.MagicSpeed, attackSpeed, AggregateType.AddRaw));
+        }
+
+        return gloves;
+    }
+
+    protected ItemDefinition CreateBoots(byte number, byte slot, byte width, byte height, string name, byte dropLevel, int defense, int walkSpeed, byte durability, int strengthRequirement, int agilityRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel)
+    {
+        var boots = this.CreateArmor(number, 6, 2, 2, name, dropLevel, defense, durability, strengthRequirement, agilityRequirement, darkWizardClassLevel, darkKnightClassLevel, elfClassLevel);
+        if (walkSpeed > 0)
+        {
+            boots.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.WalkSpeed, walkSpeed, AggregateType.AddRaw));
+        }
+
+        return boots;
+    }
+
+    protected ItemDefinition CreateBoots(byte number, string name, byte dropLevel, int defense, int walkSpeed, byte durability, int levelRequirement, int strengthRequirement, int agilityRequirement, int energyRequirement, int vitalityRequirement, int leadershipRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel, int ragefighterClassLevel)
+    {
+        var boots = this.CreateArmor(number, 6, 2, 2, name, dropLevel, defense, durability, levelRequirement, strengthRequirement, agilityRequirement, energyRequirement, vitalityRequirement, leadershipRequirement, darkWizardClassLevel, darkKnightClassLevel, elfClassLevel, magicGladiatorClassLevel, darkLordClassLevel, summonerClassLevel, ragefighterClassLevel);
+        if (walkSpeed > 0)
+        {
+            boots.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.WalkSpeed, walkSpeed, AggregateType.AddRaw));
+        }
+
+        return boots;
+    }
+
     protected ItemDefinition CreateArmor(byte number, byte slot, byte width, byte height, string name, byte dropLevel, int defense, byte durability, int strengthRequirement, int agilityRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel)
     {
         var magicGladiatorClassLevel = 0;

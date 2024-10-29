@@ -589,6 +589,9 @@ internal class SkillsInitializer : SkillsInitializerBase
         new IncreaseHealthEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         new IncreaseBlockEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         new WizardryEnhanceEffectInitializer(this.Context, this.GameConfiguration).Initialize();
+        new AlcoholEffectInitializer(this.Context, this.GameConfiguration).Initialize();
+        new SoulPotionEffectInitializer(this.Context, this.GameConfiguration).Initialize();
+        new BlessPotionEffectInitializer(this.Context, this.GameConfiguration).Initialize();
     }
 
     private void MapSkillsToEffects()

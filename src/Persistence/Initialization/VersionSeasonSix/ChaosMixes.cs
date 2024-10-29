@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.PlayerActions.Craftings;
 
 /// <summary>
@@ -90,7 +91,7 @@ public class ChaosMixes : InitializerBase
 
         crafting.SimpleCraftingSettings = craftingSettings;
         craftingSettings.Money = money;
-        craftingSettings.SuccessPercent = (byte)(60 - (((targetLevel - 10) / 2) * 5));
+        craftingSettings.SuccessPercent = (byte)(60 - ((targetLevel - 10) / 2 * 5));
         craftingSettings.SuccessPercentageAdditionForExcellentItem = -10;
         craftingSettings.SuccessPercentageAdditionForAncientItem = -15;
         craftingSettings.SuccessPercentageAdditionForSocketItem = -20;
@@ -682,7 +683,8 @@ public class ChaosMixes : InitializerBase
 
         // Result:
         var potion = this.Context.CreateNew<ItemCraftingResultItem>();
-        potion.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Siege Potion");
+
+        potion.ItemDefinition = this.GameConfiguration.Items.First(i => i.Number == ItemConstants.SiegePotion.Number && i.Group == ItemConstants.SiegePotion.Group);
         potion.Durability = 10;
         craftingSettings.ResultItems.Add(potion);
 
@@ -712,7 +714,7 @@ public class ChaosMixes : InitializerBase
 
         // Result:
         var potion = this.Context.CreateNew<ItemCraftingResultItem>();
-        potion.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Siege Potion");
+        potion.ItemDefinition = this.GameConfiguration.Items.First(i => i.Number == ItemConstants.SiegePotion.Number && i.Group == ItemConstants.SiegePotion.Group);
         potion.Durability = 10;
         potion.RandomMinimumLevel = 1;
         potion.RandomMaximumLevel = 1;
@@ -1186,7 +1188,8 @@ public class ChaosMixes : InitializerBase
 
         var randomItem = this.Context.CreateNew<ItemCraftingRequiredItem>();
         randomItem.MinimumAmount = 1;
-        randomItem.MinimumAmount = 1;
+        randomItem.MaximumAmount = 1;
+        randomItem.MaximumItemLevel = 15;
         randomItem.RequiredItemOptions.Add(this.GameConfiguration.ItemOptionTypes.First(o => o == ItemOptionTypes.HarmonyOption));
         randomItem.FailResult = MixResult.StaysAsIs; // It's never failing, but we set it just in case.
         randomItem.SuccessResult = MixResult.StaysAsIs;

@@ -180,6 +180,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<Guid?>("GameConfigurationId")
                         .HasColumnType("uuid");
 
+                    b.Property<float?>("MaximumValue")
+                        .HasColumnType("real");
+
                     b.HasKey("Id");
 
                     b.HasIndex("GameConfigurationId");
@@ -1288,6 +1291,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<int>("SubOptionType")
                         .HasColumnType("integer");
+
+                    b.Property<byte>("Weight")
+                        .HasColumnType("smallint");
 
                     b.HasKey("Id");
 

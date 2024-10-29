@@ -19,10 +19,22 @@ public class HarmonyJewelConsumeHandlerPlugIn : ItemUpgradeConsumeHandlerPlugIn
     /// Initializes a new instance of the <see cref="HarmonyJewelConsumeHandlerPlugIn" /> class.
     /// </summary>
     public HarmonyJewelConsumeHandlerPlugIn()
-        : base(new ItemUpgradeConfiguration(ItemOptionTypes.HarmonyOption, true, false, 0.5, ItemFailResult.None))
+        : base(new ItemUpgradeConfiguration(ItemOptionTypes.HarmonyOption, true, false, 0.6, ItemFailResult.None))
     {
     }
 
     /// <inheritdoc />
     public override ItemIdentifier Key => ItemConstants.JewelOfHarmony;
+
+    /// <inheritdoc />
+    protected override bool ItemCanHaveOption(Item item)
+    {
+        if (item.IsAncient())
+        {
+            // Until S16E2 ancient and socket items couldn't have harmony options: https://muonline.webzen.com/en/gameinfo/guide/detail/117
+            return false;
+        }
+
+        return base.ItemCanHaveOption(item);
+    }
 }

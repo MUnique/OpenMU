@@ -24,6 +24,6 @@ public abstract class ManaPotionConsumeHandler : RecoverConsumeHandlerPlugIn.Man
     /// <inheritdoc />
     protected override async ValueTask OnAfterRecoverAsync(Player player)
     {
-        await player.InvokeViewPlugInAsync<IUpdateCurrentManaPlugIn>(p => p.UpdateCurrentManaAsync()).ConfigureAwait(false);
+        await player.InvokeViewPlugInAsync<IUpdateStatsPlugIn>(p => p.UpdateCurrentStatsAsync(IUpdateStatsPlugIn.UpdatedStats.Mana)).ConfigureAwait(false);
     }
 }

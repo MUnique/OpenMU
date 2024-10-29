@@ -129,6 +129,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         new GreaterDamageEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         new GreaterDefenseEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         new HealEffectInitializer(this.Context, this.GameConfiguration).Initialize();
+        new AlcoholEffectInitializer(this.Context, this.GameConfiguration).Initialize();
     }
 
     private void MapSkillsToEffects()
