@@ -2,6 +2,8 @@
 
 public enum DuelStartResult
 {
+    Undefined,
+
     Success,
 
     Refused,

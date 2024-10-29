@@ -184,4 +184,9 @@ public enum UpdateVersion
     /// The version of the <see cref="AddHarmonyOptionWeightsUpdateSeason6"/>.
     /// </summary>
     AddHarmonyOptionWeightsSeason6 = 35,
+
+    /// <summary>
+    /// The version of the <see cref="FixDuelArenaSafezoneMapUpdate"/>.
+    /// </summary>
+    FixDuelArenaSafezoneMap = 36,
 }

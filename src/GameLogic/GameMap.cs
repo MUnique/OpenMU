@@ -163,29 +163,34 @@ public class GameMap
     /// <param name="locateable">The locateable object.</param>
     public async ValueTask AddAsync(ILocateable locateable)
     {
-        switch (locateable)
+        if (!this._objectsInMap.TryGetValue(locateable.Id, out var existing)
+            || existing != locateable)
         {
-            case DroppedItem droppedItem:
-                droppedItem.Id = (ushort)this._dropIdGenerator.GenerateId();
-                break;
-            case DroppedMoney droppedMoney:
-                droppedMoney.Id = (ushort)this._dropIdGenerator.GenerateId();
-                break;
-            case Player player:
-                player.Id = (ushort)this._objectIdGenerator.GenerateId();
-                Interlocked.Increment(ref this._playerCount);
-                break;
-            case NonPlayerCharacter npc:
-                npc.Id = (ushort)this._objectIdGenerator.GenerateId();
-                break;
-            case ISupportIdUpdate idUpdate:
-                idUpdate.Id = (ushort)this._objectIdGenerator.GenerateId();
-                break;
-            default:
-                throw new ArgumentException($"Adding an object of type {locateable.GetType()} is not supported.");
+            switch (locateable)
+            {
+                case DroppedItem droppedItem:
+                    droppedItem.Id = (ushort)this._dropIdGenerator.GenerateId();
+                    break;
+                case DroppedMoney droppedMoney:
+                    droppedMoney.Id = (ushort)this._dropIdGenerator.GenerateId();
+                    break;
+                case Player player:
+                    player.Id = (ushort)this._objectIdGenerator.GenerateId();
+                    Interlocked.Increment(ref this._playerCount);
+                    break;
+                case NonPlayerCharacter npc:
+                    npc.Id = (ushort)this._objectIdGenerator.GenerateId();
+                    break;
+                case ISupportIdUpdate idUpdate:
+                    idUpdate.Id = (ushort)this._objectIdGenerator.GenerateId();
+                    break;
+                default:
+                    throw new ArgumentException($"Adding an object of type {locateable.GetType()} is not supported.");
+            }
+
+            this._objectsInMap.Add(locateable.Id, locateable);
         }
 
-        this._objectsInMap.Add(locateable.Id, locateable);
         await this._areaOfInterestManager.AddObjectAsync(locateable).ConfigureAwait(false);
         if (this.ObjectAdded is { } eventHandler)
         {
@@ -203,6 +208,15 @@ public class GameMap
     public ValueTask MoveAsync(ILocateable locatable, Point target, AsyncLock moveLock, MoveType moveType)
     {
         return this._areaOfInterestManager.MoveObjectAsync(locatable, target, moveLock, moveType);
+    }
+
+    /// <summary>
+    /// Initializes a respawn for the specified locateable.
+    /// </summary>
+    /// <param name="locateable">The locateable.</param>
+    public async ValueTask InitRespawnAsync(ILocateable locateable)
+    {
+        await this._areaOfInterestManager.RemoveObjectAsync(locateable).ConfigureAwait(false);
     }
 
     /// <summary>
