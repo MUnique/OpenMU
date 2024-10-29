@@ -19,6 +19,7 @@ using MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Character;
+using MUnique.OpenMU.GameLogic.Views.Duel;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.GameLogic.Views.MuHelper;
 using MUnique.OpenMU.GameLogic.Views.Pet;
@@ -509,7 +510,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             this._appearanceData.RaiseAppearanceChanged();
 
             await this.PlayerLeftWorld.SafeInvokeAsync(this).ConfigureAwait(false);
-            this._selectedCharacter = null;
+            
             (this.SkillList as IDisposable)?.Dispose();
             this.SkillList = null;
 
@@ -523,6 +524,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             }
 
             this.DuelRoom = null;
+            this._selectedCharacter = null;
         }
         else
         {
@@ -901,7 +903,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <param name="gate">The gate to which the player should be moved.</param>
     public async ValueTask WarpToAsync(ExitGate gate)
     {
-        if (!await this.TryRemoveFromCurrentMapAsync().ConfigureAwait(false))
+        var isRespawnOnSameMap = object.Equals(this.CurrentMap?.Definition, gate.Map);
+        if (!await this.TryRemoveFromCurrentMapAsync(isRespawnOnSameMap).ConfigureAwait(false))
         {
             return;
         }
@@ -930,7 +933,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <param name="gate">The gate at which the player should be respawned.</param>
     public async ValueTask RespawnAtAsync(ExitGate gate)
     {
-        if (!await this.TryRemoveFromCurrentMapAsync().ConfigureAwait(false))
+        var isRespawnOnSameMap = object.Equals(this.CurrentMap?.Definition, gate.Map);
+
+        if (!await this.TryRemoveFromCurrentMapAsync(isRespawnOnSameMap).ConfigureAwait(false))
         {
             return;
         }
@@ -1662,7 +1667,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         throw new NotImplementedException("CreateViewPlugInContainer must be overwritten in derived classes.");
     }
 
-    private async ValueTask<bool> TryRemoveFromCurrentMapAsync()
+    private async ValueTask<bool> TryRemoveFromCurrentMapAsync(bool willRespawnOnSameMap)
     {
         var currentMap = this.CurrentMap;
         if (currentMap is null)
@@ -1670,7 +1675,15 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return false;
         }
 
-        await currentMap.RemoveAsync(this).ConfigureAwait(false);
+        if (willRespawnOnSameMap)
+        {
+            await currentMap.InitRespawnAsync(this).ConfigureAwait(false);
+        }
+        else
+        {
+            await currentMap.RemoveAsync(this).ConfigureAwait(false);
+        }
+
         this.IsAlive = false;
         this.IsTeleporting = false;
         await this._walker.StopAsync().ConfigureAwait(false);

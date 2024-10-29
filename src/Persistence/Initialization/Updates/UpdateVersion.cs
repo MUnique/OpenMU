@@ -180,7 +180,17 @@ public enum UpdateVersion
     /// </summary>
     FixWingsDmgRatesPlugInSeason6 = 34,
 
+    /// <summary>
+    /// The version of the <see cref="AddHarmonyOptionWeightsUpdateSeason6"/>.
+    /// </summary>
+    AddHarmonyOptionWeightsSeason6 = 35,
+
+    /// <summary>
+    /// The version of the <see cref="FixDuelArenaSafezoneMapUpdate"/>.
+    /// </summary>
+    FixDuelArenaSafezoneMap = 36,
+
     /// The version of the <see cref="FixAttackSpeedCalculationUpdate"/>.
     /// </summary>
-    FixAttackSpeedCalculation = 35,
+    FixAttackSpeedCalculation = 37,
 }

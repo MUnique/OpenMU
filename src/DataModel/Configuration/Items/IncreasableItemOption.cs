@@ -43,6 +43,13 @@ public partial class IncreasableItemOption : ItemOption
     public LevelType LevelType { get; set; }
 
     /// <summary>
+    /// Gets or sets a value which is considered when randomizing the option to an item.
+    /// </summary>
+    /// <remarks>This is used for Jewel of Harmony options rollout.</remarks>
+    /// <value>The statistical weight.</value>
+    public byte Weight { get; set; }
+
+    /// <summary>
     /// Gets or sets the level dependent options for option levels over 1.
     /// </summary>
     [MemberOfAggregate]
