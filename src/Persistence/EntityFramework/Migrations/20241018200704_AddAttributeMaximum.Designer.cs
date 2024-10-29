@@ -3,6 +3,7 @@ using System;
 using MUnique.OpenMU.Persistence.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 {
     [DbContext(typeof(EntityDataContext))]
-    partial class EntityDataContextModelSnapshot : ModelSnapshot
+    [Migration("20241018200704_AddAttributeMaximum")]
+    partial class AddAttributeMaximum
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -974,9 +977,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<int>("MaximumInventoryMoney")
                         .HasColumnType("integer");
 
-                    b.Property<byte>("MaximumItemOptionLevelDrop")
-                        .HasColumnType("smallint");
-
                     b.Property<int>("MaximumLetters")
                         .HasColumnType("integer");
 
@@ -1241,9 +1241,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<int>("SubOptionType")
                         .HasColumnType("integer");
-
-                    b.Property<byte>("Weight")
-                        .HasColumnType("smallint");
 
                     b.HasKey("Id");
 

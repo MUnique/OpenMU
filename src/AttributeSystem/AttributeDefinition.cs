@@ -38,18 +38,17 @@ public class AttributeDefinition : IEquatable<AttributeDefinition>
     /// <summary>
     /// Gets or sets the designation.
     /// </summary>
-    /// <value>
-    /// The designation.
-    /// </value>
     public string? Designation { get; set; }
 
     /// <summary>
     /// Gets or sets the description.
     /// </summary>
-    /// <value>
-    /// The description.
-    /// </value>
     public string? Description { get; set; }
+
+    /// <summary>
+    /// Gets or sets the maximum value of this attribute, if the value should be capped.
+    /// </summary>
+    public float? MaximumValue { get; set; }
 
     /// <summary>
     /// Implements the operator ==.

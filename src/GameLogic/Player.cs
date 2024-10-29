@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic;
 
+using System;
 using System.Threading;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Attributes;
@@ -29,6 +30,7 @@ using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
 using Nito.AsyncEx;
+using static MUnique.OpenMU.GameLogic.Views.Character.IUpdateStatsPlugIn;
 
 /// <summary>
 /// The base implementation of a player.
@@ -624,13 +626,13 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         if (Rand.NextRandomBool(this.Attributes[Stats.FullyRecoverHealthAfterHitChance]))
         {
             this.Attributes[Stats.CurrentHealth] = this.Attributes[Stats.MaximumHealth];
-            await this.InvokeViewPlugInAsync<IUpdateCurrentHealthPlugIn>(p => p.UpdateCurrentHealthAsync()).ConfigureAwait(false);
+            await this.InvokeViewPlugInAsync<IUpdateStatsPlugIn>(p => p.UpdateCurrentStatsAsync(UpdatedStats.Health)).ConfigureAwait(false);
         }
 
         if (Rand.NextRandomBool(this.Attributes[Stats.FullyRecoverManaAfterHitChance]))
         {
             this.Attributes[Stats.CurrentMana] = this.Attributes[Stats.MaximumMana];
-            await this.InvokeViewPlugInAsync<IUpdateCurrentManaPlugIn>(p => p.UpdateCurrentManaAsync()).ConfigureAwait(false);
+            await this.InvokeViewPlugInAsync<IUpdateStatsPlugIn>(p => p.UpdateCurrentStatsAsync(UpdatedStats.Mana)).ConfigureAwait(false);
         }
 
         await this.HitAsync(hitInfo, attacker, skill?.Skill).ConfigureAwait(false);
@@ -733,8 +735,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             this.Attributes[recoverAfterMonsterKill.CurrentAttribute] = (uint)Math.Min(this.Attributes[recoverAfterMonsterKill.MaximumAttribute], this.Attributes[recoverAfterMonsterKill.CurrentAttribute] + additionalValue);
         }
 
-        await this.InvokeViewPlugInAsync<IUpdateCurrentManaPlugIn>(p => p.UpdateCurrentManaAsync()).ConfigureAwait(false);
-        await this.InvokeViewPlugInAsync<IUpdateCurrentHealthPlugIn>(p => p.UpdateCurrentHealthAsync()).ConfigureAwait(false);
+        await this.InvokeViewPlugInAsync<IUpdateStatsPlugIn>(p => p.UpdateCurrentStatsAsync()).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1229,8 +1230,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                     attributes[r.MaximumAttribute]);
             }
 
-            await this.InvokeViewPlugInAsync<IUpdateCurrentHealthPlugIn>(p => p.UpdateCurrentHealthAsync()).ConfigureAwait(false);
-            await this.InvokeViewPlugInAsync<IUpdateCurrentManaPlugIn>(p => p.UpdateCurrentManaAsync()).ConfigureAwait(false);
+            await this.InvokeViewPlugInAsync<IUpdateStatsPlugIn>(p => p.UpdateCurrentStatsAsync()).ConfigureAwait(false);
 
             await this.RegenerateHeroStateAsync().ConfigureAwait(false);
         }
@@ -1339,7 +1339,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             this.Attributes![requirement.Attribute] -= this.GetRequiredValue(requirement);
         }
 
-        await this.InvokeViewPlugInAsync<IUpdateCurrentManaPlugIn>(p => p.UpdateCurrentManaAsync()).ConfigureAwait(false);
+        await this.InvokeViewPlugInAsync<IUpdateStatsPlugIn>(p => p.UpdateCurrentStatsAsync(UpdatedStats.Mana)).ConfigureAwait(false);
+
         return true;
     }
 
@@ -2095,6 +2096,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.Attributes.GetOrCreateAttribute(Stats.MaximumHealth).ValueChanged += this.OnMaximumHealthOrShieldChanged;
         this.Attributes.GetOrCreateAttribute(Stats.MaximumShield).ValueChanged += this.OnMaximumHealthOrShieldChanged;
         this.Attributes.GetOrCreateAttribute(Stats.TransformationSkin).ValueChanged += this.OnTransformationSkinChanged;
+        this.Attributes.GetOrCreateAttribute(Stats.AttackSpeed).ValueChanged += this.OnAttackSpeedChanged;
 
         var ammoAttribute = this.Attributes.GetOrCreateAttribute(Stats.AmmunitionAmount);
         this.Attributes[Stats.AmmunitionAmount] = (float)(this.Inventory?.EquippedAmmunitionItem?.Durability ?? 0);
@@ -2189,8 +2191,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         {
             this.Attributes![Stats.CurrentHealth] = Math.Min(this.Attributes[Stats.CurrentHealth], this.Attributes[Stats.MaximumHealth]);
             this.Attributes[Stats.CurrentShield] = Math.Min(this.Attributes[Stats.CurrentShield], this.Attributes[Stats.MaximumShield]);
-            await this.InvokeViewPlugInAsync<IUpdateMaximumHealthPlugIn>(p => p.UpdateMaximumHealthAsync()).ConfigureAwait(false);
-            await this.InvokeViewPlugInAsync<IUpdateCurrentHealthPlugIn>(p => p.UpdateCurrentHealthAsync()).ConfigureAwait(false);
+
+            await this.InvokeViewPlugInAsync<IUpdateStatsPlugIn>(p => p.UpdateMaximumStatsAsync(UpdatedStats.Health)).ConfigureAwait(false);
+            await this.InvokeViewPlugInAsync<IUpdateStatsPlugIn>(p => p.UpdateCurrentStatsAsync(UpdatedStats.Health)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -2231,8 +2234,21 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         {
             this.Attributes![Stats.CurrentMana] = Math.Min(this.Attributes[Stats.CurrentMana], this.Attributes[Stats.MaximumMana]);
             this.Attributes[Stats.CurrentAbility] = Math.Min(this.Attributes[Stats.CurrentAbility], this.Attributes[Stats.MaximumAbility]);
-            await this.InvokeViewPlugInAsync<IUpdateMaximumManaPlugIn>(p => p.UpdateMaximumManaAsync()).ConfigureAwait(false);
-            await this.InvokeViewPlugInAsync<IUpdateCurrentManaPlugIn>(p => p.UpdateCurrentManaAsync()).ConfigureAwait(false);
+            await this.InvokeViewPlugInAsync<IUpdateStatsPlugIn>(p => p.UpdateMaximumStatsAsync(UpdatedStats.Mana)).ConfigureAwait(false);
+            await this.InvokeViewPlugInAsync<IUpdateStatsPlugIn>(p => p.UpdateCurrentStatsAsync(UpdatedStats.Mana)).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this.Logger.LogError(ex, nameof(this.OnMaximumManaOrAbilityChanged));
+        }
+    }
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
+    private async void OnAttackSpeedChanged(object? sender, EventArgs args)
+    {
+        try
+        {
+            await this.InvokeViewPlugInAsync<IUpdateStatsPlugIn>(p => p.UpdateCurrentStatsAsync(UpdatedStats.Speed)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {

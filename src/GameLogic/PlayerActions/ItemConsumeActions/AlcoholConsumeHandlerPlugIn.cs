@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("7FC2FE02-9215-4AD3-958F-D2279CD84266")]
 [PlugIn(nameof(AlcoholConsumeHandlerPlugIn), "Plugin which handles the alcohol consumption.")]
-public class AlcoholConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn
+public class AlcoholConsumeHandlerPlugIn : ApplyMagicEffectConsumeHandlerPlugIn
 {
     /// <inheritdoc />
     public override ItemIdentifier Key => ItemConstants.Alcohol;
@@ -25,7 +25,8 @@ public class AlcoholConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn
     {
         if (await base.ConsumeItemAsync(player, item, targetItem, fruitUsage).ConfigureAwait(false))
         {
-            await player.InvokeViewPlugInAsync<IDrinkAlcoholPlugIn>(p => p.DrinkAlcoholAsync()).ConfigureAwait(false);
+            var effectDefinition = item.Definition?.ConsumeEffect;
+            await player.InvokeViewPlugInAsync<IConsumeSpecialItemPlugIn>(p => p.ConsumeSpecialItemAsync(item, (ushort)(effectDefinition?.Duration?.ConstantValue.Value ?? 0))).ConfigureAwait(false);
             return true;
         }
 

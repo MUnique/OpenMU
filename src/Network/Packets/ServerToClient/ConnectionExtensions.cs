@@ -1726,36 +1726,6 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
-    /// Sends a <see cref="CurrentHealthAndShieldExtended" /> to this connection.
-    /// </summary>
-    /// <param name="connection">The connection.</param>
-    /// <param name="health">The health.</param>
-    /// <param name="shield">The shield.</param>
-    /// <remarks>
-    /// Is sent by the server when: Periodically, or if the current health or shield changed on the server side, e.g. by hits.
-    /// Causes reaction on client side: The health and shield bar is updated on the game client user interface.
-    /// </remarks>
-    public static async ValueTask SendCurrentHealthAndShieldExtendedAsync(this IConnection? connection, uint @health, uint @shield)
-    {
-        if (connection is null)
-        {
-            return;
-        }
-
-        int WritePacket()
-        {
-            var length = CurrentHealthAndShieldExtendedRef.Length;
-            var packet = new CurrentHealthAndShieldExtendedRef(connection.Output.GetSpan(length)[..length]);
-            packet.Health = @health;
-            packet.Shield = @shield;
-
-            return packet.Header.Length;
-        }
-
-        await connection.SendAsync(WritePacket).ConfigureAwait(false);
-    }
-
-    /// <summary>
     /// Sends a <see cref="MaximumHealthAndShield" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
@@ -1786,16 +1756,20 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
-    /// Sends a <see cref="MaximumHealthAndShieldExtended" /> to this connection.
+    /// Sends a <see cref="CurrentStatsExtended" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
     /// <param name="health">The health.</param>
     /// <param name="shield">The shield.</param>
+    /// <param name="mana">The mana.</param>
+    /// <param name="ability">The ability.</param>
+    /// <param name="attackSpeed">The attack speed.</param>
+    /// <param name="magicSpeed">The magic speed.</param>
     /// <remarks>
-    /// Is sent by the server when: When the maximum health changed, e.g. by adding stat points or changed items.
-    /// Causes reaction on client side: The health and shield bar is updated on the game client user interface.
+    /// Is sent by the server when: Periodically, or if the current stats, like health, shield, mana or attack speed changed on the server side, e.g. by hits.
+    /// Causes reaction on client side: The values are updated on the game client user interface.
     /// </remarks>
-    public static async ValueTask SendMaximumHealthAndShieldExtendedAsync(this IConnection? connection, uint @health, uint @shield)
+    public static async ValueTask SendCurrentStatsExtendedAsync(this IConnection? connection, uint @health, uint @shield, uint @mana, uint @ability, ushort @attackSpeed, ushort @magicSpeed)
     {
         if (connection is null)
         {
@@ -1804,10 +1778,48 @@ public static class ConnectionExtensions
 
         int WritePacket()
         {
-            var length = MaximumHealthAndShieldExtendedRef.Length;
-            var packet = new MaximumHealthAndShieldExtendedRef(connection.Output.GetSpan(length)[..length]);
+            var length = CurrentStatsExtendedRef.Length;
+            var packet = new CurrentStatsExtendedRef(connection.Output.GetSpan(length)[..length]);
             packet.Health = @health;
             packet.Shield = @shield;
+            packet.Mana = @mana;
+            packet.Ability = @ability;
+            packet.AttackSpeed = @attackSpeed;
+            packet.MagicSpeed = @magicSpeed;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="MaximumStatsExtended" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="health">The health.</param>
+    /// <param name="shield">The shield.</param>
+    /// <param name="mana">The mana.</param>
+    /// <param name="ability">The ability.</param>
+    /// <remarks>
+    /// Is sent by the server when: When the maximum stats, like health, shield, mana or attack speed changed on the server side, e.g. by adding stat points or changed items.
+    /// Causes reaction on client side: The values are updated on the game client user interface.
+    /// </remarks>
+    public static async ValueTask SendMaximumStatsExtendedAsync(this IConnection? connection, uint @health, uint @shield, uint @mana, uint @ability)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = MaximumStatsExtendedRef.Length;
+            var packet = new MaximumStatsExtendedRef(connection.Output.GetSpan(length)[..length]);
+            packet.Health = @health;
+            packet.Shield = @shield;
+            packet.Mana = @mana;
+            packet.Ability = @ability;
 
             return packet.Header.Length;
         }
@@ -1906,36 +1918,6 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
-    /// Sends a <see cref="CurrentManaAndAbilityExtended" /> to this connection.
-    /// </summary>
-    /// <param name="connection">The connection.</param>
-    /// <param name="mana">The mana.</param>
-    /// <param name="ability">The ability.</param>
-    /// <remarks>
-    /// Is sent by the server when: The currently available mana or ability has changed, e.g. by using a skill.
-    /// Causes reaction on client side: The mana and ability bar is updated on the game client user interface.
-    /// </remarks>
-    public static async ValueTask SendCurrentManaAndAbilityExtendedAsync(this IConnection? connection, uint @mana, uint @ability)
-    {
-        if (connection is null)
-        {
-            return;
-        }
-
-        int WritePacket()
-        {
-            var length = CurrentManaAndAbilityExtendedRef.Length;
-            var packet = new CurrentManaAndAbilityExtendedRef(connection.Output.GetSpan(length)[..length]);
-            packet.Mana = @mana;
-            packet.Ability = @ability;
-
-            return packet.Header.Length;
-        }
-
-        await connection.SendAsync(WritePacket).ConfigureAwait(false);
-    }
-
-    /// <summary>
     /// Sends a <see cref="MaximumManaAndAbility" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
@@ -1956,36 +1938,6 @@ public static class ConnectionExtensions
         {
             var length = MaximumManaAndAbilityRef.Length;
             var packet = new MaximumManaAndAbilityRef(connection.Output.GetSpan(length)[..length]);
-            packet.Mana = @mana;
-            packet.Ability = @ability;
-
-            return packet.Header.Length;
-        }
-
-        await connection.SendAsync(WritePacket).ConfigureAwait(false);
-    }
-
-    /// <summary>
-    /// Sends a <see cref="MaximumManaAndAbilityExtended" /> to this connection.
-    /// </summary>
-    /// <param name="connection">The connection.</param>
-    /// <param name="mana">The mana.</param>
-    /// <param name="ability">The ability.</param>
-    /// <remarks>
-    /// Is sent by the server when: The maximum available mana or ability has changed, e.g. by adding stat points.
-    /// Causes reaction on client side: The mana and ability bar is updated on the game client user interface.
-    /// </remarks>
-    public static async ValueTask SendMaximumManaAndAbilityExtendedAsync(this IConnection? connection, uint @mana, uint @ability)
-    {
-        if (connection is null)
-        {
-            return;
-        }
-
-        int WritePacket()
-        {
-            var length = MaximumManaAndAbilityExtendedRef.Length;
-            var packet = new MaximumManaAndAbilityExtendedRef(connection.Output.GetSpan(length)[..length]);
             packet.Mana = @mana;
             packet.Ability = @ability;
 
