@@ -179,8 +179,7 @@ public enum UpdateVersion
     /// The version of the <see cref="FixWingsDmgRatesUpdatePlugInSeason6"/>.
     /// </summary>
     FixWingsDmgRatesPlugInSeason6 = 34,
-
-    /// <summary>
+    
     /// The version of the <see cref="AddHarmonyOptionWeightsUpdateSeason6"/>.
     /// </summary>
     AddHarmonyOptionWeightsSeason6 = 35,
@@ -193,4 +192,9 @@ public enum UpdateVersion
     /// The version of the <see cref="FixAttackSpeedCalculationUpdate"/>.
     /// </summary>
     FixAttackSpeedCalculation = 37,
+    
+    /// <summary>
+    /// The version of the <see cref="AddAreaSkillSettingsUpdatePlugIn"/>.
+    /// </summary>
+    AddAreaSkillSettings = 38,
 }
