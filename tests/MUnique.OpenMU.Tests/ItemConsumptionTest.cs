@@ -324,18 +324,18 @@ public class ItemConsumptionTest
         var consumeHandler = new AlcoholConsumeHandlerPlugIn();
         var player = await this.GetPlayerAsync().ConfigureAwait(false);
         var item = this.GetItem();
-        item.Definition!.ConsumeEffect = new Persistence.BasicModel.MagicEffectDefinition()
+        item.Definition!.ConsumeEffect = new Persistence.BasicModel.MagicEffectDefinition
         {
-            Duration = new Persistence.BasicModel.PowerUpDefinitionValue()
+            Duration = new Persistence.BasicModel.PowerUpDefinitionValue
             {
                 ConstantValue = { Value = 80 }
             },
             PowerUpDefinitions =
             {
-                new Persistence.BasicModel.PowerUpDefinition()
+                new Persistence.BasicModel.PowerUpDefinition
                 {
                     TargetAttribute = Stats.AttackSpeed,
-                    Boost = new Persistence.BasicModel.PowerUpDefinitionValue()
+                    Boost = new Persistence.BasicModel.PowerUpDefinitionValue
                     {
                         ConstantValue = { Value = 20 }
                     }

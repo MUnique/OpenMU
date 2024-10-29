@@ -43,5 +43,9 @@ public class ConsumeSpecialItemPlugIn : IConsumeSpecialItemPlugIn
         {
             await this._player.Connection.SendConsumeItemWithEffectAsync(ConsumeItemWithEffect.ConsumedItemType.PotionOfSoul, effectTimeInSeconds).ConfigureAwait(false);
         }
+        else
+        {
+            // do nothing
+        }
     }
 }
