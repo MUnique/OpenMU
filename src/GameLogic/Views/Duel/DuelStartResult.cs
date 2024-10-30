@@ -9,6 +9,8 @@ namespace MUnique.OpenMU.GameLogic.Views.Duel;
 /// </summary>
 public enum DuelStartResult
 {
+    Undefined,
+
     Success,
 
     Refused,

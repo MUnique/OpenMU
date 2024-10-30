@@ -38,6 +38,7 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.LetterBody>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.QuestMonsterKillRequirementState>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.SkillEntry>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.AreaSkillSettings>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.BattleZoneDefinition>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.CharacterClass>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.ChatServerDefinition>();
@@ -175,6 +176,7 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Entity<Skill>().HasMany(entity => entity.RawRequirements).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Skill>().HasMany(entity => entity.RawConsumeRequirements).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Skill>().HasOne(entity => entity.RawMasterDefinition).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<Skill>().HasOne(entity => entity.RawAreaSkillSettings).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<SkillComboDefinition>().HasMany(entity => entity.RawSteps).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<QuestDefinition>().HasMany(entity => entity.RawRequiredMonsterKills).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<QuestDefinition>().HasMany(entity => entity.RawRequiredItems).WithOne().OnDelete(DeleteBehavior.Cascade);

@@ -42,16 +42,21 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.CreateSkill(SkillNumber.Meteorite, "Meteorite", CharacterClasses.DarkWizard | CharacterClasses.MagicGladiator, DamageType.Wizardry, 21, 6, manaConsumption: 12, energyRequirement: 104, elementalModifier: ElementalType.Earth);
         this.CreateSkill(SkillNumber.Lightning, "Lightning", CharacterClasses.DarkWizard | CharacterClasses.MagicGladiator, DamageType.Wizardry, 17, 6, manaConsumption: 15, energyRequirement: 72, elementalModifier: ElementalType.Lightning);
         this.CreateSkill(SkillNumber.FireBall, "Fire Ball", CharacterClasses.DarkWizard | CharacterClasses.MagicGladiator, DamageType.Wizardry, 8, 6, manaConsumption: 3, energyRequirement: 40, elementalModifier: ElementalType.Fire);
-        this.CreateSkill(SkillNumber.Flame, "Flame", CharacterClasses.DarkWizard | CharacterClasses.MagicGladiator, DamageType.Wizardry, 25, 6, manaConsumption: 50, energyRequirement: 160, elementalModifier: ElementalType.Fire, skillType: SkillType.AreaSkillExplicitHits);
+        this.CreateSkill(SkillNumber.Flame, "Flame", CharacterClasses.DarkWizard | CharacterClasses.MagicGladiator, DamageType.Wizardry, 25, 6, manaConsumption: 50, energyRequirement: 160, elementalModifier: ElementalType.Fire, skillType: SkillType.AreaSkillAutomaticHits);
+        this.AddAreaSkillSettings(SkillNumber.Flame, false, default, default, default, true, TimeSpan.Zero, TimeSpan.FromMilliseconds(500), 0, 2, default, 0.5f, targetAreaDiameter: 2, useTargetAreaFilter: true);
         this.CreateSkill(SkillNumber.Teleport, "Teleport", CharacterClasses.DarkWizard, DamageType.Wizardry, distance: 6, manaConsumption: 30, energyRequirement: 88, skillType: SkillType.Other);
         this.CreateSkill(SkillNumber.Ice, "Ice", CharacterClasses.DarkWizard | CharacterClasses.MagicGladiator, DamageType.Wizardry, 10, 6, manaConsumption: 38, energyRequirement: 120, elementalModifier: ElementalType.Ice);
-        this.CreateSkill(SkillNumber.Twister, "Twister", CharacterClasses.DarkWizard | CharacterClasses.MagicGladiator, DamageType.Wizardry, 35, 6, manaConsumption: 60, energyRequirement: 180, elementalModifier: ElementalType.Wind, skillType: SkillType.AreaSkillExplicitHits);
-        this.CreateSkill(SkillNumber.EvilSpirit, "Evil Spirit", CharacterClasses.DarkWizard | CharacterClasses.MagicGladiator, DamageType.Wizardry, 45, 6, manaConsumption: 90, energyRequirement: 220, skillType: SkillType.AreaSkillExplicitHits);
-        this.CreateSkill(SkillNumber.Hellfire, "Hellfire", CharacterClasses.DarkWizard | CharacterClasses.MagicGladiator, DamageType.Wizardry, 120, manaConsumption: 160, energyRequirement: 260, elementalModifier: ElementalType.Fire, skillType: SkillType.AreaSkillExplicitHits);
+        this.CreateSkill(SkillNumber.Twister, "Twister", CharacterClasses.DarkWizard | CharacterClasses.MagicGladiator, DamageType.Wizardry, 35, 6, manaConsumption: 60, energyRequirement: 180, elementalModifier: ElementalType.Wind, skillType: SkillType.AreaSkillAutomaticHits);
+        this.AddAreaSkillSettings(SkillNumber.Twister, true, 1.5f, 1.5f, 4f, true, TimeSpan.FromMilliseconds(300), TimeSpan.FromMilliseconds(1000), 0, 2, default, 0.7f);
+        this.CreateSkill(SkillNumber.EvilSpirit, "Evil Spirit", CharacterClasses.DarkWizard | CharacterClasses.MagicGladiator, DamageType.Wizardry, 45, 6, manaConsumption: 90, energyRequirement: 220, skillType: SkillType.AreaSkillAutomaticHits);
+        this.AddAreaSkillSettings(SkillNumber.EvilSpirit, false, default, default, default, true, TimeSpan.FromMilliseconds(100), TimeSpan.FromMilliseconds(1000), 0, 2, default, 0.7f);
+        this.CreateSkill(SkillNumber.Hellfire, "Hellfire", CharacterClasses.DarkWizard | CharacterClasses.MagicGladiator, DamageType.Wizardry, 120, manaConsumption: 160, energyRequirement: 260, elementalModifier: ElementalType.Fire, skillType: SkillType.AreaSkillAutomaticHits);
         this.CreateSkill(SkillNumber.PowerWave, "Power Wave", CharacterClasses.DarkWizard | CharacterClasses.MagicGladiator, DamageType.Wizardry, 14, 6, manaConsumption: 5, energyRequirement: 56);
-        this.CreateSkill(SkillNumber.AquaBeam, "Aqua Beam", CharacterClasses.DarkWizard | CharacterClasses.MagicGladiator, DamageType.Wizardry, 80, 6, manaConsumption: 140, energyRequirement: 345, elementalModifier: ElementalType.Water, skillType: SkillType.AreaSkillExplicitHits);
+        this.CreateSkill(SkillNumber.AquaBeam, "Aqua Beam", CharacterClasses.DarkWizard | CharacterClasses.MagicGladiator, DamageType.Wizardry, 80, 6, manaConsumption: 140, energyRequirement: 345, elementalModifier: ElementalType.Water, skillType: SkillType.AreaSkillAutomaticHits);
+        this.AddAreaSkillSettings(SkillNumber.AquaBeam, true, 1.5f, 1.5f, 8f);
         this.CreateSkill(SkillNumber.Cometfall, "Cometfall", CharacterClasses.DarkWizard | CharacterClasses.MagicGladiator, DamageType.Wizardry, 70, 3, manaConsumption: 150, energyRequirement: 436, elementalModifier: ElementalType.Lightning);
-        this.CreateSkill(SkillNumber.Inferno, "Inferno", CharacterClasses.DarkWizard | CharacterClasses.MagicGladiator, DamageType.Wizardry, 100, manaConsumption: 200, energyRequirement: 578, elementalModifier: ElementalType.Fire, skillType: SkillType.AreaSkillExplicitHits);
+        this.AddAreaSkillSettings(SkillNumber.Cometfall, false, default, default, default, targetAreaDiameter: 2, useTargetAreaFilter: true);
+        this.CreateSkill(SkillNumber.Inferno, "Inferno", CharacterClasses.DarkWizard | CharacterClasses.MagicGladiator, DamageType.Wizardry, 100, manaConsumption: 200, energyRequirement: 578, elementalModifier: ElementalType.Fire, skillType: SkillType.AreaSkillAutomaticHits);
         this.CreateSkill(SkillNumber.EnergyBall, "Energy Ball", CharacterClasses.DarkWizard | CharacterClasses.MagicGladiator, DamageType.Wizardry, 3, 6, manaConsumption: 1);
         this.CreateSkill(SkillNumber.Defense, "Defense", CharacterClasses.DarkKnight | CharacterClasses.MagicGladiator, manaConsumption: 30, skillType: SkillType.Buff, skillTarget: SkillTarget.Explicit, implicitTargetRange: 0, targetRestriction: SkillTargetRestriction.Self);
         this.CreateSkill(SkillNumber.FallingSlash, "Falling Slash", CharacterClasses.DarkKnight | CharacterClasses.MagicGladiator, DamageType.Physical, distance: 3, manaConsumption: 9, movesToTarget: true, movesTarget: true);
@@ -59,7 +64,8 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.CreateSkill(SkillNumber.Uppercut, "Uppercut", CharacterClasses.DarkKnight | CharacterClasses.MagicGladiator, DamageType.Physical, distance: 2, manaConsumption: 8, movesToTarget: true, movesTarget: true);
         this.CreateSkill(SkillNumber.Cyclone, "Cyclone", CharacterClasses.DarkKnight | CharacterClasses.MagicGladiator, DamageType.Physical, distance: 2, manaConsumption: 9, movesToTarget: true, movesTarget: true);
         this.CreateSkill(SkillNumber.Slash, "Slash", CharacterClasses.DarkKnight | CharacterClasses.MagicGladiator, DamageType.Physical, distance: 2, manaConsumption: 10, movesToTarget: true, movesTarget: true);
-        this.CreateSkill(SkillNumber.TripleShot, "Triple Shot", CharacterClasses.FairyElf, DamageType.Physical, distance: 6, manaConsumption: 5, skillType: SkillType.AreaSkillExplicitHits);
+        this.CreateSkill(SkillNumber.TripleShot, "Triple Shot", CharacterClasses.FairyElf, DamageType.Physical, distance: 6, manaConsumption: 5, skillType: SkillType.AreaSkillAutomaticHits);
+        this.AddAreaSkillSettings(SkillNumber.TripleShot, true, 1f, 4.5f, 7f, true, TimeSpan.FromMilliseconds(50), maximumHitsPerTarget: 3, maximumHitsPerAttack: 3);
         this.CreateSkill(SkillNumber.Heal, "Heal", CharacterClasses.FairyElf, distance: 6, manaConsumption: 20, energyRequirement: 52, skillType: SkillType.Regeneration, targetRestriction: SkillTargetRestriction.Player);
         this.CreateSkill(SkillNumber.GreaterDefense, "Greater Defense", CharacterClasses.FairyElf, distance: 6, manaConsumption: 30, energyRequirement: 72, skillType: SkillType.Buff, targetRestriction: SkillTargetRestriction.Player);
         this.CreateSkill(SkillNumber.GreaterDamage, "Greater Damage", CharacterClasses.FairyElf, distance: 6, manaConsumption: 40, energyRequirement: 92, skillType: SkillType.Buff, targetRestriction: SkillTargetRestriction.Player);
@@ -130,6 +136,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         new GreaterDamageEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         new GreaterDefenseEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         new HealEffectInitializer(this.Context, this.GameConfiguration).Initialize();
+        new AlcoholEffectInitializer(this.Context, this.GameConfiguration).Initialize();
     }
 
     private void MapSkillsToEffects()

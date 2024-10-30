@@ -41,6 +41,18 @@ public class IncreaseStatsAction
         var attributeDef = selectedCharacter.CharacterClass?.GetStatAttribute(targetAttribute);
         if (attributeDef is { IncreasableByPlayer: true })
         {
+            if (attributeDef.Attribute?.MaximumValue is { } maximumValue
+                && player.Attributes![attributeDef.Attribute] is { } current
+                && current + amount > maximumValue)
+            {
+                amount = (ushort)(maximumValue - current);
+                if (amount == 0)
+                {
+                    await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync($"Maximum of {attributeDef.Attribute?.MaximumValue} {attributeDef.Attribute?.Designation} has been reached.", MessageType.BlueNormal)).ConfigureAwait(false);
+                    return;
+                }
+            }
+
             player.Attributes![attributeDef.Attribute] += amount;
             selectedCharacter.LevelUpPoints -= Math.Min(selectedCharacter.LevelUpPoints, amount);
 

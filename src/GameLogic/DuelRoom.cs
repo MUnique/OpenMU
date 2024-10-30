@@ -26,11 +26,6 @@ public enum DuelState
     DuelRequested,
 
     /// <summary>
-    /// Duel request was accepted.
-    /// </summary>
-    DuelAccepted,
-
-    /// <summary>
     /// Duel request was refused.
     /// </summary>
     DuelRefused,
@@ -39,6 +34,11 @@ public enum DuelState
     /// Duel failed to start.
     /// </summary>
     DuelStartFailed,
+
+    /// <summary>
+    /// Duel request was accepted.
+    /// </summary>
+    DuelAccepted,
 
     /// <summary>
     /// Duel has started.
@@ -62,7 +62,7 @@ public enum DuelState
 public sealed class DuelRoom : AsyncDisposable
 {
     private readonly AsyncLock _spectatorLock = new();
-    private readonly CancellationTokenSource _cts = new();
+    private CancellationTokenSource? _cts = new();
     private byte _scoreRequester;
     private byte _scoreOpponent;
     private int _maximumScore;
@@ -228,7 +228,7 @@ public sealed class DuelRoom : AsyncDisposable
     {
         try
         {
-            var cancellationToken = this._cts.Token;
+            var cancellationToken = this._cts?.Token ?? default;
 
             // We first wait until both players are on the map
             while (this.Requester.Id == default || this.Opponent.Id == default)
@@ -275,14 +275,13 @@ public sealed class DuelRoom : AsyncDisposable
                 await this.FinishDuelAsync().ConfigureAwait(false);
             }
         }
-        catch (OperationCanceledException)
+        catch
         {
-            // We expect that, when it's cancelled from outside.
-            // So we just do nothing in this case.
-        }
-        catch (Exception)
-        {
-            await this.CancelDuelAsync().ConfigureAwait(false);
+            if (this.State is not DuelState.DuelFinished)
+            {
+                this.State = DuelState.DuelCancelled;
+                await this.StopDuelAsync().ConfigureAwait(false);
+            }
         }
         finally
         {
@@ -291,27 +290,15 @@ public sealed class DuelRoom : AsyncDisposable
     }
 
     /// <summary>
-    /// Stops the duel.
-    /// </summary>
-    /// <returns>A <see cref="ValueTask"/>.</returns>
-    public async ValueTask StopDuelAsync()
-    {
-        await this.Opponent.ResetPetBehaviorAsync().ConfigureAwait(false);
-        await this.Requester.ResetPetBehaviorAsync().ConfigureAwait(false);
-
-        await this.ResetAndDisposeAsync(DuelStartResult.Refused).ConfigureAwait(false);
-        await this.AllPlayers.ForEachAsync(player => player.InvokeViewPlugInAsync<IDuelEndedPlugIn>(p => p.DuelEndedAsync())).ConfigureAwait(false);
-    }
-
-    /// <summary>
     /// Cancels and stops the duel.
     /// </summary>
     /// <returns>A <see cref="ValueTask"/>.</returns>
     public async ValueTask CancelDuelAsync()
     {
-        await this._cts.CancelAsync().ConfigureAwait(false);
-
-        await this.StopDuelAsync().ConfigureAwait(false);
+        if (this._cts is { } cts)
+        {
+            await cts.CancelAsync().ConfigureAwait(false);
+        }
     }
 
     /// <summary>
@@ -395,7 +382,7 @@ public sealed class DuelRoom : AsyncDisposable
             this.State = DuelState.DuelRefused;
             await this.Requester.InvokeViewPlugInAsync<IShowDuelRequestResultPlugIn>(p => p.ShowDuelRequestResultAsync(startResult, this.Opponent)).ConfigureAwait(false);
         }
-        else
+        else if (startResult != DuelStartResult.Undefined)
         {
             this.State = DuelState.DuelStartFailed;
             await this.Requester.InvokeViewPlugInAsync<IDuelEndedPlugIn>(p => p.DuelEndedAsync()).ConfigureAwait(false);
@@ -404,6 +391,11 @@ public sealed class DuelRoom : AsyncDisposable
             await this.Requester.InvokeViewPlugInAsync<IShowDuelRequestResultPlugIn>(p => p.ShowDuelRequestResultAsync(startResult, this.Opponent)).ConfigureAwait(false);
             await this.Opponent.InvokeViewPlugInAsync<IShowDuelRequestResultPlugIn>(p => p.ShowDuelRequestResultAsync(startResult, this.Requester)).ConfigureAwait(false);
         }
+        else
+        {
+            await this.Requester.InvokeViewPlugInAsync<IDuelEndedPlugIn>(p => p.DuelEndedAsync()).ConfigureAwait(false);
+            await this.Opponent.InvokeViewPlugInAsync<IDuelEndedPlugIn>(p => p.DuelEndedAsync()).ConfigureAwait(false);
+        }
 
         await this.DisposeAsyncCore().ConfigureAwait(false);
     }
@@ -411,8 +403,14 @@ public sealed class DuelRoom : AsyncDisposable
     /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore()
     {
-        await this._cts.CancelAsync().ConfigureAwait(false);
-        if (this.State >= DuelState.DuelStarted)
+        if (Interlocked.Exchange(ref this._cts, null) is not { } cts)
+        {
+            return;
+        }
+
+        await cts.CancelAsync().ConfigureAwait(false);
+
+        if (this.State >= DuelState.DuelAccepted)
         {
             await this.MovePlayersToExitAsync().ConfigureAwait(false);
 
@@ -420,9 +418,38 @@ public sealed class DuelRoom : AsyncDisposable
         }
 
         this.AllPlayers.ForEach(p => p.DuelRoom = null);
-        this._cts.Dispose();
+        cts.Dispose();
 
         await base.DisposeAsyncCore().ConfigureAwait(false);
+    }
+
+    private async ValueTask MovePlayersToExitAsync()
+    {
+        var duelConfig = this.Requester.GameContext.Configuration.DuelConfiguration;
+        var exitGate = duelConfig?.Exit;
+        var duelArenaMapNumber = this.Area.FirstPlayerGate?.Map?.Number;
+
+        var players = this.AllPlayers
+            .Where(p => p.CurrentMap?.MapId == duelArenaMapNumber);
+
+        foreach (var player in players)
+        {
+            try
+            {
+                if (exitGate is not null && !this.IsDuelist(player))
+                {
+                    await player.WarpToAsync(exitGate).ConfigureAwait(false);
+                }
+                else
+                {
+                    await player.WarpToSafezoneAsync().ConfigureAwait(false);
+                }
+            }
+            catch (Exception ex)
+            {
+                player.Logger.LogError(ex, "Unexpected error when moving player away from duel arena.");
+            }
+        }
     }
 
     private async ValueTask NotifyDuelFinishedAsync()
@@ -443,6 +470,15 @@ public sealed class DuelRoom : AsyncDisposable
         }
     }
 
+    private async ValueTask StopDuelAsync()
+    {
+        await this.Opponent.ResetPetBehaviorAsync().ConfigureAwait(false);
+        await this.Requester.ResetPetBehaviorAsync().ConfigureAwait(false);
+
+        await this.ResetAndDisposeAsync(DuelStartResult.Undefined).ConfigureAwait(false);
+        await this.AllPlayers.ForEachAsync(player => player.InvokeViewPlugInAsync<IDuelEndedPlugIn>(p => p.DuelEndedAsync())).ConfigureAwait(false);
+    }
+
     private async ValueTask FinishDuelAsync()
     {
         await this.Opponent.ResetPetBehaviorAsync().ConfigureAwait(false);
@@ -451,27 +487,5 @@ public sealed class DuelRoom : AsyncDisposable
         await this.NotifyDuelFinishedAsync().ConfigureAwait(false);
         await Task.Delay(10000, default).ConfigureAwait(false);
         await this.MovePlayersToExitAsync().ConfigureAwait(false);
-    }
-
-    private async ValueTask MovePlayersToExitAsync()
-    {
-        var duelConfig = this.Requester.GameContext.Configuration.DuelConfiguration;
-        var exitGate = duelConfig?.Exit;
-        var duelArenaMapNumber = this.Area.FirstPlayerGate?.Map?.Number;
-
-        var players = this.AllPlayers
-            .Where(p => p.CurrentMap?.MapId == duelArenaMapNumber);
-
-        foreach (var player in players)
-        {
-            if (exitGate is not null && !this.IsDuelist(player))
-            {
-                await player.WarpToAsync(exitGate).ConfigureAwait(false);
-            }
-            else
-            {
-                await player.WarpToSafezoneAsync().ConfigureAwait(false);
-            }
-        }
     }
 }

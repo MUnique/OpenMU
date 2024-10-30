@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.Updates;
 
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 
 /// <summary>
@@ -49,6 +50,19 @@ public abstract class UpdatePlugInBase : IConfigurationUpdatePlugIn
     /// It will be called by <see cref="DataUpdateService" />.
     /// </remarks>
     protected abstract ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration);
+
+    protected bool AddStatIfNotExists(IContext context, GameConfiguration gameConfiguration, AttributeDefinition attribute)
+    {
+        if (gameConfiguration.Attributes.Contains(attribute))
+        {
+            return false;
+        }
+
+        var persistent = context.CreateNew<AttributeDefinition>(attribute.Id, attribute.Designation, attribute.Description);
+        persistent.MaximumValue = attribute.MaximumValue;
+        gameConfiguration.Attributes.Add(persistent);
+        return true;
+    }
 
     private void AddUpdateEntry(IContext context)
     {

@@ -1,56 +1,69 @@
-﻿// <copyright file="FrustrumBasedAreaSkillFilterPlugIn.cs" company="MUnique">
+﻿// <copyright file="FrustumBasedTargetFilter.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 
 using System.Numerics;
-using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.Pathfinding;
 
 /// <summary>
-/// A <see cref="IAreaSkillTargetFilter"/> based on a frustrum.
+/// A target filter which will be executed when an area skill is about to hit its targets.
+/// It allows to filter out targets which are out of range.
 /// </summary>
-public abstract class FrustrumBasedAreaSkillFilterPlugIn : IAreaSkillTargetFilter
+public record FrustumBasedTargetFilter
 {
     private readonly Vector2[][] _rotationVectors;
 
-    private readonly float _endWidth;
-
-    private readonly float _distance;
-
-    private readonly float _startWidth;
-
     /// <summary>
-    /// Initializes a new instance of the <see cref="FrustrumBasedAreaSkillFilterPlugIn"/> class.
+    /// Initializes a new instance of the <see cref="FrustumBasedTargetFilter"/> class.
     /// </summary>
-    /// <param name="startWidth">The width of the frustrum at the start.</param>
-    /// <param name="endWidth">The width of the frustrum at the end.</param>
+    /// <param name="startWidth">The width of the frustum at the start.</param>
+    /// <param name="endWidth">The width of the frustum at the end.</param>
     /// <param name="distance">The distance.</param>
-    protected FrustrumBasedAreaSkillFilterPlugIn(float startWidth, float endWidth, float distance)
+    public FrustumBasedTargetFilter(float startWidth, float endWidth, float distance)
     {
-        this._endWidth = endWidth;
-        this._distance = distance;
-        this._startWidth = startWidth;
+        this.EndWidth = endWidth;
+        this.Distance = distance;
+        this.StartWidth = startWidth;
         this._rotationVectors = this.CalculateRotationVectors();
     }
 
-    /// <inheritdoc />
-    public abstract short Key { get; }
+    /// <summary>
+    /// Gets the end width.
+    /// </summary>
+    public float EndWidth { get; }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Gets the distance.
+    /// </summary>
+    public float Distance { get; }
+
+    /// <summary>
+    /// Gets the start width.
+    /// </summary>
+    public float StartWidth { get; }
+
+    /// <summary>
+    /// Determines whether the target is within the hit bounds.
+    /// </summary>
+    /// <param name="attacker">The attacker.</param>
+    /// <param name="target">The target.</param>
+    /// <param name="targetAreaCenter">The target area center.</param>
+    /// <param name="rotation">The rotation.</param>
+    /// <returns><c>true</c> if the target is within hit bounds; otherwise, <c>false</c>.</returns>
     public bool IsTargetWithinBounds(ILocateable attacker, ILocateable target, Point targetAreaCenter, byte rotation)
     {
-        var frustrum = this.GetFrustrum(attacker.Position, rotation);
-        return IsWithinFrustrum(frustrum, target.Position);
+        var frustum = this.GetFrustum(attacker.Position, rotation);
+        return IsWithinFrustum(frustum, target.Position);
     }
 
-    private static bool IsWithinFrustrum((Vector4 X, Vector4 Y) frustrum, Point target)
+    private static bool IsWithinFrustum((Vector4 X, Vector4 Y) frustum, Point target)
     {
-        var isOutOfRange = (((frustrum.X.X - target.X) * (frustrum.Y.W - target.Y)) - ((frustrum.X.W - target.X) * (frustrum.Y.X - target.Y))) < 0.0f
-                           || (((frustrum.X.Y - target.X) * (frustrum.Y.X - target.Y)) - ((frustrum.X.X - target.X) * (frustrum.Y.Y - target.Y))) < 0.0f
-                           || (((frustrum.X.Z - target.X) * (frustrum.Y.Y - target.Y)) - ((frustrum.X.Y - target.X) * (frustrum.Y.Z - target.Y))) < 0.0f
-                           || (((frustrum.X.W - target.X) * (frustrum.Y.Z - target.Y)) - ((frustrum.X.Z - target.X) * (frustrum.Y.W - target.Y))) < 0.0f;
+        var isOutOfRange = (((frustum.X.X - target.X) * (frustum.Y.W - target.Y)) - ((frustum.X.W - target.X) * (frustum.Y.X - target.Y))) < 0.0f
+                           || (((frustum.X.Y - target.X) * (frustum.Y.X - target.Y)) - ((frustum.X.X - target.X) * (frustum.Y.Y - target.Y))) < 0.0f
+                           || (((frustum.X.Z - target.X) * (frustum.Y.Y - target.Y)) - ((frustum.X.Y - target.X) * (frustum.Y.Z - target.Y))) < 0.0f
+                           || (((frustum.X.W - target.X) * (frustum.Y.Z - target.Y)) - ((frustum.X.Z - target.X) * (frustum.Y.W - target.Y))) < 0.0f;
 
         return !isOutOfRange;
     }
@@ -98,10 +111,10 @@ public abstract class FrustrumBasedAreaSkillFilterPlugIn : IAreaSkillTargetFilte
         var result = new Vector2[byte.MaxValue + 1][];
 
         var temp = new Vector3[4];
-        temp[0] = new Vector3(-this._endWidth, this._distance, 0);
-        temp[1] = new Vector3(this._endWidth, this._distance, 0);
-        temp[2] = new Vector3(this._startWidth, distanceOffset, 0);
-        temp[3] = new Vector3(-this._startWidth, distanceOffset, 0);
+        temp[0] = new Vector3(-this.EndWidth, this.Distance, 0);
+        temp[1] = new Vector3(this.EndWidth, this.Distance, 0);
+        temp[2] = new Vector3(this.StartWidth, distanceOffset, 0);
+        temp[3] = new Vector3(-this.StartWidth, distanceOffset, 0);
 
         for (int rotation = 0; rotation <= byte.MaxValue; rotation++)
         {
@@ -121,7 +134,7 @@ public abstract class FrustrumBasedAreaSkillFilterPlugIn : IAreaSkillTargetFilte
         return result;
     }
 
-    private (Vector4 X, Vector4 Y) GetFrustrum(Point attackerPosition, byte rotation)
+    private (Vector4 X, Vector4 Y) GetFrustum(Point attackerPosition, byte rotation)
     {
         var rotationVectors = this._rotationVectors[rotation];
 
