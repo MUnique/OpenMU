@@ -32,13 +32,15 @@ internal class Weapons : InitializerBase
     /// </summary>
     private static readonly float[] DamageIncreaseByLevel = { 0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 31, 36, 42, 49, 57, 66 };
 
-    private static readonly float[] StaffRiseIncreaseByLevel = { 0, 3, 7, 10, 14, 17, 21, 24, 28, 31, 35, 40, 45, 50, 56, 63 };
+    private static readonly float[] StaffRiseIncreaseByLevelEven = { 0, 3, 7, 10, 14, 17, 21, 24, 28, 31, 35, 40, 45, 50, 56, 63 };
+    private static readonly float[] StaffRiseIncreaseByLevelOdd = { 0, 4, 7, 11, 14, 18, 21, 25, 28, 31, 35, 39, 44, 50, 56, 62 };
 
     private static readonly float[] ScepterRiseIncreaseByLevel = { 0, 2, 3, 5, 6, 8, 9, 11, 12, 14, 16, 18, 21, 25, 29, 33 };
 
     private ItemLevelBonusTable? _weaponDamageIncreaseTable;
 
-    private ItemLevelBonusTable? _staffRiseTable;
+    private ItemLevelBonusTable? _staffRiseTableEven;
+    private ItemLevelBonusTable? _staffRiseTableOdd;
 
     private ItemLevelBonusTable? _scepterRiseTable;
 
@@ -106,7 +108,8 @@ internal class Weapons : InitializerBase
     public override void Initialize()
     {
         this._weaponDamageIncreaseTable = this.CreateItemBonusTable(DamageIncreaseByLevel, "Damage Increase (Weapons)", "The damage increase by weapon level. It increases by 3 per level, and 1 more after level 10.");
-        this._staffRiseTable = this.CreateItemBonusTable(StaffRiseIncreaseByLevel, "Staff Rise", "The staff rise bonus per item level.");
+        this._staffRiseTableEven = this.CreateItemBonusTable(StaffRiseIncreaseByLevelEven, "Staff Rise (even base)", "The staff rise bonus per item level for even base magic power.");
+        this._staffRiseTableOdd = this.CreateItemBonusTable(StaffRiseIncreaseByLevelOdd, "Staff Rise (odd base)", "The staff rise bonus per item level for odd base magic power.");
         this._scepterRiseTable = this.CreateItemBonusTable(ScepterRiseIncreaseByLevel, "Scepter Rise", "The scepter rise bonus per item level.");
 
         this.CreateWeapon(0, 0, 0, 0, 1, 2, true, "Kris", 6, 6, 11, 50, 20, 0, 0, 40, 40, 0, 0, 1, 1, 1, 1, 1, 1, 1);
@@ -224,7 +227,7 @@ internal class Weapons : InitializerBase
         this.CreateWeapon(5, 7, 0, 0, 2, 4, false, "Chaos Lightning Staff", 75, 47, 48, 30, 70, 94, 0, 60, 10, 0, 0, 1, 0, 0, 1, 0, 0, 0);
         this.CreateWeapon(5, 8, 0, 0, 2, 4, true, "Staff of Destruction", 90, 50, 54, 30, 85, 101, 0, 60, 10, 0, 0, 1, 0, 0, 1, 0, 0, 0);
         this.CreateWeapon(5, 9, 0, 0, 1, 4, true, "Dragon Soul Staff", 100, 46, 48, 30, 91, 92, 0, 52, 16, 0, 0, 2, 0, 0, 0, 0, 0, 0);
-        this.CreateWeapon(5, 10, 0, 0, 1, 4, false, "Divine Staff of Archangel", 104, 53, 55, 20, 182, 106, 0, 36, 4, 0, 0, 1, 0, 0, 1, 0, 0, 0);
+        this.CreateWeapon(5, 10, 0, 0, 1, 4, false, "Divine Staff of Archangel", 104, 153, 155, 30, 182, 156, 0, 36, 4, 0, 0, 1, 0, 0, 1, 0, 0, 0);
         this.CreateWeapon(5, 11, 0, 0, 1, 4, true, "Staff of Kundun", 140, 55, 61, 30, 95, 110, 0, 45, 16, 0, 0, 2, 0, 0, 1, 0, 0, 0);
         this.CreateWeapon(5, 12, 0, 0, 1, 4, true, "Grand Viper Staff", 147, 66, 74, 30, 100, 130, 380, 39, 13, 0, 0, 2, 0, 0, 0, 0, 0, 0);
         this.CreateWeapon(5, 13, 0, 0, 1, 4, true, "Platina Staff", 110, 51, 53, 30, 78, 120, 0, 50, 16, 0, 0, 2, 0, 0, 0, 0, 0, 0);
@@ -234,12 +237,12 @@ internal class Weapons : InitializerBase
         this.CreateWeapon(5, 17, 0, 0, 1, 4, true, "Ancient Stick", 78, 38, 40, 25, 81, 76, 0, 50, 19, 0, 0, 0, 0, 0, 0, 0, 1, 0);
         this.CreateWeapon(5, 18, 0, 0, 1, 4, true, "Demonic Stick", 100, 46, 48, 30, 91, 92, 0, 54, 15, 0, 0, 0, 0, 0, 0, 0, 2, 0);
         this.CreateWeapon(5, 19, 0, 0, 1, 4, true, "Storm Blitz Stick", 110, 51, 53, 30, 95, 110, 380, 64, 15, 0, 0, 0, 0, 0, 0, 0, 2, 0);
-        this.CreateWeapon(5, 20, 0, 0, 1, 4, true, "Eternal Wing Stick", 130, 56, 58, 25, 100, 113, 0, 60, 25, 0, 0, 0, 0, 0, 0, 0, 2, 0);
+        this.CreateWeapon(5, 20, 0, 0, 1, 4, true, "Eternal Wing Stick", 147, 66, 74, 30, 100, 106, 380, 57, 13, 0, 0, 0, 0, 0, 0, 0, 2, 0);
         this.CreateWeapon(5, 21, 1, 223, 1, 2, true, "Book of Sahamutt", 52, 0, 0, 25, 60, 46, 0, 0, 20, 135, 0, 0, 0, 0, 0, 0, 1, 0);
         this.CreateWeapon(5, 22, 1, 224, 1, 2, true, "Book of Neil", 59, 0, 0, 25, 65, 59, 0, 0, 25, 168, 0, 0, 0, 0, 0, 0, 1, 0);
         this.CreateWeapon(5, 23, 1, 225, 1, 2, true, "Book of Lagle", 65, 0, 0, 25, 50, 72, 0, 0, 30, 201, 0, 0, 0, 0, 0, 0, 1, 0);
-        this.CreateWeapon(5, 30, 0, 0, 1, 4, true, "Deadly Staff", 138, 57, 59, 30, 91, 126, 0, 47, 18, 0, 0, 0, 0, 0, 1, 0, 0, 0);
-        this.CreateWeapon(5, 31, 0, 0, 1, 4, true, "Imperial Staff", 137, 57, 61, 30, 182, 124, 0, 48, 14, 0, 0, 2, 0, 0, 0, 0, 0, 0);
+        this.CreateWeapon(5, 30, 0, 0, 1, 4, true, "Deadly Staff", 138, 57, 59, 30, 91, 126, 380, 47, 18, 0, 0, 0, 0, 0, 1, 0, 0, 0);
+        this.CreateWeapon(5, 31, 0, 0, 1, 4, true, "Imperial Staff", 137, 57, 61, 30, 182, 124, 380, 48, 14, 0, 0, 2, 0, 0, 0, 0, 0, 0);
         this.CreateWeapon(5, 33, 0, 0, 1, 4, false, "Chromatic Staff", 147, 55, 57, 30, 78, 124, 0, 50, 12, 0, 0, 2, 0, 0, 1, 0, 0, 0);
         this.CreateWeapon(5, 34, 0, 0, 1, 4, false, "Raven Stick", 147, 70, 78, 30, 98, 130, 0, 50, 14, 0, 0, 0, 0, 0, 0, 0, 2, 0);
         this.CreateWeapon(5, 36, 0, 0, 1, 4, false, "Divine Stick of Archangel", 104, 153, 165, 30, 182, 146, 0, 55, 13, 0, 0, 0, 0, 0, 0, 0, 1, 0);
@@ -332,40 +335,36 @@ internal class Weapons : InitializerBase
 
         item.PossibleItemOptions.Add(this.Luck);
 
-        if (staffRise == 0)
+        if (staffRise == 0 || darkLordClass > 0)
         {
             item.PossibleItemOptions.Add(this.PhysicalDamageOption);
             item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == ExcellentOptions.PhysicalAttackOptionsName));
             item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == HarmonyOptions.PhysicalAttackOptionsName));
+
+            if (darkLordClass > 0)
+            {
+                var scepterRisePowerUp = this.CreateItemBasePowerUpDefinition(Stats.ScepterRise, staffRise, AggregateType.AddRaw);
+                scepterRisePowerUp.BonusPerLevelTable = this._scepterRiseTable;
+                item.BasePowerUpAttributes.Add(scepterRisePowerUp);
+            }
         }
         else
         {
-            if (summonerClass > 0)
+            if (summonerClass > 0 && slot == 1)
             {
                 item.PossibleItemOptions.Add(this.CurseDamageOption);
-                item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == ExcellentOptions.CurseAttackOptionsName));
-                item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == HarmonyOptions.CurseAttackOptionsName));
-                //// TODO: Is there something similar as the staff rise?
             }
             else
             {
                 item.PossibleItemOptions.Add(this.WizardryDamageOption);
-                item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == ExcellentOptions.WizardryAttackOptionsName));
-                item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == HarmonyOptions.WizardryAttackOptionsName));
-
-                if (darkLordClass > 0)
-                {
-                    var scepterRisePowerUp = this.CreateItemBasePowerUpDefinition(Stats.ScepterRise, staffRise, AggregateType.AddRaw);
-                    scepterRisePowerUp.BonusPerLevelTable = this._scepterRiseTable;
-                    item.BasePowerUpAttributes.Add(scepterRisePowerUp);
-                }
-                else
-                {
-                    var staffRisePowerUp = this.CreateItemBasePowerUpDefinition(Stats.StaffRise, staffRise, AggregateType.AddRaw);
-                    staffRisePowerUp.BonusPerLevelTable = this._staffRiseTable;
-                    item.BasePowerUpAttributes.Add(staffRisePowerUp);
-                }
             }
+
+            item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == ExcellentOptions.WizardryAttackOptionsName));
+            item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == HarmonyOptions.WizardryAttackOptionsName));
+
+            var staffRisePowerUp = this.CreateItemBasePowerUpDefinition(Stats.StaffRise, staffRise / 2, AggregateType.AddRaw);
+            staffRisePowerUp.BonusPerLevelTable = staffRise % 2 == 0 ? this._staffRiseTableEven : this._staffRiseTableOdd;
+            item.BasePowerUpAttributes.Add(staffRisePowerUp);
         }
 
         if (group == (int)ItemGroups.Bows && height > 1)

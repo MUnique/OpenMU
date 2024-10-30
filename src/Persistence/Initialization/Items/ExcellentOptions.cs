@@ -51,9 +51,11 @@ public class ExcellentOptions : InitializerBase
         this.CreateDefenseOptions();
         this.CreatePhysicalAttackOptions();
         this.CreateWizardryAttackOptions();
-        this.CreateCurseAttackOptions();
+
+        // this.CreateCurseAttackOptions();
     }
 
+    [Obsolete("There are no curse attack excellent options (excellent curse spell books have excellent wizardry attack options).")]
     private void CreateCurseAttackOptions()
     {
         var definition = this.Context.CreateNew<ItemOptionDefinition>();

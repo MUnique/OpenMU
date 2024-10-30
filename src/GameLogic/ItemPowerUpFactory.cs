@@ -308,11 +308,11 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
 
         if (item.IsWizardryWeapon(out var staffRise))
         {
-            var additionalRise = ((int)staffRise * 25 / baseDropLevel) + 5;
+            var additionalRise = (((int)staffRise * 2 * 25 / baseDropLevel) + 5) / 2;
             yield return new PowerUpWrapper(new SimpleElement(additionalRise, AggregateType.AddRaw), Stats.StaffRise, attributeHolder);
             if (itemIsAncient)
             {
-                var ancientRiseBonus = 5 + (ancientDropLevel / 60);
+                var ancientRiseBonus = (2 + (ancientDropLevel / 60)) / 2;
                 yield return new PowerUpWrapper(new SimpleElement(ancientRiseBonus, AggregateType.AddRaw), Stats.StaffRise, attributeHolder);
             }
         }
