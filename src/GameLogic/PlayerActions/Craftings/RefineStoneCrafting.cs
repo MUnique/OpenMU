@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings;
 
-using System.Diagnostics.CodeAnalysis;
 using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.PlayerActions.Items;
