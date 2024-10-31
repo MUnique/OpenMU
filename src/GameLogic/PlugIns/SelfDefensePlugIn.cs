@@ -89,7 +89,7 @@ public class SelfDefensePlugIn : IPeriodicTaskPlugIn, IAttackableGotHitPlugIn, I
                 _ = this.BeginSelfDefenseAsync(attackerPlayer, defender);
                 return now;
             },
-            (_, time) => now);
+            (_, _) => now);
     }
 
     /// <inheritdoc />
