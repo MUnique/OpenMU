@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("1857513c-d09c-4e03-8bf4-f4ead19ea60f")]
 internal class CraftingDialogCloseRequestHandlerPlugIn : IPacketHandlerPlugIn
 {
-    private readonly CloseNpcDialogAction _closeNpcDialogAction = new ();
+    private readonly CloseNpcDialogAction _closeNpcDialogAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;

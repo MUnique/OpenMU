@@ -5,19 +5,6 @@
 namespace MUnique.OpenMU.GameLogic.Views.Character;
 
 /// <summary>
-/// Interface of a view whose implementation informs about added experience.
-/// </summary>
-public interface IAddExperiencePlugIn : IViewPlugIn
-{
-    /// <summary>
-    /// Adds Experience after the object has been killed.
-    /// </summary>
-    /// <param name="gainedExperience">The experience gain.</param>
-    /// <param name="killedObject">The killed object.</param>
-    ValueTask AddExperienceAsync(int gainedExperience, IAttackable? killedObject, ExperienceType experienceType);
-}
-
-/// <summary>
 /// Defines the type of experience which is added.
 /// </summary>
 public enum ExperienceType : byte
@@ -51,4 +38,18 @@ public enum ExperienceType : byte
     /// The monster level is too low for master experience, no master experience is added.
     /// </summary>
     MonsterLevelTooLowForMasterExperience,
+}
+
+/// <summary>
+/// Interface of a view whose implementation informs about added experience.
+/// </summary>
+public interface IAddExperiencePlugIn : IViewPlugIn
+{
+    /// <summary>
+    /// Adds Experience after the object has been killed.
+    /// </summary>
+    /// <param name="gainedExperience">The experience gain.</param>
+    /// <param name="killedObject">The killed object.</param>
+    /// <param name="experienceType">The experience type.</param>
+    ValueTask AddExperienceAsync(int gainedExperience, IAttackable? killedObject, ExperienceType experienceType);
 }

@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
 using System.Runtime.InteropServices;
-using Nito.AsyncEx.Synchronous;
 using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.Arguments;
 using MUnique.OpenMU.PlugIns;
 

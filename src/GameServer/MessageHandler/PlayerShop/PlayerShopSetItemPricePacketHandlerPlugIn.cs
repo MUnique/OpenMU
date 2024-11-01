@@ -19,7 +19,7 @@ using MUnique.OpenMU.PlugIns;
 [BelongsToGroup(StoreHandlerGroupPlugIn.GroupKey)]
 internal class PlayerShopSetItemPricePacketHandlerPlugIn : ISubPacketHandlerPlugIn
 {
-    private readonly SetItemPriceAction _setPriceAction = new ();
+    private readonly SetItemPriceAction _setPriceAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => true;

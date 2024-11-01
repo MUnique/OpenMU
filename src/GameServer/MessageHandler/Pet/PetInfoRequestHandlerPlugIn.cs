@@ -33,7 +33,7 @@ internal class PetInfoRequestHandlerPlugIn : IPacketHandlerPlugIn
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         PetInfoRequest message = packet;
-        await this._requestAction.RequestPetInfo(player, message.ItemSlot, ConvertStorageLocation(message.Storage)).ConfigureAwait(false);
+        await this._requestAction.RequestPetInfoAsync(player, message.ItemSlot, ConvertStorageLocation(message.Storage)).ConfigureAwait(false);
     }
 
     private static PetStorageLocation ConvertStorageLocation(StorageType location)

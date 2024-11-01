@@ -10,12 +10,12 @@ namespace MUnique.OpenMU.GameLogic.MuHelper;
 public enum MuHelperStatus : byte
 {
     /// <summary>
-    /// enabled
+    /// Enabled.
     /// </summary>
     Enabled = 0,
 
     /// <summary>
-    /// disabled
+    /// Disabled.
     /// </summary>
     Disabled = 1,
 }

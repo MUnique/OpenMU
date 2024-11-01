@@ -1,4 +1,4 @@
-﻿// <copyright file="IPlayerShopBuyRequestResultPlugIn.cs" company="MUnique">
+﻿// <copyright file="PlayerShopBuyRequestResultPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -41,14 +41,14 @@ public class PlayerShopBuyRequestResultPlugIn : IPlayerShopBuyRequestResultPlugI
             var itemSerializer = this._player.ItemSerializer;
             var array = new byte[itemSerializer.NeededSpace];
             itemSerializer.SerializeItem(array, item);
-            await connection.SendPlayerShopBuyResultAsync(Convert(result), seller?.GetId(this._player) ?? ushort.MaxValue, array, item.ItemSlot);
+            await connection.SendPlayerShopBuyResultAsync(Convert(result), seller?.GetId(this._player) ?? ushort.MaxValue, array, item.ItemSlot).ConfigureAwait(false);
             return;
         }
 
-        await connection.SendPlayerShopBuyResultAsync(Convert(result), seller?.GetId(this._player) ?? ushort.MaxValue, Array.Empty<byte>(), 0);
+        await connection.SendPlayerShopBuyResultAsync(Convert(result), seller?.GetId(this._player) ?? ushort.MaxValue, Array.Empty<byte>(), 0).ConfigureAwait(false);
     }
 
-    private static PlayerShopBuyResult.ResultKind Convert( ItemBuyResult result)
+    private static PlayerShopBuyResult.ResultKind Convert(ItemBuyResult result)
     {
         return result switch
         {
@@ -61,7 +61,7 @@ public class PlayerShopBuyRequestResultPlugIn : IPlayerShopBuyRequestResultPlugI
             ItemBuyResult.LackOfMoney => PlayerShopBuyResult.ResultKind.LackOfMoney,
             ItemBuyResult.MoneyOverflowOrNotEnoughSpace => PlayerShopBuyResult.ResultKind.MoneyOverflowOrNotEnoughSpace,
             ItemBuyResult.ItemBlock => PlayerShopBuyResult.ResultKind.ItemBlock,
-            _ => PlayerShopBuyResult.ResultKind.Undefined
+            _ => PlayerShopBuyResult.ResultKind.Undefined,
         };
     }
 }

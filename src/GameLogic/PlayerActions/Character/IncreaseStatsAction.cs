@@ -56,7 +56,7 @@ public class IncreaseStatsAction
             player.Attributes![attributeDef.Attribute] += amount;
             selectedCharacter.LevelUpPoints -= Math.Min(selectedCharacter.LevelUpPoints, amount);
 
-            await player.InvokeViewPlugInAsync<IStatIncreaseResultPlugIn>(p => p.StatIncreaseResultAsync(targetAttribute, amount));
+            await player.InvokeViewPlugInAsync<IStatIncreaseResultPlugIn>(p => p.StatIncreaseResultAsync(targetAttribute, amount)).ConfigureAwait(false);
         }
         else
         {

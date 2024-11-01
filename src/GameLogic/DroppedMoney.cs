@@ -6,8 +6,8 @@ namespace MUnique.OpenMU.GameLogic;
 
 using System.Diagnostics;
 using System.Threading;
-using Nito.AsyncEx;
 using MUnique.OpenMU.Pathfinding;
+using Nito.AsyncEx;
 
 /// <summary>
 /// Money which got dropped on the ground of a map.

@@ -82,11 +82,14 @@ public class SelfDefensePlugIn : IPeriodicTaskPlugIn, IAttackableGotHitPlugIn, I
 
         var now = DateTime.UtcNow;
         var gameContext = defender.GameContext;
-        gameContext.SelfDefenseState.AddOrUpdate((attackerPlayer, defender), tuple =>
-        {
-            _ = this.BeginSelfDefenseAsync(attackerPlayer, defender);
-            return now;
-        }, (tuple, time) => now);
+        gameContext.SelfDefenseState.AddOrUpdate(
+            (attackerPlayer, defender),
+            tuple =>
+            {
+                _ = this.BeginSelfDefenseAsync(attackerPlayer, defender);
+                return now;
+            },
+            (_, _) => now);
     }
 
     /// <inheritdoc />

@@ -22,7 +22,7 @@ public class AddStatChatCommandPlugIn : IChatCommandPlugIn
 
     private const CharacterStatus MinimumStatus = CharacterStatus.Normal;
 
-    private readonly IncreaseStatsAction _action = new ();
+    private readonly IncreaseStatsAction _action = new();
 
     /// <inheritdoc />
     public string Key => Command;

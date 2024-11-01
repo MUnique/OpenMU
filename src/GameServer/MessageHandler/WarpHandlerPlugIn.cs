@@ -20,7 +20,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("3d261a26-4357-4367-b999-703ea936f4e9")]
 internal class WarpHandlerPlugIn : IPacketHandlerPlugIn
 {
-    private readonly WarpAction _warpAction = new ();
+    private readonly WarpAction _warpAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;

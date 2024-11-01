@@ -26,7 +26,7 @@ public class LogInHandlerPlugIn : ISubPacketHandlerPlugIn
 {
     private readonly ISpanDecryptor _decryptor = new Xor3Decryptor(0);
 
-    private readonly LoginAction _loginAction = new ();
+    private readonly LoginAction _loginAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => true;

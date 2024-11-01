@@ -4,10 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic;
 
-using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
-using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// Interface of a trader.

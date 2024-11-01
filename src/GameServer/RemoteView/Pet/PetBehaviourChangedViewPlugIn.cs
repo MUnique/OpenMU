@@ -33,7 +33,7 @@ internal class PetBehaviourChangedViewPlugIn : IPetBehaviourChangedViewPlugIn
     }
 
     /// <inheritdoc />
-    public async ValueTask PetBehaviourChanged(Item pet, PetBehaviour behaviour, IAttackable? target)
+    public async ValueTask PetBehaviourChangedAsync(Item pet, PetBehaviour behaviour, IAttackable? target)
     {
         await this._player.Connection.SendPetModeAsync(Convert(behaviour), target?.GetId(this._player) ?? 0xFFFF).ConfigureAwait(false);
     }

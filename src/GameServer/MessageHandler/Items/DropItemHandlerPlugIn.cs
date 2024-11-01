@@ -18,7 +18,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("b79bc453-74a0-4eea-8bc3-014d737aaa88")]
 internal class DropItemHandlerPlugIn : IPacketHandlerPlugIn
 {
-    private readonly DropItemAction _dropAction = new ();
+    private readonly DropItemAction _dropAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;

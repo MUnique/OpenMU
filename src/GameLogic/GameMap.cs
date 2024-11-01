@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.GameLogic;
 
 using System.Collections.Concurrent;
 using System.Threading;
-using Nito.AsyncEx;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlayerActions;
 using MUnique.OpenMU.GameLogic.Views;
@@ -14,6 +13,7 @@ using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
+using Nito.AsyncEx;
 
 /// <summary>
 /// The game map which contains instances of players, npcs, drops, and more.
@@ -248,7 +248,7 @@ public class GameMap
     /// <summary>
     /// Clears the drops on invalid terrain.
     /// </summary>
-    public async ValueTask ClearDropsOnInvalidTerrain()
+    public async ValueTask ClearDropsOnInvalidTerrainAsync()
     {
         var drops = this._objectsInMap.Values
             .OfType<DroppedItem>()

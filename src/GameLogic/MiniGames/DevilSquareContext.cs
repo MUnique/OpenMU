@@ -13,7 +13,7 @@ using Nito.Disposables.Internals;
 /// </summary>
 public sealed class DevilSquareContext : MiniGameContext
 {
-    private readonly ConcurrentDictionary<string, PlayerGameState> _gameStates = new ();
+    private readonly ConcurrentDictionary<string, PlayerGameState> _gameStates = new();
 
     private IReadOnlyCollection<(string Name, int Score, int BonusMoney, int BonusExp)>? _highScoreTable;
 
@@ -37,6 +37,7 @@ public sealed class DevilSquareContext : MiniGameContext
         if (this._gameStates.TryGetValue(e.KillerName, out var state))
         {
             state.AddScore(this.Definition.GameLevel);
+
             // todo add money? -> in the original servers, in DS drops no money!
         }
     }

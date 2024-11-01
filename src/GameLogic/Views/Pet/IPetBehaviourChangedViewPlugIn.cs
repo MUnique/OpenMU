@@ -17,5 +17,5 @@ public interface IPetBehaviourChangedViewPlugIn : IViewPlugIn
     /// <param name="pet">The equipped pet.</param>
     /// <param name="behaviour">The behaviour.</param>
     /// <param name="target">The target.</param>
-    ValueTask PetBehaviourChanged(Item pet, PetBehaviour behaviour, IAttackable? target);
+    ValueTask PetBehaviourChangedAsync(Item pet, PetBehaviour behaviour, IAttackable? target);
 }

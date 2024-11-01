@@ -20,9 +20,9 @@ using MonsterSpawnArea = MUnique.OpenMU.Persistence.BasicModel.MonsterSpawnArea;
 [Guid("F6DB10E0-AE7F-4BC6-914F-B858763C5CF7")]
 public sealed class LostMapDroppedPlugIn : IItemDropPlugIn
 {
-    private static readonly int[] KalimaMapNumbers = [24, 25, 26, 27, 28, 29, 36];
-
     private const byte GateNpcStartNumber = 152;
+
+    private static readonly int[] KalimaMapNumbers = [24, 25, 26, 27, 28, 29, 36];
 
     /// <inheritdoc />
     public async ValueTask HandleItemDropAsync(Player player, Item item, Point target, IItemDropPlugIn.ItemDropArguments cancelArgs)

@@ -1,9 +1,12 @@
-﻿using MUnique.OpenMU.GameLogic.Attributes;
+﻿// <copyright file="NewPlayersInScopeExtendedPlugIn.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
 
 namespace MUnique.OpenMU.GameServer.RemoteView.World;
 
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.GameServer.RemoteView.Character;
@@ -21,10 +24,11 @@ using MUnique.OpenMU.PlugIns;
 public class NewPlayersInScopeExtendedPlugIn : NewPlayersInScopePlugIn, INewPlayersInScopePlugIn
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="NewPlayersInScopePlugIn"/> class.
+    /// Initializes a new instance of the <see cref="NewPlayersInScopeExtendedPlugIn"/> class.
     /// </summary>
     /// <param name="player">The player.</param>
-    public NewPlayersInScopeExtendedPlugIn(RemotePlayer player) : base(player)
+    public NewPlayersInScopeExtendedPlugIn(RemotePlayer player)
+        : base(player)
     {
     }
 

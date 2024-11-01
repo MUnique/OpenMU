@@ -38,7 +38,7 @@ public class QuestStateResponsePlugIn : IQuestStateResponsePlugIn
             return;
         }
 
-        await ShowNewQuestStateAsync(questState).ConfigureAwait(false);
+        await this.ShowNewQuestStateAsync(questState).ConfigureAwait(false);
     }
 
     /// <summary>

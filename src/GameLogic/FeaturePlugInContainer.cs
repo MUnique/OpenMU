@@ -12,8 +12,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 public class FeaturePlugInContainer : PlugInContainerBase<IFeaturePlugIn>, ICustomPlugInContainer<IFeaturePlugIn>
 {
-    private readonly ConcurrentDictionary<Type, IFeaturePlugIn> _currentlyEffectivePlugIns =
-        new ();
+    private readonly ConcurrentDictionary<Type, IFeaturePlugIn> _currentlyEffectivePlugIns = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FeaturePlugInContainer"/> class.

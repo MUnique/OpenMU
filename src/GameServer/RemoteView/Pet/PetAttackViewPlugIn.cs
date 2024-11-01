@@ -31,7 +31,7 @@ internal class PetAttackViewPlugIn : IPetAttackViewPlugIn
     }
 
     /// <inheritdoc />
-    public async ValueTask ShowPetAttackAnimation(IIdentifiable owner, Item pet, IAttackable target, PetAttackType attackType)
+    public async ValueTask ShowPetAttackAnimationAsync(IIdentifiable owner, Item pet, IAttackable target, PetAttackType attackType)
     {
         await this._player.Connection.SendPetAttackAsync(
             Convert(attackType),

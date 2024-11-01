@@ -38,5 +38,5 @@ public class GuildMoveChatCommandArgs : ArgumentsBase
     /// <summary>
     /// Gets the coordinates X and Y.
     /// </summary>
-    public Point Coordinates => new (this.X, this.Y);
+    public Point Coordinates => new(this.X, this.Y);
 }

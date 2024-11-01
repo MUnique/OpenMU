@@ -233,7 +233,7 @@ public static class ItemExtensions
     /// <remarks>
     /// Some requirements are depending on item level, drop level and item options.
     /// </remarks>
-    public static (AttributeDefinition, int) GetRequirement(this Item item, AttributeRequirement requirement)
+    public static (AttributeDefinition Attr, int Value) GetRequirement(this Item item, AttributeRequirement requirement)
     {
         requirement.ThrowNotInitializedProperty(requirement.Attribute is null, nameof(requirement.Attribute));
 

@@ -18,7 +18,7 @@ using MUnique.OpenMU.PlugIns;
 [BelongsToGroup(CharacterGroupHandlerPlugIn.GroupKey)]
 internal class CharacterDeletePacketHandlerPlugIn : ISubPacketHandlerPlugIn
 {
-    private readonly DeleteCharacterAction _deleteCharacterAction = new ();
+    private readonly DeleteCharacterAction _deleteCharacterAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;

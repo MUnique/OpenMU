@@ -1,4 +1,4 @@
-﻿// <copyright file="ItemSerializer.cs" company="MUnique">
+﻿// <copyright file="ItemSerializerExtended.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -44,6 +44,20 @@ public class ItemSerializerExtended : IItemSerializer
     /// </remarks>
     private static readonly byte[] SocketOptionIndexOffsets = { 0, 10, 16, 21, 29, 36 };
 
+    [Flags]
+    private enum OptionFlags : byte
+    {
+        None = 0x00,
+        HasOption = 0x01,
+        HasLuck = 0x02,
+        HasSkill = 0x04,
+        HasExcellent = 0x08,
+        HasAncient = 0x10,
+        HasHarmony = 0x20,
+        HasGuardian = 0x40,
+        HasSockets = 0x80,
+    }
+
     /// <inheritdoc/>
     public int NeededSpace => 15;
 
@@ -56,7 +70,7 @@ public class ItemSerializerExtended : IItemSerializer
         targetStruct.Number = (ushort)item.Definition.Number;
         targetStruct.Level = item.IsTrainablePet() ? (byte)0 : (byte)item.Level;
         targetStruct.Durability = item.Durability();
-        targetStruct.Options = GetOptionFlags(item);
+        targetStruct.Options = this.GetOptionFlags(item);
 
         if (item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.Option) is { } itemOption)
         {
@@ -64,7 +78,6 @@ public class ItemSerializerExtended : IItemSerializer
 
             // Some items (wings) can have different options (3rd wings up to 3!)
             targetStruct.OptionType = (byte)((itemOption.ItemOption?.Number ?? 0) & 0xF);
-            
         }
 
         if (targetStruct.Options.HasFlag(OptionFlags.HasExcellent))
@@ -161,56 +174,6 @@ public class ItemSerializerExtended : IItemSerializer
         return item;
     }
 
-    private OptionFlags GetOptionFlags(Item item)
-    {
-        OptionFlags result = default;
-        if (item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.Luck))
-        {
-            result |= OptionFlags.HasLuck;
-        }
-
-        if (item.HasSkill)
-        {
-            result |= OptionFlags.HasSkill;
-        }
-
-        if (item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.Option))
-        {
-            result |= OptionFlags.HasOption;
-        }
-
-        if (item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.Excellent
-                                      || o.ItemOption?.OptionType == ItemOptionTypes.Wing
-                                      || o.ItemOption?.OptionType == ItemOptionTypes.BlackFenrir
-                                      || o.ItemOption?.OptionType == ItemOptionTypes.BlueFenrir
-                                      || o.ItemOption?.OptionType == ItemOptionTypes.GoldFenrir))
-        {
-            result |= OptionFlags.HasExcellent;
-        }
-
-        if (item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.HarmonyOption))
-        {
-            result |= OptionFlags.HasHarmony;
-        }
-
-        if (item.ItemSetGroups.Any(set => set.AncientSetDiscriminator != 0))
-        {
-            result |= OptionFlags.HasAncient;
-        }
-
-        if (item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.GuardianOption))
-        {
-            result |= OptionFlags.HasGuardian;
-        }
-
-        if (item.SocketCount > 0)
-        {
-            result |= OptionFlags.HasSockets;
-        }
-
-        return result;
-    }
-
     private static byte GetHarmonyByte(Item item)
     {
         byte result = 0;
@@ -264,6 +227,56 @@ public class ItemSerializerExtended : IItemSerializer
         }
     }
 
+    private OptionFlags GetOptionFlags(Item item)
+    {
+        OptionFlags result = default;
+        if (item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.Luck))
+        {
+            result |= OptionFlags.HasLuck;
+        }
+
+        if (item.HasSkill)
+        {
+            result |= OptionFlags.HasSkill;
+        }
+
+        if (item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.Option))
+        {
+            result |= OptionFlags.HasOption;
+        }
+
+        if (item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.Excellent
+                                      || o.ItemOption?.OptionType == ItemOptionTypes.Wing
+                                      || o.ItemOption?.OptionType == ItemOptionTypes.BlackFenrir
+                                      || o.ItemOption?.OptionType == ItemOptionTypes.BlueFenrir
+                                      || o.ItemOption?.OptionType == ItemOptionTypes.GoldFenrir))
+        {
+            result |= OptionFlags.HasExcellent;
+        }
+
+        if (item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.HarmonyOption))
+        {
+            result |= OptionFlags.HasHarmony;
+        }
+
+        if (item.ItemSetGroups.Any(set => set.AncientSetDiscriminator != 0))
+        {
+            result |= OptionFlags.HasAncient;
+        }
+
+        if (item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.GuardianOption))
+        {
+            result |= OptionFlags.HasGuardian;
+        }
+
+        if (item.SocketCount > 0)
+        {
+            result |= OptionFlags.HasSockets;
+        }
+
+        return result;
+    }
+
     /// <summary>
     /// Layout:
     ///   Group:  4 bit
@@ -289,7 +302,7 @@ public class ItemSerializerExtended : IItemSerializer
     ///     Soc_Bon 4 bit
     ///     Soc_Cnt 4 bit
     ///     Sockets n * 8 bit
-    ///   
+    ///
     ///  Total: 5 ~ 15 bytes.
     /// </summary>
     private readonly ref struct ItemStruct(Span<byte> data)
@@ -461,19 +474,5 @@ public class ItemSerializerExtended : IItemSerializer
         private int HarmonyIndex => this.Options.HasFlag(OptionFlags.HasHarmony) ? this.AncientIndex + 1 : this.AncientIndex;
 
         private int SocketStartIndex => this.Options.HasFlag(OptionFlags.HasSockets) ? this.HarmonyIndex + 1 : this.HarmonyIndex;
-    }
-
-    [Flags]
-    private enum OptionFlags : byte
-    {
-        None = 0x00,
-        HasOption = 0x01,
-        HasLuck = 0x02,
-        HasSkill = 0x04,
-        HasExcellent = 0x08,
-        HasAncient = 0x10,
-        HasHarmony = 0x20,
-        HasGuardian = 0x40,
-        HasSockets = 0x80,
     }
 }

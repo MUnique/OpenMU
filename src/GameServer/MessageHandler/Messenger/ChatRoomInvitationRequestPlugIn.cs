@@ -18,7 +18,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("fc779867-7d2d-4409-83b4-b6616bb9234e")]
 public class ChatRoomInvitationRequestPlugIn : IPacketHandlerPlugIn
 {
-    private readonly ChatRequestAction _chatRequestAction = new ();
+    private readonly ChatRequestAction _chatRequestAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;

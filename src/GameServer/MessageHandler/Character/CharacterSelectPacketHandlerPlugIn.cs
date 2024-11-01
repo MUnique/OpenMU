@@ -18,7 +18,7 @@ using MUnique.OpenMU.PlugIns;
 [BelongsToGroup(CharacterGroupHandlerPlugIn.GroupKey)]
 internal class CharacterSelectPacketHandlerPlugIn : ISubPacketHandlerPlugIn
 {
-    private readonly SelectCharacterAction _characterSelectAction = new ();
+    private readonly SelectCharacterAction _characterSelectAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;

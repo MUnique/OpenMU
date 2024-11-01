@@ -116,6 +116,7 @@ public static class QuestStructExtensions
 
         message.RewardCount = (byte)r;
     }
+
     /// <summary>
     /// Assigns the <paramref name="questState"/> to this <paramref name="message"/>.
     /// </summary>

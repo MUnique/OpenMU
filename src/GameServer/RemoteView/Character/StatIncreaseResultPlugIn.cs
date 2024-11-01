@@ -40,6 +40,7 @@ public class StatIncreaseResultPlugIn : IStatIncreaseResultPlugIn
 
         if (addedPoints <= 1)
         {
+#pragma warning disable SA1118 // Parameter should not span multiple lines
             await connection.SendCharacterStatIncreaseResponseAsync(
                 addedPoints > 0,
                 attribute.GetStatType(),
@@ -50,6 +51,7 @@ public class StatIncreaseResultPlugIn : IStatIncreaseResultPlugIn
                         : default,
                 (ushort)this._player.Attributes![Stats.MaximumShield],
                 (ushort)this._player.Attributes[Stats.MaximumAbility]).ConfigureAwait(false);
+#pragma warning restore SA1118 // Parameter should not span multiple lines
             return;
         }
 

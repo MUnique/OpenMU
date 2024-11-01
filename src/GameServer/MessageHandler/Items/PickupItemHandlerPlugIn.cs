@@ -19,7 +19,7 @@ using MUnique.OpenMU.PlugIns;
 [MinimumClient(0, 97, ClientLanguage.Invariant)]
 internal class PickupItemHandlerPlugIn : IPacketHandlerPlugIn
 {
-    private readonly PickupItemAction _pickupAction = new ();
+    private readonly PickupItemAction _pickupAction = new();
 
     /// <inheritdoc />
     public bool IsEncryptionExpected => true;

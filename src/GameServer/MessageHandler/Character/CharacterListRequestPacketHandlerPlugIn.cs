@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 [BelongsToGroup(CharacterGroupHandlerPlugIn.GroupKey)]
 internal class CharacterListRequestPacketHandlerPlugIn : ISubPacketHandlerPlugIn
 {
-    private readonly RequestCharacterListAction _requestCharacterListAction = new ();
+    private readonly RequestCharacterListAction _requestCharacterListAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;

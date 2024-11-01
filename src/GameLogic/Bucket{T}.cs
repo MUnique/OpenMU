@@ -5,8 +5,8 @@
 namespace MUnique.OpenMU.GameLogic;
 
 using System.Collections;
-using Nito.AsyncEx;
 using MUnique.OpenMU.PlugIns;
+using Nito.AsyncEx;
 
 /// <summary>
 /// A bucket, which can be observed for added and removed items.
@@ -16,7 +16,7 @@ public sealed class Bucket<T> : IEnumerable<T>
 {
     private readonly List<T> _innerList;
 
-    private readonly AsyncReaderWriterLock _locker = new ();
+    private readonly AsyncReaderWriterLock _locker = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Bucket{T}"/> class.
@@ -105,6 +105,10 @@ public sealed class Bucket<T> : IEnumerable<T>
             this._enumerable = enumerable;
         }
 
+        public TEnumerated Current => this.Enumerator.Current;
+
+        object IEnumerator.Current => this.Enumerator.Current!;
+
         private IEnumerator<TEnumerated> Enumerator
         {
             get
@@ -118,10 +122,6 @@ public sealed class Bucket<T> : IEnumerable<T>
                 return this._enumerator ??= this._enumerable.GetEnumerator();
             }
         }
-
-        public TEnumerated Current => this.Enumerator.Current;
-
-        object IEnumerator.Current => this.Enumerator.Current!;
 
         public bool MoveNext()
         {

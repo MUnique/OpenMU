@@ -19,7 +19,7 @@ using MUnique.OpenMU.PlugIns;
 [MinimumClient(1, 0, ClientLanguage.Invariant)]
 internal class GuildCreateHandlerPlugIn : IPacketHandlerPlugIn
 {
-    private readonly GuildCreateAction _createAction = new ();
+    private readonly GuildCreateAction _createAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;

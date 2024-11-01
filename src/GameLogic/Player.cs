@@ -1482,6 +1482,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         var monster = new Monster(area, definition, gameMap, NullDropGenerator.Instance, intelligence, this.GameContext.PlugInManager, this.GameContext.PathFinderPool);
         area.MaximumHealthOverride = (int)monster.Attributes[Stats.MaximumHealth];
         area.MaximumHealthOverride += (int)(monster.Attributes[Stats.MaximumHealth] * this.Attributes?[Stats.SummonedMonsterHealthIncrease] ?? 0);
+
         // todo: Stats.SummonedMonsterDefenseIncrease
         this.Summon = (monster, intelligence);
         monster.Initialize();
@@ -2341,6 +2342,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         Item? GetTrainablePet(byte inventorySlot)
         {
+#pragma warning disable SA1513 // Closing brace should be followed by blank line
             if (this.Inventory?.GetItem(inventorySlot) is
                 {
                     Definition.PetExperienceFormula: not null,
@@ -2351,6 +2353,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             {
                 return pet;
             }
+#pragma warning restore SA1513 // Closing brace should be followed by blank line
 
             return null;
         }

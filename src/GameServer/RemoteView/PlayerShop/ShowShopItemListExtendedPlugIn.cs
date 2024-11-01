@@ -1,4 +1,10 @@
-﻿using System.Runtime.InteropServices;
+﻿// <copyright file="ShowShopItemListExtendedPlugIn.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.GameServer.RemoteView.PlayerShop;
+
+using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.PlayerShop;
@@ -6,8 +12,6 @@ using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.PlugIns;
-
-namespace MUnique.OpenMU.GameServer.RemoteView.PlayerShop;
 
 /// <summary>
 /// The extended implementation of the <see cref="IShowShopItemListPlugIn"/> which is forwarding everything to the game client with specific data packets.
@@ -46,7 +50,7 @@ public class ShowShopItemListExtendedPlugIn : IShowShopItemListPlugIn
             var span = connection.Output.GetSpan(size)[..size];
             _ = new PlayerShopItemListExtendedRef(span)
             {
-                Action = isUpdate 
+                Action = isUpdate
                     ? PlayerShopItemListExtended.ActionKind.UpdateAfterItemChange
                     : PlayerShopItemListExtended.ActionKind.ByRequest,
                 ItemCount = (byte)items.Count,
@@ -63,8 +67,8 @@ public class ShowShopItemListExtendedPlugIn : IShowShopItemListPlugIn
                 var itemBlock = new PlayerShopItemExtendedRef(span[actualSize..]);
                 itemBlock.ItemSlot = item.ItemSlot;
                 itemBlock.MoneyPrice = (uint)(item.StorePrice ?? 0);
-                // todo: when we can define a price in items, set PriceItemType and RequiredItemAmount
 
+                // todo: when we can define a price in items, set PriceItemType and RequiredItemAmount
                 var itemSize = itemSerializer.SerializeItem(itemBlock.ItemData, item);
                 actualSize += PlayerShopItemExtendedRef.GetRequiredSize(itemSize);
                 i++;

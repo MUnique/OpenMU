@@ -10,7 +10,7 @@ using System.Collections;
 /// A wrapper for another <see cref="ItemStorage"/>.
 /// Required to split one item storage into more than one storage spaces, e.g. Inventory and Personal Store which use the same ItemStorage.
 /// </summary>
-/// <seealso cref="MUnique.OpenMU.DataModel.Entities.ItemStorage" />
+/// <seealso cref="ItemStorage"/>
 public class ItemStorageAdapter : ItemStorage
 {
     private readonly CollectionAdapter _adapter;

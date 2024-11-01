@@ -6,12 +6,12 @@ namespace MUnique.OpenMU.GameServer;
 
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
-using Nito.AsyncEx;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
+using Nito.AsyncEx;
 
 /// <summary>
 /// The context of a game server which contains all important configurations and services used by one game server instance.
@@ -20,7 +20,7 @@ public class GameServerContext : GameContext, IGameServerContext
 {
     private readonly GameServerDefinition _gameServerDefinition;
 
-    private readonly ConcurrentDictionary<uint, LockableList<Player>> _playersByGuild = new ();
+    private readonly ConcurrentDictionary<uint, LockableList<Player>> _playersByGuild = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GameServerContext" /> class.
@@ -35,6 +35,7 @@ public class GameServerContext : GameContext, IGameServerContext
     /// <param name="loggerFactory">The logger factory.</param>
     /// <param name="plugInManager">The plug in manager.</param>
     /// <param name="dropGenerator">The drop generator.</param>
+    /// <param name="changeMediator">The change mediator.</param>
     public GameServerContext(
         GameServerDefinition gameServerDefinition,
         IGuildServer guildServer,
@@ -224,6 +225,6 @@ public class GameServerContext : GameContext, IGameServerContext
 
     private class LockableList<T> : List<T>
     {
-        public AsyncReaderWriterLock Lock { get; } = new ();
+        public AsyncReaderWriterLock Lock { get; } = new();
     }
 }

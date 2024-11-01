@@ -13,7 +13,7 @@ using MUnique.OpenMU.GameLogic.Views.NPC;
 /// </summary>
 public class SimpleItemCraftingHandler : BaseItemCraftingHandler
 {
-    private readonly ItemPriceCalculator _priceCalculator = new ();
+    private readonly ItemPriceCalculator _priceCalculator = new();
 
     private readonly SimpleCraftingSettings _settings;
 

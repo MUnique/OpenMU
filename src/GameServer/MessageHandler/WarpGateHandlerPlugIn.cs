@@ -22,9 +22,9 @@ using MUnique.OpenMU.PlugIns;
 [MinimumClient(1, 0, ClientLanguage.Invariant)]
 internal class WarpGateHandlerPlugIn : IPacketHandlerPlugIn
 {
-    private readonly WarpGateAction _warpAction = new ();
+    private readonly WarpGateAction _warpAction = new();
 
-    private readonly WizardTeleportAction _teleportAction = new ();
+    private readonly WizardTeleportAction _teleportAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;

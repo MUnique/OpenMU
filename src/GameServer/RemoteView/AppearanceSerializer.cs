@@ -23,7 +23,7 @@ public class AppearanceSerializer : IAppearanceSerializer
     /// <summary>
     /// A cache which holds the results of the serializer.
     /// </summary>
-    private static readonly ConcurrentDictionary<IAppearanceData, byte[]> Cache = new ();
+    private static readonly ConcurrentDictionary<IAppearanceData, byte[]> Cache = new();
 
     private enum PetIndex
     {

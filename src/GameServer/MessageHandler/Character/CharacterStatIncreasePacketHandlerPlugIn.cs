@@ -19,7 +19,7 @@ using MUnique.OpenMU.PlugIns;
 [BelongsToGroup(CharacterGroupHandlerPlugIn.GroupKey)]
 internal class CharacterStatIncreasePacketHandlerPlugIn : ISubPacketHandlerPlugIn
 {
-    private readonly IncreaseStatsAction _increaseStatsAction = new ();
+    private readonly IncreaseStatsAction _increaseStatsAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;

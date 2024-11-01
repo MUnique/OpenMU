@@ -4,10 +4,9 @@
 
 namespace MUnique.OpenMU.GameLogic.NPC;
 
-using Nito.AsyncEx;
-
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Pathfinding;
+using Nito.AsyncEx;
 
 /// <summary>
 /// The implementation of a non-player-character (Monster) which can not be attacked or attack.
@@ -47,7 +46,7 @@ public class NonPlayerCharacter : AsyncDisposable, IObservable, IRotatable, ILoc
     /// <summary>
     /// Gets the lock for <see cref="Observers"/>.
     /// </summary>
-    public AsyncReaderWriterLock ObserverLock { get; } = new ();
+    public AsyncReaderWriterLock ObserverLock { get; } = new();
 
     /// <inheritdoc/>
     public GameMap CurrentMap { get; }

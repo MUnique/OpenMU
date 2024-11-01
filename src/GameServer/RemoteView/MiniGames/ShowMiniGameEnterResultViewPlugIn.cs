@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.GameServer.RemoteView.MiniGames;
 
 using System.Runtime.InteropServices;
-using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.PlayerActions.MiniGames;
 using MUnique.OpenMU.Network.Packets.ServerToClient;

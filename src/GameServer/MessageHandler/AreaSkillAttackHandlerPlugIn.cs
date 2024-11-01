@@ -21,7 +21,7 @@ using MUnique.OpenMU.PlugIns;
 [MinimumClient(1, 0, ClientLanguage.Invariant)]
 internal class AreaSkillAttackHandlerPlugIn : IPacketHandlerPlugIn
 {
-    private readonly AreaSkillAttackAction _attackAction = new ();
+    private readonly AreaSkillAttackAction _attackAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => true;

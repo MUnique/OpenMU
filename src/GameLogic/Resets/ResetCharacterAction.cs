@@ -19,7 +19,7 @@ public class ResetCharacterAction
 {
     private readonly Player _player;
     private readonly NonPlayerCharacter? _npc;
-    private readonly LogoutAction _logoutAction = new ();
+    private readonly LogoutAction _logoutAction = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ResetCharacterAction"/> class.

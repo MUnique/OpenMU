@@ -1,24 +1,64 @@
-﻿namespace MUnique.OpenMU.GameLogic;
+﻿// <copyright file="DuelRoom.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
 
-using MUnique.OpenMU.GameLogic.Views.Duel;
-using Nito.AsyncEx;
+namespace MUnique.OpenMU.GameLogic;
+
 using System.Threading;
 using MUnique.OpenMU.GameLogic.Views;
+using MUnique.OpenMU.GameLogic.Views.Duel;
 using MUnique.OpenMU.Interfaces;
+using Nito.AsyncEx;
 
+/// <summary>
+/// The state of the duel.
+/// </summary>
 public enum DuelState
 {
+    /// <summary>
+    /// Duel state is undefined.
+    /// </summary>
     Undefined,
+
+    /// <summary>
+    /// A duel was requested.
+    /// </summary>
     DuelRequested,
+
+    /// <summary>
+    /// Duel request was refused.
+    /// </summary>
     DuelRefused,
+
+    /// <summary>
+    /// Duel failed to start.
+    /// </summary>
     DuelStartFailed,
+
+    /// <summary>
+    /// Duel request was accepted.
+    /// </summary>
     DuelAccepted,
 
+    /// <summary>
+    /// Duel has started.
+    /// </summary>
     DuelStarted,
+
+    /// <summary>
+    /// Dual was cancelled.
+    /// </summary>
     DuelCancelled,
+
+    /// <summary>
+    /// Duel has finished.
+    /// </summary>
     DuelFinished,
 }
 
+/// <summary>
+/// A class that manages a duel between two players.
+/// </summary>
 public sealed class DuelRoom : AsyncDisposable
 {
     private readonly AsyncLock _spectatorLock = new();
@@ -46,16 +86,34 @@ public sealed class DuelRoom : AsyncDisposable
         this._maximumSpectators = requester.GameContext.Configuration.DuelConfiguration?.MaximumSpectatorsPerDuelRoom ?? 10;
     }
 
+    /// <summary>
+    /// Gets the area of the duel.
+    /// </summary>
     public DuelArea Area { get; }
 
+    /// <summary>
+    /// Gets the index of the area of the duel.
+    /// </summary>
     public int Index { get; }
 
+    /// <summary>
+    /// Gets or sets the <see cref="DateTime"/> of the start of the duel.
+    /// </summary>
     public DateTime CreatedAt { get; set; }
 
+    /// <summary>
+    /// Gets the player that requested the duel.
+    /// </summary>
     public Player Requester { get; }
 
+    /// <summary>
+    /// Gets the player that accepted the duel.
+    /// </summary>
     public Player Opponent { get; }
 
+    /// <summary>
+    /// Gets or sets the score of the player that requested the duel.
+    /// </summary>
     public byte ScoreRequester
     {
         get => this._scoreRequester;
@@ -69,12 +127,15 @@ public sealed class DuelRoom : AsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Gets or sets the score of the player that accepted the duel.
+    /// </summary>
     public byte ScoreOpponent
     {
-        get => _scoreOpponent;
+        get => this._scoreOpponent;
         set
         {
-            _scoreOpponent = value;
+            this._scoreOpponent = value;
             if (value >= this._maximumScore)
             {
                 this.State = DuelState.DuelFinished;
@@ -82,16 +143,28 @@ public sealed class DuelRoom : AsyncDisposable
         }
     }
 
-    //public bool IsAccepted { get; set; }
+    // public bool IsAccepted { get; set; }
 
-    //public bool IsFinished { get; set; }
+    // public bool IsFinished { get; set; }
 
+    /// <summary>
+    /// Gets or sets the state of the duel.
+    /// </summary>
     public DuelState State { get; set; }
 
+    /// <summary>
+    /// Gets a lock object used to update the score of the duel.
+    /// </summary>
     public AsyncLock Lock { get; } = new();
 
-    public List<Player> Spectators { get; } = new ();
+    /// <summary>
+    /// Gets the duel room spectators list.
+    /// </summary>
+    public List<Player> Spectators { get; } = new();
 
+    /// <summary>
+    /// Gets all the players taking part in the duel, either as duelists or spectators.
+    /// </summary>
     public IEnumerable<Player> AllPlayers
     {
         get
@@ -108,8 +181,15 @@ public sealed class DuelRoom : AsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Gets a value indicating whether the duel room still has spectator slots.
+    /// </summary>
     public bool IsOpen => this.Spectators.Count < this._maximumSpectators;
 
+    /// <summary>
+    /// Gets a value indicating whether the player is participating in the duel as a duelist.
+    /// </summary>
+    /// <param name="player">The player.</param>
     public bool IsDuelist(Player player)
     {
         return this.Requester == player || this.Opponent == player;
@@ -139,6 +219,11 @@ public sealed class DuelRoom : AsyncDisposable
         await spectator.RemoveInvisibleEffectAsync().ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// Starts the duel.
+    /// </summary>
+    /// <returns>A <see cref="Task"/>.</returns>
+    /// <exception cref="InvalidOperationException">Occurs when one of the players has left the duel map.</exception>
     public async Task RunDuelAsync()
     {
         try
@@ -204,15 +289,23 @@ public sealed class DuelRoom : AsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Cancels and stops the duel.
+    /// </summary>
+    /// <returns>A <see cref="ValueTask"/>.</returns>
     public async ValueTask CancelDuelAsync()
     {
         if (this._cts is { } cts)
         {
             await cts.CancelAsync().ConfigureAwait(false);
-            
         }
     }
 
+    /// <summary>
+    /// Gets the spawn gate of the player.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <returns>The gate where the player is teleported to.</returns>
     public ExitGate? GetSpawnGate(Player player)
     {
         if (this.Opponent == player)
@@ -228,6 +321,11 @@ public sealed class DuelRoom : AsyncDisposable
         return this.Area.SpectatorsGate;
     }
 
+    /// <summary>
+    /// Tries to add the player as a spectator to the duel.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <returns>A <see cref="ValueTask"/> with the result.</returns>
     public async ValueTask<bool> TryAddSpectatorAsync(Player player)
     {
         if (this.Area.SpectatorsGate is not { } spectatorsGate)
@@ -269,6 +367,11 @@ public sealed class DuelRoom : AsyncDisposable
         return true;
     }
 
+    /// <summary>
+    /// Resets and disposes of the duel room.
+    /// </summary>
+    /// <param name="startResult">The resuls of the duel start request.</param>
+    /// <returns>A <see cref="ValueTask"/>.</returns>
     public async ValueTask ResetAndDisposeAsync(DuelStartResult startResult)
     {
         this.Requester.DuelRoom = null;
@@ -309,7 +412,7 @@ public sealed class DuelRoom : AsyncDisposable
 
         if (this.State >= DuelState.DuelAccepted)
         {
-            await this.MovePlayersToExit().ConfigureAwait(false);
+            await this.MovePlayersToExitAsync().ConfigureAwait(false);
 
             await this.Requester.GameContext.DuelRoomManager.GiveBackDuelRoomAsync(this).ConfigureAwait(false);
         }
@@ -317,10 +420,10 @@ public sealed class DuelRoom : AsyncDisposable
         this.AllPlayers.ForEach(p => p.DuelRoom = null);
         cts.Dispose();
 
-        await base.DisposeAsyncCore();
+        await base.DisposeAsyncCore().ConfigureAwait(false);
     }
 
-    private async ValueTask MovePlayersToExit()
+    private async ValueTask MovePlayersToExitAsync()
     {
         var duelConfig = this.Requester.GameContext.Configuration.DuelConfiguration;
         var exitGate = duelConfig?.Exit;
@@ -383,6 +486,6 @@ public sealed class DuelRoom : AsyncDisposable
 
         await this.NotifyDuelFinishedAsync().ConfigureAwait(false);
         await Task.Delay(10000, default).ConfigureAwait(false);
-        await this.MovePlayersToExit().ConfigureAwait(false);
+        await this.MovePlayersToExitAsync().ConfigureAwait(false);
     }
 }

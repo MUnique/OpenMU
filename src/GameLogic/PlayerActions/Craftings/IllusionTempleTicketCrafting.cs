@@ -32,7 +32,7 @@ public class IllusionTempleTicketCrafting : BaseEventTicketCrafting
             4 => 9000000,
             5 => 11000000,
             6 => 13000000,
-            _ => 3000000
+            _ => 3000000,
         };
     }
 

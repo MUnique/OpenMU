@@ -16,9 +16,9 @@ public abstract class BannableChatMessageBaseProcessor : IChatMessageProcessor
     public async ValueTask ProcessMessageAsync(Player sender, (string Message, string PlayerName) content)
     {
         TimeSpan remainingChatBan = this.RemainingChatBanTimeSpan(sender);
-        if (IsSenderBanned(remainingChatBan))
+        if (this.IsSenderBanned(remainingChatBan))
         {
-            if(remainingChatBan.TotalMinutes >= 1)
+            if (remainingChatBan.TotalMinutes >= 1)
             {
                 await this.SendMessageToPlayerAsync(sender, $"Chat Ban: {(int)Math.Ceiling(remainingChatBan.TotalMinutes)} minute(s) remaining.", MessageType.BlueNormal).ConfigureAwait(false);
             }
@@ -26,24 +26,31 @@ public abstract class BannableChatMessageBaseProcessor : IChatMessageProcessor
             {
                 await this.SendMessageToPlayerAsync(sender, $"Chat Ban: {(int)Math.Ceiling(remainingChatBan.TotalSeconds)} second(s) remaining.", MessageType.BlueNormal).ConfigureAwait(false);
             }
+
             return;
         }
 
-        await this.SubclassProcessMessageAsync(sender, content);
+        await this.SubclassProcessMessageAsync(sender, content).ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// A method to be overriden for processing a specific chat message.
+    /// </summary>
+    /// <param name="sender">The sender.</param>
+    /// <param name="content">The content.</param>
+    /// <returns>A value task with the result.</returns>
     public abstract ValueTask SubclassProcessMessageAsync(Player sender, (string Message, string PlayerName) content);
 
     private TimeSpan RemainingChatBanTimeSpan(Player sender)
     {
         DateTime chatBanUntil = sender.Account?.ChatBanUntil ?? default;
         DateTime currentDateTime = DateTime.UtcNow;
-        return (chatBanUntil - currentDateTime);
+        return chatBanUntil - currentDateTime;
     }
 
     private bool IsSenderBanned(TimeSpan remainingChatBan)
     {
-        return (remainingChatBan > TimeSpan.Zero);
+        return remainingChatBan > TimeSpan.Zero;
     }
 
     private async ValueTask SendMessageToPlayerAsync(Player player, string message, MessageType type)

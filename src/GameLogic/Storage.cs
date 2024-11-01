@@ -96,7 +96,6 @@ public class Storage : IStorage
             {
                 for (int column = 0; column < InventoryConstants.RowSize; column++)
                 {
-
                     if (!this._usedSlots[row, column])
                     {
                         yield return this.GetSlot(column, row);

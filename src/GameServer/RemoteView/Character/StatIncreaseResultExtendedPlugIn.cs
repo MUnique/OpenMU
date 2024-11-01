@@ -23,7 +23,7 @@ public class StatIncreaseResultExtendedPlugIn : IStatIncreaseResultPlugIn
     private readonly RemotePlayer _player;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="StatIncreaseResultPlugIn"/> class.
+    /// Initializes a new instance of the <see cref="StatIncreaseResultExtendedPlugIn"/> class.
     /// </summary>
     /// <param name="player">The player.</param>
     public StatIncreaseResultExtendedPlugIn(RemotePlayer player) => this._player = player;
