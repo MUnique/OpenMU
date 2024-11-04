@@ -166,7 +166,7 @@ public abstract class ItemUpgradeConsumeHandlerPlugIn : ItemModifyConsumeHandler
             else
             {
                 // ItemOptionTypes.Option
-                optionLink.ItemOption = possibleOptions.First();
+                optionLink.ItemOption = possibleOptions.SelectRandom();
                 optionLink.Level = 1;
             }
 
