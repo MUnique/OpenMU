@@ -32,17 +32,19 @@ internal class Weapons : InitializerBase
     /// </summary>
     private static readonly float[] DamageIncreaseByLevel = { 0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 31, 36, 42, 49, 57, 66 };
 
-    private static readonly float[] StaffRiseIncreaseByLevelEven = { 0, 3, 7, 10, 14, 17, 21, 24, 28, 31, 35, 40, 45, 50, 56, 63 };
-    private static readonly float[] StaffRiseIncreaseByLevelOdd = { 0, 4, 7, 11, 14, 18, 21, 25, 28, 31, 35, 39, 44, 50, 56, 62 };
+    private static readonly float[] StaffRiseIncreaseByLevelEven = { 0, 3, 7, 10, 14, 17, 21, 24, 28, 31, 35, 40, 45, 50, 56, 63 }; // Staff/stick with even magic power
+    private static readonly float[] StaffRiseIncreaseByLevelOdd = { 0, 4, 7, 11, 14, 18, 21, 25, 28, 32, 36, 40, 45, 51, 57, 63 }; // Staff/stick with odd magic power
 
-    private static readonly float[] ScepterRiseIncreaseByLevel = { 0, 2, 3, 5, 6, 8, 9, 11, 12, 14, 16, 18, 21, 25, 29, 33 };
+    private static readonly float[] ScepterRiseIncreaseByLevelEven = { 0, 1, 3, 4, 6, 7, 9, 10, 12, 13, 15, 18, 21, 24, 28, 33 }; // Scepter with even magic power
+    private static readonly float[] ScepterRiseIncreaseByLevelOdd = { 0, 2, 3, 5, 6, 8, 9, 11, 12, 14, 16, 18, 21, 25, 29, 33 }; // Scepter with odd magic power
 
     private ItemLevelBonusTable? _weaponDamageIncreaseTable;
 
     private ItemLevelBonusTable? _staffRiseTableEven;
     private ItemLevelBonusTable? _staffRiseTableOdd;
 
-    private ItemLevelBonusTable? _scepterRiseTable;
+    private ItemLevelBonusTable? _scepterRiseTableEven;
+    private ItemLevelBonusTable? _scepterRiseTableOdd;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Weapons" /> class.
@@ -108,9 +110,10 @@ internal class Weapons : InitializerBase
     public override void Initialize()
     {
         this._weaponDamageIncreaseTable = this.CreateItemBonusTable(DamageIncreaseByLevel, "Damage Increase (Weapons)", "The damage increase by weapon level. It increases by 3 per level, and 1 more after level 10.");
-        this._staffRiseTableEven = this.CreateItemBonusTable(StaffRiseIncreaseByLevelEven, "Staff Rise (even base)", "The staff rise bonus per item level for even base magic power.");
-        this._staffRiseTableOdd = this.CreateItemBonusTable(StaffRiseIncreaseByLevelOdd, "Staff Rise (odd base)", "The staff rise bonus per item level for odd base magic power.");
-        this._scepterRiseTable = this.CreateItemBonusTable(ScepterRiseIncreaseByLevel, "Scepter Rise", "The scepter rise bonus per item level.");
+        this._staffRiseTableEven = this.CreateItemBonusTable(StaffRiseIncreaseByLevelEven, "Staff Rise (even)", "The staff rise bonus per item level for even magic power staves.");
+        this._staffRiseTableOdd = this.CreateItemBonusTable(StaffRiseIncreaseByLevelOdd, "Staff Rise (odd)", "The staff rise bonus per item level for odd magic power staves.");
+        this._scepterRiseTableEven = this.CreateItemBonusTable(ScepterRiseIncreaseByLevelEven, "Scepter Rise (even)", "The scepter rise bonus per item level for even magic power scepters.");
+        this._scepterRiseTableOdd = this.CreateItemBonusTable(ScepterRiseIncreaseByLevelOdd, "Scepter Rise (odd)", "The scepter rise bonus per item level for odd magic power scepters.");
 
         this.CreateWeapon(0, 0, 0, 0, 1, 2, true, "Kris", 6, 6, 11, 50, 20, 0, 0, 40, 40, 0, 0, 1, 1, 1, 1, 1, 1, 1);
         this.CreateWeapon(0, 1, 0, 0, 1, 3, true, "Short Sword", 3, 3, 7, 20, 22, 0, 0, 60, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1);
@@ -266,7 +269,7 @@ internal class Weapons : InitializerBase
     /// <param name="maximumDamage">The maximum damage.</param>
     /// <param name="attackSpeed">The attack speed.</param>
     /// <param name="durability">The durability.</param>
-    /// <param name="staffRise">The staff rise.</param>
+    /// <param name="magicPower">The magic power.</param>
     /// <param name="levelRequirement">The level requirement.</param>
     /// <param name="strengthRequirement">The strength requirement.</param>
     /// <param name="agilityRequirement">The agility requirement.</param>
@@ -281,7 +284,7 @@ internal class Weapons : InitializerBase
     /// <param name="ragefighterClass">The ragefighter class.</param>
     protected void CreateWeapon(byte @group, byte number, byte slot, int skillNumber, byte width, byte height,
         bool dropsFromMonsters, string name, byte dropLevel, int minimumDamage, int maximumDamage, int attackSpeed,
-        byte durability, int staffRise, int levelRequirement, int strengthRequirement, int agilityRequirement,
+        byte durability, int magicPower, int levelRequirement, int strengthRequirement, int agilityRequirement,
         int energyRequirement, int vitalityRequirement,
         int wizardClass, int knightClass, int elfClass, int magicGladiatorClass, int darkLordClass, int summonerClass, int ragefighterClass)
     {
@@ -316,16 +319,22 @@ internal class Weapons : InitializerBase
         var qualifiedCharacterClasses = this.GameConfiguration.DetermineCharacterClasses(wizardClass, knightClass, elfClass, magicGladiatorClass, darkLordClass, summonerClass, ragefighterClass);
         qualifiedCharacterClasses.ToList().ForEach(item.QualifiedCharacters.Add);
 
-        var minDamagePowerUp = this.CreateItemBasePowerUpDefinition(Stats.MinimumPhysBaseDmgByWeapon, minimumDamage, AggregateType.AddRaw);
-        minDamagePowerUp.BonusPerLevelTable = this._weaponDamageIncreaseTable;
-        item.BasePowerUpAttributes.Add(minDamagePowerUp);
+        if (minimumDamage > 0)
+        {
+            var minDamagePowerUp = this.CreateItemBasePowerUpDefinition(Stats.MinimumPhysBaseDmgByWeapon, minimumDamage, AggregateType.AddRaw);
+            minDamagePowerUp.BonusPerLevelTable = this._weaponDamageIncreaseTable;
+            item.BasePowerUpAttributes.Add(minDamagePowerUp);
 
-        var maxDamagePowerUp = this.CreateItemBasePowerUpDefinition(Stats.MaximumPhysBaseDmgByWeapon, maximumDamage, AggregateType.AddRaw);
-        maxDamagePowerUp.BonusPerLevelTable = this._weaponDamageIncreaseTable;
-        item.BasePowerUpAttributes.Add(maxDamagePowerUp);
+            var maxDamagePowerUp = this.CreateItemBasePowerUpDefinition(Stats.MaximumPhysBaseDmgByWeapon, maximumDamage, AggregateType.AddRaw);
+            maxDamagePowerUp.BonusPerLevelTable = this._weaponDamageIncreaseTable;
+            item.BasePowerUpAttributes.Add(maxDamagePowerUp);
+        }
 
-        var speedPowerUp = this.CreateItemBasePowerUpDefinition(Stats.AttackSpeed, attackSpeed, AggregateType.AddRaw);
-        item.BasePowerUpAttributes.Add(speedPowerUp);
+        if (attackSpeed > 0)
+        {
+            var speedPowerUp = this.CreateItemBasePowerUpDefinition(Stats.AttackSpeed, attackSpeed, AggregateType.AddRaw);
+            item.BasePowerUpAttributes.Add(speedPowerUp);
+        }
 
         this.CreateItemRequirementIfNeeded(item, Stats.Level, levelRequirement);
         this.CreateItemRequirementIfNeeded(item, Stats.TotalStrengthRequirementValue, strengthRequirement);
@@ -335,7 +344,7 @@ internal class Weapons : InitializerBase
 
         item.PossibleItemOptions.Add(this.Luck);
 
-        if (staffRise == 0 || darkLordClass > 0)
+        if (magicPower == 0 || darkLordClass > 0)
         {
             item.PossibleItemOptions.Add(this.PhysicalDamageOption);
             item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == ExcellentOptions.PhysicalAttackOptionsName));
@@ -343,28 +352,32 @@ internal class Weapons : InitializerBase
 
             if (darkLordClass > 0)
             {
-                var scepterRisePowerUp = this.CreateItemBasePowerUpDefinition(Stats.ScepterRise, staffRise, AggregateType.AddRaw);
-                scepterRisePowerUp.BonusPerLevelTable = this._scepterRiseTable;
+                var scepterRisePowerUp = this.CreateItemBasePowerUpDefinition(Stats.ScepterRise, magicPower / 2.0f, AggregateType.AddRaw);
+                scepterRisePowerUp.BonusPerLevelTable = magicPower % 2 == 0 ? this._scepterRiseTableEven : this._scepterRiseTableOdd;
                 item.BasePowerUpAttributes.Add(scepterRisePowerUp);
             }
         }
         else
         {
+            item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == ExcellentOptions.WizardryAttackOptionsName));
+            item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == HarmonyOptions.WizardryAttackOptionsName));
+
             if (summonerClass > 0 && slot == 1)
             {
                 item.PossibleItemOptions.Add(this.CurseDamageOption);
+
+                var bookRisePowerUp = this.CreateItemBasePowerUpDefinition(Stats.BookRise, magicPower / 2.0f, AggregateType.AddRaw);
+                bookRisePowerUp.BonusPerLevelTable = magicPower % 2 == 0 ? this._staffRiseTableEven : this._staffRiseTableOdd;
+                item.BasePowerUpAttributes.Add(bookRisePowerUp);
             }
             else
             {
                 item.PossibleItemOptions.Add(this.WizardryDamageOption);
+
+                var staffRisePowerUp = this.CreateItemBasePowerUpDefinition(Stats.StaffRise, magicPower / 2.0f, AggregateType.AddRaw);
+                staffRisePowerUp.BonusPerLevelTable = magicPower % 2 == 0 ? this._staffRiseTableEven : this._staffRiseTableOdd;
+                item.BasePowerUpAttributes.Add(staffRisePowerUp);
             }
-
-            item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == ExcellentOptions.WizardryAttackOptionsName));
-            item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == HarmonyOptions.WizardryAttackOptionsName));
-
-            var staffRisePowerUp = this.CreateItemBasePowerUpDefinition(Stats.StaffRise, staffRise / 2, AggregateType.AddRaw);
-            staffRisePowerUp.BonusPerLevelTable = staffRise % 2 == 0 ? this._staffRiseTableEven : this._staffRiseTableOdd;
-            item.BasePowerUpAttributes.Add(staffRisePowerUp);
         }
 
         if (group == (int)ItemGroups.Bows && height > 1)

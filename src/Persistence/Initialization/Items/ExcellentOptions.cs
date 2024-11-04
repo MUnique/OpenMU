@@ -55,7 +55,8 @@ public class ExcellentOptions : InitializerBase
         // this.CreateCurseAttackOptions();
     }
 
-    [Obsolete("There are no curse attack excellent options (excellent curse spell books have excellent wizardry attack options).")]
+    [Obsolete(@"There are no curse attack excellent options until Season 14 (Summoner renewal). Until then, excellent curse spell books had excellent wizardry attack options.
+        Reference: https://muonline.webzen.com/pt/gameinfo/guide/detail/91")]
     private void CreateCurseAttackOptions()
     {
         var definition = this.Context.CreateNew<ItemOptionDefinition>();

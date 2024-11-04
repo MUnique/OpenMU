@@ -221,7 +221,7 @@ internal class Weapons : InitializerBase
     /// <param name="maximumDamage">The maximum damage.</param>
     /// <param name="attackSpeed">The attack speed.</param>
     /// <param name="durability">The durability.</param>
-    /// <param name="staffRise">The staff rise.</param>
+    /// <param name="magicPower">The magic power.</param>
     /// <param name="levelRequirement">The level requirement.</param>
     /// <param name="strengthRequirement">The strength requirement.</param>
     /// <param name="agilityRequirement">The agility requirement.</param>
@@ -234,7 +234,7 @@ internal class Weapons : InitializerBase
     /// <param name="isAmmunition">If set to <c>true</c>, the item is ammunition for a weapon.</param>
     protected void CreateWeapon(byte @group, byte number, byte slot, int skillNumber, byte width, byte height,
         bool dropsFromMonsters, string name, byte dropLevel, int minimumDamage, int maximumDamage, int attackSpeed,
-        byte durability, int staffRise, int levelRequirement, int strengthRequirement, int agilityRequirement,
+        byte durability, int magicPower, int levelRequirement, int strengthRequirement, int agilityRequirement,
         int energyRequirement, int vitalityRequirement,
         int wizardClass, int knightClass, int elfClass, int magicGladiatorClass = 0, bool isAmmunition = false)
     {
@@ -292,7 +292,7 @@ internal class Weapons : InitializerBase
 
         item.PossibleItemOptions.Add(this.Luck);
 
-        if (staffRise == 0)
+        if (magicPower == 0)
         {
             item.PossibleItemOptions.Add(this.PhysicalDamageOption);
             item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == ExcellentOptions.PhysicalAttackOptionsName));
@@ -302,7 +302,7 @@ internal class Weapons : InitializerBase
             item.PossibleItemOptions.Add(this.WizardryDamageOption);
             item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == ExcellentOptions.WizardryAttackOptionsName));
 
-            var staffRisePowerUp = this.CreateItemBasePowerUpDefinition(Stats.StaffRise, staffRise, AggregateType.AddRaw);
+            var staffRisePowerUp = this.CreateItemBasePowerUpDefinition(Stats.StaffRise, magicPower / 2.0f, AggregateType.AddRaw);
             staffRisePowerUp.BonusPerLevelTable = this._staffRiseTable;
             item.BasePowerUpAttributes.Add(staffRisePowerUp);
         }

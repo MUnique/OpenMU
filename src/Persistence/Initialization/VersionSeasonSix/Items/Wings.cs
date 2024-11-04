@@ -73,7 +73,7 @@ public class Wings : WingsInitializerBase
         this.CreateWing(0, 3, 2, "Wings of Elf", 100, 10, 200, 180, 0, 0, 1, 0, 0, 0, 0, this.BuildOptions((0, OptionType.HealthRecover)), 12, 12, this._damageIncreaseByLevelTable, null);
         this.CreateWing(1, 5, 3, "Wings of Heaven", 100, 10, 200, 180, 1, 0, 0, 1, 0, 0, 0, this.BuildOptions((0, OptionType.WizDamage)), 12, 12, this._damageIncreaseByLevelTable, null);
         this.CreateWing(2, 5, 2, "Wings of Satan", 100, 20, 200, 180, 0, 1, 0, 1, 0, 0, 0, this.BuildOptions((0, OptionType.PhysDamage)), 12, 12, this._damageIncreaseByLevelTable, null);
-        this.CreateWing(41, 4, 2, "Wing of Curse", 100, 10, 200, 180, 0, 0, 0, 0, 0, 1, 0, this.BuildOptions((0, OptionType.CurseDamage)), 12, 12, this._damageIncreaseByLevelTable, null);
+        this.CreateWing(41, 4, 2, "Wing of Curse", 100, 10, 200, 180, 0, 0, 0, 0, 0, 1, 0, this.BuildOptions((0, OptionType.WizDamage)), 12, 12, this._damageIncreaseByLevelTable, null);
 
         // Second class wings:
         var secondWingOptions = this.CreateSecondClassWingOptions();
@@ -81,7 +81,7 @@ public class Wings : WingsInitializerBase
         this.CreateWing(4, 5, 3, "Wings of Soul", 150, 30, 200, 215, 2, 0, 0, 0, 0, 0, 0, this.BuildOptions((0b00, OptionType.HealthRecover), (0b10, OptionType.WizDamage)), 32, 25, this._damageIncreaseByLevelTableSecond, secondWingOptions);
         this.CreateWing(5, 3, 3, "Wings of Dragon", 150, 45, 200, 215, 0, 2, 0, 0, 0, 0, 0, this.BuildOptions((0b00, OptionType.HealthRecover), (0b10, OptionType.PhysDamage)), 32, 25, this._damageIncreaseByLevelTableSecond, secondWingOptions);
         this.CreateWing(6, 4, 2, "Wings of Darkness", 150, 40, 200, 215, 0, 0, 0, 1, 0, 0, 0, this.BuildOptions((0b00, OptionType.WizDamage), (0b10, OptionType.PhysDamage)), 32, 25, this._damageIncreaseByLevelTableSecond, secondWingOptions);
-        this.CreateWing(42, 4, 3, "Wings of Despair", 150, 30, 200, 215, 0, 0, 0, 0, 0, 2, 0, this.BuildOptions((0b00, OptionType.HealthRecover), (0b10, OptionType.CurseDamage)), 32, 25, this._damageIncreaseByLevelTableSecond, secondWingOptions);
+        this.CreateWing(42, 4, 3, "Wings of Despair", 150, 30, 200, 215, 0, 0, 0, 0, 0, 2, 0, this.BuildOptions((0b00, OptionType.WizDamage), (0b10, OptionType.CurseDamage)), 32, 25, this._damageIncreaseByLevelTableSecond, secondWingOptions);
 
         // The capes are a bit of a hybrid. Their damage gets increased like first wings, but they start slightly lower than 2nd wings.
         this.CreateWing(49, 2, 3, "Cape of Fighter", 180, 15, 200, 180, 0, 0, 0, 0, 0, 0, 1, this.BuildOptions((0b00, OptionType.HealthRecover), (0b10, OptionType.PhysDamage)), 20, 10, this._damageIncreaseByLevelTable, secondWingOptions);
@@ -95,13 +95,13 @@ public class Wings : WingsInitializerBase
 
         // Third class wings:
         var thirdWingOptions = this.CreateThirdClassWingOptions();
-        this.CreateWing(36, 4, 3, "Wing of Storm", 150, 60, 220, 300, 0, 3, 0, 0, 0, 0, 0, this.BuildOptions((0b00, OptionType.HealthRecover), (0b11, OptionType.PhysDamage), (0b10, OptionType.Defense)), 39, 39, this._damageIncreaseByLevelTable, thirdWingOptions);
-        this.CreateWing(37, 4, 3, "Wing of Eternal", 150, 45, 220, 300, 3, 0, 0, 0, 0, 0, 0, this.BuildOptions((0b00, OptionType.HealthRecover), (0b11, OptionType.WizDamage), (0b10, OptionType.Defense)), 39, 39, this._damageIncreaseByLevelTable, thirdWingOptions);
-        this.CreateWing(38, 4, 3, "Wing of Illusion", 150, 45, 220, 300, 0, 0, 3, 0, 0, 0, 0, this.BuildOptions((0b00, OptionType.HealthRecover), (0b11, OptionType.PhysDamage), (0b10, OptionType.Defense)), 39, 39, this._damageIncreaseByLevelTable, thirdWingOptions);
-        this.CreateWing(39, 4, 3, "Wing of Ruin", 150, 55, 220, 300, 0, 0, 0, 3, 0, 0, 0, this.BuildOptions((0b00, OptionType.HealthRecover), (0b11, OptionType.PhysDamage), (0b10, OptionType.WizDamage)), 39, 39, this._damageIncreaseByLevelTable, thirdWingOptions);
-        this.CreateWing(40, 2, 3, "Cape of Emperor", 150, 45, 220, 300, 0, 0, 0, 0, 3, 0, 0, this.BuildOptions((0b00, OptionType.HealthRecover), (0b11, OptionType.PhysDamage), (0b10, OptionType.Defense)), 39, 39, this._damageIncreaseByLevelTable, thirdWingOptions);
-        this.CreateWing(43, 4, 3, "Wing of Dimension", 150, 45, 220, 300, 0, 0, 0, 0, 0, 3, 0, this.BuildOptions((0b00, OptionType.HealthRecover), (0b11, OptionType.CurseDamage), (0b10, OptionType.Defense)), 42, 24, this._damageIncreaseByLevelTable, thirdWingOptions);
-        this.CreateWing(50, 2, 3, "Cape of Overrule", 150, 45, 220, 300, 0, 0, 0, 0, 0, 0, 3, this.BuildOptions((0b00, OptionType.HealthRecover), (0b11, OptionType.PhysDamage), (0b10, OptionType.Defense)), 42, 24, this._damageIncreaseByLevelTable, thirdWingOptions);
+        this.CreateWing(36, 4, 3, "Wing of Storm", 150, 60, 220, 400, 0, 3, 0, 0, 0, 0, 0, this.BuildOptions((0b11, OptionType.PhysDamage), (0b10, OptionType.Defense)), 39, 39, this._damageIncreaseByLevelTable, thirdWingOptions);
+        this.CreateWing(37, 4, 3, "Wing of Eternal", 150, 45, 220, 400, 3, 0, 0, 0, 0, 0, 0, this.BuildOptions((0b11, OptionType.WizDamage), (0b10, OptionType.Defense)), 39, 39, this._damageIncreaseByLevelTable, thirdWingOptions);
+        this.CreateWing(38, 4, 3, "Wing of Illusion", 150, 45, 220, 400, 0, 0, 3, 0, 0, 0, 0, this.BuildOptions((0b11, OptionType.PhysDamage), (0b10, OptionType.Defense)), 39, 39, this._damageIncreaseByLevelTable, thirdWingOptions);
+        this.CreateWing(39, 4, 3, "Wing of Ruin", 150, 55, 220, 400, 0, 0, 0, 3, 0, 0, 0, this.BuildOptions((0b11, OptionType.PhysDamage), (0b10, OptionType.WizDamage)), 39, 39, this._damageIncreaseByLevelTable, thirdWingOptions);
+        this.CreateWing(40, 2, 3, "Cape of Emperor", 150, 45, 220, 400, 0, 0, 0, 0, 3, 0, 0, this.BuildOptions((0b11, OptionType.PhysDamage), (0b10, OptionType.Defense)), 39, 39, this._damageIncreaseByLevelTable, thirdWingOptions);
+        this.CreateWing(43, 4, 3, "Wing of Dimension", 150, 45, 220, 400, 0, 0, 0, 0, 0, 3, 0, this.BuildOptions((0b00, OptionType.WizDamage), (0b11, OptionType.CurseDamage)), 42, 24, this._damageIncreaseByLevelTable, thirdWingOptions);
+        this.CreateWing(50, 2, 3, "Cape of Overrule", 150, 45, 220, 400, 0, 0, 0, 0, 0, 0, 3, this.BuildOptions((0b11, OptionType.PhysDamage), (0b10, OptionType.Defense)), 42, 24, this._damageIncreaseByLevelTable, thirdWingOptions);
     }
 
     private void CreateFeather()
