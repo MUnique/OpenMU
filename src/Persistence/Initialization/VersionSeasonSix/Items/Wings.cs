@@ -73,7 +73,7 @@ public class Wings : WingsInitializerBase
         this.CreateWing(0, 3, 2, "Wings of Elf", 100, 10, 200, 180, 0, 0, 1, 0, 0, 0, 0, this.BuildOptions((0, OptionType.HealthRecover)), 12, 12, this._damageIncreaseByLevelTable, null);
         this.CreateWing(1, 5, 3, "Wings of Heaven", 100, 10, 200, 180, 1, 0, 0, 1, 0, 0, 0, this.BuildOptions((0, OptionType.WizDamage)), 12, 12, this._damageIncreaseByLevelTable, null);
         this.CreateWing(2, 5, 2, "Wings of Satan", 100, 20, 200, 180, 0, 1, 0, 1, 0, 0, 0, this.BuildOptions((0, OptionType.PhysDamage)), 12, 12, this._damageIncreaseByLevelTable, null);
-        this.CreateWing(41, 4, 2, "Wing of Curse", 100, 10, 200, 180, 0, 0, 0, 0, 0, 1, 0, this.BuildOptions((0, OptionType.WizDamage)), 12, 12, this._damageIncreaseByLevelTable, null);
+        this.CreateWing(41, 4, 2, "Wings of Curse", 100, 10, 200, 180, 0, 0, 0, 0, 0, 1, 0, this.BuildOptions((0, OptionType.WizDamage)), 12, 12, this._damageIncreaseByLevelTable, null);
 
         // Second class wings:
         var secondWingOptions = this.CreateSecondClassWingOptions();

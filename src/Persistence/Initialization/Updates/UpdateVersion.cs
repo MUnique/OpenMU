@@ -184,4 +184,19 @@ public enum UpdateVersion
     /// The version of the <see cref="AddHarmonyOptionWeightsUpdateSeason6"/>.
     /// </summary>
     AddHarmonyOptionWeightsSeason6 = 35,
+
+    /// <summary>
+    /// The version of the <see cref="FixWingsDmgRatesUpdatePlugIn075"/>.
+    /// </summary>
+    FixWeaponRisePercentage075 = 36,
+
+    /// <summary>
+    /// The version of the <see cref="FixWingsDmgRatesUpdatePlugIn095D"/>.
+    /// </summary>
+    FixWeaponRisePercentage095d = 37,
+
+    /// <summary>
+    /// The version of the <see cref="FixWingsDmgRatesUpdatePlugInSeason6"/>.
+    /// </summary>
+    FixWeaponRisePercentageSeason6 = 38,
 }
