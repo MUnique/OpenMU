@@ -197,4 +197,9 @@ public enum UpdateVersion
     /// The version of the <see cref="AddAreaSkillSettingsUpdatePlugIn"/>.
     /// </summary>
     AddAreaSkillSettings = 38,
+
+    /// <summary>
+    /// The version of the <see cref="FixItemRequirementsPlugIn"/>.
+    /// </summary>
+    FixItemRequirements = 38,
 }
