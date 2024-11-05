@@ -24,9 +24,8 @@ public class SelfDefensePlugIn : IPeriodicTaskPlugIn, IAttackableGotHitPlugIn, I
     /// <inheritdoc />
     public async ValueTask ExecuteTaskAsync(GameContext gameContext)
     {
-        var configuration = this.Configuration ??= CreateDefaultConfiguration();
-        var timedOut = gameContext.SelfDefenseState.Where(s => DateTime.UtcNow.Subtract(s.Value) >= configuration.SelfDefenseTimeOut).ToList();
-        foreach (var (pair, lastAttack) in timedOut)
+        var timedOut = gameContext.SelfDefenseState.Where(s => s.Value < DateTime.UtcNow).ToList();
+        foreach (var (pair, _) in timedOut)
         {
             if (gameContext.SelfDefenseState.Remove(pair, out _))
             {
@@ -80,16 +79,16 @@ public class SelfDefensePlugIn : IPeriodicTaskPlugIn, IAttackableGotHitPlugIn, I
             return;
         }
 
-        var now = DateTime.UtcNow;
+        var timeout = DateTime.UtcNow.Add(this.Configuration?.SelfDefenseTimeOut ?? TimeSpan.FromMinutes(1));
         var gameContext = defender.GameContext;
         gameContext.SelfDefenseState.AddOrUpdate(
             (attackerPlayer, defender),
             tuple =>
             {
                 _ = this.BeginSelfDefenseAsync(attackerPlayer, defender);
-                return now;
+                return timeout;
             },
-            (_, _) => now);
+            (_, _) => timeout);
     }
 
     /// <inheritdoc />
