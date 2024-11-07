@@ -4,11 +4,10 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.Updates;
 
-using MUnique.OpenMU.AttributeSystem;
-using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Persistence.Initialization.Items;
 
 /// <summary>
 /// This update fixes weapons (staff, stick, book, scepter) rise percentage; Summoner wings wizardry/curse options; and Wing of Dimension (inc/dec), Cape of Overrule (inc/dec), Cape of Emperor (dec) damage rates.
@@ -35,7 +34,7 @@ public abstract class FixWeaponRisePercentagePlugInBase : UpdatePlugInBase
     public override bool IsMandatory => true;
 
     /// <inheritdoc />
-    public override DateTime CreatedAt => new(2024, 11, 5, 16, 0, 0, DateTimeKind.Utc);
+    public override DateTime CreatedAt => new(2024, 11, 7, 16, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
@@ -65,35 +64,19 @@ public abstract class FixWeaponRisePercentagePlugInBase : UpdatePlugInBase
             }
         }
 
-        // Fix Group 5 weapons (staves)
-        var staves = gameConfiguration.Items.Where(i => i.Group == 5);
-
-        // -> fix DW staves
+        // Fix Group 5 weapons (staves - Skull Staff not included)
+        var staves = gameConfiguration.Items.Where(i => i.Group == (int)ItemGroups.Staff && i.BasePowerUpAttributes.Any(pua => pua.TargetAttribute == Stats.StaffRise));
         foreach (var staff in staves)
         {
             if (staff.BasePowerUpAttributes.FirstOrDefault(pua => pua.TargetAttribute == Stats.StaffRise) is { } staffRiseAttr)
             {
-                if (staffRiseAttr.BaseValue % 2 != 0)
+                if ((int)staffRiseAttr.BaseValue % 2 != 0)
                 {
                     staffRiseAttr.BonusPerLevelTable = staffOddTable;
                 }
 
-                staffRiseAttr.BaseValue /= 2;
+                staffRiseAttr.BaseValue /= 2.0f;
             }
         }
-    }
-
-    private PowerUpDefinition CreatePowerUpDefinition(AttributeDefinition attributeDefinition, float value, AggregateType aggregateType, IContext context, GameConfiguration gameConfiguration)
-    {
-        var powerUpDefinition = context.CreateNew<PowerUpDefinition>();
-        powerUpDefinition.TargetAttribute = attributeDefinition.GetPersistent(gameConfiguration);
-        if (value != 0)
-        {
-            powerUpDefinition.Boost = context.CreateNew<PowerUpDefinitionValue>();
-            powerUpDefinition.Boost.ConstantValue.Value = value;
-            powerUpDefinition.Boost.ConstantValue.AggregateType = aggregateType;
-        }
-
-        return powerUpDefinition;
     }
 }

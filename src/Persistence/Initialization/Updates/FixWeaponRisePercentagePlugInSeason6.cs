@@ -9,8 +9,8 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
-using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Network.Packets;
 using MUnique.OpenMU.Persistence.Initialization.Items;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
 using MUnique.OpenMU.PlugIns;
@@ -59,24 +59,23 @@ public class FixWeaponRisePercentagePlugInSeason6 : FixWeaponRisePercentagePlugI
         }
 
         // Fix scepters
-        var scepters = gameConfiguration.Items.Where(i => i.Group == 2 && i.BasePowerUpAttributes.Any(pua => pua.TargetAttribute == Stats.ScepterRise));
-
+        var scepters = gameConfiguration.Items.Where(i => i.Group == (int)ItemGroups.Scepters && i.BasePowerUpAttributes.Any(pua => pua.TargetAttribute == Stats.ScepterRise));
         foreach (var scepter in scepters)
         {
             if (scepter.BasePowerUpAttributes.FirstOrDefault(pua => pua.TargetAttribute == Stats.ScepterRise) is { } scepterRiseAttr)
             {
-                if (scepterRiseAttr.BaseValue % 2 != 0)
+                if ((int)scepterRiseAttr.BaseValue % 2 != 0)
                 {
                     scepterRiseAttr.BonusPerLevelTable = scepterOddTable;
                 }
 
-                scepterRiseAttr.BaseValue /= 2;
+                scepterRiseAttr.BaseValue /= 2.0f;
             }
         }
 
-        // Fix Group 5 weapons (Skull Staff, sticks and books)
+        // Fix Group 5 weapons (Skull Staff, sticks, and books)
         var weaponsG5 = gameConfiguration.Items.Where(i => i.Group == 5);
-        var summonerWeapons = weaponsG5.Where(i => i.PossibleItemOptions.Contains(gameConfiguration.ItemOptions.Single(o => o.Name == ExcellentOptions.CurseAttackOptionsName))); // Skull Staff included
+        var summonerWeapons = weaponsG5.Where(i => i.PossibleItemOptions.Contains(gameConfiguration.ItemOptions.First(io => io.Name == ExcellentOptions.CurseAttackOptionsName))); // Skull Staff included
         var staffEvenTable = gameConfiguration.ItemLevelBonusTables.Single(bt => bt.Name == "Staff Rise (even)");
         var staffOddTable = gameConfiguration.ItemLevelBonusTables.Single(bt => bt.Name == "Staff Rise (odd)");
 
@@ -84,9 +83,10 @@ public class FixWeaponRisePercentagePlugInSeason6 : FixWeaponRisePercentagePlugI
         if (weaponsG5.FirstOrDefault(e => e.Number == 0) is { } skullStaff)
         {
             skullStaff.PossibleItemOptions.Clear();
-            skullStaff.PossibleItemOptions.Add(gameConfiguration.ItemOptions.Single(o => o.Name == ExcellentOptions.WizardryAttackOptionsName));
-            skullStaff.PossibleItemOptions.Add(gameConfiguration.ItemOptions.Single(o => o.Name == HarmonyOptions.WizardryAttackOptionsName));
-            skullStaff.PossibleItemOptions.Add(gameConfiguration.ItemOptions.First(iod => iod.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Option && o.PowerUpDefinition?.TargetAttribute == Stats.MaximumWizBaseDmg)));
+            skullStaff.PossibleItemOptions.Add(gameConfiguration.ItemOptions.First(io => io.Name == ExcellentOptions.WizardryAttackOptionsName));
+            skullStaff.PossibleItemOptions.Add(gameConfiguration.ItemOptions.First(io => io.Name == HarmonyOptions.WizardryAttackOptionsName));
+            skullStaff.PossibleItemOptions.Add(gameConfiguration.ItemOptions.First(io => io.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Luck)));
+            skullStaff.PossibleItemOptions.Add(gameConfiguration.ItemOptions.First(io => io.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Option && o.PowerUpDefinition?.TargetAttribute == Stats.MaximumWizBaseDmg)));
 
             var powerUpDefinition = context.CreateNew<ItemBasePowerUpDefinition>();
             powerUpDefinition.TargetAttribute = Stats.StaffRise.GetPersistent(gameConfiguration);
@@ -95,14 +95,6 @@ public class FixWeaponRisePercentagePlugInSeason6 : FixWeaponRisePercentagePlugI
             powerUpDefinition.BonusPerLevelTable = staffEvenTable;
             skullStaff.BasePowerUpAttributes.Add(powerUpDefinition);
         }
-
-        // -> fix possible options for all Summoner sticks and books
-        summonerWeapons.ForEach(e =>
-        {
-            e.PossibleItemOptions.Clear();
-            e.PossibleItemOptions.Add(gameConfiguration.ItemOptions.Single(o => o.Name == ExcellentOptions.WizardryAttackOptionsName));
-            e.PossibleItemOptions.Add(gameConfiguration.ItemOptions.Single(o => o.Name == HarmonyOptions.WizardryAttackOptionsName));
-        });
 
         var rhOnlySlotType = gameConfiguration.ItemSlotTypes.First(t => !t.ItemSlots.Contains(0) && t.ItemSlots.Contains(1));
         var books = summonerWeapons.Where(e => e.ItemSlot == rhOnlySlotType);
@@ -123,7 +115,11 @@ public class FixWeaponRisePercentagePlugInSeason6 : FixWeaponRisePercentagePlugI
         };
         foreach (var stick in sticks)
         {
-            stick.PossibleItemOptions.Add(gameConfiguration.ItemOptions.First(iod => iod.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Option && o.PowerUpDefinition?.TargetAttribute == Stats.MaximumWizBaseDmg)));
+            stick.PossibleItemOptions.Clear();
+            stick.PossibleItemOptions.Add(gameConfiguration.ItemOptions.First(io => io.Name == ExcellentOptions.WizardryAttackOptionsName));
+            stick.PossibleItemOptions.Add(gameConfiguration.ItemOptions.First(io => io.Name == HarmonyOptions.WizardryAttackOptionsName));
+            stick.PossibleItemOptions.Add(gameConfiguration.ItemOptions.First(io => io.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Luck)));
+            stick.PossibleItemOptions.Add(gameConfiguration.ItemOptions.First(io => io.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Option && o.PowerUpDefinition?.TargetAttribute == Stats.MaximumWizBaseDmg)));
             if (sticksMagicPower.ContainsKey(stick.Number))
             {
                 var powerUpDefinition = context.CreateNew<ItemBasePowerUpDefinition>();
@@ -136,14 +132,24 @@ public class FixWeaponRisePercentagePlugInSeason6 : FixWeaponRisePercentagePlugI
         }
 
         // -> fix books
+        if (gameConfiguration.CharacterClasses.FirstOrDefault(cc => cc.Number == (int)CharacterClassNumber.Summoner) is { } summoner)
+        {
+            summoner.AttributeCombinations.Add(context.CreateNew<AttributeRelationship>(
+                Stats.CurseAttackDamageIncrease.GetPersistent(gameConfiguration), 1.0f / 100, Stats.BookRise, InputOperator.Multiply, default(AttributeDefinition?)));
+        }
+
         Dictionary<int, int> booksMagicPower = new() { [21] = 46, [22] = 59, [23] = 72 };
         foreach (var book in books)
         {
-            book.PossibleItemOptions.Add(gameConfiguration.ItemOptions.First(iod => iod.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Option && o.PowerUpDefinition?.TargetAttribute == Stats.MaximumCurseBaseDmg)));
+            book.PossibleItemOptions.Clear();
+            book.PossibleItemOptions.Add(gameConfiguration.ItemOptions.First(io => io.Name == ExcellentOptions.WizardryAttackOptionsName));
+            book.PossibleItemOptions.Add(gameConfiguration.ItemOptions.First(io => io.Name == HarmonyOptions.WizardryAttackOptionsName));
+            book.PossibleItemOptions.Add(gameConfiguration.ItemOptions.First(io => io.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Luck)));
+            book.PossibleItemOptions.Add(gameConfiguration.ItemOptions.First(io => io.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Option && o.PowerUpDefinition?.TargetAttribute == Stats.MaximumCurseBaseDmg)));
             if (booksMagicPower.ContainsKey(book.Number))
             {
                 var powerUpDefinition = context.CreateNew<ItemBasePowerUpDefinition>();
-                powerUpDefinition.TargetAttribute = Stats.StaffRise.GetPersistent(gameConfiguration);
+                powerUpDefinition.TargetAttribute = Stats.BookRise;
                 powerUpDefinition.BaseValue = booksMagicPower[book.Number] / 2.0f;
                 powerUpDefinition.AggregateType = AggregateType.AddRaw;
                 powerUpDefinition.BonusPerLevelTable = booksMagicPower[book.Number] % 2 == 0 ? staffEvenTable : staffOddTable;
@@ -156,8 +162,8 @@ public class FixWeaponRisePercentagePlugInSeason6 : FixWeaponRisePercentagePlugI
         if (wingsOfCurse is not null)
         {
             wingsOfCurse.Name = "Wings of Curse";
-            var wingOpts = wingsOfCurse.PossibleItemOptions.FirstOrDefault(o => o.Name == "Wing of Curse Options");
-            wingOpts!.PossibleOptions.Clear();
+            var wingOpts = wingsOfCurse.PossibleItemOptions.First(o => o.Name == "Wing of Curse Options");
+            wingOpts.PossibleOptions.Clear();
 
             var itemOption = context.CreateNew<IncreasableItemOption>();
             itemOption.SetGuid(ItemOptionDefinitionNumbers.WingWizardry, Stats.MaximumWizBaseDmg.Id.ExtractFirstTwoBytes());
@@ -184,8 +190,8 @@ public class FixWeaponRisePercentagePlugInSeason6 : FixWeaponRisePercentagePlugI
         var wingsOfDespair = gameConfiguration.Items.FirstOrDefault(i => i.GetId() == new Guid("00000080-000c-002a-0000-000000000000"));
         if (wingsOfDespair is not null)
         {
-            var wingOpts = wingsOfDespair.PossibleItemOptions.FirstOrDefault(o => o.Name == "Wings of Despair Options");
-            wingOpts!.PossibleOptions.Clear();
+            var wingOpts = wingsOfDespair.PossibleItemOptions.First(o => o.Name == "Wings of Despair Options");
+            wingOpts.PossibleOptions.Clear();
 
             var curseOption = context.CreateNew<IncreasableItemOption>();
             curseOption.SetGuid(ItemOptionDefinitionNumbers.WingCurse, Stats.MaximumCurseBaseDmg.Id.ExtractFirstTwoBytes());
@@ -232,8 +238,8 @@ public class FixWeaponRisePercentagePlugInSeason6 : FixWeaponRisePercentagePlugI
         var wingsOfDimension = gameConfiguration.Items.FirstOrDefault(i => i.GetId() == new Guid("00000080-000c-002b-0000-000000000000"));
         if (wingsOfDimension is not null)
         {
-            var wingOpts = wingsOfDimension.PossibleItemOptions.FirstOrDefault(o => o.Name == "Wing of Dimension Options");
-            var badOpts = wingOpts!.PossibleOptions.Where(opt => opt.PowerUpDefinition?.TargetAttribute != Stats.HealthRecoveryMultiplier);
+            var wingOpts = wingsOfDimension.PossibleItemOptions.First(o => o.Name == "Wing of Dimension Options");
+            var badOpts = new List<IncreasableItemOption>(wingOpts.PossibleOptions.Where(opt => opt.PowerUpDefinition?.TargetAttribute != Stats.HealthRecoveryMultiplier));
             foreach (var badOpt in badOpts)
             {
                 wingOpts.PossibleOptions.Remove(badOpt);
