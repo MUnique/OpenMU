@@ -67,7 +67,7 @@ public class UpdateStatsPlugIn : IUpdateStatsPlugIn
 
         if (updatedStats.HasFlag(IUpdateStatsPlugIn.UpdatedStats.Mana))
         {
-            await this._player.Connection.SendCurrentHealthAndShieldAsync(
+            await this._player.Connection.SendCurrentManaAndAbilityAsync(
                 (ushort)Math.Max(this._player.Attributes[Stats.CurrentMana], 0f),
                 (ushort)Math.Max(this._player.Attributes[Stats.CurrentAbility], 0f)).ConfigureAwait(false);
         }
