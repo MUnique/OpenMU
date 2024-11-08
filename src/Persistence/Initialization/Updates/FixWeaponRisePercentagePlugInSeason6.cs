@@ -136,8 +136,8 @@ public class FixWeaponRisePercentagePlugInSeason6 : FixWeaponRisePercentagePlugI
         {
             var bookRiseAttr = context.CreateNew<AttributeDefinition>(new Guid("AD9C9AE0-BA76-4C99-9F53-AE8F1AF6CAD4"), "Book Rise Percentage", string.Empty);
             gameConfiguration.Attributes.Add(bookRiseAttr);
-            summoner.AttributeCombinations.Add(context.CreateNew<AttributeRelationship>(
-                Stats.CurseAttackDamageIncrease.GetPersistent(gameConfiguration), 1.0f / 100, Stats.BookRise.GetPersistent(gameConfiguration), InputOperator.Multiply, default(AttributeDefinition?)));
+            var attrRelationship = context.CreateNew<AttributeRelationship>(Stats.CurseAttackDamageIncrease.GetPersistent(gameConfiguration), 1.0f / 100, Stats.BookRise.GetPersistent(gameConfiguration), InputOperator.Multiply, default(AttributeDefinition?));
+            summoner.AttributeCombinations.Add(attrRelationship);
         }
 
         Dictionary<int, int> booksMagicPower = new() { [21] = 46, [22] = 59, [23] = 72 };
@@ -157,6 +157,11 @@ public class FixWeaponRisePercentagePlugInSeason6 : FixWeaponRisePercentagePlugI
                 powerUpDefinition.BonusPerLevelTable = booksMagicPower[book.Number] % 2 == 0 ? staffEvenTable : staffOddTable;
                 book.BasePowerUpAttributes.Add(powerUpDefinition);
             }
+
+            if (book.BasePowerUpAttributes.FirstOrDefault(pua => pua.TargetAttribute == Stats.IsStickEquipped) is { } stickEquipAttr)
+            {
+                book.BasePowerUpAttributes.Remove(stickEquipAttr);
+            }
         }
 
         // Fix Wings of Curse options
@@ -168,6 +173,7 @@ public class FixWeaponRisePercentagePlugInSeason6 : FixWeaponRisePercentagePlugI
 
             var wizOption = wingOpts.PossibleOptions.First();
             wizOption.PowerUpDefinition = this.CreatePowerUpDefinition(Stats.MaximumWizBaseDmg, 0, AggregateType.AddRaw, context, gameConfiguration);
+            wizOption.LevelDependentOptions.Clear();
             for (int level = 1; level <= 4; level++)
             {
                 var optionOfLevel = context.CreateNew<ItemOptionOfLevel>();
@@ -190,6 +196,7 @@ public class FixWeaponRisePercentagePlugInSeason6 : FixWeaponRisePercentagePlugI
 
             var curseOption = wingOpts.PossibleOptions.First(o => o.Number == 0);
             curseOption.PowerUpDefinition = this.CreatePowerUpDefinition(Stats.MaximumCurseBaseDmg, 0, AggregateType.AddRaw, context, gameConfiguration);
+            curseOption.LevelDependentOptions.Clear();
             for (int level = 1; level <= 4; level++)
             {
                 var optionOfLevel = context.CreateNew<ItemOptionOfLevel>();
@@ -205,6 +212,7 @@ public class FixWeaponRisePercentagePlugInSeason6 : FixWeaponRisePercentagePlugI
 
             var wizOption = wingOpts.PossibleOptions.First(o => o.Number == 2);
             wizOption.PowerUpDefinition = this.CreatePowerUpDefinition(Stats.MaximumWizBaseDmg, 0, AggregateType.AddRaw, context, gameConfiguration);
+            wizOption.LevelDependentOptions.Clear();
             for (int level = 1; level <= 4; level++)
             {
                 var optionOfLevel = context.CreateNew<ItemOptionOfLevel>();
@@ -227,6 +235,7 @@ public class FixWeaponRisePercentagePlugInSeason6 : FixWeaponRisePercentagePlugI
 
             var wizOption = wingOpts.PossibleOptions.First(o => o.Number == 3);
             wizOption.PowerUpDefinition = this.CreatePowerUpDefinition(Stats.MaximumWizBaseDmg, 0, AggregateType.AddRaw, context, gameConfiguration);
+            wizOption.LevelDependentOptions.Clear();
             for (int level = 1; level <= 4; level++)
             {
                 var optionOfLevel = context.CreateNew<ItemOptionOfLevel>();
@@ -242,6 +251,7 @@ public class FixWeaponRisePercentagePlugInSeason6 : FixWeaponRisePercentagePlugI
 
             var curseOption = wingOpts.PossibleOptions.First(o => o.Number == 2);
             curseOption.PowerUpDefinition = this.CreatePowerUpDefinition(Stats.MaximumCurseBaseDmg, 0, AggregateType.AddRaw, context, gameConfiguration);
+            curseOption.LevelDependentOptions.Clear();
             for (int level = 1; level <= 4; level++)
             {
                 var optionOfLevel = context.CreateNew<ItemOptionOfLevel>();
@@ -283,9 +293,9 @@ public class FixWeaponRisePercentagePlugInSeason6 : FixWeaponRisePercentagePlugI
 
         // Fix Cape of Emperor dmg decrease rate
         var capeOfEmperor = gameConfiguration.Items.FirstOrDefault(i => i.GetId() == new Guid("00000080-000c-0028-0000-000000000000"));
-        if (capeOfOverrule is not null)
+        if (capeOfEmperor is not null)
         {
-            if (capeOfOverrule.BasePowerUpAttributes.FirstOrDefault(pua => pua.TargetAttribute == Stats.DamageReceiveDecrement) is { } dmgDec)
+            if (capeOfEmperor.BasePowerUpAttributes.FirstOrDefault(pua => pua.TargetAttribute == Stats.DamageReceiveDecrement) is { } dmgDec)
             {
                 dmgDec.BaseValue = 1f - (24 / 100f);
             }

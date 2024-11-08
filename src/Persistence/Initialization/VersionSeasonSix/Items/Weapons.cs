@@ -434,13 +434,17 @@ internal class Weapons : InitializerBase
 
         if (group == (int)ItemGroups.Staff)
         {
-            if (wizardClass == 0 && summonerClass > 0)
+            if (wizardClass == 0 && summonerClass > 0 && slot == 0)
             {
                 item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsStickEquipped, 1, AggregateType.AddRaw));
             }
-            else
+            else if (wizardClass == 1)
             {
                 item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(width == 1 ? Stats.IsOneHandedStaffEquipped : Stats.IsTwoHandedStaffEquipped, 1, AggregateType.AddRaw));
+            }
+            else
+            {
+                // It's a book. Nothing to do here.
             }
         }
 
