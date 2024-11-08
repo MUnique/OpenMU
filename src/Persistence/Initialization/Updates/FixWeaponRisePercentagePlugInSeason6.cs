@@ -134,8 +134,10 @@ public class FixWeaponRisePercentagePlugInSeason6 : FixWeaponRisePercentagePlugI
         // -> fix books
         if (gameConfiguration.CharacterClasses.FirstOrDefault(cc => cc.Number == (int)CharacterClassNumber.Summoner) is { } summoner)
         {
+            var persistentBookRiseAttr = context.CreateNew<AttributeDefinition>(new Guid("AD9C9AE0-BA76-4C99-9F53-AE8F1AF6CAD4"), "Book Rise Percentage", string.Empty);
+            gameConfiguration.Attributes.Add(persistentBookRiseAttr);
             summoner.AttributeCombinations.Add(context.CreateNew<AttributeRelationship>(
-                Stats.CurseAttackDamageIncrease.GetPersistent(gameConfiguration), 1.0f / 100, Stats.BookRise, InputOperator.Multiply, default(AttributeDefinition?)));
+                Stats.CurseAttackDamageIncrease.GetPersistent(gameConfiguration), 1.0f / 100, Stats.BookRise.GetPersistent(gameConfiguration) ?? Stats.BookRise, InputOperator.Multiply, default(AttributeDefinition?)));
         }
 
         Dictionary<int, int> booksMagicPower = new() { [21] = 46, [22] = 59, [23] = 72 };
@@ -163,27 +165,21 @@ public class FixWeaponRisePercentagePlugInSeason6 : FixWeaponRisePercentagePlugI
         {
             wingsOfCurse.Name = "Wings of Curse";
             var wingOpts = wingsOfCurse.PossibleItemOptions.First(o => o.Name == "Wing of Curse Options");
-            wingOpts.PossibleOptions.Clear();
 
-            var itemOption = context.CreateNew<IncreasableItemOption>();
-            itemOption.SetGuid(ItemOptionDefinitionNumbers.WingWizardry, Stats.MaximumWizBaseDmg.Id.ExtractFirstTwoBytes());
-            itemOption.OptionType = gameConfiguration.ItemOptionTypes.First(t => t == ItemOptionTypes.Option);
-            itemOption.Number = 0;
-            itemOption.PowerUpDefinition = this.CreatePowerUpDefinition(Stats.MaximumWizBaseDmg, 0, AggregateType.AddRaw, context, gameConfiguration);
+            var wizOption = wingOpts.PossibleOptions.First();
+            wizOption.PowerUpDefinition = this.CreatePowerUpDefinition(Stats.MaximumWizBaseDmg, 0, AggregateType.AddRaw, context, gameConfiguration);
             for (int level = 1; level <= 4; level++)
             {
                 var optionOfLevel = context.CreateNew<ItemOptionOfLevel>();
                 optionOfLevel.Level = level;
                 optionOfLevel.PowerUpDefinition = this.CreatePowerUpDefinition(
-                    itemOption.PowerUpDefinition.TargetAttribute!,
+                    wizOption.PowerUpDefinition.TargetAttribute!,
                     level * 4f,
                     AggregateType.AddRaw,
                     context,
                     gameConfiguration);
-                itemOption.LevelDependentOptions.Add(optionOfLevel);
+                wizOption.LevelDependentOptions.Add(optionOfLevel);
             }
-
-            wingOpts?.PossibleOptions.Add(itemOption);
         }
 
         // Fix Wings of Despair options
@@ -191,12 +187,8 @@ public class FixWeaponRisePercentagePlugInSeason6 : FixWeaponRisePercentagePlugI
         if (wingsOfDespair is not null)
         {
             var wingOpts = wingsOfDespair.PossibleItemOptions.First(o => o.Name == "Wings of Despair Options");
-            wingOpts.PossibleOptions.Clear();
 
-            var curseOption = context.CreateNew<IncreasableItemOption>();
-            curseOption.SetGuid(ItemOptionDefinitionNumbers.WingCurse, Stats.MaximumCurseBaseDmg.Id.ExtractFirstTwoBytes());
-            curseOption.OptionType = gameConfiguration.ItemOptionTypes.First(t => t == ItemOptionTypes.Option);
-            curseOption.Number = 0b00;
+            var curseOption = wingOpts.PossibleOptions.First(o => o.Number == 0);
             curseOption.PowerUpDefinition = this.CreatePowerUpDefinition(Stats.MaximumCurseBaseDmg, 0, AggregateType.AddRaw, context, gameConfiguration);
             for (int level = 1; level <= 4; level++)
             {
@@ -211,12 +203,7 @@ public class FixWeaponRisePercentagePlugInSeason6 : FixWeaponRisePercentagePlugI
                 curseOption.LevelDependentOptions.Add(optionOfLevel);
             }
 
-            wingOpts?.PossibleOptions.Add(curseOption);
-
-            var wizOption = context.CreateNew<IncreasableItemOption>();
-            wizOption.SetGuid(ItemOptionDefinitionNumbers.WingWizardry, Stats.MaximumWizBaseDmg.Id.ExtractFirstTwoBytes());
-            wizOption.OptionType = gameConfiguration.ItemOptionTypes.First(t => t == ItemOptionTypes.Option);
-            wizOption.Number = 0b10;
+            var wizOption = wingOpts.PossibleOptions.First(o => o.Number == 2);
             wizOption.PowerUpDefinition = this.CreatePowerUpDefinition(Stats.MaximumWizBaseDmg, 0, AggregateType.AddRaw, context, gameConfiguration);
             for (int level = 1; level <= 4; level++)
             {
@@ -230,8 +217,6 @@ public class FixWeaponRisePercentagePlugInSeason6 : FixWeaponRisePercentagePlugI
                     gameConfiguration);
                 wizOption.LevelDependentOptions.Add(optionOfLevel);
             }
-
-            wingOpts?.PossibleOptions.Add(wizOption);
         }
 
         // Fix Wing of Dimension options
@@ -239,16 +224,8 @@ public class FixWeaponRisePercentagePlugInSeason6 : FixWeaponRisePercentagePlugI
         if (wingsOfDimension is not null)
         {
             var wingOpts = wingsOfDimension.PossibleItemOptions.First(o => o.Name == "Wing of Dimension Options");
-            var badOpts = new List<IncreasableItemOption>(wingOpts.PossibleOptions.Where(opt => opt.PowerUpDefinition?.TargetAttribute != Stats.HealthRecoveryMultiplier));
-            foreach (var badOpt in badOpts)
-            {
-                wingOpts.PossibleOptions.Remove(badOpt);
-            }
 
-            var wizOption = context.CreateNew<IncreasableItemOption>();
-            wizOption.SetGuid(ItemOptionDefinitionNumbers.WingWizardry, Stats.MaximumWizBaseDmg.Id.ExtractFirstTwoBytes());
-            wizOption.OptionType = gameConfiguration.ItemOptionTypes.First(t => t == ItemOptionTypes.Option);
-            wizOption.Number = 0b11;
+            var wizOption = wingOpts.PossibleOptions.First(o => o.Number == 3);
             wizOption.PowerUpDefinition = this.CreatePowerUpDefinition(Stats.MaximumWizBaseDmg, 0, AggregateType.AddRaw, context, gameConfiguration);
             for (int level = 1; level <= 4; level++)
             {
@@ -263,12 +240,7 @@ public class FixWeaponRisePercentagePlugInSeason6 : FixWeaponRisePercentagePlugI
                 wizOption.LevelDependentOptions.Add(optionOfLevel);
             }
 
-            wingOpts?.PossibleOptions.Add(wizOption);
-
-            var curseOption = context.CreateNew<IncreasableItemOption>();
-            curseOption.SetGuid(ItemOptionDefinitionNumbers.WingCurse, Stats.MaximumCurseBaseDmg.Id.ExtractFirstTwoBytes());
-            curseOption.OptionType = gameConfiguration.ItemOptionTypes.First(t => t == ItemOptionTypes.Option);
-            curseOption.Number = 0b10;
+            var curseOption = wingOpts.PossibleOptions.First(o => o.Number == 2);
             curseOption.PowerUpDefinition = this.CreatePowerUpDefinition(Stats.MaximumCurseBaseDmg, 0, AggregateType.AddRaw, context, gameConfiguration);
             for (int level = 1; level <= 4; level++)
             {
@@ -282,8 +254,6 @@ public class FixWeaponRisePercentagePlugInSeason6 : FixWeaponRisePercentagePlugI
                     gameConfiguration);
                 curseOption.LevelDependentOptions.Add(optionOfLevel);
             }
-
-            wingOpts?.PossibleOptions.Add(curseOption);
 
             if (wingsOfDimension.BasePowerUpAttributes.FirstOrDefault(pua => pua.TargetAttribute == Stats.AttackDamageIncrease) is { } dmgInc)
             {
