@@ -134,10 +134,10 @@ public class FixWeaponRisePercentagePlugInSeason6 : FixWeaponRisePercentagePlugI
         // -> fix books
         if (gameConfiguration.CharacterClasses.FirstOrDefault(cc => cc.Number == (int)CharacterClassNumber.Summoner) is { } summoner)
         {
-            var persistentBookRiseAttr = context.CreateNew<AttributeDefinition>(new Guid("AD9C9AE0-BA76-4C99-9F53-AE8F1AF6CAD4"), "Book Rise Percentage", string.Empty);
-            gameConfiguration.Attributes.Add(persistentBookRiseAttr);
+            var bookRiseAttr = context.CreateNew<AttributeDefinition>(new Guid("AD9C9AE0-BA76-4C99-9F53-AE8F1AF6CAD4"), "Book Rise Percentage", string.Empty);
+            gameConfiguration.Attributes.Add(bookRiseAttr);
             summoner.AttributeCombinations.Add(context.CreateNew<AttributeRelationship>(
-                Stats.CurseAttackDamageIncrease.GetPersistent(gameConfiguration), 1.0f / 100, Stats.BookRise.GetPersistent(gameConfiguration) ?? Stats.BookRise, InputOperator.Multiply, default(AttributeDefinition?)));
+                Stats.CurseAttackDamageIncrease.GetPersistent(gameConfiguration), 1.0f / 100, Stats.BookRise.GetPersistent(gameConfiguration), InputOperator.Multiply, default(AttributeDefinition?)));
         }
 
         Dictionary<int, int> booksMagicPower = new() { [21] = 46, [22] = 59, [23] = 72 };
@@ -151,7 +151,7 @@ public class FixWeaponRisePercentagePlugInSeason6 : FixWeaponRisePercentagePlugI
             if (booksMagicPower.ContainsKey(book.Number))
             {
                 var powerUpDefinition = context.CreateNew<ItemBasePowerUpDefinition>();
-                powerUpDefinition.TargetAttribute = Stats.BookRise;
+                powerUpDefinition.TargetAttribute = Stats.BookRise.GetPersistent(gameConfiguration);
                 powerUpDefinition.BaseValue = booksMagicPower[book.Number] / 2.0f;
                 powerUpDefinition.AggregateType = AggregateType.AddRaw;
                 powerUpDefinition.BonusPerLevelTable = booksMagicPower[book.Number] % 2 == 0 ? staffEvenTable : staffOddTable;
