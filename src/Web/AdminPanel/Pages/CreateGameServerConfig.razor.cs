@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Pages;
 using System.ComponentModel.DataAnnotations;
 using System.Threading;
 using Blazored.Modal.Services;
+using Blazored.Toast.Services;
 using Microsoft.AspNetCore.Components;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Persistence;
@@ -47,6 +48,12 @@ public partial class CreateGameServerConfig : ComponentBase, IAsyncDisposable
     /// </summary>
     [Inject]
     public IModalService ModalService { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the toast service.
+    /// </summary>
+    [Inject]
+    public IToastService ToastService { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the navigation manager.
@@ -152,13 +159,13 @@ public partial class CreateGameServerConfig : ComponentBase, IAsyncDisposable
             var existingServerDefinitions = (await saveContext.GetAsync<GameServerDefinition>().ConfigureAwait(false)).ToList();
             if (existingServerDefinitions.Any(def => def.ServerID == this._viewModel?.ServerId))
             {
-                await this.ModalService.ShowMessageAsync("Save", $"Server with Id {this._viewModel?.ServerId} already exists. Please use another value.").ConfigureAwait(true);
+                this.ToastService.ShowError($"Server with Id {this._viewModel?.ServerId} already exists. Please use another value.");
                 return;
             }
 
             if (existingServerDefinitions.Any(def => def.Endpoints.Any(endpoint => endpoint.NetworkPort == this._viewModel?.NetworkPort)))
             {
-                await this.ModalService.ShowMessageAsync("Save", $"A server with tcp port {this._viewModel?.NetworkPort} already exists. Please use another tcp port.").ConfigureAwait(true);
+                this.ToastService.ShowError($"A server with tcp port {this._viewModel?.NetworkPort} already exists. Please use another tcp port.");
                 return;
             }
 
@@ -168,24 +175,25 @@ public partial class CreateGameServerConfig : ComponentBase, IAsyncDisposable
             this._initState = "Saving Configuration ...";
             await this.InvokeAsync(this.StateHasChanged);
             var success = await saveContext.SaveChangesAsync().ConfigureAwait(true);
-            text = success ? "The changes have been saved." : "There were no changes to save.";
 
             // if success, init new game server instance
             if (success)
             {
+                this.ToastService.ShowSuccess("The game server configuration has been saved. Initializing game server ...");
                 this._initState = "Initializing Game Server ...";
                 await this.InvokeAsync(this.StateHasChanged);
                 await this.ServerInstanceManager.InitializeGameServerAsync(gameServerDefinition.ServerID);
                 this.NavigationManager.NavigateTo("servers");
                 return;
             }
+
+            this.ToastService.ShowError("No changes have been saved.");
         }
         catch (Exception ex)
         {
-            text = $"An unexpected error occurred: {ex.Message}.";
+            this.ToastService.ShowError($"An unexpected error occurred: {ex.Message}.");
         }
 
-        await this.ModalService.ShowMessageAsync("Save", text).ConfigureAwait(true);
         this._initState = null;
     }
 

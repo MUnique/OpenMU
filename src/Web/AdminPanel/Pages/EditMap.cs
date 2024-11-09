@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Pages;
 using System.Reflection;
 using System.Threading;
 using Blazored.Modal.Services;
+using Blazored.Toast.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.AspNetCore.Components.Routing;
@@ -40,6 +41,12 @@ public sealed class EditMap : ComponentBase, IDisposable
     /// </summary>
     [Inject]
     private IModalService ModalService { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the toast service.
+    /// </summary>
+    [Inject]
+    private IToastService ToastService { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the game configuration.
@@ -209,19 +216,17 @@ public sealed class EditMap : ComponentBase, IDisposable
 
     private async Task SaveChangesAsync()
     {
-        string text;
         try
         {
             var context = await this.GameConfigurationSource.GetContextAsync().ConfigureAwait(true);
             var success = await context.SaveChangesAsync().ConfigureAwait(true);
-            text = success ? "The changes have been saved." : "There were no changes to save.";
+            var text = success ? "The changes have been saved." : "There were no changes to save.";
+            this.ToastService.ShowSuccess(text);
         }
         catch (Exception ex)
         {
             this.Logger.LogError(ex, $"Error during saving");
-            text = $"An unexpected error occured: {ex.Message}.";
+            this.ToastService.ShowError($"An unexpected error occured: {ex.Message}. See logs for more details.");
         }
-
-        await this.ModalService.ShowMessageAsync("Save", text).ConfigureAwait(true);
     }
 }
