@@ -191,12 +191,6 @@ public class FixWeaponRisePercentagePlugInSeason6 : FixWeaponRisePercentagePlugI
             {
                 attackSpeedAttr.BaseValue = 30;
             }
-
-            if (basePowerUps.FirstOrDefault(pu => pu.TargetAttribute == Stats.StaffRise) is { } staffRiseAttr)
-            {
-                staffRiseAttr.BaseValue = 106 / 2.0f;
-                staffRiseAttr.BonusPerLevelTable = staffEvenTable;
-            }
         }
 
         // -> fix books
