@@ -212,7 +212,7 @@ internal class Weapons : InitializerBase
         this.CreateWeapon(4, 15, 0, 0, 1, 1, false, "Arrows", 0, 0, 0, 0, 255, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0);
         this.CreateWeapon(4, 16, 0, 24, 2, 4, true, "Saint Crossbow", 84, 102, 127, 35, 72, 0, 0, 50, 160, 0, 0, 0, 0, 1, 0, 0, 0, 0);
         this.CreateWeapon(4, 17, 1, 24, 2, 4, true, "Celestial Bow", 92, 127, 155, 35, 76, 0, 0, 54, 198, 0, 0, 0, 0, 2, 0, 0, 0, 0);
-        this.CreateWeapon(4, 18, 0, 24, 2, 3, false, "Divine CB of Archangel", 100, 144, 166, 35, 200, 0, 0, 40, 110, 0, 0, 0, 0, 1, 0, 0, 0, 0);
+        this.CreateWeapon(4, 18, 0, 24, 2, 3, false, "Divine Crossbow of Archangel", 100, 144, 166, 35, 200, 0, 0, 40, 110, 0, 0, 0, 0, 1, 0, 0, 0, 0);
         this.CreateWeapon(4, 19, 0, 24, 2, 3, true, "Great Reign Crossbow", 100, 150, 172, 40, 80, 0, 0, 61, 285, 0, 0, 0, 0, 2, 0, 0, 0, 0);
         this.CreateWeapon(4, 20, 1, 24, 2, 4, true, "Arrow Viper Bow", 135, 166, 190, 45, 86, 0, 0, 52, 245, 0, 0, 0, 0, 2, 0, 0, 0, 0);
         this.CreateWeapon(4, 21, 1, 24, 2, 4, true, "Sylph Wind Bow", 147, 177, 200, 45, 93, 0, 380, 46, 210, 0, 0, 0, 0, 2, 0, 0, 0, 0);
@@ -230,7 +230,7 @@ internal class Weapons : InitializerBase
         this.CreateWeapon(5, 7, 0, 0, 2, 4, false, "Chaos Lightning Staff", 75, 47, 48, 30, 70, 94, 0, 60, 10, 0, 0, 1, 0, 0, 1, 0, 0, 0);
         this.CreateWeapon(5, 8, 0, 0, 2, 4, true, "Staff of Destruction", 90, 50, 54, 30, 85, 101, 0, 60, 10, 0, 0, 1, 0, 0, 1, 0, 0, 0);
         this.CreateWeapon(5, 9, 0, 0, 1, 4, true, "Dragon Soul Staff", 100, 46, 48, 30, 91, 92, 0, 52, 16, 0, 0, 2, 0, 0, 0, 0, 0, 0);
-        this.CreateWeapon(5, 10, 0, 0, 1, 4, false, "Divine Staff of Archangel", 104, 153, 155, 30, 182, 156, 0, 36, 4, 0, 0, 1, 0, 0, 1, 0, 0, 0);
+        this.CreateWeapon(5, 10, 0, 0, 1, 4, false, "Divine Staff of Archangel", 104, 153, 165, 30, 182, 156, 0, 36, 4, 0, 0, 1, 0, 0, 1, 0, 0, 0);
         this.CreateWeapon(5, 11, 0, 0, 1, 4, true, "Staff of Kundun", 140, 55, 61, 30, 95, 110, 0, 45, 16, 0, 0, 2, 0, 0, 1, 0, 0, 0);
         this.CreateWeapon(5, 12, 0, 0, 1, 4, true, "Grand Viper Staff", 147, 66, 74, 30, 100, 130, 380, 39, 13, 0, 0, 2, 0, 0, 0, 0, 0, 0);
         this.CreateWeapon(5, 13, 0, 0, 1, 4, true, "Platina Staff", 110, 51, 53, 30, 78, 120, 0, 50, 16, 0, 0, 2, 0, 0, 0, 0, 0, 0);
@@ -330,11 +330,8 @@ internal class Weapons : InitializerBase
             item.BasePowerUpAttributes.Add(maxDamagePowerUp);
         }
 
-        if (attackSpeed > 0)
-        {
-            var speedPowerUp = this.CreateItemBasePowerUpDefinition(Stats.AttackSpeed, attackSpeed, AggregateType.AddRaw);
-            item.BasePowerUpAttributes.Add(speedPowerUp);
-        }
+        var speedPowerUp = this.CreateItemBasePowerUpDefinition(Stats.AttackSpeed, attackSpeed, AggregateType.AddRaw);
+        item.BasePowerUpAttributes.Add(speedPowerUp);
 
         this.CreateItemRequirementIfNeeded(item, Stats.Level, levelRequirement);
         this.CreateItemRequirementIfNeeded(item, Stats.TotalStrengthRequirementValue, strengthRequirement);

@@ -22,6 +22,16 @@ using MUnique.OpenMU.PlugIns;
 [Guid("58740F26-6496-4CCA-8C90-C4749E09DDB2")]
 public class FixWeaponRisePercentagePlugInSeason6 : FixWeaponRisePercentagePlugInBase
 {
+    /// <summary>
+    /// The plug in name.
+    /// </summary>
+    private new const string PlugInName = "Fix Weapon Rise Percentage and Several Wing Options";
+
+    /// <summary>
+    /// The plug in description.
+    /// </summary>
+    private new const string PlugInDescription = "This update fixes weapons (staff, stick, book, scepter) rise percentage; Summoner wings wizardry/curse options; and Wing of Dimension (inc/dec), Cape of Overrule (inc/dec), Cape of Emperor (dec) damage rates.";
+
     /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
@@ -75,7 +85,7 @@ public class FixWeaponRisePercentagePlugInSeason6 : FixWeaponRisePercentagePlugI
 
         // Fix Group 5 weapons (Skull Staff, sticks, and books)
         var weaponsG5 = gameConfiguration.Items.Where(i => i.Group == 5);
-        var summonerWeapons = weaponsG5.Where(i => i.PossibleItemOptions.Contains(gameConfiguration.ItemOptions.First(io => io.Name == ExcellentOptions.CurseAttackOptionsName))); // Skull Staff included
+        var summonerWeapons = weaponsG5.Where(i => i.PossibleItemOptions.Contains(gameConfiguration.ItemOptions.First(io => io.Name == ExcellentOptions.CurseAttackOptionsName))); // Skull Staff included at this point
         var staffEvenTable = gameConfiguration.ItemLevelBonusTables.Single(bt => bt.Name == "Staff Rise (even)");
         var staffOddTable = gameConfiguration.ItemLevelBonusTables.Single(bt => bt.Name == "Staff Rise (odd)");
 

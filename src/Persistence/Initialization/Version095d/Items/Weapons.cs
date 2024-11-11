@@ -26,11 +26,13 @@ internal class Weapons : InitializerBase
     /// </summary>
     private static readonly float[] DamageIncreaseByLevel = { 0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 31, 36 };
 
-    private static readonly float[] StaffRiseIncreaseByLevel = { 0, 3, 7, 10, 14, 17, 21, 24, 28, 31, 35, 40 };
+    private static readonly float[] StaffRiseIncreaseByLevelEven = { 0, 3, 7, 10, 14, 17, 21, 24, 28, 31, 35, 40, 45, 50, 56, 63 }; // Staff with even magic power
+    private static readonly float[] StaffRiseIncreaseByLevelOdd = { 0, 4, 7, 11, 14, 18, 21, 25, 28, 32, 36, 40, 45, 51, 57, 63 }; // Staff with odd magic power
 
     private ItemLevelBonusTable? _weaponDamageIncreaseTable;
 
-    private ItemLevelBonusTable? _staffRiseTable;
+    private ItemLevelBonusTable? _staffRiseTableEven;
+    private ItemLevelBonusTable? _staffRiseTableOdd;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Weapons" /> class.
@@ -81,7 +83,8 @@ internal class Weapons : InitializerBase
     public override void Initialize()
     {
         this._weaponDamageIncreaseTable = this.CreateItemBonusTable(DamageIncreaseByLevel, "Damage Increase (Weapons)", "The damage increase by weapon level. It increases by 3 per level, and 1 more after level 10.");
-        this._staffRiseTable = this.CreateItemBonusTable(StaffRiseIncreaseByLevel, "Staff Rise", "The staff rise bonus per item level.");
+        this._staffRiseTableEven = this.CreateItemBonusTable(StaffRiseIncreaseByLevelEven, "Staff Rise (even)", "The staff rise bonus per item level for even magic power staves.");
+        this._staffRiseTableOdd = this.CreateItemBonusTable(StaffRiseIncreaseByLevelOdd, "Staff Rise (odd)", "The staff rise bonus per item level for odd magic power staves.");
 
         this.CreateWeapon(0, 0, 0, 0, 1, 2, true, "Kris", 6, 6, 11, 50, 20, 0, 0, 40, 40, 0, 0, 1, 1, 1);
         this.CreateWeapon(0, 1, 0, 0, 1, 3, true, "Short Sword", 3, 3, 7, 20, 22, 0, 0, 60, 0, 0, 0, 1, 1, 1);
@@ -303,7 +306,7 @@ internal class Weapons : InitializerBase
             item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == ExcellentOptions.WizardryAttackOptionsName));
 
             var staffRisePowerUp = this.CreateItemBasePowerUpDefinition(Stats.StaffRise, magicPower / 2.0f, AggregateType.AddRaw);
-            staffRisePowerUp.BonusPerLevelTable = this._staffRiseTable;
+            staffRisePowerUp.BonusPerLevelTable = magicPower % 2 == 0 ? this._staffRiseTableEven : this._staffRiseTableOdd;
             item.BasePowerUpAttributes.Add(staffRisePowerUp);
         }
 

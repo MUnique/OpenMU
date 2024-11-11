@@ -10,19 +10,19 @@ using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Persistence.Initialization.Items;
 
 /// <summary>
-/// This update fixes weapons (staff, stick, book, scepter) rise percentage; Summoner wings wizardry/curse options; and Wing of Dimension (inc/dec), Cape of Overrule (inc/dec), Cape of Emperor (dec) damage rates.
+/// This update fixes weapons (staff) rise percentage.
 /// </summary>
 public abstract class FixWeaponRisePercentagePlugInBase : UpdatePlugInBase
 {
     /// <summary>
     /// The plug in name.
     /// </summary>
-    internal const string PlugInName = "Fix Weapon Rise Percentage and Several Wing Options";
+    internal const string PlugInName = "Fix Weapon Rise Percentage";
 
     /// <summary>
     /// The plug in description.
     /// </summary>
-    internal const string PlugInDescription = "This update fixes weapons (staff, stick, book, scepter) rise percentage; Summoner wings wizardry/curse options; and Wing of Dimension (inc/dec), Cape of Overrule (inc/dec), Cape of Emperor (dec) damage rates.";
+    internal const string PlugInDescription = "This update fixes weapons (staff) rise percentage";
 
     /// <inheritdoc />
     public override string Name => PlugInName;
@@ -34,7 +34,7 @@ public abstract class FixWeaponRisePercentagePlugInBase : UpdatePlugInBase
     public override bool IsMandatory => true;
 
     /// <inheritdoc />
-    public override DateTime CreatedAt => new(2024, 11, 7, 16, 0, 0, DateTimeKind.Utc);
+    public override DateTime CreatedAt => new(2024, 11, 11, 16, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
@@ -64,7 +64,7 @@ public abstract class FixWeaponRisePercentagePlugInBase : UpdatePlugInBase
             }
         }
 
-        // Fix Group 5 weapons (staves - Skull Staff not included)
+        // Fix Group 5 weapons (staves)
         var staves = gameConfiguration.Items.Where(i => i.Group == (int)ItemGroups.Staff && i.BasePowerUpAttributes.Any(pua => pua.TargetAttribute == Stats.StaffRise));
         foreach (var staff in staves)
         {
