@@ -51,9 +51,12 @@ public class HarmonyOptions : InitializerBase
         this.CreateDefenseOptions();
         this.CreatePhysicalAttackOptions();
         this.CreateWizardryAttackOptions();
-        this.CreateCurseAttackOptions();
+
+        // this.CreateCurseAttackOptions();
     }
 
+    [Obsolete(@"There are no curse attack harmony options until Season 16 (JoH system renewal). Until then, curse spell books had wizardry attack options.
+        Reference: https://muonline.webzen.com/en/gameinfo/guide/detail/117")]
     private void CreateCurseAttackOptions()
     {
         var definition = this.Context.CreateNew<ItemOptionDefinition>();

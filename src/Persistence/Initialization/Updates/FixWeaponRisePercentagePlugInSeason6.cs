@@ -16,7 +16,7 @@ using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// This update fixes weapons (staff, stick, book, scepter) rise percentage increase; Summoner wings wizardry/curse options; and Wing of Dimension (inc/dec), Cape of Overrule (inc/dec), Cape of Emperor (dec) damage rates..
+/// This update fixes weapons (staff, stick, book, scepter) rise percentage increase; Summoner weapons and wings wizardry/curse options; and Wing of Dimension (inc/dec), Cape of Overrule (inc/dec), Cape of Emperor (dec) damage rates..
 /// </summary>
 [PlugIn(PlugInName, PlugInDescription)]
 [Guid("58740F26-6496-4CCA-8C90-C4749E09DDB2")]
@@ -25,12 +25,12 @@ public class FixWeaponRisePercentagePlugInSeason6 : FixWeaponRisePercentagePlugI
     /// <summary>
     /// The plug in name.
     /// </summary>
-    private new const string PlugInName = "Fix Weapon Rise Percentage and Several Wing Options";
+    private new const string PlugInName = "Fix Weapon Rise Percentage, Summoner Items Wizardry/Curse Options, and Several 3rd Level Wing Damage Rates";
 
     /// <summary>
     /// The plug in description.
     /// </summary>
-    private new const string PlugInDescription = "This update fixes weapons (staff, stick, book, scepter) rise percentage; Summoner wings wizardry/curse options; and Wing of Dimension (inc/dec), Cape of Overrule (inc/dec), Cape of Emperor (dec) damage rates.";
+    private new const string PlugInDescription = "This update fixes weapons (staff, stick, book, scepter) rise percentage; Summoner weapons and wings wizardry/curse options; and Wing of Dimension (inc/dec), Cape of Overrule (inc/dec), Cape of Emperor (dec) damage rates.";
 
     /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
