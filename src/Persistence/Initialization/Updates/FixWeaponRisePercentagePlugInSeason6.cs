@@ -30,7 +30,13 @@ public class FixWeaponRisePercentagePlugInSeason6 : FixWeaponRisePercentagePlugI
     /// <summary>
     /// The plug in description.
     /// </summary>
-    private new const string PlugInDescription = "This update fixes weapons (staff, stick, book, scepter) rise percentage; Summoner weapons and wings wizardry/curse options; and Wing of Dimension (inc/dec), Cape of Overrule (inc/dec), Cape of Emperor (dec) damage rates.";
+    private new const string PlugInDescription = "This update fixes weapons (staff, stick, book, scepter) rise percentage; Summoner weapons and wings wizardry/curse options; and Wing of Dimension (inc/dec), Cape of Overrule (inc/dec), Cape of Emperor (dec) damage rates. Also includes fixes for Divine Staff of Archangel and Eternal Wing Stick.";
+
+    /// <inheritdoc />
+    public override string Name => PlugInName;
+
+    /// <inheritdoc />
+    public override string Description => PlugInDescription;
 
     /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
@@ -83,7 +89,7 @@ public class FixWeaponRisePercentagePlugInSeason6 : FixWeaponRisePercentagePlugI
             }
         }
 
-        // Fix Group 5 weapons (Skull Staff, sticks, and books)
+        // Fix Group 5 weapons (Skull & Divine Staves, sticks, and books)
         var weaponsG5 = gameConfiguration.Items.Where(i => i.Group == 5);
         var summonerWeapons = weaponsG5.Where(i => i.PossibleItemOptions.Contains(gameConfiguration.ItemOptions.First(io => io.Name == ExcellentOptions.CurseAttackOptionsName))); // Skull Staff included at this point
         var staffEvenTable = gameConfiguration.ItemLevelBonusTables.Single(bt => bt.Name == "Staff Rise (even)");
@@ -104,6 +110,31 @@ public class FixWeaponRisePercentagePlugInSeason6 : FixWeaponRisePercentagePlugI
             powerUpDefinition.AggregateType = AggregateType.AddRaw;
             powerUpDefinition.BonusPerLevelTable = staffEvenTable;
             skullStaff.BasePowerUpAttributes.Add(powerUpDefinition);
+        }
+
+        // -> fix Divine Staff of Archangel
+        if (weaponsG5.FirstOrDefault(e => e.Number == 10) is { } divineStaff)
+        {
+            var basePowerUps = divineStaff.BasePowerUpAttributes;
+            if (basePowerUps.FirstOrDefault(pu => pu.TargetAttribute == Stats.MinimumPhysBaseDmgByWeapon) is { } minPhysDmgAttr)
+            {
+                minPhysDmgAttr.BaseValue = 153;
+            }
+
+            if (basePowerUps.FirstOrDefault(pu => pu.TargetAttribute == Stats.MaximumPhysBaseDmgByWeapon) is { } maxPhysDmgAttr)
+            {
+                maxPhysDmgAttr.BaseValue = 165;
+            }
+
+            if (basePowerUps.FirstOrDefault(pu => pu.TargetAttribute == Stats.AttackSpeed) is { } attackSpeedAttr)
+            {
+                attackSpeedAttr.BaseValue = 30;
+            }
+
+            if (basePowerUps.FirstOrDefault(pu => pu.TargetAttribute == Stats.StaffRise) is { } staffRiseAttr)
+            {
+                staffRiseAttr.BaseValue = 156 / 2.0f;
+            }
         }
 
         var rhOnlySlotType = gameConfiguration.ItemSlotTypes.First(t => !t.ItemSlots.Contains(0) && t.ItemSlots.Contains(1));
@@ -138,6 +169,33 @@ public class FixWeaponRisePercentagePlugInSeason6 : FixWeaponRisePercentagePlugI
                 powerUpDefinition.AggregateType = AggregateType.AddRaw;
                 powerUpDefinition.BonusPerLevelTable = sticksMagicPower[stick.Number] % 2 == 0 ? staffEvenTable : staffOddTable;
                 stick.BasePowerUpAttributes.Add(powerUpDefinition);
+            }
+        }
+
+        // -> fix Eternal Wing Stick
+        if (weaponsG5.FirstOrDefault(e => e.Number == 20) is { } eternalStick)
+        {
+            eternalStick.DropLevel = 147;
+            var basePowerUps = eternalStick.BasePowerUpAttributes;
+            if (basePowerUps.FirstOrDefault(pu => pu.TargetAttribute == Stats.MinimumPhysBaseDmgByWeapon) is { } minPhysDmgAttr)
+            {
+                minPhysDmgAttr.BaseValue = 66;
+            }
+
+            if (basePowerUps.FirstOrDefault(pu => pu.TargetAttribute == Stats.MaximumPhysBaseDmgByWeapon) is { } maxPhysDmgAttr)
+            {
+                maxPhysDmgAttr.BaseValue = 74;
+            }
+
+            if (basePowerUps.FirstOrDefault(pu => pu.TargetAttribute == Stats.AttackSpeed) is { } attackSpeedAttr)
+            {
+                attackSpeedAttr.BaseValue = 30;
+            }
+
+            if (basePowerUps.FirstOrDefault(pu => pu.TargetAttribute == Stats.StaffRise) is { } staffRiseAttr)
+            {
+                staffRiseAttr.BaseValue = 106 / 2.0f;
+                staffRiseAttr.BonusPerLevelTable = staffEvenTable;
             }
         }
 
