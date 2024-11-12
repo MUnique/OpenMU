@@ -126,7 +126,7 @@ public class FixWeaponRisePercentagePlugInSeason6 : FixWeaponRisePercentagePlugI
                 maxPhysDmgAttr.BaseValue = 165;
             }
 
-            if (basePowerUps.FirstOrDefault(pu => pu.TargetAttribute == Stats.AttackSpeed) is { } attackSpeedAttr)
+            if (basePowerUps.FirstOrDefault(pu => pu.TargetAttribute == Stats.AttackSpeedByWeapon) is { } attackSpeedAttr)
             {
                 attackSpeedAttr.BaseValue = 30;
             }
@@ -187,7 +187,7 @@ public class FixWeaponRisePercentagePlugInSeason6 : FixWeaponRisePercentagePlugI
                 maxPhysDmgAttr.BaseValue = 74;
             }
 
-            if (basePowerUps.FirstOrDefault(pu => pu.TargetAttribute == Stats.AttackSpeed) is { } attackSpeedAttr)
+            if (basePowerUps.FirstOrDefault(pu => pu.TargetAttribute == Stats.AttackSpeedByWeapon) is { } attackSpeedAttr)
             {
                 attackSpeedAttr.BaseValue = 30;
             }
