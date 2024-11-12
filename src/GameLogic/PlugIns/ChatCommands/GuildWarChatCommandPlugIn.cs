@@ -19,7 +19,7 @@ public class GuildWarChatCommandPlugIn : ChatCommandPlugInBase<GuildWarChatComma
 {
     private const string Command = "/war";
 
-    private readonly GuildWarRequestAction _action = new ();
+    private readonly GuildWarRequestAction _action = new();
 
     /// <inheritdoc />
     public override string Key => Command;

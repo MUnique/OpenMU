@@ -18,7 +18,7 @@ using MUnique.OpenMU.PlugIns;
 [BelongsToGroup(CharacterGroupHandlerPlugIn.GroupKey)]
 internal class CharacterKeyConfigurationPacketHandlerPlugIn : ISubPacketHandlerPlugIn
 {
-    private readonly SaveKeyConfigurationAction _saveKeyConfigurationAction = new ();
+    private readonly SaveKeyConfigurationAction _saveKeyConfigurationAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;

@@ -3168,28 +3168,6 @@
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>26</Code>
-      <SubCode>FF</SubCode>
-      <Name>CurrentHealthAndShieldExtended</Name>
-      <Length>12</Length>
-      <Direction>ServerToClient</Direction>
-      <SentWhen>Periodically, or if the current health or shield changed on the server side, e.g. by hits.</SentWhen>
-      <CausedReaction>The health and shield bar is updated on the game client user interface.</CausedReaction>
-      <Fields>
-        <Field>
-          <Index>4</Index>
-          <Type>IntegerLittleEndian</Type>
-          <Name>Health</Name>
-        </Field>
-        <Field>
-          <Index>8</Index>
-          <Type>IntegerLittleEndian</Type>
-          <Name>Shield</Name>
-        </Field>
-      </Fields>
-    </Packet>
-    <Packet>
-      <HeaderType>C1HeaderWithSubCode</HeaderType>
-      <Code>26</Code>
       <SubCode>FE</SubCode>
       <Name>MaximumHealthAndShield</Name>
       <Length>9</Length>
@@ -3212,12 +3190,12 @@
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>26</Code>
-      <SubCode>FE</SubCode>
-      <Name>MaximumHealthAndShieldExtended</Name>
-      <Length>12</Length>
+      <SubCode>FF</SubCode>
+      <Name>CurrentStatsExtended</Name>
+      <Length>24</Length>
       <Direction>ServerToClient</Direction>
-      <SentWhen>When the maximum health changed, e.g. by adding stat points or changed items.</SentWhen>
-      <CausedReaction>The health and shield bar is updated on the game client user interface.</CausedReaction>
+      <SentWhen>Periodically, or if the current stats, like health, shield, mana or attack speed changed on the server side, e.g. by hits.</SentWhen>
+      <CausedReaction>The values are updated on the game client user interface.</CausedReaction>
       <Fields>
         <Field>
           <Index>4</Index>
@@ -3228,6 +3206,58 @@
           <Index>8</Index>
           <Type>IntegerLittleEndian</Type>
           <Name>Shield</Name>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Mana</Name>
+        </Field>
+        <Field>
+          <Index>16</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Ability</Name>
+        </Field>
+        <Field>
+          <Index>20</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>AttackSpeed</Name>
+        </Field>
+        <Field>
+          <Index>22</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MagicSpeed</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>26</Code>
+      <SubCode>FE</SubCode>
+      <Name>MaximumStatsExtended</Name>
+      <Length>20</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>When the maximum stats, like health, shield, mana or attack speed changed on the server side, e.g. by adding stat points or changed items.</SentWhen>
+      <CausedReaction>The values are updated on the game client user interface.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Health</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Shield</Name>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Mana</Name>
+        </Field>
+        <Field>
+          <Index>16</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Ability</Name>
         </Field>
       </Fields>
     </Packet>
@@ -3300,28 +3330,6 @@
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>27</Code>
-      <SubCode>FF</SubCode>
-      <Name>CurrentManaAndAbilityExtended</Name>
-      <Length>12</Length>
-      <Direction>ServerToClient</Direction>
-      <SentWhen>The currently available mana or ability has changed, e.g. by using a skill.</SentWhen>
-      <CausedReaction>The mana and ability bar is updated on the game client user interface.</CausedReaction>
-      <Fields>
-        <Field>
-          <Index>4</Index>
-          <Type>IntegerLittleEndian</Type>
-          <Name>Mana</Name>
-        </Field>
-        <Field>
-          <Index>8</Index>
-          <Type>IntegerLittleEndian</Type>
-          <Name>Ability</Name>
-        </Field>
-      </Fields>
-    </Packet>
-    <Packet>
-      <HeaderType>C1HeaderWithSubCode</HeaderType>
-      <Code>27</Code>
       <SubCode>FE</SubCode>
       <Name>MaximumManaAndAbility</Name>
       <Length>8</Length>
@@ -3337,28 +3345,6 @@
         <Field>
           <Index>6</Index>
           <Type>ShortBigEndian</Type>
-          <Name>Ability</Name>
-        </Field>
-      </Fields>
-    </Packet>
-    <Packet>
-      <HeaderType>C1HeaderWithSubCode</HeaderType>
-      <Code>27</Code>
-      <SubCode>FE</SubCode>
-      <Name>MaximumManaAndAbilityExtended</Name>
-      <Length>12</Length>
-      <Direction>ServerToClient</Direction>
-      <SentWhen>The maximum available mana or ability has changed, e.g. by adding stat points.</SentWhen>
-      <CausedReaction>The mana and ability bar is updated on the game client user interface.</CausedReaction>
-      <Fields>
-        <Field>
-          <Index>4</Index>
-          <Type>IntegerLittleEndian</Type>
-          <Name>Mana</Name>
-        </Field>
-        <Field>
-          <Index>8</Index>
-          <Type>IntegerLittleEndian</Type>
           <Name>Ability</Name>
         </Field>
       </Fields>
@@ -3403,7 +3389,7 @@
         </Field>
         <Field>
           <Index>4</Index>
-          <Type>ShortBigEndian</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>EffectTimeInSeconds</Name>
         </Field>
       </Fields>

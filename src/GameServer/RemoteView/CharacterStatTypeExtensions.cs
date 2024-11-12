@@ -13,7 +13,7 @@ using MUnique.OpenMU.Network.Packets;
 /// </summary>
 public static class CharacterStatTypeExtensions
 {
-    private static readonly Dictionary<AttributeDefinition, CharacterStatAttribute> AttributesToStatTypes = new ()
+    private static readonly Dictionary<AttributeDefinition, CharacterStatAttribute> AttributesToStatTypes = new()
     {
         { Stats.BaseAgility, CharacterStatAttribute.Agility },
         { Stats.BaseEnergy, CharacterStatAttribute.Energy },
@@ -22,7 +22,7 @@ public static class CharacterStatTypeExtensions
         { Stats.BaseLeadership, CharacterStatAttribute.Leadership },
     };
 
-    private static readonly Dictionary<CharacterStatAttribute, AttributeDefinition> StatTypesToAttributes = new ()
+    private static readonly Dictionary<CharacterStatAttribute, AttributeDefinition> StatTypesToAttributes = new()
     {
         { CharacterStatAttribute.Agility, Stats.BaseAgility },
         { CharacterStatAttribute.Energy, Stats.BaseEnergy },

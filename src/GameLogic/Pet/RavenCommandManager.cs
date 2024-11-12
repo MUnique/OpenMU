@@ -62,7 +62,7 @@ public class RavenCommandManager : Disposable, IPetCommandManager
 
         this._currentBehaviour = newBehaviour;
 
-        await this._owner.InvokeViewPlugInAsync<IPetBehaviourChangedViewPlugIn>(p => p.PetBehaviourChanged(this._pet, this._currentBehaviour, target)).ConfigureAwait(false);
+        await this._owner.InvokeViewPlugInAsync<IPetBehaviourChangedViewPlugIn>(p => p.PetBehaviourChangedAsync(this._pet, this._currentBehaviour, target)).ConfigureAwait(false);
         if (newBehaviour == PetBehaviour.Idle)
         {
             return;
@@ -109,7 +109,7 @@ public class RavenCommandManager : Disposable, IPetCommandManager
         var attackType = Rand.NextRandomBool(0.3) ? PetAttackType.RangeAttack : PetAttackType.SingleTarget;
 
         await this._owner.ForEachWorldObserverAsync<IPetAttackViewPlugIn>(
-            p => p.ShowPetAttackAnimation(this._owner, this._pet, target, attackType),
+            p => p.ShowPetAttackAnimationAsync(this._owner, this._pet, target, attackType),
             true)
             .ConfigureAwait(false);
 
@@ -148,7 +148,7 @@ public class RavenCommandManager : Disposable, IPetCommandManager
             {
                 var target = this._targetBuffer[i % this._targetBuffer.Count];
                 await this._owner.ForEachWorldObserverAsync<IPetAttackViewPlugIn>(
-                        p => p.ShowPetAttackAnimation(this._owner, this._pet, target, PetAttackType.RangeAttack),
+                        p => p.ShowPetAttackAnimationAsync(this._owner, this._pet, target, PetAttackType.RangeAttack),
                         true)
                     .ConfigureAwait(false);
 
@@ -189,7 +189,7 @@ public class RavenCommandManager : Disposable, IPetCommandManager
             }
 
             this._currentBehaviour = PetBehaviour.Idle;
-            await this._owner.InvokeViewPlugInAsync<IPetBehaviourChangedViewPlugIn>(p => p.PetBehaviourChanged(this._pet, this._currentBehaviour, null)).ConfigureAwait(false);
+            await this._owner.InvokeViewPlugInAsync<IPetBehaviourChangedViewPlugIn>(p => p.PetBehaviourChangedAsync(this._pet, this._currentBehaviour, null)).ConfigureAwait(false);
         }
         catch (OperationCanceledException)
         {
@@ -292,7 +292,7 @@ public class RavenCommandManager : Disposable, IPetCommandManager
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private bool IsValidTarget([NotNullWhen(true)] IAttackable? target)
     {
-        return target is not null 
+        return target is not null
                && target is not Monster { Definition.ObjectKind: NpcObjectKind.Guard }
                && target.IsActive()
                && target.IsInRange(this._owner.Position, AttackRange);

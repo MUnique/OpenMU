@@ -4,9 +4,9 @@
 
 namespace MUnique.OpenMU.GameLogic.NPC;
 
-using MUnique.OpenMU.Pathfinding;
 using System.Diagnostics;
 using System.Threading;
+using MUnique.OpenMU.Pathfinding;
 
 /// <summary>
 /// An abstract trap AI.
@@ -15,14 +15,6 @@ public abstract class TrapIntelligenceBase : INpcIntelligence, IDisposable
 {
     private Timer? _aiTimer;
     private Trap? _trap;
-
-    /// <inheritdoc />
-    public bool CanWalkOnSafezone => false;
-
-    /// <summary>
-    /// CanWalkOn?
-    /// </summary>
-    public virtual bool CanWalkOn(Point target) => false;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TrapIntelligenceBase"/> class.
@@ -49,6 +41,9 @@ public abstract class TrapIntelligenceBase : INpcIntelligence, IDisposable
         set => this.Trap = (Trap)value;
     }
 
+    /// <inheritdoc />
+    public bool CanWalkOnSafezone => false;
+
     /// <summary>
     /// Gets the map.
     /// </summary>
@@ -70,6 +65,12 @@ public abstract class TrapIntelligenceBase : INpcIntelligence, IDisposable
             return tempObservers.OfType<IAttackable>();
         }
     }
+
+    /// <summary>
+    /// If Trap can walk on target.
+    /// </summary>
+    /// <param name="target">The target.</param>
+    public virtual bool CanWalkOn(Point target) => false;
 
     /// <inheritdoc/>
     public void RegisterHit(IAttacker attacker)

@@ -18,7 +18,7 @@ using MUnique.OpenMU.PlugIns;
 [BelongsToGroup(CharacterGroupHandlerPlugIn.GroupKey)]
 internal class CharacterAddMasterPointPacketHandlerPlugIn : ISubPacketHandlerPlugIn
 {
-    private readonly AddMasterPointAction _addMasterPointAction = new ();
+    private readonly AddMasterPointAction _addMasterPointAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;

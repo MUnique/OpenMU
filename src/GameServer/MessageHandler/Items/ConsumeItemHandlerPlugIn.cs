@@ -19,7 +19,7 @@ using MUnique.OpenMU.PlugIns;
 [MinimumClient(5, 0, ClientLanguage.Invariant)]
 internal class ConsumeItemHandlerPlugIn : IPacketHandlerPlugIn
 {
-    private readonly ItemConsumeAction _consumeAction = new ();
+    private readonly ItemConsumeAction _consumeAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;

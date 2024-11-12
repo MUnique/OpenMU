@@ -19,7 +19,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("A03821B8-2A8E-4A1D-A45D-C92C7621DC8A")]
 internal class AreaSkillAttackHandlerPlugIn075 : IPacketHandlerPlugIn
 {
-    private readonly AreaSkillAttackAction _attackAction = new ();
+    private readonly AreaSkillAttackAction _attackAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;

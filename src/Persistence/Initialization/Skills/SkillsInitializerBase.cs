@@ -103,6 +103,58 @@ internal abstract class SkillsInitializerBase : InitializerBase
         skill.SetGuid(skill.Number);
     }
 
+    /// <summary>
+    /// Adds the area skill settings for the specified skill.
+    /// </summary>
+    /// <param name="skillNumber">The skill number.</param>
+    /// <param name="useFrustumFilter">If set to <c>true</c>, the skill should use a frustum filter.</param>
+    /// <param name="frustumStartWidth">Start width of the frustum.</param>
+    /// <param name="frustumEndWidth">End width of the frustum.</param>
+    /// <param name="frustumDistance">The frustum distance.</param>
+    /// <param name="useDeferredHits">If set to <c>true</c>, the skill should use deferred hits.</param>
+    /// <param name="delayPerOneDistance">The delay per one distance.</param>
+    /// <param name="delayBetweenHits">The delay between hits.</param>
+    /// <param name="minimumHitsPerTarget">The minimum hits per target.</param>
+    /// <param name="maximumHitsPerTarget">The maximum hits per target.</param>
+    /// <param name="maximumHitsPerAttack">The maximum hits per attack.</param>
+    /// <param name="hitChancePerDistanceMultiplier">The hit chance per distance multiplier.</param>
+    /// <param name="useTargetAreaFilter">If set to <c>true</c>, the skill should use a target area filter.</param>
+    /// <param name="targetAreaDiameter">The target area diameter.</param>
+    protected void AddAreaSkillSettings(
+        SkillNumber skillNumber,
+        bool useFrustumFilter,
+        float frustumStartWidth,
+        float frustumEndWidth,
+        float frustumDistance,
+        bool useDeferredHits = false,
+        TimeSpan delayPerOneDistance = default,
+        TimeSpan delayBetweenHits = default,
+        int minimumHitsPerTarget = 1,
+        int maximumHitsPerTarget = 1,
+        int maximumHitsPerAttack = default,
+        float hitChancePerDistanceMultiplier = 1.0f,
+        bool useTargetAreaFilter = false,
+        float targetAreaDiameter = default)
+    {
+        var skill = this.GameConfiguration.Skills.First(s => s.Number == (short)skillNumber);
+        var areaSkillSettings = this.Context.CreateNew<AreaSkillSettings>();
+        skill.AreaSkillSettings = areaSkillSettings;
+
+        areaSkillSettings.UseFrustumFilter = useFrustumFilter;
+        areaSkillSettings.FrustumStartWidth = frustumStartWidth;
+        areaSkillSettings.FrustumEndWidth = frustumEndWidth;
+        areaSkillSettings.FrustumDistance = frustumDistance;
+        areaSkillSettings.UseTargetAreaFilter = useTargetAreaFilter;
+        areaSkillSettings.TargetAreaDiameter = targetAreaDiameter;
+        areaSkillSettings.UseDeferredHits = useDeferredHits;
+        areaSkillSettings.DelayPerOneDistance = delayPerOneDistance;
+        areaSkillSettings.DelayBetweenHits = delayBetweenHits;
+        areaSkillSettings.MinimumNumberOfHitsPerTarget = minimumHitsPerTarget;
+        areaSkillSettings.MaximumNumberOfHitsPerTarget = maximumHitsPerTarget;
+        areaSkillSettings.MaximumNumberOfHitsPerAttack = maximumHitsPerAttack;
+        areaSkillSettings.HitChancePerDistanceMultiplier = hitChancePerDistanceMultiplier;
+    }
+
     private void ApplyElementalModifier(ElementalType elementalModifier, Skill skill)
     {
         if ((SkillNumber)skill.Number is SkillNumber.IceArrow or SkillNumber.IceArrowStrengthener)

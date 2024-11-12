@@ -190,6 +190,5 @@ public class SkillHitValidator
         }
     }
 
-
     private record struct HitEntry(ushort Skill, DateTime TimeStamp, bool IsAnimation, int HitCount);
 }

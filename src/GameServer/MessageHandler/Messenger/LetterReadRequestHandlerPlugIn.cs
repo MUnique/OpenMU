@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("056ffd3b-567b-4787-9d07-2c9d8a5a7175")]
 internal class LetterReadRequestHandlerPlugIn : IPacketHandlerPlugIn
 {
-    private readonly LetterReadRequestAction _readAction = new ();
+    private readonly LetterReadRequestAction _readAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;

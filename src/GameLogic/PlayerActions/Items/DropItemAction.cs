@@ -4,9 +4,9 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Items;
 
+using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.Pathfinding;
-using MUnique.OpenMU.GameLogic.PlugIns;
 using static MUnique.OpenMU.GameLogic.PlugIns.IItemDropPlugIn;
 
 /// <summary>

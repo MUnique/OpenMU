@@ -16,7 +16,7 @@ The player is shown in a red color and has increased attack speed.
 | 1 | 1 |    Byte   |   6   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0x29  | Packet header - packet type identifier |
 | 3 | 1 | ConsumedItemType |  | ItemType |
-| 4 | 2 | ShortBigEndian |  | EffectTimeInSeconds |
+| 4 | 2 | ShortLittleEndian |  | EffectTimeInSeconds |
 
 ### ConsumedItemType Enum
 

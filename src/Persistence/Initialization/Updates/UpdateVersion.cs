@@ -186,17 +186,32 @@ public enum UpdateVersion
     AddHarmonyOptionWeightsSeason6 = 35,
 
     /// <summary>
+    /// The version of the <see cref="FixDuelArenaSafezoneMapUpdate"/>.
+    /// </summary>
+    FixDuelArenaSafezoneMap = 36,
+
+    /// <summary>
+    /// The version of the <see cref="FixAttackSpeedCalculationUpdate"/>.
+    /// </summary>
+    FixAttackSpeedCalculation = 37,
+
+    /// <summary>
+    /// The version of the <see cref="AddAreaSkillSettingsUpdatePlugIn"/>.
+    /// </summary>
+    AddAreaSkillSettings = 38,
+
+    /// <summary>
     /// The version of the <see cref="FixWingsDmgRatesUpdatePlugIn075"/>.
     /// </summary>
-    FixWeaponRisePercentage075 = 36,
+    FixWeaponRisePercentage075 = 39,
 
     /// <summary>
     /// The version of the <see cref="FixWingsDmgRatesUpdatePlugIn095D"/>.
     /// </summary>
-    FixWeaponRisePercentage095d = 37,
+    FixWeaponRisePercentage095d = 40,
 
     /// <summary>
     /// The version of the <see cref="FixWingsDmgRatesUpdatePlugInSeason6"/>.
     /// </summary>
-    FixWeaponRisePercentageSeason6 = 38,
+    FixWeaponRisePercentageSeason6 = 41,
 }

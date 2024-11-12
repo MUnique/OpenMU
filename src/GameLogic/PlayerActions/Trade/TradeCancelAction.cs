@@ -15,7 +15,7 @@ public class TradeCancelAction : BaseTradeAction
     /// Cancels the trade.
     /// </summary>
     /// <param name="trader">The trader.</param>
-    public new async ValueTask CancelTradeAsync(ITrader trader)
+    public async ValueTask CancelTradeAsync(ITrader trader)
     {
         using var loggerScope = (trader as Player)?.Logger.BeginScope(this.GetType());
         var tradingPartner = trader.TradingPartner;

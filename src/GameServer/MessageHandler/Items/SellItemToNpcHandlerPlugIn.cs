@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("8bbf8737-8731-4975-baa8-e14f77451b85")]
 internal class SellItemToNpcHandlerPlugIn : IPacketHandlerPlugIn
 {
-    private readonly SellItemToNpcAction _sellAction = new ();
+    private readonly SellItemToNpcAction _sellAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;

@@ -23,7 +23,7 @@ public class AddExperienceExtendedPlugIn : IAddExperiencePlugIn
     private readonly RemotePlayer _player;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="AddExperiencePlugIn"/> class.
+    /// Initializes a new instance of the <see cref="AddExperienceExtendedPlugIn"/> class.
     /// </summary>
     /// <param name="player">The player.</param>
     public AddExperienceExtendedPlugIn(RemotePlayer player) => this._player = player;
@@ -63,7 +63,7 @@ public class AddExperienceExtendedPlugIn : IAddExperiencePlugIn
             ExperienceType.MaxLevelReached => ExperienceGainedExtended.AddResult.MaxLevelReached,
             ExperienceType.MaxMasterLevelReached => ExperienceGainedExtended.AddResult.MaxMasterLevelReached,
             ExperienceType.MonsterLevelTooLowForMasterExperience => ExperienceGainedExtended.AddResult.MonsterLevelTooLowForMasterExperience,
-            _ => ExperienceGainedExtended.AddResult.Undefined
+            _ => ExperienceGainedExtended.AddResult.Undefined,
         };
     }
 }

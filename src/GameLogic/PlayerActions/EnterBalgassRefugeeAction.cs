@@ -15,7 +15,7 @@ public class EnterBalgassRefugeeAction : EnterQuestMapAction
     private const short BalgassRefugeeMapNumber = 42;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="EnterBarracksOfBalgassAction"/> class.
+    /// Initializes a new instance of the <see cref="EnterBalgassRefugeeAction"/> class.
     /// </summary>
     public EnterBalgassRefugeeAction()
         : base(

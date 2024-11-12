@@ -1,21 +1,52 @@
-﻿using MUnique.OpenMU.DataModel.Configuration.Items;
+﻿// <copyright file="ItemSerializerHelper.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.GameServer.RemoteView;
+
+using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.Persistence;
 
-namespace MUnique.OpenMU.GameServer.RemoteView;
-
+/// <summary>
+/// A helper class to <see cref="ItemSerializer"/>.
+/// </summary>
 public static class ItemSerializerHelper
 {
+    /// <summary>
+    /// Empty socket.
+    /// </summary>
     internal const byte EmptySocket = 0xFE;
+
+    /// <summary>
+    /// No socket.
+    /// </summary>
     internal const byte NoSocket = 0xFF;
+
+    /// <summary>
+    /// Maximum sockets.
+    /// </summary>
     internal const int MaximumSockets = 5;
+
+    /// <summary>
+    /// Maximum socket options.
+    /// </summary>
     internal const byte MaximumSocketOptions = 50;
 
-    
-
+    /// <summary>
+    /// The Black Fenrir flag.
+    /// </summary>
     private const byte BlackFenrirFlag = 0x01;
+
+    /// <summary>
+    /// The Blue Fenrir flag.
+    /// </summary>
     private const byte BlueFenrirFlag = 0x02;
+
+    /// <summary>
+    /// The Gold Fenrir flag.
+    /// </summary>
     private const byte GoldFenrirFlag = 0x04;
 
     /// <summary>
@@ -29,8 +60,12 @@ public static class ItemSerializerHelper
     /// Their list contains holes, so expect that index 9 doesn't define an option.
     /// </remarks>
     private static readonly byte[] SocketOptionIndexOffsets = { 0, 10, 16, 21, 29, 36 };
-    
 
+    /// <summary>
+    /// Gets the excellent (or wing) option byte for an item.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <returns>The byte.</returns>
     public static byte GetExcellentByte(Item item)
     {
         byte result = 0;
@@ -44,6 +79,11 @@ public static class ItemSerializerHelper
         return result;
     }
 
+    /// <summary>
+    /// Gets the Jewel of Harmony option byte for an item.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <returns>The byte.</returns>
     public static byte GetHarmonyByte(Item item)
     {
         byte result = 0;
@@ -57,6 +97,11 @@ public static class ItemSerializerHelper
         return result;
     }
 
+    /// <summary>
+    /// Gets the socket option byte for an item.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <returns>The byte.</returns>
     public static byte GetSocketBonusByte(Item item)
     {
         if (item.SocketCount == 0)
@@ -73,6 +118,11 @@ public static class ItemSerializerHelper
         return 0xFF;
     }
 
+    /// <summary>
+    /// Sets the socket bytes for an item.
+    /// </summary>
+    /// <param name="target">The target.</param>
+    /// <param name="item">The item.</param>
     public static void SetSocketBytes(Span<byte> target, Item item)
     {
         byte GetSocketByte(int socketSlot)
@@ -97,6 +147,12 @@ public static class ItemSerializerHelper
         }
     }
 
+    /// <summary>
+    /// Reads the Fenrir options for an item.
+    /// </summary>
+    /// <param name="fenrirByte">The fenrir byte.</param>
+    /// <param name="persistenceContext">The persistence context.</param>
+    /// <param name="item">The item.</param>
     public static void ReadFenrirOptions(byte fenrirByte, IContext persistenceContext, Item item)
     {
         if (fenrirByte == 0)
@@ -109,6 +165,12 @@ public static class ItemSerializerHelper
         AddFenrirOptionIfFlagSet(fenrirByte, GoldFenrirFlag, ItemOptionTypes.GoldFenrir, persistenceContext, item);
     }
 
+    /// <summary>
+    /// Reads the sockets for an item.
+    /// </summary>
+    /// <param name="socketBytes">The socket byte.</param>
+    /// <param name="persistenceContext">The persistence context.</param>
+    /// <param name="item">The item.</param>
     public static void ReadSockets(Span<byte> socketBytes, IContext persistenceContext, Item item)
     {
         if (item.Definition!.MaximumSockets == 0)
@@ -154,6 +216,12 @@ public static class ItemSerializerHelper
         item.SocketCount = numberOfSockets;
     }
 
+    /// <summary>
+    /// Reads the socket bonus for an item.
+    /// </summary>
+    /// <param name="socketBonusByte">The socket bonus byte.</param>
+    /// <param name="persistenceContext">The persistence context.</param>
+    /// <param name="item">The item.</param>
     public static void ReadSocketBonus(byte socketBonusByte, IContext persistenceContext, Item item)
     {
         if (socketBonusByte == 0 || socketBonusByte == 0xFF)
@@ -170,13 +238,19 @@ public static class ItemSerializerHelper
         item.ItemOptions.Add(optionLink);
     }
 
+    /// <summary>
+    /// Adds the Jewel of Harmony option to an item.
+    /// </summary>
+    /// <param name="harmonyByte">The harmony option byte.</param>
+    /// <param name="persistenceContext">The persistence context.</param>
+    /// <param name="item">The item.</param>
     public static void AddHarmonyOption(byte harmonyByte, IContext persistenceContext, Item item)
     {
         if (harmonyByte == 0)
         {
             return;
         }
-        
+
         var level = harmonyByte & 0x0F;
         var optionNumber = (harmonyByte & 0xF0) >> 4;
         var harmonyOption = item.Definition!.PossibleItemOptions
@@ -191,7 +265,11 @@ public static class ItemSerializerHelper
         item.ItemOptions.Add(optionLink);
     }
 
-
+    /// <summary>
+    /// Adds the level 380 option to an item.
+    /// </summary>
+    /// <param name="persistenceContext">The persistence context.</param>
+    /// <param name="item">The item.</param>
     public static void AddLevel380Option(IContext persistenceContext, Item item)
     {
         if (!item.Definition!.PossibleItemOptions.Any(o => o.PossibleOptions.Any(i => i.OptionType == ItemOptionTypes.GuardianOption)))
@@ -209,6 +287,11 @@ public static class ItemSerializerHelper
         }
     }
 
+    /// <summary>
+    /// Gets the Fenrir byte from an item.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <returns>The byte.</returns>
     public static byte GetFenrirByte(Item item)
     {
         byte result = 0;
@@ -230,6 +313,12 @@ public static class ItemSerializerHelper
         return result;
     }
 
+    /// <summary>
+    /// Adds the luck option to an item.
+    /// </summary>
+    /// <param name="persistenceContext">The persistence context.</param>
+    /// <param name="item">The item.</param>
+    /// <exception cref="ArgumentException">If the luck option is not part of the item's <see cref="ItemDefinition"/>.</exception>
     public static void AddLuckOption(IContext persistenceContext, Item item)
     {
         var luckOption = item.Definition!.PossibleItemOptions
@@ -241,6 +330,12 @@ public static class ItemSerializerHelper
         item.ItemOptions.Add(optionLink);
     }
 
+    /// <summary>
+    /// Reads the wing option bits of an item.
+    /// </summary>
+    /// <param name="wingBits">The wing bits.</param>
+    /// <param name="persistenceContext">The persistence context.</param>
+    /// <param name="item">The item.</param>
     public static void ReadWingOptionBits(int wingBits, IContext persistenceContext, Item item)
     {
         var wingOptionDefinition = item.Definition!.PossibleItemOptions.First(o =>
@@ -257,6 +352,12 @@ public static class ItemSerializerHelper
         }
     }
 
+    /// <summary>
+    /// Reads the excellent option bits of an item.
+    /// </summary>
+    /// <param name="excellentBits">The excellent bits.</param>
+    /// <param name="persistenceContext">The persistence context.</param>
+    /// <param name="item">The item.</param>
     public static void ReadExcellentOptionBits(int excellentBits, IContext persistenceContext, Item item)
     {
         var excellentOptionDefinition = item.Definition!.PossibleItemOptions.First(o =>
@@ -273,6 +374,14 @@ public static class ItemSerializerHelper
         }
     }
 
+    /// <summary>
+    /// Adds a "normal" option to an item.
+    /// </summary>
+    /// <param name="optionNumber">The option number.</param>
+    /// <param name="optionLevel">The option level.</param>
+    /// <param name="persistenceContext">The persistence context.</param>
+    /// <param name="item">The item.</param>
+    /// <exception cref="ArgumentException">If the "normal" option is not part of the item's <see cref="ItemDefinition"/>.</exception>
     public static void AddNormalOption(int optionNumber, int optionLevel, IContext persistenceContext, Item item)
     {
         if (optionLevel == 0)
@@ -289,6 +398,14 @@ public static class ItemSerializerHelper
         item.ItemOptions.Add(optionLink);
     }
 
+    /// <summary>
+    /// Adds an ancient option to an item.
+    /// </summary>
+    /// <param name="setDiscriminator">The set discriminator number.</param>
+    /// <param name="bonusLevel">The ancient bonus level.</param>
+    /// <param name="persistenceContext">The persistence context.</param>
+    /// <param name="item">The item.</param>
+    /// <exception cref="ArgumentException">If the set discriminator number is ambiguous with regards to <see cref="ItemDefinition.PossibleItemOptions"/>.</exception>
     public static void AddAncientOption(int setDiscriminator, int bonusLevel, IContext persistenceContext, Item item)
     {
         var ancientSets = item.Definition!.PossibleItemSetGroups

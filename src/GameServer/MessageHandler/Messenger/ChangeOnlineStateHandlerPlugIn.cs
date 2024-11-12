@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("ff1d0b4e-4748-4ee0-b68e-f42b700c0f63")]
 internal class ChangeOnlineStateHandlerPlugIn : IPacketHandlerPlugIn
 {
-    private readonly ChangeOnlineStateAction _changeAction = new ();
+    private readonly ChangeOnlineStateAction _changeAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;

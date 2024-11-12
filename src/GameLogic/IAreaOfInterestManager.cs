@@ -4,9 +4,9 @@
 
 namespace MUnique.OpenMU.GameLogic;
 
-using Nito.AsyncEx;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Pathfinding;
+using Nito.AsyncEx;
 
 /// <summary>
 /// A manager of an area of interest.

@@ -24,13 +24,6 @@ public abstract class ComplexPotionConsumeHandlerPlugIn : BaseConsumeHandlerPlug
     }
 
     /// <inheritdoc />
-    protected override bool CheckPreconditions(Player player, Item item)
-    {
-        return base.CheckPreconditions(player, item)
-               && player.PotionCooldownUntil <= DateTime.UtcNow;
-    }
-
-    /// <inheritdoc />
     public override async ValueTask<bool> ConsumeItemAsync(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
     {
         if (await base.ConsumeItemAsync(player, item, targetItem, fruitUsage).ConfigureAwait(false))
@@ -41,5 +34,12 @@ public abstract class ComplexPotionConsumeHandlerPlugIn : BaseConsumeHandlerPlug
         }
 
         return false;
+    }
+
+    /// <inheritdoc />
+    protected override bool CheckPreconditions(Player player, Item item)
+    {
+        return base.CheckPreconditions(player, item)
+               && player.PotionCooldownUntil <= DateTime.UtcNow;
     }
 }

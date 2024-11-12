@@ -18,7 +18,7 @@ using MUnique.OpenMU.PlugIns;
 [BelongsToGroup(QuestGroupHandlerPlugIn.GroupKey)]
 public class QuestSelectRequestHandlerPlugIn : ISubPacketHandlerPlugIn
 {
-    private readonly QuestSelectAction _questSelectAction = new ();
+    private readonly QuestSelectAction _questSelectAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;

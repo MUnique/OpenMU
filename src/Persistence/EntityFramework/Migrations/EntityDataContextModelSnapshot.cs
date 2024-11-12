@@ -115,6 +115,56 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.ToTable("AppearanceData", "data");
                 });
 
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.AreaSkillSettings", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<TimeSpan>("DelayBetweenHits")
+                        .HasColumnType("interval");
+
+                    b.Property<TimeSpan>("DelayPerOneDistance")
+                        .HasColumnType("interval");
+
+                    b.Property<float>("FrustumDistance")
+                        .HasColumnType("real");
+
+                    b.Property<float>("FrustumEndWidth")
+                        .HasColumnType("real");
+
+                    b.Property<float>("FrustumStartWidth")
+                        .HasColumnType("real");
+
+                    b.Property<float>("HitChancePerDistanceMultiplier")
+                        .HasColumnType("real");
+
+                    b.Property<int>("MaximumNumberOfHitsPerAttack")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MaximumNumberOfHitsPerTarget")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MinimumNumberOfHitsPerTarget")
+                        .HasColumnType("integer");
+
+                    b.Property<float>("TargetAreaDiameter")
+                        .HasColumnType("real");
+
+                    b.Property<bool>("UseDeferredHits")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("UseFrustumFilter")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("UseTargetAreaFilter")
+                        .HasColumnType("boolean");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AreaSkillSettings", "config");
+                });
+
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeDefinition", b =>
                 {
                     b.Property<Guid>("Id")
@@ -129,6 +179,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<Guid?>("GameConfigurationId")
                         .HasColumnType("uuid");
+
+                    b.Property<float?>("MaximumValue")
+                        .HasColumnType("real");
 
                     b.HasKey("Id");
 
@@ -3018,6 +3071,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("AreaSkillSettingsId")
+                        .HasColumnType("uuid");
+
                     b.Property<int>("AttackDamage")
                         .HasColumnType("integer");
 
@@ -3065,6 +3121,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AreaSkillSettingsId")
+                        .IsUnique();
 
                     b.HasIndex("ElementalModifierTargetId");
 
@@ -4618,6 +4677,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.Skill", b =>
                 {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.AreaSkillSettings", "RawAreaSkillSettings")
+                        .WithOne()
+                        .HasForeignKey("MUnique.OpenMU.Persistence.EntityFramework.Model.Skill", "AreaSkillSettingsId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeDefinition", "RawElementalModifierTarget")
                         .WithMany()
                         .HasForeignKey("ElementalModifierTargetId");
@@ -4635,6 +4699,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .WithOne()
                         .HasForeignKey("MUnique.OpenMU.Persistence.EntityFramework.Model.Skill", "MasterDefinitionId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("RawAreaSkillSettings");
 
                     b.Navigation("RawElementalModifierTarget");
 

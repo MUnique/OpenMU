@@ -31,7 +31,7 @@ public interface IGameContext
     /// Gets the global experience rate.
     /// </summary>
     float ExperienceRate { get; }
-    
+
     /// <summary>
     /// Gets a value indicating whether PVP is enabled.
     /// </summary>
@@ -103,7 +103,7 @@ public interface IGameContext
     DuelRoomManager DuelRoomManager { get; }
 
     /// <summary>
-    /// Gets the state of the active self defenses.
+    /// Gets the state of the active self defenses. The datetime holds the timestamp when self-defense ends.
     /// </summary>
     ConcurrentDictionary<(Player Attacker, Player Defender), DateTime> SelfDefenseState { get; }
 

@@ -20,7 +20,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("6d10d34d-bd20-4dcf-99eb-569d38ef1c1b")]
 internal class LetterSendHandlerPlugIn : IPacketHandlerPlugIn
 {
-    private readonly LetterSendAction _sendAction = new ();
+    private readonly LetterSendAction _sendAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => true;

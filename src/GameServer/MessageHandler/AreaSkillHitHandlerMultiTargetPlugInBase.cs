@@ -17,7 +17,7 @@ using MUnique.OpenMU.GameLogic.Views.World;
 /// </summary>
 internal class AreaSkillHitHandlerMultiTargetPlugInBase
 {
-    private readonly AreaSkillHitAction _skillHitAction = new ();
+    private readonly AreaSkillHitAction _skillHitAction = new();
 
     /// <summary>
     /// Tries the get skill entry.

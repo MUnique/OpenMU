@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("CDB87F7F-24FC-42E1-B375-9EAAEAAC0F8C")]
 internal class CancelGuildCreationHandlerPlugIn : IPacketHandlerPlugIn
 {
-    private readonly GuildMasterAnswerAction _answerAction = new ();
+    private readonly GuildMasterAnswerAction _answerAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;

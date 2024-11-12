@@ -47,6 +47,7 @@ public static class AttributeSystemExtensions
     /// </summary>
     /// <param name="attributeSystem">The attribute system.</param>
     /// <param name="value">The value.</param>
+    /// <param name="targetDefinition">The attribute.</param>
     /// <returns>The added element.</returns>
     public static IElement CreateElement(this IAttributeSystem attributeSystem, PowerUpDefinitionValue value, AttributeDefinition targetDefinition)
     {
@@ -63,14 +64,13 @@ public static class AttributeSystemExtensions
                     AggregateType = result.AggregateType,
                 })
                 .Cast<IElement>();
-            
+
             if (value.ConstantValue is not null)
             {
                 elements = elements.Concat(value.ConstantValue.GetAsEnumerable());
             }
 
             var composableResult = new ComposableAttribute(targetDefinition, result.AggregateType);
-
 
             elements.ForEach(element => composableResult.AddElement(element));
             return composableResult;

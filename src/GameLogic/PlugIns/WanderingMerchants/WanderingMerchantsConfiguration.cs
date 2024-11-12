@@ -12,12 +12,12 @@ using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 public class WanderingMerchantsConfiguration : PeriodicTaskConfiguration
 {
     /// <summary>
-    /// Gets the minimum duration of the spawn.
+    /// Gets or sets the minimum duration of the spawn.
     /// </summary>
     public TimeSpan MinimumSpawnDuration { get; set; } = TimeSpan.FromMinutes(60);
 
     /// <summary>
-    /// Gets the maximum duration of the spawn.
+    /// Gets or sets the maximum duration of the spawn.
     /// </summary>
     public TimeSpan MaximumSpawnDuration { get; set; } = TimeSpan.FromMinutes(180);
 }

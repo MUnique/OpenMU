@@ -43,11 +43,11 @@ public class PlayerShopBuyRequestResultExtendedPlugIn : IPlayerShopBuyRequestRes
             var itemSerializer = this._player.ItemSerializer;
             var array = new byte[itemSerializer.NeededSpace];
             itemSerializer.SerializeItem(array, item);
-            await connection.SendPlayerShopBuyResultExtendedAsync(seller?.GetId(this._player) ?? ushort.MaxValue, Convert(result), item.ItemSlot, array);
+            await connection.SendPlayerShopBuyResultExtendedAsync(seller?.GetId(this._player) ?? ushort.MaxValue, Convert(result), item.ItemSlot, array).ConfigureAwait(false);
             return;
         }
 
-        await connection.SendPlayerShopBuyResultExtendedAsync(seller?.GetId(this._player) ?? ushort.MaxValue, Convert(result), 0, Array.Empty<byte>());
+        await connection.SendPlayerShopBuyResultExtendedAsync(seller?.GetId(this._player) ?? ushort.MaxValue, Convert(result), 0, Array.Empty<byte>()).ConfigureAwait(false);
     }
 
     private static PlayerShopBuyResultExtended.ResultKind Convert(ItemBuyResult result)
@@ -63,7 +63,7 @@ public class PlayerShopBuyRequestResultExtendedPlugIn : IPlayerShopBuyRequestRes
             ItemBuyResult.LackOfMoney => PlayerShopBuyResultExtended.ResultKind.LackOfMoney,
             ItemBuyResult.MoneyOverflowOrNotEnoughSpace => PlayerShopBuyResultExtended.ResultKind.MoneyOverflowOrNotEnoughSpace,
             ItemBuyResult.ItemBlock => PlayerShopBuyResultExtended.ResultKind.ItemBlock,
-            _ => PlayerShopBuyResultExtended.ResultKind.Undefined
+            _ => PlayerShopBuyResultExtended.ResultKind.Undefined,
         };
     }
 }

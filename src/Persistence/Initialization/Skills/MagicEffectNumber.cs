@@ -290,6 +290,11 @@ internal enum MagicEffectNumber : short
     /// </remarks>
     ShieldSkill = 200,
 
+    /// <summary>
+    /// The alcohol effect number.
+    /// </summary>
+    Alcohol = 201,
+
     #endregion
 
 }

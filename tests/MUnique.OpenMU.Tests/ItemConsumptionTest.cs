@@ -251,7 +251,7 @@ public class ItemConsumptionTest
     }
 
     /// <summary>
-    /// Tests if the consume fails because of the player state.
+    /// Tests if the consumption fails because of the player state.
     /// </summary>
     [Test]
     public async ValueTask FailByWrongPlayerStateAsync()
@@ -266,12 +266,12 @@ public class ItemConsumptionTest
     }
 
     /// <summary>
-    /// Tests if the consume of the item decreases its durability by one.
+    /// Tests if the consumption of the item decreases its durability by one.
     /// </summary>
     [Test]
     public async ValueTask ItemDurabilityDecreaseAsync()
     {
-        var consumeHandler = new AlcoholConsumeHandlerPlugIn();
+        var consumeHandler = new LargeShieldPotionConsumeHandlerPlugIn();
         var player = await this.GetPlayerAsync().ConfigureAwait(false);
         var item = this.GetItem();
         await player.Inventory!.AddItemAsync(ItemSlot, item).ConfigureAwait(false);
@@ -283,13 +283,13 @@ public class ItemConsumptionTest
     }
 
     /// <summary>
-    /// Tests if the consume of the item not causes the removal of the item, when the durability reaches 0.
+    /// Tests if the consumption of the item not causes the removal of the item, when the durability reaches 0.
     /// The removal is handled in the <see cref="ItemConsumeAction"/>.
     /// </summary>
     [Test]
     public async ValueTask ItemRemovalAsync()
     {
-        var consumeHandler = new AlcoholConsumeHandlerPlugIn();
+        var consumeHandler = new LargeShieldPotionConsumeHandlerPlugIn();
         var player = await this.GetPlayerAsync().ConfigureAwait(false);
         var item = this.GetItem();
         await player.Inventory!.AddItemAsync(ItemSlot, item).ConfigureAwait(false);
@@ -300,7 +300,7 @@ public class ItemConsumptionTest
     }
 
     /// <summary>
-    /// Tests if the consume of the alcohol fails when the item has no durability anymore.
+    /// Tests if the consumption of the alcohol fails when the item has no durability anymore.
     /// </summary>
     [Test]
     public async ValueTask DrinkAlcoholFailAsync()
@@ -312,11 +312,11 @@ public class ItemConsumptionTest
         var success = await consumeHandler.ConsumeItemAsync(player, item, null, FruitUsage.Undefined).ConfigureAwait(false);
 
         Assert.That(success, Is.False);
-        Mock.Get(player.ViewPlugIns.GetPlugIn<IDrinkAlcoholPlugIn>()).Verify(view => view!.DrinkAlcoholAsync(), Times.Never);
+        Mock.Get(player.ViewPlugIns.GetPlugIn<IConsumeSpecialItemPlugIn>()).Verify(view => view!.ConsumeSpecialItemAsync(item, 80), Times.Never);
     }
 
     /// <summary>
-    /// Tests if the consume of alcohol works and is forwarded to the player view.
+    /// Tests if the consumption of alcohol works and is forwarded to the player view.
     /// </summary>
     [Test]
     public async ValueTask DrinkAlcoholSuccessAsync()
@@ -324,11 +324,30 @@ public class ItemConsumptionTest
         var consumeHandler = new AlcoholConsumeHandlerPlugIn();
         var player = await this.GetPlayerAsync().ConfigureAwait(false);
         var item = this.GetItem();
+        item.Definition!.ConsumeEffect = new Persistence.BasicModel.MagicEffectDefinition
+        {
+            Duration = new Persistence.BasicModel.PowerUpDefinitionValue
+            {
+                ConstantValue = { Value = 80 }
+            },
+            PowerUpDefinitions =
+            {
+                new Persistence.BasicModel.PowerUpDefinition
+                {
+                    TargetAttribute = Stats.AttackSpeed,
+                    Boost = new Persistence.BasicModel.PowerUpDefinitionValue
+                    {
+                        ConstantValue = { Value = 20 }
+                    }
+                }
+            }
+        };
+
         await player.Inventory!.AddItemAsync(ItemSlot, item).ConfigureAwait(false);
         var success = await consumeHandler.ConsumeItemAsync(player, item, null, FruitUsage.Undefined).ConfigureAwait(false);
 
         Assert.That(success, Is.True);
-        Mock.Get(player.ViewPlugIns.GetPlugIn<IDrinkAlcoholPlugIn>()).Verify(view => view!.DrinkAlcoholAsync(), Times.Once);
+        Mock.Get(player.ViewPlugIns.GetPlugIn<IConsumeSpecialItemPlugIn>()).Verify(view => view!.ConsumeSpecialItemAsync(item, 80), Times.Once);
     }
 
     /// <summary>

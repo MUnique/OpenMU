@@ -5,9 +5,9 @@
 namespace MUnique.OpenMU.GameLogic;
 
 using System.Threading;
-using Nito.AsyncEx;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.Pathfinding;
+using Nito.AsyncEx;
 
 /// <summary>
 /// An item which got dropped on the ground of a map.
@@ -19,9 +19,15 @@ public sealed class DroppedItem : AsyncDisposable, ILocateable
     /// <summary>
     /// Gets the pickup lock. Used to synchronize pick up requests from the players.
     /// </summary>
-    private readonly AsyncLock _pickupLock = new ();
+    private readonly AsyncLock _pickupLock = new();
 
     private readonly DateTime _dropTimestamp = DateTime.UtcNow;
+
+    /// <summary>
+    /// Indicates if the item was persistent (exists on the database) when it was dropped.
+    /// If it wasn't and we clean it up, then we don't need to delete it.
+    /// </summary>
+    private readonly bool _wasItemPersisted;
 
     private Player? _dropper;
 
@@ -30,12 +36,6 @@ public sealed class DroppedItem : AsyncDisposable, ILocateable
     private Timer? _removeTimer;
 
     private bool _availableToPick = true;
-
-    /// <summary>
-    /// Indicates if the item was persistent (exists on the database) when it was dropped.
-    /// If it wasn't and we clean it up, then we don't need to delete it.
-    /// </summary>
-    private readonly bool _wasItemPersisted;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DroppedItem" /> class.

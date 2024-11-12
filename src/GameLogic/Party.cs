@@ -6,11 +6,11 @@ namespace MUnique.OpenMU.GameLogic;
 
 using System.Diagnostics.Metrics;
 using System.Threading;
-using Nito.AsyncEx;
-using Nito.AsyncEx.Synchronous;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Party;
+using Nito.AsyncEx;
+using Nito.AsyncEx.Synchronous;
 
 /// <summary>
 /// The party object. Contains a group of players who can chat with each other, and get information about the health status of their party mates.
@@ -147,7 +147,7 @@ public sealed class Party : Disposable
     /// </returns>
     public async ValueTask<int> DistributeExperienceAfterKillAsync(IAttackable killedObject, IObservable killer)
     {
-        using var _ = await this._distributionLock.LockAsync();
+        using var d = await this._distributionLock.LockAsync();
         try
         {
             return await this.InternalDistributeExperienceAfterKillAsync(killedObject, killer).ConfigureAwait(false);
@@ -166,7 +166,7 @@ public sealed class Party : Disposable
     /// <param name="amount">The amount of money which should be distributed.</param>
     public async ValueTask DistributeMoneyAfterKillAsync(IAttackable killedObject, IPartyMember killer, uint amount)
     {
-        using var _ = await this._distributionLock.LockAsync();
+        using var d = await this._distributionLock.LockAsync();
         try
         {
             this._distributionList.AddRange(this.PartyList.OfType<Player>().Where(p => p.CurrentMap == killer.CurrentMap && !p.IsAtSafezone() && p.Attributes is { }));
@@ -186,7 +186,7 @@ public sealed class Party : Disposable
     /// <returns>The list of <see cref="DropItemGroup"/> which should be considered when generating a drop.</returns>
     public async ValueTask<IList<DropItemGroup>> GetQuestDropItemGroupsAsync(IPartyMember killer)
     {
-        using var _ = await this._distributionLock.LockAsync();
+        using var d = await this._distributionLock.LockAsync();
         try
         {
             using (await killer.ObserverLock.ReaderLockAsync().ConfigureAwait(false))

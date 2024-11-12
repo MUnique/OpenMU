@@ -42,7 +42,6 @@ public class TradeAcceptAction : BaseTradeAction
                     await this.CancelTradeAsync(tradeAccepter).ConfigureAwait(false);
                     await this.CancelTradeAsync(tradePartner).ConfigureAwait(false);
                 }
-                
             }
         }
         else

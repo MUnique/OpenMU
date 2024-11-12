@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("0693e102-0adc-41e4-b0d4-ce22687b6dbb")]
 internal class ChaosMixHandlerPlugIn : IPacketHandlerPlugIn
 {
-    private readonly ItemCraftAction _mixAction = new ();
+    private readonly ItemCraftAction _mixAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;

@@ -57,43 +57,12 @@ public class NewPlayersInScopePlugIn : INewPlayersInScopePlugIn
         }
     }
 
-    private async ValueTask<(IList<Player>? ShopPlayers, IList<Player>? GuildPlayers)> SendCharactersAsync(IEnumerable<Player> newPlayers, bool isSpawned)
-    {
-        IList<Player>? shopPlayers = null;
-        IList<Player>? guildPlayers = null;
-
-        var connection = this.Player.Connection;
-        if (connection is null)
-        {
-            return (shopPlayers, guildPlayers);
-        }
-
-        var newPlayerList = newPlayers.ToList();
-        foreach (var newPlayer in newPlayerList)
-        {
-            if (newPlayer.Attributes?[Stats.TransformationSkin] == 0)
-            {
-                await this.SendCharacterAsync(newPlayer, isSpawned).ConfigureAwait(false);
-            }
-            else
-            {
-                await this.SendTransformedCharacterAsync(newPlayer, isSpawned).ConfigureAwait(false);
-            }
-
-            if (newPlayer.ShopStorage?.StoreOpen ?? false)
-            {
-                (shopPlayers ??= new List<Player>()).Add(newPlayer);
-            }
-
-            if (newPlayer.GuildStatus != null)
-            {
-                (guildPlayers ??= new List<Player>()).Add(newPlayer);
-            }
-        }
-
-        return (shopPlayers, guildPlayers);
-    }
-
+    /// <summary>
+    /// Sends information about a new player which has come into view.
+    /// </summary>
+    /// <param name="newPlayer">The new player.</param>
+    /// <param name="isSpawned">If the player has spawned.</param>
+    /// <returns>A <see cref="ValueTask"/>.</returns>
     protected virtual async ValueTask SendCharacterAsync(Player newPlayer, bool isSpawned)
     {
         var connection = this.Player.Connection;
@@ -163,6 +132,43 @@ public class NewPlayersInScopePlugIn : INewPlayersInScopePlugIn
         }
 
         await connection.SendAsync(Write).ConfigureAwait(false);
+    }
+
+    private async ValueTask<(IList<Player>? ShopPlayers, IList<Player>? GuildPlayers)> SendCharactersAsync(IEnumerable<Player> newPlayers, bool isSpawned)
+    {
+        IList<Player>? shopPlayers = null;
+        IList<Player>? guildPlayers = null;
+
+        var connection = this.Player.Connection;
+        if (connection is null)
+        {
+            return (shopPlayers, guildPlayers);
+        }
+
+        var newPlayerList = newPlayers.ToList();
+        foreach (var newPlayer in newPlayerList)
+        {
+            if (newPlayer.Attributes?[Stats.TransformationSkin] == 0)
+            {
+                await this.SendCharacterAsync(newPlayer, isSpawned).ConfigureAwait(false);
+            }
+            else
+            {
+                await this.SendTransformedCharacterAsync(newPlayer, isSpawned).ConfigureAwait(false);
+            }
+
+            if (newPlayer.ShopStorage?.StoreOpen ?? false)
+            {
+                (shopPlayers ??= new List<Player>()).Add(newPlayer);
+            }
+
+            if (newPlayer.GuildStatus != null)
+            {
+                (guildPlayers ??= new List<Player>()).Add(newPlayer);
+            }
+        }
+
+        return (shopPlayers, guildPlayers);
     }
 
     private async ValueTask SendTransformedCharacterAsync(Player newPlayer, bool isSpawned)

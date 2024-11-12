@@ -18,7 +18,7 @@ using MUnique.OpenMU.PlugIns;
 [BelongsToGroup(VaultLockGroupPlugIn.GroupKey)]
 internal class SetVaultPinPlugIn : ISubPacketHandlerPlugIn
 {
-    private readonly SetVaultPinAction _setVaultPinAction = new ();
+    private readonly SetVaultPinAction _setVaultPinAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;

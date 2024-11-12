@@ -22,7 +22,7 @@ using MUnique.OpenMU.PlugIns;
 [BelongsToGroup(StoreHandlerGroupPlugIn.GroupKey)]
 internal class PlayerShopBuyRequestPacketHandlerPlugIn : ISubPacketHandlerPlugIn
 {
-    private readonly BuyRequestAction _buyAction = new ();
+    private readonly BuyRequestAction _buyAction = new();
 
     /// <inheritdoc />
     public bool IsEncryptionExpected => true;

@@ -16,5 +16,5 @@ public interface IPetAttackViewPlugIn : IViewPlugIn
     /// <param name="pet">The pet.</param>
     /// <param name="target">The target.</param>
     /// <param name="attackType">Type of the attack.</param>
-    ValueTask ShowPetAttackAnimation(IIdentifiable owner, Item pet, IAttackable target, PetAttackType attackType);
+    ValueTask ShowPetAttackAnimationAsync(IIdentifiable owner, Item pet, IAttackable target, PetAttackType attackType);
 }

@@ -28,7 +28,7 @@ public class DevilSquareTicketCrafting : BaseEventTicketCrafting
             5 => 1100000,
             6 => 1600000,
             7 => 2000000,
-            _ => 100000
+            _ => 100000,
         };
     }
 

@@ -6,8 +6,8 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
-using MUnique.OpenMU.PlugIns;
 using MUnique.OpenMU.GameLogic.Views;
+using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// A chat command plugin which handles post commands by sending a blue system message to all players.

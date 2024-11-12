@@ -317,7 +317,7 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
 
     private static WalkingStep GetStep(PathResultNode node)
     {
-        return new ()
+        return new()
         {
             Direction = node.PreviousPoint.GetDirectionTo(new Point(node.X, node.Y)),
             From = node.PreviousPoint,

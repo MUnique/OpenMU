@@ -22,7 +22,7 @@ public class RequestedItemConsumptionFailedExtendedPlugIn : IRequestedItemConsum
     private readonly RemotePlayer _player;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="RequestedItemConsumptionFailedPlugIn"/> class.
+    /// Initializes a new instance of the <see cref="RequestedItemConsumptionFailedExtendedPlugIn"/> class.
     /// </summary>
     /// <param name="player">The player.</param>
     public RequestedItemConsumptionFailedExtendedPlugIn(RemotePlayer player) => this._player = player;

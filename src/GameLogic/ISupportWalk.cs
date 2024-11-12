@@ -12,7 +12,7 @@ using MUnique.OpenMU.Pathfinding;
 public interface ISupportWalk : ILocateable
 {
     /// <summary>
-    /// Gets or sets a value indicating whether this instance can walk on safezone.
+    /// Gets a value indicating whether this instance can walk on safezone.
     /// </summary>
     /// <value>
     ///   <c>true</c> if this instance can walk on safezone; otherwise, <c>false</c>.

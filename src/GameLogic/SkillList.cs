@@ -64,7 +64,7 @@ public sealed class SkillList : ISkillList, IDisposable
     /// <inheritdoc/>
     public byte SkillCount => (byte)this._availableSkills.Count;
 
-    private List<IDisposable> PassivePowerUps => this._passivePowerUps ??= new ();
+    private List<IDisposable> PassivePowerUps => this._passivePowerUps ??= new();
 
     /// <inheritdoc />
     public void Dispose()

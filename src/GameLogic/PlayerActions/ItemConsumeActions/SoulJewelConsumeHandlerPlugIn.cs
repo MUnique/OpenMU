@@ -28,7 +28,7 @@ public class SoulJewelConsumeHandlerPlugIn : UpgradeItemLevelJewelConsumeHandler
     /// </summary>
     /// <param name="randomizer">The randomizer.</param>
     internal SoulJewelConsumeHandlerPlugIn(IRandomizer randomizer)
-        :base(randomizer)
+        : base(randomizer)
     {
     }
 

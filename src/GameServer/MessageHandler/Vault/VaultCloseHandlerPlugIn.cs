@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("7859931f-3341-4bd7-91ad-1b0b03f11198")]
 internal class VaultCloseHandlerPlugIn : IPacketHandlerPlugIn
 {
-    private readonly CloseNpcDialogAction _closeDialogAction = new ();
+    private readonly CloseNpcDialogAction _closeDialogAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;

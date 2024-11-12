@@ -2,9 +2,9 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.Pathfinding;
-
 namespace MUnique.OpenMU.GameLogic.NPC;
+
+using MUnique.OpenMU.Pathfinding;
 
 /// <summary>
 /// The monster intelligence which does nothing.
@@ -42,8 +42,9 @@ public sealed class NullMonsterIntelligence : INpcIntelligence
     }
 
     /// <summary>
-    /// CanWalkOn?
+    /// If Null Monster can walk on target.
     /// </summary>
+    /// <param name="target">The target.</param>
     public bool CanWalkOn(Point target)
     {
         return false;

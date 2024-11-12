@@ -14,7 +14,7 @@ using MUnique.OpenMU.GameLogic.Views.World;
 /// </summary>
 public class TargetedSkillAction
 {
-    private static readonly Dictionary<short, short> SummonSkillToMonsterMapping = new ()
+    private static readonly Dictionary<short, short> SummonSkillToMonsterMapping = new()
     {
         { 30, 26 }, // Goblin
         { 31, 32 }, // Stone Golem
