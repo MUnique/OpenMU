@@ -201,17 +201,22 @@ public enum UpdateVersion
     AddAreaSkillSettings = 38,
 
     /// <summary>
+    /// The version of the <see cref="FixItemRequirementsPlugIn"/>.
+    /// </summary>
+    FixItemRequirements = 39,
+
+    /// <summary>
     /// The version of the <see cref="FixWingsDmgRatesUpdatePlugIn075"/>.
     /// </summary>
-    FixWeaponRisePercentage075 = 39,
+    FixWeaponRisePercentage075 = 40,
 
     /// <summary>
     /// The version of the <see cref="FixWingsDmgRatesUpdatePlugIn095D"/>.
     /// </summary>
-    FixWeaponRisePercentage095d = 40,
+    FixWeaponRisePercentage095d = 41,
 
     /// <summary>
     /// The version of the <see cref="FixWingsDmgRatesUpdatePlugInSeason6"/>.
     /// </summary>
-    FixWeaponRisePercentageSeason6 = 41,
+    FixWeaponRisePercentageSeason6 = 42,
 }

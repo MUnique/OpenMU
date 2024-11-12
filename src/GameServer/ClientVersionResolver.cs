@@ -28,7 +28,12 @@ public static class ClientVersionResolver
     /// <param name="clientVersion">The client version.</param>
     public static void Register(Span<byte> versionBytes, ClientVersion clientVersion)
     {
-        var key = CalculateVersionValue(versionBytes);
+        long key = 0;
+        if (versionBytes.Length >= 5)
+        {
+            key = CalculateVersionValue(versionBytes);
+        }
+
         Versions[key] = clientVersion;
         if (!VersionBytes.ContainsKey(clientVersion))
         {

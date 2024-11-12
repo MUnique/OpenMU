@@ -46,6 +46,8 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
         NotFound,
 
         Error,
+
+        Cancelled,
     }
 
     /// <summary>
@@ -353,6 +355,11 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
                 this._loadingState = this.Model is not null
                     ? DataLoadingState.Loaded
                     : DataLoadingState.NotFound;
+            }
+            catch (OperationCanceledException)
+            {
+                this._loadingState = DataLoadingState.Cancelled;
+                throw;
             }
             catch (Exception ex)
             {
