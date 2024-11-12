@@ -14,6 +14,7 @@ using MUnique.OpenMU.Network.Packets;
 using MUnique.OpenMU.Persistence.Initialization.Items;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
 using MUnique.OpenMU.PlugIns;
+using static MUnique.OpenMU.Persistence.Initialization.CharacterClasses.CharacterClassHelper;
 
 /// <summary>
 /// This update fixes weapons (staff, stick, book, scepter) rise percentage increase; Summoner weapons and wings wizardry/curse options; and Wing of Dimension (inc/dec), Cape of Overrule (inc/dec), Cape of Emperor (dec) damage rates..
@@ -196,10 +197,9 @@ public class FixWeaponRisePercentagePlugInSeason6 : FixWeaponRisePercentagePlugI
         // -> fix books
         if (gameConfiguration.CharacterClasses.FirstOrDefault(cc => cc.Number == (int)CharacterClassNumber.Summoner) is { } summoner)
         {
-            var bookRiseAttr = context.CreateNew<AttributeDefinition>(new Guid("AD9C9AE0-BA76-4C99-9F53-AE8F1AF6CAD4"), "Book Rise Percentage", string.Empty);
+            var bookRiseAttr = context.CreateNew<AttributeDefinition>(Stats.BookRise.Id, Stats.BookRise.Designation, Stats.BookRise.Description);
             gameConfiguration.Attributes.Add(bookRiseAttr);
-            var attrRelationship = context.CreateNew<AttributeRelationship>(Stats.CurseAttackDamageIncrease.GetPersistent(gameConfiguration), 1.0f / 100, Stats.BookRise.GetPersistent(gameConfiguration), InputOperator.Multiply, default(AttributeDefinition?));
-            summoner.AttributeCombinations.Add(attrRelationship);
+            summoner.AttributeCombinations.Add(CreateAttributeRelationship(context, gameConfiguration, Stats.CurseAttackDamageIncrease, 1.0f / 100, Stats.BookRise));
         }
 
         Dictionary<int, int> booksMagicPower = new() { [21] = 46, [22] = 59, [23] = 72 };
