@@ -33,7 +33,10 @@
                 var targetUrl = $"edit-config/{this.TypeString}/" + context.Id;
             }
             <button type="button" class="btn-info" @onclick="@(() => this.NavigationManager.NavigateTo(targetUrl))">Edit</button>
+            <button type="button" class="btn-danger" @onclick="@(() => this.OnDeleteButtonClickAsync(context))"><span class="oi oi-trash"></span> Delete</button>
         </TemplateColumn>
     </QuickGrid>
 </div>
 <Paginator State="@_pagination" />
+<hr />
+<button type="button" class="btn-outline-primary" @onclick="OnCreateButtonClickAsync"><span class="oi oi-plus"></span> Add New</button>

@@ -103,7 +103,7 @@ public interface IGameContext
     DuelRoomManager DuelRoomManager { get; }
 
     /// <summary>
-    /// Gets the state of the active self defenses.
+    /// Gets the state of the active self defenses. The datetime holds the timestamp when self-defense ends.
     /// </summary>
     ConcurrentDictionary<(Player Attacker, Player Defender), DateTime> SelfDefenseState { get; }
 

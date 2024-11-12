@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Web.AdminPanel;
 
 using System.IO;
 using Blazored.Modal;
+using Blazored.Toast;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -58,6 +59,7 @@ public class Startup
                 setup.FeatureProviders.Add(new GenericControllerFeatureProvider()));
 
         services.AddBlazoredModal();
+        services.AddBlazoredToast();
         services.AddScoped<AccountService>();
         services.AddScoped<IDataService<Account>>(serviceProvider => serviceProvider.GetService<AccountService>()!);
 

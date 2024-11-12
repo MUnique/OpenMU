@@ -54,6 +54,11 @@ public record FrustumBasedTargetFilter
     /// <returns><c>true</c> if the target is within hit bounds; otherwise, <c>false</c>.</returns>
     public bool IsTargetWithinBounds(ILocateable attacker, ILocateable target, Point targetAreaCenter, byte rotation)
     {
+        if (attacker.Position == target.Position)
+        {
+            return true;
+        }
+
         var frustum = this.GetFrustum(attacker.Position, rotation);
         return IsWithinFrustum(frustum, target.Position);
     }

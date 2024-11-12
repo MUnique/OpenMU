@@ -59,6 +59,30 @@ public static class ItemExtensions
     }
 
     /// <summary>
+    /// Determines whether the specified item is a dark raven.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <returns>
+    ///   <c>true</c> if the specified item is raven; otherwise, <c>false</c>.
+    /// </returns>
+    public static bool IsDarkRaven(this Item item)
+    {
+        return item.Definition is { Group: 13, Number: 5 };
+    }
+
+    /// <summary>
+    /// Gets the dark raven leadership requirement, based on pet level.
+    /// TODO: Make somehow configurable?
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <param name="petLevel">The pet level.</param>
+    /// <returns>The required leadership.</returns>
+    public static int GetDarkRavenLeadershipRequirement(this Item item, int petLevel)
+    {
+        return petLevel * 15 + 185;
+    }
+
+    /// <summary>
     /// Determines whether this item can have a skill.
     /// </summary>
     /// <param name="item">The item.</param>

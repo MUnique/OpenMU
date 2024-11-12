@@ -610,7 +610,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         var hitInfo = await attacker.CalculateDamageAsync(this, skill, isCombo, damageFactor).ConfigureAwait(false);
 
-        if (hitInfo.HealthDamage == 0)
+        if (hitInfo is { HealthDamage: 0, ShieldDamage: 0 })
         {
             await this.InvokeViewPlugInAsync<IShowHitPlugIn>(p => p.ShowHitAsync(this, hitInfo)).ConfigureAwait(false);
             if (attacker is IWorldObserver observer)
@@ -2332,7 +2332,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         {
             pet.PetExperience += (int)experience;
 
-            while (pet.PetExperience >= pet.Definition!.GetExperienceOfPetLevel((byte)(pet.Level + 1), pet.Definition!.MaximumItemLevel))
+            while (pet.PetExperience >= pet.Definition!.GetExperienceOfPetLevel((byte)(pet.Level + 1), pet.Definition!.MaximumItemLevel)
+                   && (!pet.IsDarkRaven() || pet.GetDarkRavenLeadershipRequirement(pet.Level + 1) <= this.Attributes![Stats.TotalLeadership]))
             {
                 pet.Level++;
 

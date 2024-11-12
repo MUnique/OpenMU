@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Pages;
 using System.Reflection;
 using System.Threading;
 using Blazored.Modal.Services;
+using Blazored.Toast.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.AspNetCore.Components.Routing;
@@ -45,6 +46,8 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
         NotFound,
 
         Error,
+
+        Cancelled,
     }
 
     /// <summary>
@@ -70,6 +73,12 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
     /// </summary>
     [Inject]
     public IModalService ModalService { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the toast service.
+    /// </summary>
+    [Inject]
+    public IToastService ToastService { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the configuration data source.
@@ -221,26 +230,25 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
     /// </summary>
     protected async Task SaveChangesAsync()
     {
-        string text;
         try
         {
             if (this._persistenceContext is { } context)
             {
                 var success = await context.SaveChangesAsync().ConfigureAwait(true);
-                text = success ? "The changes have been saved." : "There were no changes to save.";
+                var text = success ? "The changes have been saved." : "There were no changes to save.";
+                this.ToastService.ShowSuccess(text);
             }
             else
             {
-                text = "Failed, context not initialized";
+                this.ToastService.ShowError("Failed, context not initialized");
             }
         }
         catch (Exception ex)
         {
             this.Logger?.LogError(ex, $"Error during saving {this.Id}");
-            text = $"An unexpected error occured: {ex.Message}.";
+            var text = $"An unexpected error occured: {ex.Message}.";
+            this.ToastService.ShowError(text);
         }
-
-        await this.ModalService.ShowMessageAsync("Save", text).ConfigureAwait(true);
     }
 
     /// <summary>
@@ -347,6 +355,11 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
                 this._loadingState = this.Model is not null
                     ? DataLoadingState.Loaded
                     : DataLoadingState.NotFound;
+            }
+            catch (OperationCanceledException)
+            {
+                this._loadingState = DataLoadingState.Cancelled;
+                throw;
             }
             catch (Exception ex)
             {
