@@ -194,7 +194,7 @@ public enum UpdateVersion
     /// The version of the <see cref="FixAttackSpeedCalculationUpdate"/>.
     /// </summary>
     FixAttackSpeedCalculation = 37,
-    
+
     /// <summary>
     /// The version of the <see cref="AddAreaSkillSettingsUpdatePlugIn"/>.
     /// </summary>
@@ -204,4 +204,19 @@ public enum UpdateVersion
     /// The version of the <see cref="FixItemRequirementsPlugIn"/>.
     /// </summary>
     FixItemRequirements = 39,
+
+    /// <summary>
+    /// The version of the <see cref="FixWingsDmgRatesUpdatePlugIn075"/>.
+    /// </summary>
+    FixWeaponRisePercentage075 = 40,
+
+    /// <summary>
+    /// The version of the <see cref="FixWingsDmgRatesUpdatePlugIn095D"/>.
+    /// </summary>
+    FixWeaponRisePercentage095d = 41,
+
+    /// <summary>
+    /// The version of the <see cref="FixWingsDmgRatesUpdatePlugInSeason6"/>.
+    /// </summary>
+    FixWeaponRisePercentageSeason6 = 42,
 }

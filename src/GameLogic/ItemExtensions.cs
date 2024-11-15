@@ -146,17 +146,17 @@ public static class ItemExtensions
     /// </returns>
     public static bool IsPhysicalWeapon(this Item item, [NotNullWhen(true)] out float? minimumDmg)
     {
-        minimumDmg = item.Definition?.BasePowerUpAttributes.FirstOrDefault(a => a.TargetAttribute == Stats.MinimumPhysBaseDmg)?.BaseValue;
+        minimumDmg = item.Definition?.BasePowerUpAttributes.FirstOrDefault(a => a.TargetAttribute == Stats.MinimumPhysBaseDmgByWeapon)?.BaseValue;
         return minimumDmg is not null;
     }
 
     /// <summary>
-    /// Determines whether this instance is a weapon which deals wizardry damage.
+    /// Determines whether this instance is a weapon which increases wizardry damage.
     /// </summary>
     /// <param name="item">The item.</param>
-    /// <param name="staffRise">The staff rise percentage of the weapon.</param>
+    /// <param name="staffRise">The staff/stick's wizardry damage rise percentage.</param>
     /// <returns>
-    ///   <c>true</c> if this instance is a weapon which deals wizardry damage; otherwise, <c>false</c>.
+    ///   <c>true</c> if this instance is a weapon which increases wizardry damage; otherwise, <c>false</c>.
     /// </returns>
     public static bool IsWizardryWeapon(this Item item, [NotNullWhen(true)] out float? staffRise)
     {
@@ -168,14 +168,28 @@ public static class ItemExtensions
     /// Determines whether this instance is a scepter which increases raven damage.
     /// </summary>
     /// <param name="item">The item.</param>
-    /// <param name="stickRise">The stick rise percentage of the weapon.</param>
+    /// <param name="scepterRise">The scepter's pet attack rise percentage.</param>
     /// <returns>
     ///   <c>true</c> if this instance is a scepter which increases raven damage; otherwise, <c>false</c>.
     /// </returns>
-    public static bool IsScepter(this Item item, [NotNullWhen(true)] out float? stickRise)
+    public static bool IsScepter(this Item item, [NotNullWhen(true)] out float? scepterRise)
     {
-        stickRise = item.Definition?.BasePowerUpAttributes.FirstOrDefault(a => a.TargetAttribute == Stats.ScepterRise)?.BaseValue;
-        return stickRise is not null;
+        scepterRise = item.Definition?.BasePowerUpAttributes.FirstOrDefault(a => a.TargetAttribute == Stats.ScepterRise)?.BaseValue;
+        return scepterRise is not null;
+    }
+
+    /// <summary>
+    /// Determines whether this instance is a book which increases curse damage.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <param name="bookRise">The book's curse damage rise percentage.</param>
+    /// <returns>
+    ///   <c>true</c> if this instance is a book which increases curse damage; otherwise, <c>false</c>.
+    /// </returns>
+    public static bool IsBook(this Item item, [NotNullWhen(true)] out float? bookRise)
+    {
+        bookRise = item.Definition?.BasePowerUpAttributes.FirstOrDefault(a => a.TargetAttribute == Stats.BookRise)?.BaseValue;
+        return bookRise is not null;
     }
 
     /// <summary>

@@ -272,10 +272,9 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
             var baseDefense = (int)(item.Definition?.BasePowerUpAttributes.FirstOrDefault(a => a.TargetAttribute == Stats.DefenseBase)?.BaseValue ?? 0);
             var additionalDefense = (baseDefense * 12 / baseDropLevel) + (baseDropLevel / 5) + 4;
             yield return new PowerUpWrapper(new SimpleElement(additionalDefense, AggregateType.AddRaw), Stats.DefenseBase, attributeHolder);
-
             if (itemIsAncient)
             {
-                var ancientDefenseBonus = (baseDefense * 3 / ancientDropLevel) + (ancientDropLevel / 30) + 2;
+                var ancientDefenseBonus = 2 + ((baseDefense + additionalDefense) * 3 / ancientDropLevel) + (ancientDropLevel / 30);
                 yield return new PowerUpWrapper(new SimpleElement(ancientDefenseBonus, AggregateType.AddRaw), Stats.DefenseBase, attributeHolder);
             }
         }
@@ -288,7 +287,7 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
             if (itemIsAncient)
             {
                 var baseDefense = (int)(item.Definition?.BasePowerUpAttributes.FirstOrDefault(a => a.TargetAttribute == Stats.DefenseBase)?.BaseValue ?? 0);
-                var ancientDefenseBonus = (baseDefense * 20 / ancientDropLevel) + 2;
+                var ancientDefenseBonus = 2 + ((baseDefense + item.Level) * 20 / ancientDropLevel);
                 yield return new PowerUpWrapper(new SimpleElement(ancientDefenseBonus, AggregateType.AddRaw), Stats.DefenseBase, attributeHolder);
             }
         }
@@ -308,23 +307,34 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
 
         if (item.IsWizardryWeapon(out var staffRise))
         {
-            var additionalRise = ((int)staffRise * 25 / baseDropLevel) + 5;
+            var additionalRise = (((int)staffRise * 2 * 25 / baseDropLevel) + 5) / 2;
             yield return new PowerUpWrapper(new SimpleElement(additionalRise, AggregateType.AddRaw), Stats.StaffRise, attributeHolder);
             if (itemIsAncient)
             {
-                var ancientRiseBonus = 5 + (ancientDropLevel / 60);
+                var ancientRiseBonus = (2 + (ancientDropLevel / 60)) / 2;
                 yield return new PowerUpWrapper(new SimpleElement(ancientRiseBonus, AggregateType.AddRaw), Stats.StaffRise, attributeHolder);
             }
         }
 
         if (item.IsScepter(out var scepterRise))
         {
-            var additionalRise = ((int)scepterRise * 25 / baseDropLevel) + 5;
+            var additionalRise = (((int)scepterRise * 2 * 25 / baseDropLevel) + 5) / 2;
             yield return new PowerUpWrapper(new SimpleElement(additionalRise, AggregateType.AddRaw), Stats.ScepterRise, attributeHolder);
             if (itemIsAncient)
             {
-                var ancientRiseBonus = 5 + (ancientDropLevel / 60);
+                var ancientRiseBonus = (2 + (ancientDropLevel / 60)) / 2;
                 yield return new PowerUpWrapper(new SimpleElement(ancientRiseBonus, AggregateType.AddRaw), Stats.ScepterRise, attributeHolder);
+            }
+        }
+
+        if (item.IsBook(out var curseRise))
+        {
+            var additionalRise = (((int)curseRise * 2 * 25 / baseDropLevel) + 5) / 2;
+            yield return new PowerUpWrapper(new SimpleElement(additionalRise, AggregateType.AddRaw), Stats.BookRise, attributeHolder);
+            if (itemIsAncient)
+            {
+                var ancientRiseBonus = (2 + (ancientDropLevel / 60)) / 2;
+                yield return new PowerUpWrapper(new SimpleElement(ancientRiseBonus, AggregateType.AddRaw), Stats.BookRise, attributeHolder);
             }
         }
     }

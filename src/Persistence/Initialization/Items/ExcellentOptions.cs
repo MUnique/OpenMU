@@ -51,9 +51,12 @@ public class ExcellentOptions : InitializerBase
         this.CreateDefenseOptions();
         this.CreatePhysicalAttackOptions();
         this.CreateWizardryAttackOptions();
-        this.CreateCurseAttackOptions();
+
+        // this.CreateCurseAttackOptions();
     }
 
+    [Obsolete(@"There are no curse attack excellent options until Season 14 (Summoner renewal). Until then, excellent curse spell books had excellent wizardry attack options.
+        Reference: https://muonline.webzen.com/pt/gameinfo/guide/detail/91")]
     private void CreateCurseAttackOptions()
     {
         var definition = this.Context.CreateNew<ItemOptionDefinition>();

@@ -232,6 +232,11 @@ public class Stats
     public static AttributeDefinition ScepterRise { get; } = new(new Guid("FB374862-D360-4FF0-AB88-2C170E6A9F85"), "Scepter Rise Percentage", string.Empty);
 
     /// <summary>
+    /// Gets the book rise percentage attribute definition.
+    /// </summary>
+    public static AttributeDefinition BookRise { get; } = new(new Guid("AD9C9AE0-BA76-4C99-9F53-AE8F1AF6CAD4"), "Book Rise Percentage", string.Empty);
+
+    /// <summary>
     /// Gets the minimum curse base DMG attribute definition.
     /// </summary>
     public static AttributeDefinition MinimumCurseBaseDmg { get; } = new(new Guid("B8AE2D6B-05CE-43A9-B2BB-3C32F288A043"), "Minimum Curse Base Damage", string.Empty);
