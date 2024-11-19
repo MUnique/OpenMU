@@ -1893,7 +1893,7 @@
       <HeaderType>C1Header</HeaderType>
       <Code>41</Code>
       <Name>PartyInviteResponse</Name>
-      <Length>4</Length>
+      <Length>6</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A player was invited by another player to join a party and this player sent the response back.</SentWhen>
       <CausedReaction>If the sender accepts the request, it's added to the party.</CausedReaction>
