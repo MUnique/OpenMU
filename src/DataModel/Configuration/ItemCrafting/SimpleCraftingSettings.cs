@@ -70,6 +70,11 @@ public partial class SimpleCraftingSettings
     public int SuccessPercentageAdditionForAncientItem { get; set; }
 
     /// <summary>
+    /// Gets or sets the success percentage addition for a 380 item which gets modified.
+    /// </summary>
+    public int SuccessPercentageAdditionFor380Item { get; set; }
+
+    /// <summary>
     /// Gets or sets the success percentage addition for a socket item which gets modified.
     /// </summary>
     public int SuccessPercentageAdditionForSocketItem { get; set; }

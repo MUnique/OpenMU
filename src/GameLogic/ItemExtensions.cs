@@ -103,6 +103,63 @@ public static class ItemExtensions
     }
 
     /// <summary>
+    /// Determines whether this instance is a 380 ("siege") item.
+    /// </summary>
+    /// <remarks>"380 items", which can be reinforced with Jewel of Guardian for special PvP options, were the first with a 380 level requirement. https://muonlinefanz.com/guide/items/siege/</remarks>
+    /// <param name="item">The item.</param>
+    /// <returns>
+    ///   <c>true</c> if the specified item is a 380 item; otherwise, <c>false</c>.
+    /// </returns>
+    public static bool Is380(this Item item)
+    {
+        return (item.Definition!.Group == 0 && item.Definition.Number == 22) || // Bone Blade
+            (item.Definition!.Group == 0 && item.Definition.Number == 23) || // Explosion Blade
+            (item.Definition!.Group == 0 && item.Definition.Number == 35) || // Phoenix Soul Star
+            (item.Definition!.Group == 2 && item.Definition.Number == 14) || // Soleil Scepter
+            (item.Definition!.Group == 4 && item.Definition.Number == 21) || // Sylph Wind Bow
+            (item.Definition!.Group == 5 && item.Definition.Number == 12) || // Grand Viper Staff
+            (item.Definition!.Group == 5 && item.Definition.Number == 19) || // Storm Blitz Stick
+
+            (item.Definition!.Group == 7 && item.Definition.Number == 29) || // Dragon Knight Helm
+            (item.Definition!.Group == 7 && item.Definition.Number == 30) || // Venom Mist Helm
+            (item.Definition!.Group == 7 && item.Definition.Number == 31) || // Sylphid Ray Helm
+            (item.Definition!.Group == 7 && item.Definition.Number == 33) || // Sunlight Mask
+            (item.Definition!.Group == 7 && item.Definition.Number == 43) || // Aura Helm --> CHECK name
+            (item.Definition!.Group == 7 && item.Definition.Number == 73) || // Phoenix Soul Helmet
+
+            (item.Definition!.Group == 8 && item.Definition.Number == 29) || // Dragon Knight Armor
+            (item.Definition!.Group == 8 && item.Definition.Number == 30) || // Venom Mist Armor
+            (item.Definition!.Group == 8 && item.Definition.Number == 31) || // Sylphid Ray Armor
+            (item.Definition!.Group == 8 && item.Definition.Number == 32) || // Volcano Armor
+            (item.Definition!.Group == 8 && item.Definition.Number == 33) || // Sunlight Armor
+            (item.Definition!.Group == 8 && item.Definition.Number == 43) || // Aura Armor
+            (item.Definition!.Group == 8 && item.Definition.Number == 73) || // Phoenix Soul Armor
+
+            (item.Definition!.Group == 9 && item.Definition.Number == 29) || // Dragon Knight Pants
+            (item.Definition!.Group == 9 && item.Definition.Number == 30) || // Venom Mist Pants
+            (item.Definition!.Group == 9 && item.Definition.Number == 31) || // Sylphid Ray Pants
+            (item.Definition!.Group == 9 && item.Definition.Number == 32) || // Volcano Pants
+            (item.Definition!.Group == 9 && item.Definition.Number == 33) || // Sunlight Pants
+            (item.Definition!.Group == 9 && item.Definition.Number == 43) || // Aura Pants
+            (item.Definition!.Group == 9 && item.Definition.Number == 73) || // Phoenix Soul Pants
+
+            (item.Definition!.Group == 10 && item.Definition.Number == 29) || // Dragon Knight Gloves
+            (item.Definition!.Group == 10 && item.Definition.Number == 30) || // Venom Mist Gloves
+            (item.Definition!.Group == 10 && item.Definition.Number == 31) || // Sylphid Ray Gloves
+            (item.Definition!.Group == 10 && item.Definition.Number == 32) || // Volcano Gloves
+            (item.Definition!.Group == 10 && item.Definition.Number == 33) || // Sunlight Gloves
+            (item.Definition!.Group == 10 && item.Definition.Number == 43) || // Aura Gloves
+
+            (item.Definition!.Group == 11 && item.Definition.Number == 29) || // Dragon Knight Boots
+            (item.Definition!.Group == 11 && item.Definition.Number == 30) || // Venom Mist Boots
+            (item.Definition!.Group == 11 && item.Definition.Number == 31) || // Sylphid Ray Boots
+            (item.Definition!.Group == 11 && item.Definition.Number == 32) || // Volcano Boots
+            (item.Definition!.Group == 11 && item.Definition.Number == 33) || // Sunlight Boots
+            (item.Definition!.Group == 11 && item.Definition.Number == 43) || // Aura Boots
+            (item.Definition!.Group == 11 && item.Definition.Number == 73); // Phoenix Soul Boots
+    }
+
+    /// <summary>
     /// Determines whether this item is a defensive item.
     /// </summary>
     /// <param name="item">The item.</param>

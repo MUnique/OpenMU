@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.Persistence.Initialization.Version095d.Items;
 
 /// <summary>
 /// Initializer for chaos mixes.
@@ -36,14 +37,14 @@ public class ChaosMixes : InitializerBase
         chaosGoblin.ItemCraftings.Add(this.ChaosWeaponCrafting());
         chaosGoblin.ItemCraftings.Add(this.DinorantCrafting());
 
-        chaosGoblin.ItemCraftings.Add(this.ItemLevelUpgradeCrafting(3, 10, 1_000_000));
-        chaosGoblin.ItemCraftings.Add(this.ItemLevelUpgradeCrafting(4, 11, 2_000_000));
+        chaosGoblin.ItemCraftings.Add(this.ItemLevelUpgradeCrafting(3, 10));
+        chaosGoblin.ItemCraftings.Add(this.ItemLevelUpgradeCrafting(4, 11));
         chaosGoblin.ItemCraftings.Add(this.FirstWingsCrafting());
 
         chaosGoblin.ItemCraftings.Add(this.DevilSquareTicketCrafting());
     }
 
-    private ItemCrafting ItemLevelUpgradeCrafting(byte craftingNumber, byte targetLevel, int money)
+    private ItemCrafting ItemLevelUpgradeCrafting(byte craftingNumber, byte targetLevel)
     {
         var crafting = this.Context.CreateNew<ItemCrafting>();
         crafting.Name = $"+{targetLevel} Item Combination";
@@ -51,11 +52,10 @@ public class ChaosMixes : InitializerBase
         var craftingSettings = this.Context.CreateNew<SimpleCraftingSettings>();
 
         crafting.SimpleCraftingSettings = craftingSettings;
-        craftingSettings.Money = money;
-        craftingSettings.SuccessPercent = (byte)(60 - (((targetLevel - 10) / 2) * 5));
-        craftingSettings.SuccessPercentageAdditionForExcellentItem = -10;
-        craftingSettings.SuccessPercentageAdditionForAncientItem = -15;
-        craftingSettings.SuccessPercentageAdditionForSocketItem = -20;
+        craftingSettings.Money = 2_000_000 * (targetLevel - 9);
+        craftingSettings.SuccessPercent = (byte)(targetLevel == 10 ? 50 : 45);
+        craftingSettings.SuccessPercentageAdditionForLuck = 25;
+        craftingSettings.SuccessPercentageAdditionForExcellentItem = -10; // => check if true
 
         // Requirements:
         var item = this.Context.CreateNew<ItemCraftingRequiredItem>();
@@ -64,7 +64,7 @@ public class ChaosMixes : InitializerBase
         item.MaximumAmount = 1;
         item.MinimumItemLevel = (byte)(targetLevel - 1);
         item.MaximumItemLevel = item.MinimumItemLevel;
-        item.FailResult = MixResult.DowngradedTo0;
+        item.FailResult = MixResult.Disappear;
         item.SuccessResult = MixResult.StaysAsIs;
         craftingSettings.RequiredItems.Add(item);
 
@@ -112,9 +112,9 @@ public class ChaosMixes : InitializerBase
         var randomItem = this.Context.CreateNew<ItemCraftingRequiredItem>();
         randomItem.MinimumAmount = 1;
         randomItem.MinimumItemLevel = 4;
-        randomItem.MaximumItemLevel = 15;
+        randomItem.MaximumItemLevel = Constants.MaximumItemLevel;
         randomItem.NpcPriceDivisor = 15000;
-        randomItem.FailResult = MixResult.DowngradedRandom;
+        randomItem.FailResult = MixResult.Disappear;
         randomItem.RequiredItemOptions.Add(this.GameConfiguration.ItemOptionTypes.First(o => o == ItemOptionTypes.Option));
         randomItem.SuccessResult = MixResult.Disappear;
         chaosWeaponSettings.RequiredItems.Add(randomItem);
@@ -182,9 +182,9 @@ public class ChaosMixes : InitializerBase
         chaosWeapon.MinimumAmount = 1;
         chaosWeapon.MaximumAmount = 1;
         chaosWeapon.MinimumItemLevel = 4;
-        chaosWeapon.MaximumItemLevel = 15;
+        chaosWeapon.MaximumItemLevel = Constants.MaximumItemLevel;
         chaosWeapon.NpcPriceDivisor = 15000;
-        chaosWeapon.FailResult = MixResult.DowngradedRandom;
+        chaosWeapon.FailResult = MixResult.Disappear;
         chaosWeapon.RequiredItemOptions.Add(this.GameConfiguration.ItemOptionTypes.First(o => o == ItemOptionTypes.Option));
         chaosWeapon.SuccessResult = MixResult.Disappear;
         craftingSettings.RequiredItems.Add(chaosWeapon);
@@ -192,9 +192,9 @@ public class ChaosMixes : InitializerBase
         var randomItem = this.Context.CreateNew<ItemCraftingRequiredItem>();
         randomItem.MinimumAmount = 0;
         randomItem.MinimumItemLevel = 4;
-        randomItem.MaximumItemLevel = 15;
+        randomItem.MaximumItemLevel = Constants.MaximumItemLevel;
         randomItem.NpcPriceDivisor = 15000;
-        randomItem.FailResult = MixResult.DowngradedRandom;
+        randomItem.FailResult = MixResult.Disappear;
         randomItem.RequiredItemOptions.Add(this.GameConfiguration.ItemOptionTypes.First(o => o == ItemOptionTypes.Option));
         randomItem.SuccessResult = MixResult.Disappear;
         craftingSettings.RequiredItems.Add(randomItem);

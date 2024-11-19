@@ -235,7 +235,7 @@ public class Wings : WingsInitializerBase
 
     private ItemOptionDefinition CreateCapeOptions()
     {
-        var definition = this.CreateSecondClassWingOptions();
+        var definition = this.CreateSecondClassWingOptions();   // Bug?
         definition.SetGuid(ItemOptionDefinitionNumbers.Cape);
         definition.Name = "Cape of Lord Options";
         definition.PossibleOptions.Add(this.CreateWingOption(4, Stats.TotalLeadership, 10f, AggregateType.AddRaw, 5f)); // Increase Command +10~75 Increases your Command by 10 plus 5 for each level. Only Cape of Lord can have it (PvM, PvP)

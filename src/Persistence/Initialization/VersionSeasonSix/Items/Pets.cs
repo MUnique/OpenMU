@@ -160,7 +160,7 @@ public class Pets : InitializerBase
         BaseMapInitializer.RegisterDefaultDropItemGroup(horseDrop);
 
         var ravenDrop = this.Context.CreateNew<DropItemGroup>();
-        horseDrop.SetGuid(NumberConversionExtensions.MakeWord(13, 31).ToSigned(), 1);
+        ravenDrop.SetGuid(NumberConversionExtensions.MakeWord(13, 31).ToSigned(), 1);
         ravenDrop.ItemLevel = 1;
         ravenDrop.Chance = 0.001;
         ravenDrop.Description = "Dark Raven Spirit";
@@ -220,7 +220,7 @@ public class Pets : InitializerBase
         dinoOptionDefinition.Name = "Dinorant Options";
         dinoOptionDefinition.AddChance = 0.1f;
         dinoOptionDefinition.AddsRandomly = true;
-        dinoOptionDefinition.MaximumOptionsPerItem = 1;
+        dinoOptionDefinition.MaximumOptionsPerItem = 2;
 
         dinoOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.Excellent, 1, Stats.DamageReceiveDecrement, 0.95f, AggregateType.Multiplicate, ItemOptionDefinitionNumbers.Dino));
         dinoOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.Excellent, 2, Stats.MaximumAbility, 50f, AggregateType.AddFinal, ItemOptionDefinitionNumbers.Dino));
