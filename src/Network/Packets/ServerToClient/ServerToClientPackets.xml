@@ -2526,6 +2526,65 @@
         </Field>
       </Fields>
     </Packet>
+		<Packet>
+			<HeaderType>C1Header</HeaderType>
+			<Code>D4</Code>
+			<Name>ObjectWalkedExtended</Name>
+			<Direction>ServerToClient</Direction>
+			<SentWhen>An object in the observed scope (including the own player) walked to another position.</SentWhen>
+			<CausedReaction>The object is animated to walk to the new position.</CausedReaction>
+			<Fields>
+				<Field>
+					<Index>2</Index>
+					<Type>Byte</Type>
+					<Name>HeaderCode</Name>
+				</Field>
+				<Field>
+					<Index>3</Index>
+					<Type>ShortBigEndian</Type>
+					<Name>ObjectId</Name>
+				</Field>
+				<Field>
+					<Index>5</Index>
+					<Type>Byte</Type>
+					<Name>SourceX</Name>
+				</Field>
+				<Field>
+					<Index>6</Index>
+					<Type>Byte</Type>
+					<Name>SourceY</Name>
+				</Field>
+				<Field>
+					<Index>7</Index>
+					<Type>Byte</Type>
+					<Name>TargetX</Name>
+				</Field>
+				<Field>
+					<Index>8</Index>
+					<Type>Byte</Type>
+					<Name>TargetY</Name>
+				</Field>
+				<Field>
+					<Index>9</Index>
+					<LeftShifted>4</LeftShifted>
+					<Type>Byte</Type>
+					<Name>TargetRotation</Name>
+					<Length>4</Length>
+				</Field>
+				<Field>
+					<Index>9</Index>
+					<LeftShifted>0</LeftShifted>
+					<Type>Byte</Type>
+					<Name>StepCount</Name>
+					<Length>4</Length>
+				</Field>
+				<Field>
+					<Index>10</Index>
+					<Type>Binary</Type>
+					<Name>StepData</Name>
+				</Field>
+			</Fields>
+		</Packet>
     <Packet>
       <HeaderType>C1Header</HeaderType>
       <Code>10</Code>
