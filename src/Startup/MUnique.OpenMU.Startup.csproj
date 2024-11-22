@@ -2,10 +2,8 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <TieredPGO>true</TieredPGO>
-    <ServerGarbageCollection>false</ServerGarbageCollection>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <Nullable>enable</Nullable>
     <WarningsAsErrors>nullable;CS4014;VSTHRD110;VSTHRD100</WarningsAsErrors>

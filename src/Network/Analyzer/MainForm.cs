@@ -60,7 +60,7 @@ public partial class MainForm : Form
         this.Disposed += (_, _) => this._analyzer.Dispose();
 
         this.clientVersionComboBox.SelectedIndexChanged += OnSelectedClientVersionChanged;
-        this.clientVersionComboBox.DataSource = new BindingSource(this._clientVersions, null);
+        this.clientVersionComboBox.DataSource = new BindingSource(this._clientVersions, string.Empty);
         this.clientVersionComboBox.DisplayMember = "Value";
         this.clientVersionComboBox.ValueMember = "Key";
 
