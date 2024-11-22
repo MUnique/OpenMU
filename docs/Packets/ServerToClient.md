@@ -172,6 +172,7 @@
   * [C3 CA - ChatRoomConnectionInfo (by server)](C3-CA-ChatRoomConnectionInfo_by-server.md)
   * [C3 CB - FriendInvitationResult (by server)](C3-CB-FriendInvitationResult_by-server.md)
   * [C1 D4 - ObjectWalked (by server)](C1-D4-ObjectWalked_by-server.md)
+  * [C1 D4 - ObjectWalkedExtended (by server)](C1-D4-ObjectWalkedExtended_by-server.md)
   * [C1 DE 00 - CharacterClassCreationUnlock (by server)](C1-DE-00-CharacterClassCreationUnlock_by-server.md)
   * [C1 F1 00 - GameServerEntered (by server)](C1-F1-00-GameServerEntered_by-server.md)
   * [C1 F1 01 - LoginResponse (by server)](C1-F1-01-LoginResponse_by-server.md)

@@ -6893,6 +6893,158 @@ public readonly struct ObjectWalked
 /// Is sent by the server when: An object in the observed scope (including the own player) walked to another position.
 /// Causes reaction on client side: The object is animated to walk to the new position.
 /// </summary>
+public readonly struct ObjectWalkedExtended
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ObjectWalkedExtended"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public ObjectWalkedExtended(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ObjectWalkedExtended"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private ObjectWalkedExtended(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)data.Length;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xD4;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1Header Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the header code.
+    /// </summary>
+    public byte HeaderCode
+    {
+        get => this._data.Span[2];
+        set => this._data.Span[2] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the object id.
+    /// </summary>
+    public ushort ObjectId
+    {
+        get => ReadUInt16BigEndian(this._data.Span[3..]);
+        set => WriteUInt16BigEndian(this._data.Span[3..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the source x.
+    /// </summary>
+    public byte SourceX
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the source y.
+    /// </summary>
+    public byte SourceY
+    {
+        get => this._data.Span[6];
+        set => this._data.Span[6] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the target x.
+    /// </summary>
+    public byte TargetX
+    {
+        get => this._data.Span[7];
+        set => this._data.Span[7] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the target y.
+    /// </summary>
+    public byte TargetY
+    {
+        get => this._data.Span[8];
+        set => this._data.Span[8] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the target rotation.
+    /// </summary>
+    public byte TargetRotation
+    {
+        get => this._data.Span[9..].GetByteValue(4, 4);
+        set => this._data.Span[9..].SetByteValue(value, 4, 4);
+    }
+
+    /// <summary>
+    /// Gets or sets the step count.
+    /// </summary>
+    public byte StepCount
+    {
+        get => this._data.Span[9..].GetByteValue(4, 0);
+        set => this._data.Span[9..].SetByteValue(value, 4, 0);
+    }
+
+    /// <summary>
+    /// Gets or sets the step data.
+    /// </summary>
+    public Span<byte> StepData
+    {
+        get => this._data.Slice(10).Span;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="ObjectWalkedExtended"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator ObjectWalkedExtended(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="ObjectWalkedExtended"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(ObjectWalkedExtended packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified length of <see cref="StepData"/>.
+    /// </summary>
+    /// <param name="stepDataLength">The length in bytes of <see cref="StepData"/> on which the required size depends.</param>
+        
+    public static int GetRequiredSize(int stepDataLength) => stepDataLength + 10;
+}
+
+
+/// <summary>
+/// Is sent by the server when: An object in the observed scope (including the own player) walked to another position.
+/// Causes reaction on client side: The object is animated to walk to the new position.
+/// </summary>
 public readonly struct ObjectWalked075
 {
     private readonly Memory<byte> _data;
