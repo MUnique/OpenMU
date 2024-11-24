@@ -40,15 +40,14 @@ public class ChaosMixes : InitializerBase
 
         chaosWeapon.SimpleCraftingSettings = chaosWeaponSettings;
         chaosWeaponSettings.MoneyPerFinalSuccessPercentage = 10000;
-        chaosWeaponSettings.SuccessPercent = 1;
 
         // Requirements:
         var randomItem = this.Context.CreateNew<ItemCraftingRequiredItem>();
         randomItem.MinimumAmount = 1;
         randomItem.MinimumItemLevel = 4;
         randomItem.MaximumItemLevel = Constants.MaximumItemLevel;
-        randomItem.NpcPriceDivisor = 15000;
-        randomItem.FailResult = MixResult.DowngradedRandom;
+        randomItem.NpcPriceDivisor = 10000;
+        randomItem.FailResult = MixResult.Disappear;
         randomItem.RequiredItemOptions.Add(this.GameConfiguration.ItemOptionTypes.First(o => o == ItemOptionTypes.Option));
         randomItem.SuccessResult = MixResult.Disappear;
         chaosWeaponSettings.RequiredItems.Add(randomItem);
@@ -79,19 +78,24 @@ public class ChaosMixes : InitializerBase
 
         // Result:
         chaosWeaponSettings.ResultItemSelect = ResultItemSelection.Any;
-        chaosWeaponSettings.ResultItemLuckOptionChance = 10;
-        chaosWeaponSettings.ResultItemSkillChance = 30;
+        chaosWeaponSettings.ResultItemRateDependentOptions = true;
 
         var chaosDragonAxe = this.Context.CreateNew<ItemCraftingResultItem>();
         chaosDragonAxe.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Chaos Dragon Axe");
+        chaosDragonAxe.RandomMinimumLevel = 0;
+        chaosDragonAxe.RandomMaximumLevel = 4;
         chaosWeaponSettings.ResultItems.Add(chaosDragonAxe);
 
         var chaosNatureBow = this.Context.CreateNew<ItemCraftingResultItem>();
         chaosNatureBow.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Chaos Nature Bow");
+        chaosNatureBow.RandomMinimumLevel = 0;
+        chaosNatureBow.RandomMaximumLevel = 4;
         chaosWeaponSettings.ResultItems.Add(chaosNatureBow);
 
         var chaosLightningStaff = this.Context.CreateNew<ItemCraftingResultItem>();
         chaosLightningStaff.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Chaos Lightning Staff");
+        chaosLightningStaff.RandomMinimumLevel = 0;
+        chaosLightningStaff.RandomMaximumLevel = 4;
         chaosWeaponSettings.ResultItems.Add(chaosLightningStaff);
 
         return chaosWeapon;

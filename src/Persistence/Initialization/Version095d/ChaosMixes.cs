@@ -55,7 +55,7 @@ public class ChaosMixes : InitializerBase
         craftingSettings.Money = 2_000_000 * (targetLevel - 9);
         craftingSettings.SuccessPercent = (byte)(targetLevel == 10 ? 50 : 45);
         craftingSettings.SuccessPercentageAdditionForLuck = 25;
-        craftingSettings.SuccessPercentageAdditionForExcellentItem = -10; // => check if true
+        craftingSettings.SuccessPercentageAdditionForExcellentItem = -10; // check if true
 
         // Requirements:
         var item = this.Context.CreateNew<ItemCraftingRequiredItem>();
@@ -106,14 +106,13 @@ public class ChaosMixes : InitializerBase
 
         chaosWeapon.SimpleCraftingSettings = chaosWeaponSettings;
         chaosWeaponSettings.MoneyPerFinalSuccessPercentage = 10000;
-        chaosWeaponSettings.SuccessPercent = 1;
 
         // Requirements:
         var randomItem = this.Context.CreateNew<ItemCraftingRequiredItem>();
         randomItem.MinimumAmount = 1;
         randomItem.MinimumItemLevel = 4;
         randomItem.MaximumItemLevel = Constants.MaximumItemLevel;
-        randomItem.NpcPriceDivisor = 15000;
+        randomItem.NpcPriceDivisor = 10000;
         randomItem.FailResult = MixResult.Disappear;
         randomItem.RequiredItemOptions.Add(this.GameConfiguration.ItemOptionTypes.First(o => o == ItemOptionTypes.Option));
         randomItem.SuccessResult = MixResult.Disappear;
@@ -145,19 +144,24 @@ public class ChaosMixes : InitializerBase
 
         // Result:
         chaosWeaponSettings.ResultItemSelect = ResultItemSelection.Any;
-        chaosWeaponSettings.ResultItemLuckOptionChance = 10;
-        chaosWeaponSettings.ResultItemSkillChance = 30;
+        chaosWeaponSettings.ResultItemRateDependentOptions = true;
 
         var chaosDragonAxe = this.Context.CreateNew<ItemCraftingResultItem>();
         chaosDragonAxe.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Chaos Dragon Axe");
+        chaosDragonAxe.RandomMinimumLevel = 0;
+        chaosDragonAxe.RandomMaximumLevel = 4;
         chaosWeaponSettings.ResultItems.Add(chaosDragonAxe);
 
         var chaosNatureBow = this.Context.CreateNew<ItemCraftingResultItem>();
         chaosNatureBow.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Chaos Nature Bow");
+        chaosNatureBow.RandomMinimumLevel = 0;
+        chaosNatureBow.RandomMaximumLevel = 4;
         chaosWeaponSettings.ResultItems.Add(chaosNatureBow);
 
         var chaosLightningStaff = this.Context.CreateNew<ItemCraftingResultItem>();
         chaosLightningStaff.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Chaos Lightning Staff");
+        chaosLightningStaff.RandomMinimumLevel = 0;
+        chaosLightningStaff.RandomMaximumLevel = 4;
         chaosWeaponSettings.ResultItems.Add(chaosLightningStaff);
 
         return chaosWeapon;
@@ -225,7 +229,7 @@ public class ChaosMixes : InitializerBase
 
         // Result:
         craftingSettings.ResultItemSelect = ResultItemSelection.Any;
-        craftingSettings.ResultItemLuckOptionChance = 10;
+        craftingSettings.ResultItemRateDependentOptions = true;
 
         var fairyWings = this.Context.CreateNew<ItemCraftingResultItem>();
         fairyWings.ItemDefinition = this.GameConfiguration.Items.First(i => i.Group == 12 && i.Number == 0);
@@ -252,7 +256,7 @@ public class ChaosMixes : InitializerBase
         crafting.SimpleCraftingSettings = craftingSettings;
         craftingSettings.Money = 500_000;
         craftingSettings.SuccessPercent = 70;
-        craftingSettings.ResultItemExcellentOptionChance = 10;
+        craftingSettings.ResultItemExcellentOptionChance = 30;
         craftingSettings.ResultItemSkillChance = 100;
 
         // Requirements:

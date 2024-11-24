@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Items;
 
 using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
+using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.GameLogic.Views.NPC;
@@ -42,7 +43,7 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
         if (success)
         {
             player.Logger.LogInformation("Crafting succeeded with success chance: {successRate} %", successRate);
-            if (await this.DoTheMixAsync(items, player, socketSlot).ConfigureAwait(false) is { } item)
+            if (await this.DoTheMixAsync(items, player, socketSlot, successRate).ConfigureAwait(false) is { } item)
             {
                 player.Logger.LogInformation("Crafted item: {item}", item);
                 return (CraftingResult.Success, item);
@@ -86,8 +87,9 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
     /// <param name="requiredItems">The required items.</param>
     /// <param name="player">The player.</param>
     /// <param name="socketSlot">The slot of the socket.</param>
+    /// <param name="successRate">The success rate of the combination.</param>
     /// <returns>The created or modified items.</returns>
-    protected abstract ValueTask<List<Item>> CreateOrModifyResultItemsAsync(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot);
+    protected abstract ValueTask<List<Item>> CreateOrModifyResultItemsAsync(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot, byte successRate);
 
     /// <summary>
     /// Performs the crafting with the specified items.
@@ -95,17 +97,18 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
     /// <param name="requiredItems">The required items.</param>
     /// <param name="player">The player.</param>
     /// <param name="socketSlot">The slot of the socket.</param>
+    /// <param name="successRate">The success rate of the combination.</param>
     /// <returns>
     /// The created or modified item. If there are multiple, only the last one is returned.
     /// </returns>
-    private async ValueTask<Item?> DoTheMixAsync(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot)
+    private async ValueTask<Item?> DoTheMixAsync(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot, byte successRate)
     {
         foreach (var requiredItemLink in requiredItems)
         {
             await this.RequiredItemChangeAsync(player, requiredItemLink, true).ConfigureAwait(false);
         }
 
-        var resultItems = await this.CreateOrModifyResultItemsAsync(requiredItems, player, socketSlot).ConfigureAwait(false);
+        var resultItems = await this.CreateOrModifyResultItemsAsync(requiredItems, player, socketSlot, successRate).ConfigureAwait(false);
         return resultItems.LastOrDefault();
     }
 
@@ -136,7 +139,12 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
                 itemLink.Items.ForEach(item =>
                 {
                     var previousLevel = item.Level;
-                    item.Level = (byte)Rand.NextInt(0, item.Level);
+                    item.Level -= (byte)(Rand.NextRandomBool(0.5) ? 2 : 3);
+                    if (item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.Option) is { } optionLink)
+                    {
+                        item.ItemOptions.Remove(optionLink);
+                    }
+
                     player.Logger.LogDebug("Item {0} was downgraded from {1} to {2}.", item, previousLevel, item.Level);
                 });
 

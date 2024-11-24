@@ -89,7 +89,7 @@ public class Misc : InitializerBase
     private void CreateLifeStone()
     {
         var itemDefinition = this.Context.CreateNew<ItemDefinition>();
-        itemDefinition.Name = "Life Stone"; //Client calls this Scroll of Guardian
+        itemDefinition.Name = "Life Stone";
         itemDefinition.Number = 11;
         itemDefinition.Group = 13;
         itemDefinition.DropLevel = 75;

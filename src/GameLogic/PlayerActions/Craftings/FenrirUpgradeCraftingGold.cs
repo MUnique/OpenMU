@@ -156,9 +156,10 @@ public class FenrirUpgradeCraftingGold : BaseItemCraftingHandler
     }
 
     /// <inheritdoc/>
-    protected override async ValueTask<List<Item>> CreateOrModifyResultItemsAsync(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketIndex)
+    protected override async ValueTask<List<Item>> CreateOrModifyResultItemsAsync(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketIndex, byte successRate)
     {
         var fenrir = requiredItems.First(i => i.ItemRequirement.Reference == 1).Items.First();
+        fenrir.Durability = 255;
 
         IEnumerable<IncreasableItemOption> fenrirOptions;
         if (requiredItems.Any(i => i.ItemRequirement.Reference == 2))

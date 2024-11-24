@@ -33,6 +33,11 @@ public partial class SimpleCraftingSettings
     public byte MaximumSuccessPercent { get; set; }
 
     /// <summary>
+    /// Gets or sets the minimum success percent.
+    /// </summary>
+    public byte MinimumSuccessPercent { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating whether multiple crafting at the same time are allowed for this crafting.
     /// </summary>
     public bool MultipleAllowed { get; set; }
@@ -98,4 +103,22 @@ public partial class SimpleCraftingSettings
     /// Gets or sets the maximum excellent options in the random result item.
     /// </summary>
     public byte ResultItemMaxExcOptionCount { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the skill, luck, and item option chances of the random result item are a function of the combination success rate.
+    /// </summary>
+    /// <remarks>Used for Chaos Weapon and 1st Level Wing craftings.</remarks>
+    public bool ResultItemRateDependentOptions { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the result item is a 2nd level wing.
+    /// </summary>
+    /// <remarks>Used for 2nd Level Wing and Cape craftings.</remarks>
+    public bool ResultItemIs2ndWing { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the result item is a 3rd level wing.
+    /// </summary>
+    /// <remarks>Used for 3rd Level Wing (stage 2) crafting.</remarks>
+    public bool ResultItemIs3rdWing { get; set; }
 }
