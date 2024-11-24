@@ -408,6 +408,7 @@ public class ItemConsumptionTest
         var item = new Mock<Item>();
         item.SetupAllProperties();
         item.Setup(i => i.ItemOptions).Returns(new List<ItemOptionLink>());
+        item.Setup(i => i.ItemSetGroups).Returns(new List<ItemOfItemSet>());
         var definition = new Mock<ItemDefinition>();
         definition.SetupAllProperties();
         definition.Setup(d => d.PossibleItemOptions).Returns(new List<ItemOptionDefinition>());
