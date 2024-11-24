@@ -13,8 +13,8 @@ General requirements:
 * A game client (check our Discord FAQs)
 * Knowledge or way to start the game client, so that it connects to the server. Our Launcher will do that.
 
-  * Launcher binaries: [MUnique.OpenMU.ClientLauncher v0.8.17.zip](https://github.com/MUnique/OpenMU/releases/download/v0.8.17/MUnique.OpenMU.ClientLauncher_0.8.17.zip)
-    * It requires the [.NET 8 runtime](https://dotnet.microsoft.com/download/dotnet/8.0)
+  * Launcher binaries: [MUnique.OpenMU.ClientLauncher v0.9.0.zip](https://github.com/MUnique/OpenMU/releases/download/v0.9.0/MUnique.OpenMU.ClientLauncher_0.9.0.zip)
+    * It requires the [.NET 9 runtime](https://dotnet.microsoft.com/download/dotnet/9.0)
   * If your server and client runs on your local host, use any IP of 127.x.x.x, except 127.0.0.1, because this one is blocked by the client. For example, you could use 127.127.127.127
 
 This guide describes two ways of starting the server. Use Docker, if you just
@@ -55,16 +55,16 @@ Requirements:
 
   * PostgreSQL installed
 
-  * Visual Studio 2022 (17.8+) installed, with workloads for ASP.NET Web development
+  * Visual Studio 2022 (17.12+) installed, with workloads for ASP.NET Web development
     and .NET Desktop development. Please keep it up-to-date to prevent any issues.
   
   * Visual Stuido Extension "Web Compiler 2022+", if you plan to edit SCSS files
     for the admin panel.
     * https://marketplace.visualstudio.com/items?itemName=Failwyn.WebCompiler64
 
-  * [.NET SDK 8](https://dotnet.microsoft.com/download/dotnet/8.0)
-    (it should be included in Visual Studio 17.8+)
-    * `winget install Microsoft.DotNet.SDK.8`
+  * [.NET SDK 9](https://dotnet.microsoft.com/download/dotnet/9.0)
+    (it should be included in Visual Studio 17.12+)
+    * `winget install Microsoft.DotNet.SDK.9`
 
   * [NodeJS 16+](https://nodejs.org) installed
     * `winget install OpenJS.NodeJS.LTS`

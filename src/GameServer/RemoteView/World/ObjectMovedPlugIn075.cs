@@ -29,7 +29,7 @@ public class ObjectMovedPlugIn075 : ObjectMovedPlugIn
     }
 
     /// <inheritdoc />
-    protected override ValueTask SendWalkAsync(IConnection connection, ushort objectId, Point targetPoint, Memory<Direction> steps, Direction rotation, int stepsLength)
+    protected override ValueTask SendWalkAsync(IConnection connection, ushort objectId, Point sourcePoint, Point targetPoint, Memory<Direction> steps, Direction rotation, int stepsLength)
     {
         return connection.SendObjectWalked075Async(objectId, targetPoint.X, targetPoint.Y, rotation.ToPacketByte());
     }
