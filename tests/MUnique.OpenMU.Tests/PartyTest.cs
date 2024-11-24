@@ -111,8 +111,8 @@ public class PartyTest
         Assert.That(partyMember2.Party, Is.Null);
         Assert.That(party.PartyList, Is.Null.Or.Empty);
 
-        Mock.Get(partyMember1.ViewPlugIns.GetPlugIn<IPartyMemberRemovedPlugIn>()).Verify(v => v!.PartyMemberRemovedAsync(partyMember1Index), Times.Once);
-        Mock.Get(partyMember2.ViewPlugIns.GetPlugIn<IPartyMemberRemovedPlugIn>()).Verify(v => v!.PartyMemberRemovedAsync(partyMember2Index), Times.Once);
+        Mock.Get(partyMember1.ViewPlugIns.GetPlugIn<IPartyMemberRemovedPlugIn>()!).Verify(v => v!.PartyMemberRemovedAsync(partyMember1Index), Times.Once);
+        Mock.Get(partyMember2.ViewPlugIns.GetPlugIn<IPartyMemberRemovedPlugIn>()!).Verify(v => v!.PartyMemberRemovedAsync(partyMember2Index), Times.Once);
     }
 
     /// <summary>
@@ -128,7 +128,7 @@ public class PartyTest
 
         await handler.HandlePartyRequestAsync(player, toRequest).ConfigureAwait(false);
 
-        Mock.Get(toRequest.ViewPlugIns.GetPlugIn<IShowPartyRequestPlugIn>()).Verify(v => v!.ShowPartyRequestAsync(player), Times.Once);
+        Mock.Get(toRequest.ViewPlugIns.GetPlugIn<IShowPartyRequestPlugIn>()!).Verify(v => v!.ShowPartyRequestAsync(player), Times.Once);
         Assert.That(toRequest.LastPartyRequester, Is.SameAs(player));
     }
 
@@ -149,8 +149,8 @@ public class PartyTest
         Assert.That(player.Party!.PartyMaster, Is.SameAs(requester));
         Assert.That(player.LastPartyRequester, Is.Null);
         Assert.That(player.Party.PartyList, Contains.Item(player));
-        Mock.Get(player.ViewPlugIns.GetPlugIn<IUpdatePartyListPlugIn>()).Verify(v => v!.UpdatePartyListAsync(), Times.AtLeastOnce);
-        Mock.Get(requester.ViewPlugIns.GetPlugIn<IUpdatePartyListPlugIn>()).Verify(v => v!.UpdatePartyListAsync(), Times.AtLeastOnce);
+        Mock.Get(player.ViewPlugIns.GetPlugIn<IUpdatePartyListPlugIn>()!).Verify(v => v!.UpdatePartyListAsync(), Times.AtLeastOnce);
+        Mock.Get(requester.ViewPlugIns.GetPlugIn<IUpdatePartyListPlugIn>()!).Verify(v => v!.UpdatePartyListAsync(), Times.AtLeastOnce);
     }
 
     /// <summary>
@@ -175,7 +175,7 @@ public class PartyTest
         Assert.That(player.Party!.PartyList, Is.Not.Contains(requester));
         Assert.That(player.LastPartyRequester, Is.Null);
         Assert.That(requester.Party, Is.Null);
-        Mock.Get(player.ViewPlugIns.GetPlugIn<IShowPartyRequestPlugIn>()).Verify(v => v!.ShowPartyRequestAsync(requester), Times.Never);
+        Mock.Get(player.ViewPlugIns.GetPlugIn<IShowPartyRequestPlugIn>()!).Verify(v => v!.ShowPartyRequestAsync(requester), Times.Never);
     }
 
     private async ValueTask<Player> CreatePartyMemberAsync()
