@@ -7616,7 +7616,7 @@ public readonly ref struct PartyInviteResponseRef
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 4;
+    public static int Length => 6;
 
     /// <summary>
     /// Gets the header of this packet.
