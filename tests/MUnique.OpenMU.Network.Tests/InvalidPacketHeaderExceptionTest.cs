@@ -73,7 +73,7 @@ public class InvalidPacketHeaderExceptionTest
         }
         catch (Exception e)
         {
-            Assert.Fail($"Wrong exception type {e}", e);
+            Assert.Fail($"Wrong exception type {e}");
         }
 
         Assert.That(thrown);

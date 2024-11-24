@@ -158,7 +158,7 @@ public class GameMapTest
         player2.Object.Position = new Point(101, 100);
         await map.AddAsync(player2.Object).ConfigureAwait(false);
         await map.RemoveAsync(player2.Object).ConfigureAwait(false);
-        Assert.AreEqual(player2.Object.ObservingBuckets.Count, 0);
+        Assert.Equals(player2.Object.ObservingBuckets.Count, 0);
         player1.Verify(p => p.LocateableRemovedAsync(It.IsAny<ILocateable>()), Times.Once);
         player2.Verify(p => p.LocateableRemovedAsync(It.IsAny<ILocateable>()), Times.Once);
         Assert.That(player1.Object.Observers.Count, Is.EqualTo(0));

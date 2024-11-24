@@ -35,7 +35,7 @@ public class PacketTwisterTest
         Assert.That(actual.Length, Is.EqualTo(expected.Length));
         for (int i = 0; i < actual.Length; i++)
         {
-            Assert.That(actual[i], Is.EqualTo(expected[i]), "index {0}, packet type {1}", i, expected[expected.GetPacketHeaderSize()]);
+            Assert.That(actual[i], Is.EqualTo(expected[i]), $"index {i}, packet type {expected[expected.GetPacketHeaderSize()]}");
         }
     }
 }

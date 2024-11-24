@@ -34,12 +34,12 @@ public class TradeTest
 
         var packetHandler = new TradeRequestAction();
         var success = await packetHandler.RequestTradeAsync(player, tradePartner).ConfigureAwait(false);
-        Assert.AreEqual(true, success);
-        Assert.AreSame(tradePartner, player.TradingPartner);
-        Assert.AreSame(player, tradePartner.TradingPartner);
-        Assert.AreEqual(PlayerState.TradeRequested, player.PlayerState.CurrentState);
-        Assert.AreEqual(PlayerState.TradeRequested, tradePartner.PlayerState.CurrentState);
-        Mock.Get(tradePartner.ViewPlugIns.GetPlugIn<IShowTradeRequestPlugIn>()).Verify(view => view!.ShowTradeRequestAsync(player), Times.Once);
+        Assert.Equals(true, success);
+        Assert.That(tradePartner, Is.EqualTo(player.TradingPartner));
+        Assert.That(player, Is.EqualTo(tradePartner.TradingPartner));
+        Assert.Equals(PlayerState.TradeRequested, player.PlayerState.CurrentState);
+        Assert.Equals(PlayerState.TradeRequested, tradePartner.PlayerState.CurrentState);
+        Mock.Get(tradePartner.ViewPlugIns.GetPlugIn<IShowTradeRequestPlugIn>()!).Verify(view => view!.ShowTradeRequestAsync(player), Times.Once);
     }
 
     /// <summary>
@@ -54,9 +54,9 @@ public class TradeTest
         responder.TradingPartner = requester;
         var responseHandler = new TradeAcceptAction();
         await responseHandler.HandleTradeAcceptAsync(responder, true).ConfigureAwait(false);
-        Assert.AreEqual(requester.PlayerState.CurrentState, PlayerState.TradeOpened);
-        Assert.AreEqual(responder.PlayerState.CurrentState, PlayerState.TradeOpened);
-        Mock.Get(requester.ViewPlugIns.GetPlugIn<IShowTradeRequestAnswerPlugIn>()).Verify(view => view!.ShowTradeRequestAnswerAsync(true), Times.Once);
+        Assert.Equals(requester.PlayerState.CurrentState, PlayerState.TradeOpened);
+        Assert.Equals(responder.PlayerState.CurrentState, PlayerState.TradeOpened);
+        Mock.Get(requester.ViewPlugIns.GetPlugIn<IShowTradeRequestAnswerPlugIn>()!).Verify(view => view!.ShowTradeRequestAnswerAsync(true), Times.Once);
     }
 
     /// <summary>
@@ -71,11 +71,11 @@ public class TradeTest
         trader2.TradingPartner = trader1;
         var cancelTrader = new TradeCancelAction();
         await cancelTrader.CancelTradeAsync(trader1).ConfigureAwait(false);
-        Assert.AreEqual(PlayerState.EnteredWorld, trader1.PlayerState.CurrentState);
-        Assert.AreEqual(PlayerState.EnteredWorld, trader2.PlayerState.CurrentState);
+        Assert.Equals(PlayerState.EnteredWorld, trader1.PlayerState.CurrentState);
+        Assert.Equals(PlayerState.EnteredWorld, trader2.PlayerState.CurrentState);
 
-        Mock.Get(trader1.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()).Verify(view => view!.TradeFinishedAsync(TradeResult.Cancelled), Times.Once);
-        Mock.Get(trader2.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()).Verify(view => view!.TradeFinishedAsync(TradeResult.Cancelled), Times.Once);
+        Mock.Get(trader1.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()!).Verify(view => view!.TradeFinishedAsync(TradeResult.Cancelled), Times.Once);
+        Mock.Get(trader2.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()!).Verify(view => view!.TradeFinishedAsync(TradeResult.Cancelled), Times.Once);
     }
 
     /// <summary>
@@ -98,15 +98,15 @@ public class TradeTest
 
         var tradeButtonHandler = new TradeButtonAction();
         await tradeButtonHandler.TradeButtonChangedAsync(trader1, TradeButtonState.Unchecked).ConfigureAwait(false);
-        Assert.AreEqual(trader1.PlayerState.CurrentState, PlayerState.TradeOpened);
+        Assert.Equals(trader1.PlayerState.CurrentState, PlayerState.TradeOpened);
         await tradeButtonHandler.TradeButtonChangedAsync(trader1, TradeButtonState.Checked).ConfigureAwait(false);
-        Assert.AreEqual(trader1.PlayerState.CurrentState, PlayerState.TradeButtonPressed);
-        Assert.AreEqual(trader2.PlayerState.CurrentState, PlayerState.TradeOpened);
+        Assert.Equals(trader1.PlayerState.CurrentState, PlayerState.TradeButtonPressed);
+        Assert.Equals(trader2.PlayerState.CurrentState, PlayerState.TradeOpened);
         await tradeButtonHandler.TradeButtonChangedAsync(trader2, TradeButtonState.Checked).ConfigureAwait(false);
-        Assert.AreEqual(trader1.PlayerState.CurrentState, PlayerState.EnteredWorld);
-        Assert.AreEqual(trader2.PlayerState.CurrentState, PlayerState.EnteredWorld);
-        Mock.Get(trader1.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()).Verify(view => view!.TradeFinishedAsync(TradeResult.Success), Times.Once);
-        Mock.Get(trader2.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()).Verify(view => view!.TradeFinishedAsync(TradeResult.Success), Times.Once);
+        Assert.Equals(trader1.PlayerState.CurrentState, PlayerState.EnteredWorld);
+        Assert.Equals(trader2.PlayerState.CurrentState, PlayerState.EnteredWorld);
+        Mock.Get(trader1.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()!).Verify(view => view!.TradeFinishedAsync(TradeResult.Success), Times.Once);
+        Mock.Get(trader2.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()!).Verify(view => view!.TradeFinishedAsync(TradeResult.Success), Times.Once);
     }
 
     /// <summary>

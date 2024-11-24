@@ -1,4 +1,5 @@
-﻿// <copyright file="HostConfigurationDialog.cs" company="MUnique">
+﻿using System.ComponentModel;
+// <copyright file="HostConfigurationDialog.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -22,6 +23,7 @@ public partial class HostConfigurationDialog : Form
     /// <summary>
     /// Gets or sets the settings.
     /// </summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public ServerHostSettings Settings
     {
         get
