@@ -73,7 +73,7 @@ public class GuildActionTest : GuildTestBase
         var guildRequestAction = new GuildRequestAction();
         await guildRequestAction.RequestGuildAsync(this._player, this._guildMasterPlayer.Id).ConfigureAwait(false);
         Assert.That(this._guildMasterPlayer.LastGuildRequester, Is.SameAs(this._player));
-        Mock.Get(this._guildMasterPlayer.ViewPlugIns.GetPlugIn<IShowGuildJoinRequestPlugIn>()).Verify(g => g!.ShowGuildJoinRequestAsync(this._player), Times.Once);
+        Mock.Get(this._guildMasterPlayer.ViewPlugIns.GetPlugIn<IShowGuildJoinRequestPlugIn>()!).Verify(g => g!.ShowGuildJoinRequestAsync(this._player), Times.Once);
     }
 
     /// <summary>
@@ -86,7 +86,7 @@ public class GuildActionTest : GuildTestBase
 
         Assert.That(this._player.GuildStatus, Is.Not.Null);
         Assert.That(this._player.GuildStatus!.GuildId, Is.Not.EqualTo(0));
-        Mock.Get(this._player.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()).Verify(g => g!.ShowGuildJoinResponseAsync(GuildRequestAnswerResult.Accepted), Times.Once);
+        Mock.Get(this._player.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()!).Verify(g => g!.ShowGuildJoinResponseAsync(GuildRequestAnswerResult.Accepted), Times.Once);
     }
 
     /// <summary>
@@ -97,7 +97,7 @@ public class GuildActionTest : GuildTestBase
     {
         await this.RequestGuildAndRespondAsync(false).ConfigureAwait(false);
         Assert.That(this._player.GuildStatus, Is.Null);
-        Mock.Get(this._player.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()).Verify(g => g!.ShowGuildJoinResponseAsync(GuildRequestAnswerResult.Refused), Times.Once);
+        Mock.Get(this._player.ViewPlugIns.GetPlugIn<IGuildJoinResponsePlugIn>()!).Verify(g => g!.ShowGuildJoinResponseAsync(GuildRequestAnswerResult.Refused), Times.Once);
     }
 
     /// <summary>
@@ -109,7 +109,7 @@ public class GuildActionTest : GuildTestBase
         var action = new GuildMasterAnswerAction();
         this._player.OpenedNpc = new NonPlayerCharacter(null!, null!, null!);
         await action.ProcessAnswerAsync(this._player, GuildMasterAnswerAction.Answer.ShowDialog).ConfigureAwait(false);
-        Mock.Get(this._player.ViewPlugIns.GetPlugIn<IShowGuildCreationDialogPlugIn>()).Verify(g => g!.ShowGuildCreationDialogAsync(), Times.Once());
+        Mock.Get(this._player.ViewPlugIns.GetPlugIn<IShowGuildCreationDialogPlugIn>()!).Verify(g => g!.ShowGuildCreationDialogAsync(), Times.Once());
     }
 
     /// <summary>
@@ -137,7 +137,7 @@ public class GuildActionTest : GuildTestBase
         var action = new GuildListRequestAction();
         await action.RequestGuildListAsync(this._player).ConfigureAwait(false);
         var guildList = await this.GuildServer.GetGuildListAsync(this._player.GuildStatus!.GuildId).ConfigureAwait(false);
-        Mock.Get(this._player.ViewPlugIns.GetPlugIn<IShowGuildListPlugIn>()).Verify(v => v!.ShowGuildListAsync(It.Is<IEnumerable<GuildListEntry>>(list => list.Any(entry => entry.PlayerName == this._player.SelectedCharacter!.Name))), Times.Once());
+        Mock.Get(this._player.ViewPlugIns.GetPlugIn<IShowGuildListPlugIn>()!).Verify(v => v!.ShowGuildListAsync(It.Is<IEnumerable<GuildListEntry>>(list => list.Any(entry => entry.PlayerName == this._player.SelectedCharacter!.Name))), Times.Once());
         Assert.That(guildList.Any(entry => entry.PlayerName == this._player.SelectedCharacter!.Name), Is.True);
     }
 

@@ -312,7 +312,7 @@ public class ItemConsumptionTest
         var success = await consumeHandler.ConsumeItemAsync(player, item, null, FruitUsage.Undefined).ConfigureAwait(false);
 
         Assert.That(success, Is.False);
-        Mock.Get(player.ViewPlugIns.GetPlugIn<IConsumeSpecialItemPlugIn>()).Verify(view => view!.ConsumeSpecialItemAsync(item, 80), Times.Never);
+        Mock.Get(player.ViewPlugIns.GetPlugIn<IConsumeSpecialItemPlugIn>()!).Verify(view => view!.ConsumeSpecialItemAsync(item, 80), Times.Never);
     }
 
     /// <summary>
@@ -347,7 +347,7 @@ public class ItemConsumptionTest
         var success = await consumeHandler.ConsumeItemAsync(player, item, null, FruitUsage.Undefined).ConfigureAwait(false);
 
         Assert.That(success, Is.True);
-        Mock.Get(player.ViewPlugIns.GetPlugIn<IConsumeSpecialItemPlugIn>()).Verify(view => view!.ConsumeSpecialItemAsync(item, 80), Times.Once);
+        Mock.Get(player.ViewPlugIns.GetPlugIn<IConsumeSpecialItemPlugIn>()!).Verify(view => view!.ConsumeSpecialItemAsync(item, 80), Times.Once);
     }
 
     /// <summary>
@@ -408,6 +408,7 @@ public class ItemConsumptionTest
         var item = new Mock<Item>();
         item.SetupAllProperties();
         item.Setup(i => i.ItemOptions).Returns(new List<ItemOptionLink>());
+        item.Setup(i => i.ItemSetGroups).Returns(new List<ItemOfItemSet>());
         var definition = new Mock<ItemDefinition>();
         definition.SetupAllProperties();
         definition.Setup(d => d.PossibleItemOptions).Returns(new List<ItemOptionDefinition>());

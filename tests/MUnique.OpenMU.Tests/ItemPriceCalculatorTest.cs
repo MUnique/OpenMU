@@ -398,6 +398,7 @@ public class ItemPriceCalculatorTest
         var itemMock = new Mock<Item>();
         itemMock.SetupAllProperties();
         itemMock.Setup(i => i.ItemOptions).Returns(new List<ItemOptionLink>());
+        itemMock.Setup(i => i.ItemSetGroups).Returns(new List<ItemOfItemSet>());
         var item = itemMock.Object;
         item.Definition = itemDefinition;
         item.Level = level;

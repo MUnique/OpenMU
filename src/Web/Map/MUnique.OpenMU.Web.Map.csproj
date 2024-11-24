@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <WarningsAsErrors>nullable;CS4014;VSTHRD110;VSTHRD100</WarningsAsErrors>
@@ -16,6 +16,7 @@
   <ItemGroup>
     <PackageReference Include="Mapster" Version="7.4.0" />
     <PackageReference Include="Nito.AsyncEx" Version="5.1.2" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="2.1.9" />
     <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0" />
   </ItemGroup>
 
@@ -24,7 +25,7 @@
         The CI environment is identified by the parameter 'ci'. It's set in the azure pipelines and Dockerfile.
         If you run into errors here under Linux/Mac OS, it might help to add this parameter, too. -->
     <PackageReference Include="BuildWebCompiler2022" Version="1.14.10" />
-    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="5.4.5">
+    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="5.7.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
