@@ -10456,6 +10456,10 @@ tr:nth-child(50) {
   animation-fill-mode: forwards;
 }
 
+.quickgrid tbody tr:has(td:empty) {
+  display: none;
+}
+
 app {
   position: relative;
   display: flex;

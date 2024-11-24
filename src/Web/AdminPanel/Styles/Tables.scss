@@ -40,3 +40,7 @@ th input {
         animation-fill-mode: forwards;
     }
 }
+
+.quickgrid tbody tr:has(td:empty) {
+  display: none;
+}
