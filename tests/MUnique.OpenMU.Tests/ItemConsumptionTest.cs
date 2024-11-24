@@ -144,10 +144,13 @@ public class ItemConsumptionTest
     }
 
     /// <summary>
-    /// Tests if a failed Jewels of life reduces the option level (in case level > 1).
+    /// Tests if a failed Jewel of life removes the option at any level.
     /// </summary>
-    [Test]
-    public async ValueTask JewelOfLifeFailReducesOptionLevelAsync()
+    /// <param name="numberOfOptions">The number of options.</param>
+    [TestCase(1)]
+    [TestCase(2)]
+    [TestCase(3)]
+    public async ValueTask JewelOfLifeFailRemovesOptionAsync(int numberOfOptions)
     {
         var consumeHandler = new LifeJewelConsumeHandlerPlugIn();
         consumeHandler.Configuration.SuccessChance = 1;
@@ -156,49 +159,18 @@ public class ItemConsumptionTest
         var upgradableItemSlot = (byte)(ItemSlot + 1);
         await player.Inventory!.AddItemAsync(upgradableItemSlot, upgradeableItem).ConfigureAwait(false);
 
-        // we're adding 3 options first
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < numberOfOptions; i++)
         {
-            var item = this.GetItem();
-            await player.Inventory.AddItemAsync(ItemSlot, item).ConfigureAwait(false);
-            item.Durability = 1;
+            var jol1 = this.GetItem();
+            await player.Inventory.AddItemAsync(ItemSlot, jol1).ConfigureAwait(false);
+            jol1.Durability = 1;
 
-            await consumeHandler.ConsumeItemAsync(player, item, upgradeableItem, FruitUsage.Undefined).ConfigureAwait(false);
+            await consumeHandler.ConsumeItemAsync(player, jol1, upgradeableItem, FruitUsage.Undefined).ConfigureAwait(false);
         }
-
-        // then adding fails, so one option needs to be removed
-        consumeHandler.Configuration.SuccessChance = 0;
-        var jol = this.GetItem();
-        await player.Inventory.AddItemAsync(ItemSlot, jol).ConfigureAwait(false);
-        jol.Durability = 1;
-        var jolConsumed = await consumeHandler.ConsumeItemAsync(player, jol, upgradeableItem, FruitUsage.Undefined).ConfigureAwait(false);
-
-        Assert.That(jolConsumed, Is.True);
-        Assert.That(upgradeableItem.ItemOptions.Count, Is.EqualTo(1));
-        Assert.That(upgradeableItem.ItemOptions.First().Level, Is.EqualTo(2));
-    }
-
-    /// <summary>
-    /// Tests if a failed Jewels of life removes the option (in case level = 1).
-    /// </summary>
-    [Test]
-    public async ValueTask JewelOfLifeFailRemovesOptionAsync()
-    {
-        var consumeHandler = new LifeJewelConsumeHandlerPlugIn();
-        consumeHandler.Configuration.SuccessChance = 1;
-        var player = await this.GetPlayerAsync().ConfigureAwait(false);
-        var upgradeableItem = this.GetItemWithPossibleOption();
-        var upgradableItemSlot = (byte)(ItemSlot + 1);
-        await player.Inventory!.AddItemAsync(upgradableItemSlot, upgradeableItem).ConfigureAwait(false);
-
-        var jol = this.GetItem();
-        await player.Inventory.AddItemAsync(ItemSlot, jol).ConfigureAwait(false);
-        jol.Durability = 1;
-
-        await consumeHandler.ConsumeItemAsync(player, jol, upgradeableItem, FruitUsage.Undefined).ConfigureAwait(false);
+ 
         Assert.That(upgradeableItem.ItemOptions.Count, Is.EqualTo(1));
 
-        // then adding fails, so one option needs to be removed
+        // then adding fails, so option needs to be removed
         consumeHandler.Configuration.SuccessChance = 0;
         var jol2 = this.GetItem();
         await player.Inventory.AddItemAsync(ItemSlot, jol2).ConfigureAwait(false);
