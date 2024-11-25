@@ -24,5 +24,9 @@ RUN dotnet publish "MUnique.OpenMU.Startup.csproj" -c Release -o /app/publish -p
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
+RUN mkdir /app/logs
+RUN chmod 777 /app/logs
+
 USER $APP_UID
 ENTRYPOINT ["dotnet", "MUnique.OpenMU.Startup.dll", "-autostart"]
