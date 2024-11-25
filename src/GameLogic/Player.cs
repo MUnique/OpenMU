@@ -1177,8 +1177,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         if (currentMap.Terrain.WalkMap[target.X, target.Y])
         {
             this.Logger.LogDebug("WalkToAsync: Player is walking to {0}", target);
-            await this._walker.WalkToAsync(target, steps).ConfigureAwait(false);
+
+            var token = await this._walker.InitializeWalkToAsync(target, steps).ConfigureAwait(false);
             await currentMap.MoveAsync(this, target, this._moveLock, MoveType.Walk).ConfigureAwait(false);
+            await this._walker.StartWalkAsync(token).ConfigureAwait(false);
+
             this.Logger.LogDebug("WalkToAsync: Observer Count: {0}", this.Observers.Count);
         }
         else
