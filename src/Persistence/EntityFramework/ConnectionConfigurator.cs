@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework;
 
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Nito.AsyncEx.Synchronous;
 
@@ -101,6 +102,9 @@ public static class ConnectionConfigurator
     /// <exception cref="NotImplementedException">At the moment only Npgsql engine (PostgreSQL) is implemented.</exception>
     internal static void Configure(this DbContext context, DbContextOptionsBuilder optionsBuilder)
     {
+        // see https://github.com/dotnet/efcore/issues/34431
+        optionsBuilder.ConfigureWarnings(a => a.Ignore(RelationalEventId.PendingModelChangesWarning));
+
         var type = context.GetType();
         if (type.IsGenericType)
         {

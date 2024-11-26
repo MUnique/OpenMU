@@ -188,8 +188,9 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
     public async ValueTask WalkToAsync(Point target, Memory<WalkingStep> steps)
     {
         await this._walker.StopAsync().ConfigureAwait(false);
-        await this._walker.WalkToAsync(target, steps).ConfigureAwait(false);
+        var token = await this._walker.InitializeWalkToAsync(target, steps).ConfigureAwait(false);
         await this.MoveAsync(target, MoveType.Walk).ConfigureAwait(false);
+        await this._walker.StartWalkAsync(token).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
