@@ -37,24 +37,23 @@ public class ChaosMixes : InitializerBase
         chaosWeapon.Name = "Chaos Weapon";
         chaosWeapon.Number = 1;
         var chaosWeaponSettings = this.Context.CreateNew<SimpleCraftingSettings>();
-
         chaosWeapon.SimpleCraftingSettings = chaosWeaponSettings;
-        chaosWeaponSettings.MoneyPerFinalSuccessPercentage = 10000;
+        chaosWeaponSettings.MoneyPerFinalSuccessPercentage = 10_000;
 
         // Requirements:
         var randomItem = this.Context.CreateNew<ItemCraftingRequiredItem>();
         randomItem.MinimumAmount = 1;
         randomItem.MinimumItemLevel = 4;
         randomItem.MaximumItemLevel = Constants.MaximumItemLevel;
-        randomItem.NpcPriceDivisor = 10000;
-        randomItem.FailResult = MixResult.Disappear;
+        randomItem.NpcPriceDivisor = 10_000;
+        randomItem.FailResult = MixResult.ChaosWeaponAndFirstWingsDowngradedRandom;
         randomItem.RequiredItemOptions.Add(this.GameConfiguration.ItemOptionTypes.First(o => o == ItemOptionTypes.Option));
         randomItem.SuccessResult = MixResult.Disappear;
         chaosWeaponSettings.RequiredItems.Add(randomItem);
 
         var chaos = this.Context.CreateNew<ItemCraftingRequiredItem>();
         chaos.MinimumAmount = 1;
-        chaos.AddPercentage = 2;
+        chaos.NpcPriceDivisor = 10_000;
         chaos.SuccessResult = MixResult.Disappear;
         chaos.FailResult = MixResult.Disappear;
         chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos"));
@@ -62,7 +61,7 @@ public class ChaosMixes : InitializerBase
 
         var bless = this.Context.CreateNew<ItemCraftingRequiredItem>();
         bless.MinimumAmount = 0;
-        bless.AddPercentage = 5;
+        bless.NpcPriceDivisor = 10_000;
         bless.SuccessResult = MixResult.Disappear;
         bless.FailResult = MixResult.Disappear;
         bless.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Bless"));
@@ -70,7 +69,7 @@ public class ChaosMixes : InitializerBase
 
         var soul = this.Context.CreateNew<ItemCraftingRequiredItem>();
         soul.MinimumAmount = 0;
-        soul.AddPercentage = 4;
+        soul.NpcPriceDivisor = 10_000;
         soul.SuccessResult = MixResult.Disappear;
         soul.FailResult = MixResult.Disappear;
         soul.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Soul"));

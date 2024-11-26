@@ -135,7 +135,43 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
                 }
 
                 break;
-            case MixResult.DowngradedRandom:
+            case MixResult.ChaosWeaponAndFirstWingsDowngradedRandom:
+                itemLink.Items.ForEach(item =>
+                {
+                    var previousLevel = item.Level;
+                    var hadSkill = item.HasSkill;
+                    var optionLowered = false;
+                    item.Level = (byte)Rand.NextInt(0, previousLevel);
+                    if (item.HasSkill && Rand.NextRandomBool(0.5))
+                    {
+                        item.HasSkill = false;
+                    }
+
+                    if (item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.Option) is { } optionLink && Rand.NextRandomBool(0.5))
+                    {
+                        optionLowered = true;
+                        if (optionLink.Level > 1)
+                        {
+                            optionLink.Level--;
+                        }
+                        else
+                        {
+                            item.ItemOptions.Remove(optionLink);
+                        }
+                    }
+
+                    item.Durability = item.GetMaximumDurabilityOfOnePiece();
+                    player.Logger.LogDebug(
+                        "Item {0} was downgraded from {1} to {2}. Skill removed: {3}. Item option lowered by 1 level: {4}.",
+                        item,
+                        previousLevel,
+                        item.Level,
+                        hadSkill && !item.HasSkill,
+                        optionLowered);
+                });
+
+                break;
+            case MixResult.ThirdWingsDowngradedRandom:
                 itemLink.Items.ForEach(item =>
                 {
                     var previousLevel = item.Level;
@@ -145,15 +181,8 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
                         item.ItemOptions.Remove(optionLink);
                     }
 
-                    player.Logger.LogDebug("Item {0} was downgraded from {1} to {2}.", item, previousLevel, item.Level);
-                });
-
-                break;
-            case MixResult.DowngradedTo0:
-                itemLink.Items.ForEach(item =>
-                {
-                    player.Logger.LogDebug("Item {0} is getting downgraded to level 0.", item);
-                    item.Level = 0;
+                    item.Durability = item.GetMaximumDurabilityOfOnePiece();
+                    player.Logger.LogDebug("Item {0} was downgraded from {1} to {2}. Item option was removed.", item, previousLevel, item.Level);
                 });
 
                 break;

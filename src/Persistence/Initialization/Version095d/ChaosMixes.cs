@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version095d;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.GameLogic.PlayerActions.Craftings;
 using MUnique.OpenMU.Persistence.Initialization.Version095d.Items;
 
 /// <summary>
@@ -103,24 +104,23 @@ public class ChaosMixes : InitializerBase
         chaosWeapon.Name = "Chaos Weapon";
         chaosWeapon.Number = 1;
         var chaosWeaponSettings = this.Context.CreateNew<SimpleCraftingSettings>();
-
         chaosWeapon.SimpleCraftingSettings = chaosWeaponSettings;
-        chaosWeaponSettings.MoneyPerFinalSuccessPercentage = 10000;
+        chaosWeaponSettings.MoneyPerFinalSuccessPercentage = 10_000;
 
         // Requirements:
         var randomItem = this.Context.CreateNew<ItemCraftingRequiredItem>();
         randomItem.MinimumAmount = 1;
         randomItem.MinimumItemLevel = 4;
         randomItem.MaximumItemLevel = Constants.MaximumItemLevel;
-        randomItem.NpcPriceDivisor = 10000;
-        randomItem.FailResult = MixResult.Disappear;
+        randomItem.NpcPriceDivisor = 10_000;
+        randomItem.FailResult = MixResult.ChaosWeaponAndFirstWingsDowngradedRandom;
         randomItem.RequiredItemOptions.Add(this.GameConfiguration.ItemOptionTypes.First(o => o == ItemOptionTypes.Option));
         randomItem.SuccessResult = MixResult.Disappear;
         chaosWeaponSettings.RequiredItems.Add(randomItem);
 
         var chaos = this.Context.CreateNew<ItemCraftingRequiredItem>();
         chaos.MinimumAmount = 1;
-        chaos.AddPercentage = 2;
+        chaos.NpcPriceDivisor = 10_000;
         chaos.SuccessResult = MixResult.Disappear;
         chaos.FailResult = MixResult.Disappear;
         chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos"));
@@ -128,7 +128,7 @@ public class ChaosMixes : InitializerBase
 
         var bless = this.Context.CreateNew<ItemCraftingRequiredItem>();
         bless.MinimumAmount = 0;
-        bless.AddPercentage = 5;
+        bless.NpcPriceDivisor = 10_000;
         bless.SuccessResult = MixResult.Disappear;
         bless.FailResult = MixResult.Disappear;
         bless.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Bless"));
@@ -136,7 +136,7 @@ public class ChaosMixes : InitializerBase
 
         var soul = this.Context.CreateNew<ItemCraftingRequiredItem>();
         soul.MinimumAmount = 0;
-        soul.AddPercentage = 4;
+        soul.NpcPriceDivisor = 10_000;
         soul.SuccessResult = MixResult.Disappear;
         soul.FailResult = MixResult.Disappear;
         soul.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Soul"));
@@ -173,10 +173,8 @@ public class ChaosMixes : InitializerBase
         crafting.Name = "1st Level Wings";
         crafting.Number = 11;
         var craftingSettings = this.Context.CreateNew<SimpleCraftingSettings>();
-
         crafting.SimpleCraftingSettings = craftingSettings;
-        craftingSettings.MoneyPerFinalSuccessPercentage = 10000;
-        craftingSettings.SuccessPercent = 1;
+        craftingSettings.MoneyPerFinalSuccessPercentage = 10_000;
 
         // Requirements:
         var chaosWeapon = this.Context.CreateNew<ItemCraftingRequiredItem>();
@@ -187,8 +185,8 @@ public class ChaosMixes : InitializerBase
         chaosWeapon.MaximumAmount = 1;
         chaosWeapon.MinimumItemLevel = 4;
         chaosWeapon.MaximumItemLevel = Constants.MaximumItemLevel;
-        chaosWeapon.NpcPriceDivisor = 15000;
-        chaosWeapon.FailResult = MixResult.Disappear;
+        chaosWeapon.NpcPriceDivisor = 10_000;
+        chaosWeapon.FailResult = MixResult.ChaosWeaponAndFirstWingsDowngradedRandom;
         chaosWeapon.RequiredItemOptions.Add(this.GameConfiguration.ItemOptionTypes.First(o => o == ItemOptionTypes.Option));
         chaosWeapon.SuccessResult = MixResult.Disappear;
         craftingSettings.RequiredItems.Add(chaosWeapon);
@@ -197,7 +195,7 @@ public class ChaosMixes : InitializerBase
         randomItem.MinimumAmount = 0;
         randomItem.MinimumItemLevel = 4;
         randomItem.MaximumItemLevel = Constants.MaximumItemLevel;
-        randomItem.NpcPriceDivisor = 15000;
+        randomItem.NpcPriceDivisor = 10_000;
         randomItem.FailResult = MixResult.Disappear;
         randomItem.RequiredItemOptions.Add(this.GameConfiguration.ItemOptionTypes.First(o => o == ItemOptionTypes.Option));
         randomItem.SuccessResult = MixResult.Disappear;
@@ -205,7 +203,7 @@ public class ChaosMixes : InitializerBase
 
         var chaos = this.Context.CreateNew<ItemCraftingRequiredItem>();
         chaos.MinimumAmount = 1;
-        chaos.AddPercentage = 2;
+        chaos.NpcPriceDivisor = 10_000;
         chaos.SuccessResult = MixResult.Disappear;
         chaos.FailResult = MixResult.Disappear;
         chaos.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Chaos"));
@@ -213,7 +211,7 @@ public class ChaosMixes : InitializerBase
 
         var bless = this.Context.CreateNew<ItemCraftingRequiredItem>();
         bless.MinimumAmount = 0;
-        bless.AddPercentage = 5;
+        bless.NpcPriceDivisor = 10_000;
         bless.SuccessResult = MixResult.Disappear;
         bless.FailResult = MixResult.Disappear;
         bless.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Bless"));
@@ -221,7 +219,7 @@ public class ChaosMixes : InitializerBase
 
         var soul = this.Context.CreateNew<ItemCraftingRequiredItem>();
         soul.MinimumAmount = 0;
-        soul.AddPercentage = 4;
+        soul.NpcPriceDivisor = 10_000;
         soul.SuccessResult = MixResult.Disappear;
         soul.FailResult = MixResult.Disappear;
         soul.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Jewel of Soul"));
@@ -251,6 +249,7 @@ public class ChaosMixes : InitializerBase
         var crafting = this.Context.CreateNew<ItemCrafting>();
         crafting.Name = "Dinorant";
         crafting.Number = 5;
+        crafting.ItemCraftingHandlerClassName = typeof(DinorantCraftingHandler).FullName!;
         var craftingSettings = this.Context.CreateNew<SimpleCraftingSettings>();
 
         crafting.SimpleCraftingSettings = craftingSettings;

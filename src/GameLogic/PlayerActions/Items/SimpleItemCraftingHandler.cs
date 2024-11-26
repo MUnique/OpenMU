@@ -170,6 +170,84 @@ public class SimpleItemCraftingHandler : BaseItemCraftingHandler
         return resultList;
     }
 
+    /// <summary>
+    /// Randomly adds an excellent option to the <paramref name="resultItem"/>.
+    /// </summary>
+    /// <param name="resultItem">The result item.</param>
+    /// <param name="player">The player.</param>
+    protected virtual void AddRandomExcellentOptions(Item resultItem, Player player)
+    {
+        if (this._settings.ResultItemExcellentOptionChance > 0
+            && resultItem.Definition!.PossibleItemOptions.FirstOrDefault(o =>
+                    o.PossibleOptions.Any(p => p.OptionType == ItemOptionTypes.Excellent || p.OptionType == ItemOptionTypes.Wing))
+                is { } optionDefinition)
+        {
+            for (int j = 0;
+                j < optionDefinition.MaximumOptionsPerItem && Rand.NextRandomBool(this._settings.ResultItemExcellentOptionChance);
+                j++)
+            {
+                var link = player.PersistenceContext.CreateNew<ItemOptionLink>();
+                link.ItemOption = optionDefinition.PossibleOptions
+                    .Except(resultItem.ItemOptions.Select(io => io.ItemOption)).SelectRandom();
+                resultItem.ItemOptions.Add(link);
+                if (resultItem.Definition.Skill != null)
+                {
+                    // Excellent items always have skill.
+                    resultItem.HasSkill = true;
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Randomly adds an item option to the <paramref name="resultItem"/>.
+    /// </summary>
+    /// <param name="resultItem">The result item.</param>
+    /// <param name="player">The player.</param>
+    /// <param name="successRate">The crafting combination success rate.</param>
+    protected virtual void AddRandomItemOption(Item resultItem, Player player, byte successRate)
+    {
+        if (this._settings.ResultItemRateDependentOptions
+            && resultItem.Definition!.PossibleItemOptions.FirstOrDefault(o =>
+                    o.PossibleOptions.Any(p => p.OptionType == ItemOptionTypes.Option))
+                is { } option)
+        {
+            int i = Rand.NextInt(0, 3);
+            if (Rand.NextRandomBool((successRate / 5) + (4 * (i + 1))))
+            {
+                var link = player.PersistenceContext.CreateNew<ItemOptionLink>();
+                link.ItemOption = option.PossibleOptions.First();
+                link.Level = 3 - i;
+                resultItem.ItemOptions.Add(link);
+            }
+        }
+    }
+
+    private void AddRandomLuckOption(Item resultItem, Player player, byte successRate)
+    {
+        if (((this._settings.ResultItemLuckOptionChance > 0 && Rand.NextRandomBool(this._settings.ResultItemLuckOptionChance))
+                || (this._settings.ResultItemRateDependentOptions && Rand.NextRandomBool((successRate / 5) + 4)))
+            && resultItem.Definition!.PossibleItemOptions.FirstOrDefault(o =>
+                    o.PossibleOptions.Any(po => po.OptionType == ItemOptionTypes.Luck))
+                is { } luck)
+        {
+            var luckOption = player.PersistenceContext.CreateNew<ItemOptionLink>();
+            luckOption.ItemOption = luck.PossibleOptions.First();
+            resultItem.ItemOptions.Add(luckOption);
+        }
+    }
+
+    private void AddRandomSkill(Item resultItem, byte successRate)
+    {
+        if (!resultItem.HasSkill
+            && ((this._settings.ResultItemSkillChance > 0 && Rand.NextRandomBool(this._settings.ResultItemSkillChance))
+                || (this._settings.ResultItemRateDependentOptions && Rand.NextRandomBool((successRate / 5) + 6)))
+            && resultItem.Definition!.Skill is { })
+        {
+            resultItem.HasSkill = true;
+        }
+    }
+
     private async ValueTask<List<Item>> CreateResultItemsAsync(Player player, IList<CraftingRequiredItemLink> referencedItems, ItemCraftingResultItem craftingResultItem, byte successRate)
     {
         int resultItemCount = this._settings.MultipleAllowed
@@ -188,175 +266,14 @@ public class SimpleItemCraftingHandler : BaseItemCraftingHandler
             resultItem.Durability = craftingResultItem.Durability ?? resultItem.GetMaximumDurabilityOfOnePiece();
 
             this.AddRandomLuckOption(resultItem, player, successRate);
-            this.AddRandomExcellentOptions(resultItem, player);
+            this.AddRandomItemOption(resultItem, player, successRate);
             this.AddRandomSkill(resultItem, successRate);
-            if (this._settings.ResultItemRateDependentOptions || this._settings.ResultItemIs2ndWing || this._settings.ResultItemIs3rdWing)
-            {
-                this.AddRandomItemOption(resultItem, player, successRate);
-            }
+            this.AddRandomExcellentOptions(resultItem, player);
 
             await player.TemporaryStorage!.AddItemAsync(resultItem).ConfigureAwait(false);
             resultList.Add(resultItem);
         }
 
         return resultList;
-    }
-
-    private void AddRandomLuckOption(Item resultItem, Player player, byte successRate)
-    {
-        if (((this._settings.ResultItemLuckOptionChance > 0 && Rand.NextRandomBool(this._settings.ResultItemLuckOptionChance))
-                || (this._settings.ResultItemRateDependentOptions && Rand.NextRandomBool((successRate / 5) + 4)))
-            && resultItem.Definition!.PossibleItemOptions.FirstOrDefault(o =>
-                    o.PossibleOptions.Any(po => po.OptionType == ItemOptionTypes.Luck))
-                is { } luck)
-        {
-            var luckOption = player.PersistenceContext.CreateNew<ItemOptionLink>();
-            luckOption.ItemOption = luck.PossibleOptions.First();
-            resultItem.ItemOptions.Add(luckOption);
-        }
-    }
-
-    private void AddRandomItemOption(Item resultItem, Player player, byte successRate)
-    {
-        if (resultItem.Definition!.PossibleItemOptions.Where(o => o.PossibleOptions.Any(p => p.OptionType == ItemOptionTypes.Option))
-            is { } options && options.Any())
-        {
-            if (this._settings.ResultItemRateDependentOptions)
-            {
-                int i = Rand.NextInt(0, 3);
-                if (Rand.NextRandomBool((successRate / 5) + (4 * (i + 1))))
-                {
-                    var link = player.PersistenceContext.CreateNew<ItemOptionLink>();
-                    link.ItemOption = options.First().PossibleOptions.First();
-                    link.Level = 3 - i;
-                    resultItem.ItemOptions.Add(link);
-                }
-            }
-            else if (this._settings.ResultItemIs2ndWing)
-            {
-                (int chance, int level) = Rand.NextInt(0, 3) switch
-                {
-                    0 => (20, 1),
-                    1 => (10, 2),
-                    _ => (4, 3),
-                }; // From 300 created wings about 20+10+4=34 (~11%) will have item option
-
-                if (Rand.NextRandomBool(chance))
-                {
-                    var link = player.PersistenceContext.CreateNew<ItemOptionLink>();
-                    link.Level = level;
-                    if (options.Count() > 1)
-                    {
-                        link.ItemOption = options.ElementAt(Rand.NextInt(0, 2)).PossibleOptions.First();
-                    }
-                    else
-                    {
-                        link.ItemOption = options.ElementAt(0).PossibleOptions.First(); // Cape of Lord
-                    }
-
-                    resultItem.ItemOptions.Add(link);
-                }
-            }
-            else
-            {
-                // 3rd level wings
-                (int chance1, int level) = Rand.NextInt(0, 4) switch
-                {
-                    0 => (0, 0),
-                    1 => (12, 1),
-                    2 => (6, 2),
-                    _ => (3, 3),
-                }; // From 400 created wings about 0+12+6+3=21 (~5%) will have item option
-
-                if (Rand.NextRandomBool(chance1))
-                {
-                    var link = player.PersistenceContext.CreateNew<ItemOptionLink>();
-                    link.Level = level;
-                    (int chance2, int type) = Rand.NextInt(0, 2) switch
-                    {
-                        0 => (40, 1),
-                        _ => (30, 2),
-                    };
-
-                    if (Rand.NextRandomBool(chance2))
-                    {
-                        link.ItemOption = options.ElementAt(type).PossibleOptions.First();  // Additional dmg (phys, wiz, curse) or defense
-                    }
-                    else
-                    {
-                        link.ItemOption = options.ElementAt(0).PossibleOptions.First(); // HP recovery %
-                    }
-
-                    resultItem.ItemOptions.Add(link);
-                }
-            }
-        }
-    }
-
-    private void AddRandomExcellentOptions(Item resultItem, Player player)
-    {
-        if (resultItem.Definition!.PossibleItemOptions.FirstOrDefault(o =>
-                    o.PossibleOptions.Any(p => p.OptionType == ItemOptionTypes.Excellent || p.OptionType == ItemOptionTypes.Wing))
-                is { } optionDefinition)
-        {
-            if (this._settings.ResultItemExcellentOptionChance > 0)
-            {
-                for (int j = 0;
-                    j < optionDefinition.MaximumOptionsPerItem && Rand.NextRandomBool(this._settings.ResultItemExcellentOptionChance);
-                    j++)
-                {
-                    var link = player.PersistenceContext.CreateNew<ItemOptionLink>();
-                    link.ItemOption = optionDefinition.PossibleOptions
-                        .Except(resultItem.ItemOptions.Select(io => io.ItemOption)).SelectRandom();
-                    resultItem.ItemOptions.Add(link);
-                    if (resultItem.Definition.Skill != null)
-                    {
-                        // Excellent items always have skill.
-                        resultItem.HasSkill = true;
-                    }
-
-                    if (resultItem.Definition.Group == 13 && resultItem.Definition.Number == 3 && Rand.NextRandomBool(13)) // 0.2*0.66 = 13.2%
-                    {
-                        // For Dinorant there is a second rollout for an additional bonus option to the first.
-                        var bonusLink = player.PersistenceContext.CreateNew<ItemOptionLink>();
-                        bonusLink.ItemOption = optionDefinition.PossibleOptions
-                            .Except(resultItem.ItemOptions.Select(io => io.ItemOption)).SelectRandom();
-                        resultItem.ItemOptions.Add(bonusLink);
-                    }
-                }
-            }
-            else if (this._settings.ResultItemIs3rdWing)
-            {
-                (int chance, int type) = Rand.NextInt(0, 4) switch
-                {
-                    0 => (4, 0),   // Ignore def
-                    1 => (2, 1),   // 5% full reflect
-                    2 => (7, 2),   // 5% HP restore
-                    _ => (7, 3),   // 5% mana restore
-                };  // From 400 created wings about 4+2+7+7=20 (5%) will have exc option
-
-                if (Rand.NextRandomBool(chance))
-                {
-                    var link = player.PersistenceContext.CreateNew<ItemOptionLink>();
-                    link.ItemOption = optionDefinition.PossibleOptions.ElementAt(type);
-                    resultItem.ItemOptions.Add(link);
-                }
-            }
-            else
-            {
-                // Nothing to do here...
-            }
-        }
-    }
-
-    private void AddRandomSkill(Item resultItem, byte successRate)
-    {
-        if (!resultItem.HasSkill
-            && ((this._settings.ResultItemSkillChance > 0 && Rand.NextRandomBool(this._settings.ResultItemSkillChance))
-                || (this._settings.ResultItemRateDependentOptions && Rand.NextRandomBool((successRate / 5) + 6)))
-            && resultItem.Definition!.Skill is { })
-        {
-            resultItem.HasSkill = true;
-        }
     }
 }

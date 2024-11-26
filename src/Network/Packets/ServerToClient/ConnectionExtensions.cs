@@ -1198,6 +1198,50 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="ObjectWalkedExtended" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="headerCode">The header code.</param>
+    /// <param name="objectId">The object id.</param>
+    /// <param name="sourceX">The source x.</param>
+    /// <param name="sourceY">The source y.</param>
+    /// <param name="targetX">The target x.</param>
+    /// <param name="targetY">The target y.</param>
+    /// <param name="targetRotation">The target rotation.</param>
+    /// <param name="stepCount">The step count.</param>
+    /// <param name="stepData">The step data.</param>
+    /// <remarks>
+    /// Is sent by the server when: An object in the observed scope (including the own player) walked to another position.
+    /// Causes reaction on client side: The object is animated to walk to the new position.
+    /// </remarks>
+    public static async ValueTask SendObjectWalkedExtendedAsync(this IConnection? connection, byte @headerCode, ushort @objectId, byte @sourceX, byte @sourceY, byte @targetX, byte @targetY, byte @targetRotation, byte @stepCount, Memory<byte> @stepData)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ObjectWalkedExtendedRef.GetRequiredSize(stepData.Length);
+            var packet = new ObjectWalkedExtendedRef(connection.Output.GetSpan(length)[..length]);
+            packet.HeaderCode = @headerCode;
+            packet.ObjectId = @objectId;
+            packet.SourceX = @sourceX;
+            packet.SourceY = @sourceY;
+            packet.TargetX = @targetX;
+            packet.TargetY = @targetY;
+            packet.TargetRotation = @targetRotation;
+            packet.StepCount = @stepCount;
+            @stepData.Span.CopyTo(packet.StepData);
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="ObjectWalked075" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>

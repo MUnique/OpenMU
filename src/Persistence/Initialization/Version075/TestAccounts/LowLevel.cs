@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075.TestAccounts;
 
 using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
@@ -31,7 +32,12 @@ internal class LowLevel : AccountInitializerBase
     protected override Character CreateKnight()
     {
         var character = this.CreateCharacter(this.AccountName + "Dk", CharacterClassNumber.DarkKnight, this.Level, 0);
-        character.Inventory!.Items.Add(this.CreateSmallAxe(0));
+        var z = this.CreateSmallAxe(0);
+        z.Level = 9;
+        var option = this.Context.CreateNew<ItemOptionLink>();
+        option.ItemOption = z.Definition!.PossibleItemOptions.First(o => o.PossibleOptions.Any(p => p.OptionType == ItemOptionTypes.Option)).PossibleOptions.First();
+        z.ItemOptions.Add(option);
+        character.Inventory!.Items.Add(z);
         character.Inventory.Items.Add(this.CreateArmorItem(52, 5, 8)); // Leather Armor
         character.Inventory.Items.Add(this.CreateArmorItem(47, 5, 7)); // Leather Helm
         character.Inventory.Items.Add(this.CreateArmorItem(49, 5, 9)); // Leather Pants

@@ -55,7 +55,7 @@ public class FenrirUpgradeCrafting : BaseItemCraftingHandler
 
         if (hornOfFenrir is null
             || chaos is null
-            || jewelsOfLife.Count < 5) // check
+            || jewelsOfLife.Count < 5)
         {
             return CraftingResult.LackingMixItems;
         }

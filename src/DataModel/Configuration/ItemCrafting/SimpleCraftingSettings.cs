@@ -109,16 +109,4 @@ public partial class SimpleCraftingSettings
     /// </summary>
     /// <remarks>Used for Chaos Weapon and 1st Level Wing craftings.</remarks>
     public bool ResultItemRateDependentOptions { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether the result item is a 2nd level wing.
-    /// </summary>
-    /// <remarks>Used for 2nd Level Wing and Cape craftings.</remarks>
-    public bool ResultItemIs2ndWing { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether the result item is a 3rd level wing.
-    /// </summary>
-    /// <remarks>Used for 3rd Level Wing (stage 2) crafting.</remarks>
-    public bool ResultItemIs3rdWing { get; set; }
 }
