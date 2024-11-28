@@ -8,6 +8,7 @@ using System.Threading;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views.World;
+using MUnique.OpenMU.Pathfinding;
 
 /// <summary>
 /// The summon skill action for Dark Lord.
@@ -51,7 +52,26 @@ public class SummonPartySkillAction : TargetedSkillActionBase
         var targetPlayers = targets.OfType<Player>().Where(p => p != player);
         foreach (var targetPlayer in targetPlayers)
         {
-            _ = Task.Run(() => targetPlayer.TeleportAsync(player.CurrentMap!, player.Position, skill));
+            Point targetPoint = player.Position;
+            bool foundValidPoint = false;
+            int maxAttempts = 100;
+            int attempts = 0;
+
+            while (!foundValidPoint && attempts < maxAttempts)
+            {
+                attempts++;
+
+                var offsetX = Rand.NextInt(-3, 3);
+                var offsetY = Rand.NextInt(-3, 3);
+                targetPoint = new((byte)(player.Position.X + offsetX), (byte)(player.Position.Y + offsetY));
+
+                if (player.CurrentMap!.Terrain.WalkMap[targetPoint.X, targetPoint.Y])
+                {
+                    foundValidPoint = true;
+                }
+            }
+
+            _ = Task.Run(() => targetPlayer.TeleportAsync(player.CurrentMap!, targetPoint, skill));
         }
 
         await player.ForEachWorldObserverAsync<INewPlayersInScopePlugIn>(p => p.NewPlayersInScopeAsync(targetPlayers, false), false).ConfigureAwait(false);
