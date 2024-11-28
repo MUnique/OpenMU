@@ -61,12 +61,14 @@ public class SummonPartySkillAction : TargetedSkillActionBase
             {
                 attempts++;
 
-                var offsetX = Rand.NextInt(-3, 3);
-                var offsetY = Rand.NextInt(-3, 3);
-                targetPoint = new((byte)(player.Position.X + offsetX), (byte)(player.Position.Y + offsetY));
+                var offsetX = Rand.NextInt(-3, 4);
+                var offsetY = Rand.NextInt(-3, 4);
+                Point validPoint = new((byte)(player.Position.X + offsetX), (byte)(player.Position.Y + offsetY));
 
-                if (player.CurrentMap!.Terrain.WalkMap[targetPoint.X, targetPoint.Y])
+                if (player.CurrentMap!.Terrain.WalkMap[targetPoint.X, targetPoint.Y]
+                    && player.Position.EuclideanDistanceTo(targetPoint) < 8)
                 {
+                    targetPoint = validPoint;
                     foundValidPoint = true;
                 }
             }
