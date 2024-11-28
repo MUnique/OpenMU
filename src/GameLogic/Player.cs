@@ -463,9 +463,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public WeakReference<Player>? LastRequestedPlayerStore { get; set; }
 
     /// <summary>
-    /// Gets or sets the cancellation token source for the nova skill.
+    /// Gets or sets the cancellation token source for the targeted skills with channeling.
     /// </summary>
-    public NovaCancellationTokenSource? NovaCancellationTokenSource { get; set; }
+    public TargetedSkillCancellationTokenSource? TargetedSkillCancelTokenSource { get; set; }
 
     /// <summary>
     /// Gets the mu helper.
@@ -688,7 +688,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.IsTeleporting = true;
         try
         {
-            await (this.NovaCancellationTokenSource?.CancelAsync() ?? Task.CompletedTask).ConfigureAwait(false);
+            await (this.TargetedSkillCancelTokenSource?.CancelAsync() ?? Task.CompletedTask).ConfigureAwait(false);
 
             await this._walker.StopAsync().ConfigureAwait(false);
 

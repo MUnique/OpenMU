@@ -13,21 +13,41 @@ using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// Handler for targeted skill packets.
+/// Reprersents the targeted skill packet handler.
+/// </summary>
+internal partial class TargetedSkillHandlerPlugIn
+{
+    private readonly Dictionary<int, ITargetedSkillAction> _handlers = [];
+    private readonly ITargetedSkillAction _defaultHandler = new TargetedSkillActionDefault();
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TargetedSkillHandlerPlugIn"/> class.
+    /// </summary>
+    public TargetedSkillHandlerPlugIn()
+    {
+        // Load all plugins in the current assembly
+        var pluginType = typeof(ITargetedSkillAction);
+        var pluginInstances = AppDomain.CurrentDomain.GetAssemblies()
+            .SelectMany(a => a.GetTypes())
+            .Where(t => pluginType.IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract)
+            .Select(t => (ITargetedSkillAction)Activator.CreateInstance(t)!)
+            .ToList();
+
+        foreach (var plugin in pluginInstances)
+        {
+            this._handlers[plugin.Key] = plugin;
+        }
+    }
+}
+
+/// <summary>
+/// Implements the targeted skill packet handler.
 /// </summary>
 [PlugIn("TargetedSkillHandlerPlugIn", "Handler for targeted skill packets.")]
 [Guid("5b07d03c-509c-4aec-972c-a99db77561f2")]
 [MinimumClient(3, 0, ClientLanguage.Invariant)]
-internal class TargetedSkillHandlerPlugIn : IPacketHandlerPlugIn
+internal partial class TargetedSkillHandlerPlugIn : IPacketHandlerPlugIn
 {
-    private const ushort ForceSkillId = 60;
-    private const ushort ForceWaveSkillId = 66;
-    private const ushort NovaSkillId = 40;
-    private const ushort NovaStartId = 58;
-
-    private readonly TargetedSkillAction _attackAction = new();
-    private readonly NovaSkillAction _novaSkillAction = new();
-
     /// <inheritdoc/>
     public virtual bool IsEncryptionExpected => true;
 
@@ -50,37 +70,22 @@ internal class TargetedSkillHandlerPlugIn : IPacketHandlerPlugIn
     /// <param name="targetId">The target identifier.</param>
     protected async ValueTask HandleAsync(Player player, ushort skillId, ushort targetId)
     {
-        var checkSkill = skillId == NovaStartId ? NovaSkillId : skillId;
-        if (player.SkillList is null || !player.SkillList.ContainsSkill(checkSkill))
+        if (player.SkillList is null || !player.SkillList.ContainsSkill(skillId))
         {
             return;
         }
 
-        // Special handling of force wave skill. The client might send skill id 60,
-        // even though it's performing force wave.
-        if (skillId == ForceSkillId && player.SkillList.ContainsSkill(ForceWaveSkillId))
+        this._handlers.TryGetValue(skillId, out var plugin);
+
+        if (plugin == null)
         {
-            skillId = ForceWaveSkillId;
+            plugin = this._defaultHandler;
         }
 
-        if (skillId is NovaSkillId or NovaStartId)
-        {
-            if (skillId == NovaStartId)
-            {
-                await this._novaSkillAction.StartNovaSkillAsync(player).ConfigureAwait(false);
-            }
-            else
-            {
-                await this._novaSkillAction.StopNovaSkillAsync(player, targetId).ConfigureAwait(false);
-            }
-
-            return;
-        }
-
-        // The target can be the own player too, for example when using buff skills.
+        // Note: The target can be the own player too, for example when using buff skills.
         if (player.GetObject(targetId) is IAttackable target)
         {
-            await this._attackAction.PerformSkillAsync(player, target, skillId).ConfigureAwait(false);
+            await plugin.PerformSkillAsync(player, target, skillId).ConfigureAwait(false);
         }
     }
 }
