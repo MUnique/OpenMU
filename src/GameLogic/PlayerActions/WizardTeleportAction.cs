@@ -42,7 +42,7 @@ public class WizardTeleportAction
             && CanPlayerBeTeleported(player)
             && await player.TryConsumeForSkillAsync(skill).ConfigureAwait(false))
         {
-            _ = Task.Run(() => player.TeleportAsync(target, skill));
+            _ = Task.Run(() => player.TeleportAsync(player.CurrentMap!, target, skill));
         }
         else
         {
@@ -71,7 +71,7 @@ public class WizardTeleportAction
             && targetPlayer.IsInRange(target, skill.Range + 1)
             && await player.TryConsumeForSkillAsync(skill).ConfigureAwait(false))
         {
-            _ = Task.Run(() => targetPlayer.TeleportAsync(target, skill));
+            _ = Task.Run(() => targetPlayer.TeleportAsync(player.CurrentMap!, target, skill));
         }
     }
 

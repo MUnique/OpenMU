@@ -676,9 +676,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <summary>
     /// Teleports this player to the specified target with the specified skill animation.
     /// </summary>
-    /// <param name="target">The target.</param>
-    /// <param name="teleportSkill">The teleport skill.</param>
-    public async Task TeleportAsync(Point target, Skill teleportSkill)
+    /// <param name="targetMap">The target map for teleportation.</param>
+    /// <param name="targetPoint">The target coordinate in the target map.</param>
+    /// <param name="teleportSkill">The teleport skill used.</param>
+    public async Task TeleportAsync(GameMap targetMap, Point targetPoint, Skill teleportSkill)
     {
         if (!this.IsAlive)
         {
@@ -692,26 +693,33 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
             await this._walker.StopAsync().ConfigureAwait(false);
 
-            var previous = this.Position;
-            this.Position = target;
-
-            await this.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowSkillAnimationAsync(this, this, teleportSkill, true), true).ConfigureAwait(false);
-
-            await Task.Delay(300).ConfigureAwait(false);
-
-            await this.ForEachWorldObserverAsync<IObjectsOutOfScopePlugIn>(p => p.ObjectsOutOfScopeAsync(this.GetAsEnumerable()), false).ConfigureAwait(false);
-
-            await Task.Delay(1500).ConfigureAwait(false);
-
-            if (this.IsAlive)
+            if (this.CurrentMap is { } map)
             {
-                await this.InvokeViewPlugInAsync<ITeleportPlugIn>(p => p.ShowTeleportedAsync()).ConfigureAwait(false);
+                var previous = this.Position;
+                this.Position = map == targetMap ? targetPoint : this.Position;
 
-                // We need to restore the previous position to make the Moving on the map data structure work correctly.
-                this.Position = previous;
-                if (this.CurrentMap is { } map)
+                await this.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowSkillAnimationAsync(this, this, teleportSkill, true), true).ConfigureAwait(false);
+
+                await Task.Delay(300).ConfigureAwait(false);
+
+                await this.ForEachWorldObserverAsync<IObjectsOutOfScopePlugIn>(p => p.ObjectsOutOfScopeAsync(this.GetAsEnumerable()), false).ConfigureAwait(false);
+
+                await Task.Delay(1500).ConfigureAwait(false);
+
+                if (this.IsAlive)
                 {
-                    await map.MoveAsync(this, target, this._moveLock, MoveType.Teleport).ConfigureAwait(false);
+                    await this.InvokeViewPlugInAsync<ITeleportPlugIn>(p => p.ShowTeleportedAsync()).ConfigureAwait(false);
+
+                    if (map == targetMap)
+                    {
+                        // We need to restore the previous position to make the Moving on the map data structure work correctly.
+                        this.Position = previous;
+                        await map.MoveAsync(this, targetPoint, this._moveLock, MoveType.Teleport).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        await this.WarpToMapAsync(targetMap, targetPoint).ConfigureAwait(false);
+                    }
                 }
             }
         }
@@ -910,6 +918,35 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
 
         this.PlaceAtGate(gate);
+        this.CurrentMap = null; // Will be set again, when the client acknowledged the map change by F3 12 packet.
+
+        if (!this.PlayerState.CurrentState.IsDisconnectedOrFinished())
+        {
+            await this.InvokeViewPlugInAsync<IMapChangePlugIn>(p => p.MapChangeAsync()).ConfigureAwait(false);
+        }
+
+        // after this, the Client will send us a F3 12 packet, to tell us it loaded
+        // the map and is ready to receive the new meet player/monster etc.
+        // Then ClientReadyAfterMapChange is called.
+    }
+
+    /// <summary>
+    /// Moves the player to the specified map and coordinates.
+    /// </summary>
+    /// <param name="map">The map to which the player should be warped.</param>
+    /// <param name="position">The coordinates on the target map.</param>
+    public async ValueTask WarpToMapAsync(GameMap map, Point position)
+    {
+        var isRespawnOnSameMap = object.Equals(this.CurrentMap?.Definition, map.Definition);
+        if (!await this.TryRemoveFromCurrentMapAsync(isRespawnOnSameMap).ConfigureAwait(false))
+        {
+            return;
+        }
+
+        this.SelectedCharacter!.CurrentMap = map.Definition;
+        this.SelectedCharacter.PositionX = position.X;
+        this.SelectedCharacter.PositionY = position.Y;
+
         this.CurrentMap = null; // Will be set again, when the client acknowledged the map change by F3 12 packet.
 
         if (!this.PlayerState.CurrentState.IsDisconnectedOrFinished())

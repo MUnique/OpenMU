@@ -14,7 +14,7 @@ using MUnique.OpenMU.GameLogic.Views.World;
 /// </summary>
 public class SummonPartySkillAction : TargetedSkillActionBase
 {
-    private static readonly TimeSpan CompletionDelay = TimeSpan.FromMilliseconds(5000);
+    private static readonly TimeSpan CompletionDelay = TimeSpan.FromMilliseconds(3500);
 
     /// <inheritdoc />
     public override ushort Key => 63;
@@ -48,9 +48,12 @@ public class SummonPartySkillAction : TargetedSkillActionBase
 
         await Task.Delay(CompletionDelay, CancellationToken.None).ConfigureAwait(false);
 
-        foreach (var targetMember in targets.OfType<Player>().Where(p => p != player))
+        var targetPlayers = targets.OfType<Player>().Where(p => p != player);
+        foreach (var targetPlayer in targetPlayers)
         {
-            _ = Task.Run(() => targetMember.TeleportAsync(player.Position, skill));
+            _ = Task.Run(() => targetPlayer.TeleportAsync(player.CurrentMap!, player.Position, skill));
         }
+
+        await player.ForEachWorldObserverAsync<INewPlayersInScopePlugIn>(p => p.NewPlayersInScopeAsync(targetPlayers, false), false).ConfigureAwait(false);
     }
 }
