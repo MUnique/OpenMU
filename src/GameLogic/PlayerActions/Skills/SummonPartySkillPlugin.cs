@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("44e34497-c9e1-4c15-9388-589dfa3fa820")]
 public class SummonPartySkillPlugin : TargetedSkillPluginBase
 {
-    private static readonly TimeSpan CompletionDelay = TimeSpan.FromMilliseconds(3500);
+    private static readonly int CountdownSeconds = 5;
 
     /// <inheritdoc />
     public override short Key => 63;
@@ -31,32 +31,73 @@ public class SummonPartySkillPlugin : TargetedSkillPluginBase
             return;
         }
 
+        if (player.Party == null)
+        {
+            return;
+        }
+
         if (!await player.TryConsumeForSkillAsync(skillEntry.Skill).ConfigureAwait(false))
         {
             return;
         }
 
-        await this.SummonTargetsAsync(player, skillEntry).ConfigureAwait(false);
+        await player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowSkillAnimationAsync(player, player, skillEntry.Skill.Number, true), true).ConfigureAwait(false);
+
+        var cancellationTokenSource = new SkillCancellationTokenSource();
+        player.SkillCancelTokenSource = cancellationTokenSource;
+
+        _ = this.RunSummonPartyAsync(player, skillEntry, cancellationTokenSource);
     }
 
-    private async ValueTask SummonTargetsAsync(Player player, SkillEntry skillEntry)
+    private async ValueTask RunSummonPartyAsync(Player player, SkillEntry skillEntry, CancellationTokenSource cancellationTokenSource)
     {
-        if (!player.IsAlive || player.IsAtSafezone() || skillEntry.Skill is not { } skill)
-        {
-            return;
-        }
-
-        await player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowSkillAnimationAsync(player, player, skill.Number, true), true).ConfigureAwait(false);
-        var targets = player.Party?.PartyList ?? Enumerable.Empty<IPartyMember>();
-
-        await Task.Delay(CompletionDelay, CancellationToken.None).ConfigureAwait(false);
-
+        var targets = player.Party!.PartyList;
         var targetPlayers = targets.OfType<Player>().Where(p => p != player);
+
+        try
+        {
+            for (var count = CountdownSeconds; count > 0; count--)
+            {
+                foreach (var targetPlayer in targetPlayers)
+                {
+                    await player.Party.SendChatMessageAsync($"Summoning in {count} second(s)...", player.Name).ConfigureAwait(false);
+                }
+
+                if (!player.IsAlive || player.IsAtSafezone())
+                {
+                    await player.Party.SendChatMessageAsync("Summoning canceled.", player.Name).ConfigureAwait(false);
+                    return;
+                }
+
+                await Task.Delay(1000).ConfigureAwait(false);
+            }
+
+            await this.SummonPartyAsync(player, skillEntry).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+            // Handle cancellation (if needed)
+            await player.Party.SendChatMessageAsync("Summoning canceled.", player.Name).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            // Log unexpected exceptions
+            player.Logger.LogWarning(ex, "Error during countdown");
+        }
+    }
+
+    private async ValueTask SummonPartyAsync(Player player, SkillEntry skillEntry)
+    {
+        var skill = skillEntry.Skill;
+
+        var targets = player.Party?.PartyList ?? Enumerable.Empty<IPartyMember>();
+        var targetPlayers = targets.OfType<Player>().Where(p => p != player);
+
         foreach (var targetPlayer in targetPlayers)
         {
             Point targetPoint = player.Position;
             bool foundValidPoint = false;
-            int maxAttempts = 100;
+            int maxAttempts = 10;
             int attempts = 0;
 
             while (!foundValidPoint && attempts < maxAttempts)
@@ -75,7 +116,7 @@ public class SummonPartySkillPlugin : TargetedSkillPluginBase
                 }
             }
 
-            _ = Task.Run(() => targetPlayer.TeleportAsync(player.CurrentMap!, targetPoint, skill));
+            _ = Task.Run(() => targetPlayer.TeleportToMapAsync(player.CurrentMap!, targetPoint));
         }
 
         await player.ForEachWorldObserverAsync<INewPlayersInScopePlugIn>(p => p.NewPlayersInScopeAsync(targetPlayers, false), false).ConfigureAwait(false);
