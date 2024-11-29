@@ -20,6 +20,6 @@ public class NovaSkillStopPlugin : TargetedSkillPluginBase
     /// <inheritdoc />
     public override async ValueTask PerformSkillAsync(Player player, IAttackable target, ushort skillId)
     {
-        player.TargetedSkillCancelTokenSource?.CancelWithExtraTarget(target.Id);
+        player.SkillCancelTokenSource?.CancelWithExtraTarget(target.Id);
     }
 }

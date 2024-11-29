@@ -465,7 +465,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <summary>
     /// Gets or sets the cancellation token source for the targeted skills with channeling.
     /// </summary>
-    public SkillCancellationTokenSource? TargetedSkillCancelTokenSource { get; set; }
+    public SkillCancellationTokenSource? SkillCancelTokenSource { get; set; }
 
     /// <summary>
     /// Gets the mu helper.
@@ -689,7 +689,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.IsTeleporting = true;
         try
         {
-            await (this.TargetedSkillCancelTokenSource?.CancelAsync() ?? Task.CompletedTask).ConfigureAwait(false);
+            await (this.SkillCancelTokenSource?.CancelAsync() ?? Task.CompletedTask).ConfigureAwait(false);
 
             await this._walker.StopAsync().ConfigureAwait(false);
 

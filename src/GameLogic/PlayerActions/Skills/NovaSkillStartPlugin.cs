@@ -32,7 +32,7 @@ public class NovaSkillStartPlugin : TargetedSkillPluginBase
     /// <inheritdoc />
     public override async ValueTask PerformSkillAsync(Player player, IAttackable target, ushort skillId)
     {
-        if (player.TargetedSkillCancelTokenSource is not null)
+        if (player.SkillCancelTokenSource is not null)
         {
             // A nova is already ongoing.
             return;
@@ -53,7 +53,7 @@ public class NovaSkillStartPlugin : TargetedSkillPluginBase
 
         await player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowNovaStartAsync(player), true).ConfigureAwait(false);
         var cancellationTokenSource = new SkillCancellationTokenSource();
-        player.TargetedSkillCancelTokenSource = cancellationTokenSource;
+        player.SkillCancelTokenSource = cancellationTokenSource;
 
         _ = this.RunNovaAsync(player, skillEntry, cancellationTokenSource);
     }
@@ -101,8 +101,8 @@ public class NovaSkillStartPlugin : TargetedSkillPluginBase
         catch (Exception ex)
         {
             player.Logger.LogError(ex, "Unexpected error during performing nova skill");
-            player.TargetedSkillCancelTokenSource?.Dispose();
-            player.TargetedSkillCancelTokenSource = null;
+            player.SkillCancelTokenSource?.Dispose();
+            player.SkillCancelTokenSource = null;
         }
         finally
         {
@@ -122,8 +122,8 @@ public class NovaSkillStartPlugin : TargetedSkillPluginBase
         var targets = this.DetermineTargets(player, skill, explicitTargetId);
 
         // Set cancellation token source to null, so that the next nova can be started.
-        player.TargetedSkillCancelTokenSource?.Dispose();
-        player.TargetedSkillCancelTokenSource = null;
+        player.SkillCancelTokenSource?.Dispose();
+        player.SkillCancelTokenSource = null;
 
         await Task.Delay(500, CancellationToken.None).ConfigureAwait(false);
 
