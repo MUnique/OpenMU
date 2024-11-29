@@ -4,15 +4,19 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 
+using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.World;
+using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// Action to perform a skill which is explicitly aimed to a target.
 /// </summary>
-public class TargetedSkillActionDefault : TargetedSkillActionBase
+[PlugIn(nameof(TargetedSkillDefaultPlugin), "Default (catch-all) handler for targeted skills")]
+[Guid("eb2949fb-5ed2-407e-a4e8-e3015ed5692b")]
+public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
 {
     private static readonly Dictionary<short, short> SummonSkillToMonsterMapping = new()
     {
@@ -26,7 +30,7 @@ public class TargetedSkillActionDefault : TargetedSkillActionBase
     };
 
     /// <inheritdoc/>
-    public override ushort Key => 0;
+    public override short Key => 0;
 
     /// <summary>
     /// Performs the skill.

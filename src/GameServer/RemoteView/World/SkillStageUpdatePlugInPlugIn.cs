@@ -27,7 +27,7 @@ public class SkillStageUpdatePlugInPlugIn : IShowSkillStageUpdatePlugIn
     public SkillStageUpdatePlugInPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc />
-    public async ValueTask UpdateSkillStageAsync(IAttacker attacker, ushort skillNumber, byte stageNumber)
+    public async ValueTask UpdateSkillStageAsync(IAttacker attacker, short skillNumber, byte stageNumber)
     {
         if (this._player.Connection is not { } connection)
         {

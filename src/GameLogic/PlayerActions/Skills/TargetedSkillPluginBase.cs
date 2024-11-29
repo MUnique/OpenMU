@@ -1,16 +1,17 @@
 ﻿// <copyright file="TargetedSkillActionBase.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
-
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Skills;
+
+using MUnique.OpenMU.GameLogic.PlugIns;
 
 /// <summary>
 /// Action to perform a skill which is explicitly aimed to a target.
 /// </summary>
-public abstract class TargetedSkillActionBase : ITargetedSkillAction
+public abstract class TargetedSkillPluginBase : ITargetedSkillPlugin
 {
     /// <inheritdoc />
-    public virtual ushort Key => 0;
+    public virtual short Key => 0;
 
     /// <summary>
     /// Performs the skill.

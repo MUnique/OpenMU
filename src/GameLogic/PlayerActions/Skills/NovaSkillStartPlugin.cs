@@ -1,19 +1,23 @@
-﻿// <copyright file="NovaSkillStartAction.cs" company="MUnique">
+﻿// <copyright file="NovaSkillStartPlugin.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 
+using System.Runtime.InteropServices;
 using System.Threading;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Views.World;
+using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// The start nova skill action.
 /// </summary>
-public class NovaSkillStartAction : TargetedSkillActionBase
+[PlugIn(nameof(NovaSkillStartPlugin), "Handles the start of nova skill of the wizard class.")]
+[Guid("e966e7eb-58b8-4356-8725-5da9f43c1fa4")]
+public class NovaSkillStartPlugin : TargetedSkillPluginBase
 {
     private static readonly TimeSpan NovaStepDelay = TimeSpan.FromMilliseconds(500);
 
@@ -23,7 +27,7 @@ public class NovaSkillStartAction : TargetedSkillActionBase
     private static readonly int[] NovaDamageTable = { 0, 20, 50, 99, 160, 225, 325, 425, 550, 700, 880, 1090, 1320 };
 
     /// <inheritdoc/>
-    public override ushort Key => 58;
+    public override short Key => 58;
 
     /// <inheritdoc />
     public override async ValueTask PerformSkillAsync(Player player, IAttackable target, ushort skillId)
@@ -83,8 +87,7 @@ public class NovaSkillStartAction : TargetedSkillActionBase
                     completedSteps++;
                     stepDamageElement.Value = NovaDamageTable[completedSteps];
                     var steps = completedSteps;
-                    ushort skillId = this.Key;
-                    await player.ForEachWorldObserverAsync<IShowSkillStageUpdatePlugIn>(p => p.UpdateSkillStageAsync(player, skillId, steps), true).ConfigureAwait(false);
+                    await player.ForEachWorldObserverAsync<IShowSkillStageUpdatePlugIn>(p => p.UpdateSkillStageAsync(player, this.Key, steps), true).ConfigureAwait(false);
                     await Task.Delay(NovaStepDelay, cancellationToken).ConfigureAwait(false); // Hint: Player could cancel the nova 500 ms before end without damage loss - if he is good
                 }
             }

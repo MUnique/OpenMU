@@ -4,41 +4,15 @@
 
 namespace MUnique.OpenMU.GameServer.MessageHandler;
 
+using System.Runtime;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.PlayerActions.Skills;
+using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.Network.Packets.ClientToServer;
 using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.PlugIns;
-
-/// <summary>
-/// Reprersents the targeted skill packet handler.
-/// </summary>
-internal partial class TargetedSkillHandlerPlugIn
-{
-    private readonly Dictionary<int, ITargetedSkillAction> _handlers = [];
-    private readonly ITargetedSkillAction _defaultHandler = new TargetedSkillActionDefault();
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="TargetedSkillHandlerPlugIn"/> class.
-    /// </summary>
-    public TargetedSkillHandlerPlugIn()
-    {
-        // Load all plugins in the current assembly
-        var pluginType = typeof(ITargetedSkillAction);
-        var pluginInstances = AppDomain.CurrentDomain.GetAssemblies()
-            .SelectMany(a => a.GetTypes())
-            .Where(t => pluginType.IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract)
-            .Select(t => (ITargetedSkillAction)Activator.CreateInstance(t)!)
-            .ToList();
-
-        foreach (var plugin in pluginInstances)
-        {
-            this._handlers[plugin.Key] = plugin;
-        }
-    }
-}
 
 /// <summary>
 /// Implements the targeted skill packet handler.
@@ -46,8 +20,10 @@ internal partial class TargetedSkillHandlerPlugIn
 [PlugIn("TargetedSkillHandlerPlugIn", "Handler for targeted skill packets.")]
 [Guid("5b07d03c-509c-4aec-972c-a99db77561f2")]
 [MinimumClient(3, 0, ClientLanguage.Invariant)]
-internal partial class TargetedSkillHandlerPlugIn : IPacketHandlerPlugIn
+internal class TargetedSkillHandlerPlugIn : IPacketHandlerPlugIn
 {
+    private readonly ITargetedSkillPlugin _defaultStrategy = new TargetedSkillDefaultPlugin();
+
     /// <inheritdoc/>
     public virtual bool IsEncryptionExpected => true;
 
@@ -75,17 +51,14 @@ internal partial class TargetedSkillHandlerPlugIn : IPacketHandlerPlugIn
             return;
         }
 
-        this._handlers.TryGetValue(skillId, out var plugin);
-
-        if (plugin == null)
-        {
-            plugin = this._defaultHandler;
-        }
+        var strategy = player.GameContext.
+            PlugInManager.GetStrategy<short, ITargetedSkillPlugin>((short)skillId) ??
+            this._defaultStrategy;
 
         // Note: The target can be the own player too, for example when using buff skills.
         if (player.GetObject(targetId) is IAttackable target)
         {
-            await plugin.PerformSkillAsync(player, target, skillId).ConfigureAwait(false);
+            await strategy.PerformSkillAsync(player, target, skillId).ConfigureAwait(false);
         }
     }
 }

@@ -1,24 +1,26 @@
-﻿// <copyright file="SummonPartySkillAction.cs" company="MUnique">
+﻿// <copyright file="SummonPartySkillPlugin.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 
+using System.Runtime.InteropServices;
 using System.Threading;
-using MUnique.OpenMU.AttributeSystem;
-using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Pathfinding;
+using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// The summon skill action for Dark Lord.
 /// </summary>
-public class SummonPartySkillAction : TargetedSkillActionBase
+[PlugIn(nameof(SummonPartySkillPlugin), "Handles the summon party skill of the dark lord class.")]
+[Guid("44e34497-c9e1-4c15-9388-589dfa3fa820")]
+public class SummonPartySkillPlugin : TargetedSkillPluginBase
 {
     private static readonly TimeSpan CompletionDelay = TimeSpan.FromMilliseconds(3500);
 
     /// <inheritdoc />
-    public override ushort Key => 63;
+    public override short Key => 63;
 
     /// <inheritdoc />
     public override async ValueTask PerformSkillAsync(Player player, IAttackable target, ushort skillId)

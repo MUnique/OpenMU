@@ -15,5 +15,5 @@ public interface IShowSkillStageUpdatePlugIn : IViewPlugIn
     /// <param name="attacker">The attacker.</param>
     /// <param name="skillNumber">The skill number (usually 40 for Nova).</param>
     /// <param name="stageNumber">The stage number of the skill (usually 1 to 12 for Nova).</param>
-    ValueTask UpdateSkillStageAsync(IAttacker attacker, ushort skillNumber, byte stageNumber);
+    ValueTask UpdateSkillStageAsync(IAttacker attacker, short skillNumber, byte stageNumber);
 }
