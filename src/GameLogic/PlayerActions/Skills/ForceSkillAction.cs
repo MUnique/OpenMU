@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 
 using System.Runtime.InteropServices;
-using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>

@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameServer.MessageHandler;
 
-using System.Runtime;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.PlayerActions.Skills;
