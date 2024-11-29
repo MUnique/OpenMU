@@ -51,6 +51,7 @@ public class SummonPartySkillPlugin : TargetedSkillPluginBase
 
     private async ValueTask RunSummonPartyAsync(Player player, CancellationTokenSource cancellationTokenSource)
     {
+        var cancellationToken = cancellationTokenSource.Token;
         var targets = player.Party!.PartyList;
         var targetPlayers = targets.OfType<Player>().Where(p => p != player);
 
@@ -58,6 +59,8 @@ public class SummonPartySkillPlugin : TargetedSkillPluginBase
         {
             for (var count = CountdownSeconds; count > 0; count--)
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 foreach (var targetPlayer in targetPlayers)
                 {
                     await player.Party.SendChatMessageAsync($"Summoning in {count} second(s)...", player.Name).ConfigureAwait(false);
@@ -69,7 +72,7 @@ public class SummonPartySkillPlugin : TargetedSkillPluginBase
                     return;
                 }
 
-                await Task.Delay(1000).ConfigureAwait(false);
+                await Task.Delay(1000, cancellationToken).ConfigureAwait(false);
             }
 
             await this.SummonPartyAsync(player).ConfigureAwait(false);
