@@ -742,14 +742,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
             await this._walker.StopAsync().ConfigureAwait(false);
 
-            if (this.CurrentMap is { } map)
-            {
-                await this.ForEachWorldObserverAsync<IObjectsOutOfScopePlugIn>(p => p.ObjectsOutOfScopeAsync(this.GetAsEnumerable()), false).ConfigureAwait(false);
+            await this.ForEachWorldObserverAsync<IObjectsOutOfScopePlugIn>(p => p.ObjectsOutOfScopeAsync(this.GetAsEnumerable()), false).ConfigureAwait(false);
 
-                if (this.IsAlive)
-                {
-                    await this.WarpToMapAsync(targetMap, targetPoint).ConfigureAwait(false);
-                }
+            if (this.IsAlive)
+            {
+                await this.WarpToMapAsync(targetMap, targetPoint).ConfigureAwait(false);
             }
         }
         catch (Exception e)

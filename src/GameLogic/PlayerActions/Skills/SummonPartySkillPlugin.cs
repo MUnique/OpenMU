@@ -46,10 +46,10 @@ public class SummonPartySkillPlugin : TargetedSkillPluginBase
         var cancellationTokenSource = new SkillCancellationTokenSource();
         player.SkillCancelTokenSource = cancellationTokenSource;
 
-        _ = this.RunSummonPartyAsync(player, skillEntry, cancellationTokenSource);
+        _ = this.RunSummonPartyAsync(player, cancellationTokenSource);
     }
 
-    private async ValueTask RunSummonPartyAsync(Player player, SkillEntry skillEntry, CancellationTokenSource cancellationTokenSource)
+    private async ValueTask RunSummonPartyAsync(Player player, CancellationTokenSource cancellationTokenSource)
     {
         var targets = player.Party!.PartyList;
         var targetPlayers = targets.OfType<Player>().Where(p => p != player);
@@ -72,7 +72,7 @@ public class SummonPartySkillPlugin : TargetedSkillPluginBase
                 await Task.Delay(1000).ConfigureAwait(false);
             }
 
-            await this.SummonPartyAsync(player, skillEntry).ConfigureAwait(false);
+            await this.SummonPartyAsync(player).ConfigureAwait(false);
         }
         catch (OperationCanceledException)
         {
@@ -84,12 +84,15 @@ public class SummonPartySkillPlugin : TargetedSkillPluginBase
             // Log unexpected exceptions
             player.Logger.LogWarning(ex, "Error during countdown");
         }
+        finally
+        {
+            player.SkillCancelTokenSource?.Dispose();
+            player.SkillCancelTokenSource = null;
+        }
     }
 
-    private async ValueTask SummonPartyAsync(Player player, SkillEntry skillEntry)
+    private async ValueTask SummonPartyAsync(Player player)
     {
-        var skill = skillEntry.Skill;
-
         var targets = player.Party?.PartyList ?? Enumerable.Empty<IPartyMember>();
         var targetPlayers = targets.OfType<Player>().Where(p => p != player);
 
