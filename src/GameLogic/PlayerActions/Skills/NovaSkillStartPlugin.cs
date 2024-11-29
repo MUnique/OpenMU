@@ -52,13 +52,13 @@ public class NovaSkillStartPlugin : TargetedSkillPluginBase
         }
 
         await player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowNovaStartAsync(player), true).ConfigureAwait(false);
-        var cancellationTokenSource = new TargetedSkillCancellationTokenSource();
+        var cancellationTokenSource = new SkillCancellationTokenSource();
         player.TargetedSkillCancelTokenSource = cancellationTokenSource;
 
         _ = this.RunNovaAsync(player, skillEntry, cancellationTokenSource);
     }
 
-    private async ValueTask RunNovaAsync(Player player, SkillEntry skillEntry, TargetedSkillCancellationTokenSource cancellationTokenSource)
+    private async ValueTask RunNovaAsync(Player player, SkillEntry skillEntry, SkillCancellationTokenSource cancellationTokenSource)
     {
         var cancellationToken = cancellationTokenSource.Token;
         if (player.Attributes is not { } playerAttributes
@@ -110,7 +110,7 @@ public class NovaSkillStartPlugin : TargetedSkillPluginBase
         }
     }
 
-    private async ValueTask AttackTargetsAsync(Player player, SkillEntry skillEntry, TargetedSkillCancellationTokenSource cancellationTokenSource)
+    private async ValueTask AttackTargetsAsync(Player player, SkillEntry skillEntry, SkillCancellationTokenSource cancellationTokenSource)
     {
         if (!player.IsAlive || player.IsAtSafezone() || skillEntry.Skill is not { } skill)
         {

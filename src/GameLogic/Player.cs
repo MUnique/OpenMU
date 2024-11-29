@@ -465,7 +465,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <summary>
     /// Gets or sets the cancellation token source for the targeted skills with channeling.
     /// </summary>
-    public TargetedSkillCancellationTokenSource? TargetedSkillCancelTokenSource { get; set; }
+    public SkillCancellationTokenSource? TargetedSkillCancelTokenSource { get; set; }
 
     /// <summary>
     /// Gets the mu helper.

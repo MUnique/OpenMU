@@ -10,7 +10,7 @@ using System.Threading;
 /// A <see cref="CancellationTokenSource"/> which allows to specify an explicit target when cancelling the nova skill.
 /// </summary>
 /// <seealso cref="System.Threading.CancellationTokenSource" />
-public class TargetedSkillCancellationTokenSource : CancellationTokenSource
+public class SkillCancellationTokenSource : CancellationTokenSource
 {
     /// <summary>
     /// Gets the explicit target identifier.
