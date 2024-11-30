@@ -74,6 +74,8 @@ public class SummonPartySkillPlugin : TargetedSkillPluginBase
                     return;
                 }
 
+                await Task.Delay(1000, cancellationToken).ConfigureAwait(false);
+
                 targetPlayers = targetPlayers.Where(this.CanTargetBeTeleported);
             }
 
