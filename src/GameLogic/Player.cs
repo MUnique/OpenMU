@@ -746,7 +746,16 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
             if (this.IsAlive)
             {
-                await this.WarpToMapAsync(targetMap, targetPoint).ConfigureAwait(false);
+                ExitGate tempGate = new()
+                {
+                    Map = targetMap.Definition,
+                    X1 = targetPoint.X,
+                    X2 = targetPoint.X,
+                    Y1 = targetPoint.Y,
+                    Y2 = targetPoint.Y,
+                };
+
+                await this.WarpToAsync(tempGate).ConfigureAwait(false);
             }
         }
         catch (Exception e)
@@ -944,35 +953,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
 
         this.PlaceAtGate(gate);
-        this.CurrentMap = null; // Will be set again, when the client acknowledged the map change by F3 12 packet.
-
-        if (!this.PlayerState.CurrentState.IsDisconnectedOrFinished())
-        {
-            await this.InvokeViewPlugInAsync<IMapChangePlugIn>(p => p.MapChangeAsync()).ConfigureAwait(false);
-        }
-
-        // after this, the Client will send us a F3 12 packet, to tell us it loaded
-        // the map and is ready to receive the new meet player/monster etc.
-        // Then ClientReadyAfterMapChange is called.
-    }
-
-    /// <summary>
-    /// Moves the player to the specified map and coordinates.
-    /// </summary>
-    /// <param name="map">The map to which the player should be warped.</param>
-    /// <param name="position">The coordinates on the target map.</param>
-    public async ValueTask WarpToMapAsync(GameMap map, Point position)
-    {
-        var isRespawnOnSameMap = object.Equals(this.CurrentMap?.Definition, map.Definition);
-        if (!await this.TryRemoveFromCurrentMapAsync(isRespawnOnSameMap).ConfigureAwait(false))
-        {
-            return;
-        }
-
-        this.SelectedCharacter!.CurrentMap = map.Definition;
-        this.SelectedCharacter.PositionX = position.X;
-        this.SelectedCharacter.PositionY = position.Y;
-
         this.CurrentMap = null; // Will be set again, when the client acknowledged the map change by F3 12 packet.
 
         if (!this.PlayerState.CurrentState.IsDisconnectedOrFinished())

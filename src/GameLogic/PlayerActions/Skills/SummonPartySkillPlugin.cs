@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 
 using System.Runtime.InteropServices;
 using System.Threading;
+using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.PlugIns;
@@ -63,7 +64,8 @@ public class SummonPartySkillPlugin : TargetedSkillPluginBase
 
                 foreach (var targetPlayer in targetPlayers)
                 {
-                    await player.Party.SendChatMessageAsync($"Summoning in {count} second(s)...", player.Name).ConfigureAwait(false);
+                    await targetPlayer.InvokeViewPlugInAsync<IChatViewPlugIn>(
+                        p => p.ChatMessageAsync($"Summoning in {count} second(s)...", player.Name, ChatMessageType.Party)).ConfigureAwait(false);
                 }
 
                 if (!player.IsAlive || player.IsAtSafezone())
@@ -72,9 +74,7 @@ public class SummonPartySkillPlugin : TargetedSkillPluginBase
                     return;
                 }
 
-                await Task.Delay(1000, cancellationToken).ConfigureAwait(false);
-
-                targetPlayers = targetPlayers.Where(target => this.CanTargetBeTeleported(target));
+                targetPlayers = targetPlayers.Where(this.CanTargetBeTeleported);
             }
 
             await this.SummonTargetsAsync(player, targetPlayers).ConfigureAwait(false);
