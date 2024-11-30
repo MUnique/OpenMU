@@ -73,9 +73,11 @@ public class SummonPartySkillPlugin : TargetedSkillPluginBase
                 }
 
                 await Task.Delay(1000, cancellationToken).ConfigureAwait(false);
+
+                targetPlayers = targetPlayers.Where(target => this.CanTargetBeTeleported(target));
             }
 
-            await this.SummonPartyAsync(player).ConfigureAwait(false);
+            await this.SummonTargetsAsync(player, targetPlayers).ConfigureAwait(false);
         }
         catch (OperationCanceledException)
         {
@@ -94,11 +96,8 @@ public class SummonPartySkillPlugin : TargetedSkillPluginBase
         }
     }
 
-    private async ValueTask SummonPartyAsync(Player player)
+    private async ValueTask SummonTargetsAsync(Player player, IEnumerable<Player> targetPlayers)
     {
-        var targets = player.Party?.PartyList ?? Enumerable.Empty<IPartyMember>();
-        var targetPlayers = targets.OfType<Player>().Where(p => p != player);
-
         foreach (var targetPlayer in targetPlayers)
         {
             Point targetPoint = player.Position;
@@ -110,12 +109,12 @@ public class SummonPartySkillPlugin : TargetedSkillPluginBase
             {
                 attempts++;
 
-                var offsetX = Rand.NextInt(-3, 4);
-                var offsetY = Rand.NextInt(-3, 4);
+                var offsetX = Rand.NextInt(-2, 3);
+                var offsetY = Rand.NextInt(-2, 3);
                 Point validPoint = new((byte)(player.Position.X + offsetX), (byte)(player.Position.Y + offsetY));
 
                 if (player.CurrentMap!.Terrain.WalkMap[targetPoint.X, targetPoint.Y]
-                    && player.Position.EuclideanDistanceTo(targetPoint) < 8)
+                    && player.Position.EuclideanDistanceTo(targetPoint) < 6)
                 {
                     targetPoint = validPoint;
                     foundValidPoint = true;
@@ -126,5 +125,17 @@ public class SummonPartySkillPlugin : TargetedSkillPluginBase
         }
 
         await player.ForEachWorldObserverAsync<INewPlayersInScopePlugIn>(p => p.NewPlayersInScopeAsync(targetPlayers, false), false).ConfigureAwait(false);
+    }
+
+    private bool CanTargetBeTeleported(Player target)
+    {
+        if (target.IsActive()
+            && target.OpenedNpc == null
+            && target.TradingPartner == null)
+        {
+            return true;
+        }
+
+        return false;
     }
 }
