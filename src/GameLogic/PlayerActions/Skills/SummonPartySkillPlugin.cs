@@ -32,7 +32,7 @@ public class SummonPartySkillPlugin : TargetedSkillPluginBase
             return;
         }
 
-        if (player.Party == null)
+        if (player.Party is null)
         {
             return;
         }
@@ -123,17 +123,21 @@ public class SummonPartySkillPlugin : TargetedSkillPluginBase
                 }
             }
 
+            if (player.CurrentMap!.Definition.TryGetRequirementError(targetPlayer, out var errorMessage))
+            {
+                await targetPlayer.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(errorMessage, Interfaces.MessageType.BlueNormal)).ConfigureAwait(false);
+                continue;
+            }
+
             _ = Task.Run(() => targetPlayer.TeleportToMapAsync(player.CurrentMap!, targetPoint));
         }
-
-        await player.ForEachWorldObserverAsync<INewPlayersInScopePlugIn>(p => p.NewPlayersInScopeAsync(targetPlayers, false), false).ConfigureAwait(false);
     }
 
     private bool CanTargetBeTeleported(Player target)
     {
         if (target.IsActive()
-            && target.OpenedNpc == null
-            && target.TradingPartner == null)
+            && target.OpenedNpc is null
+            && target.TradingPartner is null)
         {
             return true;
         }
