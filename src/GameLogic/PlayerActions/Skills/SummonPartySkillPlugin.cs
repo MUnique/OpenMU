@@ -43,7 +43,7 @@ public class SummonPartySkillPlugin : TargetedSkillPluginBase
         var cancellationTokenSource = new SkillCancellationTokenSource();
         player.SkillCancelTokenSource = cancellationTokenSource;
 
-        _ = this.RunSummonPartyAsync(player, cancellationTokenSource);
+        _ = Task.Run(() => this.RunSummonPartyAsync(player, cancellationTokenSource));
     }
 
     private async ValueTask RunSummonPartyAsync(Player player, CancellationTokenSource cancellationTokenSource)
@@ -125,7 +125,7 @@ public class SummonPartySkillPlugin : TargetedSkillPluginBase
                 continue;
             }
 
-            _ = Task.Run(() => targetPlayer.TeleportToMapAsync(player.CurrentMap!, targetPoint));
+            await targetPlayer.TeleportToMapAsync(player.CurrentMap!, targetPoint).ConfigureAwait(false);
         }
     }
 
