@@ -27,12 +27,8 @@ public class SummonPartySkillPlugin : TargetedSkillPluginBase
     public override async ValueTask PerformSkillAsync(Player player, IAttackable target, ushort skillId)
     {
         var skillEntry = player.SkillList?.GetSkill(skillId);
-        if (skillEntry?.Skill is null)
-        {
-            return;
-        }
 
-        if (player.Party is null)
+        if (skillEntry?.Skill is null || !this.CanPlayerSummon(player))
         {
             return;
         }
@@ -76,7 +72,7 @@ public class SummonPartySkillPlugin : TargetedSkillPluginBase
 
                 await Task.Delay(1000, cancellationToken).ConfigureAwait(false);
 
-                targetPlayers = targetPlayers.Where(this.CanTargetBeTeleported);
+                targetPlayers = targetPlayers.Where(target => this.CanPlayerSummonTarget(player, target));
             }
 
             await this.SummonTargetsAsync(player, targetPlayers).ConfigureAwait(false);
@@ -133,15 +129,18 @@ public class SummonPartySkillPlugin : TargetedSkillPluginBase
         }
     }
 
-    private bool CanTargetBeTeleported(Player target)
+    private bool CanPlayerSummon(Player player)
     {
-        if (target.IsActive()
-            && target.OpenedNpc is null
-            && target.TradingPartner is null)
-        {
-            return true;
-        }
+        return player.Party is not null
+            && player.CurrentMiniGame is null;
+    }
 
-        return false;
+    private bool CanPlayerSummonTarget(Player player, Player target)
+    {
+        return target.IsActive()
+            && target.Party?.Equals(player.Party) is true
+            && target.OpenedNpc is null
+            && target.TradingPartner is null
+            && target.CurrentMiniGame is null;
     }
 }
