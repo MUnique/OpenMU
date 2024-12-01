@@ -463,9 +463,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public WeakReference<Player>? LastRequestedPlayerStore { get; set; }
 
     /// <summary>
-    /// Gets or sets the cancellation token source for the nova skill.
+    /// Gets or sets the cancellation token source for the targeted skills with channeling.
     /// </summary>
-    public NovaCancellationTokenSource? NovaCancellationTokenSource { get; set; }
+    public SkillCancellationTokenSource? SkillCancelTokenSource { get; set; }
 
     /// <summary>
     /// Gets the mu helper.
@@ -688,7 +688,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.IsTeleporting = true;
         try
         {
-            await (this.NovaCancellationTokenSource?.CancelAsync() ?? Task.CompletedTask).ConfigureAwait(false);
+            await (this.SkillCancelTokenSource?.CancelAsync() ?? Task.CompletedTask).ConfigureAwait(false);
 
             await this._walker.StopAsync().ConfigureAwait(false);
 
@@ -713,6 +713,49 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 {
                     await map.MoveAsync(this, target, this._moveLock, MoveType.Teleport).ConfigureAwait(false);
                 }
+            }
+        }
+        catch (Exception e)
+        {
+            this.Logger.LogWarning(e, "Error during teleport");
+        }
+
+        this.IsTeleporting = false;
+    }
+
+    /// <summary>
+    /// Teleports this player to the specified target map and point.
+    /// </summary>
+    /// <param name="targetMap">The target map for teleportation.</param>
+    /// <param name="targetPoint">The target coordinate in the target map.</param>
+    public async Task TeleportToMapAsync(GameMap targetMap, Point targetPoint)
+    {
+        if (!this.IsAlive)
+        {
+            return;
+        }
+
+        this.IsTeleporting = true;
+        try
+        {
+            await (this.SkillCancelTokenSource?.CancelAsync() ?? Task.CompletedTask).ConfigureAwait(false);
+
+            await this._walker.StopAsync().ConfigureAwait(false);
+
+            await this.ForEachWorldObserverAsync<IObjectsOutOfScopePlugIn>(p => p.ObjectsOutOfScopeAsync(this.GetAsEnumerable()), false).ConfigureAwait(false);
+
+            if (this.IsAlive)
+            {
+                ExitGate tempGate = new()
+                {
+                    Map = targetMap.Definition,
+                    X1 = targetPoint.X,
+                    X2 = targetPoint.X,
+                    Y1 = targetPoint.Y,
+                    Y2 = targetPoint.Y,
+                };
+
+                await this.WarpToAsync(tempGate).ConfigureAwait(false);
             }
         }
         catch (Exception e)
