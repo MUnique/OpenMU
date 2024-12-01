@@ -50,13 +50,15 @@ public class SummonPartySkillPlugin : TargetedSkillPluginBase
     {
         var cancellationToken = cancellationTokenSource.Token;
         var targets = player.Party!.PartyList;
-        var targetPlayers = targets.OfType<Player>().Where(p => p != player);
+        var targetPlayers = targets.OfType<Player>().Where(p => p != player).ToList();
 
         try
         {
             for (var count = CountdownSeconds; count > 0; count--)
             {
                 cancellationToken.ThrowIfCancellationRequested();
+
+                targetPlayers.RemoveAll(target => !this.CanPlayerSummonTarget(player, target));
 
                 foreach (var targetPlayer in targetPlayers)
                 {
@@ -71,8 +73,6 @@ public class SummonPartySkillPlugin : TargetedSkillPluginBase
                 }
 
                 await Task.Delay(1000, cancellationToken).ConfigureAwait(false);
-
-                targetPlayers = targetPlayers.Where(target => this.CanPlayerSummonTarget(player, target));
             }
 
             await this.SummonTargetsAsync(player, targetPlayers).ConfigureAwait(false);
