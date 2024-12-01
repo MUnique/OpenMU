@@ -52,6 +52,10 @@ public class ItemPriceCalculator
                 {
                     baseprice = 2000;
                 }
+                else if (item.Level == 3)
+                {
+                    baseprice = 2800;
+                }
 
                 if (item.Durability > 0)
                 {
@@ -74,6 +78,10 @@ public class ItemPriceCalculator
                 {
                     baseprice = 2200;
                 }
+                else if (item.Level == 3)
+                {
+                    baseprice = 3000;
+                }
 
                 if (item.Durability > 0)
                 {
@@ -88,19 +96,23 @@ public class ItemPriceCalculator
         { (int)SpecialItems.Chaos, _ => 810000 },
         { (int)SpecialItems.Life, _ => 45000000 },
         { (int)SpecialItems.Creation, _ => 36000000 },
+        { (int)SpecialItems.Guardian, _ => 60000000 },
+        { (int)SpecialItems.Gemstone, _ => 18600 },
+        { (int)SpecialItems.Harmony, _ => 18600 },
+        { (int)SpecialItems.LowerRefineStone, _ => 18600 },
+        { (int)SpecialItems.HigherRefineStone, _ => 18600 },
         { (int)SpecialItems.PackedBless, item => (item.Level + 1) * 9000000 * 10 },
         { (int)SpecialItems.PackedSoul, item => (item.Level + 1) * 6000000 * 10 },
+        { (int)SpecialItems.PackedChaos, item => (item.Level + 1) * 810000 * 10 },
         { (int)SpecialItems.PackedLife, item => (item.Level + 1) * 45000000 * 10 },
         { (int)SpecialItems.PackedCreation, item => (item.Level + 1) * 36000000 * 10 },
         { (int)SpecialItems.PackedGuardian, item => (item.Level + 1) * 60000000 * 10 },
-        { (int)SpecialItems.PackedGemstone, item => (item.Level + 1) * 186000 * 10 },
-        { (int)SpecialItems.PackedHarmony, item => (item.Level + 1) * 186000 * 10 },
-        { (int)SpecialItems.PackedChaos, item => (item.Level + 1) * 810000 * 10 },
-        { (int)SpecialItems.PackedLowerRefineStone, item => (item.Level + 1) * 186000 * 10 },
-        { (int)SpecialItems.PackedHigherRefineStone, item => (item.Level + 1) * 186000 * 10 },
+        { (int)SpecialItems.PackedGemstone, item => (item.Level + 1) * 18600 * 10 },
+        { (int)SpecialItems.PackedHarmony, item => (item.Level + 1) * 18600 * 10 },
+        { (int)SpecialItems.PackedLowerRefineStone, item => (item.Level + 1) * 18600 * 10 },
+        { (int)SpecialItems.PackedHigherRefineStone, item => (item.Level + 1) * 18600 * 10 },
         { (int)SpecialItems.Fruits, _ => 33000000 },
         { (int)SpecialItems.LochFeather, item => item.Level == 1 ? 7500000 : 180000 },
-        { (int)SpecialItems.JewelGuardian, _ => 60000000 },
         { (int)SpecialItems.SiegePotion, item => item.Durability() * (item.Level == 0 ? 900000 : 450000) },
         { (int)SpecialItems.OrderGuardianLifeStone, item => item.Level == 1 ? 2400000 : 0 },
         { (int)SpecialItems.ContractSummon, item => item.Level == 0 ? 1500000 : item.Level == 1 ? 1200000 : 0 },
@@ -122,54 +134,58 @@ public class ItemPriceCalculator
             (int)SpecialItems.Dinorant, item =>
             {
                 var gold = 960000;
-                var opt = item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.Option);
-                var optionLevel = opt?.Level ?? 0;
-                gold += 300000 * optionLevel;
-                return gold;
+                var opts = item.ItemOptions.Where(o => o.ItemOption?.OptionType == ItemOptionTypes.Excellent).Count(); // to-do
+                return gold + (300000 * opts);
             }
         },
-        { (int)SpecialItems.DevilEye, item => item.Level == 1 ? 15000 : item.Level == 2 ? 21000 : (item.Level - 1) * 15000 },
-        { (int)SpecialItems.DevilKey, item => item.Level == 1 ? 15000 : item.Level == 2 ? 21000 : (item.Level - 1) * 15000 },
-        { (int)SpecialItems.DevilInvitation, item => item.Level == 1 ? 60000 : item.Level == 2 ? 84000 : (item.Level - 1) * 60000 },
-        { (int)SpecialItems.RedemyOfLove, _ => 900 },
+        {
+            (int)SpecialItems.DevilEye, item => item.Level == 1 ? 10000 :
+                item.Level == 2 ? 50000 :
+                item.Level == 3 ? 100000 :
+                item.Level == 4 ? 300000 :
+                item.Level == 5 ? 500000 :
+                item.Level == 6 ? 800000 :
+                item.Level == 7 ? 1000000 : 10000
+        },
+        {
+            (int)SpecialItems.DevilKey, item => item.Level == 1 ? 15000 :
+                item.Level == 2 ? 75000 :
+                item.Level == 3 ? 150000 :
+                item.Level == 4 ? 450000 :
+                item.Level == 5 ? 750000 :
+                item.Level == 6 ? 1200000 :
+                item.Level == 7 ? 1500000 : 15000
+        },
+        { (int)SpecialItems.DevilInvitation, item => item.Level is 1 or 7 ? 60000 : item.Level == 2 ? 84000 : (item.Level - 1) * 60000 },
+        { (int)SpecialItems.RemedyOfLove, _ => 900 },
         { (int)SpecialItems.Rena, item => item.Level == 3 ? item.Durability() * 3900 : 9000 },
-        { (int)SpecialItems.Ale, _ => 1000 },
+        { (int)SpecialItems.Ale, _ => 750 },
+        { (int)SpecialItems.InvisibleCloak, item => item.Level == 1 ? 150000 : 600000 + ((item.Level - 1) * 60000) },
         {
-            (int)SpecialItems.InvisibleCloak, item => item.Level == 1 ? 150000 :
-                item.Level == 2 ? 660000 :
-                item.Level == 3 ? 720000 :
-                item.Level == 4 ? 780000 :
-                item.Level == 5 ? 840000 :
-                item.Level == 6 ? 900000 :
-                item.Level == 7 ? 960000 :
-                item.Level == 8 ? 1200000 : 60000
+            (int)SpecialItems.ScrollOfArchangel, item => item.Level == 1 ? 10000 :
+                item.Level == 2 ? 50000 :
+                item.Level == 3 ? 100000 :
+                item.Level == 4 ? 300000 :
+                item.Level == 5 ? 500000 :
+                item.Level == 6 ? 800000 :
+                item.Level == 7 ? 1000000 :
+                item.Level == 8 ? 1200000 : 10000
         },
         {
-            (int)SpecialItems.BloodBone, item => item.Level == 1 ? 15000 :
-                item.Level == 2 ? 21000 :
-                item.Level == 3 ? 30000 :
-                item.Level == 4 ? 39000 :
-                item.Level == 5 ? 48000 :
-                item.Level == 6 ? 60000 :
-                item.Level == 7 ? 75000 :
-                item.Level == 8 ? 90000 : 15000
+            (int)SpecialItems.BloodBone, item => item.Level == 1 ? 10000 :
+                item.Level == 2 ? 50000 :
+                item.Level == 3 ? 100000 :
+                item.Level == 4 ? 300000 :
+                item.Level == 5 ? 500000 :
+                item.Level == 6 ? 800000 :
+                item.Level == 7 ? 1000000 :
+                item.Level == 8 ? 1200000 : 10000
         },
-        {
-            (int)SpecialItems.ScrollOfArchangel, item => item.Level == 1 ? 15000 :
-                item.Level == 2 ? 21000 :
-                item.Level == 3 ? 30000 :
-                item.Level == 4 ? 39000 :
-                item.Level == 5 ? 48000 :
-                item.Level == 6 ? 60000 :
-                item.Level == 7 ? 75000 :
-                item.Level == 8 ? 90000 : 15000
-        },
-        {
-            (int)SpecialItems.OldScroll, item => item.Level == 1 ? 500000 : (item.Level + 1) * 200000
-        },
-        {
-            (int)SpecialItems.IllusionSorcererCovenant, item => item.Level == 1 ? 500000 : (item.Level + 1) * 200000
-        },
+        { (int)SpecialItems.OldScroll, item => item.Level == 1 ? 500000 : (item.Level + 1) * 200000 },
+        { (int)SpecialItems.IllusionSorcererCovenant, item => item.Level == 1 ? 500000 : (item.Level + 1) * 200000 },
+        { (int)SpecialItems.ScrollOfBlood, item => item.Level == 1 ? 500000 : (item.Level + 1) * 200000 },
+        { (int)SpecialItems.FlameOfCondor, _ => 3000000 },
+        { (int)SpecialItems.FeatherOfCondor, _ => 3000000 },
         { (int)SpecialItems.ArmorGuardman, _ => 5000 },
         { (int)SpecialItems.WizardsRing, item => item.Level == 0 ? 30000 : 0 },
         { (int)SpecialItems.SpiritPet, item => item.Level == 0 ? 30000000 : item.Level == 1 ? 15000000 : 0 },
@@ -182,6 +198,21 @@ public class ItemPriceCalculator
         { (int)SpecialItems.Halloween5, item => 150 * item.Durability() },
         { (int)SpecialItems.Halloween6, item => 150 * item.Durability() },
         { (int)SpecialItems.GemOfSecret, item => item.Level == 0 ? 60000 : 0 },
+        { (int)SpecialItems.SuspiciousScrapOfPaper, item => 30000 * item.Durability() },
+        { (int)SpecialItems.GaionsOrder, item => 30000 * item.Durability() },
+        { (int)SpecialItems.FirstSecromiconFragment, item => 30000 * item.Durability() },
+        { (int)SpecialItems.SecondSecromiconFragment, item => 30000 * item.Durability() },
+        { (int)SpecialItems.ThirdSecromiconFragment, item => 30000 * item.Durability() },
+        { (int)SpecialItems.FourthSecromiconFragment, item => 30000 * item.Durability() },
+        { (int)SpecialItems.FifthSecromiconFragment, item => 30000 * item.Durability() },
+        { (int)SpecialItems.SixthSecromiconFragment, item => 30000 * item.Durability() },
+        { (int)SpecialItems.CompleteSecromicon, item => 30000 * item.Durability() },
+        { (int)SpecialItems.ChristmasStar, _ => 200000 },
+        { (int)SpecialItems.Firecracker, _ => 200000 },
+        { (int)SpecialItems.CherryBlossomWine, _ => 300 },
+        { (int)SpecialItems.CherryBlossomRiceCake, _ => 300 },
+        { (int)SpecialItems.CherryBlossomFlowerPetal, _ => 300 },
+        { (int)SpecialItems.GoldenCherryBlossomBranch, _ => 300 },
     };
 
     private enum SpecialItems
@@ -193,19 +224,23 @@ public class ItemPriceCalculator
         Chaos = 0xF0C, // getId(12,15),
         Life = 0x100E, // getId(14,16),
         Creation = 0x160E, // getId(14,22),
+        Guardian = 0x1F0E, // getId(14,31),
+        Gemstone = 0x290E,
+        Harmony = 0x2A0E,
+        LowerRefineStone = 0x2B0E,
+        HigherRefineStone = 0x2C0E,
         PackedBless = 0x1E0C, // getId(12,30),
         PackedSoul = 0x1F0C, // getId(12,31),
+        PackedChaos = 0x8D0C,
         PackedLife = 0x880C,
         PackedCreation = 0x890C,
         PackedGuardian = 0x8A0C,
         PackedGemstone = 0x8B0C,
         PackedHarmony = 0x8C0C,
-        PackedChaos = 0x8D0C,
         PackedLowerRefineStone = 0x8E0C,
         PackedHigherRefineStone = 0x8F0C,
         Fruits = 0xF0D, // getId(13,15),
         LochFeather = 0xE0D, // getId(13,14),
-        JewelGuardian = 0x1F0E, // getId(14,31),
         LargeHealPotion = 0x030E,
         LargeManaPotion = 0x060E,
         SiegePotion = 0x70E, // getId(14,7),
@@ -220,14 +255,14 @@ public class ItemPriceCalculator
         SmallSdPotion = 0x230E, // getId(14,35),
         SdPotion = 0x240E, // getId(14, 36),
         LargeSdPotion = 0x250E, // getId(14,37),
-        SmallComplexPotion = 0x280E, // getId(14,38),
-        ComplexPotion = 0x290E, // getId(14,39),
-        LargeComplexPotion = 0x2A0E, // getId(14,40),
+        SmallComplexPotion = 0x260E, // getId(14,38),
+        ComplexPotion = 0x270E, // getId(14,39),
+        LargeComplexPotion = 0x280E, // getId(14,40),
         Dinorant = 0x30D, // getId(13,3),
         DevilEye = 0x110E, // getId(14,17),
         DevilKey = 0x120E, // getId(14,18),
         DevilInvitation = 0x130E, // getId(14,19),
-        RedemyOfLove = 0x140E, // getId(14,20),
+        RemedyOfLove = 0x140E, // getId(14,20),
         Rena = 0x150E, // getId(14,21),
         Ale = 0x90E, // getId(14,9),
         InvisibleCloak = 0x120D, // getId(13,18),
@@ -247,6 +282,24 @@ public class ItemPriceCalculator
         GemOfSecret = 0x1A0C, // getId(12,26),
         OldScroll = 0x310D,
         IllusionSorcererCovenant = 0x320D,
+        ScrollOfBlood = 0x330D,
+        FlameOfCondor = 0x340D,
+        FeatherOfCondor = 0x350D,
+        SuspiciousScrapOfPaper = 0x650E,
+        GaionsOrder = 0x660E,
+        FirstSecromiconFragment = 0x670E,
+        SecondSecromiconFragment = 0x680E,
+        ThirdSecromiconFragment = 0x690E,
+        FourthSecromiconFragment = 0x6A0E,
+        FifthSecromiconFragment = 0x6B0E,
+        SixthSecromiconFragment = 0x6C0E,
+        CompleteSecromicon = 0x6D0E,
+        ChristmasStar = 0x330E,
+        Firecracker = 0x3F0E,
+        CherryBlossomWine = 0x550E,
+        CherryBlossomRiceCake = 0x560E,
+        CherryBlossomFlowerPetal = 0x570E,
+        GoldenCherryBlossomBranch = 0x5A0E,
     }
 
     /// <summary>
@@ -260,7 +313,7 @@ public class ItemPriceCalculator
         item.ThrowNotInitializedProperty(item.Definition is null, nameof(item.Definition));
 
         var sellingPrice = this.CalculateBuyingPrice(item) / 3;
-        if (item.Definition.Group == 14 && (item.Definition.Number <= 8))
+        if (item.Definition.Group == 14 && item.Definition.Number <= 8)
         {
             // Potions + Antidote
             return sellingPrice / 10 * 10;
@@ -285,7 +338,7 @@ public class ItemPriceCalculator
         const long maximumBasePrice = 400000000;
         var isPet = item.IsTrainablePet();
         var maximumDurability = item.GetMaximumDurabilityOfOnePiece();
-        var basePrice = Math.Min(isPet ? CalculateBuyingPrice(item, maximumDurability) : CalculateBuyingPrice(item, maximumDurability) / 3, maximumBasePrice);
+        var basePrice = Math.Min(isPet ? this.CalculateFinalBuyingPrice(item, maximumDurability) : this.CalculateFinalBuyingPrice(item, maximumDurability) / 3, maximumBasePrice);
         basePrice = RoundPrice(basePrice);
 
         float squareRootOfBasePrice = (float)Math.Sqrt(basePrice);
@@ -313,11 +366,35 @@ public class ItemPriceCalculator
     }
 
     /// <summary>
-    /// Calculates the buying price of the item, which the player has to pay if he wants to buy the item from a merchant.
+    /// Calculates the final buying price of the item, which the player has to pay if he wants to buy the item from a merchant.
     /// </summary>
     /// <param name="item">The item.</param>
     /// <returns>The buying price.</returns>
-    public long CalculateBuyingPrice(Item item) => CalculateBuyingPrice(item, item.Durability());
+    public long CalculateFinalBuyingPrice(Item item) => this.CalculateFinalBuyingPrice(item, item.Durability());
+
+    private static int GetId(byte group, int id)
+    {
+        return (id << 8) + group;
+    }
+
+    private static long RoundPrice(long price)
+    {
+        var result = price;
+        if (result >= 1000)
+        {
+            result = result / 100 * 100;
+        }
+        else if (result >= 100)
+        {
+            result = result / 10 * 10;
+        }
+        else
+        {
+            // no rounding for smaller values.
+        }
+
+        return result;
+    }
 
     private static long CalculateBuyingPrice(Item item, byte durability)
     {
@@ -326,7 +403,7 @@ public class ItemPriceCalculator
         var definition = item.Definition!;
         if (definition.Value > 0 && (definition.Group == 15 || definition.Group == 12))
         {
-            return RoundPrice(definition.Value);
+            return definition.Value;
         }
 
         long price = 0;
@@ -343,7 +420,7 @@ public class ItemPriceCalculator
         }
         else if (definition.Value > 0)
         {
-            price += (definition.Value * definition.Value * 10) / 12;
+            price += definition.Value * definition.Value * 10 / 12;
             if (item.Definition.Group == 14 && (item.Definition.Number <= 8))
             {
                 // Potions + Antidote
@@ -357,8 +434,13 @@ public class ItemPriceCalculator
                 return price;
             }
         }
-        else if ((item.Definition.Group == 12 && item.Definition.Number > 6) || item.Definition.Group == 13 || item.Definition.Group == 15)
+        else if ((item.Definition.Group == 12
+                && ((item.Definition.Number > 6 && item.Definition.Number < 36)
+                    || (item.Definition.Number > 43 && item.Definition.Number != 50)))
+            || item.Definition.Group == 13
+            || item.Definition.Group == 15)
         {
+            // Cape of Lord and Cape of Fighter go here
             price = (dropLevel * dropLevel * dropLevel) + 100;
         }
         else
@@ -379,7 +461,7 @@ public class ItemPriceCalculator
                 price = ((dropLevel + 40) * dropLevel * dropLevel / 8) + 100;
             }
 
-            var isOneHandedWeapon = item.Definition.Group < 6 && definition.Width < 2 && definition.BasePowerUpAttributes.Any(o => o.TargetAttribute == Stats.MinimumPhysBaseDmg);
+            var isOneHandedWeapon = item.Definition.Group < 6 && definition.Width < 2;
             var isShield = item.Definition.Group == 6;
             if (isOneHandedWeapon || isShield)
             {
@@ -446,30 +528,10 @@ public class ItemPriceCalculator
             price -= loss;
         }
 
-        return RoundPrice(price);
+        return price;
     }
 
-    private static int GetId(byte group, int id)
-    {
-        return (id << 8) + group;
-    }
+    private long CalculateBuyingPrice(Item item) => CalculateBuyingPrice(item, item.Durability());
 
-    private static long RoundPrice(long price)
-    {
-        var result = price;
-        if (result >= 1000)
-        {
-            result = result / 100 * 100;
-        }
-        else if (result >= 100)
-        {
-            result = result / 10 * 10;
-        }
-        else
-        {
-            // no rounding for smaller values.
-        }
-
-        return result;
-    }
+    private long CalculateFinalBuyingPrice(Item item, byte durability) => RoundPrice(CalculateBuyingPrice(item, durability));
 }

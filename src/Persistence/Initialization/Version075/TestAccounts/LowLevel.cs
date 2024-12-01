@@ -31,18 +31,70 @@ internal class LowLevel : AccountInitializerBase
     /// <inheritdoc/>
     protected override Character CreateKnight()
     {
+        // +9
         var character = this.CreateCharacter(this.AccountName + "Dk", CharacterClassNumber.DarkKnight, this.Level, 0);
-        var z = this.CreateSmallAxe(0);
+        var a = this.CreateSmallAxe(0);
+        a.Level = 9;
+
+        var z = this.CreateSmallAxe(1);
         z.Level = 9;
-        var option = this.Context.CreateNew<ItemOptionLink>();
-        option.ItemOption = z.Definition!.PossibleItemOptions.First(o => o.PossibleOptions.Any(p => p.OptionType == ItemOptionTypes.Option)).PossibleOptions.First();
-        z.ItemOptions.Add(option);
-        character.Inventory!.Items.Add(z);
-        character.Inventory.Items.Add(this.CreateArmorItem(52, 5, 8)); // Leather Armor
-        character.Inventory.Items.Add(this.CreateArmorItem(47, 5, 7)); // Leather Helm
-        character.Inventory.Items.Add(this.CreateArmorItem(49, 5, 9)); // Leather Pants
-        character.Inventory.Items.Add(this.CreateArmorItem(63, 5, 10)); // Leather Gloves
-        character.Inventory.Items.Add(this.CreateArmorItem(65, 5, 11)); // Leather Boots
+        var optionz = this.Context.CreateNew<ItemOptionLink>();
+        optionz.ItemOption = z.Definition!.PossibleItemOptions.First(o => o.PossibleOptions.Any(p => p.OptionType == ItemOptionTypes.Excellent)).PossibleOptions.ElementAt(3);
+        z.ItemOptions.Add(optionz);
+
+        var b = this.CreateSmallAxe(52);
+        b.Level = 9;
+        var optionb = this.Context.CreateNew<ItemOptionLink>();
+        optionb.ItemOption = b.Definition!.PossibleItemOptions.First(o => o.PossibleOptions.Any(p => p.OptionType == ItemOptionTypes.Luck)).PossibleOptions.First();
+        b.ItemOptions.Add(optionb);
+
+        var y = this.CreateSmallAxe(47);
+        y.Level = 9;
+        var optiony1 = this.Context.CreateNew<ItemOptionLink>();
+        optiony1.ItemOption = y.Definition!.PossibleItemOptions.First(o => o.PossibleOptions.Any(p => p.OptionType == ItemOptionTypes.Excellent)).PossibleOptions.ElementAt(3);
+        y.ItemOptions.Add(optiony1);
+        var optiony2 = this.Context.CreateNew<ItemOptionLink>();
+        optiony2.ItemOption = y.Definition!.PossibleItemOptions.First(o => o.PossibleOptions.Any(p => p.OptionType == ItemOptionTypes.Luck)).PossibleOptions.First();
+        y.ItemOptions.Add(optiony2);
+
+        // +10
+        var c = this.CreateSmallAxe(49);
+        c.Level = 10;
+
+        var w = this.CreateSmallAxe(63);
+        w.Level = 10;
+        var optionw = this.Context.CreateNew<ItemOptionLink>();
+        optionw.ItemOption = w.Definition!.PossibleItemOptions.First(o => o.PossibleOptions.Any(p => p.OptionType == ItemOptionTypes.Excellent)).PossibleOptions.ElementAt(3);
+        w.ItemOptions.Add(optionw);
+
+        var d = this.CreateSmallAxe(65);
+        d.Level = 10;
+        var optiond = this.Context.CreateNew<ItemOptionLink>();
+        optiond.ItemOption = d.Definition!.PossibleItemOptions.First(o => o.PossibleOptions.Any(p => p.OptionType == ItemOptionTypes.Luck)).PossibleOptions.First();
+        d.ItemOptions.Add(optiond);
+
+        var e = this.CreateSmallAxe(67);
+        e.Level = 10;
+        var optione1 = this.Context.CreateNew<ItemOptionLink>();
+        optione1.ItemOption = e.Definition!.PossibleItemOptions.First(o => o.PossibleOptions.Any(p => p.OptionType == ItemOptionTypes.Excellent)).PossibleOptions.ElementAt(3);
+        e.ItemOptions.Add(optione1);
+        var optione2 = this.Context.CreateNew<ItemOptionLink>();
+        optione2.ItemOption = e.Definition!.PossibleItemOptions.First(o => o.PossibleOptions.Any(p => p.OptionType == ItemOptionTypes.Luck)).PossibleOptions.First();
+        e.ItemOptions.Add(optione2);
+
+        character.Inventory!.Items.Add(a);
+        character.Inventory.Items.Add(b);
+        character.Inventory.Items.Add(c);
+        character.Inventory.Items.Add(d);
+        character.Inventory.Items.Add(e);
+        character.Inventory.Items.Add(z);
+        character.Inventory.Items.Add(y);
+        character.Inventory.Items.Add(w);
+        // character.Inventory.Items.Add(this.CreateArmorItem(52, 5, 8)); // Leather Armor
+        // character.Inventory.Items.Add(this.CreateArmorItem(47, 5, 7)); // Leather Helm
+        // character.Inventory.Items.Add(this.CreateArmorItem(49, 5, 9)); // Leather Pants
+        // character.Inventory.Items.Add(this.CreateArmorItem(63, 5, 10)); // Leather Gloves
+        // character.Inventory.Items.Add(this.CreateArmorItem(65, 5, 11)); // Leather Boots
         this.AddTestJewelsAndPotions(character.Inventory);
         return character;
     }

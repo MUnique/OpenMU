@@ -361,6 +361,18 @@ public class Armors : ArmorInitializerBase
             this.AddGuardianOptionForArmor(i, ItemGroups.Boots);
             this.AddGuardianOptionForArmor(i, ItemGroups.Gloves);
         }
+
+        const int auraSetIndex = 43;
+        this.AddGuardianOptionForArmor(auraSetIndex, ItemGroups.Armor);
+        this.AddGuardianOptionForArmor(auraSetIndex, ItemGroups.Pants);
+        this.AddGuardianOptionForArmor(auraSetIndex, ItemGroups.Helm);
+        this.AddGuardianOptionForArmor(auraSetIndex, ItemGroups.Boots);
+        this.AddGuardianOptionForArmor(auraSetIndex, ItemGroups.Gloves);
+        const int phoenixSoulSetIndex = 73;
+        this.AddGuardianOptionForArmor(phoenixSoulSetIndex, ItemGroups.Armor);
+        this.AddGuardianOptionForArmor(phoenixSoulSetIndex, ItemGroups.Pants);
+        this.AddGuardianOptionForArmor(phoenixSoulSetIndex, ItemGroups.Helm);
+        this.AddGuardianOptionForArmor(phoenixSoulSetIndex, ItemGroups.Boots);
     }
 
     private void AddGuardianOptionForArmor(int setNumber, ItemGroups itemGroup)

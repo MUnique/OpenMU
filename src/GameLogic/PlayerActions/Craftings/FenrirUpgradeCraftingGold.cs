@@ -131,25 +131,25 @@ public class FenrirUpgradeCraftingGold : BaseItemCraftingHandler
         if (randomWeapons.Any())
         {
             items.Add(new CraftingRequiredItemLink(randomWeapons, new TransientItemCraftingRequiredItem { MinimumAmount = 1, MaximumAmount = 1, Reference = 2 }));
-            successRateByItems = (byte)Math.Min(79, randomWeapons.Sum(this._priceCalculator.CalculateBuyingPrice) * 100 / 1_000_000);
+            successRateByItems = (byte)Math.Min(79, randomWeapons.Sum(this._priceCalculator.CalculateFinalBuyingPrice) * 100 / 1_000_000);
         }
 
         if (randomArmors.Any())
         {
             items.Add(new CraftingRequiredItemLink(randomArmors, new TransientItemCraftingRequiredItem { MinimumAmount = 1, MaximumAmount = 1, Reference = 3 }));
-            successRateByItems = (byte)Math.Min(79, randomArmors.Sum(this._priceCalculator.CalculateBuyingPrice) * 100 / 1_000_000);
+            successRateByItems = (byte)Math.Min(79, randomArmors.Sum(this._priceCalculator.CalculateFinalBuyingPrice) * 100 / 1_000_000);
         }
 
         if (randomWeaponsGold.Any())
         {
             items.Add(new CraftingRequiredItemLink(randomWeaponsGold, new TransientItemCraftingRequiredItem { MinimumAmount = 1, MaximumAmount = 1, Reference = 4 }));
-            successRateByItems = (byte)Math.Min(79, randomWeaponsGold.Sum(this._priceCalculator.CalculateBuyingPrice) * 100 / 1_000_000);
+            successRateByItems = (byte)Math.Min(79, randomWeaponsGold.Sum(this._priceCalculator.CalculateFinalBuyingPrice) * 100 / 1_000_000);
         }
 
         if (randomArmorsGold.Any())
         {
             items.Add(new CraftingRequiredItemLink(randomArmorsGold, new TransientItemCraftingRequiredItem { MinimumAmount = 1, MaximumAmount = 1, Reference = 4 }));
-            successRateByItems = (byte)Math.Min(79, randomArmorsGold.Sum(this._priceCalculator.CalculateBuyingPrice) * 100 / 1_000_000);
+            successRateByItems = (byte)Math.Min(79, randomArmorsGold.Sum(this._priceCalculator.CalculateFinalBuyingPrice) * 100 / 1_000_000);
         }
 
         return null;

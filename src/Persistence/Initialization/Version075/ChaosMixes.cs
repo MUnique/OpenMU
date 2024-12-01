@@ -77,7 +77,7 @@ public class ChaosMixes : InitializerBase
 
         // Result:
         chaosWeaponSettings.ResultItemSelect = ResultItemSelection.Any;
-        chaosWeaponSettings.ResultItemRateDependentOptions = true;
+        //chaosWeaponSettings.ResultItemRateDependentOptions = true;
 
         var chaosDragonAxe = this.Context.CreateNew<ItemCraftingResultItem>();
         chaosDragonAxe.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Chaos Dragon Axe");

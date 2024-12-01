@@ -35,7 +35,7 @@ public partial class SimpleCraftingSettings
     /// <summary>
     /// Gets or sets the minimum success percent.
     /// </summary>
-    public byte MinimumSuccessPercent { get; set; }
+    //public byte MinimumSuccessPercent { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether multiple crafting at the same time are allowed for this crafting.
@@ -77,7 +77,7 @@ public partial class SimpleCraftingSettings
     /// <summary>
     /// Gets or sets the success percentage addition for a 380 item which gets modified.
     /// </summary>
-    public int SuccessPercentageAdditionFor380Item { get; set; }
+    //public int SuccessPercentageAdditionForGuardianItem { get; set; }
 
     /// <summary>
     /// Gets or sets the success percentage addition for a socket item which gets modified.
@@ -108,5 +108,5 @@ public partial class SimpleCraftingSettings
     /// Gets or sets a value indicating whether the skill, luck, and item option chances of the random result item are a function of the combination success rate.
     /// </summary>
     /// <remarks>Used for Chaos Weapon and 1st Level Wing craftings.</remarks>
-    public bool ResultItemRateDependentOptions { get; set; }
+    //public bool ResultItemRateDependentOptions { get; set; }
 }

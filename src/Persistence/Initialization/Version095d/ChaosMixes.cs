@@ -56,7 +56,6 @@ public class ChaosMixes : InitializerBase
         craftingSettings.Money = 2_000_000 * (targetLevel - 9);
         craftingSettings.SuccessPercent = (byte)(targetLevel == 10 ? 50 : 45);
         craftingSettings.SuccessPercentageAdditionForLuck = 25;
-        craftingSettings.SuccessPercentageAdditionForExcellentItem = -10; // check if true
 
         // Requirements:
         var item = this.Context.CreateNew<ItemCraftingRequiredItem>();
@@ -144,7 +143,7 @@ public class ChaosMixes : InitializerBase
 
         // Result:
         chaosWeaponSettings.ResultItemSelect = ResultItemSelection.Any;
-        chaosWeaponSettings.ResultItemRateDependentOptions = true;
+        //chaosWeaponSettings.ResultItemRateDependentOptions = true;
 
         var chaosDragonAxe = this.Context.CreateNew<ItemCraftingResultItem>();
         chaosDragonAxe.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Chaos Dragon Axe");
@@ -227,7 +226,7 @@ public class ChaosMixes : InitializerBase
 
         // Result:
         craftingSettings.ResultItemSelect = ResultItemSelection.Any;
-        craftingSettings.ResultItemRateDependentOptions = true;
+        //craftingSettings.ResultItemRateDependentOptions = true;
 
         var fairyWings = this.Context.CreateNew<ItemCraftingResultItem>();
         fairyWings.ItemDefinition = this.GameConfiguration.Items.First(i => i.Group == 12 && i.Number == 0);

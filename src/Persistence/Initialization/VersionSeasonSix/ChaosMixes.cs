@@ -95,7 +95,7 @@ public class ChaosMixes : InitializerBase
         craftingSettings.SuccessPercentageAdditionForLuck = 25;
         craftingSettings.SuccessPercentageAdditionForExcellentItem = -10;
         craftingSettings.SuccessPercentageAdditionForAncientItem = -10;
-        craftingSettings.SuccessPercentageAdditionFor380Item = -10;
+        //craftingSettings.SuccessPercentageAdditionFor380Item = -10;
         craftingSettings.SuccessPercentageAdditionForSocketItem = -20;
 
         // Requirements:
@@ -184,7 +184,7 @@ public class ChaosMixes : InitializerBase
 
         // Result:
         chaosWeaponSettings.ResultItemSelect = ResultItemSelection.Any;
-        chaosWeaponSettings.ResultItemRateDependentOptions = true;
+        //chaosWeaponSettings.ResultItemRateDependentOptions = true;
 
         var chaosDragonAxe = this.Context.CreateNew<ItemCraftingResultItem>();
         chaosDragonAxe.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Chaos Dragon Axe");
@@ -267,7 +267,7 @@ public class ChaosMixes : InitializerBase
 
         // Result:
         craftingSettings.ResultItemSelect = ResultItemSelection.Any;
-        craftingSettings.ResultItemRateDependentOptions = true;
+        //craftingSettings.ResultItemRateDependentOptions = true;
 
         var fairyWings = this.Context.CreateNew<ItemCraftingResultItem>();
         fairyWings.ItemDefinition = this.GameConfiguration.Items.First(i => i.Group == 12 && i.Number == 0);
@@ -378,6 +378,7 @@ public class ChaosMixes : InitializerBase
         crafting.SimpleCraftingSettings = craftingSettings;
         craftingSettings.MoneyPerFinalSuccessPercentage = 200_000;
         craftingSettings.MaximumSuccessPercent = 60;
+        //craftingSettings.MinimumSuccessPercent = 1;
 
         // Requirements:
         var secondWing = this.Context.CreateNew<ItemCraftingRequiredItem>();
@@ -450,7 +451,7 @@ public class ChaosMixes : InitializerBase
         crafting.SimpleCraftingSettings = craftingSettings;
         craftingSettings.MoneyPerFinalSuccessPercentage = 200_000;
         craftingSettings.MaximumSuccessPercent = 40;
-        craftingSettings.MinimumSuccessPercent = 1;
+        //craftingSettings.MinimumSuccessPercent = 1;
 
         // Requirements:
         var randomExcItem = this.Context.CreateNew<ItemCraftingRequiredItem>();
