@@ -440,8 +440,15 @@ public class ItemPriceCalculator
             || item.Definition.Group == 13
             || item.Definition.Group == 15)
         {
-            // Cape of Lord and Cape of Fighter go here
             price = (dropLevel * dropLevel * dropLevel) + 100;
+
+            if (item.IsWing()
+                && item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.Option) is { } opt
+                && opt.ItemOption?.PowerUpDefinition?.TargetAttribute == Stats.HealthRecoveryMultiplier)
+            {
+                // Cape of Lord and Cape of Fighter go here; only health recovery option adds value
+                price += price * opt.Level;
+            }
         }
         else
         {
