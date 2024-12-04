@@ -49,8 +49,8 @@ public class SummonPartySkillPlugin : TargetedSkillPluginBase
     private async ValueTask RunSummonPartyAsync(Player player, CancellationTokenSource cancellationTokenSource)
     {
         var cancellationToken = cancellationTokenSource.Token;
-        var targets = player.Party!.PartyList;
-        var targetPlayers = targets.OfType<Player>().Where(p => p != player).ToList();
+        var partyList = player.Party!.PartyList;
+        var targetPlayers = partyList.OfType<Player>().Where(p => p != player).ToList();
 
         try
         {
@@ -109,12 +109,12 @@ public class SummonPartySkillPlugin : TargetedSkillPluginBase
 
                 var offsetX = Rand.NextInt(-2, 3);
                 var offsetY = Rand.NextInt(-2, 3);
-                Point validPoint = new((byte)(player.Position.X + offsetX), (byte)(player.Position.Y + offsetY));
+                Point testPoint = new((byte)(player.Position.X + offsetX), (byte)(player.Position.Y + offsetY));
 
-                if (player.CurrentMap!.Terrain.WalkMap[targetPoint.X, targetPoint.Y]
+                if (player.CurrentMap!.Terrain.WalkMap[testPoint.X, testPoint.Y]
                     && player.Position.EuclideanDistanceTo(targetPoint) < 6)
                 {
-                    targetPoint = validPoint;
+                    targetPoint = testPoint;
                     foundValidPoint = true;
                 }
             }
