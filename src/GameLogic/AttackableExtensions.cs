@@ -174,8 +174,6 @@ public static class AttackableExtensions
 
         skillEntry.ThrowNotInitializedProperty(skillEntry.Skill is null, nameof(skillEntry.Skill));
 
-        var isHealthUpdated = false;
-        var isManaUpdated = false;
         var skill = skillEntry.Skill;
         foreach (var powerUpDefinition in skill.MagicEffectDef?.PowerUpDefinitions ?? Enumerable.Empty<PowerUpDefinition>())
         {
@@ -187,25 +185,11 @@ public static class AttackableExtensions
                 target.Attributes[regeneration.CurrentAttribute] = Math.Min(
                     target.Attributes[regeneration.CurrentAttribute] + value,
                     target.Attributes[regeneration.MaximumAttribute]);
-                isHealthUpdated |= regeneration.CurrentAttribute == Stats.CurrentHealth || regeneration.CurrentAttribute == Stats.CurrentShield;
-                isManaUpdated |= regeneration.CurrentAttribute == Stats.CurrentMana || regeneration.CurrentAttribute == Stats.CurrentAbility;
             }
             else
             {
                 player.Logger.LogWarning(
                     $"Regeneration skill {skill.Name} is configured to regenerate a non-regeneration-able target attribute {powerUpDefinition.TargetAttribute}.");
-            }
-        }
-
-        if (target is IWorldObserver observer)
-        {
-            var updatedStats =
-                (isHealthUpdated ? IUpdateStatsPlugIn.UpdatedStats.Health : IUpdateStatsPlugIn.UpdatedStats.Undefined)
-                | (isManaUpdated ? IUpdateStatsPlugIn.UpdatedStats.Mana : IUpdateStatsPlugIn.UpdatedStats.Undefined);
-
-            if (updatedStats != IUpdateStatsPlugIn.UpdatedStats.Undefined)
-            {
-                await observer.InvokeViewPlugInAsync<IUpdateStatsPlugIn>(p => p.UpdateCurrentStatsAsync(updatedStats)).ConfigureAwait(false);
             }
         }
     }

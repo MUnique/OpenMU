@@ -431,7 +431,7 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
     {
         await this.SaveSessionOfPlayerAsync(remotePlayer).ConfigureAwait(false);
         await this.SetOfflineAtLoginServerAsync(remotePlayer).ConfigureAwait(false);
-        remotePlayer.Dispose();
+        await remotePlayer.DisposeAsync().ConfigureAwait(false);
         this.OnPropertyChanged(nameof(this.CurrentConnections));
     }
 
