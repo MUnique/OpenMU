@@ -236,7 +236,6 @@ internal abstract class AccountInitializerBase : InitializerBase
         inventory.Items.Add(this.CreateManaPotion(29, 1));
         inventory.Items.Add(this.CreateManaPotion(30, 2));
         inventory.Items.Add(this.CreateAlcohol(31));
-        inventory.Items.Add(this.CreateJewelOfChaos(20));
     }
 
     protected void AddScrolls(ItemStorage inventory)
