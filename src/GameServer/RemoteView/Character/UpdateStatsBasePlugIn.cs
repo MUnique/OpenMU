@@ -59,7 +59,7 @@ public abstract class UpdateStatsBasePlugIn : Disposable, IUpdateStatsPlugIn
 
         if (this._changeActions.TryGetValue(attribute, out var action))
         {
-            _ = this.SendDelayedUpdateAsync(action, attribute);
+            _ = this.SendDelayedUpdateAsync(action);
         }
     }
 
