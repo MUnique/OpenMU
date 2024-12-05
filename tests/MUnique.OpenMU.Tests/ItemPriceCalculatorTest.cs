@@ -389,6 +389,12 @@ public class ItemPriceCalculatorTest
             itemDefinition.ItemSlot = new ItemSlotType();
         }
 
+        if (group < 6)
+        {
+            // weapons should have an attack speed attribute
+            itemDefinition.BasePowerUpAttributes.Add(new ItemBasePowerUpDefinition { TargetAttribute = Stats.AttackSpeedByWeapon });
+        }
+
         var itemMock = new Mock<Item>();
         itemMock.SetupAllProperties();
         itemMock.Setup(i => i.ItemOptions).Returns(new List<ItemOptionLink>());
