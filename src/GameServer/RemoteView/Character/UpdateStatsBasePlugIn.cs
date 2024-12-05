@@ -74,7 +74,7 @@ public abstract class UpdateStatsBasePlugIn : Disposable, IUpdateStatsPlugIn
         base.Dispose(disposing);
     }
 
-    private async ValueTask SendDelayedUpdateAsync(UpdateAction action, AttributeDefinition attribute)
+    private async ValueTask SendDelayedUpdateAsync(UpdateAction action)
     {
         var autoResetEvent = this._resetEvents[this._actionIndexMapping[action]];
         if (!autoResetEvent.WaitOne(0))
