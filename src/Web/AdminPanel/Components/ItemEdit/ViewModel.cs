@@ -614,7 +614,7 @@ public class ViewModel : INotifyPropertyChanged
     }
 
     /// <summary>
-    /// Gets the possible socket bonus options.
+    /// Gets the possible fenrir options.
     /// </summary>
     public IEnumerable<IncreasableItemOption> PossibleFenrirOptions
     {

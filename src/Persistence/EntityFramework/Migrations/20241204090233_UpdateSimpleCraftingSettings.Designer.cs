@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 {
     [DbContext(typeof(EntityDataContext))]
-    [Migration("20241203082526_UpdateSimpleCraftingSettings")]
+    [Migration("20241204090233_UpdateSimpleCraftingSettings")]
     partial class UpdateSimpleCraftingSettings
     {
         /// <inheritdoc />
@@ -3032,6 +3032,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<bool>("MultipleAllowed")
                         .HasColumnType("boolean");
 
+                    b.Property<int>("NpcPriceDivisor")
+                        .HasColumnType("integer");
+
                     b.Property<byte>("ResultItemExcellentOptionChance")
                         .HasColumnType("smallint");
 
@@ -3040,9 +3043,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<byte>("ResultItemMaxExcOptionCount")
                         .HasColumnType("smallint");
-
-                    b.Property<bool>("ResultItemRateDependentOptions")
-                        .HasColumnType("boolean");
 
                     b.Property<int>("ResultItemSelect")
                         .HasColumnType("integer");

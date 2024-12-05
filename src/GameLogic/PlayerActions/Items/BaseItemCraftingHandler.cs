@@ -142,12 +142,12 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
                     var hadSkill = item.HasSkill;
                     var optionLowered = false;
                     item.Level = (byte)Rand.NextInt(0, previousLevel);
-                    if (item.HasSkill && Rand.NextRandomBool(0.5))
+                    if (item.HasSkill && !item.IsExcellent() && Rand.NextRandomBool())
                     {
                         item.HasSkill = false;
                     }
 
-                    if (item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.Option) is { } optionLink && Rand.NextRandomBool(0.5))
+                    if (item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.Option) is { } optionLink && Rand.NextRandomBool())
                     {
                         optionLowered = true;
                         if (optionLink.Level > 1)
@@ -162,7 +162,7 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
 
                     item.Durability = item.GetMaximumDurabilityOfOnePiece();
                     player.Logger.LogDebug(
-                        "Item {0} was downgraded from {1} to {2}. Skill removed: {3}. Item option lowered by 1 level: {4}.",
+                        "Item {0} was downgraded from level {1} to {2}. Skill removed: {3}. Item option lowered by 1 level: {4}.",
                         item,
                         previousLevel,
                         item.Level,
@@ -175,14 +175,14 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
                 itemLink.Items.ForEach(item =>
                 {
                     var previousLevel = item.Level;
-                    item.Level -= (byte)(Rand.NextRandomBool(0.5) ? 2 : 3);
+                    item.Level -= (byte)(Rand.NextRandomBool() ? 2 : 3);
                     if (item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.Option) is { } optionLink)
                     {
                         item.ItemOptions.Remove(optionLink);
                     }
 
                     item.Durability = item.GetMaximumDurabilityOfOnePiece();
-                    player.Logger.LogDebug("Item {0} was downgraded from {1} to {2}. Item option was removed.", item, previousLevel, item.Level);
+                    player.Logger.LogDebug("Item {0} was downgraded from level {1} to {2}. Item option was removed.", item, previousLevel, item.Level);
                 });
 
                 break;

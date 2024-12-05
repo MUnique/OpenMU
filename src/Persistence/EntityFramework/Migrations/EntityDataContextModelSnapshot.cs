@@ -3029,6 +3029,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<bool>("MultipleAllowed")
                         .HasColumnType("boolean");
 
+                    b.Property<int>("NpcPriceDivisor")
+                        .HasColumnType("integer");
+
                     b.Property<byte>("ResultItemExcellentOptionChance")
                         .HasColumnType("smallint");
 
@@ -3037,9 +3040,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<byte>("ResultItemMaxExcOptionCount")
                         .HasColumnType("smallint");
-
-                    b.Property<bool>("ResultItemRateDependentOptions")
-                        .HasColumnType("boolean");
 
                     b.Property<int>("ResultItemSelect")
                         .HasColumnType("integer");

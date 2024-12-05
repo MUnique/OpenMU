@@ -1,4 +1,4 @@
-﻿// <copyright file="ThirdWingsCraftingHandler.cs" company="MUnique">
+﻿// <copyright file="ThirdWingsCrafting.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -11,13 +11,13 @@ using MUnique.OpenMU.GameLogic.PlayerActions.Items;
 /// <summary>
 /// Crafting for Third Wings.
 /// </summary>
-public class ThirdWingsCraftingHandler : SimpleItemCraftingHandler
+public class ThirdWingsCrafting : SimpleItemCraftingHandler
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="ThirdWingsCraftingHandler"/> class.
+    /// Initializes a new instance of the <see cref="ThirdWingsCrafting"/> class.
     /// </summary>
     /// <param name="settings">The settings.</param>
-    public ThirdWingsCraftingHandler(SimpleCraftingSettings settings)
+    public ThirdWingsCrafting(SimpleCraftingSettings settings)
         : base(settings)
     {
     }

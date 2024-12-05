@@ -1,4 +1,4 @@
-﻿// <copyright file="SecondWingsCraftingHandler.cs" company="MUnique">
+﻿// <copyright file="SecondWingsCrafting.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -11,13 +11,13 @@ using MUnique.OpenMU.GameLogic.PlayerActions.Items;
 /// <summary>
 /// Crafting for Second Wings (including first capes).
 /// </summary>
-public class SecondWingsCraftingHandler : SimpleItemCraftingHandler
+public class SecondWingsCrafting : SimpleItemCraftingHandler
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="SecondWingsCraftingHandler"/> class.
+    /// Initializes a new instance of the <see cref="SecondWingsCrafting"/> class.
     /// </summary>
     /// <param name="settings">The settings.</param>
-    public SecondWingsCraftingHandler(SimpleCraftingSettings settings)
+    public SecondWingsCrafting(SimpleCraftingSettings settings)
         : base(settings)
     {
     }

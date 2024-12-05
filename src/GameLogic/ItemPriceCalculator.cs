@@ -18,9 +18,14 @@ using MUnique.OpenMU.GameLogic.Attributes;
 public class ItemPriceCalculator
 {
     private const short ForceWaveSkillId = 66;
-    private const long MaximumPrice = 3000000000;
+    private const short ExplosionSkillId = 223;
+    private const short RequiemSkillId = 224;
+    private const short PollutionSkillId = 225;
+    private const long MaximumPrice = 3_000_000_000;
     private const float DestroyedPetPenalty = 2.0f;
     private const float DestroyedItemPenalty = 1.4f;
+
+    private static readonly List<short> WorthlessSkills = [ForceWaveSkillId, ExplosionSkillId, RequiemSkillId, PollutionSkillId];
 
     private static readonly Dictionary<byte, int> DropLevelIncreaseByLevel = new()
     {
@@ -35,6 +40,15 @@ public class ItemPriceCalculator
         { 13, 245 },
         { 14, 305 },
         { 15, 365 },
+    };
+
+    private static readonly IDictionary<int, long> SpecialItemOldValueDictionary = new Dictionary<int, long>
+    {
+        { (int)SpecialItems.Bless, 100_000 },
+        { (int)SpecialItems.Soul, 70_000 },
+        { (int)SpecialItems.Chaos, 40_000 },
+        { (int)SpecialItems.Life, 450_000 },
+        { (int)SpecialItems.Creation, 450_000 },
     };
 
     private static readonly IDictionary<int, Func<Item, long>> SpecialItemDictionary = new Dictionary<int, Func<Item, long>>
@@ -114,7 +128,7 @@ public class ItemPriceCalculator
         { (int)SpecialItems.Fruits, _ => 33000000 },
         { (int)SpecialItems.LochFeather, item => item.Level == 1 ? 7500000 : 180000 },
         { (int)SpecialItems.SiegePotion, item => item.Durability() * (item.Level == 0 ? 900000 : 450000) },
-        { (int)SpecialItems.OrderGuardianLifeStone, item => item.Level == 1 ? 2400000 : 0 },
+        { (int)SpecialItems.OrderGuardianLifeStone, item => item.Level == 1 ? 2400000 : 1000000 },      // to-do: check
         { (int)SpecialItems.ContractSummon, item => item.Level == 0 ? 1500000 : item.Level == 1 ? 1200000 : 0 },
         { (int)SpecialItems.SplinterOfArmor, item => item.Durability() * 150 },
         { (int)SpecialItems.BlessOfGuardian, item => item.Durability() * 300 },
@@ -133,9 +147,8 @@ public class ItemPriceCalculator
         {
             (int)SpecialItems.Dinorant, item =>
             {
-                var gold = 960000;
-                var opts = item.ItemOptions.Where(o => o.ItemOption?.OptionType == ItemOptionTypes.Excellent).Count(); // to-do
-                return gold + (300000 * opts);
+                var opts = item.ItemOptions.Where(o => o.ItemOption?.OptionType == ItemOptionTypes.Option).Count();
+                return 960000 + (300000 * opts);
             }
         },
         {
@@ -156,7 +169,7 @@ public class ItemPriceCalculator
                 item.Level == 6 ? 1200000 :
                 item.Level == 7 ? 1500000 : 15000
         },
-        { (int)SpecialItems.DevilInvitation, item => item.Level is 1 or 7 ? 60000 : item.Level == 2 ? 84000 : (item.Level - 1) * 60000 },
+        { (int)SpecialItems.DevilInvitation, item => item.Level is 1 ? 60000 : item.Level == 2 ? 84000 : (item.Level - 1) * 60000 },    // +7 sell price on S6E3 client is 60k (same as +4). Bug?
         { (int)SpecialItems.RemedyOfLove, _ => 900 },
         { (int)SpecialItems.Rena, item => item.Level == 3 ? item.Durability() * 3900 : 9000 },
         { (int)SpecialItems.Ale, _ => 750 },
@@ -303,20 +316,36 @@ public class ItemPriceCalculator
     }
 
     /// <summary>
-    /// Calculates the selling price of the item, which the player gets if he is selling an item to a merchant.
-    /// It's usually a third of the buying price.
+    /// Calculates the selling price of the item for its maximum durability.
     /// </summary>
     /// <param name="item">The item.</param>
     /// <returns>The selling price.</returns>
-    public long CalculateSellingPrice(Item item)
+    public long CalculateSellingPrice(Item item) => this.CalculateSellingPrice(item, item.GetMaximumDurabilityOfOnePiece());
+
+    /// <summary>
+    /// Calculates the selling price of the item, which the player gets if he is selling an item to a merchant.
+    /// It's usually a third of the buying price, minus a durability factor.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <param name="durability">The current durability of the <paramref name="item"/>.</param>
+    /// <returns>The selling price.</returns>
+    public long CalculateSellingPrice(Item item, byte durability)
     {
         item.ThrowNotInitializedProperty(item.Definition is null, nameof(item.Definition));
 
-        var sellingPrice = this.CalculateBuyingPrice(item) / 3;
+        var sellingPrice = CalculateBuyingPrice(item) / 3;
         if (item.Definition.Group == 14 && item.Definition.Number <= 8)
         {
             // Potions + Antidote
             return sellingPrice / 10 * 10;
+        }
+
+        var maxDurability = item.GetMaximumDurabilityOfOnePiece();
+        if (maxDurability > 1 && maxDurability > durability)
+        {
+            float multiplier = 1.0f - ((float)durability / maxDurability);
+            long loss = (long)(sellingPrice * 0.6 * multiplier);
+            sellingPrice -= loss;
         }
 
         return RoundPrice(sellingPrice);
@@ -335,10 +364,9 @@ public class ItemPriceCalculator
             return 0;
         }
 
-        const long maximumBasePrice = 400000000;
+        const long maximumBasePrice = 400_000_000;
         var isPet = item.IsTrainablePet();
-        var maximumDurability = item.GetMaximumDurabilityOfOnePiece();
-        var basePrice = Math.Min(isPet ? this.CalculateFinalBuyingPrice(item, maximumDurability) : this.CalculateFinalBuyingPrice(item, maximumDurability) / 3, maximumBasePrice);
+        var basePrice = Math.Min(this.CalculateFinalBuyingPrice(item) / (isPet ? 1 : 3), maximumBasePrice);
         basePrice = RoundPrice(basePrice);
 
         float squareRootOfBasePrice = (float)Math.Sqrt(basePrice);
@@ -370,7 +398,25 @@ public class ItemPriceCalculator
     /// </summary>
     /// <param name="item">The item.</param>
     /// <returns>The buying price.</returns>
-    public long CalculateFinalBuyingPrice(Item item) => this.CalculateFinalBuyingPrice(item, item.Durability());
+    public long CalculateFinalBuyingPrice(Item item) => RoundPrice(CalculateBuyingPrice(item));
+
+    /// <summary>
+    /// Calculates the final "old" buying price of the item.
+    /// Supposedly in earlier versions jewel reference prices were different, and those were used since for Chaos Weapon and First Wings craftings rate calculations.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <returns>The "old" buying price.</returns>
+    public long CalculateFinalOldBuyingPrice(Item item)
+    {
+        if (SpecialItemOldValueDictionary.TryGetValue(GetId(item.Definition!.Group, item.Definition.Number), out var oldValue))
+        {
+            return RoundPrice(oldValue);
+        }
+        else
+        {
+            return this.CalculateFinalBuyingPrice(item);
+        }
+    }
 
     private static int GetId(byte group, int id)
     {
@@ -396,7 +442,7 @@ public class ItemPriceCalculator
         return result;
     }
 
-    private static long CalculateBuyingPrice(Item item, byte durability)
+    private static long CalculateBuyingPrice(Item item)
     {
         item.ThrowNotInitializedProperty(item.Definition is null, nameof(item.Definition));
 
@@ -475,7 +521,7 @@ public class ItemPriceCalculator
                 price = price * 80 / 100;
             }
 
-            if (item.HasSkill && definition.Skill?.Number != ForceWaveSkillId)
+            if (item.HasSkill && !WorthlessSkills.Contains(definition.Skill?.Number ?? 0))
             {
                 price += (long)(price * 1.5);
             }
@@ -527,18 +573,6 @@ public class ItemPriceCalculator
             price = MaximumPrice;
         }
 
-        var maxDurability = item.GetMaximumDurabilityOfOnePiece();
-        if (maxDurability > 1 && maxDurability > durability)
-        {
-            float multiplier = 1.0f - ((float)durability / maxDurability);
-            long loss = (long)(price * 0.6 * multiplier);
-            price -= loss;
-        }
-
         return price;
     }
-
-    private long CalculateBuyingPrice(Item item) => CalculateBuyingPrice(item, item.Durability());
-
-    private long CalculateFinalBuyingPrice(Item item, byte durability) => RoundPrice(CalculateBuyingPrice(item, durability));
 }

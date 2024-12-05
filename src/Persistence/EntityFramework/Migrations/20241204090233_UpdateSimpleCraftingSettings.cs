@@ -11,11 +11,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "CharacterId",
-                schema: "data",
-                table: "LetterHeader");
-
             migrationBuilder.AddColumn<byte>(
                 name: "MinimumSuccessPercent",
                 schema: "config",
@@ -24,13 +19,13 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 nullable: false,
                 defaultValue: (byte)0);
 
-            migrationBuilder.AddColumn<bool>(
-                name: "ResultItemRateDependentOptions",
+            migrationBuilder.AddColumn<int>(
+                name: "NpcPriceDivisor",
                 schema: "config",
                 table: "SimpleCraftingSettings",
-                type: "boolean",
+                type: "integer",
                 nullable: false,
-                defaultValue: false);
+                defaultValue: 0);
 
             migrationBuilder.AddColumn<int>(
                 name: "SuccessPercentageAdditionForGuardianItem",
@@ -50,7 +45,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 table: "SimpleCraftingSettings");
 
             migrationBuilder.DropColumn(
-                name: "ResultItemRateDependentOptions",
+                name: "NpcPriceDivisor",
                 schema: "config",
                 table: "SimpleCraftingSettings");
 
@@ -58,14 +53,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 name: "SuccessPercentageAdditionForGuardianItem",
                 schema: "config",
                 table: "SimpleCraftingSettings");
-
-            migrationBuilder.AddColumn<Guid>(
-                name: "CharacterId",
-                schema: "data",
-                table: "LetterHeader",
-                type: "uuid",
-                nullable: false,
-                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
         }
     }
 }

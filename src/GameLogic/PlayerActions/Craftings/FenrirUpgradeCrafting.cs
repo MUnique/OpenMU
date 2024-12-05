@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings;
 
 using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.PlayerActions.Items;
 using MUnique.OpenMU.GameLogic.Views.NPC;
 
@@ -29,13 +30,16 @@ public class FenrirUpgradeCrafting : BaseItemCraftingHandler
         items = new List<CraftingRequiredItemLink>(4);
         var inputItems = player.TemporaryStorage!.Items.ToList();
         var itemsLevelAndOption4 = inputItems
-            .Where(item => item.Level >= 4 && item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.Option))
+            .Where(item => item.Level >= 4
+                && item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.Option))
             .ToList();
         var randomWeapons = itemsLevelAndOption4
-            .Where(item => item.Definition!.Group >= 0 && item.Definition!.Group < 6)
+            .Where(item => item.IsWearable()
+                && item.Definition!.BasePowerUpAttributes.Any(a => a.TargetAttribute == Stats.AttackSpeedByWeapon))
             .ToList();
         var randomArmors = itemsLevelAndOption4
-            .Where(item => item.Definition!.Group >= 6 && item.Definition!.Group < 12)
+            .Where(item => item.IsWearable()
+                && item.Definition!.BasePowerUpAttributes.Any(a => a.TargetAttribute == Stats.DefenseBase))
             .ToList();
 
         if (randomArmors.Any() && randomWeapons.Any())
@@ -77,12 +81,12 @@ public class FenrirUpgradeCrafting : BaseItemCraftingHandler
         if (randomWeapons.Any())
         {
             items.Add(new CraftingRequiredItemLink(randomWeapons, new TransientItemCraftingRequiredItem { MinimumAmount = 1, MaximumAmount = 1, Reference = 2 }));
-            successRateByItems = (byte)Math.Min(79, randomWeapons.Sum(this._priceCalculator.CalculateFinalBuyingPrice) * 100 / 1_000_000);
+            successRateByItems = (byte)Math.Min(79, randomWeapons.Sum(this._priceCalculator.CalculateSellingPrice) * 100 / 1_000_000);
         }
         else
         {
             items.Add(new CraftingRequiredItemLink(randomArmors, new TransientItemCraftingRequiredItem { MinimumAmount = 1, MaximumAmount = 1, Reference = 3 }));
-            successRateByItems = (byte)Math.Min(79, randomArmors.Sum(this._priceCalculator.CalculateFinalBuyingPrice) * 100 / 1_000_000);
+            successRateByItems = (byte)Math.Min(79, randomArmors.Sum(this._priceCalculator.CalculateSellingPrice) * 100 / 1_000_000); // to-do: check
         }
 
         return null;
