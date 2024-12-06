@@ -10,9 +10,8 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.Persistence;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Formats.Png;
-using MUnique.OpenMU.Web.AdminPanel.Services;
+using SixLabors.ImageSharp.PixelFormats;
 
 /// <summary>
 /// Blazor component which allows to select an exit gate.
@@ -46,9 +45,6 @@ public partial class ExitGatePicker
     [Parameter]
     public EventCallback<ExitGate>? SelectedGateChanged { get; set; }
 
-    [Inject]
-    private ILookupController LookupController { get; set; } = null!;
-
     private GameMapDefinition? Map
     {
         get => this._map;
@@ -77,8 +73,8 @@ public partial class ExitGatePicker
     /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
-        this._maps = (await this.LookupController.GetSuggestionsAsync<GameMapDefinition>(string.Empty, null)).OrderBy(c => c.Number).ToList();
-        await base.OnInitializedAsync();
+        this._maps = (await this.PersistenceContext.GetAsync<GameMapDefinition>().ConfigureAwait(false)).OrderBy(c => c.Number).ToList();
+        await base.OnInitializedAsync().ConfigureAwait(false);
     }
 
     private string GetCssClass(Gate gate)
@@ -115,7 +111,7 @@ public partial class ExitGatePicker
         if (Guid.TryParse(args.Value as string, out var gateId)
             && this.Map?.ExitGates.FirstOrDefault(g => g.GetId() == gateId) is { } gate)
         {
-            await this.OnSelectedAsync(gate);
+            await this.OnSelectedAsync(gate).ConfigureAwait(false);
         }
     }
 
