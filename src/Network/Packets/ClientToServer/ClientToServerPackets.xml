@@ -2985,7 +2985,7 @@
       <HeaderType>C1Header</HeaderType>
       <Code>66</Code>
       <Name>GuildInfoRequest</Name>
-      <Length>6</Length>
+      <Length>8</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A player gets another player into view range which is in a guild, and the guild identifier is unknown (=not cached yet by previous requests) to him.</SentWhen>
       <CausedReaction>The server sends a response which includes the guild name and emblem.</CausedReaction>
