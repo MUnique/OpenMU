@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView;
 using System.ComponentModel.Design;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.PlugIns;
@@ -58,6 +59,7 @@ internal sealed class ViewPlugInContainer : CustomPlugInContainerBase<IViewPlugI
     public void Dispose()
     {
         this._serviceContainer.Dispose();
+        this.KnownPlugIns.OfType<IDisposable>().ForEach(d => d.Dispose());
     }
 
     /// <inheritdoc/>
