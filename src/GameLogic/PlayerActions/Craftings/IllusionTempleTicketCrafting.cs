@@ -20,9 +20,6 @@ public class IllusionTempleTicketCrafting : BaseEventTicketCrafting
     }
 
     /// <inheritdoc />
-    protected override CraftingResult IncorrectMixItemsResult => CraftingResult.IncorrectBloodCastleItems;
-
-    /// <inheritdoc />
     protected override int GetPrice(int eventLevel)
     {
         return eventLevel switch

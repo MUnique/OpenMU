@@ -31,7 +31,7 @@ public static class Rand
     /// <returns>Random boolean value.</returns>
     public static bool NextRandomBool()
     {
-        int a = RandomInstance.Next(0, 1);
+        int a = RandomInstance.Next(0, 2);
         return a == 1;
     }
 

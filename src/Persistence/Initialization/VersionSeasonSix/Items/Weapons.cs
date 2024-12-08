@@ -148,7 +148,7 @@ internal class Weapons : InitializerBase
         this.CreateWeapon(0, 32, 0, 260, 1, 2, true, "Sacred Glove", 52, 52, 58, 25, 65, 0, 0, 85, 35, 0, 0, 0, 0, 0, 0, 0, 0, 1);
         this.CreateWeapon(0, 33, 0, 261, 1, 2, true, "Storm Hard Glove", 82, 82, 88, 30, 77, 0, 0, 100, 50, 0, 0, 0, 0, 0, 0, 0, 0, 1);
         this.CreateWeapon(0, 34, 0, 260, 1, 2, true, "Piercing Blade Glove", 105, 95, 101, 35, 86, 0, 0, 120, 60, 0, 0, 0, 0, 0, 0, 0, 0, 1);
-        this.CreateWeapon(0, 35, 0, 270, 1, 2, false, "Phoenix Soul Star", 147, 122, 128, 40, 98, 0, 0, 101, 51, 0, 0, 0, 0, 0, 0, 0, 0, 1);
+        this.CreateWeapon(0, 35, 0, 270, 1, 2, false, "Phoenix Soul Star", 147, 122, 128, 40, 98, 0, 380, 101, 51, 0, 0, 0, 0, 0, 0, 0, 0, 1);
 
         this.CreateWeapon(1, 0, 0, 0, 1, 3, true, "Small Axe", 1, 1, 6, 20, 18, 0, 0, 50, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1);
         this.CreateWeapon(1, 1, 0, 0, 1, 3, true, "Hand Axe", 4, 4, 9, 30, 20, 0, 0, 70, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1);
@@ -462,6 +462,7 @@ internal class Weapons : InitializerBase
 
         var boneBlade = this.GameConfiguration.Items.First(i => i.Number == 22 && i.Group == (int)ItemGroups.Swords);
         var explosionBlade = this.GameConfiguration.Items.First(i => i.Number == 23 && i.Group == (int)ItemGroups.Swords);
+        var phoenixSoulStar = this.GameConfiguration.Items.First(i => i.Number == 35 && i.Group == (int)ItemGroups.Swords);
         var soleilScepter = this.GameConfiguration.Items.First(i => i.Number == 14 && i.Group == (int)ItemGroups.Scepters);
         var sylphWindBow = this.GameConfiguration.Items.First(i => i.Number == 21 && i.Group == (int)ItemGroups.Bows);
         var viperStaff = this.GameConfiguration.Items.First(i => i.Number == 12 && i.Group == (int)ItemGroups.Staff);
@@ -469,6 +470,7 @@ internal class Weapons : InitializerBase
 
         boneBlade.PossibleItemOptions.Add(weaponOption);
         explosionBlade.PossibleItemOptions.Add(weaponOption);
+        phoenixSoulStar.PossibleItemOptions.Add(weaponOption);
         soleilScepter.PossibleItemOptions.Add(weaponOption);
         sylphWindBow.PossibleItemOptions.Add(weaponOption);
         viperStaff.PossibleItemOptions.Add(weaponOption);

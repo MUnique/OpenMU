@@ -9,6 +9,7 @@ using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
@@ -52,6 +53,18 @@ public class ItemSerializer : IItemSerializer
         var itemOption = item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.Option);
         if (itemOption != null)
         {
+            // A dinorant can have up to 2 options, all being coded in the item option level.
+            // A one-option dino has level = 1, 2, or 4; a two-option has level = 3, 5, or 6.
+            if (item.Definition.Name == "Horn of Dinorant")
+            {
+                int compositeLevel = 0;
+                item.ItemOptions.Where(o => o.ItemOption?.OptionType == ItemOptionTypes.Option).ForEach(o =>
+                {
+                    compositeLevel |= o.Level;
+                });
+                itemOption.Level = compositeLevel;
+            }
+
             // The item option level is splitted into 2 parts. Webzen... :-/
             target[1] += (byte)(itemOption.Level & 3); // setting the first 2 bits
             target[3] = (byte)((itemOption.Level & 4) << 4); // The highest bit is placed into the 2nd bit of the exc byte (0x40).

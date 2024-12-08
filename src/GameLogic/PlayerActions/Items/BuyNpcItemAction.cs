@@ -94,7 +94,7 @@ public class BuyNpcItemAction
 
     private bool CheckMoney(Player player, Item item)
     {
-        var price = this._priceCalculator.CalculateBuyingPrice(item);
+        var price = this._priceCalculator.CalculateFinalBuyingPrice(item);
         if (!player.TryRemoveMoney((int)price))
         {
             return false;

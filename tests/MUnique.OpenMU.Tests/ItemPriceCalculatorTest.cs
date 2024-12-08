@@ -391,8 +391,8 @@ public class ItemPriceCalculatorTest
 
         if (group < 6)
         {
-            // weapons should have a min dmg attribute
-            itemDefinition.BasePowerUpAttributes.Add(new ItemBasePowerUpDefinition { TargetAttribute = Stats.MinimumPhysBaseDmg });
+            // weapons should have an attack speed attribute
+            itemDefinition.BasePowerUpAttributes.Add(new ItemBasePowerUpDefinition { TargetAttribute = Stats.AttackSpeedByWeapon });
         }
 
         var itemMock = new Mock<Item>();
@@ -434,7 +434,7 @@ public class ItemPriceCalculatorTest
             item.HasSkill = true;
         }
 
-        var buyingPrice = this._calculator.CalculateBuyingPrice(item);
+        var buyingPrice = this._calculator.CalculateFinalBuyingPrice(item);
         Assert.That(buyingPrice, Is.EqualTo(price));
     }
 }
