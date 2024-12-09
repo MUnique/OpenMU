@@ -222,10 +222,10 @@ public class ItemPriceCalculator
         { (int)SpecialItems.CompleteSecromicon, item => 30000 * item.Durability() },
         { (int)SpecialItems.ChristmasStar, _ => 200000 },
         { (int)SpecialItems.Firecracker, _ => 200000 },
-        { (int)SpecialItems.CherryBlossomWine, _ => 300 },
-        { (int)SpecialItems.CherryBlossomRiceCake, _ => 300 },
-        { (int)SpecialItems.CherryBlossomFlowerPetal, _ => 300 },
-        { (int)SpecialItems.GoldenCherryBlossomBranch, _ => 300 },
+        { (int)SpecialItems.CherryBlossomWine, item => 300 * item.Durability() },
+        { (int)SpecialItems.CherryBlossomRiceCake, item => 300 * item.Durability() },
+        { (int)SpecialItems.CherryBlossomFlowerPetal, item => 300 * item.Durability() },
+        { (int)SpecialItems.GoldenCherryBlossomBranch, item => 300 * item.Durability() },
     };
 
     private enum SpecialItems

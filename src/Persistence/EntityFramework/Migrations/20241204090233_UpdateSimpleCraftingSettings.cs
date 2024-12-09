@@ -11,14 +11,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<byte>(
-                name: "MinimumSuccessPercent",
-                schema: "config",
-                table: "SimpleCraftingSettings",
-                type: "smallint",
-                nullable: false,
-                defaultValue: (byte)0);
-
             migrationBuilder.AddColumn<int>(
                 name: "NpcPriceDivisor",
                 schema: "config",
@@ -39,11 +31,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "MinimumSuccessPercent",
-                schema: "config",
-                table: "SimpleCraftingSettings");
-
             migrationBuilder.DropColumn(
                 name: "NpcPriceDivisor",
                 schema: "config",

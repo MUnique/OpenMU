@@ -141,6 +141,8 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
                     var previousLevel = item.Level;
                     var hadSkill = item.HasSkill;
                     var optionLowered = false;
+                    var previousMaxDurability = item.GetMaximumDurabilityOfOnePiece();
+
                     item.Level = (byte)Rand.NextInt(0, previousLevel);
                     if (item.HasSkill && !item.IsExcellent() && Rand.NextRandomBool())
                     {
@@ -160,7 +162,7 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
                         }
                     }
 
-                    item.Durability = item.GetMaximumDurabilityOfOnePiece();
+                    item.Durability = item.GetMaximumDurabilityOfOnePiece() * item.Durability / previousMaxDurability;
                     player.Logger.LogDebug(
                         "Item {0} was downgraded from level {1} to {2}. Skill removed: {3}. Item option lowered by 1 level: {4}.",
                         item,

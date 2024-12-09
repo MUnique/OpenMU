@@ -34,11 +34,6 @@ public partial class SimpleCraftingSettings
     public byte SuccessPercent { get; set; }
 
     /// <summary>
-    /// Gets or sets the minimum success percent.
-    /// </summary>
-    public byte MinimumSuccessPercent { get; set; }
-
-    /// <summary>
     /// Gets or sets the maximum success percent.
     /// </summary>
     public byte MaximumSuccessPercent { get; set; }

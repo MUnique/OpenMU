@@ -370,8 +370,8 @@ public class ChaosMixes : InitializerBase
         var craftingSettings = this.Context.CreateNew<SimpleCraftingSettings>();
         crafting.SimpleCraftingSettings = craftingSettings;
         craftingSettings.MoneyPerFinalSuccessPercentage = 200_000;
+        craftingSettings.SuccessPercent = 1;
         craftingSettings.MaximumSuccessPercent = 60;
-        craftingSettings.MinimumSuccessPercent = 1;
 
         // Requirements:
         var secondWing = this.Context.CreateNew<ItemCraftingRequiredItem>();
@@ -443,8 +443,8 @@ public class ChaosMixes : InitializerBase
         var craftingSettings = this.Context.CreateNew<SimpleCraftingSettings>();
         crafting.SimpleCraftingSettings = craftingSettings;
         craftingSettings.MoneyPerFinalSuccessPercentage = 200_000;
+        craftingSettings.SuccessPercent = 1;
         craftingSettings.MaximumSuccessPercent = 40;
-        craftingSettings.MinimumSuccessPercent = 1;
 
         // Requirements:
         var randomExcItem = this.Context.CreateNew<ItemCraftingRequiredItem>();

@@ -165,7 +165,7 @@ internal class Weapons : InitializerBase
         this.CreateWeapon(2, 2, 0, 0, 1, 3, true, "Flail", 22, 22, 32, 15, 32, 0, 0, 80, 50, 0, 0, 0, 1, 0, 1, 1, 0, 1);
         this.CreateWeapon(2, 3, 0, 19, 2, 3, true, "Great Hammer", 38, 45, 56, 15, 50, 0, 0, 150, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1);
         this.CreateWeapon(2, 4, 0, 19, 2, 3, true, "Crystal Morning Star", 66, 78, 107, 30, 72, 0, 0, 130, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1);
-        this.CreateWeapon(2, 5, 0, 23, 1, 4, true, "Crystal Sword", 72, 89, 120, 40, 76, 0, 0, 130, 70, 0, 0, 1, 1, 1, 1, 0, 0, 0);
+        this.CreateWeapon(2, 5, 0, 23, 2, 4, true, "Crystal Sword", 72, 89, 120, 40, 76, 0, 0, 130, 70, 0, 0, 1, 1, 1, 1, 0, 0, 0);
         this.CreateWeapon(2, 6, 0, 23, 2, 4, false, "Chaos Dragon Axe", 75, 102, 130, 35, 80, 0, 0, 140, 50, 0, 0, 0, 1, 0, 1, 0, 0, 0);
         this.CreateWeapon(2, 7, 0, 0, 1, 3, true, "Elemental Mace", 90, 62, 80, 50, 50, 0, 0, 15, 42, 0, 0, 0, 0, 2, 0, 0, 0, 0);
         this.CreateWeapon(2, 8, 0, 66, 1, 3, true, "Battle Scepter", 54, 41, 52, 45, 40, 3, 0, 80, 17, 0, 0, 0, 0, 0, 0, 1, 0, 0);

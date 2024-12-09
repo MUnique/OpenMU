@@ -138,11 +138,6 @@ public class SimpleItemCraftingHandler : BaseItemCraftingHandler
             rate = Math.Min(this._settings.MaximumSuccessPercent, rate);
         }
 
-        if (this._settings.MinimumSuccessPercent > 0)
-        {
-            rate = Math.Max(this._settings.MinimumSuccessPercent, rate);
-        }
-
         successRate = (byte)Math.Min(100, rate);
 
         return default;
