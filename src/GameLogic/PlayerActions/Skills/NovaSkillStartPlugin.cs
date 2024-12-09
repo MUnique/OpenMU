@@ -19,6 +19,8 @@ using MUnique.OpenMU.PlugIns;
 [Guid("e966e7eb-58b8-4356-8725-5da9f43c1fa4")]
 public class NovaSkillStartPlugin : TargetedSkillPluginBase
 {
+    private const ushort NovaEndSkillId = 40;
+
     private static readonly TimeSpan NovaStepDelay = TimeSpan.FromMilliseconds(500);
 
     /// <summary>
@@ -38,7 +40,7 @@ public class NovaSkillStartPlugin : TargetedSkillPluginBase
             return;
         }
 
-        var skillEntry = player.SkillList?.GetSkill(skillId);
+        var skillEntry = player.SkillList?.GetSkill(NovaEndSkillId);
         if (skillEntry?.Skill is null)
         {
             return;
@@ -55,7 +57,7 @@ public class NovaSkillStartPlugin : TargetedSkillPluginBase
         var cancellationTokenSource = new SkillCancellationTokenSource();
         player.SkillCancelTokenSource = cancellationTokenSource;
 
-        _ = this.RunNovaAsync(player, skillEntry, cancellationTokenSource);
+        _ = Task.Run(() => this.RunNovaAsync(player, skillEntry, cancellationTokenSource));
     }
 
     private async ValueTask RunNovaAsync(Player player, SkillEntry skillEntry, SkillCancellationTokenSource cancellationTokenSource)
