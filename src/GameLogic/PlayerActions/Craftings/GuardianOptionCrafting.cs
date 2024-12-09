@@ -29,7 +29,7 @@ public class GuardianOptionCrafting : SimpleItemCraftingHandler
     public static byte ItemReference { get; } = 0x88;
 
     /// <inheritdoc />
-    protected override async ValueTask<List<Item>> CreateOrModifyResultItemsAsync(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot)
+    protected override async ValueTask<List<Item>> CreateOrModifyResultItemsAsync(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot, byte successRate)
     {
         var item = requiredItems.First(i => i.ItemRequirement.Reference == ItemReference && i.Items.Any()).Items.First();
         foreach (var optionDefinition in item.Definition!.PossibleItemOptions.First(o => o.PossibleOptions.Any(p => p.OptionType == ItemOptionTypes.GuardianOption)).PossibleOptions)

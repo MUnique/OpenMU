@@ -35,6 +35,6 @@ public class DevilSquareTicketCrafting : BaseEventTicketCrafting
     /// <inheritdoc />
     protected override byte GetSuccessRate(int eventLevel)
     {
-        return (byte)(80 - (eventLevel * 5));
+        return (byte)(eventLevel < 5 ? 80 : 70); // Future to-do: There is a +10% increase if Crywolf event is beaten
     }
 }

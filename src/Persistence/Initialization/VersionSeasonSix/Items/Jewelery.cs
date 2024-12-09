@@ -119,25 +119,27 @@ internal class Jewelery : Version095d.Items.Jewelery
     }
 
     /// <summary>
-    /// Creates the wizard ring which is dropped by the white wizard (level 0).
+    /// Creates the wizard's ring which is dropped by the white wizard (level 0).
     /// Level 1 and 2 are Ring of Warriors which can be dropped at level 40 and 80, <see cref="BoxOfLuck.CreateWizardsRings"/>.
     /// These can be equipped but have no options, and are bound to the character.
     /// </summary>
     /// <remarks>
     /// Options:
-    /// Increase Damage 10%
-    /// Increase Attacking(Wizardry) Speed+10.
+    /// Increase Damage +10%
+    /// Increase Wizardry Damage +10%
+    /// Increase Attacking (Wizardry) Speed +10.
     /// </remarks>
     private void CreateWizardsRing()
     {
-        var ring = this.CreateJewelery(20, 10, false, "Wizards Ring", 0, 250, null, null, null);
+        var ring = this.CreateJewelery(20, 10, false, "Wizard's Ring", 0, 250, null, null, null);
         ring.MaximumItemLevel = 2;
         ring.IsBoundToCharacter = true;
+        ring.Durability = 30;
         var optionDefinition = this.Context.CreateNew<ItemOptionDefinition>();
         optionDefinition.SetGuid(ItemOptionDefinitionNumbers.WizardRing);
         this.GameConfiguration.ItemOptions.Add(optionDefinition);
         ring.PossibleItemOptions.Add(optionDefinition);
-        optionDefinition.Name = "Wizard Ring Options";
+        optionDefinition.Name = "Wizard's Ring Options";
 
         var increaseDamage = this.Context.CreateNew<IncreasableItemOption>();
         increaseDamage.SetGuid(ItemOptionDefinitionNumbers.WizardRing, 1);
@@ -155,10 +157,18 @@ internal class Jewelery : Version095d.Items.Jewelery
         increaseSpeed.PowerUpDefinition.Boost.ConstantValue.Value = 10f;
         optionDefinition.PossibleOptions.Add(increaseSpeed);
 
-        // Always add both options "randomly" when it drops ;)
+        var increaseWizardryDamage = this.Context.CreateNew<IncreasableItemOption>();
+        increaseWizardryDamage.SetGuid(ItemOptionDefinitionNumbers.WizardRing, 3);
+        increaseWizardryDamage.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
+        increaseWizardryDamage.PowerUpDefinition.TargetAttribute = Stats.WizardryAttackDamageIncrease.GetPersistent(this.GameConfiguration);
+        increaseWizardryDamage.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+        increaseWizardryDamage.PowerUpDefinition.Boost.ConstantValue.Value = 0.1f;
+        optionDefinition.PossibleOptions.Add(increaseWizardryDamage);
+
+        // Always add all options "randomly" when it drops ;)
         optionDefinition.AddChance = 1.0f;
         optionDefinition.AddsRandomly = true;
-        optionDefinition.MaximumOptionsPerItem = 2;
+        optionDefinition.MaximumOptionsPerItem = 3;
     }
 
     /// <summary>
