@@ -23,7 +23,16 @@ public sealed class ItemAwareAttributeSystem : AttributeSystem, IDisposable
             character.CharacterClass.AttributeCombinations)
     {
         this.ItemPowerUps = new Dictionary<Item, IReadOnlyList<PowerUpWrapper>>();
+        foreach (var attribute in this)
+        {
+            this.OnAttributeAdded(attribute);
+        }
     }
+
+    /// <summary>
+    /// Occurs when an attribute value changed.
+    /// </summary>
+    public event EventHandler<IAttribute>? AttributeValueChanged;
 
     /// <summary>
     /// Gets the item power ups.
@@ -38,6 +47,12 @@ public sealed class ItemAwareAttributeSystem : AttributeSystem, IDisposable
     /// <inheritdoc />
     public void Dispose()
     {
+        this.AttributeValueChanged = null;
+        foreach (var attribute in this)
+        {
+            attribute.ValueChanged -= this.OnAttributeValueChanged;
+        }
+
         foreach (var powerUpWrapper in this.ItemPowerUps.SelectMany(p => p.Value))
         {
             powerUpWrapper.Dispose();
@@ -81,5 +96,32 @@ public sealed class ItemAwareAttributeSystem : AttributeSystem, IDisposable
         }
 
         return stringBuilder.ToString();
+    }
+
+    /// <inheritdoc />
+    protected override void OnAttributeAdded(IAttribute attribute)
+    {
+        base.OnAttributeAdded(attribute);
+        attribute.ValueChanged += this.OnAttributeValueChanged;
+    }
+
+    /// <inheritdoc />
+    protected override void OnAttributeRemoved(IAttribute attribute)
+    {
+        attribute.ValueChanged -= this.OnAttributeValueChanged;
+        base.OnAttributeRemoved(attribute);
+    }
+
+    /// <summary>
+    /// Called when an attribute value changed. Forwards the event to <see cref="AttributeValueChanged"/>.
+    /// </summary>
+    /// <param name="sender">The sender.</param>
+    /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+    private void OnAttributeValueChanged(object? sender, EventArgs e)
+    {
+        if (sender is IAttribute attribute)
+        {
+            this.AttributeValueChanged?.Invoke(this, attribute);
+        }
     }
 }

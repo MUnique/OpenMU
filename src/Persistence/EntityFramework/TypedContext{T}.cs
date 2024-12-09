@@ -19,9 +19,10 @@ internal class TypedContext<T> : EntityDataContext, ITypedContext
     // ReSharper disable once StaticMemberInGenericType That's okay. We don't need the behavior, but introducing a base class is just too much boilerplate.
     private static readonly IReadOnlyDictionary<Type, Type[]> AdditionalTypes = new Dictionary<Type, Type[]>
     {
-        { typeof(GameServerDefinition), new[] { typeof(GameServerConfiguration) } },
-        { typeof(GameServerEndpoint), new[] { typeof(GameClientDefinition) } },
-        { typeof(ConnectServerDefinition), new[] { typeof(GameClientDefinition) } },
+        { typeof(GameServerDefinition), [typeof(GameServerConfiguration)] },
+        { typeof(GameServerEndpoint), [typeof(GameClientDefinition)] },
+        { typeof(ConnectServerDefinition), [typeof(GameClientDefinition)] },
+        { typeof(DuelArea), [typeof(GameMapDefinition)] },
     };
 
     // ReSharper disable once StaticMemberInGenericType That's okay, we want this behavior (each type context with it's own set)
@@ -137,6 +138,8 @@ internal class TypedContext<T> : EntityDataContext, ITypedContext
             }
             else
             {
+                // We include the type, but don't go any deeper
+                yield return type;
                 continue;
             }
 

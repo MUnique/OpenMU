@@ -56,7 +56,7 @@
                                         urlPrefix = "edit-account";                                        
                                     }
 
-                                    <button type="button" class="btn-info" @onclick="@(() => this._navigationManager.NavigateTo($"{urlPrefix}/{typeof(TItem).FullName}/{item.Id}"))">Edit</button>
+                                    <a href="@($"{urlPrefix}/{typeof(TItem).FullName}/{item.Id}")" class="btn btn-info">Edit</a>
                                 }
                             </td>
                             <td>
