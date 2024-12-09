@@ -205,6 +205,11 @@ public sealed class NavigationHistory
                 }
             }
         }
+        else
+        {
+            // should never happen :)
+            return;
+        }
 
         this.HistoryChanged?.Invoke(this, EventArgs.Empty);
         if (this._current is not null)
