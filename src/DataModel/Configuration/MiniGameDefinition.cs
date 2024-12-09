@@ -146,4 +146,10 @@ public partial class MiniGameDefinition
     /// </summary>
     [MemberOfAggregate]
     public virtual ICollection<MiniGameChangeEvent> ChangeEvents { get; protected set; } = null!;
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return this.Name;
+    }
 }

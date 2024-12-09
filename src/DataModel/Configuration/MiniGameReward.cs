@@ -107,7 +107,7 @@ public partial class MiniGameReward
         {
             result.Append("Rank ").Append(this.Rank.Value).Append(": ");
         }
-        
+
         if (this.RequiredSuccess > 0)
         {
             result.Append(this.RequiredSuccess).Append(": ");

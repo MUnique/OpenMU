@@ -1,5 +1,8 @@
 ﻿@page "/setup"
 
+<PageTitle>OpenMU: Setup</PageTitle>
+<Breadcrumb IsFirstFromRoot="true" Caption="Setup"/>
+
 @if (this.ShowInstall)
 {
     <Install InstallationFinished="() => this.ShowInstall = false" />

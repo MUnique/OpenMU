@@ -50,4 +50,10 @@ public partial class GameClientDefinition : IGameClientVersion
     /// Gets or sets the description.
     /// </summary>
     public string Description { get; set; } = string.Empty;
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return this.Description;
+    }
 }

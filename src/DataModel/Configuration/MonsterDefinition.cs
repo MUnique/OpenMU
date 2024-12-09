@@ -8,7 +8,6 @@ using MUnique.OpenMU.Annotations;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration.Quests;
 using MUnique.OpenMU.DataModel.Entities;
-using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Type of the window which will be openend when talking to the npc.

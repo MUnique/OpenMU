@@ -36,4 +36,10 @@ public partial class MiniGameSpawnWave
     /// Gets or sets the end time of the wave.
     /// </summary>
     public TimeSpan EndTime { get; set; }
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return $"Wave {this.WaveNumber}: {this.Description}";
+    }
 }

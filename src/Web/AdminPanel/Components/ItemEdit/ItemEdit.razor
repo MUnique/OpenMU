@@ -8,6 +8,7 @@
     return;
 }
 
+<PageTitle>@this._viewModel.Definition?.Name</PageTitle>
 <EditForm Model="_viewModel" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator />
     <ByteField @bind-Value="@_viewModel.ItemSlot" />

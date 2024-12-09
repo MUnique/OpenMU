@@ -93,6 +93,12 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
     public NavigationManager NavigationManager { get; set; } = null!;
 
     /// <summary>
+    /// Gets or sets the navigation history.
+    /// </summary>
+    [Inject]
+    public NavigationHistory NavigationHistory { get; set; } = null!;
+
+    /// <summary>
     /// Gets or sets the java script runtime.
     /// </summary>
     [Inject]
@@ -172,13 +178,14 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
 
         var downloadMarkup = this.GetDownloadMarkup();
         var editorsMarkup = this.GetEditorsMarkup();
-        builder.AddMarkupContent(0, $"<h1>Edit {CaptionHelper.GetTypeCaption(this.Type!)}</h1>{downloadMarkup}{editorsMarkup}\r\n");
-        builder.OpenComponent<CascadingValue<IContext>>(1);
-        builder.AddAttribute(2, nameof(CascadingValue<IContext>.Value), this._persistenceContext);
-        builder.AddAttribute(3, nameof(CascadingValue<IContext>.IsFixed), this._isOwningContext);
-        builder.AddAttribute(4, nameof(CascadingValue<IContext>.ChildContent), (RenderFragment)(builder2 =>
+
+        builder.AddMarkupContent(10, $"<h1>Edit {CaptionHelper.GetTypeCaption(this.Type!)}</h1>{downloadMarkup}{editorsMarkup}\r\n");
+        builder.OpenComponent<CascadingValue<IContext>>(11);
+        builder.AddAttribute(12, nameof(CascadingValue<IContext>.Value), this._persistenceContext);
+        builder.AddAttribute(13, nameof(CascadingValue<IContext>.IsFixed), this._isOwningContext);
+        builder.AddAttribute(14, nameof(CascadingValue<IContext>.ChildContent), (RenderFragment)(builder2 =>
         {
-            var sequence = 4;
+            var sequence = 14;
             this.AddFormToRenderTree(builder2, ref sequence);
         }));
 
@@ -198,7 +205,7 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
     /// <param name="builder">The builder.</param>
     /// <param name="currentSequence">The current sequence.</param>
     protected abstract void AddFormToRenderTree(RenderTreeBuilder builder, ref int currentSequence);
-    
+
     /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -220,6 +227,11 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
                     this.StateHasChanged();
                 }
             }).ConfigureAwait(false);
+        }
+
+        if (this._loadingState == DataLoadingState.Loaded && this.Model is { } model)
+        {
+            this.NavigationHistory.AddCurrentPageToHistory(model.GetName());
         }
 
         await base.OnAfterRenderAsync(firstRender).ConfigureAwait(true);

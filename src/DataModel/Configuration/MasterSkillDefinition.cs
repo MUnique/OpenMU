@@ -83,4 +83,10 @@ public partial class MasterSkillDefinition
     /// The attack damage is also inherited and increased by the damage AND value of the master skill.
     /// </summary>
     public virtual Skill? ReplacedSkill { get; set; }
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return "Master Skill Definition";
+    }
 }
