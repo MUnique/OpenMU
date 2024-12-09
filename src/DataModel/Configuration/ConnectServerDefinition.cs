@@ -113,6 +113,9 @@ public partial class ConnectServerDefinition : IConnectServerSettings
     /// </summary>
     public int MaxServerListRequests { get; set; }
 
+    /// <summary>
+    /// Initializes the defaults.
+    /// </summary>
     public void InitializeDefaults()
     {
         this.DisconnectOnUnknownPacket = true;
@@ -127,5 +130,11 @@ public partial class ConnectServerDefinition : IConnectServerSettings
         this.MaxFtpRequests = 1;
         this.MaxIpRequests = 5;
         this.MaxServerListRequests = 20;
+    }
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return this.Description;
     }
 }

@@ -110,4 +110,10 @@ public partial class CharacterClass
     {
         return this.StatAttributes.FirstOrDefault(a => a.Attribute == attributeDefinition);
     }
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return this.Name;
+    }
 }

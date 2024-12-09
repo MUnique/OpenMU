@@ -31,4 +31,15 @@ public partial class Rectangle
     /// Gets or sets the bottom right corner, y-coordinate.
     /// </summary>
     public byte Y2 { get; set; }
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        if (this.X1 == this.X2 && this.Y1 == this.Y2)
+        {
+            return $"{this.X1} / {this.Y1}";
+        }
+
+        return $"{this.X1} / {this.Y1} to {this.X2} / {this.Y2}";
+    }
 }

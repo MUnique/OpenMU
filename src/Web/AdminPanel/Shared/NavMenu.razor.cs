@@ -36,6 +36,9 @@ public partial class NavMenu : IDisposable
     [Inject]
     private DataUpdateService UpdateService { get; set; } = null!;
 
+    [Inject]
+    private NavigationHistory NavigationHistory { get; set; } = null!;
+
     private Guid? GameConfigurationId { get; set; }
 
     /// <summary>

@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Annotations;
 
 /// <summary>
-/// Defines a level dependent damage.
+/// Defines a level-dependent damage.
 /// </summary>
 [Cloneable]
 public partial class LevelDependentDamage

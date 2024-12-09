@@ -90,4 +90,10 @@ public partial class MiniGameChangeEvent
     /// </summary>
     [MemberOfAggregate]
     public virtual ICollection<MiniGameTerrainChange> TerrainChanges { get; protected set; } = null!;
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return $"{this.Index}: {this.Description}";
+    }
 }

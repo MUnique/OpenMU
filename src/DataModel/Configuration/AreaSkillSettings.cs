@@ -79,4 +79,10 @@ public partial class AreaSkillSettings
     /// the chance to hit is 5^0.9 = 0.59.
     /// </summary>
     public float HitChancePerDistanceMultiplier { get; set; }
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return "Area Skill Settings";
+    }
 }
