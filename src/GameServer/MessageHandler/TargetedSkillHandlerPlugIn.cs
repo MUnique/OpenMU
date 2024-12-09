@@ -45,11 +45,6 @@ internal class TargetedSkillHandlerPlugIn : IPacketHandlerPlugIn
     /// <param name="targetId">The target identifier.</param>
     protected async ValueTask HandleAsync(Player player, ushort skillId, ushort targetId)
     {
-        if (player.SkillList is null || !player.SkillList.ContainsSkill(skillId))
-        {
-            return;
-        }
-
         var strategy = player.GameContext.
             PlugInManager.GetStrategy<short, ITargetedSkillPlugin>((short)skillId) ??
             this._defaultStrategy;
