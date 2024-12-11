@@ -266,7 +266,7 @@ public class SimpleItemCraftingHandler : BaseItemCraftingHandler
             var resultItem = player.PersistenceContext.CreateNew<Item>();
             resultItem.Definition = craftingResultItem.ItemDefinition ?? throw Error.NotInitializedProperty(craftingResultItem, nameof(craftingResultItem.ItemDefinition));
             resultItem.Level = resultItem.Definition.Group == ItemConstants.Fruits.Group && resultItem.Definition.Number == ItemConstants.Fruits.Number
-                ? (byte)new List<int>() { 0, 1, 2, 3, 4 }.SelectWeightedRandom([30, 25, 20, 20, 5])
+                ? (byte)new List<int> { 0, 1, 2, 3, 4 }.SelectWeightedRandom([30, 25, 20, 20, 5])
                 : (byte)Rand.NextInt(craftingResultItem.RandomMinimumLevel, craftingResultItem.RandomMaximumLevel + 1);
             resultItem.Durability = craftingResultItem.Durability ?? resultItem.GetMaximumDurabilityOfOnePiece();
 

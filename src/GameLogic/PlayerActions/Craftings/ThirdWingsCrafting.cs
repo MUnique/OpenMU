@@ -40,11 +40,9 @@ public class ThirdWingsCrafting : SimpleItemCraftingHandler
             {
                 var link = player.PersistenceContext.CreateNew<ItemOptionLink>();
                 link.Level = level;
-                (int chance2, int type) = Rand.NextInt(0, 2) switch
-                {
-                    0 => (40, 1),
-                    _ => (30, 2),
-                };
+                (int chance2, int type) = Rand.NextRandomBool()
+                    ? (40, 1)
+                    : (30, 2);
 
                 if (Rand.NextRandomBool(chance2))
                 {
