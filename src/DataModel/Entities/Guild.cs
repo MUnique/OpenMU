@@ -19,4 +19,10 @@ public class Guild : OpenMU.Interfaces.Guild
     /// Gets or sets the members.
     /// </summary>
     public virtual ICollection<GuildMember> Members { get; protected set; } = null!;
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return this.Name ?? "<Guild>";
+    }
 }

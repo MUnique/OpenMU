@@ -9,6 +9,8 @@
 
 @if (this._gameServer is not null)
 {
+    <PageTitle>OpenMU: Game Server @this._gameServer.Id</PageTitle>
+    <Breadcrumb Caption=@($"Game Server {this._gameServer.Id}")/>
     <CascadingValue Value="@_liveMapRoute" Name="LiveMapRoute">
     <CascadingValue Value="@_gameServer">
         <MapCards GameServer="@_gameServer"></MapCards>

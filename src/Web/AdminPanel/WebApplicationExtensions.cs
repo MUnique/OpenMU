@@ -68,7 +68,7 @@ public static class WebApplicationExtensions
         services.AddScoped<IDataService<PlugInConfigurationViewItem>>(serviceProvider => serviceProvider.GetService<PlugInController>()!);
         services.AddScoped<IUserService, NginxHtpasswdFileUserService>();
         services.AddScoped<IChangeNotificationService, ChangeNotificationService>();
-
+        services.AddScoped<NavigationHistory>();
         services.AddScoped<LoggedInAccountService>();
         services.AddScoped<IDataService<LoggedInAccount>>(serviceProvider => serviceProvider.GetService<LoggedInAccountService>()!);
 

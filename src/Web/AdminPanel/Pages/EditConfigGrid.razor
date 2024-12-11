@@ -4,7 +4,9 @@
 
 @if (this.Type is not null)
 {
-    <h1>@CaptionHelper.GetPluralizedTypeCaption(this.Type)</h1>
+  <h1>@CaptionHelper.GetPluralizedTypeCaption(this.Type)</h1>
+  <PageTitle>@CaptionHelper.GetPluralizedTypeCaption(this.Type)</PageTitle>
+    <Breadcrumb Caption=@CaptionHelper.GetPluralizedTypeCaption(this.Type) IsFirstFromRoot="true"></Breadcrumb>
 }
 
 @if (this.ViewModels is null)

@@ -17,6 +17,7 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Web.AdminPanel;
 using MUnique.OpenMU.Web.AdminPanel.Components;
+using MUnique.OpenMU.Web.AdminPanel.Shared;
 
 /// <summary>
 /// A page, which shows an <see cref="MapEditor"/> for all <see cref="GameConfiguration.Maps"/>.
@@ -85,16 +86,19 @@ public sealed class EditMap : ComponentBase, IDisposable
     {
         if (this._maps is { })
         {
-            builder.OpenComponent<CascadingValue<IContext>>(1);
-            builder.AddAttribute(2, nameof(CascadingValue<IContext>.Value), this._context);
-            builder.AddAttribute(3, nameof(CascadingValue<IContext>.IsFixed), false);
-            builder.AddAttribute(4, nameof(CascadingValue<IContext>.ChildContent), (RenderFragment)(builder2 =>
+            builder.OpenComponent<Breadcrumb>(0);
+            builder.AddAttribute(1, nameof(Breadcrumb.Caption), "Map Editor");
+            builder.CloseComponent();
+            builder.OpenComponent<CascadingValue<IContext>>(10);
+            builder.AddAttribute(12, nameof(CascadingValue<IContext>.Value), this._context);
+            builder.AddAttribute(13, nameof(CascadingValue<IContext>.IsFixed), false);
+            builder.AddAttribute(14, nameof(CascadingValue<IContext>.ChildContent), (RenderFragment)(builder2 =>
             {
-                builder2.OpenComponent(5, typeof(MapEditor));
-                builder2.AddAttribute(6, nameof(MapEditor.Maps), this._maps);
-                builder2.AddAttribute(7, nameof(MapEditor.SelectedMapId), this.SelectedMapId);
-                builder2.AddAttribute(8, nameof(MapEditor.OnValidSubmit), EventCallback.Factory.Create(this, this.SaveChangesAsync));
-                builder2.AddAttribute(9, nameof(MapEditor.SelectedMapChanging), EventCallback.Factory.Create<MapEditor.MapChangingArgs>(this, this.OnSelectedMapChanging));
+                builder2.OpenComponent(15, typeof(MapEditor));
+                builder2.AddAttribute(16, nameof(MapEditor.Maps), this._maps);
+                builder2.AddAttribute(17, nameof(MapEditor.SelectedMapId), this.SelectedMapId);
+                builder2.AddAttribute(18, nameof(MapEditor.OnValidSubmit), EventCallback.Factory.Create(this, this.SaveChangesAsync));
+                builder2.AddAttribute(19, nameof(MapEditor.SelectedMapChanging), EventCallback.Factory.Create<MapEditor.MapChangingArgs>(this, this.OnSelectedMapChanging));
                 builder2.CloseComponent();
             }));
 

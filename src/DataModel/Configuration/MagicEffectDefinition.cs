@@ -62,4 +62,10 @@ public partial class MagicEffectDefinition
     /// </summary>
     [MemberOfAggregate]
     public virtual ICollection<PowerUpDefinition> PowerUpDefinitions { get; protected set; } = null!;
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return $"{this.Name} ({this.Number})";
+    }
 }

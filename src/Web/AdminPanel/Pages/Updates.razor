@@ -1,6 +1,8 @@
 ﻿@page "/config-updates"
 
-<h3>Configuration updates</h3>
+<PageTitle>OpenMU: Configuration Updates</PageTitle>
+<Breadcrumb IsFirstFromRoot="true" Caption="Configuration Updates"/>
+<h3>Configuration Updates</h3>
 
 @if (!this.SetupService.IsInstalled || this.SetupService.IsUpdateRequired)
 {

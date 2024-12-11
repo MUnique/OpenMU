@@ -300,4 +300,10 @@ public partial class Skill
     /// </summary>
     [MemberOfAggregate]
     public virtual AreaSkillSettings? AreaSkillSettings { get; set; }
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return this.Name;
+    }
 }

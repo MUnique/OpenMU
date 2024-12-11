@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.DataModel.Configuration;
 
 /// <summary>
-/// The appearance data of an character.
+/// The appearance data of a character.
 /// </summary>
 public class AppearanceData : IAppearanceData
 {
@@ -25,7 +25,7 @@ public class AppearanceData : IAppearanceData
     public virtual CharacterClass? CharacterClass { get; set; }
 
     /// <summary>
-    /// Gets the character status.
+    /// Gets or sets the character status.
     /// </summary>
     public CharacterStatus CharacterStatus { get; set; }
 

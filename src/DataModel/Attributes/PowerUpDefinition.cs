@@ -44,7 +44,6 @@ public partial class PowerUpDefinition
             {
                 value = relation.InputAttribute?.Designation + relation.InputOperator.AsString() + relation.InputOperand;
             }
-            
         }
         else
         {

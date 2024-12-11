@@ -122,7 +122,12 @@ internal abstract class GenericRepositoryBase<T> : IRepository<T>, ILoadByProper
     /// <returns>The navigations which should be considered when loading the data.</returns>
     protected virtual IEnumerable<INavigationBase> GetNavigations(EntityEntry entityEntry)
     {
-        return FullEntityType.GetNavigations();
+        if (entityEntry.Context is ITypedContext)
+        {
+            return entityEntry.Metadata.GetNavigations();
+        }
+
+        return this.FullEntityType.GetNavigations();
     }
 
     /// <summary>
