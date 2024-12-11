@@ -144,8 +144,7 @@ public abstract class FixChaosMixesPlugInBase : UpdatePlugInBase
     /// <param name="gameConfiguration">The game configuration.</param>
     protected void ApplyDinorantOptionsUpdate(GameConfiguration gameConfiguration)
     {
-        Guid dinorantOptionsId = new("00000083-0080-0000-0000-000000000000");
-        if (gameConfiguration.ItemOptions.Single(iod => iod.GetId() == dinorantOptionsId) is { } dinoOpts
+        if (gameConfiguration.ItemOptions.Single(iod => iod.Name == "Dinorant Options") is { } dinoOpts
             && gameConfiguration.ItemOptionTypes.Single(iot => iot == ItemOptionTypes.Option) is { } itemOption)
         {
             dinoOpts.AddChance = 0.3f;
