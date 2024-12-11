@@ -243,11 +243,9 @@ public class ChaosMixes : InitializerBase
         crafting.Number = 5;
         crafting.ItemCraftingHandlerClassName = typeof(DinorantCrafting).FullName!;
         var craftingSettings = this.Context.CreateNew<SimpleCraftingSettings>();
-
         crafting.SimpleCraftingSettings = craftingSettings;
         craftingSettings.Money = 500_000;
         craftingSettings.SuccessPercent = 70;
-        craftingSettings.ResultItemSkillChance = 100;
 
         // Requirements:
         var chaos = this.Context.CreateNew<ItemCraftingRequiredItem>();
@@ -267,6 +265,8 @@ public class ChaosMixes : InitializerBase
         craftingSettings.RequiredItems.Add(horn);
 
         // Result:
+        craftingSettings.ResultItemSkillChance = 100;
+
         var dinorant = this.Context.CreateNew<ItemCraftingResultItem>();
         dinorant.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Horn of Dinorant");
         craftingSettings.ResultItems.Add(dinorant);

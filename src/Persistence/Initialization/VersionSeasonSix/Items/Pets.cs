@@ -147,6 +147,7 @@ public class Pets : InitializerBase
         spirit.Width = 1;
         spirit.Height = 1;
         spirit.Durability = 1;
+        spirit.MaximumItemLevel = 1;
         spirit.SetGuid(spirit.Group, spirit.Number);
         this.GameConfiguration.Items.Add(spirit);
 

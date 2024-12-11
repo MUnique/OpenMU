@@ -744,7 +744,6 @@ public class ChaosMixes : InitializerBase
         crafting.SimpleCraftingSettings = craftingSettings;
         craftingSettings.Money = 500_000;
         craftingSettings.SuccessPercent = 70;
-        craftingSettings.ResultItemSkillChance = 100;
 
         // Requirements:
         var chaos = this.Context.CreateNew<ItemCraftingRequiredItem>();
@@ -764,6 +763,8 @@ public class ChaosMixes : InitializerBase
         craftingSettings.RequiredItems.Add(horn);
 
         // Result:
+        craftingSettings.ResultItemSkillChance = 100;
+
         var dinorant = this.Context.CreateNew<ItemCraftingResultItem>();
         dinorant.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Horn of Dinorant");
         craftingSettings.ResultItems.Add(dinorant);
@@ -839,11 +840,12 @@ public class ChaosMixes : InitializerBase
         craftingSettings.RequiredItems.Add(creation);
 
         // Result:
+        craftingSettings.ResultItemSkillChance = 100;
+
         var darkHorse = this.Context.CreateNew<ItemCraftingResultItem>();
         darkHorse.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Dark Horse");
         darkHorse.Durability = 255;
         craftingSettings.ResultItems.Add(darkHorse);
-        craftingSettings.ResultItemSkillChance = 100;
 
         return crafting;
     }
@@ -1123,11 +1125,12 @@ public class ChaosMixes : InitializerBase
         craftingSettings.RequiredItems.Add(life);
 
         // Result:
+        craftingSettings.ResultItemSkillChance = 100;
+
         var fenrir = this.Context.CreateNew<ItemCraftingResultItem>();
         fenrir.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Horn of Fenrir");
         fenrir.Durability = 255;
         craftingSettings.ResultItems.Add(fenrir);
-        craftingSettings.ResultItemSkillChance = 100;
 
         return crafting;
     }
