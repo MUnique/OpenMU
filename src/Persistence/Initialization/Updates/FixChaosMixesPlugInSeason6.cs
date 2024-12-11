@@ -52,15 +52,13 @@ public class FixChaosMixesPlugInSeason6 : FixChaosMixesPlugInBase
         {
             spirit.MaximumItemLevel = 1;
             var maps = gameConfiguration.Maps;
-            if (gameConfiguration.DropItemGroups.Single(dig => dig.Description == "Dark Horse Spirit") is { } horseGroup)
+            if (gameConfiguration.DropItemGroups.Single(dig => dig.Description == "Dark Horse Spirit") is { } horseGroup
+                && gameConfiguration.DropItemGroups.Single(dig => dig.Description == "Dark Raven Spirit") is { } ravenGroup)
             {
                 ClearDropItemGroup(horseGroup);
-                CreateDropItemGroup(true);
-            }
-
-            if (gameConfiguration.DropItemGroups.Single(dig => dig.Description == "Dark Raven Spirit") is { } ravenGroup)
-            {
                 ClearDropItemGroup(ravenGroup);
+                await context.SaveChangesAsync().ConfigureAwait(false);
+                CreateDropItemGroup(true);
                 CreateDropItemGroup(false);
             }
 
@@ -77,7 +75,6 @@ public class FixChaosMixesPlugInSeason6 : FixChaosMixesPlugInBase
 
                 gameConfiguration.DropItemGroups.Remove(group);
                 context.DeleteAsync(group);
-                context.SaveChangesAsync().ConfigureAwait(false);
             }
 
             void CreateDropItemGroup(bool isHorse)
