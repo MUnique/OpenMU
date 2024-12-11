@@ -57,6 +57,10 @@ public class FixChaosMixesPlugIn095D : FixChaosMixesPlugInBase
                 foreach (var item in craftingSettings.RequiredItems)
                 {
                     item.FailResult = MixResult.Disappear;
+                    if (item.MaximumAmount == 0)
+                    {
+                        item.MaximumAmount = item.MinimumAmount;
+                    }
                 }
             }
         }
