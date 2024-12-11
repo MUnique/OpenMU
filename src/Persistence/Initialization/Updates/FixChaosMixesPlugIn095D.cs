@@ -40,7 +40,6 @@ public class FixChaosMixesPlugIn095D : FixChaosMixesPlugInBase
         this.ApplyDinorantCraftingUpdate(craftings);
         this.ApplyDinorantOptionsUpdate(gameConfiguration);
 
-        // ---> Fix chaos mixes settings
         // Item Level Upgrade craftings
         int[] itemLevelUpgradeCraftingNos = [3, 4];
 

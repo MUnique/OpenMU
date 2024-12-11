@@ -40,22 +40,21 @@ public abstract class FixChaosMixesPlugInBase : UpdatePlugInBase
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
         // Misc item fixes
-        string crystalSwordId = "00000080-0002-0005-0000-000000000000";
-        if (gameConfiguration.Items.FirstOrDefault(id => id.GetId() == new Guid(crystalSwordId)) is { } crystalSword)
+        Guid crystalSwordId = new("00000080-0002-0005-0000-000000000000");
+        if (gameConfiguration.Items.FirstOrDefault(id => id.GetId() == crystalSwordId) is { } crystalSword)
         {
             crystalSword.Width = 2;
         }
 
-        string powerWaveScrollId = "00000080-000f-000a-0000-000000000000";
-        if (gameConfiguration.Items.FirstOrDefault(id => id.GetId() == new Guid(powerWaveScrollId)) is { } powerWaveScroll)
+        Guid powerWaveScrollId = new("00000080-000f-000a-0000-000000000000");
+        if (gameConfiguration.Items.FirstOrDefault(id => id.GetId() == powerWaveScrollId) is { } powerWaveScroll)
         {
             powerWaveScroll.Value = 1100;
         }
 
-        // ---> Fix chaos mixes settings
+        // Fix Chaos Weapon crafting
         var craftings = gameConfiguration.Monsters.First(m => m.NpcWindow == NpcWindow.ChaosMachine).ItemCraftings;
 
-        // Chaos Weapon crafting
         if (craftings.Single(c => c.Number == 1) is { } chaosWeaponCrafting)
         {
             chaosWeaponCrafting.ItemCraftingHandlerClassName = typeof(ChaosWeaponAndFirstWingsCrafting).FullName!;
@@ -145,14 +144,15 @@ public abstract class FixChaosMixesPlugInBase : UpdatePlugInBase
     /// <param name="gameConfiguration">The game configuration.</param>
     protected void ApplyDinorantOptionsUpdate(GameConfiguration gameConfiguration)
     {
-        string dinorantOptionsId = "00000083-0080-0000-0000-000000000000";
-        if (gameConfiguration.ItemOptions.Single(iod => iod.GetId() == new Guid(dinorantOptionsId)) is { } dinoOpts)
+        Guid dinorantOptionsId = new("00000083-0080-0000-0000-000000000000");
+        if (gameConfiguration.ItemOptions.Single(iod => iod.GetId() == dinorantOptionsId) is { } dinoOpts
+            && gameConfiguration.ItemOptionTypes.Single(iot => iot == ItemOptionTypes.Option) is { } itemOption)
         {
             dinoOpts.AddChance = 0.3f;
 
             foreach (var opt in dinoOpts.PossibleOptions)
             {
-                opt.OptionType = ItemOptionTypes.Option;
+                opt.OptionType = itemOption;
                 opt.Number = 4;
             }
         }

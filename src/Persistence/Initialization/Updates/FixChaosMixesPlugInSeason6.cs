@@ -47,14 +47,7 @@ public class FixChaosMixesPlugInSeason6 : FixChaosMixesPlugInBase
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
-        await base.ApplyAsync(context, gameConfiguration).ConfigureAwait(false);
-
-        var craftings = gameConfiguration.Monsters.Single(m => m.NpcWindow == NpcWindow.ChaosMachine).ItemCraftings;
-        this.ApplyFirstWingsCraftingUpdate(craftings);
-        this.ApplyDinorantCraftingUpdate(craftings);
-        this.ApplyDinorantOptionsUpdate(gameConfiguration);
-
-        // Dark horse spirit and raven spirit drop item groups id fix
+        // Dark horse spirit and raven spirit drop item groups id fix (do this first because it persists changes to DB)
         if (gameConfiguration.Items.Single(id => id.Name == "Spirit") is { } spirit)
         {
             spirit.MaximumItemLevel = 1;
@@ -62,14 +55,12 @@ public class FixChaosMixesPlugInSeason6 : FixChaosMixesPlugInBase
             if (gameConfiguration.DropItemGroups.Single(dig => dig.Description == "Dark Horse Spirit") is { } horseGroup)
             {
                 ClearDropItemGroup(horseGroup);
-                await context.SaveChangesAsync().ConfigureAwait(false);
                 CreateDropItemGroup(true);
             }
 
             if (gameConfiguration.DropItemGroups.Single(dig => dig.Description == "Dark Raven Spirit") is { } ravenGroup)
             {
                 ClearDropItemGroup(ravenGroup);
-                await context.SaveChangesAsync().ConfigureAwait(false);
                 CreateDropItemGroup(false);
             }
 
@@ -86,6 +77,7 @@ public class FixChaosMixesPlugInSeason6 : FixChaosMixesPlugInBase
 
                 gameConfiguration.DropItemGroups.Remove(group);
                 context.DeleteAsync(group);
+                context.SaveChangesAsync().ConfigureAwait(false);
             }
 
             void CreateDropItemGroup(bool isHorse)
@@ -106,18 +98,25 @@ public class FixChaosMixesPlugInSeason6 : FixChaosMixesPlugInBase
             }
         }
 
+        await base.ApplyAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        var craftings = gameConfiguration.Monsters.Single(m => m.NpcWindow == NpcWindow.ChaosMachine).ItemCraftings;
+        this.ApplyFirstWingsCraftingUpdate(craftings);
+        this.ApplyDinorantCraftingUpdate(craftings);
+        this.ApplyDinorantOptionsUpdate(gameConfiguration);
+
         // Fenrir dmg decrease fix
-        string fenrirOptionsId = "00000083-0081-0000-0000-000000000000";
-        if (gameConfiguration.ItemOptions.Single(iod => iod.GetId() == new Guid(fenrirOptionsId)) is { } fenrirOpts
+        Guid fenrirOptionsId = new("00000083-0081-0000-0000-000000000000");
+        if (gameConfiguration.ItemOptions.Single(iod => iod.GetId() == fenrirOptionsId) is { } fenrirOpts
             && fenrirOpts.PossibleOptions.Single(iio => iio.PowerUpDefinition?.TargetAttribute == Stats.DamageReceiveDecrement) is { } dmgDecreaseOpt
             && dmgDecreaseOpt.PowerUpDefinition?.Boost is { } boost)
         {
             boost.ConstantValue.Value = 0.90f;
         }
 
-        // Misc item fixes
-        string wizardsRingId = "00000080-000d-0014-0000-000000000000";
-        if (gameConfiguration.Items.Single(id => id.GetId() == new Guid(wizardsRingId)) is { } wizardsRing)
+        // Wizard's Ring wizardry option fix
+        Guid wizardsRingId = new("00000080-000d-0014-0000-000000000000");
+        if (gameConfiguration.Items.Single(id => id.GetId() == wizardsRingId) is { } wizardsRing)
         {
             wizardsRing.Durability = 30;
 
@@ -170,8 +169,8 @@ public class FixChaosMixesPlugInSeason6 : FixChaosMixesPlugInBase
         }
 
         // Phoenix Soul Star definition fix
-        string phoenixSoulStarId = "00000080-0000-0023-0000-000000000000";
-        if (gameConfiguration.Items.FirstOrDefault(id => id.GetId() == new Guid(phoenixSoulStarId)) is { } phoenixSoulStar)
+        Guid phoenixSoulStarId = new("00000080-0000-0023-0000-000000000000");
+        if (gameConfiguration.Items.FirstOrDefault(id => id.GetId() == phoenixSoulStarId) is { } phoenixSoulStar)
         {
             if (gameConfiguration.ItemOptions.FirstOrDefault(io => io.PossibleOptions.Any(po => po.OptionType == ItemOptionTypes.GuardianOption && po.Number == (int)ItemGroups.Weapon)) is { } weapGuardOpt)
             {
