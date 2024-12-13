@@ -848,6 +848,8 @@ public class ChaosMixes : InitializerBase
         var darkHorse = this.Context.CreateNew<ItemCraftingResultItem>();
         darkHorse.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Dark Horse");
         darkHorse.Durability = 255;
+        darkHorse.RandomMinimumLevel = 1;
+        darkHorse.RandomMaximumLevel = 1;
         craftingSettings.ResultItems.Add(darkHorse);
 
         return crafting;
@@ -899,6 +901,8 @@ public class ChaosMixes : InitializerBase
         var darkRaven = this.Context.CreateNew<ItemCraftingResultItem>();
         darkRaven.ItemDefinition = this.GameConfiguration.Items.First(i => i.Name == "Dark Raven");
         darkRaven.Durability = 255;
+        darkRaven.RandomMinimumLevel = 1;
+        darkRaven.RandomMaximumLevel = 1;
         craftingSettings.ResultItems.Add(darkRaven);
 
         return crafting;

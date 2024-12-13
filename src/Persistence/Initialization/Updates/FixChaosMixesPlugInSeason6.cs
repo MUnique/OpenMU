@@ -344,12 +344,30 @@ public class FixChaosMixesPlugInSeason6 : FixChaosMixesPlugInBase
             }
         }
 
-        // Dark Raven crafting (no impact)
-        if (craftings.FirstOrDefault(c => c.Number == 14) is { } darkRavenCrafting)
+        // Dark Horse crafting
+        if (craftings.Single(c => c.Number == 13) is { } darkHorseCrafting)
+        {
+            if (darkHorseCrafting.SimpleCraftingSettings is { } settings)
+            {
+                if (settings.ResultItems.First() is { } darkHorseResult)
+                {
+                    darkHorseResult.RandomMinimumLevel = 1;
+                    darkHorseResult.RandomMaximumLevel = 1;
+                }
+            }
+        }
+
+        // Dark Raven crafting
+        if (craftings.Single(c => c.Number == 14) is { } darkRavenCrafting)
         {
             if (darkRavenCrafting.SimpleCraftingSettings is { } settings)
             {
                 settings.ResultItemSkillChance = 0;
+                if (settings.ResultItems.First() is { } darkRavenResult)
+                {
+                    darkRavenResult.RandomMinimumLevel = 1;
+                    darkRavenResult.RandomMaximumLevel = 1;
+                }
             }
         }
 
