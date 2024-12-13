@@ -131,6 +131,7 @@ public class FixChaosMixesPlugInSeason6 : FixChaosMixesPlugInBase
             }
         }
 
+        // Remove Raven's lvl requirement
         Guid darkRavenId = new("00000080-000d-0005-0000-000000000000");
         if (gameConfiguration.Items.Single(id => id.GetId() == darkRavenId) is { } darkRaven)
         {
