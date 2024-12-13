@@ -46,7 +46,7 @@ public class Pets : InitializerBase
         darkHorse.PetExperienceFormula = PetExperienceFormula;
         darkHorse.MaximumItemLevel = 50;
 
-        var darkRaven = this.CreatePet(5, 0, 1, 1, "Dark Raven", 218, false, false);
+        var darkRaven = this.CreatePet(5, 0, 1, 1, "Dark Raven", 0, false, false);
         darkRaven.ItemSlot = this.GameConfiguration.ItemSlotTypes.First(st => st.ItemSlots.Contains(1));
         darkRaven.PetExperienceFormula = PetExperienceFormula;
         darkRaven.MaximumItemLevel = 50;

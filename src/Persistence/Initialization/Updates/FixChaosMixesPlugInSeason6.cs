@@ -131,6 +131,12 @@ public class FixChaosMixesPlugInSeason6 : FixChaosMixesPlugInBase
             }
         }
 
+        Guid darkRavenId = new("00000080-000d-0005-0000-000000000000");
+        if (gameConfiguration.Items.Single(id => id.GetId() == darkRavenId) is { } darkRaven)
+        {
+            darkRaven.Requirements.Clear();
+        }
+
         // Aura/Storm Blitz Set definitions fix
         for (int i = 7; i <= 11; i++)
         {

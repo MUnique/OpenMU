@@ -57,19 +57,13 @@ public class ItemPriceCalculator
             (int)SpecialItems.Arrow, item =>
             {
                 int gold = 0;
-                int baseprice = 70;
-                if (item.Level == 1)
+                int baseprice = item.Level switch
                 {
-                    baseprice = 1200;
-                }
-                else if (item.Level == 2)
-                {
-                    baseprice = 2000;
-                }
-                else if (item.Level == 3)
-                {
-                    baseprice = 2800;
-                }
+                    1 => 1200,
+                    2 => 2000,
+                    3 => 2800,
+                    _ => 70,
+                };
 
                 if (item.Durability > 0)
                 {
@@ -83,19 +77,13 @@ public class ItemPriceCalculator
             (int)SpecialItems.Bolt, item =>
             {
                 int gold = 0;
-                int baseprice = 100;
-                if (item.Level == 1)
+                int baseprice = item.Level switch
                 {
-                    baseprice = 1400;
-                }
-                else if (item.Level == 2)
-                {
-                    baseprice = 2200;
-                }
-                else if (item.Level == 3)
-                {
-                    baseprice = 3000;
-                }
+                    1 => 1400,
+                    2 => 2200,
+                    3 => 3000,
+                    _ => 100,
+                };
 
                 if (item.Durability > 0)
                 {
@@ -452,6 +440,18 @@ public class ItemPriceCalculator
             return definition.Value;
         }
 
+        if (item.IsTrainablePet())
+        {
+            if (item.IsDarkRaven())
+            {
+                return item.Level * 1_000_000;
+            }
+            else
+            {
+                return item.Level * 2_000_000;
+            }
+        }
+
         long price = 0;
         int dropLevel = definition.DropLevel + (item.Level * 3);
         if (item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.Excellent))
@@ -486,13 +486,13 @@ public class ItemPriceCalculator
             || item.Definition.Group == 13
             || item.Definition.Group == 15)
         {
+            // Cape of Lord and Cape of Fighter go here
             price = (dropLevel * dropLevel * dropLevel) + 100;
 
-            if (item.IsWing()
-                && item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.Option) is { } opt
+            if (item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.Option) is { } opt
                 && opt.ItemOption?.PowerUpDefinition?.TargetAttribute == Stats.HealthRecoveryMultiplier)
             {
-                // Cape of Lord and Cape of Fighter go here; only health recovery option adds value
+                // Rings, pendants, and capes. Capes with physical damage option have no extra value (possibly a source bug).
                 price += price * opt.Level;
             }
         }
