@@ -328,12 +328,15 @@ public class ItemPriceCalculator
             return sellingPrice / 10 * 10;
         }
 
-        var maxDurability = item.GetMaximumDurabilityOfOnePiece();
-        if (maxDurability > 1 && maxDurability > durability)
+        if (!item.IsTrainablePet())
         {
-            float multiplier = 1.0f - ((float)durability / maxDurability);
-            long loss = (long)(sellingPrice * 0.6 * multiplier);
-            sellingPrice -= loss;
+            var maxDurability = item.GetMaximumDurabilityOfOnePiece();
+            if (maxDurability > 1 && maxDurability > durability)
+            {
+                float multiplier = 1.0f - ((float)durability / maxDurability);
+                long loss = (long)(sellingPrice * 0.6 * multiplier);
+                sellingPrice -= loss;
+            }
         }
 
         return RoundPrice(sellingPrice);
