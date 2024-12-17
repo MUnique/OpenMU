@@ -40,7 +40,7 @@ public class Scrolls : InitializerBase
         this.CreateScroll(7, 8, "Scroll of Twister", 40, 0, 180, 25000);
         this.CreateScroll(8, 9, "Scroll of Evil Spirit", 50, 0, 220, 35000);
         this.CreateScroll(9, 10, "Scroll of Hellfire", 60, 0, 260, 60000);
-        this.CreateScroll(10, 11, "Scroll of Power Wave", 9, 0, 56, 1150);
+        this.CreateScroll(10, 11, "Scroll of Power Wave", 9, 0, 56, 1100);
         this.CreateScroll(11, 12, "Scroll of Aqua Beam", 74, 0, 345, 100000);
     }
 

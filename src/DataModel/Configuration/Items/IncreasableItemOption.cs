@@ -23,7 +23,7 @@ public enum LevelType
     /// It's increased by the level of the item which has the option.
     /// </summary>
     /// <remarks>
-    /// As far as I know, this is only required for wing options, e.g. 'Increase max HP +50~115'. That's why <see cref="OptionLevel"/> is the default, too.
+    /// As far as I know, this is only required for wing options, e.g. 'Increase max HP +50~125'. That's why <see cref="OptionLevel"/> is the default, too.
     /// </remarks>
     ItemLevel,
 }

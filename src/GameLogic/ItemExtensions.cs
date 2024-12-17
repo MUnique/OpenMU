@@ -103,6 +103,19 @@ public static class ItemExtensions
     }
 
     /// <summary>
+    /// Determines whether this instance is a "380 item", that is, if it can be upgraded with Jewel of Guardian.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <returns>
+    ///   <c>true</c> if the specified item is a "380 item"; otherwise, <c>false</c>.
+    /// </returns>
+    public static bool IsGuardian(this Item item)
+    {
+        return item.Definition!.PossibleItemOptions.Any(pio => pio.PossibleOptions
+            .Any(po => po.OptionType == ItemOptionTypes.GuardianOption));
+    }
+
+    /// <summary>
     /// Determines whether this item is a defensive item.
     /// </summary>
     /// <param name="item">The item.</param>
