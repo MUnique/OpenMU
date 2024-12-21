@@ -466,6 +466,14 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
 
                 player.Inventory.ItemStorage.Money = player.BackupInventory.Money;
             }
+            else if (player is { TemporaryStorage: { } storage, Inventory: { } inventory })
+            {
+                if (!await inventory.TryTakeAllAsync(storage).ConfigureAwait(false))
+                {
+                    // This should never happen since the space is checked before mixing
+                    this._logger.LogWarning($"Could not take fit items of player {player}");
+                }
+            }
 
             if (!await player.PersistenceContext.SaveChangesAsync().ConfigureAwait(false))
             {
