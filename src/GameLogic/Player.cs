@@ -16,6 +16,7 @@ using MUnique.OpenMU.GameLogic.Pet;
 using MUnique.OpenMU.GameLogic.PlayerActions;
 using MUnique.OpenMU.GameLogic.PlayerActions.Items;
 using MUnique.OpenMU.GameLogic.PlayerActions.Skills;
+using MUnique.OpenMU.GameLogic.PlayerActions.Trade;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Character;
@@ -1291,6 +1292,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// </summary>
     public async ValueTask DisconnectAsync()
     {
+        await this.CloseTradeIfNeededAsync().ConfigureAwait(false);
         if (await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.Disconnected).ConfigureAwait(false))
         {
             try
@@ -2405,6 +2407,16 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         if (attackPet is { })
         {
             await AddExpToPetAsync(attackPet, petExperience).ConfigureAwait(false);
+        }
+    }
+
+    private async ValueTask CloseTradeIfNeededAsync()
+    {
+        if (this.PlayerState.CurrentState == GameLogic.PlayerState.TradeButtonPressed
+            || this.PlayerState.CurrentState == GameLogic.PlayerState.TradeOpened)
+        {
+            var cancelAction = new TradeCancelAction();
+            await cancelAction.CancelTradeAsync(this).ConfigureAwait(false);
         }
     }
 

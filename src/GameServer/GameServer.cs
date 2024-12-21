@@ -474,6 +474,10 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
                     this._logger.LogWarning($"Could not take fit items of player {player}");
                 }
             }
+            else
+            {
+                // nothing else to restore.
+            }
 
             if (!await player.PersistenceContext.SaveChangesAsync().ConfigureAwait(false))
             {
