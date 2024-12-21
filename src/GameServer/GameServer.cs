@@ -454,6 +454,19 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
     {
         try
         {
+            // Recover items placed in the NPC when player is diconnected
+            if (player.OpenedNpc is not null && player.BackupInventory is not null)
+            {
+                player.Inventory!.Clear();
+                player.BackupInventory.RestoreItemStates();
+                foreach (var item in player.BackupInventory.Items)
+                {
+                    await player.Inventory.AddItemAsync(item.ItemSlot, item).ConfigureAwait(false);
+                }
+
+                player.Inventory.ItemStorage.Money = player.BackupInventory.Money;
+            }
+
             if (!await player.PersistenceContext.SaveChangesAsync().ConfigureAwait(false))
             {
                 this._logger.LogWarning($"Could not save session of player {player}");
