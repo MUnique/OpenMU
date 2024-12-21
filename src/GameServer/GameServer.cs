@@ -454,8 +454,8 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
     {
         try
         {
-            // Recover items placed in the NPC when player is diconnected
-            if (player.OpenedNpc is not null && player.BackupInventory is not null)
+            // Recover items placed in an NPC or trade dialog when player is diconnected
+            if (player.BackupInventory is not null)
             {
                 player.Inventory!.Clear();
                 player.BackupInventory.RestoreItemStates();
