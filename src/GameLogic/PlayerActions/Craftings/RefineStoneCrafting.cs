@@ -135,7 +135,7 @@ public class RefineStoneCrafting : SimpleItemCraftingHandler
     }
 
     /// <inheritdoc />
-    protected override async ValueTask<List<Item>> CreateOrModifyResultItemsAsync(IList<CraftingRequiredItemLink> referencedItems, Player player, byte socketSlot)
+    protected override async ValueTask<List<Item>> CreateOrModifyResultItemsAsync(IList<CraftingRequiredItemLink> referencedItems, Player player, byte socketSlot, byte successRate)
     {
         var higherRefineStoneItems = referencedItems
             .FirstOrDefault(r => r.ItemRequirement.Reference == HigherRefineStoneReference)?.Items.Count() ?? 0;
