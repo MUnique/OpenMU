@@ -60,7 +60,7 @@
   * [C1 2A - ItemDurabilityChanged (by server)](C1-2A-ItemDurabilityChanged_by-server.md)
   * [C1 2C - FruitConsumptionResponse (by server)](C1-2C-FruitConsumptionResponse_by-server.md)
   * [C1 2D - EffectItemConsumption (by server)](C1-2D-EffectItemConsumption_by-server.md)
-  * [C2 2F - MoneyDroppedExtended (by server)](C2-2F-MoneyDroppedExtended_by-server.md)
+  * [C1 2F - MoneyDroppedExtended (by server)](C1-2F-MoneyDroppedExtended_by-server.md)
   * [C3 30 - NpcWindowResponse (by server)](C3-30-NpcWindowResponse_by-server.md)
   * [C2 31 - StoreItemList (by server)](C2-31-StoreItemList_by-server.md)
   * [C1 32 - ItemBought (by server)](C1-32-ItemBought_by-server.md)

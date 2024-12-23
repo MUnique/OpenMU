@@ -2929,7 +2929,7 @@
       </Fields>
     </Packet>
     <Packet>
-      <HeaderType>C2Header</HeaderType>
+      <HeaderType>C1Header</HeaderType>
       <Code>2F</Code>
       <Name>MoneyDroppedExtended</Name>
       <Length>12</Length>
