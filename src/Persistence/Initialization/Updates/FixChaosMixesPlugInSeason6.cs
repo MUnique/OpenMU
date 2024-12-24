@@ -97,9 +97,10 @@ public class FixChaosMixesPlugInSeason6 : FixChaosMixesPlugInBase
 
         await base.ApplyAsync(context, gameConfiguration).ConfigureAwait(false);
 
-        var craftings = gameConfiguration.Monsters.Single(m => m.NpcWindow == NpcWindow.ChaosMachine).ItemCraftings;
-        this.ApplyFirstWingsCraftingUpdate(craftings);
-        this.ApplyDinorantCraftingUpdate(craftings);
+        var goblinCraftings = gameConfiguration.Monsters.Single(m => m.NpcWindow == NpcWindow.ChaosMachine).ItemCraftings;
+        var petTrainercraftings = gameConfiguration.Monsters.Single(m => m.NpcWindow == NpcWindow.PetTrainer).ItemCraftings;
+        this.ApplyFirstWingsCraftingUpdate(goblinCraftings);
+        this.ApplyDinorantCraftingUpdate(goblinCraftings);
         this.ApplyDinorantOptionsUpdate(gameConfiguration);
 
         // Fenrir dmg decrease fix
@@ -192,7 +193,7 @@ public class FixChaosMixesPlugInSeason6 : FixChaosMixesPlugInBase
         int[] itemLevelUpgradeCraftingNos = [3, 4, 22, 23, 49, 50];
         for (int i = 0; i < itemLevelUpgradeCraftingNos.Length; i++)
         {
-            if (craftings.Single(c => c.Number == itemLevelUpgradeCraftingNos[i])?.SimpleCraftingSettings is { } craftingSettings)
+            if (goblinCraftings.Single(c => c.Number == itemLevelUpgradeCraftingNos[i])?.SimpleCraftingSettings is { } craftingSettings)
             {
                 craftingSettings.Money = 2_000_000 * (10 + i - 9);
                 craftingSettings.SuccessPercentageAdditionForLuck = 25;
@@ -211,7 +212,7 @@ public class FixChaosMixesPlugInSeason6 : FixChaosMixesPlugInBase
         }
 
         // Second Wings crafting
-        if (craftings.Single(c => c.Number == 7) is { } secondWingsCrafting)
+        if (goblinCraftings.Single(c => c.Number == 7) is { } secondWingsCrafting)
         {
             secondWingsCrafting.ItemCraftingHandlerClassName = typeof(SecondWingsCrafting).FullName!;
 
@@ -239,7 +240,7 @@ public class FixChaosMixesPlugInSeason6 : FixChaosMixesPlugInBase
         }
 
         // Thirds Wings, Stage 1 crafting
-        if (craftings.Single(c => c.Number == 38) is { } thirdWingsS1Crafting)
+        if (goblinCraftings.Single(c => c.Number == 38) is { } thirdWingsS1Crafting)
         {
             if (thirdWingsS1Crafting.SimpleCraftingSettings is { } settings)
             {
@@ -262,7 +263,7 @@ public class FixChaosMixesPlugInSeason6 : FixChaosMixesPlugInBase
         }
 
         // Thirds Wings, Stage 2 crafting
-        if (craftings.Single(c => c.Number == 39) is { } thirdWingsS2Crafting)
+        if (goblinCraftings.Single(c => c.Number == 39) is { } thirdWingsS2Crafting)
         {
             thirdWingsS2Crafting.ItemCraftingHandlerClassName = typeof(ThirdWingsCrafting).FullName!;
 
@@ -293,7 +294,7 @@ public class FixChaosMixesPlugInSeason6 : FixChaosMixesPlugInBase
         }
 
         // Cape crafting
-        if (craftings.Single(c => c.Number == 24) is { } capeCrafting)
+        if (goblinCraftings.Single(c => c.Number == 24) is { } capeCrafting)
         {
             capeCrafting.ItemCraftingHandlerClassName = typeof(SecondWingsCrafting).FullName!;
 
@@ -329,7 +330,7 @@ public class FixChaosMixesPlugInSeason6 : FixChaosMixesPlugInBase
         }
 
         // Fruit crafting
-        if (craftings.Single(c => c.Number == 6) is { } fruitCrafting)
+        if (goblinCraftings.Single(c => c.Number == 6) is { } fruitCrafting)
         {
             fruitCrafting.ItemCraftingHandlerClassName = typeof(SecondWingsCrafting).FullName!;
 
@@ -344,37 +345,10 @@ public class FixChaosMixesPlugInSeason6 : FixChaosMixesPlugInBase
             }
         }
 
-        // Dark Horse crafting
-        if (craftings.Single(c => c.Number == 13) is { } darkHorseCrafting)
-        {
-            if (darkHorseCrafting.SimpleCraftingSettings is { } settings)
-            {
-                if (settings.ResultItems.First() is { } darkHorseResult)
-                {
-                    darkHorseResult.RandomMinimumLevel = 1;
-                    darkHorseResult.RandomMaximumLevel = 1;
-                }
-            }
-        }
-
-        // Dark Raven crafting
-        if (craftings.Single(c => c.Number == 14) is { } darkRavenCrafting)
-        {
-            if (darkRavenCrafting.SimpleCraftingSettings is { } settings)
-            {
-                settings.ResultItemSkillChance = 0;
-                if (settings.ResultItems.First() is { } darkRavenResult)
-                {
-                    darkRavenResult.RandomMinimumLevel = 1;
-                    darkRavenResult.RandomMaximumLevel = 1;
-                }
-            }
-        }
-
         // Small, Medium, and Large Shield Potion craftings
         for (int i = 30; i <= 32; i++)
         {
-            if (craftings.Single(c => c.Number == i) is { } smallShieldPotCrafting)
+            if (goblinCraftings.Single(c => c.Number == i) is { } smallShieldPotCrafting)
             {
                 if (smallShieldPotCrafting.SimpleCraftingSettings is { } settings)
                 {
@@ -387,7 +361,7 @@ public class FixChaosMixesPlugInSeason6 : FixChaosMixesPlugInBase
         }
 
         // Guardian Option crafting
-        if (craftings.Single(c => c.Number == 36) is { } guardianOptionCrafting)
+        if (goblinCraftings.Single(c => c.Number == 36) is { } guardianOptionCrafting)
         {
             if (guardianOptionCrafting.SimpleCraftingSettings is { } settings)
             {
@@ -411,11 +385,38 @@ public class FixChaosMixesPlugInSeason6 : FixChaosMixesPlugInBase
         }
 
         // Secromicon crafting
-        if (craftings.Single(c => c.Number == 46) is { } secromiconCrafting)
+        if (goblinCraftings.Single(c => c.Number == 46) is { } secromiconCrafting)
         {
             if (secromiconCrafting.SimpleCraftingSettings is { } settings)
             {
                 settings.Money = 1_000_000;
+            }
+        }
+
+        // Dark Horse crafting
+        if (petTrainercraftings.Single(c => c.Number == 13) is { } darkHorseCrafting)
+        {
+            if (darkHorseCrafting.SimpleCraftingSettings is { } settings)
+            {
+                if (settings.ResultItems.First() is { } darkHorseResult)
+                {
+                    darkHorseResult.RandomMinimumLevel = 1;
+                    darkHorseResult.RandomMaximumLevel = 1;
+                }
+            }
+        }
+
+        // Dark Raven crafting
+        if (petTrainercraftings.Single(c => c.Number == 14) is { } darkRavenCrafting)
+        {
+            if (darkRavenCrafting.SimpleCraftingSettings is { } settings)
+            {
+                settings.ResultItemSkillChance = 0;
+                if (settings.ResultItems.First() is { } darkRavenResult)
+                {
+                    darkRavenResult.RandomMinimumLevel = 1;
+                    darkRavenResult.RandomMaximumLevel = 1;
+                }
             }
         }
     }
