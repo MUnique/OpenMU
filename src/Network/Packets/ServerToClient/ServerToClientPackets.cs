@@ -8043,14 +8043,14 @@ public readonly struct MoneyDroppedExtended
             var header = this.Header;
             header.Type = HeaderType;
             header.Code = Code;
-            header.Length = (ushort)Math.Min(data.Length, Length);
+            header.Length = (byte)Math.Min(data.Length, Length);
         }
     }
 
     /// <summary>
     /// Gets the header type of this data packet.
     /// </summary>
-    public static byte HeaderType => 0xC2;
+    public static byte HeaderType => 0xC1;
 
     /// <summary>
     /// Gets the operation code of this data packet.
@@ -8065,7 +8065,7 @@ public readonly struct MoneyDroppedExtended
     /// <summary>
     /// Gets the header of this packet.
     /// </summary>
-    public C2Header Header => new (this._data);
+    public C1Header Header => new (this._data);
 
     /// <summary>
     /// Gets or sets if this flag is set, the money is added to the map with an animation and sound. Otherwise, it's just added like it was already on the ground before.

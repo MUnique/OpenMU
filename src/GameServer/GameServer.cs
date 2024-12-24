@@ -454,6 +454,31 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
     {
         try
         {
+            // Recover items placed in an NPC or trade dialog when player is diconnected
+            if (player.BackupInventory is not null)
+            {
+                player.Inventory!.Clear();
+                player.BackupInventory.RestoreItemStates();
+                foreach (var item in player.BackupInventory.Items)
+                {
+                    await player.Inventory.AddItemAsync(item.ItemSlot, item).ConfigureAwait(false);
+                }
+
+                player.Inventory.ItemStorage.Money = player.BackupInventory.Money;
+            }
+            else if (player is { TemporaryStorage: { } storage, Inventory: { } inventory })
+            {
+                if (!await inventory.TryTakeAllAsync(storage).ConfigureAwait(false))
+                {
+                    // This should never happen since the space is checked before mixing
+                    this._logger.LogWarning($"Could not take fit items of player {player}");
+                }
+            }
+            else
+            {
+                // nothing else to restore.
+            }
+
             if (!await player.PersistenceContext.SaveChangesAsync().ConfigureAwait(false))
             {
                 this._logger.LogWarning($"Could not save session of player {player}");

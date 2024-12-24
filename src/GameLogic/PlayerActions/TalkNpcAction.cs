@@ -129,6 +129,11 @@ public class TalkNpcAction
                 });
 
                 break;
+            case NpcWindow.ChaosMachine:
+            case NpcWindow.RemoveJohOption:
+                player.BackupInventory = new BackupItemStorage(player.Inventory!.ItemStorage);
+                await player.InvokeViewPlugInAsync<IOpenNpcWindowPlugIn>(p => p.OpenNpcWindowAsync(npcStats.NpcWindow)).ConfigureAwait(false);
+                break;
             default:
                 await player.InvokeViewPlugInAsync<IOpenNpcWindowPlugIn>(p => p.OpenNpcWindowAsync(npcStats.NpcWindow)).ConfigureAwait(false);
                 break;

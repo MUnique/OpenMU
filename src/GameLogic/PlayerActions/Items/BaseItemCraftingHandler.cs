@@ -46,6 +46,8 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
             if (await this.DoTheMixAsync(items, player, socketSlot, successRate).ConfigureAwait(false) is { } item)
             {
                 player.Logger.LogInformation("Crafted item: {item}", item);
+                player.BackupInventory = null;
+
                 return (CraftingResult.Success, item);
             }
 

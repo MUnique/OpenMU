@@ -100,7 +100,7 @@ public class AreaSkillAttackAction
         }
         else
         {
-            extraTarget = await AttackTargetsAsync(player, extraTargetId, targetAreaCenter, skillEntry, areaSkillSettings, targets, isCombo).ConfigureAwait(false);
+            extraTarget = await this.AttackTargetsAsync(player, extraTargetId, targetAreaCenter, skillEntry, areaSkillSettings, targets, isCombo).ConfigureAwait(false);
         }
 
         if (isCombo)
@@ -115,7 +115,7 @@ public class AreaSkillAttackAction
         var attackCount = 0;
         var maxAttacks = areaSkillSettings.MaximumNumberOfHitsPerAttack == 0 ? int.MaxValue : areaSkillSettings.MaximumNumberOfHitsPerAttack;
         var currentDelay = TimeSpan.Zero;
-            
+
         for (int attackRound = 0; attackRound < areaSkillSettings.MaximumNumberOfHitsPerTarget; attackRound++)
         {
             if (attackCount > maxAttacks)
@@ -199,7 +199,7 @@ public class AreaSkillAttackAction
             yield break;
         }
 
-        foreach (var target in GetTargetsInRange(player, targetAreaCenter, skill, rotation).Where(t => t != extraTarget))
+        foreach (var target in GetTargetsInRange(player, targetAreaCenter, skill, rotation))
         {
             yield return target;
         }
