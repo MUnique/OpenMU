@@ -53,21 +53,19 @@ public class ItemSerializer : IItemSerializer
         var itemOption = item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.Option);
         if (itemOption != null)
         {
-            // A dinorant can have up to 2 options, all being coded in the item option level.
+            var optionLevel = itemOption.Level;
+
+            // A dinorant can normally have up to 2 options, all being coded in the item option level.
             // A one-option dino has level = 1, 2, or 4; a two-option has level = 3, 5, or 6.
-            if (item.Definition.Name == "Horn of Dinorant")
+            if (item.Definition.Skill?.Number == 49)
             {
-                int compositeLevel = 0;
-                item.ItemOptions.Where(o => o.ItemOption?.OptionType == ItemOptionTypes.Option).ForEach(o =>
-                {
-                    compositeLevel |= o.Level;
-                });
-                itemOption.Level = compositeLevel;
+                item.ItemOptions.Where(o => o.ItemOption?.OptionType == ItemOptionTypes.Option && o != itemOption)
+                    .ForEach(o => optionLevel |= o.Level);
             }
 
             // The item option level is splitted into 2 parts. Webzen... :-/
-            target[1] += (byte)(itemOption.Level & 3); // setting the first 2 bits
-            target[3] = (byte)((itemOption.Level & 4) << 4); // The highest bit is placed into the 2nd bit of the exc byte (0x40).
+            target[1] += (byte)(optionLevel & 3); // setting the first 2 bits
+            target[3] = (byte)((optionLevel & 4) << 4); // The highest bit is placed into the 2nd bit of the exc byte (0x40).
 
             // Some items (wings) can have different options (3rd wings up to 3!)
             // Alternate options are set at array[startIndex + 3] |= 0x20 and 0x10

@@ -12,7 +12,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [PlugIn(PlugInName, PlugInDescription)]
 [Guid("04A5F236-117F-422A-8C38-28D09DE911D7")]
-public class FixChaosMixesUpdatePlugIn075 : FixWingsDmgRatesUpdatePlugInBase
+public class FixChaosMixesUpdatePlugIn075 : FixChaosMixesPlugInBase
 {
     /// <inheritdoc />
     public override string DataInitializationKey => Version075.DataInitialization.Id;

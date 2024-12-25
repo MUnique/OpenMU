@@ -83,7 +83,7 @@ public class ItemChatCommandPlugIn : ChatCommandPlugInBase<ItemChatCommandArgs>
                 .Where(o => o.OptionType == ItemOptionTypes.Option);
             IncreasableItemOption itemOption;
 
-            if (item.Definition!.Name == "Horn of Dinorant")
+            if (item.Definition.Skill?.Number == 49) // Dinorant
             {
                 if ((arguments.Opt & 1) > 0)
                 {
