@@ -58,8 +58,8 @@ public class FixChaosMixesPlugInSeason6 : FixChaosMixesPlugInBase
                 ClearDropItemGroup(horseGroup);
                 ClearDropItemGroup(ravenGroup);
                 await context.SaveChangesAsync().ConfigureAwait(false);
-                CreateDropItemGroup(true);
-                CreateDropItemGroup(false);
+                CreateDropItemGroup(0, "Dark Horse Spirit", 102);
+                CreateDropItemGroup(1, "Dark Raven Spirit", 96);
             }
 
             void ClearDropItemGroup(DropItemGroup group)
@@ -77,15 +77,15 @@ public class FixChaosMixesPlugInSeason6 : FixChaosMixesPlugInBase
                 context.DeleteAsync(group);
             }
 
-            void CreateDropItemGroup(bool isHorse)
+            void CreateDropItemGroup(int itemLevel, string description, short minimumMonsterLevel)
             {
                 var group = context.CreateNew<DropItemGroup>();
-                group.SetGuid(NumberConversionExtensions.MakeWord(13, 31).ToSigned(), (short)(isHorse ? 0 : 1));
-                group.ItemLevel = (byte)(isHorse ? 0 : 1);
+                group.SetGuid(NumberConversionExtensions.MakeWord(13, 31).ToSigned(), (short)itemLevel);
+                group.ItemLevel = (byte)itemLevel;
                 group.Chance = 0.001;
-                group.Description = $"Dark {(isHorse ? "Horse" : "Raven")} Spirit";
+                group.Description = description;
                 group.PossibleItems.Add(spirit);
-                group.MinimumMonsterLevel = (byte)(isHorse ? 102 : 96);
+                group.MinimumMonsterLevel = (byte)minimumMonsterLevel;
 
                 gameConfiguration.DropItemGroups.Add(group);
                 foreach (var map in maps)
