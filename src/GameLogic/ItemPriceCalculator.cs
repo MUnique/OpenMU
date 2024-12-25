@@ -116,7 +116,7 @@ public class ItemPriceCalculator
         { (int)SpecialItems.Fruits, _ => 33000000 },
         { (int)SpecialItems.LochFeather, item => item.Level == 1 ? 7500000 : 180000 },
         { (int)SpecialItems.SiegePotion, item => item.Durability() * (item.Level == 0 ? 900000 : 450000) },
-        { (int)SpecialItems.OrderGuardianLifeStone, item => item.Level == 1 ? 2400000 : 1000000 },      // to-do: check
+        { (int)SpecialItems.OrderGuardianLifeStone, item => item.Level == 1 ? 2400000 : 1000000 },
         { (int)SpecialItems.ContractSummon, item => item.Level == 0 ? 1500000 : item.Level == 1 ? 1200000 : 0 },
         { (int)SpecialItems.SplinterOfArmor, item => item.Durability() * 150 },
         { (int)SpecialItems.BlessOfGuardian, item => item.Durability() * 300 },
