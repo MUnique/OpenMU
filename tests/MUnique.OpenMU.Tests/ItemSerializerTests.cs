@@ -174,6 +174,51 @@ public class ItemSerializerTests<T>
         }
     }
 
+    /// <summary>
+    /// Tests if socket items are correctly (de)serialized.
+    /// </summary>
+    [Test]
+    public void Sockets()
+    {
+        var tuple = this.SerializeAndDeserializeFlamberge();
+        var item = tuple.Item1;
+        var deserializedItem = tuple.Item2;
+        Assert.That(deserializedItem.ItemOptions.Count, Is.EqualTo(item.ItemOptions.Count));
+        foreach (var optionLink in item.ItemOptions)
+        {
+            var deserializedOptionLink = deserializedItem.ItemOptions
+                .FirstOrDefault(link => link.Level == optionLink.Level
+                                        && link.ItemOption!.OptionType == optionLink.ItemOption!.OptionType
+                                        && link.ItemOption.Number == optionLink.ItemOption.Number);
+            Assert.That(deserializedOptionLink, Is.Not.Null, () => $"Option Link not found: {optionLink.ItemOption!.OptionType!.Name}, {optionLink.ItemOption.PowerUpDefinition}, Level: {optionLink.Level}");
+        }
+
+        Assert.That(deserializedItem.SocketCount, Is.EqualTo(item.SocketCount));
+    }
+
+    private Tuple<Item, Item> SerializeAndDeserializeFlamberge()
+    {
+        using var context = this._contextProvider.CreateNewContext(this._gameConfiguration);
+        var item = context.CreateNew<Item>();
+        item.Definition = this._gameConfiguration.Items.First(i => i.Group == 0 && i.Number == 26);
+        item.Level = 15;
+        item.Durability = 100;
+        item.HasSkill = true;
+        item.SocketCount = 3;
+
+        var socketOption = context.CreateNew<ItemOptionLink>();
+        socketOption.ItemOption = this._gameConfiguration.ItemOptions.SelectMany(o => o.PossibleOptions).FirstOrDefault(o => o.OptionType == ItemOptionTypes.SocketOption);
+        socketOption.Index = 1;
+        socketOption.Level = 1;
+        item.ItemOptions.Add(socketOption);
+
+        var array = new byte[this._itemSerializer.NeededSpace];
+        this._itemSerializer.SerializeItem(array, item);
+
+        var deserializedItem = this._itemSerializer.DeserializeItem(array, this._gameConfiguration, context);
+        return new Tuple<Item, Item>(item, deserializedItem);
+    }
+
     private Tuple<Item, Item> SerializeAndDeserializeHyonLightingSword()
     {
         using var context = this._contextProvider.CreateNewContext(this._gameConfiguration);
