@@ -224,7 +224,7 @@ public static class ItemSerializerHelper
     /// <param name="item">The item.</param>
     public static void ReadSocketBonus(byte socketBonusByte, IContext persistenceContext, Item item)
     {
-        if (socketBonusByte == 0 || socketBonusByte == 0xFF)
+        if (socketBonusByte == 0 || socketBonusByte == 0xFF || socketBonusByte == 0xF)
         {
             return;
         }
