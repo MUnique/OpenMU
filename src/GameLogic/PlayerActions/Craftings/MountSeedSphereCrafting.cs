@@ -34,7 +34,7 @@ public class MountSeedSphereCrafting : SimpleItemCraftingHandler
     public static byte SocketItemReference { get; } = 0x88;
 
     /// <inheritdoc />
-    protected override async ValueTask<List<Item>> CreateOrModifyResultItemsAsync(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot)
+    protected override async ValueTask<List<Item>> CreateOrModifyResultItemsAsync(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot, byte successRate)
     {
         var seedSphere = requiredItems.Single(i => i.ItemRequirement.Reference == SeedSphereReference).Items.Single();
         var socketItem = requiredItems.Single(i => i.ItemRequirement.Reference == SocketItemReference).Items.Single();

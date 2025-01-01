@@ -28,7 +28,7 @@ public class RemoveSeedSphereCrafting : SimpleItemCraftingHandler
     public static byte SocketItemReference { get; } = 0x88;
 
     /// <inheritdoc />
-    protected override async ValueTask<List<Item>> CreateOrModifyResultItemsAsync(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot)
+    protected override async ValueTask<List<Item>> CreateOrModifyResultItemsAsync(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot, byte successRate)
     {
         var socketItem = requiredItems.Single(i => i.ItemRequirement.Reference == SocketItemReference).Items.Single();
 

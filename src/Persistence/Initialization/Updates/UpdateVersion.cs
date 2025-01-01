@@ -219,4 +219,19 @@ public enum UpdateVersion
     /// The version of the <see cref="FixWingsDmgRatesUpdatePlugInSeason6"/>.
     /// </summary>
     FixWeaponRisePercentageSeason6 = 42,
+
+    /// <summary>
+    /// The version of the <see cref="FixChaosMixesPlugIn075"/>.
+    /// </summary>
+    FixChaosMixes075 = 43,
+
+    /// <summary>
+    /// The version of the <see cref="FixChaosMixesPlugIn095D"/>.
+    /// </summary>
+    FixChaosMixes095d = 44,
+
+    /// <summary>
+    /// The version of the <see cref="FixChaosMixesPlugInSeason6"/>.
+    /// </summary>
+    FixChaosMixesSeason6 = 45,
 }
