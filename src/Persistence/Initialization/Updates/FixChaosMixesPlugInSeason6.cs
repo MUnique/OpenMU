@@ -52,17 +52,16 @@ public class FixChaosMixesPlugInSeason6 : FixChaosMixesPlugInBase
         {
             spirit.MaximumItemLevel = 1;
             var maps = gameConfiguration.Maps;
-            if (gameConfiguration.DropItemGroups.Single(dig => dig.Description == "Dark Horse Spirit") is { } horseGroup
-                && gameConfiguration.DropItemGroups.Single(dig => dig.Description == "Dark Raven Spirit") is { } ravenGroup)
+            if (gameConfiguration.DropItemGroups.Single(dig => dig.Description == "Dark Horse Spirit") is { } oldHorseGroup
+                && gameConfiguration.DropItemGroups.Single(dig => dig.Description == "Dark Raven Spirit") is { } oldRavenGroup)
             {
-                ClearDropItemGroup(horseGroup);
-                ClearDropItemGroup(ravenGroup);
-                await context.SaveChangesAsync().ConfigureAwait(false);
+                DeleteDropItemGroup(oldHorseGroup);
+                DeleteDropItemGroup(oldRavenGroup);
                 CreateDropItemGroup(0, "Dark Horse Spirit", 102);
                 CreateDropItemGroup(1, "Dark Raven Spirit", 96);
             }
 
-            void ClearDropItemGroup(DropItemGroup group)
+            void DeleteDropItemGroup(DropItemGroup group)
             {
                 group.PossibleItems.Clear();
                 foreach (var map in maps)
@@ -80,7 +79,7 @@ public class FixChaosMixesPlugInSeason6 : FixChaosMixesPlugInBase
             void CreateDropItemGroup(int itemLevel, string description, short minimumMonsterLevel)
             {
                 var group = context.CreateNew<DropItemGroup>();
-                group.SetGuid(NumberConversionExtensions.MakeWord(13, 31).ToSigned(), (short)itemLevel);
+                group.SetGuid(NumberConversionExtensions.MakeWord(13, 31).ToSigned(), (short)itemLevel, 1);
                 group.ItemLevel = (byte)itemLevel;
                 group.Chance = 0.001;
                 group.Description = description;
