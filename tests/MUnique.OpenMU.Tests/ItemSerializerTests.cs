@@ -180,7 +180,7 @@ public class ItemSerializerTests<T>
     [Test]
     public void Sockets()
     {
-        var tuple = this.SerializeAndDeserializeFlamberge();
+        var tuple = this.SerializeAndDeserializeBraveHelm();
         var item = tuple.Item1;
         var deserializedItem = tuple.Item2;
         Assert.That(deserializedItem.ItemOptions.Count, Is.EqualTo(item.ItemOptions.Count));
@@ -196,21 +196,38 @@ public class ItemSerializerTests<T>
         Assert.That(deserializedItem.SocketCount, Is.EqualTo(item.SocketCount));
     }
 
-    private Tuple<Item, Item> SerializeAndDeserializeFlamberge()
+    private Tuple<Item, Item> SerializeAndDeserializeBraveHelm()
     {
         using var context = this._contextProvider.CreateNewContext(this._gameConfiguration);
         var item = context.CreateNew<Item>();
-        item.Definition = this._gameConfiguration.Items.First(i => i.Group == 0 && i.Number == 26);
-        item.Level = 15;
+        item.Definition = this._gameConfiguration.Items.First(i => i.Group == 7 && i.Number == 46);
+        item.Level = 3;
         item.Durability = 100;
-        item.HasSkill = true;
-        item.SocketCount = 3;
+        item.SocketCount = 2;
 
-        var socketOption = context.CreateNew<ItemOptionLink>();
-        socketOption.ItemOption = this._gameConfiguration.ItemOptions.SelectMany(o => o.PossibleOptions).FirstOrDefault(o => o.OptionType == ItemOptionTypes.SocketOption);
-        socketOption.Index = 1;
-        socketOption.Level = 1;
-        item.ItemOptions.Add(socketOption);
+        var option = context.CreateNew<ItemOptionLink>();
+        option.ItemOption = item.Definition.PossibleItemOptions.SelectMany(def =>
+            def.PossibleOptions.Where(p => p.OptionType == ItemOptionTypes.Option)).First();
+        option.Level = 4;
+        item.ItemOptions.Add(option);
+
+
+        for (var i = 0; i < item.SocketCount; i++)
+        {
+            var socketOption = context.CreateNew<ItemOptionLink>();
+            socketOption.ItemOption = item.Definition.PossibleItemOptions
+                .SelectMany(o => o.PossibleOptions)
+                .Where(o => o.OptionType == ItemOptionTypes.SocketOption)
+                .Skip(i)
+                .First();
+            socketOption.Index = i;
+            socketOption.Level = 1;
+            item.ItemOptions.Add(socketOption);
+        }
+
+        var bonusOption = context.CreateNew<ItemOptionLink>();
+        bonusOption.ItemOption = item.Definition.PossibleItemOptions.SelectMany(o => o.PossibleOptions).First(o => o.OptionType == ItemOptionTypes.SocketBonusOption);
+        item.ItemOptions.Add(bonusOption);
 
         var array = new byte[this._itemSerializer.NeededSpace];
         this._itemSerializer.SerializeItem(array, item);

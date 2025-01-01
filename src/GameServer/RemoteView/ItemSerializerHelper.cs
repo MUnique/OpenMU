@@ -195,7 +195,7 @@ public static class ItemSerializerHelper
 
             var sphereLevel = socketByte / MaximumSocketOptions;
             var optionIndex = socketByte % MaximumSocketOptions;
-            var indexOffset = SocketOptionIndexOffsets.First(offset => offset <= optionIndex);
+            var indexOffset = SocketOptionIndexOffsets.Last(offset => offset <= optionIndex);
             var elementType = Array.IndexOf(SocketOptionIndexOffsets, indexOffset);
             var optionNumber = optionIndex - indexOffset;
 
