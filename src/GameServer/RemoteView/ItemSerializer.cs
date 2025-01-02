@@ -117,7 +117,7 @@ public class ItemSerializer : IItemSerializer
         }
 
         target[6] = (byte)(GetHarmonyByte(item) | GetSocketBonusByte(item));
-        SetSocketBytes(target.Slice(7), item);
+        SetSocketBytes(target.Slice(7, MaximumSockets), item);
 
         return this.NeededSpace;
     }
