@@ -125,6 +125,11 @@ public static class ItemSerializerHelper
     /// <param name="item">The item.</param>
     public static void SetSocketBytes(Span<byte> target, Item item)
     {
+        for (int i = 0; i < MaximumSockets; i++)
+        {
+            target[i] = i < item.SocketCount ? GetSocketByte(i) : NoSocket;
+        }
+
         byte GetSocketByte(int socketSlot)
         {
             var optionLink = item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.SocketOption && o.Index == socketSlot);
@@ -139,11 +144,6 @@ public static class ItemSerializerHelper
             var optionIndex = SocketOptionIndexOffsets[elementType] + elementOption;
 
             return (byte)((sphereLevel * MaximumSocketOptions) + optionIndex);
-        }
-
-        for (int i = 0; i < MaximumSockets; i++)
-        {
-            target[i] = i < item.SocketCount ? GetSocketByte(i) : NoSocket;
         }
     }
 
