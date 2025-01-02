@@ -18,8 +18,8 @@
       MUnique.OpenMU.Network contains all what's required to connect from and to a MU Online game, connect or chat server. It implements the MU Online network protocol.
       It also contains several the encryption algorithms and keys which were used until a few years ago up to Season 6 Episode 3.
     </Description>
-    <PackageVersion>0.9.3</PackageVersion>
-    <Version>0.9.3</Version>
+    <PackageVersion>0.9.4</PackageVersion>
+    <Version>0.9.4</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

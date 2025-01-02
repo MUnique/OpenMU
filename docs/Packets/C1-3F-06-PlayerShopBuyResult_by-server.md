@@ -18,7 +18,7 @@ The result is shown to the player. If successful, the item is added to the inven
 | 3 | 1 |    Byte   | 0x06  | Packet header - sub packet type identifier |
 | 4 | 1 | ResultKind |  | Result |
 | 5 | 2 | ShortBigEndian |  | SellerId |
-| 8 | 13 | Binary |  | ItemData |
+| 7 | 13 | Binary |  | ItemData |
 | 20 | 1 | Byte |  | ItemSlot |
 
 ### ResultKind Enum

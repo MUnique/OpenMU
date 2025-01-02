@@ -4264,7 +4264,7 @@
           <Name>SellerId</Name>
         </Field>
         <Field>
-          <Index>8</Index>
+          <Index>7</Index>
           <Type>Binary</Type>
           <Name>ItemData</Name>
           <Length>13</Length>
@@ -4355,12 +4355,12 @@
           <Name>Result</Name>
         </Field>
         <Field>
-          <Index>8</Index>
+          <Index>7</Index>
           <Type>Byte</Type>
           <Name>ItemSlot</Name>
         </Field>
         <Field>
-          <Index>9</Index>
+          <Index>8</Index>
           <Type>Binary</Type>
           <Name>ItemData</Name>
         </Field>
