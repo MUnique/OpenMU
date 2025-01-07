@@ -175,10 +175,26 @@ public class EnterMiniGameAction
             return true;
         }
 
-        // find the required ticket instead of using the client provided index for simplicity
-        ticketItem = player.Inventory?.FindItemByDefinition(ticketItemDefinition);
+        ticketItem = player.Inventory?.GetItem(gameTicketInventoryIndex);
+        if (ticketItemDefinition.Equals(ticketItem?.Definition) && ticketItem.Durability > 0 && ticketItem.Level == miniGameDefinition.TicketItemLevel)
+        {
+            return true;
+        }
 
-        return ticketItemDefinition.Equals(ticketItem?.Definition) && ticketItem.Durability > 0 && ticketItem.Level == miniGameDefinition.TicketItemLevel;
+        var candidateTicketItems = player.Inventory?.FindItemsByDefinition(ticketItemDefinition);
+        if (candidateTicketItems is not null && candidateTicketItems.Any())
+        {
+            foreach (var candidateTicketItem in candidateTicketItems)
+            {
+                ticketItem = candidateTicketItem;
+                if (ticketItemDefinition.Equals(ticketItem?.Definition) && ticketItem.Durability > 0 && ticketItem.Level == miniGameDefinition.TicketItemLevel)
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     private bool CheckEntranceFee(MiniGameDefinition miniGameDefinition, Player player, out int entranceFee)

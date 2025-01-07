@@ -166,11 +166,11 @@ public interface IStorage
     Item? GetItem(byte inventorySlot);
 
     /// <summary>
-    /// Finds an item with the same definition.
+    /// Finds items that matches the given definition.
     /// </summary>
     /// <param name="definition">The item definition to be searched.</param>
-    /// <returns>The item with the same definition.</returns>
-    Item? FindItemByDefinition(ItemDefinition definition);
+    /// <returns>The items with the same definition.</returns>
+    IEnumerable<Item> FindItemsByDefinition(ItemDefinition definition);
 
     /// <summary>
     /// Removes the item from this storage.
