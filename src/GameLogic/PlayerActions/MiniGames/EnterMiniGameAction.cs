@@ -175,7 +175,7 @@ public class EnterMiniGameAction
             return true;
         }
 
-        //ticketItem = player.Inventory?.GetItem(gameTicketInventoryIndex);
+        // find the required ticket instead of using the client provided index for simplicity
         ticketItem = player.Inventory?.FindItemByDefinition(ticketItemDefinition);
 
         return ticketItemDefinition.Equals(ticketItem?.Definition) && ticketItem.Durability > 0 && ticketItem.Level == miniGameDefinition.TicketItemLevel;

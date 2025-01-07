@@ -263,9 +263,25 @@ public class Storage : IStorage
     }
 
     /// <inheritdoc />
-    public virtual Item? FindItemByDefinition(ItemDefinition definition)
+    public Item? FindItemByDefinition(ItemDefinition definition)
     {
-        return this.ItemArray.FirstOrDefault(i => i != null && i.Definition == definition);
+        // Search in the primary storage.
+        var ticket = this.ItemArray.FirstOrDefault(i => i != null && i.Definition == definition);
+        if (ticket is not null)
+        {
+            return ticket;
+        }
+
+        // Search in the extensions if they exist.
+        foreach (var extension in this.Extensions)
+        {
+            if (extension.FindItemByDefinition(definition) is { } item)
+            {
+                return item;
+            }
+        }
+
+        return null;
     }
 
     /// <inheritdoc/>
