@@ -175,7 +175,9 @@ public class EnterMiniGameAction
             return true;
         }
 
-        ticketItem = player.Inventory?.GetItem(gameTicketInventoryIndex);
+        //ticketItem = player.Inventory?.GetItem(gameTicketInventoryIndex);
+        ticketItem = player.Inventory?.FindItemByDefinition(ticketItemDefinition);
+
         return ticketItemDefinition.Equals(ticketItem?.Definition) && ticketItem.Durability > 0 && ticketItem.Level == miniGameDefinition.TicketItemLevel;
     }
 

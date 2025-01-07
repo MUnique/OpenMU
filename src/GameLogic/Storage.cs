@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic;
 
+using MUnique.OpenMU.DataModel.Configuration.Items;
+
 /// <summary>
 /// This class wraps the access to the IItemStorage of an character.
 /// </summary>
@@ -258,6 +260,12 @@ public class Storage : IStorage
 
         var extension = this.Extensions.FirstOrDefault(ext => ext.ContainsSlot(inventorySlot));
         return extension?.GetItem(inventorySlot);
+    }
+
+    /// <inheritdoc />
+    public virtual Item? FindItemByDefinition(ItemDefinition definition)
+    {
+        return this.ItemArray.FirstOrDefault(i => i != null && i.Definition == definition);
     }
 
     /// <inheritdoc/>
