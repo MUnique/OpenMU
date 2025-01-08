@@ -267,7 +267,7 @@ public class Storage : IStorage
     {
         var primaryMatches = this.ItemArray
             .Where(i => i != null && i.Definition == definition)
-            .Cast<Item>();
+            .Select(i => i!);
 
         var extensionMatches = this.Extensions?
             .SelectMany(extension => extension.FindItemsByDefinition(definition))
