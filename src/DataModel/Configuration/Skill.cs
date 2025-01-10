@@ -47,6 +47,32 @@ public enum DamageType
     /// All damage types.
     /// </summary>
     All = 5,
+
+    /// <summary>
+    /// The electric spike (DL) skill damage type.
+    /// </summary>
+    ElectricSpike = 6,
+
+    /// <summary>
+    /// The dark horse's earthshake skill damage type.
+    /// </summary>
+    Earthshake = 7,
+
+    /// <summary>
+    /// The chaotic diseier (DL) skill damage type.
+    /// </summary>
+    ChaoticDiseier = 8,
+
+    /// <summary>
+    /// The generic dark lord offensive skill damage type.
+    /// </summary>
+    /// <remarks>Any DL skill other than electric spike, chaotic diseier, and earthshake.</remarks>
+    GenericDarkLordSkill = 9,
+
+    /// <summary>
+    /// The multishot (Elf) skill damage type.
+    /// </summary>
+    MultiShot = 10,
 }
 
 /// <summary>
@@ -55,7 +81,7 @@ public enum DamageType
 public enum SkillType
 {
     /// <summary>
-    /// The skill hit its target directly.
+    /// The skill hits its target directly.
     /// </summary>
     DirectHit = 0,
 
@@ -65,7 +91,7 @@ public enum SkillType
     CastleSiegeSpecial = 1,
 
     /// <summary>
-    /// Same as <see cref="DirectHit"/> but only applyable during castle siege event.
+    /// Same as <see cref="DirectHit"/> but only applicable during castle siege event.
     /// </summary>
     CastleSiegeSkill = 2,
 

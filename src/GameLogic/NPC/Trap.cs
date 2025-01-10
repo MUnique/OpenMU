@@ -38,6 +38,10 @@ public sealed class Trap : NonPlayerCharacter, IAttacker
     /// <remarks>Traps don't do combos.</remarks>
     public ComboStateMachine? ComboState => null;
 
+    /// <inheritdoc/>
+    /// <remarks>Traps don't have parties.</remarks>
+    public Party? Party => null;
+
     /// <summary>
     /// Attacks the specified player.
     /// </summary>

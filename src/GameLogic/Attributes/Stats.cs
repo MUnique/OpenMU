@@ -87,6 +87,11 @@ public class Stats
     public static AttributeDefinition TotalLeadershipRequirementValue { get; } = new(new Guid("E38A897E-ED6F-4C06-AE11-7CAA7EAEC5A9"), "Total Leadership Requirement Value", "The total leadership requirement value of an item, which is used to calculate the required total leadership of a character to equip an item. The required total leadership depends on the options, drop level and level of the item.");
 
     /// <summary>
+    /// Gets the total strength and agility attribute definition.
+    /// </summary>
+    public static AttributeDefinition TotalStrenghtAndAgility { get; } = new(new Guid("4DFA4E4A-D185-4BCE-952C-5E78A92DC4AF"), "Total Strength and Agility", string.Empty);
+
+    /// <summary>
     /// Gets the level attribute definition.
     /// </summary>
     public static AttributeDefinition Level { get; } = new(new Guid("560931AD-0901-4342-B7F4-FD2E2FCC0563"), "Level", "The level of the character.");
@@ -247,6 +252,11 @@ public class Stats
     public static AttributeDefinition MaximumCurseBaseDmg { get; } = new(new Guid("5E7B5B56-BB4D-4645-9593-836FE86E80EA"), "Maximum Curse Base Damage", string.Empty);
 
     /// <summary>
+    /// Gets the the min and max curse base DMG attribute definition.
+    /// </summary>
+    public static AttributeDefinition CurseBaseDmg { get; } = new(new Guid("60868001-6A67-408C-BFDB-320670A9A682"), "Curse Base Damage (min and max)", string.Empty);
+
+    /// <summary>
     /// Gets the attribute definition for the base damage of the fenrir pet.
     /// </summary>
     public static AttributeDefinition FenrirBaseDmg { get; } = new(new Guid("96F47E70-5C85-4A92-B224-944A9359240E"), "Fenrir Base Damage", string.Empty);
@@ -373,6 +383,36 @@ public class Stats
     public static AttributeDefinition CrossBowBonusBaseDamage { get; } = new(new Guid("DBAD454A-EB1C-4FEE-9B40-97EA70278BB5"), "Cross Bow Bonus Base Damage", string.Empty);
 
     /// <summary>
+    /// Gets elf's is melee attack attribute definition.
+    /// </summary>
+    public static AttributeDefinition IsMeleeAttack { get; } = new(new Guid("2121E586-B511-4D27-9E1A-67BFCACD7F41"), "Is Melee Attack", "The elf's melee attack switch.");
+
+    /// <summary>
+    /// Gets elf's melee minimum damage attribute definition.
+    /// </summary>
+    public static AttributeDefinition MeleeMinDmg { get; } = new(new Guid("A85BD4A5-9649-49F9-A7E2-B24D9114CC3E"), "Melee Minimum Damage", "The elf's minimum melee damage, which is added to close range attacks.");
+
+    /// <summary>
+    /// Gets elf's melee maximum damage attribute definition.
+    /// </summary>
+    public static AttributeDefinition MeleeMaxDmg { get; } = new(new Guid("35A2224D-FD1C-4D19-B64B-EB7247530DE4"), "Melee Maximum Damage", "The elf's maximum melee damage, which is added to close range attacks.");
+
+    /// <summary>
+    /// Gets elf's is archery attack attribute definition.
+    /// </summary>
+    public static AttributeDefinition IsArcheryAttack { get; } = new(new Guid("371E1237-6AE9-4AC1-9A7F-20CBEC897091"), "Is Archery Attack", "The elf's archery attack switch.");
+
+    /// <summary>
+    /// Gets elf's archery minimum damage attribute definition.
+    /// </summary>
+    public static AttributeDefinition ArcheryMinDmg { get; } = new(new Guid("9308EF7C-4DC4-4A0A-8747-02AAB7CC051A"), "Archery Minimum Damage", "The elf's minimum archery damage, which is added to projectile weapon attacks.");
+
+    /// <summary>
+    /// Gets elf's archery maximum damage attribute definition.
+    /// </summary>
+    public static AttributeDefinition ArcheryMaxDmg { get; } = new(new Guid("EC807B7C-4004-4D13-BED2-326E13F8EFEB"), "Archery Maximum Damage", "The elf's maximum archery damage, which is added to projectile weapon attacks.");
+
+    /// <summary>
     /// Gets the is a one handed sword equipped.
     /// </summary>
     public static AttributeDefinition IsOneHandedSwordEquipped { get; } = new(new Guid("21B71774-EB4F-41F6-A0AA-0E600F41226C"), "Is One Handed Sword Equipped", string.Empty);
@@ -436,6 +476,16 @@ public class Stats
     /// Gets the is a stick equipped.
     /// </summary>
     public static AttributeDefinition IsStickEquipped { get; } = new(new Guid("85C46193-8EC9-4CCE-B18B-F79E938FE9C3"), "Is Stick Equipped", string.Empty);
+
+    /// <summary>
+    /// Gets the is a book equipped.
+    /// </summary>
+    public static AttributeDefinition IsBookEquipped { get; } = new(new Guid("1EE456B6-65EF-46E9-A90D-D3BA7D23CBF5"), "Is Book Equipped", string.Empty);
+
+    /// <summary>
+    /// Gets the book bonus base damage.
+    /// </summary>
+    public static AttributeDefinition BookBonusBaseDamage { get; } = new(new Guid("6B15592C-70A4-4EE0-A713-DDC4794313DA"), "Book Bonus Base Damage", string.Empty);
 
     /// <summary>
     /// Gets the stick bonus base damage.
@@ -554,14 +604,59 @@ public class Stats
     public static AttributeDefinition BonusDefenseWithScepter { get; } = new(new Guid("7977FE44-FC22-4A6B-A4E0-BA522FE807DF"), "Defense Increase Bonus (absolute) with equipped Scepter", string.Empty);
 
     /// <summary>
-    /// Gets the bonus defense (absolute) command/leadership divisor with an equipped shield attribute definition.
+    /// Gets the bonus defense (absolute) command/leadership divisor with an equipped scepter attribute definition.
     /// </summary>
-    public static AttributeDefinition BonusDefenseWithScepterCmdDiv { get; } = new(new Guid("9A3C99C4-4F94-4CD0-8BFC-C8B870CD5FE4"), "Defense Increase Bonus (absolute) with equipped Scepter", string.Empty);
+    public static AttributeDefinition BonusDefenseWithScepterCmdDiv { get; } = new(new Guid("9A3C99C4-4F94-4CD0-8BFC-C8B870CD5FE4"), "Defense Increase Bonus (absolute) command divisor with equipped Scepter", string.Empty);
 
     /// <summary>
     /// Gets the bonus defense (absolute) with an equipped dark horse attribute definition.
     /// </summary>
     public static AttributeDefinition BonusDefenseWithHorse { get; } = new(new Guid("8D22E36C-EB36-47DB-8CE0-9ABD599C533C"), "Defense Increase Bonus (absolute) With equipped Horse", string.Empty);
+
+    /// <summary>
+    /// Gets the dark horse damage absorb attribute definition.
+    /// </summary>
+    public static AttributeDefinition HorseDamageAbsorb { get; } = new(new Guid("A83FFDAA-2666-4AF0-B00C-E6DBC13A8768"), "Dark Horse Damage Absorb Multiplier", string.Empty);
+
+    /// <summary>
+    /// Gets the electric spike skill bonus damage attribute definition.
+    /// </summary>
+    public static AttributeDefinition ElectricSpikeBonusDmg { get; } = new(new Guid("2DDBCE01-88CF-4A01-B691-1772FA836D9B"), "Electric Spike Bonus Damage", "The electric spike skill bonus damage, which depends on other stats.");
+
+    /// <summary>
+    /// Gets the earthshake skill bonus damage attribute definition.
+    /// </summary>
+    public static AttributeDefinition EarthshakeBonusDmg { get; } = new(new Guid("6370BB15-5602-44BC-8FDC-A787A6FAB4F2"), "Earthshake Bonus Damage", "The earthshake skill bonus damage, which depends on other stats.");
+
+    /// <summary>
+    /// Gets the chaotic diseier skill bonus damage attribute definition.
+    /// </summary>
+    public static AttributeDefinition ChaoticDiseierBonusDmg { get; } = new(new Guid("BF691FDC-2791-49DD-8725-602C6762A57D"), "Chaotic Diseier Bonus Damage", "The chaotic diseier skill bonus damage, which depends on other stats.");
+
+    /// <summary>
+    /// Gets the dark lord generic skill attribute definition.
+    /// </summary>
+    public static AttributeDefinition DarkLordGenericSkillBonusDmg { get; } = new(new Guid("8D6E3761-0C88-48F7-91DC-9D520038F12F"), "Dark Lord Generic Skill Bonus Damage", "The dark lord generic skill bonus damage, which depends on other stats. Any skill other than Electric Spike, Earthshake, and Chaotic Diseier.");
+
+    /// <summary>
+    /// Gets the berserker buff mana multiplier attribute definition.
+    /// </summary>
+    public static AttributeDefinition BerserkerManaMultiplier { get; } = new(new Guid("9B6AA0DA-9ABA-4C14-B094-F1AC70BCB52D"), "Berserker Mana Multiplier", string.Empty);
+
+    /// <summary>
+    /// Gets the berserker buff health multiplier attribute definition.
+    /// </summary>
+    public static AttributeDefinition BerserkerHealthMultiplier { get; } = new(new Guid("D1948382-23F6-43A4-AD84-69227BF2ABA3"), "Berserker Health Multiplier", string.Empty);
+
+    /// <summary>
+    /// Gets the berserker buff minimum physical base damage attribute definition.
+    /// </summary>
+    public static AttributeDefinition BerserkerMinPhysBaseDmg { get; } = new(new Guid("E3BDFE05-AC78-4416-BAE0-5589E987E01A"), "Berserker Minimum Physical Base Damage", "The berserker minimum physical base damage, which is multiplied with the berserker mana multiplier for physical damage attacks.");
+
+    /// <summary>
+    /// Gets the berserker buff maximum physical base damage attribute definition.
+    /// </summary>
+    public static AttributeDefinition BerserkerMaxPhysBaseDmg { get; } = new(new Guid("D7C0A347-7661-455A-9BDF-A5528E1DA16F"), "Berserker Maximum Physical Base Damage", "The berserker maximum physical base damage, which is multiplied with the berserker mana multiplier for physical damage attacks.");
 
     /// <summary>
     /// Gets the 'is shield equipped' attribute definition.

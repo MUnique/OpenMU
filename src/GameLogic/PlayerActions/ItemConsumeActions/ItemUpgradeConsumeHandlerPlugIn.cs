@@ -88,9 +88,9 @@ public abstract class ItemUpgradeConsumeHandlerPlugIn : ItemModifyConsumeHandler
             return false;
         }
 
-        var itemOption = item.ItemOptions.First(o => o.ItemOption?.OptionType == this.Configuration.OptionType);
-        var increasableOption = itemOption.ItemOption;
-        var higherOptionPossible = increasableOption?.LevelDependentOptions.Any(o => o.Level > itemOption.Level && o.RequiredItemLevel <= item.Level) ?? false;
+        var itemOptions = item.ItemOptions.Where(o => o.ItemOption?.OptionType == this.Configuration.OptionType);
+        var increasableOption = itemOptions.First().ItemOption;
+        var higherOptionPossible = increasableOption?.LevelDependentOptions.Any(o => o.Level > itemOptions.First().Level && o.RequiredItemLevel <= item.Level) ?? false;
         if (!higherOptionPossible)
         {
             return false;
@@ -98,11 +98,17 @@ public abstract class ItemUpgradeConsumeHandlerPlugIn : ItemModifyConsumeHandler
 
         if (Rand.NextRandomBool(this.Configuration.SuccessChance))
         {
-            itemOption.Level++;
+            foreach (var itemOption in itemOptions)
+            {
+                itemOption.Level++;
+            }
         }
         else
         {
-            this.HandleFailedUpgrade(item, itemOption);
+            foreach (var itemOption in itemOptions)
+            {
+                this.HandleFailedUpgrade(item, itemOption);
+            }
         }
 
         return true;
@@ -168,6 +174,14 @@ public abstract class ItemUpgradeConsumeHandlerPlugIn : ItemModifyConsumeHandler
                 // ItemOptionTypes.Option
                 optionLink.ItemOption = possibleOptions.SelectRandom();
                 optionLink.Level = 1;
+
+                if (item.Definition.Group == 0 && item.Definition.BasePowerUpAttributes.Any(bpua => bpua.TargetAttribute == Stats.StaffRise))
+                {
+                    // Double item option MG sword
+                    var doubleOptionLink = persistenceContext.CreateNew<ItemOptionLink>();
+                    doubleOptionLink.ItemOption = possibleOptions.FirstOrDefault(o => o != optionLink.ItemOption);
+                    doubleOptionLink.Level = 1;
+                }
             }
 
             item.ItemOptions.Add(optionLink);

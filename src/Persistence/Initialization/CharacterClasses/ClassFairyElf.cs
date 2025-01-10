@@ -48,6 +48,8 @@ internal partial class CharacterClassInitialization
 
         this.AddCommonAttributeRelationships(result.AttributeCombinations);
 
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.TotalStrenghtAndAgility, Stats.TotalAgility, Stats.TotalStrength, InputOperator.Add));
+
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.DefenseBase, 1.0f / 10, Stats.TotalAgility));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.DefenseRatePvm, 0.25f, Stats.TotalAgility));
 
@@ -67,14 +69,20 @@ internal partial class CharacterClassInitialization
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumMana, 1.5f, Stats.Level));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumHealth, 1, Stats.Level));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumHealth, 2, Stats.TotalVitality));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MinimumPhysBaseDmg, 1.0f / 7, Stats.TotalAgility));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumPhysBaseDmg, 1.0f / 4, Stats.TotalAgility));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MinimumPhysBaseDmg, 1.0f / 14, Stats.TotalStrength));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumPhysBaseDmg, 1.0f / 8, Stats.TotalStrength));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.ArcheryMinDmg, 1.0f / 7, Stats.TotalAgility));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.ArcheryMaxDmg, 1.0f / 4, Stats.TotalAgility));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.ArcheryMinDmg, 1.0f / 14, Stats.TotalStrength));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.ArcheryMaxDmg, 1.0f / 8, Stats.TotalStrength));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MeleeMinDmg, 1.0f / 7, Stats.TotalStrenghtAndAgility));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MeleeMaxDmg, 1.0f / 4, Stats.TotalStrenghtAndAgility));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MinimumPhysBaseDmg, 1, Stats.MinimumPhysBaseDmgByWeapon));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumPhysBaseDmg, 1, Stats.MaximumPhysBaseDmgByWeapon));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MinimumPhysBaseDmg, 1, Stats.PhysicalBaseDmg));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumPhysBaseDmg, 1, Stats.PhysicalBaseDmg));
+
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.IsArcheryAttack, 1, Stats.IsBowEquipped));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.IsArcheryAttack, 1, Stats.IsCrossBowEquipped));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.IsMeleeAttack, -1, Stats.IsArcheryAttack));
 
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.FenrirBaseDmg, 1.0f / 5, Stats.TotalStrength));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.FenrirBaseDmg, 1.0f / 3, Stats.TotalAgility));
@@ -83,11 +91,16 @@ internal partial class CharacterClassInitialization
 
         result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.PhysicalBaseDmg, Stats.IsBowEquipped, Stats.BowBonusBaseDamage));
         result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.PhysicalBaseDmg, Stats.IsCrossBowEquipped, Stats.CrossBowBonusBaseDamage));
+        result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.MinimumPhysBaseDmg, Stats.IsArcheryAttack, Stats.ArcheryMinDmg));
+        result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.MaximumPhysBaseDmg, Stats.IsArcheryAttack, Stats.ArcheryMaxDmg));
+        result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.MinimumPhysBaseDmg, Stats.IsMeleeAttack, Stats.MeleeMinDmg));
+        result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.MaximumPhysBaseDmg, Stats.IsMeleeAttack, Stats.MeleeMaxDmg));
 
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(39, Stats.MaximumHealth));
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(6, Stats.MaximumMana));
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.SkillMultiplier));
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f / 33f, Stats.AbilityRecoveryMultiplier));
+        result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.IsMeleeAttack));
 
         if (!this.UseClassicPvp)
         {

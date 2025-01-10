@@ -87,9 +87,9 @@ internal class Jewelery : Version095d.Items.Jewelery
                 ItemOptionDefinitionNumbers.SkeletonTransformationRing,
                 (Stats.BaseDamageBonus, 40, AggregateType.AddRaw),
                 (Stats.ExperienceRate, 1.5f, AggregateType.Multiplicate))); // todo: exp rate only with equipped skeleton pet
-        this.CreateTransformationRing(163, "? Transformation Ring", 1, 255, (CharacterTransformationSkin)625);
-        this.CreateTransformationRing(164, "?? Transformation Ring", 1, 255, (CharacterTransformationSkin)626);
-        this.CreateTransformationRing(165, "??? Transformation Ring", 1, 255, (CharacterTransformationSkin)642);
+        this.CreateTransformationRing(163, "Robot Knight Transformation Ring", 1, 255, (CharacterTransformationSkin)625);
+        this.CreateTransformationRing(164, "Mini Robot Transformation Ring", 1, 255, (CharacterTransformationSkin)626);
+        this.CreateTransformationRing(165, "Great Heavenly Mage Transformation Ring", 1, 255, (CharacterTransformationSkin)642);
     }
 
     private ItemOptionDefinition CreateItemOptionDefinition(string name, short number, params (AttributeDefinition targetOption, float value, AggregateType aggregateType)[] options)
@@ -142,7 +142,7 @@ internal class Jewelery : Version095d.Items.Jewelery
         var increaseDamage = this.Context.CreateNew<IncreasableItemOption>();
         increaseDamage.SetGuid(ItemOptionDefinitionNumbers.WizardRing, 1);
         increaseDamage.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
-        increaseDamage.PowerUpDefinition.TargetAttribute = Stats.AttackDamageIncrease.GetPersistent(this.GameConfiguration);
+        increaseDamage.PowerUpDefinition.TargetAttribute = Stats.AttackDamageIncrease.GetPersistent(this.GameConfiguration); // Needs review
         increaseDamage.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
         increaseDamage.PowerUpDefinition.Boost.ConstantValue.Value = 0.1f;
         optionDefinition.PossibleOptions.Add(increaseDamage);

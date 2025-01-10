@@ -10,7 +10,7 @@ using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// A surrogate for an <see cref="Player"/> which exposes the attack attributes
+/// A surrogate for a <see cref="Player"/> which exposes the attack attributes
 /// of another <see cref="IAttributeSystem"/>.
 /// </summary>
 public class AttackerSurrogate : IAttacker, IWorldObserver, IPlayerSurrogate
@@ -35,6 +35,10 @@ public class AttackerSurrogate : IAttacker, IWorldObserver, IPlayerSurrogate
     /// combo state of the player here.
     /// </remarks>
     public ComboStateMachine? ComboState => null;
+
+    /// <inheritdoc/>
+    /// <remarks>Pets don't have parties.</remarks>
+    public Party? Party => null;
 
     /// <inheritdoc />
     public ushort Id => this.Owner.Id;

@@ -251,6 +251,11 @@ internal enum MagicEffectNumber : short
     CherryBlossomFlowerPetal = 0x50,
 
     /// <summary>
+    /// The berserker buff effect.
+    /// </summary>
+    Berserker = 0x51,
+
+    /// <summary>
     /// The wiz enhance effect.
     /// </summary>
     WizEnhance = 0x52,

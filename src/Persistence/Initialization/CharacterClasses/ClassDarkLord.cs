@@ -36,7 +36,7 @@ internal partial class CharacterClassInitialization
         result.LevelRequirementByCreation = 250;
         result.IsMasterClass = isMaster;
         result.NextGenerationClass = nextGenerationClass;
-        result.LevelWarpRequirementReductionPercent = (int) Math.Ceiling(100.0 / 3);
+        result.LevelWarpRequirementReductionPercent = (int)Math.Ceiling(100.0 / 3);
         result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.Level, 1, false));
         result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.PointsPerLevelUp, 7, false));
         result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.BaseStrength, 26, true));
@@ -108,15 +108,23 @@ internal partial class CharacterClassInitialization
         result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.PhysicalBaseDmg, Stats.IsScepterEquipped, Stats.ScepterBonusBaseDamage));
         result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.RavenBaseDamage, Stats.IsScepterEquipped, Stats.ScepterPetBonusBaseDamage));
         result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.DefenseBase, Stats.IsScepterEquipped, Stats.BonusDefenseWithScepter));
+        result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.DefenseBase, Stats.IsHorseEquipped, Stats.BonusDefenseWithHorse));
+        //result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.DamageReceiveDecrement, Stats.IsHorseEquipped, Stats.HorseDamageAbsorb));
 
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.BonusDefenseWithScepter, Stats.BonusDefenseWithScepterCmdDiv, Stats.TotalLeadership));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.BonusDefenseWithHorse, 2.0f, Stats.HorseLevel));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.BonusDefenseWithHorse, 1.0f / 20, Stats.TotalAgility));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.HorseDamageAbsorb, 1.0f / 2, Stats.HorseLevel));
 
-        /* TODO: Add these stats
-                                    Critical dmg = cmd/25+str/30
-                                    Fireburst bonus min dmg = 100+str/25+ene/50
-                                    Fireburst bonus max dmg = 150+str/25+ene/50
-                                    Horse bonus dmg = 100+horseLvl*10+lvl*2.5+str/10+cmd/5
-                                */
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.ElectricSpikeBonusDmg, 1.0f / 10, Stats.TotalLeadership));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.EarthshakeBonusDmg, 1.0f / 10, Stats.TotalStrength));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.EarthshakeBonusDmg, 1.0f / 5, Stats.TotalLeadership));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.EarthshakeBonusDmg, 10, Stats.HorseLevel));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.ChaoticDiseierBonusDmg, 1.0f / 30, Stats.TotalStrength));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.ChaoticDiseierBonusDmg, 1.0f / 55, Stats.TotalEnergy));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.DarkLordGenericSkillBonusDmg, 1.0f / 25, Stats.TotalStrength));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.DarkLordGenericSkillBonusDmg, 1.0f / 50, Stats.TotalEnergy));
+
         if (!this.UseClassicPvp)
         {
             result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.CurrentShield, 1, false));

@@ -92,6 +92,10 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
     /// <remarks>Monsters don't do combos.</remarks>
     public ComboStateMachine? ComboState => null;
 
+    /// <inheritdoc/>
+    /// <remarks>Monsters don't have parties.</remarks>
+    public Party? Party => null;
+
     /// <summary>
     /// Attacks the specified target.
     /// </summary>

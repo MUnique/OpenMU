@@ -9,7 +9,6 @@ using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
-using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Pathfinding;
 
@@ -86,13 +85,12 @@ public static class AttackableExtensions
 
         if (skill != null)
         {
-            dmg += (int)attacker.Attributes[Stats.SkillDamageBonus];
             dmg = (int)(dmg * attacker.Attributes[Stats.SkillMultiplier]);
         }
 
         if (attacker.Attributes[Stats.IsTwoHandedWeaponEquipped] > 0)
         {
-            dmg = (int)(dmg * attacker.Attributes[Stats.TwoHandedWeaponDamageIncrease]);
+            dmg += (int)(dmg * attacker.Attributes[Stats.TwoHandedWeaponDamageIncrease]);
         }
 
         if (attacker is Player && defender is Player)
@@ -459,8 +457,8 @@ public static class AttackableExtensions
     private static void GetBaseDmg(this IAttacker attacker, SkillEntry? skill, out int minimumBaseDamage, out int maximumBaseDamage)
     {
         var attackerStats = attacker.Attributes;
-        minimumBaseDamage = (int)(attackerStats[Stats.BaseDamageBonus] + attackerStats[Stats.BaseMinDamageBonus]);
-        maximumBaseDamage = (int)(attackerStats[Stats.BaseDamageBonus] + attackerStats[Stats.BaseMaxDamageBonus]);
+        minimumBaseDamage = 0;
+        maximumBaseDamage = 0;
 
         DamageType damageType = DamageType.Physical;
         if (skill?.Skill != null)
@@ -478,6 +476,9 @@ public static class AttackableExtensions
                 minimumBaseDamage += novaDamage;
                 maximumBaseDamage += novaDamage;
             }
+
+            minimumBaseDamage += (int)attackerStats[Stats.SkillDamageBonus]; // todo: does not apply to Summoner
+            maximumBaseDamage += (int)attackerStats[Stats.SkillDamageBonus];
         }
 
         switch (damageType)
@@ -485,12 +486,10 @@ public static class AttackableExtensions
             case DamageType.Wizardry:
                 minimumBaseDamage = (int)((minimumBaseDamage + attackerStats[Stats.MinimumWizBaseDmg]) * attackerStats[Stats.WizardryAttackDamageIncrease]);
                 maximumBaseDamage = (int)((maximumBaseDamage + attackerStats[Stats.MaximumWizBaseDmg]) * attackerStats[Stats.WizardryAttackDamageIncrease]);
-
                 break;
             case DamageType.Curse:
                 minimumBaseDamage += (int)((minimumBaseDamage + attackerStats[Stats.MinimumCurseBaseDmg]) * attackerStats[Stats.CurseAttackDamageIncrease]);
                 maximumBaseDamage += (int)((maximumBaseDamage + attackerStats[Stats.MaximumCurseBaseDmg]) * attackerStats[Stats.CurseAttackDamageIncrease]);
-
                 break;
             case DamageType.Physical:
                 minimumBaseDamage += (int)attackerStats[Stats.MinimumPhysBaseDmg];
@@ -512,14 +511,43 @@ public static class AttackableExtensions
                 minimumBaseDamage += (int)attackerStats[Stats.FenrirBaseDmg];
                 maximumBaseDamage += (int)attackerStats[Stats.FenrirBaseDmg];
                 break;
+
+            // Dark Lord skills
+            case DamageType.ElectricSpike:
+                var nearbyPartyMembers = attacker.Party?.PartyList.Where(p => p == attacker || p.Observers.Contains((IWorldObserver)attacker)).Count() ?? 0;
+                minimumBaseDamage += (int)attackerStats[Stats.ElectricSpikeBonusDmg] + (nearbyPartyMembers * 50);
+                maximumBaseDamage += (int)attackerStats[Stats.ElectricSpikeBonusDmg] + (nearbyPartyMembers * 50);
+                goto case DamageType.Physical;
+            case DamageType.Earthshake:
+                minimumBaseDamage += (int)attackerStats[Stats.EarthshakeBonusDmg];
+                maximumBaseDamage += (int)attackerStats[Stats.EarthshakeBonusDmg];
+                goto case DamageType.Physical;
+            case DamageType.ChaoticDiseier:
+                minimumBaseDamage += (int)attackerStats[Stats.ChaoticDiseierBonusDmg];
+                maximumBaseDamage += (int)attackerStats[Stats.ChaoticDiseierBonusDmg];
+                goto case DamageType.Physical;
+            case DamageType.GenericDarkLordSkill:
+                minimumBaseDamage += (int)attackerStats[Stats.DarkLordGenericSkillBonusDmg];
+                maximumBaseDamage += (int)attackerStats[Stats.DarkLordGenericSkillBonusDmg];
+                goto case DamageType.Physical;
+
+            // Elf skills
+            case DamageType.MultiShot:
+                minimumBaseDamage *= (int)0.8;
+                maximumBaseDamage *= (int)0.8;
+                goto case DamageType.Physical;
+
             default:
                 // the skill has some other damage type defined which is not applicable to this calculation
                 break;
         }
+
+        minimumBaseDamage = (int)(attackerStats[Stats.BaseDamageBonus] + attackerStats[Stats.BaseMinDamageBonus]);
+        maximumBaseDamage = (int)(attackerStats[Stats.BaseDamageBonus] + attackerStats[Stats.BaseMaxDamageBonus]);
     }
 
     /// <summary>
-    /// Applies the magic effect of the attackers skill to the target.
+    /// Applies the magic effect of the attacker's skill to the target.
     /// </summary>
     /// <param name="target">The target.</param>
     /// <param name="attacker">The attacker.</param>

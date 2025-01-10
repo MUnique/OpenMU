@@ -341,7 +341,7 @@ internal class Weapons : InitializerBase
 
         item.PossibleItemOptions.Add(this.Luck);
 
-        if (magicPower == 0 || darkLordClass > 0)
+        if (magicPower == 0 || darkLordClass > 0 || group == (int)ItemGroups.Swords)
         {
             item.PossibleItemOptions.Add(this.PhysicalDamageOption);
             item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == ExcellentOptions.PhysicalAttackOptionsName));
@@ -352,6 +352,15 @@ internal class Weapons : InitializerBase
                 var scepterRisePowerUp = this.CreateItemBasePowerUpDefinition(Stats.ScepterRise, magicPower / 2.0f, AggregateType.AddRaw);
                 scepterRisePowerUp.BonusPerLevelTable = magicPower % 2 == 0 ? this._scepterRiseTableEven : this._scepterRiseTableOdd;
                 item.BasePowerUpAttributes.Add(scepterRisePowerUp);
+            }
+
+            if (magicPower > 0) // MG swords can have wizardry rise, functioning as both sword and staff
+            {
+                item.PossibleItemOptions.Add(this.WizardryDamageOption);
+
+                var swordRisePowerUp = this.CreateItemBasePowerUpDefinition(Stats.StaffRise, magicPower / 2.0f, AggregateType.AddRaw);
+                swordRisePowerUp.BonusPerLevelTable = magicPower % 2 == 0 ? this._staffRiseTableEven : this._staffRiseTableOdd;
+                item.BasePowerUpAttributes.Add(swordRisePowerUp);
             }
         }
         else
@@ -382,21 +391,27 @@ internal class Weapons : InitializerBase
             item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.EquippedWeaponCount, 1, AggregateType.AddRaw));
         }
 
-        if (group == (int)ItemGroups.Bows && height > 1)
+        if (group == (int)ItemGroups.Bows)
         {
-            item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.AmmunitionConsumptionRate, 1, AggregateType.AddRaw));
+            if (height > 1)
+            {
+                item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.AmmunitionConsumptionRate, 1, AggregateType.AddRaw));
+                item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(slot == 0 ? Stats.IsCrossBowEquipped : Stats.IsBowEquipped, 1, AggregateType.AddRaw));
+            }
+            else
+            {
+                item.IsAmmunition = true;
+            }
         }
-
-        item.IsAmmunition = group == (int)ItemGroups.Bows && height == 1;
 
         if (group != (int)ItemGroups.Bows && width == 2)
         {
             item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsTwoHandedWeaponEquipped, 1, AggregateType.AddRaw));
         }
 
-        if (group == (int)ItemGroups.Swords)
+        if (group == (int)ItemGroups.Swords || (group == (int)ItemGroups.Scepters && number == 5)) // Crystal Sword
         {
-            if (ragefighterClass == 0 || number < 3)
+            if (ragefighterClass == 0 || number < 2)
             {
                 if (width == 1)
                 {
@@ -440,19 +455,14 @@ internal class Weapons : InitializerBase
             {
                 item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsStickEquipped, 1, AggregateType.AddRaw));
             }
-            else if (wizardClass == 1)
+            else if (wizardClass > 0)
             {
                 item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(width == 1 ? Stats.IsOneHandedStaffEquipped : Stats.IsTwoHandedStaffEquipped, 1, AggregateType.AddRaw));
             }
             else
             {
-                // It's a book. Nothing to do here.
+                item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsBookEquipped, 1, AggregateType.AddRaw));
             }
-        }
-
-        if (group == (int)ItemGroups.Bows && !item.IsAmmunition)
-        {
-            item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(slot == 0 ? Stats.IsCrossBowEquipped : Stats.IsBowEquipped, 1, AggregateType.AddRaw));
         }
     }
 
