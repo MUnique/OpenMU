@@ -11755,7 +11755,7 @@ public readonly struct PlayerShopBuyResult
     /// </summary>
     public Span<byte> ItemData
     {
-        get => this._data.Slice(8, 13).Span;
+        get => this._data.Slice(7, 13).Span;
     }
 
     /// <summary>
@@ -11918,8 +11918,8 @@ public readonly struct PlayerShopBuyResultExtended
     /// </summary>
     public byte ItemSlot
     {
-        get => this._data.Span[8];
-        set => this._data.Span[8] = value;
+        get => this._data.Span[7];
+        set => this._data.Span[7] = value;
     }
 
     /// <summary>
@@ -11927,7 +11927,7 @@ public readonly struct PlayerShopBuyResultExtended
     /// </summary>
     public Span<byte> ItemData
     {
-        get => this._data.Slice(9).Span;
+        get => this._data.Slice(8).Span;
     }
 
     /// <summary>
@@ -11949,7 +11949,7 @@ public readonly struct PlayerShopBuyResultExtended
     /// </summary>
     /// <param name="itemDataLength">The length in bytes of <see cref="ItemData"/> on which the required size depends.</param>
         
-    public static int GetRequiredSize(int itemDataLength) => itemDataLength + 9;
+    public static int GetRequiredSize(int itemDataLength) => itemDataLength + 8;
 }
 
 

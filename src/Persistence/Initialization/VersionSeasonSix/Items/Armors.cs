@@ -100,7 +100,7 @@ public class Armors : ArmorInitializerBase
         this.CreateArmor(40, 2, 2, 2, "Red Wing Helm", 50, 18, 42, 0, 26, 4, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0);
         this.CreateArmor(41, 2, 2, 2, "Ancient Helm", 68, 24, 54, 0, 52, 16, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0);
         this.CreateArmor(42, 2, 2, 2, "Black Rose Helm", 81, 32, 67, 0, 60, 20, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0);
-        this.CreateArmor(43, 2, 2, 2, "Aura Helm", 110, 43, 75, 0, 56, 20, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0);
+        this.CreateArmor(43, 2, 2, 2, "Aura Helm", 110, 43, 75, 380, 56, 20, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0);
         this.CreateArmor(44, 2, 2, 2, "Lilium Helm", 110, 50, 80, 0, 80, 50, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0);
         this.CreateArmor(45, 2, 2, 2, "Titan Helm", 111, 63, 86, 0, 222, 32, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0);
         this.CreateArmor(46, 2, 2, 2, "Brave Helm", 107, 51, 86, 0, 74, 162, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0);
@@ -111,7 +111,7 @@ public class Armors : ArmorInitializerBase
         this.CreateArmor(59, 2, 2, 2, "Sacred Helm", 54, 24, 52, 1, 85, 0, 0, 75, 0, 0, 0, 0, 0, 0, 0, 1);
         this.CreateArmor(60, 2, 2, 2, "Storm Hard Helm", 70, 32, 68, 1, 100, 0, 0, 90, 0, 0, 0, 0, 0, 0, 0, 1);
         this.CreateArmor(61, 2, 2, 2, "Piercing Helm", 90, 45, 82, 1, 115, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 1);
-        this.CreateArmor(73, 2, 2, 2, "Phoenix Soul Helmet", 128, 60, 88, 0, 97, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
+        this.CreateArmor(73, 2, 2, 2, "Phoenix Soul Helmet", 128, 60, 88, 380, 97, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
 
         // Armors:
         this.CreateArmor(0, 3, 2, 2, "Bronze Armor", 18, 14, 34, 0, 80, 20, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0);
@@ -157,7 +157,7 @@ public class Armors : ArmorInitializerBase
         this.CreateArmor(40, 3, 2, 2, "Red Wing Armor", 56, 28, 42, 0, 35, 8, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0);
         this.CreateArmor(41, 3, 2, 2, "Ancient Armor", 75, 35, 54, 0, 52, 16, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0);
         this.CreateArmor(42, 3, 2, 2, "Black Rose Armor", 91, 45, 67, 0, 60, 20, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0);
-        this.CreateArmor(43, 3, 2, 2, "Aura Armor", 122, 56, 75, 0, 57, 19, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0);
+        this.CreateArmor(43, 3, 2, 2, "Aura Armor", 122, 56, 75, 380, 57, 19, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0);
         this.CreateArmor(44, 3, 2, 2, "Lilium Armor", 113, 71, 84, 0, 110, 50, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0);
         this.CreateArmor(45, 3, 2, 3, "Titan Armor", 132, 81, 86, 0, 222, 32, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0);
         this.CreateArmor(46, 3, 2, 3, "Brave Armor", 128, 62, 86, 0, 74, 162, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0);
@@ -170,7 +170,7 @@ public class Armors : ArmorInitializerBase
         this.CreateArmor(59, 3, 2, 3, "Sacred Armor", 66, 43, 52, 1, 85, 0, 0, 75, 0, 0, 0, 0, 0, 0, 0, 1);
         this.CreateArmor(60, 3, 2, 3, "Storm Hard Armor", 82, 51, 68, 1, 100, 0, 0, 90, 0, 0, 0, 0, 0, 0, 0, 1);
         this.CreateArmor(61, 3, 2, 3, "Piercing Armor", 101, 59, 82, 1, 115, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 1);
-        this.CreateArmor(73, 3, 2, 3, "Phoenix Soul Armor", 143, 78, 88, 0, 97, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
+        this.CreateArmor(73, 3, 2, 3, "Phoenix Soul Armor", 143, 78, 88, 380, 97, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
 
         // Pants:
         this.CreateArmor(0, 4, 2, 2, "Bronze Pants", 15, 10, 34, 0, 80, 20, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0);
@@ -216,7 +216,7 @@ public class Armors : ArmorInitializerBase
         this.CreateArmor(40, 4, 2, 2, "Red Wing Pants", 53, 22, 42, 0, 35, 7, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0);
         this.CreateArmor(41, 4, 2, 2, "Ancient Pants", 72, 28, 54, 0, 49, 16, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0);
         this.CreateArmor(42, 4, 2, 2, "Black Rose Pants", 86, 37, 67, 0, 60, 20, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0);
-        this.CreateArmor(43, 4, 2, 2, "Aura Pants", 117, 49, 75, 0, 57, 19, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0);
+        this.CreateArmor(43, 4, 2, 2, "Aura Pants", 117, 49, 75, 380, 57, 19, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0);
         this.CreateArmor(44, 4, 2, 2, "Lilium Pants", 102, 52, 82, 0, 75, 30, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0);
         this.CreateArmor(45, 4, 2, 2, "Titan Pants", 116, 74, 86, 0, 222, 32, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0);
         this.CreateArmor(46, 4, 2, 2, "Brave Pants", 112, 58, 86, 0, 74, 162, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0);
@@ -229,7 +229,7 @@ public class Armors : ArmorInitializerBase
         this.CreateArmor(59, 4, 2, 2, "Sacred Pants", 62, 33, 52, 1, 85, 0, 0, 75, 0, 0, 0, 0, 0, 0, 0, 1);
         this.CreateArmor(60, 4, 2, 2, "Storm Hard Pants", 78, 41, 68, 1, 100, 0, 0, 90, 0, 0, 0, 0, 0, 0, 0, 1);
         this.CreateArmor(61, 4, 2, 2, "Piercing Pants", 95, 49, 82, 1, 115, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 1);
-        this.CreateArmor(73, 4, 2, 2, "Phoenix Soul Pants", 134, 68, 88, 0, 97, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
+        this.CreateArmor(73, 4, 2, 2, "Phoenix Soul Pants", 134, 68, 88, 380, 97, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
 
         // Gloves:
         this.CreateGloves(0, "Bronze Gloves", 13, 4, 4, 34, 0, 80, 20, 0, 1, 0, 1, 1, 0);
@@ -275,7 +275,7 @@ public class Armors : ArmorInitializerBase
         this.CreateGloves(40, "Red Wing Gloves", 44, 13, 8, 42, 0, 18, 4, 0, 0, 0, 0, 0, 1);
         this.CreateGloves(41, "Ancient Gloves", 61, 19, 7, 54, 0, 52, 16, 0, 0, 0, 0, 0, 1);
         this.CreateGloves(42, "Black Rose Gloves", 70, 26, 6, 67, 0, 50, 10, 0, 0, 0, 0, 0, 2);
-        this.CreateGloves(43, "Aura Gloves", 87, 34, 6, 75, 0, 56, 20, 0, 0, 0, 0, 0, 2);
+        this.CreateGloves(43, "Aura Gloves", 87, 34, 6, 75, 380, 56, 20, 0, 0, 0, 0, 0, 2);
         this.CreateGloves(44, "Lilium Gloves", 82, 45, 6, 80, 0, 75, 20, 0, 0, 0, 0, 0, 2);
         this.CreateGloves(45, "Titan Gloves", 100, 56, 7, 86, 0, 222, 32, 0, 1, 0, 0, 0, 0);
         this.CreateGloves(46, "Brave Gloves", 97, 42, 7, 86, 0, 74, 162, 0, 1, 0, 0, 0, 0);
@@ -330,7 +330,7 @@ public class Armors : ArmorInitializerBase
         this.CreateBoots(40, "Red Wing Boots", 46, 15, 0, 42, 0, 25, 4, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0);
         this.CreateBoots(41, "Ancient Boots", 65, 21, 0, 54, 0, 53, 16, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0);
         this.CreateBoots(42, "Black Rose Boots", 76, 28, 0, 67, 0, 60, 10, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0);
-        this.CreateBoots(43, "Aura Boots", 95, 38, 0, 75, 0, 57, 20, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0);
+        this.CreateBoots(43, "Aura Boots", 95, 38, 0, 75, 380, 57, 20, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0);
         this.CreateBoots(44, "Lilium Boots", 90, 50, 0, 85, 0, 150, 30, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0);
         this.CreateBoots(45, "Titan Boots", 96, 57, 0, 86, 0, 222, 32, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0);
         this.CreateBoots(46, "Brave Boots", 93, 45, 0, 86, 0, 74, 162, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0);
@@ -343,7 +343,7 @@ public class Armors : ArmorInitializerBase
         this.CreateBoots(59, "Sacred Boots", 50, 20, 0, 52, 1, 85, 0, 0, 75, 0, 0, 0, 0, 0, 0, 0, 1);
         this.CreateBoots(60, "Storm Hard Boots", 62, 28, 0, 68, 1, 100, 0, 0, 90, 0, 0, 0, 0, 0, 0, 0, 1);
         this.CreateBoots(61, "Piercing Boots", 82, 36, 0, 82, 1, 115, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 1);
-        this.CreateBoots(73, "Phoenix Soul Boots", 119, 57, 0, 88, 0, 97, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
+        this.CreateBoots(73, "Phoenix Soul Boots", 119, 57, 0, 88, 380, 97, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
 
         this.BuildSets();
         this.AddGuardianOptionsToSets();
@@ -361,6 +361,18 @@ public class Armors : ArmorInitializerBase
             this.AddGuardianOptionForArmor(i, ItemGroups.Boots);
             this.AddGuardianOptionForArmor(i, ItemGroups.Gloves);
         }
+
+        const int auraSetIndex = 43;
+        this.AddGuardianOptionForArmor(auraSetIndex, ItemGroups.Armor);
+        this.AddGuardianOptionForArmor(auraSetIndex, ItemGroups.Pants);
+        this.AddGuardianOptionForArmor(auraSetIndex, ItemGroups.Helm);
+        this.AddGuardianOptionForArmor(auraSetIndex, ItemGroups.Boots);
+        this.AddGuardianOptionForArmor(auraSetIndex, ItemGroups.Gloves);
+        const int phoenixSoulSetIndex = 73;
+        this.AddGuardianOptionForArmor(phoenixSoulSetIndex, ItemGroups.Armor);
+        this.AddGuardianOptionForArmor(phoenixSoulSetIndex, ItemGroups.Pants);
+        this.AddGuardianOptionForArmor(phoenixSoulSetIndex, ItemGroups.Helm);
+        this.AddGuardianOptionForArmor(phoenixSoulSetIndex, ItemGroups.Boots);
     }
 
     private void AddGuardianOptionForArmor(int setNumber, ItemGroups itemGroup)

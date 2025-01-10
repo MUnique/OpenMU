@@ -125,6 +125,11 @@ public static class ItemSerializerHelper
     /// <param name="item">The item.</param>
     public static void SetSocketBytes(Span<byte> target, Item item)
     {
+        for (int i = 0; i < target.Length; i++)
+        {
+            target[i] = i < item.SocketCount ? GetSocketByte(i) : NoSocket;
+        }
+
         byte GetSocketByte(int socketSlot)
         {
             var optionLink = item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.SocketOption && o.Index == socketSlot);
@@ -139,11 +144,6 @@ public static class ItemSerializerHelper
             var optionIndex = SocketOptionIndexOffsets[elementType] + elementOption;
 
             return (byte)((sphereLevel * MaximumSocketOptions) + optionIndex);
-        }
-
-        for (int i = 0; i < MaximumSockets; i++)
-        {
-            target[i] = i < item.SocketCount ? GetSocketByte(i) : NoSocket;
         }
     }
 
@@ -195,7 +195,7 @@ public static class ItemSerializerHelper
 
             var sphereLevel = socketByte / MaximumSocketOptions;
             var optionIndex = socketByte % MaximumSocketOptions;
-            var indexOffset = SocketOptionIndexOffsets.First(offset => offset <= optionIndex);
+            var indexOffset = SocketOptionIndexOffsets.Last(offset => offset <= optionIndex);
             var elementType = Array.IndexOf(SocketOptionIndexOffsets, indexOffset);
             var optionNumber = optionIndex - indexOffset;
 
@@ -224,7 +224,7 @@ public static class ItemSerializerHelper
     /// <param name="item">The item.</param>
     public static void ReadSocketBonus(byte socketBonusByte, IContext persistenceContext, Item item)
     {
-        if (socketBonusByte == 0 || socketBonusByte == 0xFF)
+        if (socketBonusByte == 0 || socketBonusByte == 0xFF || socketBonusByte == 0xF)
         {
             return;
         }

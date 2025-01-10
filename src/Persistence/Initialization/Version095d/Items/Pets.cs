@@ -82,13 +82,13 @@ public class Pets : InitializerBase
         this.GameConfiguration.ItemOptions.Add(dinoOptionDefinition);
 
         dinoOptionDefinition.Name = "Dinorant Options";
-        dinoOptionDefinition.AddChance = 0.1f;
+        dinoOptionDefinition.AddChance = 0.3f;
         dinoOptionDefinition.AddsRandomly = true;
-        dinoOptionDefinition.MaximumOptionsPerItem = 1;
+        dinoOptionDefinition.MaximumOptionsPerItem = 1;     // There is second rollout for an additional bonus option to the first
 
-        dinoOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.Excellent, 1, Stats.DamageReceiveDecrement, 0.95f, AggregateType.Multiplicate));
-        dinoOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.Excellent, 2, Stats.MaximumAbility, 50f, AggregateType.AddFinal));
-        dinoOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.Excellent, 4, Stats.AttackSpeed, 5f, AggregateType.AddFinal));
+        dinoOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.Option, 4, Stats.DamageReceiveDecrement, 0.95f, AggregateType.Multiplicate));
+        dinoOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.Option, 4, Stats.MaximumAbility, 50f, AggregateType.AddFinal));
+        dinoOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.Option, 4, Stats.AttackSpeed, 5f, AggregateType.AddFinal));
 
         dinorant.PossibleItemOptions.Add(dinoOptionDefinition);
     }

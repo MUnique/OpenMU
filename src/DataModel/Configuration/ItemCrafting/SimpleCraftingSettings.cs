@@ -23,6 +23,12 @@ public partial class SimpleCraftingSettings
     public int MoneyPerFinalSuccessPercentage { get; set; }
 
     /// <summary>
+    /// Gets or sets the NPC price divisor for the sum of crafting items' prices. For each full division, the percentage gets increased by 1 percent, and the mix price rises.
+    /// </summary>
+    /// <remarks>Used for Chaos Weapon and 1st Level Wing craftings.</remarks>
+    public int NpcPriceDivisor { get; set; }
+
+    /// <summary>
     /// Gets or sets the success percent.
     /// </summary>
     public byte SuccessPercent { get; set; }
@@ -68,6 +74,11 @@ public partial class SimpleCraftingSettings
     /// Gets or sets the success percentage addition for an ancient item which gets modified.
     /// </summary>
     public int SuccessPercentageAdditionForAncientItem { get; set; }
+
+    /// <summary>
+    /// Gets or sets the success percentage addition for a "380 item" which gets modified.
+    /// </summary>
+    public int SuccessPercentageAdditionForGuardianItem { get; set; }
 
     /// <summary>
     /// Gets or sets the success percentage addition for a socket item which gets modified.

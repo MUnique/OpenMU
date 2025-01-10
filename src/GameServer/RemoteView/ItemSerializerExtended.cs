@@ -26,24 +26,6 @@ using static ItemSerializerHelper;
 [MinimumClient(106, 3, ClientLanguage.Invariant)]
 public class ItemSerializerExtended : IItemSerializer
 {
-    private const byte EmptySocket = 0xFE;
-    private const byte BlackFenrirFlag = 0x01;
-    private const byte BlueFenrirFlag = 0x02;
-    private const byte GoldFenrirFlag = 0x04;
-    private const byte MaximumSocketOptions = 50;
-
-    /// <summary>
-    /// The socket seed index offsets, where the key is the numerical value of a <see cref="SocketSubOptionType"/>
-    /// and the value is the first index of this corresponding elemental seed.
-    /// </summary>
-    /// <remarks>
-    /// Webzen decided to put every possible socket option of each elemental seed type into one big list,
-    /// which may contain up to <see cref="MaximumSocketOptions"/> elements.
-    /// I couldn't figure out a pattern, but found these index offsets by trial and error.
-    /// Their list contains holes, so expect that index 9 doesn't define an option.
-    /// </remarks>
-    private static readonly byte[] SocketOptionIndexOffsets = { 0, 10, 16, 21, 29, 36 };
-
     [Flags]
     private enum OptionFlags : byte
     {
@@ -172,59 +154,6 @@ public class ItemSerializerExtended : IItemSerializer
         }
 
         return item;
-    }
-
-    private static byte GetHarmonyByte(Item item)
-    {
-        byte result = 0;
-        var harmonyOption = item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.HarmonyOption);
-        if (harmonyOption?.ItemOption is not null)
-        {
-            result = (byte)(harmonyOption.ItemOption.Number << 4);
-            result |= (byte)harmonyOption.Level;
-        }
-
-        return result;
-    }
-
-    private static byte GetSocketBonusByte(Item item)
-    {
-        if (item.SocketCount == 0)
-        {
-            return 0;
-        }
-
-        var bonusOption = item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.SocketBonusOption);
-        if (bonusOption?.ItemOption != null)
-        {
-            return (byte)bonusOption.ItemOption.Number;
-        }
-
-        return 0xFF;
-    }
-
-    private static void SetSocketBytes(Span<byte> target, Item item)
-    {
-        for (int i = 0; i < item.SocketCount; i++)
-        {
-            target[i] = GetSocketByte(i);
-        }
-
-        byte GetSocketByte(int socketSlot)
-        {
-            var optionLink = item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.SocketOption && o.Index == socketSlot);
-            if (optionLink is null)
-            {
-                return EmptySocket;
-            }
-
-            var sphereLevel = optionLink.Level;
-            var elementType = optionLink.ItemOption!.SubOptionType;
-            var elementOption = optionLink.ItemOption.Number;
-            var optionIndex = SocketOptionIndexOffsets[elementType] + elementOption;
-
-            return (byte)((sphereLevel * MaximumSocketOptions) + optionIndex);
-        }
     }
 
     private OptionFlags GetOptionFlags(Item item)

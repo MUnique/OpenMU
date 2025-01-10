@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic;
 
+using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.PlugIns;
 using Nito.AsyncEx;
 
@@ -163,6 +164,13 @@ public interface IStorage
     /// <param name="inventorySlot">The inventory slot.</param>
     /// <returns>The item from the specified slot.</returns>
     Item? GetItem(byte inventorySlot);
+
+    /// <summary>
+    /// Finds items that matches the given definition.
+    /// </summary>
+    /// <param name="definition">The item definition to be searched.</param>
+    /// <returns>The items with the same definition.</returns>
+    IEnumerable<Item> FindItemsByDefinition(ItemDefinition definition);
 
     /// <summary>
     /// Removes the item from this storage.

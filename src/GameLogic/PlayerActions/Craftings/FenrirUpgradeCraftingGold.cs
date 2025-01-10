@@ -31,33 +31,36 @@ public class FenrirUpgradeCraftingGold : BaseItemCraftingHandler
         items = new List<CraftingRequiredItemLink>(4);
         var inputItems = player.TemporaryStorage!.Items.ToList();
         var itemsLevelAndOption4gold = inputItems
-                    .Where(item => item.Level >= 11
-                                   && item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.Option)
-                           && item.ItemOptions.Any(e => e.ItemOption?.OptionType == ItemOptionTypes.Excellent))
-                    .ToList();
+            .Where(item => item.Level >= 11
+                && item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.Option)
+                && item.IsExcellent())
+            .ToList();
         var itemsLevelAndOption4 = inputItems
-                    .Where(item => (item.Level >= 11 && !item.ItemOptions.Any(e => e.ItemOption?.OptionType == ItemOptionTypes.Excellent)
-                                   && item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.Option))
-                                   || (item.Level >= 4 && item.Level <= 10 && item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.Option)))
-                    .ToList();
+            .Where(item => (item.Level >= 11
+                    && item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.Option)
+                    && !item.IsExcellent())
+                || (item.Level >= 4
+                    && item.Level <= 10
+                    && item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.Option)))
+            .ToList();
         var randomWeapons = itemsLevelAndOption4
             .Where(item => item.IsWearable()
-                           && item.Definition!.BasePowerUpAttributes.Any(a =>
-                               a.TargetAttribute == Stats.MaximumPhysBaseDmgByWeapon))
+                && item.Definition!.BasePowerUpAttributes.Any(a => a.TargetAttribute == Stats.AttackSpeedByWeapon))
             .ToList();
 
         var randomArmors = itemsLevelAndOption4
-           .Where(item => item.IsWearable() && item.Definition!.BasePowerUpAttributes.Any(a => a.TargetAttribute == Stats.DefenseBase))
+           .Where(item => item.IsWearable()
+                && item.Definition!.BasePowerUpAttributes.Any(a => a.TargetAttribute == Stats.DefenseBase))
            .ToList();
 
         var randomWeaponsGold = itemsLevelAndOption4gold
             .Where(item => item.IsWearable()
-                           && item.Definition!.BasePowerUpAttributes.Any(a =>
-                               a.TargetAttribute == Stats.MaximumPhysBaseDmgByWeapon))
+                && item.Definition!.BasePowerUpAttributes.Any(a => a.TargetAttribute == Stats.AttackSpeedByWeapon))
             .ToList();
 
         var randomArmorsGold = itemsLevelAndOption4gold
-            .Where(item => item.IsWearable() && item.Definition!.BasePowerUpAttributes.Any(a => a.TargetAttribute == Stats.DefenseBase))
+            .Where(item => item.IsWearable()
+                && item.Definition!.BasePowerUpAttributes.Any(a => a.TargetAttribute == Stats.DefenseBase))
             .ToList();
 
         if (randomArmors.Any() && randomWeapons.Any())
@@ -131,34 +134,35 @@ public class FenrirUpgradeCraftingGold : BaseItemCraftingHandler
         if (randomWeapons.Any())
         {
             items.Add(new CraftingRequiredItemLink(randomWeapons, new TransientItemCraftingRequiredItem { MinimumAmount = 1, MaximumAmount = 1, Reference = 2 }));
-            successRateByItems = (byte)Math.Min(79, randomWeapons.Sum(this._priceCalculator.CalculateBuyingPrice) * 100 / 1_000_000);
+            successRateByItems = (byte)Math.Min(79, randomWeapons.Sum(this._priceCalculator.CalculateSellingPrice) * 100 / 1_000_000);
         }
 
         if (randomArmors.Any())
         {
             items.Add(new CraftingRequiredItemLink(randomArmors, new TransientItemCraftingRequiredItem { MinimumAmount = 1, MaximumAmount = 1, Reference = 3 }));
-            successRateByItems = (byte)Math.Min(79, randomArmors.Sum(this._priceCalculator.CalculateBuyingPrice) * 100 / 1_000_000);
+            successRateByItems = (byte)Math.Min(79, randomArmors.Sum(this._priceCalculator.CalculateSellingPrice) * 100 / 1_000_000);
         }
 
         if (randomWeaponsGold.Any())
         {
             items.Add(new CraftingRequiredItemLink(randomWeaponsGold, new TransientItemCraftingRequiredItem { MinimumAmount = 1, MaximumAmount = 1, Reference = 4 }));
-            successRateByItems = (byte)Math.Min(79, randomWeaponsGold.Sum(this._priceCalculator.CalculateBuyingPrice) * 100 / 1_000_000);
+            successRateByItems = (byte)Math.Min(79, randomWeaponsGold.Sum(this._priceCalculator.CalculateSellingPrice) * 100 / 1_000_000);
         }
 
         if (randomArmorsGold.Any())
         {
             items.Add(new CraftingRequiredItemLink(randomArmorsGold, new TransientItemCraftingRequiredItem { MinimumAmount = 1, MaximumAmount = 1, Reference = 4 }));
-            successRateByItems = (byte)Math.Min(79, randomArmorsGold.Sum(this._priceCalculator.CalculateBuyingPrice) * 100 / 1_000_000);
+            successRateByItems = (byte)Math.Min(79, randomArmorsGold.Sum(this._priceCalculator.CalculateSellingPrice) * 100 / 1_000_000);
         }
 
         return null;
     }
 
     /// <inheritdoc/>
-    protected override async ValueTask<List<Item>> CreateOrModifyResultItemsAsync(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketIndex)
+    protected override async ValueTask<List<Item>> CreateOrModifyResultItemsAsync(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketIndex, byte successRate)
     {
         var fenrir = requiredItems.First(i => i.ItemRequirement.Reference == 1).Items.First();
+        fenrir.Durability = 255;
 
         IEnumerable<IncreasableItemOption> fenrirOptions;
         if (requiredItems.Any(i => i.ItemRequirement.Reference == 2))

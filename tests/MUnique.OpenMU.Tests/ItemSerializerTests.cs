@@ -174,6 +174,68 @@ public class ItemSerializerTests<T>
         }
     }
 
+    /// <summary>
+    /// Tests if socket items are correctly (de)serialized.
+    /// </summary>
+    [Test]
+    public void Sockets()
+    {
+        var tuple = this.SerializeAndDeserializeBraveHelm();
+        var item = tuple.Item1;
+        var deserializedItem = tuple.Item2;
+        Assert.That(deserializedItem.ItemOptions.Count, Is.EqualTo(item.ItemOptions.Count));
+        foreach (var optionLink in item.ItemOptions)
+        {
+            var deserializedOptionLink = deserializedItem.ItemOptions
+                .FirstOrDefault(link => link.Level == optionLink.Level
+                                        && link.ItemOption!.OptionType == optionLink.ItemOption!.OptionType
+                                        && link.ItemOption.Number == optionLink.ItemOption.Number);
+            Assert.That(deserializedOptionLink, Is.Not.Null, () => $"Option Link not found: {optionLink.ItemOption!.OptionType!.Name}, {optionLink.ItemOption.PowerUpDefinition}, Level: {optionLink.Level}");
+        }
+
+        Assert.That(deserializedItem.SocketCount, Is.EqualTo(item.SocketCount));
+    }
+
+    private Tuple<Item, Item> SerializeAndDeserializeBraveHelm()
+    {
+        using var context = this._contextProvider.CreateNewContext(this._gameConfiguration);
+        var item = context.CreateNew<Item>();
+        item.Definition = this._gameConfiguration.Items.First(i => i.Group == 7 && i.Number == 46);
+        item.Level = 3;
+        item.Durability = 100;
+        item.SocketCount = 2;
+
+        var option = context.CreateNew<ItemOptionLink>();
+        option.ItemOption = item.Definition.PossibleItemOptions.SelectMany(def =>
+            def.PossibleOptions.Where(p => p.OptionType == ItemOptionTypes.Option)).First();
+        option.Level = 4;
+        item.ItemOptions.Add(option);
+
+
+        for (var i = 0; i < item.SocketCount; i++)
+        {
+            var socketOption = context.CreateNew<ItemOptionLink>();
+            socketOption.ItemOption = item.Definition.PossibleItemOptions
+                .SelectMany(o => o.PossibleOptions)
+                .Where(o => o.OptionType == ItemOptionTypes.SocketOption)
+                .Skip(i)
+                .First();
+            socketOption.Index = i;
+            socketOption.Level = 1;
+            item.ItemOptions.Add(socketOption);
+        }
+
+        var bonusOption = context.CreateNew<ItemOptionLink>();
+        bonusOption.ItemOption = item.Definition.PossibleItemOptions.SelectMany(o => o.PossibleOptions).First(o => o.OptionType == ItemOptionTypes.SocketBonusOption);
+        item.ItemOptions.Add(bonusOption);
+
+        var array = new byte[this._itemSerializer.NeededSpace];
+        this._itemSerializer.SerializeItem(array, item);
+
+        var deserializedItem = this._itemSerializer.DeserializeItem(array, this._gameConfiguration, context);
+        return new Tuple<Item, Item>(item, deserializedItem);
+    }
+
     private Tuple<Item, Item> SerializeAndDeserializeHyonLightingSword()
     {
         using var context = this._contextProvider.CreateNewContext(this._gameConfiguration);

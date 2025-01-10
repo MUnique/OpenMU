@@ -20,12 +20,12 @@ public enum MixResult
     StaysAsIs = 1,
 
     /// <summary>
-    /// The item will be downgraded to level 0.
+    /// The item will be downgraded to a random level, may lose its skill, and its item option may be reduced by 1 level.
     /// </summary>
-    DowngradedTo0 = 3,
+    ChaosWeaponAndFirstWingsDowngradedRandom = 2,
 
     /// <summary>
-    /// The item will be downgraded to a random level.
+    /// The item will be downgraded 2 or 3 levels and its item option will be removed.
     /// </summary>
-    DowngradedRandom = 4,
+    ThirdWingsDowngradedRandom = 3,
 }

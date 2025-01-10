@@ -17,6 +17,7 @@ using MUnique.OpenMU.Persistence.Initialization.Skills;
 /// <summary>
 /// Initializer for pets.
 /// </summary>
+/// <remarks>Pet system changed in Season 9. Reference: https://muonline.webzen.com/en/gameinfo/guide/detail/76 .</remarks>
 public class Pets : InitializerBase
 {
     private const string PetExperienceFormula = "level * level * level * 100 * (level + 10)";
@@ -45,7 +46,7 @@ public class Pets : InitializerBase
         darkHorse.PetExperienceFormula = PetExperienceFormula;
         darkHorse.MaximumItemLevel = 50;
 
-        var darkRaven = this.CreatePet(5, 0, 1, 1, "Dark Raven", 218, false, false);
+        var darkRaven = this.CreatePet(5, 0, 1, 1, "Dark Raven", 0, false, false);
         darkRaven.ItemSlot = this.GameConfiguration.ItemSlotTypes.First(st => st.ItemSlots.Contains(1));
         darkRaven.PetExperienceFormula = PetExperienceFormula;
         darkRaven.MaximumItemLevel = 50;
@@ -146,11 +147,12 @@ public class Pets : InitializerBase
         spirit.Width = 1;
         spirit.Height = 1;
         spirit.Durability = 1;
+        spirit.MaximumItemLevel = 1;
         spirit.SetGuid(spirit.Group, spirit.Number);
         this.GameConfiguration.Items.Add(spirit);
 
         var horseDrop = this.Context.CreateNew<DropItemGroup>();
-        horseDrop.SetGuid(NumberConversionExtensions.MakeWord(13, 31).ToSigned(), 0);
+        horseDrop.SetGuid(NumberConversionExtensions.MakeWord(13, 31).ToSigned(), 0, 1);
         horseDrop.ItemLevel = 0;
         horseDrop.Chance = 0.001;
         horseDrop.Description = "Dark Horse Spirit";
@@ -160,7 +162,7 @@ public class Pets : InitializerBase
         BaseMapInitializer.RegisterDefaultDropItemGroup(horseDrop);
 
         var ravenDrop = this.Context.CreateNew<DropItemGroup>();
-        horseDrop.SetGuid(NumberConversionExtensions.MakeWord(13, 31).ToSigned(), 1);
+        ravenDrop.SetGuid(NumberConversionExtensions.MakeWord(13, 31).ToSigned(), 1, 1);
         ravenDrop.ItemLevel = 1;
         ravenDrop.Chance = 0.001;
         ravenDrop.Description = "Dark Raven Spirit";
@@ -218,13 +220,13 @@ public class Pets : InitializerBase
         this.GameConfiguration.ItemOptions.Add(dinoOptionDefinition);
 
         dinoOptionDefinition.Name = "Dinorant Options";
-        dinoOptionDefinition.AddChance = 0.1f;
+        dinoOptionDefinition.AddChance = 0.3f;
         dinoOptionDefinition.AddsRandomly = true;
-        dinoOptionDefinition.MaximumOptionsPerItem = 1;
+        dinoOptionDefinition.MaximumOptionsPerItem = 1;     // There is second rollout for an additional bonus option to the first
 
-        dinoOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.Excellent, 1, Stats.DamageReceiveDecrement, 0.95f, AggregateType.Multiplicate, ItemOptionDefinitionNumbers.Dino));
-        dinoOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.Excellent, 2, Stats.MaximumAbility, 50f, AggregateType.AddFinal, ItemOptionDefinitionNumbers.Dino));
-        dinoOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.Excellent, 4, Stats.AttackSpeed, 5f, AggregateType.AddFinal, ItemOptionDefinitionNumbers.Dino));
+        dinoOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.Option, 4, Stats.DamageReceiveDecrement, 0.95f, AggregateType.Multiplicate, ItemOptionDefinitionNumbers.Dino));  // Level 1
+        dinoOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.Option, 4, Stats.MaximumAbility, 50f, AggregateType.AddFinal, ItemOptionDefinitionNumbers.Dino));    // Level 2
+        dinoOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.Option, 4, Stats.AttackSpeed, 5f, AggregateType.AddFinal, ItemOptionDefinitionNumbers.Dino));    // Level 4
 
         dinorant.PossibleItemOptions.Add(dinoOptionDefinition);
     }
@@ -245,7 +247,7 @@ public class Pets : InitializerBase
         fenrirOptionDefinition.Name = "Fenrir Options";
 
         fenrirOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.BlackFenrir, 1, Stats.AttackDamageIncrease, 1.1f, AggregateType.Multiplicate, ItemOptionDefinitionNumbers.Fenrir));
-        fenrirOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.BlueFenrir, 2, Stats.DamageReceiveDecrement, 0.95f, AggregateType.Multiplicate, ItemOptionDefinitionNumbers.Fenrir));
+        fenrirOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.BlueFenrir, 2, Stats.DamageReceiveDecrement, 0.90f, AggregateType.Multiplicate, ItemOptionDefinitionNumbers.Fenrir));
 
         fenrirOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.GoldFenrir, 4, Stats.MaximumHealth, 200f, AggregateType.AddFinal, ItemOptionDefinitionNumbers.Fenrir));
         fenrirOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.GoldFenrir, 4, Stats.MaximumMana, 200f, AggregateType.AddFinal, ItemOptionDefinitionNumbers.Fenrir));
