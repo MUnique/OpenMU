@@ -3017,9 +3017,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<byte>("MaximumSuccessPercent")
                         .HasColumnType("smallint");
 
-                    b.Property<byte>("MinimumSuccessPercent")
-                        .HasColumnType("smallint");
-
                     b.Property<int>("Money")
                         .HasColumnType("integer");
 
