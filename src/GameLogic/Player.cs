@@ -143,6 +143,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// </summary>
     public bool IsInvisible => this.Attributes?[Stats.IsInvisible] > 0;
 
+    /// <inheritdoc />
+    public bool IsTemplatePlayer => this.Account?.IsTemplate is true;
+
     /// <summary>
     /// Gets the skill hit validator.
     /// </summary>
@@ -1651,12 +1654,27 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         try
         {
-            await this.PersistenceContext.SaveChangesAsync().ConfigureAwait(false);
+            await this.SaveProgressAsync().ConfigureAwait(false);
         }
         catch (Exception ex)
         {
             this.Logger.LogError(ex, "Couldn't save when leaving the game. Player: {player}", this);
         }
+    }
+
+    /// <summary>
+    /// Saves the progress of the player.
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>Success of the save operation.</returns>
+    public async ValueTask<bool> SaveProgressAsync(CancellationToken cancellationToken = default)
+    {
+        if (!this.IsTemplatePlayer)
+        {
+            return await this.PersistenceContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        return true;
     }
 
     /// <inheritdoc />
