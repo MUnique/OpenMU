@@ -12,7 +12,7 @@ using MUnique.OpenMU.GameLogic.Views.Login;
 /// </summary>
 public class LoginAction
 {
-    private static int templateCounter = 0;
+    private static int _templateCounter = 0;
 
     /// <summary>
     /// Logins the specified player.
@@ -64,7 +64,7 @@ public class LoginAction
                     {
                         foreach (var character in account.Characters)
                         {
-                            var counter = Interlocked.Increment(ref templateCounter);
+                            var counter = Interlocked.Increment(ref _templateCounter);
                             character.Name = $"_{counter}";
                         }
                     }
