@@ -2106,33 +2106,33 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     private async ValueTask OnPlayerEnteredWorldAsync()
     {
-        if (this.SelectedCharacter is null)
+        if (this.SelectedCharacter is not { } selectedCharacter)
         {
             throw new InvalidOperationException($"The player has no selected character.");
         }
 
-        if (this.SelectedCharacter?.CharacterClass is null)
+        if (selectedCharacter.CharacterClass is null)
         {
-            throw new InvalidOperationException($"The character '{this.SelectedCharacter}' has no assigned character class.");
+            throw new InvalidOperationException($"The character '{selectedCharacter}' has no assigned character class.");
         }
 
         // For characters which got created on the database or with the admin panel,
         // it's possible that they're missing the inventory. In this case, we create it here
         // and initialize with default items.
-        if (this.SelectedCharacter!.Inventory is null)
+        if (selectedCharacter!.Inventory is null)
         {
-            this.SelectedCharacter.Inventory = this.PersistenceContext.CreateNew<ItemStorage>();
-            this.GameContext.PlugInManager.GetPlugInPoint<ICharacterCreatedPlugIn>()?.CharacterCreated(this, this.SelectedCharacter);
+            selectedCharacter.Inventory = this.PersistenceContext.CreateNew<ItemStorage>();
+            this.GameContext.PlugInManager.GetPlugInPoint<ICharacterCreatedPlugIn>()?.CharacterCreated(this, selectedCharacter);
         }
 
-        this.SelectedCharacter.CurrentMap ??= this.SelectedCharacter.CharacterClass?.HomeMap;
+        selectedCharacter.CurrentMap ??= selectedCharacter.CharacterClass?.HomeMap;
         this.AddMissingStatAttributes();
 
-        this.Attributes = new ItemAwareAttributeSystem(this.Account!, this.SelectedCharacter!);
+        this.Attributes = new ItemAwareAttributeSystem(this.Account!, selectedCharacter);
         this.LogInvalidInventoryItems();
 
         this.Inventory = new InventoryStorage(this, this.GameContext);
-        this.ShopStorage = new ShopStorage(this);
+        this.ShopStorage = new ShopStorage(selectedCharacter);
         this.TemporaryStorage = new Storage(InventoryConstants.TemporaryStorageSize, new TemporaryItemStorage());
         this.Vault = null; // vault storage is getting set when vault npc is opened.
         this.SkillList = new SkillList(this);
@@ -2161,13 +2161,13 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         await this.InvokeViewPlugInAsync<IUpdateRotationPlugIn>(p => p.UpdateRotationAsync()).ConfigureAwait(false);
         await this.ResetPetBehaviorAsync().ConfigureAwait(false);
 
-        if (this.SelectedCharacter?.MuHelperConfiguration is { } muHelperConfiguration)
+        if (selectedCharacter.MuHelperConfiguration is { } muHelperConfiguration)
         {
             await this.InvokeViewPlugInAsync<IMuHelperConfigurationUpdatePlugIn>(p => p.UpdateMuHelperConfigurationAsync(muHelperConfiguration)).ConfigureAwait(false);
         }
 
         // Add GM mark (mu logo above character's head)
-        if (this.SelectedCharacter?.CharacterStatus == CharacterStatus.GameMaster)
+        if (selectedCharacter.CharacterStatus == CharacterStatus.GameMaster)
         {
             await this.MagicEffectList.AddEffectAsync(new MagicEffect(
             TimeSpan.FromMilliseconds((double)int.MaxValue),
