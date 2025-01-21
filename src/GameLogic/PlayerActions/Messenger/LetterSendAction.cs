@@ -87,7 +87,7 @@ public class LetterSendAction
         letterBody.Message = message;
         letterBody.SenderAppearance = context.CreateNew<AppearanceData>();
         letterBody.SenderAppearance.CharacterClass = player.AppearanceData.CharacterClass;
-        player.AppearanceData.EquippedItems.Select(i => i.MakePersistent(context)).ForEach(letterBody.SenderAppearance.EquippedItems.Add);
+        player.AppearanceData.EquippedItems.Select(i => i.MakePersistent(context, player.GameContext.Configuration)).ForEach(letterBody.SenderAppearance.EquippedItems.Add);
         letterBody.Rotation = rotation;
         letterBody.Animation = animation;
         return letterHeader;
