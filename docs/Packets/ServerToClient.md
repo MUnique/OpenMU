@@ -168,6 +168,7 @@
   * [C1 C5 - LetterSendResponse (by server)](C1-C5-LetterSendResponse_by-server.md)
   * [C3 C6 - AddLetter (by server)](C3-C6-AddLetter_by-server.md)
   * [C4 C7 - OpenLetter (by server)](C4-C7-OpenLetter_by-server.md)
+  * [C4 C7 - OpenLetterExtended (by server)](C4-C7-OpenLetterExtended_by-server.md)
   * [C1 C8 - RemoveLetter (by server)](C1-C8-RemoveLetter_by-server.md)
   * [C3 CA - ChatRoomConnectionInfo (by server)](C3-CA-ChatRoomConnectionInfo_by-server.md)
   * [C3 CB - FriendInvitationResult (by server)](C3-CB-FriendInvitationResult_by-server.md)

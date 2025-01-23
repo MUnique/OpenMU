@@ -26791,6 +26791,127 @@ public readonly struct OpenLetter
 
 
 /// <summary>
+/// Is sent by the server when: After the player requested to read a letter.
+/// Causes reaction on client side: The letter is opened in a new dialog.
+/// </summary>
+public readonly struct OpenLetterExtended
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="OpenLetterExtended"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public OpenLetterExtended(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="OpenLetterExtended"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private OpenLetterExtended(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (ushort)data.Length;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC4;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xC7;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C4Header Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the letter index.
+    /// </summary>
+    public ushort LetterIndex
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[4..]);
+        set => WriteUInt16LittleEndian(this._data.Span[4..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the sender appearance.
+    /// </summary>
+    public Span<byte> SenderAppearance
+    {
+        get => this._data.Slice(6, 42).Span;
+    }
+
+    /// <summary>
+    /// Gets or sets the rotation.
+    /// </summary>
+    public byte Rotation
+    {
+        get => this._data.Span[48];
+        set => this._data.Span[48] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the animation.
+    /// </summary>
+    public byte Animation
+    {
+        get => this._data.Span[49];
+        set => this._data.Span[49] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the message.
+    /// </summary>
+    public string Message
+    {
+        get => this._data.Span.ExtractString(50, this._data.Length - 50, System.Text.Encoding.UTF8);
+        set => this._data.Slice(50).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="OpenLetterExtended"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator OpenLetterExtended(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="OpenLetterExtended"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(OpenLetterExtended packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified field content.
+    /// </summary>
+    /// <param name="content">The content of the variable 'Message' field from which the size will be calculated.</param>
+    public static int GetRequiredSize(string content) => System.Text.Encoding.UTF8.GetByteCount(content) + 1 + 50;
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified field content.
+    /// </summary>
+    /// <param name="contentLength">The content length in bytes of the variable 'Message' field from which the size will be calculated.</param>
+    public static int GetRequiredSize(int contentLength) => contentLength + 1 + 50;
+}
+
+
+/// <summary>
 /// Is sent by the server when: After a letter has been deleted by the request of the player.
 /// Causes reaction on client side: The letter is removed from the letter list.
 /// </summary>

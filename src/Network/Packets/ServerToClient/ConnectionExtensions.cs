@@ -5547,6 +5547,42 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="OpenLetterExtended" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="letterIndex">The letter index.</param>
+    /// <param name="senderAppearance">The sender appearance.</param>
+    /// <param name="rotation">The rotation.</param>
+    /// <param name="animation">The animation.</param>
+    /// <param name="message">The message.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the player requested to read a letter.
+    /// Causes reaction on client side: The letter is opened in a new dialog.
+    /// </remarks>
+    public static async ValueTask SendOpenLetterExtendedAsync(this IConnection? connection, ushort @letterIndex, Memory<byte> @senderAppearance, byte @rotation, byte @animation, string @message)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = OpenLetterExtendedRef.GetRequiredSize(message);
+            var packet = new OpenLetterExtendedRef(connection.Output.GetSpan(length)[..length]);
+            packet.LetterIndex = @letterIndex;
+            @senderAppearance.Span.CopyTo(packet.SenderAppearance);
+            packet.Rotation = @rotation;
+            packet.Animation = @animation;
+            packet.Message = @message;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="RemoveLetter" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>

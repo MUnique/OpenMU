@@ -9597,6 +9597,42 @@
       </Fields>
     </Packet>
     <Packet>
+      <HeaderType>C4Header</HeaderType>
+      <Code>C7</Code>
+      <Name>OpenLetterExtended</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the player requested to read a letter.</SentWhen>
+      <CausedReaction>The letter is opened in a new dialog.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>LetterIndex</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Binary</Type>
+          <Name>SenderAppearance</Name>
+          <Length>42</Length>
+        </Field>
+        <Field>
+          <Index>48</Index>
+          <Type>Byte</Type>
+          <Name>Rotation</Name>
+        </Field>
+        <Field>
+          <Index>49</Index>
+          <Type>Byte</Type>
+          <Name>Animation</Name>
+        </Field>
+        <Field>
+          <Index>50</Index>
+          <Type>String</Type>
+          <Name>Message</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
       <HeaderType>C1Header</HeaderType>
       <Code>C8</Code>
       <Name>RemoveLetter</Name>
