@@ -122,6 +122,11 @@ public class Stats
     public static AttributeDefinition MasterExperienceRate { get; } = new(new Guid("E367A231-C8A4-4F92-B553-C665F98DB1FC"), "Master Experience Rate", string.Empty);
 
     /// <summary>
+    /// Gets the level plus master level attribute definition.
+    /// </summary>
+    public static AttributeDefinition TotalLevel { get; } = new(new Guid("AAB627F1-9150-4B03-8C51-48E4348B4E7D"), "Total Level", "The level plus the master level of the character.");
+
+    /// <summary>
     /// Gets the reset quantity attribute definition.
     /// </summary>
     public static AttributeDefinition Resets { get; } = new(new Guid("89A891A7-F9F9-4AB5-AF36-12056E53A5F7"), "Resets", "Reset quantity of current character");
@@ -257,24 +262,40 @@ public class Stats
     public static AttributeDefinition CurseBaseDmg { get; } = new(new Guid("60868001-6A67-408C-BFDB-320670A9A682"), "Curse Base Damage (min and max)", string.Empty);
 
     /// <summary>
+    /// Gets the the minimum wizardry and curse common base DMG attribute definition.
+    /// </summary>
+    public static AttributeDefinition MinWizardryAndCurseBaseDmg { get; } = new(new Guid("7E32A2B5-54F2-4D95-9968-9DE53100D3D4"), "Minimum Wizardry And Curse Base Damage", string.Empty);
+
+    /// <summary>
+    /// Gets the the min and max wizardry and curse common base DMG attribute definition.
+    /// </summary>
+    public static AttributeDefinition WizardryAndCurseBaseDmg { get; } = new(new Guid("A4F57534-4185-450D-93B1-0CE4246FE2D3"), "Wizardry And Curse Base Damage (min and max)", string.Empty);
+
+    /// <summary>
     /// Gets the attribute definition for the base damage of the fenrir pet.
     /// </summary>
     public static AttributeDefinition FenrirBaseDmg { get; } = new(new Guid("96F47E70-5C85-4A92-B224-944A9359240E"), "Fenrir Base Damage", string.Empty);
 
     /// <summary>
-    /// Gets the base damage bonus attribute definition.
+    /// Gets the base damage (any type) bonus attribute definition.
     /// </summary>
-    public static AttributeDefinition BaseDamageBonus { get; } = new(new Guid("BB6F0151-EAB2-4A9D-BFE3-51E145F36C52"), "Base Damage Bonus", "A bonus value which gets added to all min/max damage values during the damage calculation");
+    public static AttributeDefinition BaseDamageBonus { get; } = new(new Guid("BB6F0151-EAB2-4A9D-BFE3-51E145F36C52"), "Base Damage Bonus", "A bonus value which gets added to all min/max damage values during the damage calculation.");
 
     /// <summary>
-    /// Gets the base min damage bonus attribute definition.
+    /// Gets the base min damage (any type) bonus attribute definition.
     /// </summary>
-    public static AttributeDefinition BaseMinDamageBonus { get; } = new(new Guid("ACE8CC0A-3288-491C-A49F-4B754A18BA1F"), "Base Min Damage Bonus", "A bonus value which gets added to all min damage values during the damage calculation");
+    public static AttributeDefinition BaseMinDamageBonus { get; } = new(new Guid("ACE8CC0A-3288-491C-A49F-4B754A18BA1F"), "Base Min Damage Bonus", "A bonus value which gets added to all min damage values during the damage calculation.");
 
     /// <summary>
-    /// Gets the base max damage bonus attribute definition.
+    /// Gets the base max damage (any type) bonus attribute definition.
     /// </summary>
-    public static AttributeDefinition BaseMaxDamageBonus { get; } = new(new Guid("7C9E419B-63B0-4237-B799-B80418693A61"), "Base Max Damage Bonus", "A bonus value which gets added to all max damage values during the damage calculation");
+    public static AttributeDefinition BaseMaxDamageBonus { get; } = new(new Guid("7C9E419B-63B0-4237-B799-B80418693A61"), "Base Max Damage Bonus", "A bonus value which gets added to all max damage values during the damage calculation.");
+
+    /// <summary>
+    /// Gets the final damage (any type) bonus attribute definition.
+    /// </summary>
+    /// <remarks>So far includes the ancient set option.</remarks>
+    public static AttributeDefinition FinalDamageBonus { get; } = new(new Guid("88316AEC-1D82-4103-BF09-CA6A3C0B177A"), "Late Damage Bonus", "A bonus value which gets added to the final damage value during the damage calculation.");
 
     /// <summary>
     /// Gets the skill multiplier attribute definition.
@@ -323,9 +344,40 @@ public class Stats
     public static AttributeDefinition EquippedWeaponCount { get; } = new(new Guid("15D6493F-549D-455F-9FFF-A0D589FD7DA2"), "Equipped Weapon Count", string.Empty);
 
     /// <summary>
+    /// Gets the double wield (DK, MG, DL, RF) weapon count attribute.
+    /// </summary>
+    /// <remarks>This is different from the <see cref="AreTwoWeaponsEquipped"/> attribute, where two staffs can be equipped, for example.</remarks>
+    public static AttributeDefinition DoubleWieldWeaponCount { get; } = new(new Guid("84252905-3DAD-4E38-AE4D-C18FE2A99395"), "Double Wield Weapon Count", "A double weapon wield grants a 10% increase in physical damage. Applies to DK, MG, DL, and RF.");
+
+    /// <summary>
     /// Gets the magic speed attribute definition which is used for some skills.
     /// </summary>
     public static AttributeDefinition MagicSpeed { get; } = new(new Guid("AE32AA45-9C18-43B3-9F7B-648FD7F4B0AD"), "Magic Speed", string.Empty);
+
+    /// <summary>
+    /// Gets the excellent option attack speed attribute definition which adds to <see cref="Stats.AttackSpeed"/> and <see cref="Stats.MagicSpeed"/>.
+    /// </summary>
+    public static AttributeDefinition ExcOptAttackSpeed { get; } = new(new Guid("DA08473F-DF5B-444D-8651-9EDB65797922"), "Excellent Option Attack Speed", string.Empty);
+
+    /// <summary>
+    /// Gets the excellent option wizardry damage 2% increase attribute definition>.
+    /// </summary>
+    public static AttributeDefinition ExcOptWizTwoPercentInc { get; } = new(new Guid("D9DBAA2C-BA56-4F7F-A516-8DE6354406FE"), "Excellent Option Wizardry Damage 2% Increase", string.Empty);
+
+    /// <summary>
+    /// Gets the excellent option physical damage 2% increase attribute definition>.
+    /// </summary>
+    public static AttributeDefinition ExcOptPhysTwoPercentInc { get; } = new(new Guid("104B4DAA-C507-4CBB-AF38-D53DDBB4817E"), "Excellent Option Physical Damage 2% Increase", string.Empty);
+
+    /// <summary>
+    /// Gets the excellent option wizardry damage increase by level/20 attribute definition>.
+    /// </summary>
+    public static AttributeDefinition ExcOptWizLvlBy20Inc { get; } = new(new Guid("887E2CE6-CC5D-4B44-8F99-5B3CB7AF167C"), "Excellent Option Wizardry Damage Level/20 Percent Increase", string.Empty);
+
+    /// <summary>
+    /// Gets the excellent option physical damage increase by level/20 attribute definition>.
+    /// </summary>
+    public static AttributeDefinition ExcOptPhysLvlBy20Inc { get; } = new(new Guid("A9F95B14-7139-41BA-8395-F47B223A42FB"), "Excellent Option Physical Damage Level/20 Increase", string.Empty);
 
     /// <summary>
     /// Gets the walk speed attribute definition.
@@ -335,7 +387,34 @@ public class Stats
     /// <summary>
     /// Gets the attack damage increase attribute definition.
     /// </summary>
+    /// <remarks>Includes wings, and dinorant.</remarks>
     public static AttributeDefinition AttackDamageIncrease { get; } = new(new Guid("0765CCD2-C70A-4338-BF49-0D652364C223"), "Attack Damage Increase Multiplier", string.Empty);
+
+    /// <summary>
+    /// Gets the generic ring base attack damage (any type) increase attribute definition.
+    /// </summary>
+    /// <remarks>Includes any ring absolute bonus or multipliers.</remarks>
+    public static AttributeDefinition RingAttackDamageIncrease { get; } = new(new Guid("6C61073C-BC87-474A-9268-3BE7045384A5"), "Ring Attack Damage Increase", string.Empty);
+
+    /// <summary>
+    /// Gets the imp pet attack damage increase attribute definition.
+    /// </summary>
+    public static AttributeDefinition ImpAttackDamageIncrease { get; } = new(new Guid("D548B040-A4F2-4B65-A55D-5F46849994F1"), "Imp Attack Damage Increase", "The imp attack damage multiplier which is multiplied with the final damage and added to it.");
+
+    /// <summary>
+    /// Gets the fenrir pet attack damage increase attribute definition.
+    /// </summary>
+    public static AttributeDefinition FenrirAttackDamageIncrease { get; } = new(new Guid("46437116-2974-4595-A15A-DD9FC6CC673E"), "Fenrir Attack Damage Increase", "The fenrir attack damage multiplier which is multiplied with the final damage and added to it.");
+
+    /// <summary>
+    /// Gets the fenrir pet damage receive decrement attribute definition.
+    /// </summary>
+    public static AttributeDefinition FenrirDamageReceiveDecrement { get; } = new(new Guid("1204AF41-706E-47CE-8D03-71F1F80F0B05"), "Fenrir Damage Receive Decrement", "The fenrir receive damage multiplier which is multiplied with the final damage and subtracted from it.");
+
+    /// <summary>
+    /// Gets the panda ring attack damage bonus attribute definition.
+    /// </summary>
+    public static AttributeDefinition PandaRingDamageBonus { get; } = new(new Guid("7969421C-0F30-4991-BBB2-1CFEB8B151B2"), "Panda Ring Damage Bonus", string.Empty);
 
     /// <summary>
     /// Gets the wizardry attack damage increase attribute definition.
@@ -343,9 +422,9 @@ public class Stats
     public static AttributeDefinition WizardryAttackDamageIncrease { get; } = new(new Guid("8F1CD5A5-3792-42FC-89B8-E6D50F997F4B"), "Wizardry Attack Damage Increase Multiplier", "The wizardry damage increase which is multiplied with the min/max wiz base damage and added to it.");
 
     /// <summary>
-    /// Gets the pet attack damage increase attribute definition.
+    /// Gets the raven attack damage increase attribute definition.
     /// </summary>
-    public static AttributeDefinition PetAttackDamageIncrease { get; } = new(new Guid("662467B2-CBCF-4347-9B39-A2BBEE04E6D7"), "Pet Attack Damage Increase Multiplier", "The pet damage increase which is multiplied with the min/max wiz base damage and added to it.");
+    public static AttributeDefinition RavenAttackDamageIncrease { get; } = new(new Guid("662467B2-CBCF-4347-9B39-A2BBEE04E6D7"), "Raven Attack Damage Increase Multiplier", "The raven damage increase which is multiplied with the min/max raven base damage and added to it.");
 
     /// <summary>
     /// Gets the curse attack damage increase attribute definition.
@@ -353,9 +432,9 @@ public class Stats
     public static AttributeDefinition CurseAttackDamageIncrease { get; } = new(new Guid("2B8904D5-9901-40C0-BFDE-66675672D9DC"), "Curse Attack Damage Increase Multiplier", "The cursed damage increase which is multiplied with the min/max curse base damage and added to it.");
 
     /// <summary>
-    /// Gets the two handed weapon damage increase attribute definition.
+    /// Gets the two handed weapon damage increase ancient set option attribute definition.
     /// </summary>
-    public static AttributeDefinition TwoHandedWeaponDamageIncrease { get; } = new(new Guid("BA3D57E9-68A5-47AC-A6E9-43793F4DDE2A"), "Two-Handed Weapon Damage Increase", "The damage increase which is multiplied with the min/max base damage and added to it when using a two-handed weapon.");
+    public static AttributeDefinition TwoHandedWeaponDamageIncrease { get; } = new(new Guid("BA3D57E9-68A5-47AC-A6E9-43793F4DDE2A"), "Two-Handed Weapon Damage Increase (Ancient Set)", "The damage increase which is multiplied with the final damage and added to it when using a two-handed weapon.");
 
     /// <summary>
     /// Gets the is two handed weapon equipped.
@@ -368,9 +447,9 @@ public class Stats
     public static AttributeDefinition IsBowEquipped { get; } = new(new Guid("8B1135B7-C323-4822-9B98-1A56C802BB6A"), "Is Bow Equipped", string.Empty);
 
     /// <summary>
-    /// Gets the bow bonus base damage.
+    /// Gets the bow strengthener MST bonus damage.
     /// </summary>
-    public static AttributeDefinition BowBonusBaseDamage { get; } = new(new Guid("AF19A56D-2F31-4A80-8DF7-B99ADF7D275B"), "Bow Bonus Base Damage", string.Empty);
+    public static AttributeDefinition BowStrBonusDamage { get; } = new(new Guid("AF19A56D-2F31-4A80-8DF7-B99ADF7D275B"), "Bow Strengthener Bonus Damage (MST)", string.Empty);
 
     /// <summary>
     /// Gets the is a cross bow equipped.
@@ -378,14 +457,19 @@ public class Stats
     public static AttributeDefinition IsCrossBowEquipped { get; } = new(new Guid("EDB70177-D824-45FC-8B76-7AE26859B7E5"), "Is Cross Bow Equipped", string.Empty);
 
     /// <summary>
-    /// Gets the bow bonus base damage.
+    /// Gets the cross bow strengthener MST bonus damage.
     /// </summary>
-    public static AttributeDefinition CrossBowBonusBaseDamage { get; } = new(new Guid("DBAD454A-EB1C-4FEE-9B40-97EA70278BB5"), "Cross Bow Bonus Base Damage", string.Empty);
+    public static AttributeDefinition CrossBowStrBonusDamage { get; } = new(new Guid("DBAD454A-EB1C-4FEE-9B40-97EA70278BB5"), "Cross Bow Strengthener Bonus Damage (MST)", string.Empty);
 
     /// <summary>
-    /// Gets elf's is melee attack attribute definition.
+    /// Gets the cross bow mastery MST bonus damage.
     /// </summary>
-    public static AttributeDefinition IsMeleeAttack { get; } = new(new Guid("2121E586-B511-4D27-9E1A-67BFCACD7F41"), "Is Melee Attack", "The elf's melee attack switch.");
+    public static AttributeDefinition CrossBowMasteryBonusDamage { get; } = new(new Guid("B3AF7F51-6D6B-42FB-B8FF-689D03890F3E"), "Cross Bow Mastery Bonus Damage (MST)", string.Empty);
+
+    /// <summary>
+    /// Gets elf's melee attack mode attribute definition.
+    /// </summary>
+    public static AttributeDefinition MeleeAttackMode { get; } = new(new Guid("2121E586-B511-4D27-9E1A-67BFCACD7F41"), "Is Melee Attack", "The elf's melee attack mode switch.");
 
     /// <summary>
     /// Gets elf's melee minimum damage attribute definition.
@@ -398,9 +482,9 @@ public class Stats
     public static AttributeDefinition MeleeMaxDmg { get; } = new(new Guid("35A2224D-FD1C-4D19-B64B-EB7247530DE4"), "Melee Maximum Damage", "The elf's maximum melee damage, which is added to close range attacks.");
 
     /// <summary>
-    /// Gets elf's is archery attack attribute definition.
+    /// Gets elf's archery attack mode attribute definition.
     /// </summary>
-    public static AttributeDefinition IsArcheryAttack { get; } = new(new Guid("371E1237-6AE9-4AC1-9A7F-20CBEC897091"), "Is Archery Attack", "The elf's archery attack switch.");
+    public static AttributeDefinition ArcheryAttackMode { get; } = new(new Guid("371E1237-6AE9-4AC1-9A7F-20CBEC897091"), "Archery Attack Mode", "The elf's archery attack mode switch.");
 
     /// <summary>
     /// Gets elf's archery minimum damage attribute definition.
@@ -413,14 +497,24 @@ public class Stats
     public static AttributeDefinition ArcheryMaxDmg { get; } = new(new Guid("EC807B7C-4004-4D13-BED2-326E13F8EFEB"), "Archery Maximum Damage", "The elf's maximum archery damage, which is added to projectile weapon attacks.");
 
     /// <summary>
+    /// Gets the greater damage buff bonus damage attribute definition.
+    /// </summary>
+    public static AttributeDefinition GreaterDamageBonus { get; } = new(new Guid("5CFE3ED7-AF45-4790-BDD9-0DC55B981296"), "Greater Damage Bonus", string.Empty);
+
+    /// <summary>
+    /// Gets the infinity arrow strengthener attack damage multiplier attribute definition.
+    /// </summary>
+    public static AttributeDefinition InfinityArrowStrMultiplier { get; } = new(new Guid("62536721-6C69-46D9-A6C4-1E4F0F7AC5AB"), "Infinity Arrow Strengthener Multiplier", "The infinity arrow strengthener damage multiplier which is multiplied with the final damage and added to it.");
+
+    /// <summary>
     /// Gets the is a one handed sword equipped.
     /// </summary>
     public static AttributeDefinition IsOneHandedSwordEquipped { get; } = new(new Guid("21B71774-EB4F-41F6-A0AA-0E600F41226C"), "Is One Handed Sword Equipped", string.Empty);
 
     /// <summary>
-    /// Gets the one handed sword bonus base damage.
+    /// Gets the one handed sword MST bonus base damage.
     /// </summary>
-    public static AttributeDefinition OneHandedSwordBonusBaseDamage { get; } = new(new Guid("60FA78A3-4E8C-4304-9077-5D3312EB1BE8"), "One Handed Sword Bonus Base Damage", string.Empty);
+    public static AttributeDefinition OneHandedSwordBonusDamage { get; } = new(new Guid("60FA78A3-4E8C-4304-9077-5D3312EB1BE8"), "One Handed Sword Bonus Damage (MST)", string.Empty);
 
     /// <summary>
     /// Gets the is a two handed sword equipped.
@@ -428,9 +522,14 @@ public class Stats
     public static AttributeDefinition IsTwoHandedSwordEquipped { get; } = new(new Guid("15530767-556E-45F6-8C2D-9AC71FC4070F"), "Is Two Handed Sword Equipped", string.Empty);
 
     /// <summary>
-    /// Gets the two handed sword bonus base damage.
+    /// Gets the two handed sword strengthener MST bonus damage.
     /// </summary>
-    public static AttributeDefinition TwoHandedSwordBonusBaseDamage { get; } = new(new Guid("C77F9C38-336B-43AE-8B82-A8D73612E9D2"), "Two Handed Sword Bonus Base Damage", string.Empty);
+    public static AttributeDefinition TwoHandedSwordStrBonusDamage { get; } = new(new Guid("C77F9C38-336B-43AE-8B82-A8D73612E9D2"), "Two Handed Sword Strengthener Bonus Damage (MST)", string.Empty);
+
+    /// <summary>
+    /// Gets the two handed sword mastery MST bonus damage.
+    /// </summary>
+    public static AttributeDefinition TwoHandedSwordMasteryBonusDamage { get; } = new(new Guid("77B2B093-7418-4A71-AD52-12DB162B4461"), "Two Handed Sword Mastery Bonus Damage (MST)", string.Empty);
 
     /// <summary>
     /// Gets the is a mace equipped.
@@ -438,9 +537,9 @@ public class Stats
     public static AttributeDefinition IsMaceEquipped { get; } = new(new Guid("47BD42D1-2E27-407B-92B5-925F418C30DE"), "Is Mace Equipped", string.Empty);
 
     /// <summary>
-    /// Gets the mace bonus base damage.
+    /// Gets the mace bonus MST damage.
     /// </summary>
-    public static AttributeDefinition MaceBonusBaseDamage { get; } = new(new Guid("E7F2A75F-E8F5-4877-A0D8-59D59041A973"), "Mace Bonus Base Damage", string.Empty);
+    public static AttributeDefinition MaceBonusDamage { get; } = new(new Guid("E7F2A75F-E8F5-4877-A0D8-59D59041A973"), "Mace Bonus Damage (MST)", string.Empty);
 
     /// <summary>
     /// Gets the is a spear equipped.
@@ -448,9 +547,15 @@ public class Stats
     public static AttributeDefinition IsSpearEquipped { get; } = new(new Guid("5CBBD700-B897-4425-AADE-FDE249318505"), "Is Spear Equipped", string.Empty);
 
     /// <summary>
-    /// Gets the spear bonus base damage.
+    /// Gets the spear MST bonus damage.
     /// </summary>
-    public static AttributeDefinition SpearBonusBaseDamage { get; } = new(new Guid("207DA941-CDDC-4231-A82C-B76A2441B77A"), "Spear Bonus Base Damage", string.Empty);
+    public static AttributeDefinition SpearBonusDamage { get; } = new(new Guid("207DA941-CDDC-4231-A82C-B76A2441B77A"), "Spear Bonus Damage (MST)", string.Empty);
+
+    /// <summary>
+    /// Gets the generic physical MST bonus damage attribute, which serves as a bucket for late stage bonus physical damage.
+    /// </summary>
+    /// <remarks>So far includes the Weapon Mastery (DK, Elf, MG, DL, RF) passive skills, and the end product of Command Attack Increase (DL).</remarks>
+    public static AttributeDefinition MasterSkillPhysBonusDmg { get; } = new(new Guid("48BD920B-9C6F-4884-A307-AD3AB58B7927"), "Master Skill Physical Bonus Damage (MST)", "A generic master tree physical damage bonus attribute, which serves as a bucket for late stage bonus physical damage.");
 
     /// <summary>
     /// Gets the is a one handed staff equipped.
@@ -458,9 +563,9 @@ public class Stats
     public static AttributeDefinition IsOneHandedStaffEquipped { get; } = new(new Guid("C452EFD8-9FFE-4015-BE93-8BC8D5D81572"), "Is One Handed Staff Equipped", string.Empty);
 
     /// <summary>
-    /// Gets the one handed staff bonus base damage.
+    /// Gets the one handed staff bonus (MST) base damage.
     /// </summary>
-    public static AttributeDefinition OneHandedStaffBonusBaseDamage { get; } = new(new Guid("12F2F553-DA04-432F-83E0-28F30C1B93A2"), "One Handed Staff Bonus Base Damage", string.Empty);
+    public static AttributeDefinition OneHandedStaffBonusBaseDamage { get; } = new(new Guid("12F2F553-DA04-432F-83E0-28F30C1B93A2"), "One Handed Staff Bonus Base Damage (MST)", string.Empty);
 
     /// <summary>
     /// Gets the is a two handed staff equipped.
@@ -468,9 +573,14 @@ public class Stats
     public static AttributeDefinition IsTwoHandedStaffEquipped { get; } = new(new Guid("FE669B70-D36D-4F56-A1DA-4A4B98ED503D"), "Is Two Handed Staff Equipped", string.Empty);
 
     /// <summary>
-    /// Gets the two handed staff bonus base damage.
+    /// Gets the two handed staff bonus base damage (MST).
     /// </summary>
-    public static AttributeDefinition TwoHandedStaffBonusBaseDamage { get; } = new(new Guid("8A46D105-4B58-4E42-B602-52715F6BEE61"), "Two Handed Staff Bonus Base Damage", string.Empty);
+    public static AttributeDefinition TwoHandedStaffBonusBaseDamage { get; } = new(new Guid("8A46D105-4B58-4E42-B602-52715F6BEE61"), "Two Handed Staff Bonus Base Damage (MST)", string.Empty);
+
+    /// <summary>
+    /// Gets the two handed staff mastery (MST) bonus damage.
+    /// </summary>
+    public static AttributeDefinition TwoHandedStaffMasteryBonusDamage { get; } = new(new Guid("1E6B1569-A36D-4C41-97B1-DD6E0A9746EE"), "Two Handed Staff Mastery Bonus Damage (MST)", string.Empty);
 
     /// <summary>
     /// Gets the is a stick equipped.
@@ -483,14 +593,34 @@ public class Stats
     public static AttributeDefinition IsBookEquipped { get; } = new(new Guid("1EE456B6-65EF-46E9-A90D-D3BA7D23CBF5"), "Is Book Equipped", string.Empty);
 
     /// <summary>
-    /// Gets the book bonus base damage.
+    /// Gets the book MST bonus base damage.
     /// </summary>
-    public static AttributeDefinition BookBonusBaseDamage { get; } = new(new Guid("6B15592C-70A4-4EE0-A713-DDC4794313DA"), "Book Bonus Base Damage", string.Empty);
+    public static AttributeDefinition BookBonusBaseDamage { get; } = new(new Guid("6B15592C-70A4-4EE0-A713-DDC4794313DA"), "Book Bonus Base Damage (MST)", string.Empty);
 
     /// <summary>
-    /// Gets the stick bonus base damage.
+    /// Gets the stick MST bonus base damage.
     /// </summary>
-    public static AttributeDefinition StickBonusBaseDamage { get; } = new(new Guid("0EF0D78B-9518-445B-BE5A-469962AF7C9D"), "Stick Bonus Base Damage", string.Empty);
+    public static AttributeDefinition StickBonusBaseDamage { get; } = new(new Guid("0EF0D78B-9518-445B-BE5A-469962AF7C9D"), "Stick Bonus Base Damage (MST)", string.Empty);
+
+    /// <summary>
+    /// Gets the stick mastery MST bonus damage.
+    /// </summary>
+    public static AttributeDefinition StickMasteryBonusDamage { get; } = new(new Guid("E79B2B06-9A32-451F-9B2D-2B91FD79B614"), "Stick Mastery Bonus Damage (MST)", string.Empty);
+
+    /// <summary>
+    /// Gets the explosion skill bonus damage, which rises with fire tome strengthener and is added late stage.
+    /// </summary>
+    public static AttributeDefinition ExplosionBonusDmg { get; } = new(new Guid("543E01C2-5C61-4473-ACF9-8A63A987A230"), "Explosion Bonus Damage", "The explosion skill (book of samut) bonus damage, which rises with fire stome strengthener and is added at a late stage.");
+
+    /// <summary>
+    /// Gets the requiem skill bonus damage, which rises with wind tome strengthener and is added late stage.
+    /// </summary>
+    public static AttributeDefinition RequiemBonusDmg { get; } = new(new Guid("9354C6C8-5F85-440B-8649-3E18B7539D92"), "Requiem Bonus Damage", "The requiem skill (book of neil) bonus damage, which rises with wind tome strengthener and is added at a late stage.");
+
+    /// <summary>
+    /// Gets the pollution skill bonus damage, which rises with lightning tome strengthener and is added late stage.
+    /// </summary>
+    public static AttributeDefinition PollutionBonusDmg { get; } = new(new Guid("9B7AF584-DB59-4770-BCE9-1B5131BBDE38"), "Pollution Bonus Damage", "The pollution skill (book of lagle) bonus damage, which rises with lightning tome strengthener and is added at a late stage.");
 
     /// <summary>
     /// Gets the is a scepter equipped.
@@ -498,9 +628,14 @@ public class Stats
     public static AttributeDefinition IsScepterEquipped { get; } = new(new Guid("8650DE3B-BE11-458E-B352-4046CE264402"), "Is Scepter Equipped", string.Empty);
 
     /// <summary>
-    /// Gets the scepter bonus base damage.
+    /// Gets the scepter strengthener MST bonus damage.
     /// </summary>
-    public static AttributeDefinition ScepterBonusBaseDamage { get; } = new(new Guid("4E4373A5-F5DB-4D06-B5C1-EE798B58017E"), "Scepter Bonus Base Damage", string.Empty);
+    public static AttributeDefinition ScepterStrBonusDamage { get; } = new(new Guid("4E4373A5-F5DB-4D06-B5C1-EE798B58017E"), "Scepter Strengthener Bonus Damage (MST)", string.Empty);
+
+    /// <summary>
+    /// Gets the scepter mastery MST bonus damage.
+    /// </summary>
+    public static AttributeDefinition ScepterMasteryBonusDamage { get; } = new(new Guid("39C1837C-B19F-4FA3-B16F-03A0F5AE624A"), "Scepter Mastery Bonus Damage (MST)", string.Empty);
 
     /// <summary>
     /// Gets the scepter pet bonus base damage.
@@ -510,7 +645,7 @@ public class Stats
     /// <summary>
     /// Gets the is a horse equipped.
     /// </summary>
-    public static AttributeDefinition IsHorseEquipped { get; } = new(new Guid("4CDC3CCC-9266-4EEE-9C91-0E6AAFA8B636"), "Is Horse equipped", string.Empty);
+    public static AttributeDefinition IsHorseEquipped { get; } = new(new Guid("4CDC3CCC-9266-4EEE-9C91-0E6AAFA8B636"), "Is Horse Equipped", string.Empty);
 
     /// <summary>
     /// Gets the is a glove weapon equipped.
@@ -518,9 +653,9 @@ public class Stats
     public static AttributeDefinition IsGloveWeaponEquipped { get; } = new(new Guid("BC8FFFCA-A593-4B64-BE37-BF7EDC97CA1E"), "Is Glove Weapon Equipped", string.Empty);
 
     /// <summary>
-    /// Gets the glove weapon bonus base damage.
+    /// Gets the glove weapon MST bonus damage.
     /// </summary>
-    public static AttributeDefinition GloveWeaponBonusBaseDamage { get; } = new(new Guid("F9CB1174-0184-4F21-B71D-AFC7359BC594"), "Glove Weapon Bonus Base Damage", string.Empty);
+    public static AttributeDefinition GloveWeaponBonusDamage { get; } = new(new Guid("F9CB1174-0184-4F21-B71D-AFC7359BC594"), "Glove Weapon Bonus Damage (MST)", string.Empty);
 
     /// <summary>
     /// Gets the summoned monster health increase, percentage.
@@ -555,7 +690,12 @@ public class Stats
     /// <summary>
     /// Gets the defense base attribute definition.
     /// </summary>
-    public static AttributeDefinition DefenseBase { get; } = new(new Guid("EB098C46-60D4-4CA6-BBD4-5B6270A1407B"), "Base Defense", string.Empty);
+    public static AttributeDefinition DefenseBase { get; } = new(new Guid("EB098C46-60D4-4CA6-BBD4-5B6270A1407B"), "Base Defense", "The base defense, which is always divided by two.");
+
+    /// <summary>
+    /// Gets the defense final attribute definition.
+    /// </summary>
+    public static AttributeDefinition DefenseFinal { get; } = new(new Guid("97B9CFB6-105D-48F5-B2CE-7B8A5A0A3470"), "Final Defense", "The effective defense in damage calculations.");
 
     /// <summary>
     /// Gets the defense PVM attribute definition.
@@ -580,13 +720,34 @@ public class Stats
     /// <summary>
     /// Gets the damage receive decrement attribute definition.
     /// </summary>
+    /// <remarks>Includes wings, dinorant, and dark horse.</remarks>
     public static AttributeDefinition DamageReceiveDecrement { get; } = new(new Guid("9D9761EF-EF47-4E5C-8106-EBC555786F20"), "Damage Receive Multiplier", string.Empty);
 
     /// <summary>
-    /// Gets the shield block damage decrement attribute definition.
-    /// TODO: Usage in a shield skill handler.
+    /// Gets the soul barrier skill damage receive decrement attribute definition.
     /// </summary>
-    public static AttributeDefinition ShieldBlockDamageDecrement { get; } = new(new Guid("DAC6690B-5922-4446-BCE5-5E701BE62EC1"), "Shield Block Damage Multiplier", string.Empty);
+    public static AttributeDefinition SoulBarrierReceiveDecrement { get; } = new(new Guid("CBC5404A-6232-4BF3-9B85-9AA0AE0F9BA4"), "Soul Barrier Damage Receive Decrement", "The soul barrier skill receive damage multiplier which is multiplied with the final damage and subtracted from it.");
+
+    /// <summary>
+    /// Gets the soul barrier skill mana toll per successful received hit attribute definition.
+    /// </summary>
+    public static AttributeDefinition SoulBarrierManaTollPerHit { get; } = new(new Guid("25315C15-C884-4B45-9883-9A92693DC455"), "Soul Barrier Mana Toll Per Hit", string.Empty);
+
+    /// <summary>
+    /// Gets the damage receive decrement from a guardian angel or spirit of guardian pet attribute definition.
+    /// </summary>
+    public static AttributeDefinition GuardianReceiveDecrement { get; } = new(new Guid("9A23A2C2-6452-4D5B-B849-CDA3A1236C92"), "Guardian Damage Receive Decrement", "The guardian receive damage multiplier which is multiplied with the final damage and subtracted from it.");
+
+    /// <summary>
+    /// Gets the total excellent plus harmony options damage decrease (receive) attribute definition.
+    /// </summary>
+    public static AttributeDefinition ArmorDamageDecrease { get; } = new(new Guid("BFCF7096-44E9-473F-8162-416E9AD61477"), "Armor Damage Decrease", "The total excellent and harmony options damage decrease multiplier which is multiplied with the final damage and subtracted from it.");
+
+    /// <summary>
+    /// Gets the shield defense skill damage receive decrement attribute definition.
+    /// </summary>
+    /// <remarks>The value is either 0 or 50%.</remarks>
+    public static AttributeDefinition ShieldSkillReceiveDecrement { get; } = new(new Guid("DAC6690B-5922-4446-BCE5-5E701BE62EC1"), "Shield Defense Skill Damage Receive Decrement", "The shield's defense skill multiplier which is multiplied with the final damage and added to it.");
 
     /// <summary>
     /// Gets the defense increase with equipped shield attribute definition.
@@ -599,14 +760,14 @@ public class Stats
     public static AttributeDefinition BonusDefenseWithShield { get; } = new(new Guid("05F08D89-9BC6-4164-9B30-26EFAF4C0E0F"), "Defense Increase Bonus (absolute) With equipped Shield", string.Empty);
 
     /// <summary>
-    /// Gets the bonus defense (absolute) with an equipped scepter attribute definition.
+    /// Gets the bonus damage (absolute) with an equipped scepter attribute definition.
     /// </summary>
-    public static AttributeDefinition BonusDefenseWithScepter { get; } = new(new Guid("7977FE44-FC22-4A6B-A4E0-BA522FE807DF"), "Defense Increase Bonus (absolute) with equipped Scepter", string.Empty);
+    public static AttributeDefinition BonusDamageWithScepter { get; } = new(new Guid("7977FE44-FC22-4A6B-A4E0-BA522FE807DF"), "Damage Increase Bonus (absolute) with equipped Scepter", string.Empty);
 
     /// <summary>
-    /// Gets the bonus defense (absolute) command/leadership divisor with an equipped scepter attribute definition.
+    /// Gets the bonus damage (absolute) command/leadership divisor with an equipped scepter attribute definition.
     /// </summary>
-    public static AttributeDefinition BonusDefenseWithScepterCmdDiv { get; } = new(new Guid("9A3C99C4-4F94-4CD0-8BFC-C8B870CD5FE4"), "Defense Increase Bonus (absolute) command divisor with equipped Scepter", string.Empty);
+    public static AttributeDefinition BonusDamageWithScepterCmdDiv { get; } = new(new Guid("9A3C99C4-4F94-4CD0-8BFC-C8B870CD5FE4"), "Damage Increase Bonus (absolute) command divisor with equipped Scepter", string.Empty);
 
     /// <summary>
     /// Gets the bonus defense (absolute) with an equipped dark horse attribute definition.
@@ -639,7 +800,7 @@ public class Stats
     public static AttributeDefinition DarkLordGenericSkillBonusDmg { get; } = new(new Guid("8D6E3761-0C88-48F7-91DC-9D520038F12F"), "Dark Lord Generic Skill Bonus Damage", "The dark lord generic skill bonus damage, which depends on other stats. Any skill other than Electric Spike, Earthshake, and Chaotic Diseier.");
 
     /// <summary>
-    /// Gets the berserker buff mana multiplier attribute definition.
+    /// Gets the berserker buff mana (and damage) multiplier attribute definition.
     /// </summary>
     public static AttributeDefinition BerserkerManaMultiplier { get; } = new(new Guid("9B6AA0DA-9ABA-4C14-B094-F1AC70BCB52D"), "Berserker Mana Multiplier", string.Empty);
 
@@ -647,6 +808,16 @@ public class Stats
     /// Gets the berserker buff health multiplier attribute definition.
     /// </summary>
     public static AttributeDefinition BerserkerHealthMultiplier { get; } = new(new Guid("D1948382-23F6-43A4-AD84-69227BF2ABA3"), "Berserker Health Multiplier", string.Empty);
+
+    /// <summary>
+    /// Gets the berserker (strengthener) buff curse damage multiplier attribute definition.
+    /// </summary>
+    public static AttributeDefinition BerserkerCurseMultiplier { get; } = new(new Guid("AD1A3A3F-B461-4CAE-B3A3-D03DD0714A96"), "Berserker (Strengthener) Curse Multiplier", string.Empty);
+
+    /// <summary>
+    /// Gets the berserker (proficiency) buff wizardry damage multiplier attribute definition.
+    /// </summary>
+    public static AttributeDefinition BerserkerWizardryMultiplier { get; } = new(new Guid("8DA7B8C2-F28B-4472-AE8F-28F08D4E7E93"), "Berserker (Proficiency) Wizardry Multiplier", "The berserker proficiency wizardry damage multiplier which is multiplied with the final damage and added to it.");
 
     /// <summary>
     /// Gets the berserker buff minimum physical base damage attribute definition.
@@ -657,6 +828,22 @@ public class Stats
     /// Gets the berserker buff maximum physical base damage attribute definition.
     /// </summary>
     public static AttributeDefinition BerserkerMaxPhysBaseDmg { get; } = new(new Guid("D7C0A347-7661-455A-9BDF-A5528E1DA16F"), "Berserker Maximum Physical Base Damage", "The berserker maximum physical base damage, which is multiplied with the berserker mana multiplier for physical damage attacks.");
+
+    /// <summary>
+    /// Gets the berserker buff minimum physical damage bonus attribute definition.
+    /// </summary>
+    public static AttributeDefinition BerserkerMinPhysDmgBonus { get; } = new(new Guid("81B5B942-A6D4-4343-BD4D-106CFFF34F4E"), "Berserker Minimum Physical Damage Bonus", "The berserker minimum physical damage bonus, which results by multiplying the berserker min physical base damage with the mana/damage multiplier.");
+
+    /// <summary>
+    /// Gets the berserker buff maximum physical damage bonus attribute definition.
+    /// </summary>
+    public static AttributeDefinition BerserkerMaxPhysDmgBonus { get; } = new(new Guid("602D5FC4-AB85-423A-9C91-D23B0A28996C"), "Berserker Maximum Physical Damage Bonus", "The berserker maximum physical damage bonus, which results by multiplying the berserker max physical base damage with the mana/damage multiplier.");
+
+    /// <summary>
+    /// Gets the weakness physical damage decrement due to magic effects of weakness or killing blow skills attribute definition.
+    /// </summary>
+    /// <remarks>Only applies to physical damage.</remarks>
+    public static AttributeDefinition WeaknessPhysDmgDecrement { get; } = new(new Guid("37497650-139B-4DA1-9FB6-27AEB8F04CF6"), "Weakness Physical Damage Decrement", "The inflicted physical damage decrement due to the magic effects of weakness or killing blow skills, which is multiplied with the final damage and subtracted from it.");
 
     /// <summary>
     /// Gets the 'is shield equipped' attribute definition.
@@ -945,7 +1132,12 @@ public class Stats
     public static AttributeDefinition CanFly { get; } = new(new Guid("EC34C673-84DE-4811-8962-CD2164A2248C"), "Requirement of the Icarus map.", "You can enter Icarus only with wings, dinorant, fenrir.");
 
     /// <summary>
-    /// Gets the MoonstonePendantEquipped attribute for warping to Karutan.
+    /// Gets the is dinorant equipped attribute definition.
+    /// </summary>
+    public static AttributeDefinition IsDinorantEquipped { get; } = new(new Guid("C52B5CA4-34BA-4E31-963B-E37089671C37"), "Is Dinorant Equipped", string.Empty);
+
+    /// <summary>
+    /// Gets the MoonstonePendantEquipped attribute for entering Kanturu event.
     /// </summary>
     public static AttributeDefinition MoonstonePendantEquipped { get; } = new(new Guid("4BC010D0-9E75-4ECB-8963-08A3697278C3"), "Requirement of the Kanturu Event Map during the event.", "You can enter the Kanturu Event only with an equipped Moonstone Pendant.");
 

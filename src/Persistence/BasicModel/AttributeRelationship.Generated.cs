@@ -25,20 +25,20 @@ public partial class AttributeRelationship : MUnique.OpenMU.AttributeSystem.Attr
     }
 
     /// <inheritdoc />
-    public AttributeRelationship(MUnique.OpenMU.AttributeSystem.AttributeDefinition targetAttribute, System.Single inputOperand, MUnique.OpenMU.AttributeSystem.AttributeDefinition inputAttribute)
-        : base(targetAttribute, inputOperand, inputAttribute)
+    public AttributeRelationship(MUnique.OpenMU.AttributeSystem.AttributeDefinition targetAttribute, System.Single inputOperand, MUnique.OpenMU.AttributeSystem.AttributeDefinition inputAttribute, MUnique.OpenMU.AttributeSystem.AggregateType aggregateType)
+        : base(targetAttribute, inputOperand, inputAttribute, aggregateType)
     {
     }
 
     /// <inheritdoc />
-    public AttributeRelationship(MUnique.OpenMU.AttributeSystem.AttributeDefinition targetAttribute, MUnique.OpenMU.AttributeSystem.AttributeDefinition inputOperand, MUnique.OpenMU.AttributeSystem.AttributeDefinition inputAttribute)
-        : base(targetAttribute, inputOperand, inputAttribute)
+    public AttributeRelationship(MUnique.OpenMU.AttributeSystem.AttributeDefinition targetAttribute, MUnique.OpenMU.AttributeSystem.AttributeDefinition inputOperand, MUnique.OpenMU.AttributeSystem.AttributeDefinition inputAttribute, MUnique.OpenMU.AttributeSystem.AggregateType aggregateType)
+        : base(targetAttribute, inputOperand, inputAttribute, aggregateType)
     {
     }
 
     /// <inheritdoc />
-    public AttributeRelationship(MUnique.OpenMU.AttributeSystem.AttributeDefinition targetAttribute, System.Single inputOperand, MUnique.OpenMU.AttributeSystem.AttributeDefinition inputAttribute, MUnique.OpenMU.AttributeSystem.InputOperator inputOperator, MUnique.OpenMU.AttributeSystem.AttributeDefinition operandAttribute)
-        : base(targetAttribute, inputOperand, inputAttribute, inputOperator, operandAttribute)
+    public AttributeRelationship(MUnique.OpenMU.AttributeSystem.AttributeDefinition targetAttribute, System.Single inputOperand, MUnique.OpenMU.AttributeSystem.AttributeDefinition inputAttribute, MUnique.OpenMU.AttributeSystem.InputOperator inputOperator, MUnique.OpenMU.AttributeSystem.AttributeDefinition operandAttribute, MUnique.OpenMU.AttributeSystem.AggregateType aggregateType)
+        : base(targetAttribute, inputOperand, inputAttribute, inputOperator, operandAttribute, aggregateType)
     {
     }
 

@@ -65,8 +65,8 @@ public class AncientSets : InitializerBase
             2,
             (Stats.MaximumHealth, 50.0f),
             (Stats.TotalAgility, 50.0f),
-            (Stats.ShieldBlockDamageDecrement, 0.25f),
-            (Stats.BaseDamageBonus, 30.0f));
+            (Stats.DefenseIncreaseWithEquippedShield, 0.25f),
+            (Stats.FinalDamageBonus, 30.0f));
         anonymous.SetGuid(5, 2);
         this.AddItems(
             anonymous,
@@ -224,7 +224,7 @@ public class AncientSets : InitializerBase
             "Vicious", // Dragon
             12,
             (Stats.SkillDamageBonus, 15.0f),
-            (Stats.BaseDamageBonus, 15.0f),
+            (Stats.FinalDamageBonus, 15.0f),
             (Stats.DoubleDamageChance, 0.10f),
             (Stats.MinimumPhysBaseDmg, 20f),
             (Stats.MaximumPhysBaseDmg, 30f),
@@ -354,7 +354,7 @@ public class AncientSets : InitializerBase
             (Stats.CriticalDamageChance, 0.15f),
             (Stats.ExcellentDamageChance, 0.15f),
             (Stats.CriticalDamageBonus, 20.0f),
-            (Stats.ExcellentDamageChance, 20.0f));
+            (Stats.ExcellentDamageBonus, 20.0f));
         anubis.SetGuid(3, 1);
         this.AddItems(
             anubis,
@@ -403,7 +403,7 @@ public class AncientSets : InitializerBase
             "Drake", // Vine
             22,
             (Stats.TotalAgility, 20.0f),
-            (Stats.BaseDamageBonus, 25.0f),
+            (Stats.FinalDamageBonus, 25.0f),
             (Stats.DoubleDamageChance, 0.20f),
             (Stats.DefenseBase, 40.0f),
             (Stats.CriticalDamageChance, 0.10f));
@@ -528,7 +528,7 @@ public class AncientSets : InitializerBase
         var aruan = this.AddAncientSet(
             "Aruan", // Guardian
             30,
-            (Stats.BaseDamageBonus, 10.0f),
+            (Stats.FinalDamageBonus, 10.0f),
             (Stats.DoubleDamageChance, 0.10f),
             (Stats.SkillDamageBonus, 20.0f),
             (Stats.CriticalDamageChance, 0.15f),
@@ -599,7 +599,7 @@ public class AncientSets : InitializerBase
         var broy = this.AddAncientSet(
             "Broy", // Adamantine
             34,
-            (Stats.BaseDamageBonus, 20.0f),
+            (Stats.FinalDamageBonus, 20.0f),
             (Stats.SkillDamageBonus, 20.0f),
             (Stats.TotalEnergy, 30.0f),
             (Stats.CriticalDamageChance, 0.15f),

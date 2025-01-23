@@ -54,8 +54,8 @@ public class AttributeRelationship
     /// <param name="targetAttribute">The target attribute.</param>
     /// <param name="inputOperand">The multiplier.</param>
     /// <param name="inputAttribute">The input attribute.</param>
-    public AttributeRelationship(AttributeDefinition targetAttribute, float inputOperand, AttributeDefinition inputAttribute)
-        : this(targetAttribute, inputOperand, inputAttribute, InputOperator.Multiply)
+    public AttributeRelationship(AttributeDefinition targetAttribute, float inputOperand, AttributeDefinition inputAttribute, AggregateType aggregateType)
+        : this(targetAttribute, inputOperand, inputAttribute, InputOperator.Multiply, null, aggregateType)
     {
     }
 
@@ -65,8 +65,8 @@ public class AttributeRelationship
     /// <param name="targetAttribute">The target attribute.</param>
     /// <param name="inputOperand">The multiplier.</param>
     /// <param name="inputAttribute">The input attribute.</param>
-    public AttributeRelationship(AttributeDefinition targetAttribute, AttributeDefinition inputOperand, AttributeDefinition inputAttribute)
-        : this(targetAttribute, 1, inputAttribute, InputOperator.Multiply, inputOperand)
+    public AttributeRelationship(AttributeDefinition targetAttribute, AttributeDefinition inputOperand, AttributeDefinition inputAttribute, AggregateType aggregateType)
+        : this(targetAttribute, 1, inputAttribute, InputOperator.Multiply, inputOperand, aggregateType)
     {
     }
 
@@ -78,10 +78,12 @@ public class AttributeRelationship
     /// <param name="inputAttribute">The input attribute.</param>
     /// <param name="inputOperator">The input operator.</param>
     /// <param name="operandAttribute">The operand attribute.</param>
-    public AttributeRelationship(AttributeDefinition targetAttribute, float inputOperand, AttributeDefinition inputAttribute, InputOperator inputOperator, AttributeDefinition? operandAttribute = null)
+    /// <param name="aggregateType">The type of the aggregate.</param>
+    public AttributeRelationship(AttributeDefinition targetAttribute, float inputOperand, AttributeDefinition inputAttribute, InputOperator inputOperator, AttributeDefinition? operandAttribute = null, AggregateType aggregateType = AggregateType.AddRaw)
     {
         this.InputOperand = inputOperand;
         this.InputOperator = inputOperator;
+        this.AggregateType = aggregateType;
         this._targetAttribute = targetAttribute;
         this._inputAttribute = inputAttribute;
         this._operandAttribute = operandAttribute;
@@ -124,6 +126,11 @@ public class AttributeRelationship
     /// Has only effect, when <see cref="OperandAttribute"/> is <see langword="null"/>.
     /// </summary>
     public float InputOperand { get; set; }
+
+    /// <summary>
+    /// Gets or sets the aggregate type with which the relationship will effect the target attribute.
+    /// </summary>
+    public AggregateType AggregateType { get; set; }
 
     /// <inheritdoc/>
     public override string ToString()

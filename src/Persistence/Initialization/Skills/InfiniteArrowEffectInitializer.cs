@@ -65,7 +65,7 @@ public class InfiniteArrowEffectInitializer : InitializerBase
         // The next is more like a placeholder in case it's used by the master skill which adds a percentage bonus.
         var damageIncreaseByMasterLevel = this.Context.CreateNew<PowerUpDefinition>();
         magicEffect.PowerUpDefinitions.Add(damageIncreaseByMasterLevel);
-        damageIncreaseByMasterLevel.TargetAttribute = Stats.AttackDamageIncrease.GetPersistent(this.GameConfiguration);
+        damageIncreaseByMasterLevel.TargetAttribute = Stats.InfinityArrowStrMultiplier.GetPersistent(this.GameConfiguration);
         damageIncreaseByMasterLevel.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
     }
 }

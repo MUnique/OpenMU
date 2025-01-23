@@ -67,29 +67,59 @@ internal class Jewelery : Version095d.Items.Jewelery
 
         var eliteSkeletonRing = this.CreateTransformationRing(39, "Elite Transfer Skeleton Ring", 10, 255, CharacterTransformationSkin.EliteSkillSoldier);
         eliteSkeletonRing.PossibleItemOptions.Add(
-            this.CreateItemOptionDefinition("Elite Transfer Skeleton Ring",
+            this.CreateItemOptionDefinition(
+                "Elite Transfer Skeleton Ring",
                 ItemOptionDefinitionNumbers.EliteTransferSkeletonRing,
-                (Stats.DefenseBase, 10, AggregateType.AddRaw),
-                (Stats.MaximumHealth, 400, AggregateType.AddRaw)));
+                (Stats.DefenseFinal, 1.1f, AggregateType.Multiplicate),
+                (Stats.MaximumHealth, 400, AggregateType.AddRaw))); // todo: added health is equal to Stats.TotalLevel
         this.CreateTransformationRing(40, "Jack Olantern Transformation Ring", 10, 100, CharacterTransformationSkin.JackOlantern);
-        this.CreateTransformationRing(41, "Christmas Transformation Ring", 1, 100, CharacterTransformationSkin.Christmas);
+        var christmasRing = this.CreateTransformationRing(41, "Christmas Transformation Ring", 1, 100, CharacterTransformationSkin.Christmas);
+        christmasRing.PossibleItemOptions.Add(
+            this.CreateItemOptionDefinition(
+                "Christmas Transformation Ring",
+                ItemOptionDefinitionNumbers.ChristmasTransformationRing,
+                (Stats.MinimumPhysBaseDmg, 20, AggregateType.AddFinal),
+                (Stats.MaximumPhysBaseDmg, 20, AggregateType.AddFinal),
+                (Stats.MinimumWizBaseDmg, 20, AggregateType.AddFinal),
+                (Stats.MaximumWizBaseDmg, 20, AggregateType.AddFinal)));
         this.CreateTransformationRing(42, "Game Master Transformation Ring", 0, 255, CharacterTransformationSkin.GameMaster);
         this.CreateTransformationRing(68, "Snowman Transformation Ring", 10, 100, CharacterTransformationSkin.Snowman);
         var pandaRing = this.CreateTransformationRing(76, "Panda Transformation Ring", 28, 255, CharacterTransformationSkin.Panda);
         pandaRing.PossibleItemOptions.Add(
-            this.CreateItemOptionDefinition("Panda Ring",
+            this.CreateItemOptionDefinition(
+                "Panda Transformation Ring",
                 ItemOptionDefinitionNumbers.PandaRing,
+                (Stats.BaseDamageBonus, 30, AggregateType.AddRaw),
                 (Stats.MoneyAmountRate, 1.5f, AggregateType.Multiplicate),
-                (Stats.BaseDamageBonus, 30, AggregateType.AddRaw)));
+                (Stats.PandaRingDamageBonus, 30, AggregateType.AddRaw)));
         var skeletonRing = this.CreateTransformationRing(122, "Skeleton Transformation Ring", 1, 255, CharacterTransformationSkin.Skeleton);
         skeletonRing.PossibleItemOptions.Add(
-            this.CreateItemOptionDefinition("Skeleton Transformation Ring",
+            this.CreateItemOptionDefinition(
+                "Skeleton Transformation Ring",
                 ItemOptionDefinitionNumbers.SkeletonTransformationRing,
                 (Stats.BaseDamageBonus, 40, AggregateType.AddRaw),
                 (Stats.ExperienceRate, 1.5f, AggregateType.Multiplicate))); // todo: exp rate only with equipped skeleton pet
-        this.CreateTransformationRing(163, "Robot Knight Transformation Ring", 1, 255, (CharacterTransformationSkin)625);
-        this.CreateTransformationRing(164, "Mini Robot Transformation Ring", 1, 255, (CharacterTransformationSkin)626);
-        this.CreateTransformationRing(165, "Great Heavenly Mage Transformation Ring", 1, 255, (CharacterTransformationSkin)642);
+        var robotKnightRing = this.CreateTransformationRing(163, "Robot Knight Transformation Ring", 1, 255, (CharacterTransformationSkin)625);
+        robotKnightRing.PossibleItemOptions.Add(
+            this.CreateItemOptionDefinition(
+                "Robot Knight Transformation Ring",
+                ItemOptionDefinitionNumbers.RobotKnightTransformationRing,
+                (Stats.BaseDamageBonus, 30, AggregateType.AddRaw),
+                (Stats.DefenseFinal, 10, AggregateType.AddRaw)));
+        var miniRobotRing = this.CreateTransformationRing(164, "Mini Robot Transformation Ring", 1, 255, (CharacterTransformationSkin)626);
+        miniRobotRing.PossibleItemOptions.Add(
+            this.CreateItemOptionDefinition(
+                "Mini Robot Transformation Ring",
+                ItemOptionDefinitionNumbers.MiniRobotTransformationRing,
+                (Stats.BaseDamageBonus, 30, AggregateType.AddRaw),
+                (Stats.AttackSpeed, 7, AggregateType.AddRaw),
+                (Stats.MagicSpeed, 7, AggregateType.AddRaw)));
+        var greatHeavenlyMageRing = this.CreateTransformationRing(165, "Great Heavenly Mage Transformation Ring", 1, 255, (CharacterTransformationSkin)642);
+        greatHeavenlyMageRing.PossibleItemOptions.Add(
+            this.CreateItemOptionDefinition(
+                "Great Heavenly Mage Transformation Ring",
+                ItemOptionDefinitionNumbers.GreatHeavenlyMageTransformationRing,
+                (Stats.BaseDamageBonus, 40, AggregateType.AddRaw)));
     }
 
     private ItemOptionDefinition CreateItemOptionDefinition(string name, short number, params (AttributeDefinition targetOption, float value, AggregateType aggregateType)[] options)
@@ -141,34 +171,62 @@ internal class Jewelery : Version095d.Items.Jewelery
         ring.PossibleItemOptions.Add(optionDefinition);
         optionDefinition.Name = "Wizard's Ring Options";
 
-        var increaseDamage = this.Context.CreateNew<IncreasableItemOption>();
-        increaseDamage.SetGuid(ItemOptionDefinitionNumbers.WizardRing, 1);
-        increaseDamage.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
-        increaseDamage.PowerUpDefinition.TargetAttribute = Stats.AttackDamageIncrease.GetPersistent(this.GameConfiguration); // Needs review
-        increaseDamage.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-        increaseDamage.PowerUpDefinition.Boost.ConstantValue.Value = 0.1f;
-        optionDefinition.PossibleOptions.Add(increaseDamage);
+        var increaseMinPhysBaseDamage = this.Context.CreateNew<IncreasableItemOption>();
+        increaseMinPhysBaseDamage.SetGuid(ItemOptionDefinitionNumbers.WizardRing, 1);
+        increaseMinPhysBaseDamage.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
+        increaseMinPhysBaseDamage.PowerUpDefinition.TargetAttribute = Stats.MinimumPhysBaseDmg.GetPersistent(this.GameConfiguration);
+        increaseMinPhysBaseDamage.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+        increaseMinPhysBaseDamage.PowerUpDefinition.Boost.ConstantValue.Value = 1.1f;
+        increaseMinPhysBaseDamage.PowerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
+        optionDefinition.PossibleOptions.Add(increaseMinPhysBaseDamage);
 
-        var increaseSpeed = this.Context.CreateNew<IncreasableItemOption>();
-        increaseSpeed.SetGuid(ItemOptionDefinitionNumbers.WizardRing, 2);
-        increaseSpeed.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
-        increaseSpeed.PowerUpDefinition.TargetAttribute = Stats.AttackSpeed.GetPersistent(this.GameConfiguration);
-        increaseSpeed.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-        increaseSpeed.PowerUpDefinition.Boost.ConstantValue.Value = 10f;
-        optionDefinition.PossibleOptions.Add(increaseSpeed);
+        var increaseMaxPhysBaseDamage = this.Context.CreateNew<IncreasableItemOption>();
+        increaseMaxPhysBaseDamage.SetGuid(ItemOptionDefinitionNumbers.WizardRing, 2);
+        increaseMaxPhysBaseDamage.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
+        increaseMaxPhysBaseDamage.PowerUpDefinition.TargetAttribute = Stats.MaximumPhysBaseDmg.GetPersistent(this.GameConfiguration);
+        increaseMaxPhysBaseDamage.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+        increaseMaxPhysBaseDamage.PowerUpDefinition.Boost.ConstantValue.Value = 1.1f;
+        increaseMaxPhysBaseDamage.PowerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
+        optionDefinition.PossibleOptions.Add(increaseMaxPhysBaseDamage);
 
-        var increaseWizardryDamage = this.Context.CreateNew<IncreasableItemOption>();
-        increaseWizardryDamage.SetGuid(ItemOptionDefinitionNumbers.WizardRing, 3);
-        increaseWizardryDamage.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
-        increaseWizardryDamage.PowerUpDefinition.TargetAttribute = Stats.WizardryAttackDamageIncrease.GetPersistent(this.GameConfiguration);
-        increaseWizardryDamage.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-        increaseWizardryDamage.PowerUpDefinition.Boost.ConstantValue.Value = 0.1f;
-        optionDefinition.PossibleOptions.Add(increaseWizardryDamage);
+        var increaseAttackSpeed = this.Context.CreateNew<IncreasableItemOption>();
+        increaseAttackSpeed.SetGuid(ItemOptionDefinitionNumbers.WizardRing, 3);
+        increaseAttackSpeed.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
+        increaseAttackSpeed.PowerUpDefinition.TargetAttribute = Stats.AttackSpeed.GetPersistent(this.GameConfiguration);
+        increaseAttackSpeed.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+        increaseAttackSpeed.PowerUpDefinition.Boost.ConstantValue.Value = 10f;
+        optionDefinition.PossibleOptions.Add(increaseAttackSpeed);
+
+        var increaseMagicSpeed = this.Context.CreateNew<IncreasableItemOption>();
+        increaseMagicSpeed.SetGuid(ItemOptionDefinitionNumbers.WizardRing, 4);
+        increaseMagicSpeed.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
+        increaseMagicSpeed.PowerUpDefinition.TargetAttribute = Stats.MagicSpeed.GetPersistent(this.GameConfiguration);
+        increaseMagicSpeed.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+        increaseMagicSpeed.PowerUpDefinition.Boost.ConstantValue.Value = 10f;
+        optionDefinition.PossibleOptions.Add(increaseMagicSpeed);
+
+        var increaseMinWizBaseDamage = this.Context.CreateNew<IncreasableItemOption>();
+        increaseMinWizBaseDamage.SetGuid(ItemOptionDefinitionNumbers.WizardRing, 5);
+        increaseMinWizBaseDamage.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
+        increaseMinWizBaseDamage.PowerUpDefinition.TargetAttribute = Stats.MinimumWizBaseDmg.GetPersistent(this.GameConfiguration);
+        increaseMinWizBaseDamage.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+        increaseMinWizBaseDamage.PowerUpDefinition.Boost.ConstantValue.Value = 1.1f;
+        increaseMinWizBaseDamage.PowerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
+        optionDefinition.PossibleOptions.Add(increaseMinWizBaseDamage);
+
+        var increaseMaxWizBaseDamage = this.Context.CreateNew<IncreasableItemOption>();
+        increaseMaxWizBaseDamage.SetGuid(ItemOptionDefinitionNumbers.WizardRing, 6);
+        increaseMaxWizBaseDamage.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
+        increaseMaxWizBaseDamage.PowerUpDefinition.TargetAttribute = Stats.MaximumWizBaseDmg.GetPersistent(this.GameConfiguration);
+        increaseMaxWizBaseDamage.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+        increaseMaxWizBaseDamage.PowerUpDefinition.Boost.ConstantValue.Value = 1.1f;
+        increaseMaxWizBaseDamage.PowerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
+        optionDefinition.PossibleOptions.Add(increaseMaxWizBaseDamage);
 
         // Always add all options "randomly" when it drops ;)
         optionDefinition.AddChance = 1.0f;
         optionDefinition.AddsRandomly = true;
-        optionDefinition.MaximumOptionsPerItem = 3;
+        optionDefinition.MaximumOptionsPerItem = 6;
     }
 
     /// <summary>

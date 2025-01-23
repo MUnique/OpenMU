@@ -236,6 +236,11 @@ internal enum MagicEffectNumber : short
     Blind = 0x49,
 
     /// <summary>
+    /// The weakness effect, which decreases inflicted damage.
+    /// </summary>
+    Weakness = 0x4C,
+
+    /// <summary>
     /// The cherry blossom wine effect (+ 700 Mana).
     /// </summary>
     CherryBlossomWine = 0x4E,

@@ -36,20 +36,20 @@ public class SoulBarrierEffectInitializer : InitializerBase
         magicEffect.StopByDeath = true;
         var powerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
         magicEffect.PowerUpDefinitions.Add(powerUpDefinition);
-        powerUpDefinition.TargetAttribute = Stats.DamageReceiveDecrement.GetPersistent(this.GameConfiguration);
+        powerUpDefinition.TargetAttribute = Stats.SoulBarrierReceiveDecrement.GetPersistent(this.GameConfiguration);
         magicEffect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.Duration.ConstantValue.Value = 60;
         var durationPerEnergy = this.Context.CreateNew<AttributeRelationship>();
         durationPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
         durationPerEnergy.InputOperator = InputOperator.Multiply;
-        durationPerEnergy.InputOperand = 1f / 5f; // 5 energy adds 1 second duration
+        durationPerEnergy.InputOperand = 1f / 40f; // 40 energy adds 1 second duration
         magicEffect.Duration.RelatedValues.Add(durationPerEnergy);
 
         // one percent per 200 energy
         var boostPerEnergy = this.Context.CreateNew<AttributeRelationship>();
         boostPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
         boostPerEnergy.InputOperator = InputOperator.ExponentiateByAttribute;
-        boostPerEnergy.InputOperand = 1 - (0.01f / 200f);
+        boostPerEnergy.InputOperand = 1 - (0.01f / 200f); // test
 
         // one percent per 50 agility
         var boostPerAgility = this.Context.CreateNew<AttributeRelationship>();
@@ -63,5 +63,17 @@ public class SoulBarrierEffectInitializer : InitializerBase
         powerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
         powerUpDefinition.Boost.RelatedValues.Add(boostPerEnergy);
         powerUpDefinition.Boost.RelatedValues.Add(boostPerAgility);
+
+        // two percent mana toll per received hit - TODO: Add Soul Barrier Proficiency additional values
+        var manaTollPerHit = this.Context.CreateNew<AttributeRelationship>();
+        manaTollPerHit.InputAttribute = Stats.CurrentMana.GetPersistent(this.GameConfiguration);
+        manaTollPerHit.InputOperator = InputOperator.Multiply;
+        manaTollPerHit.InputOperand = 0.02f;
+
+        var powerUpDefinition2 = this.Context.CreateNew<PowerUpDefinition>();
+        magicEffect.PowerUpDefinitions.Add(powerUpDefinition2);
+        powerUpDefinition2.TargetAttribute = Stats.SoulBarrierManaTollPerHit.GetPersistent(this.GameConfiguration);
+        powerUpDefinition2.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+        powerUpDefinition2.Boost.RelatedValues.Add(manaTollPerHit);
     }
 }

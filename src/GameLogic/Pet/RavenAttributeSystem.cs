@@ -19,7 +19,7 @@ public class RavenAttributeSystem : IAttributeSystem
                 Stats.MinimumPhysBaseDmg, player =>
                 {
                     var minDamage = player.Attributes?[Stats.RavenMinimumDamage] ?? 0;
-                    minDamage += minDamage * (player.Attributes?[Stats.PetAttackDamageIncrease] ?? 1);
+                    minDamage += minDamage * (player.Attributes?[Stats.RavenAttackDamageIncrease] ?? 1);
                     return minDamage;
                 }
             },
@@ -27,7 +27,7 @@ public class RavenAttributeSystem : IAttributeSystem
                 Stats.MaximumPhysBaseDmg, player =>
                 {
                     var maxDamage = player.Attributes?[Stats.RavenMaximumDamage] ?? 0;
-                    maxDamage += maxDamage * (player.Attributes?[Stats.PetAttackDamageIncrease] ?? 1);
+                    maxDamage += maxDamage * (player.Attributes?[Stats.RavenAttackDamageIncrease] ?? 1);
                     return maxDamage;
                 }
             },

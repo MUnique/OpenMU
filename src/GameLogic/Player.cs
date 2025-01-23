@@ -509,7 +509,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             this._appearanceData.RaiseAppearanceChanged();
 
             await this.PlayerLeftWorld.SafeInvokeAsync(this).ConfigureAwait(false);
-            
+
             (this.SkillList as IDisposable)?.Dispose();
             this.SkillList = null;
 
