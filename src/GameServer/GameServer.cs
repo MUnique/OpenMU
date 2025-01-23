@@ -429,8 +429,12 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
 
     private async ValueTask OnPlayerDisconnectedAsync(Player remotePlayer)
     {
-        await this.SaveSessionOfPlayerAsync(remotePlayer).ConfigureAwait(false);
-        await this.SetOfflineAtLoginServerAsync(remotePlayer).ConfigureAwait(false);
+        if (!remotePlayer.IsTemplatePlayer)
+        {
+            await this.SaveSessionOfPlayerAsync(remotePlayer).ConfigureAwait(false);
+            await this.SetOfflineAtLoginServerAsync(remotePlayer).ConfigureAwait(false);
+        }
+
         await remotePlayer.DisposeAsync().ConfigureAwait(false);
         this.OnPropertyChanged(nameof(this.CurrentConnections));
     }
@@ -454,7 +458,7 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
     {
         try
         {
-            // Recover items placed in an NPC or trade dialog when player is diconnected
+            // Recover items placed in an NPC or trade dialog when player is disconnected
             if (player.BackupInventory is not null)
             {
                 player.Inventory!.Clear();
@@ -479,7 +483,7 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
                 // nothing else to restore.
             }
 
-            if (!await player.PersistenceContext.SaveChangesAsync().ConfigureAwait(false))
+            if (!await player.SaveProgressAsync().ConfigureAwait(false))
             {
                 this._logger.LogWarning($"Could not save session of player {player}");
             }
