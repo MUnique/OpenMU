@@ -11,6 +11,8 @@ using Nito.AsyncEx;
 /// </summary>
 public class ShopStorage : Storage, IShopStorage
 {
+    private readonly Character _character;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ShopStorage"/> class.
     /// </summary>
@@ -19,13 +21,18 @@ public class ShopStorage : Storage, IShopStorage
         : base(InventoryConstants.StoreSize, 0, InventoryConstants.FirstStoreItemSlotIndex, new ItemStorageAdapter(character.Inventory ?? throw Error.NotInitializedProperty(character, nameof(Character.Inventory)), InventoryConstants.FirstStoreItemSlotIndex, InventoryConstants.StoreSize))
     {
         this.StoreLock = new AsyncLock();
+        this._character = character;
     }
 
     /// <inheritdoc/>
     public AsyncLock StoreLock { get; }
 
     /// <inheritdoc/>
-    public bool StoreOpen { get; set; }
+    public bool StoreOpen
+    {
+        get => this._character.IsStoreOpened;
+        set => this._character.IsStoreOpened = value;
+    }
 
     /// <inheritdoc/>
     public override async ValueTask<bool> AddItemAsync(byte slot, Item item)

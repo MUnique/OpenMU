@@ -220,6 +220,11 @@ public class Character
     public string? StoreName { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether this character has it's store opened.
+    /// </summary>
+    public bool IsStoreOpened { get; set; }
+
+    /// <summary>
     /// Gets or sets the stat attributes.
     /// </summary>
     /// <remarks>
