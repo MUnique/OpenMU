@@ -23,6 +23,7 @@ using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.GameLogic.Views.MuHelper;
 using MUnique.OpenMU.GameLogic.Views.Pet;
+using MUnique.OpenMU.GameLogic.Views.PlayerShop;
 using MUnique.OpenMU.GameLogic.Views.Quest;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Interfaces;
@@ -142,6 +143,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// Gets a value indicating whether this instance is invisible to other players.
     /// </summary>
     public bool IsInvisible => this.Attributes?[Stats.IsInvisible] > 0;
+
+    /// <inheritdoc />
+    public bool IsTemplatePlayer => this.Account?.IsTemplate is true;
 
     /// <summary>
     /// Gets the skill hit validator.
@@ -475,6 +479,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// Gets or sets the cooldown timestamp until no further potion can be consumed.
     /// </summary>
     public DateTime PotionCooldownUntil { get; set; } = DateTime.UtcNow;
+
+    /// <summary>
+    /// Gets a value indicating whether opening the player store after entering the game is supported by this instance.
+    /// </summary>
+    protected virtual bool IsPlayerStoreOpeningAfterEnterSupported => true;
 
     private static readonly MagicEffectDefinition GMEffect = new GMMagicEffectDefinition
     {
@@ -1651,12 +1660,27 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         try
         {
-            await this.PersistenceContext.SaveChangesAsync().ConfigureAwait(false);
+            await this.SaveProgressAsync().ConfigureAwait(false);
         }
         catch (Exception ex)
         {
             this.Logger.LogError(ex, "Couldn't save when leaving the game. Player: {player}", this);
         }
+    }
+
+    /// <summary>
+    /// Saves the progress of the player.
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>Success of the save operation.</returns>
+    public async ValueTask<bool> SaveProgressAsync(CancellationToken cancellationToken = default)
+    {
+        if (!this.IsTemplatePlayer)
+        {
+            return await this.PersistenceContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        return true;
     }
 
     /// <inheritdoc />
@@ -2088,33 +2112,33 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     private async ValueTask OnPlayerEnteredWorldAsync()
     {
-        if (this.SelectedCharacter is null)
+        if (this.SelectedCharacter is not { } selectedCharacter)
         {
             throw new InvalidOperationException($"The player has no selected character.");
         }
 
-        if (this.SelectedCharacter?.CharacterClass is null)
+        if (selectedCharacter.CharacterClass is null)
         {
-            throw new InvalidOperationException($"The character '{this.SelectedCharacter}' has no assigned character class.");
+            throw new InvalidOperationException($"The character '{selectedCharacter}' has no assigned character class.");
         }
 
         // For characters which got created on the database or with the admin panel,
         // it's possible that they're missing the inventory. In this case, we create it here
         // and initialize with default items.
-        if (this.SelectedCharacter!.Inventory is null)
+        if (selectedCharacter!.Inventory is null)
         {
-            this.SelectedCharacter.Inventory = this.PersistenceContext.CreateNew<ItemStorage>();
-            this.GameContext.PlugInManager.GetPlugInPoint<ICharacterCreatedPlugIn>()?.CharacterCreated(this, this.SelectedCharacter);
+            selectedCharacter.Inventory = this.PersistenceContext.CreateNew<ItemStorage>();
+            this.GameContext.PlugInManager.GetPlugInPoint<ICharacterCreatedPlugIn>()?.CharacterCreated(this, selectedCharacter);
         }
 
-        this.SelectedCharacter.CurrentMap ??= this.SelectedCharacter.CharacterClass?.HomeMap;
+        selectedCharacter.CurrentMap ??= selectedCharacter.CharacterClass?.HomeMap;
         this.AddMissingStatAttributes();
 
-        this.Attributes = new ItemAwareAttributeSystem(this.Account!, this.SelectedCharacter!);
+        this.Attributes = new ItemAwareAttributeSystem(this.Account!, selectedCharacter);
         this.LogInvalidInventoryItems();
 
         this.Inventory = new InventoryStorage(this, this.GameContext);
-        this.ShopStorage = new ShopStorage(this);
+        this.ShopStorage = new ShopStorage(selectedCharacter);
         this.TemporaryStorage = new Storage(InventoryConstants.TemporaryStorageSize, new TemporaryItemStorage());
         this.Vault = null; // vault storage is getting set when vault npc is opened.
         this.SkillList = new SkillList(this);
@@ -2143,17 +2167,31 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         await this.InvokeViewPlugInAsync<IUpdateRotationPlugIn>(p => p.UpdateRotationAsync()).ConfigureAwait(false);
         await this.ResetPetBehaviorAsync().ConfigureAwait(false);
 
-        if (this.SelectedCharacter?.MuHelperConfiguration is { } muHelperConfiguration)
+        if (selectedCharacter.MuHelperConfiguration is { } muHelperConfiguration)
         {
             await this.InvokeViewPlugInAsync<IMuHelperConfigurationUpdatePlugIn>(p => p.UpdateMuHelperConfigurationAsync(muHelperConfiguration)).ConfigureAwait(false);
         }
 
         // Add GM mark (mu logo above character's head)
-        if (this.SelectedCharacter?.CharacterStatus == CharacterStatus.GameMaster)
+        if (selectedCharacter.CharacterStatus == CharacterStatus.GameMaster)
         {
             await this.MagicEffectList.AddEffectAsync(new MagicEffect(
             TimeSpan.FromMilliseconds((double)int.MaxValue),
             GMEffect)).ConfigureAwait(false);
+        }
+
+        // Restore previously opened Store
+        if (selectedCharacter.IsStoreOpened
+            && !string.IsNullOrWhiteSpace(selectedCharacter.StoreName)
+            && this.IsPlayerStoreOpeningAfterEnterSupported)
+        {
+            await this.InvokeViewPlugInAsync<IShowShopItemListPlugIn>(p => p.ShowShopItemListAsync(this, true)).ConfigureAwait(false);
+            var action = new PlayerActions.PlayerStore.OpenStoreAction();
+            await action.OpenStoreAsync(this, selectedCharacter.StoreName).ConfigureAwait(false);
+        }
+        else
+        {
+            selectedCharacter.IsStoreOpened = false;
         }
     }
 

@@ -231,11 +231,6 @@ public interface IShopStorage : IStorage
     bool StoreOpen { get; set; }
 
     /// <summary>
-    /// Gets or sets the name of the store.
-    /// </summary>
-    string StoreName { get; set; }
-
-    /// <summary>
     /// Gets the store lock.
     /// </summary>
     AsyncLock StoreLock { get; }

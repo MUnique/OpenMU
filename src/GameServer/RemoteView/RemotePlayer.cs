@@ -88,6 +88,9 @@ public class RemotePlayer : Player, IClientVersionProvider
     internal MainPacketHandlerPlugInContainer MainPacketHandler { get; }
 
     /// <inheritdoc />
+    protected override bool IsPlayerStoreOpeningAfterEnterSupported => this.ClientVersion.Season > 100;
+
+    /// <inheritdoc />
     protected override ICustomPlugInContainer<IViewPlugIn> CreateViewPlugInContainer()
     {
         return new ViewPlugInContainer(this, this.ClientVersion, this.GameContext.PlugInManager);

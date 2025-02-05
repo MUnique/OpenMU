@@ -33,7 +33,7 @@ public class CloseNpcDialogAction
                 {
                     await Task.Delay(1000).ConfigureAwait(false);
                     player.Logger.LogInformation("Saving changes after closing the chaos goblin ...");
-                    await player.PersistenceContext.SaveChangesAsync().ConfigureAwait(false);
+                    await player.SaveProgressAsync().ConfigureAwait(false);
                     player.Logger.LogInformation("Saved changes after closing the chaos goblin ...");
                 }
                 catch (Exception ex)

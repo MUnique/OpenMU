@@ -52,7 +52,7 @@ public class ShowShopItemListPlugIn : IShowShopItemListPlugIn
                 ItemCount = (byte)items.Count,
                 PlayerId = playerId,
                 PlayerName = requestedPlayer.SelectedCharacter.Name,
-                ShopName = requestedPlayer.ShopStorage.StoreName,
+                ShopName = requestedPlayer.SelectedCharacter.StoreName,
             };
 
             int i = 0;

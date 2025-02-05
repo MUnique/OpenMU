@@ -215,6 +215,16 @@ public class Character
     public byte[]? MuHelperConfiguration { get; set; }
 
     /// <summary>
+    /// Gets or sets the name of the personal store.
+    /// </summary>
+    public string? StoreName { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether this character has it's store opened.
+    /// </summary>
+    public bool IsStoreOpened { get; set; }
+
+    /// <summary>
     /// Gets or sets the stat attributes.
     /// </summary>
     /// <remarks>

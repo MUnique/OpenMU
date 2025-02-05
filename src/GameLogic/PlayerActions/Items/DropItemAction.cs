@@ -31,6 +31,13 @@ public class DropItemAction
             return;
         }
 
+        if (player.IsTemplatePlayer)
+        {
+            player.Logger.LogWarning("Can't drop items of a template account.");
+            await player.InvokeViewPlugInAsync<IItemDropResultPlugIn>(p => p.ItemDropResultAsync(slot, false)).ConfigureAwait(false);
+            return;
+        }
+
         if (player.GameContext.PlugInManager.GetPlugInPoint<IItemDropPlugIn>() is { } plugInPoint)
         {
             var dropArguments = new ItemDropArguments();
@@ -67,7 +74,7 @@ public class DropItemAction
 
         // We have to save here already. Otherwise, if the item got modified since last
         // save point by the dropper, changes would not be saved by the picking up player!
-        await player.PersistenceContext.SaveChangesAsync().ConfigureAwait(false);
+        await player.SaveProgressAsync().ConfigureAwait(false);
 
         // Some room for improvement: When the item is not persisted, we don't need to save.
         // However, to check this in the right order, we need to extend IContext to

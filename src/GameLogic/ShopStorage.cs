@@ -11,24 +11,28 @@ using Nito.AsyncEx;
 /// </summary>
 public class ShopStorage : Storage, IShopStorage
 {
+    private readonly Character _character;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ShopStorage"/> class.
     /// </summary>
-    /// <param name="player">The player.</param>
-    public ShopStorage(Player player)
-        : base(InventoryConstants.StoreSize, 0, InventoryConstants.FirstStoreItemSlotIndex, new ItemStorageAdapter(player.SelectedCharacter?.Inventory ?? throw Error.NotInitializedProperty(player, nameof(Character.Inventory)), InventoryConstants.FirstStoreItemSlotIndex, InventoryConstants.StoreSize))
+    /// <param name="character">The character.</param>
+    public ShopStorage(Character character)
+        : base(InventoryConstants.StoreSize, 0, InventoryConstants.FirstStoreItemSlotIndex, new ItemStorageAdapter(character.Inventory ?? throw Error.NotInitializedProperty(character, nameof(Character.Inventory)), InventoryConstants.FirstStoreItemSlotIndex, InventoryConstants.StoreSize))
     {
         this.StoreLock = new AsyncLock();
+        this._character = character;
     }
 
     /// <inheritdoc/>
     public AsyncLock StoreLock { get; }
 
     /// <inheritdoc/>
-    public string StoreName { get; set; } = string.Empty;
-
-    /// <inheritdoc/>
-    public bool StoreOpen { get; set; }
+    public bool StoreOpen
+    {
+        get => this._character.IsStoreOpened;
+        set => this._character.IsStoreOpened = value;
+    }
 
     /// <inheritdoc/>
     public override async ValueTask<bool> AddItemAsync(byte slot, Item item)

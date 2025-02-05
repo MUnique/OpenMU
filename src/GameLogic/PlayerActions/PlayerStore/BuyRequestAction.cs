@@ -25,6 +25,12 @@ public class BuyRequestAction
     public async ValueTask BuyItemAsync(Player player, Player requestedPlayer, byte slot)
     {
         using var loggerScope = player.Logger.BeginScope(this.GetType());
+        if (requestedPlayer.IsTemplatePlayer || player.IsTemplatePlayer)
+        {
+            await player.InvokeViewPlugInAsync<IPlayerShopBuyRequestResultPlugIn>(p => p.ShowResultAsync(requestedPlayer, ItemBuyResult.ItemBlock, null)).ConfigureAwait(false);
+            return;
+        }
+
         if (!(requestedPlayer.ShopStorage?.StoreOpen ?? false))
         {
             player.Logger.LogDebug("Store not open, Character {0}", requestedPlayer.SelectedCharacter?.Name);

@@ -94,7 +94,7 @@ public class CreateCharacterAction
         player.GameContext.PlugInManager.GetPlugInPoint<ICharacterCreatedPlugIn>()?.CharacterCreated(player, character);
         try
         {
-            await player.PersistenceContext.SaveChangesAsync().ConfigureAwait(false);
+            await player.SaveProgressAsync().ConfigureAwait(false);
         }
         catch (Exception ex)
         {

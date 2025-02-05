@@ -56,7 +56,7 @@ public class ShowShopItemListExtendedPlugIn : IShowShopItemListPlugIn
                 ItemCount = (byte)items.Count,
                 PlayerId = playerId,
                 PlayerName = requestedPlayer.SelectedCharacter.Name,
-                ShopName = requestedPlayer.ShopStorage.StoreName,
+                ShopName = requestedPlayer.SelectedCharacter.StoreName,
             };
 
             int headerSize = PlayerShopItemListExtendedRef.GetRequiredSize(0, 0);
