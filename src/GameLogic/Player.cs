@@ -23,6 +23,7 @@ using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.GameLogic.Views.MuHelper;
 using MUnique.OpenMU.GameLogic.Views.Pet;
+using MUnique.OpenMU.GameLogic.Views.PlayerShop;
 using MUnique.OpenMU.GameLogic.Views.Quest;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Interfaces;
@@ -478,6 +479,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// Gets or sets the cooldown timestamp until no further potion can be consumed.
     /// </summary>
     public DateTime PotionCooldownUntil { get; set; } = DateTime.UtcNow;
+
+    /// <summary>
+    /// Gets a value indicating whether opening the player store after entering the game is supported by this instance.
+    /// </summary>
+    protected virtual bool IsPlayerStoreOpeningAfterEnterSupported => true;
 
     private static readonly MagicEffectDefinition GMEffect = new GMMagicEffectDefinition
     {
@@ -2172,6 +2178,20 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             await this.MagicEffectList.AddEffectAsync(new MagicEffect(
             TimeSpan.FromMilliseconds((double)int.MaxValue),
             GMEffect)).ConfigureAwait(false);
+        }
+
+        // Restore previously opened Store
+        if (selectedCharacter.IsStoreOpened
+            && !string.IsNullOrWhiteSpace(selectedCharacter.StoreName)
+            && this.IsPlayerStoreOpeningAfterEnterSupported)
+        {
+            await this.InvokeViewPlugInAsync<IShowShopItemListPlugIn>(p => p.ShowShopItemListAsync(this, true)).ConfigureAwait(false);
+            var action = new PlayerActions.PlayerStore.OpenStoreAction();
+            await action.OpenStoreAsync(this, selectedCharacter.StoreName).ConfigureAwait(false);
+        }
+        else
+        {
+            selectedCharacter.IsStoreOpened = false;
         }
     }
 
