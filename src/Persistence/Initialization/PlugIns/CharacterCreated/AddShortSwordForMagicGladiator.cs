@@ -1,4 +1,4 @@
-﻿// <copyright file="AddSmallAxeForMagicGladiator.cs" company="MUnique">
+﻿// <copyright file="AddShortSwordForMagicGladiator.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -13,13 +13,13 @@ using MUnique.OpenMU.PlugIns;
 /// Adds a short sword to a created magic gladiator character.
 /// </summary>
 [Guid("3D2790E3-B757-46FD-8618-2441B7E9E2B3")]
-[PlugIn(nameof(AddSmallAxeForMagicGladiator), "Adds a short sword to a created magic gladiator character.")]
-public class AddSmallAxeForMagicGladiator : AddInitialItemPlugInBase
+[PlugIn(nameof(AddShortSwordForMagicGladiator), "Adds a short sword to a created magic gladiator character.")]
+public class AddShortSwordForMagicGladiator : AddInitialItemPlugInBase
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="AddSmallAxeForMagicGladiator" /> class.
+    /// Initializes a new instance of the <see cref="AddShortSwordForMagicGladiator" /> class.
     /// </summary>
-    public AddSmallAxeForMagicGladiator()
+    public AddShortSwordForMagicGladiator()
         : base((byte)CharacterClassNumber.MagicGladiator, (byte)ItemGroups.Swords, 1, 0)
     {
     }
