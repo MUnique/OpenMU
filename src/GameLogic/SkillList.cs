@@ -88,6 +88,15 @@ public sealed class SkillList : ISkillList, IDisposable
         skillEntry.Level = 0;
         await this.AddLearnedSkillAsync(skillEntry).ConfigureAwait(false);
 
+        if (skill.Number == 509) // Force Wave Streng
+        {
+            var forceWaveStrAltSkillEntry = this._player.PersistenceContext.CreateNew<SkillEntry>();
+            forceWaveStrAltSkillEntry.Skill = this._player.GameContext.Configuration.Skills.FirstOrDefault(s => s.Number == 5090);
+            forceWaveStrAltSkillEntry.Level = 0;
+            this._availableSkills.Add(forceWaveStrAltSkillEntry.Skill!.Number.ToUnsigned(), forceWaveStrAltSkillEntry);
+            this._learnedSkills.Add(forceWaveStrAltSkillEntry);
+        }
+
         if (skill.MasterDefinition?.ReplacedSkill is { } replacedSkill)
         {
             await this._player.InvokeViewPlugInAsync<ISkillListViewPlugIn>(p => p.RemoveSkillAsync(replacedSkill)).ConfigureAwait(false);
@@ -212,6 +221,8 @@ public sealed class SkillList : ISkillList, IDisposable
         public float Value { get; private set; }
 
         public AggregateType AggregateType { get; }
+
+        public byte Stage { get; }
 
         public void Dispose()
         {

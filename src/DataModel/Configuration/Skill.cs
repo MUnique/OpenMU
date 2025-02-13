@@ -67,7 +67,7 @@ public enum DamageType
     /// The generic dark lord offensive skill damage type.
     /// </summary>
     /// <remarks>Any DL skill other than electric spike, chaotic diseier, and earthshake.</remarks>
-    GenericDarkLordSkill = 9,
+    DarkLordGenericSkill = 9,
 
     /// <summary>
     /// The multishot (Elf) skill damage type.

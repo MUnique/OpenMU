@@ -14,10 +14,12 @@ public class ConstantElement : IElement
     /// </summary>
     /// <param name="value">The constant value.</param>
     /// <param name="aggregateType">Type of the aggregate.</param>
-    public ConstantElement(float value, AggregateType aggregateType = AggregateType.AddRaw)
+    /// <param name="stage">The calculation stage.</param>
+    public ConstantElement(float value, AggregateType aggregateType = AggregateType.AddRaw, byte stage = 0)
     {
         this.Value = value;
         this.AggregateType = aggregateType;
+        this.Stage = stage;
     }
 
     /// <summary>
@@ -42,9 +44,12 @@ public class ConstantElement : IElement
     /// <inheritdoc/>
     public AggregateType AggregateType { get; }
 
+    /// <inheritdoc />
+    public byte Stage { get; }
+
     /// <inheritdoc/>
     public override string ToString()
     {
-        return $"{this.Value} ({this.AggregateType})";
+        return $"{this.Value} ({this.AggregateType}) @{this.Stage}";
     }
 }

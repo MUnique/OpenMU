@@ -16,10 +16,10 @@ internal static class AttributeExtensions
     /// Applies the settings for the <see cref="ConstValueAttribute"/> entity.
     /// </summary>
     /// <param name="builder">The builder.</param>
-    public static void Apply(this EntityTypeBuilder<ConstValueAttribute> builder)
-    {
-        builder.Ignore(c => c.AggregateType);
-    }
+    //public static void Apply(this EntityTypeBuilder<ConstValueAttribute> builder)
+    //{
+    //    builder.Ignore(c => c.AggregateType);
+    //}
 
     /// <summary>
     /// Applies the settings for the <see cref="PowerUpDefinitionValue"/> entity.

@@ -30,6 +30,16 @@ public enum InputOperator
     /// The <see cref="AttributeRelationship.InputOperand"/> is exponentiated by the <see cref="AttributeRelationship.InputAttribute"/> before adding to the <see cref="AttributeRelationship.TargetAttribute"/>.
     /// </summary>
     ExponentiateByAttribute,
+
+    /// <summary>
+    /// The minimum between <see cref="AttributeRelationship.InputAttribute"/> and <see cref="AttributeRelationship.InputOperand"/> is taken before adding to the <see cref="AttributeRelationship.TargetAttribute"/>.
+    /// </summary>
+    Minimum,
+
+    /// <summary>
+    /// The maximum between <see cref="AttributeRelationship.InputAttribute"/> and <see cref="AttributeRelationship.InputOperand"/> is taken before adding to the <see cref="AttributeRelationship.TargetAttribute"/>.
+    /// </summary>
+    Maximum,
 }
 
 /// <summary>
@@ -54,8 +64,10 @@ public class AttributeRelationship
     /// <param name="targetAttribute">The target attribute.</param>
     /// <param name="inputOperand">The multiplier.</param>
     /// <param name="inputAttribute">The input attribute.</param>
-    public AttributeRelationship(AttributeDefinition targetAttribute, float inputOperand, AttributeDefinition inputAttribute, AggregateType aggregateType)
-        : this(targetAttribute, inputOperand, inputAttribute, InputOperator.Multiply, null, aggregateType)
+    /// <param name="aggregateType">The type of the aggregate on the <paramref name="targetAttribute"/>.</param>
+    /// <param name="stage">The calculation stage on the <paramref name="targetAttribute"/>.</param>
+    public AttributeRelationship(AttributeDefinition targetAttribute, float inputOperand, AttributeDefinition inputAttribute, AggregateType aggregateType, byte stage)
+        : this(targetAttribute, inputOperand, inputAttribute, InputOperator.Multiply, null, aggregateType, stage)
     {
     }
 
@@ -65,8 +77,10 @@ public class AttributeRelationship
     /// <param name="targetAttribute">The target attribute.</param>
     /// <param name="inputOperand">The multiplier.</param>
     /// <param name="inputAttribute">The input attribute.</param>
-    public AttributeRelationship(AttributeDefinition targetAttribute, AttributeDefinition inputOperand, AttributeDefinition inputAttribute, AggregateType aggregateType)
-        : this(targetAttribute, 1, inputAttribute, InputOperator.Multiply, inputOperand, aggregateType)
+    /// <param name="aggregateType">The type of the aggregate on the <paramref name="targetAttribute"/>.</param>
+    /// <param name="stage">The calculation stage on the <paramref name="targetAttribute"/>.</param>
+    public AttributeRelationship(AttributeDefinition targetAttribute, AttributeDefinition inputOperand, AttributeDefinition inputAttribute, AggregateType aggregateType, byte stage)
+        : this(targetAttribute, 1, inputAttribute, InputOperator.Multiply, inputOperand, aggregateType, stage)
     {
     }
 
@@ -78,12 +92,14 @@ public class AttributeRelationship
     /// <param name="inputAttribute">The input attribute.</param>
     /// <param name="inputOperator">The input operator.</param>
     /// <param name="operandAttribute">The operand attribute.</param>
-    /// <param name="aggregateType">The type of the aggregate.</param>
-    public AttributeRelationship(AttributeDefinition targetAttribute, float inputOperand, AttributeDefinition inputAttribute, InputOperator inputOperator, AttributeDefinition? operandAttribute = null, AggregateType aggregateType = AggregateType.AddRaw)
+    /// <param name="aggregateType">The type of the aggregate on the <paramref name="targetAttribute"/>.</param>
+    /// <param name="stage">The calculation stage on the <paramref name="targetAttribute"/>.</param>
+    public AttributeRelationship(AttributeDefinition targetAttribute, float inputOperand, AttributeDefinition inputAttribute, InputOperator inputOperator, AttributeDefinition? operandAttribute = null, AggregateType aggregateType = AggregateType.AddRaw, byte stage = 0)
     {
         this.InputOperand = inputOperand;
         this.InputOperator = inputOperator;
         this.AggregateType = aggregateType;
+        this.Stage = stage;
         this._targetAttribute = targetAttribute;
         this._inputAttribute = inputAttribute;
         this._operandAttribute = operandAttribute;
@@ -128,9 +144,14 @@ public class AttributeRelationship
     public float InputOperand { get; set; }
 
     /// <summary>
-    /// Gets or sets the aggregate type with which the relationship will effect the target attribute.
+    /// Gets or sets the aggregate type with which the relationship should effect the target attribute.
     /// </summary>
     public AggregateType AggregateType { get; set; }
+
+    /// <summary>
+    /// Gets or sets the calculation stage at which the relationship should effect the target attribute.
+    /// </summary>
+    public byte Stage { get; set; }
 
     /// <inheritdoc/>
     public override string ToString()
@@ -142,9 +163,9 @@ public class AttributeRelationship
 
         if (this.InputOperator == InputOperator.ExponentiateByAttribute)
         {
-            return $"{this.TargetAttribute} += {this.OperandAttribute?.ToString() ?? this.InputOperand.ToString(CultureInfo.InvariantCulture)} {this.InputOperator.AsString()} {this.InputAttribute}";
+            return $"{this.TargetAttribute} {(this.AggregateType == AggregateType.Multiplicate ? "*" : "+")}= {this.OperandAttribute?.ToString() ?? this.InputOperand.ToString(CultureInfo.InvariantCulture)} {this.InputOperator.AsString()} {this.InputAttribute}";
         }
 
-        return $"{this.TargetAttribute} += {this.InputAttribute} {this.InputOperator.AsString()} {this.OperandAttribute?.ToString() ?? this.InputOperand.ToString(CultureInfo.InvariantCulture)}";
+        return $"{this.TargetAttribute} {(this.AggregateType == AggregateType.Multiplicate ? "*" : "+")}= {this.InputAttribute} {this.InputOperator.AsString()} {this.OperandAttribute?.ToString() ?? this.InputOperand.ToString(CultureInfo.InvariantCulture)}";
     }
 }

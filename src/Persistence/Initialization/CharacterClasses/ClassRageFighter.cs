@@ -33,7 +33,7 @@ internal partial class CharacterClassInitialization
         result.IsMasterClass = isMaster;
         result.LevelRequirementByCreation = 150;
         result.NextGenerationClass = nextGenerationClass;
-        result.LevelWarpRequirementReductionPercent = (int) Math.Ceiling(100.0 / 3);
+        result.LevelWarpRequirementReductionPercent = (int)Math.Ceiling(100.0 / 3);
         result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.Level, 1, false));
         result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.PointsPerLevelUp, 7, false));
         result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.BaseStrength, 32, true));
@@ -50,7 +50,6 @@ internal partial class CharacterClassInitialization
         this.AddCommonAttributeRelationships(result.AttributeCombinations);
 
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.DefenseBase, 1.0f / 8, Stats.TotalAgility));
-
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.DefenseRatePvm, 1.0f / 10, Stats.TotalAgility));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.DefenseRatePvp, 0.2f, Stats.TotalAgility));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.DefenseRatePvp, 1.5f, Stats.TotalLevel));
@@ -86,21 +85,18 @@ internal partial class CharacterClassInitialization
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumPhysBaseDmg, 1.0f / 5, Stats.TotalStrength));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MinimumPhysBaseDmg, 1.0f / 15, Stats.TotalVitality));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumPhysBaseDmg, 1.0f / 12, Stats.TotalVitality));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MinimumPhysBaseDmg, 1, Stats.MinimumPhysBaseDmgByWeapon));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumPhysBaseDmg, 1, Stats.MaximumPhysBaseDmgByWeapon));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MinimumPhysBaseDmg, 1, Stats.PhysicalBaseDmg));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumPhysBaseDmg, 1, Stats.PhysicalBaseDmg));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.SkillMultiplier, 0.001f, Stats.TotalEnergy));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.VitalitySkillMultiplier, 0.001f, Stats.TotalVitality));
 
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.FenrirBaseDmg, 1.0f / 5, Stats.BaseStrength));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.FenrirBaseDmg, 1.0f / 5, Stats.BaseAgility));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.FenrirBaseDmg, 1.0f / 5, Stats.BaseVitality));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.FenrirBaseDmg, 1.0f / 7, Stats.BaseEnergy));
 
-        //result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.PhysicalBaseDmg, Stats.IsGloveWeaponEquipped, Stats.GloveWeaponBonusDamage));
-
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(57, Stats.MaximumHealth));
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(7, Stats.MaximumMana));
-        result.BaseAttributeValues.Add(this.CreateConstValueAttribute(2, Stats.SkillMultiplier));
+        result.BaseAttributeValues.Add(this.CreateConstValueAttribute(0.5f, Stats.SkillMultiplier));
+        result.BaseAttributeValues.Add(this.CreateConstValueAttribute(0.5f, Stats.VitalitySkillMultiplier));
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f / 33f, Stats.AbilityRecoveryMultiplier));
 
         this.AddCommonBaseAttributeValues(result.BaseAttributeValues, isMaster);

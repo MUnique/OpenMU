@@ -38,6 +38,9 @@ public abstract class BaseAttribute : IAttribute
     /// <inheritdoc/>
     public AggregateType AggregateType { get; }
 
+    /// <inheritdoc />
+    public byte Stage { get; }
+
     /// <inheritdoc/>
     public override string ToString()
     {

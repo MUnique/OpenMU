@@ -279,11 +279,11 @@ public class SocketSystem : InitializerBase
         definition.MaximumOptionsPerItem = 1;
 
         definition.PossibleOptions.Add(this.CreateRelatedSocketOption(0, SocketSubOptionType.Fire, Stats.MaximumPhysBaseDmg, Stats.Level, 1f / 20f, 1f / 19f, 1f / 18f, 1f / 17f, 1f / 14f));
-        definition.PossibleOptions.Add(this.CreateSocketOption(1, SocketSubOptionType.Fire, Stats.AttackSpeed, AggregateType.AddRaw, 7, 8, 9, 10, 11));
-        definition.PossibleOptions.Add(this.CreateSocketOption(2, SocketSubOptionType.Fire, Stats.BaseMaxDamageBonus, AggregateType.AddRaw, 30, 32, 35, 40, 50));
-        definition.PossibleOptions.Add(this.CreateSocketOption(3, SocketSubOptionType.Fire, Stats.BaseMinDamageBonus, AggregateType.AddRaw, 20, 22, 25, 30, 35));
-        definition.PossibleOptions.Add(this.CreateSocketOption(4, SocketSubOptionType.Fire, Stats.BaseDamageBonus, AggregateType.AddRaw, 20, 22, 25, 30, 35));
-        definition.PossibleOptions.Add(this.CreateSocketOption(5, SocketSubOptionType.Fire, Stats.AbilityUsageReduction, AggregateType.AddRaw, 0.40f, 0.41f, 0.42f, 0.43f, 0.44f));
+        definition.PossibleOptions.Add(this.CreateSocketOption(1, SocketSubOptionType.Fire, Stats.AttackSpeedAny, AggregateType.AddRaw, 0, 7, 8, 9, 10, 11));
+        definition.PossibleOptions.Add(this.CreateSocketOption(2, SocketSubOptionType.Fire, Stats.SocketBaseMaxDmgBonus, AggregateType.AddRaw, 0, 30, 32, 35, 40, 50));
+        definition.PossibleOptions.Add(this.CreateSocketOption(3, SocketSubOptionType.Fire, Stats.SocketBaseMinDmgBonus, AggregateType.AddRaw, 0, 20, 22, 25, 30, 35));
+        definition.PossibleOptions.Add(this.CreateSocketOption(4, SocketSubOptionType.Fire, Stats.SocketBaseDmgBonus, AggregateType.AddRaw, 0, 20, 22, 25, 30, 35));
+        definition.PossibleOptions.Add(this.CreateSocketOption(5, SocketSubOptionType.Fire, Stats.AbilityUsageReduction, AggregateType.AddRaw, 0, 0.40f, 0.41f, 0.42f, 0.43f, 0.44f));
         return definition;
     }
 
@@ -295,11 +295,11 @@ public class SocketSystem : InitializerBase
         definition.Name = "Socket Options (Ice)";
         definition.MaximumOptionsPerItem = 1;
 
-        definition.PossibleOptions.Add(this.CreateSocketOption(0, SocketSubOptionType.Ice, Stats.HealthAfterMonsterKillMultiplier, AggregateType.AddRaw, 1f / 8f, 1f / 7f, 1f / 6f, 1f / 5f, 1f / 4f));
-        definition.PossibleOptions.Add(this.CreateSocketOption(1, SocketSubOptionType.Ice, Stats.ManaAfterMonsterKillMultiplier, AggregateType.AddRaw, 1f / 8f, 1f / 7f, 1f / 6f, 1f / 5f, 1f / 4f));
-        definition.PossibleOptions.Add(this.CreateSocketOption(2, SocketSubOptionType.Ice, Stats.SkillDamageBonus, AggregateType.AddRaw, 37, 40, 45, 50, 60));
-        definition.PossibleOptions.Add(this.CreateSocketOption(3, SocketSubOptionType.Ice, Stats.AttackRatePvm, AggregateType.AddRaw, 25, 27, 30, 35, 40));
-        definition.PossibleOptions.Add(this.CreateSocketOption(4, SocketSubOptionType.Ice, Stats.ItemDurationIncrease, AggregateType.Multiplicate, 1.30f, 1.32f, 1.34f, 1.36f, 1.38f));
+        definition.PossibleOptions.Add(this.CreateSocketOption(0, SocketSubOptionType.Ice, Stats.HealthAfterMonsterKillMultiplier, AggregateType.AddRaw, 0, 1f / 8f, 1f / 7f, 1f / 6f, 1f / 5f, 1f / 4f));
+        definition.PossibleOptions.Add(this.CreateSocketOption(1, SocketSubOptionType.Ice, Stats.ManaAfterMonsterKillMultiplier, AggregateType.AddRaw, 0, 1f / 8f, 1f / 7f, 1f / 6f, 1f / 5f, 1f / 4f));
+        definition.PossibleOptions.Add(this.CreateSocketOption(2, SocketSubOptionType.Ice, Stats.SkillDamageBonus, AggregateType.AddRaw, 0, 37, 40, 45, 50, 60));
+        definition.PossibleOptions.Add(this.CreateSocketOption(3, SocketSubOptionType.Ice, Stats.AttackRatePvm, AggregateType.AddRaw, 0, 25, 27, 30, 35, 40));
+        definition.PossibleOptions.Add(this.CreateSocketOption(4, SocketSubOptionType.Ice, Stats.ItemDurationIncrease, AggregateType.Multiplicate, 0, 1.30f, 1.32f, 1.34f, 1.36f, 1.38f));
         return definition;
     }
 
@@ -311,10 +311,10 @@ public class SocketSystem : InitializerBase
         definition.Name = "Socket Options (Lightning)";
         definition.MaximumOptionsPerItem = 1;
 
-        definition.PossibleOptions.Add(this.CreateSocketOption(0, SocketSubOptionType.Lightning, Stats.ExcellentDamageBonus, AggregateType.AddRaw, 15, 20, 25, 30, 40));
-        definition.PossibleOptions.Add(this.CreateSocketOption(1, SocketSubOptionType.Lightning, Stats.ExcellentDamageChance, AggregateType.AddRaw, 0.10f, 0.11f, 0.12f, 0.13f, 0.14f));
-        definition.PossibleOptions.Add(this.CreateSocketOption(2, SocketSubOptionType.Lightning, Stats.CriticalDamageBonus, AggregateType.AddRaw, 15, 20, 25, 30, 40));
-        definition.PossibleOptions.Add(this.CreateSocketOption(3, SocketSubOptionType.Lightning, Stats.CriticalDamageChance, AggregateType.AddRaw, 0.08f, 0.09f, 0.10f, 0.11f, 0.12f));
+        definition.PossibleOptions.Add(this.CreateSocketOption(0, SocketSubOptionType.Lightning, Stats.ExcellentDamageBonus, AggregateType.AddRaw, 0, 15, 20, 25, 30, 40));
+        definition.PossibleOptions.Add(this.CreateSocketOption(1, SocketSubOptionType.Lightning, Stats.ExcellentDamageChance, AggregateType.AddRaw, 0, 0.10f, 0.11f, 0.12f, 0.13f, 0.14f));
+        definition.PossibleOptions.Add(this.CreateSocketOption(2, SocketSubOptionType.Lightning, Stats.CriticalDamageBonus, AggregateType.AddRaw, 0, 15, 20, 25, 30, 40));
+        definition.PossibleOptions.Add(this.CreateSocketOption(3, SocketSubOptionType.Lightning, Stats.CriticalDamageChance, AggregateType.AddRaw, 0, 0.08f, 0.09f, 0.10f, 0.11f, 0.12f));
         return definition;
     }
 
@@ -326,12 +326,12 @@ public class SocketSystem : InitializerBase
         definition.Name = "Socket Options (Wind)";
         definition.MaximumOptionsPerItem = 1;
 
-        definition.PossibleOptions.Add(this.CreateSocketOption(0, SocketSubOptionType.Wind, Stats.HealthRecoveryAbsolute, AggregateType.AddRaw, 8, 10, 13, 16, 20));
-        definition.PossibleOptions.Add(this.CreateSocketOption(1, SocketSubOptionType.Wind, Stats.MaximumHealth, AggregateType.Multiplicate, 1.04f, 1.05f, 1.06f, 1.07f, 1.08f));
-        definition.PossibleOptions.Add(this.CreateSocketOption(2, SocketSubOptionType.Wind, Stats.MaximumMana, AggregateType.Multiplicate, 1.04f, 1.05f, 1.06f, 1.07f, 1.08f));
-        definition.PossibleOptions.Add(this.CreateSocketOption(3, SocketSubOptionType.Wind, Stats.ManaRecoveryAbsolute, AggregateType.AddRaw, 7, 14, 21, 28, 35));
-        definition.PossibleOptions.Add(this.CreateSocketOption(4, SocketSubOptionType.Wind, Stats.MaximumAbility, AggregateType.AddRaw, 25, 30, 35, 40, 50));
-        definition.PossibleOptions.Add(this.CreateSocketOption(5, SocketSubOptionType.Wind, Stats.AbilityRecoveryAbsolute, AggregateType.AddRaw, 3, 5, 7, 10, 15));
+        definition.PossibleOptions.Add(this.CreateSocketOption(0, SocketSubOptionType.Wind, Stats.HealthRecoveryAbsolute, AggregateType.AddRaw, 0, 8, 10, 13, 16, 20));
+        definition.PossibleOptions.Add(this.CreateSocketOption(1, SocketSubOptionType.Wind, Stats.MaximumHealth, AggregateType.Multiplicate, 0, 1.04f, 1.05f, 1.06f, 1.07f, 1.08f));
+        definition.PossibleOptions.Add(this.CreateSocketOption(2, SocketSubOptionType.Wind, Stats.MaximumMana, AggregateType.Multiplicate, 0, 1.04f, 1.05f, 1.06f, 1.07f, 1.08f));
+        definition.PossibleOptions.Add(this.CreateSocketOption(3, SocketSubOptionType.Wind, Stats.ManaRecoveryAbsolute, AggregateType.AddRaw, 0, 7, 14, 21, 28, 35));
+        definition.PossibleOptions.Add(this.CreateSocketOption(4, SocketSubOptionType.Wind, Stats.MaximumAbility, AggregateType.AddRaw, 0, 25, 30, 35, 40, 50));
+        definition.PossibleOptions.Add(this.CreateSocketOption(5, SocketSubOptionType.Wind, Stats.AbilityRecoveryAbsolute, AggregateType.AddRaw, 0, 3, 5, 7, 10, 15));
         return definition;
     }
 
@@ -343,11 +343,11 @@ public class SocketSystem : InitializerBase
         definition.Name = "Socket Options (Water)";
         definition.MaximumOptionsPerItem = 1;
 
-        definition.PossibleOptions.Add(this.CreateSocketOption(0, SocketSubOptionType.Water, Stats.DefenseRatePvm, AggregateType.Multiplicate, 1.10f, 1.11f, 1.12f, 1.13f, 1.14f));
-        definition.PossibleOptions.Add(this.CreateSocketOption(1, SocketSubOptionType.Water, Stats.DefenseBase, AggregateType.AddRaw, 30, 33, 36, 39, 42));
-        definition.PossibleOptions.Add(this.CreateSocketOption(2, SocketSubOptionType.Water, Stats.ShieldDecreaseRateIncrease, AggregateType.AddRaw, 0.07f, 0.10f, 0.15f, 0.20f, 0.30f));
-        definition.PossibleOptions.Add(this.CreateSocketOption(3, SocketSubOptionType.Water, Stats.DamageReceiveDecrement, AggregateType.Multiplicate, 0.96f, 0.95f, 0.94f, 0.93f, 0.92f));
-        definition.PossibleOptions.Add(this.CreateSocketOption(4, SocketSubOptionType.Water, Stats.DamageReflection, AggregateType.AddRaw, 0.05f, 0.06f, 0.07f, 0.08f, 0.09f));
+        definition.PossibleOptions.Add(this.CreateSocketOption(0, SocketSubOptionType.Water, Stats.DefenseRatePvm, AggregateType.Multiplicate, 0, 1.10f, 1.11f, 1.12f, 1.13f, 1.14f));
+        definition.PossibleOptions.Add(this.CreateSocketOption(1, SocketSubOptionType.Water, Stats.DefenseBase, AggregateType.AddRaw, 2, 30, 33, 36, 39, 42));
+        definition.PossibleOptions.Add(this.CreateSocketOption(2, SocketSubOptionType.Water, Stats.DefenseIncreaseWithEquippedShield, AggregateType.AddRaw, 0, 0.07f, 0.10f, 0.15f, 0.20f, 0.30f));
+        definition.PossibleOptions.Add(this.CreateSocketOption(3, SocketSubOptionType.Water, Stats.ArmorDamageDecrease, AggregateType.AddRaw, 0, 0.04f, 0.05f, 0.06f, 0.07f, 0.08f));
+        definition.PossibleOptions.Add(this.CreateSocketOption(4, SocketSubOptionType.Water, Stats.DamageReflection, AggregateType.AddRaw, 0, 0.05f, 0.06f, 0.07f, 0.08f, 0.09f));
         return definition;
     }
 
@@ -359,7 +359,7 @@ public class SocketSystem : InitializerBase
         definition.Name = "Socket Options (Earth)";
         definition.MaximumOptionsPerItem = 1;
 
-        definition.PossibleOptions.Add(this.CreateSocketOption(0, SocketSubOptionType.Earth, Stats.MaximumHealth, AggregateType.AddRaw, 30, 32, 34, 36, 38));
+        definition.PossibleOptions.Add(this.CreateSocketOption(0, SocketSubOptionType.Earth, Stats.MaximumHealth, AggregateType.AddRaw, 0, 30, 32, 34, 36, 38));
         return definition;
     }
 
@@ -371,7 +371,7 @@ public class SocketSystem : InitializerBase
         definition.Name = "Socket Bonus Options (Physical)";
         definition.MaximumOptionsPerItem = 1;
         definition.AddChance = 0.30f;
-        definition.PossibleOptions.Add(this.CreateSocketBonusOption(0, Stats.BaseDamageBonus, 11));
+        definition.PossibleOptions.Add(this.CreateSocketBonusOption(0, Stats.SocketBaseDmgBonus, 11));
         definition.PossibleOptions.Add(this.CreateSocketBonusOption(1, Stats.SkillDamageBonus, 11));
         return definition;
     }
@@ -384,7 +384,7 @@ public class SocketSystem : InitializerBase
         definition.Name = "Socket Bonus Options (Wizardry)";
         definition.MaximumOptionsPerItem = 1;
         definition.AddChance = 0.30f;
-        definition.PossibleOptions.Add(this.CreateSocketBonusOption(2, Stats.BaseDamageBonus, 5));
+        definition.PossibleOptions.Add(this.CreateSocketBonusOption(2, Stats.SocketBaseDmgBonus, 5));
         definition.PossibleOptions.Add(this.CreateSocketBonusOption(3, Stats.SkillDamageBonus, 11));
         return definition;
     }
@@ -419,7 +419,7 @@ public class SocketSystem : InitializerBase
         return itemOption;
     }
 
-    private IncreasableItemOption CreateSocketOption(short number, SocketSubOptionType subOptionType, AttributeDefinition attributeDefinition, AggregateType aggregateType, params float[] values)
+    private IncreasableItemOption CreateSocketOption(short number, SocketSubOptionType subOptionType, AttributeDefinition attributeDefinition, AggregateType aggregateType, byte stage, params float[] values)
     {
         var itemOption = this.Context.CreateNew<IncreasableItemOption>();
         itemOption.SetGuid((short)(ItemOptionDefinitionNumbers.SocketFire + subOptionType), number);
@@ -436,6 +436,7 @@ public class SocketSystem : InitializerBase
             powerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
             powerUpDefinition.Boost.ConstantValue.Value = value;
             powerUpDefinition.Boost.ConstantValue.AggregateType = aggregateType;
+            powerUpDefinition.Boost.ConstantValue.Stage = stage;
             optionOfLevel.PowerUpDefinition = powerUpDefinition;
             itemOption.LevelDependentOptions.Add(optionOfLevel);
             if (optionOfLevel.Level == 1)

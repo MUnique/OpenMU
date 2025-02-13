@@ -82,6 +82,12 @@ public class AddMasterPointAction
             learnedSkill.PowerUpDuration = null;
             learnedSkill.PowerUps = null;
             player.SelectedCharacter.MasterLevelUpPoints -= requiredPoints;
+
+            if (learnedSkill.Skill.Number == 509) // Force Wave Streng
+            {
+                player.SkillList!.GetSkill(5090)!.Level += requiredPoints;
+            }
+
             await player.InvokeViewPlugInAsync<IMasterSkillLevelChangedPlugIn>(p => p.MasterSkillLevelChangedAsync(learnedSkill)).ConfigureAwait(false);
         }
         else
@@ -127,10 +133,10 @@ public class AddMasterPointAction
         }
 
         var learnedRequiredSkill = character.LearnedSkills
-            .Where(l => l.Skill?.MasterDefinition?.Root != null)
-            .FirstOrDefault(l => l.Skill!.MasterDefinition!.Root!.Id == definition.Root?.Id
-                                 && l.Skill.MasterDefinition.Rank == definition.Rank - 1);
-        return learnedRequiredSkill?.Level >= MinimumSkillLevelOfRequiredSkill;
+            .Where(l => l.Skill?.MasterDefinition?.Root != null
+                && l.Skill.MasterDefinition.Root.Id == definition.Root?.Id
+                && l.Skill.MasterDefinition.Rank == definition.Rank - 1);
+        return learnedRequiredSkill?.Any(lrs => lrs.Level >= MinimumSkillLevelOfRequiredSkill) ?? false;
     }
 
     private bool CheckRequiredSkill(MasterSkillDefinition definition, Player player)

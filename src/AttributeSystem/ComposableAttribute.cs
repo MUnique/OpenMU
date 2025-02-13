@@ -58,26 +58,34 @@ public class ComposableAttribute : BaseAttribute, IComposableAttribute
             return 0;
         }
 
-        var rawValues = this.Elements.Where(e => e.AggregateType == AggregateType.AddRaw).Sum(e => e.Value);
-        var multiValues = this.Elements.Where(e => e.AggregateType == AggregateType.Multiplicate).Select(e => e.Value).Concat(Enumerable.Repeat(1.0F, 1)).Aggregate((a, b) => a * b);
-        var finalValues = this.Elements.Where(e => e.AggregateType == AggregateType.AddFinal).Sum(e => e.Value);
-        var maxValues = this.Elements.Where(e => e.AggregateType == AggregateType.Maximum).MaxBy(e => e.Value)?.Value ?? 0;
-        rawValues += maxValues;
+        var highestStage = this._elementList.Max(e => e.Stage);
+        float newValue = 0;
+        for (int i = 0; i <= highestStage; i++)
+        {
+            var stageElements = this._elementList.Where(e => e.Stage == i);
 
-        if (multiValues == 0 && this.Elements.All(e => e.AggregateType != AggregateType.Multiplicate))
-        {
-            multiValues = 1;
-        }
-        else if (rawValues == 0 && multiValues != 0 && this.Elements.All(e => e.AggregateType != AggregateType.AddRaw))
-        {
-            rawValues = 1;
-        }
-        else
-        {
-            // nothing to do
+            var rawValues = stageElements.Where(e => e.AggregateType == AggregateType.AddRaw).Sum(e => e.Value);
+            var multiValues = stageElements.Where(e => e.AggregateType == AggregateType.Multiplicate).Select(e => e.Value).Concat(Enumerable.Repeat(1.0F, 1)).Aggregate((a, b) => a * b);
+            var finalValues = stageElements.Where(e => e.AggregateType == AggregateType.AddFinal).Sum(e => e.Value);
+            var maxValues = stageElements.Where(e => e.AggregateType == AggregateType.Maximum).MaxBy(e => e.Value)?.Value ?? 0;
+            rawValues += maxValues;
+
+            if (multiValues == 0 && stageElements.All(e => e.AggregateType != AggregateType.Multiplicate))
+            {
+                multiValues = 1;
+            }
+            else if (newValue + rawValues == 0 && multiValues != 0 && stageElements.All(e => e.AggregateType == AggregateType.Multiplicate))
+            {
+                rawValues = 1;
+            }
+            else
+            {
+                // nothing to do
+            }
+
+            newValue = ((newValue + rawValues) * multiValues) + finalValues;
         }
 
-        var newValue = (rawValues * multiValues) + finalValues;
         if (this.Definition.MaximumValue.HasValue)
         {
             newValue = Math.Min(this.Definition.MaximumValue.Value, newValue);

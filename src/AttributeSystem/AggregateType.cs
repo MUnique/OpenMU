@@ -25,11 +25,6 @@ public enum AggregateType
     AddFinal,
 
     /// <summary>
-    /// Multiplicates by the final value.
-    /// </summary>
-    MultiplicateFinal,
-
-    /// <summary>
     /// Adds only the highest available value to the raw base value (jewelry element resistance).
     /// </summary>
     Maximum,

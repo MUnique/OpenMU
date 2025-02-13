@@ -112,6 +112,8 @@ internal class RaklionBoss : BaseMapInitializer
             };
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             monster.SetGuid(monster.Number);
+
+            // TODO: Selupan appears to have 4 different types of skill attacks, which have damage multipliers and magic effects.
         }
 
         {

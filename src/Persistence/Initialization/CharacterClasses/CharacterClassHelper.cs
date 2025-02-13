@@ -139,8 +139,10 @@ public static class CharacterClassHelper
     /// <param name="multiplier">The multiplier.</param>
     /// <param name="sourceAttribute">The source attribute.</param>
     /// <param name="inputOperator">The input operator.</param>
+    /// <param name="aggregateType">The aggregate type with which the relationship will effect the <paramref name="targetAttribute"/>.</param>
+    /// <param name="stage">The calculation stage at which the product of the relationship will effect the <paramref name="targetAttribute"/>.</param>
     /// <returns>The attribute relationship.</returns>
-    public static AttributeRelationship CreateAttributeRelationship(IContext context, GameConfiguration gameConfiguration, AttributeDefinition targetAttribute, float multiplier, AttributeDefinition sourceAttribute, InputOperator inputOperator = InputOperator.Multiply, AggregateType aggregateType = AggregateType.AddRaw)
+    public static AttributeRelationship CreateAttributeRelationship(IContext context, GameConfiguration gameConfiguration, AttributeDefinition targetAttribute, float multiplier, AttributeDefinition sourceAttribute, InputOperator inputOperator = InputOperator.Multiply, AggregateType aggregateType = AggregateType.AddRaw, byte stage = 0)
     {
         return context.CreateNew<AttributeRelationship>(
             targetAttribute.GetPersistent(gameConfiguration) ?? targetAttribute,
@@ -148,7 +150,8 @@ public static class CharacterClassHelper
             sourceAttribute.GetPersistent(gameConfiguration) ?? sourceAttribute,
             inputOperator,
             default(AttributeDefinition?),
-            aggregateType);
+            aggregateType,
+            stage);
     }
 
     /// <summary>
@@ -160,8 +163,10 @@ public static class CharacterClassHelper
     /// <param name="multiplierAttribute">The multiplier attribute.</param>
     /// <param name="sourceAttribute">The source attribute.</param>
     /// <param name="inputOperator">The input operator.</param>
+    /// <param name="aggregateType">The aggregate type with which the relationship will effect the <paramref name="targetAttribute"/>.</param>
+    /// <param name="stage">The calculation stage at which the product of the relationship will effect the <paramref name="targetAttribute"/>.</param>
     /// <returns>The attribute relationship.</returns>
-    public static AttributeRelationship CreateAttributeRelationship(IContext context, GameConfiguration gameConfiguration, AttributeDefinition targetAttribute, AttributeDefinition multiplierAttribute, AttributeDefinition sourceAttribute, InputOperator inputOperator = InputOperator.Multiply, AggregateType aggregateType = AggregateType.AddRaw)
+    public static AttributeRelationship CreateAttributeRelationship(IContext context, GameConfiguration gameConfiguration, AttributeDefinition targetAttribute, AttributeDefinition multiplierAttribute, AttributeDefinition sourceAttribute, InputOperator inputOperator = InputOperator.Multiply, AggregateType aggregateType = AggregateType.AddRaw, byte stage = 0)
     {
         return context.CreateNew<AttributeRelationship>(
             targetAttribute.GetPersistent(gameConfiguration) ?? targetAttribute,
@@ -169,7 +174,8 @@ public static class CharacterClassHelper
             sourceAttribute.GetPersistent(gameConfiguration) ?? sourceAttribute,
             inputOperator,
             multiplierAttribute.GetPersistent(gameConfiguration) ?? multiplierAttribute,
-            aggregateType);
+            aggregateType,
+            stage);
     }
 
     /// <summary>
@@ -180,14 +186,17 @@ public static class CharacterClassHelper
     /// <param name="targetAttribute">The target attribute.</param>
     /// <param name="conditionalAttribute">The conditional attribute.</param>
     /// <param name="sourceAttribute">The source attribute.</param>
+    /// <param name="aggregateType">The aggregate type with which the relationship will effect the <paramref name="targetAttribute"/>.</param>
+    /// <param name="stage">The calculation stage at which the product of the relationship will effect the <paramref name="targetAttribute"/>.</param>
     /// <returns>The attribute relationship.</returns>
-    public static AttributeRelationship CreateConditionalRelationship(IContext context, GameConfiguration gameConfiguration, AttributeDefinition targetAttribute, AttributeDefinition conditionalAttribute, AttributeDefinition sourceAttribute, AggregateType aggregateType = AggregateType.AddRaw)
+    public static AttributeRelationship CreateConditionalRelationship(IContext context, GameConfiguration gameConfiguration, AttributeDefinition targetAttribute, AttributeDefinition conditionalAttribute, AttributeDefinition sourceAttribute, AggregateType aggregateType = AggregateType.AddRaw, byte stage = 0)
     {
         return context.CreateNew<AttributeRelationship>(
             targetAttribute.GetPersistent(gameConfiguration) ?? targetAttribute,
             conditionalAttribute.GetPersistent(gameConfiguration) ?? conditionalAttribute,
             sourceAttribute.GetPersistent(gameConfiguration) ?? sourceAttribute,
-            aggregateType);
+            aggregateType,
+            stage);
     }
 
     /// <summary>
@@ -197,9 +206,11 @@ public static class CharacterClassHelper
     /// <param name="gameConfiguration">The game configuration.</param>
     /// <param name="value">The value.</param>
     /// <param name="attribute">The attribute.</param>
+    /// <param name="aggregateType">The aggregate type to effect the <paramref name="attribute"/>.</param>
+    /// <param name="stage">The calculation stage to effect the <paramref name="attribute"/>.</param>
     /// <returns>The constant value attribute.</returns>
-    public static ConstValueAttribute CreateConstValueAttribute(IContext context, GameConfiguration gameConfiguration, float value, AttributeDefinition attribute)
+    public static ConstValueAttribute CreateConstValueAttribute(IContext context, GameConfiguration gameConfiguration, float value, AttributeDefinition attribute, AggregateType aggregateType = AggregateType.AddRaw, byte stage = 0)
     {
-        return context.CreateNew<ConstValueAttribute>(value, attribute.GetPersistent(gameConfiguration));
+        return context.CreateNew<ConstValueAttribute>(value, attribute.GetPersistent(gameConfiguration), aggregateType, stage);
     }
 }

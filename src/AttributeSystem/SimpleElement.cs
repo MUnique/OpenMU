@@ -11,6 +11,7 @@ public class SimpleElement : IElement
 {
     private float _value;
     private AggregateType _aggregateType;
+    private byte _stage;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SimpleElement"/> class.
@@ -24,10 +25,12 @@ public class SimpleElement : IElement
     /// </summary>
     /// <param name="value">The value.</param>
     /// <param name="aggregateType">Type of the aggregate.</param>
-    public SimpleElement(float value, AggregateType aggregateType)
+    /// <param name="stage">The calculation stage.</param>
+    public SimpleElement(float value, AggregateType aggregateType, byte stage = 0)
     {
         this._value = value;
         this._aggregateType = aggregateType;
+        this._stage = stage;
     }
 
     /// <inheritdoc/>
@@ -63,10 +66,25 @@ public class SimpleElement : IElement
         }
     }
 
+    /// <inheritdoc />
+    public byte Stage
+    {
+        get => this._stage;
+
+        set
+        {
+            if (this._stage != value)
+            {
+                this._stage = value;
+                this.RaiseValueChanged();
+            }
+        }
+    }
+
     /// <inheritdoc/>
     public override string ToString()
     {
-        return $"{this.Value} ({this.AggregateType})";
+        return $"{this.Value} ({this.AggregateType}) @{this.Stage}";
     }
 
     /// <summary>

@@ -70,6 +70,7 @@ public class AttributeSystem : IAttributeSystem, IEnumerable<IAttribute>
         return new AttributeRelationshipElement(inputElements, relationship.GetOperandElement(sourceAttributeHolder), relationship.InputOperator)
         {
             AggregateType = aggregateType,
+            Stage = relationship.Stage,
         };
     }
 

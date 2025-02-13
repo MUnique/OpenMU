@@ -105,9 +105,10 @@ public abstract class ItemUpgradeConsumeHandlerPlugIn : ItemModifyConsumeHandler
         }
         else
         {
-            foreach (var itemOption in itemOptions)
+            var totalOptions = itemOptions.Count();
+            for (int i = 0; i < totalOptions; i++)
             {
-                this.HandleFailedUpgrade(item, itemOption);
+                this.HandleFailedUpgrade(item, itemOptions.First());
             }
         }
 
@@ -181,6 +182,7 @@ public abstract class ItemUpgradeConsumeHandlerPlugIn : ItemModifyConsumeHandler
                     var doubleOptionLink = persistenceContext.CreateNew<ItemOptionLink>();
                     doubleOptionLink.ItemOption = possibleOptions.FirstOrDefault(o => o != optionLink.ItemOption);
                     doubleOptionLink.Level = 1;
+                    item.ItemOptions.Add(doubleOptionLink);
                 }
             }
 

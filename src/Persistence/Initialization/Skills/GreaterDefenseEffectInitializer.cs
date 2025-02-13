@@ -42,10 +42,11 @@ public class GreaterDefenseEffectInitializer : InitializerBase
 
         powerUpDefinition.TargetAttribute = Stats.DefenseBase.GetPersistent(this.GameConfiguration);
 
-        // The buff gives 2 + (energy / 8) defense
+        // The buff gives 1 + (energy / 8) defense
         powerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-        powerUpDefinition.Boost.ConstantValue.Value = 2f;
+        powerUpDefinition.Boost.ConstantValue.Value = 1f;
         powerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.AddRaw;
+        powerUpDefinition.Boost.ConstantValue.Stage = 3;
 
         var boostPerEnergy = this.Context.CreateNew<AttributeRelationship>();
         boostPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);

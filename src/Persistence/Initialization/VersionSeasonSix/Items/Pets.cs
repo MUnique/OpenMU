@@ -37,12 +37,13 @@ public class Pets : InitializerBase
     public override void Initialize()
     {
         this.CreatePet(0, 0, 1, 1, "Guardian Angel", 23, true, true, (Stats.GuardianReceiveDecrement, 0.2f, AggregateType.AddRaw), (Stats.MaximumHealth, 50f, AggregateType.AddRaw));
-        this.CreatePet(1, 0, 1, 1, "Imp", 28, true, true, (Stats.ImpAttackDamageIncrease, 0.3f, AggregateType.AddRaw));
+        this.CreatePet(1, 0, 1, 1, "Imp", 28, true, true, (Stats.ImpAttackDamageIncrease, 0.3f, AggregateType.AddRaw, 0));
         this.CreatePet(2, 0, 1, 1, "Horn of Uniria", 25, true, true);
         var dinorant = this.CreatePet(3, SkillNumber.FireBreath, 1, 1, "Horn of Dinorant", 110, false, true, (Stats.IsDinorantEquipped, 1, AggregateType.AddRaw), (Stats.DamageReceiveDecrement, 0.9f, AggregateType.Multiplicate), (Stats.AttackDamageIncrease, 1.15f, AggregateType.Multiplicate));
         this.AddDinorantOptions(dinorant);
 
-        var darkHorse = this.CreatePet(4, SkillNumber.Earthshake, 1, 1, "Dark Horse", 218, false, false, (Stats.IsHorseEquipped, 1, AggregateType.AddRaw), (Stats.DamageReceiveDecrement, 0.85f, AggregateType.Multiplicate), (Stats.DefenseBase, 5, AggregateType.AddRaw));
+        var darkHorse = this.CreatePet(4, SkillNumber.Earthshake, 1, 1, "Dark Horse", 218, false, false, (Stats.IsHorseEquipped, 1, AggregateType.AddRaw));
+        this.AddDarkHorseOptions(darkHorse);
         this.GameConfiguration.DetermineCharacterClasses(CharacterClasses.AllLords).ForEach(darkHorse.QualifiedCharacters.Add);
         darkHorse.PetExperienceFormula = PetExperienceFormula;
         darkHorse.MaximumItemLevel = 50;
@@ -53,23 +54,22 @@ public class Pets : InitializerBase
         darkRaven.MaximumItemLevel = 50;
         this.GameConfiguration.DetermineCharacterClasses(CharacterClasses.AllLords).ForEach(darkRaven.QualifiedCharacters.Add);
 
-        var fenrir = this.CreatePet(37, SkillNumber.PlasmaStorm, 2, 2, "Horn of Fenrir", 300, false, true, (Stats.CanFly, 1.0f, AggregateType.AddRaw));
+        var fenrir = this.CreatePet(37, SkillNumber.PlasmaStorm, 2, 2, "Horn of Fenrir", 300, false, true, (Stats.CanFly, 1.0f, AggregateType.AddRaw, 0));
         this.AddFenrirOptions(fenrir);
 
 #pragma warning disable SA1117 // Parameters should be on same line or separete lines
         this.CreatePet(64, 0, 1, 1, "Demon", 1, false, true,
-            (Stats.MinimumPhysBaseDmg, 1.4f, AggregateType.Multiplicate),
-            (Stats.MaximumPhysBaseDmg, 1.4f, AggregateType.Multiplicate),
-            (Stats.MinimumWizBaseDmg, 1.4f, AggregateType.Multiplicate),
-            (Stats.MaximumWizBaseDmg, 1.4f, AggregateType.Multiplicate),
-            (Stats.MinimumCurseBaseDmg, 1.4f, AggregateType.Multiplicate),
-            (Stats.MaximumCurseBaseDmg, 1.4f, AggregateType.Multiplicate),
-            (Stats.AttackSpeed, 10f, AggregateType.AddRaw),
-            (Stats.MagicSpeed, 10f, AggregateType.AddRaw));
+            (Stats.MinimumPhysBaseDmg, 1.4f, AggregateType.Multiplicate, 1),
+            (Stats.MaximumPhysBaseDmg, 1.4f, AggregateType.Multiplicate, 1),
+            (Stats.MinimumWizBaseDmg, 1.4f, AggregateType.Multiplicate, 1),
+            (Stats.MaximumWizBaseDmg, 1.4f, AggregateType.Multiplicate, 1),
+            (Stats.MinimumCurseBaseDmg, 1.4f, AggregateType.Multiplicate, 1),
+            (Stats.MaximumCurseBaseDmg, 1.4f, AggregateType.Multiplicate, 1),
+            (Stats.AttackSpeedAny, 10f, AggregateType.AddRaw, 0));
         this.CreatePet(65, 0, 1, 1, "Spirit of Guardian", 1, false, true, (Stats.GuardianReceiveDecrement, 0.3f, AggregateType.AddRaw), (Stats.MaximumHealth, 50f, AggregateType.AddRaw));
         this.CreatePet(67, 0, 1, 1, "Pet Rudolf", 28, false, true);
-        this.CreatePet(80, 0, 1, 1, "Pet Panda", 1, false, true, (Stats.ExperienceRate, 1.5f, AggregateType.Multiplicate), (Stats.MasterExperienceRate, 1.5f, AggregateType.Multiplicate), (Stats.DefenseFinal, 50f, AggregateType.AddRaw));
-        this.CreatePet(106, 0, 1, 1, "Pet Unicorn", 28, false, true, (Stats.MoneyAmountRate, 1.5f, AggregateType.Multiplicate), (Stats.DefenseFinal, 50f, AggregateType.AddRaw));
+        this.CreatePet(80, 0, 1, 1, "Pet Panda", 1, false, true, (Stats.ExperienceRate, 1.5f, AggregateType.Multiplicate, 0), (Stats.MasterExperienceRate, 1.5f, AggregateType.Multiplicate, 0), (Stats.DefenseBase, 50f, AggregateType.AddRaw, 2));
+        this.CreatePet(106, 0, 1, 1, "Pet Unicorn", 28, false, true, (Stats.MoneyAmountRate, 1.5f, AggregateType.Multiplicate, 0), (Stats.DefenseBase, 50f, AggregateType.AddRaw, 2));
         this.CreatePet(123, 0, 1, 1, "Pet Skeleton", 1, false, true,
             (Stats.MinimumPhysBaseDmg, 1.2f, AggregateType.Multiplicate),
             (Stats.MaximumPhysBaseDmg, 1.2f, AggregateType.Multiplicate),
@@ -77,8 +77,7 @@ public class Pets : InitializerBase
             (Stats.MaximumWizBaseDmg, 1.2f, AggregateType.Multiplicate),
             (Stats.MinimumCurseBaseDmg, 1.2f, AggregateType.Multiplicate),
             (Stats.MaximumCurseBaseDmg, 1.2f, AggregateType.Multiplicate),
-            (Stats.AttackSpeed, 10f, AggregateType.AddRaw),
-            (Stats.MagicSpeed, 10f, AggregateType.AddRaw),
+            (Stats.AttackSpeedAny, 10f, AggregateType.AddRaw),
             (Stats.ExperienceRate, 1.3f, AggregateType.Multiplicate));
 #pragma warning restore SA1011
 
@@ -192,7 +191,17 @@ public class Pets : InitializerBase
         BaseMapInitializer.RegisterDefaultDropItemGroup(ravenDrop);
     }
 
+    private ItemDefinition CreatePet(byte number, SkillNumber skillNumber, byte width, byte height, string name, int dropLevelAndLevelRequirement, bool dropsFromMonsters, bool addAllCharacterClasses)
+    {
+        return this.CreatePet(number, skillNumber, width, height, name, dropLevelAndLevelRequirement, dropsFromMonsters, addAllCharacterClasses, Array.Empty<(AttributeDefinition, float, AggregateType, byte)>());
+    }
+
     private ItemDefinition CreatePet(byte number, SkillNumber skillNumber, byte width, byte height, string name, int dropLevelAndLevelRequirement, bool dropsFromMonsters, bool addAllCharacterClasses, params (AttributeDefinition, float, AggregateType)[] basePowerUps)
+    {
+        return this.CreatePet(number, skillNumber, width, height, name, dropLevelAndLevelRequirement, dropsFromMonsters, addAllCharacterClasses, basePowerUps.Select(bpu => (bpu.Item1, bpu.Item2, bpu.Item3, (byte)0)).ToArray());
+    }
+
+    private ItemDefinition CreatePet(byte number, SkillNumber skillNumber, byte width, byte height, string name, int dropLevelAndLevelRequirement, bool dropsFromMonsters, bool addAllCharacterClasses, params (AttributeDefinition, float, AggregateType, byte)[] basePowerUps)
     {
         var pet = this.Context.CreateNew<ItemDefinition>();
         pet.SetGuid(13, number);
@@ -226,6 +235,7 @@ public class Pets : InitializerBase
                 powerUpDefinition.TargetAttribute = basePowerUp.Item1.GetPersistent(this.GameConfiguration);
                 powerUpDefinition.BaseValue = basePowerUp.Item2;
                 powerUpDefinition.AggregateType = basePowerUp.Item3;
+                powerUpDefinition.Stage = basePowerUp.Item4;
                 pet.BasePowerUpAttributes.Add(powerUpDefinition);
             }
         }
@@ -246,9 +256,23 @@ public class Pets : InitializerBase
 
         dinoOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.Option, 4, Stats.DamageReceiveDecrement, 0.95f, AggregateType.Multiplicate, ItemOptionDefinitionNumbers.Dino));  // Level 1
         dinoOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.Option, 4, Stats.MaximumAbility, 50f, AggregateType.AddFinal, ItemOptionDefinitionNumbers.Dino));    // Level 2
-        dinoOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.Option, 4, Stats.AttackSpeed, 5f, AggregateType.AddFinal, ItemOptionDefinitionNumbers.Dino));    // Level 4
+        dinoOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.Option, 4, Stats.AttackSpeedAny, 5f, AggregateType.AddFinal, ItemOptionDefinitionNumbers.Dino));    // Level 4
 
         dinorant.PossibleItemOptions.Add(dinoOptionDefinition);
+    }
+
+    private void AddDarkHorseOptions(ItemDefinition horse)
+    {
+        var horseOptionDefinition = this.Context.CreateNew<ItemOptionDefinition>();
+        horseOptionDefinition.SetGuid(ItemOptionDefinitionNumbers.Horse);
+        this.GameConfiguration.ItemOptions.Add(horseOptionDefinition);
+
+        horseOptionDefinition.Name = "Dark Horse Options";
+
+        horseOptionDefinition.PossibleOptions.Add(this.CreateRelatedPetOption(ItemOptionTypes.DarkHorse, 1, Stats.DamageReceiveHorseDecrement, AggregateType.AddRaw, 0, ItemOptionDefinitionNumbers.Horse, -0.15f, (Stats.HorseLevel, -0.005f)));
+        horseOptionDefinition.PossibleOptions.Add(this.CreateRelatedPetOption(ItemOptionTypes.DarkHorse, 2, Stats.DefenseBase, AggregateType.AddRaw, 0, ItemOptionDefinitionNumbers.Horse, 5, (Stats.HorseLevel, 2), (Stats.TotalAgility, 1f / 20)));
+
+        horse.PossibleItemOptions.Add(horseOptionDefinition);
     }
 
     /// <summary>
@@ -269,12 +293,12 @@ public class Pets : InitializerBase
         fenrirOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.BlackFenrir, 1, Stats.FenrirAttackDamageIncrease, 0.1f, AggregateType.AddRaw, ItemOptionDefinitionNumbers.Fenrir));
         fenrirOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.BlueFenrir, 2, Stats.FenrirDamageReceiveDecrement, 0.1f, AggregateType.AddRaw, ItemOptionDefinitionNumbers.Fenrir));
 
-        fenrirOptionDefinition.PossibleOptions.Add(this.CreateRelatedFenrirOption(ItemOptionTypes.GoldFenrir, 4, Stats.MaximumHealth, Stats.TotalLevel, 0.5f, AggregateType.AddFinal, ItemOptionDefinitionNumbers.Fenrir));
-        fenrirOptionDefinition.PossibleOptions.Add(this.CreateRelatedFenrirOption(ItemOptionTypes.GoldFenrir, 4, Stats.MaximumMana, Stats.TotalLevel, 0.5f, AggregateType.AddFinal, ItemOptionDefinitionNumbers.Fenrir));
-        fenrirOptionDefinition.PossibleOptions.Add(this.CreateRelatedFenrirOption(ItemOptionTypes.GoldFenrir, 4, Stats.MinimumPhysBaseDmg, Stats.TotalLevel, 1f / 12f, AggregateType.AddFinal, ItemOptionDefinitionNumbers.Fenrir));
-        fenrirOptionDefinition.PossibleOptions.Add(this.CreateRelatedFenrirOption(ItemOptionTypes.GoldFenrir, 4, Stats.MaximumPhysBaseDmg, Stats.TotalLevel, 1f / 12f, AggregateType.AddFinal, ItemOptionDefinitionNumbers.Fenrir));
-        fenrirOptionDefinition.PossibleOptions.Add(this.CreateRelatedFenrirOption(ItemOptionTypes.GoldFenrir, 4, Stats.MinimumWizBaseDmg, Stats.TotalLevel, 1f / 12f, AggregateType.AddFinal, ItemOptionDefinitionNumbers.Fenrir));
-        fenrirOptionDefinition.PossibleOptions.Add(this.CreateRelatedFenrirOption(ItemOptionTypes.GoldFenrir, 4, Stats.MaximumWizBaseDmg, Stats.TotalLevel, 1f / 12f, AggregateType.AddFinal, ItemOptionDefinitionNumbers.Fenrir));
+        fenrirOptionDefinition.PossibleOptions.Add(this.CreateRelatedPetOption(ItemOptionTypes.GoldFenrir, 4, Stats.MaximumHealth, AggregateType.AddFinal, 0, ItemOptionDefinitionNumbers.Fenrir, 0, (Stats.TotalLevel, 0.5f)));
+        fenrirOptionDefinition.PossibleOptions.Add(this.CreateRelatedPetOption(ItemOptionTypes.GoldFenrir, 4, Stats.MaximumMana, AggregateType.AddFinal, 0, ItemOptionDefinitionNumbers.Fenrir, 0, (Stats.TotalLevel, 0.5f)));
+        fenrirOptionDefinition.PossibleOptions.Add(this.CreateRelatedPetOption(ItemOptionTypes.GoldFenrir, 4, Stats.MinimumPhysBaseDmg, AggregateType.AddRaw, 1, ItemOptionDefinitionNumbers.Fenrir, 0, (Stats.TotalLevel, 1f / 12f)));
+        fenrirOptionDefinition.PossibleOptions.Add(this.CreateRelatedPetOption(ItemOptionTypes.GoldFenrir, 4, Stats.MaximumPhysBaseDmg, AggregateType.AddRaw, 1, ItemOptionDefinitionNumbers.Fenrir, 0, (Stats.TotalLevel, 1f / 12f)));
+        fenrirOptionDefinition.PossibleOptions.Add(this.CreateRelatedPetOption(ItemOptionTypes.GoldFenrir, 4, Stats.MinimumWizBaseDmg, AggregateType.AddRaw, 1, ItemOptionDefinitionNumbers.Fenrir, 0, (Stats.TotalLevel, 1f / 25f)));
+        fenrirOptionDefinition.PossibleOptions.Add(this.CreateRelatedPetOption(ItemOptionTypes.GoldFenrir, 4, Stats.MaximumWizBaseDmg, AggregateType.AddRaw, 1, ItemOptionDefinitionNumbers.Fenrir, 0, (Stats.TotalLevel, 1f / 25f)));
 
         fenrir.PossibleItemOptions.Add(fenrirOptionDefinition);
     }
@@ -289,7 +313,7 @@ public class Pets : InitializerBase
         return itemOption;
     }
 
-    private IncreasableItemOption CreateRelatedFenrirOption(ItemOptionType optionType, int number, AttributeDefinition targetAttribute, AttributeDefinition sourceAttribute, float multiplier, AggregateType aggregateType, short optionNumber)
+    private IncreasableItemOption CreateRelatedPetOption(ItemOptionType optionType, int number, AttributeDefinition targetAttribute, AggregateType aggregateType, byte stage, short optionNumber, float baseValue = 0, params (AttributeDefinition SourceAttribute, float Multiplier)[] relatedAttributes)
     {
         var itemOption = this.Context.CreateNew<IncreasableItemOption>();
         itemOption.SetGuid(optionNumber, targetAttribute.Id.ExtractFirstTwoBytes());
@@ -298,14 +322,20 @@ public class Pets : InitializerBase
         itemOption.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
         itemOption.PowerUpDefinition.TargetAttribute = targetAttribute.GetPersistent(this.GameConfiguration);
         itemOption.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+        itemOption.PowerUpDefinition.Boost.ConstantValue.Value = baseValue;
         itemOption.PowerUpDefinition.Boost.ConstantValue.AggregateType = aggregateType;
+        itemOption.PowerUpDefinition.Boost.ConstantValue.Stage = stage;
 
-        var attributeRelationship = this.Context.CreateNew<AttributeRelationship>();
-        attributeRelationship.SetGuid(optionNumber, targetAttribute.Id.ExtractFirstTwoBytes());
-        attributeRelationship.InputAttribute = sourceAttribute.GetPersistent(this.GameConfiguration);
-        attributeRelationship.InputOperator = InputOperator.Multiply;
-        attributeRelationship.InputOperand = multiplier;
-        itemOption.PowerUpDefinition.Boost.RelatedValues.Add(attributeRelationship);
+        for (int i = 0; i < relatedAttributes.Length; i++)
+        {
+            var attributeRelationship = this.Context.CreateNew<AttributeRelationship>();
+            attributeRelationship.SetGuid(optionNumber, targetAttribute.Id.ExtractFirstTwoBytes(), (byte)i);
+            attributeRelationship.InputAttribute = relatedAttributes[i].SourceAttribute.GetPersistent(this.GameConfiguration);
+            attributeRelationship.InputOperator = InputOperator.Multiply;
+            attributeRelationship.InputOperand = relatedAttributes[i].Multiplier;
+            itemOption.PowerUpDefinition.Boost.RelatedValues.Add(attributeRelationship);
+        }
+
         return itemOption;
     }
 }

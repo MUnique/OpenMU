@@ -610,6 +610,26 @@ internal abstract class AccountInitializerBase : InitializerBase
     }
 
     /// <summary>
+    /// Creates the horse.
+    /// </summary>
+    /// <param name="itemSlot">The item slot.</param>
+    /// <returns>The created dark horse.</returns>
+    protected Item CreateHorse(byte itemSlot)
+    {
+        var horse = this.CreatePet(itemSlot, 4);
+
+        var options = horse.Definition!.PossibleItemOptions.First().PossibleOptions.Where(p => p.OptionType == ItemOptionTypes.DarkHorse);
+        foreach (var option in options)
+        {
+            var optionLink = this.Context.CreateNew<ItemOptionLink>();
+            optionLink.ItemOption = option;
+            horse.ItemOptions.Add(optionLink);
+        }
+
+        return horse;
+    }
+
+    /// <summary>
     /// Creates the pet.
     /// </summary>
     /// <param name="itemSlot">The item slot.</param>

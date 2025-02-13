@@ -23,8 +23,8 @@ internal partial class ConstValueAttribute : MUnique.OpenMU.AttributeSystem.Cons
 {
     
     /// <inheritdoc />
-    public ConstValueAttribute(System.Single value, MUnique.OpenMU.AttributeSystem.AttributeDefinition definition)
-        : base(value, definition)
+    public ConstValueAttribute(System.Single value, MUnique.OpenMU.AttributeSystem.AttributeDefinition definition, MUnique.OpenMU.AttributeSystem.AggregateType aggregateType, System.Byte stage)
+        : base(value, definition, aggregateType, stage)
     {
 
     }

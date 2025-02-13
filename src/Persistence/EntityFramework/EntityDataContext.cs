@@ -54,7 +54,7 @@ public class EntityDataContext : ExtendedTypeContext
         modelBuilder.Entity<SystemConfiguration>();
 
         modelBuilder.Entity<PowerUpDefinitionValue>().Apply();
-        modelBuilder.Entity<Model.ConstValueAttribute>().Apply();
+        //modelBuilder.Entity<Model.ConstValueAttribute>().Apply();
         modelBuilder.Entity<Account>().Apply();
         modelBuilder.Entity<Character>().Apply();
         modelBuilder.Entity<ItemStorage>().Apply();

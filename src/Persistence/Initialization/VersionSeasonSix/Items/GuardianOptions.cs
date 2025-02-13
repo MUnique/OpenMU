@@ -57,7 +57,7 @@ internal class GuardianOptions : InitializerBase
         definition.AddsRandomly = false;
 
         definition.PossibleOptions.Add(this.CreateOption(ItemGroups.Pants, Stats.DefenseRatePvp, 10, AggregateType.AddRaw, ItemOptionDefinitionNumbers.GuardianOption1));
-        definition.PossibleOptions.Add(this.CreateOption(ItemGroups.Pants, Stats.DefenseBase, 200, AggregateType.AddRaw, ItemOptionDefinitionNumbers.GuardianOption2));
+        definition.PossibleOptions.Add(this.CreateOption(ItemGroups.Pants, Stats.DefenseBase, 200 / 2, AggregateType.AddRaw, 3, ItemOptionDefinitionNumbers.GuardianOption2));
     }
 
     private void CreateArmorOption()
@@ -106,6 +106,11 @@ internal class GuardianOptions : InitializerBase
 
     private IncreasableItemOption CreateOption(ItemGroups itemGroup, AttributeDefinition attributeDefinition, float value, AggregateType aggregateType, short optionNumber)
     {
+        return this.CreateOption(itemGroup, attributeDefinition, value, aggregateType, 0, optionNumber);
+    }
+
+    private IncreasableItemOption CreateOption(ItemGroups itemGroup, AttributeDefinition attributeDefinition, float value, AggregateType aggregateType, byte stage, short optionNumber)
+    {
         var itemOption = this.Context.CreateNew<IncreasableItemOption>();
         itemOption.SetGuid(optionNumber, (short)itemGroup);
         itemOption.OptionType = this.GameConfiguration.ItemOptionTypes.First(t => t == ItemOptionTypes.GuardianOption);
@@ -115,6 +120,7 @@ internal class GuardianOptions : InitializerBase
         itemOption.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
         itemOption.PowerUpDefinition.Boost.ConstantValue.Value = value;
         itemOption.PowerUpDefinition.Boost.ConstantValue.AggregateType = aggregateType;
+        itemOption.PowerUpDefinition.Boost.ConstantValue.Stage = stage;
         return itemOption;
     }
 }

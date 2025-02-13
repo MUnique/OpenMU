@@ -55,7 +55,7 @@ internal class GameMaster2 : AccountInitializerBase
         character.LevelUpPoints = 2000;
         character.MasterLevelUpPoints = 100; // To test master skill tree
 
-        character.Inventory!.Items.Add(this.CreateWeapon(InventoryConstants.LeftHandSlot, 5, 36, 15, 4, true, true, Stats.ExcellentDamageChance)); // Exc AA Stick+15+16+L+ExcDmg
+        character.Inventory!.Items.Add(this.CreateWeapon(InventoryConstants.LeftHandSlot, 5, 36, 15, 4, true, true)); // AA Stick+15+16+L
         character.Inventory!.Items.Add(this.CreateWeapon(InventoryConstants.RightHandSlot, 5, 23, 15, 4, true, true, Stats.ExcellentDamageChance)); // Exc Book of Lagle+15+16+L+ExcDmg
         character.Inventory.Items.Add(this.CreateFullAncient(InventoryConstants.ArmorSlot, ItemGroups.Armor, 40, 15, "Semeden")); // Sememden Armor+16+L
         character.Inventory.Items.Add(this.CreateFullAncient(InventoryConstants.HelmSlot, ItemGroups.Helm, 40, 15, "Semeden")); // Sememden Helm+15+16+L

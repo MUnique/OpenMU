@@ -35,7 +35,6 @@ internal partial class CharacterClassInitialization
         result.SetGuid((byte)number);
         this.GameConfiguration.CharacterClasses.Add(result);
         result.CanGetCreated = canGetCreated;
-        result.LevelWarpRequirementReductionPercent = (int) Math.Ceiling(100.0 / 3);
         result.HomeMap = this.GameConfiguration.Maps.FirstOrDefault(map => map.Number == LorenciaMapId);
         result.Number = (byte)number;
         result.Name = name;
@@ -43,12 +42,13 @@ internal partial class CharacterClassInitialization
         result.IsMasterClass = isMaster;
         result.LevelRequirementByCreation = 220;
         result.NextGenerationClass = nextGenerationClass;
+        result.LevelWarpRequirementReductionPercent = (int)Math.Ceiling(100.0 / 3);
         result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.Level, 1, false));
         result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.PointsPerLevelUp, 7, false));
         result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.BaseStrength, 26, true));
         result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.BaseAgility, 26, true));
         result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.BaseVitality, 26, true));
-        result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.BaseEnergy, 16, true));
+        result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.BaseEnergy, 26, true));
         result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.CurrentHealth, 110, false));
         result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.CurrentMana, 60, false));
         result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.CurrentAbility, 1, false));
@@ -57,7 +57,7 @@ internal partial class CharacterClassInitialization
 
         this.AddCommonAttributeRelationships(result.AttributeCombinations);
 
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.DefenseBase, 1.0f / 5, Stats.TotalAgility));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.DefenseBase, 1.0f / 5, Stats.TotalAgility)); // client says /5, server says /4
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.DefenseRatePvm, 1.0f / 3, Stats.TotalAgility));
 
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.AttackRatePvm, 5, Stats.TotalLevel));
@@ -80,20 +80,28 @@ internal partial class CharacterClassInitialization
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumPhysBaseDmg, 1.0f / 4, Stats.TotalStrength));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MinimumPhysBaseDmg, 1.0f / 12, Stats.TotalEnergy));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumPhysBaseDmg, 1.0f / 8, Stats.TotalEnergy));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MinimumPhysBaseDmg, 1, Stats.MinimumPhysBaseDmgByWeapon));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumPhysBaseDmg, 1, Stats.MaximumPhysBaseDmgByWeapon));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MinimumPhysBaseDmg, 1, Stats.PhysicalBaseDmg));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumPhysBaseDmg, 1, Stats.PhysicalBaseDmg));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MinimumWizBaseDmg, 1.0f / 9, Stats.TotalEnergy));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumWizBaseDmg, 1.0f / 4, Stats.TotalEnergy));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MinimumWizBaseDmg, 1, Stats.WizardryBaseDmg));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumWizBaseDmg, 1, Stats.WizardryBaseDmg));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MinimumWizBaseDmg, 1, Stats.HarmonyWizBaseDmg, stage: 2));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumWizBaseDmg, 1, Stats.HarmonyWizBaseDmg, stage: 2));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MinimumWizBaseDmg, 1, Stats.SocketBaseMinDmgBonus, stage: 2));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumWizBaseDmg, 1, Stats.SocketBaseMaxDmgBonus, stage: 2));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MinimumWizBaseDmg, 1, Stats.ExcellentWizBaseDmg, stage: 2));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumWizBaseDmg, 1, Stats.ExcellentWizBaseDmg, stage: 2));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MinimumWizBaseDmg, 1, Stats.ExcellentWizTwoPercentInc, aggregateType: AggregateType.Multiplicate, stage: 2));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumWizBaseDmg, 1, Stats.ExcellentWizTwoPercentInc, aggregateType: AggregateType.Multiplicate, stage: 2));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MinimumWizBaseDmg, 1, Stats.AncientWizDmgIncrease, aggregateType: AggregateType.Multiplicate, stage: 3));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumWizBaseDmg, 1, Stats.AncientWizDmgIncrease, aggregateType: AggregateType.Multiplicate, stage: 3));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumWizBaseDmg, 1, Stats.BaseDamageBonus, stage: 4));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumWizBaseDmg, 1, Stats.BaseDamageBonus, stage: 4));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.WizardryAttackDamageIncrease, 1.0f / 100, Stats.StaffRise));
 
-        //result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.PhysicalBaseDmg, Stats.IsOneHandedSwordEquipped, Stats.OneHandedSwordBonusDamage));
-        //result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.PhysicalBaseDmg, Stats.IsTwoHandedSwordEquipped, Stats.TwoHandedSwordBonusDamage));
-        result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.WizardryBaseDmg, Stats.IsOneHandedStaffEquipped, Stats.OneHandedStaffBonusBaseDamage));
-        result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.WizardryBaseDmg, Stats.IsTwoHandedStaffEquipped, Stats.TwoHandedStaffBonusBaseDamage));
+        result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.MinimumWizBaseDmg, Stats.IsOneHandedStaffEquipped, Stats.OneHandedStaffBonusBaseDamage, stage: 4));
+        result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.MaximumWizBaseDmg, Stats.IsOneHandedStaffEquipped, Stats.OneHandedStaffBonusBaseDamage, stage: 4));
+        result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.MinimumWizBaseDmg, Stats.IsTwoHandedStaffEquipped, Stats.TwoHandedStaffBonusBaseDamage, stage: 4));
+        result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.MaximumWizBaseDmg, Stats.IsTwoHandedStaffEquipped, Stats.TwoHandedStaffBonusBaseDamage, stage: 4));
 
         if (!this.UseClassicPvp)
         {
@@ -124,7 +132,8 @@ internal partial class CharacterClassInitialization
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(2, Stats.SkillMultiplier));
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f, Stats.WizardryAttackDamageIncrease));
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f / 33f, Stats.AbilityRecoveryMultiplier));
-        result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.ExcOptWizTwoPercentInc));
+        result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.ExcellentWizTwoPercentInc));
+        result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.AncientWizDmgIncrease));
 
         this.AddCommonBaseAttributeValues(result.BaseAttributeValues, isMaster);
 

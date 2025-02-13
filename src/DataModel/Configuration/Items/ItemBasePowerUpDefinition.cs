@@ -16,6 +16,7 @@ public partial class ItemBasePowerUpDefinition
     private ConstantElement? _baseValueElement;
     private float _baseValue;
     private AggregateType _aggregateType;
+    private byte _stage;
 
     /// <summary>
     /// Gets or sets the target attribute.
@@ -26,7 +27,7 @@ public partial class ItemBasePowerUpDefinition
     /// Gets the base value.
     /// </summary>
     [Transient]
-    public ConstantElement BaseValueElement => this._baseValueElement ??= new ConstantElement(this.BaseValue, this.AggregateType);
+    public ConstantElement BaseValueElement => this._baseValueElement ??= new ConstantElement(this.BaseValue, this.AggregateType, this.Stage);
 
     /// <summary>
     /// Gets or sets the bonus per level.
@@ -55,6 +56,19 @@ public partial class ItemBasePowerUpDefinition
         set
         {
             this._aggregateType = value;
+            this._baseValueElement = null;
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the calculation stage.
+    /// </summary>
+    public byte Stage
+    {
+        get => this._stage;
+        set
+        {
+            this._stage = value;
             this._baseValueElement = null;
         }
     }

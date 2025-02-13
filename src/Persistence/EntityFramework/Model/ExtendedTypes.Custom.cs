@@ -46,6 +46,15 @@ internal partial class PowerUpDefinitionValue
         get => this.ConstantValue!.AggregateType;
         set => this.ConstantValue!.AggregateType = value;
     }
+
+    /// <summary>
+    /// Gets the calculation stage.
+    /// </summary>
+    public byte Stage
+    {
+        get => this.ConstantValue!.Stage;
+        set => this.ConstantValue!.Stage = value;
+    }
 }
 
 /// <summary>
@@ -81,6 +90,18 @@ internal partial class ConstValueAttribute
     {
         get => base.Value;
         set => base.Value = value;
+    }
+
+    public new AggregateType AggregateType
+    {
+        get => base.AggregateType;
+        set => base.AggregateType = value;
+    }
+
+    public new byte Stage
+    {
+        get => base.Stage;
+        set => base.Stage = value;
     }
 }
 

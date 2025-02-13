@@ -44,6 +44,6 @@ public class DefenseEffectInitializer : InitializerBase
         // Always a 50 % damage reduction
         powerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
         powerUpDefinition.Boost.ConstantValue.Value = 0.50f;
-        powerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
+        powerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.AddRaw;
     }
 }

@@ -142,8 +142,7 @@ public abstract class ArmorInitializerBase : InitializerBase
         var gloves = this.CreateArmor(number, 5, 2, 2, name, dropLevel, defense, durability, strengthRequirement, agilityRequirement, darkWizardClassLevel, darkKnightClassLevel, elfClassLevel);
         if (attackSpeed > 0)
         {
-            gloves.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.AttackSpeed, attackSpeed, AggregateType.AddRaw));
-            gloves.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.MagicSpeed, attackSpeed, AggregateType.AddRaw));
+            gloves.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.AttackSpeedAny, attackSpeed, AggregateType.AddRaw));
         }
 
         return gloves;
@@ -154,8 +153,7 @@ public abstract class ArmorInitializerBase : InitializerBase
         var gloves = this.CreateArmor(number, 5, 2, 2, name, dropLevel, defense, durability, levelRequirement, strengthRequirement, agilityRequirement, 0, 0, 0, darkWizardClassLevel, darkKnightClassLevel, elfClassLevel, magicGladiatorClassLevel, darkLordClassLevel, summonerClassLevel, 0);
         if (attackSpeed > 0)
         {
-            gloves.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.AttackSpeed, attackSpeed, AggregateType.AddRaw));
-            gloves.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.MagicSpeed, attackSpeed, AggregateType.AddRaw));
+            gloves.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.AttackSpeedAny, attackSpeed, AggregateType.AddRaw));
         }
 
         return gloves;

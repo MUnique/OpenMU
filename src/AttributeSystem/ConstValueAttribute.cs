@@ -16,10 +16,14 @@ public class ConstValueAttribute : IAttribute
     /// </summary>
     /// <param name="value">The value.</param>
     /// <param name="definition">The definition.</param>
-    public ConstValueAttribute(float value, AttributeDefinition definition)
+    /// <param name="aggregateType">The type of the aggregate on the <paramref name="definition"/>.</param>
+    /// <param name="stage">The calculation stage on the <paramref name="definition"/>.</param>
+    public ConstValueAttribute(float value, AttributeDefinition definition, AggregateType aggregateType = AggregateType.AddRaw, byte stage = 0)
     {
         this.Value = value;
         this._definition = definition;
+        this.AggregateType = aggregateType;
+        this.Stage = stage;
     }
 
     /// <summary>
@@ -57,11 +61,14 @@ public class ConstValueAttribute : IAttribute
     public float Value { get; protected set; }
 
     /// <inheritdoc/>
-    public AggregateType AggregateType => AggregateType.AddRaw;
+    public AggregateType AggregateType { get; protected set; }
+
+    /// <inheritdoc />
+    public byte Stage { get; protected set; }
 
     /// <inheritdoc/>
     public override string ToString()
     {
-        return $"{this.Definition.Designation}: {this.Value}";
+        return $"{this.Definition.Designation}: {this.Value} ({this.AggregateType}) @{this.Stage}";
     }
 }

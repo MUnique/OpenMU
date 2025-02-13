@@ -40,5 +40,6 @@ public partial class AttributeRelationship :
         this.InputOperand = other.InputOperand;
         this.InputOperator = other.InputOperator;
         this.AggregateType = other.AggregateType;
+        this.Stage = other.Stage;
     }
 }

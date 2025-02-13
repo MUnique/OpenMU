@@ -44,8 +44,8 @@ internal partial class CharacterClassInitialization
         result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.BaseVitality, 20, true));
         result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.BaseEnergy, 15, true));
         result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.BaseLeadership, 25, true));
-        result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.CurrentHealth, 1, false));
-        result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.CurrentMana, 1, false));
+        result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.CurrentHealth, 90, false));
+        result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.CurrentMana, 40, false));
         result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.CurrentAbility, 1, false));
         result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.IsInSafezone, 1, false));
         result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.Resets, 0, false));
@@ -73,21 +73,18 @@ internal partial class CharacterClassInitialization
 
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(energyMinus15, -15, Stats.TotalEnergy, InputOperator.Add));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumMana, 1.5f, energyMinus15));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumMana, 0.5f, Stats.Level));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumHealth, 2, Stats.Level));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumHealth, 3, Stats.TotalVitality));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumMana, 1, Stats.Level));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumHealth, 1.5f, Stats.Level));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumHealth, 2, Stats.TotalVitality));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MinimumPhysBaseDmg, 1.0f / 7, Stats.TotalStrength));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumPhysBaseDmg, 1.0f / 5, Stats.TotalStrength));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MinimumPhysBaseDmg, 1.0f / 14, Stats.TotalEnergy));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumPhysBaseDmg, 1.0f / 10, Stats.TotalEnergy));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MinimumPhysBaseDmg, 1, Stats.MinimumPhysBaseDmgByWeapon));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumPhysBaseDmg, 1, Stats.MaximumPhysBaseDmgByWeapon));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MinimumPhysBaseDmg, 1, Stats.PhysicalBaseDmg));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumPhysBaseDmg, 1, Stats.PhysicalBaseDmg));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.SkillMultiplier, 0.0005f, Stats.TotalEnergy));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.RavenAttackDamageIncrease, 1.0f / 100, Stats.ScepterRise));
 
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumGuildSize, 0.1f, Stats.TotalLeadership));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.DamageReceiveDecrement, 1, Stats.DamageReceiveHorseDecrement, aggregateType: AggregateType.Multiplicate));
 
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.FenrirBaseDmg, 1.0f / 5, Stats.BaseStrength));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.FenrirBaseDmg, 1.0f / 5, Stats.BaseAgility));
@@ -95,26 +92,18 @@ internal partial class CharacterClassInitialization
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.FenrirBaseDmg, 1.0f / 3, Stats.BaseEnergy));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.FenrirBaseDmg, 1.0f / 3, Stats.BaseLeadership));
 
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.RavenMinimumDamage, 1, Stats.RavenBaseDamage));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.RavenMinimumDamage, 1.0f / 8, Stats.TotalLeadership));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.RavenMinimumDamage, 15, Stats.RavenLevel));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.RavenMaximumDamage, 1.0f / 4, Stats.TotalLeadership));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.RavenMaximumDamage, 15, Stats.RavenLevel));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.RavenMaximumDamage, 1, Stats.RavenBaseDamage));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.RavenAttackSpeed, 1.0f / 50, Stats.TotalLeadership));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.RavenAttackSpeed, 4.0f / 5, Stats.RavenLevel));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.RavenAttackRate, 16, Stats.RavenLevel));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.RavenAttackRate, 16f / 15, Stats.RavenLevel));
 
-        //result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.PhysicalBaseDmg, Stats.IsScepterEquipped, Stats.ScepterBonusDamage));
-        result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.RavenBaseDamage, Stats.IsScepterEquipped, Stats.ScepterPetBonusBaseDamage));
+        result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.RavenBonusDamage, Stats.IsScepterEquipped, Stats.ScepterPetBonusDamage));
+        result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.BonusDamageWithScepter, Stats.BonusDamageWithScepterCmdDiv, Stats.TotalLeadership));
         result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.MasterSkillPhysBonusDmg, Stats.IsScepterEquipped, Stats.BonusDamageWithScepter));
-        result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.DefenseBase, Stats.IsHorseEquipped, Stats.BonusDefenseWithHorse));
-        result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.DamageReceiveDecrement, Stats.IsHorseEquipped, Stats.HorseDamageAbsorb));
-
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.BonusDamageWithScepter, Stats.BonusDamageWithScepterCmdDiv, Stats.TotalLeadership));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.BonusDefenseWithHorse, 2.0f, Stats.HorseLevel));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.BonusDefenseWithHorse, 1.0f / 20, Stats.TotalAgility));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.HorseDamageAbsorb, 1.0f / 2, Stats.HorseLevel));
+        result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.DefenseBase, Stats.IsHorseEquipped, Stats.BonusDefenseWithHorse, stage: 3));
 
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.ElectricSpikeBonusDmg, 1.0f / 10, Stats.TotalLeadership));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.EarthshakeBonusDmg, 1.0f / 10, Stats.TotalStrength));
@@ -150,11 +139,13 @@ internal partial class CharacterClassInitialization
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(2, Stats.SkillMultiplier));
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f / 33f, Stats.AbilityRecoveryMultiplier));
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.PetDurationIncrease));
+        result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.DamageReceiveHorseDecrement));
 
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(180, Stats.RavenMinimumDamage));
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(200, Stats.RavenMaximumDamage));
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(20, Stats.RavenAttackSpeed));
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1000, Stats.RavenAttackRate));
+        result.BaseAttributeValues.Add(this.CreateConstValueAttribute(0.3f, Stats.RavenCriticalDamageChance));
 
         this.AddCommonBaseAttributeValues(result.BaseAttributeValues, isMaster);
 
