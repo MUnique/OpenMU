@@ -47,6 +47,12 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
 
         foreach (var attribute in item.Definition.BasePowerUpAttributes)
         {
+            if (item.ItemSlot == InventoryConstants.RightHandSlot && attribute.TargetAttribute == Stats.StaffRise)
+            {
+                // For a RH-wielded staff (MG), its rise doesn't count
+                continue;
+            }
+
             foreach (var powerUp in this.GetBasePowerUpWrappers(item, attributeHolder, attribute))
             {
                 yield return powerUp;
@@ -218,6 +224,12 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
                 continue;
             }
 
+            if (item.ItemSlot == InventoryConstants.RightHandSlot && option.PowerUpDefinition?.TargetAttribute == Stats.WizardryBaseDmg)
+            {
+                // For a RH-wielded staff (MG), its wizardry option doesn't count (but the others do!)
+                continue;
+            }
+
             var level = option.LevelType == LevelType.ItemLevel ? item.Level : optionLink.Level;
 
             var optionOfLevel = option.LevelDependentOptions?.FirstOrDefault(l => l.Level == level);
@@ -305,7 +317,7 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
             }
         }
 
-        if (item.IsWizardryWeapon(out var staffRise))
+        if (item.IsWizardryWeapon(out var staffRise) && item.ItemSlot == InventoryConstants.LeftHandSlot)
         {
             var additionalRise = (((int)staffRise * 2 * 25 / baseDropLevel) + 5) / 2;
             yield return new PowerUpWrapper(new SimpleElement(additionalRise, AggregateType.AddRaw), Stats.StaffRise, attributeHolder);

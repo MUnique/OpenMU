@@ -672,20 +672,18 @@ public static class AttackableExtensions
 
                 // Elf skills specific damage types
                 case DamageType.MultiShot:
-                    skillMinimumDamage = (int)(skillMinimumDamage * 0.8); // check s6 sources
+                    skillMinimumDamage = (int)(skillMinimumDamage * 0.8);
                     skillMaximumDamage = (int)(skillMaximumDamage * 0.8);
-                    damageType = DamageType.Physical;
-                    break;
+                    goto case DamageType.Physical;
 
                 case DamageType.Physical:
-                    // Because double wield damage will be doubled later, we only take half of the skill dmg here
-                    int doubleWieldSkillDivisor = attackerStats[Stats.HasDoubleWield] > 0 ? 2 : 1;
-                    skillMinimumDamage /= doubleWieldSkillDivisor;
-                    skillMaximumDamage /= doubleWieldSkillDivisor;
-                    damageType = DamageType.Physical;
-                    break;
+                    if (attackerStats[Stats.HasDoubleWield] > 0)
+                    { // Because double wield damage will be doubled later, we only take half of the skill dmg here
+                        skillMinimumDamage /= 2;
+                        skillMaximumDamage /= 2;
+                    }
 
-                default:
+                    damageType = DamageType.Physical;
                     break;
             }
         }
@@ -858,7 +856,8 @@ public static class AttackableExtensions
     {
         var skillMultiplier = attacker.Attributes[Stats.SkillMultiplier];
 
-        // Switch cases ordering kept close to source's for reference
+        // Not all character's skills get multiplied (e.g., elf's TripleShot and MultiShot), so default case should be empty.
+        // Switch cases ordering kept close to source's for reference, with new season (NS) skills included.
         switch (skill.Skill?.Number)
         {
             case 19: // FallingSlash
@@ -871,18 +870,19 @@ public static class AttackableExtensions
                     skillMultiplier = 2;
                 }
 
-                goto case 41;
+                dmg = (int)(dmg * skillMultiplier);
+                break;
             case 41: // TwistingSlash
             case 42: // RagefulBlow
             case 43: // DeathStab
             case 44: // CrescentMoonSlash (CS)
             case 49: // FireBreath (Dino)
             case 55: // FireSlash
-            case 57: // SpiralSlash
+            case 57: // SpiralSlash (CS)
             case 47: // Impale (mount & spear)
             case 56: // PowerSlash
         /* Elf */
-            case 46: // Starfall
+            case 46: // Starfall (CS)
             case 51: // IceArrow
             case 52: // Penetration
         /* DL */
@@ -954,19 +954,19 @@ public static class AttackableExtensions
             case 523: // ChaoticDiseierStr (NS)
                 dmg = (int)(dmg * skillMultiplier / 1.25f);
                 break;
-        /* Selupan (Raklion boss) skills */
+        /* Selupan (Raklion boss) */
             case 250:
-                dmg *= 2;
+                dmg = (int)(dmg * skillMultiplier);
                 break;
             case 251:
-                dmg = (int)(dmg * 2.2f);
-                break;
+                skillMultiplier += 0.2f;
+                goto case 250;
             case 252:
-                dmg = (int)(dmg * 2.3f);
-                break;
+                skillMultiplier += 0.3f;
+                goto case 250;
             case 253:
-                dmg = (int)(dmg * 2.5f);
-                break;
+                skillMultiplier += 0.5f;
+                goto case 250;
         /* RF */
             case 260: // KillingBlow
             case 261: // BeastUppercut
@@ -1007,7 +1007,7 @@ public static class AttackableExtensions
 
                 break;
 
-        /* Summoner late stage book skill bonuses */
+        /* Summoner's book skill bonuses */
             case 223: // Explosion223 (Samut)
                 dmg += (int)attacker.Attributes[Stats.ExplosionBonusDmg];
                 break;

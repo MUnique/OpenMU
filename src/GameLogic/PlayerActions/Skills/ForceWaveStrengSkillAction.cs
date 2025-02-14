@@ -23,7 +23,7 @@ public class ForceWaveStrengSkillAction : TargetedSkillDefaultPlugin
     /// <inheritdoc/>
     public override async ValueTask PerformSkillAsync(Player player, IAttackable target, ushort skillId)
     {
-        // If there is an equipped scepter with skill, we call the alt master skill related to force wave instead
+        // If there is an equipped scepter with skill, we call the alt master skill with force wave as its related skill
         if (player.Attributes is { } attr && attr[Stats.IsScepterEquipped] > 0
             && (player.Inventory?.EquippedItems.FirstOrDefault(item => item.ItemSlot == InventoryConstants.LeftHandSlot)?.HasSkill ?? false))
         {

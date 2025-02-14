@@ -256,7 +256,7 @@ public class Stats
     /// <summary>
     /// Gets the min and max wiz base DMG attribute definition.
     /// </summary>
-    /// <remarks>Includes the wizardry DMG item option from weapons (staffs, swords, sticks) and wings.</remarks>
+    /// <remarks>Includes the wizardry DMG item option from weapons (staffs, swords, sticks) and wings, and MST Magic Mastery passive.</remarks>
     public static AttributeDefinition WizardryBaseDmg { get; } = new(new Guid("7F4F3646-33A6-40AC-8DA6-29A0A0F46016"), "Wizardry Base Damage (min and max)", string.Empty);
 
     /// <summary>

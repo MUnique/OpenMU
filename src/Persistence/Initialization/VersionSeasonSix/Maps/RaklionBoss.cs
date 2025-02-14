@@ -109,6 +109,7 @@ internal class RaklionBoss : BaseMapInitializer
                 { Stats.IceResistance, 254f / 255 },
                 { Stats.WaterResistance, 150f / 255 },
                 { Stats.FireResistance, 150f / 255 },
+                { Stats.SkillMultiplier, 2 },
             };
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             monster.SetGuid(monster.Number);
