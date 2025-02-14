@@ -22,6 +22,8 @@ public static class Extensions
             InputOperator.Multiply => "*",
             InputOperator.Exponentiate => "^",
             InputOperator.ExponentiateByAttribute => "^",
+            InputOperator.Minimum => "<min>",
+            InputOperator.Maximum => "<max>",
             _ => string.Empty,
         };
     }

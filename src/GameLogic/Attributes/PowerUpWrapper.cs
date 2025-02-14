@@ -44,6 +44,9 @@ public sealed class PowerUpWrapper : IElement, IDisposable
     /// <inheritdoc/>
     public AggregateType AggregateType => this._element.AggregateType;
 
+    /// <inheritdoc/>
+    public byte Stage => this._element.Stage;
+
     /// <summary>
     /// Creates elements by a <see cref="PowerUpDefinition"/>.
     /// </summary>

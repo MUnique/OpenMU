@@ -196,6 +196,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<int>("AggregateType")
+                        .HasColumnType("integer");
+
                     b.Property<Guid?>("CharacterClassId")
                         .HasColumnType("uuid");
 
@@ -213,6 +216,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<Guid?>("PowerUpDefinitionValueId")
                         .HasColumnType("uuid");
+
+                    b.Property<byte>("Stage")
+                        .HasColumnType("smallint");
 
                     b.Property<Guid?>("TargetAttributeId")
                         .HasColumnType("uuid");
@@ -706,11 +712,17 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<int>("AggregateType")
+                        .HasColumnType("integer");
+
                     b.Property<Guid>("CharacterClassId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid?>("DefinitionId")
                         .HasColumnType("uuid");
+
+                    b.Property<byte>("Stage")
+                        .HasColumnType("smallint");
 
                     b.Property<float>("Value")
                         .HasColumnType("real");
@@ -1407,6 +1419,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<Guid?>("ItemDefinitionId")
                         .HasColumnType("uuid");
+
+                    b.Property<byte>("Stage")
+                        .HasColumnType("smallint");
 
                     b.Property<Guid?>("TargetAttributeId")
                         .HasColumnType("uuid");
@@ -2804,6 +2819,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<int>("AggregateType")
                         .HasColumnType("integer");
+
+                    b.Property<byte>("Stage")
+                        .HasColumnType("smallint");
 
                     b.Property<float>("Value")
                         .HasColumnType("real");

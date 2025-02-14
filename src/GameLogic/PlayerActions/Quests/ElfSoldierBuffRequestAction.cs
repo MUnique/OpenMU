@@ -50,8 +50,8 @@ public class ElfSoldierBuffRequestAction
         await player.MagicEffectList.AddEffectAsync(new MagicEffect(
             TimeSpan.FromMinutes(60),
             BuffEffect,
-            new MagicEffect.ElementWithTarget(new ConstantElement(50 + (player.Level / 5)), Stats.DefenseBase),
-            new MagicEffect.ElementWithTarget(new ConstantElement(45 + (player.Level / 3)), Stats.BaseDamageBonus))).ConfigureAwait(false);
+            new MagicEffect.ElementWithTarget(new ConstantElement(50 + (player.Level / 5), stage: 3), Stats.DefenseBase),
+            new MagicEffect.ElementWithTarget(new ConstantElement(45 + (player.Level / 3)), Stats.GreaterDamageBonus))).ConfigureAwait(false);
     }
 
     private sealed class SoldierBuffMagicEffectDefinition : MagicEffectDefinition

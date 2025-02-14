@@ -70,8 +70,8 @@ public abstract class GameConfigurationInitializerBase : InitializerBase
         this.CreateItemOptionTypes();
         this.GameConfiguration.ItemOptions.Add(this.CreateLuckOptionDefinition());
         this.GameConfiguration.ItemOptions.Add(this.CreateOptionDefinition(Stats.DefenseBase, ItemOptionDefinitionNumbers.DefenseOption));
-        this.GameConfiguration.ItemOptions.Add(this.CreateOptionDefinition(Stats.MaximumPhysBaseDmg, ItemOptionDefinitionNumbers.PhysicalAttack));
-        this.GameConfiguration.ItemOptions.Add(this.CreateOptionDefinition(Stats.MaximumWizBaseDmg, ItemOptionDefinitionNumbers.WizardryAttack));
+        this.GameConfiguration.ItemOptions.Add(this.CreateOptionDefinition(Stats.PhysicalBaseDmg, ItemOptionDefinitionNumbers.PhysicalAttack));
+        this.GameConfiguration.ItemOptions.Add(this.CreateOptionDefinition(Stats.WizardryBaseDmg, ItemOptionDefinitionNumbers.WizardryAttack));
     }
 
     protected ItemOptionDefinition CreateOptionDefinition(AttributeDefinition attributeDefinition, short number)

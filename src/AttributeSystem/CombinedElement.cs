@@ -40,9 +40,12 @@ public class CombinedElement : IElement
     /// <inheritdoc />
     public AggregateType AggregateType => this._element1.AggregateType;
 
+    /// <inheritdoc />
+    public byte Stage => this._element1.Stage;
+
     /// <inheritdoc/>
     public override string ToString()
     {
-        return $"{this.Value} ({this.AggregateType})";
+        return $"{this.Value} ({this.AggregateType}) @{this.Stage}";
     }
 }
