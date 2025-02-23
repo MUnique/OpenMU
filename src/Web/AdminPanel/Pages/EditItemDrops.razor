@@ -1,0 +1,98 @@
+﻿@page "/edit-item-drops/"
+
+<PageTitle>OpenMU: Item Drop Chances</PageTitle>
+<Breadcrumb IsFirstFromRoot="true" Caption="Item Drop Chances" />
+
+<h1>Item Drop Chances</h1>
+
+@if (this._randomDropGroup is null && this._excellentDropGroup is null)
+{
+  <span class="spinner-border" role="status" aria-hidden="true"></span>
+  <span class="sr-only">Loading...</span>
+  return;
+}
+
+  <h2>Drop Item Groups</h2>
+<table>
+  <thead>
+  <tr>
+    <th>Type</th>
+    <th>Drop Rate (0.0 to 1.0)</th>
+    <th></th>
+  </tr>
+  </thead>
+  <tbody>
+  @if (this._moneyDropGroup is { } moneyDropGroup)
+  {
+    <tr>
+      <td>Money Drop:</td>
+      <td><InputNumber @bind-Value="moneyDropGroup.Chance" step="0.01" min="0" max="1"/></td>
+      <td></td>
+    </tr>
+  }
+  @if (this._randomDropGroup is { } randomDropGroup)
+  {
+    <tr>
+      <td>Common Items:</td>
+      <td><InputNumber @bind-Value="randomDropGroup.Chance" step="0.01" min="0" max="1"/></td>
+      <td></td>
+    </tr>
+  }
+  @if (this._excellentDropGroup is { } excellentDropGroup)
+  {
+    <tr>
+      <td>Excellent Item Drop:</td>
+      <td><InputNumber @bind-Value="excellentDropGroup.Chance" step="0.0001" min="0" max="1" /></td>
+      <td></td>
+    </tr>
+  }
+  <tr>
+    <td>No Drop:</td>
+    <td>@(this.NoDropPercentage.ToString("P"))</td>
+    <td></td>
+  </tr>
+  </tbody>
+</table>
+
+<h2>Options</h2>
+<table>
+  <thead>
+  <tr>
+    <th>Type</th>
+    <th>Add Rate (0.0 to 1.0)</th>
+    <th>Maximum Options per Item</th>
+  </tr>
+  </thead>
+  <tbody>
+  
+  @if (this._luckOption is { } luckOption)
+  {
+    <tr>
+      <td>@this._luckOption!.Name:</td>
+      <td><InputNumber @bind-Value="@luckOption.AddChance" step="0.01" min="0" max="1"/></td>
+      <td></td>
+    </tr>
+  }
+  @foreach (var option in this._excellentOptions)
+  {
+    <tr>
+      <td>@option.Name:</td>
+      <td><InputNumber @bind-Value="@option.AddChance" step="0.01" min="0" max="1" /></td>
+      <td><InputNumber @bind-Value="@option.MaximumOptionsPerItem" min="1" max="@option.PossibleOptions.Count"></InputNumber></td>
+    </tr>
+  }
+  @foreach (var option in this._normalOptions)
+  {
+    <tr>
+      <td>@option.Name:</td>
+      <td><InputNumber @bind-Value="@option.AddChance" step="0.01" min="0" max="1" /></td>
+      <td></td>
+    </tr>
+  }
+
+  </tbody>
+</table>
+
+<button type="submit" class="primary-button" onclick="@this.OnSaveButtonClickAsync">Save</button>
+<button type="button" onclick="@this.OnCancelButtonClickAsync">Cancel</button>
+<p/>
