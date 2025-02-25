@@ -544,6 +544,16 @@ internal abstract class AccountInitializerBase : InitializerBase
                 .First(o => o.OptionType == ItemOptionTypes.Option);
             optionLink.Level = optionLevel;
             weapon.ItemOptions.Add(optionLink);
+
+            if (group == 0 && weapon.Definition.BasePowerUpAttributes.Any(bpua => bpua.TargetAttribute == Stats.StaffRise))
+            {
+                // Double item option MG sword
+                var doubleOptionLink = this.Context.CreateNew<ItemOptionLink>();
+                doubleOptionLink.ItemOption = weapon.Definition.PossibleItemOptions.SelectMany(o => o.PossibleOptions)
+                    .First(o => o != optionLink.ItemOption);
+                doubleOptionLink.Level = optionLevel;
+                weapon.ItemOptions.Add(doubleOptionLink);
+            }
         }
 
         if (luck)

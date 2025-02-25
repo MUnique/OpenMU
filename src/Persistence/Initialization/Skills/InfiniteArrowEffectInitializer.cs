@@ -45,13 +45,15 @@ public class InfiniteArrowEffectInitializer : InitializerBase
         reduceAmmonitionUsage.Boost.ConstantValue.Value = 0f;
         reduceAmmonitionUsage.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
 
+        // Mana loss is 5 plus: 0 (arrows/bolts + 0); 2 (arrows/bolts +1); 5 (arrows/bolts +2 or higher).
+        // Because the ammo item can be changed during the magic effect duration, the extra loss is added later.
         var manaLossAfterHit = this.Context.CreateNew<PowerUpDefinition>();
         magicEffect.PowerUpDefinitions.Add(manaLossAfterHit);
         manaLossAfterHit.TargetAttribute = Stats.ManaLossAfterHit.GetPersistent(this.GameConfiguration);
         manaLossAfterHit.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-        manaLossAfterHit.Boost.ConstantValue.Value = 5f; // Todo: this should vary according to the bolts/arrows level: +0 => 5;+1 => 7;+2 => 10
+        manaLossAfterHit.Boost.ConstantValue.Value = 5f;
 
-        // The next is more like a placeholder in case it's used by the master skill which adds a percentage bonus.
+        // Placeholder for the Infinity Arrow Strengthener master skill
         var damageIncreaseByMasterLevel = this.Context.CreateNew<PowerUpDefinition>();
         magicEffect.PowerUpDefinitions.Add(damageIncreaseByMasterLevel);
         damageIncreaseByMasterLevel.TargetAttribute = Stats.InfinityArrowStrMultiplier.GetPersistent(this.GameConfiguration);

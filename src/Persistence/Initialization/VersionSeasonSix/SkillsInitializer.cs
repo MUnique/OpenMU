@@ -664,7 +664,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.AddPassiveMasterSkillDefinition(SkillNumber.MaceStrengthener, Stats.MaceBonusDamage, AggregateType.AddRaw, Formula632, 2, 3);
         this.AddPassiveMasterSkillDefinition(SkillNumber.SpearStrengthener, Stats.SpearBonusDamage, AggregateType.AddRaw, Formula632, 2, 3);
         this.AddPassiveMasterSkillDefinition(SkillNumber.TwoHandedSwordMaster, Stats.TwoHandedSwordMasteryBonusDamage, AggregateType.AddRaw, Formula1154, 3, 3, SkillNumber.TwoHandedSwordStrengthener);
-        this.AddPassiveMasterSkillDefinition(SkillNumber.OneHandedSwordMaster, Stats.AttackSpeed, AggregateType.AddRaw, Formula1, 3, 3, SkillNumber.OneHandedSwordStrengthener, SkillNumber.Undefined, 10);
+        this.AddPassiveMasterSkillDefinition(SkillNumber.OneHandedSwordMaster, Stats.WeaponMasteryAttackSpeed, AggregateType.AddRaw, Formula1, 3, 3, SkillNumber.OneHandedSwordStrengthener, SkillNumber.Undefined, 10);
 
         // todo: Probability of stunning the target for 2 seconds according to the assigned Skill Level while using a Mace.
         this.AddMasterSkillDefinition(SkillNumber.MaceMastery, SkillNumber.MaceStrengthener, SkillNumber.Undefined, 3, 3, SkillNumber.Undefined, 20, Formula120);
@@ -695,12 +695,12 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.AddMasterSkillDefinition(SkillNumber.IceStrengthener, SkillNumber.Ice, SkillNumber.Undefined, 2, 5, SkillNumber.Ice, 20, Formula632);
         this.AddPassiveMasterSkillDefinition(SkillNumber.OneHandedStaffStrengthener, Stats.OneHandedStaffBonusBaseDamage, AggregateType.AddRaw, Formula502, 2, 3);
         this.AddPassiveMasterSkillDefinition(SkillNumber.TwoHandedStaffStrengthener, Stats.TwoHandedStaffBonusBaseDamage, AggregateType.AddRaw, Formula883, 2, 3);
-        this.AddPassiveMasterSkillDefinition(SkillNumber.ShieldStrengthenerGrandMaster, Stats.BonusDefenseWithShield, AggregateType.AddRaw, Formula803, 2, 3); // todo: check if this is correct
-        this.AddPassiveMasterSkillDefinition(SkillNumber.OneHandedStaffMaster, Stats.AttackSpeed, AggregateType.AddRaw, Formula1, 3, 3, SkillNumber.OneHandedStaffStrengthener, SkillNumber.Undefined, 10);
+        this.AddPassiveMasterSkillDefinition(SkillNumber.ShieldStrengthenerGrandMaster, Stats.BonusDefenseWithShield, AggregateType.AddRaw, Formula803, 2, 3);
+        this.AddPassiveMasterSkillDefinition(SkillNumber.OneHandedStaffMaster, Stats.WeaponMasteryAttackSpeed, AggregateType.AddRaw, Formula1, 3, 3, SkillNumber.OneHandedStaffStrengthener, SkillNumber.Undefined, 10);
         this.AddPassiveMasterSkillDefinition(SkillNumber.TwoHandedStaffMaster, Stats.TwoHandedStaffMasteryBonusDamage, AggregateType.AddRaw, Formula1154, 3, 3, SkillNumber.TwoHandedStaffStrengthener);
         this.AddPassiveMasterSkillDefinition(SkillNumber.ShieldMasteryGrandMaster, Stats.BonusDefenseRateWithShield, AggregateType.AddRaw, Formula1204, 3, 3, SkillNumber.ShieldStrengthenerGrandMaster);
-        this.AddMasterSkillDefinition(SkillNumber.SoulBarrierStrength, SkillNumber.SoulBarrier, SkillNumber.Undefined, 3, 4, SkillNumber.SoulBarrier, 20, Formula181);
-        this.AddMasterSkillDefinition(SkillNumber.SoulBarrierProficie, SkillNumber.SoulBarrierStrength, SkillNumber.Undefined, 3, 5, SkillNumber.SoulBarrier, 20, Formula803);
+        this.AddMasterSkillDefinition(SkillNumber.SoulBarrierStrength, SkillNumber.SoulBarrier, SkillNumber.Undefined, 3, 4, SkillNumber.SoulBarrier, 20, $"-{Formula181} / 100", Formula181, Stats.SoulBarrierReceiveDecrement, AggregateType.AddRaw);
+        this.AddMasterSkillDefinition(SkillNumber.SoulBarrierProficie, SkillNumber.SoulBarrierStrength, SkillNumber.Undefined, 3, 5, SkillNumber.SoulBarrierStrength, 20, Formula803, extendsDuration: true);
         this.AddPassiveMasterSkillDefinition(SkillNumber.MinimumWizardryInc, Stats.MinimumWizBaseDmg, AggregateType.AddRaw, Formula502, 5, 3);
 
         // ELF
@@ -719,7 +719,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.AddPassiveMasterSkillDefinition(SkillNumber.BowStrengthener, Stats.BowStrBonusDamage, AggregateType.AddRaw, Formula502, 2, 3);
         this.AddPassiveMasterSkillDefinition(SkillNumber.CrossbowStrengthener, Stats.CrossBowStrBonusDamage, AggregateType.AddRaw, Formula632, 2, 3);
         this.AddPassiveMasterSkillDefinition(SkillNumber.ShieldStrengthenerHighElf, Stats.BonusDefenseWithShield, AggregateType.AddRaw, Formula803, 2, 3);
-        this.AddPassiveMasterSkillDefinition(SkillNumber.BowMastery, Stats.AttackSpeed, AggregateType.AddRaw, Formula1, 3, 3, SkillNumber.BowStrengthener, SkillNumber.Undefined, 10);
+        this.AddPassiveMasterSkillDefinition(SkillNumber.BowMastery, Stats.WeaponMasteryAttackSpeed, AggregateType.AddRaw, Formula1, 3, 3, SkillNumber.BowStrengthener, SkillNumber.Undefined, 10);
         this.AddPassiveMasterSkillDefinition(SkillNumber.CrossbowMastery, Stats.CrossBowMasteryBonusDamage, AggregateType.AddRaw, Formula1154, 3, 3, SkillNumber.CrossbowStrengthener);
         this.AddPassiveMasterSkillDefinition(SkillNumber.ShieldMasteryHighElf, Stats.BonusDefenseRateWithShield, AggregateType.AddRaw, Formula1806, 3, 3, SkillNumber.ShieldStrengthenerHighElf);
         this.AddMasterSkillDefinition(SkillNumber.InfinityArrowStr, SkillNumber.InfinityArrow, SkillNumber.Undefined, 3, 5, SkillNumber.InfinityArrow, 20, $"{Formula120} / 100", Formula120, Stats.InfinityArrowStrMultiplier, AggregateType.AddRaw);
@@ -740,7 +740,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.AddPassiveMasterSkillDefinition(SkillNumber.StickStrengthener, Stats.StickBonusBaseDamage, AggregateType.AddRaw, Formula502, 2, 3);
         this.AddPassiveMasterSkillDefinition(SkillNumber.OtherWorldTomeStreng, Stats.BookBonusBaseDamage, AggregateType.AddRaw, Formula632, 2, 3);
         this.AddPassiveMasterSkillDefinition(SkillNumber.StickMastery, Stats.StickMasteryBonusDamage, AggregateType.AddRaw, Formula1154, 3, 3, SkillNumber.StickStrengthener);
-        this.AddPassiveMasterSkillDefinition(SkillNumber.OtherWorldTomeMastery, Stats.AttackSpeed, AggregateType.AddRaw, Formula1, 3, 3, SkillNumber.OtherWorldTomeStreng, SkillNumber.Undefined, 10);
+        this.AddPassiveMasterSkillDefinition(SkillNumber.OtherWorldTomeMastery, Stats.WeaponMasteryAttackSpeed, AggregateType.AddRaw, Formula1, 3, 3, SkillNumber.OtherWorldTomeStreng, SkillNumber.Undefined, 10);
         this.AddMasterSkillDefinition(SkillNumber.BerserkerStrengthener, SkillNumber.Berserker, SkillNumber.Undefined, 3, 4, SkillNumber.Berserker, 20, Formula181, Formula181, Stats.BerserkerCurseMultiplier, AggregateType.AddRaw);
         this.AddMasterSkillDefinition(SkillNumber.BerserkerProficiency, SkillNumber.BerserkerStrengthener, SkillNumber.Undefined, 3, 5, SkillNumber.Berserker, 20, $"{Formula181} / 100", Formula181, Stats.BerserkerProficiencyMultiplier, AggregateType.AddRaw);
         this.AddPassiveMasterSkillDefinition(SkillNumber.MinimumWizCurseInc, Stats.MinWizardryAndCurseDmgBonus, AggregateType.AddRaw, Formula502, 5, 3);
@@ -834,12 +834,12 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.AddMasterSkillDefinition(skillNumber, requiredSkill1, requiredSkill2, root, rank, SkillNumber.Undefined, maximumLevel, valueFormula, valueFormula, targetAttribute, aggregateType);
     }
 
-    private void AddMasterSkillDefinition(SkillNumber skillNumber, SkillNumber requiredSkill1, SkillNumber requiredSkill2, byte root, byte rank, SkillNumber regularSkill, byte maximumLevel, string valueFormula)
+    private void AddMasterSkillDefinition(SkillNumber skillNumber, SkillNumber requiredSkill1, SkillNumber requiredSkill2, byte root, byte rank, SkillNumber regularSkill, byte maximumLevel, string valueFormula, bool extendsDuration = false)
     {
-        this.AddMasterSkillDefinition(skillNumber, requiredSkill1, requiredSkill2, root, rank, regularSkill, maximumLevel, valueFormula, valueFormula, null, AggregateType.AddRaw);
+        this.AddMasterSkillDefinition(skillNumber, requiredSkill1, requiredSkill2, root, rank, regularSkill, maximumLevel, valueFormula, valueFormula, null, AggregateType.AddRaw, extendsDuration);
     }
 
-    private void AddMasterSkillDefinition(SkillNumber skillNumber, SkillNumber requiredSkill1, SkillNumber requiredSkill2, byte root, byte rank, SkillNumber regularSkill, byte maximumLevel, string valueFormula, string displayValueFormula, AttributeDefinition? targetAttribute, AggregateType aggregateType)
+    private void AddMasterSkillDefinition(SkillNumber skillNumber, SkillNumber requiredSkill1, SkillNumber requiredSkill2, byte root, byte rank, SkillNumber regularSkill, byte maximumLevel, string valueFormula, string displayValueFormula, AttributeDefinition? targetAttribute, AggregateType aggregateType, bool extendsDuration = false)
     {
         var skill = this.GameConfiguration.Skills.First(s => s.Number == (short)skillNumber);
         skill.MasterDefinition = this.Context.CreateNew<MasterSkillDefinition>();
@@ -851,6 +851,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         skill.MasterDefinition.TargetAttribute = targetAttribute?.GetPersistent(this.GameConfiguration);
         skill.MasterDefinition.Aggregation = aggregateType;
         skill.MasterDefinition.ReplacedSkill = this.GameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)regularSkill);
+        skill.MasterDefinition.ExtendsDuration = extendsDuration;
         if (requiredSkill1 != SkillNumber.Undefined)
         {
             skill.MasterDefinition.RequiredMasterSkills.Add(this.GameConfiguration.Skills.First(s => s.Number == (short)requiredSkill1));

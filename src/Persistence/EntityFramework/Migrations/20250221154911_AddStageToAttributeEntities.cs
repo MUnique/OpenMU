@@ -18,6 +18,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 nullable: false,
                 defaultValue: (byte)0);
 
+            migrationBuilder.AddColumn<bool>(
+                name: "ExtendsDuration",
+                schema: "config",
+                table: "MasterSkillDefinition",
+                type: "boolean",
+                nullable: false,
+                defaultValue: false);
+
             migrationBuilder.AddColumn<byte>(
                 name: "Stage",
                 schema: "config",
@@ -66,6 +74,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 name: "Stage",
                 schema: "config",
                 table: "PowerUpDefinitionValue");
+
+            migrationBuilder.DropColumn(
+                name: "ExtendsDuration",
+                schema: "config",
+                table: "MasterSkillDefinition");
 
             migrationBuilder.DropColumn(
                 name: "Stage",

@@ -90,6 +90,7 @@ internal partial class CharacterClassInitialization
         result.AttributeCombinations.Add(this.CreateConditionalRelationship(ammunitionDmgIncrease, Stats.ArcheryAttackMode, Stats.AmmunitionDamageBonus));
         result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.MinimumPhysBaseDmg, Stats.MeleeAttackMode, Stats.MeleeMinDmg));
         result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.MaximumPhysBaseDmg, Stats.MeleeAttackMode, Stats.MeleeMaxDmg));
+        result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.AttackSpeedAny, Stats.IsBowEquipped, Stats.WeaponMasteryAttackSpeed));
 
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.FenrirBaseDmg, 1.0f / 5, Stats.BaseStrength));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.FenrirBaseDmg, 1.0f / 3, Stats.BaseAgility));

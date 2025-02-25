@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 {
     [DbContext(typeof(EntityDataContext))]
-    [Migration("20250203151015_AddStageToAttributeEntities")]
+    [Migration("20250221154911_AddStageToAttributeEntities")]
     partial class AddStageToAttributeEntities
     {
         /// <inheritdoc />
@@ -2256,6 +2256,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<string>("DisplayValueFormula")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<bool>("ExtendsDuration")
+                        .HasColumnType("boolean");
 
                     b.Property<byte>("MaximumLevel")
                         .HasColumnType("smallint");

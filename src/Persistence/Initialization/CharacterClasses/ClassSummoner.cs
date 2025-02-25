@@ -128,6 +128,7 @@ internal partial class CharacterClassInitialization
 
         result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.MinimumWizBaseDmg, Stats.IsStickEquipped, Stats.StickBonusBaseDamage, stage: 4));
         result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.MaximumWizBaseDmg, Stats.IsStickEquipped, Stats.StickBonusBaseDamage, stage: 4));
+        result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.AttackSpeedAny, Stats.IsBookEquipped, Stats.WeaponMasteryAttackSpeed));
         result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.MinimumCurseBaseDmg, Stats.IsBookEquipped, Stats.BookBonusBaseDamage, stage: 2));
         result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.MaximumCurseBaseDmg, Stats.IsBookEquipped, Stats.BookBonusBaseDamage, stage: 2));
 

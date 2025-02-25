@@ -123,15 +123,18 @@ internal partial class CharacterClassInitialization : InitializerBase
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.MinimumPhysBaseDmg, 1, Stats.BaseDamageBonus, stage: 4));
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.MaximumPhysBaseDmg, 1, Stats.BaseDamageBonus, stage: 4));
 
+        // A double wield (DK, MG, RF) grants 110% physical attack dmg (here 55%, later doubled after base dmg calculations)
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.HasDoubleWield, 1, Stats.DoubleWieldWeaponCount, InputOperator.Maximum));
-        var tempDoubleWield = this.Context.CreateNew<AttributeDefinition>(Guid.NewGuid(), "Temp Double wield multiplier", string.Empty);
+        var tempDoubleWield = this.Context.CreateNew<AttributeDefinition>(Guid.NewGuid(), "Temp Double Wield multiplier", string.Empty);
         this.GameConfiguration.Attributes.Add(tempDoubleWield);
         attributeRelationships.Add(this.CreateAttributeRelationship(tempDoubleWield, 1, Stats.Level, InputOperator.Minimum));
         attributeRelationships.Add(this.CreateAttributeRelationship(tempDoubleWield, -0.45f, Stats.HasDoubleWield));
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.MinimumPhysBaseDmg, 1, tempDoubleWield, aggregateType: AggregateType.Multiplicate, stage: 3));
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.MaximumPhysBaseDmg, 1, tempDoubleWield, aggregateType: AggregateType.Multiplicate, stage: 3));
+        attributeRelationships.Add(this.CreateConditionalRelationship(Stats.MinimumPhysBaseDmgByWeapon, Stats.HasDoubleWield, Stats.MinPhysBaseDmgByRightWeapon));
+        attributeRelationships.Add(this.CreateConditionalRelationship(Stats.MaximumPhysBaseDmgByWeapon, Stats.HasDoubleWield, Stats.MaxPhysBaseDmgByRightWeapon));
 
-        // If two weapons are equipped we subtract the half of the sum of the speeds again from the attack speed
+        // If two weapons are equipped (DK, MG, Sum, RF) we subtract the half of the sum of the speeds again from the attack speed
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.AreTwoWeaponsEquipped, 1, Stats.EquippedWeaponCount));
         var tempSpeed = this.Context.CreateNew<AttributeDefinition>(Guid.NewGuid(), "Temp Half weapon attack speed", string.Empty);
         this.GameConfiguration.Attributes.Add(tempSpeed);

@@ -81,12 +81,22 @@ public class AddMasterPointAction
             learnedSkill.Level += requiredPoints;
             learnedSkill.PowerUpDuration = null;
             learnedSkill.PowerUps = null;
-            player.SelectedCharacter.MasterLevelUpPoints -= requiredPoints;
+
+            var currentSkill = learnedSkill;
+            while (player.SkillList!.Skills.FirstOrDefault(s => s.Skill?.MasterDefinition?.ReplacedSkill == currentSkill.Skill) is { } childSkill)
+            {
+                // Because the learned skill might have been replaced by a child skill (active), we also need to nullify the child's powerups to force an update
+                childSkill.PowerUpDuration = null;
+                childSkill.PowerUps = null;
+                currentSkill = childSkill;
+            }
 
             if (learnedSkill.Skill.Number == 509) // Force Wave Streng
             {
                 player.SkillList!.GetSkill(5090)!.Level += requiredPoints;
             }
+
+            player.SelectedCharacter.MasterLevelUpPoints -= requiredPoints;
 
             await player.InvokeViewPlugInAsync<IMasterSkillLevelChangedPlugIn>(p => p.MasterSkillLevelChangedAsync(learnedSkill)).ConfigureAwait(false);
         }

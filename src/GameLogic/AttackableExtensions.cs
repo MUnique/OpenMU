@@ -651,39 +651,44 @@ public static class AttackableExtensions
 
             switch (damageType)
             {
-                // Dark Lord skills specific damage types
                 case DamageType.ElectricSpike:
                     var nearbyPartyMembers = attacker.Party?.PartyList.Where(p => p == attacker || p.Observers.Contains((IWorldObserver)attacker)).Count() ?? 0;
                     skillMinimumDamage += (int)attackerStats[Stats.ElectricSpikeBonusDmg] + (nearbyPartyMembers * 50);
                     skillMaximumDamage += (int)attackerStats[Stats.ElectricSpikeBonusDmg] + (nearbyPartyMembers * 50);
-                    goto case DamageType.Physical;
+                    damageType = DamageType.Physical;
+                    break;
                 case DamageType.Earthshake:
                     skillMinimumDamage += (int)attackerStats[Stats.EarthshakeBonusDmg];
                     skillMaximumDamage += (int)attackerStats[Stats.EarthshakeBonusDmg];
-                    goto case DamageType.Physical;
+                    damageType = DamageType.Physical;
+                    break;
                 case DamageType.ChaoticDiseier:
                     skillMinimumDamage += (int)attackerStats[Stats.ChaoticDiseierBonusDmg];
                     skillMaximumDamage += (int)attackerStats[Stats.ChaoticDiseierBonusDmg];
-                    goto case DamageType.Physical;
+                    damageType = DamageType.Physical;
+                    break;
                 case DamageType.DarkLordGenericSkill:
                     skillMinimumDamage += (int)attackerStats[Stats.DarkLordGenericSkillBonusDmg];
                     skillMaximumDamage += (int)attackerStats[Stats.DarkLordGenericSkillBonusDmg];
-                    goto case DamageType.Physical;
-
-                // Elf skills specific damage types
+                    damageType = DamageType.Physical;
+                    break;
                 case DamageType.MultiShot:
                     skillMinimumDamage = (int)(skillMinimumDamage * 0.8);
                     skillMaximumDamage = (int)(skillMaximumDamage * 0.8);
-                    goto case DamageType.Physical;
+                    damageType = DamageType.Physical;
+                    break;
 
                 case DamageType.Physical:
                     if (attackerStats[Stats.HasDoubleWield] > 0)
-                    { // Because double wield damage will be doubled later, we only take half of the skill dmg here
+                    { // Because double wield dmg will be doubled later, we only take half of the skill dmg here (the skill is from a single weapon)
                         skillMinimumDamage /= 2;
                         skillMaximumDamage /= 2;
                     }
 
-                    damageType = DamageType.Physical;
+                    break;
+
+                default:
+                    // Nothing to do here
                     break;
             }
         }
@@ -1006,7 +1011,6 @@ public static class AttackableExtensions
                 }
 
                 break;
-
         /* Summoner's book skill bonuses */
             case 223: // Explosion223 (Samut)
                 dmg += (int)attacker.Attributes[Stats.ExplosionBonusDmg];

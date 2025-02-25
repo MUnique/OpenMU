@@ -333,7 +333,7 @@ public class DefaultDropGenerator : IDropGenerator
                     // Double item option MG sword
                     var doubleOptionLink = new ItemOptionLink
                     {
-                        ItemOption = remainingOptions.FirstOrDefault(o => o != newOption),
+                        ItemOption = remainingOptions.First(o => o != newOption),
                         Level = itemOptionLink.Level,
                     };
                     item.ItemOptions.Add(doubleOptionLink);

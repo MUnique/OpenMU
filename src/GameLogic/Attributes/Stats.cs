@@ -204,6 +204,23 @@ public class Stats
     public static AttributeDefinition MaximumPhysBaseDmgByWeapon { get; } = new(new Guid("EC0D70BE-839C-4BAD-9FC5-1AD7438C75F8"), "Maximum Physical Base Damage By Weapon", string.Empty);
 
     /// <summary>
+    /// Gets the minimum physical base DMG by right hand weapon attribute definition.
+    /// </summary>
+    /// <remarks>Used to isolate RH weapon min damage for double weapon wield logic.
+    /// On a staff-sword (mixed) or double-staff wield (MG), the LH weapon alone dictates the "attack type":
+    ///   LH: staff; RH: sword or staff => LH physical damage and rise (ene-MG).
+    ///   LH: sword; RH: staff => LH physical damage (str-MG).
+    /// Other than these, it's a "true" double wield (two one-handed physical weapons) and both weapons' damage attributes count.
+    /// Summoner can also double weapon wield (stick and book), but books have no damage.</remarks>
+    public static AttributeDefinition MinPhysBaseDmgByRightWeapon { get; } = new(new Guid("99F42E8D-2C03-4D23-94F8-F920DCF032B4"), "Minimum Physical Base Damage By Right Weapon", string.Empty);
+
+    /// <summary>
+    /// Gets the maximum physical base DMG by right hand weapon attribute definition.
+    /// </summary>
+    /// <remarks>Used to isolate RH weapon max damage for double weapon wield logic. Refer to <see cref="MinPhysBaseDmgByRightWeapon"/> for remarks.</remarks>
+    public static AttributeDefinition MaxPhysBaseDmgByRightWeapon { get; } = new(new Guid("84F794AE-D7EB-4AC6-B56B-79D1E9FF3AF4"), "Maximum Physical Base Damage By Right Weapon", string.Empty);
+
+    /// <summary>
     /// Gets the minimum physical base DMG attribute definition.
     /// </summary>
     /// <remarks>The "resting" physical minimum base damage. Calculated in several stages:
@@ -403,7 +420,7 @@ public class Stats
     public static AttributeDefinition AttackSpeedByWeapon { get; } = new(new Guid("45EEEDEE-C76B-40E6-A0BC-2B493E10B140"), "Attack Speed by Weapons", string.Empty);
 
     /// <summary>
-    /// Gets the attribute which says, if any two weapons are equipped.
+    /// Gets the attribute which says, if any two weapons are equipped (DK, MG, Sum, RF).
     /// </summary>
     /// <remarks>Used to average out the <see cref="AttackSpeedAny"/>.</remarks>
     public static AttributeDefinition AreTwoWeaponsEquipped { get; } = new(new Guid("56DA895D-BAFD-4A5C-9864-B17AB8369998"), "Are two weapons equipped", string.Empty)
@@ -419,7 +436,8 @@ public class Stats
     /// <summary>
     /// Gets the attribute which says if the player has a double wield (DK, MG, RF).
     /// </summary>
-    /// <remarks>This is different from the <see cref="AreTwoWeaponsEquipped"/> attribute, where two staffs can be equipped, for example. For a double wield only physical attack type weapons are considered.</remarks>
+    /// <remarks>This is different from the <see cref="AreTwoWeaponsEquipped"/> attribute, where two staffs can be equipped, for example.
+    /// For a double wield only physical attack type weapons are considered.</remarks>
     public static AttributeDefinition HasDoubleWield { get; } = new(new Guid("4AD0E3CA-526D-4DBF-AB65-87BEB7A1F080"), "Has Double Wield", "A double weapon wield grants a 10% increase in physical damage. Only DK, MG, and RF can double wield.");
 
     /// <summary>
@@ -575,6 +593,12 @@ public class Stats
     public static AttributeDefinition OneHandedSwordBonusDamage { get; } = new(new Guid("60FA78A3-4E8C-4304-9077-5D3312EB1BE8"), "One Handed Sword Bonus Damage (MST)", string.Empty);
 
     /// <summary>
+    /// Gets the weapon mastery MST bonus attack speed.
+    /// </summary>
+    /// <remarks>Bucket attribute for the master skills: one handed sword mastery (DK), bow mastery (Elf), one handed staff mastery (DW), other world tome mastery (Summoner).</remarks>
+    public static AttributeDefinition WeaponMasteryAttackSpeed { get; } = new(new Guid("CD16D6FD-5495-4BD9-A112-DBAF83BB4008"), "Weapon Mastery Bonus Attack Speed (MST)", string.Empty);
+
+    /// <summary>
     /// Gets the is a two handed sword equipped.
     /// </summary>
     public static AttributeDefinition IsTwoHandedSwordEquipped { get; } = new(new Guid("15530767-556E-45F6-8C2D-9AC71FC4070F"), "Is Two Handed Sword Equipped", string.Empty);
@@ -618,7 +642,11 @@ public class Stats
     /// <summary>
     /// Gets the is a one handed staff equipped.
     /// </summary>
-    public static AttributeDefinition IsOneHandedStaffEquipped { get; } = new(new Guid("C452EFD8-9FFE-4015-BE93-8BC8D5D81572"), "Is One Handed Staff Equipped", string.Empty);
+    /// <remarks>MG can equip two.</remarks>
+    public static AttributeDefinition IsOneHandedStaffEquipped { get; } = new(new Guid("C452EFD8-9FFE-4015-BE93-8BC8D5D81572"), "Is One Handed Staff Equipped", string.Empty)
+    {
+        MaximumValue = 1,
+    };
 
     /// <summary>
     /// Gets the one handed staff bonus (MST) base damage.

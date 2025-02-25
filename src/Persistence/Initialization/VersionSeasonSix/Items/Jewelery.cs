@@ -70,7 +70,7 @@ internal class Jewelery : Version095d.Items.Jewelery
         eliteSkeletonRing.PossibleItemOptions.Add(
             this.CreateItemOptionDefinition("Elite Transfer Skeleton Ring", ItemOptionDefinitionNumbers.EliteTransferSkeletonRing,
                 (Stats.DefenseBase, 1.1f, AggregateType.Multiplicate, 1),
-                (Stats.MaximumHealth, 400, AggregateType.AddRaw, 0))); // todo: added health is equal to Stats.TotalLevel
+                (Stats.MaximumHealth, 400, AggregateType.AddRaw, 0))); // todo: added health should be equal to Stats.TotalLevel
         this.CreateTransformationRing(40, "Jack O'lantern Transformation Ring", 10, 100, CharacterTransformationSkin.JackOlantern);
         var christmasRing = this.CreateTransformationRing(41, "Christmas Transformation Ring", 1, 100, CharacterTransformationSkin.Christmas);
         christmasRing.PossibleItemOptions.Add(
@@ -79,7 +79,7 @@ internal class Jewelery : Version095d.Items.Jewelery
                 (Stats.MaximumPhysBaseDmg, 20, AggregateType.AddRaw, 1),
                 (Stats.MinimumWizBaseDmg, 20, AggregateType.AddRaw, 1),
                 (Stats.MaximumWizBaseDmg, 20, AggregateType.AddRaw, 1)));
-        this.CreateTransformationRing(42, "Game Master Transformation Ring", 0, 255, CharacterTransformationSkin.GameMaster);
+        this.CreateTransformationRing(42, "Game Master Transformation Ring", 0, 255, CharacterTransformationSkin.GameMaster); // todo: add options
         this.CreateTransformationRing(68, "Snowman Transformation Ring", 10, 100, CharacterTransformationSkin.Snowman);
         var pandaRing = this.CreateTransformationRing(76, "Panda Transformation Ring", 28, 255, CharacterTransformationSkin.Panda);
         pandaRing.PossibleItemOptions.Add(
@@ -101,7 +101,7 @@ internal class Jewelery : Version095d.Items.Jewelery
                 (Stats.MaximumWizBaseDmg, 40, AggregateType.AddRaw, 1),
                 (Stats.MinimumCurseBaseDmg, 40, AggregateType.AddRaw, 1),
                 (Stats.MaximumCurseBaseDmg, 40, AggregateType.AddRaw, 1),
-                (Stats.ExperienceRate, 1.5f, AggregateType.Multiplicate, 0))); // todo: exp rate only with equipped skeleton pet
+                (Stats.ExperienceRate, 1.5f, AggregateType.Multiplicate, 0))); // todo: exp rate only applies with equipped skeleton pet
         var robotKnightRing = this.CreateTransformationRing(163, "Robot Knight Transformation Ring", 1, 255, (CharacterTransformationSkin)625);
         robotKnightRing.PossibleItemOptions.Add(
             this.CreateItemOptionDefinition("Robot Knight Transformation Ring", ItemOptionDefinitionNumbers.RobotKnightTransformationRing,

@@ -112,12 +112,12 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
             attacker.ApplyAmmunitionConsumption(hitInfo);
             if (attacker is Player player)
             {
-                await player.AfterHitTargetAsync().ConfigureAwait(false);
+                await player.AfterHitTargetAsync(skill).ConfigureAwait(false);
             }
 
             if (attacker as IPlayerSurrogate is { } playerSurrogate)
             {
-                await playerSurrogate.Owner.AfterHitTargetAsync().ConfigureAwait(false);
+                await playerSurrogate.Owner.AfterHitTargetAsync(skill).ConfigureAwait(false);
             }
         }
 

@@ -2254,6 +2254,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<bool>("ExtendsDuration")
+                        .HasColumnType("boolean");
+
                     b.Property<byte>("MaximumLevel")
                         .HasColumnType("smallint");
 

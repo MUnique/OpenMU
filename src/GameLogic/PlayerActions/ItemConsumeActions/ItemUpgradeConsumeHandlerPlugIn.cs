@@ -180,7 +180,7 @@ public abstract class ItemUpgradeConsumeHandlerPlugIn : ItemModifyConsumeHandler
                 {
                     // Double item option MG sword
                     var doubleOptionLink = persistenceContext.CreateNew<ItemOptionLink>();
-                    doubleOptionLink.ItemOption = possibleOptions.FirstOrDefault(o => o != optionLink.ItemOption);
+                    doubleOptionLink.ItemOption = possibleOptions.First(o => o != optionLink.ItemOption);
                     doubleOptionLink.Level = 1;
                     item.ItemOptions.Add(doubleOptionLink);
                 }

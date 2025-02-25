@@ -89,6 +89,7 @@ internal partial class CharacterClassInitialization
 
         result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.MinimumWizBaseDmg, Stats.IsOneHandedStaffEquipped, Stats.OneHandedStaffBonusBaseDamage, stage: 4));
         result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.MaximumWizBaseDmg, Stats.IsOneHandedStaffEquipped, Stats.OneHandedStaffBonusBaseDamage, stage: 4));
+        result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.AttackSpeedAny, Stats.IsOneHandedStaffEquipped, Stats.WeaponMasteryAttackSpeed));
         result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.MinimumWizBaseDmg, Stats.IsTwoHandedStaffEquipped, Stats.TwoHandedStaffBonusBaseDamage, stage: 4));
         result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.MaximumWizBaseDmg, Stats.IsTwoHandedStaffEquipped, Stats.TwoHandedStaffBonusBaseDamage, stage: 4));
 

@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 using MUnique.OpenMU.Persistence.Initialization.Items;
@@ -41,6 +42,7 @@ internal class Weapons : InitializerBase
     private static readonly float[] AmmunitionDamageIncreaseByLevel = { 0, 0.03f, 0.05f, 0.1f }; // Bolts/Arrows
 
     private ItemLevelBonusTable? _weaponDamageIncreaseTable;
+    private ItemLevelBonusTable? _staffDamageIncreaseTable;
 
     private ItemLevelBonusTable? _staffRiseTableEven;
     private ItemLevelBonusTable? _staffRiseTableOdd;
@@ -114,11 +116,12 @@ internal class Weapons : InitializerBase
     public override void Initialize()
     {
         this._weaponDamageIncreaseTable = this.CreateItemBonusTable(DamageIncreaseByLevel, "Damage Increase (Weapons)", "The damage increase by weapon level. It increases by 3 per level, and 1 more after level 10.");
+        this._staffDamageIncreaseTable = this.CreateItemBonusTable([.. DamageIncreaseByLevel.Select(dmg => dmg /= 2.0f)], "Damage Increase (Staffs/Sticks)", "The damage increase by staff/stick level. It's half of the physical weapons.");
         this._staffRiseTableEven = this.CreateItemBonusTable(StaffRiseIncreaseByLevelEven, "Staff Rise (even)", "The staff rise bonus per item level for even magic power staves.");
         this._staffRiseTableOdd = this.CreateItemBonusTable(StaffRiseIncreaseByLevelOdd, "Staff Rise (odd)", "The staff rise bonus per item level for odd magic power staves.");
         this._scepterRiseTableEven = this.CreateItemBonusTable(ScepterRiseIncreaseByLevelEven, "Scepter Rise (even)", "The scepter rise bonus per item level for even magic power scepters.");
         this._scepterRiseTableOdd = this.CreateItemBonusTable(ScepterRiseIncreaseByLevelOdd, "Scepter Rise (odd)", "The scepter rise bonus per item level for odd magic power scepters.");
-        this._ammunitionDamageIncreaseTable = this.CreateItemBonusTable(AmmunitionDamageIncreaseByLevel, "Damage Increase % (Bolts/Arrows)", "The damage increase % by ammunition item level.");
+        this._ammunitionDamageIncreaseTable = this.CreateItemBonusTable(AmmunitionDamageIncreaseByLevel, "Damage Increase % (Bolts/Arrows)", "The damage increase % per ammunition item level.");
 
         this.CreateWeapon(0, 0, 0, 0, 1, 2, true, "Kris", 6, 6, 11, 50, 20, 0, 0, 40, 40, 0, 0, 1, 1, 1, 1, 1, 1, 1);
         this.CreateWeapon(0, 1, 0, 0, 1, 3, true, "Short Sword", 3, 3, 7, 20, 22, 0, 0, 60, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1);
@@ -336,18 +339,15 @@ internal class Weapons : InitializerBase
 
         if (minimumDamage > 0)
         {
-            if (group == (int)ItemGroups.Staff)
-            {
-                minimumDamage /= 2;
-                maximumDamage /= 2;
-            }
+            var dmgDivider = group == (int)ItemGroups.Staff ? 2.0f : 1.0f;
+            var bonusPerLevelTable = group == (int)ItemGroups.Staff ? this._staffDamageIncreaseTable : this._weaponDamageIncreaseTable;
 
-            var minDamagePowerUp = this.CreateItemBasePowerUpDefinition(Stats.MinimumPhysBaseDmgByWeapon, minimumDamage, AggregateType.AddRaw);
-            minDamagePowerUp.BonusPerLevelTable = this._weaponDamageIncreaseTable;
+            var minDamagePowerUp = this.CreateItemBasePowerUpDefinition(Stats.MinimumPhysBaseDmgByWeapon, minimumDamage / dmgDivider, AggregateType.AddRaw);
+            minDamagePowerUp.BonusPerLevelTable = bonusPerLevelTable;
             item.BasePowerUpAttributes.Add(minDamagePowerUp);
 
-            var maxDamagePowerUp = this.CreateItemBasePowerUpDefinition(Stats.MaximumPhysBaseDmgByWeapon, maximumDamage, AggregateType.AddRaw);
-            maxDamagePowerUp.BonusPerLevelTable = this._weaponDamageIncreaseTable;
+            var maxDamagePowerUp = this.CreateItemBasePowerUpDefinition(Stats.MaximumPhysBaseDmgByWeapon, maximumDamage / dmgDivider, AggregateType.AddRaw);
+            maxDamagePowerUp.BonusPerLevelTable = bonusPerLevelTable;
             item.BasePowerUpAttributes.Add(maxDamagePowerUp);
         }
 
