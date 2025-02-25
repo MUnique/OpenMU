@@ -161,7 +161,7 @@ public static class AttackableExtensions
         }
         else if (damageType == DamageType.Physical)
         {
-            dmg -= (int)(dmg * attacker.Attributes[Stats.WeaknessPhysDmgDecrement]);
+            dmg -= (int)(dmg * attacker.Attributes[Stats.WeaknessPhysDmgDecrement]); // check if it's a mob attacking
             dmg += GetMasterSkillTreePhysicalPassiveDamageBonus(attacker, false);
         }
         else

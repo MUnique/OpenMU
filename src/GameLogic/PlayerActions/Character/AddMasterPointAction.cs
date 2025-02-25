@@ -142,11 +142,11 @@ public class AddMasterPointAction
             return true;
         }
 
-        var learnedRequiredSkill = character.LearnedSkills
+        var learnedRequiredSkills = character.LearnedSkills
             .Where(l => l.Skill?.MasterDefinition?.Root != null
                 && l.Skill.MasterDefinition.Root.Id == definition.Root?.Id
                 && l.Skill.MasterDefinition.Rank == definition.Rank - 1);
-        return learnedRequiredSkill?.Any(lrs => lrs.Level >= MinimumSkillLevelOfRequiredSkill) ?? false;
+        return learnedRequiredSkills?.Any(lrs => lrs.Level >= MinimumSkillLevelOfRequiredSkill) ?? false;
     }
 
     private bool CheckRequiredSkill(MasterSkillDefinition definition, Player player)

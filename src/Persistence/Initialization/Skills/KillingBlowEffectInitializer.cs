@@ -10,7 +10,7 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
 
 /// <summary>
-/// Initializer for the berserker buff effect.
+/// Initializer for the killing blow skill effect.
 /// </summary>
 public class KillingBlowEffectInitializer : InitializerBase
 {
@@ -36,11 +36,11 @@ public class KillingBlowEffectInitializer : InitializerBase
         magicEffect.StopByDeath = true;
         magicEffect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.Duration.ConstantValue.Value = 10; // 10 seconds
+
+        // Target's damage decreases by 5%
         var decDmgPowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
         magicEffect.PowerUpDefinitions.Add(decDmgPowerUpDefinition);
         decDmgPowerUpDefinition.TargetAttribute = Stats.WeaknessPhysDmgDecrement.GetPersistent(this.GameConfiguration);
-
-        // Target's damage decreases by 5%
         decDmgPowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
         decDmgPowerUpDefinition.Boost.ConstantValue.Value = 0.05f;
         decDmgPowerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.AddRaw;
