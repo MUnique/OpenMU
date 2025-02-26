@@ -18,7 +18,7 @@ using MUnique.OpenMU.PlugIns;
 public class SoulBarrierStrengSkillAction : TargetedSkillDefaultPlugin
 {
     private const ushort SoulBarrierStrengSkilId = 403;
-    private const ushort SoulBarrierProficeSkilId = 404;
+    private const ushort SoulBarrierProficieSkilId = 404;
 
     /// <inheritdoc/>
     public override short Key => 403;
@@ -76,7 +76,7 @@ public class SoulBarrierStrengSkillAction : TargetedSkillDefaultPlugin
         {
             player.CreateMagicEffectPowerUp(skillEntry);
 
-            var strengSkillLevel = skillId == SoulBarrierProficeSkilId ? player.SkillList!.GetSkill(SoulBarrierStrengSkilId) : skillEntry;
+            var strengSkillLevel = skillId == SoulBarrierProficieSkilId ? player.SkillList!.GetSkill(SoulBarrierStrengSkilId) : skillEntry;
             skillEntry.PowerUps =
             [
                 .. skillEntry.PowerUps!,

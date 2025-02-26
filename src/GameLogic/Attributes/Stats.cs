@@ -317,7 +317,7 @@ public class Stats
 
     /// <summary>
     /// Gets the maximum curse base DMG attribute definition.
-    /// </summary>.
+    /// </summary>
     /// <remarks>The "resting" curse maximum base damage. Refer to <see cref="MinimumCurseBaseDmg"/> for base DMG stage calculations breakdown.</remarks>
     public static AttributeDefinition MaximumCurseBaseDmg { get; } = new(new Guid("5E7B5B56-BB4D-4645-9593-836FE86E80EA"), "Maximum Curse Base Damage", string.Empty);
 
@@ -441,7 +441,7 @@ public class Stats
     public static AttributeDefinition HasDoubleWield { get; } = new(new Guid("4AD0E3CA-526D-4DBF-AB65-87BEB7A1F080"), "Has Double Wield", "A double weapon wield grants a 10% increase in physical damage. Only DK, MG, and RF can double wield.");
 
     /// <summary>
-    /// Gets the double wield (DK, MG, RF) weapon count attribute. Unlocks <see cref="HasDoubleWield"/>.
+    /// Gets the double wield weapon count attribute. Unlocks <see cref="HasDoubleWield"/>.
     /// </summary>
     public static AttributeDefinition DoubleWieldWeaponCount { get; } = new(new Guid("84252905-3DAD-4E38-AE4D-C18FE2A99395"), "Double Wield Weapon Count", string.Empty);
 
@@ -470,12 +470,6 @@ public class Stats
     /// </summary>
     /// <remarks>Includes wings, and dinorant.</remarks>
     public static AttributeDefinition AttackDamageIncrease { get; } = new(new Guid("0765CCD2-C70A-4338-BF49-0D652364C223"), "Attack Damage Increase Multiplier", string.Empty);
-
-    /// <summary>
-    /// Gets the generic ring base attack damage (any type) increase attribute definition.
-    /// </summary>
-    /// <remarks>Includes any ring absolute bonus or multipliers.</remarks>
-    public static AttributeDefinition RingAttackDamageIncrease { get; } = new(new Guid("6C61073C-BC87-474A-9268-3BE7045384A5"), "Ring Attack Damage Increase", string.Empty);
 
     /// <summary>
     /// Gets the imp pet attack damage increase attribute definition.
@@ -508,9 +502,9 @@ public class Stats
     public static AttributeDefinition CurseAttackDamageIncrease { get; } = new(new Guid("2B8904D5-9901-40C0-BFDE-66675672D9DC"), "Curse Attack Damage Increase Multiplier", "The cursed damage increase which is multiplied with the min/max curse base damage and added to it.");
 
     /// <summary>
-    /// Gets the two handed weapon damage increase ancient set option attribute definition.
+    /// Gets the two handed weapon physical damage increase ancient set option attribute definition.
     /// </summary>
-    public static AttributeDefinition TwoHandedWeaponDamageIncrease { get; } = new(new Guid("BA3D57E9-68A5-47AC-A6E9-43793F4DDE2A"), "Two-Handed Weapon Damage Increase (Ancient Option)", "The damage increase which is multiplied with the final damage and added to it when using a two-handed weapon.");
+    public static AttributeDefinition TwoHandedWeaponDamageIncrease { get; } = new(new Guid("BA3D57E9-68A5-47AC-A6E9-43793F4DDE2A"), "Two-Handed Weapon Physical Damage Increase (Ancient Option)", "The physical damage increase which is multiplied with the final damage and added to it when using a two-handed weapon.");
 
     /// <summary>
     /// Gets the is two handed weapon equipped.
@@ -596,7 +590,7 @@ public class Stats
     /// Gets the weapon mastery MST bonus attack speed.
     /// </summary>
     /// <remarks>Bucket attribute for the master skills: one handed sword mastery (DK), bow mastery (Elf), one handed staff mastery (DW), other world tome mastery (Summoner).</remarks>
-    public static AttributeDefinition WeaponMasteryAttackSpeed { get; } = new(new Guid("CD16D6FD-5495-4BD9-A112-DBAF83BB4008"), "Weapon Mastery Bonus Attack Speed (MST)", string.Empty);
+    public static AttributeDefinition WeaponMasteryAttackSpeed { get; } = new(new Guid("CD16D6FD-5495-4BD9-A112-DBAF83BB4008"), "Weapon Mastery Bonus Attack Speed (MST)", "A generic master tree attack speed bonus attribute, which serves as a bucket for \"mastery\" skills.");
 
     /// <summary>
     /// Gets the is a two handed sword equipped.
@@ -649,7 +643,7 @@ public class Stats
     };
 
     /// <summary>
-    /// Gets the one handed staff bonus (MST) base damage.
+    /// Gets the one handed staff MST bonus base damage.
     /// </summary>
     public static AttributeDefinition OneHandedStaffBonusBaseDamage { get; } = new(new Guid("12F2F553-DA04-432F-83E0-28F30C1B93A2"), "One Handed Staff Bonus Base Damage (MST)", string.Empty);
 
@@ -659,12 +653,12 @@ public class Stats
     public static AttributeDefinition IsTwoHandedStaffEquipped { get; } = new(new Guid("FE669B70-D36D-4F56-A1DA-4A4B98ED503D"), "Is Two Handed Staff Equipped", string.Empty);
 
     /// <summary>
-    /// Gets the two handed staff bonus base damage (MST).
+    /// Gets the two handed staff MST bonus base damage.
     /// </summary>
     public static AttributeDefinition TwoHandedStaffBonusBaseDamage { get; } = new(new Guid("8A46D105-4B58-4E42-B602-52715F6BEE61"), "Two Handed Staff Bonus Base Damage (MST)", string.Empty);
 
     /// <summary>
-    /// Gets the two handed staff mastery (MST) bonus damage.
+    /// Gets the two handed staff mastery MST bonus damage.
     /// </summary>
     public static AttributeDefinition TwoHandedStaffMasteryBonusDamage { get; } = new(new Guid("1E6B1569-A36D-4C41-97B1-DD6E0A9746EE"), "Two Handed Staff Mastery Bonus Damage (MST)", string.Empty);
 
@@ -825,7 +819,7 @@ public class Stats
     /// <summary>
     /// Gets the soul barrier skill mana toll per successful received hit attribute definition.
     /// </summary>
-    public static AttributeDefinition SoulBarrierManaTollPerHit { get; } = new(new Guid("25315C15-C884-4B45-9883-9A92693DC455"), "Soul Barrier Mana Toll Per Hit", string.Empty);
+    public static AttributeDefinition SoulBarrierManaTollPerHit { get; } = new(new Guid("25315C15-C884-4B45-9883-9A92693DC455"), "Soul Barrier Mana Toll Per Received Hit", "A mana requirement which must be met for the soul barrier skill decrement.");
 
     /// <summary>
     /// Gets the damage receive decrement from a guardian angel or spirit of guardian pet attribute definition.
@@ -836,13 +830,13 @@ public class Stats
     /// Gets the total armor damage decrease (receive) attribute definition.
     /// </summary>
     /// <remarks>Includes the sum of excellent, harmony, and socket options.</remarks>
-    public static AttributeDefinition ArmorDamageDecrease { get; } = new(new Guid("BFCF7096-44E9-473F-8162-416E9AD61477"), "Armor Damage Decrease", "The total excellent and harmony options damage decrease multiplier which is multiplied with the final damage and subtracted from it.");
+    public static AttributeDefinition ArmorDamageDecrease { get; } = new(new Guid("BFCF7096-44E9-473F-8162-416E9AD61477"), "Armor Damage Decrease", "The total excellent, harmony, and socket options damage decrease multiplier which is multiplied with the final damage and subtracted from it.");
 
     /// <summary>
     /// Gets the shield defense skill damage receive decrement attribute definition.
     /// </summary>
     /// <remarks>The value is either 0 or 50%.</remarks>
-    public static AttributeDefinition ShieldSkillReceiveDecrement { get; } = new(new Guid("DAC6690B-5922-4446-BCE5-5E701BE62EC1"), "Shield Defense Skill Damage Receive Decrement", "The shield's defense skill multiplier which is multiplied with the final damage and added to it.");
+    public static AttributeDefinition ShieldSkillReceiveDecrement { get; } = new(new Guid("DAC6690B-5922-4446-BCE5-5E701BE62EC1"), "Shield Defense Skill Damage Receive Decrement", "The shield's defense skill multiplier which is multiplied with the final damage and subtracted from it.");
 
     /// <summary>
     /// Gets the total defense increase with equipped shield attribute definition.

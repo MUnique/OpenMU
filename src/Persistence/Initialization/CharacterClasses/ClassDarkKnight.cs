@@ -24,9 +24,6 @@ internal partial class CharacterClassInitialization
     /// <returns>The created character class.</returns>
     protected CharacterClass CreateDarkKnight(CharacterClassNumber number, string name, bool isMaster, CharacterClass? nextGenerationClass, bool canGetCreated)
     {
-        var doubleWieldMultiplier = this.Context.CreateNew<AttributeDefinition>(Guid.NewGuid(), "Double wield multiplier", string.Empty);
-        this.GameConfiguration.Attributes.Add(doubleWieldMultiplier);
-
         var result = this.Context.CreateNew<CharacterClass>();
         result.SetGuid((byte)number);
         this.GameConfiguration.CharacterClasses.Add(result);

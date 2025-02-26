@@ -54,13 +54,18 @@ public static class AttackableExtensions
         bool isCriticalHit = Rand.NextRandomBool(attacker.Attributes[Stats.CriticalDamageChance]);
         bool isExcellentHit = Rand.NextRandomBool(attacker.Attributes[Stats.ExcellentDamageChance]);
         bool isIgnoringDefense = Rand.NextRandomBool(attacker.Attributes[Stats.DefenseIgnoreChance]);
+
+        var defense = 0;
         if (isIgnoringDefense)
         {
             attributes |= DamageAttributes.IgnoreDefense;
         }
+        else
+        {
+            var defenseAttribute = defender.GetDefenseAttribute(attacker);
+            defense = (int)defender.Attributes[defenseAttribute];
+        }
 
-        var defenseAttribute = defender.GetDefenseAttribute(attacker);
-        var defense = (int)defender.Attributes[defenseAttribute];
         attacker.GetBaseDmg(skill, out int baseMinDamage, out int baseMaxDamage, out DamageType damageType);
         int dmg;
         if (damageType == DamageType.Physical)

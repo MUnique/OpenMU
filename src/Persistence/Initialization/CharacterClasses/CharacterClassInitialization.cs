@@ -170,7 +170,6 @@ internal partial class CharacterClassInitialization : InitializerBase
         baseAttributeValues.Add(this.CreateConstValueAttribute(1.0f / 27.5f, Stats.ManaRecoveryMultiplier));
         baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.DamageReceiveDecrement));
         baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.AttackDamageIncrease));
-        baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.TwoHandedWeaponDamageIncrease));
         baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.MoneyAmountRate));
         baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.ExperienceRate));
         baseAttributeValues.Add(this.CreateConstValueAttribute(0.03f, Stats.PoisonDamageMultiplier));

@@ -57,7 +57,7 @@ internal partial class CharacterClassInitialization
 
         this.AddCommonAttributeRelationships(result.AttributeCombinations);
 
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.DefenseBase, 1.0f / 5, Stats.TotalAgility)); // client says /5, server says /4
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.DefenseBase, 1.0f / 4, Stats.TotalAgility));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.DefenseRatePvm, 1.0f / 3, Stats.TotalAgility));
 
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.AttackRatePvm, 5, Stats.TotalLevel));

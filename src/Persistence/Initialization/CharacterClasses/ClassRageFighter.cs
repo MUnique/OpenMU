@@ -90,8 +90,8 @@ internal partial class CharacterClassInitialization
 
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.FenrirBaseDmg, 1.0f / 5, Stats.BaseStrength));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.FenrirBaseDmg, 1.0f / 5, Stats.BaseAgility));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.FenrirBaseDmg, 1.0f / 5, Stats.BaseVitality));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.FenrirBaseDmg, 1.0f / 7, Stats.BaseEnergy));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.FenrirBaseDmg, 1.0f / 7, Stats.BaseVitality));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.FenrirBaseDmg, 1.0f / 3, Stats.BaseEnergy));
 
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(57, Stats.MaximumHealth));
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(7, Stats.MaximumMana));
