@@ -51,14 +51,15 @@ internal partial class CharacterClassInitialization
 
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.DefenseBase, 1.0f / 8, Stats.TotalAgility));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.DefenseRatePvm, 1.0f / 10, Stats.TotalAgility));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.DefenseRatePvp, 0.2f, Stats.TotalAgility));
+
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.DefenseRatePvp, 0.2f, Stats.BaseAgility));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.DefenseRatePvp, 1.5f, Stats.TotalLevel));
 
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.AttackRatePvm, 5, Stats.TotalLevel));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.AttackRatePvm, 1.5f, Stats.TotalAgility));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.AttackRatePvm, 0.25f, Stats.TotalStrength));
 
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.AttackRatePvp, 3.6f, Stats.TotalAgility));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.AttackRatePvp, 3.6f, Stats.BaseAgility));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.AttackRatePvp, 2.6f, Stats.TotalLevel));
 
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.AttackSpeed, 1.0f / 9, Stats.TotalAgility));
