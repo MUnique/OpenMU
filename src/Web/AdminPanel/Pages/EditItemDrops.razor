@@ -5,7 +5,7 @@
 
 <h1>Item Drop Chances</h1>
 
-@if (this._randomDropGroup is null && this._excellentDropGroup is null)
+@if (!this._loadingFinished)
 {
   <span class="spinner-border" role="status" aria-hidden="true"></span>
   <span class="sr-only">Loading...</span>

@@ -36,23 +36,7 @@ public partial class EditItemDrops : IAsyncDisposable
 
     private ItemOptionDefinition? _luckOption;
 
-    private double CommonItemPercentage
-    {
-        get => this._randomDropGroup!.Chance * 100;
-        set => this._randomDropGroup!.Chance = value / 100;
-    }
-
-    private double ExcellentItemPercentage
-    {
-        get => this._excellentDropGroup!.Chance * 100;
-        set => this._excellentDropGroup!.Chance = value / 100;
-    }
-
-    private double MoneyPercentage
-    {
-        get => this._moneyDropGroup!.Chance * 100;
-        set => this._moneyDropGroup!.Chance = value / 100;
-    }
+    private bool _loadingFinished;
 
     private double NoDropPercentage
     {
@@ -131,6 +115,7 @@ public partial class EditItemDrops : IAsyncDisposable
     {
         var cts = new CancellationTokenSource();
         this._disposeCts = cts;
+        this._loadingFinished = false;
         this._loadTask = Task.Run(() => this.LoadDataAsync(cts.Token), cts.Token);
         await base.OnParametersSetAsync().ConfigureAwait(true);
     }
@@ -175,6 +160,8 @@ public partial class EditItemDrops : IAsyncDisposable
         this._normalOptions = options.Where(d => d.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Option)).ToList();
         this._excellentOptions = options.Where(d => d.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Excellent)).ToList();
         this._luckOption = options.FirstOrDefault(d => d.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Luck));
+
+        this._loadingFinished = true;
 
         await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
     }
