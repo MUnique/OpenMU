@@ -97,4 +97,26 @@ public class EventPublisher : IEventPublisher
             this._logger.LogError(ex, "Unexpected error when publishing an alliance message");
         }
     }
+
+    /// <summary>
+    /// Notifies that a client tried to log into an already logged-in account.
+    /// The connected player can be notified about that.
+    /// </summary>
+    /// <param name="serverId">The identifier of the server on which the client tried to enter.</param>
+    /// <param name="loginName">The login name.</param>
+    public async ValueTask PlayerAlreadyLoggedInAsync(byte serverId, string loginName)
+    {
+        try
+        {
+            await this._daprClient
+                .PublishEventAsync(
+                    PubSubName,
+                    nameof(IGameServer.PlayerAlreadyLoggedInAsync),
+                    new PlayerLoggedInArguments(serverId, loginName)).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, "Unexpected error when publishing an alliance message");
+        }
+    }
 }

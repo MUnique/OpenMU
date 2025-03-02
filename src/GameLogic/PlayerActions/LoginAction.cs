@@ -75,6 +75,11 @@ public class LoginAction
                 {
                     context.Allowed = false;
                     await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.AccountAlreadyConnected)).ConfigureAwait(false);
+
+                    if (player.GameContext is IGameServerContext gameServerContext2)
+                    {
+                        await gameServerContext2.EventPublisher.PlayerAlreadyLoggedInAsync(gameServerContext2.Id, username).ConfigureAwait(false);
+                    }
                 }
             }
             catch (Exception ex)

@@ -6,8 +6,8 @@ namespace MUnique.OpenMU.ServerClients;
 
 using System.ComponentModel;
 using Dapr.Client;
-using Nito.AsyncEx.Synchronous;
 using MUnique.OpenMU.Interfaces;
+using Nito.AsyncEx.Synchronous;
 
 /// <summary>
 /// Implementation of an <see cref="IGameServer"/> which accesses another game server remotely over Dapr.
@@ -116,6 +116,12 @@ public class GameServer : IGameServer
     public async ValueTask AssignGuildToPlayerAsync(string characterName, GuildMemberStatus guildStatus)
     {
         await this._client.InvokeMethodAsync(this._targetAppId, nameof(this.AssignGuildToPlayerAsync), new GuildMemberAssignArguments(characterName, guildStatus)).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public async ValueTask PlayerAlreadyLoggedInAsync(byte serverId, string loginName)
+    {
+        await this._client.InvokeMethodAsync(this._targetAppId, nameof(this.PlayerAlreadyLoggedInAsync), new PlayerLoggedInArguments(serverId, loginName)).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
