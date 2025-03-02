@@ -12,7 +12,7 @@ using MUnique.OpenMU.GameLogic.Views.Login;
 /// </summary>
 public class LoginAction
 {
-    private static int _templateCounter = 0;
+    private static int _templateCounter;
 
     /// <summary>
     /// Logins the specified player.
