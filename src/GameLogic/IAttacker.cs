@@ -20,4 +20,9 @@ public interface IAttacker : IIdentifiable, ILocateable
     /// Gets the state of the combo, if the attacker supports combos.
     /// </summary>
     ComboStateMachine? ComboState { get; }
+
+    /// <summary>
+    /// Gets the attacker's party, if the attacker can have one.
+    /// </summary>
+    Party? Party { get; }
 }

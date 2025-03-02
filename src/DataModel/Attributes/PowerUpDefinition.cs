@@ -9,7 +9,7 @@ using MUnique.OpenMU.Annotations;
 using MUnique.OpenMU.AttributeSystem;
 
 /// <summary>
-/// The power up definition which describes the boost of an target attribute.
+/// The power up definition which describes the boost of a target attribute.
 /// </summary>
 [Cloneable]
 public partial class PowerUpDefinition

@@ -119,15 +119,17 @@ public abstract class InitializerBase : IInitializer
     /// <param name="attributeDefinition">The attribute definition.</param>
     /// <param name="value">The value.</param>
     /// <param name="aggregateType">Type of the aggregate.</param>
+    /// <param name="stage">The calculation stage.</param>
     /// <returns>
     /// The created <see cref="ItemBasePowerUpDefinition" />.
     /// </returns>
-    protected ItemBasePowerUpDefinition CreateItemBasePowerUpDefinition(AttributeDefinition attributeDefinition, float value, AggregateType aggregateType)
+    protected ItemBasePowerUpDefinition CreateItemBasePowerUpDefinition(AttributeDefinition attributeDefinition, float value, AggregateType aggregateType, byte stage = 0)
     {
         var powerUpDefinition = this.Context.CreateNew<ItemBasePowerUpDefinition>();
         powerUpDefinition.TargetAttribute = attributeDefinition.GetPersistent(this.GameConfiguration);
         powerUpDefinition.BaseValue = value;
         powerUpDefinition.AggregateType = aggregateType;
+        powerUpDefinition.Stage = stage;
         return powerUpDefinition;
     }
 

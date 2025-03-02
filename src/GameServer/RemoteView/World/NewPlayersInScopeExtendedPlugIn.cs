@@ -85,7 +85,7 @@ public class NewPlayersInScopeExtendedPlugIn : NewPlayersInScopePlugIn, INewPlay
             packet.Rotation = newPlayer.Rotation.ToPacketByte();
             packet.HeroState = selectedCharacter.State.Convert();
             packet.AttackSpeed = (ushort)(newPlayer.Attributes?[Stats.AttackSpeed] ?? 0);
-            packet.MagicSpeed = (ushort)(newPlayer.Attributes?[Stats.AttackSpeed] ?? 0); // TODO: Implement MagicSpeed
+            packet.MagicSpeed = (ushort)(newPlayer.Attributes?[Stats.MagicSpeed] ?? 0);
 
             appearanceSerializer.WriteAppearanceData(packet.AppearanceAndEffects, newPlayer.AppearanceData, true);
 

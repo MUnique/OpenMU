@@ -43,5 +43,6 @@ public class DefenseReductionEffectInitializer : InitializerBase
         reduceDefenseEffect.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
         reduceDefenseEffect.Boost.ConstantValue.Value = 0.9f;
         reduceDefenseEffect.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
+        reduceDefenseEffect.Boost.ConstantValue.Stage = 3;
     }
 }

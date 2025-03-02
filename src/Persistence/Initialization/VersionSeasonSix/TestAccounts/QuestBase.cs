@@ -50,11 +50,11 @@ internal class QuestBase : AccountInitializerBase
         character.Attributes.First(a => a.Definition == Stats.BaseEnergy).Value += 100;
         character.LevelUpPoints -= 700;
         character.Inventory!.Items.Add(this.CreateWeapon(InventoryConstants.LeftHandSlot, 0, 0, 13, 4, true, false, Stats.ExcellentDamageChance)); // Exc Kris+13+16+L+ExcDmg
-        character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.ArmorSlot, 5, 8, Stats.DamageReceiveDecrement, 13, 4, true)); // Leather Armor
-        character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.HelmSlot, 5, 7, Stats.DamageReceiveDecrement, 13, 4, true)); // Leather Helm
-        character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.PantsSlot, 5, 9, Stats.DamageReceiveDecrement, 13, 4, true)); // Leather Pants
-        character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.GlovesSlot, 5, 10, Stats.DamageReceiveDecrement, 13, 4, true)); // Leather Gloves
-        character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.BootsSlot, 5, 11, Stats.DamageReceiveDecrement, 13, 4, true)); // Leather Boots
+        character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.ArmorSlot, 5, 8, Stats.ArmorDamageDecrease, 13, 4, true)); // Leather Armor
+        character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.HelmSlot, 5, 7, Stats.ArmorDamageDecrease, 13, 4, true)); // Leather Helm
+        character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.PantsSlot, 5, 9, Stats.ArmorDamageDecrease, 13, 4, true)); // Leather Pants
+        character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.GlovesSlot, 5, 10, Stats.ArmorDamageDecrease, 13, 4, true)); // Leather Gloves
+        character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.BootsSlot, 5, 11, Stats.ArmorDamageDecrease, 13, 4, true)); // Leather Boots
 
         this.AddDarkLordItems(character.Inventory);
         this.AddTestJewelsAndPotions(character.Inventory);
@@ -73,11 +73,11 @@ internal class QuestBase : AccountInitializerBase
         character.LevelUpPoints -= 700;
         character.Inventory!.Items.Add(this.CreateWeapon(InventoryConstants.LeftHandSlot, 0, 0, 13, 4, true, false, Stats.ExcellentDamageChance)); // Exc Kris+13+16+L+ExcDmg
         character.Inventory.Items.Add(this.CreateWeapon(InventoryConstants.RightHandSlot, 1, 3, 13, 4, true, true, Stats.ExcellentDamageChance)); // Exc Tomahawk+13+16+L+ExcDmg
-        character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.ArmorSlot, 5, 8, Stats.DamageReceiveDecrement, 13, 4, true)); // Leather Armor
-        character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.HelmSlot, 5, 7, Stats.DamageReceiveDecrement, 13, 4, true)); // Leather Helm
-        character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.PantsSlot, 5, 9, Stats.DamageReceiveDecrement, 13, 4, true)); // Leather Pants
-        character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.GlovesSlot, 5, 10, Stats.DamageReceiveDecrement, 13, 4, true)); // Leather Gloves
-        character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.BootsSlot, 5, 11, Stats.DamageReceiveDecrement, 13, 4, true)); // Leather Boots
+        character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.ArmorSlot, 5, 8, Stats.ArmorDamageDecrease, 13, 4, true)); // Leather Armor
+        character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.HelmSlot, 5, 7, Stats.ArmorDamageDecrease, 13, 4, true)); // Leather Helm
+        character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.PantsSlot, 5, 9, Stats.ArmorDamageDecrease, 13, 4, true)); // Leather Pants
+        character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.GlovesSlot, 5, 10, Stats.ArmorDamageDecrease, 13, 4, true)); // Leather Gloves
+        character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.BootsSlot, 5, 11, Stats.ArmorDamageDecrease, 13, 4, true)); // Leather Boots
         character.Inventory.Items.Add(this.CreateJewel(47, Items.Quest.ScrollOfEmperorNumber));
         character.Inventory.Items.Add(this.CreateJewel(48, Items.Quest.BrokenSwordNumber));
         this.AddTestJewelsAndPotions(character.Inventory);

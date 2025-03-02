@@ -303,7 +303,7 @@ public class ItemSerializerTests<T>
         item.ItemOptions.Add(excellent1);
         var excellent2 = context.CreateNew<ItemOptionLink>();
         excellent2.ItemOption = item.Definition.PossibleItemOptions.SelectMany(def =>
-            def.PossibleOptions.Where(p => p.OptionType == ItemOptionTypes.Excellent && p.PowerUpDefinition!.TargetAttribute == Stats.AttackSpeed)).First();
+            def.PossibleOptions.Where(p => p.OptionType == ItemOptionTypes.Excellent && p.PowerUpDefinition!.TargetAttribute == Stats.AttackSpeedAny)).First();
         item.ItemOptions.Add(excellent2);
 
         var array = new byte[this._itemSerializer.NeededSpace];

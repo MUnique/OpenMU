@@ -70,6 +70,7 @@ public class AttributeSystem : IAttributeSystem, IEnumerable<IAttribute>
         return new AttributeRelationshipElement(inputElements, relationship.GetOperandElement(sourceAttributeHolder), relationship.InputOperator)
         {
             AggregateType = aggregateType,
+            Stage = relationship.Stage,
         };
     }
 
@@ -238,7 +239,7 @@ public class AttributeSystem : IAttributeSystem, IEnumerable<IAttribute>
     /// <param name="combination">The combination.</param>
     private void AddAttributeRelationship(AttributeRelationship combination)
     {
-        this.AddAttributeRelationship(combination, this, AggregateType.AddRaw);
+        this.AddAttributeRelationship(combination, this, combination.AggregateType);
     }
 
     private IElement? GetAttribute(AttributeDefinition? attributeDefinition)

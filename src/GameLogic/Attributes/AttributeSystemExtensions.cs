@@ -62,6 +62,7 @@ public static class AttributeSystemExtensions
                     r.InputOperator)
                 {
                     AggregateType = result.AggregateType,
+                    Stage = result.Stage,
                 })
                 .Cast<IElement>();
 
