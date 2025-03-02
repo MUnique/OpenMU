@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions;
 
+using System.Threading;
 using MUnique.OpenMU.GameLogic.Views.Login;
 
 /// <summary>
@@ -11,6 +12,8 @@ using MUnique.OpenMU.GameLogic.Views.Login;
 /// </summary>
 public class LoginAction
 {
+    private static int _templateCounter;
+
     /// <summary>
     /// Logins the specified player.
     /// </summary>
@@ -50,11 +53,22 @@ public class LoginAction
             try
             {
                 await using var context = await player.PlayerState.TryBeginAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
-                if (context.Allowed && player.GameContext is IGameServerContext gameServerContext &&
-                    await gameServerContext.LoginServer.TryLoginAsync(username, gameServerContext.Id).ConfigureAwait(false))
+                if (context.Allowed
+                    && player.GameContext is IGameServerContext gameServerContext
+                    && (account.IsTemplate || await gameServerContext.LoginServer.TryLoginAsync(username, gameServerContext.Id).ConfigureAwait(false)))
                 {
                     player.Account = account;
                     player.Logger.LogDebug("Login successful, username: [{0}]", username);
+
+                    if (player.IsTemplatePlayer)
+                    {
+                        foreach (var character in account.Characters)
+                        {
+                            var counter = Interlocked.Increment(ref _templateCounter);
+                            character.Name = $"_{counter}";
+                        }
+                    }
+
                     await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.Ok)).ConfigureAwait(false);
                 }
                 else

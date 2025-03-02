@@ -45,7 +45,7 @@ public class PeriodicSaveProgressPlugIn : IPeriodicTaskPlugIn, ISupportCustomCon
                 {
                     if (player.PlayerState.CurrentState == PlayerState.EnteredWorld)
                     {
-                        await player.PersistenceContext.SaveChangesAsync().ConfigureAwait(false);
+                        await player.SaveProgressAsync().ConfigureAwait(false);
                     }
                     else
                     {
