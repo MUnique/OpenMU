@@ -39,14 +39,8 @@ public class AlcoholEffectInitializer : InitializerBase
 
         var attackSpeedPowerUp = this.Context.CreateNew<PowerUpDefinition>();
         magicEffect.PowerUpDefinitions.Add(attackSpeedPowerUp);
-        attackSpeedPowerUp.TargetAttribute = Stats.AttackSpeed.GetPersistent(this.GameConfiguration);
+        attackSpeedPowerUp.TargetAttribute = Stats.AttackSpeedAny.GetPersistent(this.GameConfiguration);
         attackSpeedPowerUp.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
         attackSpeedPowerUp.Boost.ConstantValue.Value = 20f;
-
-        var magicSpeedPowerUp = this.Context.CreateNew<PowerUpDefinition>();
-        magicEffect.PowerUpDefinitions.Add(magicSpeedPowerUp);
-        magicSpeedPowerUp.TargetAttribute = Stats.MagicSpeed.GetPersistent(this.GameConfiguration);
-        magicSpeedPowerUp.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-        magicSpeedPowerUp.Boost.ConstantValue.Value = 20f;
     }
 }

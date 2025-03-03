@@ -1,4 +1,4 @@
-﻿// <copyright file="CharacterClassInitialization.cs" company="MUnique">
+// <copyright file="CharacterClassInitialization.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -99,16 +99,16 @@ internal partial class CharacterClassInitialization : InitializerBase
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.DefensePvm, 1, Stats.DefenseBase));
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.DefensePvp, 1, Stats.DefenseBase));
 
-        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.AttackSpeed, 1, Stats.AttackSpeedByWeapon));
-        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.MagicSpeed, 1, Stats.AttackSpeedByWeapon));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.AttackSpeedAny, 1, Stats.AttackSpeedByWeapon));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.AttackSpeed, 1, Stats.AttackSpeedAny));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.MagicSpeed, 1, Stats.AttackSpeedAny));
 
         // If two weapons are equipped we subtract the half of the sum of the speeds again from the attack speed
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.AreTwoWeaponsEquipped, 1, Stats.EquippedWeaponCount));
         var tempSpeed = this.Context.CreateNew<AttributeDefinition>(Guid.NewGuid(), "Temp Half weapon attack speed", string.Empty);
         this.GameConfiguration.Attributes.Add(tempSpeed);
         attributeRelationships.Add(this.CreateAttributeRelationship(tempSpeed, -0.5f, Stats.AttackSpeedByWeapon));
-        attributeRelationships.Add(this.CreateConditionalRelationship(Stats.AttackSpeed, Stats.AreTwoWeaponsEquipped, tempSpeed));
-        attributeRelationships.Add(this.CreateConditionalRelationship(Stats.MagicSpeed, Stats.AreTwoWeaponsEquipped, tempSpeed));
+        attributeRelationships.Add(this.CreateConditionalRelationship(Stats.AttackSpeedAny, Stats.AreTwoWeaponsEquipped, tempSpeed));
 
         attributeRelationships.Add(this.CreateConditionalRelationship(Stats.DefenseBase, Stats.IsShieldEquipped, Stats.BonusDefenseWithShield));
 

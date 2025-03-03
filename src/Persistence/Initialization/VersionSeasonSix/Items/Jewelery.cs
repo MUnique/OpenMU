@@ -1,4 +1,4 @@
-﻿// <copyright file="Jewelery.cs" company="MUnique">
+// <copyright file="Jewelery.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -152,7 +152,7 @@ internal class Jewelery : Version095d.Items.Jewelery
         var increaseSpeed = this.Context.CreateNew<IncreasableItemOption>();
         increaseSpeed.SetGuid(ItemOptionDefinitionNumbers.WizardRing, 2);
         increaseSpeed.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
-        increaseSpeed.PowerUpDefinition.TargetAttribute = Stats.AttackSpeed.GetPersistent(this.GameConfiguration);
+        increaseSpeed.PowerUpDefinition.TargetAttribute = Stats.AttackSpeedAny.GetPersistent(this.GameConfiguration);
         increaseSpeed.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
         increaseSpeed.PowerUpDefinition.Boost.ConstantValue.Value = 10f;
         optionDefinition.PossibleOptions.Add(increaseSpeed);

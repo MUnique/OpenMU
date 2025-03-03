@@ -1,4 +1,4 @@
-﻿// <copyright file="Weapons.cs" company="MUnique">
+// <copyright file="Weapons.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -62,7 +62,7 @@ internal class Weapons : InitializerBase
     {
         get
         {
-            return this.GameConfiguration.ItemOptions.First(iod => iod.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Option && o.PowerUpDefinition?.TargetAttribute == Stats.MaximumPhysBaseDmg));
+            return this.GameConfiguration.ItemOptions.First(iod => iod.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Option && o.PowerUpDefinition?.TargetAttribute == Stats.PhysicalBaseDmg));
         }
     }
 
@@ -73,7 +73,7 @@ internal class Weapons : InitializerBase
     {
         get
         {
-            return this.GameConfiguration.ItemOptions.First(iod => iod.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Option && o.PowerUpDefinition?.TargetAttribute == Stats.MaximumWizBaseDmg));
+            return this.GameConfiguration.ItemOptions.First(iod => iod.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Option && o.PowerUpDefinition?.TargetAttribute == Stats.WizardryBaseDmg));
         }
     }
 
@@ -274,7 +274,7 @@ internal class Weapons : InitializerBase
         maxDamagePowerUp.BonusPerLevelTable = this._weaponDamageIncreaseTable;
         item.BasePowerUpAttributes.Add(maxDamagePowerUp);
 
-        var speedPowerUp = this.CreateItemBasePowerUpDefinition(Stats.AttackSpeed, attackSpeed, AggregateType.AddRaw);
+        var speedPowerUp = this.CreateItemBasePowerUpDefinition(Stats.AttackSpeedByWeapon, attackSpeed, AggregateType.AddRaw);
         item.BasePowerUpAttributes.Add(speedPowerUp);
 
         this.CreateItemRequirementIfNeeded(item, Stats.Level, levelRequirement);

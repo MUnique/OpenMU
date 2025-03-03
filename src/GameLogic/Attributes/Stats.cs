@@ -1,4 +1,4 @@
-﻿// <copyright file="Stats.cs" company="MUnique">
+// <copyright file="Stats.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -285,6 +285,11 @@ public class Stats
     /// Gets the excellent damage bonus attribute definition.
     /// </summary>
     public static AttributeDefinition ExcellentDamageBonus { get; } = new(new Guid("9CB8705A-398D-4158-BC60-D6ADBED36A28"), "Excellent Damage Bonus", "A bonus value which gets added to the damage calculation when the damage is calculated and excellent damage applies.");
+
+    /// <summary>
+    /// Gets the common attack speed attribute definition which adds to both <see cref="AttackSpeed"/> and <see cref="MagicSpeed"/>.
+    /// </summary>
+    public static AttributeDefinition AttackSpeedAny { get; } = new(new Guid("DA08473F-DF5B-444D-8651-9EDB65797922"), "Attack Speed Any", "The any attack speed which contributes to both attack speed and magic speed.");
 
     /// <summary>
     /// Gets the attack speed attribute definition.

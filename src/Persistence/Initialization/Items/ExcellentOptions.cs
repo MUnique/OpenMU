@@ -1,4 +1,4 @@
-﻿// <copyright file="ExcellentOptions.cs" company="MUnique">
+// <copyright file="ExcellentOptions.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -69,9 +69,9 @@ public class ExcellentOptions : InitializerBase
 
         definition.PossibleOptions.Add(this.CreateExcellentOption(1, Stats.ManaAfterMonsterKillMultiplier, 1f / 8f, AggregateType.AddRaw, ItemOptionDefinitionNumbers.ExcellentCurse));
         definition.PossibleOptions.Add(this.CreateExcellentOption(2, Stats.HealthAfterMonsterKillMultiplier, 1f / 8f, AggregateType.AddRaw, ItemOptionDefinitionNumbers.ExcellentCurse));
-        definition.PossibleOptions.Add(this.CreateExcellentOption(3, Stats.AttackSpeed, 7, AggregateType.AddRaw, ItemOptionDefinitionNumbers.ExcellentCurse));
+        definition.PossibleOptions.Add(this.CreateExcellentOption(3, Stats.AttackSpeedAny, 7, AggregateType.AddRaw, ItemOptionDefinitionNumbers.ExcellentCurse));
         definition.PossibleOptions.Add(this.CreateExcellentOption(4, Stats.MaximumCurseBaseDmg, 1.02f, AggregateType.Multiplicate, ItemOptionDefinitionNumbers.ExcellentCurse));
-        definition.PossibleOptions.Add(this.CreateRelatedExcellentOption(5, Stats.MaximumCurseBaseDmg, Stats.Level, 1f / 20f, ItemOptionDefinitionNumbers.ExcellentCurse));
+        definition.PossibleOptions.Add(this.CreateRelatedExcellentOption(5, Stats.WizardryBaseDmg, Stats.Level, 1f / 20f, ItemOptionDefinitionNumbers.ExcellentCurse));
         definition.PossibleOptions.Add(this.CreateExcellentOption(6, Stats.ExcellentDamageChance, 0.1f, AggregateType.AddRaw, ItemOptionDefinitionNumbers.ExcellentCurse));
     }
 
@@ -87,9 +87,9 @@ public class ExcellentOptions : InitializerBase
 
         definition.PossibleOptions.Add(this.CreateExcellentOption(1, Stats.ManaAfterMonsterKillMultiplier, 1f / 8f, AggregateType.AddRaw, ItemOptionDefinitionNumbers.ExcellentWizardry));
         definition.PossibleOptions.Add(this.CreateExcellentOption(2, Stats.HealthAfterMonsterKillMultiplier, 1f / 8f, AggregateType.AddRaw, ItemOptionDefinitionNumbers.ExcellentWizardry));
-        definition.PossibleOptions.Add(this.CreateExcellentOption(3, Stats.AttackSpeed, 7, AggregateType.AddRaw, ItemOptionDefinitionNumbers.ExcellentWizardry));
+        definition.PossibleOptions.Add(this.CreateExcellentOption(3, Stats.AttackSpeedAny, 7, AggregateType.AddRaw, ItemOptionDefinitionNumbers.ExcellentWizardry));
         definition.PossibleOptions.Add(this.CreateExcellentOption(4, Stats.MaximumWizBaseDmg, 1.02f, AggregateType.Multiplicate, ItemOptionDefinitionNumbers.ExcellentWizardry));
-        definition.PossibleOptions.Add(this.CreateRelatedExcellentOption(5, Stats.MaximumWizBaseDmg, Stats.Level, 1f / 20f, ItemOptionDefinitionNumbers.ExcellentWizardry));
+        definition.PossibleOptions.Add(this.CreateRelatedExcellentOption(5, Stats.WizardryBaseDmg, Stats.Level, 1f / 20f, ItemOptionDefinitionNumbers.ExcellentWizardry));
         definition.PossibleOptions.Add(this.CreateExcellentOption(6, Stats.ExcellentDamageChance, 0.1f, AggregateType.AddRaw, ItemOptionDefinitionNumbers.ExcellentWizardry));
     }
 
@@ -105,9 +105,9 @@ public class ExcellentOptions : InitializerBase
 
         definition.PossibleOptions.Add(this.CreateExcellentOption(1, Stats.ManaAfterMonsterKillMultiplier, 1f / 8f, AggregateType.AddRaw, ItemOptionDefinitionNumbers.ExcellentPhysical));
         definition.PossibleOptions.Add(this.CreateExcellentOption(2, Stats.HealthAfterMonsterKillMultiplier, 1f / 8f, AggregateType.AddRaw, ItemOptionDefinitionNumbers.ExcellentPhysical));
-        definition.PossibleOptions.Add(this.CreateExcellentOption(3, Stats.AttackSpeed, 7, AggregateType.AddRaw, ItemOptionDefinitionNumbers.ExcellentPhysical));
+        definition.PossibleOptions.Add(this.CreateExcellentOption(3, Stats.AttackSpeedAny, 7, AggregateType.AddRaw, ItemOptionDefinitionNumbers.ExcellentPhysical));
         definition.PossibleOptions.Add(this.CreateExcellentOption(4, Stats.MaximumPhysBaseDmg, 1.02f, AggregateType.Multiplicate, ItemOptionDefinitionNumbers.ExcellentPhysical));
-        definition.PossibleOptions.Add(this.CreateRelatedExcellentOption(5, Stats.MaximumPhysBaseDmg, Stats.Level, 1f / 20f, ItemOptionDefinitionNumbers.ExcellentPhysical));
+        definition.PossibleOptions.Add(this.CreateRelatedExcellentOption(5, Stats.PhysicalBaseDmg, Stats.Level, 1f / 20f, ItemOptionDefinitionNumbers.ExcellentPhysical));
         definition.PossibleOptions.Add(this.CreateExcellentOption(6, Stats.ExcellentDamageChance, 0.1f, AggregateType.AddRaw, ItemOptionDefinitionNumbers.ExcellentPhysical));
     }
 

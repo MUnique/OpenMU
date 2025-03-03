@@ -25,7 +25,8 @@ public class InventoryStorage : Storage, IInventoryStorage
     /// <param name="player">The player.</param>
     /// <param name="context">The game context.</param>
     public InventoryStorage(Player player, IGameContext context)
-        : base(GetInventorySize(0),
+        : base(
+            GetInventorySize(0),
             EquippableSlotsCount,
             0,
             new ItemStorageAdapter(player.SelectedCharacter?.Inventory ?? throw Error.NotInitializedProperty(player, "SelectedCharacter.Inventory"), FirstEquippableItemSlotIndex, player.GetInventorySize()))
@@ -155,7 +156,7 @@ public class InventoryStorage : Storage, IInventoryStorage
             }
         }
 
-        if (item.ItemSetGroups != null && item.ItemSetGroups.Any())
+        if (item.Definition!.PossibleItemSetGroups.Count > 0)
         {
             this.UpdateSetPowerUps();
         }
@@ -178,7 +179,7 @@ public class InventoryStorage : Storage, IInventoryStorage
     {
         if (this._player.Attributes is null)
         {
-            throw new InvalidOperationException("The players AttributeSystem is not set yet.");
+            throw new InvalidOperationException("The player's AttributeSystem is not set yet.");
         }
 
         foreach (var powerUp in this._player.Attributes.ItemPowerUps.Values.SelectMany(p => p).ToList())
