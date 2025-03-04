@@ -11,16 +11,25 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Persistence.Initialization.Items;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
+using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// This update fixes some item options (damage, defense, defense rate), weapon attributes, and some AA weapon values.
+/// This update fixes some item options (damage, defense, defense rate), weapons attack speed, third wings defense, and some AA weapon values.
 /// It also refactors attack speed attributes for simplification.
 /// </summary>
 [PlugIn(PlugInName, PlugInDescription)]
 [Guid("EEEAA884-4704-48DE-825A-8E588A47E2CC")]
 public class FixItemOptionsAndAttackSpeedPlugInSeason6 : FixItemOptionsAndAttackSpeedPlugInBase
 {
+    /// <summary>
+    /// The plug in description.
+    /// </summary>
+    internal new const string PlugInDescription = "This update fixes some item options (damage, defense, defense rate), weapons attack speed, third wings defense, and some AA weapon values.";
+
+    /// <inheritdoc />
+    public override string Description => PlugInDescription;
+
     /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
@@ -34,12 +43,17 @@ public class FixItemOptionsAndAttackSpeedPlugInSeason6 : FixItemOptionsAndAttack
         this.ChangeDinorantAttackSpeedOption(gameConfiguration);
         this.UpdateExcellentAttackSpeedAndBaseDmgOptions(gameConfiguration);
 
+        gameConfiguration.ItemOptions
+            .First(iod => iod.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Option && o.PowerUpDefinition?.TargetAttribute == Stats.CurseBaseDmg))
+            .Name = Stats.CurseBaseDmg.Designation + " Option";
+        var attackSpeedAny = Stats.AttackSpeedAny.GetPersistent(gameConfiguration);
+
         // Change attack speed magic effects
         if (gameConfiguration.MagicEffects.FirstOrDefault(me => me.Number == (short)MagicEffectNumber.PotionOfSoul) is { } soulPotionMagicEffect
             && soulPotionMagicEffect.PowerUpDefinitions.FirstOrDefault(pu => pu.TargetAttribute == Stats.AttackSpeed) is { } soulPotionAttackSpeed
             && soulPotionMagicEffect.PowerUpDefinitions.FirstOrDefault(pu => pu.TargetAttribute == Stats.MagicSpeed) is { } soulPotionMagicSpeed)
         {
-            soulPotionAttackSpeed.TargetAttribute = Stats.AttackSpeedAny;
+            soulPotionAttackSpeed.TargetAttribute = attackSpeedAny;
             soulPotionMagicEffect.PowerUpDefinitions.Remove(soulPotionMagicSpeed);
         }
 
@@ -47,7 +61,7 @@ public class FixItemOptionsAndAttackSpeedPlugInSeason6 : FixItemOptionsAndAttack
             && jackMagicEffect.PowerUpDefinitions.FirstOrDefault(pu => pu.TargetAttribute == Stats.AttackSpeed) is { } jackAttackSpeed
             && jackMagicEffect.PowerUpDefinitions.FirstOrDefault(pu => pu.TargetAttribute == Stats.MagicSpeed) is { } jackMagicSpeed)
         {
-            jackAttackSpeed.TargetAttribute = Stats.AttackSpeedAny;
+            jackAttackSpeed.TargetAttribute = attackSpeedAny;
             jackMagicEffect.PowerUpDefinitions.Remove(jackMagicSpeed);
         }
 
@@ -56,36 +70,39 @@ public class FixItemOptionsAndAttackSpeedPlugInSeason6 : FixItemOptionsAndAttack
         if (wizardsRingOption is not null
             && wizardsRingOption.PossibleOptions.FirstOrDefault(opt => opt.PowerUpDefinition?.TargetAttribute == Stats.AttackSpeed) is { } wizardsRingAttackSpeed)
         {
-            wizardsRingAttackSpeed.PowerUpDefinition!.TargetAttribute = Stats.AttackSpeedAny;
+            wizardsRingAttackSpeed.PowerUpDefinition!.TargetAttribute = attackSpeedAny;
         }
 
         var fireSocketOption = gameConfiguration.ItemOptions.FirstOrDefault(io => io.GetId() == new Guid("00000083-0032-0000-0000-000000000000"));
         if (fireSocketOption is not null
             && fireSocketOption.PossibleOptions.FirstOrDefault(opt => opt.PowerUpDefinition?.TargetAttribute == Stats.AttackSpeed) is { } fireSocketAttackSpeed)
         {
-            fireSocketAttackSpeed.PowerUpDefinition!.TargetAttribute = Stats.AttackSpeedAny;
+            fireSocketAttackSpeed.PowerUpDefinition!.TargetAttribute = attackSpeedAny;
         }
 
-        // Add missing magic swords wiz item option
+        // Fix magic swords options
         var magicSwords = gameConfiguration.Items.Where(i => i.Group == (int)ItemGroups.Swords
             && (i.Number == 21 // Dark Reign Blade
                 || i.Number == 23 // Explosion Blade
                 || i.Number == 25 // Sword Dancer
                 || i.Number == 28 // Imperial Sword
                 || i.Number == 31)); // Rune Blade
-
-        var wizItemOption = gameConfiguration.ItemOptions.FirstOrDefault(io =>
-            io.PossibleOptions.Any(po => po.OptionType == ItemOptionTypes.Option && po.PowerUpDefinition?.TargetAttribute == Stats.WizardryBaseDmg));
-        if (wizItemOption is not null)
+        var physItemOption = gameConfiguration.PhysicalDamageOption();
+        var excWizAttackOption = gameConfiguration.ExcellentWizardryAttackOptions();
+        var excPhysAttackOption = gameConfiguration.ExcellentPhysicalAttackOptions();
+        var harmonyWizAttackOption = gameConfiguration.ItemOptions.First(o => o.Name == HarmonyOptions.WizardryAttackOptionsName);
+        var harmonyPhysAttackOption = gameConfiguration.ItemOptions.First(o => o.Name == HarmonyOptions.PhysicalAttackOptionsName);
+        foreach (var magicSword in magicSwords)
         {
-            foreach (var magicSword in magicSwords)
-            {
-                magicSword.PossibleItemOptions.Add(wizItemOption);
-            }
+            magicSword.PossibleItemOptions.Remove(excWizAttackOption);
+            magicSword.PossibleItemOptions.Remove(harmonyWizAttackOption);
+            magicSword.PossibleItemOptions.Add(excPhysAttackOption);
+            magicSword.PossibleItemOptions.Add(harmonyPhysAttackOption);
+            magicSword.PossibleItemOptions.Add(physItemOption);
         }
 
         // Remove staffs two handed weapon powerup & add missing powerup for soul master/mg staffs
-        var staffs = gameConfiguration.Items.Where(i => i.Group == (int)ItemGroups.Staff && i.Width == 2);
+        var staffs = gameConfiguration.Items.Where(i => i.Group == (int)ItemGroups.Staff);
         foreach (var staff in staffs)
         {
             if (staff.BasePowerUpAttributes.FirstOrDefault(pua => pua.TargetAttribute == Stats.IsTwoHandedWeaponEquipped) is { } twoHandedWeapon)
@@ -115,7 +132,7 @@ public class FixItemOptionsAndAttackSpeedPlugInSeason6 : FixItemOptionsAndAttack
         }
 
         // Add crystal sword two handed sword powerup
-        var crystalSword = gameConfiguration.Items.FirstOrDefault(i => i.Group == (int)ItemGroups.Swords && i.Number == 5);
+        var crystalSword = gameConfiguration.Items.FirstOrDefault(i => i.Group == (int)ItemGroups.Scepters && i.Number == 5);
         if (crystalSword is not null)
         {
             crystalSword.BasePowerUpAttributes.Add(CreateNewBasePowerUpDefinition(Stats.IsTwoHandedSwordEquipped));
@@ -128,12 +145,12 @@ public class FixItemOptionsAndAttackSpeedPlugInSeason6 : FixItemOptionsAndAttack
 
         if (archangelSword is not null)
         {
-            if (archangelSword.BasePowerUpAttributes.FirstOrDefault(pu => pu.TargetAttribute == Stats.MinimumPhysBaseDmg) is { } minPhysDmg)
+            if (archangelSword.BasePowerUpAttributes.FirstOrDefault(pu => pu.TargetAttribute == Stats.MinimumPhysBaseDmgByWeapon) is { } minPhysDmg)
             {
                 minPhysDmg.BaseValue = 220;
             }
 
-            if (archangelSword.BasePowerUpAttributes.FirstOrDefault(pu => pu.TargetAttribute == Stats.MaximumPhysBaseDmg) is { } maxPhysDmg)
+            if (archangelSword.BasePowerUpAttributes.FirstOrDefault(pu => pu.TargetAttribute == Stats.MaximumPhysBaseDmgByWeapon) is { } maxPhysDmg)
             {
                 maxPhysDmg.BaseValue = 230;
             }
@@ -146,12 +163,12 @@ public class FixItemOptionsAndAttackSpeedPlugInSeason6 : FixItemOptionsAndAttack
 
         if (archangelScepter is not null)
         {
-            if (archangelScepter.BasePowerUpAttributes.FirstOrDefault(pu => pu.TargetAttribute == Stats.MinimumPhysBaseDmg) is { } minPhysDmg)
+            if (archangelScepter.BasePowerUpAttributes.FirstOrDefault(pu => pu.TargetAttribute == Stats.MinimumPhysBaseDmgByWeapon) is { } minPhysDmg)
             {
                 minPhysDmg.BaseValue = 200;
             }
 
-            if (archangelScepter.BasePowerUpAttributes.FirstOrDefault(pu => pu.TargetAttribute == Stats.MaximumPhysBaseDmg) is { } maxPhysDmg)
+            if (archangelScepter.BasePowerUpAttributes.FirstOrDefault(pu => pu.TargetAttribute == Stats.MaximumPhysBaseDmgByWeapon) is { } maxPhysDmg)
             {
                 maxPhysDmg.BaseValue = 233;
             }
@@ -164,12 +181,12 @@ public class FixItemOptionsAndAttackSpeedPlugInSeason6 : FixItemOptionsAndAttack
 
         if (archangelCrossbow is not null)
         {
-            if (archangelCrossbow.BasePowerUpAttributes.FirstOrDefault(pu => pu.TargetAttribute == Stats.MinimumPhysBaseDmg) is { } minPhysDmg)
+            if (archangelCrossbow.BasePowerUpAttributes.FirstOrDefault(pu => pu.TargetAttribute == Stats.MinimumPhysBaseDmgByWeapon) is { } minPhysDmg)
             {
                 minPhysDmg.BaseValue = 224;
             }
 
-            if (archangelCrossbow.BasePowerUpAttributes.FirstOrDefault(pu => pu.TargetAttribute == Stats.MaximumPhysBaseDmg) is { } maxPhysDmg)
+            if (archangelCrossbow.BasePowerUpAttributes.FirstOrDefault(pu => pu.TargetAttribute == Stats.MaximumPhysBaseDmgByWeapon) is { } maxPhysDmg)
             {
                 maxPhysDmg.BaseValue = 246;
             }

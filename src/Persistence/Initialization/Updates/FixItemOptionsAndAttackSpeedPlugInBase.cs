@@ -39,15 +39,15 @@ public abstract class FixItemOptionsAndAttackSpeedPlugInBase : UpdatePlugInBase
     public override bool IsMandatory => true;
 
     /// <inheritdoc />
-    public override DateTime CreatedAt => new(2025, 03, 04, 16, 0, 0, DateTimeKind.Utc);
+    public override DateTime CreatedAt => new(2025, 03, 05, 16, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
         // Add AttackSpeedAny stat
-        /*gameConfiguration.Attributes.Add(
+        gameConfiguration.Attributes.Add(
             new AttributeDefinition(new Guid("DA08473F-DF5B-444D-8651-9EDB65797922"), "Attack Speed Any", "The any attack speed which contributes to both attack speed and magic speed."));
-        var attackSpeedAny = Stats.AttackSpeedAny.GetPersistent(gameConfiguration);*/
+        var attackSpeedAny = Stats.AttackSpeedAny.GetPersistent(gameConfiguration);
 
         // Change attack speed-related combination class attributes
         gameConfiguration.CharacterClasses.ForEach(charClass =>
@@ -57,17 +57,17 @@ public abstract class FixItemOptionsAndAttackSpeedPlugInBase : UpdatePlugInBase
                 && charClass.AttributeCombinations.FirstOrDefault(rel => rel.TargetAttribute == Stats.AttackSpeed && rel.OperandAttribute == Stats.AreTwoWeaponsEquipped) is { } areTwoWeaponsEquippedToAttackSpeedConditional
                 && charClass.AttributeCombinations.FirstOrDefault(rel => rel.TargetAttribute == Stats.MagicSpeed && rel.OperandAttribute == Stats.AreTwoWeaponsEquipped) is { } areTwoWeaponsEquippedToMagicSpeedConditional)
             {
-                attackSpeedByWeaponToAttackSpeed.InputAttribute = Stats.AttackSpeedAny;
-                attackSpeedByWeaponToMagicSpeed.InputAttribute = Stats.AttackSpeedAny;
+                attackSpeedByWeaponToAttackSpeed.InputAttribute = attackSpeedAny;
+                attackSpeedByWeaponToMagicSpeed.InputAttribute = attackSpeedAny;
 
                 charClass.AttributeCombinations.Add(context.CreateNew<AttributeRelationship>(
-                    Stats.AttackSpeedAny,
+                    attackSpeedAny,
                     1,
                     Stats.AttackSpeedByWeapon,
                     InputOperator.Multiply,
                     default(AttributeDefinition?)));
 
-                areTwoWeaponsEquippedToAttackSpeedConditional.TargetAttribute = Stats.AttackSpeedAny;
+                areTwoWeaponsEquippedToAttackSpeedConditional.TargetAttribute = attackSpeedAny;
                 charClass.AttributeCombinations.Remove(areTwoWeaponsEquippedToMagicSpeedConditional);
             }
         });
@@ -79,7 +79,7 @@ public abstract class FixItemOptionsAndAttackSpeedPlugInBase : UpdatePlugInBase
             if (glovesItem.BasePowerUpAttributes.FirstOrDefault(pua => pua.TargetAttribute == Stats.AttackSpeed) is { } glovesAttackSpeed
                 && glovesItem.BasePowerUpAttributes.FirstOrDefault(pua => pua.TargetAttribute == Stats.MagicSpeed) is { } glovesMagicSpeed)
             {
-                glovesAttackSpeed.TargetAttribute = Stats.AttackSpeedAny;
+                glovesAttackSpeed.TargetAttribute = attackSpeedAny;
                 glovesItem.BasePowerUpAttributes.Remove(glovesMagicSpeed);
             }
         }
@@ -89,32 +89,37 @@ public abstract class FixItemOptionsAndAttackSpeedPlugInBase : UpdatePlugInBase
             && alcoholMagicEffect.PowerUpDefinitions.FirstOrDefault(pu => pu.TargetAttribute == Stats.AttackSpeed) is { } alcoholAttackSpeed
             && alcoholMagicEffect.PowerUpDefinitions.FirstOrDefault(pu => pu.TargetAttribute == Stats.MagicSpeed) is { } alcoholMagicSpeed)
         {
-            alcoholAttackSpeed.TargetAttribute = Stats.AttackSpeedAny;
+            alcoholAttackSpeed.TargetAttribute = attackSpeedAny;
             alcoholMagicEffect.PowerUpDefinitions.Remove(alcoholMagicSpeed);
         }
 
-        // Fix Item Options
+        // Fix Item Options (all weapon and wing damage options)
         var itemOptions = gameConfiguration.ItemOptions.Where(io => io.PossibleOptions.Any(po => po.OptionType == ItemOptionTypes.Option));
         foreach (var itemOption in itemOptions)
         {
-            var opt = itemOption.PossibleOptions.First();
-            if (opt.PowerUpDefinition?.TargetAttribute == Stats.MaximumPhysBaseDmg)
+            foreach (var opt in itemOption.PossibleOptions)
             {
-                opt.PowerUpDefinition.TargetAttribute = Stats.PhysicalBaseDmg;
-            }
-            else if (opt.PowerUpDefinition?.TargetAttribute == Stats.MaximumWizBaseDmg)
-            {
-                opt.PowerUpDefinition.TargetAttribute = Stats.WizardryBaseDmg;
-            }
-            else if (opt.PowerUpDefinition?.TargetAttribute == Stats.MaximumCurseBaseDmg)
-            {
-                opt.PowerUpDefinition.TargetAttribute = Stats.CurseBaseDmg;
-            }
-            else
-            {
-                continue;
+                if (opt.PowerUpDefinition?.TargetAttribute == Stats.MaximumPhysBaseDmg)
+                {
+                    opt.PowerUpDefinition.TargetAttribute = Stats.PhysicalBaseDmg;
+                }
+                else if (opt.PowerUpDefinition?.TargetAttribute == Stats.MaximumWizBaseDmg)
+                {
+                    opt.PowerUpDefinition.TargetAttribute = Stats.WizardryBaseDmg;
+                }
+                else if (opt.PowerUpDefinition?.TargetAttribute == Stats.MaximumCurseBaseDmg)
+                {
+                    opt.PowerUpDefinition.TargetAttribute = Stats.CurseBaseDmg;
+                }
+                else
+                {
+                    continue;
+                }
             }
         }
+
+        gameConfiguration.PhysicalDamageOption().Name = Stats.PhysicalBaseDmg.Designation + " Option";
+        gameConfiguration.WizardryDamageOption().Name = Stats.WizardryBaseDmg.Designation + " Option";
 
         // Add shield defense rate item option
         gameConfiguration.ItemOptions.Add(CreateOptionDefinition(Stats.DefenseRatePvm, ItemOptionDefinitionNumbers.DefenseRateOption));
@@ -155,55 +160,38 @@ public abstract class FixItemOptionsAndAttackSpeedPlugInBase : UpdatePlugInBase
 
         // Fix all shields item option
         var shields = gameConfiguration.Items.Where(i => i.Group == (int)ItemGroups.Shields);
+        var defenseOption = gameConfiguration.GetDefenseOption();
+        var defenseRateOption = gameConfiguration.GetDefenseRateOption();
         foreach (var shield in shields)
         {
-            if (shield.PossibleItemOptions.FirstOrDefault(io => io == gameConfiguration.GetDefenseOption()) is { } defenseOption)
+            if (shield.PossibleItemOptions.FirstOrDefault(io => io == defenseOption) is { } defOpt)
             {
-                shield.PossibleItemOptions.Remove(defenseOption);
+                shield.PossibleItemOptions.Remove(defOpt);
             }
 
-            shield.PossibleItemOptions.Add(gameConfiguration.GetDefenseRateOption());
+            shield.PossibleItemOptions.Add(defenseRateOption);
         }
 
-        // Fix all wings item option and 3rd wings bonus per level table
-        var thirdWingsTable = gameConfiguration.ItemLevelBonusTables.FirstOrDefault(t => t.Name == "Defense Bonus (3rd Wings)");
-        if (thirdWingsTable is not null)
+        // Fix 3rd wings defense bonus per level table
+        var thirdWingsDefenseTable = gameConfiguration.ItemLevelBonusTables.FirstOrDefault(t => t.Name == "Defense Bonus (3rd Wings)");
+        if (thirdWingsDefenseTable is not null)
         {
-            var wings = gameConfiguration.Items.Where(i => i.Group == (int)ItemGroups.Orbs && i.BasePowerUpAttributes.Any(pua => pua.TargetAttribute == Stats.CanFly));
-            var thirdWings = wings.Where(i => i.Requirements.Any(r => r.Attribute == Stats.Level && r.MinimumValue == 300));
+            var thirdWings = gameConfiguration.Items.Where(i =>
+                i.Group == (int)ItemGroups.Orbs
+                && i.BasePowerUpAttributes.Any(pua => pua.TargetAttribute == Stats.CanFly)
+                && i.Requirements.Any(r => r.Attribute == Stats.Level && r.MinimumValue == 400));
 
-            foreach (var wing in wings)
+            foreach (var wing in thirdWings)
             {
-                var wingOpts = wing.PossibleItemOptions.Where(o => o.PossibleOptions.Any(p => p.OptionType == ItemOptionTypes.Option));
-                foreach (var wingOpt in wingOpts)
+                if (wing.BasePowerUpAttributes.First(pua => pua.TargetAttribute == Stats.DefenseBase) is { } defensePowerUp)
                 {
-                    if (wingOpt.PossibleOptions.FirstOrDefault(po => po.PowerUpDefinition?.TargetAttribute == Stats.MaximumPhysBaseDmg) is { } physDmgOpt
-                        && physDmgOpt.PowerUpDefinition is not null)
-                    {
-                        physDmgOpt.PowerUpDefinition.TargetAttribute = Stats.PhysicalBaseDmg;
-                    }
-
-                    if (wingOpt.PossibleOptions.FirstOrDefault(po => po.PowerUpDefinition?.TargetAttribute == Stats.MaximumWizBaseDmg) is { } wizDmgOpt
-                        && wizDmgOpt.PowerUpDefinition is not null)
-                    {
-                        wizDmgOpt.PowerUpDefinition.TargetAttribute = Stats.WizardryBaseDmg;
-                    }
-
-                    if (wingOpt.PossibleOptions.FirstOrDefault(po => po.PowerUpDefinition?.TargetAttribute == Stats.MaximumCurseBaseDmg) is { } curseDmgOpt
-                        && curseDmgOpt.PowerUpDefinition is not null)
-                    {
-                        curseDmgOpt.PowerUpDefinition.TargetAttribute = Stats.CurseBaseDmg;
-                    }
-                }
-
-                if (thirdWings.Contains(wing) && wing.BasePowerUpAttributes.First(pua => pua.TargetAttribute == Stats.DefenseBase) is { } defensePowerUp)
-                {
-                    defensePowerUp.BonusPerLevelTable = thirdWingsTable;
+                    defensePowerUp.BonusPerLevelTable = thirdWingsDefenseTable;
                 }
             }
         }
     }
 
+#pragma warning disable SA1600, CS1591 // Elements should be documented.
     protected void FixWeaponsAttackSpeedStat(GameConfiguration gameConfiguration)
     {
         var weapons = gameConfiguration.Items.Where(i => i.Group >= (int)ItemGroups.Swords && i.Group <= (int)ItemGroups.Staff);
@@ -222,7 +210,7 @@ public abstract class FixItemOptionsAndAttackSpeedPlugInBase : UpdatePlugInBase
         if (dinorantOption is not null
             && dinorantOption.PossibleOptions.FirstOrDefault(opt => opt.PowerUpDefinition?.TargetAttribute == Stats.AttackSpeed) is { } dinoAttackSpeed)
         {
-            dinoAttackSpeed.PowerUpDefinition!.TargetAttribute = Stats.AttackSpeedAny;
+            dinoAttackSpeed.PowerUpDefinition!.TargetAttribute = Stats.AttackSpeedAny.GetPersistent(gameConfiguration);
         }
     }
 
@@ -231,35 +219,37 @@ public abstract class FixItemOptionsAndAttackSpeedPlugInBase : UpdatePlugInBase
         var excPhysAttackOpts = gameConfiguration.ItemOptions.FirstOrDefault(io => io.GetId() == new Guid("00000083-0013-0000-0000-000000000000"));
         var excWizAttackOpts = gameConfiguration.ItemOptions.FirstOrDefault(io => io.GetId() == new Guid("00000083-0014-0000-0000-000000000000"));
         var excCurseAttackOpts = gameConfiguration.ItemOptions.FirstOrDefault(io => io.GetId() == new Guid("00000083-0015-0000-0000-000000000000"));
+        var attackSpeedAny = Stats.AttackSpeedAny.GetPersistent(gameConfiguration);
 
         if (excPhysAttackOpts?.PossibleOptions.FirstOrDefault(opt => opt.PowerUpDefinition?.TargetAttribute == Stats.AttackSpeed) is { } physOptAttackSpeed)
         {
-            physOptAttackSpeed.PowerUpDefinition!.TargetAttribute = Stats.AttackSpeedAny;
+            physOptAttackSpeed.PowerUpDefinition!.TargetAttribute = attackSpeedAny;
         }
 
-        if (excPhysAttackOpts?.PossibleOptions.FirstOrDefault(opt => opt.PowerUpDefinition?.TargetAttribute == Stats.MaximumPhysBaseDmg) is { } maxPhysBaseDmg)
+        if (excPhysAttackOpts?.PossibleOptions.FirstOrDefault(opt => opt.PowerUpDefinition?.TargetAttribute == Stats.MaximumPhysBaseDmg && opt.Number == 5) is { } maxPhysBaseDmg)
         {
             maxPhysBaseDmg.PowerUpDefinition!.TargetAttribute = Stats.PhysicalBaseDmg;
         }
 
         if (excWizAttackOpts?.PossibleOptions.FirstOrDefault(opt => opt.PowerUpDefinition?.TargetAttribute == Stats.AttackSpeed) is { } wizOptAttackSpeed)
         {
-            wizOptAttackSpeed.PowerUpDefinition!.TargetAttribute = Stats.AttackSpeedAny;
+            wizOptAttackSpeed.PowerUpDefinition!.TargetAttribute = attackSpeedAny;
         }
 
-        if (excWizAttackOpts?.PossibleOptions.FirstOrDefault(opt => opt.PowerUpDefinition?.TargetAttribute == Stats.MaximumWizBaseDmg) is { } maxWizBaseDmg)
+        if (excWizAttackOpts?.PossibleOptions.FirstOrDefault(opt => opt.PowerUpDefinition?.TargetAttribute == Stats.MaximumWizBaseDmg && opt.Number == 5) is { } maxWizBaseDmg)
         {
             maxWizBaseDmg.PowerUpDefinition!.TargetAttribute = Stats.WizardryBaseDmg;
         }
 
         if (excCurseAttackOpts?.PossibleOptions.FirstOrDefault(opt => opt.PowerUpDefinition?.TargetAttribute == Stats.AttackSpeed) is { } curseOptAttackSpeed)
         {
-            curseOptAttackSpeed.PowerUpDefinition!.TargetAttribute = Stats.AttackSpeedAny;
+            curseOptAttackSpeed.PowerUpDefinition!.TargetAttribute = attackSpeedAny;
         }
 
-        if (excCurseAttackOpts?.PossibleOptions.FirstOrDefault(opt => opt.PowerUpDefinition?.TargetAttribute == Stats.MaximumCurseBaseDmg) is { } maxCurseBaseDmg)
+        if (excCurseAttackOpts?.PossibleOptions.FirstOrDefault(opt => opt.PowerUpDefinition?.TargetAttribute == Stats.MaximumCurseBaseDmg && opt.Number == 5) is { } maxCurseBaseDmg)
         {
             maxCurseBaseDmg.PowerUpDefinition!.TargetAttribute = Stats.WizardryBaseDmg; // Yes, it's wizardry!
         }
     }
+#pragma warning restore CS1591 // Elements should be documented.
 }
