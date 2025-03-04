@@ -49,10 +49,11 @@ public class ShowShopsOfPlayersPlugIn : IShowShopsOfPlayersPlugIn
             foreach (var shopPlayer in playersWithShop)
             {
                 var shopBlock = packet[i];
-                if (shopPlayer.ShopStorage is not null)
+                if (shopPlayer.ShopStorage is not null
+                    && shopPlayer.SelectedCharacter?.StoreName is { } storeName)
                 {
                     shopBlock.PlayerId = shopPlayer.GetId(this._player);
-                    shopBlock.StoreName = shopPlayer.ShopStorage.StoreName;
+                    shopBlock.StoreName = storeName;
                 }
 
                 i++;
