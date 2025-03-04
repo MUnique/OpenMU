@@ -247,6 +247,11 @@ public class Stats
     public static AttributeDefinition MaximumCurseBaseDmg { get; } = new(new Guid("5E7B5B56-BB4D-4645-9593-836FE86E80EA"), "Maximum Curse Base Damage", string.Empty);
 
     /// <summary>
+    /// Gets the the min and max curse base DMG attribute definition.
+    /// </summary>
+    public static AttributeDefinition CurseBaseDmg { get; } = new(new Guid("60868001-6A67-408C-BFDB-320670A9A682"), "Curse Base Damage (min and max)", string.Empty);
+
+    /// <summary>
     /// Gets the attribute definition for the base damage of the fenrir pet.
     /// </summary>
     public static AttributeDefinition FenrirBaseDmg { get; } = new(new Guid("96F47E70-5C85-4A92-B224-944A9359240E"), "Fenrir Base Damage", string.Empty);
