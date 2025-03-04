@@ -221,7 +221,7 @@ public enum UpdateVersion
     FixWeaponRisePercentageSeason6 = 42,
 
     /// <summary>
-    /// The version of the <see cref="FixChaosMixesPlugIn075"/>.
+    /// The version of the <see cref="FixChaosMixesUpdatePlugIn075"/>.
     /// </summary>
     FixChaosMixes075 = 43,
 
@@ -234,4 +234,19 @@ public enum UpdateVersion
     /// The version of the <see cref="FixChaosMixesPlugInSeason6"/>.
     /// </summary>
     FixChaosMixesSeason6 = 45,
+
+    /// <summary>
+    /// The version of the <see cref="FixItemOptionsAndAttackSpeedPlugIn075"/>.
+    /// </summary>
+    FixItemOptionsAndAttackSpeed075 = 46,
+
+    /// <summary>
+    /// The version of the <see cref="FixItemOptionsAndAttackSpeedPlugIn095D"/>.
+    /// </summary>
+    FixItemOptionsAndAttackSpeed095d = 47,
+
+    /// <summary>
+    /// The version of the <see cref="FixItemOptionsAndAttackSpeedPlugInSeason6"/>.
+    /// </summary>
+    FixItemOptionsAndAttackSpeedSeason6 = 48,
 }
