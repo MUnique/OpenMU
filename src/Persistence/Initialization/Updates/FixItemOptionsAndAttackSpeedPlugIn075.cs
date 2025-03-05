@@ -9,7 +9,7 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// This update fixes some item options (damage, defense, defense rate) and weapons attack speed.
+/// This update fixes some item options (damage, defense rate) and weapons attack speed.
 /// It also refactors attack speed attributes for simplification.
 /// </summary>
 [PlugIn(PlugInName, PlugInDescription)]

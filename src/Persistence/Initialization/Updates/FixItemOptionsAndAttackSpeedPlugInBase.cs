@@ -14,7 +14,7 @@ using MUnique.OpenMU.Persistence.Initialization.Items;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
 
 /// <summary>
-/// This update fixes some item options (damage, defense, defense rate) and weapons attack speed.
+/// This update fixes some item options (damage, defense rate) and weapons attack speed.
 /// It also refactors attack speed attributes for simplification.
 /// </summary>
 public abstract class FixItemOptionsAndAttackSpeedPlugInBase : UpdatePlugInBase
@@ -27,7 +27,7 @@ public abstract class FixItemOptionsAndAttackSpeedPlugInBase : UpdatePlugInBase
     /// <summary>
     /// The plug in description.
     /// </summary>
-    internal const string PlugInDescription = "This update fixes some item options (damage, defense, defense rate) and weapons attack speed.";
+    internal const string PlugInDescription = "This update fixes some item options (damage, defense rate) and weapons attack speed.";
 
     /// <inheritdoc />
     public override string Name => PlugInName;
@@ -44,10 +44,13 @@ public abstract class FixItemOptionsAndAttackSpeedPlugInBase : UpdatePlugInBase
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
+        var attackSpeedByWeapon = Stats.AttackSpeedByWeapon.GetPersistent(gameConfiguration);
+        var physicalBaseDmg = Stats.PhysicalBaseDmg.GetPersistent(gameConfiguration);
+        var wizardryBaseDmg = Stats.WizardryBaseDmg.GetPersistent(gameConfiguration);
+
         // Add AttackSpeedAny stat
-        gameConfiguration.Attributes.Add(
-            new AttributeDefinition(new Guid("DA08473F-DF5B-444D-8651-9EDB65797922"), "Attack Speed Any", "The any attack speed which contributes to both attack speed and magic speed."));
-        var attackSpeedAny = Stats.AttackSpeedAny.GetPersistent(gameConfiguration);
+        var attackSpeedAny = context.CreateNew<AttributeDefinition>(Stats.AttackSpeedAny.Id, Stats.AttackSpeedAny.Designation, Stats.AttackSpeedAny.Description);
+        gameConfiguration.Attributes.Add(attackSpeedAny);
 
         // Change attack speed-related combination class attributes
         gameConfiguration.CharacterClasses.ForEach(charClass =>
@@ -63,7 +66,7 @@ public abstract class FixItemOptionsAndAttackSpeedPlugInBase : UpdatePlugInBase
                 charClass.AttributeCombinations.Add(context.CreateNew<AttributeRelationship>(
                     attackSpeedAny,
                     1,
-                    Stats.AttackSpeedByWeapon,
+                    attackSpeedByWeapon,
                     InputOperator.Multiply,
                     default(AttributeDefinition?)));
 
@@ -101,15 +104,11 @@ public abstract class FixItemOptionsAndAttackSpeedPlugInBase : UpdatePlugInBase
             {
                 if (opt.PowerUpDefinition?.TargetAttribute == Stats.MaximumPhysBaseDmg)
                 {
-                    opt.PowerUpDefinition.TargetAttribute = Stats.PhysicalBaseDmg;
+                    opt.PowerUpDefinition.TargetAttribute = physicalBaseDmg;
                 }
                 else if (opt.PowerUpDefinition?.TargetAttribute == Stats.MaximumWizBaseDmg)
                 {
-                    opt.PowerUpDefinition.TargetAttribute = Stats.WizardryBaseDmg;
-                }
-                else if (opt.PowerUpDefinition?.TargetAttribute == Stats.MaximumCurseBaseDmg)
-                {
-                    opt.PowerUpDefinition.TargetAttribute = Stats.CurseBaseDmg;
+                    opt.PowerUpDefinition.TargetAttribute = wizardryBaseDmg;
                 }
                 else
                 {
@@ -135,8 +134,7 @@ public abstract class FixItemOptionsAndAttackSpeedPlugInBase : UpdatePlugInBase
 
             var itemOption = context.CreateNew<IncreasableItemOption>();
             itemOption.SetGuid(number);
-            itemOption.OptionType =
-                gameConfiguration.ItemOptionTypes.FirstOrDefault(o => o == ItemOptionTypes.Option);
+            itemOption.OptionType = gameConfiguration.ItemOptionTypes.FirstOrDefault(o => o == ItemOptionTypes.Option);
             itemOption.PowerUpDefinition = context.CreateNew<PowerUpDefinition>();
             itemOption.PowerUpDefinition.TargetAttribute = gameConfiguration.Attributes.First(a => a == Stats.DefenseRatePvm);
             itemOption.PowerUpDefinition.Boost = context.CreateNew<PowerUpDefinitionValue>();
@@ -194,12 +192,13 @@ public abstract class FixItemOptionsAndAttackSpeedPlugInBase : UpdatePlugInBase
 #pragma warning disable SA1600, CS1591 // Elements should be documented.
     protected void FixWeaponsAttackSpeedStat(GameConfiguration gameConfiguration)
     {
+        var attackSpeedByWeapon = Stats.AttackSpeedByWeapon.GetPersistent(gameConfiguration);
         var weapons = gameConfiguration.Items.Where(i => i.Group >= (int)ItemGroups.Swords && i.Group <= (int)ItemGroups.Staff);
         foreach (var weapon in weapons)
         {
             if (weapon.BasePowerUpAttributes.FirstOrDefault(pua => pua.TargetAttribute == Stats.AttackSpeed) is { } weaponAttackSpeed)
             {
-                weaponAttackSpeed.TargetAttribute = Stats.AttackSpeedByWeapon;
+                weaponAttackSpeed.TargetAttribute = attackSpeedByWeapon;
             }
         }
     }
@@ -220,6 +219,8 @@ public abstract class FixItemOptionsAndAttackSpeedPlugInBase : UpdatePlugInBase
         var excWizAttackOpts = gameConfiguration.ItemOptions.FirstOrDefault(io => io.GetId() == new Guid("00000083-0014-0000-0000-000000000000"));
         var excCurseAttackOpts = gameConfiguration.ItemOptions.FirstOrDefault(io => io.GetId() == new Guid("00000083-0015-0000-0000-000000000000"));
         var attackSpeedAny = Stats.AttackSpeedAny.GetPersistent(gameConfiguration);
+        var physicalBaseDmg = Stats.PhysicalBaseDmg.GetPersistent(gameConfiguration);
+        var wizardryBaseDmg = Stats.PhysicalBaseDmg.GetPersistent(gameConfiguration);
 
         if (excPhysAttackOpts?.PossibleOptions.FirstOrDefault(opt => opt.PowerUpDefinition?.TargetAttribute == Stats.AttackSpeed) is { } physOptAttackSpeed)
         {
@@ -228,7 +229,7 @@ public abstract class FixItemOptionsAndAttackSpeedPlugInBase : UpdatePlugInBase
 
         if (excPhysAttackOpts?.PossibleOptions.FirstOrDefault(opt => opt.PowerUpDefinition?.TargetAttribute == Stats.MaximumPhysBaseDmg && opt.Number == 5) is { } maxPhysBaseDmg)
         {
-            maxPhysBaseDmg.PowerUpDefinition!.TargetAttribute = Stats.PhysicalBaseDmg;
+            maxPhysBaseDmg.PowerUpDefinition!.TargetAttribute = physicalBaseDmg;
         }
 
         if (excWizAttackOpts?.PossibleOptions.FirstOrDefault(opt => opt.PowerUpDefinition?.TargetAttribute == Stats.AttackSpeed) is { } wizOptAttackSpeed)
@@ -238,7 +239,7 @@ public abstract class FixItemOptionsAndAttackSpeedPlugInBase : UpdatePlugInBase
 
         if (excWizAttackOpts?.PossibleOptions.FirstOrDefault(opt => opt.PowerUpDefinition?.TargetAttribute == Stats.MaximumWizBaseDmg && opt.Number == 5) is { } maxWizBaseDmg)
         {
-            maxWizBaseDmg.PowerUpDefinition!.TargetAttribute = Stats.WizardryBaseDmg;
+            maxWizBaseDmg.PowerUpDefinition!.TargetAttribute = wizardryBaseDmg;
         }
 
         if (excCurseAttackOpts?.PossibleOptions.FirstOrDefault(opt => opt.PowerUpDefinition?.TargetAttribute == Stats.AttackSpeed) is { } curseOptAttackSpeed)
@@ -248,7 +249,7 @@ public abstract class FixItemOptionsAndAttackSpeedPlugInBase : UpdatePlugInBase
 
         if (excCurseAttackOpts?.PossibleOptions.FirstOrDefault(opt => opt.PowerUpDefinition?.TargetAttribute == Stats.MaximumCurseBaseDmg && opt.Number == 5) is { } maxCurseBaseDmg)
         {
-            maxCurseBaseDmg.PowerUpDefinition!.TargetAttribute = Stats.WizardryBaseDmg; // Yes, it's wizardry!
+            maxCurseBaseDmg.PowerUpDefinition!.TargetAttribute = wizardryBaseDmg; // Yes, it's wizardry!
         }
     }
 #pragma warning restore CS1591 // Elements should be documented.

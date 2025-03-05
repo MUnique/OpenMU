@@ -1,4 +1,4 @@
-﻿// <copyright file="FixItemOptionsAndAttackSpeedPlugIn095D.cs" company="MUnique">
+﻿// <copyright file="FixItemOptionsAndAttackSpeedPlugIn095d.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -9,7 +9,7 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// This update fixes some item options (damage, defense, defense rate) and weapons attack speed.
+/// This update fixes some item options (damage, defense rate) and weapons attack speed.
 /// It also refactors attack speed attributes for simplification.
 /// </summary>
 [PlugIn(PlugInName, PlugInDescription)]

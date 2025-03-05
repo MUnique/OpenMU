@@ -15,7 +15,7 @@ using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// This update fixes some item options (damage, defense, defense rate), weapons attack speed, third wings defense, and some AA weapon values.
+/// This update fixes some item options (damage, defense rate), weapons attack speed, third wings defense, and some AA weapon values.
 /// It also refactors attack speed attributes for simplification.
 /// </summary>
 [PlugIn(PlugInName, PlugInDescription)]
@@ -25,7 +25,7 @@ public class FixItemOptionsAndAttackSpeedPlugInSeason6 : FixItemOptionsAndAttack
     /// <summary>
     /// The plug in description.
     /// </summary>
-    internal new const string PlugInDescription = "This update fixes some item options (damage, defense, defense rate), weapons attack speed, third wings defense, and some AA weapon values.";
+    internal new const string PlugInDescription = "This update fixes some item options (damage, defense rate), weapons attack speed, third wings defense, and some AA weapon values.";
 
     /// <inheritdoc />
     public override string Description => PlugInDescription;
@@ -43,10 +43,28 @@ public class FixItemOptionsAndAttackSpeedPlugInSeason6 : FixItemOptionsAndAttack
         this.ChangeDinorantAttackSpeedOption(gameConfiguration);
         this.UpdateExcellentAttackSpeedAndBaseDmgOptions(gameConfiguration);
 
-        gameConfiguration.ItemOptions
-            .First(iod => iod.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Option && o.PowerUpDefinition?.TargetAttribute == Stats.CurseBaseDmg))
-            .Name = Stats.CurseBaseDmg.Designation + " Option";
         var attackSpeedAny = Stats.AttackSpeedAny.GetPersistent(gameConfiguration);
+
+        // Add CurseBaseDmg stat
+        var curseBaseDmg = context.CreateNew<AttributeDefinition>(Stats.CurseBaseDmg.Id, Stats.CurseBaseDmg.Designation, Stats.CurseBaseDmg.Description);
+        gameConfiguration.Attributes.Add(curseBaseDmg);
+
+        // Fix Curse Dmg Item Options (all weapon and wing damage options)
+        var itemOptions = gameConfiguration.ItemOptions.Where(io =>
+            io.PossibleOptions.Any(po =>
+                po.OptionType == ItemOptionTypes.Option
+                && po.PowerUpDefinition?.TargetAttribute == Stats.MaximumCurseBaseDmg));
+        foreach (var itemOption in itemOptions)
+        {
+            if (itemOption.PossibleOptions.First().PowerUpDefinition is { } curseDmgOpt)
+            {
+                curseDmgOpt.TargetAttribute = curseBaseDmg;
+            }
+        }
+
+        gameConfiguration.ItemOptions
+            .First(iod => iod.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Option && o.PowerUpDefinition?.TargetAttribute == curseBaseDmg))
+            .Name = curseBaseDmg.Designation + " Option";
 
         // Change attack speed magic effects
         if (gameConfiguration.MagicEffects.FirstOrDefault(me => me.Number == (short)MagicEffectNumber.PotionOfSoul) is { } soulPotionMagicEffect
@@ -170,7 +188,7 @@ public class FixItemOptionsAndAttackSpeedPlugInSeason6 : FixItemOptionsAndAttack
 
             if (archangelScepter.BasePowerUpAttributes.FirstOrDefault(pu => pu.TargetAttribute == Stats.MaximumPhysBaseDmgByWeapon) is { } maxPhysDmg)
             {
-                maxPhysDmg.BaseValue = 233;
+                maxPhysDmg.BaseValue = 223;
             }
 
             if (archangelScepter.BasePowerUpAttributes.FirstOrDefault(pu => pu.TargetAttribute == Stats.ScepterRise) is { } rise)
