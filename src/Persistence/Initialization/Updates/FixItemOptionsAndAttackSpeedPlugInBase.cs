@@ -206,6 +206,8 @@ public abstract class FixItemOptionsAndAttackSpeedPlugInBase : UpdatePlugInBase
     protected void ChangeDinorantAttackSpeedOption(GameConfiguration gameConfiguration)
     {
         var dinorantOption = gameConfiguration.ItemOptions.FirstOrDefault(io => io.GetId() == new Guid("00000083-0080-0000-0000-000000000000"));
+        dinorantOption ??= gameConfiguration.ItemOptions.FirstOrDefault(io => io.Name == "Dinorant Options"); // 0.95d
+
         if (dinorantOption is not null
             && dinorantOption.PossibleOptions.FirstOrDefault(opt => opt.PowerUpDefinition?.TargetAttribute == Stats.AttackSpeed) is { } dinoAttackSpeed)
         {
@@ -249,8 +251,8 @@ public abstract class FixItemOptionsAndAttackSpeedPlugInBase : UpdatePlugInBase
 
         if (excCurseAttackOpts?.PossibleOptions.FirstOrDefault(opt => opt.PowerUpDefinition?.TargetAttribute == Stats.MaximumCurseBaseDmg && opt.Number == 5) is { } maxCurseBaseDmg)
         {
-            maxCurseBaseDmg.PowerUpDefinition!.TargetAttribute = wizardryBaseDmg; // Yes, it's wizardry!
+            maxCurseBaseDmg.PowerUpDefinition!.TargetAttribute = wizardryBaseDmg; // Yes, wizardry. This should not be in use, but just in case.
         }
     }
-#pragma warning restore CS1591 // Elements should be documented.
+#pragma warning restore SA1600, CS1591 // Elements should be documented.
 }
