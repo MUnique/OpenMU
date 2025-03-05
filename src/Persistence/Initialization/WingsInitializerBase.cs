@@ -57,7 +57,7 @@ public abstract class WingsInitializerBase : InitializerBase
             switch (tuple.Item2)
             {
                 case OptionType.CurseDamage:
-                    yield return this.CreateItemOption(tuple.Item1, Stats.MaximumCurseBaseDmg, 0, AggregateType.AddRaw, 4f, ItemOptionDefinitionNumbers.WingCurse);
+                    yield return this.CreateItemOption(tuple.Item1, Stats.CurseBaseDmg, 0, AggregateType.AddRaw, 4f, ItemOptionDefinitionNumbers.WingCurse);
                     break;
                 case OptionType.Defense:
                     yield return this.CreateItemOption(tuple.Item1, Stats.DefenseBase, 0, AggregateType.AddRaw, 4f, ItemOptionDefinitionNumbers.WingDefense);
@@ -66,10 +66,10 @@ public abstract class WingsInitializerBase : InitializerBase
                     yield return this.CreateItemOption(tuple.Item1, Stats.HealthRecoveryMultiplier, 0, AggregateType.AddRaw, 0.01f, ItemOptionDefinitionNumbers.WingHealthRecover);
                     break;
                 case OptionType.PhysDamage:
-                    yield return this.CreateItemOption(tuple.Item1, Stats.MaximumPhysBaseDmg, 0, AggregateType.AddRaw, 4f, ItemOptionDefinitionNumbers.WingPhysical);
+                    yield return this.CreateItemOption(tuple.Item1, Stats.PhysicalBaseDmg, 0, AggregateType.AddRaw, 4f, ItemOptionDefinitionNumbers.WingPhysical);
                     break;
                 case OptionType.WizDamage:
-                    yield return this.CreateItemOption(tuple.Item1, Stats.MaximumWizBaseDmg, 0, AggregateType.AddRaw, 4f, ItemOptionDefinitionNumbers.WingWizardry);
+                    yield return this.CreateItemOption(tuple.Item1, Stats.WizardryBaseDmg, 0, AggregateType.AddRaw, 4f, ItemOptionDefinitionNumbers.WingWizardry);
                     break;
                 default:
                     throw new ArgumentException("unknown OptionType");
