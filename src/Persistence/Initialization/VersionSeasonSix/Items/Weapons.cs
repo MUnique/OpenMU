@@ -1,4 +1,4 @@
-// <copyright file="Weapons.cs" company="MUnique">
+﻿// <copyright file="Weapons.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -173,7 +173,7 @@ internal class Weapons : InitializerBase
         this.CreateWeapon(2, 10, 0, 66, 1, 4, true, "Great Scepter", 82, 74, 85, 45, 65, 35, 0, 100, 21, 0, 0, 0, 0, 0, 0, 1, 0, 0);
         this.CreateWeapon(2, 11, 0, 66, 1, 4, true, "Lord Scepter", 98, 91, 102, 40, 72, 52, 0, 105, 23, 0, 0, 0, 0, 0, 0, 1, 0, 0);
         this.CreateWeapon(2, 12, 0, 66, 1, 4, true, "Great Lord Scepter", 140, 108, 120, 40, 84, 67, 0, 90, 20, 0, 0, 0, 0, 0, 0, 1, 0, 0);
-        this.CreateWeapon(2, 13, 0, 66, 1, 4, false, "Divine Scepter of Archangel", 150, 200, 233, 45, 90, 138, 0, 75, 16, 0, 0, 0, 0, 0, 0, 1, 0, 0);
+        this.CreateWeapon(2, 13, 0, 66, 1, 4, false, "Divine Scepter of Archangel", 150, 200, 223, 45, 90, 138, 0, 75, 16, 0, 0, 0, 0, 0, 0, 1, 0, 0);
         this.CreateWeapon(2, 14, 0, 66, 1, 4, true, "Soleil Scepter", 146, 130, 153, 40, 95, 84, 380, 80, 15, 0, 0, 0, 0, 0, 0, 1, 0, 0);
         this.CreateWeapon(2, 15, 0, 66, 1, 4, true, "Shining Scepter", 110, 99, 111, 40, 78, 60, 0, 108, 22, 0, 0, 0, 0, 0, 0, 1, 0, 0);
         this.CreateWeapon(2, 16, 0, 0, 1, 3, true, "Frost Mace", 121, 106, 146, 50, 80, 0, 0, 27, 19, 0, 0, 0, 0, 2, 0, 0, 0, 0);
