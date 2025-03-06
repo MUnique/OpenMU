@@ -421,7 +421,7 @@ public class Potions : InitializerBase
         item.Width = 1;
         item.Height = 2;
         item.SetGuid(item.Group, item.Number);
-        this.CreateConsumeEffect(item, 16, MagicEffectNumber.JackOlanternBlessing, TimeSpan.FromMinutes(32), (Stats.AttackSpeed, 10), (Stats.MagicSpeed, 10));
+        this.CreateConsumeEffect(item, 16, MagicEffectNumber.JackOlanternBlessing, TimeSpan.FromMinutes(32), (Stats.AttackSpeedAny, 10));
         return item;
     }
 
@@ -449,7 +449,7 @@ public class Potions : InitializerBase
         item.Width = 1;
         item.Height = 2;
         item.SetGuid(item.Group, item.Number);
-        this.CreateConsumeEffect(item, 16, MagicEffectNumber.JackOlanternCry, TimeSpan.FromMinutes(30), (Stats.DefenseBase, 100));
+        this.CreateConsumeEffect(item, 16, MagicEffectNumber.JackOlanternCry, TimeSpan.FromMinutes(30), (Stats.DefenseBase, 100 / 2, 3));
         return item;
     }
 
@@ -525,6 +525,11 @@ public class Potions : InitializerBase
 
     private MagicEffectDefinition CreateConsumeEffect(ItemDefinition item, byte subType, MagicEffectNumber effectNumber, TimeSpan duration, params (AttributeDefinition targetAttribute, float boostValue)[] boosts)
     {
+        return this.CreateConsumeEffect(item, subType, effectNumber, duration, boosts.Select(b => (b.targetAttribute, b.boostValue, (byte)0)).ToArray());
+    }
+
+    private MagicEffectDefinition CreateConsumeEffect(ItemDefinition item, byte subType, MagicEffectNumber effectNumber, TimeSpan duration, params (AttributeDefinition targetAttribute, float boostValue, byte stage)[] boosts)
+    {
         var effect = this.Context.CreateNew<MagicEffectDefinition>();
         effect.SetGuid(item.Number, (short)effectNumber);
         this.GameConfiguration.MagicEffects.Add(effect);
@@ -538,12 +543,13 @@ public class Potions : InitializerBase
         effect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
         effect.Duration.ConstantValue.Value = (float)duration.TotalSeconds;
 
-        foreach (var (targetAttribute, boostValue) in boosts)
+        foreach (var (targetAttribute, boostValue, stage) in boosts)
         {
             var powerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
             effect.PowerUpDefinitions.Add(powerUpDefinition);
             powerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
             powerUpDefinition.Boost.ConstantValue.Value = boostValue;
+            powerUpDefinition.Boost.ConstantValue.Stage = stage;
             powerUpDefinition.TargetAttribute = targetAttribute.GetPersistent(this.GameConfiguration);
         }
 

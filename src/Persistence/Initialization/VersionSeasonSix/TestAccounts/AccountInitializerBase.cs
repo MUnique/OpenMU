@@ -544,6 +544,16 @@ internal abstract class AccountInitializerBase : InitializerBase
                 .First(o => o.OptionType == ItemOptionTypes.Option);
             optionLink.Level = optionLevel;
             weapon.ItemOptions.Add(optionLink);
+
+            if (group == 0 && weapon.Definition.BasePowerUpAttributes.Any(bpua => bpua.TargetAttribute == Stats.StaffRise))
+            {
+                // Double item option MG sword
+                var doubleOptionLink = this.Context.CreateNew<ItemOptionLink>();
+                doubleOptionLink.ItemOption = weapon.Definition.PossibleItemOptions.SelectMany(o => o.PossibleOptions)
+                    .First(o => o != optionLink.ItemOption);
+                doubleOptionLink.Level = optionLevel;
+                weapon.ItemOptions.Add(doubleOptionLink);
+            }
         }
 
         if (luck)
@@ -610,6 +620,26 @@ internal abstract class AccountInitializerBase : InitializerBase
     }
 
     /// <summary>
+    /// Creates the horse.
+    /// </summary>
+    /// <param name="itemSlot">The item slot.</param>
+    /// <returns>The created dark horse.</returns>
+    protected Item CreateHorse(byte itemSlot)
+    {
+        var horse = this.CreatePet(itemSlot, 4);
+
+        var options = horse.Definition!.PossibleItemOptions.First().PossibleOptions.Where(p => p.OptionType == ItemOptionTypes.DarkHorse);
+        foreach (var option in options)
+        {
+            var optionLink = this.Context.CreateNew<ItemOptionLink>();
+            optionLink.ItemOption = option;
+            horse.ItemOptions.Add(optionLink);
+        }
+
+        return horse;
+    }
+
+    /// <summary>
     /// Creates the pet.
     /// </summary>
     /// <param name="itemSlot">The item slot.</param>
@@ -620,6 +650,7 @@ internal abstract class AccountInitializerBase : InitializerBase
         var pet = this.Context.CreateNew<Item>();
         pet.Definition = this.GameConfiguration.Items.First(def => def.Group == 13 && def.Number == itemNumber);
         pet.Durability = 255;
+        pet.Level = 1;
         pet.ItemSlot = itemSlot;
         if (pet.Definition?.Skill != null)
         {

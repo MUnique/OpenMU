@@ -306,7 +306,7 @@ public class ItemConsumptionTest
             {
                 new Persistence.BasicModel.PowerUpDefinition
                 {
-                    TargetAttribute = Stats.AttackSpeed,
+                    TargetAttribute = Stats.AttackSpeedAny,
                     Boost = new Persistence.BasicModel.PowerUpDefinitionValue
                     {
                         ConstantValue = { Value = 20 }

@@ -35,15 +35,15 @@ public class DefenseEffectInitializer : InitializerBase
         magicEffect.SendDuration = false;
         magicEffect.StopByDeath = true;
         magicEffect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
-        magicEffect.Duration.ConstantValue!.Value = 1; // 1 Second
+        magicEffect.Duration.ConstantValue!.Value = 4; // 4 Seconds
 
         var powerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
         magicEffect.PowerUpDefinitions.Add(powerUpDefinition);
-        powerUpDefinition.TargetAttribute = Stats.DamageReceiveDecrement.GetPersistent(this.GameConfiguration);
+        powerUpDefinition.TargetAttribute = Stats.ShieldSkillReceiveDecrement.GetPersistent(this.GameConfiguration);
 
         // Always a 50 % damage reduction
         powerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
         powerUpDefinition.Boost.ConstantValue.Value = 0.50f;
-        powerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
+        powerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.AddRaw;
     }
 }

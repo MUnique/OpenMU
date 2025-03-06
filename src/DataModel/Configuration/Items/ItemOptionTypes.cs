@@ -76,4 +76,10 @@ public static class ItemOptionTypes
     /// </summary>
     /// <remarks>Applies only to the fenrir pet.</remarks>
     public static ItemOptionType GoldFenrir { get; } = new () { Name = "Gold Fenrir Option", Id = new Guid("{78E6DB0B-AC53-454C-956F-CD2B5467856E}"), IsVisible = true };
+
+    /// <summary>
+    /// Gets the dark horse option type.
+    /// </summary>
+    /// <remarks>Applies only to the dark horse pet.</remarks>
+    public static ItemOptionType DarkHorse { get; } = new() { Name = "Dark Horse Option", Id = new Guid("{D2295C44-E458-40F8-8555-87CFD9626616}"), IsVisible = true };
 }

@@ -159,6 +159,11 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
         {
             if (skill.SkillType == SkillType.DirectHit || skill.SkillType == SkillType.CastleSiegeSkill)
             {
+                if (player.Attributes![Stats.AmmunitionConsumptionRate] > player.Attributes[Stats.AmmunitionAmount])
+                {
+                    break;
+                }
+
                 if (!target.IsAtSafezone() && !player.IsAtSafezone() && target != player)
                 {
                     await target.AttackByAsync(player, skillEntry, isCombo).ConfigureAwait(false);

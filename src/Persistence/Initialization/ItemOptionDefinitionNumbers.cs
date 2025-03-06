@@ -43,6 +43,7 @@ internal static class ItemOptionDefinitionNumbers
     /// Gets the excellent defense option number.
     /// </summary>
     public static short ExcellentDefense => 0x12;
+
     /// <summary>
     /// Gets the excellent physical option number.
     /// </summary>
@@ -147,6 +148,7 @@ internal static class ItemOptionDefinitionNumbers
     /// Gets the wing defense option number.
     /// </summary>
     public static short WingDefense => 0x60;
+
     /// <summary>
     /// Gets the wing physical option number.
     /// </summary>
@@ -161,6 +163,7 @@ internal static class ItemOptionDefinitionNumbers
     /// Gets the wing curse option number.
     /// </summary>
     public static short WingCurse => 0x63;
+
     /// <summary>
     /// Gets the wing health recover option number.
     /// </summary>
@@ -170,6 +173,7 @@ internal static class ItemOptionDefinitionNumbers
     /// Gets the wing2nd option number.
     /// </summary>
     public static short Wing2nd => 0x65;
+
     /// <summary>
     /// Gets the cape option number.
     /// </summary>
@@ -201,6 +205,26 @@ internal static class ItemOptionDefinitionNumbers
     public static short WizardRing => 0x73;
 
     /// <summary>
+    /// Gets the christmas transformation ring option number.
+    /// </summary>
+    public static short ChristmasTransformationRing => 0x74;
+
+    /// <summary>
+    /// Gets the robot knight transformation ring option number.
+    /// </summary>
+    public static short RobotKnightTransformationRing => 0x75;
+
+    /// <summary>
+    /// Gets the mini robot transformation ring option number.
+    /// </summary>
+    public static short MiniRobotTransformationRing => 0x76;
+
+    /// <summary>
+    /// Gets the great heavenly mage transformation ring option number.
+    /// </summary>
+    public static short GreatHeavenlyMageTransformationRing => 0x77;
+
+    /// <summary>
     /// Gets the dino option number.
     /// </summary>
     public static short Dino => 0x80;
@@ -209,4 +233,9 @@ internal static class ItemOptionDefinitionNumbers
     /// Gets the fenrir option number.
     /// </summary>
     public static short Fenrir => 0x81;
+
+    /// <summary>
+    /// Gets the dark horse option number.
+    /// </summary>
+    public static short Horse => 0x82;
 }
