@@ -40,7 +40,7 @@ public class UpgradeItemLevelConfiguration
     /// Gets or sets the amount of levels which the item will be upgraded by.
     /// </summary>
     [Display(Name = "Jewel Add Levels", Description = "The amount of levels to add to the item (up to the Maximum Level).")]
-    public byte JewelAddLevels { get; set; }
+    public byte LevelsAdd { get; set; }
 
     /// <summary>
     /// Gets or sets the item level after which the item will drop to level 0 when it fails.
