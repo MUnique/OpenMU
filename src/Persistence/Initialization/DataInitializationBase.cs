@@ -168,8 +168,8 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
                 plugInConfiguration.IsActive = false;
             }
 
-            // Resets are disabled by default.
-            if (plugInType == typeof(ResetFeaturePlugIn))
+            // Disable plugins marked as disabled by default.
+            if (plugInType.IsAssignableTo(typeof(IDisabledByDefault)))
             {
                 plugInConfiguration.IsActive = false;
             }
