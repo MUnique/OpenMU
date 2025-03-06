@@ -64,4 +64,13 @@ public class InMemoryEventPublisher : IEventPublisher
             await gameServer.Value.AllianceChatMessageAsync(guildId, sender, message).ConfigureAwait(false);
         }
     }
+
+    /// <inheritdoc />
+    public async ValueTask PlayerAlreadyLoggedInAsync(byte serverId, string loginName)
+    {
+        foreach (var gameServer in this._gameServers)
+        {
+            await gameServer.Value.PlayerAlreadyLoggedInAsync(serverId, loginName).ConfigureAwait(false);
+        }
+    }
 }
