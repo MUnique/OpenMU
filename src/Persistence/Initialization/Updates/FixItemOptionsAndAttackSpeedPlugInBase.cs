@@ -170,7 +170,7 @@ public abstract class FixItemOptionsAndAttackSpeedPlugInBase : UpdatePlugInBase
         itemOption.SetGuid(number);
         itemOption.OptionType = gameConfiguration.ItemOptionTypes.FirstOrDefault(o => o == ItemOptionTypes.Option);
         itemOption.PowerUpDefinition = context.CreateNew<PowerUpDefinition>();
-        itemOption.PowerUpDefinition.TargetAttribute = gameConfiguration.Attributes.First(a => a == Stats.DefenseRatePvm);
+        itemOption.PowerUpDefinition.TargetAttribute = gameConfiguration.Attributes.First(a => a == attributeDefinition);
         itemOption.PowerUpDefinition.Boost = context.CreateNew<PowerUpDefinitionValue>();
         itemOption.PowerUpDefinition.Boost.ConstantValue!.Value = baseValue;
         for (short level = 2; level <= 4; level++)
