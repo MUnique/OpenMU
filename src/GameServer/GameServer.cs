@@ -12,6 +12,7 @@ using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Guild;
 using MUnique.OpenMU.GameLogic.Views.Login;
@@ -319,6 +320,18 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
         player.GuildStatus = guildStatus;
         await player.ForEachWorldObserverAsync<IAssignPlayersToGuildPlugIn>(p => p.AssignPlayerToGuildAsync(player, true), true).ConfigureAwait(false);
         await this.Context.RegisterGuildMemberAsync(player).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public async ValueTask PlayerAlreadyLoggedInAsync(byte serverId, string loginName)
+    {
+        var players = await this._gameContext.GetPlayersAsync().ConfigureAwait(false);
+        var affectedPlayer = players.FirstOrDefault(p => p.Account?.LoginName == loginName);
+
+        if (affectedPlayer is not null)
+        {
+            await affectedPlayer.ShowMessageAsync("Another user attempted to login this account. If it wasn't you, we suggest you to change your password.").ConfigureAwait(false);
+        }
     }
 
     /// <inheritdoc/>
