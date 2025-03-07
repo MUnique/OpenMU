@@ -64,6 +64,16 @@ public static class OptionExtensions
     }
 
     /// <summary>
+    /// Gets the physical and wizardry damage option definition.
+    /// </summary>
+    /// <param name="gameConfiguration">The game configuration.</param>
+    /// <returns>The definition for the physical and wizardry damage option.</returns>
+    public static ItemOptionDefinition PhysicalAndWizardryDamageOption(this GameConfiguration gameConfiguration)
+    {
+        return gameConfiguration.ItemOptions.First(iod => iod.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Option && o.PowerUpDefinition?.TargetAttribute == Stats.BaseDamageBonus));
+    }
+
+    /// <summary>
     /// Gets the excellent defense options.
     /// </summary>
     /// <param name="gameConfiguration">The game configuration.</param>

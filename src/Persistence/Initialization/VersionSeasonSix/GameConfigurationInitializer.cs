@@ -48,6 +48,7 @@ public class GameConfigurationInitializer : GameConfigurationInitializerBase
     {
         base.Initialize();
 
+        this.GameConfiguration.ItemOptions.Add(this.CreateOptionDefinition(Stats.BaseDamageBonus, ItemOptionDefinitionNumbers.PhysicalAndWizardryAttack));
         this.GameConfiguration.ItemOptions.Add(this.CreateOptionDefinition(Stats.CurseBaseDmg, ItemOptionDefinitionNumbers.CurseAttack));
 
         new CharacterClassInitialization(this.Context, this.GameConfiguration).Initialize();

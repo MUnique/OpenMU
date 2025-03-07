@@ -98,6 +98,9 @@ public class FixItemOptionsAndAttackSpeedPlugInSeason6 : FixItemOptionsAndAttack
             fireSocketAttackSpeed.PowerUpDefinition!.TargetAttribute = attackSpeedAny;
         }
 
+        // Add physical and attack damage item option
+        gameConfiguration.ItemOptions.Add(this.CreateOptionDefinition(context, gameConfiguration, Stats.BaseDamageBonus, ItemOptionDefinitionNumbers.PhysicalAndWizardryAttack, 4));
+
         // Fix magic swords options
         var magicSwords = gameConfiguration.Items.Where(i => i.Group == (int)ItemGroups.Swords
             && (i.Number == 21 // Dark Reign Blade
@@ -105,18 +108,20 @@ public class FixItemOptionsAndAttackSpeedPlugInSeason6 : FixItemOptionsAndAttack
                 || i.Number == 25 // Sword Dancer
                 || i.Number == 28 // Imperial Sword
                 || i.Number == 31)); // Rune Blade
-        var physItemOption = gameConfiguration.PhysicalDamageOption();
+        var wizItemOption = gameConfiguration.WizardryDamageOption();
+        var physAndWizItemOption = gameConfiguration.PhysicalAndWizardryDamageOption();
         var excWizAttackOption = gameConfiguration.ExcellentWizardryAttackOptions();
         var excPhysAttackOption = gameConfiguration.ExcellentPhysicalAttackOptions();
         var harmonyWizAttackOption = gameConfiguration.ItemOptions.First(o => o.Name == HarmonyOptions.WizardryAttackOptionsName);
         var harmonyPhysAttackOption = gameConfiguration.ItemOptions.First(o => o.Name == HarmonyOptions.PhysicalAttackOptionsName);
         foreach (var magicSword in magicSwords)
         {
+            magicSword.PossibleItemOptions.Remove(wizItemOption);
             magicSword.PossibleItemOptions.Remove(excWizAttackOption);
             magicSword.PossibleItemOptions.Remove(harmonyWizAttackOption);
+            magicSword.PossibleItemOptions.Add(physAndWizItemOption);
             magicSword.PossibleItemOptions.Add(excPhysAttackOption);
             magicSword.PossibleItemOptions.Add(harmonyPhysAttackOption);
-            magicSword.PossibleItemOptions.Add(physItemOption);
         }
 
         // Remove staffs two handed weapon powerup & add missing powerup for soul master/mg staffs

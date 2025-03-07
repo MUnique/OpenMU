@@ -121,40 +121,7 @@ public abstract class FixItemOptionsAndAttackSpeedPlugInBase : UpdatePlugInBase
         gameConfiguration.WizardryDamageOption().Name = Stats.WizardryBaseDmg.Designation + " Option";
 
         // Add shield defense rate item option
-        gameConfiguration.ItemOptions.Add(CreateOptionDefinition(Stats.DefenseRatePvm, ItemOptionDefinitionNumbers.DefenseRateOption));
-
-        ItemOptionDefinition CreateOptionDefinition(AttributeDefinition attributeDefinition, short number)
-        {
-            var definition = context.CreateNew<ItemOptionDefinition>();
-            definition.SetGuid(number);
-            definition.Name = attributeDefinition.Designation + " Option";
-            definition.AddChance = 0.25f;
-            definition.AddsRandomly = true;
-            definition.MaximumOptionsPerItem = 1;
-
-            var itemOption = context.CreateNew<IncreasableItemOption>();
-            itemOption.SetGuid(number);
-            itemOption.OptionType = gameConfiguration.ItemOptionTypes.FirstOrDefault(o => o == ItemOptionTypes.Option);
-            itemOption.PowerUpDefinition = context.CreateNew<PowerUpDefinition>();
-            itemOption.PowerUpDefinition.TargetAttribute = gameConfiguration.Attributes.First(a => a == Stats.DefenseRatePvm);
-            itemOption.PowerUpDefinition.Boost = context.CreateNew<PowerUpDefinitionValue>();
-            itemOption.PowerUpDefinition.Boost.ConstantValue!.Value = 5;
-            for (short level = 2; level <= 4; level++)
-            {
-                var levelDependentOption = context.CreateNew<ItemOptionOfLevel>();
-                levelDependentOption.Level = level;
-                var powerUpDefinition = context.CreateNew<PowerUpDefinition>();
-                powerUpDefinition.TargetAttribute = itemOption.PowerUpDefinition.TargetAttribute;
-                powerUpDefinition.Boost = context.CreateNew<PowerUpDefinitionValue>();
-                powerUpDefinition.Boost.ConstantValue!.Value = level * 5;
-                levelDependentOption.PowerUpDefinition = powerUpDefinition;
-                itemOption.LevelDependentOptions.Add(levelDependentOption);
-            }
-
-            definition.PossibleOptions.Add(itemOption);
-
-            return definition;
-        }
+        gameConfiguration.ItemOptions.Add(this.CreateOptionDefinition(context, gameConfiguration, Stats.DefenseRatePvm, ItemOptionDefinitionNumbers.DefenseRateOption, 5));
 
         // Fix all shields item option
         var shields = gameConfiguration.Items.Where(i => i.Group == (int)ItemGroups.Shields);
@@ -190,6 +157,39 @@ public abstract class FixItemOptionsAndAttackSpeedPlugInBase : UpdatePlugInBase
     }
 
 #pragma warning disable SA1600, CS1591 // Elements should be documented.
+    protected ItemOptionDefinition CreateOptionDefinition(IContext context, GameConfiguration gameConfiguration, AttributeDefinition attributeDefinition, short number, byte baseValue)
+    {
+        var definition = context.CreateNew<ItemOptionDefinition>();
+        definition.SetGuid(number);
+        definition.Name = attributeDefinition.Designation + " Option";
+        definition.AddChance = 0.25f;
+        definition.AddsRandomly = true;
+        definition.MaximumOptionsPerItem = 1;
+
+        var itemOption = context.CreateNew<IncreasableItemOption>();
+        itemOption.SetGuid(number);
+        itemOption.OptionType = gameConfiguration.ItemOptionTypes.FirstOrDefault(o => o == ItemOptionTypes.Option);
+        itemOption.PowerUpDefinition = context.CreateNew<PowerUpDefinition>();
+        itemOption.PowerUpDefinition.TargetAttribute = gameConfiguration.Attributes.First(a => a == Stats.DefenseRatePvm);
+        itemOption.PowerUpDefinition.Boost = context.CreateNew<PowerUpDefinitionValue>();
+        itemOption.PowerUpDefinition.Boost.ConstantValue!.Value = baseValue;
+        for (short level = 2; level <= 4; level++)
+        {
+            var levelDependentOption = context.CreateNew<ItemOptionOfLevel>();
+            levelDependentOption.Level = level;
+            var powerUpDefinition = context.CreateNew<PowerUpDefinition>();
+            powerUpDefinition.TargetAttribute = itemOption.PowerUpDefinition.TargetAttribute;
+            powerUpDefinition.Boost = context.CreateNew<PowerUpDefinitionValue>();
+            powerUpDefinition.Boost.ConstantValue!.Value = level * baseValue;
+            levelDependentOption.PowerUpDefinition = powerUpDefinition;
+            itemOption.LevelDependentOptions.Add(levelDependentOption);
+        }
+
+        definition.PossibleOptions.Add(itemOption);
+
+        return definition;
+    }
+
     protected void FixWeaponsAttackSpeedStat(GameConfiguration gameConfiguration)
     {
         var attackSpeedByWeapon = Stats.AttackSpeedByWeapon.GetPersistent(gameConfiguration);

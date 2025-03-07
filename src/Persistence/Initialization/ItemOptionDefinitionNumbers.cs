@@ -1,4 +1,4 @@
-// <copyright file="ItemOptionDefinitionNumbers.cs" company="MUnique">
+﻿// <copyright file="ItemOptionDefinitionNumbers.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -38,6 +38,12 @@ internal static class ItemOptionDefinitionNumbers
     /// Gets the defense option option number.
     /// </summary>
     public static short DefenseRateOption => 0x06;
+
+    /// <summary>
+    /// Gets the physical and wizardry attack option number.
+    /// </summary>
+    /// <remarks>Used for MG "magic swords", which always increase both damage types simultaneously.</remarks>
+    public static short PhysicalAndWizardryAttack => 0x07;
 
     /// <summary>
     /// Gets the jewelery health option number.

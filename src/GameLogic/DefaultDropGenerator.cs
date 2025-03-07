@@ -327,17 +327,6 @@ public class DefaultDropGenerator : IDropGenerator
                         .Distinct().Where(l => l <= this._maxItemOptionLevelDrop).SelectRandom() ?? 0,
                 };
                 item.ItemOptions.Add(itemOptionLink);
-
-                if (item.Definition?.Group == 0 && item.Definition.BasePowerUpAttributes.Any(bpua => bpua.TargetAttribute == Stats.StaffRise))
-                {
-                    // Double item option MG sword
-                    var doubleOptionLink = new ItemOptionLink
-                    {
-                        ItemOption = remainingOptions.First(o => o != newOption),
-                        Level = itemOptionLink.Level,
-                    };
-                    item.ItemOptions.Add(doubleOptionLink);
-                }
             }
         }
     }

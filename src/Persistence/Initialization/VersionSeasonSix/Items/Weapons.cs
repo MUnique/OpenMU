@@ -101,6 +101,17 @@ internal class Weapons : InitializerBase
     }
 
     /// <summary>
+    /// Gets the physical and wizardry damage option definition.
+    /// </summary>
+    protected ItemOptionDefinition PhysicalAndWizardryDamageOption
+    {
+        get
+        {
+            return this.GameConfiguration.ItemOptions.First(iod => iod.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Option && o.PowerUpDefinition?.TargetAttribute == Stats.BaseDamageBonus));
+        }
+    }
+
+    /// <summary>
     /// Initializes the weapons.
     /// </summary>
     /// <remarks>
@@ -343,19 +354,13 @@ internal class Weapons : InitializerBase
 
         if (magicPower == 0 || darkLordClass > 0 || group == (int)ItemGroups.Swords)
         {
-            item.PossibleItemOptions.Add(this.PhysicalDamageOption);
             item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == ExcellentOptions.PhysicalAttackOptionsName));
             item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == HarmonyOptions.PhysicalAttackOptionsName));
 
-            if (skillNumber == (int)SkillNumber.ForceWave)
+            if (skillNumber == (int)SkillNumber.PowerSlash)
             {
-                var scepterRisePowerUp = this.CreateItemBasePowerUpDefinition(Stats.ScepterRise, magicPower / 2.0f, AggregateType.AddRaw);
-                scepterRisePowerUp.BonusPerLevelTable = magicPower % 2 == 0 ? this._scepterRiseTableEven : this._scepterRiseTableOdd;
-                item.BasePowerUpAttributes.Add(scepterRisePowerUp);
-            }
-            else if (magicPower > 0) // MG swords can have wizardry rise, functioning as both sword and staff
-            {
-                item.PossibleItemOptions.Add(this.WizardryDamageOption);
+                // MG "magic swords" have a double item option, and wizardry rise, functioning as both sword and staff
+                item.PossibleItemOptions.Add(this.PhysicalAndWizardryDamageOption);
 
                 var swordRisePowerUp = this.CreateItemBasePowerUpDefinition(Stats.StaffRise, magicPower / 2.0f, AggregateType.AddRaw);
                 swordRisePowerUp.BonusPerLevelTable = magicPower % 2 == 0 ? this._staffRiseTableEven : this._staffRiseTableOdd;
@@ -363,7 +368,14 @@ internal class Weapons : InitializerBase
             }
             else
             {
-                // Nothing to do here
+                item.PossibleItemOptions.Add(this.PhysicalDamageOption);
+
+                if (skillNumber == (int)SkillNumber.ForceWave)
+                {
+                    var scepterRisePowerUp = this.CreateItemBasePowerUpDefinition(Stats.ScepterRise, magicPower / 2.0f, AggregateType.AddRaw);
+                    scepterRisePowerUp.BonusPerLevelTable = magicPower % 2 == 0 ? this._scepterRiseTableEven : this._scepterRiseTableOdd;
+                    item.BasePowerUpAttributes.Add(scepterRisePowerUp);
+                }
             }
         }
         else
