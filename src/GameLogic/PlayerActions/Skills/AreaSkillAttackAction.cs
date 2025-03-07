@@ -76,6 +76,11 @@ public class AreaSkillAttackAction
             return;
         }
 
+        if (player.Attributes[Stats.AmmunitionConsumptionRate] > player.Attributes[Stats.AmmunitionAmount])
+        {
+            return;
+        }
+
         bool isCombo = false;
         if (player.ComboState is { } comboState)
         {

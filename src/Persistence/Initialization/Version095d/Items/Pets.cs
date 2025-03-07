@@ -1,4 +1,4 @@
-﻿// <copyright file="Pets.cs" company="MUnique">
+// <copyright file="Pets.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -88,7 +88,7 @@ public class Pets : InitializerBase
 
         dinoOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.Option, 4, Stats.DamageReceiveDecrement, 0.95f, AggregateType.Multiplicate));
         dinoOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.Option, 4, Stats.MaximumAbility, 50f, AggregateType.AddFinal));
-        dinoOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.Option, 4, Stats.AttackSpeed, 5f, AggregateType.AddFinal));
+        dinoOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.Option, 4, Stats.AttackSpeedAny, 5f, AggregateType.AddFinal));
 
         dinorant.PossibleItemOptions.Add(dinoOptionDefinition);
     }

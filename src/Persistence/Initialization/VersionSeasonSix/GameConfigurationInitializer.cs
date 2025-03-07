@@ -47,8 +47,9 @@ public class GameConfigurationInitializer : GameConfigurationInitializerBase
     public override void Initialize()
     {
         base.Initialize();
-        
-        this.GameConfiguration.ItemOptions.Add(this.CreateOptionDefinition(Stats.MaximumCurseBaseDmg, ItemOptionDefinitionNumbers.CurseAttack));
+
+        this.GameConfiguration.ItemOptions.Add(this.CreateOptionDefinition(Stats.BaseDamageBonus, ItemOptionDefinitionNumbers.PhysicalAndWizardryAttack));
+        this.GameConfiguration.ItemOptions.Add(this.CreateOptionDefinition(Stats.CurseBaseDmg, ItemOptionDefinitionNumbers.CurseAttack));
 
         new CharacterClassInitialization(this.Context, this.GameConfiguration).Initialize();
         new SkillsInitializer(this.Context, this.GameConfiguration).Initialize();

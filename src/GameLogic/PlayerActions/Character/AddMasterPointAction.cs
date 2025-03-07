@@ -1,4 +1,4 @@
-﻿// <copyright file="AddMasterPointAction.cs" company="MUnique">
+// <copyright file="AddMasterPointAction.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -126,11 +126,11 @@ public class AddMasterPointAction
             return true;
         }
 
-        var learnedRequiredSkill = character.LearnedSkills
-            .Where(l => l.Skill?.MasterDefinition?.Root != null)
-            .FirstOrDefault(l => l.Skill!.MasterDefinition!.Root!.Id == definition.Root?.Id
-                                 && l.Skill.MasterDefinition.Rank == definition.Rank - 1);
-        return learnedRequiredSkill?.Level >= MinimumSkillLevelOfRequiredSkill;
+        var learnedRequiredSkills = character.LearnedSkills
+            .Where(l => l.Skill?.MasterDefinition?.Root != null
+                && l.Skill.MasterDefinition.Root.Id == definition.Root?.Id
+                && l.Skill.MasterDefinition.Rank == definition.Rank - 1);
+        return learnedRequiredSkills?.Any(lrs => lrs.Level >= MinimumSkillLevelOfRequiredSkill) ?? false;
     }
 
     private bool CheckRequiredSkill(MasterSkillDefinition definition, Player player)

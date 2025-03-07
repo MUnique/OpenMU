@@ -279,7 +279,7 @@ public class Armors : ArmorInitializerBase
         this.CreateGloves(44, "Lilium Gloves", 82, 45, 6, 80, 0, 75, 20, 0, 0, 0, 0, 0, 2);
         this.CreateGloves(45, "Titan Gloves", 100, 56, 7, 86, 0, 222, 32, 0, 1, 0, 0, 0, 0);
         this.CreateGloves(46, "Brave Gloves", 97, 42, 7, 86, 0, 74, 162, 0, 1, 0, 0, 0, 0);
-        this.CreateGloves(47, "Destory Gloves", 101, 49, 7, 86, 0, 212, 57, 0, 0, 0, 1, 0, 0);
+        this.CreateGloves(47, "Destroy Gloves", 101, 49, 7, 86, 0, 212, 57, 0, 0, 0, 1, 0, 0);
         this.CreateGloves(48, "Phantom Gloves", 99, 40, 7, 86, 0, 62, 19, 0, 0, 0, 1, 0, 0);
         this.CreateGloves(49, "Seraphim Gloves", 100, 43, 7, 86, 0, 55, 197, 0, 0, 1, 0, 0, 0);
         this.CreateGloves(50, "Faith Gloves", 95, 36, 7, 86, 0, 32, 29, 0, 0, 1, 0, 0, 0);

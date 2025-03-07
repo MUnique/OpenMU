@@ -1,4 +1,4 @@
-﻿// <copyright file="Potions.cs" company="MUnique">
+// <copyright file="Potions.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -421,7 +421,7 @@ public class Potions : InitializerBase
         item.Width = 1;
         item.Height = 2;
         item.SetGuid(item.Group, item.Number);
-        this.CreateConsumeEffect(item, 16, MagicEffectNumber.JackOlanternBlessing, TimeSpan.FromMinutes(32), (Stats.AttackSpeed, 10), (Stats.MagicSpeed, 10));
+        this.CreateConsumeEffect(item, 16, MagicEffectNumber.JackOlanternBlessing, TimeSpan.FromMinutes(32), (Stats.AttackSpeedAny, 10));
         return item;
     }
 
@@ -523,7 +523,7 @@ public class Potions : InitializerBase
         return item;
     }
 
-    private MagicEffectDefinition CreateConsumeEffect(ItemDefinition item, byte subType, MagicEffectNumber effectNumber, TimeSpan duration, params (AttributeDefinition targetAttribute, float boostValue)[] boosts)
+    private MagicEffectDefinition CreateConsumeEffect(ItemDefinition item, byte subType, MagicEffectNumber effectNumber, TimeSpan duration, params (AttributeDefinition TargetAttribute, float BoostValue)[] boosts)
     {
         var effect = this.Context.CreateNew<MagicEffectDefinition>();
         effect.SetGuid(item.Number, (short)effectNumber);
