@@ -30,7 +30,6 @@ public class BlessJewelConsumeHandlerPlugIn : UpgradeItemLevelJewelConsumeHandle
             SuccessRatePercentage = 100,
             SuccessRateBonusWithLuckPercentage = 0,
             ResetToLevel0WhenFailMinLevel = 0,
-            LevelsAdd = 1,
         };
     }
 

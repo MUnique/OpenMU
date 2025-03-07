@@ -36,11 +36,17 @@ public class UpgradeItemLevelConfiguration
     [Display(Name = "Item Maximum Level", Description = "The maximum item level which the item has to have before applying the jewel.")]
     public byte MaximumLevel { get; set; }
 
+    private byte _levelAmount = 1;
+
     /// <summary>
     /// Gets or sets the amount of levels which the item will be upgraded by.
     /// </summary>
-    [Display(Name = "Jewel Add Levels", Description = "The amount of levels to add to the item (up to the Maximum Level).")]
-    public byte LevelsAdd { get; set; }
+    [Display(Name = "Add Levels Amount", Description = "How many times to add a level to the item (will become MaximumLevel + 1).")]
+    public byte LevelAmount
+    {
+        get => this._levelAmount;
+        set => this._levelAmount = value;
+    }
 
     /// <summary>
     /// Gets or sets the item level after which the item will drop to level 0 when it fails.

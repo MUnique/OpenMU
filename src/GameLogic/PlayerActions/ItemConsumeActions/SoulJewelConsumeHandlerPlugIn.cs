@@ -43,6 +43,5 @@ public class SoulJewelConsumeHandlerPlugIn : UpgradeItemLevelJewelConsumeHandler
         SuccessRatePercentage = 50,
         SuccessRateBonusWithLuckPercentage = 25,
         ResetToLevel0WhenFailMinLevel = 7,
-        LevelsAdd = 1,
     };
 }
