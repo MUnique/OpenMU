@@ -136,7 +136,7 @@ public static class LocateableExtensions
             ydiff = 0;
         }
 
-        return ydiff < range;
+        return ydiff <= range;
     }
 
     /// <summary>
