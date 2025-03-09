@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Interfaces;
+using System.IO;
 
 /// <summary>
 /// Class which listens to changes within the <see cref="GameConfiguration"/>,
@@ -55,7 +56,16 @@ public class ConfigurationChangeListener : IConfigurationChangeListener
             }
 
             using var context = this._contextProvider.Value.CreateNewContext(gameConfiguration);
-            var cachedParent = await context.GetByIdAsync(parentId, parentCollectionNavigation.DeclaringEntityType.ClrType).ConfigureAwait(false);
+            object? cachedParent = null;
+            try
+            {
+                cachedParent = await context.GetByIdAsync(parentId, parentCollectionNavigation.DeclaringEntityType.ClrType).ConfigureAwait(false);
+            }
+            catch (InvalidDataException)
+            {
+                // It can happen when the object and the parent object were created at the same time.
+                // In this case, we just ignore it.
+            }
 
             if (cachedParent is not null)
             {
