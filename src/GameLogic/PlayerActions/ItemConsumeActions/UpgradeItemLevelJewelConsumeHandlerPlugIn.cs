@@ -67,16 +67,6 @@ public abstract class UpgradeItemLevelJewelConsumeHandlerPlugIn<TConfig>
             return false;
         }
 
-        if (this.Configuration.DisallowedDropItemGroups.Any(dig => dig.PossibleItems?.Contains(item.Definition!) == true))
-        {
-            return false;
-        }
-
-        if (this.Configuration.AllowedDropItemGroups.Any() && !this.Configuration.AllowedDropItemGroups.Any(dig => dig.PossibleItems?.Contains(item.Definition!) == true))
-        {
-            return false;
-        }
-
         var maximumAllowedLevel = Math.Min(this.Configuration.MaximumLevel + 1, item.Definition!.MaximumItemLevel);
         var levelAmount = Math.Min(this.Configuration.LevelAmount, maximumAllowedLevel - item.Level);
         if (levelAmount <= 0)

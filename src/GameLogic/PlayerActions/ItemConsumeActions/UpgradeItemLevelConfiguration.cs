@@ -54,16 +54,6 @@ public class UpgradeItemLevelConfiguration
     public ICollection<ItemDefinition> DisallowedItems { get; set; } = new List<ItemDefinition>();
 
     /// <summary>
-    /// Gets or sets the drop item groups which are allowed to be upgraded. If empty, all drop item groups are allowed except those in <see cref="DisallowedDropItemGroups"/>.
-    /// </summary>
-    public ICollection<DropItemGroup> AllowedDropItemGroups { get; set; } = new List<DropItemGroup>();
-
-    /// <summary>
-    /// Gets or sets the drop item groups which are not allowed to be upgraded.
-    /// </summary>
-    public ICollection<DropItemGroup> DisallowedDropItemGroups { get; set; } = new List<DropItemGroup>();
-
-    /// <summary>
     /// Gets or sets the item level after which the item will drop to level 0 when it fails.
     /// </summary>
     [Display(Name = "Fail To 0 min. Level", Description = "The item level after which the item will drop to level 0 when it fails.")]
