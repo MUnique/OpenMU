@@ -42,13 +42,7 @@ public class OpenWarehouseChatCommandPlugIn : ChatCommandPlugInBase<OpenWarehous
     public override CharacterStatus MinCharacterStatusRequirement => MinimumStatus;
 
     /// <inheritdoc />
-    public object CreateDefaultConfig()
-    {
-        return new OpenWarehouseChatCommandPlugIn.OpenWarehouseChatCommandConfiguration
-        {
-            MinimumVipLevel = 0,
-        };
-    }
+    public object CreateDefaultConfig() => new OpenWarehouseChatCommandConfiguration();
 
     /// <inheritdoc />
     protected override async ValueTask DoHandleCommandAsync(Player player, Arguments arguments)
@@ -76,7 +70,7 @@ public class OpenWarehouseChatCommandPlugIn : ChatCommandPlugInBase<OpenWarehous
             return;
         }
 
-        var npc = new NonPlayerCharacter(new DataModel.Configuration.MonsterSpawnArea { MonsterDefinition = definition }, definition, currentMap);
+        var npc = new NonPlayerCharacter(new MonsterSpawnArea { MonsterDefinition = definition }, definition, currentMap);
         await this._talkNpcAction.TalkToNpcAsync(player, npc).ConfigureAwait(false);
     }
 
@@ -96,6 +90,6 @@ public class OpenWarehouseChatCommandPlugIn : ChatCommandPlugInBase<OpenWarehous
         /// Gets or sets the minimum VIP level to use the command.
         /// </summary>
         [Display(Name = "Minimum VIP Level", Description = @"The minimum VIP level to use the command. (Default: 0)")]
-        public int MinimumVipLevel { get; set; }
+        public int MinimumVipLevel { get; set; } = 0;
     }
 }

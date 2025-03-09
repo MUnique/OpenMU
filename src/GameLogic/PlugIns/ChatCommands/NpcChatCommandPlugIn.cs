@@ -43,14 +43,7 @@ public class NpcChatCommandPlugIn : ChatCommandPlugInBase<NpcChatCommandPlugIn.A
     public override CharacterStatus MinCharacterStatusRequirement => MinimumStatus;
 
     /// <inheritdoc />
-    public object CreateDefaultConfig()
-    {
-        return new NpcChatCommandPlugIn.NpcChatCommandConfiguration
-        {
-            OpenMerchantNpcId = 253,
-            MinimumVipLevel = 0,
-        };
-    }
+    public object CreateDefaultConfig() => new NpcChatCommandConfiguration();
 
     /// <inheritdoc />
     protected override async ValueTask DoHandleCommandAsync(Player player, Arguments arguments)
@@ -65,15 +58,15 @@ public class NpcChatCommandPlugIn : ChatCommandPlugInBase<NpcChatCommandPlugIn.A
 
         if (player.SelectedCharacter?.CharacterStatus >= CharacterStatus.GameMaster)
         {
-            if (arguments?.NpcId != null)
+            if (arguments?.NpcId is { } newNpcId)
             {
-                if (int.TryParse(arguments.NpcId, out var intNpcId))
+                if (int.TryParse(newNpcId, out var intNpcId))
                 {
                     npcId = (ushort)intNpcId;
                 }
                 else
                 {
-                    await this.ShowMessageToAsync(player, string.Format(InvalidNpcIdMessage, arguments.NpcId)).ConfigureAwait(false);
+                    await this.ShowMessageToAsync(player, string.Format(InvalidNpcIdMessage, newNpcId)).ConfigureAwait(false);
                     return;
                 }
             }
@@ -95,7 +88,7 @@ public class NpcChatCommandPlugIn : ChatCommandPlugInBase<NpcChatCommandPlugIn.A
             return;
         }
 
-        var npc = new NonPlayerCharacter(new DataModel.Configuration.MonsterSpawnArea { MonsterDefinition = definition }, definition, currentMap);
+        var npc = new NonPlayerCharacter(new MonsterSpawnArea { MonsterDefinition = definition }, definition, currentMap);
         await this._talkNpcAction.TalkToNpcAsync(player, npc).ConfigureAwait(false);
     }
 
@@ -120,12 +113,12 @@ public class NpcChatCommandPlugIn : ChatCommandPlugInBase<NpcChatCommandPlugIn.A
         /// </summary>
         // TODO: Change to a list of possible NPCs merchants
         [Display(Name = "NPC ID", Description = @"The ID of the NPC to open the merchant store. (Default: 253 - Potion Girl Amy)")]
-        public int OpenMerchantNpcId { get; set; }
+        public int OpenMerchantNpcId { get; set; } = 253;
 
         /// <summary>
         /// Gets or sets the minimum VIP level to use the command.
         /// </summary>
         [Display(Name = "Minimum VIP Level", Description = @"The minimum VIP level to use the command. (Default: 0)")]
-        public int MinimumVipLevel { get; set; }
+        public int MinimumVipLevel { get; set; } = 0;
     }
 }

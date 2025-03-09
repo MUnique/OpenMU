@@ -33,18 +33,18 @@ public class GetMoneyChatCommandPlugIn : ChatCommandPlugInBase<GetMoneyChatComma
     protected override async ValueTask DoHandleCommandAsync(Player player, Arguments arguments)
     {
         var targetPlayer = player;
-        if (arguments?.CharacterName != null)
+        if (arguments?.CharacterName is { } characterName)
         {
-            targetPlayer = player.GameContext.GetPlayerByCharacterName(arguments.CharacterName);
-            if (targetPlayer?.SelectedCharacter == null ||
-                !targetPlayer.SelectedCharacter.Name.Equals(arguments.CharacterName, StringComparison.OrdinalIgnoreCase))
+            targetPlayer = player.GameContext.GetPlayerByCharacterName(characterName);
+            if (targetPlayer?.SelectedCharacter is null ||
+                !targetPlayer.SelectedCharacter.Name.Equals(characterName, StringComparison.OrdinalIgnoreCase))
             {
-                await this.ShowMessageToAsync(player, string.Format(CharacterNotFoundMessage, arguments.CharacterName)).ConfigureAwait(false);
+                await this.ShowMessageToAsync(player, string.Format(CharacterNotFoundMessage, characterName)).ConfigureAwait(false);
                 return;
             }
         }
 
-        if (targetPlayer?.SelectedCharacter?.Inventory == null)
+        if (targetPlayer.SelectedCharacter?.Inventory is null)
         {
             return;
         }

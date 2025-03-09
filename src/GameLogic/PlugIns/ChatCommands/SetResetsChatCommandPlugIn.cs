@@ -44,25 +44,25 @@ public class SetResetsChatCommandPlugIn : ChatCommandPlugInBase<SetResetsChatCom
         }
 
         var targetPlayer = player;
-        if (arguments?.CharacterName != null)
+        if (arguments?.CharacterName is { } characterName)
         {
-            targetPlayer = player.GameContext.GetPlayerByCharacterName(arguments.CharacterName);
-            if (targetPlayer?.SelectedCharacter == null ||
-                !targetPlayer.SelectedCharacter.Name.Equals(arguments.CharacterName, StringComparison.OrdinalIgnoreCase))
+            targetPlayer = player.GameContext.GetPlayerByCharacterName(characterName);
+            if (targetPlayer?.SelectedCharacter is null ||
+                !targetPlayer.SelectedCharacter.Name.Equals(characterName, StringComparison.OrdinalIgnoreCase))
             {
-                await this.ShowMessageToAsync(player, string.Format(CharacterNotFoundMessage, arguments.CharacterName)).ConfigureAwait(false);
+                await this.ShowMessageToAsync(player, string.Format(CharacterNotFoundMessage, characterName)).ConfigureAwait(false);
                 return;
             }
         }
 
-        if (targetPlayer?.SelectedCharacter == null)
+        if (targetPlayer?.SelectedCharacter is null)
         {
             return;
         }
 
-        if (configuration?.ResetLimit == null)
+        if (configuration.ResetLimit is null)
         {
-            if (arguments == null || arguments.Resets < 0)
+            if (arguments is null || arguments.Resets < 0)
             {
                 await this.ShowMessageToAsync(player, InvalidResetsNoLimitMessage).ConfigureAwait(false);
                 return;
@@ -70,7 +70,7 @@ public class SetResetsChatCommandPlugIn : ChatCommandPlugInBase<SetResetsChatCom
         }
         else
         {
-            if (arguments == null || arguments.Resets < 0 || arguments.Resets > configuration.ResetLimit)
+            if (arguments is null || arguments.Resets < 0 || arguments.Resets > configuration.ResetLimit)
             {
                 await this.ShowMessageToAsync(player, string.Format(InvalidResetsWithLimitMessage, configuration.ResetLimit)).ConfigureAwait(false);
                 return;

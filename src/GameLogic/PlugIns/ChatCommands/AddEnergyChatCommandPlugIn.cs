@@ -28,5 +28,5 @@ public class AddEnergyChatCommandPlugIn : AddStatChatCommandPlugInBase.AddSingle
     public override CharacterStatus MinCharacterStatusRequirement => MinimumStatus;
 
     /// <inheritdoc />
-    protected override AttributeDefinition TheStat => Stats.BaseStrength;
+    protected override AttributeDefinition TheStat => Stats.BaseEnergy;
 }
