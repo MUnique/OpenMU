@@ -101,7 +101,7 @@ public class ItemChatCommandPlugIn : ChatCommandPlugInBase<ItemChatCommandArgs>
 
                 if ((arguments.Opt & 4) > 0)
                 {
-                    itemOption = allOptions.First(o => o.PowerUpDefinition!.TargetAttribute == Stats.AttackSpeed);
+                    itemOption = allOptions.First(o => o.PowerUpDefinition!.TargetAttribute == Stats.AttackSpeedAny);
                     var dinoOptionLink = new ItemOptionLink { ItemOption = itemOption, Level = 4 };
                     item.ItemOptions.Add(dinoOptionLink);
                 }

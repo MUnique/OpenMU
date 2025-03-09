@@ -167,7 +167,7 @@ public static class ItemExtensions
     /// Determines whether this instance is a weapon which increases wizardry damage.
     /// </summary>
     /// <param name="item">The item.</param>
-    /// <param name="staffRise">The staff/stick's wizardry damage rise percentage.</param>
+    /// <param name="staffRise">The staff/sword/stick's wizardry damage rise percentage.</param>
     /// <returns>
     ///   <c>true</c> if this instance is a weapon which increases wizardry damage; otherwise, <c>false</c>.
     /// </returns>

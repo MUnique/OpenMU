@@ -215,7 +215,7 @@ public class Wings : WingsInitializerBase
         {
             var powerUp = this.CreateItemBasePowerUpDefinition(Stats.DefenseBase, defense, AggregateType.AddRaw);
             wing.BasePowerUpAttributes.Add(powerUp);
-            powerUp.BonusPerLevelTable = levelRequirement == 300 ? this._defenseBonusByLevelTableThird : this._defenseBonusByLevelTable;
+            powerUp.BonusPerLevelTable = levelRequirement == 400 ? this._defenseBonusByLevelTableThird : this._defenseBonusByLevelTable;
         }
 
         var classes = this.GameConfiguration.DetermineCharacterClasses(darkWizardClassLevel, darkKnightClassLevel, elfClassLevel, magicGladiatorClassLevel, darkLordClassLevel, summonerClassLevel, ragefighterClassLevel);

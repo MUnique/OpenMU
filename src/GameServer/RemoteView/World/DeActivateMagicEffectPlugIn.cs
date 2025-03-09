@@ -26,7 +26,7 @@ public class DeActivateMagicEffectPlugIn : IActivateMagicEffectPlugIn, IDeactiva
     private static readonly ReadOnlyDictionary<AttributeDefinition, EffectItemConsumption.EffectType> EffectTypeMapping = new(
         new Dictionary<AttributeDefinition, EffectItemConsumption.EffectType>
         {
-            { Stats.AttackSpeed, EffectItemConsumption.EffectType.AttackSpeed },
+            { Stats.AttackSpeedAny, EffectItemConsumption.EffectType.AttackSpeed },
             { Stats.BaseDamageBonus, EffectItemConsumption.EffectType.Damage },
             { Stats.DefenseBase, EffectItemConsumption.EffectType.Defense },
             { Stats.MaximumHealth, EffectItemConsumption.EffectType.MaximumHealth },

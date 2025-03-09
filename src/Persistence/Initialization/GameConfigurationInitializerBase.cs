@@ -70,11 +70,12 @@ public abstract class GameConfigurationInitializerBase : InitializerBase
         this.CreateItemOptionTypes();
         this.GameConfiguration.ItemOptions.Add(this.CreateLuckOptionDefinition());
         this.GameConfiguration.ItemOptions.Add(this.CreateOptionDefinition(Stats.DefenseBase, ItemOptionDefinitionNumbers.DefenseOption));
-        this.GameConfiguration.ItemOptions.Add(this.CreateOptionDefinition(Stats.MaximumPhysBaseDmg, ItemOptionDefinitionNumbers.PhysicalAttack));
-        this.GameConfiguration.ItemOptions.Add(this.CreateOptionDefinition(Stats.MaximumWizBaseDmg, ItemOptionDefinitionNumbers.WizardryAttack));
+        this.GameConfiguration.ItemOptions.Add(this.CreateOptionDefinition(Stats.PhysicalBaseDmg, ItemOptionDefinitionNumbers.PhysicalAttack));
+        this.GameConfiguration.ItemOptions.Add(this.CreateOptionDefinition(Stats.WizardryBaseDmg, ItemOptionDefinitionNumbers.WizardryAttack));
+        this.GameConfiguration.ItemOptions.Add(this.CreateOptionDefinition(Stats.DefenseRatePvm, ItemOptionDefinitionNumbers.DefenseRateOption, 5));
     }
 
-    protected ItemOptionDefinition CreateOptionDefinition(AttributeDefinition attributeDefinition, short number)
+    protected ItemOptionDefinition CreateOptionDefinition(AttributeDefinition attributeDefinition, short number, byte baseValue = 4)
     {
         var definition = this.Context.CreateNew<ItemOptionDefinition>();
         definition.SetGuid(number);
@@ -91,7 +92,7 @@ public abstract class GameConfigurationInitializerBase : InitializerBase
         itemOption.PowerUpDefinition.TargetAttribute =
             this.GameConfiguration.Attributes.First(a => a == attributeDefinition);
         itemOption.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-        itemOption.PowerUpDefinition.Boost.ConstantValue!.Value = 4;
+        itemOption.PowerUpDefinition.Boost.ConstantValue!.Value = baseValue;
         for (short level = 2; level <= this.MaximumOptionLevel; level++)
         {
             var levelDependentOption = this.Context.CreateNew<ItemOptionOfLevel>();
@@ -99,7 +100,7 @@ public abstract class GameConfigurationInitializerBase : InitializerBase
             var powerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
             powerUpDefinition.TargetAttribute = itemOption.PowerUpDefinition.TargetAttribute;
             powerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-            powerUpDefinition.Boost.ConstantValue!.Value = level * 4;
+            powerUpDefinition.Boost.ConstantValue!.Value = level * baseValue;
             levelDependentOption.PowerUpDefinition = powerUpDefinition;
             itemOption.LevelDependentOptions.Add(levelDependentOption);
         }

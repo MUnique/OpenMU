@@ -1,4 +1,4 @@
-﻿// <copyright file="Stats.cs" company="MUnique">
+// <copyright file="Stats.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -247,6 +247,11 @@ public class Stats
     public static AttributeDefinition MaximumCurseBaseDmg { get; } = new(new Guid("5E7B5B56-BB4D-4645-9593-836FE86E80EA"), "Maximum Curse Base Damage", string.Empty);
 
     /// <summary>
+    /// Gets the the min and max curse base DMG attribute definition.
+    /// </summary>
+    public static AttributeDefinition CurseBaseDmg { get; } = new(new Guid("60868001-6A67-408C-BFDB-320670A9A682"), "Curse Base Damage (min and max)", string.Empty);
+
+    /// <summary>
     /// Gets the attribute definition for the base damage of the fenrir pet.
     /// </summary>
     public static AttributeDefinition FenrirBaseDmg { get; } = new(new Guid("96F47E70-5C85-4A92-B224-944A9359240E"), "Fenrir Base Damage", string.Empty);
@@ -285,6 +290,11 @@ public class Stats
     /// Gets the excellent damage bonus attribute definition.
     /// </summary>
     public static AttributeDefinition ExcellentDamageBonus { get; } = new(new Guid("9CB8705A-398D-4158-BC60-D6ADBED36A28"), "Excellent Damage Bonus", "A bonus value which gets added to the damage calculation when the damage is calculated and excellent damage applies.");
+
+    /// <summary>
+    /// Gets the common attack speed attribute definition which adds to both <see cref="AttackSpeed"/> and <see cref="MagicSpeed"/>.
+    /// </summary>
+    public static AttributeDefinition AttackSpeedAny { get; } = new(new Guid("DA08473F-DF5B-444D-8651-9EDB65797922"), "Attack Speed Any", "The any attack speed which contributes to both attack speed and magic speed.");
 
     /// <summary>
     /// Gets the attack speed attribute definition.

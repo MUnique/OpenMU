@@ -55,7 +55,7 @@ internal class GameMaster2 : AccountInitializerBase
         character.LevelUpPoints = 2000;
         character.MasterLevelUpPoints = 100; // To test master skill tree
 
-        character.Inventory!.Items.Add(this.CreateWeapon(InventoryConstants.LeftHandSlot, 5, 36, 15, 4, true, true, Stats.ExcellentDamageChance)); // Exc AA Stick+15+16+L+ExcDmg
+        character.Inventory!.Items.Add(this.CreateWeapon(InventoryConstants.LeftHandSlot, 5, 36, 15, 4, true, true)); // AA Stick+15+16+L
         character.Inventory!.Items.Add(this.CreateWeapon(InventoryConstants.RightHandSlot, 5, 23, 15, 4, true, true, Stats.ExcellentDamageChance)); // Exc Book of Lagle+15+16+L+ExcDmg
         character.Inventory.Items.Add(this.CreateFullAncient(InventoryConstants.ArmorSlot, ItemGroups.Armor, 40, 15, "Semeden")); // Sememden Armor+16+L
         character.Inventory.Items.Add(this.CreateFullAncient(InventoryConstants.HelmSlot, ItemGroups.Helm, 40, 15, "Semeden")); // Sememden Helm+15+16+L
@@ -64,7 +64,7 @@ internal class GameMaster2 : AccountInitializerBase
         character.Inventory.Items.Add(this.CreateFullAncient(InventoryConstants.BootsSlot, ItemGroups.Boots, 40, 15, "Semeden")); // Sememden Boots+13+16+L
         character.Inventory.Items.Add(this.CreateFullOptionJewellery(InventoryConstants.PendantSlot, 12)); // Exc Pendant of Lightning
         character.Inventory.Items.Add(this.CreateFullAncient(InventoryConstants.Ring1Slot, ItemGroups.Misc1, 24, 0, "Chrono")); // Chrono Ring of Magic
-        character.Inventory.Items.Add(this.CreateFullOptionJewellery(InventoryConstants.Ring2Slot, 9)); // Ring of Poison
+        character.Inventory.Items.Add(this.CreateFullOptionJewellery(InventoryConstants.Ring2Slot, 9)); // Exc Ring of Poison
         character.Inventory.Items.Add(this.CreateWings(InventoryConstants.WingsSlot, 43, 15)); // Wing of Dimension+15
 
         character.Inventory.Items.Add(this.CreateFenrir(InventoryConstants.PetSlot, ItemOptionTypes.GoldFenrir));
