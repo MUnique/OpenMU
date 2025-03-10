@@ -1,4 +1,4 @@
-// <copyright file="Level400.cs" company="MUnique">
+﻿// <copyright file="Level400.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -60,8 +60,7 @@ internal class Level400 : AccountInitializerBase
         character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.BootsSlot, 33, 11, null, 15, 4, true));
         character.Inventory.Items.Add(this.CreateFullOptionJewellery(InventoryConstants.PendantSlot, 13)); // Exc Pendant of Fire
         character.Inventory.Items.Add(this.CreateWings(InventoryConstants.WingsSlot, 40, 15)); // Cape of Emperor +15
-
-        character.Inventory.Items.Add(this.CreatePet(InventoryConstants.PetSlot, 4)); // Horse
+        character.Inventory.Items.Add(this.CreateHorse(InventoryConstants.PetSlot));
 
         this.AddDarkLordItems(character.Inventory);
         this.AddTestJewelsAndPotions(character.Inventory);
@@ -115,6 +114,7 @@ internal class Level400 : AccountInitializerBase
         character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.PantsSlot, 32, 9, null, 15, 4, true));
         character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.GlovesSlot, 32, 10, null, 15, 4, true));
         character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.BootsSlot, 32, 11, null, 15, 4, true));
+        character.Inventory.Items.Add(this.CreateFullOptionJewellery(InventoryConstants.PendantSlot, 13)); // Exc Pendant of Fire
         character.Inventory.Items.Add(this.CreateWings(InventoryConstants.WingsSlot, 39, 15)); // Wing of Ruin +15
         character.Inventory.Items.Add(this.CreateFenrir(InventoryConstants.PetSlot, ItemOptionTypes.GoldFenrir));
 
