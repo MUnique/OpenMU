@@ -4,8 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
+using System.Globalization;
 using System.Runtime.InteropServices;
-using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.PlugIns;
@@ -40,7 +40,7 @@ public class SetMoneyChatCommandPlugIn : ChatCommandPlugInBase<SetMoneyChatComma
             if (targetPlayer?.SelectedCharacter is null ||
                 !targetPlayer.SelectedCharacter.Name.Equals(characterName, StringComparison.OrdinalIgnoreCase))
             {
-                await this.ShowMessageToAsync(player, string.Format(CharacterNotFoundMessage, characterName)).ConfigureAwait(false);
+                await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, CharacterNotFoundMessage, characterName)).ConfigureAwait(false);
                 return;
             }
         }
@@ -57,12 +57,12 @@ public class SetMoneyChatCommandPlugIn : ChatCommandPlugInBase<SetMoneyChatComma
 
         if (arguments is null || arguments.Amount < 0 || arguments.Amount > maxMoney)
         {
-            await this.ShowMessageToAsync(player, string.Format(InvalidAmountMessage, maxMoney)).ConfigureAwait(false);
+            await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, InvalidAmountMessage, maxMoney)).ConfigureAwait(false);
             return;
         }
 
         targetPlayer.Money = checked(arguments.Amount);
-        await this.ShowMessageToAsync(player, string.Format(MoneySetMessage, arguments.Amount)).ConfigureAwait(false);
+        await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, MoneySetMessage, arguments.Amount)).ConfigureAwait(false);
     }
 
     /// <summary>

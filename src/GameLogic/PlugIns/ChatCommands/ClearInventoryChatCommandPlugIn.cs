@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
@@ -64,7 +65,7 @@ public class ClearInventoryChatCommandPlugIn : ChatCommandPlugInBase<ClearInvent
                 if (targetPlayer?.SelectedCharacter is null ||
                     !targetPlayer.SelectedCharacter.Name.Equals(characterName, StringComparison.OrdinalIgnoreCase))
                 {
-                    await this.ShowMessageToAsync(player, string.Format(CharacterNotFoundMessage, characterName)).ConfigureAwait(false);
+                    await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, CharacterNotFoundMessage, characterName)).ConfigureAwait(false);
                     return;
                 }
             }
@@ -100,7 +101,7 @@ public class ClearInventoryChatCommandPlugIn : ChatCommandPlugInBase<ClearInvent
 
         if (removeMoney && !player.TryRemoveMoney(configuration.MoneyCost))
         {
-            await this.ShowMessageToAsync(player, configuration.NotEnoughMoneyMessage.Replace("{money}", configuration.MoneyCost.ToString())).ConfigureAwait(false);
+            await this.ShowMessageToAsync(player, configuration.NotEnoughMoneyMessage).ConfigureAwait(false);
             return;
         }
 
@@ -132,7 +133,7 @@ public class ClearInventoryChatCommandPlugIn : ChatCommandPlugInBase<ClearInvent
         /// Gets or sets the character name to clear inventory for (GM only).
         /// </summary>
         [Display(Name = "Money Cost", Description = @"The money cost to clear inventory (except GMs). Default: 0.")]
-        public int MoneyCost { get; set; } = 0;
+        public int MoneyCost { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the player needs to run the command again within 10 seconds to confirm the inventory clearing (excluding GM).
@@ -147,10 +148,10 @@ public class ClearInventoryChatCommandPlugIn : ChatCommandPlugInBase<ClearInvent
         public string ConfirmationMessage { get; set; } = "Confirmation: run again within 10 seconds to confirm inventory clearing";
 
         /// <summary>
-        /// Gets or sets the message to show when the player does not have enough money to run the command. Placeholder for the amount: {money}.
+        /// Gets or sets the message to show when the player does not have enough money to run the command.
         /// </summary>
-        [Display(Name = "Not Enough Money Message", Description = @"The message to show when the player does not have enough money to run the command. Placeholder for the amount: {money}.")]
-        public string NotEnoughMoneyMessage { get; set; } = "Not enough money to run command, cost: {money}";
+        [Display(Name = "Not Enough Money Message", Description = @"The message to show when the player does not have enough money to run the command.")]
+        public string NotEnoughMoneyMessage { get; set; } = "Not enough money to run command";
 
         /// <summary>
         /// Gets or sets the message to show when the inventory is cleared.

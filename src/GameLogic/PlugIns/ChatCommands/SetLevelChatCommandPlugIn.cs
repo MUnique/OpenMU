@@ -4,8 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
+using System.Globalization;
 using System.Runtime.InteropServices;
-using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.Interfaces;
@@ -41,7 +41,7 @@ public class SetLevelChatCommandPlugIn : ChatCommandPlugInBase<SetLevelChatComma
             if (targetPlayer?.SelectedCharacter is null ||
                 !targetPlayer.SelectedCharacter.Name.Equals(characterName, StringComparison.OrdinalIgnoreCase))
             {
-                await this.ShowMessageToAsync(player, string.Format(CharacterNotFoundMessage, characterName)).ConfigureAwait(false);
+                await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, CharacterNotFoundMessage, characterName)).ConfigureAwait(false);
                 return;
             }
         }
@@ -53,14 +53,14 @@ public class SetLevelChatCommandPlugIn : ChatCommandPlugInBase<SetLevelChatComma
 
         if (arguments is null || arguments.Level < 1 || arguments.Level > targetPlayer.GameContext.Configuration.MaximumLevel)
         {
-            await this.ShowMessageToAsync(player, string.Format(InvalidLevelMessage, targetPlayer.GameContext.Configuration.MaximumLevel)).ConfigureAwait(false);
+            await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, InvalidLevelMessage, targetPlayer.GameContext.Configuration.MaximumLevel)).ConfigureAwait(false);
             return;
         }
 
         targetPlayer.Attributes![Stats.Level] = checked(arguments.Level);
         await targetPlayer.InvokeViewPlugInAsync<IUpdateLevelPlugIn>(p => p.UpdateLevelAsync()).ConfigureAwait(false);
         await targetPlayer.ForEachWorldObserverAsync<IShowEffectPlugIn>(p => p.ShowEffectAsync(targetPlayer, IShowEffectPlugIn.EffectType.LevelUp), true).ConfigureAwait(false);
-        await this.ShowMessageToAsync(player, string.Format(LevelSetMessage, arguments.Level)).ConfigureAwait(false);
+        await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, LevelSetMessage, arguments.Level)).ConfigureAwait(false);
     }
 
     /// <summary>

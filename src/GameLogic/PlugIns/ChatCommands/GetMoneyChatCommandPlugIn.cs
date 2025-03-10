@@ -4,8 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
+using System.Globalization;
 using System.Runtime.InteropServices;
-using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.PlugIns;
@@ -39,7 +39,7 @@ public class GetMoneyChatCommandPlugIn : ChatCommandPlugInBase<GetMoneyChatComma
             if (targetPlayer?.SelectedCharacter is null ||
                 !targetPlayer.SelectedCharacter.Name.Equals(characterName, StringComparison.OrdinalIgnoreCase))
             {
-                await this.ShowMessageToAsync(player, string.Format(CharacterNotFoundMessage, characterName)).ConfigureAwait(false);
+                await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, CharacterNotFoundMessage, characterName)).ConfigureAwait(false);
                 return;
             }
         }
@@ -49,7 +49,7 @@ public class GetMoneyChatCommandPlugIn : ChatCommandPlugInBase<GetMoneyChatComma
             return;
         }
 
-        await this.ShowMessageToAsync(player, string.Format(MoneyGetMessage, targetPlayer.SelectedCharacter.Name, targetPlayer.Money)).ConfigureAwait(false);
+        await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, MoneyGetMessage, targetPlayer.SelectedCharacter.Name, targetPlayer.Money)).ConfigureAwait(false);
     }
 
     /// <summary>

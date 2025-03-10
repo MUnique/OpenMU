@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
@@ -53,31 +54,26 @@ public class NpcChatCommandPlugIn : ChatCommandPlugInBase<NpcChatCommandPlugIn.A
         }
 
         var configuration = this.Configuration ??= (NpcChatCommandConfiguration)this.CreateDefaultConfig();
-        var npcId = configuration.OpenMerchantNpc.Number;
+        var npcDefinition = configuration.OpenMerchantNpc;
 
-        if (player.SelectedCharacter?.CharacterStatus >= CharacterStatus.GameMaster)
+        if (player.SelectedCharacter?.CharacterStatus >= CharacterStatus.GameMaster && arguments?.NpcId is { } npcIdStr)
         {
-            if (arguments?.NpcId is { } newNpcId)
+            if (int.TryParse(npcIdStr, out var npcId) && player.GameContext.Configuration.Monsters.FirstOrDefault(m => m.Number == npcId) is { } definition)
             {
-                if (int.TryParse(newNpcId, out var intNpcId))
-                {
-                    npcId = (short)intNpcId;
-                }
-                else
-                {
-                    await this.ShowMessageToAsync(player, string.Format(InvalidNpcIdMessage, newNpcId)).ConfigureAwait(false);
-                    return;
-                }
+                npcDefinition = definition;
+            }
+            else
+            {
+                await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, InvalidNpcIdMessage, npcIdStr)).ConfigureAwait(false);
+                return;
             }
         }
-
-        if (configuration.MinimumVipLevel > 0 && (player.Attributes?[Stats.IsVip] ?? 0) < configuration.MinimumVipLevel)
+        else if (npcDefinition is null)
         {
-            await this.ShowMessageToAsync(player, configuration.InsufficientVipLevelMessage.Replace("{vip}", configuration.MinimumVipLevel.ToString())).ConfigureAwait(false);
             return;
         }
 
-        if (player.GameContext.Configuration.Monsters.FirstOrDefault(m => m.Number == npcId) is not { } definition)
+        if (npcDefinition!.MerchantStore is null)
         {
             if (player.SelectedCharacter?.CharacterStatus >= CharacterStatus.GameMaster)
             {
@@ -87,7 +83,13 @@ public class NpcChatCommandPlugIn : ChatCommandPlugInBase<NpcChatCommandPlugIn.A
             return;
         }
 
-        var npc = new NonPlayerCharacter(new MonsterSpawnArea { MonsterDefinition = definition }, definition, currentMap);
+        if (configuration.MinimumVipLevel > 0 && (player.Attributes?[Stats.IsVip] ?? 0) < configuration.MinimumVipLevel)
+        {
+            await this.ShowMessageToAsync(player, configuration.InsufficientVipLevelMessage).ConfigureAwait(false);
+            return;
+        }
+
+        var npc = new NonPlayerCharacter(new MonsterSpawnArea { MonsterDefinition = npcDefinition }, npcDefinition, currentMap);
         await this._talkNpcAction.TalkToNpcAsync(player, npc).ConfigureAwait(false);
     }
 
@@ -112,18 +114,18 @@ public class NpcChatCommandPlugIn : ChatCommandPlugInBase<NpcChatCommandPlugIn.A
         /// </summary>
         // TODO: Change to a list of possible NPCs merchants
         [Display(Name = "NPC ID", Description = @"The ID of the NPC to open the merchant store. Default: Potion Girl Amy - 253.")]
-        public MonsterDefinition OpenMerchantNpc { get; set; } = new MonsterDefinition { Number = 253 };
+        public MonsterDefinition? OpenMerchantNpc { get; set; }
 
         /// <summary>
         /// Gets or sets the minimum VIP level to use the command.
         /// </summary>
         [Display(Name = "Minimum VIP Level", Description = @"The minimum VIP level to use the command. Default: 0.")]
-        public int MinimumVipLevel { get; set; } = 0;
+        public int MinimumVipLevel { get; set; }
 
         /// <summary>
-        /// Gets or sets the message to show when the player does not have the required VIP level for this command (excluding GM). Placeholder for the VIP level: {vip}.
+        /// Gets or sets the message to show when the player does not have the required VIP level for this command (excluding GM).
         /// </summary>
-        [Display(Name = "Insufficient VIP Level Message", Description = @"The message to show when the player does not have the required VIP level for this command (excluding GM). Placeholder for the VIP level: {vip}.")]
-        public string InsufficientVipLevelMessage { get; set; } = "Insufficient VIP level to use this command, required VIP level: {vip}";
+        [Display(Name = "Insufficient VIP Level Message", Description = @"The message to show when the player does not have the required VIP level for this command (excluding GM).")]
+        public string InsufficientVipLevelMessage { get; set; } = "Insufficient VIP level to use this command";
     }
 }

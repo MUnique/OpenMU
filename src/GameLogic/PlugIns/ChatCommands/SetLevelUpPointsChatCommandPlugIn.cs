@@ -4,8 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
+using System.Globalization;
 using System.Runtime.InteropServices;
-using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.PlugIns;
@@ -40,7 +40,7 @@ public class SetLevelUpPointsChatCommandPlugIn : ChatCommandPlugInBase<SetLevelU
             if (targetPlayer?.SelectedCharacter is null ||
                 !targetPlayer.SelectedCharacter.Name.Equals(characterName, StringComparison.OrdinalIgnoreCase))
             {
-                await this.ShowMessageToAsync(player, string.Format(CharacterNotFoundMessage, characterName)).ConfigureAwait(false);
+                await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, CharacterNotFoundMessage, characterName)).ConfigureAwait(false);
                 return;
             }
         }
@@ -58,7 +58,7 @@ public class SetLevelUpPointsChatCommandPlugIn : ChatCommandPlugInBase<SetLevelU
 
         targetPlayer.SelectedCharacter.LevelUpPoints = checked(arguments.LevelUpPoints);
         await targetPlayer.InvokeViewPlugInAsync<IUpdateLevelPlugIn>(p => p.UpdateLevelAsync()).ConfigureAwait(false);
-        await this.ShowMessageToAsync(player, string.Format(LevelUpPointsSetMessage, arguments.LevelUpPoints)).ConfigureAwait(false);
+        await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, LevelUpPointsSetMessage, arguments.LevelUpPoints)).ConfigureAwait(false);
     }
 
     /// <summary>

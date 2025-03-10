@@ -4,8 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
+using System.Globalization;
 using System.Runtime.InteropServices;
-using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.Interfaces;
@@ -40,7 +40,7 @@ public class GetMasterLevelChatCommandPlugIn : ChatCommandPlugInBase<GetMasterLe
             if (targetPlayer?.SelectedCharacter is null ||
                 !targetPlayer.SelectedCharacter.Name.Equals(characterName, StringComparison.OrdinalIgnoreCase))
             {
-                await this.ShowMessageToAsync(player, string.Format(CharacterNotFoundMessage, characterName)).ConfigureAwait(false);
+                await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, CharacterNotFoundMessage, characterName)).ConfigureAwait(false);
                 return;
             }
         }
@@ -50,7 +50,7 @@ public class GetMasterLevelChatCommandPlugIn : ChatCommandPlugInBase<GetMasterLe
             return;
         }
 
-        await this.ShowMessageToAsync(player, string.Format(MasterLevelGetMessage, targetPlayer.SelectedCharacter.Name, targetPlayer.Attributes![Stats.MasterLevel])).ConfigureAwait(false);
+        await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, MasterLevelGetMessage, targetPlayer.SelectedCharacter.Name, targetPlayer.Attributes![Stats.MasterLevel])).ConfigureAwait(false);
     }
 
     /// <summary>

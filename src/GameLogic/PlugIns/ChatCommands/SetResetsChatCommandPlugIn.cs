@@ -4,8 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
+using System.Globalization;
 using System.Runtime.InteropServices;
-using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Resets;
 using MUnique.OpenMU.Interfaces;
@@ -50,7 +50,7 @@ public class SetResetsChatCommandPlugIn : ChatCommandPlugInBase<SetResetsChatCom
             if (targetPlayer?.SelectedCharacter is null ||
                 !targetPlayer.SelectedCharacter.Name.Equals(characterName, StringComparison.OrdinalIgnoreCase))
             {
-                await this.ShowMessageToAsync(player, string.Format(CharacterNotFoundMessage, characterName)).ConfigureAwait(false);
+                await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, CharacterNotFoundMessage, characterName)).ConfigureAwait(false);
                 return;
             }
         }
@@ -72,13 +72,13 @@ public class SetResetsChatCommandPlugIn : ChatCommandPlugInBase<SetResetsChatCom
         {
             if (arguments is null || arguments.Resets < 0 || arguments.Resets > configuration.ResetLimit)
             {
-                await this.ShowMessageToAsync(player, string.Format(InvalidResetsWithLimitMessage, configuration.ResetLimit)).ConfigureAwait(false);
+                await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, InvalidResetsWithLimitMessage, configuration.ResetLimit)).ConfigureAwait(false);
                 return;
             }
         }
 
         targetPlayer.Attributes![Stats.Resets] = checked(arguments.Resets);
-        await this.ShowMessageToAsync(player, string.Format(ResetsSetMessage, arguments.Resets)).ConfigureAwait(false);
+        await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, ResetsSetMessage, arguments.Resets)).ConfigureAwait(false);
     }
 
     /// <summary>

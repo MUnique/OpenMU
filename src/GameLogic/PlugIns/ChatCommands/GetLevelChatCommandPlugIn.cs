@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
+using System.Globalization;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
@@ -40,7 +41,7 @@ public class GetLevelChatCommandPlugIn : ChatCommandPlugInBase<GetLevelChatComma
             if (targetPlayer?.SelectedCharacter is null ||
                 !targetPlayer.SelectedCharacter.Name.Equals(characterName, StringComparison.OrdinalIgnoreCase))
             {
-                await this.ShowMessageToAsync(player, string.Format(CharacterNotFoundMessage, characterName)).ConfigureAwait(false);
+                await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, CharacterNotFoundMessage, characterName)).ConfigureAwait(false);
                 return;
             }
         }
@@ -50,7 +51,7 @@ public class GetLevelChatCommandPlugIn : ChatCommandPlugInBase<GetLevelChatComma
             return;
         }
 
-        await this.ShowMessageToAsync(player, string.Format(LevelGetMessage, targetPlayer.SelectedCharacter.Name, targetPlayer.Attributes![Stats.Level])).ConfigureAwait(false);
+        await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, LevelGetMessage, targetPlayer.SelectedCharacter.Name, targetPlayer.Attributes![Stats.Level])).ConfigureAwait(false);
     }
 
     /// <summary>
