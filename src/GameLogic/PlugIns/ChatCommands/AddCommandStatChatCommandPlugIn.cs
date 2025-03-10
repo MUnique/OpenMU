@@ -1,4 +1,4 @@
-﻿// <copyright file="AddCommandChatCommandPlugIn.cs" company="MUnique">
+﻿// <copyright file="AddCommandStatChatCommandPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("042EC5C6-27C8-4E00-A48B-C5458EDEA0BF")]
 [PlugIn("Add command chat command", "Adds the specified amount of command points to the character.")]
 [ChatCommandHelp(Command, "Adds the specified amount of command points to the character.", typeof(Arguments), MinimumStatus)]
-public class AddCommandChatCommandPlugIn : AddStatChatCommandPlugInBase.AddSingleStatChatCommandPlugInBase
+public class AddCommandStatChatCommandPlugIn : AddStatChatCommandPlugInBase.AddSingleStatChatCommandPlugInBase
 {
     private const string Command = "/addcmd";
 

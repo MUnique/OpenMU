@@ -1,4 +1,4 @@
-﻿// <copyright file="AddVitalityChatCommandPlugIn.cs" company="MUnique">
+﻿// <copyright file="AddVitalityStatChatCommandPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("042EC5C6-27C8-4E00-A48B-C5458EDEA0BD")]
 [PlugIn("Add vitality chat command", "Adds the specified amount of vitality points to the character.")]
 [ChatCommandHelp(Command, "Adds the specified amount of vitality points to the character.", typeof(Arguments), MinimumStatus)]
-public class AddVitalityChatCommandPlugIn : AddStatChatCommandPlugInBase.AddSingleStatChatCommandPlugInBase
+public class AddVitalityStatChatCommandPlugIn : AddStatChatCommandPlugInBase.AddSingleStatChatCommandPlugInBase
 {
     private const string Command = "/addvit";
 

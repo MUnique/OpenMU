@@ -1,4 +1,4 @@
-﻿// <copyright file="AddEnergyChatCommandPlugIn.cs" company="MUnique">
+﻿// <copyright file="AddEnergyStatChatCommandPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("042EC5C6-27C8-4E00-A48B-C5458EDEA0BE")]
 [PlugIn("Add energy chat command", "Adds the specified amount of energy points to the character.")]
 [ChatCommandHelp(Command, "Adds the specified amount of energy points to the character.", typeof(Arguments), MinimumStatus)]
-public class AddEnergyChatCommandPlugIn : AddStatChatCommandPlugInBase.AddSingleStatChatCommandPlugInBase
+public class AddEnergyStatChatCommandPlugIn : AddStatChatCommandPlugInBase.AddSingleStatChatCommandPlugInBase
 {
     private const string Command = "/addene";
 
