@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
 using System.Globalization;
 using System.Runtime.InteropServices;
-using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.Interfaces;

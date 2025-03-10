@@ -68,7 +68,8 @@ public class NpcChatCommandPlugIn : ChatCommandPlugInBase<NpcChatCommandPlugIn.A
                 return;
             }
         }
-        else if (npcDefinition is null)
+
+        if (npcDefinition is null)
         {
             return;
         }
