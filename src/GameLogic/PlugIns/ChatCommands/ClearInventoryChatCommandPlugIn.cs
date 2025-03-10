@@ -100,7 +100,7 @@ public class ClearInventoryChatCommandPlugIn : ChatCommandPlugInBase<ClearInvent
 
         if (removeMoney && !player.TryRemoveMoney(configuration.MoneyCost))
         {
-            await this.ShowMessageToAsync(player, string.Format(configuration.NotEnoughMoneyMessage, configuration.MoneyCost)).ConfigureAwait(false);
+            await this.ShowMessageToAsync(player, configuration.NotEnoughMoneyMessage.Replace("{money}", configuration.MoneyCost.ToString())).ConfigureAwait(false);
             return;
         }
 
@@ -131,7 +131,7 @@ public class ClearInventoryChatCommandPlugIn : ChatCommandPlugInBase<ClearInvent
         /// <summary>
         /// Gets or sets the character name to clear inventory for (GM only).
         /// </summary>
-        [Display(Name = "Money Cost", Description = @"The money cost to clear inventory (except GMs). (Default: 0)")]
+        [Display(Name = "Money Cost", Description = @"The money cost to clear inventory (except GMs). Default: 0.")]
         public int MoneyCost { get; set; } = 0;
 
         /// <summary>
@@ -150,12 +150,12 @@ public class ClearInventoryChatCommandPlugIn : ChatCommandPlugInBase<ClearInvent
         /// Gets or sets the message to show when the player does not have enough money to run the command. Placeholder for the amount: {money}.
         /// </summary>
         [Display(Name = "Not Enough Money Message", Description = @"The message to show when the player does not have enough money to run the command. Placeholder for the amount: {money}.")]
-        public string NotEnoughMoneyMessage { get; set; } = "Not enough money to run command. Cost: {money}";
+        public string NotEnoughMoneyMessage { get; set; } = "Not enough money to run command, cost: {money}";
 
         /// <summary>
         /// Gets or sets the message to show when the inventory is cleared.
         /// </summary>
         [Display(Name = "Inventory Cleared Message", Description = @"The message to show when the inventory is cleared.")]
-        public string InventoryClearedMessage { get; set; } = "Inventory cleared.";
+        public string InventoryClearedMessage { get; set; } = "Inventory cleared";
     }
 }

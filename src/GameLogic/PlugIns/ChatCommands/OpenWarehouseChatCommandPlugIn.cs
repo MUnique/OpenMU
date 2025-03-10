@@ -25,8 +25,7 @@ public class OpenWarehouseChatCommandPlugIn : ChatCommandPlugInBase<OpenWarehous
 {
     private const string Command = "/openware";
     private const CharacterStatus MinimumStatus = CharacterStatus.Normal;
-    private const string InsufficientVipMessage = "Insufficient VIP level to use this command.";
-    private const string NoWarehouseNpcMessage = "No warehouse NPC found.";
+    private const string NoWarehouseNpcMessage = "No warehouse NPC found";
 
     private readonly TalkNpcAction _talkNpcAction = new();
 
@@ -56,7 +55,7 @@ public class OpenWarehouseChatCommandPlugIn : ChatCommandPlugInBase<OpenWarehous
 
         if (configuration.MinimumVipLevel > 0 && (player.Attributes?[Stats.IsVip] ?? 0) < configuration.MinimumVipLevel)
         {
-            await this.ShowMessageToAsync(player, InsufficientVipMessage).ConfigureAwait(false);
+            await this.ShowMessageToAsync(player, configuration.InsufficientVipLevelMessage.Replace("{vip}", configuration.MinimumVipLevel.ToString())).ConfigureAwait(false);
             return;
         }
 
@@ -87,9 +86,15 @@ public class OpenWarehouseChatCommandPlugIn : ChatCommandPlugInBase<OpenWarehous
     public class OpenWarehouseChatCommandConfiguration
     {
         /// <summary>
-        /// Gets or sets the minimum VIP level to use the command.
+        /// Gets or sets the minimum VIP level to use the command (excluding GM).
         /// </summary>
-        [Display(Name = "Minimum VIP Level", Description = @"The minimum VIP level to use the command. (Default: 0)")]
+        [Display(Name = "Minimum VIP Level", Description = @"The minimum VIP level to use the command (excluding GM). Default: 0.")]
         public int MinimumVipLevel { get; set; } = 0;
+
+        /// <summary>
+        /// Gets or sets the message to show when the player does not have the required VIP level for this command (excluding GM). Placeholder for the VIP level: {vip}.
+        /// </summary>
+        [Display(Name = "Insufficient VIP Level Message", Description = @"The message to show when the player does not have the required VIP level for this command (excluding GM). Placeholder for the VIP level: {vip}.")]
+        public string InsufficientVipLevelMessage { get; set; } = "Insufficient VIP level to use this command, required VIP level: {vip}";
     }
 }

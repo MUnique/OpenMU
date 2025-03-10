@@ -26,7 +26,6 @@ public class NpcChatCommandPlugIn : ChatCommandPlugInBase<NpcChatCommandPlugIn.A
     private const string Command = "/npc";
     private const CharacterStatus MinimumStatus = CharacterStatus.Normal;
     private const string InvalidNpcIdMessage = "Invalid NPC ID \"{0}\". Please provide a valid merchant NPC ID.";
-    private const string InsufficientVipMessage = "Insufficient VIP level to use this command.";
     private const string InvalidMerchantMessage = "Not a valid merchant NPC.";
 
     private readonly TalkNpcAction _talkNpcAction = new();
@@ -54,7 +53,7 @@ public class NpcChatCommandPlugIn : ChatCommandPlugInBase<NpcChatCommandPlugIn.A
         }
 
         var configuration = this.Configuration ??= (NpcChatCommandConfiguration)this.CreateDefaultConfig();
-        var npcId = configuration.OpenMerchantNpcId;
+        var npcId = configuration.OpenMerchantNpc.Number;
 
         if (player.SelectedCharacter?.CharacterStatus >= CharacterStatus.GameMaster)
         {
@@ -62,7 +61,7 @@ public class NpcChatCommandPlugIn : ChatCommandPlugInBase<NpcChatCommandPlugIn.A
             {
                 if (int.TryParse(newNpcId, out var intNpcId))
                 {
-                    npcId = (ushort)intNpcId;
+                    npcId = (short)intNpcId;
                 }
                 else
                 {
@@ -74,7 +73,7 @@ public class NpcChatCommandPlugIn : ChatCommandPlugInBase<NpcChatCommandPlugIn.A
 
         if (configuration.MinimumVipLevel > 0 && (player.Attributes?[Stats.IsVip] ?? 0) < configuration.MinimumVipLevel)
         {
-            await this.ShowMessageToAsync(player, InsufficientVipMessage).ConfigureAwait(false);
+            await this.ShowMessageToAsync(player, configuration.InsufficientVipLevelMessage.Replace("{vip}", configuration.MinimumVipLevel.ToString())).ConfigureAwait(false);
             return;
         }
 
@@ -112,13 +111,19 @@ public class NpcChatCommandPlugIn : ChatCommandPlugInBase<NpcChatCommandPlugIn.A
         /// Gets or sets the NPC ID of the NPC to open the merchant store.
         /// </summary>
         // TODO: Change to a list of possible NPCs merchants
-        [Display(Name = "NPC ID", Description = @"The ID of the NPC to open the merchant store. (Default: 253 - Potion Girl Amy)")]
-        public int OpenMerchantNpcId { get; set; } = 253;
+        [Display(Name = "NPC ID", Description = @"The ID of the NPC to open the merchant store. Default: Potion Girl Amy - 253.")]
+        public MonsterDefinition OpenMerchantNpc { get; set; } = new MonsterDefinition { Number = 253 };
 
         /// <summary>
         /// Gets or sets the minimum VIP level to use the command.
         /// </summary>
-        [Display(Name = "Minimum VIP Level", Description = @"The minimum VIP level to use the command. (Default: 0)")]
+        [Display(Name = "Minimum VIP Level", Description = @"The minimum VIP level to use the command. Default: 0.")]
         public int MinimumVipLevel { get; set; } = 0;
+
+        /// <summary>
+        /// Gets or sets the message to show when the player does not have the required VIP level for this command (excluding GM). Placeholder for the VIP level: {vip}.
+        /// </summary>
+        [Display(Name = "Insufficient VIP Level Message", Description = @"The message to show when the player does not have the required VIP level for this command (excluding GM). Placeholder for the VIP level: {vip}.")]
+        public string InsufficientVipLevelMessage { get; set; } = "Insufficient VIP level to use this command, required VIP level: {vip}";
     }
 }
