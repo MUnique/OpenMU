@@ -807,6 +807,7 @@ public class ChaosMixes : InitializerBase
         var crafting = this.Context.CreateNew<ItemCrafting>();
         crafting.Name = "Dark Horse";
         crafting.Number = 13;
+        crafting.ItemCraftingHandlerClassName = typeof(DarkHorseCrafting).FullName!;
         var craftingSettings = this.Context.CreateNew<SimpleCraftingSettings>();
         craftingSettings.Money = 5_000_000;
         craftingSettings.SuccessPercent = 60;

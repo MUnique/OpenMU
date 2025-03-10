@@ -1,4 +1,4 @@
-﻿// <copyright file="AttackableExtensions.cs" company="MUnique">
+// <copyright file="AttackableExtensions.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -34,13 +34,14 @@ public static class AttackableExtensions
     /// <param name="isCombo">If set to <c>true</c>, the damage gets increased by a combo bonus.</param>
     /// <param name="damageFactor">The damage factor.</param>
     /// <returns>
-    /// The hit information.
+    /// The hit information, and the soul barrier mana toll, if any.
     /// </returns>
-    public static async ValueTask<HitInfo> CalculateDamageAsync(this IAttacker attacker, IAttackable defender, SkillEntry? skill, bool isCombo, double damageFactor = 1.0)
+    public static async ValueTask<(HitInfo HitInfo, float ManaToll)> CalculateDamageAsync(this IAttacker attacker, IAttackable defender, SkillEntry? skill, bool isCombo, double damageFactor = 1.0)
     {
+        float manaToll = 0;
         if (!attacker.IsAttackSuccessfulTo(defender))
         {
-            return new HitInfo(0, 0, DamageAttributes.Undefined);
+            return (new HitInfo(0, 0, DamageAttributes.Undefined), manaToll);
         }
 
         DamageAttributes attributes = DamageAttributes.Undefined;
@@ -95,6 +96,13 @@ public static class AttackableExtensions
             dmg = (int)(dmg * attacker.Attributes[Stats.TwoHandedWeaponDamageIncrease]);
         }
 
+        var soulBarrierManaToll = defender.Attributes[Stats.SoulBarrierManaTollPerHit];
+        if (soulBarrierManaToll > 0 && defender.Attributes[Stats.CurrentMana] > soulBarrierManaToll)
+        {
+            manaToll = soulBarrierManaToll;
+            dmg -= (int)(dmg * defender.Attributes[Stats.SoulBarrierReceiveDecrement]);
+        }
+
         if (attacker is Player && defender is Player)
         {
             dmg += (int)attacker.Attributes[Stats.FinalDamageIncreasePvp];
@@ -116,7 +124,7 @@ public static class AttackableExtensions
         dmg = (int)(dmg * damageFactor);
 
         var minimumDamage = attacker.Attributes[Stats.Level] / 10;
-        return defender.GetHitInfo(Math.Max((uint)dmg, (uint)minimumDamage), attributes, attacker);
+        return (defender.GetHitInfo((uint)dmg, attributes, attacker), manaToll);
     }
 
     /// <summary>

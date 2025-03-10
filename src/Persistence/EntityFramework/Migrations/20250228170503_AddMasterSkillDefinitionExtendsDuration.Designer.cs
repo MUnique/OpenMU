@@ -3,6 +3,7 @@ using System;
 using MUnique.OpenMU.Persistence.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 {
     [DbContext(typeof(EntityDataContext))]
-    partial class EntityDataContextModelSnapshot : ModelSnapshot
+    [Migration("20250228170503_AddMasterSkillDefinitionExtendsDuration")]
+    partial class AddMasterSkillDefinitionExtendsDuration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,9 +37,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<string>("EMail")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<bool>("IsTemplate")
-                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsVaultExtended")
                         .HasColumnType("boolean");
@@ -354,9 +354,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<Guid?>("InventoryId")
                         .HasColumnType("uuid");
 
-                    b.Property<bool>("IsStoreOpened")
-                        .HasColumnType("boolean");
-
                     b.Property<byte[]>("KeyConfiguration")
                         .HasColumnType("bytea");
 
@@ -394,9 +391,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<int>("StateRemainingSeconds")
                         .HasColumnType("integer");
-
-                    b.Property<string>("StoreName")
-                        .HasColumnType("text");
 
                     b.Property<int>("UsedFruitPoints")
                         .HasColumnType("integer");

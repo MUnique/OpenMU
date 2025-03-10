@@ -1,4 +1,4 @@
-// <copyright file="Stats.cs" company="MUnique">
+﻿// <copyright file="Stats.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -115,6 +115,11 @@ public class Stats
     /// Gets the master experience rate definition.
     /// </summary>
     public static AttributeDefinition MasterExperienceRate { get; } = new(new Guid("E367A231-C8A4-4F92-B553-C665F98DB1FC"), "Master Experience Rate", string.Empty);
+
+    /// <summary>
+    /// Gets the level plus master level attribute definition.
+    /// </summary>
+    public static AttributeDefinition TotalLevel { get; } = new(new Guid("AAB627F1-9150-4B03-8C51-48E4348B4E7D"), "Total Level", "The level plus the master level of the character.");
 
     /// <summary>
     /// Gets the reset quantity attribute definition.
@@ -543,6 +548,11 @@ public class Stats
     public static AttributeDefinition DamageReceiveDecrement { get; } = new(new Guid("9D9761EF-EF47-4E5C-8106-EBC555786F20"), "Damage Receive Multiplier", string.Empty);
 
     /// <summary>
+    /// Gets the damage receive decrement from dark horse attribute definition.
+    /// </summary>
+    public static AttributeDefinition DamageReceiveHorseDecrement { get; } = new(new Guid("041B2811-05C0-49DE-B083-4D1FBD7E6286"), "Damage Receive From Dark Horse Multiplier", string.Empty);
+
+    /// <summary>
     /// Gets the shield block damage decrement attribute definition.
     /// TODO: Usage in a shield skill handler.
     /// </summary>
@@ -552,6 +562,16 @@ public class Stats
     /// Gets the defense increase with equipped shield attribute definition.
     /// </summary>
     public static AttributeDefinition DefenseIncreaseWithEquippedShield { get; } = new(new Guid("41BCEC8D-A7A8-4930-AB2E-A07D8BF1B86C"), "Defense Increase Multiplier With Equipped Shield", string.Empty);
+
+    /// <summary>
+    /// Gets the soul barrier skill damage receive decrement attribute definition.
+    /// </summary>
+    public static AttributeDefinition SoulBarrierReceiveDecrement { get; } = new(new Guid("CBC5404A-6232-4BF3-9B85-9AA0AE0F9BA4"), "Soul Barrier Damage Receive Decrement", "The soul barrier skill receive damage multiplier which is multiplied with the final damage and subtracted from it.");
+
+    /// <summary>
+    /// Gets the soul barrier skill mana toll per successful received hit attribute definition.
+    /// </summary>
+    public static AttributeDefinition SoulBarrierManaTollPerHit { get; } = new(new Guid("25315C15-C884-4B45-9883-9A92693DC455"), "Soul Barrier Mana Toll Per Received Hit", "A mana requirement which must be met for the soul barrier skill decrement.");
 
     /// <summary>
     /// Gets the bonus defense (absolute) with an equipped shield attribute definition.
