@@ -1,4 +1,4 @@
-// <copyright file="AttackableExtensions.cs" company="MUnique">
+﻿// <copyright file="AttackableExtensions.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -100,7 +100,7 @@ public static class AttackableExtensions
         if (soulBarrierManaToll > 0 && defender.Attributes[Stats.CurrentMana] > soulBarrierManaToll)
         {
             manaToll = soulBarrierManaToll;
-            dmg -= (int)(dmg * defender.Attributes[Stats.SoulBarrierReceiveDecrement]);
+            dmg = (int)(dmg * defender.Attributes[Stats.SoulBarrierReceiveDecrement]);
         }
 
         if (attacker is Player && defender is Player)

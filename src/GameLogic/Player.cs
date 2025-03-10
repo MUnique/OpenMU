@@ -2417,6 +2417,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                    && (!pet.IsDarkRaven() || pet.GetDarkRavenLeadershipRequirement(pet.Level + 1) <= this.Attributes![Stats.TotalLeadership]))
             {
                 pet.Level++;
+                this.Attributes!.ItemPowerUps[pet] = this.Attributes.ItemPowerUps[pet]
+                    .Append(new PowerUpWrapper(
+                        new SimpleElement(1, AggregateType.AddRaw),
+                        pet.IsDarkRaven() ? Stats.RavenLevel : Stats.HorseLevel,
+                        this.Attributes)).ToList();
 
                 await this.InvokeViewPlugInAsync<IPetInfoViewPlugIn>(p => p.ShowPetInfoAsync(pet, pet.ItemSlot, PetStorageLocation.InventoryPetSlot)).ConfigureAwait(false);
             }
