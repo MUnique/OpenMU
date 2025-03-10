@@ -449,7 +449,9 @@ internal abstract class AccountInitializerBase : InitializerBase
         inventory.Items.Add(this.CreateFullOptionJewellery(62, 8)); // Ring of Ice
         inventory.Items.Add(this.CreateFullOptionJewellery(63, 9)); // Ring of Poison
         inventory.Items.Add(this.CreateFullOptionJewellery(64, 12)); // Pendant of Lightning
-        inventory.Items.Add(this.CreatePet(53, 5)); // Raven
+        var darkRaven = this.CreatePet(53, 5);
+        darkRaven.Level = 1;
+        inventory.Items.Add(darkRaven);
     }
 
     /// <summary>
@@ -617,6 +619,7 @@ internal abstract class AccountInitializerBase : InitializerBase
     protected Item CreateHorse(byte itemSlot)
     {
         var horse = this.CreatePet(itemSlot, 4);
+        horse.Level = 1;
 
         var options = horse.Definition!.PossibleItemOptions.First().PossibleOptions.Where(p => p.OptionType == ItemOptionTypes.DarkHorse);
         foreach (var option in options)
@@ -640,7 +643,6 @@ internal abstract class AccountInitializerBase : InitializerBase
         var pet = this.Context.CreateNew<Item>();
         pet.Definition = this.GameConfiguration.Items.First(def => def.Group == 13 && def.Number == itemNumber);
         pet.Durability = 255;
-        pet.Level = 1;
         pet.ItemSlot = itemSlot;
         if (pet.Definition?.Skill != null)
         {

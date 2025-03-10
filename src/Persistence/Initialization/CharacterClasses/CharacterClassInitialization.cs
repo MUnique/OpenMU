@@ -1,4 +1,4 @@
-// <copyright file="CharacterClassInitialization.cs" company="MUnique">
+﻿// <copyright file="CharacterClassInitialization.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -84,9 +84,9 @@ internal partial class CharacterClassInitialization : InitializerBase
         return CharacterClassHelper.CreateConditionalRelationship(this.Context, this.GameConfiguration, targetAttribute, conditionalAttribute, sourceAttribute, aggregateType);
     }
 
-    private ConstValueAttribute CreateConstValueAttribute(float value, AttributeDefinition attribute, AggregateType aggregateType = AggregateType.AddRaw)
+    private ConstValueAttribute CreateConstValueAttribute(float value, AttributeDefinition attribute)
     {
-        return CharacterClassHelper.CreateConstValueAttribute(this.Context, this.GameConfiguration, value, attribute, aggregateType);
+        return CharacterClassHelper.CreateConstValueAttribute(this.Context, this.GameConfiguration, value, attribute);
     }
 
     private void AddCommonAttributeRelationships(ICollection<AttributeRelationship> attributeRelationships)
