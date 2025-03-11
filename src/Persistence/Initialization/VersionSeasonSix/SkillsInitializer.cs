@@ -1,4 +1,4 @@
-// <copyright file="SkillsInitializer.cs" company="MUnique">
+﻿// <copyright file="SkillsInitializer.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -775,7 +775,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.AddPassiveMasterSkillDefinition(SkillNumber.ScepterMastery, Stats.ScepterBonusBaseDamage, AggregateType.AddRaw, Formula1154, 3, 3, SkillNumber.ScepterStrengthener); // todo pvp
         this.AddPassiveMasterSkillDefinition(SkillNumber.ShieldMastery, Stats.BonusDefenseWithShield, AggregateType.AddRaw, Formula1204, 3, 3, SkillNumber.ShieldStrengthenerLordEmperor);
         this.AddPassiveMasterSkillDefinition(SkillNumber.CommandAttackInc, Stats.BonusDefenseWithScepterCmdDiv, AggregateType.AddRaw, $"1 / ({Formula3822})", Formula3822, 3, 3);
-        this.AddPassiveMasterSkillDefinition(SkillNumber.DarkSpiritStr3, Stats.RavenExcDamageChanceBonus, AggregateType.AddRaw, $"{Formula120} / 100", Formula120,5, 3, SkillNumber.DarkSpiritStr2);
+        this.AddPassiveMasterSkillDefinition(SkillNumber.DarkSpiritStr3, Stats.RavenExcDamageChanceBonus, AggregateType.AddRaw, $"{Formula120} / 100", Formula120, 5, 3, SkillNumber.DarkSpiritStr2);
         this.AddPassiveMasterSkillDefinition(SkillNumber.PetDurabilityStr, Stats.PetDurationIncrease, AggregateType.Multiplicate, Formula1204, 5, 3);
 
         // RF

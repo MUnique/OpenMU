@@ -124,7 +124,7 @@ public static class AttackableExtensions
         dmg = (int)(dmg * damageFactor);
 
         var minimumDamage = attacker.Attributes[Stats.Level] / 10;
-        return (defender.GetHitInfo((uint)dmg, attributes, attacker), manaToll);
+        return (defender.GetHitInfo(Math.Max((uint)dmg, (uint)minimumDamage), attributes, attacker), manaToll);
     }
 
     /// <summary>
