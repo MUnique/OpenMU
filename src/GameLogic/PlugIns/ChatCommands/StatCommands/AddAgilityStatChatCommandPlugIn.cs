@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("042EC5C6-27C8-4E00-A48B-C5458EDEA0BB")]
 [PlugIn("Add agility chat command", "Adds the specified amount of agility points to the character.")]
 [ChatCommandHelp(Command, "Adds the specified amount of agility points to the character.", typeof(Arguments), MinimumStatus)]
-public class AddAgilityStatChatCommandPlugIn : AddStatChatCommandPlugInBase.AddSingleStatChatCommandPlugInBase
+public class AddAgilityStatChatCommandPlugIn : AddStatChatCommandPlugInBase.AddSingleStatChatCommandPlugInBase, IDisabledByDefault
 {
     private const string Command = "/addagi";
 

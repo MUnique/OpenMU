@@ -15,8 +15,8 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which sets a character's master level.
 /// </summary>
 [Guid("B8E35F57-2ED4-4BAD-9F95-9C88E1B92B1B")]
-[PlugIn("Set master level command", "Sets master level of a player.")]
-[ChatCommandHelp(Command, "Sets master level of a player. Usage: /setmasterlevel <level> <optional:character>", null)]
+[PlugIn("Set master level command", "Sets master level of a player. Usage: /setmasterlevel (level) (optional:character)")]
+[ChatCommandHelp(Command, "Sets master level of a player. Usage: /setmasterlevel (level) (optional:character)", null)]
 public class SetMasterLevelChatCommandPlugIn : ChatCommandPlugInBase<SetMasterLevelChatCommandPlugIn.Arguments>, IDisabledByDefault
 {
     private const string Command = "/setmasterlevel";

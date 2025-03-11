@@ -20,7 +20,7 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which clears a character's inventory.
 /// </summary>
 [Guid("B8E35F57-2ED4-4BAD-9F95-9C88E1B92B0D")]
-[PlugIn("Clear Inventory chat command", "Clears inventory.")]
+[PlugIn("Clear Inventory chat command", "Clears inventory. Usage: /clearinv (optional:character)")]
 [ChatCommandHelp(Command, "Clears inventory.", null, MinimumStatus)]
 public class ClearInventoryChatCommandPlugIn : ChatCommandPlugInBase<ClearInventoryChatCommandPlugIn.Arguments>, ISupportCustomConfiguration<ClearInventoryChatCommandPlugIn.ClearInventoryConfiguration>, ISupportDefaultCustomConfiguration, IDisabledByDefault
 {
