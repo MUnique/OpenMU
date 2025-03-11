@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.Updates;
 
+using System.Collections;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Attributes;
@@ -54,8 +55,8 @@ public class FixHorseFenrirOptionsSoulBarrierPlugIn : UpdatePlugInBase
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
         // Update dark horse item crafting
-        var petTrainercraftings = gameConfiguration.Monsters.Single(m => m.NpcWindow == NpcWindow.PetTrainer).ItemCraftings;
-        if (petTrainercraftings.Single(c => c.Number == 13) is { } darkHorseCrafting)
+        var petTrainerCraftings = gameConfiguration.Monsters.Single(m => m.NpcWindow == NpcWindow.PetTrainer).ItemCraftings;
+        if (petTrainerCraftings.Single(c => c.Number == 13) is { } darkHorseCrafting)
         {
             darkHorseCrafting.ItemCraftingHandlerClassName = typeof(DarkHorseCrafting).FullName!;
         }
@@ -80,14 +81,16 @@ public class FixHorseFenrirOptionsSoulBarrierPlugIn : UpdatePlugInBase
                 1,
                 level,
                 InputOperator.Multiply,
-                default(AttributeDefinition?)));
+                default(AttributeDefinition?),
+                AggregateType.AddRaw));
 
             charClass.AttributeCombinations.Add(context.CreateNew<AttributeRelationship>(
                 totalLevel,
                 1,
                 masterLevel,
                 InputOperator.Multiply,
-                default(AttributeDefinition?)));
+                default(AttributeDefinition?),
+                AggregateType.AddRaw));
         });
 
         // Add DL horse dmg receive base value and relationship to dmg receive
@@ -110,10 +113,12 @@ public class FixHorseFenrirOptionsSoulBarrierPlugIn : UpdatePlugInBase
         }
 
         // Add new dark horse option type
-        gameConfiguration.ItemOptionTypes.Add(new()
-        {
-            Name = "Dark Horse Option", Id = new Guid("{D2295C44-E458-40F8-8555-87CFD9626616}"), IsVisible = true,
-        });
+        var darkHorseOptionType = context.CreateNew<ItemOptionType>();
+        darkHorseOptionType.Description = ItemOptionTypes.DarkHorse.Description;
+        darkHorseOptionType.Id = ItemOptionTypes.DarkHorse.Id;
+        darkHorseOptionType.Name = ItemOptionTypes.DarkHorse.Name;
+        darkHorseOptionType.IsVisible = ItemOptionTypes.DarkHorse.IsVisible;
+        gameConfiguration.ItemOptionTypes.Add(darkHorseOptionType);
 
         // Add dark horse options
         var horse = gameConfiguration.Items.Single(i => i.Group == 13 && i.Number == 4);
@@ -127,16 +132,37 @@ public class FixHorseFenrirOptionsSoulBarrierPlugIn : UpdatePlugInBase
 
         // Update gold fenrir options
         var fenrirOptionDef = gameConfiguration.ItemOptions.First(o => o.PossibleOptions.Any(opt => opt.OptionType == ItemOptionTypes.GoldFenrir));
-        var goldFenrirOptions = fenrirOptionDef.PossibleOptions.Where(opt => opt.OptionType == ItemOptionTypes.GoldFenrir);
+        var goldFenrirOptions = fenrirOptionDef.PossibleOptions.Where(opt => opt.OptionType == ItemOptionTypes.GoldFenrir).ToList();
         foreach (var goldFenrirOpt in goldFenrirOptions)
         {
-            fenrirOptionDef.PossibleOptions.Remove(goldFenrirOpt);
-        }
+            AttributeDefinition? targetAttribute = null;
+            float multiplier = 0;
+            if (goldFenrirOpt.PowerUpDefinition!.TargetAttribute == Stats.MaximumHealth)
+            {
+                targetAttribute = Stats.MaximumHealth;
+                multiplier = 0.5f;
+            }
+            else if (goldFenrirOpt.PowerUpDefinition.TargetAttribute == Stats.MaximumMana)
+            {
+                targetAttribute = Stats.MaximumMana;
+                multiplier = 0.5f;
+            }
+            else if (goldFenrirOpt.PowerUpDefinition.TargetAttribute == Stats.MaximumPhysBaseDmg)
+            {
+                targetAttribute = Stats.PhysicalBaseDmg;
+                multiplier = 1f / 12f;
+            }
+            else
+            {
+                targetAttribute = Stats.WizardryBaseDmg;
+                multiplier = 1f / 25f;
+            }
 
-        fenrirOptionDef.PossibleOptions.Add(this.CreateRelatedPetOption(context, gameConfiguration, ItemOptionTypes.GoldFenrir, 4, Stats.MaximumHealth, AggregateType.AddFinal, ItemOptionDefinitionNumbers.Fenrir, 0, (Stats.TotalLevel, 0.5f)));
-        fenrirOptionDef.PossibleOptions.Add(this.CreateRelatedPetOption(context, gameConfiguration, ItemOptionTypes.GoldFenrir, 4, Stats.MaximumMana, AggregateType.AddFinal, ItemOptionDefinitionNumbers.Fenrir, 0, (Stats.TotalLevel, 0.5f)));
-        fenrirOptionDef.PossibleOptions.Add(this.CreateRelatedPetOption(context, gameConfiguration, ItemOptionTypes.GoldFenrir, 4, Stats.PhysicalBaseDmg, AggregateType.AddRaw, ItemOptionDefinitionNumbers.Fenrir, 0, (Stats.TotalLevel, 1f / 12f)));
-        fenrirOptionDef.PossibleOptions.Add(this.CreateRelatedPetOption(context, gameConfiguration, ItemOptionTypes.GoldFenrir, 4, Stats.WizardryBaseDmg, AggregateType.AddRaw, ItemOptionDefinitionNumbers.Fenrir, 0, (Stats.TotalLevel, 1f / 25f)));
+            goldFenrirOpt.PowerUpDefinition.TargetAttribute = targetAttribute.GetPersistent(gameConfiguration);
+            goldFenrirOpt.PowerUpDefinition.Boost!.ConstantValue.Value = 0;
+            goldFenrirOpt.PowerUpDefinition.Boost.RelatedValues.Add(
+                this.CreateAttributeRelationship(context, gameConfiguration, targetAttribute, ItemOptionDefinitionNumbers.Fenrir, (Stats.TotalLevel, multiplier)));
+        }
 
         // Update soul barrier magic effect. Soul barrier dmg decrease % = 10 + (Agility/50) + (Energy/200)
         var soulBarrierMagicEffect = gameConfiguration.MagicEffects.FirstOrDefault(me => me.Number == (short)MagicEffectNumber.SoulBarrier);
@@ -150,15 +176,16 @@ public class FixHorseFenrirOptionsSoulBarrierPlugIn : UpdatePlugInBase
             if (soulBarrierMagicEffect.PowerUpDefinitions.FirstOrDefault() is { } powerUp)
             {
                 powerUp.TargetAttribute = soulBarrierReceiveDec;
+                powerUp.Boost!.ConstantValue.Value = 0.1f;
                 powerUp.Boost!.ConstantValue.AggregateType = AggregateType.AddRaw;
 
                 var boostPerEnergy = powerUp.Boost.RelatedValues.First(v => v.InputOperand == 1 - (0.01f / 200f));
                 boostPerEnergy.InputOperator = InputOperator.Multiply;
-                boostPerEnergy.InputOperand = -1f / 20000f;
+                boostPerEnergy.InputOperand = 1f / 20000f;
 
                 var boostPerAgility = powerUp.Boost.RelatedValues.First(v => v.InputOperand == 1 - (0.01f / 50f));
-                boostPerEnergy.InputOperator = InputOperator.Multiply;
-                boostPerEnergy.InputOperand = -1f / 5000f;
+                boostPerAgility.InputOperator = InputOperator.Multiply;
+                boostPerAgility.InputOperand = 1f / 5000f;
             }
 
             var manaTollPerHit = context.CreateNew<PowerUpDefinition>();
@@ -209,14 +236,19 @@ public class FixHorseFenrirOptionsSoulBarrierPlugIn : UpdatePlugInBase
 
         for (int i = 0; i < relatedAttributes.Length; i++)
         {
-            var attributeRelationship = context.CreateNew<AttributeRelationship>();
-            attributeRelationship.SetGuid(optionNumber, targetAttribute.Id.ExtractFirstTwoBytes(), (byte)i);
-            attributeRelationship.InputAttribute = relatedAttributes[i].SourceAttribute.GetPersistent(gameConfiguration);
-            attributeRelationship.InputOperator = InputOperator.Multiply;
-            attributeRelationship.InputOperand = relatedAttributes[i].Multiplier;
-            itemOption.PowerUpDefinition.Boost.RelatedValues.Add(attributeRelationship);
+            itemOption.PowerUpDefinition.Boost.RelatedValues.Add(this.CreateAttributeRelationship(context, gameConfiguration, targetAttribute, optionNumber, relatedAttributes[i], i));
         }
 
         return itemOption;
+    }
+
+    private AttributeRelationship CreateAttributeRelationship(IContext context, GameConfiguration gameConfiguration, AttributeDefinition targetAttribute, short optionNumber, (AttributeDefinition SourceAttribute, float Multiplier) relatedAttribute, int i = 0)
+    {
+        var attributeRelationship = context.CreateNew<AttributeRelationship>();
+        attributeRelationship.SetGuid(optionNumber, targetAttribute.Id.ExtractFirstTwoBytes(), (byte)i);
+        attributeRelationship.InputAttribute = relatedAttribute.SourceAttribute.GetPersistent(gameConfiguration);
+        attributeRelationship.InputOperator = InputOperator.Multiply;
+        attributeRelationship.InputOperand = relatedAttribute.Multiplier;
+        return attributeRelationship;
     }
 }

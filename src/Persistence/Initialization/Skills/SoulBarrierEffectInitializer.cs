@@ -48,18 +48,18 @@ public class SoulBarrierEffectInitializer : InitializerBase
         magicEffect.PowerUpDefinitions.Add(damageDecrement);
         damageDecrement.TargetAttribute = Stats.SoulBarrierReceiveDecrement.GetPersistent(this.GameConfiguration);
         damageDecrement.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-        damageDecrement.Boost.ConstantValue.Value = 0.9f;
+        damageDecrement.Boost.ConstantValue.Value = 0.1f;
 
         var boostPerEnergy = this.Context.CreateNew<AttributeRelationship>();
         boostPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
         boostPerEnergy.InputOperator = InputOperator.Multiply;
-        boostPerEnergy.InputOperand = -1f / 20000f;  // one percent per 200 energy
+        boostPerEnergy.InputOperand = 1f / 20000f;  // one percent per 200 energy
         damageDecrement.Boost.RelatedValues.Add(boostPerEnergy);
 
         var boostPerAgility = this.Context.CreateNew<AttributeRelationship>();
         boostPerAgility.InputAttribute = Stats.TotalAgility.GetPersistent(this.GameConfiguration);
         boostPerAgility.InputOperator = InputOperator.Multiply;
-        boostPerAgility.InputOperand = -1f / 5000f; // one percent per 50 agility
+        boostPerAgility.InputOperand = 1f / 5000f; // one percent per 50 agility
         damageDecrement.Boost.RelatedValues.Add(boostPerAgility);
 
         // Mana toll = 2% + 0.1% per SB strengthener level (added in skill action plugin)
