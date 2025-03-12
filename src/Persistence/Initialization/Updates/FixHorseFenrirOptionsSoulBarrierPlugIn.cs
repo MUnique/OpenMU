@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.Updates;
 
-using System.Collections;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Attributes;
@@ -43,7 +42,7 @@ public class FixHorseFenrirOptionsSoulBarrierPlugIn : UpdatePlugInBase
     public override bool IsMandatory => true;
 
     /// <inheritdoc />
-    public override DateTime CreatedAt => new(2025, 03, 11, 16, 0, 0, DateTimeKind.Utc);
+    public override DateTime CreatedAt => new(2025, 03, 12, 16, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
