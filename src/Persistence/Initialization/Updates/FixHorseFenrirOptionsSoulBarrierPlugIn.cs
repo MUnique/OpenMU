@@ -202,7 +202,7 @@ public class FixHorseFenrirOptionsSoulBarrierPlugIn : UpdatePlugInBase
 
         // Update Soul Barrier Streng master skill definition
         var soulBarrierStreng = gameConfiguration.Skills.First(s => s.GetId() == new Guid("00000400-0193-0000-0000-000000000000"));
-        soulBarrierStreng.MasterDefinition!.ValueFormula = $"-{soulBarrierStreng.MasterDefinition.ValueFormula} / 100";
+        soulBarrierStreng.MasterDefinition!.ValueFormula = $"{soulBarrierStreng.MasterDefinition.ValueFormula} / 100";
         soulBarrierStreng.MasterDefinition.TargetAttribute = soulBarrierReceiveDec;
         soulBarrierStreng.MasterDefinition.Aggregation = AggregateType.AddRaw;
 
