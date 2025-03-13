@@ -212,6 +212,7 @@
   * [C1 F3 22 - GuildSoccerTimeUpdate (by server)](C1-F3-22-GuildSoccerTimeUpdate_by-server.md)
   * [C1 F3 23 - GuildSoccerScoreUpdate (by server)](C1-F3-23-GuildSoccerScoreUpdate_by-server.md)
   * [C1 F3 30 - ApplyKeyConfiguration (by server)](C1-F3-30-ApplyKeyConfiguration_by-server.md)
+  * [C1 F3 32 - BaseStatsExtended (by server)](C1-F3-32-BaseStatsExtended_by-server.md)
   * [C1 F3 40 - ServerCommand (by server)](C1-F3-40-ServerCommand_by-server.md)
   * [C1 F3 40 - ShowFireworks (by server)](C1-F3-40-ShowFireworks_by-server.md)
   * [C1 F3 40 - ShowChristmasFireworks (by server)](C1-F3-40-ShowChristmasFireworks_by-server.md)

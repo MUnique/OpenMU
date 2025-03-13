@@ -3366,6 +3366,43 @@
     </Packet>
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
+      <SubCode>32</SubCode>
+      <Name>BaseStatsExtended</Name>
+      <Length>24</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>Setting the base stats of a character, e.g. set stats command or after a reset.</SentWhen>
+      <CausedReaction>The values are updated on the game client user interface.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Strength</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Agility</Name>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Vitality</Name>
+        </Field>
+        <Field>
+          <Index>16</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Energy</Name>
+        </Field>
+        <Field>
+          <Index>20</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Command</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>27</Code>
       <SubCode>FF</SubCode>
       <Name>CurrentManaAndAbility</Name>
