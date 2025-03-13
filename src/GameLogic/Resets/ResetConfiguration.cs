@@ -41,12 +41,27 @@ public class ResetConfiguration
     public bool ResetStats { get; set; } = true;
 
     /// <summary>
+    /// Gets or sets the amount of points which will be set at the <see cref="Character.LevelUpPoints"/> when doing a reset.
+    /// </summary>
+    public int PointsPerReset { get; set; } = 1500;
+
+    /// <summary>
     /// Gets or sets a value indicating whether the <see cref="PointsPerReset"/> should be multiplied with the current reset count.
     /// </summary>
     public bool MultiplyPointsByResetCount { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the amount of points which will be set at the <see cref="Character.LevelUpPoints"/> when doing a reset.
+    /// Gets or sets a value indicating whether a reset will replace (true) or add (false) the <see cref="Character.LevelUpPoints"/>.
     /// </summary>
-    public int PointsPerReset { get; set; } = 1500;
+    public bool ReplacePointsPerReset { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether a reset moves the player home.
+    /// </summary>
+    public bool MoveHome { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether a reset logs the player out back to character selection.
+    /// </summary>
+    public bool LogOut { get; set; } = true;
 }
