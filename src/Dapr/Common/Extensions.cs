@@ -89,7 +89,7 @@ public static class Extensions
                 return;
             }
 
-            var configs = await persistenceContextProvider.CreateNewTypedContext<PlugInConfiguration>(false).GetAsync<PlugInConfiguration>().ConfigureAwait(false);
+            var configs = await persistenceContextProvider.CreateNewTypedContext(typeof(PlugInConfiguration), false).GetAsync<PlugInConfiguration>().ConfigureAwait(false);
             plugInConfigurations.AddRange(configs);
         }
         catch
@@ -315,7 +315,7 @@ public static class Extensions
             try
             {
                 var persistenceContextProvider = serviceProvider.GetService<IPersistenceContextProvider>() ?? throw new Exception($"{nameof(IPersistenceContextProvider)} not registered.");
-                using var context = persistenceContextProvider.CreateNewTypedContext<SystemConfiguration>(false);
+                using var context = persistenceContextProvider.CreateNewTypedContext(typeof(SystemConfiguration), false);
 
                 // TODO: this may lead to a deadlock?
                 var configuration = context.GetAsync<SystemConfiguration>().AsTask().WaitAndUnwrapException().FirstOrDefault();

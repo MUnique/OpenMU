@@ -343,8 +343,7 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
             {
                 this._isOwningContext = true;
                 var gameConfiguration = await this.ConfigDataSource.GetOwnerAsync(Guid.Empty, cancellationToken).ConfigureAwait(true);
-                var createContextMethod = typeof(IPersistenceContextProvider).GetMethod(nameof(IPersistenceContextProvider.CreateNewTypedContext))!.MakeGenericMethod(this.Type);
-                this._persistenceContext = (IContext)createContextMethod.Invoke(this.PersistenceContextProvider, new object[] { true, gameConfiguration})!;
+                this._persistenceContext = this.PersistenceContextProvider.CreateNewTypedContext(this.Type, true, gameConfiguration);
             }
 
             cancellationToken.ThrowIfCancellationRequested();

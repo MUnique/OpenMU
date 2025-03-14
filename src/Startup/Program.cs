@@ -324,7 +324,7 @@ internal sealed class Program : IDisposable
     private ICollection<PlugInConfiguration> PlugInConfigurationsFactory(IServiceProvider serviceProvider)
     {
         var persistenceContextProvider = serviceProvider.GetService<IPersistenceContextProvider>() ?? throw new Exception($"{nameof(IPersistenceContextProvider)} not registered.");
-        using var context = persistenceContextProvider.CreateNewTypedContext<PlugInConfiguration>(false);
+        using var context = persistenceContextProvider.CreateNewTypedContext(typeof(PlugInConfiguration), false);
 
         var configs = context.GetAsync<PlugInConfiguration>().AsTask().WaitAndUnwrapException().ToList();
 
@@ -499,7 +499,7 @@ internal sealed class Program : IDisposable
 
     private async Task ReadSystemConfigurationAsync(IPersistenceContextProvider persistenceContextProvider)
     {
-        using var context = persistenceContextProvider.CreateNewTypedContext<SystemConfiguration>(false);
+        using var context = persistenceContextProvider.CreateNewTypedContext(typeof(SystemConfiguration), false);
         var config = (await context.GetAsync<SystemConfiguration>().ConfigureAwait(false)).FirstOrDefault();
         if (config != null)
         {

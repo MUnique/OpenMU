@@ -216,7 +216,7 @@
       where T : class
     {
       var gameConfiguration = await this.DataSource.GetOwnerAsync().ConfigureAwait(false);
-      using var context = this.ContextProvider.CreateNewTypedContext<T>(true, gameConfiguration);
+      using var context = this.ContextProvider.CreateNewTypedContext(typeof(T), true, gameConfiguration);
       var definitions = await context.GetAsync<T>().ConfigureAwait(false);
       var definition = definitions.FirstOrDefault(def => predicate(def));
 

@@ -77,7 +77,7 @@ public class Program
             throw new NotImplementedException();
         }
 
-        public IContext CreateNewTypedContext<T>(bool useCache, GameConfiguration? gameConfiguration = null)
+        public IContext CreateNewTypedContext(Type editType, bool useCache, GameConfiguration? gameConfiguration = null)
         {
             throw new NotImplementedException();
         }
