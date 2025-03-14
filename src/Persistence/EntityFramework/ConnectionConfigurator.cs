@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Nito.AsyncEx.Synchronous;
 
@@ -119,6 +120,7 @@ public static class ConnectionConfigurator
                 case DatabaseEngine.Npgsql:
                     optionsBuilder.UseNpgsql(setting.ConnectionString!);
                     optionsBuilder.ReplaceService<IMigrationsSqlGenerator, MyNpgsqlMigrationsSqlGenerator>();
+                    optionsBuilder.ReplaceService<IModelCacheKeyFactory, MyModelCacheKeyFactory>();
                     return;
                 default:
                     throw new NotImplementedException("At the moment only Npgsql engine (PostgreSQL) is implemented.");

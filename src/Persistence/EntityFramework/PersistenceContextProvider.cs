@@ -240,12 +240,11 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
         return new GuildServerContext(new GuildContext(), this.RepositoryProvider, this._loggerFactory.CreateLogger<GuildServerContext>());
     }
 
-    /// <inheritdoc />
-    public IContext CreateNewTypedContext<T>(bool useCache, DataModel.Configuration.GameConfiguration? gameConfiguration = null)
+    public IContext CreateNewTypedContext(Type editType, bool useCache, DataModel.Configuration.GameConfiguration? gameConfiguration = null)
     {
-        if (!typeof(T).IsConfigurationType() && gameConfiguration is null)
+        if (!editType.IsConfigurationType() && gameConfiguration is null)
         {
-            Debug.WriteLine($"Non-configuration type {typeof(T)} without game configuration");
+            Debug.WriteLine($"Non-configuration type {editType} without game configuration");
         }
 
         if (useCache && gameConfiguration is null)
@@ -253,7 +252,7 @@ public class PersistenceContextProvider : IMigratableDatabaseContextProvider
             throw new ArgumentNullException(nameof(gameConfiguration), "When cache should be used, the game configuration must be provided.");
         }
 
-        var dbContext = new TypedContext<T> { CurrentGameConfiguration = gameConfiguration as GameConfiguration };
+        var dbContext = new TypedContext(editType) { CurrentGameConfiguration = gameConfiguration as GameConfiguration };
         if (useCache)
         {
             return new CachingEntityFrameworkContext(dbContext, this.RepositoryProvider, this._changeListener, this._loggerFactory.CreateLogger<CachingEntityFrameworkContext>());

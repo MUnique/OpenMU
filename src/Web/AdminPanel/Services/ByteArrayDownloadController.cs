@@ -52,8 +52,7 @@ public class ByteArrayDownloadController : Controller
             throw new ArgumentException($"Property {type}.{propertyName} is not a byte array.", nameof(propertyName));
         }
 
-        var createContextMethod = typeof(IPersistenceContextProvider).GetMethod(nameof(IPersistenceContextProvider.CreateNewTypedContext))!.MakeGenericMethod(type);
-        using var persistenceContext = (IContext)createContextMethod.Invoke(this._persistenceContextProvider, new object?[] { false, null })!;
+        using var persistenceContext = this._persistenceContextProvider.CreateNewTypedContext(type, false);
 
         var obj = await persistenceContext.GetByIdAsync(id, type).ConfigureAwait(false);
         if (obj is null)

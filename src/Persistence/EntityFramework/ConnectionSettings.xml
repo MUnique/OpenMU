@@ -9,7 +9,7 @@
     </Connection>
     <Connection>
       <!-- The user role of this context should have rights to select/insert/update/delete data in all schemas. -->
-      <ContextTypeName>MUnique.OpenMU.Persistence.EntityFramework.TypedContext`1</ContextTypeName>
+      <ContextTypeName>MUnique.OpenMU.Persistence.EntityFramework.TypedContext</ContextTypeName>
       <ConnectionString>Server=localhost;Port=5432;User Id=postgres;Password=admin;Database=openmu;Command Timeout=120;</ConnectionString>
       <DatabaseEngine>Npgsql</DatabaseEngine>
     </Connection>

@@ -21,7 +21,12 @@ internal static class CharacterExtensions
     {
         builder.Property(character => character.Name).HasMaxLength(10).IsRequired();
         builder.HasIndex(character => character.Name).IsUnique();
-        builder.Metadata.FindNavigation(nameof(Character.RawCharacterClass))!.ForeignKey.IsRequired = true;
+
+        if (builder.Metadata.FindNavigation(nameof(Character.RawCharacterClass)) is { } navigation)
+        {
+            navigation.ForeignKey.IsRequired = true;
+        }
+
         builder.Property(character => character.CharacterSlot).IsRequired();
         builder.HasMany(character => character.RawLetters).WithOne(letter => letter.Receiver!).OnDelete(DeleteBehavior.Cascade);
     }
