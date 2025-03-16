@@ -65,7 +65,7 @@ public class GetStatChatCommandPlugIn : ChatCommandPlugInBase<GetStatChatCommand
         }
     }
 
-    private AttributeDefinition GetAttribute(Character character, string? statType)
+    private AttributeDefinition GetAttribute(Character selectedCharacter, string? statType)
     {
         var attribute = statType switch
         {
@@ -77,7 +77,7 @@ public class GetStatChatCommandPlugIn : ChatCommandPlugInBase<GetStatChatCommand
             _ => throw new ArgumentException($"Unknown stat: '{statType}'."),
         };
 
-        if (character.Attributes.All(sa => sa.Definition != attribute))
+        if (selectedCharacter.Attributes.All(sa => sa.Definition != attribute))
         {
             throw new ArgumentException($"The character has no stat attribute '{statType}'.");
         }

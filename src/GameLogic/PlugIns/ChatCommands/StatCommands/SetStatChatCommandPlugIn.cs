@@ -78,18 +78,6 @@ public class SetStatChatCommandPlugIn : ChatCommandPlugInBase<SetStatChatCommand
                 }
             }
 
-            var diff = arguments.Amount - targetPlayer.Attributes![attribute];
-            if (diff == 0)
-            {
-                return;
-            }
-
-            targetPlayer.Attributes![attribute] = arguments.Amount;
-            if (diff < 0)
-            {
-                diff += ushort.MaxValue + 1;
-            }
-
             await targetPlayer.InvokeViewPlugInAsync<IUpdateCharacterBaseStatsPlugIn>(p => p.UpdateCharacterBaseStatsAsync()).ConfigureAwait(false);
             await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, StatSetMessage, targetPlayer.SelectedCharacter.Name, arguments.Amount)).ConfigureAwait(false);
         }
@@ -99,7 +87,7 @@ public class SetStatChatCommandPlugIn : ChatCommandPlugInBase<SetStatChatCommand
         }
     }
 
-    private AttributeDefinition GetAttribute(Character character, string? statType)
+    private AttributeDefinition GetAttribute(Character selectedCharacter, string? statType)
     {
         var attribute = statType switch
         {
@@ -111,7 +99,7 @@ public class SetStatChatCommandPlugIn : ChatCommandPlugInBase<SetStatChatCommand
             _ => throw new ArgumentException($"Unknown stat: '{statType}'."),
         };
 
-        if (character.Attributes.All(sa => sa.Definition != attribute))
+        if (selectedCharacter.Attributes.All(sa => sa.Definition != attribute))
         {
             throw new ArgumentException($"The character has no stat attribute '{statType}'.");
         }
