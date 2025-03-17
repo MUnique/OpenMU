@@ -43,7 +43,7 @@ internal class Socket : AccountInitializerBase
         character.Inventory.Items.Add(this.CreateSocketItem(InventoryConstants.GlovesSlot, ItemGroups.Gloves, 51, (SocketSubOptionType.Earth, 0), (SocketSubOptionType.Water, 0), (SocketSubOptionType.Wind, 1)));
         character.Inventory.Items.Add(this.CreateSocketItem(InventoryConstants.BootsSlot, ItemGroups.Boots, 51, (SocketSubOptionType.Earth, 0), (SocketSubOptionType.Water, 0), (SocketSubOptionType.Wind, 1)));
         character.Inventory.Items.Add(this.CreateWings(InventoryConstants.WingsSlot, 30, 13, 13)); // Cape +13
-        character.Inventory.Items.Add(this.CreatePet(InventoryConstants.PetSlot, 4)); // Horse
+        character.Inventory.Items.Add(this.CreateHorse(InventoryConstants.PetSlot));
         this.AddDarkLordItems(character.Inventory);
         this.AddTestJewelsAndPotions(character.Inventory);
 

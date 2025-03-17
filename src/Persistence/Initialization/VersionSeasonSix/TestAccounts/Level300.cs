@@ -43,7 +43,7 @@ internal class Level300 : AccountInitializerBase
         character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.GlovesSlot, 26, 10, Stats.MaximumMana, 13, 4, true)); // Exc Ada Gloves+13+16+L
         character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.BootsSlot, 26, 11, Stats.DamageReflection, 13, 4, true)); // Exc Ada Boots+13+16+L
         character.Inventory.Items.Add(this.CreateWings(InventoryConstants.WingsSlot, 30, 13, 13)); // Cape +13
-        character.Inventory.Items.Add(this.CreatePet(InventoryConstants.PetSlot, 4)); // Horse
+        character.Inventory.Items.Add(this.CreateHorse(InventoryConstants.PetSlot));
 
         this.AddDarkLordItems(character.Inventory);
         this.AddTestJewelsAndPotions(character.Inventory);

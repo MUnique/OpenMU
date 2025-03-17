@@ -58,7 +58,7 @@ internal abstract class AccountInitializerBase : InitializerBase
     protected int Level { get; }
 
     /// <summary>
-    /// Gets a value indicating whether to add all available skills automatically.
+    /// Gets or sets a value indicating whether to add all available skills automatically.
     /// </summary>
     protected bool AddAllSkills { get; set; }
 
@@ -70,6 +70,9 @@ internal abstract class AccountInitializerBase : InitializerBase
     /// </value>
     protected string AccountName { get; }
 
+    /// <summary>
+    /// Gets the item helper.
+    /// </summary>
     protected ItemHelper ItemHelper { get; }
 
     /// <inheritdoc />
@@ -449,7 +452,9 @@ internal abstract class AccountInitializerBase : InitializerBase
         inventory.Items.Add(this.CreateFullOptionJewellery(62, 8)); // Ring of Ice
         inventory.Items.Add(this.CreateFullOptionJewellery(63, 9)); // Ring of Poison
         inventory.Items.Add(this.CreateFullOptionJewellery(64, 12)); // Pendant of Lightning
-        inventory.Items.Add(this.CreatePet(53, 5)); // Raven
+        var darkRaven = this.CreatePet(53, 5);
+        darkRaven.Level = 1;
+        inventory.Items.Add(darkRaven);
     }
 
     /// <summary>
@@ -610,6 +615,27 @@ internal abstract class AccountInitializerBase : InitializerBase
     }
 
     /// <summary>
+    /// Creates the horse.
+    /// </summary>
+    /// <param name="itemSlot">The item slot.</param>
+    /// <returns>The created dark horse.</returns>
+    protected Item CreateHorse(byte itemSlot)
+    {
+        var horse = this.CreatePet(itemSlot, 4);
+        horse.Level = 1;
+
+        var options = horse.Definition!.PossibleItemOptions.First().PossibleOptions;
+        foreach (var option in options)
+        {
+            var optionLink = this.Context.CreateNew<ItemOptionLink>();
+            optionLink.ItemOption = option;
+            horse.ItemOptions.Add(optionLink);
+        }
+
+        return horse;
+    }
+
+    /// <summary>
     /// Creates the pet.
     /// </summary>
     /// <param name="itemSlot">The item slot.</param>
@@ -641,6 +667,52 @@ internal abstract class AccountInitializerBase : InitializerBase
         arrows.Durability = 255;
         arrows.ItemSlot = itemSlot;
         return arrows;
+    }
+
+    /// <summary>
+    /// Creates an ancient set item with full maxed options.
+    /// </summary>
+    /// <param name="itemSlot">The item slot.</param>
+    /// <param name="group">The item group.</param>
+    /// <param name="number">The item number.</param>
+    /// <param name="level">The item level.</param>
+    /// <param name="ancientName">The ancient set name.</param>
+    /// <returns>The created ancient set item.</returns>
+    protected Item CreateFullAncient(byte itemSlot, ItemGroups group, byte number, byte level, string ancientName)
+    {
+        var ancient = this.Context.CreateNew<Item>();
+        ancient.Definition = this.GameConfiguration.Items.First(def => def.Group == (int)group && def.Number == number);
+        ancient.Durability = ancient.Definition.Durability;
+        ancient.ItemSlot = itemSlot;
+        ancient.Level = level;
+        ancient.HasSkill = ancient.Definition.Skill is { };
+        var optionLink = this.Context.CreateNew<ItemOptionLink>();
+        optionLink.ItemOption = ancient.Definition.PossibleItemOptions.SelectMany(o => o.PossibleOptions)
+            .First(o => o.OptionType == ItemOptionTypes.Option);
+        optionLink.Level = optionLink.ItemOption.LevelDependentOptions.Max(o => o.Level);
+        ancient.ItemOptions.Add(optionLink);
+
+        if (ancient.Definition.PossibleItemOptions.SelectMany(o => o.PossibleOptions)
+                .FirstOrDefault(o => o.OptionType == ItemOptionTypes.Luck) is { } luckOption)
+        {
+            var luck = this.Context.CreateNew<ItemOptionLink>();
+            luck.ItemOption = luckOption;
+            ancient.ItemOptions.Add(luck);
+        }
+
+        var set = ancient.Definition.PossibleItemSetGroups.First(a => a.Name == ancientName);
+        var itemOfSet = set.Items.First(i => i.ItemDefinition == ancient.Definition);
+        if (itemOfSet.BonusOption is { })
+        {
+            var ancientBonus = this.Context.CreateNew<ItemOptionLink>();
+            ancientBonus.ItemOption = itemOfSet.BonusOption;
+            ancientBonus.Level = 2;
+            ancient.ItemOptions.Add(ancientBonus);
+        }
+
+        ancient.ItemSetGroups.Add(itemOfSet);
+
+        return ancient;
     }
 
     private Item CreateAlcohol(byte itemSlot)
@@ -741,42 +813,5 @@ internal abstract class AccountInitializerBase : InitializerBase
         vault.Items.Add(this.CreateDevilSquareTicket(37, 5));
         vault.Items.Add(this.CreateDevilSquareTicket(38, 4));
         vault.Items.Add(this.CreateDevilSquareTicket(39, 4));
-    }
-
-    protected Item CreateFullAncient(byte itemSlot, ItemGroups group, byte number, byte level, string ancientName)
-    {
-        var ancient = this.Context.CreateNew<Item>();
-        ancient.Definition = this.GameConfiguration.Items.First(def => def.Group == (int)group && def.Number == number);
-        ancient.Durability = ancient.Definition.Durability;
-        ancient.ItemSlot = itemSlot;
-        ancient.Level = level;
-        ancient.HasSkill = ancient.Definition.Skill is { };
-        var optionLink = this.Context.CreateNew<ItemOptionLink>();
-        optionLink.ItemOption = ancient.Definition.PossibleItemOptions.SelectMany(o => o.PossibleOptions)
-            .First(o => o.OptionType == ItemOptionTypes.Option);
-        optionLink.Level = optionLink.ItemOption.LevelDependentOptions.Max(o => o.Level);
-        ancient.ItemOptions.Add(optionLink);
-
-        if (ancient.Definition.PossibleItemOptions.SelectMany(o => o.PossibleOptions)
-                .FirstOrDefault(o => o.OptionType == ItemOptionTypes.Luck) is { } luckOption)
-        {
-            var luck = this.Context.CreateNew<ItemOptionLink>();
-            luck.ItemOption = luckOption;
-            ancient.ItemOptions.Add(luck);
-        }
-
-        var set = ancient.Definition.PossibleItemSetGroups.First(a => a.Name == ancientName);
-        var itemOfSet = set.Items.First(i => i.ItemDefinition == ancient.Definition);
-        if (itemOfSet.BonusOption is { })
-        {
-            var ancientBonus = this.Context.CreateNew<ItemOptionLink>();
-            ancientBonus.ItemOption = itemOfSet.BonusOption;
-            ancientBonus.Level = 2;
-            ancient.ItemOptions.Add(ancientBonus);
-        }
-
-        ancient.ItemSetGroups.Add(itemOfSet);
-
-        return ancient;
     }
 }

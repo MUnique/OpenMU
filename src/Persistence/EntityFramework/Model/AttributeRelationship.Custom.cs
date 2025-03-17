@@ -27,7 +27,7 @@ internal partial class AttributeRelationship :
     {
         if (other is AttributeSystem.AttributeRelationship typedOther)
         {
-            AssignValuesOf(typedOther, gameConfiguration);
+            this.AssignValuesOf(typedOther, gameConfiguration);
         }
     }
 
@@ -39,5 +39,6 @@ internal partial class AttributeRelationship :
         this.TargetAttribute = gameConfiguration.Attributes.FirstOrDefault(a => a.Id == other.TargetAttribute?.Id) ?? other.TargetAttribute;
         this.InputOperand = other.InputOperand;
         this.InputOperator = other.InputOperator;
+        this.AggregateType = other.AggregateType;
     }
 }

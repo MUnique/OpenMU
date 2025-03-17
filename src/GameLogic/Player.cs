@@ -518,7 +518,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             this._appearanceData.RaiseAppearanceChanged();
 
             await this.PlayerLeftWorld.SafeInvokeAsync(this).ConfigureAwait(false);
-            
+
             (this.SkillList as IDisposable)?.Dispose();
             this.SkillList = null;
 
@@ -636,9 +636,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             this.Attributes[Stats.CurrentHealth] = this.Attributes[Stats.MaximumHealth];
         }
 
-        if (Rand.NextRandomBool(this.Attributes[Stats.FullyRecoverManaAfterHitChance]))
+        var manaFullyRecovered = Rand.NextRandomBool(this.Attributes[Stats.FullyRecoverManaAfterHitChance]);
+        if (hitInfo.ManaToll > 0 || manaFullyRecovered)
         {
-            this.Attributes[Stats.CurrentMana] = this.Attributes[Stats.MaximumMana];
+            this.Attributes[Stats.CurrentMana] = (manaFullyRecovered ? this.Attributes[Stats.MaximumMana] : this.Attributes[Stats.CurrentMana]) - hitInfo.ManaToll;
         }
 
         await this.HitAsync(hitInfo, attacker, skill?.Skill).ConfigureAwait(false);
@@ -1068,8 +1069,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                             && (short)this.Attributes![Stats.Level] == this.GameContext.Configuration.MaximumLevel;
         var expRateAttribute = addMasterExperience ? Stats.MasterExperienceRate : Stats.ExperienceRate;
 
-        var totalLevel = this.Attributes![Stats.Level] + this.Attributes![Stats.MasterLevel];
-        var experience = killedObject.CalculateBaseExperience(totalLevel);
+        var experience = killedObject.CalculateBaseExperience(this.Attributes![Stats.TotalLevel]);
         experience *= this.GameContext.ExperienceRate;
         experience *= this.Attributes[expRateAttribute];
         experience *= this.CurrentMap?.Definition.ExpMultiplier ?? 1;
@@ -1413,12 +1413,14 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         int i = 0;
         var result = new (AttributeDefinition Target, IElement BuffPowerUp)[skill.MagicEffectDef.PowerUpDefinitions.Count];
+        var durationElement = this.Attributes!.CreateDurationElement(skill.MagicEffectDef.Duration);
         AddSkillPowersToResult(skill);
-        skillEntry.PowerUpDuration = this.Attributes!.CreateDurationElement(skill.MagicEffectDef.Duration);
+        skillEntry.PowerUpDuration = durationElement;
         skillEntry.PowerUps = result;
 
         void AddSkillPowersToResult(Skill skill)
         {
+            var durationExtended = false;
             foreach (var powerUpDef in skill.MagicEffectDef!.PowerUpDefinitions)
             {
                 IElement powerUp;
@@ -1426,11 +1428,26 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 {
                     powerUp = this.Attributes!.CreateElement(powerUpDef);
 
-                    foreach (var masterSkillDefinition in GetMasterSkillDefinitions(skill.MasterDefinition))
+                    foreach (var masterSkillEntry in GetMasterSkillEntries(skillEntry))
                     {
-                        // Apply either for all, or just for the specified TargetAttribute of the master skill
-                        powerUp = AppedMasterSkillPowerUp(masterSkillDefinition, powerUpDef, powerUp);
+                        var extendsDuration = masterSkillEntry.Skill?.MasterDefinition?.ExtendsDuration ?? false;
+                        if (extendsDuration && !durationExtended)
+                        {
+                            durationElement = new CombinedElement(durationElement, new ConstantElement(skillEntry.CalculateValue()));
+                        }
+                        else if (extendsDuration)
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            // Apply either for all, or just for the specified TargetAttribute of the master skill
+                            powerUp = AppedMasterSkillPowerUp(masterSkillEntry, powerUpDef, powerUp);
+                        }
                     }
+
+                    // After the first iteration all possible duration extensions have been applied
+                    durationExtended = true;
                 }
                 else
                 {
@@ -1442,27 +1459,34 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             }
         }
 
-        IEnumerable<MasterSkillDefinition> GetMasterSkillDefinitions(MasterSkillDefinition? masterSkillDefinition)
+        IEnumerable<SkillEntry> GetMasterSkillEntries(SkillEntry? masterSkillEntry)
         {
-            var current = masterSkillDefinition;
-            while (current is not null)
+            var currentEntry = masterSkillEntry;
+            while (currentEntry is not null)
             {
-                yield return current;
-                current = current.ReplacedSkill?.MasterDefinition;
+                yield return currentEntry;
+                if (currentEntry.Skill?.MasterDefinition?.ReplacedSkill is { } replacedSkill && replacedSkill.MasterDefinition is not null)
+                {
+                    currentEntry = this.SkillList!.GetSkill((ushort)replacedSkill.Number);
+                }
+                else
+                {
+                    currentEntry = null;
+                }
             }
         }
 
-        IElement AppedMasterSkillPowerUp(MasterSkillDefinition? masterSkillDefinition, PowerUpDefinition powerUpDef, IElement powerUp)
+        IElement AppedMasterSkillPowerUp(SkillEntry? masterSkillEntry, PowerUpDefinition powerUpDef, IElement powerUp)
         {
-            if (masterSkillDefinition is null)
+            if (masterSkillEntry?.Skill?.MasterDefinition is not { } masterSkillDefinition)
             {
                 return powerUp;
             }
 
-            if (masterSkillDefinition?.TargetAttribute is not { } masterSkillTargetAttribute
+            if (masterSkillDefinition.TargetAttribute is not { } masterSkillTargetAttribute
                 || masterSkillTargetAttribute == powerUpDef.TargetAttribute)
             {
-                var additionalValue = new SimpleElement(skillEntry.CalculateValue(), skillEntry.Skill.MasterDefinition?.Aggregation ?? powerUp.AggregateType);
+                var additionalValue = new SimpleElement(masterSkillEntry.CalculateValue(), masterSkillEntry.Skill.MasterDefinition?.Aggregation ?? powerUp.AggregateType);
                 powerUp = new CombinedElement(powerUp, additionalValue);
             }
 
@@ -2392,6 +2416,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                    && (!pet.IsDarkRaven() || pet.GetDarkRavenLeadershipRequirement(pet.Level + 1) <= this.Attributes![Stats.TotalLeadership]))
             {
                 pet.Level++;
+                this.Attributes!.ItemPowerUps[pet] = this.Attributes.ItemPowerUps[pet]
+                    .Append(new PowerUpWrapper(
+                        new SimpleElement(1, AggregateType.AddRaw),
+                        pet.IsDarkRaven() ? Stats.RavenLevel : Stats.HorseLevel,
+                        this.Attributes)).ToList();
 
                 await this.InvokeViewPlugInAsync<IPetInfoViewPlugIn>(p => p.ShowPetInfoAsync(pet, pet.ItemSlot, PetStorageLocation.InventoryPetSlot)).ConfigureAwait(false);
             }

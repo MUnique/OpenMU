@@ -1,4 +1,4 @@
-// <copyright file="Pets.cs" company="MUnique">
+﻿// <copyright file="Pets.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -7,6 +7,7 @@ using MUnique.OpenMU.Network;
 namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
 
 using MUnique.OpenMU.AttributeSystem;
+using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic;
@@ -42,6 +43,7 @@ public class Pets : InitializerBase
         this.AddDinorantOptions(dinorant);
 
         var darkHorse = this.CreatePet(4, SkillNumber.Earthshake, 1, 1, "Dark Horse", 218, false, false, (Stats.IsHorseEquipped, 1, AggregateType.AddRaw));
+        this.AddDarkHorseOptions(darkHorse);
         this.GameConfiguration.DetermineCharacterClasses(CharacterClasses.AllLords).ForEach(darkHorse.QualifiedCharacters.Add);
         darkHorse.PetExperienceFormula = PetExperienceFormula;
         darkHorse.MaximumItemLevel = 50;
@@ -231,6 +233,20 @@ public class Pets : InitializerBase
         dinorant.PossibleItemOptions.Add(dinoOptionDefinition);
     }
 
+    private void AddDarkHorseOptions(ItemDefinition horse)
+    {
+        var horseOptionDefinition = this.Context.CreateNew<ItemOptionDefinition>();
+        horseOptionDefinition.SetGuid(ItemOptionDefinitionNumbers.Horse);
+        this.GameConfiguration.ItemOptions.Add(horseOptionDefinition);
+
+        horseOptionDefinition.Name = "Dark Horse Options";
+
+        horseOptionDefinition.PossibleOptions.Add(this.CreateRelatedPetOption(ItemOptionTypes.DarkHorse, 1, Stats.DamageReceiveHorseDecrement, AggregateType.AddRaw, ItemOptionDefinitionNumbers.Horse, -0.15f, (Stats.HorseLevel, -0.005f)));
+        horseOptionDefinition.PossibleOptions.Add(this.CreateRelatedPetOption(ItemOptionTypes.DarkHorse, 2, Stats.DefenseBase, AggregateType.AddRaw, ItemOptionDefinitionNumbers.Horse, 5, (Stats.HorseLevel, 2), (Stats.TotalAgility, 1f / 20)));
+
+        horse.PossibleItemOptions.Add(horseOptionDefinition);
+    }
+
     /// <summary>
     /// Adds the fenrir options.
     /// </summary>
@@ -249,10 +265,10 @@ public class Pets : InitializerBase
         fenrirOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.BlackFenrir, 1, Stats.AttackDamageIncrease, 1.1f, AggregateType.Multiplicate, ItemOptionDefinitionNumbers.Fenrir));
         fenrirOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.BlueFenrir, 2, Stats.DamageReceiveDecrement, 0.90f, AggregateType.Multiplicate, ItemOptionDefinitionNumbers.Fenrir));
 
-        fenrirOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.GoldFenrir, 4, Stats.MaximumHealth, 200f, AggregateType.AddFinal, ItemOptionDefinitionNumbers.Fenrir));
-        fenrirOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.GoldFenrir, 4, Stats.MaximumMana, 200f, AggregateType.AddFinal, ItemOptionDefinitionNumbers.Fenrir));
-        fenrirOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.GoldFenrir, 4, Stats.MaximumPhysBaseDmg, 33f, AggregateType.AddRaw, ItemOptionDefinitionNumbers.Fenrir));
-        fenrirOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.GoldFenrir, 4, Stats.MaximumWizBaseDmg, 16f, AggregateType.AddRaw, ItemOptionDefinitionNumbers.Fenrir));
+        fenrirOptionDefinition.PossibleOptions.Add(this.CreateRelatedPetOption(ItemOptionTypes.GoldFenrir, 4, Stats.MaximumHealth, AggregateType.AddFinal, ItemOptionDefinitionNumbers.Fenrir, 0, (Stats.TotalLevel, 0.5f)));
+        fenrirOptionDefinition.PossibleOptions.Add(this.CreateRelatedPetOption(ItemOptionTypes.GoldFenrir, 4, Stats.MaximumMana, AggregateType.AddFinal, ItemOptionDefinitionNumbers.Fenrir, 0, (Stats.TotalLevel, 0.5f)));
+        fenrirOptionDefinition.PossibleOptions.Add(this.CreateRelatedPetOption(ItemOptionTypes.GoldFenrir, 4, Stats.PhysicalBaseDmg, AggregateType.AddRaw, ItemOptionDefinitionNumbers.Fenrir, 0, (Stats.TotalLevel, 1f / 12f)));
+        fenrirOptionDefinition.PossibleOptions.Add(this.CreateRelatedPetOption(ItemOptionTypes.GoldFenrir, 4, Stats.WizardryBaseDmg, AggregateType.AddRaw, ItemOptionDefinitionNumbers.Fenrir, 0, (Stats.TotalLevel, 1f / 25f)));
 
         fenrir.PossibleItemOptions.Add(fenrirOptionDefinition);
     }
@@ -264,6 +280,31 @@ public class Pets : InitializerBase
         itemOption.OptionType = this.GameConfiguration.ItemOptionTypes.First(t => t == optionType);
         itemOption.Number = number;
         itemOption.PowerUpDefinition = this.CreatePowerUpDefinition(attributeDefinition, value, aggregateType);
+        return itemOption;
+    }
+
+    private IncreasableItemOption CreateRelatedPetOption(ItemOptionType optionType, int number, AttributeDefinition targetAttribute, AggregateType aggregateType, short optionNumber, float baseValue = 0, params (AttributeDefinition SourceAttribute, float Multiplier)[] relatedAttributes)
+    {
+        var itemOption = this.Context.CreateNew<IncreasableItemOption>();
+        itemOption.SetGuid(optionNumber, targetAttribute.Id.ExtractFirstTwoBytes());
+        itemOption.OptionType = this.GameConfiguration.ItemOptionTypes.First(t => t == optionType);
+        itemOption.Number = number;
+        itemOption.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
+        itemOption.PowerUpDefinition.TargetAttribute = targetAttribute.GetPersistent(this.GameConfiguration);
+        itemOption.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+        itemOption.PowerUpDefinition.Boost.ConstantValue.Value = baseValue;
+        itemOption.PowerUpDefinition.Boost.ConstantValue.AggregateType = aggregateType;
+
+        for (int i = 0; i < relatedAttributes.Length; i++)
+        {
+            var attributeRelationship = this.Context.CreateNew<AttributeRelationship>();
+            attributeRelationship.SetGuid(optionNumber, targetAttribute.Id.ExtractFirstTwoBytes(), (byte)i);
+            attributeRelationship.InputAttribute = relatedAttributes[i].SourceAttribute.GetPersistent(this.GameConfiguration);
+            attributeRelationship.InputOperator = InputOperator.Multiply;
+            attributeRelationship.InputOperand = relatedAttributes[i].Multiplier;
+            itemOption.PowerUpDefinition.Boost.RelatedValues.Add(attributeRelationship);
+        }
+
         return itemOption;
     }
 }

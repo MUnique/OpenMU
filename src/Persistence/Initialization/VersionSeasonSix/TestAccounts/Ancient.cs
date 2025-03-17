@@ -44,7 +44,7 @@ internal class Ancient : AccountInitializerBase
         character.Inventory.Items.Add(this.CreateFullAncient(InventoryConstants.PendantSlot, ItemGroups.Misc1, 25, 0, "Broy")); // Broy Pendant of Ice
         character.Inventory.Items.Add(this.CreateFullAncient(InventoryConstants.Ring1Slot, ItemGroups.Misc1, 9, 0, "Agnis")); // Agnis Ring of Poison
         character.Inventory.Items.Add(this.CreateWings(InventoryConstants.WingsSlot, 30, 13, 13)); // Cape +13
-        character.Inventory.Items.Add(this.CreatePet(InventoryConstants.PetSlot, 4)); // Horse
+        character.Inventory.Items.Add(this.CreateHorse(InventoryConstants.PetSlot));
 
         this.AddDarkLordItems(character.Inventory);
         this.AddTestJewelsAndPotions(character.Inventory);
