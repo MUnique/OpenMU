@@ -134,7 +134,7 @@ public static class AttackableExtensions
     /// <param name="damage">The damage.</param>
     /// <param name="attributes">The attributes.</param>
     /// <param name="attacker">The attacker.</param>
-    /// <param name="manaToll">The mana amount that is traded for damage (e.g. from Soul Barrier).</param>
+    /// <param name="manaToll">The mana reduction amount that is traded for damage (e.g. from Soul Barrier).</param>
     /// <returns>The calculated hit info.</returns>
     public static HitInfo GetHitInfo(this IAttackable defender, uint damage, DamageAttributes attributes, IAttacker attacker, uint manaToll = 0)
     {

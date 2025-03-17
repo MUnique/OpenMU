@@ -1,4 +1,4 @@
-// <copyright file="AttackableNpcBase.cs" company="MUnique">
+﻿// <copyright file="AttackableNpcBase.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -105,7 +105,7 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
             return null;
         }
 
-        var hitInfo = (await attacker.CalculateDamageAsync(this, skill, isCombo, damageFactor).ConfigureAwait(false)).HitInfo;
+        var hitInfo = await attacker.CalculateDamageAsync(this, skill, isCombo, damageFactor).ConfigureAwait(false);
         await this.HitAsync(hitInfo, attacker, skill?.Skill).ConfigureAwait(false);
         if (hitInfo.HealthDamage > 0)
         {
