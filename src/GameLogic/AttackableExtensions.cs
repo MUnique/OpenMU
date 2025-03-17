@@ -34,7 +34,7 @@ public static class AttackableExtensions
     /// <param name="isCombo">If set to <c>true</c>, the damage gets increased by a combo bonus.</param>
     /// <param name="damageFactor">The damage factor.</param>
     /// <returns>
-    /// The hit information, and the soul barrier mana toll, if any.
+    /// The hit information.
     /// </returns>
     public static async ValueTask<HitInfo> CalculateDamageAsync(this IAttacker attacker, IAttackable defender, SkillEntry? skill, bool isCombo, double damageFactor = 1.0)
     {
