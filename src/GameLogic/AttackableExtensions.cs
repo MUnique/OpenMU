@@ -95,11 +95,11 @@ public static class AttackableExtensions
             dmg = (int)(dmg * attacker.Attributes[Stats.TwoHandedWeaponDamageIncrease]);
         }
 
-        int manaToll = 0;
+        float manaToll = 0;
         var soulBarrierManaToll = defender.Attributes[Stats.SoulBarrierManaTollPerHit];
         if (soulBarrierManaToll > 0 && defender.Attributes[Stats.CurrentMana] > soulBarrierManaToll)
         {
-            manaToll = (int)soulBarrierManaToll;
+            manaToll = soulBarrierManaToll;
             dmg -= (int)(dmg * defender.Attributes[Stats.SoulBarrierReceiveDecrement]);
         }
 
