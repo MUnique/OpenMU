@@ -36,12 +36,11 @@ public static class AttackableExtensions
     /// <returns>
     /// The hit information, and the soul barrier mana toll, if any.
     /// </returns>
-    public static async ValueTask<(HitInfo HitInfo, float ManaToll)> CalculateDamageAsync(this IAttacker attacker, IAttackable defender, SkillEntry? skill, bool isCombo, double damageFactor = 1.0)
+    public static async ValueTask<HitInfo> CalculateDamageAsync(this IAttacker attacker, IAttackable defender, SkillEntry? skill, bool isCombo, double damageFactor = 1.0)
     {
-        float manaToll = 0;
         if (!attacker.IsAttackSuccessfulTo(defender))
         {
-            return (new HitInfo(0, 0, DamageAttributes.Undefined), manaToll);
+            return new HitInfo(0, 0, DamageAttributes.Undefined);
         }
 
         DamageAttributes attributes = DamageAttributes.Undefined;
@@ -96,10 +95,11 @@ public static class AttackableExtensions
             dmg = (int)(dmg * attacker.Attributes[Stats.TwoHandedWeaponDamageIncrease]);
         }
 
+        int manaToll = 0;
         var soulBarrierManaToll = defender.Attributes[Stats.SoulBarrierManaTollPerHit];
         if (soulBarrierManaToll > 0 && defender.Attributes[Stats.CurrentMana] > soulBarrierManaToll)
         {
-            manaToll = soulBarrierManaToll;
+            manaToll = (int)soulBarrierManaToll;
             dmg -= (int)(dmg * defender.Attributes[Stats.SoulBarrierReceiveDecrement]);
         }
 
@@ -124,7 +124,7 @@ public static class AttackableExtensions
         dmg = (int)(dmg * damageFactor);
 
         var minimumDamage = attacker.Attributes[Stats.Level] / 10;
-        return (defender.GetHitInfo(Math.Max((uint)dmg, (uint)minimumDamage), attributes, attacker), manaToll);
+        return defender.GetHitInfo(Math.Max((uint)dmg, (uint)minimumDamage), attributes, attacker, (uint)manaToll);
     }
 
     /// <summary>
@@ -134,13 +134,14 @@ public static class AttackableExtensions
     /// <param name="damage">The damage.</param>
     /// <param name="attributes">The attributes.</param>
     /// <param name="attacker">The attacker.</param>
+    /// <param name="manaToll">The mana amount that is traded for damage (e.g. from Soul Barrier).</param>
     /// <returns>The calculated hit info.</returns>
-    public static HitInfo GetHitInfo(this IAttackable defender, uint damage, DamageAttributes attributes, IAttacker attacker)
+    public static HitInfo GetHitInfo(this IAttackable defender, uint damage, DamageAttributes attributes, IAttacker attacker, uint manaToll = 0)
     {
         var shieldBypass = Rand.NextRandomBool(attacker.Attributes[Stats.ShieldBypassChance]);
         if (shieldBypass || defender.Attributes[Stats.CurrentShield] < 1)
         {
-            return new HitInfo(damage, 0, attributes);
+            return new HitInfo(damage, 0, attributes, manaToll);
         }
 
         var shieldRatio = 0.90;
@@ -148,7 +149,7 @@ public static class AttackableExtensions
         shieldRatio += defender.Attributes[Stats.ShieldRateIncrease];
         shieldRatio = Math.Max(0, shieldRatio);
         shieldRatio = Math.Min(1, shieldRatio);
-        return new HitInfo((uint)(damage * (1 - shieldRatio)), (uint)(damage * shieldRatio), attributes);
+        return new HitInfo((uint)(damage * (1 - shieldRatio)), (uint)(damage * shieldRatio), attributes, manaToll);
     }
 
     /// <summary>
