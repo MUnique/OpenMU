@@ -337,11 +337,11 @@ internal sealed class Program : IDisposable
 
         var typesWithCustomConfig = pluginManager.KnownPlugInTypes.Where(t => t.GetInterfaces().Contains(typeof(ISupportDefaultCustomConfiguration))).ToDictionary(t => t.GUID, t => t);
 
+        using var notificationSuspension = context.SuspendChangeNotifications();
         var typesWithMissingCustomConfigs = configs.Where(c => string.IsNullOrWhiteSpace(c.CustomConfiguration) && typesWithCustomConfig.ContainsKey(c.TypeId)).ToList();
         if (typesWithMissingCustomConfigs.Any())
         {
             typesWithMissingCustomConfigs.ForEach(c => this.CreateDefaultPlugInConfiguration(typesWithCustomConfig[c.TypeId]!, c, referenceHandler));
-            using var notificationSuspension = context.SuspendChangeNotifications();
             _ = context.SaveChangesAsync().AsTask().WaitAndUnwrapException();
         }
 
@@ -352,6 +352,7 @@ internal sealed class Program : IDisposable
         }
 
         configs.AddRange(this.CreateMissingPlugInConfigurations(typesWithMissingConfigs, persistenceContextProvider, referenceHandler));
+        _ = context.SaveChangesAsync().AsTask().WaitAndUnwrapException();
         return configs;
     }
 
