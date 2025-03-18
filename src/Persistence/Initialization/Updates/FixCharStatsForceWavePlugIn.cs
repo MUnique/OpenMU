@@ -46,7 +46,7 @@ public class FixCharStatsForceWavePlugIn : UpdatePlugInBase
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FixHorseFenrirOptionsSoulBarrierPlugIn;
+    public override UpdateVersion Version => UpdateVersion.FixCharStatsForceWavePlugIn;
 
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
@@ -55,6 +55,7 @@ public class FixCharStatsForceWavePlugIn : UpdatePlugInBase
         var baseAgility = Stats.BaseAgility.GetPersistent(gameConfiguration);
         var baseVitality = Stats.BaseVitality.GetPersistent(gameConfiguration);
         var baseEnergy = Stats.BaseEnergy.GetPersistent(gameConfiguration);
+        var baseLeadership = Stats.BaseLeadership.GetPersistent(gameConfiguration);
 
         var attackRatePvm = Stats.AttackRatePvm.GetPersistent(gameConfiguration);
         var attackRatePvp = Stats.AttackRatePvp.GetPersistent(gameConfiguration);
@@ -80,6 +81,10 @@ public class FixCharStatsForceWavePlugIn : UpdatePlugInBase
                 else if (attrCombo.TargetAttribute == Stats.FenrirBaseDmg && attrCombo.InputAttribute == Stats.TotalEnergy)
                 {
                     attrCombo.InputAttribute = baseEnergy;
+                }
+                else if (attrCombo.TargetAttribute == Stats.FenrirBaseDmg && attrCombo.InputAttribute == Stats.TotalLeadership)
+                {
+                    attrCombo.InputAttribute = baseLeadership;
                 }
                 else if (attrCombo.TargetAttribute == Stats.AttackRatePvm && attrCombo.InputAttribute == Stats.Level)
                 {
