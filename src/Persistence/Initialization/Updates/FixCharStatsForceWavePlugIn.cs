@@ -82,10 +82,6 @@ public class FixCharStatsForceWavePlugIn : UpdatePlugInBase
                 {
                     attrCombo.InputAttribute = baseEnergy;
                 }
-                else if (attrCombo.TargetAttribute == Stats.FenrirBaseDmg && attrCombo.InputAttribute == Stats.TotalLeadership)
-                {
-                    attrCombo.InputAttribute = baseLeadership;
-                }
                 else if (attrCombo.TargetAttribute == Stats.AttackRatePvm && attrCombo.InputAttribute == Stats.Level)
                 {
                     attrCombo.InputAttribute = totalLevel;
@@ -129,23 +125,32 @@ public class FixCharStatsForceWavePlugIn : UpdatePlugInBase
                 charClass.StatAttributes.First(attr => attr.Attribute == Stats.CurrentHealth).BaseValue = 90;
                 charClass.StatAttributes.First(attr => attr.Attribute == Stats.CurrentMana).BaseValue = 40;
 
+                if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.FenrirBaseDmg && attrCombo.InputAttribute == Stats.TotalLeadership) is { } totalLeadershipToFenrirBaseDmg)
+                {
+                    totalLeadershipToFenrirBaseDmg.InputAttribute = baseLeadership;
+                }
+
                 if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.AttackRatePvm && attrCombo.InputAttribute == Stats.TotalAgility) is { } totalAgilityToAttackRatePvm)
                 {
                     totalAgilityToAttackRatePvm.InputOperand = 3;
                 }
-                else if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.AttackRatePvm && attrCombo.InputAttribute == Stats.TotalStrength) is { } totalStrengthToAttackRatePvm)
+
+                if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.AttackRatePvm && attrCombo.InputAttribute == Stats.TotalStrength) is { } totalStrengthToAttackRatePvm)
                 {
                     totalStrengthToAttackRatePvm.InputOperand = 0.25f;
                 }
-                else if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.MaximumMana && attrCombo.InputAttribute == Stats.TotalLevel) is { } totalLevelToMaximumMana)
+
+                if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.MaximumMana && attrCombo.InputAttribute == Stats.TotalLevel) is { } totalLevelToMaximumMana)
                 {
                     totalLevelToMaximumMana.InputOperand = 1;
                 }
-                else if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.MaximumHealth && attrCombo.InputAttribute == Stats.TotalLevel) is { } totalLevelToMaximumHealth)
+
+                if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.MaximumHealth && attrCombo.InputAttribute == Stats.TotalLevel) is { } totalLevelToMaximumHealth)
                 {
                     totalLevelToMaximumHealth.InputOperand = 1.5f;
                 }
-                else if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.MaximumHealth && attrCombo.InputAttribute == Stats.TotalVitality) is { } totalVitalityoMaximumHealth)
+
+                if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.MaximumHealth && attrCombo.InputAttribute == Stats.TotalVitality) is { } totalVitalityoMaximumHealth)
                 {
                     totalVitalityoMaximumHealth.InputOperand = 2;
                 }
@@ -172,45 +177,55 @@ public class FixCharStatsForceWavePlugIn : UpdatePlugInBase
                 {
                     baseAgilityToDefenseRatePvp.InputOperand = 0.2f;
                 }
-                else if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.DefenseRatePvp && attrCombo.InputAttribute == Stats.TotalLevel) is { } totalLevelToDefenseRatePvp)
+
+                if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.DefenseRatePvp && attrCombo.InputAttribute == Stats.TotalLevel) is { } totalLevelToDefenseRatePvp)
                 {
                     totalLevelToDefenseRatePvp.InputOperand = 1.5f;
                 }
-                else if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.AttackRatePvm && attrCombo.InputAttribute == Stats.TotalLevel) is { } totalLevelToAttackRatePvm)
+
+                if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.AttackRatePvm && attrCombo.InputAttribute == Stats.TotalLevel) is { } totalLevelToAttackRatePvm)
                 {
                     totalLevelToAttackRatePvm.InputOperand = 5;
                 }
-                else if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.AttackRatePvm && attrCombo.InputAttribute == Stats.TotalAgility) is { } totalAgilityToAttackRatePvm)
+
+                if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.AttackRatePvm && attrCombo.InputAttribute == Stats.TotalAgility) is { } totalAgilityToAttackRatePvm)
                 {
                     totalAgilityToAttackRatePvm.InputOperand = 1.5f;
                 }
-                else if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.AttackRatePvm && attrCombo.InputAttribute == Stats.TotalStrength) is { } totalStrengthToAttackRatePvm)
+
+                if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.AttackRatePvm && attrCombo.InputAttribute == Stats.TotalStrength) is { } totalStrengthToAttackRatePvm)
                 {
                     totalStrengthToAttackRatePvm.InputOperand = 0.25f;
                 }
-                else if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.AttackRatePvp && attrCombo.InputAttribute == Stats.BaseAgility) is { } baseAgilityToAttackRatePvp)
+
+                if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.AttackRatePvp && attrCombo.InputAttribute == Stats.BaseAgility) is { } baseAgilityToAttackRatePvp)
                 {
                     baseAgilityToAttackRatePvp.InputOperand = 3.6f;
                 }
-                else if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.AttackRatePvp && attrCombo.InputAttribute == Stats.TotalLevel) is { } totalLevelToAttackRatePvp)
+
+                if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.AttackRatePvp && attrCombo.InputAttribute == Stats.TotalLevel) is { } totalLevelToAttackRatePvp)
                 {
                     totalLevelToAttackRatePvp.InputOperand = 2.6f;
                 }
-                else if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.FenrirBaseDmg && attrCombo.InputAttribute == Stats.BaseStrength) is { } baseStrengthToFenrirBaseDmg)
+
+                if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.AttackRatePvp && attrCombo.InputAttribute == Stats.TotalEnergy) is { } totalEnergyToAttackRatePvp)
+                {
+                    charClass.AttributeCombinations.Remove(totalEnergyToAttackRatePvp);
+                }
+
+                if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.FenrirBaseDmg && attrCombo.InputAttribute == Stats.BaseStrength) is { } baseStrengthToFenrirBaseDmg)
                 {
                     baseStrengthToFenrirBaseDmg.InputOperand = 1.0f / 5;
                 }
-                else if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.FenrirBaseDmg && attrCombo.InputAttribute == Stats.BaseVitality) is { } baseVitalityToFenrirBaseDmg)
+
+                if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.FenrirBaseDmg && attrCombo.InputAttribute == Stats.BaseVitality) is { } baseVitalityToFenrirBaseDmg)
                 {
                     baseVitalityToFenrirBaseDmg.InputOperand = 1.0f / 7;
                 }
-                else if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.FenrirBaseDmg && attrCombo.InputAttribute == Stats.BaseEnergy) is { } baseEnergyToFenrirBaseDmg)
+
+                if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.FenrirBaseDmg && attrCombo.InputAttribute == Stats.BaseEnergy) is { } baseEnergyToFenrirBaseDmg)
                 {
                     baseEnergyToFenrirBaseDmg.InputOperand = 1.0f / 3;
-                }
-                else
-                {
-                    // nothing to do
                 }
             }
             else if (charClass.Number == 20 || charClass.Number == 22 || charClass.Number == 23) // Summoner classes
@@ -221,17 +236,15 @@ public class FixCharStatsForceWavePlugIn : UpdatePlugInBase
                 {
                     totalAgilityToDefenseBase.InputOperand = 1.0f / 3;
                 }
-                else if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.DefenseRatePvp && attrCombo.InputAttribute == Stats.BaseAgility) is { } baseAgilityToDefenseRatePvp)
+
+                if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.DefenseRatePvp && attrCombo.InputAttribute == Stats.BaseAgility) is { } baseAgilityToDefenseRatePvp)
                 {
                     baseAgilityToDefenseRatePvp.InputOperand = 0.5f;
                 }
-                else if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.AttackRatePvp && attrCombo.InputAttribute == Stats.BaseAgility) is { } baseAgilityToAttackRatePvp)
+
+                if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.AttackRatePvp && attrCombo.InputAttribute == Stats.BaseAgility) is { } baseAgilityToAttackRatePvp)
                 {
                     baseAgilityToAttackRatePvp.InputOperand = 3.5f;
-                }
-                else
-                {
-                    // nothing to do
                 }
             }
             else
@@ -245,33 +258,27 @@ public class FixCharStatsForceWavePlugIn : UpdatePlugInBase
         forceWave.ImplicitTargetRange = 1;
 
         // Create Force Wave Streng alt skill
-        this.CreateForceWaveStrengAltSkill(context, gameConfiguration);
-        this.AddForceWaveStrengAltMasterSkillDefinition(context, gameConfiguration, forceWave);
+        this.CreateForceWaveStrengAltSkill(context, gameConfiguration, forceWave);
     }
 
-    private void CreateForceWaveStrengAltSkill(IContext context, GameConfiguration gameConfiguration)
+    private void CreateForceWaveStrengAltSkill(IContext context, GameConfiguration gameConfiguration, Skill regularSkill)
     {
         var skill = context.CreateNew<Skill>();
         gameConfiguration.Skills.Add(skill);
         skill.Number = (short)SkillNumber.ForceWaveStrengAlt;
         skill.Name = "Force Wave Streng (scepter with skill)";
+        skill.Range = 4;
 
         var requirement = context.CreateNew<AttributeRequirement>();
         requirement.Attribute = Stats.CurrentMana.GetPersistent(gameConfiguration);
         requirement.MinimumValue = 15;
         skill.ConsumeRequirements.Add(requirement);
 
-        skill.Range = 4;
-
         var lordEmperorClass = gameConfiguration.CharacterClasses.First(c => c.Number == 17);
         skill.QualifiedCharacters.Add(lordEmperorClass);
 
         skill.SetGuid(skill.Number);
-    }
 
-    private void AddForceWaveStrengAltMasterSkillDefinition(IContext context, GameConfiguration gameConfiguration, Skill regularSkill)
-    {
-        var skill = gameConfiguration.Skills.First(s => s.Number == (short)SkillNumber.ForceWaveStrengAlt);
         skill.MasterDefinition = context.CreateNew<MasterSkillDefinition>();
         skill.MasterDefinition.Rank = 2;
         skill.MasterDefinition.Root = gameConfiguration.MasterSkillRoots.First(r => r.Name == "Middle Root");
@@ -290,8 +297,6 @@ public class FixCharStatsForceWavePlugIn : UpdatePlugInBase
         var replacedSkill = skill.MasterDefinition.ReplacedSkill;
         if (replacedSkill != null)
         {
-            // Because we don't want to duplicate code from the replaced skills to the master skills, we just assign some values from the replaced skill.
-            // These describe the skill behavior.
             skill.AttackDamage = replacedSkill.AttackDamage;
             skill.DamageType = replacedSkill.DamageType;
             skill.ElementalModifierTarget = replacedSkill.ElementalModifierTarget;
