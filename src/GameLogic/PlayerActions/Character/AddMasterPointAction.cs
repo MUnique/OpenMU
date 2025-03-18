@@ -1,4 +1,4 @@
-// <copyright file="AddMasterPointAction.cs" company="MUnique">
+﻿// <copyright file="AddMasterPointAction.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -89,6 +89,11 @@ public class AddMasterPointAction
                 childSkill.PowerUpDuration = null;
                 childSkill.PowerUps = null;
                 currentSkill = childSkill;
+            }
+
+            if (learnedSkill.Skill.Number == 509) // Force Wave Streng
+            {
+                player.SkillList!.GetSkill(5090)!.Level += requiredPoints;
             }
 
             player.SelectedCharacter.MasterLevelUpPoints -= requiredPoints;

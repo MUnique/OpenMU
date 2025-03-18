@@ -88,6 +88,15 @@ public sealed class SkillList : ISkillList, IDisposable
         skillEntry.Level = 0;
         await this.AddLearnedSkillAsync(skillEntry).ConfigureAwait(false);
 
+        if (skill.Number == 509) // Force Wave Streng
+        {
+            var forceWaveStrSkillScepterSkillEntry = this._player.PersistenceContext.CreateNew<SkillEntry>();
+            forceWaveStrSkillScepterSkillEntry.Skill = this._player.GameContext.Configuration.Skills.FirstOrDefault(s => s.Number == 5090);
+            forceWaveStrSkillScepterSkillEntry.Level = 0;
+            this._availableSkills.Add(forceWaveStrSkillScepterSkillEntry.Skill!.Number.ToUnsigned(), forceWaveStrSkillScepterSkillEntry);
+            this._learnedSkills.Add(forceWaveStrSkillScepterSkillEntry);
+        }
+
         if (skill.MasterDefinition?.ReplacedSkill is { } replacedSkill)
         {
             await this._player.InvokeViewPlugInAsync<ISkillListViewPlugIn>(p => p.RemoveSkillAsync(replacedSkill)).ConfigureAwait(false);

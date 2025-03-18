@@ -160,8 +160,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.CreateSkill(SkillNumber.IncreaseCriticalDamage, "Increase Critical Damage", CharacterClasses.AllLords, abilityConsumption: 50, manaConsumption: 50, energyRequirement: 102, leadershipRequirement: 300, skillType: SkillType.Buff, skillTarget: SkillTarget.ImplicitParty);
         this.CreateSkill(SkillNumber.ElectricSpike, "Electric Spike", CharacterClasses.AllLords, DamageType.Physical, 250, 10, 100, energyRequirement: 126, leadershipRequirement: 340, skillType: SkillType.AreaSkillAutomaticHits);
         this.AddAreaSkillSettings(SkillNumber.ElectricSpike, true, 1.5f, 1.5f, 12f, useDeferredHits: true, delayPerOneDistance: TimeSpan.FromMilliseconds(10));
-        this.CreateSkill(SkillNumber.ForceWave, "Force Wave", CharacterClasses.AllLords, DamageType.Physical, 50, 4, manaConsumption: 10, skillType: SkillType.DirectHit, skillTarget: SkillTarget.ExplicitWithImplicitInRange);
-        this.AddAreaSkillSettings(SkillNumber.ForceWave, true, 1f, 1f, 4f);
+        this.CreateSkill(SkillNumber.ForceWave, "Force Wave", CharacterClasses.AllLords, DamageType.Physical, 50, 4, manaConsumption: 10, skillType: SkillType.DirectHit, skillTarget: SkillTarget.ExplicitWithImplicitInRange, implicitTargetRange: 1);
         this.CreateSkill(SkillNumber.Stun, "Stun", CharacterClasses.All, distance: 2, abilityConsumption: 50, manaConsumption: 70, skillType: SkillType.AreaSkillAutomaticHits, cooldownMinutes: 4);
         this.AddAreaSkillSettings(SkillNumber.Stun, true, 1.5f, 1.5f, 3f);
         this.CreateSkill(SkillNumber.CancelStun, "Cancel Stun", CharacterClasses.All, abilityConsumption: 30, manaConsumption: 25, skillType: SkillType.Other, cooldownMinutes: 2);
@@ -353,6 +352,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         // Lord Emperor (DL):
         this.CreateSkill(SkillNumber.FireBurstStreng, "Fire Burst Streng", CharacterClasses.LordEmperor, DamageType.Physical, 22, 6, manaConsumption: 25, levelRequirement: 74, energyRequirement: 20);
         this.CreateSkill(SkillNumber.ForceWaveStreng, "Force Wave Streng", CharacterClasses.LordEmperor, DamageType.Physical, 3, 4, manaConsumption: 15);
+        this.CreateSkill(SkillNumber.ForceWaveStrengAlt, "Force Wave Streng (scepter with skill)", CharacterClasses.LordEmperor, DamageType.Physical, 3, 4, manaConsumption: 15);
         this.CreateSkill(SkillNumber.DarkHorseStreng1, "Dark Horse Streng (1)", CharacterClasses.LordEmperor, damage: 17, skillType: SkillType.PassiveBoost);
         this.CreateSkill(SkillNumber.CriticalDmgIncPowUp, "Critical DMG Inc PowUp", CharacterClasses.LordEmperor, damage: 3, abilityConsumption: 75, manaConsumption: 75, levelRequirement: 82, energyRequirement: 25, leadershipRequirement: 300);
         this.CreateSkill(SkillNumber.EarthshakeStreng, "Earthshake Streng", CharacterClasses.LordEmperor, DamageType.Physical, 22, 10, 75, elementalModifier: ElementalType.Lightning);
@@ -758,6 +758,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         // DL
         this.AddMasterSkillDefinition(SkillNumber.FireBurstStreng, SkillNumber.FireBurst, SkillNumber.Undefined, 2, 2, SkillNumber.FireBurst, 20, Formula502);
         this.AddMasterSkillDefinition(SkillNumber.ForceWaveStreng, SkillNumber.Force, SkillNumber.Undefined, 2, 2, SkillNumber.Force, 20, Formula632);
+        this.AddMasterSkillDefinition(SkillNumber.ForceWaveStrengAlt, SkillNumber.Force, SkillNumber.Undefined, 2, 2, SkillNumber.ForceWave, 20, Formula632);
         this.AddPassiveMasterSkillDefinition(SkillNumber.DarkHorseStreng1, Stats.BonusDefenseWithHorse, AggregateType.AddRaw, Formula1204, 2, 2);
         this.AddMasterSkillDefinition(SkillNumber.CriticalDmgIncPowUp, SkillNumber.IncreaseCriticalDamage, SkillNumber.Undefined, 2, 3, SkillNumber.IncreaseCriticalDamage, 20, Formula632);
         this.AddMasterSkillDefinition(SkillNumber.EarthshakeStreng, SkillNumber.Earthshake, SkillNumber.DarkHorseStreng1, 2, 3, SkillNumber.Earthshake, 20, Formula502);

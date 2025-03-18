@@ -243,6 +243,7 @@ internal enum SkillNumber
     BloodAttackStrengthen = 490,
     FireBurstStreng = 508,
     ForceWaveStreng = 509,
+    ForceWaveStrengAlt = 5090,
     DarkHorseStreng1 = 510,
     CriticalDmgIncPowUp = 511,
     EarthshakeStreng = 512,
