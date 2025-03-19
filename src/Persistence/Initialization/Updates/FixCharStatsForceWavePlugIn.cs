@@ -56,10 +56,6 @@ public class FixCharStatsForceWavePlugIn : UpdatePlugInBase
         var baseVitality = Stats.BaseVitality.GetPersistent(gameConfiguration);
         var baseEnergy = Stats.BaseEnergy.GetPersistent(gameConfiguration);
         var baseLeadership = Stats.BaseLeadership.GetPersistent(gameConfiguration);
-
-        var attackRatePvm = Stats.AttackRatePvm.GetPersistent(gameConfiguration);
-        var attackRatePvp = Stats.AttackRatePvp.GetPersistent(gameConfiguration);
-        var defenseRatePvp = Stats.DefenseRatePvp.GetPersistent(gameConfiguration);
         var totalLevel = Stats.TotalLevel.GetPersistent(gameConfiguration);
 
         gameConfiguration.CharacterClasses.ForEach(charClass =>
@@ -155,7 +151,7 @@ public class FixCharStatsForceWavePlugIn : UpdatePlugInBase
                     totalVitalityoMaximumHealth.InputOperand = 2;
                 }
             }
-            else if (charClass.Number == 0 || charClass.Number == 0 || charClass.Number == 3) // Wizard classes
+            else if (charClass.Number == 0 || charClass.Number == 2 || charClass.Number == 3) // Wizard classes
             {
                 if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.DefenseBase && attrCombo.InputAttribute == Stats.TotalAgility) is { } totalAgilityToDefenseBase)
                 {

@@ -10,82 +10,82 @@ namespace MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 public enum CharacterClassNumber : byte
 {
     /// <summary>
-    /// The dark wizard
+    /// The dark wizard.
     /// </summary>
     DarkWizard = 0,
 
     /// <summary>
-    /// The soul master
+    /// The soul master.
     /// </summary>
     SoulMaster = 2,
 
     /// <summary>
-    /// The grand master
+    /// The grand master.
     /// </summary>
     GrandMaster = 3,
 
     /// <summary>
-    /// The dark knight
+    /// The dark knight.
     /// </summary>
     DarkKnight = 4,
 
     /// <summary>
-    /// The blade knight
+    /// The blade knight.
     /// </summary>
     BladeKnight = 6,
 
     /// <summary>
-    /// The blade master
+    /// The blade master.
     /// </summary>
     BladeMaster = 7,
 
     /// <summary>
-    /// The fairy elf
+    /// The fairy elf.
     /// </summary>
     FairyElf = 8,
 
     /// <summary>
-    /// The muse elf
+    /// The muse elf.
     /// </summary>
     MuseElf = 10,
 
     /// <summary>
-    /// The high elf
+    /// The high elf.
     /// </summary>
     HighElf = 11,
 
     /// <summary>
-    /// The magic gladiator
+    /// The magic gladiator.
     /// </summary>
     MagicGladiator = 12,
 
     /// <summary>
-    /// The duel master
+    /// The duel master.
     /// </summary>
     DuelMaster = 13,
 
     /// <summary>
-    /// The dark lord
+    /// The dark lord.
     /// </summary>
     DarkLord = 16,
 
     /// <summary>
-    /// The lord emperor
+    /// The lord emperor.
     /// </summary>
     LordEmperor = 17,
 
     /// <summary>
-    /// The summoner
+    /// The summoner.
     /// </summary>
     Summoner = 20,
 
     /// <summary>
-    /// The bloody summoner
+    /// The bloody summoner.
     /// </summary>
     BloodySummoner = 22,
 
     /// <summary>
-    /// The dimension master
+    /// The dimension master.
     /// </summary>
     DimensionMaster = 23,
 
