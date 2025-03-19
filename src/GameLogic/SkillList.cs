@@ -15,6 +15,9 @@ using Nito.AsyncEx.Synchronous;
 /// </summary>
 public sealed class SkillList : ISkillList, IDisposable
 {
+    private const short ForceWaveStrengSkillId = 509;
+    private const short ForceWaveStrengAltSkillId = 5090;
+
     private readonly IDictionary<ushort, SkillEntry> _availableSkills;
 
     private readonly ICollection<SkillEntry> _learnedSkills;
@@ -88,13 +91,12 @@ public sealed class SkillList : ISkillList, IDisposable
         skillEntry.Level = 0;
         await this.AddLearnedSkillAsync(skillEntry).ConfigureAwait(false);
 
-        if (skill.Number == 509) // Force Wave Streng
+        if (skill.Number == ForceWaveStrengSkillId)
         {
-            var forceWaveStrSkillScepterSkillEntry = this._player.PersistenceContext.CreateNew<SkillEntry>();
-            forceWaveStrSkillScepterSkillEntry.Skill = this._player.GameContext.Configuration.Skills.FirstOrDefault(s => s.Number == 5090);
-            forceWaveStrSkillScepterSkillEntry.Level = 0;
-            this._availableSkills.Add(forceWaveStrSkillScepterSkillEntry.Skill!.Number.ToUnsigned(), forceWaveStrSkillScepterSkillEntry);
-            this._learnedSkills.Add(forceWaveStrSkillScepterSkillEntry);
+            var forceWaveStrAltSkillEntry = this._player.PersistenceContext.CreateNew<SkillEntry>();
+            forceWaveStrAltSkillEntry.Skill = this._player.GameContext.Configuration.Skills.First(s => s.Number == ForceWaveStrengAltSkillId);
+            forceWaveStrAltSkillEntry.Level = 0;
+            await this.AddLearnedSkillAsync(forceWaveStrAltSkillEntry).ConfigureAwait(false);
         }
 
         if (skill.MasterDefinition?.ReplacedSkill is { } replacedSkill)
@@ -150,6 +152,11 @@ public sealed class SkillList : ISkillList, IDisposable
     {
         this._availableSkills.Add(skill.Skill!.Number.ToUnsigned(), skill);
         this._learnedSkills.Add(skill);
+
+        if (skill.Skill.Number == ForceWaveStrengAltSkillId)
+        {
+            return;
+        }
 
         if (skill.Skill.SkillType == SkillType.PassiveBoost)
         {

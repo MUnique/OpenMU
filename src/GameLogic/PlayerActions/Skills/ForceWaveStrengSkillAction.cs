@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("9072ce9c-1482-4838-ba0a-4c312062e090")]
 public class ForceWaveStrengSkillAction : TargetedSkillDefaultPlugin
 {
-    private const ushort ForceWaveStrengAltId = 5090;
+    private const ushort ForceWaveStrengAltSkillId = 5090;
 
     /// <inheritdoc/>
     public override short Key => 509;
@@ -27,7 +27,7 @@ public class ForceWaveStrengSkillAction : TargetedSkillDefaultPlugin
         if (player.Attributes?[Stats.IsScepterEquipped] > 0 is true
             && player.Inventory!.EquippedItems.First(item => item.ItemSlot == InventoryConstants.LeftHandSlot).HasSkill)
         {
-            skillId = ForceWaveStrengAltId;
+            skillId = ForceWaveStrengAltSkillId;
         }
 
         await base.PerformSkillAsync(player, target, skillId).ConfigureAwait(false);
