@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// A chat command plugin which handles the command to get stat points.
 /// </summary>
-[Guid("042EC5C6-27C8-4E00-A48B-C5458EDEA0AA")]
+[Guid("F8CACA47-D486-45AE-814F-C6218AD87652")]
 [PlugIn("Get Stat chat command", "Get stat points. Usage: /get (ene|agi|vit|str|cmd) (optional:character)")]
 [ChatCommandHelp(Command, "Get stat points. Usage: /get (ene|agi|vit|str|cmd) (optional:character)", typeof(Arguments), MinimumStatus)]
 public class GetStatChatCommandPlugIn : ChatCommandPlugInBase<GetStatChatCommandPlugIn.Arguments>, IDisabledByDefault

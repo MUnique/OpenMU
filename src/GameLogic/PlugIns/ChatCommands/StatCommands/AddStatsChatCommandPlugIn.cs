@@ -19,7 +19,7 @@ public class AddStatsChatCommandPlugIn : AddStatChatCommandPlugInBase
 {
     private const string Command = "/add";
 
-    private const CharacterStatus MinimumStatus = CharacterStatus.GameMaster;
+    private const CharacterStatus MinimumStatus = CharacterStatus.Normal;
 
     /// <inheritdoc />
     public override string Key => Command;

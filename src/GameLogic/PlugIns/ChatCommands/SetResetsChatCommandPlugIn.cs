@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// A chat command plugin which sets a character's resets.
 /// </summary>
-[Guid("B8E35F57-2ED4-4BAD-9F95-9C88E1B92B3A")]
+[Guid("47A8644C-B6C5-439E-BAB0-C1A7AE72691C")]
 [PlugIn("Set resets command", "Sets resets of a player. Usage: /setresets (resets) (optional:character)")]
 [ChatCommandHelp(Command, "Sets resets of a player. Usage: /setresets (resets) (optional:character)", null)]
 public class SetResetsChatCommandPlugIn : ChatCommandPlugInBase<SetResetsChatCommandPlugIn.Arguments>, IDisabledByDefault

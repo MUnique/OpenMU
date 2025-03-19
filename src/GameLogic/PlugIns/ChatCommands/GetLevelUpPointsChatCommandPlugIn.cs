@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// A chat command plugin to get a character's level-up points.
 /// </summary>
-[Guid("B8E35F57-2ED4-4BAD-9F95-9C88E1B92B2C")]
+[Guid("E4D65354-CCD2-4960-BDCA-D4582A57BBCB")]
 [PlugIn("Get level up points command", "Gets level up points of a player. Usage: /getleveluppoints (optional:character)")]
 [ChatCommandHelp(Command, "Gets level up points of a player. Usage: /getleveluppoints (optional:character)", null)]
 public class GetLevelUpPointsChatCommandPlugIn : ChatCommandPlugInBase<GetLevelUpPointsChatCommandPlugIn.Arguments>, IDisabledByDefault

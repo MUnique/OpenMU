@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// A chat command plugin to get a character's master level-up points.
 /// </summary>
-[Guid("B8E35F57-2ED4-4BAD-9F95-9C88E1B92B2D")]
+[Guid("8ACCF267-F5F3-4003-B4C3-536ACCB5181D")]
 [PlugIn("Get master level up points command", "Gets master level up points of a player. Usage: /getmasterleveluppoints (optional:character)")]
 [ChatCommandHelp(Command, "Gets master level up points of a player. Usage: /getmasterleveluppoints (optional:character)", null)]
 public class GetMasterLevelUpPointsChatCommandPlugIn : ChatCommandPlugInBase<GetMasterLevelUpPointsChatCommandPlugIn.Arguments>, IDisabledByDefault

@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// A chat command plugin which handles the command to add stat points.
 /// </summary>
-[Guid("042EC5C6-27C8-4E00-A48B-C5458EDEA0AB")]
+[Guid("D074E8AB-9D6E-49A4-956F-1F4818188AF1")]
 [PlugIn("Set Stat chat command", "Set stat points. Usage: /set (ene|agi|vit|str|cmd) (amount) (optional:character)")]
 [ChatCommandHelp(Command, "Set stat points. Usage: /set (ene|agi|vit|str|cmd) (amount) (optional:character)", typeof(Arguments), MinimumStatus)]
 public class SetStatChatCommandPlugIn : ChatCommandPlugInBase<SetStatChatCommandPlugIn.Arguments>, IDisabledByDefault

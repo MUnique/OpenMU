@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// A chat command plugin to get a character's money.
 /// </summary>
-[Guid("B8E35F57-2ED4-4BAD-9F95-9C88E1B92B0B")]
+[Guid("207F5872-33AB-4764-B67F-95AB7C6313E3")]
 [PlugIn("Get money command", "Gets money of a player. Usage: /getmoney (optional:character)")]
 [ChatCommandHelp(Command, "Gets money of a player. Usage: /getmoney (optional:character)", null)]
 public class GetMoneyChatCommandPlugIn : ChatCommandPlugInBase<GetMoneyChatCommandPlugIn.Arguments>, IDisabledByDefault

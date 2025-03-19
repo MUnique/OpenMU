@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// A chat command plugin to get a character's level.
 /// </summary>
-[Guid("B8E35F57-2ED4-4BAD-9F95-9C88E1B92B1C")]
+[Guid("9D5C8FFE-EC32-48AC-8B6F-BB361AD184E5")]
 [PlugIn("Get level command", "Gets level of a player. Usage: /getlevel (optional:character)")]
 [ChatCommandHelp(Command, "Gets level of a player. Usage: /getlevel (optional:character)", null)]
 public class GetLevelChatCommandPlugIn : ChatCommandPlugInBase<GetLevelChatCommandPlugIn.Arguments>, IDisabledByDefault

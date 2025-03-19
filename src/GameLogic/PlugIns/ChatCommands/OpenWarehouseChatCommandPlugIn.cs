@@ -18,7 +18,7 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// A chat command plugin which opens the warehouse NPC window.
 /// </summary>
-[Guid("B8E35F57-2ED4-4BAD-9F95-9C88E1B92B0F")]
+[Guid("62027B6B-D8E7-4DDB-A16B-7070D1BC4A56")]
 [PlugIn("Open Warehouse chat command", "Opens the warehouse.")]
 [ChatCommandHelp(Command, "Opens the warehouse.", null)]
 public class OpenWarehouseChatCommandPlugIn : ChatCommandPlugInBase<OpenWarehouseChatCommandPlugIn.Arguments>, ISupportCustomConfiguration<OpenWarehouseChatCommandPlugIn.OpenWarehouseChatCommandConfiguration>, ISupportDefaultCustomConfiguration, IDisabledByDefault
