@@ -110,10 +110,10 @@ public class ConfigFileDatabaseConnectionStringProvider : IDatabaseConnectionSet
                         this.ApplyEnvironmentVariables(setting);
                         result.Add(contextType, setting);
                     }
-                    else if (setting.ContextTypeName.EndsWith($".{nameof(TypedContext<object>)}"))
+                    else if (setting.ContextTypeName.EndsWith($".{nameof(TypedContext)}") || setting.ContextTypeName.EndsWith($".{nameof(TypedContext)}^1"))
                     {
                         this.ApplyEnvironmentVariables(setting);
-                        result.Add(typeof(TypedContext<>), setting);
+                        result.Add(typeof(TypedContext), setting);
                     }
                     else
                     {

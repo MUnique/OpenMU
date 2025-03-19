@@ -74,7 +74,7 @@ public class InMemoryPersistenceContextProvider : IMigratableDatabaseContextProv
     }
 
     /// <inheritdoc />
-    public IContext CreateNewTypedContext<T>(bool useCache, GameConfiguration? gameConfiguration = null)
+    public IContext CreateNewTypedContext(Type editType, bool useCache, GameConfiguration? gameConfiguration = null)
     {
         var context = new InMemoryContext(this._repositoryProvider);
         if (this._changePublisher is { })
@@ -85,9 +85,9 @@ public class InMemoryPersistenceContextProvider : IMigratableDatabaseContextProv
             {
                 try
                 {
-                    foreach (var obj in await context.GetAsync(typeof(T), default).ConfigureAwait(false))
+                    foreach (var obj in await context.GetAsync(editType, default).ConfigureAwait(false))
                     {
-                        await this._changePublisher.ConfigurationChangedAsync(typeof(T), obj.GetId(), obj).ConfigureAwait(false);
+                        await this._changePublisher.ConfigurationChangedAsync(editType, obj.GetId(), obj).ConfigureAwait(false);
                     }
                 }
                 catch
@@ -97,7 +97,6 @@ public class InMemoryPersistenceContextProvider : IMigratableDatabaseContextProv
             }
 
             context.SavedChanges += OnContextOnSavedChanges;
-
         }
 
         return context;

@@ -64,8 +64,7 @@ internal class GameMaster : Level400
         character.Inventory.Items.Add(this.CreateFullOptionJewellery(InventoryConstants.PendantSlot, 13)); // Exc Pendant of Fire
         character.Inventory.Items.Add(this.CreateFullOptionJewellery(InventoryConstants.Ring2Slot, 9)); // Exc Ring of Poison
         character.Inventory.Items.Add(this.CreateWings(InventoryConstants.WingsSlot, 40, 15)); // Cape of Emperor +15
-
-        character.Inventory.Items.Add(this.CreatePet(InventoryConstants.PetSlot, 4)); // Horse
+        character.Inventory.Items.Add(this.CreateHorse(InventoryConstants.PetSlot));
 
         this.AddDarkLordItems(character.Inventory);
 

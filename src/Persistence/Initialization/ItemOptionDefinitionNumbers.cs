@@ -224,4 +224,9 @@ internal static class ItemOptionDefinitionNumbers
     /// Gets the fenrir option number.
     /// </summary>
     public static short Fenrir => 0x81;
+
+    /// <summary>
+    /// Gets the dark horse option number.
+    /// </summary>
+    public static short Horse => 0x82;
 }

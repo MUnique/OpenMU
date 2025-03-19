@@ -34,34 +34,44 @@ public class SoulBarrierEffectInitializer : InitializerBase
         magicEffect.InformObservers = true;
         magicEffect.SendDuration = false;
         magicEffect.StopByDeath = true;
-        var powerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
-        magicEffect.PowerUpDefinitions.Add(powerUpDefinition);
-        powerUpDefinition.TargetAttribute = Stats.DamageReceiveDecrement.GetPersistent(this.GameConfiguration);
         magicEffect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.Duration.ConstantValue.Value = 60;
+
         var durationPerEnergy = this.Context.CreateNew<AttributeRelationship>();
         durationPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
         durationPerEnergy.InputOperator = InputOperator.Multiply;
-        durationPerEnergy.InputOperand = 1f / 5f; // 5 energy adds 1 second duration
+        durationPerEnergy.InputOperand = 1f / 40f; // 40 energy adds 1 second duration
         magicEffect.Duration.RelatedValues.Add(durationPerEnergy);
 
-        // one percent per 200 energy
+        // Soul barrier dmg decrease % = 10 + (Agility/50) + (Energy/200)
+        var damageDecrement = this.Context.CreateNew<PowerUpDefinition>();
+        magicEffect.PowerUpDefinitions.Add(damageDecrement);
+        damageDecrement.TargetAttribute = Stats.SoulBarrierReceiveDecrement.GetPersistent(this.GameConfiguration);
+        damageDecrement.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+        damageDecrement.Boost.ConstantValue.Value = 0.1f;
+
         var boostPerEnergy = this.Context.CreateNew<AttributeRelationship>();
         boostPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
-        boostPerEnergy.InputOperator = InputOperator.ExponentiateByAttribute;
-        boostPerEnergy.InputOperand = 1 - (0.01f / 200f);
+        boostPerEnergy.InputOperator = InputOperator.Multiply;
+        boostPerEnergy.InputOperand = 1f / 20000f;  // one percent per 200 energy
+        damageDecrement.Boost.RelatedValues.Add(boostPerEnergy);
 
-        // one percent per 50 agility
         var boostPerAgility = this.Context.CreateNew<AttributeRelationship>();
         boostPerAgility.InputAttribute = Stats.TotalAgility.GetPersistent(this.GameConfiguration);
-        boostPerAgility.InputOperator = InputOperator.ExponentiateByAttribute;
-        boostPerAgility.InputOperand = 1 - (0.01f / 50f);
+        boostPerAgility.InputOperator = InputOperator.Multiply;
+        boostPerAgility.InputOperand = 1f / 5000f; // one percent per 50 agility
+        damageDecrement.Boost.RelatedValues.Add(boostPerAgility);
 
-        // Soul barrier % = 10 + (Agility/50) + (Energy/200)
-        powerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-        powerUpDefinition.Boost.ConstantValue.Value = 0.9f;
-        powerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
-        powerUpDefinition.Boost.RelatedValues.Add(boostPerEnergy);
-        powerUpDefinition.Boost.RelatedValues.Add(boostPerAgility);
+        // Mana toll = 2% + 0.1% per SB strengthener level (added in skill action plugin)
+        var manaTollPerHit = this.Context.CreateNew<PowerUpDefinition>();
+        magicEffect.PowerUpDefinitions.Add(manaTollPerHit);
+        manaTollPerHit.TargetAttribute = Stats.SoulBarrierManaTollPerHit.GetPersistent(this.GameConfiguration);
+        manaTollPerHit.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+
+        var manaToll = this.Context.CreateNew<AttributeRelationship>();
+        manaToll.InputAttribute = Stats.MaximumMana.GetPersistent(this.GameConfiguration);
+        manaToll.InputOperator = InputOperator.Multiply;
+        manaToll.InputOperand = 0.02f; // two percent of total mana
+        manaTollPerHit.Boost.RelatedValues.Add(manaToll);
     }
 }

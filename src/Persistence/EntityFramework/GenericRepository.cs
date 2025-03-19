@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework;
 
 using System.Reflection;
 using Microsoft.Extensions.Logging;
-using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// A generic repository which wraps the access to the DBSet of the <see cref="EntityDataContext"/>.
@@ -39,6 +38,6 @@ internal class GenericRepository<T> : GenericRepositoryBase<T>
     protected override EntityFrameworkContextBase GetContext()
     {
         var context = this.RepositoryProvider.ContextStack.GetCurrentContext() as EntityFrameworkContextBase;
-        return new EntityFrameworkContext(context?.Context ?? new TypedContext<T>(), this._loggerFactory, this.RepositoryProvider, context is null, this._changeListener);
+        return new EntityFrameworkContext(context?.Context ?? new TypedContext(typeof(T)), this._loggerFactory, this.RepositoryProvider, context is null, this._changeListener);
     }
 }

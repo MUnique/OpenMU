@@ -324,7 +324,7 @@ internal sealed class Program : IDisposable
     private ICollection<PlugInConfiguration> PlugInConfigurationsFactory(IServiceProvider serviceProvider)
     {
         var persistenceContextProvider = serviceProvider.GetService<IPersistenceContextProvider>() ?? throw new Exception($"{nameof(IPersistenceContextProvider)} not registered.");
-        using var context = persistenceContextProvider.CreateNewTypedContext<PlugInConfiguration>(false);
+        using var context = persistenceContextProvider.CreateNewTypedContext(typeof(PlugInConfiguration), false);
 
         var configs = context.GetAsync<PlugInConfiguration>().AsTask().WaitAndUnwrapException().ToList();
 
@@ -337,11 +337,11 @@ internal sealed class Program : IDisposable
 
         var typesWithCustomConfig = pluginManager.KnownPlugInTypes.Where(t => t.GetInterfaces().Contains(typeof(ISupportDefaultCustomConfiguration))).ToDictionary(t => t.GUID, t => t);
 
+        using var notificationSuspension = context.SuspendChangeNotifications();
         var typesWithMissingCustomConfigs = configs.Where(c => string.IsNullOrWhiteSpace(c.CustomConfiguration) && typesWithCustomConfig.ContainsKey(c.TypeId)).ToList();
         if (typesWithMissingCustomConfigs.Any())
         {
             typesWithMissingCustomConfigs.ForEach(c => this.CreateDefaultPlugInConfiguration(typesWithCustomConfig[c.TypeId]!, c, referenceHandler));
-            using var notificationSuspension = context.SuspendChangeNotifications();
             _ = context.SaveChangesAsync().AsTask().WaitAndUnwrapException();
         }
 
@@ -352,6 +352,7 @@ internal sealed class Program : IDisposable
         }
 
         configs.AddRange(this.CreateMissingPlugInConfigurations(typesWithMissingConfigs, persistenceContextProvider, referenceHandler));
+        _ = context.SaveChangesAsync().AsTask().WaitAndUnwrapException();
         return configs;
     }
 
@@ -499,7 +500,7 @@ internal sealed class Program : IDisposable
 
     private async Task ReadSystemConfigurationAsync(IPersistenceContextProvider persistenceContextProvider)
     {
-        using var context = persistenceContextProvider.CreateNewTypedContext<SystemConfiguration>(false);
+        using var context = persistenceContextProvider.CreateNewTypedContext(typeof(SystemConfiguration), false);
         var config = (await context.GetAsync<SystemConfiguration>().ConfigureAwait(false)).FirstOrDefault();
         if (config != null)
         {

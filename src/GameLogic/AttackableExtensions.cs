@@ -95,6 +95,14 @@ public static class AttackableExtensions
             dmg = (int)(dmg * attacker.Attributes[Stats.TwoHandedWeaponDamageIncrease]);
         }
 
+        float manaToll = 0;
+        var soulBarrierManaToll = defender.Attributes[Stats.SoulBarrierManaTollPerHit];
+        if (soulBarrierManaToll > 0 && defender.Attributes[Stats.CurrentMana] > soulBarrierManaToll)
+        {
+            manaToll = soulBarrierManaToll;
+            dmg -= (int)(dmg * defender.Attributes[Stats.SoulBarrierReceiveDecrement]);
+        }
+
         if (attacker is Player && defender is Player)
         {
             dmg += (int)attacker.Attributes[Stats.FinalDamageIncreasePvp];
@@ -116,7 +124,7 @@ public static class AttackableExtensions
         dmg = (int)(dmg * damageFactor);
 
         var minimumDamage = attacker.Attributes[Stats.Level] / 10;
-        return defender.GetHitInfo(Math.Max((uint)dmg, (uint)minimumDamage), attributes, attacker);
+        return defender.GetHitInfo(Math.Max((uint)dmg, (uint)minimumDamage), attributes, attacker, (uint)manaToll);
     }
 
     /// <summary>
@@ -126,13 +134,14 @@ public static class AttackableExtensions
     /// <param name="damage">The damage.</param>
     /// <param name="attributes">The attributes.</param>
     /// <param name="attacker">The attacker.</param>
+    /// <param name="manaToll">The mana reduction amount that is traded for damage (e.g. from Soul Barrier).</param>
     /// <returns>The calculated hit info.</returns>
-    public static HitInfo GetHitInfo(this IAttackable defender, uint damage, DamageAttributes attributes, IAttacker attacker)
+    public static HitInfo GetHitInfo(this IAttackable defender, uint damage, DamageAttributes attributes, IAttacker attacker, uint manaToll = 0)
     {
         var shieldBypass = Rand.NextRandomBool(attacker.Attributes[Stats.ShieldBypassChance]);
         if (shieldBypass || defender.Attributes[Stats.CurrentShield] < 1)
         {
-            return new HitInfo(damage, 0, attributes);
+            return new HitInfo(damage, 0, attributes, manaToll);
         }
 
         var shieldRatio = 0.90;
@@ -140,7 +149,7 @@ public static class AttackableExtensions
         shieldRatio += defender.Attributes[Stats.ShieldRateIncrease];
         shieldRatio = Math.Max(0, shieldRatio);
         shieldRatio = Math.Min(1, shieldRatio);
-        return new HitInfo((uint)(damage * (1 - shieldRatio)), (uint)(damage * shieldRatio), attributes);
+        return new HitInfo((uint)(damage * (1 - shieldRatio)), (uint)(damage * shieldRatio), attributes, manaToll);
     }
 
     /// <summary>

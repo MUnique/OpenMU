@@ -15,7 +15,7 @@ public enum AggregateType
     AddRaw,
 
     /// <summary>
-    /// Multiplicates the value.
+    /// Multiplicates the raw base value.
     /// </summary>
     Multiplicate,
 

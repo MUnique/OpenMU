@@ -135,7 +135,7 @@ public partial class CreateConnectServerConfig : ComponentBase, IAsyncDisposable
         {
             var gameConfiguration = await this.DataSource.GetOwnerAsync().ConfigureAwait(false);
 
-            using var saveContext = this.ContextProvider.CreateNewTypedContext<DataModel.Configuration.ConnectServerDefinition>(true, gameConfiguration);
+            using var saveContext = this.ContextProvider.CreateNewTypedContext(typeof(DataModel.Configuration.ConnectServerDefinition), true, gameConfiguration);
 
             var existingServerDefinitions = (await saveContext.GetAsync<ConnectServerDefinition>().ConfigureAwait(false)).ToList();
             if (existingServerDefinitions.Any(def => def.ServerId == this._viewModel?.ServerId))

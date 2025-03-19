@@ -82,7 +82,7 @@ public class PlugInConfiguration : INotifyPropertyChanged
             var plugInType = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(assembly => assembly.DefinedTypes)
                 .FirstOrDefault(t => t.GUID == this.TypeId);
-            var plugInAttribute = plugInType?.GetCustomAttribute<PlugInAttribute>();
+            var plugInAttribute = plugInType?.GetCustomAttribute<PlugInAttribute>(inherit: false);
 
             return plugInAttribute?.Name ?? this.TypeId.ToString();
         }

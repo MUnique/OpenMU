@@ -54,8 +54,9 @@ public class AttributeRelationship
     /// <param name="targetAttribute">The target attribute.</param>
     /// <param name="inputOperand">The multiplier.</param>
     /// <param name="inputAttribute">The input attribute.</param>
-    public AttributeRelationship(AttributeDefinition targetAttribute, float inputOperand, AttributeDefinition inputAttribute)
-        : this(targetAttribute, inputOperand, inputAttribute, InputOperator.Multiply)
+    /// <param name="aggregateType">The type of the aggregate on the <paramref name="targetAttribute"/>.</param>
+    public AttributeRelationship(AttributeDefinition targetAttribute, float inputOperand, AttributeDefinition inputAttribute, AggregateType aggregateType = AggregateType.AddRaw)
+        : this(targetAttribute, inputOperand, inputAttribute, InputOperator.Multiply, default, aggregateType)
     {
     }
 
@@ -65,8 +66,9 @@ public class AttributeRelationship
     /// <param name="targetAttribute">The target attribute.</param>
     /// <param name="inputOperand">The multiplier.</param>
     /// <param name="inputAttribute">The input attribute.</param>
-    public AttributeRelationship(AttributeDefinition targetAttribute, AttributeDefinition inputOperand, AttributeDefinition inputAttribute)
-        : this(targetAttribute, 1, inputAttribute, InputOperator.Multiply, inputOperand)
+    /// <param name="aggregateType">The type of the aggregate on the <paramref name="targetAttribute"/>.</param>
+    public AttributeRelationship(AttributeDefinition targetAttribute, AttributeDefinition inputOperand, AttributeDefinition inputAttribute, AggregateType aggregateType = AggregateType.AddRaw)
+        : this(targetAttribute, 1, inputAttribute, InputOperator.Multiply, inputOperand, aggregateType)
     {
     }
 
@@ -78,10 +80,12 @@ public class AttributeRelationship
     /// <param name="inputAttribute">The input attribute.</param>
     /// <param name="inputOperator">The input operator.</param>
     /// <param name="operandAttribute">The operand attribute.</param>
-    public AttributeRelationship(AttributeDefinition targetAttribute, float inputOperand, AttributeDefinition inputAttribute, InputOperator inputOperator, AttributeDefinition? operandAttribute = null)
+    /// <param name="aggregateType">The type of the aggregate on the <paramref name="targetAttribute"/>.</param>
+    public AttributeRelationship(AttributeDefinition targetAttribute, float inputOperand, AttributeDefinition inputAttribute, InputOperator inputOperator, AttributeDefinition? operandAttribute = null, AggregateType aggregateType = AggregateType.AddRaw)
     {
         this.InputOperand = inputOperand;
         this.InputOperator = inputOperator;
+        this.AggregateType = aggregateType;
         this._targetAttribute = targetAttribute;
         this._inputAttribute = inputAttribute;
         this._operandAttribute = operandAttribute;
@@ -125,6 +129,11 @@ public class AttributeRelationship
     /// </summary>
     public float InputOperand { get; set; }
 
+    /// <summary>
+    /// Gets or sets the aggregate type with which the relationship should effect the target attribute.
+    /// </summary>
+    public AggregateType AggregateType { get; set; }
+
     /// <inheritdoc/>
     public override string ToString()
     {
@@ -135,9 +144,9 @@ public class AttributeRelationship
 
         if (this.InputOperator == InputOperator.ExponentiateByAttribute)
         {
-            return $"{this.TargetAttribute} += {this.OperandAttribute?.ToString() ?? this.InputOperand.ToString(CultureInfo.InvariantCulture)} {this.InputOperator.AsString()} {this.InputAttribute}";
+            return $"{this.TargetAttribute} {(this.AggregateType == AggregateType.Multiplicate ? "*" : "+")}= {this.OperandAttribute?.ToString() ?? this.InputOperand.ToString(CultureInfo.InvariantCulture)} {this.InputOperator.AsString()} {this.InputAttribute}";
         }
 
-        return $"{this.TargetAttribute} += {this.InputAttribute} {this.InputOperator.AsString()} {this.OperandAttribute?.ToString() ?? this.InputOperand.ToString(CultureInfo.InvariantCulture)}";
+        return $"{this.TargetAttribute} {(this.AggregateType == AggregateType.Multiplicate ? "*" : "+")}= {this.InputAttribute} {this.InputOperator.AsString()} {this.OperandAttribute?.ToString() ?? this.InputOperand.ToString(CultureInfo.InvariantCulture)}";
     }
 }

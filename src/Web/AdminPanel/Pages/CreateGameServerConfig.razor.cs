@@ -154,7 +154,7 @@ public partial class CreateGameServerConfig : ComponentBase, IAsyncDisposable
         {
             var gameConfiguration = await this.DataSource.GetOwnerAsync().ConfigureAwait(false);
 
-            using var saveContext = this.ContextProvider.CreateNewTypedContext<DataModel.Configuration.GameServerDefinition>(true, gameConfiguration);
+            using var saveContext = this.ContextProvider.CreateNewTypedContext(typeof(DataModel.Configuration.GameServerDefinition), true, gameConfiguration);
 
             var existingServerDefinitions = (await saveContext.GetAsync<GameServerDefinition>().ConfigureAwait(false)).ToList();
             if (existingServerDefinitions.Any(def => def.ServerID == this._viewModel?.ServerId))
