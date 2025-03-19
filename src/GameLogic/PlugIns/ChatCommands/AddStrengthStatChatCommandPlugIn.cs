@@ -14,8 +14,8 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("21B15D95-BA2F-40A3-AB7D-8BD886FAEAE5")]
 [PlugIn("Add strength chat command", "Adds the specified amount of strength points to the character.")]
-[ChatCommandHelp(Command, "Adds the specified amount of strength points to the character.", typeof(Arguments), MinimumStatus)]
-public class AddStrengthStatChatCommandPlugIn : AddStatChatCommandPlugInBase.AddSingleStatChatCommandPlugInBase, IDisabledByDefault
+[ChatCommandHelp(Command, "Adds the specified amount of strength points to the character.", null, MinimumStatus)]
+public class AddStrengthStatChatCommandPlugIn : AddStatChatCommandPlugIn, IDisabledByDefault
 {
     private const string Command = "/addstr";
 
@@ -28,5 +28,9 @@ public class AddStrengthStatChatCommandPlugIn : AddStatChatCommandPlugInBase.Add
     public override CharacterStatus MinCharacterStatusRequirement => MinimumStatus;
 
     /// <inheritdoc />
-    protected override AttributeDefinition TheStat => Stats.BaseStrength;
+    public override async ValueTask HandleCommandAsync(Player player, string command)
+    {
+        command = command.Insert(4, " ");
+        await base.HandleCommandAsync(player, command).ConfigureAwait(false);
+    }
 }

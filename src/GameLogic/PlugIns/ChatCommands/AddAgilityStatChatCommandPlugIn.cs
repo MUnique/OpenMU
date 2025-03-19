@@ -14,8 +14,8 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("43156A52-03EE-42C0-88BF-CA9665DC8E1E")]
 [PlugIn("Add agility chat command", "Adds the specified amount of agility points to the character.")]
-[ChatCommandHelp(Command, "Adds the specified amount of agility points to the character.", typeof(Arguments), MinimumStatus)]
-public class AddAgilityStatChatCommandPlugIn : AddStatChatCommandPlugInBase.AddSingleStatChatCommandPlugInBase, IDisabledByDefault
+[ChatCommandHelp(Command, "Adds the specified amount of agility points to the character.", null, MinimumStatus)]
+public class AddAgilityStatChatCommandPlugIn : AddStatChatCommandPlugIn, IDisabledByDefault
 {
     private const string Command = "/addagi";
 
@@ -28,5 +28,9 @@ public class AddAgilityStatChatCommandPlugIn : AddStatChatCommandPlugInBase.AddS
     public override CharacterStatus MinCharacterStatusRequirement => MinimumStatus;
 
     /// <inheritdoc />
-    protected override AttributeDefinition TheStat => Stats.BaseAgility;
+    public override async ValueTask HandleCommandAsync(Player player, string command)
+    {
+        command = command.Insert(4, " ");
+        await base.HandleCommandAsync(player, command).ConfigureAwait(false);
+    }
 }

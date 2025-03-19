@@ -14,8 +14,8 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("EFE421FB-BE79-4656-AF39-D22A105D1455")]
 [PlugIn("Add command chat command", "Adds the specified amount of command points to the character.")]
-[ChatCommandHelp(Command, "Adds the specified amount of command points to the character.", typeof(Arguments), MinimumStatus)]
-public class AddCommandStatChatCommandPlugIn : AddStatChatCommandPlugInBase.AddSingleStatChatCommandPlugInBase, IDisabledByDefault
+[ChatCommandHelp(Command, "Adds the specified amount of command points to the character.", null, MinimumStatus)]
+public class AddCommandStatChatCommandPlugIn : AddStatChatCommandPlugIn, IDisabledByDefault
 {
     private const string Command = "/addcmd";
 
@@ -28,5 +28,9 @@ public class AddCommandStatChatCommandPlugIn : AddStatChatCommandPlugInBase.AddS
     public override CharacterStatus MinCharacterStatusRequirement => MinimumStatus;
 
     /// <inheritdoc />
-    protected override AttributeDefinition TheStat => Stats.BaseLeadership;
+    public override async ValueTask HandleCommandAsync(Player player, string command)
+    {
+        command = command.Insert(4, " ");
+        await base.HandleCommandAsync(player, command).ConfigureAwait(false);
+    }
 }

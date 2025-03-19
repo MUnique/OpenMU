@@ -14,8 +14,8 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("A597B6E7-9395-4CF4-8439-A1D60134B63E")]
 [PlugIn("Add energy chat command", "Adds the specified amount of energy points to the character.")]
-[ChatCommandHelp(Command, "Adds the specified amount of energy points to the character.", typeof(Arguments), MinimumStatus)]
-public class AddEnergyStatChatCommandPlugIn : AddStatChatCommandPlugInBase.AddSingleStatChatCommandPlugInBase, IDisabledByDefault
+[ChatCommandHelp(Command, "Adds the specified amount of energy points to the character.", null, MinimumStatus)]
+public class AddEnergyStatChatCommandPlugIn : AddStatChatCommandPlugIn, IDisabledByDefault
 {
     private const string Command = "/addene";
 
@@ -28,5 +28,9 @@ public class AddEnergyStatChatCommandPlugIn : AddStatChatCommandPlugInBase.AddSi
     public override CharacterStatus MinCharacterStatusRequirement => MinimumStatus;
 
     /// <inheritdoc />
-    protected override AttributeDefinition TheStat => Stats.BaseEnergy;
+    public override async ValueTask HandleCommandAsync(Player player, string command)
+    {
+        command = command.Insert(4, " ");
+        await base.HandleCommandAsync(player, command).ConfigureAwait(false);
+    }
 }

@@ -14,8 +14,8 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("370CE86C-E382-4E0F-93F4-AD75FA079129")]
 [PlugIn("Add vitality chat command", "Adds the specified amount of vitality points to the character.")]
-[ChatCommandHelp(Command, "Adds the specified amount of vitality points to the character.", typeof(Arguments), MinimumStatus)]
-public class AddVitalityStatChatCommandPlugIn : AddStatChatCommandPlugInBase.AddSingleStatChatCommandPlugInBase, IDisabledByDefault
+[ChatCommandHelp(Command, "Adds the specified amount of vitality points to the character.", null, MinimumStatus)]
+public class AddVitalityStatChatCommandPlugIn : AddStatChatCommandPlugIn, IDisabledByDefault
 {
     private const string Command = "/addvit";
 
@@ -28,5 +28,9 @@ public class AddVitalityStatChatCommandPlugIn : AddStatChatCommandPlugInBase.Add
     public override CharacterStatus MinCharacterStatusRequirement => MinimumStatus;
 
     /// <inheritdoc />
-    protected override AttributeDefinition TheStat => Stats.BaseVitality;
+    public override async ValueTask HandleCommandAsync(Player player, string command)
+    {
+        command = command.Insert(4, " ");
+        await base.HandleCommandAsync(player, command).ConfigureAwait(false);
+    }
 }
