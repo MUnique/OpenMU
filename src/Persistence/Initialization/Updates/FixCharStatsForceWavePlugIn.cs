@@ -40,7 +40,7 @@ public class FixCharStatsForceWavePlugIn : UpdatePlugInBase
     public override bool IsMandatory => true;
 
     /// <inheritdoc />
-    public override DateTime CreatedAt => new(2025, 03, 18, 16, 0, 0, DateTimeKind.Utc);
+    public override DateTime CreatedAt => new(2025, 03, 19, 16, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
