@@ -38,11 +38,11 @@ public class UpdateCharacterBaseStatsExtendedPlugIn : IUpdateCharacterBaseStatsP
         }
 
         await connection.SendBaseStatsExtendedAsync(
-                (ushort)this._player.Attributes![Stats.BaseStrength],
-                (ushort)this._player.Attributes[Stats.BaseAgility],
-                (ushort)this._player.Attributes[Stats.BaseVitality],
-                (ushort)this._player.Attributes[Stats.BaseEnergy],
-                (ushort)this._player.Attributes[Stats.BaseLeadership])
+                (uint)this._player.Attributes![Stats.BaseStrength],
+                (uint)this._player.Attributes[Stats.BaseAgility],
+                (uint)this._player.Attributes[Stats.BaseVitality],
+                (uint)this._player.Attributes[Stats.BaseEnergy],
+                (uint)this._player.Attributes[Stats.BaseLeadership])
             .ConfigureAwait(false);
     }
 }
