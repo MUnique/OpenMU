@@ -371,7 +371,7 @@ internal sealed class Program : IDisposable
         {
             var plugInConfiguration = saveContext.CreateNew<PlugInConfiguration>();
             plugInConfiguration.TypeId = plugInType.GUID;
-            plugInConfiguration.IsActive = true;
+            plugInConfiguration.IsActive = !plugInType.IsAssignableTo(typeof(IDisabledByDefault));
             gameConfiguration.PlugInConfigurations.Add(plugInConfiguration);
             if (plugInType.GetInterfaces().Contains(typeof(ISupportDefaultCustomConfiguration)))
             {

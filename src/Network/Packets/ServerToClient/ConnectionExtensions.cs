@@ -1932,6 +1932,42 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="BaseStatsExtended" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="strength">The strength.</param>
+    /// <param name="agility">The agility.</param>
+    /// <param name="vitality">The vitality.</param>
+    /// <param name="energy">The energy.</param>
+    /// <param name="command">The command.</param>
+    /// <remarks>
+    /// Is sent by the server when: Setting the base stats of a character, e.g. set stats command or after a reset.
+    /// Causes reaction on client side: The values are updated on the game client user interface.
+    /// </remarks>
+    public static async ValueTask SendBaseStatsExtendedAsync(this IConnection? connection, uint @strength, uint @agility, uint @vitality, uint @energy, uint @command)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = BaseStatsExtendedRef.Length;
+            var packet = new BaseStatsExtendedRef(connection.Output.GetSpan(length)[..length]);
+            packet.Strength = @strength;
+            packet.Agility = @agility;
+            packet.Vitality = @vitality;
+            packet.Energy = @energy;
+            packet.Command = @command;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="CurrentManaAndAbility" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
