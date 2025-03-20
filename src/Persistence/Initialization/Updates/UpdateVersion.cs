@@ -251,7 +251,12 @@ public enum UpdateVersion
     FixItemOptionsAndAttackSpeedSeason6 = 48,
 
     /// <summary>
-    /// The version of the <see cref="FixHorseFenrirOptionsSoulBarrierPlugIn"/>.
+    /// The version of the <see cref="Updates.FixHorseFenrirOptionsSoulBarrierPlugIn"/>.
     /// </summary>
     FixHorseFenrirOptionsSoulBarrierPlugIn = 49,
+
+    /// <summary>
+    /// The version of the <see cref="Updates.FixCharStatsForceWavePlugIn"/>.
+    /// </summary>
+    FixCharStatsForceWavePlugIn = 50,
 }

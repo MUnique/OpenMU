@@ -22,6 +22,7 @@ using MUnique.OpenMU.PlugIns;
 public class SkillListViewPlugIn : ISkillListViewPlugIn
 {
     private const short ForceWaveSkillId = 66;
+    private const short ForceWaveStrengAltSkillId = 5090;
 
     private readonly RemotePlayer _player;
 
@@ -142,7 +143,7 @@ public class SkillListViewPlugIn : ISkillListViewPlugIn
         skills.RemoveAll(s => replacedSkills.Contains(s.Skill));
         skills.RemoveAll(s => s.Skill?.SkillType == SkillType.PassiveBoost);
 
-        skills.RemoveAll(s => s.Skill?.Number == ForceWaveSkillId);
+        skills.RemoveAll(s => s.Skill?.Number == ForceWaveSkillId || s.Skill?.Number == ForceWaveStrengAltSkillId);
 
         foreach (var skillEntry in skills.Distinct(default(SkillEqualityComparer)))
         {
