@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameServer.RemoteView.Inventory;
 
 using System.Runtime.InteropServices;
+using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
@@ -52,6 +53,13 @@ public class UpdateInventoryListPlugIn : IUpdateInventoryListPlugIn
             int i = 0;
             foreach (var item in items)
             {
+                if (item.Definition is null)
+                {
+                    this._player.Logger.LogWarning("Item {0} has no definition.", item);
+                    packet.ItemCount--;
+                    continue;
+                }
+
                 var storedItem = new StoredItemRef(span[actualSize..]);
                 storedItem.ItemSlot = item.ItemSlot;
                 var itemSize = itemSerializer.SerializeItem(storedItem.ItemData, item);
