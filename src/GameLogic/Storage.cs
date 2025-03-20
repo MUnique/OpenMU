@@ -71,6 +71,10 @@ public class Storage : IStorage
             if (freeSlot is not null && this.ContainsSlot(freeSlot.Value) && this.AddItem(freeSlot.Value, item))
             {
                 unfittingItems.RemoveAt(index);
+                if (this.ItemStorage.Items.Count(i => item == i) > 1)
+                {
+                    this.ItemStorage.Items.Remove(item);
+                }
             }
         }
 

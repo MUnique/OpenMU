@@ -133,7 +133,7 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
             var plugInConfiguration = this.Context.CreateNew<PlugInConfiguration>();
             plugInConfiguration.SetGuid(plugInType.GUID);
             plugInConfiguration.TypeId = plugInType.GUID;
-            plugInConfiguration.IsActive = true;
+            plugInConfiguration.IsActive = !plugInType.IsAssignableTo(typeof(IDisabledByDefault));
             this.GameConfiguration.PlugInConfigurations.Add(plugInConfiguration);
 
             if (plugInType.GetInterfaces().Contains(typeof(ISupportDefaultCustomConfiguration)))
@@ -168,8 +168,8 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
                 plugInConfiguration.IsActive = false;
             }
 
-            // Resets are disabled by default.
-            if (plugInType == typeof(ResetFeaturePlugIn))
+            // Disable plugins marked as disabled by default.
+            if (plugInType.IsAssignableTo(typeof(IDisabledByDefault)))
             {
                 plugInConfiguration.IsActive = false;
             }

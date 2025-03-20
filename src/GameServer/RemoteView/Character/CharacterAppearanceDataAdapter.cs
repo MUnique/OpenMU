@@ -51,6 +51,7 @@ internal class CharacterAppearanceDataAdapter : IAppearanceData
             if (this._character.Inventory != null)
             {
                 return this._character.Inventory.Items
+                    .Where(item => item.Definition is not null)
                     .Where(item => item.ItemSlot <= InventoryConstants.LastEquippableItemSlotIndex)
                     .Select(item => item.GetAppearance());
             }
