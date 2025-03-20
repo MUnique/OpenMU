@@ -147,9 +147,8 @@ public class InventoryStorage : Storage, IInventoryStorage
             return;
         }
 
-        if (this._player.Attributes.ItemPowerUps.TryGetValue(item, out var itemPowerUps))
+        if (this._player.Attributes.ItemPowerUps.Remove(item, out var itemPowerUps))
         {
-            this._player.Attributes.ItemPowerUps.Remove(item);
             foreach (var powerUp in itemPowerUps)
             {
                 powerUp.Dispose();
