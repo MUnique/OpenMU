@@ -179,19 +179,14 @@ public class FixCharStatsForceWavePlugIn : UpdatePlugInBase
                     totalLevelToDefenseRatePvp.InputOperand = 1.5f;
                 }
 
-                if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.AttackRatePvm && attrCombo.InputAttribute == Stats.TotalLevel) is { } totalLevelToAttackRatePvm)
-                {
-                    totalLevelToAttackRatePvm.InputOperand = 5;
-                }
-
                 if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.AttackRatePvm && attrCombo.InputAttribute == Stats.TotalAgility) is { } totalAgilityToAttackRatePvm)
                 {
-                    totalAgilityToAttackRatePvm.InputOperand = 1.5f;
+                    totalAgilityToAttackRatePvm.InputOperand = 1.25f;
                 }
 
                 if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.AttackRatePvm && attrCombo.InputAttribute == Stats.TotalStrength) is { } totalStrengthToAttackRatePvm)
                 {
-                    totalStrengthToAttackRatePvm.InputOperand = 0.25f;
+                    totalStrengthToAttackRatePvm.InputOperand = 1.0f / 6;
                 }
 
                 if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.AttackRatePvp && attrCombo.InputAttribute == Stats.BaseAgility) is { } baseAgilityToAttackRatePvp)
