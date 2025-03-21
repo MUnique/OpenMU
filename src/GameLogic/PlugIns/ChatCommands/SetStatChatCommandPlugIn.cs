@@ -78,6 +78,7 @@ public class SetStatChatCommandPlugIn : ChatCommandPlugInBase<SetStatChatCommand
                 }
             }
 
+            targetPlayer.Attributes![attribute] = arguments.Amount;
             await targetPlayer.InvokeViewPlugInAsync<IUpdateCharacterBaseStatsPlugIn>(p => p.UpdateCharacterBaseStatsAsync()).ConfigureAwait(false);
             await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, StatSetMessage, targetPlayer.SelectedCharacter.Name, arguments.Amount)).ConfigureAwait(false);
         }
