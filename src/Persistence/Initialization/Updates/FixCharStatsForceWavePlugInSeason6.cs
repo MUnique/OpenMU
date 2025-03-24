@@ -1,4 +1,4 @@
-﻿// <copyright file="FixCharStatsForceWavePlugIn.cs" company="MUnique">
+﻿// <copyright file="FixCharStatsForceWavePlugInSeason6.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -18,17 +18,17 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [PlugIn(PlugInName, PlugInDescription)]
 [Guid("0C1995AB-A1CC-42A8-9EFC-E5FE8F360C53")]
-public class FixCharStatsForceWavePlugIn : UpdatePlugInBase
+public class FixCharStatsForceWavePlugInSeason6 : FixCharStatsForceWavePlugInBase
 {
     /// <summary>
     /// The plug in name.
     /// </summary>
-    internal const string PlugInName = "Fix Char Stats and DL Force (Wave) skills";
+    internal new const string PlugInName = "Fix Char Stats and DL Force (Wave) skills";
 
     /// <summary>
     /// The plug in description.
     /// </summary>
-    internal const string PlugInDescription = "This update fixes several character stats values and DL Force (Wave) base and master skills.";
+    internal new const string PlugInDescription = "This update fixes several character stats values and DL Force (Wave) base and master skills.";
 
     /// <inheritdoc />
     public override string Name => PlugInName;
@@ -37,20 +37,17 @@ public class FixCharStatsForceWavePlugIn : UpdatePlugInBase
     public override string Description => PlugInDescription;
 
     /// <inheritdoc />
-    public override bool IsMandatory => true;
-
-    /// <inheritdoc />
-    public override DateTime CreatedAt => new(2025, 03, 19, 16, 0, 0, DateTimeKind.Utc);
-
-    /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FixCharStatsForceWavePlugIn;
+    public override UpdateVersion Version => UpdateVersion.FixCharStatsForceWaveSeason6;
 
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
+        await base.ApplyAsync(context, gameConfiguration).ConfigureAwait(false);
+        this.UpdateMagicGladiatorClassesStats(gameConfiguration);
+
         var baseStrength = Stats.BaseStrength.GetPersistent(gameConfiguration);
         var baseAgility = Stats.BaseAgility.GetPersistent(gameConfiguration);
         var baseVitality = Stats.BaseVitality.GetPersistent(gameConfiguration);
@@ -149,22 +146,6 @@ public class FixCharStatsForceWavePlugIn : UpdatePlugInBase
                 if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.MaximumHealth && attrCombo.InputAttribute == Stats.TotalVitality) is { } totalVitalityoMaximumHealth)
                 {
                     totalVitalityoMaximumHealth.InputOperand = 2;
-                }
-            }
-            else if (charClass.Number == 0 || charClass.Number == 2 || charClass.Number == 3) // Wizard classes
-            {
-                if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.DefenseBase && attrCombo.InputAttribute == Stats.TotalAgility) is { } totalAgilityToDefenseBase)
-                {
-                    totalAgilityToDefenseBase.InputOperand = 0.25f;
-                }
-            }
-            else if (charClass.Number == 12 || charClass.Number == 13) // MG classes
-            {
-                charClass.StatAttributes.First(attr => attr.Attribute == Stats.BaseEnergy).BaseValue = 26;
-
-                if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.DefenseBase && attrCombo.InputAttribute == Stats.TotalAgility) is { } totalAgilityToDefenseBase)
-                {
-                    totalAgilityToDefenseBase.InputOperand = 0.25f;
                 }
             }
             else if (charClass.Number == 24 || charClass.Number == 25) // RF classes
