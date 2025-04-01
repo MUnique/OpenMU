@@ -1,4 +1,4 @@
-// <copyright file="AddMasterPointAction.cs" company="MUnique">
+﻿// <copyright file="AddMasterPointAction.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -12,6 +12,8 @@ using MUnique.OpenMU.GameLogic.Views.Character;
 public class AddMasterPointAction
 {
     private const int MinimumSkillLevelOfRequiredSkill = 10;
+    private const short ForceWaveStrengSkillId = 509;
+    private const short ForceWaveStrengAltSkillId = 5090;
 
     /// <summary>
     /// Adds the master point.
@@ -89,6 +91,11 @@ public class AddMasterPointAction
                 childSkill.PowerUpDuration = null;
                 childSkill.PowerUps = null;
                 currentSkill = childSkill;
+            }
+
+            if (learnedSkill.Skill.Number == ForceWaveStrengSkillId)
+            {
+                player.SkillList!.GetSkill((ushort)ForceWaveStrengAltSkillId)!.Level += requiredPoints;
             }
 
             player.SelectedCharacter.MasterLevelUpPoints -= requiredPoints;
