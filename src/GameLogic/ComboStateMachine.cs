@@ -68,7 +68,7 @@ public sealed class ComboStateMachine : StateMachine
             await this.TryAdvanceToAsync(this.InitialState).ConfigureAwait(false);
         }
 
-        var nextPossibleSkillState = this.CurrentState?.PossibleTransitions?.OfType<ComboState>().FirstOrDefault(t => t.RequiredSkill == skill);
+        var nextPossibleSkillState = this.CurrentState?.PossibleTransitions?.OfType<ComboState>().FirstOrDefault(t => t.RequiredSkill == skill.GetBaseSkill());
         if (nextPossibleSkillState is null)
         {
             // If it's the wrong skill, reset to initial state.
