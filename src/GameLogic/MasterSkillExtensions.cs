@@ -46,13 +46,22 @@ public static class MasterSkillExtensions
     /// <returns>The base <see cref="Skill"/>.</returns>
     public static Skill GetBaseSkill(this SkillEntry skillEntry)
     {
-        var skill = skillEntry.Skill!;
-        while (skill?.MasterDefinition?.ReplacedSkill is { } replacedSkill)
+        return skillEntry.Skill!.GetBaseSkill();
+    }
+
+    /// <summary>
+    /// Gets the base <see cref="Skill"/> of a <see cref="Skill"/>.
+    /// </summary>
+    /// <param name="skill">The <see cref="Skill"/>.</param>
+    /// <returns>The base <see cref="Skill"/>.</returns>
+    public static Skill GetBaseSkill(this Skill skill)
+    {
+        while (skill.MasterDefinition?.ReplacedSkill is { } replacedSkill)
         {
             skill = replacedSkill;
         }
 
-        return skill!;
+        return skill;
     }
 
     private static float CalculateValue(this MasterSkillDefinition? skillDefinition, int level) => skillDefinition?.ValueFormula.GetValue(level, skillDefinition.MaximumLevel) ?? 0;
