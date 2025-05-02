@@ -48,34 +48,13 @@ public class FixCharStatsForceWavePlugInSeason6 : FixCharStatsForceWavePlugInBas
         await base.ApplyAsync(context, gameConfiguration).ConfigureAwait(false);
         this.UpdateMagicGladiatorClassesStats(gameConfiguration);
 
-        var baseStrength = Stats.BaseStrength.GetPersistent(gameConfiguration);
-        var baseAgility = Stats.BaseAgility.GetPersistent(gameConfiguration);
-        var baseVitality = Stats.BaseVitality.GetPersistent(gameConfiguration);
-        var baseEnergy = Stats.BaseEnergy.GetPersistent(gameConfiguration);
-        var baseLeadership = Stats.BaseLeadership.GetPersistent(gameConfiguration);
         var totalLevel = Stats.TotalLevel.GetPersistent(gameConfiguration);
 
         gameConfiguration.CharacterClasses.ForEach(charClass =>
         {
             foreach (var attrCombo in charClass.AttributeCombinations)
             {
-                if (attrCombo.TargetAttribute == Stats.FenrirBaseDmg && attrCombo.InputAttribute == Stats.TotalStrength)
-                {
-                    attrCombo.InputAttribute = baseStrength;
-                }
-                else if (attrCombo.TargetAttribute == Stats.FenrirBaseDmg && attrCombo.InputAttribute == Stats.TotalAgility)
-                {
-                    attrCombo.InputAttribute = baseAgility;
-                }
-                else if (attrCombo.TargetAttribute == Stats.FenrirBaseDmg && attrCombo.InputAttribute == Stats.TotalVitality)
-                {
-                    attrCombo.InputAttribute = baseVitality;
-                }
-                else if (attrCombo.TargetAttribute == Stats.FenrirBaseDmg && attrCombo.InputAttribute == Stats.TotalEnergy)
-                {
-                    attrCombo.InputAttribute = baseEnergy;
-                }
-                else if (attrCombo.TargetAttribute == Stats.AttackRatePvm && attrCombo.InputAttribute == Stats.Level)
+                if (attrCombo.TargetAttribute == Stats.AttackRatePvm && attrCombo.InputAttribute == Stats.Level)
                 {
                     attrCombo.InputAttribute = totalLevel;
                 }
@@ -83,17 +62,9 @@ public class FixCharStatsForceWavePlugInSeason6 : FixCharStatsForceWavePlugInBas
                 {
                     attrCombo.InputAttribute = totalLevel;
                 }
-                else if (attrCombo.TargetAttribute == Stats.AttackRatePvp && attrCombo.InputAttribute == Stats.TotalAgility)
-                {
-                    attrCombo.InputAttribute = baseAgility;
-                }
                 else if (attrCombo.TargetAttribute == Stats.DefenseRatePvp && attrCombo.InputAttribute == Stats.Level)
                 {
                     attrCombo.InputAttribute = totalLevel;
-                }
-                else if (attrCombo.TargetAttribute == Stats.DefenseRatePvp && attrCombo.InputAttribute == Stats.TotalAgility)
-                {
-                    attrCombo.InputAttribute = baseAgility;
                 }
                 else if (attrCombo.TargetAttribute == Stats.MaximumMana && attrCombo.InputAttribute == Stats.Level)
                 {
@@ -118,21 +89,6 @@ public class FixCharStatsForceWavePlugInSeason6 : FixCharStatsForceWavePlugInBas
                 charClass.StatAttributes.First(attr => attr.Attribute == Stats.CurrentHealth).BaseValue = 90;
                 charClass.StatAttributes.First(attr => attr.Attribute == Stats.CurrentMana).BaseValue = 40;
 
-                if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.FenrirBaseDmg && attrCombo.InputAttribute == Stats.TotalLeadership) is { } totalLeadershipToFenrirBaseDmg)
-                {
-                    totalLeadershipToFenrirBaseDmg.InputAttribute = baseLeadership;
-                }
-
-                if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.AttackRatePvm && attrCombo.InputAttribute == Stats.TotalAgility) is { } totalAgilityToAttackRatePvm)
-                {
-                    totalAgilityToAttackRatePvm.InputOperand = 3;
-                }
-
-                if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.AttackRatePvm && attrCombo.InputAttribute == Stats.TotalStrength) is { } totalStrengthToAttackRatePvm)
-                {
-                    totalStrengthToAttackRatePvm.InputOperand = 0.25f;
-                }
-
                 if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.MaximumMana && attrCombo.InputAttribute == Stats.TotalLevel) is { } totalLevelToMaximumMana)
                 {
                     totalLevelToMaximumMana.InputOperand = 1;
@@ -150,9 +106,9 @@ public class FixCharStatsForceWavePlugInSeason6 : FixCharStatsForceWavePlugInBas
             }
             else if (charClass.Number == 24 || charClass.Number == 25) // RF classes
             {
-                if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.DefenseRatePvp && attrCombo.InputAttribute == Stats.BaseAgility) is { } baseAgilityToDefenseRatePvp)
+                if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.DefenseRatePvp && attrCombo.InputAttribute == Stats.TotalAgility) is { } totalAgilityToDefenseRatePvp)
                 {
-                    baseAgilityToDefenseRatePvp.InputOperand = 0.2f;
+                    totalAgilityToDefenseRatePvp.InputOperand = 0.2f;
                 }
 
                 if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.DefenseRatePvp && attrCombo.InputAttribute == Stats.TotalLevel) is { } totalLevelToDefenseRatePvp)
@@ -170,9 +126,9 @@ public class FixCharStatsForceWavePlugInSeason6 : FixCharStatsForceWavePlugInBas
                     totalStrengthToAttackRatePvm.InputOperand = 1.0f / 6;
                 }
 
-                if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.AttackRatePvp && attrCombo.InputAttribute == Stats.BaseAgility) is { } baseAgilityToAttackRatePvp)
+                if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.AttackRatePvp && attrCombo.InputAttribute == Stats.TotalAgility) is { } totalAgilityToAttackRatePvp)
                 {
-                    baseAgilityToAttackRatePvp.InputOperand = 3.6f;
+                    totalAgilityToAttackRatePvp.InputOperand = 3.6f;
                 }
 
                 if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.AttackRatePvp && attrCombo.InputAttribute == Stats.TotalLevel) is { } totalLevelToAttackRatePvp)
@@ -185,19 +141,14 @@ public class FixCharStatsForceWavePlugInSeason6 : FixCharStatsForceWavePlugInBas
                     charClass.AttributeCombinations.Remove(totalEnergyToAttackRatePvp);
                 }
 
-                if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.FenrirBaseDmg && attrCombo.InputAttribute == Stats.BaseStrength) is { } baseStrengthToFenrirBaseDmg)
+                if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.FenrirBaseDmg && attrCombo.InputAttribute == Stats.TotalStrength) is { } totalStrengthToFenrirBaseDmg)
                 {
-                    baseStrengthToFenrirBaseDmg.InputOperand = 1.0f / 5;
+                    totalStrengthToFenrirBaseDmg.InputOperand = 1.0f / 5;
                 }
 
-                if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.FenrirBaseDmg && attrCombo.InputAttribute == Stats.BaseVitality) is { } baseVitalityToFenrirBaseDmg)
+                if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.FenrirBaseDmg && attrCombo.InputAttribute == Stats.TotalVitality) is { } totalVitalityToFenrirBaseDmg)
                 {
-                    baseVitalityToFenrirBaseDmg.InputOperand = 1.0f / 7;
-                }
-
-                if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.FenrirBaseDmg && attrCombo.InputAttribute == Stats.BaseEnergy) is { } baseEnergyToFenrirBaseDmg)
-                {
-                    baseEnergyToFenrirBaseDmg.InputOperand = 1.0f / 3;
+                    totalVitalityToFenrirBaseDmg.InputOperand = 1.0f / 3;
                 }
             }
             else if (charClass.Number == 20 || charClass.Number == 22 || charClass.Number == 23) // Summoner classes
@@ -209,14 +160,14 @@ public class FixCharStatsForceWavePlugInSeason6 : FixCharStatsForceWavePlugInBas
                     totalAgilityToDefenseBase.InputOperand = 1.0f / 3;
                 }
 
-                if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.DefenseRatePvp && attrCombo.InputAttribute == Stats.BaseAgility) is { } baseAgilityToDefenseRatePvp)
+                if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.DefenseRatePvp && attrCombo.InputAttribute == Stats.TotalAgility) is { } totalAgilityToDefenseRatePvp)
                 {
-                    baseAgilityToDefenseRatePvp.InputOperand = 0.5f;
+                    totalAgilityToDefenseRatePvp.InputOperand = 0.5f;
                 }
 
-                if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.AttackRatePvp && attrCombo.InputAttribute == Stats.BaseAgility) is { } baseAgilityToAttackRatePvp)
+                if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.AttackRatePvp && attrCombo.InputAttribute == Stats.TotalAgility) is { } totalAgilityToAttackRatePvp)
                 {
-                    baseAgilityToAttackRatePvp.InputOperand = 3.5f;
+                    totalAgilityToAttackRatePvp.InputOperand = 3.5f;
                 }
             }
             else

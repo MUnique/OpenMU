@@ -54,11 +54,6 @@ public abstract class FixCharStatsForceWavePlugInBase : UpdatePlugInBase
         foreach (var magicGladiatorClass in magicGladiatorClasses)
         {
             magicGladiatorClass.StatAttributes.First(attr => attr.Attribute == Stats.BaseEnergy).BaseValue = 26;
-
-            if (magicGladiatorClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.DefenseBase && attrCombo.InputAttribute == Stats.TotalAgility) is { } totalAgilityToDefenseBase)
-            {
-                totalAgilityToDefenseBase.InputOperand = 0.25f;
-            }
         }
     }
 #pragma warning restore SA1600, CS1591 // Elements should be documented.
