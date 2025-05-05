@@ -5,12 +5,9 @@
 namespace MUnique.OpenMU.Persistence.Initialization.Updates;
 
 using System.Runtime.InteropServices;
-using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
-using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
-using MUnique.OpenMU.Persistence.Initialization.Skills;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -175,61 +172,5 @@ public class FixCharStatsForceWavePlugInSeason6 : FixCharStatsForceWavePlugInBas
                 // nothing to do
             }
         });
-
-        // Update Force Wave skill
-        var forceWave = gameConfiguration.Skills.First(me => me.Number == (short)SkillNumber.ForceWave);
-        forceWave.ImplicitTargetRange = 1;
-
-        // Create Force Wave Streng alt skill
-        this.CreateForceWaveStrengAltSkill(context, gameConfiguration, forceWave);
-    }
-
-    private void CreateForceWaveStrengAltSkill(IContext context, GameConfiguration gameConfiguration, Skill regularSkill)
-    {
-        var skill = context.CreateNew<Skill>();
-        gameConfiguration.Skills.Add(skill);
-        skill.Number = (short)SkillNumber.ForceWaveStrengAlt;
-        skill.Name = "Force Wave Streng (scepter with skill)";
-        skill.Range = 4;
-
-        var requirement = context.CreateNew<AttributeRequirement>();
-        requirement.Attribute = Stats.CurrentMana.GetPersistent(gameConfiguration);
-        requirement.MinimumValue = 15;
-        skill.ConsumeRequirements.Add(requirement);
-
-        var lordEmperorClass = gameConfiguration.CharacterClasses.First(c => c.Number == 17);
-        skill.QualifiedCharacters.Add(lordEmperorClass);
-
-        skill.SetGuid(skill.Number);
-
-        skill.MasterDefinition = context.CreateNew<MasterSkillDefinition>();
-        skill.MasterDefinition.Rank = 2;
-        skill.MasterDefinition.Root = gameConfiguration.MasterSkillRoots.First(r => r.Name == "Middle Root");
-
-        var formula = gameConfiguration.Skills.First(me => me.Number == (short)SkillNumber.ForceWaveStreng).MasterDefinition!.ValueFormula;
-        skill.MasterDefinition.ValueFormula = formula;
-        skill.MasterDefinition.DisplayValueFormula = formula;
-        skill.MasterDefinition.MaximumLevel = 20;
-        skill.MasterDefinition.TargetAttribute = null;
-        skill.MasterDefinition.Aggregation = AggregateType.AddRaw;
-        skill.MasterDefinition.ReplacedSkill = regularSkill;
-        skill.MasterDefinition.ExtendsDuration = false;
-        skill.MasterDefinition.RequiredMasterSkills.Add(gameConfiguration.Skills.First(s => s.Number == (short)SkillNumber.Force));
-        skill.MasterDefinition.MinimumLevel = 1;
-
-        var replacedSkill = skill.MasterDefinition.ReplacedSkill;
-        if (replacedSkill != null)
-        {
-            skill.AttackDamage = replacedSkill.AttackDamage;
-            skill.DamageType = replacedSkill.DamageType;
-            skill.ElementalModifierTarget = replacedSkill.ElementalModifierTarget;
-            skill.ImplicitTargetRange = replacedSkill.ImplicitTargetRange;
-            skill.MovesTarget = replacedSkill.MovesTarget;
-            skill.MovesToTarget = replacedSkill.MovesToTarget;
-            skill.SkillType = replacedSkill.SkillType;
-            skill.Target = replacedSkill.Target;
-            skill.TargetRestriction = replacedSkill.TargetRestriction;
-            skill.MagicEffectDef = replacedSkill.MagicEffectDef;
-        }
     }
 }

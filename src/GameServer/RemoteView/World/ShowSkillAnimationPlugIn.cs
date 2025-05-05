@@ -30,8 +30,6 @@ public class ShowSkillAnimationPlugIn : IShowSkillAnimationPlugIn
     private const ushort NovaStartSkillId = 58;
     private const short ForceSkillId = 60;
     private const short ForceWaveSkillId = 66;
-    private const short ForceWaveStrengSkillId = 509;
-    private const short ForceWaveStrengAltSkillId = 5090;
 
     private readonly RemotePlayer _player;
 
@@ -53,14 +51,6 @@ public class ShowSkillAnimationPlugIn : IShowSkillAnimationPlugIn
         if (skillNumber == ForceWaveSkillId)
         {
             skillNumber = ForceSkillId;
-        }
-        else if (skillNumber == ForceWaveStrengAltSkillId)
-        {
-            skillNumber = ForceWaveStrengSkillId;
-        }
-        else
-        {
-            // nothing to do
         }
 
         var playerId = attacker.GetId(this._player);

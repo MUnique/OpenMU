@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 
 using System.Runtime.InteropServices;
-using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -13,23 +12,26 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [PlugIn(nameof(ForceWaveStrengSkillAction), "Handles the force wave strengthener skill of the dark lord.")]
 [Guid("9072ce9c-1482-4838-ba0a-4c312062e090")]
-public class ForceWaveStrengSkillAction : TargetedSkillDefaultPlugin
+public class ForceWaveStrengSkillAction : ForceSkillAction
 {
-    private const ushort ForceWaveStrengAltSkillId = 5090;
-
     /// <inheritdoc/>
     public override short Key => 509;
 
     /// <inheritdoc/>
     public override async ValueTask PerformSkillAsync(Player player, IAttackable target, ushort skillId)
     {
-        // If there is an equipped scepter with skill, we call the alt master skill which has force wave (not force) as its related skill
-        if (player.Attributes?[Stats.IsScepterEquipped] > 0 is true
-            && player.Inventory!.EquippedItems.First(item => item.ItemSlot == InventoryConstants.LeftHandSlot).HasSkill)
+        // Originally, force wave strengthener could be used on top of force or force wave skills.
+        // In OpenMU, you can only use it with force wave (which means a scepter with skill must be equipped).
+        // This simplifies code at the expense of not allowing usage of FWS with any weapon (or fists).
+        // Since a Lord Emperor will likely be wearing a skilled scepter as a weapon, this is acceptable.
+        // It also makes the skill name more accurate :-).
+        if (player.SkillList?.ContainsSkill(ForceWaveSkillId) is true)
         {
-            skillId = ForceWaveStrengAltSkillId;
+            await base.PerformSkillAsync(player, target, skillId).ConfigureAwait(false);
         }
-
-        await base.PerformSkillAsync(player, target, skillId).ConfigureAwait(false);
+        else
+        {
+            return;
+        }
     }
 }

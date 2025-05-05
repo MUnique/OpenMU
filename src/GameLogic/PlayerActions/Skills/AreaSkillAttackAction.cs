@@ -221,7 +221,7 @@ public class AreaSkillAttackAction
         if (skill.AreaSkillSettings is { UseFrustumFilter: true } areaSkillSettings)
         {
             var filter = FrustumFilters.GetOrAdd(areaSkillSettings, static s => new FrustumBasedTargetFilter(s.FrustumStartWidth, s.FrustumEndWidth, s.FrustumDistance));
-            targetsInRange = targetsInRange.Where(a => filter.IsTargetWithinBounds(player, a, targetAreaCenter, rotation));
+            targetsInRange = targetsInRange.Where(a => filter.IsTargetWithinBounds(player, a, rotation));
         }
 
         if (skill.AreaSkillSettings is { UseTargetAreaFilter: true })

@@ -6,8 +6,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Updates;
 
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Configuration;
-using MUnique.OpenMU.GameLogic;
-using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -25,7 +23,7 @@ public class FixCharStatsForceWavePlugIn095D : FixCharStatsForceWavePlugInBase
     /// <summary>
     /// The plug in description.
     /// </summary>
-    internal new const string PlugInDescription = "This update fixes agility to defense multipliers (DW, MG) and base energy (MG) stats.";
+    internal new const string PlugInDescription = "This update fixes agility to defense multiplier (DW) and base energy (MG) stats.";
 
     /// <inheritdoc />
     public override string Name => PlugInName;
