@@ -1,4 +1,4 @@
-﻿// <copyright file="FixCharStatsForceWavePlugIn095d.cs" company="MUnique">
+﻿// <copyright file="FixCharStatsPlugIn095d.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -9,11 +9,11 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// This update fixes agility to defense multipliers (DW, MG) and base energy (MG) stats.
+/// This update fixes agility to defense multiplier (DW) and base energy (MG) stats.
 /// </summary>
 [PlugIn(PlugInName, PlugInDescription)]
 [Guid("14DFF317-B4E6-424A-A8D1-6D1D5195E970")]
-public class FixCharStatsForceWavePlugIn095D : FixCharStatsForceWavePlugInBase
+public class FixCharStatsPlugIn095D : FixCharStatsPlugInBase
 {
     /// <summary>
     /// The plug in name.
@@ -35,7 +35,7 @@ public class FixCharStatsForceWavePlugIn095D : FixCharStatsForceWavePlugInBase
     public override string DataInitializationKey => Version095d.DataInitialization.Id;
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FixCharStatsForceWave095d;
+    public override UpdateVersion Version => UpdateVersion.FixCharStats095d;
 
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)

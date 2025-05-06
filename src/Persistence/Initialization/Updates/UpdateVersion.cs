@@ -256,17 +256,17 @@ public enum UpdateVersion
     FixHorseFenrirOptionsSoulBarrierPlugIn = 49,
 
     /// <summary>
-    /// The version of the <see cref="FixCharStatsForceWavePlugIn075"/>.
+    /// The version of the <see cref="FixCharStatsPlugIn075"/>.
     /// </summary>
-    FixCharStatsForceWave075 = 50,
+    FixCharStats075 = 50,
 
     /// <summary>
-    /// The version of the <see cref="FixCharStatsForceWavePlugIn095D"/>.
+    /// The version of the <see cref="FixCharStatsPlugIn095D"/>.
     /// </summary>
-    FixCharStatsForceWave095d = 51,
+    FixCharStats095d = 51,
 
     /// <summary>
-    /// The version of the <see cref="FixCharStatsForceWavePlugInSeason6"/>.
+    /// The version of the <see cref="FixCharStatsPlugInSeason6"/>.
     /// </summary>
-    FixCharStatsForceWaveSeason6 = 52,
+    FixCharStatsSeason6 = 52,
 }

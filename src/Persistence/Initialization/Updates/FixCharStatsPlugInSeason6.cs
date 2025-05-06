@@ -1,4 +1,4 @@
-﻿// <copyright file="FixCharStatsForceWavePlugInSeason6.cs" company="MUnique">
+﻿// <copyright file="FixCharStatsPlugInSeason6.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -11,21 +11,21 @@ using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// This update fixes several character stats values and DL Force (Wave) base and master skills.
+/// This update fixes several character stats values.
 /// </summary>
 [PlugIn(PlugInName, PlugInDescription)]
 [Guid("0C1995AB-A1CC-42A8-9EFC-E5FE8F360C53")]
-public class FixCharStatsForceWavePlugInSeason6 : FixCharStatsForceWavePlugInBase
+public class FixCharStatsPlugInSeason6 : FixCharStatsPlugInBase
 {
     /// <summary>
     /// The plug in name.
     /// </summary>
-    internal new const string PlugInName = "Fix Char Stats and DL Force (Wave) skills";
+    internal new const string PlugInName = "Fix Char Stats";
 
     /// <summary>
     /// The plug in description.
     /// </summary>
-    internal new const string PlugInDescription = "This update fixes several character stats values and DL Force (Wave) base and master skills.";
+    internal new const string PlugInDescription = "This update fixes several character stats values.";
 
     /// <inheritdoc />
     public override string Name => PlugInName;
@@ -37,7 +37,7 @@ public class FixCharStatsForceWavePlugInSeason6 : FixCharStatsForceWavePlugInBas
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FixCharStatsForceWaveSeason6;
+    public override UpdateVersion Version => UpdateVersion.FixCharStatsSeason6;
 
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)

@@ -29,9 +29,5 @@ public class ForceWaveStrengSkillAction : ForceSkillAction
         {
             await base.PerformSkillAsync(player, target, skillId).ConfigureAwait(false);
         }
-        else
-        {
-            return;
-        }
     }
 }
