@@ -56,9 +56,13 @@ public class ForceSkillAction : TargetedSkillDefaultPlugin
 
         if (skill.AreaSkillSettings is { UseFrustumFilter: true } areaSkillSettings)
         {
-            frustumFilter ??= CreateFrustumFilter(areaSkillSettings);
+            if (frustumFilter is null)
+            {
+                CreateFrustumFilter(areaSkillSettings);
+            }
+
             var rotationToTarget = (byte)(player.Position.GetAngleDegreeTo(targetedTarget.Position) / 360.0 * 255.0);
-            targetsInRange = targetsInRange.Where(a => frustumFilter.IsTargetWithinBounds(player, a, rotationToTarget)).ToList();
+            targetsInRange = targetsInRange.Where(a => frustumFilter!.IsTargetWithinBounds(player, a, rotationToTarget)).ToList();
         }
 
         if (!targetsInRange.Contains(targetedTarget))
@@ -69,8 +73,8 @@ public class ForceSkillAction : TargetedSkillDefaultPlugin
         return targetsInRange;
     }
 
-    private static FrustumBasedTargetFilter CreateFrustumFilter(AreaSkillSettings areaSkillSettings)
+    private static void CreateFrustumFilter(AreaSkillSettings areaSkillSettings)
     {
-        return frustumFilter ??= new FrustumBasedTargetFilter(areaSkillSettings.FrustumStartWidth, areaSkillSettings.FrustumEndWidth, areaSkillSettings.FrustumDistance);
+        frustumFilter ??= new FrustumBasedTargetFilter(areaSkillSettings.FrustumStartWidth, areaSkillSettings.FrustumEndWidth, areaSkillSettings.FrustumDistance);
     }
 }
