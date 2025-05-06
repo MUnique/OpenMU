@@ -1,4 +1,4 @@
-﻿// <copyright file="FixCharStatsPlugInSeason6.cs" company="MUnique">
+﻿// <copyright file="FixCharStatsForceWavePlugInSeason6.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -8,24 +8,25 @@ using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Persistence.Initialization.Skills;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// This update fixes several character stats values.
+/// This update fixes several character stats values and DL Force Wave Strengthener master skill.
 /// </summary>
 [PlugIn(PlugInName, PlugInDescription)]
 [Guid("0C1995AB-A1CC-42A8-9EFC-E5FE8F360C53")]
-public class FixCharStatsPlugInSeason6 : FixCharStatsPlugInBase
+public class FixCharStatsForceWavePlugInSeason6 : FixCharStatsForceWavePlugInBase
 {
     /// <summary>
     /// The plug in name.
     /// </summary>
-    internal new const string PlugInName = "Fix Char Stats";
+    internal new const string PlugInName = "Fix Char Stats and DL Force Wave Str skill";
 
     /// <summary>
     /// The plug in description.
     /// </summary>
-    internal new const string PlugInDescription = "This update fixes several character stats values.";
+    internal new const string PlugInDescription = "This update fixes several character stats values and DL Force Wave Strengthener master skill.";
 
     /// <inheritdoc />
     public override string Name => PlugInName;
@@ -37,7 +38,7 @@ public class FixCharStatsPlugInSeason6 : FixCharStatsPlugInBase
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FixCharStatsSeason6;
+    public override UpdateVersion Version => UpdateVersion.FixCharStatsForceWaveSeason6;
 
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
@@ -172,5 +173,29 @@ public class FixCharStatsPlugInSeason6 : FixCharStatsPlugInBase
                 // nothing to do
             }
         });
+
+        // Update Force Wave Strengthener skill
+        if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.ForceWave) is { } forceWave
+            && gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.ForceWaveStreng) is { } forceWaveStr)
+        {
+            forceWaveStr.AttackDamage = forceWave.AttackDamage;
+            forceWaveStr.DamageType = forceWave.DamageType;
+            forceWaveStr.ElementalModifierTarget = forceWave.ElementalModifierTarget;
+            forceWaveStr.ImplicitTargetRange = forceWave.ImplicitTargetRange;
+            forceWaveStr.MovesTarget = forceWave.MovesTarget;
+            forceWaveStr.MovesToTarget = forceWave.MovesToTarget;
+            forceWaveStr.SkillType = forceWave.SkillType;
+            forceWaveStr.Target = forceWave.Target;
+            forceWaveStr.TargetRestriction = forceWave.TargetRestriction;
+            forceWaveStr.MagicEffectDef = forceWave.MagicEffectDef;
+
+            if (forceWave.AreaSkillSettings is { } areaSkillSettings)
+            {
+                forceWaveStr.AreaSkillSettings = context.CreateNew<AreaSkillSettings>();
+                var id = forceWaveStr.AreaSkillSettings.GetId();
+                forceWaveStr.AreaSkillSettings.AssignValuesOf(areaSkillSettings, gameConfiguration);
+                forceWaveStr.AreaSkillSettings.SetGuid(id);
+            }
+        }
     }
 }

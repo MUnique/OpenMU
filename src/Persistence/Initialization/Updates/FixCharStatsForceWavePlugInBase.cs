@@ -1,4 +1,4 @@
-﻿// <copyright file="FixCharStatsPlugInBase.cs" company="MUnique">
+﻿// <copyright file="FixCharStatsForceWavePlugInBase.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -10,7 +10,7 @@ using MUnique.OpenMU.GameLogic.Attributes;
 /// <summary>
 /// This update fixes DW agility to defense multiplier stat.
 /// </summary>
-public abstract class FixCharStatsPlugInBase : UpdatePlugInBase
+public abstract class FixCharStatsForceWavePlugInBase : UpdatePlugInBase
 {
     /// <summary>
     /// The plug in name.

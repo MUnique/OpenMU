@@ -1,4 +1,4 @@
-﻿// <copyright file="FixCharStatsPlugIn075.cs" company="MUnique">
+﻿// <copyright file="FixCharStatsForceWavePlugIn075.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -12,11 +12,11 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [PlugIn(PlugInName, PlugInDescription)]
 [Guid("D7CD05B7-06EE-4D9F-BAD0-65267F3A9FE8")]
-public class FixCharStatsPlugIn075 : FixCharStatsPlugInBase
+public class FixCharStatsForceWavePlugIn075 : FixCharStatsForceWavePlugInBase
 {
     /// <inheritdoc />
     public override string DataInitializationKey => Version075.DataInitialization.Id;
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FixCharStats075;
+    public override UpdateVersion Version => UpdateVersion.FixCharStatsForceWave075;
 }

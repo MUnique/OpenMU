@@ -1,4 +1,4 @@
-﻿// <copyright file="FixCharStatsPlugIn095d.cs" company="MUnique">
+﻿// <copyright file="FixCharStatsForceWavePlugIn095d.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [PlugIn(PlugInName, PlugInDescription)]
 [Guid("14DFF317-B4E6-424A-A8D1-6D1D5195E970")]
-public class FixCharStatsPlugIn095D : FixCharStatsPlugInBase
+public class FixCharStatsForceWavePlugIn095D : FixCharStatsForceWavePlugInBase
 {
     /// <summary>
     /// The plug in name.
@@ -35,7 +35,7 @@ public class FixCharStatsPlugIn095D : FixCharStatsPlugInBase
     public override string DataInitializationKey => Version095d.DataInitialization.Id;
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FixCharStats095d;
+    public override UpdateVersion Version => UpdateVersion.FixCharStatsForceWave095d;
 
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
