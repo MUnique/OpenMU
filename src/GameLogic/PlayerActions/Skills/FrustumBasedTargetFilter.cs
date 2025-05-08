@@ -49,10 +49,9 @@ public record FrustumBasedTargetFilter
     /// </summary>
     /// <param name="attacker">The attacker.</param>
     /// <param name="target">The target.</param>
-    /// <param name="targetAreaCenter">The target area center.</param>
     /// <param name="rotation">The rotation.</param>
     /// <returns><c>true</c> if the target is within hit bounds; otherwise, <c>false</c>.</returns>
-    public bool IsTargetWithinBounds(ILocateable attacker, ILocateable target, Point targetAreaCenter, byte rotation)
+    public bool IsTargetWithinBounds(ILocateable attacker, ILocateable target, byte rotation)
     {
         if (attacker.Position == target.Position)
         {

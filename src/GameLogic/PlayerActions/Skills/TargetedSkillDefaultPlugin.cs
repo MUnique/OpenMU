@@ -1,4 +1,4 @@
-﻿// <copyright file="TargetedSkillActionDefault.cs" company="MUnique">
+﻿// <copyright file="TargetedSkillDefaultPlugin.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -138,79 +138,14 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
         await player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowSkillAnimationAsync(player, target, skill, effectApplied), true).ConfigureAwait(false);
     }
 
-    private async ValueTask<bool> ApplySkillAsync(Player player, IAttackable targetedTarget, SkillEntry skillEntry)
-    {
-        skillEntry.ThrowNotInitializedProperty(skillEntry.Skill is null, nameof(skillEntry.Skill));
-        var skill = skillEntry.Skill;
-        var success = false;
-        var targets = this.DetermineTargets(player, targetedTarget, skill);
-        bool isCombo = false;
-        if (skill.SkillType is SkillType.DirectHit or SkillType.CastleSiegeSkill
-            && player.ComboState is { } comboState
-            && !targetedTarget.IsAtSafezone()
-            && !player.IsAtSafezone()
-            && targetedTarget.IsActive()
-            && player.IsActive())
-        {
-            isCombo = await comboState.RegisterSkillAsync(skill).ConfigureAwait(false);
-        }
-
-        foreach (var target in targets)
-        {
-            if (skill.SkillType == SkillType.DirectHit || skill.SkillType == SkillType.CastleSiegeSkill)
-            {
-                if (player.Attributes![Stats.AmmunitionConsumptionRate] > player.Attributes[Stats.AmmunitionAmount])
-                {
-                    break;
-                }
-
-                if (!target.IsAtSafezone() && !player.IsAtSafezone() && target != player)
-                {
-                    await target.AttackByAsync(player, skillEntry, isCombo).ConfigureAwait(false);
-                    player.LastAttackedTarget.SetTarget(target);
-                    success = await target.TryApplyElementalEffectsAsync(player, skillEntry).ConfigureAwait(false) || success;
-                }
-            }
-            else if (skill.MagicEffectDef != null)
-            {
-                // Buffs are allowed in the Safezone of Blood Castle.
-                var canDoBuff = !player.IsAtSafezone() || player.CurrentMiniGame is { };
-                if (!canDoBuff)
-                {
-                    player.Logger.LogWarning($"Can't apply magic effect when being in the safezone. skill: {skill.Name} ({skill.Number}), skillType: {skill.SkillType}.");
-                    break;
-                }
-
-                if (skill.SkillType == SkillType.Buff)
-                {
-                    await target.ApplyMagicEffectAsync(player, skillEntry).ConfigureAwait(false);
-                    success = true;
-                }
-                else if (skill.SkillType == SkillType.Regeneration)
-                {
-                    await target.ApplyRegenerationAsync(player, skillEntry).ConfigureAwait(false);
-                    success = true;
-                }
-                else
-                {
-                    player.Logger.LogWarning($"Skill.MagicEffectDef isn't null, but it's not a buff or regeneration skill. skill: {skill.Name} ({skill.Number}), skillType: {skill.SkillType}.");
-                }
-            }
-            else
-            {
-                player.Logger.LogWarning($"Skill.MagicEffectDef is null, skill: {skill.Name} ({skill.Number}), skillType: {skill.SkillType}.");
-            }
-        }
-
-        if (isCombo)
-        {
-            await player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowComboAnimationAsync(player, targetedTarget), true).ConfigureAwait(false);
-        }
-
-        return success;
-    }
-
-    private IEnumerable<IAttackable> DetermineTargets(Player player, IAttackable targetedTarget, Skill skill)
+    /// <summary>
+    /// Determines the targets of the skill. It can be overridden by derived classes to provide custom target selection logic.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="targetedTarget">The skill target.</param>
+    /// <param name="skill">The skill.</param>
+    /// <returns>The list of targets.</returns>
+    protected virtual IEnumerable<IAttackable> DetermineTargets(Player player, IAttackable targetedTarget, Skill skill)
     {
         if (skill.Target == SkillTarget.ImplicitPlayer)
         {
@@ -291,5 +226,77 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
         }
 
         return Enumerable.Empty<IAttackable>();
+    }
+
+    private async ValueTask<bool> ApplySkillAsync(Player player, IAttackable targetedTarget, SkillEntry skillEntry)
+    {
+        skillEntry.ThrowNotInitializedProperty(skillEntry.Skill is null, nameof(skillEntry.Skill));
+        var skill = skillEntry.Skill;
+        var success = false;
+        var targets = this.DetermineTargets(player, targetedTarget, skill);
+        bool isCombo = false;
+        if (skill.SkillType is SkillType.DirectHit or SkillType.CastleSiegeSkill
+            && player.ComboState is { } comboState
+            && !targetedTarget.IsAtSafezone()
+            && !player.IsAtSafezone()
+            && targetedTarget.IsActive()
+            && player.IsActive())
+        {
+            isCombo = await comboState.RegisterSkillAsync(skill).ConfigureAwait(false);
+        }
+
+        foreach (var target in targets)
+        {
+            if (skill.SkillType == SkillType.DirectHit || skill.SkillType == SkillType.CastleSiegeSkill)
+            {
+                if (player.Attributes![Stats.AmmunitionConsumptionRate] > player.Attributes[Stats.AmmunitionAmount])
+                {
+                    break;
+                }
+
+                if (!target.IsAtSafezone() && !player.IsAtSafezone() && target != player)
+                {
+                    await target.AttackByAsync(player, skillEntry, isCombo).ConfigureAwait(false);
+                    player.LastAttackedTarget.SetTarget(target);
+                    success = await target.TryApplyElementalEffectsAsync(player, skillEntry).ConfigureAwait(false) || success;
+                }
+            }
+            else if (skill.MagicEffectDef != null)
+            {
+                // Buffs are allowed in the Safezone of Blood Castle.
+                var canDoBuff = !player.IsAtSafezone() || player.CurrentMiniGame is { };
+                if (!canDoBuff)
+                {
+                    player.Logger.LogWarning($"Can't apply magic effect when being in the safezone. skill: {skill.Name} ({skill.Number}), skillType: {skill.SkillType}.");
+                    break;
+                }
+
+                if (skill.SkillType == SkillType.Buff)
+                {
+                    await target.ApplyMagicEffectAsync(player, skillEntry).ConfigureAwait(false);
+                    success = true;
+                }
+                else if (skill.SkillType == SkillType.Regeneration)
+                {
+                    await target.ApplyRegenerationAsync(player, skillEntry).ConfigureAwait(false);
+                    success = true;
+                }
+                else
+                {
+                    player.Logger.LogWarning($"Skill.MagicEffectDef isn't null, but it's not a buff or regeneration skill. skill: {skill.Name} ({skill.Number}), skillType: {skill.SkillType}.");
+                }
+            }
+            else
+            {
+                player.Logger.LogWarning($"Skill.MagicEffectDef is null, skill: {skill.Name} ({skill.Number}), skillType: {skill.SkillType}.");
+            }
+        }
+
+        if (isCombo)
+        {
+            await player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowComboAnimationAsync(player, targetedTarget), true).ConfigureAwait(false);
+        }
+
+        return success;
     }
 }

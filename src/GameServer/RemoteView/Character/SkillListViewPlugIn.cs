@@ -21,7 +21,10 @@ using MUnique.OpenMU.PlugIns;
 [MinimumClient(3, 0, ClientLanguage.Invariant)]
 public class SkillListViewPlugIn : ISkillListViewPlugIn
 {
+    private const short Explosion79SkillId = 79;
+    private const short ForceSkillId = 60;
     private const short ForceWaveSkillId = 66;
+    private const short ForceWaveStrengSkillId = 509;
 
     private readonly RemotePlayer _player;
 
@@ -64,9 +67,12 @@ public class SkillListViewPlugIn : ISkillListViewPlugIn
     /// <inheritdoc/>
     public virtual async ValueTask RemoveSkillAsync(Skill skill)
     {
-        if (skill.Number == ForceWaveSkillId)
+        if (skill.Number == ForceWaveSkillId
+            && this.SkillList.Any(s => s?.Number == ForceWaveStrengSkillId)
+            && this.SkillList.FirstOrDefault(s => s?.Number == ForceSkillId) is { } forceSkill)
         {
-            return;
+            // Force wave strengthener is replacing force skill
+            skill = forceSkill;
         }
 
         var skillIndex = this.SkillList.IndexOf(skill);
@@ -142,7 +148,11 @@ public class SkillListViewPlugIn : ISkillListViewPlugIn
         skills.RemoveAll(s => replacedSkills.Contains(s.Skill));
         skills.RemoveAll(s => s.Skill?.SkillType == SkillType.PassiveBoost);
 
-        skills.RemoveAll(s => s.Skill?.Number == ForceWaveSkillId);
+        skills.RemoveAll(s => s.Skill?.Number == ForceWaveSkillId || s.Skill?.Number == Explosion79SkillId);
+        if (skills.Any(s => s.Skill?.Number == ForceWaveStrengSkillId))
+        {
+            skills.RemoveAll(s => s.Skill?.Number == ForceSkillId);
+        }
 
         foreach (var skillEntry in skills.Distinct(default(SkillEqualityComparer)))
         {
