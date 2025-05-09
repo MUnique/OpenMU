@@ -116,6 +116,7 @@ internal partial class CharacterClassInitialization : InitializerBase
 
         var tempDefense = this.Context.CreateNew<AttributeDefinition>(Guid.NewGuid(), "Temp Defense Bonus multiplier with Shield", string.Empty);
         this.GameConfiguration.Attributes.Add(tempDefense);
+        attributeRelationships.Add(this.CreateAttributeRelationship(tempDefense, 1, Stats.Level, InputOperator.Minimum));
         attributeRelationships.Add(this.CreateConditionalRelationship(tempDefense, Stats.IsShieldEquipped, Stats.DefenseIncreaseWithEquippedShield));
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.DefenseFinal, 1, tempDefense, aggregateType: AggregateType.Multiplicate));
 
@@ -148,7 +149,6 @@ internal partial class CharacterClassInitialization : InitializerBase
         baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.ItemDurationIncrease));
         baseAttributeValues.Add(this.CreateConstValueAttribute(2, Stats.AbilityRecoveryAbsolute));
         baseAttributeValues.Add(this.CreateConstValueAttribute(-1, Stats.AreTwoWeaponsEquipped));
-        baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.DefenseIncreaseWithEquippedShield));
 
         if (isMaster)
         {

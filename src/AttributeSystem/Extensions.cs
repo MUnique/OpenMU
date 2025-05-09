@@ -22,6 +22,7 @@ public static class Extensions
             InputOperator.Multiply => "*",
             InputOperator.Exponentiate => "^",
             InputOperator.ExponentiateByAttribute => "^",
+            InputOperator.Minimum => "<min>",
             _ => string.Empty,
         };
     }
