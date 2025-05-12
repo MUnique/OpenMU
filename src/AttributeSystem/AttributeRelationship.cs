@@ -30,11 +30,6 @@ public enum InputOperator
     /// The <see cref="AttributeRelationship.InputOperand"/> is exponentiated by the <see cref="AttributeRelationship.InputAttribute"/> before adding to the <see cref="AttributeRelationship.TargetAttribute"/>.
     /// </summary>
     ExponentiateByAttribute,
-
-    /// <summary>
-    /// The minimum between <see cref="AttributeRelationship.InputAttribute"/> and <see cref="AttributeRelationship.InputOperand"/> is taken before effecting the <see cref="AttributeRelationship.TargetAttribute"/>.
-    /// </summary>
-    Minimum,
 }
 
 /// <summary>

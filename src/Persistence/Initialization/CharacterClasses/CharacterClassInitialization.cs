@@ -116,9 +116,8 @@ internal partial class CharacterClassInitialization : InitializerBase
 
         var tempDefense = this.Context.CreateNew<AttributeDefinition>(Guid.NewGuid(), "Temp Defense Bonus multiplier with Shield", string.Empty);
         this.GameConfiguration.Attributes.Add(tempDefense);
-        attributeRelationships.Add(this.CreateAttributeRelationship(tempDefense, 1, Stats.Level, InputOperator.Minimum));
         attributeRelationships.Add(this.CreateConditionalRelationship(tempDefense, Stats.IsShieldEquipped, Stats.DefenseIncreaseWithEquippedShield));
-        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.DefenseFinal, 1, tempDefense, aggregateType: AggregateType.Multiplicate));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.DefenseFinal, 1, tempDefense, InputOperator.Add, aggregateType: AggregateType.Multiplicate));
 
         attributeRelationships.Add(this.CreateConditionalRelationship(Stats.DefenseFinal, Stats.IsShieldEquipped, Stats.BonusDefenseWithShield, AggregateType.AddFinal));
         attributeRelationships.Add(this.CreateConditionalRelationship(Stats.DefenseRatePvm, Stats.IsShieldEquipped, Stats.BonusDefenseRateWithShield));
