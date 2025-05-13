@@ -106,13 +106,13 @@ public class AncientSets : InitializerBase
         var eplete = this.AddAncientSet(
             "Eplete", // Scale
             5,
-            (Stats.SkillDamageBonus, 15.0f, AggregateType.AddRaw),
-            (Stats.AttackRatePvm, 1.50f, AggregateType.Multiplicate),
-            (Stats.WizardryAttackDamageIncrease, 0.05f, AggregateType.AddRaw),
-            (Stats.MaximumHealth, 50.0f, AggregateType.AddRaw),
-            (Stats.MaximumAbility, 30.0f, AggregateType.AddRaw),
-            (Stats.CriticalDamageChance, 0.10f, AggregateType.AddRaw),
-            (Stats.ExcellentDamageChance, 0.10f, AggregateType.AddRaw));
+            (Stats.SkillDamageBonus, 15.0f),
+            (Stats.AttackRatePvm, 50.0f),
+            (Stats.WizardryAttackDamageIncrease, 0.05f),
+            (Stats.MaximumHealth, 50.0f),
+            (Stats.MaximumAbility, 30.0f),
+            (Stats.CriticalDamageChance, 0.10f),
+            (Stats.ExcellentDamageChance, 0.10f));
         eplete.SetGuid(6, 1);
         this.AddItems(
             eplete,
@@ -277,12 +277,12 @@ public class AncientSets : InitializerBase
         var evis = this.AddAncientSet(
             "Evis", // Bone
             15,
-            (Stats.SkillDamageBonus, 15.0f, AggregateType.AddRaw),
-            (Stats.TotalVitality, 20.0f, AggregateType.AddRaw),
-            (Stats.WizardryAttackDamageIncrease, 0.10f, AggregateType.AddRaw),
-            (Stats.DoubleDamageChance, 0.05f, AggregateType.AddRaw),
-            (Stats.AttackRatePvm, 1.50f, AggregateType.Multiplicate),
-            (Stats.AbilityRecoveryAbsolute, 5.0f, AggregateType.AddRaw));
+            (Stats.SkillDamageBonus, 15.0f),
+            (Stats.TotalVitality, 20.0f),
+            (Stats.WizardryAttackDamageIncrease, 0.10f),
+            (Stats.DoubleDamageChance, 0.05f),
+            (Stats.AttackRatePvm, 50.0f),
+            (Stats.AbilityRecoveryAbsolute, 5.0f));
         evis.SetGuid(4, 1);
         this.AddItems(
             evis,
@@ -312,15 +312,15 @@ public class AncientSets : InitializerBase
         var heras = this.AddAncientSet(
             "Heras", // Sphinx
             17,
-            (Stats.TotalStrength, 15.0f, AggregateType.AddRaw),
-            (Stats.WizardryAttackDamageIncrease, 0.10f, AggregateType.AddRaw),
-            (Stats.DefenseIncreaseWithEquippedShield, 0.05f, AggregateType.AddRaw),
-            (Stats.TotalEnergy, 15.0f, AggregateType.AddRaw),
-            (Stats.AttackRatePvm, 1.50f, AggregateType.Multiplicate),
-            (Stats.CriticalDamageChance, 0.10f, AggregateType.AddRaw),
-            (Stats.ExcellentDamageChance, 0.10f, AggregateType.AddRaw),
-            (Stats.MaximumHealth, 50.0f, AggregateType.AddRaw),
-            (Stats.MaximumMana, 50.0f, AggregateType.AddRaw));
+            (Stats.TotalStrength, 15.0f),
+            (Stats.WizardryAttackDamageIncrease, 0.10f),
+            (Stats.DefenseIncreaseWithEquippedShield, 0.05f),
+            (Stats.TotalEnergy, 15.0f),
+            (Stats.AttackRatePvm, 50.0f),
+            (Stats.CriticalDamageChance, 0.10f),
+            (Stats.ExcellentDamageChance, 0.10f),
+            (Stats.MaximumHealth, 50.0f),
+            (Stats.MaximumMana, 50.0f));
         heras.SetGuid(7, 1);
         this.AddItems(
             heras,
@@ -450,13 +450,13 @@ public class AncientSets : InitializerBase
         var odin = this.AddAncientSet(
             "Odin", // Wind
             25,
-            (Stats.TotalEnergy, 15.0f, AggregateType.AddRaw),
-            (Stats.MaximumHealth, 50.0f, AggregateType.AddRaw),
-            (Stats.AttackRatePvm, 1.50f, AggregateType.Multiplicate),
-            (Stats.TotalAgility, 30.0f, AggregateType.AddRaw),
-            (Stats.MaximumMana, 50.0f, AggregateType.AddRaw),
-            (Stats.DefenseIgnoreChance, 0.05f, AggregateType.AddRaw),
-            (Stats.MaximumAbility, 50.0f, AggregateType.AddRaw));
+            (Stats.TotalEnergy, 15.0f),
+            (Stats.MaximumHealth, 50.0f),
+            (Stats.AttackRatePvm, 50.0f),
+            (Stats.TotalAgility, 30.0f),
+            (Stats.MaximumMana, 50.0f),
+            (Stats.DefenseIgnoreChance, 0.05f),
+            (Stats.MaximumAbility, 50.0f));
         odin.SetGuid(12, 1);
         this.AddItems(
             odin,

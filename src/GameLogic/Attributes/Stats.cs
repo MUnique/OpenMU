@@ -181,11 +181,7 @@ public class Stats
     /// </summary>
     /// <remarks>
     /// <see cref="AggregateType.AddRaw"/> values include:
-    ///     Base attack rate from level and stats.
-    /// <see cref="AggregateType.Multiplicate"/> values include:
-    ///     Ancient set option multiplier.
-    /// <see cref="AggregateType.AddFinal"/> values include:
-    ///     MST PvM attack rate increase bonus.
+    ///     Base attack rate from level and stats, ancient set option bonus, MST PvM attack rate increase bonus.
     /// </remarks>
     public static AttributeDefinition AttackRatePvm { get; } = new(new Guid("1129442A-E1C7-4240-8866-B781C2838C25"), "Attack Rate (PvM)", string.Empty);
 
@@ -598,12 +594,6 @@ public class Stats
     /// Gets the damage receive decrement from dark horse attribute definition.
     /// </summary>
     public static AttributeDefinition DamageReceiveHorseDecrement { get; } = new(new Guid("041B2811-05C0-49DE-B083-4D1FBD7E6286"), "Damage Receive From Dark Horse Multiplier", string.Empty);
-
-    /// <summary>
-    /// Gets the shield block damage decrement attribute definition.
-    /// TODO: Usage in a shield skill handler.
-    /// </summary>
-    public static AttributeDefinition ShieldBlockDamageDecrement { get; } = new(new Guid("DAC6690B-5922-4446-BCE5-5E701BE62EC1"), "Shield Block Damage Multiplier", string.Empty);
 
     /// <summary>
     /// Gets the total defense increase with equipped shield attribute definition.
