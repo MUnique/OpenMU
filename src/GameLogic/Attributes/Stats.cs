@@ -574,9 +574,11 @@ public class Stats
     /// </summary>
     /// <remarks>
     /// <see cref="AggregateType.AddRaw"/> values include:
-    ///     Base defense rate from agility; MST bonus defense rate with shield (shield mastery).
+    ///     Base defense rate from agility; shield defense rate plus its item option.
     /// <see cref="AggregateType.Multiplicate"/> values include:
-    ///     Complete set bonus multiplier (+10%); MST PvM defense rate increase multiplier; excellent DR option multiplier.
+    ///     Complete set bonus multiplier (+10%); excellent DR option multiplier; MST PvM defense rate increase multiplier.
+    /// <see cref="AggregateType.AddFinal"/> values include:
+    ///     MST bonus defense rate with shield (shield mastery).
     /// </remarks>
     public static AttributeDefinition DefenseRatePvm { get; } = new(new Guid("C520DD2D-1B06-4392-95EE-3C41F33E68DA"), "Defense Rate (PvM)", string.Empty);
 
