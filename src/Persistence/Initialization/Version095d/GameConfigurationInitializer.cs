@@ -40,7 +40,7 @@ public class GameConfigurationInitializer : GameConfigurationInitializerBase
     public override void Initialize()
     {
         base.Initialize();
-        
+
         new CharacterClassInitialization(this.Context, this.GameConfiguration).Initialize();
 
         new SkillsInitializer(this.Context, this.GameConfiguration).Initialize();
