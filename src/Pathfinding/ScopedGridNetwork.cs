@@ -66,7 +66,7 @@ public sealed class ScopedGridNetwork : BaseGridNetwork
         }
 
         this._actualSegmentSideLength = this._minimumSegmentSideLength;
-        while ((diffX > this._actualSegmentSideLength || diffY > this._actualSegmentSideLength)
+        while ((diffX > this._actualSegmentSideLength - 1 || diffY > this._actualSegmentSideLength - 1)
                && this._actualSegmentSideLength < this._maximumSegmentSideLength)
         {
             this._actualSegmentSideLength *= 2;
