@@ -357,7 +357,9 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
 
     private void ValidatePath(Memory<WalkingStep> steps)
     {
-        if (this.Position.EuclideanDistanceTo(steps.GetStart()) > 1.5)
+        const double maxInitialStepDistanceThreshold = 1.5; // Greater than sqrt(2) to consider diagonal steps, but lower than 2.
+
+        if (this.Position.EuclideanDistanceTo(steps.GetStart()) > maxInitialStepDistanceThreshold)
         {
             Debugger.Break();
         }
@@ -369,7 +371,7 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
                 Debugger.Break();
             }
 
-            if (step.To.EuclideanDistanceTo(step.From) > 1.5)
+            if (step.To.EuclideanDistanceTo(step.From) > maxInitialStepDistanceThreshold)
             {
                 Debugger.Break();
             }
