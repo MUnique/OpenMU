@@ -66,7 +66,7 @@ public sealed class ScopedGridNetwork : BaseGridNetwork
         }
 
         this._actualSegmentSideLength = this._minimumSegmentSideLength;
-        while ((diffX > this._actualSegmentSideLength || diffY > this._actualSegmentSideLength)
+        while ((diffX > this._actualSegmentSideLength - 1 || diffY > this._actualSegmentSideLength - 1)
                && this._actualSegmentSideLength < this._maximumSegmentSideLength)
         {
             this._actualSegmentSideLength *= 2;
@@ -106,12 +106,22 @@ public sealed class ScopedGridNetwork : BaseGridNetwork
         }
     }
 
+    /// <inheritdoc />
+    protected override bool IsWithinBounds(byte x, byte y)
+    {
+        return base.IsWithinBounds(x, y)
+               && x >= this._segmentOffset.X
+               && y >= this._segmentOffset.Y
+               && x < this._segmentOffset.X + this._actualSegmentSideLength
+               && y < this._segmentOffset.Y + this._actualSegmentSideLength;
+    }
+
     private int GetIndexOfPoint(int x, int y)
     {
         y -= this._segmentOffset.Y;
         x -= this._segmentOffset.X;
 
-        if (x < 0 || y < 0)
+        if (x < 0 || y < 0 || x >= this._actualSegmentSideLength || y >= this._actualSegmentSideLength)
         {
             return -1;
         }

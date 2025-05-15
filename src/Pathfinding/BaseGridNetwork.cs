@@ -96,7 +96,7 @@ public abstract class BaseGridNetwork : INetwork
             }
 
             var costToNode = grid[newX, newY] & CostBitMask;
-            if (newX >= this._gridWidth || newY >= this._gridHeight || costToNode == UnreachableGridNodeValue)
+            if (!this.IsWithinBounds(newX, newY) || costToNode == UnreachableGridNodeValue)
             {
                 continue;
             }
@@ -124,4 +124,17 @@ public abstract class BaseGridNetwork : INetwork
 
     /// <inheritdoc />
     public abstract Node? GetNodeAt(Point position);
+
+    /// <summary>
+    /// Determines whether the coordinates are within bounds of this network.
+    /// </summary>
+    /// <param name="x">The x.</param>
+    /// <param name="y">The y.</param>
+    /// <returns>
+    ///   <c>true</c> if the coordinates are within bounds of this network; otherwise, <c>false</c>.
+    /// </returns>
+    protected virtual bool IsWithinBounds(byte x, byte y)
+    {
+        return x < this._gridWidth && y < this._gridHeight;
+    }
 }
