@@ -576,7 +576,7 @@ public class Stats
     /// <see cref="AggregateType.AddRaw"/> values include:
     ///     Base defense rate from agility; shield defense rate plus its item option.
     /// <see cref="AggregateType.Multiplicate"/> values include:
-    ///     Complete set bonus multiplier (+10%); excellent DR option multiplier; MST PvM defense rate increase multiplier.
+    ///     Complete set bonus multiplier (+10%); excellent DR option; socket DR option; MST PvM defense rate increase.
     /// <see cref="AggregateType.AddFinal"/> values include:
     ///     MST bonus defense rate with shield (shield mastery).
     /// </remarks>
