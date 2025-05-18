@@ -191,6 +191,8 @@
   * [C3 F3 03 - CharacterInformation097 (by server)](C3-F3-03-CharacterInformation097_by-server.md)
   * [C1 F3 04 - RespawnAfterDeath075 (by server)](C1-F3-04-RespawnAfterDeath075_by-server.md)
   * [C1 F3 04 - RespawnAfterDeath095 (by server)](C1-F3-04-RespawnAfterDeath095_by-server.md)
+  * [C1 F3 04 - RespawnAfterDeath (by server)](C1-F3-04-RespawnAfterDeath_by-server.md)
+  * [C1 F3 04 - RespawnAfterDeathExtended (by server)](C1-F3-04-RespawnAfterDeathExtended_by-server.md)
   * [C1 F3 05 - CharacterLevelUpdate (by server)](C1-F3-05-CharacterLevelUpdate_by-server.md)
   * [C1 F3 05 - CharacterLevelUpdateExtended (by server)](C1-F3-05-CharacterLevelUpdateExtended_by-server.md)
   * [C1 F3 06 - CharacterStatIncreaseResponse (by server)](C1-F3-06-CharacterStatIncreaseResponse_by-server.md)
