@@ -62,8 +62,6 @@ public class PlayerLosesExperienceAfterDeathPlugIn : IAttackableGotKilledPlugIn,
                 selectedCharacter.Experience = newExperience;
             }
         }
-
-        // todo: Do we need to send an update to the client?
     }
 
     /// <inheritdoc/>
