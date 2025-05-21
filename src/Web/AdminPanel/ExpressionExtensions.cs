@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using System.ComponentModel.DataAnnotations;
+
 namespace MUnique.OpenMU.Web.AdminPanel;
 
 using System.Linq.Expressions;
@@ -41,6 +43,24 @@ public static class ExpressionExtensions
         if (expression.Body is MemberExpression memberExpression)
         {
             return memberExpression.Member.GetCustomAttribute(typeof(MemberOfAggregateAttribute)) is { };
+        }
+
+        throw new ArgumentException("Expression Body must be a MemberExpression", nameof(expression));
+    }
+
+    /// <summary>
+    /// Determines whether the accessed member is marked with <see cref="ScaffoldColumnAttribute"/>.
+    /// </summary>
+    /// <typeparam name="TProperty">The type of the property.</typeparam>
+    /// <param name="expression">The expression.</param>
+    /// <returns>
+    ///   <c>true</c> if  the accessed member is marked with <see cref="ScaffoldColumnAttribute"/>; otherwise, <c>false</c>.
+    /// </returns>
+    public static bool ScaffoldColumn<TProperty>(this Expression<Func<TProperty>> expression)
+    {
+        if (expression.Body is MemberExpression memberExpression)
+        {
+            return memberExpression.Member.GetCustomAttribute<ScaffoldColumnAttribute>() is { Scaffold: true };
         }
 
         throw new ArgumentException("Expression Body must be a MemberExpression", nameof(expression));

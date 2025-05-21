@@ -21,6 +21,8 @@ public partial class ItemTable<TItem>
 {
     private bool _isEditable;
 
+    private bool _isInlineEditable;
+
     private bool _isAddingSupported;
 
     private bool _isCreatingSupported;
@@ -49,6 +51,7 @@ public partial class ItemTable<TItem>
                               ?.StartsWith(nameof(MUnique), StringComparison.InvariantCulture)
                           ?? false;
         var isMemberOfAggregate = this.ValueExpression!.IsAccessToMemberOfAggregate();
+        this._isInlineEditable = this._isEditable && isMemberOfAggregate && this.ValueExpression!.ScaffoldColumn();
         this._isAddingSupported = !isMemberOfAggregate;
         this._isCreatingSupported = isMemberOfAggregate;
         this._isStartingCollapsed = this.Value is not null && this.Value.Count > 10;
@@ -82,7 +85,17 @@ public partial class ItemTable<TItem>
 
     private async Task OnCreateClickAsync()
     {
-        var item = this.PersistenceContext.CreateNew<TItem>();
+        TItem? item = null;
+        if (this._isInlineEditable)
+        {
+            item = this.PersistenceContext.IsSupporting(typeof(TItem)) ? this.PersistenceContext.CreateNew<TItem>() : Activator.CreateInstance<TItem>();
+            this.Value ??= new List<TItem>();
+            this.Value.Add(item);
+            return;
+        }
+
+        item ??= this.PersistenceContext.CreateNew<TItem>();
+
         var parameters = new ModalParameters();
         parameters.Add(nameof(ModalCreateNew<TItem>.Item), item);
         parameters.Add(nameof(ModalCreateNew<TItem>.PersistenceContext), this.PersistenceContext);
@@ -111,11 +124,11 @@ public partial class ItemTable<TItem>
         this.Value?.Remove(item);
 
         if (this.ValueExpression?.Body is MemberExpression { Member: PropertyInfo propertyInfo }
-            && propertyInfo.GetCustomAttribute<MemberOfAggregateAttribute>() is not null)
+            && propertyInfo.GetCustomAttribute<MemberOfAggregateAttribute>() is not null
+            && this.PersistenceContext.IsSupporting(typeof(TItem)))
         {
             await this.PersistenceContext.DeleteAsync(item).ConfigureAwait(false);
+            await this.PersistenceContext.SaveChangesAsync().ConfigureAwait(false);
         }
-
-        await this.PersistenceContext.SaveChangesAsync().ConfigureAwait(false);
     }
 }

@@ -32,33 +32,42 @@
                         .OrderBy(i => i.Name))
                     {
                         <tr>
+                        @if (this._isInlineEditable)
+                        {
+                          <td colspan="2">
+                            <EditForm Model="@item.Item"><AutoFields></AutoFields></EditForm>
+                          </td>
+                        }
+                        else
+                        {
                             <td>
                                 @item.Name
                             </td>
                             <td>
-                                @if (this._isEditable)
+                              @if (this._isEditable)
+                              {
+                                string urlPrefix;
+                                if (typeof(TItem).IsConfigurationType())
                                 {
-                                    string urlPrefix;
-                                    if (typeof(TItem).IsConfigurationType())
-                                    {
-                                        urlPrefix = "edit-config";
-                                    }
-                                    else if (Regex.Match(this._navigationManager.Uri, @"\/edit-(.*)\/(.+)?\/M") is { Success: true } match)
-                                    {
-                                        urlPrefix = $"edit-{match.Groups[1]}/{match.Groups[2]}";
-                                    }
-                                    else if (Regex.Match(this._navigationManager.Uri, @"\/edit-(.*)?\/M") is { Success: true } matchConfig)
-                                    {
-                                        urlPrefix = $"edit-{matchConfig.Groups[1]}";
-                                    }
-                                    else
-                                    {
-                                        urlPrefix = "edit-account";                                        
-                                    }
-
-                                    <a href="@($"{urlPrefix}/{typeof(TItem).FullName}/{item.Id}")" class="btn btn-info">Edit</a>
+                                  urlPrefix = "edit-config";
                                 }
+                                else if (Regex.Match(this._navigationManager.Uri, @"\/edit-(.*)\/(.+)?\/M") is { Success: true } match)
+                                {
+                                  urlPrefix = $"edit-{match.Groups[1]}/{match.Groups[2]}";
+                                }
+                                else if (Regex.Match(this._navigationManager.Uri, @"\/edit-(.*)?\/M") is { Success: true } matchConfig)
+                                {
+                                  urlPrefix = $"edit-{matchConfig.Groups[1]}";
+                                }
+                                else
+                                {
+                                  urlPrefix = "edit-account";
+                                }
+
+                                <a href="@($"{urlPrefix}/{typeof(TItem).FullName}/{item.Id}")" class="btn btn-info">Edit</a>
+                              }
                             </td>
+                        }
                             <td>
                                 @if (this._isEditable)
                                 {
