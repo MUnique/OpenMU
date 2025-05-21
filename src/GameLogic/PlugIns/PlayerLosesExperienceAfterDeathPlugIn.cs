@@ -27,8 +27,6 @@ public class PlayerLosesExperienceAfterDeathPlugIn : IAttackableGotKilledPlugIn,
     /// <param name="killer">The killer.</param>
     public async ValueTask AttackableGotKilledAsync(IAttackable killed, IAttacker? killer)
     {
-        var configuration = this.Configuration ??= CreateDefaultConfiguration();
-
         if (killer is not Monster || killed is not Player player
                                   || player.SelectedCharacter is not { } selectedCharacter
                                   || selectedCharacter.CharacterClass is not { } characterClass
@@ -48,6 +46,7 @@ public class PlayerLosesExperienceAfterDeathPlugIn : IAttackableGotKilledPlugIn,
             return;
         }
 
+        this.Configuration ??= CreateDefaultConfiguration();
         if (characterClass.IsMasterClass)
         {
             if (this.CalculateNewExperience(selectedCharacter, selectedCharacter.MasterExperience, player.GameContext.MasterExperienceTable, attributes, Stats.MasterLevel, player.GameContext.Configuration.MaximumMasterLevel) is { } newExperience)
