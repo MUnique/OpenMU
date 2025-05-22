@@ -147,7 +147,7 @@ public class PlayerLosesExperienceAfterDeathPlugIn : IAttackableGotKilledPlugIn,
     {
         return this.Configuration?.LossesPerLevel
             .Where(l => l.IsMaster == isMaster)
-            .OrderBy(l => l.MinimumLevel)
+            .OrderByDescending(l => l.MinimumLevel)
             .FirstOrDefault(l => l.MinimumLevel <= playerLevel)
             ?.Losses.FirstOrDefault(loss => loss.State == heroState)
             ?.ExperienceLossPercentage ?? 0;
