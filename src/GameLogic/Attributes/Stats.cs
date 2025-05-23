@@ -539,7 +539,7 @@ public class Stats
     /// </summary>
     /// <remarks>
     /// <see cref="AggregateType.AddRaw"/> values include:
-    ///     Halved <see cref="DefenseBase"/>; socket defense bonus option; robot knight xfm ring bonus; panda pet bonus; unicorn pet bonus.
+    ///     Halved <see cref="DefenseBase"/>; socket (water, armor bonus) defense bonus option; robot knight xfm ring bonus; panda pet bonus; unicorn pet bonus.
     /// <see cref="AggregateType.Multiplicate"/> values include:
     ///     <see cref="DefenseIncreaseWithEquippedShield"/>.
     /// <see cref="AggregateType.AddFinal"/> values include:
@@ -570,6 +570,11 @@ public class Stats
     public static AttributeDefinition DefensePvp { get; } = new(new Guid("28D14EB7-1049-45BE-A7B7-D5E28E63943B"), "Defense (PvP)", string.Empty);
 
     /// <summary>
+    /// Gets the defense shield (item) attribute definition.
+    /// </summary>
+    public static AttributeDefinition DefenseShield { get; } = new(new Guid("F3DB2083-500C-42A2-A487-B0AE68DFD331"), "Shield Defense (item)", string.Empty);
+
+    /// <summary>
     /// Gets the defense rate PVM attribute definition.
     /// </summary>
     /// <remarks>
@@ -598,10 +603,14 @@ public class Stats
     public static AttributeDefinition DamageReceiveHorseDecrement { get; } = new(new Guid("041B2811-05C0-49DE-B083-4D1FBD7E6286"), "Damage Receive From Dark Horse Multiplier", string.Empty);
 
     /// <summary>
-    /// Gets the total defense increase with equipped shield attribute definition.
+    /// Gets the defense increase with equipped shield (ancient) attribute definition.
     /// </summary>
-    /// <remarks>Includes the sum of ancient set and socket options.</remarks>
     public static AttributeDefinition DefenseIncreaseWithEquippedShield { get; } = new(new Guid("41BCEC8D-A7A8-4930-AB2E-A07D8BF1B86C"), "Defense Increase Multiplier With Equipped Shield", string.Empty);
+
+    /// <summary>
+    /// Gets the shield item defense increase (water socket) attribute definition.
+    /// </summary>
+    public static AttributeDefinition ShieldItemDefenseIncrease { get; } = new(new Guid("84C49DEC-EC01-4835-89FD-7016E4E181D7"), "Shield Item Defense Increase Multiplier", string.Empty);
 
     /// <summary>
     /// Gets the soul barrier skill damage receive decrement attribute definition.

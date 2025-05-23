@@ -269,4 +269,19 @@ public enum UpdateVersion
     /// The version of the <see cref="FixCharStatsForceWavePlugInSeason6"/>.
     /// </summary>
     FixCharStatsForceWaveSeason6 = 52,
+
+    /// <summary>
+    /// The version of the <see cref="FixDefenseCalcsPlugIn075"/>.
+    /// </summary>
+    FixDefenseCalcs075 = 53,
+
+    /// <summary>
+    /// The version of the <see cref="FixDefenseCalcsPlugIn095D"/>.
+    /// </summary>
+    FixDefenseCalcs095d = 54,
+
+    /// <summary>
+    /// The version of the <see cref="FixDefenseCalcsPlugInSeason6"/>.
+    /// </summary>
+    FixDefenseCalcsSeason6 = 55,
 }

@@ -119,7 +119,7 @@ public abstract class ArmorInitializerBase : InitializerBase
 
         if (defense > 0)
         {
-            var powerUp = this.CreateItemBasePowerUpDefinition(Stats.DefenseBase, defense, AggregateType.AddRaw);
+            var powerUp = this.CreateItemBasePowerUpDefinition(Stats.DefenseShield, defense, AggregateType.AddRaw);
             powerUp.BonusPerLevelTable = this._shieldDefenseIncreaseTable;
             shield.BasePowerUpAttributes.Add(powerUp);
         }
