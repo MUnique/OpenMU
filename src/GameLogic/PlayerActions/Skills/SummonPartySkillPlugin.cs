@@ -158,6 +158,16 @@ public class SummonPartySkillPlugin : TargetedSkillPluginBase
         }
 
         var warpInfo = player.GameContext.Configuration.WarpList.Where(w => w.Gate?.Map == player.CurrentMap?.Definition).OrderBy(w => w.LevelRequirement).FirstOrDefault();
-        return warpInfo is null || !(warpInfo.LevelRequirement > target.Attributes?[Stats.TotalLevel]);
+        if (warpInfo is null)
+        {
+            return true;
+        }
+
+        if (target.Attributes?[Stats.TotalLevel] is not { } totalLevel)
+        {
+            return false;
+        }
+
+        return warpInfo.LevelRequirement <= totalLevel;
     }
 }
