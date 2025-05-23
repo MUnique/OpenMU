@@ -68,70 +68,6 @@ public abstract class FixDefenseCalcsPlugInBase : UpdatePlugInBase
         var isHorseEquipped = Stats.IsHorseEquipped.GetPersistent(gameConfiguration);
         var bonusDefenseWithHorse = Stats.BonusDefenseWithHorse.GetPersistent(gameConfiguration);
 
-        var shieldDefenseToDefenseBase = context.CreateNew<AttributeRelationship>(
-            defenseBase,
-            1,
-            defenseShield,
-            InputOperator.Multiply,
-            default(AttributeDefinition?),
-            AggregateType.AddRaw);
-
-        var defenseBaseToDefenseFinal = context.CreateNew<AttributeRelationship>(
-            defenseFinal,
-            0.5f,
-            defenseBase,
-            InputOperator.Multiply,
-            default(AttributeDefinition?),
-            AggregateType.AddRaw);
-
-        var defenseFinalToDefensePvm = context.CreateNew<AttributeRelationship>(
-            defensePvm,
-            1,
-            defenseFinal,
-            InputOperator.Multiply,
-            default(AttributeDefinition?),
-            AggregateType.AddRaw);
-
-        var defenseFinalToDefensePvp = context.CreateNew<AttributeRelationship>(
-            defensePvp,
-            1,
-            defenseFinal,
-            InputOperator.Multiply,
-            default(AttributeDefinition?),
-            AggregateType.AddRaw);
-
-        var tempDefenseToDefenseFinal = context.CreateNew<AttributeRelationship>(
-            defenseFinal,
-            1,
-            tempDefense,
-            InputOperator.Add,
-            default(AttributeDefinition?),
-            AggregateType.Multiplicate);
-
-        var shieldItemDefenseIncreaseToDefenseFinal = context.CreateNew<AttributeRelationship>(
-            defenseFinal,
-            defenseShield,
-            shieldItemDefenseIncrease,
-            AggregateType.AddRaw);
-
-        var bonusDefenseWithShieldToDefenseFinal = context.CreateNew<AttributeRelationship>(
-            defenseFinal,
-            isShieldEquipped,
-            bonusDefenseWithShield,
-            AggregateType.AddFinal);
-
-        var bonusDefenseRateWithShieldToDefenseRatePvm = context.CreateNew<AttributeRelationship>(
-            defenseRatePvm,
-            isShieldEquipped,
-            bonusDefenseRateWithShield,
-            AggregateType.AddFinal);
-
-        var bonusDefenseWithHorseToDefenseFinal = context.CreateNew<AttributeRelationship>(
-            defenseFinal,
-            isHorseEquipped,
-            bonusDefenseWithHorse,
-            AggregateType.AddFinal);
-
         gameConfiguration.CharacterClasses.ForEach(charClass =>
         {
             var attrCombos = charClass.AttributeCombinations.ToList();
@@ -152,6 +88,64 @@ public abstract class FixDefenseCalcsPlugInBase : UpdatePlugInBase
                 charClass.AttributeCombinations.Remove(bonusDefenseWithShieldToDefenseBase);
             }
 
+            var shieldDefenseToDefenseBase = context.CreateNew<AttributeRelationship>(
+                defenseBase,
+                1,
+                defenseShield,
+                InputOperator.Multiply,
+                default(AttributeDefinition?),
+                AggregateType.AddRaw);
+
+            var defenseBaseToDefenseFinal = context.CreateNew<AttributeRelationship>(
+                defenseFinal,
+                0.5f,
+                defenseBase,
+                InputOperator.Multiply,
+                default(AttributeDefinition?),
+                AggregateType.AddRaw);
+
+            var defenseFinalToDefensePvm = context.CreateNew<AttributeRelationship>(
+                defensePvm,
+                1,
+                defenseFinal,
+                InputOperator.Multiply,
+                default(AttributeDefinition?),
+                AggregateType.AddRaw);
+
+            var defenseFinalToDefensePvp = context.CreateNew<AttributeRelationship>(
+                defensePvp,
+                1,
+                defenseFinal,
+                InputOperator.Multiply,
+                default(AttributeDefinition?),
+                AggregateType.AddRaw);
+
+            var tempDefenseToDefenseFinal = context.CreateNew<AttributeRelationship>(
+                defenseFinal,
+                1,
+                tempDefense,
+                InputOperator.Add,
+                default(AttributeDefinition?),
+                AggregateType.Multiplicate);
+
+            var shieldItemDefenseIncreaseToDefenseFinal = context.CreateNew<AttributeRelationship>(
+                defenseFinal,
+                defenseShield,
+                shieldItemDefenseIncrease,
+                AggregateType.AddRaw);
+
+            var bonusDefenseWithShieldToDefenseFinal = context.CreateNew<AttributeRelationship>(
+                defenseFinal,
+                isShieldEquipped,
+                bonusDefenseWithShield,
+                AggregateType.AddFinal);
+
+            var bonusDefenseRateWithShieldToDefenseRatePvm = context.CreateNew<AttributeRelationship>(
+                defenseRatePvm,
+                isShieldEquipped,
+                bonusDefenseRateWithShield,
+                AggregateType.AddFinal);
+
             charClass.AttributeCombinations.Add(shieldDefenseToDefenseBase);
             charClass.AttributeCombinations.Add(defenseBaseToDefenseFinal);
             charClass.AttributeCombinations.Add(defenseFinalToDefensePvm);
@@ -163,6 +157,12 @@ public abstract class FixDefenseCalcsPlugInBase : UpdatePlugInBase
 
             if (charClass.Number == 16 || charClass.Number == 17) // Lord classes
             {
+                var bonusDefenseWithHorseToDefenseFinal = context.CreateNew<AttributeRelationship>(
+                    defenseFinal,
+                    isHorseEquipped,
+                    bonusDefenseWithHorse,
+                    AggregateType.AddFinal);
+
                 charClass.AttributeCombinations.Add(bonusDefenseWithHorseToDefenseFinal);
             }
         });

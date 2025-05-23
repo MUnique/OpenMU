@@ -29,6 +29,16 @@ public class FixDefenseCalcsPlugInSeason6 : FixDefenseCalcsPlugInBase
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
+        // Update Anonymous Leather ancient set obsolete option prior to its removal
+        var shieldBlockDamageDecrementId = new Guid("DAC6690B-5922-4446-BCE5-5E701BE62EC1");
+        var anonymousLeatherOptsId = new Guid("00000083-0029-0002-0100-000000000000");
+        var anonymousLeatherOpts = gameConfiguration.ItemOptions.FirstOrDefault(i => i.GetId() == anonymousLeatherOptsId);
+        if (gameConfiguration.Attributes.FirstOrDefault(a => a.Id == shieldBlockDamageDecrementId) is { } shieldBlockDamageDecrement
+            && anonymousLeatherOpts?.PossibleOptions.FirstOrDefault(opt => opt.PowerUpDefinition?.TargetAttribute == shieldBlockDamageDecrement) is { } shieldBlockDamageDecrementOpt)
+        {
+            shieldBlockDamageDecrementOpt.PowerUpDefinition!.TargetAttribute = Stats.DefenseIncreaseWithEquippedShield.GetPersistent(gameConfiguration);
+        }
+
         await base.ApplyAsync(context, gameConfiguration).ConfigureAwait(false);
 
         var defenseBase = Stats.DefenseBase.GetPersistent(gameConfiguration);
@@ -37,6 +47,8 @@ public class FixDefenseCalcsPlugInSeason6 : FixDefenseCalcsPlugInBase
         var defensePvp = Stats.DefensePvp.GetPersistent(gameConfiguration);
         var shieldItemDefenseIncrease = Stats.ShieldItemDefenseIncrease.GetPersistent(gameConfiguration);
         var bonusDefenseRateWithShield = Stats.BonusDefenseRateWithShield.GetPersistent(gameConfiguration);
+        var excellentDamageChance = Stats.ExcellentDamageChance.GetPersistent(gameConfiguration);
+        var excellentDamageBonus = Stats.ExcellentDamageBonus.GetPersistent(gameConfiguration);
 
         // Update attribute combinations
         gameConfiguration.CharacterClasses.ForEach(charClass =>
@@ -81,8 +93,25 @@ public class FixDefenseCalcsPlugInSeason6 : FixDefenseCalcsPlugInBase
         }
 
         // Update options
-        var guardianOptionPantsId = new Guid("4ec49601-0000-7def-e2e1-68ca7f3778e5");
-        var pantsGuardianOptions = gameConfiguration.ItemOptions.FirstOrDefault(o => o.GetId() == guardianOptionPantsId);
+        var ancientSetsOpts = gameConfiguration.ItemOptions.Where(io => io.Name.EndsWith("(Ancient Set)"));
+        foreach (var ancientSetOpts in ancientSetsOpts)
+        {
+            if (ancientSetOpts.PossibleOptions.FirstOrDefault(o => o.PowerUpDefinition?.TargetAttribute == defenseBase) is { } defenseBaseAncOpt)
+            {
+                defenseBaseAncOpt.PowerUpDefinition!.Boost!.ConstantValue.AggregateType = AggregateType.AddFinal;
+            }
+        }
+
+        var anubisLegendaryOptsId = new Guid("00000083-0029-0013-0100-000000000000");
+        var anubisLegendaryOpts = gameConfiguration.ItemOptions.FirstOrDefault(i => i.GetId() == anubisLegendaryOptsId);
+        if (anubisLegendaryOpts?.PossibleOptions.FirstOrDefault(opt =>
+            opt.PowerUpDefinition?.TargetAttribute == excellentDamageChance
+            && opt.PowerUpDefinition.Boost?.ConstantValue.Value == 20.0f) is { } excellentDamageChanceOpt)
+        {
+            excellentDamageChanceOpt.PowerUpDefinition!.TargetAttribute = excellentDamageBonus;
+        }
+
+        var pantsGuardianOptions = gameConfiguration.ItemOptions.FirstOrDefault(o => o.Name == "Guardian Option (Pants)");
         if (pantsGuardianOptions is not null
             && pantsGuardianOptions.PossibleOptions.FirstOrDefault(o => o.PowerUpDefinition?.TargetAttribute == defenseBase) is { } defenseOpt)
         {
@@ -90,8 +119,7 @@ public class FixDefenseCalcsPlugInSeason6 : FixDefenseCalcsPlugInBase
             defenseOpt.PowerUpDefinition.Boost!.ConstantValue.Value = 200 / 2;
         }
 
-        var harmonyDefenseOptionsId = new Guid("4ec49601-0000-7d15-c50d-2a78dd03da02");
-        var harmonyDefOptions = gameConfiguration.ItemOptions.FirstOrDefault(o => o.GetId() == harmonyDefenseOptionsId);
+        var harmonyDefOptions = gameConfiguration.ItemOptions.FirstOrDefault(o => o.Name == "Harmony Defense Options");
         if (harmonyDefOptions is not null
             && harmonyDefOptions.PossibleOptions.FirstOrDefault(o => o.Number == 1) is { } defenseBaseOpt)
         {
@@ -153,7 +181,7 @@ public class FixDefenseCalcsPlugInSeason6 : FixDefenseCalcsPlugInBase
             shieldMasteryGrandMaster.TargetAttribute = bonusDefenseRateWithShield;
         }
 
-        if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.ShieldMasteryGrandMaster)?.MasterDefinition is { } shieldMasteryHighElf)
+        if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.ShieldMasteryHighElf)?.MasterDefinition is { } shieldMasteryHighElf)
         {
             shieldMasteryHighElf.TargetAttribute = bonusDefenseRateWithShield;
         }
