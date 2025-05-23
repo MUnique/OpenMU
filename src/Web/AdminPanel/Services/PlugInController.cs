@@ -183,6 +183,7 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
         var options = new ModalOptions
         {
             DisableBackgroundCancel = true,
+            Size = ModalSize.Large,
         };
 
         var modal = this._modalService.Show(

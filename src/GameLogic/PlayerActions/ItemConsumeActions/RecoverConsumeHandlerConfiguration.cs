@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using System.ComponentModel.DataAnnotations;
+
 namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
 
 using System.ComponentModel;
@@ -44,7 +46,7 @@ public class RecoverConsumeHandlerConfiguration
     /// Gets or sets the recover steps. If none are defined, the recover happens
     /// instantly.
     /// </summary>
-    [Browsable(false)] // They cannot be edited on the admin panel yet.
+    [ScaffoldColumn(true)]
     [MemberOfAggregate]
-    public IList<RecoverStep> RecoverSteps { get; set; } = new List<RecoverStep>();
+    public ICollection<RecoverStep> RecoverSteps { get; set; } = new List<RecoverStep>();
 }

@@ -2696,6 +2696,98 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="RespawnAfterDeath" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="positionX">The position x.</param>
+    /// <param name="positionY">The position y.</param>
+    /// <param name="mapNumber">The map number.</param>
+    /// <param name="direction">The direction.</param>
+    /// <param name="currentHealth">The current health.</param>
+    /// <param name="currentMana">The current mana.</param>
+    /// <param name="currentShield">The current shield.</param>
+    /// <param name="currentAbility">The current ability.</param>
+    /// <param name="experience">The experience.</param>
+    /// <param name="money">The money.</param>
+    /// <remarks>
+    /// Is sent by the server when: The character respawned after death.
+    /// Causes reaction on client side: The character respawns with the specified attributes at the specified map.
+    /// </remarks>
+    public static async ValueTask SendRespawnAfterDeathAsync(this IConnection? connection, byte @positionX, byte @positionY, byte @mapNumber, byte @direction, ushort @currentHealth, ushort @currentMana, ushort @currentShield, ushort @currentAbility, ulong @experience, uint @money)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = RespawnAfterDeathRef.Length;
+            var packet = new RespawnAfterDeathRef(connection.Output.GetSpan(length)[..length]);
+            packet.PositionX = @positionX;
+            packet.PositionY = @positionY;
+            packet.MapNumber = @mapNumber;
+            packet.Direction = @direction;
+            packet.CurrentHealth = @currentHealth;
+            packet.CurrentMana = @currentMana;
+            packet.CurrentShield = @currentShield;
+            packet.CurrentAbility = @currentAbility;
+            packet.Experience = @experience;
+            packet.Money = @money;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="RespawnAfterDeathExtended" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="positionX">The position x.</param>
+    /// <param name="positionY">The position y.</param>
+    /// <param name="mapNumber">The map number.</param>
+    /// <param name="direction">The direction.</param>
+    /// <param name="currentHealth">The current health.</param>
+    /// <param name="currentMana">The current mana.</param>
+    /// <param name="currentShield">The current shield.</param>
+    /// <param name="currentAbility">The current ability.</param>
+    /// <param name="experience">The experience.</param>
+    /// <param name="money">The money.</param>
+    /// <remarks>
+    /// Is sent by the server when: The character respawned after death.
+    /// Causes reaction on client side: The character respawns with the specified attributes at the specified map.
+    /// </remarks>
+    public static async ValueTask SendRespawnAfterDeathExtendedAsync(this IConnection? connection, byte @positionX, byte @positionY, byte @mapNumber, byte @direction, uint @currentHealth, uint @currentMana, uint @currentShield, uint @currentAbility, ulong @experience, uint @money)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = RespawnAfterDeathExtendedRef.Length;
+            var packet = new RespawnAfterDeathExtendedRef(connection.Output.GetSpan(length)[..length]);
+            packet.PositionX = @positionX;
+            packet.PositionY = @positionY;
+            packet.MapNumber = @mapNumber;
+            packet.Direction = @direction;
+            packet.CurrentHealth = @currentHealth;
+            packet.CurrentMana = @currentMana;
+            packet.CurrentShield = @currentShield;
+            packet.CurrentAbility = @currentAbility;
+            packet.Experience = @experience;
+            packet.Money = @money;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="PoisonDamage" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>

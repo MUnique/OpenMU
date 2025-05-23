@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.NPC;
 
 using System.Buffers;
+using System.Diagnostics;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views.World;
@@ -187,6 +188,11 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
     /// <param name="steps">The steps.</param>
     public async ValueTask WalkToAsync(Point target, Memory<WalkingStep> steps)
     {
+        if (Debugger.IsAttached)
+        {
+            this.ValidatePath(steps);
+        }
+
         await this._walker.StopAsync().ConfigureAwait(false);
         var token = await this._walker.InitializeWalkToAsync(target, steps).ConfigureAwait(false);
         await this.MoveAsync(target, MoveType.Walk).ConfigureAwait(false);
@@ -347,5 +353,28 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
         }
 
         return (this.Attributes.CreateElement(powerUpDefinition), this.Attributes.CreateDurationElement(duration), powerUpDefinition.TargetAttribute);
+    }
+
+    private void ValidatePath(Memory<WalkingStep> steps)
+    {
+        const double maxInitialStepDistanceThreshold = 1.5; // Greater than sqrt(2) to consider diagonal steps, but lower than 2.
+
+        if (this.Position.EuclideanDistanceTo(steps.GetStart()) > maxInitialStepDistanceThreshold)
+        {
+            Debugger.Break();
+        }
+
+        foreach (var step in steps.Span)
+        {
+            if (this.CurrentMap.Terrain.AIgrid[step.To.X, step.To.Y] == 0)
+            {
+                Debugger.Break();
+            }
+
+            if (step.To.EuclideanDistanceTo(step.From) > maxInitialStepDistanceThreshold)
+            {
+                Debugger.Break();
+            }
+        }
     }
 }
