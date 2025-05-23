@@ -135,6 +135,12 @@ internal sealed class Program : IDisposable
                         || args.Contains("-autostart")
                         || !this.IsAdminPanelEnabled(args);
 
+        if (_systemConfiguration is { }
+            && this._serverHost.Services.GetService<IIpAddressResolver>() is ConfigurableIpResolver resolver)
+        {
+            resolver.Configure(_systemConfiguration.IpResolver, _systemConfiguration.IpResolverParameter);
+        }
+
         if (autoStart)
         {
             foreach (var chatServer in this._servers.OfType<ChatServer>())
