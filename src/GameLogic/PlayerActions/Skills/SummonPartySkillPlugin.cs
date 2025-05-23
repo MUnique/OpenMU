@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 
 using System.Runtime.InteropServices;
 using System.Threading;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Pathfinding;
@@ -131,16 +132,42 @@ public class SummonPartySkillPlugin : TargetedSkillPluginBase
 
     private bool CanPlayerSummon(Player player)
     {
-        return player.Party is not null
-            && player.CurrentMiniGame is null;
+        return player.Party is not null 
+               && player.OpenedNpc is null
+               && player.CurrentMiniGame is null;
+        // todo, not in:
+        // * Kalima
+        // * kanturu boss (39)
+        // * raklion boss when state is RAKLION_STATE_CLOSE_DOOR, RAKLION_STATE_ALL_USER_DIE, RAKLION_STATE_NOTIFY_4, RAKLION_STATE_END
+        // * not during pandora box event
+        // -> we could add some kind of flag in the map definition to check for this
     }
 
     private bool CanPlayerSummonTarget(Player player, Player target)
     {
-        return target.IsActive()
+        var allowedByState = target.IsActive()
             && target.Party?.Equals(player.Party) is true
             && target.OpenedNpc is null
             && target.TradingPartner is null
             && target.CurrentMiniGame is null;
+
+        // todo: not during castle siege for players which are not in the same ally
+        if (!allowedByState)
+        {
+            return false;
+        }
+
+        var warpInfo = player.GameContext.Configuration.WarpList.Where(w => w.Gate?.Map == player.CurrentMap?.Definition).OrderBy(w => w.LevelRequirement).FirstOrDefault();
+        if (warpInfo is null)
+        {
+            return true;
+        }
+
+        if (target.Attributes?[Stats.TotalLevel] is not { } totalLevel)
+        {
+            return false;
+        }
+
+        return warpInfo.LevelRequirement <= totalLevel;
     }
 }
