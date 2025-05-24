@@ -1,4 +1,4 @@
-// <copyright file="Potions.cs" company="MUnique">
+﻿// <copyright file="Potions.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -449,7 +449,7 @@ public class Potions : InitializerBase
         item.Width = 1;
         item.Height = 2;
         item.SetGuid(item.Group, item.Number);
-        this.CreateConsumeEffect(item, 16, MagicEffectNumber.JackOlanternCry, TimeSpan.FromMinutes(30), (Stats.DefenseBase, 100));
+        this.CreateConsumeEffect(item, 16, MagicEffectNumber.JackOlanternCry, TimeSpan.FromMinutes(30), (Stats.DefenseFinal, 100 / 2, AggregateType.AddFinal));
         return item;
     }
 
@@ -525,6 +525,11 @@ public class Potions : InitializerBase
 
     private MagicEffectDefinition CreateConsumeEffect(ItemDefinition item, byte subType, MagicEffectNumber effectNumber, TimeSpan duration, params (AttributeDefinition TargetAttribute, float BoostValue)[] boosts)
     {
+        return this.CreateConsumeEffect(item, subType, effectNumber, duration, boosts.Select(b => (b.TargetAttribute, b.BoostValue, AggregateType.AddRaw)).ToArray());
+    }
+
+    private MagicEffectDefinition CreateConsumeEffect(ItemDefinition item, byte subType, MagicEffectNumber effectNumber, TimeSpan duration, params (AttributeDefinition TargetAttribute, float BoostValue, AggregateType AggregateType)[] boosts)
+    {
         var effect = this.Context.CreateNew<MagicEffectDefinition>();
         effect.SetGuid(item.Number, (short)effectNumber);
         this.GameConfiguration.MagicEffects.Add(effect);
@@ -538,12 +543,13 @@ public class Potions : InitializerBase
         effect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
         effect.Duration.ConstantValue.Value = (float)duration.TotalSeconds;
 
-        foreach (var (targetAttribute, boostValue) in boosts)
+        foreach (var (targetAttribute, boostValue, aggregateType) in boosts)
         {
             var powerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
             effect.PowerUpDefinitions.Add(powerUpDefinition);
             powerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
             powerUpDefinition.Boost.ConstantValue.Value = boostValue;
+            powerUpDefinition.Boost.ConstantValue.AggregateType = aggregateType;
             powerUpDefinition.TargetAttribute = targetAttribute.GetPersistent(this.GameConfiguration);
         }
 

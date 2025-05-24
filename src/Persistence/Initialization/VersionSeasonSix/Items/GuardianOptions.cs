@@ -57,7 +57,7 @@ internal class GuardianOptions : InitializerBase
         definition.AddsRandomly = false;
 
         definition.PossibleOptions.Add(this.CreateOption(ItemGroups.Pants, Stats.DefenseRatePvp, 10, AggregateType.AddRaw, ItemOptionDefinitionNumbers.GuardianOption1));
-        definition.PossibleOptions.Add(this.CreateOption(ItemGroups.Pants, Stats.DefenseBase, 200, AggregateType.AddRaw, ItemOptionDefinitionNumbers.GuardianOption2));
+        definition.PossibleOptions.Add(this.CreateOption(ItemGroups.Pants, Stats.DefensePvp, 200 / 2, AggregateType.AddRaw, ItemOptionDefinitionNumbers.GuardianOption2));
     }
 
     private void CreateArmorOption()

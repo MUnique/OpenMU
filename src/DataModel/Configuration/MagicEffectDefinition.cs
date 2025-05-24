@@ -8,7 +8,7 @@ using MUnique.OpenMU.Annotations;
 using MUnique.OpenMU.DataModel.Attributes;
 
 /// <summary>
-/// Magic Effect Definition. It can be an effect from an consumed item, or by a buff.
+/// Magic Effect Definition. It can be an effect from a consumed item, a buff, or the result of an attack skill.
 /// </summary>
 [Cloneable]
 public partial class MagicEffectDefinition

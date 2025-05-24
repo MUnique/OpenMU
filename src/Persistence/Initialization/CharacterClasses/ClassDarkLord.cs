@@ -109,6 +109,7 @@ internal partial class CharacterClassInitialization
         result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.PhysicalBaseDmg, Stats.IsScepterEquipped, Stats.ScepterBonusBaseDamage));
         result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.RavenBaseDamage, Stats.IsScepterEquipped, Stats.ScepterPetBonusBaseDamage));
         result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.DefenseBase, Stats.IsScepterEquipped, Stats.BonusDefenseWithScepter));
+        result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.DefenseFinal, Stats.IsHorseEquipped, Stats.BonusDefenseWithHorse, aggregateType: AggregateType.AddFinal));
 
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.BonusDefenseWithScepter, Stats.BonusDefenseWithScepterCmdDiv, Stats.TotalLeadership));
 
@@ -127,7 +128,7 @@ internal partial class CharacterClassInitialization
             result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumShield, 1.2f, Stats.TotalAgility));
             result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumShield, 1.2f, Stats.TotalStrength));
             result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumShield, 1.2f, Stats.TotalLeadership));
-            result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumShield, 0.5f, Stats.DefenseBase));
+            result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumShield, 1f, Stats.DefenseFinal));
             result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumShieldTemp, 2f, Stats.TotalLevel, InputOperator.Exponentiate));
             result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumShield, 1f / 30f, Stats.MaximumShieldTemp));
 
