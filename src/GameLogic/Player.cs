@@ -1230,7 +1230,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         var startPoint = steps.Span[0].From;
         var currentPosition = this.Position;
         var startOffset = startPoint.EuclideanDistanceTo(currentPosition);
-        if (startOffset > 3)
+        const int maxAllowedWalkStartOffset = 3;
+        if (startOffset > maxAllowedWalkStartOffset)
         {
             this.Logger.LogWarning("WalkToAsync: Player requested to walk from {0}, but it's currently at {1}", startPoint, currentPosition);
 
