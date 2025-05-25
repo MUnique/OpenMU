@@ -1220,8 +1220,28 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return;
         }
 
+        if (steps.IsEmpty)
+        {
+            return;
+        }
+
         await this._walker.StopAsync().ConfigureAwait(false);
-        if (currentMap.Terrain.WalkMap[target.X, target.Y])
+
+        var startPoint = steps.Span[0].From;
+        var currentPosition = this.Position;
+        var startOffset = startPoint.EuclideanDistanceTo(currentPosition);
+        const int maxAllowedWalkStartOffset = 3;
+        if (startOffset > maxAllowedWalkStartOffset)
+        {
+            this.Logger.LogWarning("WalkToAsync: Player requested to walk from {0}, but it's currently at {1}", startPoint, currentPosition);
+
+            // Send current position back to the client, so that it can re-synchronize.
+            await this.InvokeViewPlugInAsync<IObjectMovedPlugIn>(p => p.ObjectMovedAsync(this, MoveType.Instant)).ConfigureAwait(false);
+            return;
+        }
+
+        var canWalkToTarget = currentMap.Terrain.WalkMap[target.X, target.Y];
+        if (canWalkToTarget)
         {
             this.Logger.LogDebug("WalkToAsync: Player is walking to {0}", target);
 
