@@ -51,7 +51,7 @@ internal class ClientSettings
     /// <summary>
     /// Gets or sets the resolution.
     /// </summary>
-    public ClientResolution Resolution { get; set; }
+    public int ResolutionIndex { get; set; }
 
     /// <summary>
     /// Gets or sets the language selection.
@@ -71,7 +71,7 @@ internal class ClientSettings
         this.IsSoundEnabled = (int)(key.GetValue("SoundOnOff") ?? 0) == 1;
         this.VolumeLevel = (int)(key.GetValue("VolumeLevel") ?? 0);
         this.IsWindowModeActive = (int)(key.GetValue("WindowMode") ?? 0) == 1;
-        this.Resolution = (ClientResolution)(key.GetValue("Resolution") ?? 0);
+        this.ResolutionIndex = (int)(key.GetValue("Resolution") ?? 0);
         this.LangSelection = ((string?)key.GetValue("LangSelection") ?? DefaultLanguage).GetLanguage();
     }
 
@@ -88,7 +88,7 @@ internal class ClientSettings
         key.SetValue("SoundOnOff", this.IsSoundEnabled, RegistryValueKind.DWord);
         key.SetValue("VolumeLevel", this.VolumeLevel, RegistryValueKind.DWord);
         key.SetValue("WindowMode", this.IsWindowModeActive, RegistryValueKind.DWord);
-        key.SetValue("Resolution", this.Resolution, RegistryValueKind.DWord);
+        key.SetValue("Resolution", this.ResolutionIndex, RegistryValueKind.DWord);
         key.SetValue("LangSelection", this.LangSelection.GetString() ?? DefaultLanguage, RegistryValueKind.String);
     }
 }

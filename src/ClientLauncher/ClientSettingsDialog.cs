@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.ClientLauncher;
 
+using System.ComponentModel;
 using System.Drawing;
 using System.Runtime.Versioning;
 using System.Windows.Forms;
@@ -20,10 +21,34 @@ internal partial class ClientSettingsDialog : Form
     public ClientSettingsDialog()
     {
         this.InitializeComponent();
+        this.clientResolutionComboBox.DisplayMember = nameof(ClientResolution.Caption);
+        this.clientResolutionComboBox.ValueMember = nameof(ClientResolution.Index);
+        this.clientResolutionComboBox.DataSource = LauncherSettings.DefaultResolutions;
         this.Icon = Icon.FromHandle(Properties.Resources.Settings_16x.GetHicon());
         var config = new ClientSettings();
         config.Load();
         this.ReadConfig(config);
+    }
+
+    /// <summary>
+    /// Gets or sets the available client resolutions.
+    /// </summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public BindingList<ClientResolution>? Resolutions
+    {
+        get => this.clientResolutionComboBox.DataSource as BindingList<ClientResolution>;
+        set
+        {
+            if (value?.Count > 0)
+            {
+                var index = this.clientResolutionComboBox.SelectedIndex;
+                this.clientResolutionComboBox.DataSource = value;
+                if (value?.Count > index)
+                {
+                    this.clientResolutionComboBox.SelectedIndex = index;
+                }
+            }
+        }
     }
 
     private void SaveButtonClick(object sender, EventArgs e)
@@ -41,7 +66,7 @@ internal partial class ClientSettingsDialog : Form
         this.soundActiveCheckBox.Checked = clientSettings.IsSoundEnabled;
         this.soundVolumeTrackBar.Value = clientSettings.VolumeLevel;
         this.windowModeCheckBox.Checked = clientSettings.IsWindowModeActive;
-        this.clientResolutionComboBox.SelectedIndex = (int)clientSettings.Resolution;
+        this.clientResolutionComboBox.SelectedIndex = clientSettings.ResolutionIndex;
         this.clientLanguageComboBox.SelectedIndex = (int)clientSettings.LangSelection;
     }
 
@@ -52,7 +77,7 @@ internal partial class ClientSettingsDialog : Form
         clientSettings.IsSoundEnabled = this.soundActiveCheckBox.Checked;
         clientSettings.VolumeLevel = this.soundVolumeTrackBar.Value;
         clientSettings.IsWindowModeActive = this.windowModeCheckBox.Checked;
-        clientSettings.Resolution = (ClientResolution)this.clientResolutionComboBox.SelectedIndex;
+        clientSettings.ResolutionIndex = this.clientResolutionComboBox.SelectedIndex;
         clientSettings.LangSelection = (ClientLanguage)this.clientLanguageComboBox.SelectedIndex;
     }
 }
