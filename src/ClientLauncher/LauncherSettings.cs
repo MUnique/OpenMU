@@ -40,5 +40,5 @@ public class LauncherSettings
     /// <summary>
     /// Gets or sets the resolutions.
     /// </summary>
-    public List<ClientResolution> AvailableResolutions { get; set; } = DefaultResolutions.ToList();
+    public List<ClientResolution> AvailableResolutions { get; set; } = [];
 }

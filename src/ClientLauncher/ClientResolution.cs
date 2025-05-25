@@ -30,12 +30,12 @@ public class ClientResolution
     }
 
     /// <summary>
-    /// Gets or sets the index.
+    /// Gets the index.
     /// </summary>
-    public int Index { get; set; }
+    public int Index { get; init; }
 
     /// <summary>
-    /// Gets  or sets the caption.
+    /// Gets the caption.
     /// </summary>
-    public string Caption { get; set; }
+    public string Caption { get; init; }
 }

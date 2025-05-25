@@ -90,7 +90,11 @@ public partial class MainForm : Form
             {
                 this.MainExePathTextBox.Text = launcherSettings.MainExePath;
                 this.Hosts = new BindingList<ServerHostSettings>(launcherSettings.Hosts);
-                if (launcherSettings.AvailableResolutions?.Any() is not true)
+                if (launcherSettings.AvailableResolutions?.Any() is true)
+                {
+                    this.Resolutions = new(launcherSettings.AvailableResolutions);
+                }
+                else
                 {
                     this.Resolutions = new(LauncherSettings.DefaultResolutions);
                 }
