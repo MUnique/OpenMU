@@ -61,7 +61,6 @@ public abstract class FixDefenseCalcsPlugInBase : UpdatePlugInBase
         var defenseBase = Stats.DefenseBase.GetPersistent(gameConfiguration);
         var defensePvm = Stats.DefensePvm.GetPersistent(gameConfiguration);
         var defensePvp = Stats.DefensePvp.GetPersistent(gameConfiguration);
-        var tempDefense = gameConfiguration.Attributes.First(a => a.Designation == "Temp Defense Bonus multiplier with Shield");
         var bonusDefenseWithShield = Stats.BonusDefenseWithShield.GetPersistent(gameConfiguration);
         var isShieldEquipped = Stats.IsShieldEquipped.GetPersistent(gameConfiguration);
         var defenseRatePvm = Stats.DefenseRatePvm.GetPersistent(gameConfiguration);
@@ -120,13 +119,17 @@ public abstract class FixDefenseCalcsPlugInBase : UpdatePlugInBase
                 default(AttributeDefinition?),
                 AggregateType.AddRaw);
 
-            var tempDefenseToDefenseFinal = context.CreateNew<AttributeRelationship>(
-                defenseFinal,
-                1,
-                tempDefense,
-                InputOperator.Add,
-                default(AttributeDefinition?),
-                AggregateType.Multiplicate);
+            if (attrCombos.FirstOrDefault(attrCombo => attrCombo.InputAttribute == Stats.DefenseIncreaseWithEquippedShield
+                && attrCombo.OperandAttribute == Stats.IsShieldEquipped) is { } defenseIncWithEquippedShieldToTempDefense)
+            {
+                var tempDefenseToDefenseFinal = context.CreateNew<AttributeRelationship>(
+                    defenseFinal,
+                    1,
+                    defenseIncWithEquippedShieldToTempDefense.TargetAttribute,
+                    InputOperator.Add,
+                    default(AttributeDefinition?),
+                    AggregateType.Multiplicate);
+            }
 
             var shieldItemDefenseIncreaseToDefenseFinal = context.CreateNew<AttributeRelationship>(
                 defenseFinal,
