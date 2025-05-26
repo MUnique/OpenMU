@@ -129,6 +129,8 @@ public abstract class FixDefenseCalcsPlugInBase : UpdatePlugInBase
                     InputOperator.Add,
                     default(AttributeDefinition?),
                     AggregateType.Multiplicate);
+
+                charClass.AttributeCombinations.Add(tempDefenseToDefenseFinal);
             }
 
             var shieldItemDefenseIncreaseToDefenseFinal = context.CreateNew<AttributeRelationship>(
@@ -153,7 +155,6 @@ public abstract class FixDefenseCalcsPlugInBase : UpdatePlugInBase
             charClass.AttributeCombinations.Add(defenseBaseToDefenseFinal);
             charClass.AttributeCombinations.Add(defenseFinalToDefensePvm);
             charClass.AttributeCombinations.Add(defenseFinalToDefensePvp);
-            charClass.AttributeCombinations.Add(tempDefenseToDefenseFinal);
             charClass.AttributeCombinations.Add(shieldItemDefenseIncreaseToDefenseFinal);
             charClass.AttributeCombinations.Add(bonusDefenseWithShieldToDefenseFinal);
             charClass.AttributeCombinations.Add(bonusDefenseRateWithShieldToDefenseRatePvm);

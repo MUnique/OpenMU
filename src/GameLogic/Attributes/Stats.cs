@@ -640,7 +640,7 @@ public class Stats
     /// <summary>
     /// Gets the bonus defense (absolute) command/leadership divisor with an equipped shield attribute definition.
     /// </summary>
-    public static AttributeDefinition BonusDefenseWithScepterCmdDiv { get; } = new(new Guid("9A3C99C4-4F94-4CD0-8BFC-C8B870CD5FE4"), "Defense Increase Bonus (absolute) with equipped Scepter", string.Empty);
+    public static AttributeDefinition BonusDefenseWithScepterCmdDiv { get; } = new(new Guid("9A3C99C4-4F94-4CD0-8BFC-C8B870CD5FE4"), "Defense Increase Bonus (absolute) with equipped Scepter (command div)", string.Empty);
 
     /// <summary>
     /// Gets the bonus defense (absolute) with an equipped dark horse MST attribute definition.
