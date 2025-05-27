@@ -526,7 +526,7 @@ public class Stats
     /// </summary>
     /// <remarks>
     /// <see cref="AggregateType.AddRaw"/> values include:
-    ///     Armor, shield, and wings defense plus their item options; dark horse defense bonus.
+    ///     Armor, and wings defense plus their item options; <see cref="DefenseShield"/>; dark horse defense bonus.
     /// <see cref="AggregateType.Multiplicate"/> values include:
     ///     Set level bonus; elite transfer skeleton xfm ring bonus.
     /// <see cref="AggregateType.AddFinal"/> values include:
@@ -570,7 +570,7 @@ public class Stats
     public static AttributeDefinition DefensePvp { get; } = new(new Guid("28D14EB7-1049-45BE-A7B7-D5E28E63943B"), "Defense (PvP)", string.Empty);
 
     /// <summary>
-    /// Gets the defense shield (item) attribute definition.
+    /// Gets the shield (item) defense attribute definition.
     /// </summary>
     public static AttributeDefinition DefenseShield { get; } = new(new Guid("F3DB2083-500C-42A2-A487-B0AE68DFD331"), "Shield Defense (item)", string.Empty);
 
