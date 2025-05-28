@@ -13,7 +13,7 @@ General requirements:
 * A game client (check our Discord FAQs)
 * Knowledge or way to start the game client, so that it connects to the server. Our Launcher will do that.
 
-  * Launcher binaries: [MUnique.OpenMU.ClientLauncher v0.9.0.zip](https://github.com/MUnique/OpenMU/releases/download/v0.9.0/MUnique.OpenMU.ClientLauncher_0.9.0.zip)
+  * Launcher binaries: [MUnique.OpenMU.ClientLauncher v0.9.6.zip](https://github.com/MUnique/OpenMU/releases/download/v0.9.0/MUnique.OpenMU.ClientLauncher_0.9.6.zip)
     * It requires the [.NET 9 runtime](https://dotnet.microsoft.com/download/dotnet/9.0)
   * If your server and client runs on your local host, use any IP of 127.x.x.x, except 127.0.0.1, because this one is blocked by the client. For example, you could use 127.127.127.127
 
