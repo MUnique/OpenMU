@@ -117,7 +117,7 @@ public class HarmonyOptions : InitializerBase
         definition.Name = DefenseOptionsName;
         definition.MaximumOptionsPerItem = 1;
 
-        definition.PossibleOptions.Add(this.CreateHarmonyOptions(1, ItemOptionDefinitionNumbers.HarmonyDefense, 50, Stats.DefenseBase, AggregateType.AddRaw, 0, 3, 4, 5, 6, 7, 8, 10, 12, 14, 16, 18, 20, 22, 25));
+        definition.PossibleOptions.Add(this.CreateHarmonyOptions(1, ItemOptionDefinitionNumbers.HarmonyDefense, 50, Stats.DefenseBase, AggregateType.AddFinal, 0, 3, 4, 5, 6, 7, 8, 10, 12, 14, 16, 18, 20, 22, 25));
         definition.PossibleOptions.Add(this.CreateHarmonyOptions(2, ItemOptionDefinitionNumbers.HarmonyDefense, 40, Stats.MaximumAbility, AggregateType.AddRaw, 3, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 25));
         definition.PossibleOptions.Add(this.CreateHarmonyOptions(3, ItemOptionDefinitionNumbers.HarmonyDefense, 40, Stats.MaximumHealth, AggregateType.AddRaw, 3, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 30));
         definition.PossibleOptions.Add(this.CreateHarmonyOptions(4, ItemOptionDefinitionNumbers.HarmonyDefense, 30, Stats.HealthRecoveryAbsolute, AggregateType.AddRaw, 6, 1, 2, 3, 4, 5, 6, 7, 8));

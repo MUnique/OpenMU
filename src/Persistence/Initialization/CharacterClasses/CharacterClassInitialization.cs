@@ -99,8 +99,10 @@ internal partial class CharacterClassInitialization : InitializerBase
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.TotalVitality, 1, Stats.BaseVitality));
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.TotalEnergy, 1, Stats.BaseEnergy));
 
-        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.DefensePvm, 1, Stats.DefenseBase));
-        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.DefensePvp, 1, Stats.DefenseBase));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.DefenseBase, 1, Stats.DefenseShield));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.DefenseFinal, 0.5f, Stats.DefenseBase));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.DefensePvm, 1, Stats.DefenseFinal));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.DefensePvp, 1, Stats.DefenseFinal));
 
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.AttackSpeedAny, 1, Stats.AttackSpeedByWeapon));
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.AttackSpeed, 1, Stats.AttackSpeedAny));
@@ -113,13 +115,14 @@ internal partial class CharacterClassInitialization : InitializerBase
         attributeRelationships.Add(this.CreateAttributeRelationship(tempSpeed, -0.5f, Stats.AttackSpeedByWeapon));
         attributeRelationships.Add(this.CreateConditionalRelationship(Stats.AttackSpeedAny, Stats.AreTwoWeaponsEquipped, tempSpeed));
 
-        attributeRelationships.Add(this.CreateConditionalRelationship(Stats.DefenseBase, Stats.IsShieldEquipped, Stats.BonusDefenseWithShield));
-
         var tempDefense = this.Context.CreateNew<AttributeDefinition>(Guid.NewGuid(), "Temp Defense Bonus multiplier with Shield", string.Empty);
         this.GameConfiguration.Attributes.Add(tempDefense);
-        attributeRelationships.Add(this.CreateAttributeRelationship(tempDefense, Stats.IsShieldEquipped, Stats.DefenseIncreaseWithEquippedShield));
-        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.DefensePvm, tempDefense, Stats.DefenseBase));
-        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.DefensePvp, tempDefense, Stats.DefenseBase));
+        attributeRelationships.Add(this.CreateConditionalRelationship(tempDefense, Stats.IsShieldEquipped, Stats.DefenseIncreaseWithEquippedShield));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.DefenseFinal, 1, tempDefense, InputOperator.Add, aggregateType: AggregateType.Multiplicate));
+
+        attributeRelationships.Add(this.CreateConditionalRelationship(Stats.DefenseFinal, Stats.DefenseShield, Stats.ShieldItemDefenseIncrease));
+        attributeRelationships.Add(this.CreateConditionalRelationship(Stats.DefenseFinal, Stats.IsShieldEquipped, Stats.BonusDefenseWithShield, AggregateType.AddFinal));
+        attributeRelationships.Add(this.CreateConditionalRelationship(Stats.DefenseRatePvm, Stats.IsShieldEquipped, Stats.BonusDefenseRateWithShield, AggregateType.AddFinal));
 
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.HealthRecoveryMultiplier, 0.01f, Stats.IsInSafezone));
         if (this.UseClassicPvp)

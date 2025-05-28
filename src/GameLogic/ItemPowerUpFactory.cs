@@ -286,9 +286,9 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
             yield return new PowerUpWrapper(new SimpleElement(additionalRate, AggregateType.AddRaw), Stats.DefenseRatePvm, attributeHolder);
             if (itemIsAncient)
             {
-                var baseDefense = (int)(item.Definition?.BasePowerUpAttributes.FirstOrDefault(a => a.TargetAttribute == Stats.DefenseBase)?.BaseValue ?? 0);
+                var baseDefense = (int)(item.Definition?.BasePowerUpAttributes.FirstOrDefault(a => a.TargetAttribute == Stats.DefenseShield)?.BaseValue ?? 0);
                 var ancientDefenseBonus = 2 + ((baseDefense + item.Level) * 20 / ancientDropLevel);
-                yield return new PowerUpWrapper(new SimpleElement(ancientDefenseBonus, AggregateType.AddRaw), Stats.DefenseBase, attributeHolder);
+                yield return new PowerUpWrapper(new SimpleElement(ancientDefenseBonus, AggregateType.AddRaw), Stats.DefenseShield, attributeHolder);
             }
         }
 

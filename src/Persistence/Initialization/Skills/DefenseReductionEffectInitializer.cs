@@ -37,11 +37,18 @@ public class DefenseReductionEffectInitializer : InitializerBase
         magicEffect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.Duration.ConstantValue.Value = (float)TimeSpan.FromSeconds(10).TotalSeconds;
 
-        var reduceDefenseEffect = this.Context.CreateNew<PowerUpDefinition>();
-        magicEffect.PowerUpDefinitions.Add(reduceDefenseEffect);
-        reduceDefenseEffect.TargetAttribute = Stats.DefenseBase.GetPersistent(this.GameConfiguration);
-        reduceDefenseEffect.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-        reduceDefenseEffect.Boost.ConstantValue.Value = 0.9f;
-        reduceDefenseEffect.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
+        var reducePvmDefenseEffect = this.Context.CreateNew<PowerUpDefinition>();
+        magicEffect.PowerUpDefinitions.Add(reducePvmDefenseEffect);
+        reducePvmDefenseEffect.TargetAttribute = Stats.DefensePvm.GetPersistent(this.GameConfiguration);
+        reducePvmDefenseEffect.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+        reducePvmDefenseEffect.Boost.ConstantValue.Value = 0.9f;
+        reducePvmDefenseEffect.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
+
+        var reducePvpDefenseEffect = this.Context.CreateNew<PowerUpDefinition>();
+        magicEffect.PowerUpDefinitions.Add(reducePvpDefenseEffect);
+        reducePvpDefenseEffect.TargetAttribute = Stats.DefensePvp.GetPersistent(this.GameConfiguration);
+        reducePvpDefenseEffect.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+        reducePvpDefenseEffect.Boost.ConstantValue.Value = 0.9f;
+        reducePvpDefenseEffect.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
     }
 }

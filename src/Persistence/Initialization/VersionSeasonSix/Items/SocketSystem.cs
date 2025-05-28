@@ -1,4 +1,4 @@
-// <copyright file="SocketSystem.cs" company="MUnique">
+﻿// <copyright file="SocketSystem.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -344,8 +344,8 @@ public class SocketSystem : InitializerBase
         definition.MaximumOptionsPerItem = 1;
 
         definition.PossibleOptions.Add(this.CreateSocketOption(0, SocketSubOptionType.Water, Stats.DefenseRatePvm, AggregateType.Multiplicate, 1.10f, 1.11f, 1.12f, 1.13f, 1.14f));
-        definition.PossibleOptions.Add(this.CreateSocketOption(1, SocketSubOptionType.Water, Stats.DefenseBase, AggregateType.AddRaw, 30, 33, 36, 39, 42));
-        definition.PossibleOptions.Add(this.CreateSocketOption(2, SocketSubOptionType.Water, Stats.ShieldDecreaseRateIncrease, AggregateType.AddRaw, 0.07f, 0.10f, 0.15f, 0.20f, 0.30f));
+        definition.PossibleOptions.Add(this.CreateSocketOption(1, SocketSubOptionType.Water, Stats.DefenseFinal, AggregateType.AddRaw, 30, 33, 36, 39, 42));
+        definition.PossibleOptions.Add(this.CreateSocketOption(2, SocketSubOptionType.Water, Stats.ShieldItemDefenseIncrease, AggregateType.AddRaw, 0.07f, 0.10f, 0.15f, 0.20f, 0.30f));
         definition.PossibleOptions.Add(this.CreateSocketOption(3, SocketSubOptionType.Water, Stats.DamageReceiveDecrement, AggregateType.Multiplicate, 0.96f, 0.95f, 0.94f, 0.93f, 0.92f));
         definition.PossibleOptions.Add(this.CreateSocketOption(4, SocketSubOptionType.Water, Stats.DamageReflection, AggregateType.AddRaw, 0.05f, 0.06f, 0.07f, 0.08f, 0.09f));
         return definition;
@@ -397,7 +397,7 @@ public class SocketSystem : InitializerBase
         definition.Name = "Socket Bonus Options (Armors)";
         definition.MaximumOptionsPerItem = 1;
         definition.AddChance = 0.30f;
-        definition.PossibleOptions.Add(this.CreateSocketBonusOption(4, Stats.DefenseBase, 24));
+        definition.PossibleOptions.Add(this.CreateSocketBonusOption(4, Stats.DefenseFinal, 24));
         definition.PossibleOptions.Add(this.CreateSocketBonusOption(5, Stats.MaximumHealth, 29));
         return definition;
     }

@@ -179,6 +179,10 @@ public class Stats
     /// <summary>
     /// Gets the attack rate PVM attribute definition.
     /// </summary>
+    /// <remarks>
+    /// <see cref="AggregateType.AddRaw"/> values include:
+    ///     Base attack rate from level and stats, ancient set option bonus, MST PvM attack rate increase bonus.
+    /// </remarks>
     public static AttributeDefinition AttackRatePvm { get; } = new(new Guid("1129442A-E1C7-4240-8866-B781C2838C25"), "Attack Rate (PvM)", string.Empty);
 
     /// <summary>
@@ -520,21 +524,67 @@ public class Stats
     /// <summary>
     /// Gets the defense base attribute definition.
     /// </summary>
+    /// <remarks>
+    /// <see cref="AggregateType.AddRaw"/> values include:
+    ///     Armor, and wings defense plus their item options; <see cref="DefenseShield"/>; dark horse defense bonus.
+    /// <see cref="AggregateType.Multiplicate"/> values include:
+    ///     Set level bonus; elite transfer skeleton xfm ring bonus.
+    /// <see cref="AggregateType.AddFinal"/> values include:
+    ///     Harmony defense bonus option; ancient defense bonus option; MST defense increase bonus.
+    /// </remarks>
     public static AttributeDefinition DefenseBase { get; } = new(new Guid("EB098C46-60D4-4CA6-BBD4-5B6270A1407B"), "Base Defense", string.Empty);
+
+    /// <summary>
+    /// Gets the defense final attribute definition.
+    /// </summary>
+    /// <remarks>
+    /// <see cref="AggregateType.AddRaw"/> values include:
+    ///     Halved <see cref="DefenseBase"/>; socket (water, armor bonus) defense bonus option; robot knight xfm ring bonus; panda pet bonus; unicorn pet bonus.
+    /// <see cref="AggregateType.Multiplicate"/> values include:
+    ///     <see cref="DefenseIncreaseWithEquippedShield"/>.
+    /// <see cref="AggregateType.AddFinal"/> values include:
+    ///     Greater defense buff; MST bonus defense with shield (shield strengthener); MST dark horse strengthener; Jack O'Lantern Cry bonus (halved).
+    /// </remarks>
+    public static AttributeDefinition DefenseFinal { get; } = new(new Guid("0888AD48-0CC8-47CA-B6A3-99F3771AA5FC"), "Final Defense", string.Empty);
 
     /// <summary>
     /// Gets the defense PVM attribute definition.
     /// </summary>
+    /// <remarks>
+    /// <see cref="AggregateType.AddRaw"/> values include:
+    ///     <see cref="DefenseFinal"/>.
+    /// <see cref="AggregateType.Multiplicate"/> values include:
+    ///     Fire slash defense reduction.
+    /// </remarks>
     public static AttributeDefinition DefensePvm { get; } = new(new Guid("B4201610-2824-4EC1-A145-76B15DB9DEC6"), "Defense (PvM)", string.Empty);
 
     /// <summary>
     /// Gets the defense PVP attribute definition.
     /// </summary>
+    /// <remarks>
+    /// <see cref="AggregateType.AddRaw"/> values include:
+    ///     <see cref="DefenseFinal"/>; pants guardian option (halved).
+    /// <see cref="AggregateType.Multiplicate"/> values include:
+    ///     Fire slash defense reduction.
+    /// </remarks>
     public static AttributeDefinition DefensePvp { get; } = new(new Guid("28D14EB7-1049-45BE-A7B7-D5E28E63943B"), "Defense (PvP)", string.Empty);
+
+    /// <summary>
+    /// Gets the shield (item) defense attribute definition.
+    /// </summary>
+    public static AttributeDefinition DefenseShield { get; } = new(new Guid("F3DB2083-500C-42A2-A487-B0AE68DFD331"), "Shield Defense (item)", string.Empty);
 
     /// <summary>
     /// Gets the defense rate PVM attribute definition.
     /// </summary>
+    /// <remarks>
+    /// <see cref="AggregateType.AddRaw"/> values include:
+    ///     Base defense rate from agility; shield defense rate plus its item option.
+    /// <see cref="AggregateType.Multiplicate"/> values include:
+    ///     Complete set bonus multiplier (+10%); excellent DR option; socket DR option; MST PvM defense rate increase.
+    /// <see cref="AggregateType.AddFinal"/> values include:
+    ///     MST bonus defense rate with shield (shield mastery).
+    /// </remarks>
     public static AttributeDefinition DefenseRatePvm { get; } = new(new Guid("C520DD2D-1B06-4392-95EE-3C41F33E68DA"), "Defense Rate (PvM)", string.Empty);
 
     /// <summary>
@@ -553,15 +603,14 @@ public class Stats
     public static AttributeDefinition DamageReceiveHorseDecrement { get; } = new(new Guid("041B2811-05C0-49DE-B083-4D1FBD7E6286"), "Damage Receive From Dark Horse Multiplier", string.Empty);
 
     /// <summary>
-    /// Gets the shield block damage decrement attribute definition.
-    /// TODO: Usage in a shield skill handler.
-    /// </summary>
-    public static AttributeDefinition ShieldBlockDamageDecrement { get; } = new(new Guid("DAC6690B-5922-4446-BCE5-5E701BE62EC1"), "Shield Block Damage Multiplier", string.Empty);
-
-    /// <summary>
-    /// Gets the defense increase with equipped shield attribute definition.
+    /// Gets the defense increase with equipped shield (ancient) attribute definition.
     /// </summary>
     public static AttributeDefinition DefenseIncreaseWithEquippedShield { get; } = new(new Guid("41BCEC8D-A7A8-4930-AB2E-A07D8BF1B86C"), "Defense Increase Multiplier With Equipped Shield", string.Empty);
+
+    /// <summary>
+    /// Gets the shield item defense increase (water socket) attribute definition.
+    /// </summary>
+    public static AttributeDefinition ShieldItemDefenseIncrease { get; } = new(new Guid("84C49DEC-EC01-4835-89FD-7016E4E181D7"), "Shield Item Defense Increase Multiplier", string.Empty);
 
     /// <summary>
     /// Gets the soul barrier skill damage receive decrement attribute definition.
@@ -574,9 +623,9 @@ public class Stats
     public static AttributeDefinition SoulBarrierManaTollPerHit { get; } = new(new Guid("25315C15-C884-4B45-9883-9A92693DC455"), "Soul Barrier Mana Toll Per Received Hit", "A mana requirement which must be met for the soul barrier skill decrement.");
 
     /// <summary>
-    /// Gets the bonus defense (absolute) with an equipped shield attribute definition.
+    /// Gets the bonus defense (absolute) with an equipped shield MST attribute definition.
     /// </summary>
-    public static AttributeDefinition BonusDefenseWithShield { get; } = new(new Guid("05F08D89-9BC6-4164-9B30-26EFAF4C0E0F"), "Defense Increase Bonus (absolute) With equipped Shield", string.Empty);
+    public static AttributeDefinition BonusDefenseWithShield { get; } = new(new Guid("05F08D89-9BC6-4164-9B30-26EFAF4C0E0F"), "Defense Increase Bonus (absolute) With equipped Shield (MST)", string.Empty);
 
     /// <summary>
     /// Gets the bonus defense (absolute) with an equipped scepter attribute definition.
@@ -584,14 +633,19 @@ public class Stats
     public static AttributeDefinition BonusDefenseWithScepter { get; } = new(new Guid("7977FE44-FC22-4A6B-A4E0-BA522FE807DF"), "Defense Increase Bonus (absolute) with equipped Scepter", string.Empty);
 
     /// <summary>
-    /// Gets the bonus defense (absolute) command/leadership divisor with an equipped shield attribute definition.
+    /// Gets the bonus PvM defense rate (absolute) with an equipped shield MST attribute definition.
     /// </summary>
-    public static AttributeDefinition BonusDefenseWithScepterCmdDiv { get; } = new(new Guid("9A3C99C4-4F94-4CD0-8BFC-C8B870CD5FE4"), "Defense Increase Bonus (absolute) with equipped Scepter", string.Empty);
+    public static AttributeDefinition BonusDefenseRateWithShield { get; } = new(new Guid("C8CF9CE1-F7AC-48DE-BFCC-349ABBFB1FCA"), "Defense Rate (PvM) Increase Bonus (absolute) With equipped Shield (MST)", string.Empty);
 
     /// <summary>
-    /// Gets the bonus defense (absolute) with an equipped dark horse attribute definition.
+    /// Gets the bonus defense (absolute) command/leadership divisor with an equipped shield attribute definition.
     /// </summary>
-    public static AttributeDefinition BonusDefenseWithHorse { get; } = new(new Guid("8D22E36C-EB36-47DB-8CE0-9ABD599C533C"), "Defense Increase Bonus (absolute) With equipped Horse", string.Empty);
+    public static AttributeDefinition BonusDefenseWithScepterCmdDiv { get; } = new(new Guid("9A3C99C4-4F94-4CD0-8BFC-C8B870CD5FE4"), "Defense Increase Bonus (absolute) with equipped Scepter (command div)", string.Empty);
+
+    /// <summary>
+    /// Gets the bonus defense (absolute) with an equipped dark horse MST attribute definition.
+    /// </summary>
+    public static AttributeDefinition BonusDefenseWithHorse { get; } = new(new Guid("8D22E36C-EB36-47DB-8CE0-9ABD599C533C"), "Defense Increase Bonus (absolute) With equipped Horse (MST)", string.Empty);
 
     /// <summary>
     /// Gets the 'is shield equipped' attribute definition.
