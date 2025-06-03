@@ -55,7 +55,7 @@ public enum DamageType
 public enum SkillType
 {
     /// <summary>
-    /// The skill hit its target directly.
+    /// The skill hits its target directly.
     /// </summary>
     DirectHit = 0,
 
@@ -65,7 +65,7 @@ public enum SkillType
     CastleSiegeSpecial = 1,
 
     /// <summary>
-    /// Same as <see cref="DirectHit"/> but only applyable during castle siege event.
+    /// Same as <see cref="DirectHit"/> but only appliable during castle siege event.
     /// </summary>
     CastleSiegeSkill = 2,
 
@@ -90,6 +90,21 @@ public enum SkillType
     Nova = 6,
 
     /// <summary>
+    /// The earthshake skill which hits all targets in range and applies some base bonus damage.
+    /// </summary>
+    Earthshake = 7,
+
+    /// <summary>
+    /// The electric spike skill which hits all targets in range and applies some base bonus damage.
+    /// </summary>
+    ElectricSpike = 8,
+
+    /// <summary>
+    /// The chaotic diseier skill which hits all targets in range and applies some base bonus damage.
+    /// </summary>
+    ChaoticDiseier = 9,
+
+    /// <summary>
     /// The buff skill type. Applies magic effects on players.
     /// </summary>
     Buff = 10,
@@ -98,6 +113,17 @@ public enum SkillType
     /// The regeneration skill type. Regenerates the target attribute of the defined effect.
     /// </summary>
     Regeneration = 11,
+
+    /// <summary>
+    /// A dark lord/lord emperor skill which hits all targets in range and applies some base bonus damage.
+    /// </summary>
+    /// <remarks>Common to any lord skill other than <see cref="ElectricSpike"/>, <see cref="ChaoticDiseier"/>, and <see cref="Earthshake"/>.</remarks>
+    LordGeneric = 12,
+
+    /// <summary>
+    /// The multishot skill which hits all targets in range and has a 0.8 base damage multiplier.
+    /// </summary>
+    MultiShot = 13,
 
     /// <summary>
     /// The passive boost skill type. Applies boosts to the player who has learned this skill, without the need to be casted.

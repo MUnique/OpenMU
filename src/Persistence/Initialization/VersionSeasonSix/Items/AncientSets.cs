@@ -66,7 +66,7 @@ public class AncientSets : InitializerBase
             (Stats.MaximumHealth, 50.0f),
             (Stats.TotalAgility, 50.0f),
             (Stats.DefenseIncreaseWithEquippedShield, 0.25f),
-            (Stats.BaseDamageBonus, 30.0f));
+            (Stats.FinalDamageBonus, 30.0f));
         anonymous.SetGuid(5, 2);
         this.AddItems(
             anonymous,
@@ -106,13 +106,13 @@ public class AncientSets : InitializerBase
         var eplete = this.AddAncientSet(
             "Eplete", // Scale
             5,
-            (Stats.SkillDamageBonus, 15.0f),
-            (Stats.AttackRatePvm, 50.0f),
-            (Stats.WizardryAttackDamageIncrease, 0.05f),
-            (Stats.MaximumHealth, 50.0f),
-            (Stats.MaximumAbility, 30.0f),
-            (Stats.CriticalDamageChance, 0.10f),
-            (Stats.ExcellentDamageChance, 0.10f));
+            (Stats.SkillDamageBonus, 15.0f, AggregateType.AddRaw),
+            (Stats.AttackRatePvm, 50.0f, AggregateType.AddRaw),
+            (Stats.WizardryBaseDmgIncrease, 1.05f, AggregateType.Multiplicate),
+            (Stats.MaximumHealth, 50.0f, AggregateType.AddRaw),
+            (Stats.MaximumAbility, 30.0f, AggregateType.AddRaw),
+            (Stats.CriticalDamageChance, 0.10f, AggregateType.AddRaw),
+            (Stats.ExcellentDamageChance, 0.10f, AggregateType.AddRaw));
         eplete.SetGuid(6, 1);
         this.AddItems(
             eplete,
@@ -143,12 +143,12 @@ public class AncientSets : InitializerBase
         var garuda = this.AddAncientSet(
             "Garuda", // Brass
             7,
-            (Stats.MaximumAbility, 30.0f),
-            (Stats.DoubleDamageChance, 0.05f),
-            (Stats.TotalEnergy, 15.0f),
-            (Stats.MaximumHealth, 50.0f),
-            (Stats.SkillDamageBonus, 25.0f),
-            (Stats.WizardryAttackDamageIncrease, 0.15f));
+            (Stats.MaximumAbility, 30.0f, AggregateType.AddRaw),
+            (Stats.DoubleDamageChance, 0.05f, AggregateType.AddRaw),
+            (Stats.TotalEnergy, 15.0f, AggregateType.AddRaw),
+            (Stats.MaximumHealth, 50.0f, AggregateType.AddRaw),
+            (Stats.SkillDamageBonus, 25.0f, AggregateType.AddRaw),
+            (Stats.WizardryBaseDmgIncrease, 1.15f, AggregateType.Multiplicate));
         garuda.SetGuid(8, 1);
         this.AddItems(
             garuda,
@@ -172,13 +172,13 @@ public class AncientSets : InitializerBase
         var kantata = this.AddAncientSet(
             "Kantata", // Plate
             9,
-            (Stats.TotalEnergy, 15.0f),
-            (Stats.TotalVitality, 30.0f),
-            (Stats.WizardryAttackDamageIncrease, 0.10f),
-            (Stats.TotalStrength, 15.0f),
-            (Stats.SkillDamageBonus, 25.0f),
-            (Stats.ExcellentDamageChance, 10.0f),
-            (Stats.ExcellentDamageBonus, 20.0f));
+            (Stats.TotalEnergy, 15.0f, AggregateType.AddRaw),
+            (Stats.TotalVitality, 30.0f, AggregateType.AddRaw),
+            (Stats.WizardryBaseDmgIncrease, 1.10f, AggregateType.Multiplicate),
+            (Stats.TotalStrength, 15.0f, AggregateType.AddRaw),
+            (Stats.SkillDamageBonus, 25.0f, AggregateType.AddRaw),
+            (Stats.ExcellentDamageChance, 10.0f, AggregateType.AddRaw),
+            (Stats.ExcellentDamageBonus, 20.0f, AggregateType.AddRaw));
         kantata.SetGuid(9, 1);
         this.AddItems(
             kantata,
@@ -224,7 +224,7 @@ public class AncientSets : InitializerBase
             "Vicious", // Dragon
             12,
             (Stats.SkillDamageBonus, 15.0f),
-            (Stats.BaseDamageBonus, 15.0f),
+            (Stats.FinalDamageBonus, 15.0f),
             (Stats.DoubleDamageChance, 0.10f),
             (Stats.MinimumPhysBaseDmg, 20f),
             (Stats.MaximumPhysBaseDmg, 30f),
@@ -240,15 +240,15 @@ public class AncientSets : InitializerBase
         var apollo = this.AddAncientSet(
             "Apollo", // Pad
             13,
-            (Stats.TotalEnergy, 10.0f),
-            (Stats.WizardryAttackDamageIncrease, 0.05f),
-            (Stats.SkillDamageBonus, 10.0f),
-            (Stats.MaximumMana, 30.0f),
-            (Stats.MaximumHealth, 30.0f),
-            (Stats.MaximumAbility, 20.0f),
-            (Stats.CriticalDamageChance, 0.10f),
-            (Stats.ExcellentDamageChance, 0.10f),
-            (Stats.TotalEnergy, 30.0f));
+            (Stats.TotalEnergy, 10.0f, AggregateType.AddRaw),
+            (Stats.WizardryBaseDmgIncrease, 1.05f, AggregateType.Multiplicate),
+            (Stats.SkillDamageBonus, 10.0f, AggregateType.AddRaw),
+            (Stats.MaximumMana, 30.0f, AggregateType.AddRaw),
+            (Stats.MaximumHealth, 30.0f, AggregateType.AddRaw),
+            (Stats.MaximumAbility, 20.0f, AggregateType.AddRaw),
+            (Stats.CriticalDamageChance, 0.10f, AggregateType.AddRaw),
+            (Stats.ExcellentDamageChance, 0.10f, AggregateType.AddRaw),
+            (Stats.TotalEnergy, 30.0f, AggregateType.AddRaw));
         apollo.SetGuid(2, 1);
         this.AddItems(
             apollo,
@@ -263,10 +263,10 @@ public class AncientSets : InitializerBase
         var barnake = this.AddAncientSet(
             "Barnake", // Pad
             14,
-            (Stats.WizardryAttackDamageIncrease, 0.10f),
-            (Stats.TotalEnergy, 20.0f),
-            (Stats.SkillDamageBonus, 30.0f),
-            (Stats.MaximumMana, 100.0f));
+            (Stats.WizardryBaseDmgIncrease, 1.10f, AggregateType.Multiplicate),
+            (Stats.TotalEnergy, 20.0f, AggregateType.AddRaw),
+            (Stats.SkillDamageBonus, 30.0f, AggregateType.AddRaw),
+            (Stats.MaximumMana, 100.0f, AggregateType.AddRaw));
         barnake.SetGuid(2, 2);
         this.AddItems(
             barnake,
@@ -277,12 +277,12 @@ public class AncientSets : InitializerBase
         var evis = this.AddAncientSet(
             "Evis", // Bone
             15,
-            (Stats.SkillDamageBonus, 15.0f),
-            (Stats.TotalVitality, 20.0f),
-            (Stats.WizardryAttackDamageIncrease, 0.10f),
-            (Stats.DoubleDamageChance, 0.05f),
-            (Stats.AttackRatePvm, 50.0f),
-            (Stats.AbilityRecoveryAbsolute, 5.0f));
+            (Stats.SkillDamageBonus, 15.0f, AggregateType.AddRaw),
+            (Stats.TotalVitality, 20.0f, AggregateType.AddRaw),
+            (Stats.WizardryBaseDmgIncrease, 1.10f, AggregateType.Multiplicate),
+            (Stats.DoubleDamageChance, 0.05f, AggregateType.AddRaw),
+            (Stats.AttackRatePvm, 50.0f, AggregateType.AddRaw),
+            (Stats.AbilityRecoveryAbsolute, 5.0f, AggregateType.AddRaw));
         evis.SetGuid(4, 1);
         this.AddItems(
             evis,
@@ -312,15 +312,15 @@ public class AncientSets : InitializerBase
         var heras = this.AddAncientSet(
             "Heras", // Sphinx
             17,
-            (Stats.TotalStrength, 15.0f),
-            (Stats.WizardryAttackDamageIncrease, 0.10f),
-            (Stats.DefenseIncreaseWithEquippedShield, 0.05f),
-            (Stats.TotalEnergy, 15.0f),
-            (Stats.AttackRatePvm, 50.0f),
-            (Stats.CriticalDamageChance, 0.10f),
-            (Stats.ExcellentDamageChance, 0.10f),
-            (Stats.MaximumHealth, 50.0f),
-            (Stats.MaximumMana, 50.0f));
+            (Stats.TotalStrength, 15.0f, AggregateType.AddRaw),
+            (Stats.WizardryBaseDmgIncrease, 1.10f, AggregateType.Multiplicate),
+            (Stats.DefenseIncreaseWithEquippedShield, 0.05f, AggregateType.AddRaw),
+            (Stats.TotalEnergy, 15.0f, AggregateType.AddRaw),
+            (Stats.AttackRatePvm, 50.0f, AggregateType.AddRaw),
+            (Stats.CriticalDamageChance, 0.10f, AggregateType.AddRaw),
+            (Stats.ExcellentDamageChance, 0.10f, AggregateType.AddRaw),
+            (Stats.MaximumHealth, 50.0f, AggregateType.AddRaw),
+            (Stats.MaximumMana, 50.0f, AggregateType.AddRaw));
         heras.SetGuid(7, 1);
         this.AddItems(
             heras,
@@ -348,13 +348,13 @@ public class AncientSets : InitializerBase
         var anubis = this.AddAncientSet(
             "Anubis", // Legendary
             19,
-            (Stats.DoubleDamageChance, 0.10f),
-            (Stats.MaximumMana, 50.0f),
-            (Stats.WizardryAttackDamageIncrease, 0.10f),
-            (Stats.CriticalDamageChance, 0.15f),
-            (Stats.ExcellentDamageChance, 0.15f),
-            (Stats.CriticalDamageBonus, 20.0f),
-            (Stats.ExcellentDamageBonus, 20.0f));
+            (Stats.DoubleDamageChance, 0.10f, AggregateType.AddRaw),
+            (Stats.MaximumMana, 50.0f, AggregateType.AddRaw),
+            (Stats.WizardryBaseDmgIncrease, 1.10f, AggregateType.Multiplicate),
+            (Stats.CriticalDamageChance, 0.15f, AggregateType.AddRaw),
+            (Stats.ExcellentDamageChance, 0.15f, AggregateType.AddRaw),
+            (Stats.CriticalDamageBonus, 20.0f, AggregateType.AddRaw),
+            (Stats.ExcellentDamageBonus, 20.0f, AggregateType.AddRaw));
         anubis.SetGuid(3, 1);
         this.AddItems(
             anubis,
@@ -366,11 +366,11 @@ public class AncientSets : InitializerBase
         var enis = this.AddAncientSet(
             "Enis", // Legendary
             20,
-            (Stats.SkillDamageBonus, 10.0f),
-            (Stats.DoubleDamageChance, 0.10f),
-            (Stats.TotalEnergy, 30.0f),
-            (Stats.WizardryAttackDamageIncrease, 0.10f),
-            (Stats.DefenseIgnoreChance, 0.05f));
+            (Stats.SkillDamageBonus, 10.0f, AggregateType.AddRaw),
+            (Stats.DoubleDamageChance, 0.10f, AggregateType.AddRaw),
+            (Stats.TotalEnergy, 30.0f, AggregateType.AddRaw),
+            (Stats.WizardryBaseDmgIncrease, 1.10f, AggregateType.Multiplicate),
+            (Stats.DefenseIgnoreChance, 0.05f, AggregateType.AddRaw));
         enis.SetGuid(3, 2);
         this.AddItems(
             enis,
@@ -403,7 +403,7 @@ public class AncientSets : InitializerBase
             "Drake", // Vine
             22,
             (Stats.TotalAgility, 20.0f, AggregateType.AddRaw),
-            (Stats.BaseDamageBonus, 25.0f, AggregateType.AddRaw),
+            (Stats.FinalDamageBonus, 25.0f, AggregateType.AddRaw),
             (Stats.DoubleDamageChance, 0.20f, AggregateType.AddRaw),
             (Stats.DefenseBase, 40.0f, AggregateType.AddFinal),
             (Stats.CriticalDamageChance, 0.10f, AggregateType.AddRaw));
@@ -528,7 +528,7 @@ public class AncientSets : InitializerBase
         var aruan = this.AddAncientSet(
             "Aruan", // Guardian
             30,
-            (Stats.BaseDamageBonus, 10.0f),
+            (Stats.FinalDamageBonus, 10.0f),
             (Stats.DoubleDamageChance, 0.10f),
             (Stats.SkillDamageBonus, 20.0f),
             (Stats.CriticalDamageChance, 0.15f),
@@ -545,13 +545,13 @@ public class AncientSets : InitializerBase
         var gaion = this.AddAncientSet(
             "Gaion", // Storm Crow
             31,
-            (Stats.DefenseIgnoreChance, 0.05f),
-            (Stats.DoubleDamageChance, 0.15f),
-            (Stats.SkillDamageBonus, 15.0f),
-            (Stats.ExcellentDamageChance, 0.15f),
-            (Stats.ExcellentDamageBonus, 30.0f),
-            (Stats.WizardryAttackDamageIncrease, 0.10f),
-            (Stats.TotalStrength, 30.0f));
+            (Stats.DefenseIgnoreChance, 0.05f, AggregateType.AddRaw),
+            (Stats.DoubleDamageChance, 0.15f, AggregateType.AddRaw),
+            (Stats.SkillDamageBonus, 15.0f, AggregateType.AddRaw),
+            (Stats.ExcellentDamageChance, 0.15f, AggregateType.AddRaw),
+            (Stats.ExcellentDamageBonus, 30.0f, AggregateType.AddRaw),
+            (Stats.WizardryBaseDmgIncrease, 1.10f, AggregateType.Multiplicate),
+            (Stats.TotalStrength, 30.0f, AggregateType.AddRaw));
         gaion.SetGuid(15, 1);
         this.AddItems(
             gaion,
@@ -564,7 +564,7 @@ public class AncientSets : InitializerBase
             "Muren", // Storm Crow
             32,
             (Stats.SkillDamageBonus, 10.0f, AggregateType.AddRaw),
-            (Stats.WizardryAttackDamageIncrease, 0.10f, AggregateType.AddRaw),
+            (Stats.WizardryBaseDmgIncrease, 1.10f, AggregateType.Multiplicate),
             (Stats.DoubleDamageChance, 0.10f, AggregateType.AddRaw),
             (Stats.CriticalDamageChance, 0.15f, AggregateType.AddRaw),
             (Stats.ExcellentDamageChance, 0.15f, AggregateType.AddRaw),
@@ -599,7 +599,7 @@ public class AncientSets : InitializerBase
         var broy = this.AddAncientSet(
             "Broy", // Adamantine
             34,
-            (Stats.BaseDamageBonus, 20.0f),
+            (Stats.FinalDamageBonus, 20.0f),
             (Stats.SkillDamageBonus, 20.0f),
             (Stats.TotalEnergy, 30.0f),
             (Stats.CriticalDamageChance, 0.15f),
@@ -635,12 +635,12 @@ public class AncientSets : InitializerBase
         var semeden = this.AddAncientSet(
             "Semeden", // Red Wing
             36,
-            (Stats.WizardryAttackDamageIncrease, 0.15f),
-            (Stats.SkillDamageBonus, 25.0f),
-            (Stats.TotalEnergy, 30.0f),
-            (Stats.CriticalDamageChance, 0.15f),
-            (Stats.ExcellentDamageChance, 0.15f),
-            (Stats.DefenseIgnoreChance, 0.05f));
+            (Stats.WizardryBaseDmgIncrease, 1.15f, AggregateType.Multiplicate),
+            (Stats.SkillDamageBonus, 25.0f, AggregateType.AddRaw),
+            (Stats.TotalEnergy, 30.0f, AggregateType.AddRaw),
+            (Stats.CriticalDamageChance, 0.15f, AggregateType.AddRaw),
+            (Stats.ExcellentDamageChance, 0.15f, AggregateType.AddRaw),
+            (Stats.DefenseIgnoreChance, 0.05f, AggregateType.AddRaw));
         semeden.SetGuid(40, 2);
         this.AddItems(
             semeden,

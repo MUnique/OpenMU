@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.GameLogic.PlugIns;
 
 using System.Runtime.InteropServices;
-using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -18,10 +17,10 @@ public interface ITargetedSkillPlugin : IStrategyPlugIn<short>
 {
     /// <summary>
     /// Callback function to trigger when specific skill is invoked.
+    /// </summary>
     /// <param name="player">The player invoking the skill.</param>
     /// <param name="target">The target of the skill.</param>
     /// <param name="skillId">The skill identifier.</param>
     /// <returns>Returns the coroutine for the skill action.</returns>
-    /// </summary>
     ValueTask PerformSkillAsync(Player player, IAttackable target, ushort skillId);
 }

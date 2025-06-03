@@ -46,7 +46,13 @@ public class AreaSkillAttackAction
             return;
         }
 
-        if (skill.SkillType is SkillType.AreaSkillAutomaticHits or SkillType.AreaSkillExplicitTarget
+        if (skill.SkillType is SkillType.AreaSkillAutomaticHits
+                or SkillType.AreaSkillExplicitTarget
+                or SkillType.Earthshake
+                or SkillType.ElectricSpike
+                or SkillType.ChaoticDiseier
+                or SkillType.LordGeneric // fire scream
+                or SkillType.MultiShot
             || (skill.SkillType is SkillType.AreaSkillExplicitHits && hitImplicitlyForExplicitSkill))
         {
             // todo: delayed automatic hits, like evil spirit, flame, triple shot... when hitImplicitlyForExplicitSkill = true.

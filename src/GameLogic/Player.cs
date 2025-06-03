@@ -647,12 +647,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         if (attacker as IPlayerSurrogate is { } playerSurrogate)
         {
-            await playerSurrogate.Owner.AfterHitTargetAsync().ConfigureAwait(false);
+            await playerSurrogate.Owner.AfterHitTargetAsync(skill).ConfigureAwait(false);
         }
 
         if (attacker is Player attackerPlayer)
         {
-            await attackerPlayer.AfterHitTargetAsync().ConfigureAwait(false);
+            await attackerPlayer.AfterHitTargetAsync(skill).ConfigureAwait(false);
         }
 
         return hitInfo;
@@ -661,10 +661,37 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <summary>
     /// Is called after the player successfully hit a target.
     /// </summary>
-    public async ValueTask AfterHitTargetAsync()
+    public async ValueTask AfterHitTargetAsync(SkillEntry? skill)
     {
         this.Attributes![Stats.CurrentHealth] = Math.Max(this.Attributes[Stats.CurrentHealth] - this.Attributes[Stats.HealthLossAfterHit], 1);
-        this.Attributes![Stats.CurrentMana] = Math.Max(this.Attributes[Stats.CurrentMana] - this.Attributes[Stats.ManaLossAfterHit], 0);
+
+        if (skill?.Skill is not null)
+        {
+            // Only skills consume mana
+            float extraManaLoss = 0;
+            if (this.MagicEffectList.ActiveEffects.ContainsKey(6)) // MagicEffectNumber.InfiniteArrow
+            {
+                var ammoItemLevel = this.Inventory?.EquippedAmmunitionItem?.Level ?? 0;
+                switch (ammoItemLevel)
+                {
+                    case 0:
+                        break;
+                    case 1:
+                        extraManaLoss = 2;
+                        break;
+                    case 2:
+                        extraManaLoss = 5;
+                        break;
+                    default:
+                        // Arrows/bolts +3 aren't available until after S6, although the S6E3 client recognizes them (the value is a best guess)
+                        extraManaLoss = 10;
+                        break;
+                }
+            }
+
+            this.Attributes![Stats.CurrentMana] = Math.Max(this.Attributes[Stats.CurrentMana] - (this.Attributes[Stats.ManaLossAfterHit] + extraManaLoss), 0);
+        }
+
         await this.DecreaseWeaponDurabilityAfterHitAsync().ConfigureAwait(false);
     }
 

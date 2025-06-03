@@ -38,7 +38,7 @@ public class GreaterDamageEffectInitializer : InitializerBase
         magicEffect.Duration.ConstantValue.Value = 60; // 60 Seconds
         var powerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
         magicEffect.PowerUpDefinitions.Add(powerUpDefinition);
-        powerUpDefinition.TargetAttribute = Stats.BaseDamageBonus.GetPersistent(this.GameConfiguration);
+        powerUpDefinition.TargetAttribute = Stats.GreaterDamageBonus.GetPersistent(this.GameConfiguration);
 
         // The buff gives 3 + (energy / 7) damage
         powerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
