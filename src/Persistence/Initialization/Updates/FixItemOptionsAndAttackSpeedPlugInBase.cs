@@ -68,7 +68,8 @@ public abstract class FixItemOptionsAndAttackSpeedPlugInBase : UpdatePlugInBase
                     1,
                     attackSpeedByWeapon,
                     InputOperator.Multiply,
-                    default(AttributeDefinition?)));
+                    default(AttributeDefinition?),
+                    AggregateType.AddRaw));
 
                 areTwoWeaponsEquippedToAttackSpeedConditional.TargetAttribute = attackSpeedAny;
                 charClass.AttributeCombinations.Remove(areTwoWeaponsEquippedToMagicSpeedConditional);
