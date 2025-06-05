@@ -78,8 +78,7 @@ internal partial class CharacterClassInitialization
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.ArcheryMaxDmg, 1.0f / 8, Stats.TotalStrength));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MeleeMinDmg, 1.0f / 7, Stats.TotalStrengthAndAgility));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MeleeMaxDmg, 1.0f / 4, Stats.TotalStrengthAndAgility));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MinimumPhysBaseDmg, 1, ammunitionDmgIncrease, InputOperator.Add, AggregateType.Multiplicate));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumPhysBaseDmg, 1, ammunitionDmgIncrease, InputOperator.Add, AggregateType.Multiplicate));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.PhysicalBaseDmgIncrease, 1, ammunitionDmgIncrease, InputOperator.Add, AggregateType.Multiplicate));
 
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.ArcheryAttackMode, 1, Stats.IsBowEquipped));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.ArcheryAttackMode, 1, Stats.IsCrossBowEquipped));

@@ -313,7 +313,7 @@ public class Stats
     /// <summary>
     /// Gets the min (physical and wizardry) base DMG bonus attribute definition.
     /// </summary>
-    public static AttributeDefinition BaseMinDamageBonus { get; } = new(new Guid("8C175E46-D614-495C-9990-EECD98547381"), "Base Min Damage Bonus (physical and wizardry)", "A bonus value which gets added to physical and wizardry base min damage values during the damage calculation.");
+    public static AttributeDefinition BaseMinDamageBonus { get; } = new(new Guid("ACE8CC0A-3288-491C-A49F-4B754A18BA1F"), "Base Min Damage Bonus (physical and wizardry)", "A bonus value which gets added to physical and wizardry base min damage values during the damage calculation.");
 
     /// <summary>
     /// Gets the max (physical and wizardry) base DMG bonus attribute definition.
@@ -407,7 +407,7 @@ public class Stats
     /// <summary>
     /// Gets the physical base (min and max) damage increase attribute definition>.
     /// </summary>
-    /// <remarks>Includes excellent 2% physical increase option, and the double wield multiplier (55%).</remarks>
+    /// <remarks>Includes excellent 2% physical increase option, ammunition damage increase, and the double wield multiplier (55%).</remarks>
     public static AttributeDefinition PhysicalBaseDmgIncrease { get; } = new(new Guid("104B4DAA-C507-4CBB-AF38-D53DDBB4817E"), "Physical Base Damage Increase", string.Empty);
 
     /// <summary>
@@ -859,7 +859,7 @@ public class Stats
     /// <summary>
     /// Gets the berserker buff health decrement attribute definition.
     /// </summary>
-    public static AttributeDefinition BerserkerHealthDecrement { get; } = new(new Guid("D1948382-23F6-43A4-AD84-69227BF2ABA3"), "Berserker Health Decrement", "The berserker health decrement which is compared against a minimum value (-10%) to lower the caster's total health.")
+    public static AttributeDefinition BerserkerHealthDecrement { get; } = new(new Guid("D1948382-23F6-43A4-AD84-69227BF2ABA3"), "Berserker Health Decrement", "The berserker health decrement which has a maximum value of -10%.")
     {
         MaximumValue = -0.1f, // At least -10% HP
     };

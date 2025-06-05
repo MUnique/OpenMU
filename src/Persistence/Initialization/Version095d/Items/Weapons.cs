@@ -32,7 +32,6 @@ internal class Weapons : InitializerBase
     private static readonly float[] AmmunitionDamageIncreaseByLevel = { 0, 0.03f, 0.05f }; // Bolts/Arrows
 
     private ItemLevelBonusTable? _weaponDamageIncreaseTable;
-    private ItemLevelBonusTable? _staffDamageIncreaseTable;
 
     private ItemLevelBonusTable? _staffRiseTableEven;
     private ItemLevelBonusTable? _staffRiseTableOdd;
@@ -88,7 +87,6 @@ internal class Weapons : InitializerBase
     public override void Initialize()
     {
         this._weaponDamageIncreaseTable = this.CreateItemBonusTable(DamageIncreaseByLevel, "Damage Increase (Weapons)", "The damage increase by weapon level. It increases by 3 per level, and 1 more after level 10.");
-        this._staffDamageIncreaseTable = this.CreateItemBonusTable([.. DamageIncreaseByLevel.Select(dmg => dmg /= 2.0f)], "Damage Increase (Staffs)", "The damage increase by staff level. It's half of the physical weapons.");
         this._staffRiseTableEven = this.CreateItemBonusTable(StaffRiseIncreaseByLevelEven, "Staff Rise (even)", "The staff rise bonus per item level for even magic power staves.");
         this._staffRiseTableOdd = this.CreateItemBonusTable(StaffRiseIncreaseByLevelOdd, "Staff Rise (odd)", "The staff rise bonus per item level for odd magic power staves.");
         this._ammunitionDamageIncreaseTable = this.CreateItemBonusTable(AmmunitionDamageIncreaseByLevel, "Damage Increase % (Bolts/Arrows)", "The damage increase % by ammunition item level.");
@@ -287,15 +285,12 @@ internal class Weapons : InitializerBase
         var qualifiedCharacterClasses = this.GameConfiguration.DetermineCharacterClasses(classes);
         qualifiedCharacterClasses.ToList().ForEach(item.QualifiedCharacters.Add);
 
-        var dmgDivisor = group == (int)ItemGroups.Staff ? 2.0f : 1.0f;
-        var bonusPerLevelTable = group == (int)ItemGroups.Staff ? this._staffDamageIncreaseTable : this._weaponDamageIncreaseTable;
-
-        var minDamagePowerUp = this.CreateItemBasePowerUpDefinition(Stats.MinimumPhysBaseDmgByWeapon, minimumDamage / dmgDivisor, AggregateType.AddRaw);
-        minDamagePowerUp.BonusPerLevelTable = bonusPerLevelTable;
+        var minDamagePowerUp = this.CreateItemBasePowerUpDefinition(Stats.MinimumPhysBaseDmgByWeapon, minimumDamage, AggregateType.AddRaw);
+        minDamagePowerUp.BonusPerLevelTable = this._weaponDamageIncreaseTable;
         item.BasePowerUpAttributes.Add(minDamagePowerUp);
 
-        var maxDamagePowerUp = this.CreateItemBasePowerUpDefinition(Stats.MaximumPhysBaseDmgByWeapon, maximumDamage / dmgDivisor, AggregateType.AddRaw);
-        maxDamagePowerUp.BonusPerLevelTable = bonusPerLevelTable;
+        var maxDamagePowerUp = this.CreateItemBasePowerUpDefinition(Stats.MaximumPhysBaseDmgByWeapon, maximumDamage, AggregateType.AddRaw);
+        maxDamagePowerUp.BonusPerLevelTable = this._weaponDamageIncreaseTable;
         item.BasePowerUpAttributes.Add(maxDamagePowerUp);
 
         var speedPowerUp = this.CreateItemBasePowerUpDefinition(Stats.AttackSpeedByWeapon, attackSpeed, AggregateType.AddRaw);

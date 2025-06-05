@@ -110,8 +110,8 @@ internal partial class CharacterClassInitialization
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.WizardryBaseDmg, 1, Stats.BaseDamageBonus));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MinimumWizBaseDmg, 1, Stats.WizardryBaseDmg));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumWizBaseDmg, 1, Stats.WizardryBaseDmg));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MinimumWizBaseDmg, 1, Stats.WizardryBaseDmgIncrease, InputOperator.Add, AggregateType.Multiplicate));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumWizBaseDmg, 1, Stats.WizardryBaseDmgIncrease, InputOperator.Add, AggregateType.Multiplicate));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MinimumWizBaseDmg, 1, Stats.WizardryBaseDmgIncrease, aggregateType: AggregateType.Multiplicate));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumWizBaseDmg, 1, Stats.WizardryBaseDmgIncrease, aggregateType: AggregateType.Multiplicate));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.WizardryAttackDamageIncrease, 1.0f / 100, Stats.StaffRise));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MinimumCurseBaseDmg, 1, statsMinWizAndCurseBaseDmg));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumCurseBaseDmg, 1, statsMaxWizAndCurseBaseDmg));
@@ -150,7 +150,7 @@ internal partial class CharacterClassInitialization
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f, Stats.WizardryAttackDamageIncrease));
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f, Stats.CurseAttackDamageIncrease));
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f / 33f, Stats.AbilityRecoveryMultiplier));
-        result.BaseAttributeValues.Add(this.CreateConstValueAttribute(0.015f, statsMaxWizAndCurseBaseDmg));
+        result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.WizardryBaseDmgIncrease));
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(0, Stats.BerserkerManaMultiplier)); // due to Berserker magic effect
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(0, Stats.BerserkerHealthDecrement)); // due to Berserker magic effect
 

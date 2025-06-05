@@ -94,7 +94,7 @@ public class BerserkerEffectInitializer : InitializerBase
         maxDmgPerStrengthAndAgility.InputOperand = 1.0f / 30;
         maxPhysPowerUpDefinition.Boost.RelatedValues.Add(maxDmgPerStrengthAndAgility);
 
-        // Berserker Proficiency master level multiplier placeholder
+        // Berserker Proficiency master skill multiplier placeholder
         var masterLevelDmgMultiplier = this.Context.CreateNew<PowerUpDefinition>();
         magicEffect.PowerUpDefinitions.Add(masterLevelDmgMultiplier);
         masterLevelDmgMultiplier.TargetAttribute = Stats.BerserkerProficiencyMultiplier.GetPersistent(this.GameConfiguration);
