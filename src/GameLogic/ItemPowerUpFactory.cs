@@ -333,15 +333,12 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
                 maxDmgAttribute = Stats.MaxPhysBaseDmgByRightWeapon;
             }
 
-            var dmgFactor = item.Definition!.Group == 5 ? 2 : 1;
-            minPhysDmg *= dmgFactor; // For staffs/sticks the nominal damage is halved initially, so we have to restore it first
-
-            var additionalDmg = (((int)minPhysDmg * 25 / baseDropLevel) + 5) / dmgFactor;
+            var additionalDmg = ((int)minPhysDmg * 25 / baseDropLevel) + 5;
             yield return new PowerUpWrapper(new SimpleElement(additionalDmg, AggregateType.AddRaw), minDmgAttribute, attributeHolder);
             yield return new PowerUpWrapper(new SimpleElement(additionalDmg, AggregateType.AddRaw), maxDmgAttribute, attributeHolder);
             if (itemIsAncient)
             {
-                var ancientBonus = (5 + (ancientDropLevel / 40)) / dmgFactor;
+                var ancientBonus = 5 + (ancientDropLevel / 40);
                 yield return new PowerUpWrapper(new SimpleElement(ancientBonus, AggregateType.AddRaw), minDmgAttribute, attributeHolder);
                 yield return new PowerUpWrapper(new SimpleElement(ancientBonus, AggregateType.AddRaw), maxDmgAttribute, attributeHolder);
             }
