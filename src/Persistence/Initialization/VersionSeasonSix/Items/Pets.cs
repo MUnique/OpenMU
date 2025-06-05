@@ -39,7 +39,7 @@ public class Pets : InitializerBase
         this.CreatePet(0, 0, 1, 1, "Guardian Angel", 23, true, true, (Stats.DamageReceiveDecrement, 0.8f, AggregateType.Multiplicate), (Stats.MaximumHealth, 50f, AggregateType.AddRaw));
         this.CreatePet(1, 0, 1, 1, "Imp", 28, true, true, (Stats.AttackDamageIncrease, 1.3f, AggregateType.Multiplicate));
         this.CreatePet(2, 0, 1, 1, "Horn of Uniria", 25, true, true);
-        var dinorant = this.CreatePet(3, SkillNumber.FireBreath, 1, 1, "Horn of Dinorant", 110, false, true, (Stats.DamageReceiveDecrement, 0.9f, AggregateType.Multiplicate), (Stats.AttackDamageIncrease, 1.15f, AggregateType.Multiplicate), (Stats.CanFly, 1.0f, AggregateType.AddRaw));
+        var dinorant = this.CreatePet(3, SkillNumber.FireBreath, 1, 1, "Horn of Dinorant", 110, false, true, (Stats.IsDinorantEquipped, 1, AggregateType.AddRaw), (Stats.DamageReceiveDecrement, 0.9f, AggregateType.Multiplicate), (Stats.AttackDamageIncrease, 1.15f, AggregateType.Multiplicate));
         this.AddDinorantOptions(dinorant);
 
         var darkHorse = this.CreatePet(4, SkillNumber.Earthshake, 1, 1, "Dark Horse", 218, false, false, (Stats.IsHorseEquipped, 1, AggregateType.AddRaw));
@@ -262,8 +262,8 @@ public class Pets : InitializerBase
 
         fenrirOptionDefinition.Name = "Fenrir Options";
 
-        fenrirOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.BlackFenrir, 1, Stats.AttackDamageIncrease, 1.1f, AggregateType.Multiplicate, ItemOptionDefinitionNumbers.Fenrir));
-        fenrirOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.BlueFenrir, 2, Stats.DamageReceiveDecrement, 0.90f, AggregateType.Multiplicate, ItemOptionDefinitionNumbers.Fenrir));
+        fenrirOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.BlackFenrir, 1, Stats.FenrirAttackDamageIncrease, 0.1f, AggregateType.AddRaw, ItemOptionDefinitionNumbers.Fenrir));
+        fenrirOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.BlueFenrir, 2, Stats.FenrirDamageReceiveDecrement, 0.1f, AggregateType.AddRaw, ItemOptionDefinitionNumbers.Fenrir));
 
         fenrirOptionDefinition.PossibleOptions.Add(this.CreateRelatedPetOption(ItemOptionTypes.GoldFenrir, 4, Stats.MaximumHealth, AggregateType.AddFinal, ItemOptionDefinitionNumbers.Fenrir, 0, (Stats.TotalLevel, 0.5f)));
         fenrirOptionDefinition.PossibleOptions.Add(this.CreateRelatedPetOption(ItemOptionTypes.GoldFenrir, 4, Stats.MaximumMana, AggregateType.AddFinal, ItemOptionDefinitionNumbers.Fenrir, 0, (Stats.TotalLevel, 0.5f)));
