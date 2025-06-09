@@ -54,9 +54,9 @@ public class InfiniteArrowEffectInitializer : InitializerBase
         manaLossAfterHit.Boost.ConstantValue.Value = 5f;
 
         // Placeholder for the Infinity Arrow Strengthener master skill
-        var damageIncreaseByMasterLevel = this.Context.CreateNew<PowerUpDefinition>();
-        magicEffect.PowerUpDefinitions.Add(damageIncreaseByMasterLevel);
-        damageIncreaseByMasterLevel.TargetAttribute = Stats.InfinityArrowStrMultiplier.GetPersistent(this.GameConfiguration);
-        damageIncreaseByMasterLevel.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+        var damageIncreaseByMasterSkill = this.Context.CreateNew<PowerUpDefinition>();
+        magicEffect.PowerUpDefinitions.Add(damageIncreaseByMasterSkill);
+        damageIncreaseByMasterSkill.TargetAttribute = Stats.InfinityArrowStrMultiplier.GetPersistent(this.GameConfiguration);
+        damageIncreaseByMasterSkill.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
     }
 }

@@ -731,6 +731,8 @@ public class Stats
     ///     <see cref="DefenseFinal"/>.
     /// <see cref="AggregateType.Multiplicate"/> values include:
     ///     Fire slash defense reduction.
+    /// <see cref="AggregateType.AddFinal"/> values include:
+    ///     Berserker defense reduction.
     /// </remarks>
     public static AttributeDefinition DefensePvm { get; } = new(new Guid("B4201610-2824-4EC1-A145-76B15DB9DEC6"), "Defense (PvM)", string.Empty);
 
@@ -742,6 +744,8 @@ public class Stats
     ///     <see cref="DefenseFinal"/>; pants guardian option (halved).
     /// <see cref="AggregateType.Multiplicate"/> values include:
     ///     Fire slash defense reduction.
+    /// <see cref="AggregateType.AddFinal"/> values include:
+    ///     Berserker defense reduction.
     /// </remarks>
     public static AttributeDefinition DefensePvp { get; } = new(new Guid("28D14EB7-1049-45BE-A7B7-D5E28E63943B"), "Defense (PvP)", string.Empty);
 
@@ -857,18 +861,18 @@ public class Stats
     public static AttributeDefinition BerserkerManaMultiplier { get; } = new(new Guid("9B6AA0DA-9ABA-4C14-B094-F1AC70BCB52D"), "Berserker Mana Multiplier", "The berserker mana multiplier which is used to increase both the caster's mana and damage (any type).");
 
     /// <summary>
-    /// Gets the berserker buff health decrement attribute definition.
+    /// Gets the berserker buff health (and defense) decrement attribute definition.
     /// </summary>
     public static AttributeDefinition BerserkerHealthDecrement { get; } = new(new Guid("D1948382-23F6-43A4-AD84-69227BF2ABA3"), "Berserker Health Decrement", "The berserker health decrement which has a maximum value of -10%.")
     {
-        MaximumValue = -0.1f, // At least -10% HP
+        MaximumValue = -0.1f, // At least -10% HP/defense
     };
 
     /// <summary>
     /// Gets the berserker buff curse damage multiplier MST attribute definition.
     /// </summary>
     /// <remarks>Increases with MST berserker strengthener. Applies on <see cref="DamageType.Curse"/> skills.</remarks>
-    public static AttributeDefinition BerserkerCurseMultiplier { get; } = new(new Guid("AD1A3A3F-B461-4CAE-B3A3-D03DD0714A96"), "Berserker Curse Multiplier", "The berserker strengthener curse damage multiplier which is multiplied with the base min/max and added to it.");
+    public static AttributeDefinition BerserkerCurseMultiplier { get; } = new(new Guid("AD1A3A3F-B461-4CAE-B3A3-D03DD0714A96"), "Berserker Curse Multiplier (MST)", "The berserker strengthener curse damage multiplier which is multiplied with the base min/max and added to it.");
 
     /// <summary>
     /// Gets the berserker buff wizardry damage multiplier attribute definition.

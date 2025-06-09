@@ -738,8 +738,8 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.AddPassiveMasterSkillDefinition(SkillNumber.OtherWorldTomeStreng, Stats.BookBonusBaseDamage, AggregateType.AddRaw, Formula632, 2, 3);
         this.AddPassiveMasterSkillDefinition(SkillNumber.StickMastery, Stats.StickMasteryBonusDamage, AggregateType.AddRaw, Formula1154, 3, 3, SkillNumber.StickStrengthener);
         this.AddPassiveMasterSkillDefinition(SkillNumber.OtherWorldTomeMastery, Stats.WeaponMasteryAttackSpeed, AggregateType.AddRaw, Formula1, 3, 3, SkillNumber.OtherWorldTomeStreng, SkillNumber.Undefined, 10);
-        this.AddMasterSkillDefinition(SkillNumber.BerserkerStrengthener, SkillNumber.Berserker, SkillNumber.Undefined, 3, 4, SkillNumber.Berserker, 20, Formula181, Formula181, Stats.BerserkerCurseMultiplier, AggregateType.AddRaw);
-        this.AddMasterSkillDefinition(SkillNumber.BerserkerProficiency, SkillNumber.BerserkerStrengthener, SkillNumber.Undefined, 3, 5, SkillNumber.Berserker, 20, $"{Formula181} / 100", Formula181, Stats.BerserkerProficiencyMultiplier, AggregateType.AddRaw);
+        this.AddMasterSkillDefinition(SkillNumber.BerserkerStrengthener, SkillNumber.Berserker, SkillNumber.Undefined, 3, 4, SkillNumber.Berserker, 20, $"{Formula181} / 100", Formula181, Stats.BerserkerCurseMultiplier, AggregateType.AddRaw);
+        this.AddMasterSkillDefinition(SkillNumber.BerserkerProficiency, SkillNumber.BerserkerStrengthener, SkillNumber.Undefined, 3, 5, SkillNumber.BerserkerStrengthener, 20, $"{Formula181} / 100", Formula181, Stats.BerserkerProficiencyMultiplier, AggregateType.AddRaw);
         this.AddPassiveMasterSkillDefinition(SkillNumber.MinimumWizCurseInc, Stats.MinWizardryAndCurseDmgBonus, AggregateType.AddRaw, Formula502, 5, 3);
 
         // MG

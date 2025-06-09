@@ -55,7 +55,7 @@ public class BerserkerEffectInitializer : InitializerBase
         manaMultiplier.InputOperand = 1f / 3000f;
         manaPowerUpDefinition.Boost.RelatedValues.Add(manaMultiplier);
 
-        // Health multiplier factor (debuff)
+        // Health (and defense) multiplier factor (debuff)
         var healthPowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
         magicEffect.PowerUpDefinitions.Add(healthPowerUpDefinition);
         healthPowerUpDefinition.TargetAttribute = Stats.BerserkerHealthDecrement.GetPersistent(this.GameConfiguration);
@@ -94,10 +94,16 @@ public class BerserkerEffectInitializer : InitializerBase
         maxDmgPerStrengthAndAgility.InputOperand = 1.0f / 30;
         maxPhysPowerUpDefinition.Boost.RelatedValues.Add(maxDmgPerStrengthAndAgility);
 
-        // Berserker Proficiency master skill multiplier placeholder
-        var masterLevelDmgMultiplier = this.Context.CreateNew<PowerUpDefinition>();
-        magicEffect.PowerUpDefinitions.Add(masterLevelDmgMultiplier);
-        masterLevelDmgMultiplier.TargetAttribute = Stats.BerserkerProficiencyMultiplier.GetPersistent(this.GameConfiguration);
-        masterLevelDmgMultiplier.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+        // Placeholder for the Berserker Strengthener master skill
+        var strengthenerCurseDmgMultiplier = this.Context.CreateNew<PowerUpDefinition>();
+        magicEffect.PowerUpDefinitions.Add(strengthenerCurseDmgMultiplier);
+        strengthenerCurseDmgMultiplier.TargetAttribute = Stats.BerserkerCurseMultiplier.GetPersistent(this.GameConfiguration);
+        strengthenerCurseDmgMultiplier.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+
+        // Placeholder for the Berserker Proficiency master skill
+        var proficiencyDmgMultiplier = this.Context.CreateNew<PowerUpDefinition>();
+        magicEffect.PowerUpDefinitions.Add(proficiencyDmgMultiplier);
+        proficiencyDmgMultiplier.TargetAttribute = Stats.BerserkerProficiencyMultiplier.GetPersistent(this.GameConfiguration);
+        proficiencyDmgMultiplier.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
     }
 }

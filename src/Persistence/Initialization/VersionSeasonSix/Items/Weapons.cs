@@ -38,7 +38,7 @@ internal class Weapons : InitializerBase
     private static readonly float[] ScepterRiseIncreaseByLevelEven = { 0, 1, 3, 4, 6, 7, 9, 10, 12, 13, 15, 18, 21, 24, 28, 33 }; // Scepter with even magic power
     private static readonly float[] ScepterRiseIncreaseByLevelOdd = { 0, 2, 3, 5, 6, 8, 9, 11, 12, 14, 16, 18, 21, 25, 29, 33 }; // Scepter with odd magic power
 
-    private static readonly float[] AmmunitionDamageIncreaseByLevel = { 0, 0.03f, 0.05f, 0.1f }; // Bolts/Arrows
+    private static readonly float[] AmmunitionDamageIncreaseByLevel = { 0, 0.03f, 0.05f, 0.07f }; // Bolts/Arrows
 
     private ItemLevelBonusTable? _weaponDamageIncreaseTable;
 

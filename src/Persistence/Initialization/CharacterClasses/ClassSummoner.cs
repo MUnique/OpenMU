@@ -27,6 +27,8 @@ internal partial class CharacterClassInitialization
 
     private CharacterClass CreateSummoner(CharacterClassNumber number, string name, bool isMaster, CharacterClass? nextGenerationClass, bool canGetCreated)
     {
+        var statsDefense = this.Context.CreateNew<AttributeDefinition>(Guid.NewGuid(), "Stats defense", string.Empty);
+        this.GameConfiguration.Attributes.Add(statsDefense);
         var statsMinWizAndCurseBaseDmg = this.Context.CreateNew<AttributeDefinition>(Guid.NewGuid(), "Stats min wiz and curse base dmg", string.Empty);
         this.GameConfiguration.Attributes.Add(statsMinWizAndCurseBaseDmg);
         var statsMaxWizAndCurseBaseDmg = this.Context.CreateNew<AttributeDefinition>(Guid.NewGuid(), "Stats max wiz and curse base dmg", string.Empty);
@@ -65,8 +67,9 @@ internal partial class CharacterClassInitialization
         this.AddCommonAttributeRelationships(result.AttributeCombinations);
 
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.TotalStrengthAndAgility, Stats.TotalAgility, Stats.TotalStrength, InputOperator.Add));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(statsDefense, 1.0f / 3, Stats.TotalAgility));
 
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.DefenseBase, 1.0f / 3, Stats.TotalAgility));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.DefenseBase, 1, statsDefense));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.DefenseRatePvm, 0.25f, Stats.TotalAgility));
 
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.DefenseRatePvp, 0.5f, Stats.TotalAgility));
@@ -127,6 +130,8 @@ internal partial class CharacterClassInitialization
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(isBerserkerBuffed, 1, Stats.BerserkerMinPhysDmgBonus));
         result.AttributeCombinations.Add(this.CreateConditionalRelationship(finalBerserkerHealthDecrement, isBerserkerBuffed, Stats.BerserkerHealthDecrement));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumHealth, 1, finalBerserkerHealthDecrement, InputOperator.Add, AggregateType.Multiplicate));
+        result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.DefensePvm, statsDefense, finalBerserkerHealthDecrement, AggregateType.AddFinal));
+        result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.DefensePvp, statsDefense, finalBerserkerHealthDecrement, AggregateType.AddFinal));
 
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.BerserkerMinPhysDmgBonus, 1, Stats.BerserkerManaMultiplier, aggregateType: AggregateType.Multiplicate));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.BerserkerMaxPhysDmgBonus, 1, Stats.BerserkerManaMultiplier, aggregateType: AggregateType.Multiplicate));
@@ -151,8 +156,9 @@ internal partial class CharacterClassInitialization
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f, Stats.CurseAttackDamageIncrease));
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f / 33f, Stats.AbilityRecoveryMultiplier));
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.WizardryBaseDmgIncrease));
-        result.BaseAttributeValues.Add(this.CreateConstValueAttribute(0, Stats.BerserkerManaMultiplier)); // due to Berserker magic effect
-        result.BaseAttributeValues.Add(this.CreateConstValueAttribute(0, Stats.BerserkerHealthDecrement)); // due to Berserker magic effect
+        result.BaseAttributeValues.Add(this.CreateConstValueAttribute(0, Stats.BerserkerManaMultiplier)); // placeholder value
+        result.BaseAttributeValues.Add(this.CreateConstValueAttribute(0, Stats.BerserkerHealthDecrement)); // placeholder value
+        result.BaseAttributeValues.Add(this.CreateConstValueAttribute(0, Stats.BerserkerProficiencyMultiplier)); // placeholder value
 
         this.AddCommonBaseAttributeValues(result.BaseAttributeValues, isMaster);
 
