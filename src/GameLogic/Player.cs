@@ -674,17 +674,16 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 var ammoItemLevel = this.Inventory?.EquippedAmmunitionItem?.Level ?? 0;
                 switch (ammoItemLevel)
                 {
-                    case 0:
-                        break;
-                    case 1:
-                        extraManaLoss = 2;
+                    case 3:
+                        extraManaLoss = 10; // This value is unreferenced and a best guess
                         break;
                     case 2:
                         extraManaLoss = 5;
                         break;
+                    case 1:
+                        extraManaLoss = 2;
+                        break;
                     default:
-                        // Arrows/bolts +3 aren't available until after S6, although the S6E3 client recognizes them (the value is a best guess)
-                        extraManaLoss = 10;
                         break;
                 }
             }
