@@ -454,6 +454,7 @@ public class Stats
     /// <summary>
     /// Gets the is two handed weapon equipped.
     /// </summary>
+    /// <remarks>Excludes bows and staffs.</remarks>
     public static AttributeDefinition IsTwoHandedWeaponEquipped { get; } = new(new Guid("7426781F-CD87-4F2B-8B03-9447B670C632"), "Is Two-Handed Weapon Equipped", string.Empty);
 
     /// <summary>
@@ -650,7 +651,7 @@ public class Stats
     /// <summary>
     /// Gets the scepter pet MST bonus damage.
     /// </summary>
-    public static AttributeDefinition ScepterPetBonusDamage { get; } = new(new Guid("5706451D-6A73-4462-B559-31C7F847994E"), "Scepter Pet Bonus Base Damage (MST)", string.Empty);
+    public static AttributeDefinition ScepterPetBonusDamage { get; } = new(new Guid("5706451D-6A73-4462-B559-31C7F847994E"), "Scepter Pet Bonus Damage (MST)", string.Empty);
 
     /// <summary>
     /// Gets the is a horse equipped.
@@ -827,7 +828,7 @@ public class Stats
     /// <summary>
     /// Gets the bonus damage (absolute) command/leadership divisor with an equipped scepter MST attribute definition.
     /// </summary>
-    public static AttributeDefinition BonusDamageWithScepterCmdDiv { get; } = new(new Guid("9A3C99C4-4F94-4CD0-8BFC-C8B870CD5FE4"), "Damage Increase Bonus (absolute) With equipped Scepter command divisor (MST)", string.Empty);
+    public static AttributeDefinition BonusDamageWithScepterCmdDiv { get; } = new(new Guid("9A3C99C4-4F94-4CD0-8BFC-C8B870CD5FE4"), "Damage Increase Bonus (absolute) With equipped Scepter Command Divisor (MST)", string.Empty);
 
     /// <summary>
     /// Gets the bonus defense (absolute) with an equipped dark horse MST attribute definition.
@@ -887,37 +888,37 @@ public class Stats
     public static AttributeDefinition BerserkerProficiencyMultiplier { get; } = new(new Guid("55124C97-6EF3-4C46-AEC9-D01C11BE18A4"), "Berserker Proficiency Multiplier (MST)", "The berserker proficiency damage multiplier which is added to the wizardry multiplier but also by itself is multiplied by the wizardry/curse final damage and added to it.");
 
     /// <summary>
-    /// Gets the berserker buff minimum physical damage bonus attribute definition.
+    /// Gets the berserker buff minimum physical DMG bonus attribute definition.
     /// </summary>
     public static AttributeDefinition BerserkerMinPhysDmgBonus { get; } = new(new Guid("81B5B942-A6D4-4343-BD4D-106CFFF34F4E"), "Berserker Minimum Physical Damage Bonus", string.Empty);
 
     /// <summary>
-    /// Gets the berserker buff maximum physical damage bonus attribute definition.
+    /// Gets the berserker buff maximum physical DMG bonus attribute definition.
     /// </summary>
     public static AttributeDefinition BerserkerMaxPhysDmgBonus { get; } = new(new Guid("602D5FC4-AB85-423A-9C91-D23B0A28996C"), "Berserker Maximum Physical Damage Bonus", string.Empty);
 
     /// <summary>
-    /// Gets the berserker buff minimum wizardry damage bonus attribute definition.
+    /// Gets the berserker buff minimum wizardry DMG bonus attribute definition.
     /// </summary>
     public static AttributeDefinition BerserkerMinWizDmgBonus { get; } = new(new Guid("DFCEC75A-BFB4-4FD4-922D-12EAAB4AEF18"), "Berserker Minimum Wizardry Damage Bonus", string.Empty);
 
     /// <summary>
-    /// Gets the berserker buff maximum wizardry damage bonus attribute definition.
+    /// Gets the berserker buff maximum wizardry DMG bonus attribute definition.
     /// </summary>
     public static AttributeDefinition BerserkerMaxWizDmgBonus { get; } = new(new Guid("B2A85454-B442-44C5-BAD0-4933F0C5E6E0"), "Berserker Maximum Wizardry Damage Bonus", string.Empty);
 
     /// <summary>
-    /// Gets the berserker buff minimum curse damage bonus attribute definition.
+    /// Gets the berserker buff minimum curse DMG bonus attribute definition.
     /// </summary>
     public static AttributeDefinition BerserkerMinCurseDmgBonus { get; } = new(new Guid("06BA893F-F9EF-4813-8233-DAB0D83CC4EC"), "Berserker Minimum Curse Damage Bonus", string.Empty);
 
     /// <summary>
-    /// Gets the berserker buff maximum curse damage bonus attribute definition.
+    /// Gets the berserker buff maximum curse DMG bonus attribute definition.
     /// </summary>
     public static AttributeDefinition BerserkerMaxCurseDmgBonus { get; } = new(new Guid("B519555A-748D-4462-A8C0-A7E7DA0C3B67"), "Berserker Maximum Curse Damage Bonus", string.Empty);
 
     /// <summary>
-    /// Gets the weakness physical damage decrement due to magic effects of weakness (Summoner) or killing blow (RF) skills attribute definition.
+    /// Gets the weakness physical DMG decrement due to magic effects of weakness (Summoner) or killing blow (RF) skills attribute definition.
     /// </summary>
     /// <remarks>Only applies to physical damage.</remarks>
     public static AttributeDefinition WeaknessPhysDmgDecrement { get; } = new(new Guid("37497650-139B-4DA1-9FB6-27AEB8F04CF6"), "Weakness Physical Damage Decrement", "The inflicted physical damage decrement due to the magic effects of weakness or killing blow skills, which is multiplied with the final damage and subtracted from it.");

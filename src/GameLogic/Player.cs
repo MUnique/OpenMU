@@ -683,6 +683,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                     case 1:
                         extraManaLoss = 2;
                         break;
+                    default:
+                        // No extra mana loss
+                        break;
                 }
             }
 
