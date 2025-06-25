@@ -126,15 +126,18 @@ public class DefaultDropGenerator : IDropGenerator
             return (null, null, ItemDropEffect.Undefined);
         }
 
-        if (@group is ItemDropItemGroup itemDropItemGroup)
+        var dropEffect = ItemDropEffect.Undefined;
+        if (group is ItemDropItemGroup itemDropItemGroup)
         {
+            dropEffect = itemDropItemGroup.DropEffect;
+
             if (group.ItemType == SpecialItemType.Money)
             {
-                return (null, (uint)itemDropItemGroup.MoneyAmount, itemDropItemGroup.DropEffect);
+                return (null, (uint)itemDropItemGroup.MoneyAmount, dropEffect);
             }
         }
 
-        return (this.GenerateItemDrop(group), null, ItemDropEffect.Undefined);
+        return (this.GenerateItemDrop(group), null, dropEffect);
     }
 
     /// <summary>
@@ -184,16 +187,17 @@ public class DefaultDropGenerator : IDropGenerator
     /// <summary>
     /// Gets a random excellent item.
     /// </summary>
-    /// <param name="monsterLvl">The monster level.</param>
+    /// <param name="monsterLvl">The monster level, if it's a monster drop.</param>
+    /// <param name="possibleItems">The possible items, if the drop is from an item box (e.g. box of kundun).</param>
     /// <returns>A random excellent item.</returns>
-    protected Item? GenerateRandomExcellentItem(int monsterLvl)
+    protected Item? GenerateRandomExcellentItem(int monsterLvl = 0, ICollection<ItemDefinition>? possibleItems = null)
     {
-        if (monsterLvl < 25)
+        if (monsterLvl < 25 && possibleItems is null)
         {
             return null;
         }
 
-        var possible = this.GetPossibleList(monsterLvl - 25);
+        var possible = possibleItems ?? this.GetPossibleList(monsterLvl - 25);
         var item = this.GenerateRandomItem(possible);
         if (item is null)
         {
@@ -273,13 +277,21 @@ public class DefaultDropGenerator : IDropGenerator
 
     private Item? GenerateItemDrop(DropItemGroup selectedGroup, ICollection<ItemDefinition> possibleItems)
     {
-        var item = selectedGroup.ItemType == SpecialItemType.Ancient
-            ? this.GenerateRandomAncient()
-            : this.GenerateRandomItem(possibleItems);
+        var item = selectedGroup.ItemType switch
+        {
+            SpecialItemType.Ancient => this.GenerateRandomAncient(),
+            SpecialItemType.Excellent => this.GenerateRandomExcellentItem(possibleItems: possibleItems),
+            _ => this.GenerateRandomItem(possibleItems),
+        };
 
         if (item is null)
         {
             return null;
+        }
+
+        if (item.Durability == 0)
+        {
+            item.Durability = item.GetMaximumDurabilityOfOnePiece();
         }
 
         if (selectedGroup is ItemDropItemGroup itemDropItemGroup)
@@ -297,12 +309,6 @@ public class DefaultDropGenerator : IDropGenerator
 
         item.Level = Math.Min(item.Level, item.Definition!.MaximumItemLevel);
 
-        if (selectedGroup.ItemType == SpecialItemType.Excellent)
-        {
-            this.AddRandomExcOptions(item);
-        }
-
-        item.Durability = item.GetMaximumDurabilityOfOnePiece();
         return item;
     }
 
