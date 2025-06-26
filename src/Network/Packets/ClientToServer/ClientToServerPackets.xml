@@ -4187,7 +4187,7 @@
       <Code>AA</Code>
       <SubCode>02</SubCode>
       <Name>DuelStartResponse</Name>
-      <Length>16</Length>
+      <Length>17</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A player requested to start a duel with the sending player.</SentWhen>
       <CausedReaction>Depending on the response, the server starts the duel, or not.</CausedReaction>
