@@ -16,8 +16,8 @@
     <PackageTags>MUnique OpenMU MUOnline Network Packets</PackageTags>
     <PackageId>MUnique.OpenMU.Network.Packets</PackageId>
     <Description>This package contains message structs for the MMORPG "MU Online", which are primarily focused on the english version of Season 6 Episode 3.</Description>
-    <PackageVersion>0.9.6</PackageVersion>
-    <Version>0.9.6</Version>
+    <PackageVersion>0.9.8</PackageVersion>
+    <Version>0.9.8</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

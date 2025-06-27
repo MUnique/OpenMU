@@ -17,8 +17,8 @@
     <Description>
       MUnique.OpenMU.PlugIns contains all what's required to create plugins extension points and own plugins for dependent applications.
     </Description>
-    <PackageVersion>0.9.6</PackageVersion>
-    <Version>0.9.6</Version>
+    <PackageVersion>0.9.8</PackageVersion>
+    <Version>0.9.8</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
