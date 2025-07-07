@@ -48,7 +48,8 @@ public class PacketStructureTests
 {</xsl:text>
     <xsl:apply-templates select="pd:Structures/pd:Structure" />
     <xsl:apply-templates select="pd:Packets/pd:Packet" />
-<xsl:text>}
+<xsl:text>
+}
 </xsl:text>
   </xsl:template>
 
