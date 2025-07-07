@@ -80,7 +80,7 @@ public class PacketStructureTests
         const int expectedLength = </xsl:text>
         <xsl:value-of select="pd:Length"/>
         <xsl:text>;
-        const int actualLength = </xsl:text>
+        var actualLength = </xsl:text>
         <xsl:apply-templates select="pd:Name"/>
         <xsl:text>.Length;
         
@@ -215,7 +215,7 @@ public class PacketStructureTests
         const int expectedLength = </xsl:text>
         <xsl:value-of select="pd:Length"/>
         <xsl:text>;
-        const int actualLength = </xsl:text>
+        var actualLength = </xsl:text>
         <xsl:apply-templates select="pd:Name"/>
         <xsl:text>Ref.Length;
         
