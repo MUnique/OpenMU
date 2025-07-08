@@ -247,7 +247,7 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
 
         foreach (var target in targets)
         {
-            if (skill.SkillType == SkillType.DirectHit || skill.SkillType == SkillType.CastleSiegeSkill)
+            if (skill.SkillType == SkillType.DirectHit || skill.SkillType == SkillType.CastleSiegeSkill || skill.SkillType == SkillType.LordGeneric)
             {
                 if (player.Attributes![Stats.AmmunitionConsumptionRate] > player.Attributes[Stats.AmmunitionAmount])
                 {
