@@ -1,0 +1,51 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <WarningsAsErrors>nullable;CS4014;VSTHRD110;VSTHRD100</WarningsAsErrors>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>bin\Debug\</OutputPath>
+    <DocumentationFile>bin\Debug\MUnique.OpenMU.Network.Packets.Tests.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>bin\Release\</OutputPath>
+    <DocumentationFile>bin\Release\MUnique.OpenMU.Network.Packets.Tests.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\src\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
+    <Compile Include="..\..\src\SharedGlobalUsings.cs" Link="SharedGlobalUsings.cs" />
+    <Compile Include="..\SharedTestUsings.cs" Link="SharedTestUsings.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="..\..\src\stylecop.json" Link="stylecop.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\src\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
+    <PackageReference Include="NUnit" Version="3.14.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.6.0" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Network\Packets\MUnique.OpenMU.Network.Packets.csproj" />
+  </ItemGroup>
+
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent" Condition="'$(ci)'!='true'">
+    <!-- Generate test files from XML packet definitions -->
+    <XslTransformation OutputPaths="ClientToServerPacketTests.cs" XmlInputPaths="..\..\src\Network\Packets\ClientToServer\ClientToServerPackets.xml" XslInputPath="..\..\src\Network\Packets\GenerateTests.xslt" Parameters="&lt;Parameter Name='resultFileName' Value='ClientToServerPacketTests.cs'/&gt;&lt;Parameter Name='subNamespace' Value='ClientToServer'/&gt;" />
+    <XslTransformation OutputPaths="ServerToClientPacketTests.cs" XmlInputPaths="..\..\src\Network\Packets\ServerToClient\ServerToClientPackets.xml" XslInputPath="..\..\src\Network\Packets\GenerateTests.xslt" Parameters="&lt;Parameter Name='resultFileName' Value='ServerToClientPacketTests.cs'/&gt;&lt;Parameter Name='subNamespace' Value='ServerToClient'/&gt;" />
+    <XslTransformation OutputPaths="ChatServerPacketTests.cs" XmlInputPaths="..\..\src\Network\Packets\ChatServer\ChatServerPackets.xml" XslInputPath="..\..\src\Network\Packets\GenerateTests.xslt" Parameters="&lt;Parameter Name='resultFileName' Value='ChatServerPacketTests.cs'/&gt;&lt;Parameter Name='subNamespace' Value='ChatServer'/&gt;" />
+    <XslTransformation OutputPaths="ConnectServerPacketTests.cs" XmlInputPaths="..\..\src\Network\Packets\ConnectServer\ConnectServerPackets.xml" XslInputPath="..\..\src\Network\Packets\GenerateTests.xslt" Parameters="&lt;Parameter Name='resultFileName' Value='ConnectServerPacketTests.cs'/&gt;&lt;Parameter Name='subNamespace' Value='ConnectServer'/&gt;" />
+  </Target>
+
+</Project>
