@@ -56,7 +56,7 @@ public class InfiniteArrowEffectInitializer : InitializerBase
         // Placeholder for the Infinity Arrow Strengthener master skill
         var damageIncreaseByMasterSkill = this.Context.CreateNew<PowerUpDefinition>();
         magicEffect.PowerUpDefinitions.Add(damageIncreaseByMasterSkill);
-        damageIncreaseByMasterSkill.TargetAttribute = Stats.InfinityArrowStrMultiplier.GetPersistent(this.GameConfiguration);
+        damageIncreaseByMasterSkill.TargetAttribute = Stats.AttackDamageIncrease.GetPersistent(this.GameConfiguration);
         damageIncreaseByMasterSkill.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
     }
 }

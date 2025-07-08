@@ -418,18 +418,8 @@ public class Stats
     /// <summary>
     /// Gets the attack damage increase attribute definition.
     /// </summary>
-    /// <remarks>Includes wings, imp, and dinorant.</remarks>
+    /// <remarks>Includes wings, imp, dinorant, black fenrir, and infinite arrow strengthener.</remarks>
     public static AttributeDefinition AttackDamageIncrease { get; } = new(new Guid("0765CCD2-C70A-4338-BF49-0D652364C223"), "Attack Damage Increase Multiplier", string.Empty);
-
-    /// <summary>
-    /// Gets the fenrir pet attack damage increase attribute definition.
-    /// </summary>
-    public static AttributeDefinition FenrirAttackDamageIncrease { get; } = new(new Guid("46437116-2974-4595-A15A-DD9FC6CC673E"), "Fenrir Attack Damage Increase", "The fenrir attack damage multiplier which is multiplied with the final damage and added to it.");
-
-    /// <summary>
-    /// Gets the fenrir pet damage receive decrement attribute definition.
-    /// </summary>
-    public static AttributeDefinition FenrirDamageReceiveDecrement { get; } = new(new Guid("1204AF41-706E-47CE-8D03-71F1F80F0B05"), "Fenrir Damage Receive Decrement", "The fenrir receive damage multiplier which is multiplied with the final damage and subtracted from it.");
 
     /// <summary>
     /// Gets the wizardry attack damage increase attribute definition.
@@ -516,11 +506,6 @@ public class Stats
     /// Gets the elf's greater damage buff bonus damage attribute definition.
     /// </summary>
     public static AttributeDefinition GreaterDamageBonus { get; } = new(new Guid("5CFE3ED7-AF45-4790-BDD9-0DC55B981296"), "Greater Damage Bonus", string.Empty);
-
-    /// <summary>
-    /// Gets the infinity arrow strengthener attack damage multiplier attribute definition.
-    /// </summary>
-    public static AttributeDefinition InfinityArrowStrMultiplier { get; } = new(new Guid("62536721-6C69-46D9-A6C4-1E4F0F7AC5AB"), "Infinity Arrow Strengthener Multiplier", "The infinity arrow strengthener damage multiplier which is multiplied with the final damage and added to it.");
 
     /// <summary>
     /// Gets the is a one handed sword equipped.
@@ -776,7 +761,7 @@ public class Stats
     /// <summary>
     /// Gets the damage receive decrement attribute definition.
     /// </summary>
-    /// <remarks>Includes wings, angel, spirit of guardian, dinorant, and shield's defense skill.</remarks>
+    /// <remarks>Includes wings, angel, spirit of guardian, dinorant, blue fenrir, and shield's defense skill.</remarks>
     public static AttributeDefinition DamageReceiveDecrement { get; } = new(new Guid("9D9761EF-EF47-4E5C-8106-EBC555786F20"), "Damage Receive Multiplier", string.Empty);
 
     /// <summary>

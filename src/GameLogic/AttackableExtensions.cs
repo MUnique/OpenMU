@@ -217,21 +217,13 @@ public static class AttackableExtensions
         if (isPvp && attacker is not AttackerSurrogate)
         {
             dmg += (int)attacker.Attributes[Stats.FinalDamageIncreasePvp];
+            dmg += GetMasterSkillTreeMasteryPvpDamageBonus(attacker);
 
             if (attackerPlayer!.CurrentMiniGame?.Definition.Type == MiniGameType.ChaosCastle)
             {
                 // In Chaos Castle PvP damage is halved (except for raven)
                 dmg /= 2;
             }
-        }
-
-        dmg += (int)(dmg * attacker.Attributes[Stats.InfinityArrowStrMultiplier]);
-        dmg += (int)(dmg * attacker.Attributes[Stats.FenrirAttackDamageIncrease]);
-        dmg -= (int)(dmg * defender.Attributes[Stats.FenrirDamageReceiveDecrement]);
-
-        if (isPvp)
-        {
-            dmg += GetMasterSkillTreeMasteryPvpDamageBonus(attacker);
         }
 
         if (dmg > 0)
