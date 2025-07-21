@@ -55,6 +55,41 @@ public class ItemCraftAction
             .ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// Finds the relevant <see cref="ItemCrafting"/> by testing the mix items against every crafting's item requirements.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <returns>The relevant <see cref="ItemCrafting"/>.</returns>
+    public ItemCrafting? FindAppropriateCraftingByItems(Player player)
+    {
+        ItemCrafting? selectedCrafting = null;
+
+        if (player.OpenedNpc?.Definition is { } npc)
+        {
+            foreach (var itemCrafting in npc.ItemCraftings)
+            {
+                if (!this._craftingHandlerCache.TryGetValue(itemCrafting, out var craftingHandler))
+                {
+                    craftingHandler = this.CreateCraftingHandler(itemCrafting);
+                    this._craftingHandlerCache.Add(itemCrafting, craftingHandler);
+                }
+
+                if (craftingHandler.TryGetRequiredItems(player, out _, out _) is null)
+                {
+                    selectedCrafting = itemCrafting;
+                    if (selectedCrafting.Number != 1)
+                    {
+                        // If any but the chaos weapon crafting, the search is finished.
+                        // Otherwise, it still could be a wing crafting, which has an extra item requirement (chaos weapon).
+                        break;
+                    }
+                }
+            }
+        }
+
+        return selectedCrafting;
+    }
+
     private IItemCraftingHandler CreateCraftingHandler(ItemCrafting crafting)
     {
         if (!string.IsNullOrWhiteSpace(crafting.ItemCraftingHandlerClassName))
