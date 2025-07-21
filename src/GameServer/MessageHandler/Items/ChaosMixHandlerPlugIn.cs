@@ -29,7 +29,6 @@ internal class ChaosMixHandlerPlugIn : IPacketHandlerPlugIn
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         ChaosMachineMixRequest message = packet;
-        var socketSlot = packet.Length > 4 ? message.SocketSlot : (byte)0;
 
         byte mixType;
         if (packet.Length == 3)
@@ -48,6 +47,7 @@ internal class ChaosMixHandlerPlugIn : IPacketHandlerPlugIn
             mixType = (byte)message.MixType;
         }
 
+        var socketSlot = packet.Length > 4 ? message.SocketSlot : (byte)0;
         await this._mixAction.MixItemsAsync(player, mixType, socketSlot).ConfigureAwait(false);
     }
 }
