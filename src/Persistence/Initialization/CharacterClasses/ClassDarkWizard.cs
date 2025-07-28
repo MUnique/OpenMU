@@ -89,8 +89,6 @@ internal partial class CharacterClassInitialization
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.FenrirBaseDmg, 1.0f / 7, Stats.TotalVitality));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.FenrirBaseDmg, 1.0f / 3, Stats.TotalEnergy));
 
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.NovaBonusDamage, 1.0f / 2, Stats.TotalStrength));
-
         if (!this.UseClassicPvp)
         {
             result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.CurrentShield, 1, false));

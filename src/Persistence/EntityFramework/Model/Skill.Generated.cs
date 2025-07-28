@@ -52,6 +52,15 @@ internal partial class Skill : MUnique.OpenMU.DataModel.Configuration.Skill, IId
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement> ConsumeRequirements => base.ConsumeRequirements ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement, AttributeRequirement>(this.RawConsumeRequirements);
 
     /// <summary>
+    /// Gets the raw collection of <see cref="AttributeRelationships" />.
+    /// </summary>
+    public ICollection<AttributeRelationship> RawAttributeRelationships { get; } = new EntityFramework.List<AttributeRelationship>();
+    
+    /// <inheritdoc/>
+    [NotMapped]
+    public override ICollection<MUnique.OpenMU.AttributeSystem.AttributeRelationship> AttributeRelationships => base.AttributeRelationships ??= new CollectionAdapter<MUnique.OpenMU.AttributeSystem.AttributeRelationship, AttributeRelationship>(this.RawAttributeRelationships);
+
+    /// <summary>
     /// Gets or sets the identifier of <see cref="ElementalModifierTarget"/>.
     /// </summary>
     public Guid? ElementalModifierTargetId { get; set; }

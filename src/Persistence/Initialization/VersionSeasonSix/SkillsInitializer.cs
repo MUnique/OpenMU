@@ -153,14 +153,14 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.CreateSkill(SkillNumber.PowerSlash, "Power Slash", CharacterClasses.AllMGs, DamageType.Physical, distance: 5, manaConsumption: 15, skillType: SkillType.AreaSkillAutomaticHits);
         this.AddAreaSkillSettings(SkillNumber.PowerSlash, true, 1.0f, 6.0f, 6.0f);
         this.CreateSkill(SkillNumber.SpiralSlash, "Spiral Slash", CharacterClasses.AllMGs, DamageType.Physical, 75, 5, 15, 20);
-        this.CreateSkill(SkillNumber.Force, "Force", CharacterClasses.AllLords, DamageType.Physical, 10, 4, manaConsumption: 10, skillType: SkillType.LordGeneric);
-        this.CreateSkill(SkillNumber.FireBurst, "Fire Burst", CharacterClasses.AllLords, DamageType.Physical, 100, 6, manaConsumption: 25, energyRequirement: 79, skillType: SkillType.LordGeneric, skillTarget: SkillTarget.ExplicitWithImplicitInRange, implicitTargetRange: 1);
-        this.CreateSkill(SkillNumber.Earthshake, "Earthshake", CharacterClasses.AllLords, DamageType.Physical, 150, 10, 50, elementalModifier: ElementalType.Lightning, skillType: SkillType.Earthshake);
+        this.CreateSkill(SkillNumber.Force, "Force", CharacterClasses.AllLords, DamageType.Physical, 10, 4, manaConsumption: 10);
+        this.CreateSkill(SkillNumber.FireBurst, "Fire Burst", CharacterClasses.AllLords, DamageType.Physical, 100, 6, manaConsumption: 25, energyRequirement: 79, skillTarget: SkillTarget.ExplicitWithImplicitInRange, implicitTargetRange: 1);
+        this.CreateSkill(SkillNumber.Earthshake, "Earthshake", CharacterClasses.AllLords, DamageType.Physical, 150, 10, 50, elementalModifier: ElementalType.Lightning, skillType: SkillType.AreaSkillAutomaticHits);
         this.CreateSkill(SkillNumber.Summon, "Summon", CharacterClasses.AllLords, abilityConsumption: 30, manaConsumption: 70, energyRequirement: 153, leadershipRequirement: 400, skillType: SkillType.Other);
         this.CreateSkill(SkillNumber.IncreaseCriticalDamage, "Increase Critical Damage", CharacterClasses.AllLords, abilityConsumption: 50, manaConsumption: 50, energyRequirement: 102, leadershipRequirement: 300, skillType: SkillType.Buff, skillTarget: SkillTarget.ImplicitParty);
-        this.CreateSkill(SkillNumber.ElectricSpike, "Electric Spike", CharacterClasses.AllLords, DamageType.Physical, 250, 10, 100, energyRequirement: 126, leadershipRequirement: 340, skillType: SkillType.ElectricSpike);
+        this.CreateSkill(SkillNumber.ElectricSpike, "Electric Spike", CharacterClasses.AllLords, DamageType.Physical, 250, 10, 100, energyRequirement: 126, leadershipRequirement: 340, skillType: SkillType.AreaSkillAutomaticHits);
         this.AddAreaSkillSettings(SkillNumber.ElectricSpike, true, 1.5f, 1.5f, 12f, useDeferredHits: true, delayPerOneDistance: TimeSpan.FromMilliseconds(10));
-        this.CreateSkill(SkillNumber.ForceWave, "Force Wave", CharacterClasses.AllLords, DamageType.Physical, 50, 4, manaConsumption: 10, skillType: SkillType.LordGeneric, skillTarget: SkillTarget.ExplicitWithImplicitInRange);
+        this.CreateSkill(SkillNumber.ForceWave, "Force Wave", CharacterClasses.AllLords, DamageType.Physical, 50, 4, manaConsumption: 10, skillTarget: SkillTarget.ExplicitWithImplicitInRange);
         this.AddAreaSkillSettings(SkillNumber.ForceWave, true, 1f, 1f, 4f);
         this.CreateSkill(SkillNumber.Stun, "Stun", CharacterClasses.All, distance: 2, abilityConsumption: 50, manaConsumption: 70, skillType: SkillType.AreaSkillAutomaticHits, cooldownMinutes: 4);
         this.AddAreaSkillSettings(SkillNumber.Stun, true, 1.5f, 1.5f, 3f);
@@ -170,10 +170,10 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.CreateSkill(SkillNumber.CancelInvisibility, "Cancel Invisibility", CharacterClasses.All, abilityConsumption: 30, manaConsumption: 40, cooldownMinutes: 2);
         this.CreateSkill(SkillNumber.AbolishMagic, "Abolish Magic", CharacterClasses.AllLords, abilityConsumption: 70, manaConsumption: 90, cooldownMinutes: 8);
         this.CreateSkill(SkillNumber.ManaRays, "Mana Rays", CharacterClasses.AllMGs, DamageType.Wizardry, 85, 6, 7, 130);
-        this.CreateSkill(SkillNumber.FireBlast, "Fire Blast", CharacterClasses.AllLords, DamageType.Physical, 150, 6, 10, 30, skillType: SkillType.LordGeneric);
+        this.CreateSkill(SkillNumber.FireBlast, "Fire Blast", CharacterClasses.AllLords, DamageType.Physical, 150, 6, 10, 30);
         this.CreateSkill(SkillNumber.PlasmaStorm, "Plasma Storm", CharacterClasses.AllMastersAndSecondClass, DamageType.Fenrir, damage: 60, distance: 6, abilityConsumption: 20, manaConsumption: 50, levelRequirement: 110, skillType: SkillType.AreaSkillAutomaticHits);
         this.CreateSkill(SkillNumber.InfinityArrow, "Infinity Arrow", CharacterClasses.MuseElfAndHighElf, distance: 6, abilityConsumption: 10, manaConsumption: 50, levelRequirement: 220, skillType: SkillType.Buff, targetRestriction: SkillTargetRestriction.Self);
-        this.CreateSkill(SkillNumber.FireScream, "Fire Scream", CharacterClasses.AllLords, DamageType.Physical, 130, 6, 10, 45, energyRequirement: 70, leadershipRequirement: 150, skillType: SkillType.LordGeneric);
+        this.CreateSkill(SkillNumber.FireScream, "Fire Scream", CharacterClasses.AllLords, DamageType.Physical, 130, 6, 10, 45, energyRequirement: 70, leadershipRequirement: 150, skillType: SkillType.AreaSkillAutomaticHits);
         this.AddAreaSkillSettings(SkillNumber.FireScream, true, 2f, 3f, 6f); // TODO: Add fireScream's explosion (Explosion79) damage effect
         this.CreateSkill(SkillNumber.Explosion79, "Explosion", CharacterClasses.AllLords, DamageType.Physical, distance: 2);
         this.CreateSkill(SkillNumber.SummonMonster, "Summon Monster", manaConsumption: 40, energyRequirement: 90);
@@ -199,12 +199,12 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.CreateSkill(SkillNumber.StrikeofDestruction, "Strike of Destruction", CharacterClasses.BladeKnightAndBladeMaster, DamageType.Physical, 110, 5, 24, 30, 100, elementalModifier: ElementalType.Ice, skillType: SkillType.AreaSkillAutomaticHits);
         this.CreateSkill(SkillNumber.ExpansionofWizardry, "Expansion of Wizardry", CharacterClasses.SoulMasterAndGrandMaster, distance: 6, abilityConsumption: 50, manaConsumption: 200, levelRequirement: 220, energyRequirement: 118, skillType: SkillType.Buff, targetRestriction: SkillTargetRestriction.Player, skillTarget: SkillTarget.ImplicitPlayer);
         this.CreateSkill(SkillNumber.Recovery, "Recovery", CharacterClasses.MuseElfAndHighElf, distance: 6, abilityConsumption: 10, manaConsumption: 40, levelRequirement: 100, energyRequirement: 37, skillType: SkillType.Regeneration, targetRestriction: SkillTargetRestriction.Player);
-        this.CreateSkill(SkillNumber.MultiShot, "Multi-Shot", CharacterClasses.MuseElfAndHighElf, DamageType.Physical, 40, 6, 7, 10, 100, skillType: SkillType.MultiShot);
+        this.CreateSkill(SkillNumber.MultiShot, "Multi-Shot", CharacterClasses.MuseElfAndHighElf, DamageType.Physical, 40, 6, 7, 10, 100, skillType: SkillType.AreaSkillAutomaticHits);
         this.AddAreaSkillSettings(SkillNumber.MultiShot, true, 1f, 6f, 7f);
         this.CreateSkill(SkillNumber.FlameStrike, "Flame Strike", CharacterClasses.AllMGs, DamageType.Physical, 140, 3, 25, 20, 100, elementalModifier: ElementalType.Fire, skillType: SkillType.AreaSkillAutomaticHits);
         this.AddAreaSkillSettings(SkillNumber.FlameStrike, true, 5f, 2f, 4f);
         this.CreateSkill(SkillNumber.GiganticStorm, "Gigantic Storm", CharacterClasses.AllMGs, DamageType.Wizardry, 110, 6, 10, 120, 220, 118, elementalModifier: ElementalType.Wind, skillType: SkillType.AreaSkillAutomaticHits);
-        this.CreateSkill(SkillNumber.ChaoticDiseier, "Chaotic Diseier", CharacterClasses.AllLords, DamageType.Physical, 190, 6, 15, 50, 100, 16, skillType: SkillType.ChaoticDiseier);
+        this.CreateSkill(SkillNumber.ChaoticDiseier, "Chaotic Diseier", CharacterClasses.AllLords, DamageType.Physical, 190, 6, 15, 50, 100, 16, skillType: SkillType.AreaSkillAutomaticHits);
         this.AddAreaSkillSettings(SkillNumber.ChaoticDiseier, true, 1.5f, 1.5f, 6f);
         this.CreateSkill(SkillNumber.DoppelgangerSelfExplosion, "Doppelganger Self Explosion", CharacterClasses.AllMGs, DamageType.Wizardry, 140, 3, 25, 20, 100, elementalModifier: ElementalType.Fire);
         this.CreateSkill(SkillNumber.KillingBlow, "Killing Blow", CharacterClasses.AllFighters, DamageType.Physical, distance: 2, manaConsumption: 9, elementalModifier: ElementalType.Earth);
@@ -351,17 +351,17 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.CreateSkill(SkillNumber.BloodAttackStrengthen, "Blood Attack Strengthen", CharacterClasses.DuelMaster, damage: 22, distance: 3, abilityConsumption: 22, manaConsumption: 15, elementalModifier: ElementalType.Poison);
 
         // Lord Emperor (DL):
-        this.CreateSkill(SkillNumber.FireBurstStreng, "Fire Burst Streng", CharacterClasses.LordEmperor, DamageType.Physical, 22, 6, manaConsumption: 25, levelRequirement: 74, energyRequirement: 20, skillType: SkillType.LordGeneric);
-        this.CreateSkill(SkillNumber.ForceWaveStreng, "Force Wave Streng", CharacterClasses.LordEmperor, DamageType.Physical, 3, 4, manaConsumption: 15, skillType: SkillType.LordGeneric);
+        this.CreateSkill(SkillNumber.FireBurstStreng, "Fire Burst Streng", CharacterClasses.LordEmperor, DamageType.Physical, 22, 6, manaConsumption: 25, levelRequirement: 74, energyRequirement: 20);
+        this.CreateSkill(SkillNumber.ForceWaveStreng, "Force Wave Streng", CharacterClasses.LordEmperor, DamageType.Physical, 3, 4, manaConsumption: 15);
         this.CreateSkill(SkillNumber.DarkHorseStreng1, "Dark Horse Streng (1)", CharacterClasses.LordEmperor, damage: 17, skillType: SkillType.PassiveBoost);
         this.CreateSkill(SkillNumber.CriticalDmgIncPowUp, "Critical DMG Inc PowUp", CharacterClasses.LordEmperor, damage: 3, abilityConsumption: 75, manaConsumption: 75, levelRequirement: 82, energyRequirement: 25, leadershipRequirement: 300);
-        this.CreateSkill(SkillNumber.EarthshakeStreng, "Earthshake Streng", CharacterClasses.LordEmperor, DamageType.Physical, 22, 10, 75, elementalModifier: ElementalType.Lightning, skillType: SkillType.Earthshake);
+        this.CreateSkill(SkillNumber.EarthshakeStreng, "Earthshake Streng", CharacterClasses.LordEmperor, DamageType.Physical, 22, 10, 75, elementalModifier: ElementalType.Lightning, skillType: SkillType.AreaSkillAutomaticHits);
         this.CreateSkill(SkillNumber.WeaponMasteryLordEmperor, "Weapon Mastery", CharacterClasses.LordEmperor, damage: 22, skillType: SkillType.PassiveBoost);
-        this.CreateSkill(SkillNumber.FireBurstMastery, "Fire Burst Mastery", CharacterClasses.LordEmperor, DamageType.Physical, 1, 6, manaConsumption: 27, levelRequirement: 74, energyRequirement: 20, skillType: SkillType.LordGeneric);
+        this.CreateSkill(SkillNumber.FireBurstMastery, "Fire Burst Mastery", CharacterClasses.LordEmperor, DamageType.Physical, 1, 6, manaConsumption: 27, levelRequirement: 74, energyRequirement: 20);
         this.CreateSkill(SkillNumber.CritDmgIncPowUp2, "Crit DMG Inc PowUp (2)", CharacterClasses.LordEmperor, damage: 10, abilityConsumption: 82, manaConsumption: 82, levelRequirement: 82, energyRequirement: 25, leadershipRequirement: 300);
-        this.CreateSkill(SkillNumber.EarthshakeMastery, "Earthshake Mastery", CharacterClasses.LordEmperor, DamageType.Physical, 1, 10, 75, elementalModifier: ElementalType.Lightning, skillType: SkillType.Earthshake);
+        this.CreateSkill(SkillNumber.EarthshakeMastery, "Earthshake Mastery", CharacterClasses.LordEmperor, DamageType.Physical, 1, 10, 75, elementalModifier: ElementalType.Lightning, skillType: SkillType.AreaSkillAutomaticHits);
         this.CreateSkill(SkillNumber.CritDmgIncPowUp3, "Crit DMG Inc PowUp (3)", CharacterClasses.LordEmperor, damage: 7, abilityConsumption: 100, manaConsumption: 100, levelRequirement: 82, energyRequirement: 25, leadershipRequirement: 300);
-        this.CreateSkill(SkillNumber.FireScreamStren, "Fire Scream Stren", CharacterClasses.LordEmperor, DamageType.Physical, 22, 6, 11, 45, 102, 32, 70, skillType: SkillType.LordGeneric);
+        this.CreateSkill(SkillNumber.FireScreamStren, "Fire Scream Stren", CharacterClasses.LordEmperor, DamageType.Physical, 22, 6, 11, 45, 102, 32, 70);
         this.CreateSkill(SkillNumber.DarkSpiritStr, "Dark Spirit Str", CharacterClasses.LordEmperor, damage: 3, skillType: SkillType.PassiveBoost);
         this.CreateSkill(SkillNumber.ScepterStrengthener, "Scepter Strengthener", CharacterClasses.LordEmperor, DamageType.Physical, 22, skillType: SkillType.PassiveBoost);
         this.CreateSkill(SkillNumber.ShieldStrengthenerLordEmperor, "Shield Strengthener", CharacterClasses.LordEmperor, damage: 10, skillType: SkillType.PassiveBoost);
@@ -416,6 +416,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.InitializeMasterSkillData();
         this.CreateSpecialSummonMonsters();
         this.CreateSkillCombos();
+        this.InitializeSkillAttributes();
     }
 
     // ReSharper disable once UnusedMember.Local
@@ -470,7 +471,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         // High Elf:
         this.CreateSkill(SkillNumber.IllusionWingsAbsPowUp, "Illusion Wings Abs PowUp", CharacterClasses.HighElf, damage: 1, skillType: SkillType.PassiveBoost);
         this.CreateSkill(SkillNumber.IllusionWingsDefPowUp, "Illusion Wings Def PowUp", CharacterClasses.HighElf, damage: 17, skillType: SkillType.PassiveBoost);
-        this.CreateSkill(SkillNumber.MultiShotStreng, "Multi-Shot Streng", CharacterClasses.HighElf, DamageType.Physical, 22, 6, 7, 11, 100, skillType: SkillType.MultiShot);
+        this.CreateSkill(SkillNumber.MultiShotStreng, "Multi-Shot Streng", CharacterClasses.HighElf, DamageType.Physical, 22, 6, 7, 11, 100, skillType: SkillType.AreaSkillAutomaticHits);
         this.CreateSkill(SkillNumber.IllusionWingsAttPowUp, "Illusion Wings Att PowUp", CharacterClasses.HighElf, damage: 17, skillType: SkillType.PassiveBoost);
         this.CreateSkill(SkillNumber.Cure, "Cure", CharacterClasses.HighElf, distance: 6, abilityConsumption: 10, manaConsumption: 72);
         this.CreateSkill(SkillNumber.PartyHealing, "Party Healing", CharacterClasses.HighElf, distance: 6, abilityConsumption: 12, manaConsumption: 66, energyRequirement: 100);
@@ -478,7 +479,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.CreateSkill(SkillNumber.SummonedMonsterStr3, "Summoned Monster Str (3)", CharacterClasses.HighElf, damage: 16, skillType: SkillType.PassiveBoost);
         this.CreateSkill(SkillNumber.PartyHealingStr, "Party Healing Str", CharacterClasses.HighElf, damage: 22, distance: 6, abilityConsumption: 13, manaConsumption: 72, energyRequirement: 100);
         this.CreateSkill(SkillNumber.Bless, "Bless", CharacterClasses.HighElf, distance: 6, abilityConsumption: 18, manaConsumption: 108, energyRequirement: 100);
-        this.CreateSkill(SkillNumber.MultiShotMastery, "Multi-Shot Mastery", CharacterClasses.HighElf, DamageType.Physical, 1, 6, 8, 12, 100, skillType: SkillType.MultiShot);
+        this.CreateSkill(SkillNumber.MultiShotMastery, "Multi-Shot Mastery", CharacterClasses.HighElf, DamageType.Physical, 1, 6, 8, 12, 100, skillType: SkillType.AreaSkillAutomaticHits);
         this.CreateSkill(SkillNumber.SummonSatyros, "Summon Satyros", CharacterClasses.HighElf, abilityConsumption: 52, manaConsumption: 525, energyRequirement: 280);
         this.CreateSkill(SkillNumber.BlessStrengthener, "Bless Strengthener", CharacterClasses.HighElf, damage: 10, distance: 6, abilityConsumption: 20, manaConsumption: 118, energyRequirement: 100);
         this.CreateSkill(SkillNumber.PoisonArrowStr, "Poison Arrow Str", CharacterClasses.HighElf, DamageType.Physical, 22, 6, 29, 24, elementalModifier: ElementalType.Poison);
@@ -513,11 +514,11 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.CreateSkill(SkillNumber.EmperorCapeDefPowUp, "Emperor Cape Def PowUp", CharacterClasses.LordEmperor, damage: 17, skillType: SkillType.PassiveBoost);
         this.CreateSkill(SkillNumber.AddsCommandStat, "Adds Command Stat", CharacterClasses.LordEmperor, damage: 17, skillType: SkillType.PassiveBoost);
         this.CreateSkill(SkillNumber.EmperorCapeAttPowUp, "Emperor Cape Att PowUp", CharacterClasses.LordEmperor, damage: 17, skillType: SkillType.PassiveBoost);
-        this.CreateSkill(SkillNumber.ElectricSparkStreng, "Electric Spark Streng", CharacterClasses.LordEmperor, DamageType.Physical, 3, 10, 150, levelRequirement: 92, energyRequirement: 29, leadershipRequirement: 340, skillType: SkillType.ElectricSpike);
-        this.CreateSkill(SkillNumber.FireScreamMastery, "Fire Scream Mastery", CharacterClasses.LordEmperor, DamageType.Physical, 5, 6, 12, 49, 102, 32, 70, skillType: SkillType.LordGeneric);
+        this.CreateSkill(SkillNumber.ElectricSparkStreng, "Electric Spark Streng", CharacterClasses.LordEmperor, DamageType.Physical, 3, 10, 150, levelRequirement: 92, energyRequirement: 29, leadershipRequirement: 340, skillType: SkillType.AreaSkillAutomaticHits);
+        this.CreateSkill(SkillNumber.FireScreamMastery, "Fire Scream Mastery", CharacterClasses.LordEmperor, DamageType.Physical, 5, 6, 12, 49, 102, 32, 70);
         this.CreateSkill(SkillNumber.IronDefenseLordEmperor, "Iron Defense", CharacterClasses.LordEmperor, damage: 28, abilityConsumption: 29, manaConsumption: 64);
         this.CreateSkill(SkillNumber.CriticalDamageIncM, "Critical Damage Inc M", CharacterClasses.LordEmperor, damage: 1, abilityConsumption: 110, manaConsumption: 110, levelRequirement: 82, energyRequirement: 25, leadershipRequirement: 300);
-        this.CreateSkill(SkillNumber.ChaoticDiseierStr, "Chaotic Diseier Str", CharacterClasses.LordEmperor, DamageType.Physical, 22, 6, 22, 75, 100, 16, skillType: SkillType.ChaoticDiseier);
+        this.CreateSkill(SkillNumber.ChaoticDiseierStr, "Chaotic Diseier Str", CharacterClasses.LordEmperor, DamageType.Physical, 22, 6, 22, 75, 100, 16, skillType: SkillType.AreaSkillAutomaticHits);
         this.CreateSkill(SkillNumber.IronDefenseStr, "Iron Defense Str", CharacterClasses.LordEmperor, damage: 3, abilityConsumption: 31, manaConsumption: 70);
         this.CreateSkill(SkillNumber.DarkSpiritStr4, "Dark Spirit Str (4)", CharacterClasses.LordEmperor, damage: 23, skillType: SkillType.PassiveBoost);
         this.CreateSkill(SkillNumber.DarkSpiritStr5, "Dark Spirit Str (5)", CharacterClasses.LordEmperor, damage: 1, skillType: SkillType.PassiveBoost);
@@ -570,6 +571,41 @@ internal class SkillsInitializer : SkillsInitializerBase
         step.Skill = skill;
         step.Order = order;
         step.IsFinalStep = isFinal;
+    }
+
+    private void InitializeSkillAttributes()
+    {
+        this.AddAttributeRelationship(SkillNumber.NovaStart, Stats.SkillDamageBonus, 1.0f / 2, Stats.TotalStrength);
+        this.AddAttributeRelationship(SkillNumber.NovaStart, Stats.SkillDamageBonus, 1, Stats.NovaStageDamage);
+
+        this.AddAttributeRelationship(SkillNumber.Earthshake, Stats.SkillDamageBonus, 1.0f / 10, Stats.TotalStrength);
+        this.AddAttributeRelationship(SkillNumber.Earthshake, Stats.SkillDamageBonus, 1.0f / 5, Stats.TotalLeadership);
+        this.AddAttributeRelationship(SkillNumber.Earthshake, Stats.SkillDamageBonus, 10, Stats.HorseLevel);
+
+        this.AddAttributeRelationship(SkillNumber.ElectricSpike, Stats.SkillDamageBonus, 50, Stats.NearbyPartyMemberCount);
+        this.AddAttributeRelationship(SkillNumber.ElectricSpike, Stats.SkillDamageBonus, 1.0f / 10, Stats.TotalLeadership);
+
+        var chaoticDesire = this.GameConfiguration.Skills.First(s => s.Number == (int)SkillNumber.ChaoticDiseier);
+        chaoticDesire.AttributeRelationships.Add(CharacterClassHelper.CreateAttributeRelationship(this.Context, this.GameConfiguration, Stats.SkillDamageBonus, 1.0f / 30, Stats.TotalStrength));
+        chaoticDesire.AttributeRelationships.Add(CharacterClassHelper.CreateAttributeRelationship(this.Context, this.GameConfiguration, Stats.SkillDamageBonus, 1.0f / 55, Stats.TotalEnergy));
+
+        SkillNumber[] lordSkills = [SkillNumber.Force, SkillNumber.FireBlast, SkillNumber.FireBurst, SkillNumber.ForceWave, SkillNumber.FireScream];
+        foreach (var lordSkillNumber in lordSkills)
+        {
+            var lordSkill = this.GameConfiguration.Skills.First(s => s.Number == (int)lordSkillNumber);
+            lordSkill.AttributeRelationships.Add(CharacterClassHelper.CreateAttributeRelationship(this.Context, this.GameConfiguration, Stats.SkillDamageBonus, 1.0f / 25, Stats.TotalStrength));
+            lordSkill.AttributeRelationships.Add(CharacterClassHelper.CreateAttributeRelationship(this.Context, this.GameConfiguration, Stats.SkillDamageBonus, 1.0f / 50, Stats.TotalEnergy));
+        }
+
+        var multishot = this.GameConfiguration.Skills.First(s => s.Number == (int)SkillNumber.MultiShot);
+        multishot.AttributeRelationships.Add(CharacterClassHelper.CreateAttributeRelationship(this.Context, this.GameConfiguration, Stats.SkillDamageBonus, 0.8f, Stats.SkillMultiplier, aggregateType: AggregateType.Multiplicate));
+    }
+
+    private void AddAttributeRelationship(SkillNumber skillNumber, AttributeDefinition targetAttribute, float multiplier, AttributeDefinition sourceAttribute)
+    {
+        var skill = this.GameConfiguration.Skills.First(s => s.Number == (int)skillNumber);
+        var relationship = CharacterClassHelper.CreateAttributeRelationship(this.Context, this.GameConfiguration, targetAttribute, multiplier, sourceAttribute);
+        skill.AttributeRelationships.Add(relationship);
     }
 
     private void InitializeEffects()

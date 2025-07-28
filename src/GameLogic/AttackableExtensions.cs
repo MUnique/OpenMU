@@ -589,6 +589,141 @@ public static class AttackableExtensions
         return result;
     }
 
+    private static IAttributeSystem? EnsureSkillAttributes(this SkillEntry skillEntry, IAttributeSystem attackerSystem)
+    {
+        var skillAttributes = skillEntry.Attributes;
+        if (skillAttributes is not null)
+        {
+            return skillAttributes;
+        }
+
+        if (skillEntry.Skill is not { } skill)
+        {
+            return skillAttributes;
+        }
+
+        var baseSkills = skillEntry.Skill.GetBaseSkills().ToList();
+
+        if (baseSkills.All(s => s.AttributeRelationships.Count == 0))
+        {
+            return skillAttributes;
+        }
+
+        skillAttributes = skillEntry.Attributes = new AttributeSystem([], [], []);
+        var levelElement = new SimpleElement(skillEntry.Level, AggregateType.AddRaw);
+        skillEntry.PropertyChanged += (sender, args) => levelElement.Value = skillEntry.Level;
+        skillAttributes.AddElement(levelElement, Stats.SkillLevel);
+        foreach (var relationship in baseSkills.SelectMany(s => s.AttributeRelationships))
+        {
+            skillAttributes.AddAttributeRelationship(relationship, attackerSystem, relationship.AggregateType);
+        }
+
+        return skillAttributes;
+    }
+
+    private static void GetSkillDmg(this IAttacker attacker, SkillEntry? skillEntry, out int skillMinimumDamage, out int skillMaximumDamage, out DamageType damageType)
+    {
+        skillMinimumDamage = 0;
+        skillMaximumDamage = 0;
+        var attackerStats = attacker.Attributes;
+        damageType = DamageType.Physical;
+        if (skillEntry?.Skill is not { } skill)
+        {
+            return;
+        }
+
+        damageType = skill.DamageType;
+        var isSummonerSkill = attackerStats[Stats.MinimumCurseBaseDmg] > 0 && damageType != DamageType.Fenrir;
+
+        var skillDamage = skillEntry.GetDamage();
+        skillMinimumDamage += skillDamage;
+        skillMaximumDamage += skillDamage + (skillDamage / 2);
+
+        if (skill.ElementalModifierTarget is { } resistance
+            && Stats.ElementResistanceToDamageBonus.TryGetValue(resistance, out var dmgBonus))
+        {
+            skillMinimumDamage += (int)attackerStats[dmgBonus];
+            skillMaximumDamage += (int)attackerStats[dmgBonus];
+        }
+
+        if (!isSummonerSkill && damageType != DamageType.Fenrir)
+        {
+            // For Summoner, the skill bonus gets added last
+            skillMinimumDamage += (int)attackerStats[Stats.SkillDamageBonus];
+            skillMaximumDamage += (int)attackerStats[Stats.SkillDamageBonus];
+        }
+
+        if (skillEntry.EnsureSkillAttributes(attackerStats) is { } skillAttributes)
+        {
+            skillMinimumDamage += (int)skillAttributes[Stats.SkillDamageBonus];
+            skillMaximumDamage += (int)skillAttributes[Stats.SkillDamageBonus];
+
+            var multiplier = skillAttributes[Stats.SkillMultiplier];
+            if (multiplier > 0)
+            {
+                skillMinimumDamage = (int)(skillMinimumDamage * multiplier);
+                skillMaximumDamage = (int)(skillMaximumDamage * multiplier);
+            }
+        }
+
+        //switch (skill.SkillType)
+        //{
+        //    case SkillType.Nova:
+        //        var novaDamage = (int)(attackerStats[Stats.NovaBonusDamage] + attackerStats[Stats.NovaStageDamage]);
+        //        skillMinimumDamage += novaDamage;
+        //        skillMaximumDamage += novaDamage;
+        //        break;
+        //    case SkillType.Earthshake:
+        //        skillMinimumDamage += (int)attackerStats[Stats.EarthshakeBonusDmg];
+        //        skillMaximumDamage += (int)attackerStats[Stats.EarthshakeBonusDmg];
+        //        break;
+        //    case SkillType.ElectricSpike:
+        //        var nearbyPartyMembers = (int)attackerStats[Stats.NearbyPartyMemberCount];
+        //        skillMinimumDamage += (int)attackerStats[Stats.ElectricSpikeBonusDmg] + (nearbyPartyMembers * 50);
+        //        skillMaximumDamage += (int)attackerStats[Stats.ElectricSpikeBonusDmg] + (nearbyPartyMembers * 50);
+        //        break;
+        //    case SkillType.ChaoticDiseier:
+        //        skillMinimumDamage += (int)attackerStats[Stats.ChaoticDiseierBonusDmg];
+        //        skillMaximumDamage += (int)attackerStats[Stats.ChaoticDiseierBonusDmg];
+        //        break;
+        //    case SkillType.LordGeneric:
+        //        skillMinimumDamage += (int)attackerStats[Stats.LordGenericSkillBonusDmg];
+        //        skillMaximumDamage += (int)attackerStats[Stats.LordGenericSkillBonusDmg];
+        //        break;
+        //    case SkillType.MultiShot:
+        //        skillMinimumDamage = (int)(skillMinimumDamage * 0.8);
+        //        skillMaximumDamage = (int)(skillMaximumDamage * 0.8);
+        //        break;
+        //    default:
+        //        // Not a specific skill type
+        //        break;
+        //}
+
+        if (damageType == DamageType.Physical && attackerStats[Stats.HasDoubleWield] > 0)
+        {
+            // Because double wield dmg will be doubled later, we only take half of the skill dmg here (the skill is from a single weapon)
+            skillMinimumDamage /= 2;
+            skillMaximumDamage /= 2;
+        }
+
+        if (isSummonerSkill)
+        {
+            skillMinimumDamage += (int)(attackerStats[Stats.WizardryAndCurseBaseDmgBonus] + attackerStats[Stats.MinWizardryAndCurseDmgBonus]);
+            skillMaximumDamage += (int)attackerStats[Stats.WizardryAndCurseBaseDmgBonus];
+
+            if (damageType == DamageType.Wizardry)
+            {
+                skillMinimumDamage += (int)attackerStats[Stats.BerserkerMinWizDmgBonus];
+                skillMaximumDamage += (int)attackerStats[Stats.BerserkerMaxWizDmgBonus];
+            }
+            else
+            {
+                skillMinimumDamage += (int)attackerStats[Stats.BerserkerMinCurseDmgBonus];
+                skillMaximumDamage += (int)attackerStats[Stats.BerserkerMaxCurseDmgBonus];
+            }
+        }
+    }
+
     /// <summary>
     /// Returns the base damage of the attacker, using a specific skill.
     /// </summary>
@@ -601,92 +736,10 @@ public static class AttackableExtensions
     {
         minimumBaseDamage = 0;
         maximumBaseDamage = 0;
-        var skillMinimumDamage = 0;
-        var skillMaximumDamage = 0;
         var attackerStats = attacker.Attributes;
         bool isSummonerSkill = false;
 
-        damageType = DamageType.Physical;
-        if (skill?.Skill != null)
-        {
-            damageType = skill.Skill.DamageType;
-            isSummonerSkill = attackerStats[Stats.MinimumCurseBaseDmg] > 0 && damageType != DamageType.Fenrir;
-
-            var skillDamage = skill.GetDamage();
-            skillMinimumDamage += skillDamage;
-            skillMaximumDamage += skillDamage + (skillDamage / 2);
-
-            if (skill.Skill.ElementalModifierTarget is { } resistance
-                && Stats.ElementResistanceToDamageBonus.TryGetValue(resistance, out AttributeDefinition? dmgBonus))
-            {
-                skillMinimumDamage += (int)attackerStats[dmgBonus];
-                skillMaximumDamage += (int)attackerStats[dmgBonus];
-            }
-
-            if (!isSummonerSkill && damageType != DamageType.Fenrir)
-            {
-                // For Summoner, the skill bonus gets added last
-                skillMinimumDamage += (int)attackerStats[Stats.SkillDamageBonus];
-                skillMaximumDamage += (int)attackerStats[Stats.SkillDamageBonus];
-            }
-
-            switch (skill.Skill.SkillType)
-            {
-                case SkillType.Nova:
-                    var novaDamage = (int)(attackerStats[Stats.NovaBonusDamage] + attackerStats[Stats.NovaStageDamage]);
-                    skillMinimumDamage += novaDamage;
-                    skillMaximumDamage += novaDamage;
-                    break;
-                case SkillType.Earthshake:
-                    skillMinimumDamage += (int)attackerStats[Stats.EarthshakeBonusDmg];
-                    skillMaximumDamage += (int)attackerStats[Stats.EarthshakeBonusDmg];
-                    break;
-                case SkillType.ElectricSpike:
-                    var nearbyPartyMembers = ((Player)attacker).Party?.PartyList.Where(p => p == attacker || p.Observers.Contains((IWorldObserver)attacker)).Count() ?? 0;
-                    skillMinimumDamage += (int)attackerStats[Stats.ElectricSpikeBonusDmg] + (nearbyPartyMembers * 50);
-                    skillMaximumDamage += (int)attackerStats[Stats.ElectricSpikeBonusDmg] + (nearbyPartyMembers * 50);
-                    break;
-                case SkillType.ChaoticDiseier:
-                    skillMinimumDamage += (int)attackerStats[Stats.ChaoticDiseierBonusDmg];
-                    skillMaximumDamage += (int)attackerStats[Stats.ChaoticDiseierBonusDmg];
-                    break;
-                case SkillType.LordGeneric:
-                    skillMinimumDamage += (int)attackerStats[Stats.LordGenericSkillBonusDmg];
-                    skillMaximumDamage += (int)attackerStats[Stats.LordGenericSkillBonusDmg];
-                    break;
-                case SkillType.MultiShot:
-                    skillMinimumDamage = (int)(skillMinimumDamage * 0.8);
-                    skillMaximumDamage = (int)(skillMaximumDamage * 0.8);
-                    break;
-                default:
-                    // Not a specific skill type
-                    break;
-            }
-
-            if (damageType == DamageType.Physical && attackerStats[Stats.HasDoubleWield] > 0)
-            {
-                // Because double wield dmg will be doubled later, we only take half of the skill dmg here (the skill is from a single weapon)
-                skillMinimumDamage /= 2;
-                skillMaximumDamage /= 2;
-            }
-        }
-
-        if (isSummonerSkill)
-        {
-            minimumBaseDamage += (int)(attackerStats[Stats.WizardryAndCurseBaseDmgBonus] + attackerStats[Stats.MinWizardryAndCurseDmgBonus]);
-            maximumBaseDamage += (int)attackerStats[Stats.WizardryAndCurseBaseDmgBonus];
-
-            if (damageType == DamageType.Wizardry)
-            {
-                minimumBaseDamage += (int)attackerStats[Stats.BerserkerMinWizDmgBonus];
-                maximumBaseDamage += (int)attackerStats[Stats.BerserkerMaxWizDmgBonus];
-            }
-            else
-            {
-                minimumBaseDamage += (int)attackerStats[Stats.BerserkerMinCurseDmgBonus];
-                maximumBaseDamage += (int)attackerStats[Stats.BerserkerMaxCurseDmgBonus];
-            }
-        }
+        GetSkillDmg(attacker, skill, out var skillMinimumDamage, out var skillMaximumDamage, out damageType);
 
         switch (damageType)
         {

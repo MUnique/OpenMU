@@ -90,21 +90,6 @@ public enum SkillType
     Nova = 6,
 
     /// <summary>
-    /// The earthshake skill which hits all targets in range and applies some base bonus damage.
-    /// </summary>
-    Earthshake = 7,
-
-    /// <summary>
-    /// The electric spike skill which hits all targets in range and applies some base bonus damage.
-    /// </summary>
-    ElectricSpike = 8,
-
-    /// <summary>
-    /// The chaotic diseier skill which hits all targets in range and applies some base bonus damage.
-    /// </summary>
-    ChaoticDiseier = 9,
-
-    /// <summary>
     /// The buff skill type. Applies magic effects on players.
     /// </summary>
     Buff = 10,
@@ -113,17 +98,6 @@ public enum SkillType
     /// The regeneration skill type. Regenerates the target attribute of the defined effect.
     /// </summary>
     Regeneration = 11,
-
-    /// <summary>
-    /// A dark lord/lord emperor skill which hits all targets in range and applies some base bonus damage.
-    /// </summary>
-    /// <remarks>Common to any lord skill other than <see cref="ElectricSpike"/>, <see cref="ChaoticDiseier"/>, and <see cref="Earthshake"/>.</remarks>
-    LordGeneric = 12,
-
-    /// <summary>
-    /// The multishot skill which hits all targets in range and has a 0.8 base damage multiplier.
-    /// </summary>
-    MultiShot = 13,
 
     /// <summary>
     /// The passive boost skill type. Applies boosts to the player who has learned this skill, without the need to be casted.
@@ -248,6 +222,18 @@ public partial class Skill
     /// </summary>
     [MemberOfAggregate]
     public virtual ICollection<AttributeRequirement> ConsumeRequirements { get; protected set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the attribute relationships which are applied during damage calculations.
+    /// </summary>
+    /// <remarks>
+    /// For example, horse skill:
+    ///  * new AttributeRelationship(Stats.SkillDamageBonus, 1.0f / 10, Stats.TotalStrength)
+    ///  * new AttributeRelationship(Stats.SkillDamageBonus, 1.0f / 5, Stats.TotalLeadership)
+    ///  * new AttributeRelationship(Stats.SkillDamageBonus, 10, Stats.HorseLevel)
+    /// </remarks>
+    [MemberOfAggregate]
+    public virtual ICollection<AttributeRelationship> AttributeRelationships { get; protected set; } = null!;
 
     /// <summary>
     /// Gets or sets the maximum range between executor of the skill and the target object.

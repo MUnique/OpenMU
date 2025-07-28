@@ -821,27 +821,6 @@ public class Stats
     public static AttributeDefinition BonusDefenseWithHorse { get; } = new(new Guid("8D22E36C-EB36-47DB-8CE0-9ABD599C533C"), "Defense Increase Bonus (absolute) With equipped Horse (MST)", string.Empty);
 
     /// <summary>
-    /// Gets the electric spike skill bonus damage attribute definition.
-    /// </summary>
-    public static AttributeDefinition ElectricSpikeBonusDmg { get; } = new(new Guid("2DDBCE01-88CF-4A01-B691-1772FA836D9B"), "Electric Spike Bonus Damage", "The electric spike skill bonus damage, which depends on other stats.");
-
-    /// <summary>
-    /// Gets the earthshake skill bonus damage attribute definition.
-    /// </summary>
-    public static AttributeDefinition EarthshakeBonusDmg { get; } = new(new Guid("6370BB15-5602-44BC-8FDC-A787A6FAB4F2"), "Earthshake Bonus Damage", "The earthshake skill bonus damage, which depends on other stats.");
-
-    /// <summary>
-    /// Gets the chaotic diseier skill bonus damage attribute definition.
-    /// </summary>
-    public static AttributeDefinition ChaoticDiseierBonusDmg { get; } = new(new Guid("BF691FDC-2791-49DD-8725-602C6762A57D"), "Chaotic Diseier Bonus Damage", "The chaotic diseier skill bonus damage, which depends on other stats.");
-
-    /// <summary>
-    /// Gets the dark lord/lord emperor generic skill bonus damage attribute definition.
-    /// </summary>
-    /// <remarks>Applies to any lord specific skill other than earthshake, electric spike, and chaotic diseier.</remarks>
-    public static AttributeDefinition LordGenericSkillBonusDmg { get; } = new(new Guid("8D6E3761-0C88-48F7-91DC-9D520038F12F"), "Lord Generic Skill Bonus Damage", "The lord generic skill bonus damage, which depends on other stats. Any skill other than Electric Spike, Earthshake, and Chaotic Diseier.");
-
-    /// <summary>
     /// Gets the berserker buff mana (and damage) multiplier attribute definition.
     /// </summary>
     public static AttributeDefinition BerserkerManaMultiplier { get; } = new(new Guid("9B6AA0DA-9ABA-4C14-B094-F1AC70BCB52D"), "Berserker Mana Multiplier", "The berserker mana multiplier which is used to increase both the caster's mana and damage (any type).");
@@ -1277,6 +1256,16 @@ public class Stats
     public static AttributeDefinition IsInvisible { get; } = new(new Guid("8B0721BC-7AC6-4677-B488-ED4319AE9A56"), "Is invisible", "This value is > 0, when the character is either a game master which used the hide-command, or when a player is spectating a duel.");
 
     /// <summary>
+    /// Gets the <see cref="NearbyPartyMemberCount"/> attribute which defines how many party members are nearby.
+    /// </summary>
+    public static AttributeDefinition NearbyPartyMemberCount { get; } = new(new Guid("585CB9C8-FA23-4995-ABA9-3327321A6F44"), "Nearby party member count", "Defines how many party members are currently nearby.");
+
+    /// <summary>
+    /// Gets the <see cref="SkillLevel"/> attribute which defines the level of a skill.
+    /// </summary>
+    public static AttributeDefinition SkillLevel { get; } = new(new Guid("BB84DC85-D153-4BDE-84D6-0B893D653810"), "Skill level", "Defines the level of a skill.");
+
+    /// <summary>
     /// Gets the attribute for a strength requirement reduction. Items with this option require less strength, according to the option's value.
     /// </summary>
     /// <remarks>
@@ -1315,11 +1304,6 @@ public class Stats
     /// This has no effect on the player itself, just on the requirement of an item.
     /// </remarks>
     public static AttributeDefinition RequiredLeadershipReduction { get; } = new(new Guid("8E6244B8-8E88-4413-B18E-0D2812830DFE"), "Leadership Requirement reduction", "Items with this option require less leadership, according to the option's value.");
-
-    /// <summary>
-    /// Gets the attribute for the nova bonus damage which depends on other stats.
-    /// </summary>
-    public static AttributeDefinition NovaBonusDamage { get; } = new(new Guid("0ABE8432-7F23-4CE9-BBCC-B8A633DAC08B"), "Nova Bonus Damage", "The nova bonus bonus damage, which depends on other stats.");
 
     /// <summary>
     /// Gets the attribute for the nova stage damage which depends on the duration of the skill.

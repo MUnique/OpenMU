@@ -277,6 +277,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
                 if (this._currentMap is { } newMap)
                 {
+                    if (this.Attributes is { } attributes)
+                    {
+                        attributes[Stats.NearbyPartyMemberCount] = 0;
+                    }
+
                     this.RaisePlayerEnteredMap(newMap);
                 }
             }
@@ -1377,6 +1382,13 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         using var _ = await this.ObserverLock.WriterLockAsync();
         this.Observers.Add(observer);
+        if (this.Party is not null
+            && observer is Player observingPlayer
+            && observingPlayer.Party == this.Party
+            && observingPlayer.Attributes is { } attributes)
+        {
+            attributes[Stats.NearbyPartyMemberCount]++;
+        }
     }
 
     /// <inheritdoc/>
@@ -1384,6 +1396,13 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     {
         using var _ = await this.ObserverLock.WriterLockAsync();
         this.Observers.Remove(observer);
+        if (this.Party is not null
+            && observer is Player observingPlayer
+            && observingPlayer.Party == this.Party
+            && observingPlayer.Attributes is { } attributes)
+        {
+            attributes[Stats.NearbyPartyMemberCount]--;
+        }
     }
 
     /// <inheritdoc/>
@@ -2206,6 +2225,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.AddMissingStatAttributes();
 
         this.Attributes = new ItemAwareAttributeSystem(this.Account!, selectedCharacter);
+        this.Attributes[Stats.NearbyPartyMemberCount] = 0;
         this.LogInvalidInventoryItems();
 
         this.Inventory = new InventoryStorage(this, this.GameContext);

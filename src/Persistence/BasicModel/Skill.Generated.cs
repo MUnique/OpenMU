@@ -68,6 +68,27 @@ public partial class Skill : MUnique.OpenMU.DataModel.Configuration.Skill, IIden
     }
 
     /// <summary>
+    /// Gets the raw collection of <see cref="AttributeRelationships" />.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonPropertyName("attributeRelationships")]
+    public ICollection<AttributeRelationship> RawAttributeRelationships { get; } = new List<AttributeRelationship>();
+    
+    /// <inheritdoc/>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override ICollection<MUnique.OpenMU.AttributeSystem.AttributeRelationship> AttributeRelationships
+    {
+        get => base.AttributeRelationships ??= new CollectionAdapter<MUnique.OpenMU.AttributeSystem.AttributeRelationship, AttributeRelationship>(this.RawAttributeRelationships);
+        protected set
+        {
+            this.AttributeRelationships.Clear();
+            foreach (var item in value)
+            {
+                this.AttributeRelationships.Add(item);
+            }
+        }
+    }
+
+    /// <summary>
     /// Gets the raw collection of <see cref="QualifiedCharacters" />.
     /// </summary>
     [System.Text.Json.Serialization.JsonPropertyName("qualifiedCharacters")]

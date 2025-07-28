@@ -105,15 +105,6 @@ internal partial class CharacterClassInitialization
         result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.MasterSkillPhysBonusDmg, Stats.IsScepterEquipped, Stats.BonusDamageWithScepter));
         result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.DefenseFinal, Stats.IsHorseEquipped, Stats.BonusDefenseWithHorse, aggregateType: AggregateType.AddFinal));
 
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.ElectricSpikeBonusDmg, 1.0f / 10, Stats.TotalLeadership));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.EarthshakeBonusDmg, 1.0f / 10, Stats.TotalStrength));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.EarthshakeBonusDmg, 1.0f / 5, Stats.TotalLeadership));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.EarthshakeBonusDmg, 10, Stats.HorseLevel));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.ChaoticDiseierBonusDmg, 1.0f / 30, Stats.TotalStrength));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.ChaoticDiseierBonusDmg, 1.0f / 55, Stats.TotalEnergy));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.LordGenericSkillBonusDmg, 1.0f / 25, Stats.TotalStrength));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.LordGenericSkillBonusDmg, 1.0f / 50, Stats.TotalEnergy));
-
         if (!this.UseClassicPvp)
         {
             result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.CurrentShield, 1, false));

@@ -175,6 +175,7 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Entity<MonsterDefinition>().HasMany(entity => entity.RawQuests).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Skill>().HasMany(entity => entity.RawRequirements).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Skill>().HasMany(entity => entity.RawConsumeRequirements).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<Skill>().HasMany(entity => entity.RawAttributeRelationships).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Skill>().HasOne(entity => entity.RawMasterDefinition).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Skill>().HasOne(entity => entity.RawAreaSkillSettings).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<SkillComboDefinition>().HasMany(entity => entity.RawSteps).WithOne().OnDelete(DeleteBehavior.Cascade);
