@@ -10,7 +10,7 @@ General requirements:
     * 44406: connection port especially for the [open source client](https://github.com/sven-n/MuMain)
   * 55980 (chat server)
 
-* A game client (check our Discord FAQs)
+* A game client (check [our Discord](https://discord.gg/2u5Agkd) FAQs)
 * Knowledge or way to start the game client, so that it connects to the server. Our Launcher will do that.
 
   * Launcher binaries: [MUnique.OpenMU.ClientLauncher v0.9.6.zip](https://github.com/MUnique/OpenMU/releases/download/v0.9.0/MUnique.OpenMU.ClientLauncher_0.9.6.zip)
