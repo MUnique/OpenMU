@@ -585,26 +585,23 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.AddAttributeRelationship(SkillNumber.ElectricSpike, Stats.SkillDamageBonus, 50, Stats.NearbyPartyMemberCount);
         this.AddAttributeRelationship(SkillNumber.ElectricSpike, Stats.SkillDamageBonus, 1.0f / 10, Stats.TotalLeadership);
 
-        var chaoticDesire = this.GameConfiguration.Skills.First(s => s.Number == (int)SkillNumber.ChaoticDiseier);
-        chaoticDesire.AttributeRelationships.Add(CharacterClassHelper.CreateAttributeRelationship(this.Context, this.GameConfiguration, Stats.SkillDamageBonus, 1.0f / 30, Stats.TotalStrength));
-        chaoticDesire.AttributeRelationships.Add(CharacterClassHelper.CreateAttributeRelationship(this.Context, this.GameConfiguration, Stats.SkillDamageBonus, 1.0f / 55, Stats.TotalEnergy));
+        this.AddAttributeRelationship(SkillNumber.ChaoticDiseier, Stats.SkillDamageBonus, 1.0f / 30, Stats.TotalStrength);
+        this.AddAttributeRelationship(SkillNumber.ChaoticDiseier, Stats.SkillDamageBonus, 1.0f / 55, Stats.TotalEnergy);
 
         SkillNumber[] lordSkills = [SkillNumber.Force, SkillNumber.FireBlast, SkillNumber.FireBurst, SkillNumber.ForceWave, SkillNumber.FireScream];
         foreach (var lordSkillNumber in lordSkills)
         {
-            var lordSkill = this.GameConfiguration.Skills.First(s => s.Number == (int)lordSkillNumber);
-            lordSkill.AttributeRelationships.Add(CharacterClassHelper.CreateAttributeRelationship(this.Context, this.GameConfiguration, Stats.SkillDamageBonus, 1.0f / 25, Stats.TotalStrength));
-            lordSkill.AttributeRelationships.Add(CharacterClassHelper.CreateAttributeRelationship(this.Context, this.GameConfiguration, Stats.SkillDamageBonus, 1.0f / 50, Stats.TotalEnergy));
+            this.AddAttributeRelationship(lordSkillNumber, Stats.SkillDamageBonus, 1.0f / 25, Stats.TotalStrength);
+            this.AddAttributeRelationship(lordSkillNumber, Stats.SkillDamageBonus, 1.0f / 50, Stats.TotalEnergy);
         }
 
-        var multishot = this.GameConfiguration.Skills.First(s => s.Number == (int)SkillNumber.MultiShot);
-        multishot.AttributeRelationships.Add(CharacterClassHelper.CreateAttributeRelationship(this.Context, this.GameConfiguration, Stats.SkillDamageBonus, 0.8f, Stats.SkillMultiplier, aggregateType: AggregateType.Multiplicate));
+        this.AddAttributeRelationship(SkillNumber.MultiShot, Stats.SkillDamageBonus, 0.8f, Stats.SkillMultiplier, AggregateType.Multiplicate);
     }
 
-    private void AddAttributeRelationship(SkillNumber skillNumber, AttributeDefinition targetAttribute, float multiplier, AttributeDefinition sourceAttribute)
+    private void AddAttributeRelationship(SkillNumber skillNumber, AttributeDefinition targetAttribute, float multiplier, AttributeDefinition sourceAttribute, AggregateType aggregateType = AggregateType.AddRaw)
     {
         var skill = this.GameConfiguration.Skills.First(s => s.Number == (int)skillNumber);
-        var relationship = CharacterClassHelper.CreateAttributeRelationship(this.Context, this.GameConfiguration, targetAttribute, multiplier, sourceAttribute);
+        var relationship = CharacterClassHelper.CreateAttributeRelationship(this.Context, this.GameConfiguration, targetAttribute, multiplier, sourceAttribute, aggregateType: aggregateType);
         skill.AttributeRelationships.Add(relationship);
     }
 
