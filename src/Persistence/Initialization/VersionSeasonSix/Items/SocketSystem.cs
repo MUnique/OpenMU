@@ -278,7 +278,7 @@ public class SocketSystem : InitializerBase
         definition.Name = "Socket Options (Fire)";
         definition.MaximumOptionsPerItem = 1;
 
-        definition.PossibleOptions.Add(this.CreateRelatedSocketOption(0, SocketSubOptionType.Fire, Stats.MaximumPhysBaseDmg, Stats.Level, 1f / 20f, 1f / 19f, 1f / 18f, 1f / 17f, 1f / 14f));
+        definition.PossibleOptions.Add(this.CreateRelatedSocketOption(0, SocketSubOptionType.Fire, Stats.BaseDamageBonus, Stats.TotalLevel, 1f / 20f, 1f / 19f, 1f / 18f, 1f / 17f, 1f / 14f));
         definition.PossibleOptions.Add(this.CreateSocketOption(1, SocketSubOptionType.Fire, Stats.AttackSpeedAny, AggregateType.AddRaw, 7, 8, 9, 10, 11));
         definition.PossibleOptions.Add(this.CreateSocketOption(2, SocketSubOptionType.Fire, Stats.BaseMaxDamageBonus, AggregateType.AddRaw, 30, 32, 35, 40, 50));
         definition.PossibleOptions.Add(this.CreateSocketOption(3, SocketSubOptionType.Fire, Stats.BaseMinDamageBonus, AggregateType.AddRaw, 20, 22, 25, 30, 35));
@@ -346,7 +346,7 @@ public class SocketSystem : InitializerBase
         definition.PossibleOptions.Add(this.CreateSocketOption(0, SocketSubOptionType.Water, Stats.DefenseRatePvm, AggregateType.Multiplicate, 1.10f, 1.11f, 1.12f, 1.13f, 1.14f));
         definition.PossibleOptions.Add(this.CreateSocketOption(1, SocketSubOptionType.Water, Stats.DefenseFinal, AggregateType.AddRaw, 30, 33, 36, 39, 42));
         definition.PossibleOptions.Add(this.CreateSocketOption(2, SocketSubOptionType.Water, Stats.ShieldItemDefenseIncrease, AggregateType.AddRaw, 0.07f, 0.10f, 0.15f, 0.20f, 0.30f));
-        definition.PossibleOptions.Add(this.CreateSocketOption(3, SocketSubOptionType.Water, Stats.DamageReceiveDecrement, AggregateType.Multiplicate, 0.96f, 0.95f, 0.94f, 0.93f, 0.92f));
+        definition.PossibleOptions.Add(this.CreateSocketOption(3, SocketSubOptionType.Water, Stats.ArmorDamageDecrease, AggregateType.AddRaw, 0.04f, 0.05f, 0.06f, 0.07f, 0.08f));
         definition.PossibleOptions.Add(this.CreateSocketOption(4, SocketSubOptionType.Water, Stats.DamageReflection, AggregateType.AddRaw, 0.05f, 0.06f, 0.07f, 0.08f, 0.09f));
         return definition;
     }

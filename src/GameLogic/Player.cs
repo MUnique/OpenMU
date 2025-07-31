@@ -277,6 +277,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
                 if (this._currentMap is { } newMap)
                 {
+                    if (this.Attributes is { } attributes)
+                    {
+                        attributes[Stats.NearbyPartyMemberCount] = 0;
+                    }
+
                     this.RaisePlayerEnteredMap(newMap);
                 }
             }
@@ -647,12 +652,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         if (attacker as IPlayerSurrogate is { } playerSurrogate)
         {
-            await playerSurrogate.Owner.AfterHitTargetAsync().ConfigureAwait(false);
+            await playerSurrogate.Owner.AfterHitTargetAsync(skill).ConfigureAwait(false);
         }
 
         if (attacker is Player attackerPlayer)
         {
-            await attackerPlayer.AfterHitTargetAsync().ConfigureAwait(false);
+            await attackerPlayer.AfterHitTargetAsync(skill).ConfigureAwait(false);
         }
 
         return hitInfo;
@@ -661,10 +666,37 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <summary>
     /// Is called after the player successfully hit a target.
     /// </summary>
-    public async ValueTask AfterHitTargetAsync()
+    public async ValueTask AfterHitTargetAsync(SkillEntry? skill)
     {
         this.Attributes![Stats.CurrentHealth] = Math.Max(this.Attributes[Stats.CurrentHealth] - this.Attributes[Stats.HealthLossAfterHit], 1);
-        this.Attributes![Stats.CurrentMana] = Math.Max(this.Attributes[Stats.CurrentMana] - this.Attributes[Stats.ManaLossAfterHit], 0);
+
+        if (skill?.Skill is not null)
+        {
+            // Only skills consume mana
+            float extraManaLoss = 0;
+            if (this.MagicEffectList.ActiveEffects.ContainsKey(6)) // MagicEffectNumber.InfiniteArrow
+            {
+                var ammoItemLevel = this.Inventory?.EquippedAmmunitionItem?.Level ?? 0;
+                switch (ammoItemLevel)
+                {
+                    case 3:
+                        extraManaLoss = 10; // This value is unreferenced and a best guess
+                        break;
+                    case 2:
+                        extraManaLoss = 5;
+                        break;
+                    case 1:
+                        extraManaLoss = 2;
+                        break;
+                    default:
+                        // No extra mana loss
+                        break;
+                }
+            }
+
+            this.Attributes![Stats.CurrentMana] = Math.Max(this.Attributes[Stats.CurrentMana] - (this.Attributes[Stats.ManaLossAfterHit] + extraManaLoss), 0);
+        }
+
         await this.DecreaseWeaponDurabilityAfterHitAsync().ConfigureAwait(false);
     }
 
@@ -1350,6 +1382,13 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         using var _ = await this.ObserverLock.WriterLockAsync();
         this.Observers.Add(observer);
+        if (this.Party is not null
+            && observer is Player observingPlayer
+            && observingPlayer.Party == this.Party
+            && observingPlayer.Attributes is { } attributes)
+        {
+            attributes[Stats.NearbyPartyMemberCount]++;
+        }
     }
 
     /// <inheritdoc/>
@@ -1357,6 +1396,13 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     {
         using var _ = await this.ObserverLock.WriterLockAsync();
         this.Observers.Remove(observer);
+        if (this.Party is not null
+            && observer is Player observingPlayer
+            && observingPlayer.Party == this.Party
+            && observingPlayer.Attributes is { } attributes)
+        {
+            attributes[Stats.NearbyPartyMemberCount]--;
+        }
     }
 
     /// <inheritdoc/>
@@ -2179,6 +2225,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.AddMissingStatAttributes();
 
         this.Attributes = new ItemAwareAttributeSystem(this.Account!, selectedCharacter);
+        this.Attributes[Stats.NearbyPartyMemberCount] = 0;
         this.LogInvalidInventoryItems();
 
         this.Inventory = new InventoryStorage(this, this.GameContext);

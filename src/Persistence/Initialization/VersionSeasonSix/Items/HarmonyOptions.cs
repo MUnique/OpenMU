@@ -123,7 +123,7 @@ public class HarmonyOptions : InitializerBase
         definition.PossibleOptions.Add(this.CreateHarmonyOptions(4, ItemOptionDefinitionNumbers.HarmonyDefense, 30, Stats.HealthRecoveryAbsolute, AggregateType.AddRaw, 6, 1, 2, 3, 4, 5, 6, 7, 8));
         definition.PossibleOptions.Add(this.CreateHarmonyOptions(5, ItemOptionDefinitionNumbers.HarmonyDefense, 20, Stats.ManaRecoveryAbsolute, AggregateType.AddRaw, 9, 1, 2, 3, 4, 5));
         definition.PossibleOptions.Add(this.CreateHarmonyOptions(6, ItemOptionDefinitionNumbers.HarmonyDefense, 20, Stats.DefenseRatePvp, AggregateType.AddRaw, 9, 3, 4, 5, 6, 8));
-        definition.PossibleOptions.Add(this.CreateHarmonyOptions(7, ItemOptionDefinitionNumbers.HarmonyDefense, 20, Stats.DamageReceiveDecrement, AggregateType.Multiplicate, 9, 0.97f, 0.96f, 0.95f, 0.94f, 0.93f));
+        definition.PossibleOptions.Add(this.CreateHarmonyOptions(7, ItemOptionDefinitionNumbers.HarmonyDefense, 20, Stats.ArmorDamageDecrease, AggregateType.AddRaw, 9, 0.03f, 0.04f, 0.05f, 0.06f, 0.07f));
         definition.PossibleOptions.Add(this.CreateHarmonyOptions(8, ItemOptionDefinitionNumbers.HarmonyDefense, 10, Stats.ShieldRateIncrease, AggregateType.AddRaw, 13, 0.05f));
     }
 
