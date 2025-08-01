@@ -17,14 +17,8 @@ public class FenrirUpgradeCrafting : BaseItemCraftingHandler
 {
     private readonly ItemPriceCalculator _priceCalculator = new();
 
-    /// <inheritdoc />
-    protected override int GetPrice(byte successRate, IList<CraftingRequiredItemLink> requiredItems)
-    {
-        return 10_000_000;
-    }
-
     /// <inheritdoc/>
-    protected override CraftingResult? TryGetRequiredItems(Player player, out IList<CraftingRequiredItemLink> items, out byte successRateByItems)
+    public override CraftingResult? TryGetRequiredItems(Player player, out IList<CraftingRequiredItemLink> items, out byte successRateByItems)
     {
         successRateByItems = 0;
         items = new List<CraftingRequiredItemLink>(4);
@@ -90,6 +84,12 @@ public class FenrirUpgradeCrafting : BaseItemCraftingHandler
         }
 
         return null;
+    }
+
+    /// <inheritdoc />
+    protected override int GetPrice(byte successRate, IList<CraftingRequiredItemLink> requiredItems)
+    {
+        return 10_000_000;
     }
 
     /// <inheritdoc/>

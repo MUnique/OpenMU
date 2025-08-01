@@ -247,7 +247,7 @@ public class ChaosMixes : InitializerBase
         crafting.ItemCraftingHandlerClassName = typeof(DinorantCrafting).FullName!;
         var craftingSettings = this.Context.CreateNew<SimpleCraftingSettings>();
         crafting.SimpleCraftingSettings = craftingSettings;
-        craftingSettings.Money = 500_000;
+        craftingSettings.Money = 250_000;
         craftingSettings.SuccessPercent = 70;
 
         // Requirements:
@@ -260,8 +260,8 @@ public class ChaosMixes : InitializerBase
         craftingSettings.RequiredItems.Add(chaos);
 
         var horn = this.Context.CreateNew<ItemCraftingRequiredItem>();
-        horn.MinimumAmount = 10;
-        horn.MaximumAmount = 10;
+        horn.MinimumAmount = 3;
+        horn.MaximumAmount = 3;
         horn.SuccessResult = MixResult.Disappear;
         horn.FailResult = MixResult.Disappear;
         horn.PossibleItems.Add(this.GameConfiguration.Items.First(i => i.Name == "Horn of Uniria"));

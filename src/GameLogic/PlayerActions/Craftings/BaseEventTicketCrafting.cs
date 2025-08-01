@@ -37,7 +37,7 @@ public abstract class BaseEventTicketCrafting : BaseItemCraftingHandler
     protected virtual CraftingResult IncorrectMixItemsResult => CraftingResult.IncorrectMixItems;
 
     /// <inheritdoc />
-    protected override CraftingResult? TryGetRequiredItems(Player player, out IList<CraftingRequiredItemLink> itemLinks, out byte successRate)
+    public override CraftingResult? TryGetRequiredItems(Player player, out IList<CraftingRequiredItemLink> itemLinks, out byte successRate)
     {
         successRate = 0;
         itemLinks = new List<CraftingRequiredItemLink>(3);

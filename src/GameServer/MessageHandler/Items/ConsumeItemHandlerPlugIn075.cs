@@ -8,7 +8,6 @@ using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
 using MUnique.OpenMU.Network.Packets.ClientToServer;
-using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>

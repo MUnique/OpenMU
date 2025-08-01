@@ -29,21 +29,7 @@ public class GuardianOptionCrafting : SimpleItemCraftingHandler
     public static byte ItemReference { get; } = 0x88;
 
     /// <inheritdoc />
-    protected override async ValueTask<List<Item>> CreateOrModifyResultItemsAsync(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot, byte successRate)
-    {
-        var item = requiredItems.First(i => i.ItemRequirement.Reference == ItemReference && i.Items.Any()).Items.First();
-        foreach (var optionDefinition in item.Definition!.PossibleItemOptions.First(o => o.PossibleOptions.Any(p => p.OptionType == ItemOptionTypes.GuardianOption)).PossibleOptions)
-        {
-            var optionLink = player.PersistenceContext.CreateNew<ItemOptionLink>();
-            optionLink.ItemOption = optionDefinition;
-            item.ItemOptions.Add(optionLink);
-        }
-
-        return new List<Item> { item };
-    }
-
-    /// <inheritdoc />
-    protected override CraftingResult? TryGetRequiredItems(Player player, out IList<CraftingRequiredItemLink> items, out byte successRate)
+    public override CraftingResult? TryGetRequiredItems(Player player, out IList<CraftingRequiredItemLink> items, out byte successRate)
     {
         if (base.TryGetRequiredItems(player, out items, out successRate) is { } error)
         {
@@ -56,6 +42,20 @@ public class GuardianOptionCrafting : SimpleItemCraftingHandler
         }
 
         return default;
+    }
+
+    /// <inheritdoc />
+    protected override async ValueTask<List<Item>> CreateOrModifyResultItemsAsync(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot, byte successRate)
+    {
+        var item = requiredItems.First(i => i.ItemRequirement.Reference == ItemReference && i.Items.Any()).Items.First();
+        foreach (var optionDefinition in item.Definition!.PossibleItemOptions.First(o => o.PossibleOptions.Any(p => p.OptionType == ItemOptionTypes.GuardianOption)).PossibleOptions)
+        {
+            var optionLink = player.PersistenceContext.CreateNew<ItemOptionLink>();
+            optionLink.ItemOption = optionDefinition;
+            item.ItemOptions.Add(optionLink);
+        }
+
+        return new List<Item> { item };
     }
 
     /// <inheritdoc />
