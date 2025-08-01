@@ -62,11 +62,11 @@ public class ItemCraftAction
     /// <returns>The relevant <see cref="ItemCrafting"/>.</returns>
     public ItemCrafting? FindAppropriateCraftingByItems(Player player)
     {
-        ItemCrafting? selectedCrafting = null;
-
         if (player.OpenedNpc?.Definition is { } npc)
         {
-            foreach (var itemCrafting in npc.ItemCraftings)
+            // Wing crafting is similiar but has one extra requirement (chaos weapon) than
+            // chaos weapon crafting, so we set a descending order so it gets get checked first
+            foreach (var itemCrafting in npc.ItemCraftings.OrderByDescending(c => c.Number))
             {
                 if (!this._craftingHandlerCache.TryGetValue(itemCrafting, out var craftingHandler))
                 {
@@ -76,18 +76,12 @@ public class ItemCraftAction
 
                 if (craftingHandler.TryGetRequiredItems(player, out _, out _) is null)
                 {
-                    selectedCrafting = itemCrafting;
-                    if (selectedCrafting.Number != 1)
-                    {
-                        // If any but the chaos weapon crafting, the search is finished.
-                        // Otherwise, it still could be a wing crafting, which has an extra item requirement (chaos weapon).
-                        break;
-                    }
+                    return itemCrafting;
                 }
             }
         }
 
-        return selectedCrafting;
+        return null;
     }
 
     private IItemCraftingHandler CreateCraftingHandler(ItemCrafting crafting)
