@@ -711,12 +711,12 @@ public static class AttackableExtensions
         {
             // Common damage types
             case DamageType.Wizardry:
-                minimumBaseDamage = (int)((minimumBaseDamage + attackerStats[Stats.MinimumWizBaseDmg] + skillMinimumDamage) * attackerStats[Stats.WizardryAttackDamageIncrease]);
-                maximumBaseDamage = (int)((maximumBaseDamage + attackerStats[Stats.MaximumWizBaseDmg] + skillMaximumDamage) * attackerStats[Stats.WizardryAttackDamageIncrease]);
+                minimumBaseDamage = (int)((attackerStats[Stats.MinimumWizBaseDmg] + skillMinimumDamage) * attackerStats[Stats.WizardryAttackDamageIncrease]);
+                maximumBaseDamage = (int)((attackerStats[Stats.MaximumWizBaseDmg] + skillMaximumDamage) * attackerStats[Stats.WizardryAttackDamageIncrease]);
                 break;
             case DamageType.Curse:
-                minimumBaseDamage = (int)((minimumBaseDamage + attackerStats[Stats.MinimumCurseBaseDmg] + skillMinimumDamage) * attackerStats[Stats.CurseAttackDamageIncrease]);
-                maximumBaseDamage = (int)((maximumBaseDamage + attackerStats[Stats.MaximumCurseBaseDmg] + skillMaximumDamage) * attackerStats[Stats.CurseAttackDamageIncrease]);
+                minimumBaseDamage = (int)((attackerStats[Stats.MinimumCurseBaseDmg] + skillMinimumDamage) * attackerStats[Stats.CurseAttackDamageIncrease]);
+                maximumBaseDamage = (int)((attackerStats[Stats.MaximumCurseBaseDmg] + skillMaximumDamage) * attackerStats[Stats.CurseAttackDamageIncrease]);
                 break;
             case DamageType.Physical:
                 minimumBaseDamage = (int)attackerStats[Stats.MinimumPhysBaseDmg] + skillMinimumDamage;

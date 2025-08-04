@@ -113,6 +113,7 @@ internal partial class CharacterClassInitialization
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f, Stats.WizardryAttackDamageIncrease));
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f / 33f, Stats.AbilityRecoveryMultiplier));
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.WizardryBaseDmgIncrease));
+        result.BaseAttributeValues.Add(this.CreateConstValueAttribute(0, Stats.NovaStageDamage)); // placeholder value
 
         this.AddCommonBaseAttributeValues(result.BaseAttributeValues, isMaster);
 

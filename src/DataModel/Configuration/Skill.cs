@@ -85,11 +85,6 @@ public enum SkillType
     AreaSkillExplicitTarget = 5,
 
     /// <summary>
-    /// The nova skill which hits all targets in range and applies some bonus damage.
-    /// </summary>
-    Nova = 6,
-
-    /// <summary>
     /// The buff skill type. Applies magic effects on players.
     /// </summary>
     Buff = 10,
@@ -230,7 +225,7 @@ public partial class Skill
     /// For example, horse skill:
     ///  * new AttributeRelationship(Stats.SkillDamageBonus, 1.0f / 10, Stats.TotalStrength)
     ///  * new AttributeRelationship(Stats.SkillDamageBonus, 1.0f / 5, Stats.TotalLeadership)
-    ///  * new AttributeRelationship(Stats.SkillDamageBonus, 10, Stats.HorseLevel)
+    ///  * new AttributeRelationship(Stats.SkillDamageBonus, 10, Stats.HorseLevel).
     /// </remarks>
     [MemberOfAggregate]
     public virtual ICollection<AttributeRelationship> AttributeRelationships { get; protected set; } = null!;

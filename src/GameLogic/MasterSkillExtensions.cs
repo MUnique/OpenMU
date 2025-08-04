@@ -68,13 +68,21 @@ public static class MasterSkillExtensions
     /// Gets the base <see cref="Skill"/>s of a <see cref="Skill"/>.
     /// </summary>
     /// <param name="skill">The <see cref="Skill"/>.</param>
+    /// <param name="onlyMasterSkills">If set to <c>true</c>, only master skills are returned.</param>
     /// <returns>The base <see cref="Skill"/>.</returns>
-    public static IEnumerable<Skill> GetBaseSkills(this Skill skill)
+    public static IEnumerable<Skill> GetBaseSkills(this Skill skill, bool onlyMasterSkills = false)
     {
         while (skill.MasterDefinition?.ReplacedSkill is { } replacedSkill)
         {
-            skill = replacedSkill;
-            yield return skill;
+            if (onlyMasterSkills && replacedSkill.MasterDefinition is null)
+            {
+                yield break;
+            }
+            else
+            {
+                skill = replacedSkill;
+                yield return skill;
+            }
         }
     }
 

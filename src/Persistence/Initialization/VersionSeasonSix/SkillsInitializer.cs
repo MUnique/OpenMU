@@ -133,7 +133,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.CreateSkill(SkillNumber.Decay, "Decay", CharacterClasses.SoulMasterAndGrandMaster, DamageType.Wizardry, 95, 6, 7, 110, energyRequirement: 953, elementalModifier: ElementalType.Poison, skillType: SkillType.AreaSkillAutomaticHits);
         this.CreateSkill(SkillNumber.IceStorm, "Ice Storm", CharacterClasses.SoulMasterAndGrandMaster, DamageType.Wizardry, 80, 6, 5, 100, energyRequirement: 849, elementalModifier: ElementalType.Ice, skillType: SkillType.AreaSkillAutomaticHits);
         this.AddAreaSkillSettings(SkillNumber.IceStorm, false, default, default, default, true, TimeSpan.Zero, TimeSpan.FromMilliseconds(200), targetAreaDiameter: 3, useTargetAreaFilter: true);
-        this.CreateSkill(SkillNumber.Nova, "Nova", CharacterClasses.SoulMasterAndGrandMaster, DamageType.Wizardry, distance: 6, manaConsumption: 180 / 12 /* mana per stage */, levelRequirement: 100, energyRequirement: 1052, elementalModifier: ElementalType.Fire, skillType: SkillType.Nova);
+        this.CreateSkill(SkillNumber.Nova, "Nova", CharacterClasses.SoulMasterAndGrandMaster, DamageType.Wizardry, distance: 6, manaConsumption: 180 / 12 /* mana per stage */, levelRequirement: 100, energyRequirement: 1052, elementalModifier: ElementalType.Fire);
         this.CreateSkill(SkillNumber.NovaStart, "Nova (Start)", CharacterClasses.SoulMasterAndGrandMaster, DamageType.None, abilityConsumption: 45, levelRequirement: 100, energyRequirement: 1052, skillType: SkillType.Other);
         this.CreateSkill(SkillNumber.TwistingSlash, "Twisting Slash", CharacterClasses.AllKnights | CharacterClasses.AllMGs, DamageType.Physical, distance: 2, abilityConsumption: 10, manaConsumption: 10, elementalModifier: ElementalType.Wind, skillType: SkillType.AreaSkillAutomaticHits);
         this.CreateSkill(SkillNumber.RagefulBlow, "Rageful Blow", CharacterClasses.BladeKnightAndBladeMaster, DamageType.Physical, 60, 3, 20, 25, 170, elementalModifier: ElementalType.Earth, skillType: SkillType.AreaSkillAutomaticHits);
@@ -575,8 +575,8 @@ internal class SkillsInitializer : SkillsInitializerBase
 
     private void InitializeSkillAttributes()
     {
-        this.AddAttributeRelationship(SkillNumber.NovaStart, Stats.SkillDamageBonus, 1.0f / 2, Stats.TotalStrength);
-        this.AddAttributeRelationship(SkillNumber.NovaStart, Stats.SkillDamageBonus, 1, Stats.NovaStageDamage);
+        this.AddAttributeRelationship(SkillNumber.Nova, Stats.SkillDamageBonus, 1.0f / 2, Stats.TotalStrength);
+        this.AddAttributeRelationship(SkillNumber.Nova, Stats.SkillDamageBonus, 1, Stats.NovaStageDamage);
 
         this.AddAttributeRelationship(SkillNumber.Earthshake, Stats.SkillDamageBonus, 1.0f / 10, Stats.TotalStrength);
         this.AddAttributeRelationship(SkillNumber.Earthshake, Stats.SkillDamageBonus, 1.0f / 5, Stats.TotalLeadership);

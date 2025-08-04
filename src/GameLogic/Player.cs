@@ -1525,26 +1525,19 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             }
         }
 
-        IEnumerable<SkillEntry> GetMasterSkillEntries(SkillEntry? masterSkillEntry)
+        IEnumerable<SkillEntry> GetMasterSkillEntries(SkillEntry masterSkillEntry)
         {
-            var currentEntry = masterSkillEntry;
-            while (currentEntry is not null)
+            yield return masterSkillEntry;
+
+            foreach (var masterSkill in skillEntry.Skill.GetBaseSkills(true))
             {
-                yield return currentEntry;
-                if (currentEntry.Skill?.MasterDefinition?.ReplacedSkill is { } replacedSkill && replacedSkill.MasterDefinition is not null)
-                {
-                    currentEntry = this.SkillList!.GetSkill((ushort)replacedSkill.Number);
-                }
-                else
-                {
-                    currentEntry = null;
-                }
+                yield return this.SkillList!.GetSkill((ushort)masterSkill.Number)!;
             }
         }
 
-        IElement AppedMasterSkillPowerUp(SkillEntry? masterSkillEntry, PowerUpDefinition powerUpDef, IElement powerUp)
+        IElement AppedMasterSkillPowerUp(SkillEntry masterSkillEntry, PowerUpDefinition powerUpDef, IElement powerUp)
         {
-            if (masterSkillEntry?.Skill?.MasterDefinition is not { } masterSkillDefinition)
+            if (masterSkillEntry.Skill?.MasterDefinition is not { } masterSkillDefinition)
             {
                 return powerUp;
             }
