@@ -45,14 +45,6 @@ public class InfiniteArrowEffectInitializer : InitializerBase
         reduceAmmonitionUsage.Boost.ConstantValue.Value = 0f;
         reduceAmmonitionUsage.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
 
-        // Mana loss is 5 plus an extra dependent on the ammo item level.
-        // Because the ammo item can be changed during the magic effect duration, the extra loss is added after each hit.
-        var manaLossAfterHit = this.Context.CreateNew<PowerUpDefinition>();
-        magicEffect.PowerUpDefinitions.Add(manaLossAfterHit);
-        manaLossAfterHit.TargetAttribute = Stats.ManaLossAfterHit.GetPersistent(this.GameConfiguration);
-        manaLossAfterHit.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-        manaLossAfterHit.Boost.ConstantValue.Value = 5f;
-
         // Placeholder for the Infinity Arrow Strengthener master skill
         var damageIncreaseByMasterSkill = this.Context.CreateNew<PowerUpDefinition>();
         magicEffect.PowerUpDefinitions.Add(damageIncreaseByMasterSkill);

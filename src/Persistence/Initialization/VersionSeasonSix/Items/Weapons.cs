@@ -39,6 +39,7 @@ internal class Weapons : InitializerBase
     private static readonly float[] ScepterRiseIncreaseByLevelOdd = { 0, 2, 3, 5, 6, 8, 9, 11, 12, 14, 16, 18, 21, 25, 29, 33 }; // Scepter with odd magic power
 
     private static readonly float[] AmmunitionDamageIncreaseByLevel = { 0, 0.03f, 0.05f, 0.07f }; // Bolts/Arrows
+    private static readonly float[] AmmunitionManaLossAfterHitByLevel = { 5, 7, 10, 15 }; // Only if Infinity Arrow effect is active
 
     private ItemLevelBonusTable? _weaponDamageIncreaseTable;
 
@@ -49,6 +50,7 @@ internal class Weapons : InitializerBase
     private ItemLevelBonusTable? _scepterRiseTableOdd;
 
     private ItemLevelBonusTable? _ammunitionDamageIncreaseTable;
+    private ItemLevelBonusTable? _ammunitionManaLossAfterHitTable;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Weapons" /> class.
@@ -130,6 +132,7 @@ internal class Weapons : InitializerBase
         this._scepterRiseTableEven = this.CreateItemBonusTable(ScepterRiseIncreaseByLevelEven, "Scepter Rise (even)", "The scepter rise bonus per item level for even magic power scepters.");
         this._scepterRiseTableOdd = this.CreateItemBonusTable(ScepterRiseIncreaseByLevelOdd, "Scepter Rise (odd)", "The scepter rise bonus per item level for odd magic power scepters.");
         this._ammunitionDamageIncreaseTable = this.CreateItemBonusTable(AmmunitionDamageIncreaseByLevel, "Damage Increase % (Bolts/Arrows)", "The damage increase % per ammunition item level.");
+        this._ammunitionManaLossAfterHitTable = this.CreateItemBonusTable(AmmunitionManaLossAfterHitByLevel, "Mana Loss After Hit (Bolts/Arrows)", "The mana loss per skill hit per ammunition item level due to infinity arrow efect.");
 
         this.CreateWeapon(0, 0, 0, 0, 1, 2, true, "Kris", 6, 6, 11, 50, 20, 0, 0, 40, 40, 0, 0, 1, 1, 1, 1, 1, 1, 1);
         this.CreateWeapon(0, 1, 0, 0, 1, 3, true, "Short Sword", 3, 3, 7, 20, 22, 0, 0, 60, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1);
@@ -340,6 +343,10 @@ internal class Weapons : InitializerBase
             var damagePowerUp = this.CreateItemBasePowerUpDefinition(Stats.AmmunitionDamageBonus, 0f, AggregateType.AddRaw);
             damagePowerUp.BonusPerLevelTable = this._ammunitionDamageIncreaseTable;
             item.BasePowerUpAttributes.Add(damagePowerUp);
+
+            var manaLossPowerUp = this.CreateItemBasePowerUpDefinition(Stats.ManaLossAfterHit, 0f, AggregateType.AddRaw);
+            manaLossPowerUp.BonusPerLevelTable = this._ammunitionManaLossAfterHitTable;
+            item.BasePowerUpAttributes.Add(manaLossPowerUp);
 
             item.IsAmmunition = true;
             return;

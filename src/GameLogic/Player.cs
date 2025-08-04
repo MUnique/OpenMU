@@ -670,31 +670,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     {
         this.Attributes![Stats.CurrentHealth] = Math.Max(this.Attributes[Stats.CurrentHealth] - this.Attributes[Stats.HealthLossAfterHit], 1);
 
-        if (skill?.Skill is not null)
+        if (skill?.Skill is not null
+            && this.MagicEffectList.ActiveEffects.ContainsKey(6)) // MagicEffectNumber.InfiniteArrow
         {
-            // Only skills consume mana
-            float extraManaLoss = 0;
-            if (this.MagicEffectList.ActiveEffects.ContainsKey(6)) // MagicEffectNumber.InfiniteArrow
-            {
-                var ammoItemLevel = this.Inventory?.EquippedAmmunitionItem?.Level ?? 0;
-                switch (ammoItemLevel)
-                {
-                    case 3:
-                        extraManaLoss = 10; // This value is unreferenced and a best guess
-                        break;
-                    case 2:
-                        extraManaLoss = 5;
-                        break;
-                    case 1:
-                        extraManaLoss = 2;
-                        break;
-                    default:
-                        // No extra mana loss
-                        break;
-                }
-            }
-
-            this.Attributes![Stats.CurrentMana] = Math.Max(this.Attributes[Stats.CurrentMana] - (this.Attributes[Stats.ManaLossAfterHit] + extraManaLoss), 0);
+            // The mana penalty only applies for skill hits
+            this.Attributes![Stats.CurrentMana] = Math.Max(this.Attributes[Stats.CurrentMana] - this.Attributes[Stats.ManaLossAfterHit], 0);
         }
 
         await this.DecreaseWeaponDurabilityAfterHitAsync().ConfigureAwait(false);
