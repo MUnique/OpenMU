@@ -27,29 +27,7 @@ public class SimpleItemCraftingHandler : BaseItemCraftingHandler
     }
 
     /// <inheritdoc />
-    protected override int GetPrice(byte successRate, IList<CraftingRequiredItemLink> requiredItems)
-    {
-        return this._settings.Money + (this._settings.MoneyPerFinalSuccessPercentage * successRate);
-    }
-
-    /// <summary>
-    /// Determines whether the actual item matches with the required item definition.
-    /// </summary>
-    /// <param name="item">The item.</param>
-    /// <param name="requiredItem">The required item.</param>
-    /// <returns><c>true</c>, if the actual item matches with the required item definition.</returns>
-    protected virtual bool RequiredItemMatches(Item item, ItemCraftingRequiredItem requiredItem)
-    {
-        item.ThrowNotInitializedProperty(item.Definition is null, nameof(item.Definition));
-
-        return (!requiredItem.PossibleItems.Any() || requiredItem.PossibleItems.Contains(item.Definition))
-               && item.Level >= requiredItem.MinimumItemLevel
-               && item.Level <= requiredItem.MaximumItemLevel
-               && requiredItem.RequiredItemOptions.All(r => item.ItemOptions.Any(o => o.ItemOption!.OptionType == r));
-    }
-
-    /// <inheritdoc />
-    protected override CraftingResult? TryGetRequiredItems(Player player, out IList<CraftingRequiredItemLink> items, out byte successRate)
+    public override CraftingResult? TryGetRequiredItems(Player player, out IList<CraftingRequiredItemLink> items, out byte successRate)
     {
         successRate = 0;
         int rate = this._settings.SuccessPercent;
@@ -141,6 +119,28 @@ public class SimpleItemCraftingHandler : BaseItemCraftingHandler
         successRate = (byte)Math.Min(100, rate);
 
         return default;
+    }
+
+    /// <inheritdoc />
+    protected override int GetPrice(byte successRate, IList<CraftingRequiredItemLink> requiredItems)
+    {
+        return this._settings.Money + (this._settings.MoneyPerFinalSuccessPercentage * successRate);
+    }
+
+    /// <summary>
+    /// Determines whether the actual item matches with the required item definition.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <param name="requiredItem">The required item.</param>
+    /// <returns><c>true</c>, if the actual item matches with the required item definition.</returns>
+    protected virtual bool RequiredItemMatches(Item item, ItemCraftingRequiredItem requiredItem)
+    {
+        item.ThrowNotInitializedProperty(item.Definition is null, nameof(item.Definition));
+
+        return (!requiredItem.PossibleItems.Any() || requiredItem.PossibleItems.Contains(item.Definition))
+               && item.Level >= requiredItem.MinimumItemLevel
+               && item.Level <= requiredItem.MaximumItemLevel
+               && requiredItem.RequiredItemOptions.All(r => item.ItemOptions.Any(o => o.ItemOption!.OptionType == r));
     }
 
     /// <inheritdoc />

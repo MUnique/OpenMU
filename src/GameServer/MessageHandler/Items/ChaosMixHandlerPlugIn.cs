@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.PlayerActions.Items;
+using MUnique.OpenMU.GameLogic.Views.NPC;
 using MUnique.OpenMU.Network.Packets.ClientToServer;
 using MUnique.OpenMU.PlugIns;
 
@@ -29,8 +30,26 @@ internal class ChaosMixHandlerPlugIn : IPacketHandlerPlugIn
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         ChaosMachineMixRequest message = packet;
+
+        byte mixType;
+        if (packet.Length == 3)
+        {
+            // Older versions (e.g. 0.75, 0.95d) don't provide a mix type identifier, so we have to infer the item crafting
+            var crafting = this._mixAction.FindAppropriateCraftingByItems(player);
+            if (crafting is null)
+            {
+                await player.InvokeViewPlugInAsync<IShowItemCraftingResultPlugIn>(p => p.ShowResultAsync(CraftingResult.IncorrectMixItems, null)).ConfigureAwait(false);
+                return;
+            }
+
+            mixType = crafting.Number;
+        }
+        else
+        {
+            mixType = (byte)message.MixType;
+        }
+
         var socketSlot = packet.Length > 4 ? message.SocketSlot : (byte)0;
-        var mixType = packet.Length > 3 ? message.MixType : ChaosMachineMixRequest.ChaosMachineMixType.ChaosWeapon;
-        await this._mixAction.MixItemsAsync(player, (byte)mixType, socketSlot).ConfigureAwait(false);
+        await this._mixAction.MixItemsAsync(player, mixType, socketSlot).ConfigureAwait(false);
     }
 }

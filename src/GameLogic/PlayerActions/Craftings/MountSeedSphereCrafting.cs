@@ -34,6 +34,32 @@ public class MountSeedSphereCrafting : SimpleItemCraftingHandler
     public static byte SocketItemReference { get; } = 0x88;
 
     /// <inheritdoc />
+    public override CraftingResult? TryGetRequiredItems(Player player, out IList<CraftingRequiredItemLink> items, out byte successRate)
+    {
+        var result = base.TryGetRequiredItems(player, out items, out successRate);
+        if (result != default)
+        {
+            return result;
+        }
+
+        // We need to check, if the seed sphere can be mounted on the item.
+        // Weapons: Fire, Lightning, Ice
+        // Armors: Water, Earth, Wind
+        var seedSphere = items.Single(i => i.ItemRequirement.Reference == SeedSphereReference).Items.Single();
+        var socketItem = items.Single(i => i.ItemRequirement.Reference == SocketItemReference).Items.Single();
+        seedSphere.ThrowNotInitializedProperty(seedSphere.Definition is null, nameof(seedSphere.Definition));
+        socketItem.ThrowNotInitializedProperty(socketItem.Definition is null, nameof(socketItem.Definition));
+
+        var seedOption = seedSphere.Definition.PossibleItemOptions.Single();
+        if (socketItem.Definition.PossibleItemOptions.All(iod => iod != seedOption))
+        {
+            return CraftingResult.IncorrectMixItems;
+        }
+
+        return null;
+    }
+
+    /// <inheritdoc />
     protected override async ValueTask<List<Item>> CreateOrModifyResultItemsAsync(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot, byte successRate)
     {
         var seedSphere = requiredItems.Single(i => i.ItemRequirement.Reference == SeedSphereReference).Items.Single();
@@ -71,32 +97,6 @@ public class MountSeedSphereCrafting : SimpleItemCraftingHandler
         }
 
         return new List<Item> { socketItem };
-    }
-
-    /// <inheritdoc />
-    protected override CraftingResult? TryGetRequiredItems(Player player, out IList<CraftingRequiredItemLink> items, out byte successRate)
-    {
-        var result = base.TryGetRequiredItems(player, out items, out successRate);
-        if (result != default)
-        {
-            return result;
-        }
-
-        // We need to check, if the seed sphere can be mounted on the item.
-        // Weapons: Fire, Lightning, Ice
-        // Armors: Water, Earth, Wind
-        var seedSphere = items.Single(i => i.ItemRequirement.Reference == SeedSphereReference).Items.Single();
-        var socketItem = items.Single(i => i.ItemRequirement.Reference == SocketItemReference).Items.Single();
-        seedSphere.ThrowNotInitializedProperty(seedSphere.Definition is null, nameof(seedSphere.Definition));
-        socketItem.ThrowNotInitializedProperty(socketItem.Definition is null, nameof(socketItem.Definition));
-
-        var seedOption = seedSphere.Definition.PossibleItemOptions.Single();
-        if (socketItem.Definition.PossibleItemOptions.All(iod => iod != seedOption))
-        {
-            return CraftingResult.IncorrectMixItems;
-        }
-
-        return null;
     }
 
     private IncreasableItemOption? GetPossibleBonusOption(Item socketItem)

@@ -27,6 +27,7 @@ public class ItemCraftAction
         var crafting = npcStats?.ItemCraftings.FirstOrDefault(c => c.Number == mixTypeId);
         if (crafting is null)
         {
+            await player.InvokeViewPlugInAsync<IShowItemCraftingResultPlugIn>(p => p.ShowResultAsync(CraftingResult.IncorrectMixItems, null)).ConfigureAwait(false);
             return;
         }
 
@@ -53,6 +54,35 @@ public class ItemCraftAction
                 itemList,
                 npcStats!.NpcWindow == NpcWindow.PetTrainer && result.Item1 != CraftingResult.Success ? StoreKind.ResurrectionFailed : StoreKind.ChaosMachine))
             .ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Finds the relevant <see cref="ItemCrafting"/> by testing the mix items against every crafting's item requirements.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <returns>The relevant <see cref="ItemCrafting"/>.</returns>
+    public ItemCrafting? FindAppropriateCraftingByItems(Player player)
+    {
+        if (player.OpenedNpc?.Definition is { } npc)
+        {
+            // Wing crafting is similar but has one extra requirement (chaos weapon) than
+            // chaos weapon crafting, so we set a descending order so it gets get checked first
+            foreach (var itemCrafting in npc.ItemCraftings.OrderByDescending(c => c.Number))
+            {
+                if (!this._craftingHandlerCache.TryGetValue(itemCrafting, out var craftingHandler))
+                {
+                    craftingHandler = this.CreateCraftingHandler(itemCrafting);
+                    this._craftingHandlerCache.Add(itemCrafting, craftingHandler);
+                }
+
+                if (craftingHandler.TryGetRequiredItems(player, out _, out _) is null)
+                {
+                    return itemCrafting;
+                }
+            }
+        }
+
+        return null;
     }
 
     private IItemCraftingHandler CreateCraftingHandler(ItemCrafting crafting)

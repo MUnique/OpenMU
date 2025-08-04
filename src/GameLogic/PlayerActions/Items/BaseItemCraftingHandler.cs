@@ -64,6 +64,9 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
         return (CraftingResult.Failed, null);
     }
 
+    /// <inheritdoc/>
+    public abstract CraftingResult? TryGetRequiredItems(Player player, out IList<CraftingRequiredItemLink> items, out byte successRateByItems);
+
     /// <summary>
     /// Gets the price based on the success rate and the required items.
     /// </summary>
@@ -71,17 +74,6 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
     /// <param name="requiredItems">The required items.</param>
     /// <returns>The calculated price of the crafting.</returns>
     protected abstract int GetPrice(byte successRate, IList<CraftingRequiredItemLink> requiredItems);
-
-    /// <summary>
-    /// Tries to get the required items for this crafting.
-    /// If they can't be get or something is wrong, a <see cref="CraftingResult"/> with the
-    /// corresponding error is returned. Otherwise, it's <c>null</c>.
-    /// </summary>
-    /// <param name="player">The player.</param>
-    /// <param name="items">The items.</param>
-    /// <param name="successRateByItems">The success rate by items.</param>
-    /// <returns><c>null</c>, if the required items could be get; Otherwise, the corresponding error is returned.</returns>
-    protected abstract CraftingResult? TryGetRequiredItems(Player player, out IList<CraftingRequiredItemLink> items, out byte successRateByItems);
 
     /// <summary>
     /// Creates the result items or modifies referenced required items as a result.
