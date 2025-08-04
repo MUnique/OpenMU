@@ -667,39 +667,6 @@ public static class AttackableExtensions
             }
         }
 
-        //switch (skill.SkillType)
-        //{
-        //    case SkillType.Nova:
-        //        var novaDamage = (int)(attackerStats[Stats.NovaBonusDamage] + attackerStats[Stats.NovaStageDamage]);
-        //        skillMinimumDamage += novaDamage;
-        //        skillMaximumDamage += novaDamage;
-        //        break;
-        //    case SkillType.Earthshake:
-        //        skillMinimumDamage += (int)attackerStats[Stats.EarthshakeBonusDmg];
-        //        skillMaximumDamage += (int)attackerStats[Stats.EarthshakeBonusDmg];
-        //        break;
-        //    case SkillType.ElectricSpike:
-        //        var nearbyPartyMembers = (int)attackerStats[Stats.NearbyPartyMemberCount];
-        //        skillMinimumDamage += (int)attackerStats[Stats.ElectricSpikeBonusDmg] + (nearbyPartyMembers * 50);
-        //        skillMaximumDamage += (int)attackerStats[Stats.ElectricSpikeBonusDmg] + (nearbyPartyMembers * 50);
-        //        break;
-        //    case SkillType.ChaoticDiseier:
-        //        skillMinimumDamage += (int)attackerStats[Stats.ChaoticDiseierBonusDmg];
-        //        skillMaximumDamage += (int)attackerStats[Stats.ChaoticDiseierBonusDmg];
-        //        break;
-        //    case SkillType.LordGeneric:
-        //        skillMinimumDamage += (int)attackerStats[Stats.LordGenericSkillBonusDmg];
-        //        skillMaximumDamage += (int)attackerStats[Stats.LordGenericSkillBonusDmg];
-        //        break;
-        //    case SkillType.MultiShot:
-        //        skillMinimumDamage = (int)(skillMinimumDamage * 0.8);
-        //        skillMaximumDamage = (int)(skillMaximumDamage * 0.8);
-        //        break;
-        //    default:
-        //        // Not a specific skill type
-        //        break;
-        //}
-
         if (damageType == DamageType.Physical && attackerStats[Stats.HasDoubleWield] > 0)
         {
             // Because double wield dmg will be doubled later, we only take half of the skill dmg here (the skill is from a single weapon)
