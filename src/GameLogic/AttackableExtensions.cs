@@ -602,7 +602,8 @@ public static class AttackableExtensions
             return skillAttributes;
         }
 
-        var baseSkills = skillEntry.Skill.GetBaseSkills().ToList();
+        var baseSkills = new List<Skill> { skill };
+        baseSkills.AddRange(skillEntry.Skill.GetBaseSkills());
 
         if (baseSkills.All(s => s.AttributeRelationships.Count == 0))
         {
