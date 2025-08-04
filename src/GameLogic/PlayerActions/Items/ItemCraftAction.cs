@@ -27,6 +27,7 @@ public class ItemCraftAction
         var crafting = npcStats?.ItemCraftings.FirstOrDefault(c => c.Number == mixTypeId);
         if (crafting is null)
         {
+            await player.InvokeViewPlugInAsync<IShowItemCraftingResultPlugIn>(p => p.ShowResultAsync(CraftingResult.IncorrectMixItems, null)).ConfigureAwait(false);
             return;
         }
 

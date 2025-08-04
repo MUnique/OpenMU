@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.PlayerActions.Items;
+using MUnique.OpenMU.GameLogic.Views.NPC;
 using MUnique.OpenMU.Network.Packets.ClientToServer;
 using MUnique.OpenMU.PlugIns;
 
@@ -34,13 +35,14 @@ internal class ChaosMixHandlerPlugIn : IPacketHandlerPlugIn
         if (packet.Length == 3)
         {
             // Older versions (e.g. 0.75, 0.95d) don't provide a mix type identifier, so we have to infer the item crafting
-            var itemCrafting = this._mixAction.FindAppropriateCraftingByItems(player);
-            if (itemCrafting is null)
+            var crafting = this._mixAction.FindAppropriateCraftingByItems(player);
+            if (crafting is null)
             {
+                await player.InvokeViewPlugInAsync<IShowItemCraftingResultPlugIn>(p => p.ShowResultAsync(CraftingResult.IncorrectMixItems, null)).ConfigureAwait(false);
                 return;
             }
 
-            mixType = itemCrafting.Number;
+            mixType = crafting.Number;
         }
         else
         {
