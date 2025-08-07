@@ -82,7 +82,7 @@ internal partial class CharacterClassInitialization
 
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.ArcheryAttackMode, 1, Stats.IsBowEquipped));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.ArcheryAttackMode, 1, Stats.IsCrossBowEquipped));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MeleeAttackMode, -1, Stats.ArcheryAttackMode));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MeleeAttackMode, 0, Stats.ArcheryAttackMode, InputOperator.ExponentiateByAttribute));
 
         result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.MinimumPhysBaseDmg, Stats.ArcheryAttackMode, Stats.ArcheryMinDmg));
         result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.MaximumPhysBaseDmg, Stats.ArcheryAttackMode, Stats.ArcheryMaxDmg));
@@ -119,7 +119,6 @@ internal partial class CharacterClassInitialization
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(6, Stats.MaximumMana));
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.SkillMultiplier));
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f / 33f, Stats.AbilityRecoveryMultiplier));
-        result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.MeleeAttackMode));
 
         this.AddCommonBaseAttributeValues(result.BaseAttributeValues, isMaster);
 

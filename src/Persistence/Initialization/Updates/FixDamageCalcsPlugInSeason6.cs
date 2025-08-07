@@ -140,11 +140,11 @@ public class FixDamageCalcsPlugInSeason6 : FixDamageCalcsPlugInBase
             infiniteArrowEffect.Duration!.ConstantValue.Value = 600;
 
             var powerUps = infiniteArrowEffect.PowerUpDefinitions.ToList();
-            for (int i = 0; i < powerUps.Count; i++)
+            foreach (var powerUp in powerUps)
             {
-                if (powerUps[i].TargetAttribute == Stats.ManaLossAfterHit || powerUps[i].TargetAttribute == Stats.BaseDamageBonus)
+                if (powerUp.TargetAttribute == Stats.ManaLossAfterHit || powerUp.TargetAttribute == Stats.BaseDamageBonus)
                 {
-                    infiniteArrowEffect.PowerUpDefinitions.Remove(powerUps[i]);
+                    infiniteArrowEffect.PowerUpDefinitions.Remove(powerUp);
                 }
             }
         }
@@ -284,26 +284,6 @@ public class FixDamageCalcsPlugInSeason6 : FixDamageCalcsPlugInBase
             drainLifeStr.DamageType = DamageType.Wizardry;
         }
 
-        if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.EarthshakeStreng) is { } earthshakeStr)
-        {
-            earthshakeStr.SkillType = SkillType.AreaSkillAutomaticHits;
-        }
-
-        if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.EarthshakeMastery) is { } earthshakeMastery)
-        {
-            earthshakeMastery.SkillType = SkillType.AreaSkillAutomaticHits;
-        }
-
-        if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.ElectricSparkStreng) is { } electricSparkStr)
-        {
-            electricSparkStr.SkillType = SkillType.AreaSkillAutomaticHits;
-        }
-
-        if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.ChaoticDiseierStr) is { } chaoticDiseierStr)
-        {
-            chaoticDiseierStr.SkillType = SkillType.AreaSkillAutomaticHits;
-        }
-
         // Create Skill attribute relationships
         AddAttributeRelationship(SkillNumber.Nova, Stats.SkillDamageBonus, 1.0f / 2, Stats.TotalStrength);
         AddAttributeRelationship(SkillNumber.Nova, Stats.SkillDamageBonus, 1, Stats.NovaStageDamage);
@@ -325,7 +305,7 @@ public class FixDamageCalcsPlugInSeason6 : FixDamageCalcsPlugInBase
             AddAttributeRelationship(lordSkillNumber, Stats.SkillDamageBonus, 1.0f / 50, Stats.TotalEnergy);
         }
 
-        AddAttributeRelationship(SkillNumber.MultiShot, Stats.SkillDamageBonus, 0.8f, Stats.SkillMultiplier, AggregateType.Multiplicate);
+        AddAttributeRelationship(SkillNumber.MultiShot, Stats.SkillMultiplier, 0.8f, Stats.SkillMultiplier, AggregateType.Multiplicate);
 
         void AddAttributeRelationship(SkillNumber skillNumber, AttributeDefinition targetAttribute, float multiplier, AttributeDefinition sourceAttribute, AggregateType aggregateType = AggregateType.AddRaw)
         {

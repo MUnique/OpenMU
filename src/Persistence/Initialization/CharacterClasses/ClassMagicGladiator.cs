@@ -88,6 +88,12 @@ internal partial class CharacterClassInitialization
         result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.WizardryBaseDmg, Stats.IsOneHandedStaffEquipped, Stats.OneHandedStaffBonusBaseDamage));
         result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.WizardryBaseDmg, Stats.IsTwoHandedStaffEquipped, Stats.TwoHandedStaffBonusBaseDamage));
 
+        // If a one-handed staff is equipped, we assume it's an energy MG and "switch off" the one-handed sword attribute,
+        // otherwise the mastery attack speed bonus would double in case of a staff-sword wield
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.IsOneHandedSwordEquipped, 0, Stats.IsOneHandedStaffEquipped, InputOperator.ExponentiateByAttribute, AggregateType.Multiplicate));
+        result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.AttackSpeedAny, Stats.IsOneHandedStaffEquipped, Stats.WeaponMasteryAttackSpeed));
+        result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.AttackSpeedAny, Stats.IsOneHandedSwordEquipped, Stats.WeaponMasteryAttackSpeed));
+
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.FenrirBaseDmg, 1.0f / 3, Stats.TotalStrength));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.FenrirBaseDmg, 1.0f / 5, Stats.TotalAgility));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.FenrirBaseDmg, 1.0f / 5, Stats.TotalVitality));
@@ -118,6 +124,7 @@ internal partial class CharacterClassInitialization
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f, Stats.WizardryAttackDamageIncrease));
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f / 33f, Stats.AbilityRecoveryMultiplier));
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.WizardryBaseDmgIncrease));
+        result.BaseAttributeValues.Add(this.CreateConstValueAttribute(0, Stats.IsOneHandedSwordEquipped));
 
         this.AddCommonBaseAttributeValues(result.BaseAttributeValues, isMaster);
 

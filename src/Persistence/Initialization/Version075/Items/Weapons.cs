@@ -319,7 +319,7 @@ internal class Weapons : InitializerBase
             item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.AmmunitionConsumptionRate, 1, AggregateType.AddRaw));
         }
 
-        if (group != (int)ItemGroups.Bows && group != (int)ItemGroups.Staff && width == 2)
+        if (group < (int)ItemGroups.Bows && width == 2)
         {
             item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsTwoHandedWeaponEquipped, 1, AggregateType.AddRaw));
         }

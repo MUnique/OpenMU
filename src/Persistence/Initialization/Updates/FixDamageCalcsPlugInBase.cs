@@ -64,6 +64,8 @@ public abstract class FixDamageCalcsPlugInBase : UpdatePlugInBase
         gameConfiguration.Attributes.Add(wizardryBaseDmgIncrease);
         var physicalBaseDmgIncrease = context.CreateNew<AttributeDefinition>(Stats.PhysicalBaseDmgIncrease.Id, Stats.PhysicalBaseDmgIncrease.Designation, Stats.PhysicalBaseDmgIncrease.Description);
         gameConfiguration.Attributes.Add(physicalBaseDmgIncrease);
+        var crossBowMasteryBonusDamage = context.CreateNew<AttributeDefinition>(Stats.CrossBowMasteryBonusDamage.Id, Stats.CrossBowMasteryBonusDamage.Designation, Stats.CrossBowMasteryBonusDamage.Description);
+        gameConfiguration.Attributes.Add(crossBowMasteryBonusDamage);
         var meleeAttackMode = context.CreateNew<AttributeDefinition>(Stats.MeleeAttackMode.Id, Stats.MeleeAttackMode.Designation, Stats.MeleeAttackMode.Description);
         gameConfiguration.Attributes.Add(meleeAttackMode);
         var meleeMinDmg = context.CreateNew<AttributeDefinition>(Stats.MeleeMinDmg.Id, Stats.MeleeMinDmg.Designation, Stats.MeleeMinDmg.Description);
@@ -518,9 +520,9 @@ public abstract class FixDamageCalcsPlugInBase : UpdatePlugInBase
 
                 var archeryAttackModeToMeleeAttackMode = context.CreateNew<AttributeRelationship>(
                     meleeAttackMode,
-                    -1,
+                    0,
                     archeryAttackMode,
-                    InputOperator.Multiply,
+                    InputOperator.ExponentiateByAttribute,
                     default(AttributeDefinition?),
                     AggregateType.AddRaw);
 
@@ -573,7 +575,6 @@ public abstract class FixDamageCalcsPlugInBase : UpdatePlugInBase
                 charClass.AttributeCombinations.Add(meleeMinDmgToMinPhysBaseDmg);
                 charClass.AttributeCombinations.Add(meleeMaxDmgToMaxPhysBaseDmg);
                 charClass.AttributeCombinations.Add(weaponMasteryAttackSpeedToAttackSpeedAny);
-                charClass.BaseAttributeValues.Add(context.CreateNew<ConstValueAttribute>(1, meleeAttackMode));
             }
 
             if (charClass.Number == 12 || charClass.Number == 13) // MG classes
@@ -585,6 +586,30 @@ public abstract class FixDamageCalcsPlugInBase : UpdatePlugInBase
                         charClass.AttributeCombinations.Remove(attrCombo);
                     }
                 }
+
+                var isOneHandedStaffEquippedToIsOneHandedSwordEquipped = context.CreateNew<AttributeRelationship>(
+                    isOneHandedSwordEquipped,
+                    0,
+                    isOneHandedStaffEquipped,
+                    InputOperator.ExponentiateByAttribute,
+                    default(AttributeDefinition?),
+                    AggregateType.Multiplicate);
+
+                var weaponMasteryAttackSpeedToAttackSpeedAnyStaff = context.CreateNew<AttributeRelationship>(
+                    attackSpeedAny,
+                    isOneHandedStaffEquipped,
+                    weaponMasteryAttackSpeed,
+                    AggregateType.AddRaw);
+
+                var weaponMasteryAttackSpeedToAttackSpeedAnySword = context.CreateNew<AttributeRelationship>(
+                    attackSpeedAny,
+                    isOneHandedSwordEquipped,
+                    weaponMasteryAttackSpeed,
+                    AggregateType.AddRaw);
+
+                charClass.AttributeCombinations.Add(weaponMasteryAttackSpeedToAttackSpeedAnyStaff);
+                charClass.AttributeCombinations.Add(weaponMasteryAttackSpeedToAttackSpeedAnySword);
+                charClass.BaseAttributeValues.Add(context.CreateNew<ConstValueAttribute>(0, isOneHandedSwordEquipped));
             }
 
             if (charClass.Number == 24 || charClass.Number == 25) // RF classes
@@ -625,7 +650,6 @@ public abstract class FixDamageCalcsPlugInBase : UpdatePlugInBase
                     {
                         attrCombo.InputAttribute = statsDefense;
                         attrCombo.InputOperand = 1;
-                        break;
                     }
 
                     if ((attrCombo.TargetAttribute == Stats.MinimumPhysBaseDmg || attrCombo.TargetAttribute == Stats.MaximumPhysBaseDmg)
@@ -900,7 +924,7 @@ public abstract class FixDamageCalcsPlugInBase : UpdatePlugInBase
             }
         }
 
-        // Remove Stats.IsTwoHandedWeaponEquipped from staffs (this is for physical type damage weapons only)
+        // Remove Stats.IsTwoHandedWeaponEquipped from staffs (this stat is for physical type damage weapons only)
         if (items.Where(i => i.Group == (byte)ItemGroups.Staff && i.Width == 2) is { } staffs)
         {
             foreach (var staff in staffs)
@@ -927,7 +951,7 @@ public abstract class FixDamageCalcsPlugInBase : UpdatePlugInBase
             if (excWizAttackOptions.PossibleOptions.FirstOrDefault(p => p.PowerUpDefinition?.TargetAttribute == Stats.WizardryBaseDmg) is { } levelDmgIncOption
                 && levelDmgIncOption.PowerUpDefinition!.Boost?.RelatedValues.FirstOrDefault() is { } relatedValue)
             {
-                relatedValue.TargetAttribute = Stats.TotalLevel.GetPersistent(gameConfiguration);
+                relatedValue.InputAttribute = Stats.TotalLevel.GetPersistent(gameConfiguration);
             }
         }
 
@@ -942,7 +966,7 @@ public abstract class FixDamageCalcsPlugInBase : UpdatePlugInBase
             if (excPhysAttackOptions.PossibleOptions.FirstOrDefault(p => p.PowerUpDefinition?.TargetAttribute == Stats.PhysicalBaseDmg) is { } levelDmgIncOption
                 && levelDmgIncOption.PowerUpDefinition!.Boost?.RelatedValues.FirstOrDefault() is { } relatedValue)
             {
-                relatedValue.TargetAttribute = Stats.TotalLevel.GetPersistent(gameConfiguration);
+                relatedValue.InputAttribute = Stats.TotalLevel.GetPersistent(gameConfiguration);
             }
         }
 

@@ -444,7 +444,7 @@ public class Stats
     /// <summary>
     /// Gets the is two handed weapon equipped.
     /// </summary>
-    /// <remarks>Excludes bows and staffs.</remarks>
+    /// <remarks>Excludes bows and staffs. Unlocks <see cref="TwoHandedWeaponDamageIncrease"/>.</remarks>
     public static AttributeDefinition IsTwoHandedWeaponEquipped { get; } = new(new Guid("7426781F-CD87-4F2B-8B03-9447B670C632"), "Is Two-Handed Weapon Equipped", string.Empty);
 
     /// <summary>
@@ -468,9 +468,9 @@ public class Stats
     public static AttributeDefinition CrossBowStrBonusDamage { get; } = new(new Guid("DBAD454A-EB1C-4FEE-9B40-97EA70278BB5"), "Cross Bow Strengthener Bonus Damage (MST)", string.Empty);
 
     /// <summary>
-    /// Gets the cross bow mastery MST bonus damage.
+    /// Gets the cross bow mastery MST bonus damage (PvP).
     /// </summary>
-    public static AttributeDefinition CrossBowMasteryBonusDamage { get; } = new(new Guid("B3AF7F51-6D6B-42FB-B8FF-689D03890F3E"), "Cross Bow Mastery Bonus Damage (MST)", string.Empty);
+    public static AttributeDefinition CrossBowMasteryBonusDamage { get; } = new(new Guid("B3AF7F51-6D6B-42FB-B8FF-689D03890F3E"), "Cross Bow Mastery PvP Bonus Damage (MST)", string.Empty);
 
     /// <summary>
     /// Gets elf's melee attack mode attribute definition.
@@ -510,7 +510,10 @@ public class Stats
     /// <summary>
     /// Gets the is a one handed sword equipped.
     /// </summary>
-    public static AttributeDefinition IsOneHandedSwordEquipped { get; } = new(new Guid("21B71774-EB4F-41F6-A0AA-0E600F41226C"), "Is One Handed Sword Equipped", string.Empty);
+    public static AttributeDefinition IsOneHandedSwordEquipped { get; } = new(new Guid("21B71774-EB4F-41F6-A0AA-0E600F41226C"), "Is One Handed Sword Equipped", string.Empty)
+    {
+        MaximumValue = 1,
+    };
 
     /// <summary>
     /// Gets the one handed sword MST bonus base damage.
@@ -520,7 +523,7 @@ public class Stats
     /// <summary>
     /// Gets the weapon mastery MST bonus attack speed.
     /// </summary>
-    /// <remarks>Bucket attribute for the master skills: one handed sword mastery (DK), bow mastery (Elf), one handed staff mastery (DW), other world tome mastery (Summoner).</remarks>
+    /// <remarks>Bucket attribute for the master skills: one handed sword mastery (DK/MG), bow mastery (Elf), one handed staff mastery (DW/MG), other world tome mastery (Summoner).</remarks>
     public static AttributeDefinition WeaponMasteryAttackSpeed { get; } = new(new Guid("CD16D6FD-5495-4BD9-A112-DBAF83BB4008"), "Weapon Mastery Bonus Attack Speed (MST)", "A generic master tree attack speed bonus attribute, which serves as a bucket for \"mastery\" skills.");
 
     /// <summary>
@@ -534,9 +537,9 @@ public class Stats
     public static AttributeDefinition TwoHandedSwordStrBonusDamage { get; } = new(new Guid("C77F9C38-336B-43AE-8B82-A8D73612E9D2"), "Two Handed Sword Strengthener Bonus Damage (MST)", string.Empty);
 
     /// <summary>
-    /// Gets the two handed sword mastery MST bonus damage.
+    /// Gets the two handed sword mastery MST bonus damage (PvP).
     /// </summary>
-    public static AttributeDefinition TwoHandedSwordMasteryBonusDamage { get; } = new(new Guid("77B2B093-7418-4A71-AD52-12DB162B4461"), "Two Handed Sword Mastery Bonus Damage (MST)", string.Empty);
+    public static AttributeDefinition TwoHandedSwordMasteryBonusDamage { get; } = new(new Guid("77B2B093-7418-4A71-AD52-12DB162B4461"), "Two Handed Sword Mastery PvP Bonus Damage (MST)", string.Empty);
 
     /// <summary>
     /// Gets the is a mace equipped.
@@ -589,9 +592,9 @@ public class Stats
     public static AttributeDefinition TwoHandedStaffBonusBaseDamage { get; } = new(new Guid("8A46D105-4B58-4E42-B602-52715F6BEE61"), "Two Handed Staff Bonus Base Damage (MST)", string.Empty);
 
     /// <summary>
-    /// Gets the two handed staff mastery MST bonus damage.
+    /// Gets the two handed staff mastery MST bonus damage (PvP).
     /// </summary>
-    public static AttributeDefinition TwoHandedStaffMasteryBonusDamage { get; } = new(new Guid("1E6B1569-A36D-4C41-97B1-DD6E0A9746EE"), "Two Handed Staff Mastery Bonus Damage (MST)", string.Empty);
+    public static AttributeDefinition TwoHandedStaffMasteryBonusDamage { get; } = new(new Guid("1E6B1569-A36D-4C41-97B1-DD6E0A9746EE"), "Two Handed Staff Mastery PvP Bonus Damage (MST)", string.Empty);
 
     /// <summary>
     /// Gets the is a stick equipped.
@@ -614,9 +617,9 @@ public class Stats
     public static AttributeDefinition StickBonusBaseDamage { get; } = new(new Guid("0EF0D78B-9518-445B-BE5A-469962AF7C9D"), "Stick Bonus Base Damage (MST)", string.Empty);
 
     /// <summary>
-    /// Gets the stick mastery MST bonus damage.
+    /// Gets the stick mastery MST bonus damage (PvP).
     /// </summary>
-    public static AttributeDefinition StickMasteryBonusDamage { get; } = new(new Guid("E79B2B06-9A32-451F-9B2D-2B91FD79B614"), "Stick Mastery Bonus Damage (MST)", string.Empty);
+    public static AttributeDefinition StickMasteryBonusDamage { get; } = new(new Guid("E79B2B06-9A32-451F-9B2D-2B91FD79B614"), "Stick Mastery PvP Bonus Damage (MST)", string.Empty);
 
     /// <summary>
     /// Gets the is a scepter equipped.
@@ -629,9 +632,9 @@ public class Stats
     public static AttributeDefinition ScepterStrBonusDamage { get; } = new(new Guid("4E4373A5-F5DB-4D06-B5C1-EE798B58017E"), "Scepter Strengthener Bonus Damage (MST)", string.Empty);
 
     /// <summary>
-    /// Gets the scepter mastery MST bonus damage.
+    /// Gets the scepter mastery MST bonus damage (PvP).
     /// </summary>
-    public static AttributeDefinition ScepterMasteryBonusDamage { get; } = new(new Guid("39C1837C-B19F-4FA3-B16F-03A0F5AE624A"), "Scepter Mastery Bonus Damage (MST)", string.Empty);
+    public static AttributeDefinition ScepterMasteryBonusDamage { get; } = new(new Guid("39C1837C-B19F-4FA3-B16F-03A0F5AE624A"), "Scepter Mastery PvP Bonus Damage (MST)", string.Empty);
 
     /// <summary>
     /// Gets the scepter pet MST bonus damage.

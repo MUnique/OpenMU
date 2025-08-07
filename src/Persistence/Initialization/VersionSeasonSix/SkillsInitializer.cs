@@ -595,7 +595,7 @@ internal class SkillsInitializer : SkillsInitializerBase
             this.AddAttributeRelationship(lordSkillNumber, Stats.SkillDamageBonus, 1.0f / 50, Stats.TotalEnergy);
         }
 
-        this.AddAttributeRelationship(SkillNumber.MultiShot, Stats.SkillDamageBonus, 0.8f, Stats.SkillMultiplier, AggregateType.Multiplicate);
+        this.AddAttributeRelationship(SkillNumber.MultiShot, Stats.SkillMultiplier, 0.8f, Stats.SkillMultiplier, AggregateType.Multiplicate);
     }
 
     private void AddAttributeRelationship(SkillNumber skillNumber, AttributeDefinition targetAttribute, float multiplier, AttributeDefinition sourceAttribute, AggregateType aggregateType = AggregateType.AddRaw)
