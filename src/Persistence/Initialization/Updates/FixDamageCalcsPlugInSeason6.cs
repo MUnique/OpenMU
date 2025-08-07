@@ -131,6 +131,8 @@ public class FixDamageCalcsPlugInSeason6 : FixDamageCalcsPlugInBase
             s.Number == (short)SkillNumber.BerserkerProficiency);
         foreach (var berserker_ in berserkers)
         {
+            berserker_.SkillType = SkillType.Buff;
+            berserker_.TargetRestriction = SkillTargetRestriction.Self;
             berserker_.MagicEffectDef = magicEffect;
         }
 

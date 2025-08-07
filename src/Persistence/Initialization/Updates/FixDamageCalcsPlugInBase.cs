@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.Updates;
 
-using System.Text.RegularExpressions;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
@@ -38,7 +37,7 @@ public abstract class FixDamageCalcsPlugInBase : UpdatePlugInBase
     public override bool IsMandatory => true;
 
     /// <inheritdoc />
-    public override DateTime CreatedAt => new(2025, 08, 5, 16, 0, 0, DateTimeKind.Utc);
+    public override DateTime CreatedAt => new(2025, 08, 7, 16, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
@@ -607,6 +606,7 @@ public abstract class FixDamageCalcsPlugInBase : UpdatePlugInBase
                     weaponMasteryAttackSpeed,
                     AggregateType.AddRaw);
 
+                charClass.AttributeCombinations.Add(isOneHandedStaffEquippedToIsOneHandedSwordEquipped);
                 charClass.AttributeCombinations.Add(weaponMasteryAttackSpeedToAttackSpeedAnyStaff);
                 charClass.AttributeCombinations.Add(weaponMasteryAttackSpeedToAttackSpeedAnySword);
                 charClass.BaseAttributeValues.Add(context.CreateNew<ConstValueAttribute>(0, isOneHandedSwordEquipped));
