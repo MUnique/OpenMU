@@ -344,9 +344,9 @@ internal class Weapons : InitializerBase
             damagePowerUp.BonusPerLevelTable = this._ammunitionDamageIncreaseTable;
             item.BasePowerUpAttributes.Add(damagePowerUp);
 
-            var manaLossPowerUp = this.CreateItemBasePowerUpDefinition(Stats.ManaLossAfterHit, 0f, AggregateType.AddRaw);
-            manaLossPowerUp.BonusPerLevelTable = this._ammunitionManaLossAfterHitTable;
-            item.BasePowerUpAttributes.Add(manaLossPowerUp);
+            var manaCostPowerUp = this.CreateItemBasePowerUpDefinition(Stats.SkillExtraManaCost, 0f, AggregateType.AddRaw);
+            manaCostPowerUp.BonusPerLevelTable = this._ammunitionManaLossAfterHitTable;
+            item.BasePowerUpAttributes.Add(manaCostPowerUp);
 
             item.IsAmmunition = true;
             return;

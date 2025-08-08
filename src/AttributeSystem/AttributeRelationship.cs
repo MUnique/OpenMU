@@ -35,6 +35,11 @@ public enum InputOperator
     /// The maximum between <see cref="AttributeRelationship.InputAttribute"/> and <see cref="AttributeRelationship.InputOperand"/> is taken before effecting the <see cref="AttributeRelationship.TargetAttribute"/>.
     /// </summary>
     Maximum,
+
+    /// <summary>
+    /// The minimum between <see cref="AttributeRelationship.InputAttribute"/> and <see cref="AttributeRelationship.InputOperand"/> is taken before effecting the <see cref="AttributeRelationship.TargetAttribute"/>.
+    /// </summary>
+    Minimum,
 }
 
 /// <summary>

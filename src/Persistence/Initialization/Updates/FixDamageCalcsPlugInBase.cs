@@ -638,9 +638,6 @@ public abstract class FixDamageCalcsPlugInBase : UpdatePlugInBase
                 gameConfiguration.Attributes.Add(statsMaxWizAndCurseBaseDmg);
                 var minBerserkerHealthDecrement = context.CreateNew<AttributeDefinition>(Guid.NewGuid(), "Min Berserker health decrement", string.Empty);
                 gameConfiguration.Attributes.Add(minBerserkerHealthDecrement);
-                var isBerserkerBuffed = context.CreateNew<AttributeDefinition>(Guid.NewGuid(), "Is Berserker buffed", string.Empty);
-                isBerserkerBuffed.MaximumValue = 1;
-                gameConfiguration.Attributes.Add(isBerserkerBuffed);
                 var finalBerserkerHealthDecrement = context.CreateNew<AttributeDefinition>(Guid.NewGuid(), "Final Berserker health decrement", string.Empty);
                 gameConfiguration.Attributes.Add(finalBerserkerHealthDecrement);
 
@@ -771,19 +768,21 @@ public abstract class FixDamageCalcsPlugInBase : UpdatePlugInBase
                     default(AttributeDefinition?),
                     AggregateType.Multiplicate);
 
-                var berserkerMinPhysDmgBonusToIsBerserkerBuffed = context.CreateNew<AttributeRelationship>(
-                    isBerserkerBuffed,
-                    1,
-                    berserkerMinPhysDmgBonus,
-                    InputOperator.Multiply,
+                var berserkerHealthDecToFinalBerserkerHealthDec = context.CreateNew<AttributeRelationship>(
+                    finalBerserkerHealthDecrement,
+                    -0.1f,
+                    berserkerHealthDecrement,
+                    InputOperator.Minimum,
                     default(AttributeDefinition?),
                     AggregateType.AddRaw);
 
-                var berserkerHealthDecToFinalBerserkerHealthDec = context.CreateNew<AttributeRelationship>(
+                var berserkerMinPhysDmgBonusToIsBerserkerBuffed = context.CreateNew<AttributeRelationship>(
                     finalBerserkerHealthDecrement,
-                    isBerserkerBuffed,
-                    berserkerHealthDecrement,
-                    AggregateType.AddRaw);
+                    1,
+                    berserkerMinPhysDmgBonus,
+                    InputOperator.Minimum,
+                    default(AttributeDefinition?),
+                    AggregateType.Multiplicate);
 
                 var finalBerserkerHealthDecToMaxHealth = context.CreateNew<AttributeRelationship>(
                     maximumHealth,
@@ -1003,7 +1002,7 @@ public abstract class FixDamageCalcsPlugInBase : UpdatePlugInBase
             }
 
             var ammunitionDamageBonus = Stats.AmmunitionDamageBonus.GetPersistent(gameConfiguration);
-            var manaLossAfterHit = Stats.ManaLossAfterHit.GetPersistent(gameConfiguration);
+            var skillExtraManaCost = Stats.SkillExtraManaCost.GetPersistent(gameConfiguration);
             ItemLevelBonusTable? ammoManaLossTable = null;
             foreach (var ammoItem in ammoItems)
             {
@@ -1018,7 +1017,7 @@ public abstract class FixDamageCalcsPlugInBase : UpdatePlugInBase
                 {
                     ammoManaLossTable ??= CreateManaLossAfterHitTable(context, gameConfiguration, ammunitionDamageIncreaseByLevel);
                     var manaLossPowerDown = context.CreateNew<ItemBasePowerUpDefinition>();
-                    manaLossPowerDown.TargetAttribute = manaLossAfterHit;
+                    manaLossPowerDown.TargetAttribute = skillExtraManaCost;
                     manaLossPowerDown.BaseValue = 0f;
                     manaLossPowerDown.AggregateType = AggregateType.AddRaw;
                     manaLossPowerDown.BonusPerLevelTable = ammoManaLossTable;

@@ -652,12 +652,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         if (attacker as IPlayerSurrogate is { } playerSurrogate)
         {
-            await playerSurrogate.Owner.AfterHitTargetAsync(skill).ConfigureAwait(false);
+            await playerSurrogate.Owner.AfterHitTargetAsync().ConfigureAwait(false);
         }
 
         if (attacker is Player attackerPlayer)
         {
-            await attackerPlayer.AfterHitTargetAsync(skill).ConfigureAwait(false);
+            await attackerPlayer.AfterHitTargetAsync().ConfigureAwait(false);
         }
 
         return hitInfo;
@@ -666,16 +666,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <summary>
     /// Is called after the player successfully hit a target.
     /// </summary>
-    public async ValueTask AfterHitTargetAsync(SkillEntry? skill)
+    public async ValueTask AfterHitTargetAsync()
     {
         this.Attributes![Stats.CurrentHealth] = Math.Max(this.Attributes[Stats.CurrentHealth] - this.Attributes[Stats.HealthLossAfterHit], 1);
-
-        if (skill?.Skill is not null
-            && this.MagicEffectList.ActiveEffects.ContainsKey(6)) // MagicEffectNumber.InfiniteArrow
-        {
-            // The mana penalty only applies for skill hits
-            this.Attributes![Stats.CurrentMana] = Math.Max(this.Attributes[Stats.CurrentMana] - this.Attributes[Stats.ManaLossAfterHit], 0);
-        }
 
         await this.DecreaseWeaponDurabilityAfterHitAsync().ConfigureAwait(false);
     }
@@ -1424,14 +1417,16 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return false;
         }
 
-        if (skill.ConsumeRequirements.Any(r => this.GetRequiredValue(r) > this.Attributes![r.Attribute]))
+        var addExtraManaCost = this.Attributes![Stats.AmmunitionConsumptionRate] == 0
+            && skill.SkillType is SkillType.DirectHit or SkillType.AreaSkillAutomaticHits;
+        if (skill.ConsumeRequirements.Any(r => this.GetRequiredValue(r, addExtraManaCost) > this.Attributes![r.Attribute]))
         {
             return false;
         }
 
         foreach (var requirement in skill.ConsumeRequirements)
         {
-            this.Attributes![requirement.Attribute] -= this.GetRequiredValue(requirement);
+            this.Attributes![requirement.Attribute] -= this.GetRequiredValue(requirement, addExtraManaCost);
         }
 
         return true;

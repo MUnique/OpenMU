@@ -23,6 +23,7 @@ public static class Extensions
             InputOperator.Exponentiate => "^",
             InputOperator.ExponentiateByAttribute => "^",
             InputOperator.Maximum => "<max>",
+            InputOperator.Minimum => "<min>",
             _ => string.Empty,
         };
     }

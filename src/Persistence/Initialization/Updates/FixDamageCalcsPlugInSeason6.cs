@@ -144,7 +144,7 @@ public class FixDamageCalcsPlugInSeason6 : FixDamageCalcsPlugInBase
             var powerUps = infiniteArrowEffect.PowerUpDefinitions.ToList();
             foreach (var powerUp in powerUps)
             {
-                if (powerUp.TargetAttribute == Stats.ManaLossAfterHit || powerUp.TargetAttribute == Stats.BaseDamageBonus)
+                if (powerUp.TargetAttribute == Stats.SkillExtraManaCost || powerUp.TargetAttribute == Stats.BaseDamageBonus) // SkillExtraManaCost is the old ManaLossAfterHit
                 {
                     infiniteArrowEffect.PowerUpDefinitions.Remove(powerUp);
                 }

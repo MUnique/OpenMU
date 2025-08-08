@@ -114,7 +114,7 @@ public static class AttackableExtensions
             {
                 dmg += (int)attacker.Attributes[Stats.RavenBonusDamage];
 
-                if (attributes is not (DamageAttributes.Excellent or DamageAttributes.Critical))
+                if ((attributes & (DamageAttributes.Excellent | DamageAttributes.Critical)) == DamageAttributes.Undefined)
                 {
                     dmg = (int)(dmg / 1.5);
                 }
@@ -493,8 +493,9 @@ public static class AttackableExtensions
     /// </summary>
     /// <param name="attacker">The attacker.</param>
     /// <param name="attributeRequirement">The attribute requirement, e.g. of a skill.</param>
+    /// <param name="addExtraManaCost">If set to <c>true</c>, <see cref="Stats.SkillExtraManaCost"/> applies.</param>
     /// <returns>The required value.</returns>
-    public static int GetRequiredValue(this IAttacker attacker, AttributeRequirement attributeRequirement)
+    public static int GetRequiredValue(this IAttacker attacker, AttributeRequirement attributeRequirement, bool addExtraManaCost = false)
     {
         var modifier = 1.0f;
         if (ReductionModifiers.TryGetValue(
@@ -504,7 +505,13 @@ public static class AttackableExtensions
             modifier -= attacker.Attributes[reductionAttribute];
         }
 
-        return (int)(attributeRequirement.MinimumValue * modifier);
+        var extraCost = 0;
+        if (addExtraManaCost && attributeRequirement.Attribute == Stats.CurrentMana)
+        {
+            extraCost = (int)attacker.Attributes[Stats.SkillExtraManaCost];
+        }
+
+        return (int)((attributeRequirement.MinimumValue + extraCost) * modifier);
     }
 
     /// <summary>

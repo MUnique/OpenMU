@@ -242,7 +242,9 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
                 continue;
             }
 
-            if (item.ItemSlot == InventoryConstants.RightHandSlot && option.PowerUpDefinition?.TargetAttribute == Stats.WizardryBaseDmg)
+            if (item.ItemSlot == InventoryConstants.RightHandSlot
+                && option.OptionType == ItemOptionTypes.Option
+                && option.PowerUpDefinition?.TargetAttribute == Stats.WizardryBaseDmg)
             {
                 // For a RH-wielded staff (MG), its wizardry item option doesn't count (but the others do!)
                 continue;

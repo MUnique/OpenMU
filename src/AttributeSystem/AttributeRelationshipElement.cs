@@ -79,6 +79,9 @@ public class AttributeRelationshipElement : SimpleElement
             InputOperator.Maximum => Math.Max(
                 this.InputElements.Sum(a => a.Value),
                 this.InputOperand.Value),
+            InputOperator.Minimum => Math.Min(
+                this.InputElements.Sum(a => a.Value),
+                this.InputOperand.Value),
             _ => throw new InvalidOperationException($"Input operator {this.InputOperator} unknown"),
         };
     }

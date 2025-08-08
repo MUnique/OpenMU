@@ -831,10 +831,8 @@ public class Stats
     /// <summary>
     /// Gets the berserker buff health (and defense) decrement attribute definition.
     /// </summary>
-    public static AttributeDefinition BerserkerHealthDecrement { get; } = new(new Guid("D1948382-23F6-43A4-AD84-69227BF2ABA3"), "Berserker Health Decrement", "The berserker health decrement which has a maximum value of -10%.")
-    {
-        MaximumValue = -0.1f, // At least -10% HP/defense
-    };
+    /// <remarks>Starts at -40% and increases with energy until a maximum of -10%.</remarks>
+    public static AttributeDefinition BerserkerHealthDecrement { get; } = new(new Guid("D1948382-23F6-43A4-AD84-69227BF2ABA3"), "Berserker Health Decrement", "The berserker health decrement which should have a maximum value of -10%.");
 
     /// <summary>
     /// Gets the berserker buff curse damage multiplier MST attribute definition.
@@ -1202,9 +1200,9 @@ public class Stats
     public static AttributeDefinition HealthLossAfterHit { get; } = new(new Guid("D84A719B-D18E-433E-BF55-9F08A214AB00"), "Health loss after hitting a target", "Caused by wearing wings");
 
     /// <summary>
-    /// Gets the mana loss after hit definition.
+    /// Gets the skill extra mana cost definition.
     /// </summary>
-    public static AttributeDefinition ManaLossAfterHit { get; } = new(new Guid("321B9B7D-EF8C-45FC-9CA7-F511FC7D802B"), "Mana loss after hitting a target", "Caused by infinity arrow effect");
+    public static AttributeDefinition SkillExtraManaCost { get; } = new(new Guid("321B9B7D-EF8C-45FC-9CA7-F511FC7D802B"), "Skill extra mana cost", "Caused by infinity arrow effect");
 
     /// <summary>
     /// Gets the CanFly attribute for warping to icarus.

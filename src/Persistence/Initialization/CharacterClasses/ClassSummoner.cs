@@ -35,9 +35,6 @@ internal partial class CharacterClassInitialization
         this.GameConfiguration.Attributes.Add(statsMaxWizAndCurseBaseDmg);
         var minBerserkerHealthDecrement = this.Context.CreateNew<AttributeDefinition>(Guid.NewGuid(), "Min Berserker health decrement", string.Empty);
         this.GameConfiguration.Attributes.Add(minBerserkerHealthDecrement);
-        var isBerserkerBuffed = this.Context.CreateNew<AttributeDefinition>(Guid.NewGuid(), "Is Berserker buffed", string.Empty);
-        isBerserkerBuffed.MaximumValue = 1;
-        this.GameConfiguration.Attributes.Add(isBerserkerBuffed);
         var finalBerserkerHealthDecrement = this.Context.CreateNew<AttributeDefinition>(Guid.NewGuid(), "Final Berserker health decrement", string.Empty);
         this.GameConfiguration.Attributes.Add(finalBerserkerHealthDecrement);
 
@@ -127,8 +124,8 @@ internal partial class CharacterClassInitialization
         result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.AttackSpeedAny, Stats.IsBookEquipped, Stats.WeaponMasteryAttackSpeed));
 
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumMana, 1, Stats.BerserkerManaMultiplier, InputOperator.Add, AggregateType.Multiplicate));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(isBerserkerBuffed, 1, Stats.BerserkerMinPhysDmgBonus));
-        result.AttributeCombinations.Add(this.CreateConditionalRelationship(finalBerserkerHealthDecrement, isBerserkerBuffed, Stats.BerserkerHealthDecrement));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(finalBerserkerHealthDecrement, -0.1f, Stats.BerserkerHealthDecrement, InputOperator.Minimum));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(finalBerserkerHealthDecrement, 1, Stats.BerserkerMinPhysDmgBonus, InputOperator.Minimum, AggregateType.Multiplicate));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumHealth, 1, finalBerserkerHealthDecrement, InputOperator.Add, AggregateType.Multiplicate));
         result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.DefensePvm, statsDefense, finalBerserkerHealthDecrement, AggregateType.AddFinal));
         result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.DefensePvp, statsDefense, finalBerserkerHealthDecrement, AggregateType.AddFinal));
