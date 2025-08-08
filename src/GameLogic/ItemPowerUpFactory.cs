@@ -45,9 +45,33 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
             yield break;
         }
 
+        var isRightWieldWeapon = item.ItemSlot == InventoryConstants.RightHandSlot
+            && item.Definition!.BasePowerUpAttributes.Any(pu => pu.TargetAttribute == Stats.DoubleWieldWeaponCount || pu.TargetAttribute == Stats.IsOneHandedStaffEquipped);
+
+        AttributeDefinition? targetAttribute = null;
         foreach (var attribute in item.Definition.BasePowerUpAttributes)
         {
-            foreach (var powerUp in this.GetBasePowerUpWrappers(item, attributeHolder, attribute))
+            if (isRightWieldWeapon)
+            {
+                if (attribute.TargetAttribute == Stats.StaffRise)
+                {
+                    continue;
+                }
+                else if (attribute.TargetAttribute == Stats.MinimumPhysBaseDmgByWeapon)
+                {
+                    targetAttribute = Stats.MinPhysBaseDmgByRightWeapon;
+                }
+                else if (attribute.TargetAttribute == Stats.MaximumPhysBaseDmgByWeapon)
+                {
+                    targetAttribute = Stats.MaxPhysBaseDmgByRightWeapon;
+                }
+                else
+                {
+                    targetAttribute = null;
+                }
+            }
+
+            foreach (var powerUp in this.GetBasePowerUpWrappers(item, attributeHolder, attribute, targetAttribute))
             {
                 yield return powerUp;
             }
@@ -179,7 +203,7 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
         return true;
     }
 
-    private IEnumerable<PowerUpWrapper> GetBasePowerUpWrappers(Item item, AttributeSystem attributeHolder, ItemBasePowerUpDefinition attribute)
+    private IEnumerable<PowerUpWrapper> GetBasePowerUpWrappers(Item item, AttributeSystem attributeHolder, ItemBasePowerUpDefinition attribute, AttributeDefinition? targetAttribute = null)
     {
         attribute.ThrowNotInitializedProperty(attribute.BaseValueElement is null, nameof(attribute.BaseValueElement));
         attribute.ThrowNotInitializedProperty(attribute.TargetAttribute is null, nameof(attribute.TargetAttribute));
@@ -190,13 +214,13 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
 
         if (levelBonusElmt is null)
         {
-            yield return new PowerUpWrapper(attribute.BaseValueElement, attribute.TargetAttribute, attributeHolder);
+            yield return new PowerUpWrapper(attribute.BaseValueElement, targetAttribute ?? attribute.TargetAttribute, attributeHolder);
         }
         else
         {
             yield return new PowerUpWrapper(
                 new CombinedElement(attribute.BaseValueElement, levelBonusElmt),
-                attribute.TargetAttribute,
+                targetAttribute ?? attribute.TargetAttribute,
                 attributeHolder);
         }
     }
@@ -215,6 +239,14 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
             if (option is null)
             {
                 this._logger.LogWarning("Item {item} (id {itemId}) has ItemOptionLink ({optionLinkId}) without option.", item, item.GetId(), optionLink.GetId());
+                continue;
+            }
+
+            if (item.ItemSlot == InventoryConstants.RightHandSlot
+                && option.OptionType == ItemOptionTypes.Option
+                && option.PowerUpDefinition?.TargetAttribute == Stats.WizardryBaseDmg)
+            {
+                // For a RH-wielded staff (MG), its wizardry item option doesn't count (but the others do!)
                 continue;
             }
 
@@ -294,18 +326,27 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
 
         if (item.IsPhysicalWeapon(out var minPhysDmg))
         {
+            var minDmgAttribute = Stats.MinimumPhysBaseDmgByWeapon;
+            var maxDmgAttribute = Stats.MaximumPhysBaseDmgByWeapon;
+            if (item.ItemSlot == InventoryConstants.RightHandSlot
+                && item.Definition!.BasePowerUpAttributes.Any(pu => pu.TargetAttribute == Stats.DoubleWieldWeaponCount || pu.TargetAttribute == Stats.IsOneHandedStaffEquipped))
+            {
+                minDmgAttribute = Stats.MinPhysBaseDmgByRightWeapon;
+                maxDmgAttribute = Stats.MaxPhysBaseDmgByRightWeapon;
+            }
+
             var additionalDmg = ((int)minPhysDmg * 25 / baseDropLevel) + 5;
-            yield return new PowerUpWrapper(new SimpleElement(additionalDmg, AggregateType.AddRaw), Stats.MinimumPhysBaseDmgByWeapon, attributeHolder);
-            yield return new PowerUpWrapper(new SimpleElement(additionalDmg, AggregateType.AddRaw), Stats.MaximumPhysBaseDmgByWeapon, attributeHolder);
+            yield return new PowerUpWrapper(new SimpleElement(additionalDmg, AggregateType.AddRaw), minDmgAttribute, attributeHolder);
+            yield return new PowerUpWrapper(new SimpleElement(additionalDmg, AggregateType.AddRaw), maxDmgAttribute, attributeHolder);
             if (itemIsAncient)
             {
                 var ancientBonus = 5 + (ancientDropLevel / 40);
-                yield return new PowerUpWrapper(new SimpleElement(ancientBonus, AggregateType.AddRaw), Stats.MinimumPhysBaseDmgByWeapon, attributeHolder);
-                yield return new PowerUpWrapper(new SimpleElement(ancientBonus, AggregateType.AddRaw), Stats.MaximumPhysBaseDmgByWeapon, attributeHolder);
+                yield return new PowerUpWrapper(new SimpleElement(ancientBonus, AggregateType.AddRaw), minDmgAttribute, attributeHolder);
+                yield return new PowerUpWrapper(new SimpleElement(ancientBonus, AggregateType.AddRaw), maxDmgAttribute, attributeHolder);
             }
         }
 
-        if (item.IsWizardryWeapon(out var staffRise))
+        if (item.IsWizardryWeapon(out var staffRise) && item.ItemSlot == InventoryConstants.LeftHandSlot)
         {
             var additionalRise = (((int)staffRise * 2 * 25 / baseDropLevel) + 5) / 2;
             yield return new PowerUpWrapper(new SimpleElement(additionalRise, AggregateType.AddRaw), Stats.StaffRise, attributeHolder);
@@ -335,6 +376,17 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
             {
                 var ancientRiseBonus = (2 + (ancientDropLevel / 60)) / 2;
                 yield return new PowerUpWrapper(new SimpleElement(ancientRiseBonus, AggregateType.AddRaw), Stats.BookRise, attributeHolder);
+            }
+        }
+
+        if (itemIsAncient && item.IsJewelry())
+        {
+            foreach (var baseAttribute in item.Definition!.BasePowerUpAttributes)
+            {
+                if (Stats.ElementResistanceToDamageBonus.Keys.FirstOrDefault(resistance => resistance == baseAttribute.TargetAttribute) is { } key)
+                {
+                    yield return new PowerUpWrapper(new SimpleElement(5, AggregateType.AddRaw), Stats.ElementResistanceToDamageBonus[key], attributeHolder);
+                }
             }
         }
     }

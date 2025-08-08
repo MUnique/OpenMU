@@ -277,6 +277,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
                 if (this._currentMap is { } newMap)
                 {
+                    if (this.Attributes is { } attributes)
+                    {
+                        attributes[Stats.NearbyPartyMemberCount] = 0;
+                    }
+
                     this.RaisePlayerEnteredMap(newMap);
                 }
             }
@@ -664,7 +669,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public async ValueTask AfterHitTargetAsync()
     {
         this.Attributes![Stats.CurrentHealth] = Math.Max(this.Attributes[Stats.CurrentHealth] - this.Attributes[Stats.HealthLossAfterHit], 1);
-        this.Attributes![Stats.CurrentMana] = Math.Max(this.Attributes[Stats.CurrentMana] - this.Attributes[Stats.ManaLossAfterHit], 0);
+
         await this.DecreaseWeaponDurabilityAfterHitAsync().ConfigureAwait(false);
     }
 
@@ -1350,6 +1355,13 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         using var _ = await this.ObserverLock.WriterLockAsync();
         this.Observers.Add(observer);
+        if (this.Party is not null
+            && observer is Player observingPlayer
+            && observingPlayer.Party == this.Party
+            && observingPlayer.Attributes is { } attributes)
+        {
+            attributes[Stats.NearbyPartyMemberCount]++;
+        }
     }
 
     /// <inheritdoc/>
@@ -1357,6 +1369,13 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     {
         using var _ = await this.ObserverLock.WriterLockAsync();
         this.Observers.Remove(observer);
+        if (this.Party is not null
+            && observer is Player observingPlayer
+            && observingPlayer.Party == this.Party
+            && observingPlayer.Attributes is { } attributes)
+        {
+            attributes[Stats.NearbyPartyMemberCount]--;
+        }
     }
 
     /// <inheritdoc/>
@@ -1398,14 +1417,16 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return false;
         }
 
-        if (skill.ConsumeRequirements.Any(r => this.GetRequiredValue(r) > this.Attributes![r.Attribute]))
+        var addExtraManaCost = this.Attributes![Stats.AmmunitionConsumptionRate] == 0
+            && skill.SkillType is SkillType.DirectHit or SkillType.AreaSkillAutomaticHits;
+        if (skill.ConsumeRequirements.Any(r => this.GetRequiredValue(r, addExtraManaCost) > this.Attributes![r.Attribute]))
         {
             return false;
         }
 
         foreach (var requirement in skill.ConsumeRequirements)
         {
-            this.Attributes![requirement.Attribute] -= this.GetRequiredValue(requirement);
+            this.Attributes![requirement.Attribute] -= this.GetRequiredValue(requirement, addExtraManaCost);
         }
 
         return true;
@@ -1479,26 +1500,19 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             }
         }
 
-        IEnumerable<SkillEntry> GetMasterSkillEntries(SkillEntry? masterSkillEntry)
+        IEnumerable<SkillEntry> GetMasterSkillEntries(SkillEntry masterSkillEntry)
         {
-            var currentEntry = masterSkillEntry;
-            while (currentEntry is not null)
+            yield return masterSkillEntry;
+
+            foreach (var masterSkill in skillEntry.Skill.GetBaseSkills(true))
             {
-                yield return currentEntry;
-                if (currentEntry.Skill?.MasterDefinition?.ReplacedSkill is { } replacedSkill && replacedSkill.MasterDefinition is not null)
-                {
-                    currentEntry = this.SkillList!.GetSkill((ushort)replacedSkill.Number);
-                }
-                else
-                {
-                    currentEntry = null;
-                }
+                yield return this.SkillList!.GetSkill((ushort)masterSkill.Number)!;
             }
         }
 
-        IElement AppedMasterSkillPowerUp(SkillEntry? masterSkillEntry, PowerUpDefinition powerUpDef, IElement powerUp)
+        IElement AppedMasterSkillPowerUp(SkillEntry masterSkillEntry, PowerUpDefinition powerUpDef, IElement powerUp)
         {
-            if (masterSkillEntry?.Skill?.MasterDefinition is not { } masterSkillDefinition)
+            if (masterSkillEntry.Skill?.MasterDefinition is not { } masterSkillDefinition)
             {
                 return powerUp;
             }
@@ -2179,6 +2193,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.AddMissingStatAttributes();
 
         this.Attributes = new ItemAwareAttributeSystem(this.Account!, selectedCharacter);
+        this.Attributes[Stats.NearbyPartyMemberCount] = 0;
         this.LogInvalidInventoryItems();
 
         this.Inventory = new InventoryStorage(this, this.GameContext);
