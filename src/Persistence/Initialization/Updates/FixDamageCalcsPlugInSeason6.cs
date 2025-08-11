@@ -170,13 +170,15 @@ public class FixDamageCalcsPlugInSeason6 : FixDamageCalcsPlugInBase
             }
         }
 
+        var armorDamageDecrease = Stats.ArmorDamageDecrease.GetPersistent(gameConfiguration);
         var harmonyDefOptions = gameConfiguration.ItemOptions.FirstOrDefault(o => o.Name == "Harmony Defense Options");
         if (harmonyDefOptions is not null
             && harmonyDefOptions.PossibleOptions.FirstOrDefault(o => o.Number == 7) is { } dmgDecOpt)
         {
             foreach (var level in dmgDecOpt.LevelDependentOptions)
             {
-                level.PowerUpDefinition!.Boost!.ConstantValue.Value = 1f - level.PowerUpDefinition!.Boost!.ConstantValue.Value;
+                level.PowerUpDefinition!.TargetAttribute = armorDamageDecrease;
+                level.PowerUpDefinition.Boost!.ConstantValue.Value = 1f - level.PowerUpDefinition!.Boost!.ConstantValue.Value;
                 level.PowerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.AddRaw;
             }
         }
@@ -186,9 +188,10 @@ public class FixDamageCalcsPlugInSeason6 : FixDamageCalcsPlugInBase
             && fireSocketOptions.PossibleOptions.FirstOrDefault(o => o.Number == 0) is { } lvlDmgSockOpt)
         {
             var totalLevel = Stats.TotalLevel.GetPersistent(gameConfiguration);
+            var baseDamageBonus = Stats.BaseDamageBonus.GetPersistent(gameConfiguration);
             foreach (var level in lvlDmgSockOpt.LevelDependentOptions)
             {
-                level.PowerUpDefinition!.TargetAttribute = Stats.BaseDamageBonus.GetPersistent(gameConfiguration);
+                level.PowerUpDefinition!.TargetAttribute = baseDamageBonus;
 
                 if (level.PowerUpDefinition!.Boost!.RelatedValues.FirstOrDefault() is { } relatedValue)
                 {
@@ -201,7 +204,6 @@ public class FixDamageCalcsPlugInSeason6 : FixDamageCalcsPlugInBase
         if (gameConfiguration.ItemOptions.FirstOrDefault(o => o.GetId() == socketOptionsWaterId) is { } waterSocketOptions
             && waterSocketOptions.PossibleOptions.FirstOrDefault(o => o.Number == 3) is { } dmgDecSockOpt)
         {
-            var armorDamageDecrease = Stats.ArmorDamageDecrease.GetPersistent(gameConfiguration);
             foreach (var level in dmgDecSockOpt.LevelDependentOptions)
             {
                 level.PowerUpDefinition!.TargetAttribute = armorDamageDecrease;
