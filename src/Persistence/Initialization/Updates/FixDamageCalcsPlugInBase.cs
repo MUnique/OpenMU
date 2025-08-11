@@ -988,7 +988,7 @@ public abstract class FixDamageCalcsPlugInBase : UpdatePlugInBase
             for (int level = 0; level < ammunitionDamageIncreaseByLevel.Length; level++)
             {
                 var value = ammunitionDamageIncreaseByLevel[level];
-                if ((int)value != 0)
+                if (value != 0)
                 {
                     var levelBonus = context.CreateNew<LevelBonus>();
                     levelBonus.Level = level;
