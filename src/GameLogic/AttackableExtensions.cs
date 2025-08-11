@@ -619,7 +619,7 @@ public static class AttackableExtensions
 
         skillAttributes = skillEntry.Attributes = new AttributeSystem([], [], []);
         var levelElement = new SimpleElement(skillEntry.Level, AggregateType.AddRaw);
-        skillEntry.PropertyChanged += (_, args) => levelElement.Value = skillEntry.Level;
+        skillEntry.PropertyChanged += (_, _) => levelElement.Value = skillEntry.Level;
         skillAttributes.AddElement(levelElement, Stats.SkillLevel);
         foreach (var relationship in baseSkills.SelectMany(s => s.AttributeRelationships))
         {

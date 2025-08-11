@@ -79,6 +79,8 @@ public abstract class FixDamageCalcsPlugInBase : UpdatePlugInBase
         gameConfiguration.Attributes.Add(archeryMaxDmg);
         var greaterDamageBonus = context.CreateNew<AttributeDefinition>(Stats.GreaterDamageBonus.Id, Stats.GreaterDamageBonus.Designation, Stats.GreaterDamageBonus.Description);
         gameConfiguration.Attributes.Add(greaterDamageBonus);
+        var isOneHandedSwordEquipped = Stats.IsOneHandedSwordEquipped.GetPersistent(gameConfiguration);
+        isOneHandedSwordEquipped.MaximumValue = 1;
         var weaponMasteryAttackSpeed = context.CreateNew<AttributeDefinition>(Stats.WeaponMasteryAttackSpeed.Id, Stats.WeaponMasteryAttackSpeed.Designation, Stats.WeaponMasteryAttackSpeed.Description);
         gameConfiguration.Attributes.Add(weaponMasteryAttackSpeed);
         var twoHandedSwordMasteryBonusDamage = context.CreateNew<AttributeDefinition>(Stats.TwoHandedSwordMasteryBonusDamage.Id, Stats.TwoHandedSwordMasteryBonusDamage.Designation, Stats.TwoHandedSwordMasteryBonusDamage.Description);
@@ -158,10 +160,7 @@ public abstract class FixDamageCalcsPlugInBase : UpdatePlugInBase
         var canFly = Stats.CanFly.GetPersistent(gameConfiguration);
         var minimumPhysBaseDmgByWeapon = Stats.MinimumPhysBaseDmgByWeapon.GetPersistent(gameConfiguration);
         var maximumPhysBaseDmgByWeapon = Stats.MaximumPhysBaseDmgByWeapon.GetPersistent(gameConfiguration);
-
-        // DK
         var attackSpeedAny = Stats.AttackSpeedAny.GetPersistent(gameConfiguration);
-        var isOneHandedSwordEquipped = Stats.IsOneHandedSwordEquipped.GetPersistent(gameConfiguration);
 
         // DL
         var isScepterEquipped = Stats.IsScepterEquipped.GetPersistent(gameConfiguration);
