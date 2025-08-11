@@ -168,10 +168,7 @@ public abstract class FixDamageCalcsPlugInBase : UpdatePlugInBase
         var ravenBonusDamage = Stats.RavenBonusDamage.GetPersistent(gameConfiguration);
         var scepterPetBonusDamage = Stats.ScepterPetBonusDamage.GetPersistent(gameConfiguration);
         var bonusDamageWithScepter = Stats.BonusDamageWithScepter.GetPersistent(gameConfiguration);
-        var bonusDamageWithScepterCmdDiv = Stats.BonusDamageWithScepterCmdDiv.GetPersistent(gameConfiguration);
-        var totalLeadership = Stats.TotalLeadership.GetPersistent(gameConfiguration);
         var totalStrength = Stats.TotalStrength.GetPersistent(gameConfiguration);
-        var totalEnergy = Stats.TotalEnergy.GetPersistent(gameConfiguration);
         var ravenCriticalDamageChance = Stats.RavenCriticalDamageChance.GetPersistent(gameConfiguration);
 
         // DW, MG, Summoner
@@ -185,7 +182,6 @@ public abstract class FixDamageCalcsPlugInBase : UpdatePlugInBase
         var isCrossBowEquipped = Stats.IsCrossBowEquipped.GetPersistent(gameConfiguration);
 
         // Summoner
-        var defenseBase = Stats.DefenseBase.GetPersistent(gameConfiguration);
         var minimumCurseBaseDmg = Stats.MinimumCurseBaseDmg.GetPersistent(gameConfiguration);
         var maximumCurseBaseDmg = Stats.MaximumCurseBaseDmg.GetPersistent(gameConfiguration);
         var curseBaseDmg = Stats.CurseBaseDmg.GetPersistent(gameConfiguration);
@@ -992,7 +988,7 @@ public abstract class FixDamageCalcsPlugInBase : UpdatePlugInBase
             for (int level = 0; level < ammunitionDamageIncreaseByLevel.Length; level++)
             {
                 var value = ammunitionDamageIncreaseByLevel[level];
-                if (value != 0)
+                if ((int)value != 0)
                 {
                     var levelBonus = context.CreateNew<LevelBonus>();
                     levelBonus.Level = level;
