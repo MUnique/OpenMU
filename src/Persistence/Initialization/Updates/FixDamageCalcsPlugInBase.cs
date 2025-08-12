@@ -1072,8 +1072,13 @@ public abstract class FixDamageCalcsPlugInBase : UpdatePlugInBase
     protected void UpdateWeaponItems(IContext context, GameConfiguration gameConfiguration)
     {
         var equippedWeaponCount = Stats.EquippedWeaponCount.GetPersistent(gameConfiguration);
-        foreach (var weapon in gameConfiguration.Items.Where(i => i.Group >= (byte)ItemGroups.Swords && i.Group <= (byte)ItemGroups.Staff))
+        foreach (var weapon in gameConfiguration.Items.Where(i => i.Group >= (byte)ItemGroups.Swords && i.Group <= (byte)ItemGroups.Staff && !i.IsAmmunition))
         {
+            if (weapon.Group != (byte)ItemGroups.Bows && weapon.BasePowerUpAttributes.FirstOrDefault(bpu => bpu.TargetAttribute == Stats.AmmunitionConsumptionRate) is { } badPowerUp)
+            {
+                weapon.BasePowerUpAttributes.Remove(badPowerUp);
+            }
+
             var powerUpDefinition = context.CreateNew<ItemBasePowerUpDefinition>();
             powerUpDefinition.TargetAttribute = equippedWeaponCount;
             powerUpDefinition.BaseValue = 1f;
