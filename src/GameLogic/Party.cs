@@ -114,6 +114,7 @@ public sealed class Party : Disposable
         this.PartyList.Add(newPartyMate);
         newPartyMate.Party = this;
         await this.SendPartyListAsync().ConfigureAwait(false);
+        await this.UpdateNearbyCountAsync().ConfigureAwait(false);
         return true;
     }
 
@@ -312,6 +313,11 @@ public sealed class Party : Disposable
         }
 
         await this.SendPartyListAsync().ConfigureAwait(false);
+        await this.UpdateNearbyCountAsync().ConfigureAwait(false);
+        if (player is Player actualPlayer && actualPlayer.Attributes is { } attributes)
+        {
+            attributes[Stats.NearbyPartyMemberCount] = 0;
+        }
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
@@ -343,6 +349,33 @@ public sealed class Party : Disposable
         catch (Exception ex)
         {
             this._logger.LogDebug(ex, "Unexpected error during health update");
+        }
+    }
+
+    private async ValueTask UpdateNearbyCountAsync()
+    {
+        if (this.PartyList.Count == 0)
+        {
+            return;
+        }
+
+        for (byte i = 0; i < this.PartyList.Count; i++)
+        {
+            try
+            {
+                if (this.PartyList[i] is not Player player || player.Attributes is not { } attributes)
+                {
+                    continue;
+                }
+
+                using var readerLock = await player.ObserverLock.ReaderLockAsync().ConfigureAwait(false);
+
+                attributes[Stats.NearbyPartyMemberCount] = this.PartyList.Count(player.Observers.Contains);
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogDebug(ex, "Error updating {statsName}", nameof(Stats.NearbyPartyMemberCount));
+            }
         }
     }
 

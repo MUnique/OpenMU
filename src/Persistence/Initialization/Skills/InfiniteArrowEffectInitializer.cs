@@ -35,7 +35,7 @@ public class InfiniteArrowEffectInitializer : InitializerBase
         magicEffect.SendDuration = true;
         magicEffect.StopByDeath = true;
         magicEffect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
-        magicEffect.Duration.ConstantValue.Value = (float)TimeSpan.FromHours(8).TotalSeconds;
+        magicEffect.Duration.ConstantValue.Value = 600;
 
         // Multiply usage rate with 0, so no arrows are consumed anymore.
         var reduceAmmonitionUsage = this.Context.CreateNew<PowerUpDefinition>();
@@ -45,27 +45,10 @@ public class InfiniteArrowEffectInitializer : InitializerBase
         reduceAmmonitionUsage.Boost.ConstantValue.Value = 0f;
         reduceAmmonitionUsage.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
 
-        var manaLossAfterHit = this.Context.CreateNew<PowerUpDefinition>();
-        magicEffect.PowerUpDefinitions.Add(manaLossAfterHit);
-        manaLossAfterHit.TargetAttribute = Stats.ManaLossAfterHit.GetPersistent(this.GameConfiguration);
-        manaLossAfterHit.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-        manaLossAfterHit.Boost.ConstantValue.Value = 3f;
-
-        var damageBonusPerEnergy = this.Context.CreateNew<PowerUpDefinition>();
-        magicEffect.PowerUpDefinitions.Add(damageBonusPerEnergy);
-        damageBonusPerEnergy.TargetAttribute = Stats.BaseDamageBonus.GetPersistent(this.GameConfiguration);
-        damageBonusPerEnergy.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-        var oneDamagePer7Energy = this.Context.CreateNew<AttributeRelationship>();
-        damageBonusPerEnergy.Boost.RelatedValues.Add(oneDamagePer7Energy);
-        oneDamagePer7Energy.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
-        oneDamagePer7Energy.InputOperand = 1f / 7f;
-        oneDamagePer7Energy.InputOperator = InputOperator.Add;
-        oneDamagePer7Energy.TargetAttribute = Stats.BaseDamageBonus.GetPersistent(this.GameConfiguration);
-
-        // The next is more like a placeholder in case it's used by the master skill which adds a percentage bonus.
-        var damageIncreaseByMasterLevel = this.Context.CreateNew<PowerUpDefinition>();
-        magicEffect.PowerUpDefinitions.Add(damageIncreaseByMasterLevel);
-        damageIncreaseByMasterLevel.TargetAttribute = Stats.AttackDamageIncrease.GetPersistent(this.GameConfiguration);
-        damageIncreaseByMasterLevel.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+        // Placeholder for the Infinity Arrow Strengthener master skill
+        var damageIncreaseByMasterSkill = this.Context.CreateNew<PowerUpDefinition>();
+        magicEffect.PowerUpDefinitions.Add(damageIncreaseByMasterSkill);
+        damageIncreaseByMasterSkill.TargetAttribute = Stats.AttackDamageIncrease.GetPersistent(this.GameConfiguration);
+        damageIncreaseByMasterSkill.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
     }
 }

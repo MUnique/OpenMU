@@ -55,7 +55,7 @@ public enum DamageType
 public enum SkillType
 {
     /// <summary>
-    /// The skill hit its target directly.
+    /// The skill hits its target directly.
     /// </summary>
     DirectHit = 0,
 
@@ -65,7 +65,7 @@ public enum SkillType
     CastleSiegeSpecial = 1,
 
     /// <summary>
-    /// Same as <see cref="DirectHit"/> but only applyable during castle siege event.
+    /// Same as <see cref="DirectHit"/> but only appliable during castle siege event.
     /// </summary>
     CastleSiegeSkill = 2,
 
@@ -83,11 +83,6 @@ public enum SkillType
     /// Area skill, which only hits the explicit target. No declaration of hits by the client.
     /// </summary>
     AreaSkillExplicitTarget = 5,
-
-    /// <summary>
-    /// The nova skill which hits all targets in range and applies some bonus damage.
-    /// </summary>
-    Nova = 6,
 
     /// <summary>
     /// The buff skill type. Applies magic effects on players.
@@ -222,6 +217,18 @@ public partial class Skill
     /// </summary>
     [MemberOfAggregate]
     public virtual ICollection<AttributeRequirement> ConsumeRequirements { get; protected set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the attribute relationships which are applied during damage calculations.
+    /// </summary>
+    /// <remarks>
+    /// For example, horse skill:
+    ///  * new AttributeRelationship(Stats.SkillDamageBonus, 1.0f / 10, Stats.TotalStrength)
+    ///  * new AttributeRelationship(Stats.SkillDamageBonus, 1.0f / 5, Stats.TotalLeadership)
+    ///  * new AttributeRelationship(Stats.SkillDamageBonus, 10, Stats.HorseLevel).
+    /// </remarks>
+    [MemberOfAggregate]
+    public virtual ICollection<AttributeRelationship> AttributeRelationships { get; protected set; } = null!;
 
     /// <summary>
     /// Gets or sets the maximum range between executor of the skill and the target object.

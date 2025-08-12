@@ -58,6 +58,12 @@ public class SkillEntry : INotifyPropertyChanged
     [Transient]
     public IElement? PowerUpDuration { get; set; }
 
+    /// <summary>
+    /// Gets or sets the attributes, if this skill has attribute relationships.
+    /// </summary>
+    [Transient]
+    public IAttributeSystem? Attributes { get; set; }
+
     /// <inheritdoc />
     public override string ToString()
     {

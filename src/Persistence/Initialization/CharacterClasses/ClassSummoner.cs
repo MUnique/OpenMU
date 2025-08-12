@@ -1,4 +1,4 @@
-// <copyright file="ClassSummoner.cs" company="MUnique">
+﻿// <copyright file="ClassSummoner.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -27,6 +27,17 @@ internal partial class CharacterClassInitialization
 
     private CharacterClass CreateSummoner(CharacterClassNumber number, string name, bool isMaster, CharacterClass? nextGenerationClass, bool canGetCreated)
     {
+        var statsDefense = this.Context.CreateNew<AttributeDefinition>(Guid.NewGuid(), "Stats defense", string.Empty);
+        this.GameConfiguration.Attributes.Add(statsDefense);
+        var statsMinWizAndCurseBaseDmg = this.Context.CreateNew<AttributeDefinition>(Guid.NewGuid(), "Stats min wiz and curse base dmg", string.Empty);
+        this.GameConfiguration.Attributes.Add(statsMinWizAndCurseBaseDmg);
+        var statsMaxWizAndCurseBaseDmg = this.Context.CreateNew<AttributeDefinition>(Guid.NewGuid(), "Stats max wiz and curse base dmg", string.Empty);
+        this.GameConfiguration.Attributes.Add(statsMaxWizAndCurseBaseDmg);
+        var minBerserkerHealthDecrement = this.Context.CreateNew<AttributeDefinition>(Guid.NewGuid(), "Min Berserker health decrement", string.Empty);
+        this.GameConfiguration.Attributes.Add(minBerserkerHealthDecrement);
+        var finalBerserkerHealthDecrement = this.Context.CreateNew<AttributeDefinition>(Guid.NewGuid(), "Final Berserker health decrement", string.Empty);
+        this.GameConfiguration.Attributes.Add(finalBerserkerHealthDecrement);
+
         var result = this.Context.CreateNew<CharacterClass>();
         result.SetGuid((byte)number);
         this.GameConfiguration.CharacterClasses.Add(result);
@@ -52,7 +63,10 @@ internal partial class CharacterClassInitialization
 
         this.AddCommonAttributeRelationships(result.AttributeCombinations);
 
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.DefenseBase, 1.0f / 3, Stats.TotalAgility));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.TotalStrengthAndAgility, Stats.TotalAgility, Stats.TotalStrength, InputOperator.Add));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(statsDefense, 1.0f / 3, Stats.TotalAgility));
+
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.DefenseBase, 1, statsDefense));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.DefenseRatePvm, 0.25f, Stats.TotalAgility));
 
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.DefenseRatePvp, 0.5f, Stats.TotalAgility));
@@ -85,23 +99,47 @@ internal partial class CharacterClassInitialization
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumMana, 1.5f, Stats.TotalLevel));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumHealth, 1, Stats.TotalLevel));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumHealth, 2, Stats.TotalVitality));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MinimumPhysBaseDmg, 1.0f / 7, Stats.TotalStrength));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumPhysBaseDmg, 1.0f / 4, Stats.TotalStrength));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MinimumPhysBaseDmg, 1, Stats.MinimumPhysBaseDmgByWeapon));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumPhysBaseDmg, 1, Stats.MaximumPhysBaseDmgByWeapon));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MinimumPhysBaseDmg, 1, Stats.PhysicalBaseDmg));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumPhysBaseDmg, 1, Stats.PhysicalBaseDmg));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MinimumWizBaseDmg, 1.0f / 9, Stats.TotalEnergy));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumWizBaseDmg, 1.0f / 4, Stats.TotalEnergy));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MinimumPhysBaseDmg, 1.0f / 7, Stats.TotalStrengthAndAgility));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumPhysBaseDmg, 1.0f / 4, Stats.TotalStrengthAndAgility));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(statsMinWizAndCurseBaseDmg, 1.0f / 9, Stats.TotalEnergy));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(statsMaxWizAndCurseBaseDmg, 1.0f / 4, Stats.TotalEnergy));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MinimumWizBaseDmg, 1, statsMinWizAndCurseBaseDmg));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumWizBaseDmg, 1, statsMaxWizAndCurseBaseDmg));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MinimumWizBaseDmg, 1, Stats.BaseMinDamageBonus));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumWizBaseDmg, 1, Stats.BaseMaxDamageBonus));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.WizardryBaseDmg, 1, Stats.BaseDamageBonus));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MinimumWizBaseDmg, 1, Stats.WizardryBaseDmg));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumWizBaseDmg, 1, Stats.WizardryBaseDmg));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MinimumWizBaseDmg, 1, Stats.WizardryBaseDmgIncrease, aggregateType: AggregateType.Multiplicate));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumWizBaseDmg, 1, Stats.WizardryBaseDmgIncrease, aggregateType: AggregateType.Multiplicate));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.WizardryAttackDamageIncrease, 1.0f / 100, Stats.StaffRise));
-
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MinimumCurseBaseDmg, 1.0f / 9, Stats.TotalEnergy));
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumCurseBaseDmg, 1.0f / 4, Stats.TotalEnergy));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MinimumCurseBaseDmg, 1, statsMinWizAndCurseBaseDmg));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumCurseBaseDmg, 1, statsMaxWizAndCurseBaseDmg));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MinimumCurseBaseDmg, 1, Stats.CurseBaseDmg));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumCurseBaseDmg, 1, Stats.CurseBaseDmg));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.CurseAttackDamageIncrease, 1.0f / 100, Stats.BookRise));
 
         result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.WizardryBaseDmg, Stats.IsStickEquipped, Stats.StickBonusBaseDamage));
+        result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.CurseBaseDmg, Stats.IsBookEquipped, Stats.BookBonusBaseDamage));
+        result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.AttackSpeedAny, Stats.IsBookEquipped, Stats.WeaponMasteryAttackSpeed));
+
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumMana, 1, Stats.BerserkerManaMultiplier, InputOperator.Add, AggregateType.Multiplicate));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(finalBerserkerHealthDecrement, -0.1f, Stats.BerserkerHealthDecrement, InputOperator.Minimum));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(finalBerserkerHealthDecrement, 1, Stats.BerserkerMinPhysDmgBonus, InputOperator.Minimum, AggregateType.Multiplicate));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumHealth, 1, finalBerserkerHealthDecrement, InputOperator.Add, AggregateType.Multiplicate));
+        result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.DefensePvm, statsDefense, finalBerserkerHealthDecrement, AggregateType.AddFinal));
+        result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.DefensePvp, statsDefense, finalBerserkerHealthDecrement, AggregateType.AddFinal));
+
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.BerserkerMinPhysDmgBonus, 1, Stats.BerserkerManaMultiplier, aggregateType: AggregateType.Multiplicate));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.BerserkerMaxPhysDmgBonus, 1, Stats.BerserkerManaMultiplier, aggregateType: AggregateType.Multiplicate));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.BerserkerWizardryMultiplier, 1, Stats.BerserkerManaMultiplier));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.BerserkerCurseMultiplier, 1, Stats.BerserkerManaMultiplier));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.BerserkerWizardryMultiplier, 1, Stats.BerserkerProficiencyMultiplier));
+
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.BerserkerMinWizDmgBonus, Stats.BerserkerWizardryMultiplier, statsMinWizAndCurseBaseDmg));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.BerserkerMaxWizDmgBonus, Stats.BerserkerWizardryMultiplier, statsMaxWizAndCurseBaseDmg));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.BerserkerMinCurseDmgBonus, Stats.BerserkerCurseMultiplier, statsMinWizAndCurseBaseDmg));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.BerserkerMaxCurseDmgBonus, Stats.BerserkerCurseMultiplier, statsMaxWizAndCurseBaseDmg));
 
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.FenrirBaseDmg, 1.0f / 5, Stats.TotalStrength));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.FenrirBaseDmg, 1.0f / 5, Stats.TotalAgility));
@@ -114,6 +152,10 @@ internal partial class CharacterClassInitialization
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f, Stats.WizardryAttackDamageIncrease));
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f, Stats.CurseAttackDamageIncrease));
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f / 33f, Stats.AbilityRecoveryMultiplier));
+        result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.WizardryBaseDmgIncrease));
+        result.BaseAttributeValues.Add(this.CreateConstValueAttribute(0, Stats.BerserkerManaMultiplier)); // placeholder value
+        result.BaseAttributeValues.Add(this.CreateConstValueAttribute(0, Stats.BerserkerHealthDecrement)); // placeholder value
+        result.BaseAttributeValues.Add(this.CreateConstValueAttribute(0, Stats.BerserkerProficiencyMultiplier)); // placeholder value
 
         this.AddCommonBaseAttributeValues(result.BaseAttributeValues, isMaster);
 
