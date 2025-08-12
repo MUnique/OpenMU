@@ -25,7 +25,6 @@ public class FixDamageCalcsPlugIn075 : FixDamageCalcsPlugInBase
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
         await base.ApplyAsync(context, gameConfiguration).ConfigureAwait(false);
-        this.UpdateAmmoItems(context, gameConfiguration, [0, 0.03f, 0.05f]);
         this.UpdateWeaponItems(context, gameConfiguration);
     }
 }
