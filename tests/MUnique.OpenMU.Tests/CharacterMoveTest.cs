@@ -62,8 +62,8 @@ public class CharacterMoveTest
     {
         var packet = new byte[] { 0xC1, 0x08, (byte)PacketType.Walk, 0x93, 0x78, 0x44, 0x33, 0x44 };
         var player = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
-        player.SelectedCharacter!.PositionX = 147;
-        player.SelectedCharacter.PositionY = 120;
+        player.SelectedCharacter!.PositionX = StartPoint.X;
+        player.SelectedCharacter.PositionY = StartPoint.Y;
         var moveHandler = new CharacterWalkHandlerPlugIn();
         await moveHandler.HandlePacketAsync(player, packet).ConfigureAwait(false);
 

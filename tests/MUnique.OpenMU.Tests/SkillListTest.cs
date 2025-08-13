@@ -41,8 +41,8 @@ public class SkillListTest
     {
         var player = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
         var skillList = player.SkillList as SkillList;
-        await player.Inventory!.AddItemAsync(0, this.CreateItemWithSkill(player.SelectedCharacter!.CharacterClass)).ConfigureAwait(false);
-        await player.Inventory!.AddItemAsync(1, this.CreateItemWithSkill()).ConfigureAwait(false);
+        await player.Inventory!.AddItemAsync(0, this.CreateItemWithSkill(QualifiedItemSkillId, player.SelectedCharacter!.CharacterClass)).ConfigureAwait(false);
+        await player.Inventory!.AddItemAsync(1, this.CreateItemWithSkill(NonQualifiedItemSkillId)).ConfigureAwait(false);
 
         Assert.That(skillList!.ContainsSkill(QualifiedItemSkillId), Is.True);
         Assert.That(skillList!.ContainsSkill(NonQualifiedItemSkillId), Is.False);
@@ -55,7 +55,7 @@ public class SkillListTest
     public async ValueTask ItemSkillRemovedAsync()
     {
         var player = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
-        var item = this.CreateItemWithSkill(player.SelectedCharacter!.CharacterClass);
+        var item = this.CreateItemWithSkill(QualifiedItemSkillId, player.SelectedCharacter!.CharacterClass);
         item.Durability = 1;
         await player.Inventory!.AddItemAsync(0, item).ConfigureAwait(false);
         var skillList = new SkillList(player);
@@ -73,13 +73,13 @@ public class SkillListTest
         Assert.That(player.SkillList!.ContainsSkill(NonLearnedSkillId), Is.False);
     }
 
-    private Item CreateItemWithSkill(CharacterClass? qualifiedClass = null)
+    private Item CreateItemWithSkill(ushort skillId, CharacterClass? qualifiedClass = null)
     {
         var itemDefinition = new Mock<ItemDefinition>();
         itemDefinition.SetupAllProperties();
 
         var skillDefinition = new Mock<Skill>();
-        skillDefinition.Object.Number = QualifiedItemSkillId.ToSigned();
+        skillDefinition.Object.Number = skillId.ToSigned();
         skillDefinition.Setup(sd => sd.QualifiedCharacters).Returns(new List<CharacterClass>());
         if (qualifiedClass is not null)
         {
