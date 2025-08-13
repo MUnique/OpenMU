@@ -37,7 +37,7 @@ public class SkillListTest
     /// Tests if the skill of an item is or isn't getting added to the skill list, depending if it's suitable to the character's class.
     /// </summary>
     [Test]
-    public async ValueTask ItemSkillAddedLaterAsync()
+    public async ValueTask ItemSkillAddedAsync()
     {
         var player = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
         var skillList = player.SkillList as SkillList;
