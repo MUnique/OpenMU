@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.Persistence.Initialization.Updates;
 
 using System.Runtime.InteropServices;
-using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -14,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [PlugIn(PlugInName, PlugInDescription)]
 [Guid("B9C6D3E2-4F5A-6B7C-8D9E-0F1A2B3C4D5E")]
-public class FixEventItemsDropFromMonstersUpdatePlugIn095d : UpdatePlugInBase
+public class FixEventItemsDropFromMonstersUpdatePlugIn095d : FixEventItemsDropFromMonstersUpdatePlugInBase
 {
     /// <summary>
     /// The plug in name.
@@ -37,29 +36,4 @@ public class FixEventItemsDropFromMonstersUpdatePlugIn095d : UpdatePlugInBase
 
     /// <inheritdoc />
     public override string Description => PlugInDescription;
-
-    /// <inheritdoc />
-    public override bool IsMandatory => true;
-
-    /// <inheritdoc />
-    public override DateTime CreatedAt => new(2025, 01, 27, 10, 0, 0, DateTimeKind.Utc);
-
-    /// <inheritdoc />
-#pragma warning disable CS1998
-    protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
-#pragma warning restore CS1998
-    {
-        // Find event items that have DropsFromMonsters = true but also have dedicated DropItemGroups
-        var eventItemsWithDropGroups = gameConfiguration.DropItemGroups
-            .Where(dig => dig.PossibleItems.Any())
-            .SelectMany(dig => dig.PossibleItems)
-            .Where(item => item.Group is 13 or 14 && item.DropsFromMonsters)
-            .Distinct()
-            .ToList();
-
-        foreach (var item in eventItemsWithDropGroups)
-        {
-            item.DropsFromMonsters = false;
-        }
-    }
 }
