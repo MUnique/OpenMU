@@ -1,4 +1,4 @@
-// <copyright file="Weapons.cs" company="MUnique">
+﻿// <copyright file="Weapons.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -298,21 +298,21 @@ internal class Weapons : InitializerBase
             item.BasePowerUpAttributes.Add(staffRisePowerUp);
         }
 
-        item.IsAmmunition = isAmmunition;
-        if (!item.IsAmmunition)
+        item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.EquippedWeaponCount, 1, AggregateType.AddRaw));
+
+        if (group < (int)ItemGroups.Spears && width == 1)
         {
-            var ammunitionConsumption = this.Context.CreateNew<ItemBasePowerUpDefinition>();
-            ammunitionConsumption.TargetAttribute = Stats.AmmunitionConsumptionRate.GetPersistent(this.GameConfiguration);
-            ammunitionConsumption.BaseValue = 1.0f;
-            item.BasePowerUpAttributes.Add(ammunitionConsumption);
+            item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.DoubleWieldWeaponCount, 1, AggregateType.AddRaw));
         }
 
-        if (group != (int)ItemGroups.Bows && width == 2)
+        if (group == (int)ItemGroups.Bows)
         {
-            var isTwoHandedWeapon = this.Context.CreateNew<ItemBasePowerUpDefinition>();
-            isTwoHandedWeapon.TargetAttribute = Stats.IsTwoHandedWeaponEquipped.GetPersistent(this.GameConfiguration);
-            isTwoHandedWeapon.BaseValue = 1.0f;
-            item.BasePowerUpAttributes.Add(isTwoHandedWeapon);
+            item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.AmmunitionConsumptionRate, 1, AggregateType.AddRaw));
+        }
+
+        if (group < (int)ItemGroups.Bows && width == 2)
+        {
+            item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsTwoHandedWeaponEquipped, 1, AggregateType.AddRaw));
         }
     }
 }

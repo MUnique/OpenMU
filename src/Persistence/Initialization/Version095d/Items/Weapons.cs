@@ -1,4 +1,4 @@
-// <copyright file="Weapons.cs" company="MUnique">
+﻿// <copyright file="Weapons.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -29,10 +29,14 @@ internal class Weapons : InitializerBase
     private static readonly float[] StaffRiseIncreaseByLevelEven = { 0, 3, 7, 10, 14, 17, 21, 24, 28, 31, 35, 40, 45, 50, 56, 63 }; // Staff with even magic power
     private static readonly float[] StaffRiseIncreaseByLevelOdd = { 0, 4, 7, 11, 14, 18, 21, 25, 28, 32, 36, 40, 45, 51, 57, 63 }; // Staff with odd magic power
 
+    private static readonly float[] AmmunitionDamageIncreaseByLevel = { 0, 0.03f, 0.05f }; // Bolts/Arrows
+
     private ItemLevelBonusTable? _weaponDamageIncreaseTable;
 
     private ItemLevelBonusTable? _staffRiseTableEven;
     private ItemLevelBonusTable? _staffRiseTableOdd;
+
+    private ItemLevelBonusTable? _ammunitionDamageIncreaseTable;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Weapons" /> class.
@@ -85,6 +89,7 @@ internal class Weapons : InitializerBase
         this._weaponDamageIncreaseTable = this.CreateItemBonusTable(DamageIncreaseByLevel, "Damage Increase (Weapons)", "The damage increase by weapon level. It increases by 3 per level, and 1 more after level 10.");
         this._staffRiseTableEven = this.CreateItemBonusTable(StaffRiseIncreaseByLevelEven, "Staff Rise (even)", "The staff rise bonus per item level for even magic power staves.");
         this._staffRiseTableOdd = this.CreateItemBonusTable(StaffRiseIncreaseByLevelOdd, "Staff Rise (odd)", "The staff rise bonus per item level for odd magic power staves.");
+        this._ammunitionDamageIncreaseTable = this.CreateItemBonusTable(AmmunitionDamageIncreaseByLevel, "Damage Increase % (Bolts/Arrows)", "The damage increase % by ammunition item level.");
 
         this.CreateWeapon(0, 0, 0, 0, 1, 2, true, "Kris", 6, 6, 11, 50, 20, 0, 0, 40, 40, 0, 0, 1, 1, 1);
         this.CreateWeapon(0, 1, 0, 0, 1, 3, true, "Short Sword", 3, 3, 7, 20, 22, 0, 0, 60, 0, 0, 0, 1, 1, 1);
@@ -205,6 +210,10 @@ internal class Weapons : InitializerBase
         var qualifiedCharacterClasses = this.GameConfiguration.DetermineCharacterClasses(wizardClass == 1, knightClass == 1, elfClass == 1);
         qualifiedCharacterClasses.ToList().ForEach(item.QualifiedCharacters.Add);
 
+        var damagePowerUp = this.CreateItemBasePowerUpDefinition(Stats.AmmunitionDamageBonus, 0f, AggregateType.AddRaw);
+        damagePowerUp.BonusPerLevelTable = this._ammunitionDamageIncreaseTable;
+        item.BasePowerUpAttributes.Add(damagePowerUp);
+
         item.IsAmmunition = true;
     }
 
@@ -253,7 +262,7 @@ internal class Weapons : InitializerBase
         item.MaximumItemLevel = isAmmunition ? (byte)0 : Constants.MaximumItemLevel;
         item.DropsFromMonsters = dropsFromMonsters;
         item.SetGuid(item.Group, item.Number);
-        if (slot == 0 && knightClass > 0 && width == 1)
+        if (slot == 0 && (knightClass > 0 || magicGladiatorClass > 0) && width == 1)
         {
             item.ItemSlot = this.GameConfiguration.ItemSlotTypes.First(t => t.ItemSlots.Contains(0) && t.ItemSlots.Contains(1));
         }
@@ -310,21 +319,21 @@ internal class Weapons : InitializerBase
             item.BasePowerUpAttributes.Add(staffRisePowerUp);
         }
 
-        item.IsAmmunition = isAmmunition;
-        if (!item.IsAmmunition)
+        item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.EquippedWeaponCount, 1, AggregateType.AddRaw));
+
+        if (group < (int)ItemGroups.Spears && width == 1)
         {
-            var ammunitionConsumption = this.Context.CreateNew<ItemBasePowerUpDefinition>();
-            ammunitionConsumption.TargetAttribute = Stats.AmmunitionConsumptionRate.GetPersistent(this.GameConfiguration);
-            ammunitionConsumption.BaseValue = 1.0f;
-            item.BasePowerUpAttributes.Add(ammunitionConsumption);
+            item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.DoubleWieldWeaponCount, 1, AggregateType.AddRaw));
         }
 
-        if (group != (int)ItemGroups.Bows && width == 2)
+        if (group == (int)ItemGroups.Bows)
         {
-            var isTwoHandedWeapon = this.Context.CreateNew<ItemBasePowerUpDefinition>();
-            isTwoHandedWeapon.TargetAttribute = Stats.IsTwoHandedWeaponEquipped.GetPersistent(this.GameConfiguration);
-            isTwoHandedWeapon.BaseValue = 1.0f;
-            item.BasePowerUpAttributes.Add(isTwoHandedWeapon);
+            item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.AmmunitionConsumptionRate, 1, AggregateType.AddRaw));
+        }
+
+        if (group < (int)ItemGroups.Bows && width == 2)
+        {
+            item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsTwoHandedWeaponEquipped, 1, AggregateType.AddRaw));
         }
     }
 }

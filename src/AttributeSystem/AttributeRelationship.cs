@@ -12,24 +12,34 @@ using System.Globalization;
 public enum InputOperator
 {
     /// <summary>
-    /// The <see cref="AttributeRelationship.InputAttribute"/> is multiplied with the <see cref="AttributeRelationship.InputOperand"/> before adding to the <see cref="AttributeRelationship.TargetAttribute"/>.
+    /// The <see cref="AttributeRelationship.InputAttribute"/> is multiplied with the <see cref="AttributeRelationship.InputOperand"/> before effecting the <see cref="AttributeRelationship.TargetAttribute"/>.
     /// </summary>
     Multiply,
 
     /// <summary>
-    /// The <see cref="AttributeRelationship.InputAttribute"/> is increased by the <see cref="AttributeRelationship.InputOperand"/> before adding to the <see cref="AttributeRelationship.TargetAttribute"/>.
+    /// The <see cref="AttributeRelationship.InputAttribute"/> is increased by the <see cref="AttributeRelationship.InputOperand"/> before effecting the <see cref="AttributeRelationship.TargetAttribute"/>.
     /// </summary>
     Add,
 
     /// <summary>
-    /// The <see cref="AttributeRelationship.InputAttribute"/> is exponentiated by the <see cref="AttributeRelationship.InputOperand"/> before adding to the <see cref="AttributeRelationship.TargetAttribute"/>.
+    /// The <see cref="AttributeRelationship.InputAttribute"/> is exponentiated by the <see cref="AttributeRelationship.InputOperand"/> before effecting the <see cref="AttributeRelationship.TargetAttribute"/>.
     /// </summary>
     Exponentiate,
 
     /// <summary>
-    /// The <see cref="AttributeRelationship.InputOperand"/> is exponentiated by the <see cref="AttributeRelationship.InputAttribute"/> before adding to the <see cref="AttributeRelationship.TargetAttribute"/>.
+    /// The <see cref="AttributeRelationship.InputOperand"/> is exponentiated by the <see cref="AttributeRelationship.InputAttribute"/> before effecting the <see cref="AttributeRelationship.TargetAttribute"/>.
     /// </summary>
     ExponentiateByAttribute,
+
+    /// <summary>
+    /// The maximum between <see cref="AttributeRelationship.InputAttribute"/> and <see cref="AttributeRelationship.InputOperand"/> is taken before effecting the <see cref="AttributeRelationship.TargetAttribute"/>.
+    /// </summary>
+    Maximum,
+
+    /// <summary>
+    /// The minimum between <see cref="AttributeRelationship.InputAttribute"/> and <see cref="AttributeRelationship.InputOperand"/> is taken before effecting the <see cref="AttributeRelationship.TargetAttribute"/>.
+    /// </summary>
+    Minimum,
 }
 
 /// <summary>

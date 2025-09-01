@@ -38,6 +38,9 @@ internal class Weapons : InitializerBase
     private static readonly float[] ScepterRiseIncreaseByLevelEven = { 0, 1, 3, 4, 6, 7, 9, 10, 12, 13, 15, 18, 21, 24, 28, 33 }; // Scepter with even magic power
     private static readonly float[] ScepterRiseIncreaseByLevelOdd = { 0, 2, 3, 5, 6, 8, 9, 11, 12, 14, 16, 18, 21, 25, 29, 33 }; // Scepter with odd magic power
 
+    private static readonly float[] AmmunitionDamageIncreaseByLevel = { 0, 0.03f, 0.05f, 0.07f }; // Bolts/Arrows
+    private static readonly float[] AmmunitionManaLossAfterHitByLevel = { 5, 7, 10, 15 }; // Only if Infinity Arrow effect is active
+
     private ItemLevelBonusTable? _weaponDamageIncreaseTable;
 
     private ItemLevelBonusTable? _staffRiseTableEven;
@@ -45,6 +48,9 @@ internal class Weapons : InitializerBase
 
     private ItemLevelBonusTable? _scepterRiseTableEven;
     private ItemLevelBonusTable? _scepterRiseTableOdd;
+
+    private ItemLevelBonusTable? _ammunitionDamageIncreaseTable;
+    private ItemLevelBonusTable? _ammunitionManaLossAfterHitTable;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Weapons" /> class.
@@ -125,6 +131,8 @@ internal class Weapons : InitializerBase
         this._staffRiseTableOdd = this.CreateItemBonusTable(StaffRiseIncreaseByLevelOdd, "Staff Rise (odd)", "The staff rise bonus per item level for odd magic power staves.");
         this._scepterRiseTableEven = this.CreateItemBonusTable(ScepterRiseIncreaseByLevelEven, "Scepter Rise (even)", "The scepter rise bonus per item level for even magic power scepters.");
         this._scepterRiseTableOdd = this.CreateItemBonusTable(ScepterRiseIncreaseByLevelOdd, "Scepter Rise (odd)", "The scepter rise bonus per item level for odd magic power scepters.");
+        this._ammunitionDamageIncreaseTable = this.CreateItemBonusTable(AmmunitionDamageIncreaseByLevel, "Damage Increase % (Bolts/Arrows)", "The damage increase % per ammunition item level.");
+        this._ammunitionManaLossAfterHitTable = this.CreateItemBonusTable(AmmunitionManaLossAfterHitByLevel, "Mana Loss After Hit (Bolts/Arrows)", "The mana loss per skill hit per ammunition item level due to infinity arrow efect.");
 
         this.CreateWeapon(0, 0, 0, 0, 1, 2, true, "Kris", 6, 6, 11, 50, 20, 0, 0, 40, 40, 0, 0, 1, 1, 1, 1, 1, 1, 1);
         this.CreateWeapon(0, 1, 0, 0, 1, 3, true, "Short Sword", 3, 3, 7, 20, 22, 0, 0, 60, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1);
@@ -311,7 +319,7 @@ internal class Weapons : InitializerBase
         item.MaximumItemLevel = MaximumItemLevel;
         item.DropsFromMonsters = dropsFromMonsters;
         item.SetGuid(item.Group, item.Number);
-        if (slot == 0 && knightClass > 0 && width == 1)
+        if (slot == 0 && (knightClass > 0 || magicGladiatorClass > 0 || ragefighterClass > 0) && width == 1)
         {
             item.ItemSlot = this.GameConfiguration.ItemSlotTypes.First(t => t.ItemSlots.Contains(0) && t.ItemSlots.Contains(1));
         }
@@ -329,6 +337,20 @@ internal class Weapons : InitializerBase
         item.Durability = durability;
         var qualifiedCharacterClasses = this.GameConfiguration.DetermineCharacterClasses(wizardClass, knightClass, elfClass, magicGladiatorClass, darkLordClass, summonerClass, ragefighterClass);
         qualifiedCharacterClasses.ToList().ForEach(item.QualifiedCharacters.Add);
+
+        if (height == 1) // bolts and arrows
+        {
+            var damagePowerUp = this.CreateItemBasePowerUpDefinition(Stats.AmmunitionDamageBonus, 0f, AggregateType.AddRaw);
+            damagePowerUp.BonusPerLevelTable = this._ammunitionDamageIncreaseTable;
+            item.BasePowerUpAttributes.Add(damagePowerUp);
+
+            var manaCostPowerUp = this.CreateItemBasePowerUpDefinition(Stats.SkillExtraManaCost, 0f, AggregateType.AddRaw);
+            manaCostPowerUp.BonusPerLevelTable = this._ammunitionManaLossAfterHitTable;
+            item.BasePowerUpAttributes.Add(manaCostPowerUp);
+
+            item.IsAmmunition = true;
+            return;
+        }
 
         if (minimumDamage > 0)
         {
@@ -401,19 +423,20 @@ internal class Weapons : InitializerBase
             }
         }
 
-        if (height > 1) // exclude bolts and arrows
+        item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.EquippedWeaponCount, 1, AggregateType.AddRaw));
+
+        if (group < (int)ItemGroups.Spears && width == 1)
         {
-            item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.EquippedWeaponCount, 1, AggregateType.AddRaw));
+            item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.DoubleWieldWeaponCount, 1, AggregateType.AddRaw));
         }
 
-        if (group == (int)ItemGroups.Bows && height > 1)
+        if (group == (int)ItemGroups.Bows)
         {
             item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.AmmunitionConsumptionRate, 1, AggregateType.AddRaw));
+            item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(slot == 0 ? Stats.IsCrossBowEquipped : Stats.IsBowEquipped, 1, AggregateType.AddRaw));
         }
 
-        item.IsAmmunition = group == (int)ItemGroups.Bows && height == 1;
-
-        if (group != (int)ItemGroups.Bows && group != (int)ItemGroups.Staff && width == 2)
+        if (group < (int)ItemGroups.Bows && width == 2)
         {
             item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsTwoHandedWeaponEquipped, 1, AggregateType.AddRaw));
         }
@@ -470,13 +493,8 @@ internal class Weapons : InitializerBase
             }
             else
             {
-                // It's a book. Nothing to do here.
+                item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsBookEquipped, 1, AggregateType.AddRaw));
             }
-        }
-
-        if (group == (int)ItemGroups.Bows && !item.IsAmmunition)
-        {
-            item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(slot == 0 ? Stats.IsCrossBowEquipped : Stats.IsBowEquipped, 1, AggregateType.AddRaw));
         }
     }
 

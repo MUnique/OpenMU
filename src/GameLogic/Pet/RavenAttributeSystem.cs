@@ -19,7 +19,7 @@ public class RavenAttributeSystem : IAttributeSystem
                 Stats.MinimumPhysBaseDmg, player =>
                 {
                     var minDamage = player.Attributes?[Stats.RavenMinimumDamage] ?? 0;
-                    minDamage += minDamage * (player.Attributes?[Stats.PetAttackDamageIncrease] ?? 1);
+                    minDamage += minDamage * (player.Attributes?[Stats.RavenAttackDamageIncrease] ?? 1);
                     return minDamage;
                 }
             },
@@ -27,24 +27,20 @@ public class RavenAttributeSystem : IAttributeSystem
                 Stats.MaximumPhysBaseDmg, player =>
                 {
                     var maxDamage = player.Attributes?[Stats.RavenMaximumDamage] ?? 0;
-                    maxDamage += maxDamage * (player.Attributes?[Stats.PetAttackDamageIncrease] ?? 1);
+                    maxDamage += maxDamage * (player.Attributes?[Stats.RavenAttackDamageIncrease] ?? 1);
                     return maxDamage;
                 }
             },
-            { Stats.BaseDamageBonus, player => player.Attributes?[Stats.BaseDamageBonus] ?? 0 },
+            { Stats.RavenBonusDamage, player => player.Attributes?[Stats.RavenBonusDamage] ?? 0 },
             { Stats.AttackSpeed, player => player.Attributes?[Stats.RavenAttackSpeed] ?? 0 },
             { Stats.AttackRatePvm, player => player.Attributes?[Stats.RavenAttackRate] ?? 0 },
-            { Stats.AttackRatePvp, player => player.Attributes?[Stats.RavenAttackRate] ?? 0 },
-            { Stats.CriticalDamageChance, player => player.Attributes?[Stats.CriticalDamageChance] + player.Attributes?[Stats.RavenCriticalDamageChanceBonus] ?? 0 },
-            { Stats.CriticalDamageBonus, player => player.Attributes?[Stats.CriticalDamageBonus] ?? 0 },
-            { Stats.ExcellentDamageChance, player => player.Attributes?[Stats.ExcellentDamageChance] ?? 0 + player.Attributes?[Stats.RavenExcDamageChanceBonus] ?? 0 },
-            { Stats.ExcellentDamageBonus, player => player.Attributes?[Stats.ExcellentDamageBonus] ?? 0 },
+            { Stats.AttackRatePvp, player => player.Attributes?[Stats.AttackRatePvp] ?? 0 },
+            { Stats.CriticalDamageChance, player => player.Attributes?[Stats.RavenCriticalDamageChance] ?? 0 },
+            { Stats.ExcellentDamageChance, player => player.Attributes?[Stats.RavenExcDamageChance] ?? 0 },
             { Stats.DefenseIgnoreChance, player => player.Attributes?[Stats.DefenseIgnoreChance] ?? 0 },
-            { Stats.DoubleDamageChance, player => player.Attributes?[Stats.DoubleDamageChance] ?? 0 },
             { Stats.ShieldBypassChance, player => player.Attributes?[Stats.ShieldBypassChance] ?? 0 },
             { Stats.ShieldDecreaseRateIncrease, player => player.Attributes?[Stats.ShieldDecreaseRateIncrease] ?? 0 },
-            { Stats.AttackDamageIncrease, player => player.Attributes?[Stats.AttackDamageIncrease] ?? 0 },
-            { Stats.FinalDamageIncreasePvp, player => player.Attributes?[Stats.FinalDamageIncreasePvp] ?? 0 },
+            { Stats.AttackDamageIncrease, player => 1.0f },
         };
 
     private readonly Player _owner;
