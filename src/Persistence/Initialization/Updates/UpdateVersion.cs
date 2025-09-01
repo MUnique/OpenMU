@@ -299,4 +299,14 @@ public enum UpdateVersion
     /// The version of the <see cref="FixDamageCalcsPlugInSeason6"/>.
     /// </summary>
     FixDamageCalcsSeason6 = 58,
+
+    /// <summary>
+    /// The version of the <see cref="FixEventItemsDropFromMonstersUpdatePlugInSeason6"/>.
+    /// </summary>
+    FixEventItemsDropFromMonstersSeason6 = 59,
+
+    /// <summary>
+    /// The version of the <see cref="FixEventItemsDropFromMonstersUpdatePlugIn095d"/>.
+    /// </summary>
+    FixEventItemsDropFromMonsters095d = 60,
 }
