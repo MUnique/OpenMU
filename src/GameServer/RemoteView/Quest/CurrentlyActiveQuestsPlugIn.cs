@@ -42,9 +42,11 @@ public class CurrentlyActiveQuestsPlugIn : ICurrentlyActiveQuestsPlugIn
 
         int Write()
         {
+            const int maxQuestsPerPacket = 62;
             var activeQuests = character.QuestStates
                 .Where(state => state.Group != QuestConstants.LegacyQuestGroup && state.ActiveQuest != null)
                 .Select(s => s.ActiveQuest!)
+                .Take(maxQuestsPerPacket)
                 .ToList();
             var size = QuestStateListRef.GetRequiredSize(activeQuests.Count);
             var span = connection.Output.GetSpan(size)[..size];
