@@ -273,6 +273,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 }
 
                 this._currentMap = value;
+                if (this.SelectedCharacter is { } selectedCharacter && value is not null)
+                {
+                    selectedCharacter.CurrentMap = value?.Definition;
+                }
+
                 this.GameContext.PlugInManager?.GetPlugInPoint<IAttackableMovedPlugIn>()?.AttackableMoved(this);
 
                 if (this._currentMap is { } newMap)
