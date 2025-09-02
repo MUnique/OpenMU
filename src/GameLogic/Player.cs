@@ -1799,7 +1799,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         var currentMap = this.CurrentMap;
         if (currentMap is null)
         {
-            return false;
+            return true;
         }
 
         if (willRespawnOnSameMap)
