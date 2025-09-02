@@ -243,7 +243,14 @@ public class GameContext : AsyncDisposable, IGameContext
 
         if (this._miniGames.TryGetValue(miniGameKey, out var miniGameContext))
         {
-            return miniGameContext;
+            if (miniGameContext.IsDisposed)
+            {
+                this._miniGames.Remove(miniGameKey);
+            }
+            else
+            {
+                return miniGameContext;
+            }
         }
 
         using (await this._mapInitializerLock.LockAsync().ConfigureAwait(false))
