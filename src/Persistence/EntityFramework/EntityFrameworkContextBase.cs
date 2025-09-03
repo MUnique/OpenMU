@@ -44,6 +44,9 @@ internal class EntityFrameworkContextBase : IContext
         this._isOwner = isOwner;
         this._changeListener = changeListener;
         this._logger = logger;
+
+        // Ensure that the model is created.
+        _ = context.Model;
     }
 
     /// <summary>

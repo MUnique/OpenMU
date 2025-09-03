@@ -227,7 +227,7 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
             this.Map.ObjectRemoved -= this.OnObjectRemovedFromMapAsync;
 
             await this._gameContext.RemoveMiniGameAsync(this).ConfigureAwait(false);
-            await this._gameEndedCts.CancelAsync();
+            await this._gameEndedCts.CancelAsync().ConfigureAwait(false);
             this._gameEndedCts.Dispose();
         }
         catch (Exception ex)
@@ -493,7 +493,7 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
 
         try
         {
-            using var context = this._gameContext.PersistenceContextProvider.CreateNewTypedContext(typeof(MiniGameRankingEntry), false);
+            using var context = this._gameContext.PersistenceContextProvider.CreateNewTypedContext(typeof(MiniGameRankingEntry), false, this._gameContext.Configuration);
             var instanceId = GuidV7.NewGuid();
             var timestamp = DateTime.UtcNow;
             foreach (var score in scoreEntries)
@@ -505,6 +505,8 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
                 entry.Character = score.Character;
                 entry.MiniGame = this.Definition;
                 entry.Timestamp = timestamp;
+
+                // todo: Consider "winning", too. E.g. in Chaos Castle a player which died last, might not be the winner, but is saved with rank 1.
             }
 
             await context.SaveChangesAsync().ConfigureAwait(false);
