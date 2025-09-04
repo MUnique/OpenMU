@@ -57,12 +57,36 @@ public class Pets : InitializerBase
         var fenrir = this.CreatePet(37, SkillNumber.PlasmaStorm, 2, 2, "Horn of Fenrir", 300, false, true, (Stats.CanFly, 1.0f, AggregateType.AddRaw));
         this.AddFenrirOptions(fenrir);
 
-        this.CreatePet(64, 0, 1, 1, "Demon", 1, false, true, (Stats.AttackDamageIncrease, 1.4f, AggregateType.Multiplicate), (Stats.AttackSpeed, 10f, AggregateType.AddRaw));
-        this.CreatePet(65, 0, 1, 1, "Spirit of Guardian", 1, false, true, (Stats.DamageReceiveDecrement, 0.7f, AggregateType.Multiplicate), (Stats.MaximumHealth, 50f, AggregateType.AddRaw));
+#pragma warning disable SA1117 // Parameters should be on same line or separete lines
+        this.CreatePet(64, 0, 1, 1, "Demon", 1, false, true,
+            (Stats.MinimumPhysBaseDmg, 1.4f, AggregateType.Multiplicate),
+            (Stats.MaximumPhysBaseDmg, 1.4f, AggregateType.Multiplicate),
+            (Stats.MinimumWizBaseDmg, 1.4f, AggregateType.Multiplicate),
+            (Stats.MaximumWizBaseDmg, 1.4f, AggregateType.Multiplicate),
+            (Stats.MinimumCurseBaseDmg, 1.4f, AggregateType.Multiplicate),
+            (Stats.MaximumCurseBaseDmg, 1.4f, AggregateType.Multiplicate),
+            (Stats.AttackSpeedAny, 10f, AggregateType.AddRaw));
+        this.CreatePet(65, 0, 1, 1, "Spirit of Guardian", 1, false, true,
+            (Stats.DamageReceiveDecrement, 0.7f, AggregateType.Multiplicate),
+            (Stats.MaximumHealth, 50f, AggregateType.AddRaw));
         this.CreatePet(67, 0, 1, 1, "Pet Rudolf", 28, false, true);
-        this.CreatePet(80, 0, 1, 1, "Pet Panda", 1, false, true, (Stats.ExperienceRate, 1.5f, AggregateType.Multiplicate), (Stats.MasterExperienceRate, 1.5f, AggregateType.Multiplicate), (Stats.DefenseBase, 50f, AggregateType.AddRaw));
-        this.CreatePet(106, 0, 1, 1, "Pet Unicorn", 28, false, true, (Stats.MoneyAmountRate, 1.5f, AggregateType.Multiplicate), (Stats.DefenseBase, 50f, AggregateType.AddRaw));
-        this.CreatePet(123, 0, 1, 1, "Pet Skeleton", 1, false, true, (Stats.AttackDamageIncrease, 1.2f, AggregateType.Multiplicate), (Stats.AttackSpeed, 10f, AggregateType.AddRaw), (Stats.ExperienceRate, 1.3f, AggregateType.Multiplicate));
+        this.CreatePet(80, 0, 1, 1, "Pet Panda", 1, false, true,
+            (Stats.ExperienceRate, 1.5f, AggregateType.Multiplicate),
+            (Stats.MasterExperienceRate, 1.5f, AggregateType.Multiplicate),
+            (Stats.DefenseFinal, 50f, AggregateType.AddRaw));
+        this.CreatePet(106, 0, 1, 1, "Pet Unicorn", 28, false, true,
+            (Stats.MoneyAmountRate, 1.5f, AggregateType.Multiplicate),
+            (Stats.DefenseFinal, 50f, AggregateType.AddRaw));
+        this.CreatePet(123, 0, 1, 1, "Pet Skeleton", 1, false, true,
+            (Stats.MinimumPhysBaseDmg, 1.2f, AggregateType.Multiplicate),
+            (Stats.MaximumPhysBaseDmg, 1.2f, AggregateType.Multiplicate),
+            (Stats.MinimumWizBaseDmg, 1.2f, AggregateType.Multiplicate),
+            (Stats.MaximumWizBaseDmg, 1.2f, AggregateType.Multiplicate),
+            (Stats.MinimumCurseBaseDmg, 1.2f, AggregateType.Multiplicate),
+            (Stats.MaximumCurseBaseDmg, 1.2f, AggregateType.Multiplicate),
+            (Stats.AttackSpeedAny, 10f, AggregateType.AddRaw),
+            (Stats.ExperienceRate, 1.3f, AggregateType.Multiplicate));
+#pragma warning restore SA1011
 
         // Items which are required for crafting:
         this.CreateSpirit();
