@@ -1,0 +1,9 @@
+version: '3'
+
+services:
+  openmu-startup:
+    environment:
+      # EJEMPLO: Ajusta con tu IP pública real y guarda como 'docker-compose.public-ip.yml'.
+      # Este archivo de ejemplo SÍ se versiona; el real 'docker-compose.public-ip.yml' está ignorado por .gitignore.
+      RESOLVE_IP: "1.2.3.4"
+

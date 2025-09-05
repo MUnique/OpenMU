@@ -198,6 +198,7 @@ _pkginfo.txt
 # Others
 ClientBin/
 ~$*
+deploy/all-in-one/docker-compose.public-ip.yml
 *~
 *.dbmdl
 *.dbproj.schemaview

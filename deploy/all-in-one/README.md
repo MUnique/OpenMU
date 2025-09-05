@@ -148,3 +148,19 @@ If your Nginx Proxy Manager (or nginx) runs on an external Docker network (e.g. 
    - Forward Port: `8080`
    - Scheme: `http`
    - WebSockets: enabled
+
+### Use a fixed public IP without committing it
+
+If you prefer a fixed public IP instead of DNS but don't want to commit it to the repo:
+
+1) Copy the example overlay:
+
+   `cp docker-compose.public-ip.example.yml docker-compose.public-ip.yml`
+
+2) Edit `docker-compose.public-ip.yml` and set your public IP in `RESOLVE_IP`.
+
+3) Start with:
+
+   `docker compose -f docker-compose.no-nginx.yml -f docker-compose.public-ip.yml -f docker-compose.npm-net.yml up -d --build --no-deps openmu-startup`
+
+Note: `docker-compose.public-ip.yml` is git-ignored by default.
