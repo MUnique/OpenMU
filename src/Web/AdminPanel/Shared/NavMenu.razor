@@ -16,7 +16,7 @@
             {
                 <li>
                     <NavLink href="" Match="NavLinkMatch.All">
-                        <span class="oi oi-clock" aria-hidden="true"></span> Loading ...
+                        <span class="oi oi-clock" aria-hidden="true"></span> Cargando...
                     </NavLink>
                 </li>
             }
@@ -24,7 +24,7 @@
             {
                 <li>
                     <NavLink href="setup">
-                        <span class="oi oi-cog" aria-hidden="true"></span> Setup
+                        <span class="oi oi-cog" aria-hidden="true"></span> Configuración
                     </NavLink>
                 </li>
             }
@@ -32,22 +32,22 @@
             {
                 <li>
                     <NavLink href="" Match="NavLinkMatch.All">
-                        <span class="oi oi-home" aria-hidden="true"></span> Home
+                        <span class="oi oi-home" aria-hidden="true"></span> Inicio
                     </NavLink>
                 </li>
                 <li>
                     <NavLink href="servers">
-                        <span class="oi oi-project" aria-hidden="true"></span> Servers
+                        <span class="oi oi-project" aria-hidden="true"></span> Servidores
                     </NavLink>
                 </li>
                 <li>
                   <NavLink href="accounts">
-                    <span class="oi oi-list" aria-hidden="true"></span> Accounts
+                    <span class="oi oi-list" aria-hidden="true"></span> Cuentas
                   </NavLink>
                 </li>
                 <li>
                   <NavLink href="logged-in">
-                    <span class="oi oi-people" aria-hidden="true" /> Online Accounts
+                    <span class="oi oi-people" aria-hidden="true" /> Cuentas en Línea
                   </NavLink>
                 </li>
                 @if (this.GameConfigurationId is { } gameConfigurationId )
@@ -56,16 +56,16 @@
                 }
                 <li>
                     <NavLink href="setup">
-                        <span class="oi oi-cog" aria-hidden="true"></span> Setup
+                        <span class="oi oi-cog" aria-hidden="true"></span> Configuración
                     </NavLink>
                 </li>
                 <li>
                     <NavLink href="config-updates">
-                        <span class="oi oi-medical-cross" aria-hidden="true"></span> Updates
+                        <span class="oi oi-medical-cross" aria-hidden="true"></span> Actualizaciones
                         @if (this._availableConfigUpdates > 0)
                         {
                             <span class="badge badge-light ml-2">@this._availableConfigUpdates</span>
-                            <span class="sr-only">available updates</span>
+                            <span class="sr-only">actualizaciones disponibles</span>
                         }
                     </NavLink>
                 </li>
@@ -74,7 +74,7 @@
             {
                 <li>
                     <NavLink href="users">
-                        <span class="oi oi-key" aria-hidden="true"></span> Users
+                        <span class="oi oi-key" aria-hidden="true"></span> Usuarios
                     </NavLink>
                 </li>
             }
@@ -82,7 +82,7 @@
             {
                 <li>
                     <NavLink href="logfiles">
-                        <span class="oi oi-list" aria-hidden="true"></span> Log Files
+                        <span class="oi oi-list" aria-hidden="true"></span> Archivos de Log
                     </NavLink>
                 </li>
             }
@@ -91,19 +91,19 @@
                 <li>
                     <a href="/grafana/explore?orgId=1&left=%7B%22datasource%22:%22Loki%22,%22queries%22:%5B%7B%22refId%22:%22A%22%7D%5D,%22range%22:%7B%22from%22:%22now-1h%22,%22to%22:%22now%22%7D%7D"
                        target="_blank">
-                        <span class="oi oi-list" aria-hidden="true"></span> Log
+                        <span class="oi oi-list" aria-hidden="true"></span> Logs
                     </a>
                 </li>
                 <li>
                     <a href="/grafana/dashboards"
                        target="_blank">
-                        <span class="oi oi-bar-chart" aria-hidden="true"></span> Metrics
+                        <span class="oi oi-bar-chart" aria-hidden="true"></span> Métricas
                     </a>
                 </li>
                 <li>
                     <a href="/zipkin/"
                        target="_blank">
-                        <span class="oi oi-fork" aria-hidden="true"></span> Tracing
+                        <span class="oi oi-fork" aria-hidden="true"></span> Trazas
                     </a>
                 </li>
             }

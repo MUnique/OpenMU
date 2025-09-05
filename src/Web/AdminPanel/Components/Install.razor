@@ -1,18 +1,18 @@
 ﻿<div>
 @if (this.SelectedVersion is null)
 {
-    <span>Loading ...</span>
+    <span>Cargando...</span>
 }
 else if (this.IsInstalling)
 {
-    <span>Installing, please wait ...</span>
+    <span>Instalando, por favor espere...</span>
 }
 else if (this.IsInstalled)
 {
-    <p>Finished! Have fun :)</p>
+    <p>¡Listo! ¡Diviértete! :)</p>
     if (!AdminPanelEnvironment.IsHostingEmbedded)
     {
-        <p>Please restart the connect and game server containers.</p>
+        <p>Por favor reinicia los contenedores de connect y game server.</p>
     }
 
     <button class="btn btn-primary" @onclick="async () => await this.InstallationFinished.InvokeAsync()">OK</button>
@@ -22,12 +22,12 @@ else
     if (this.CurrentConnections > 0)
     {
         <div class="alert alert-danger" role="alert">
-            First, close all connections to the server.
+            Primero, cierra todas las conexiones al servidor.
         </div>
     }
 
     <p>
-        <h2>Select the game version</h2>
+        <h2>Selecciona la versión del juego</h2>
 
         <div>
         @foreach (var initializer in this.SetupService.Versions)
@@ -40,18 +40,18 @@ else
         </div>
     </p>
     <p>
-        <h2>How many game servers do you want?</h2>
+        <h2>¿Cuántos servidores de juego quieres?</h2>
         <div>
-            <label for="gameServerCount" class="form-label">Game server count (@this.GameServerCount)</label>
+            <label for="gameServerCount" class="form-label">Cantidad de servidores de juego (@this.GameServerCount)</label>
             <input type="range" class="form-range" min="1" max="10" value="@this.GameServerCount" id="gameServerCount" @oninput="this.OnGameServerCountChange">
         </div>
     </p>
     <p>
-        <h2>Do you want test accounts?</h2>
+        <h2>¿Quieres cuentas de prueba?</h2>
         <div class="form-check">
             <input class="form-check-input" type="checkbox" value="" id="testAccountsCheck" @oninput="this.OnTestAccountsChange">
             <label class="form-check-label" for="testAccountsCheck">
-                Yes, create test accounts
+                Sí, crear cuentas de prueba
             </label>
         </div>
     </p>
@@ -59,11 +59,11 @@ else
     <p>
         @if (this.CurrentConnections == 0)
         {
-            <button class="btn btn-primary" @onclick="this.StartInstallationAsync">Start install</button>
+            <button class="btn btn-primary" @onclick="this.StartInstallationAsync">Iniciar instalación</button>
         }
         else
         {
-            <button class="btn btn-primary disabled">Start install</button>
+            <button class="btn btn-primary disabled">Iniciar instalación</button>
         }
     </p>
 }

@@ -87,3 +87,17 @@ should be created.
 
 If you click on 'Install', wait a bit until the database is set up and filled with the
 data and voila, OpenMU is ready to use.
+
+## Presets for LAN vs Public
+
+To simplify IP resolution for clients, additional compose overlays are provided:
+
+- LAN testing (announce local IP):
+
+  `docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose.lan.yml up -d --build`
+
+- Public internet (announce public IP):
+
+  `docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.public.yml up -d`
+
+You can switch between them by recreating the `openmu-startup` service with the respective overlays.

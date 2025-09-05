@@ -1,7 +1,7 @@
 ﻿@page "/setup"
 
-<PageTitle>OpenMU: Setup</PageTitle>
-<Breadcrumb IsFirstFromRoot="true" Caption="Setup"/>
+<PageTitle>OpenMU: Configuración</PageTitle>
+<Breadcrumb IsFirstFromRoot="true" Caption="Configuración"/>
 
 @if (this.ShowInstall)
 {
@@ -9,32 +9,32 @@
 }
 else if (!this.SetupService.CanConnectToDatabase)
 {
-    <p>Database status: <span class="badge bg-danger">Can't connect to the database. Probably not created yet.</span></p>
+    <p>Estado de la base de datos: <span class="badge bg-danger">No se puede conectar a la base de datos. Probablemente aún no fue creada.</span></p>
 
-    <button class="btn btn-primary" @onclick="this.OnInstallClick">Create</button>
+    <button class="btn btn-primary" @onclick="this.OnInstallClick">Crear</button>
 }
 else if (!this.SetupService.IsInstalled)
 {
-    <p>Database status: <span class="badge bg-warning text-dark">Not created</span></p>
+    <p>Estado de la base de datos: <span class="badge bg-warning text-dark">No creada</span></p>
 
-    <button class="btn btn-primary" @onclick="this.OnInstallClick">Create</button>
+    <button class="btn btn-primary" @onclick="this.OnInstallClick">Crear</button>
 }
 else if (this.SetupService.IsUpdateRequired)
 {
-    <p>Database status: <span class="badge bg-warning text-dark">Update required</span></p>
-    <button class="btn btn-primary" @onclick="this.OnUpdateClickAsync">Update</button>
+    <p>Estado de la base de datos: <span class="badge bg-warning text-dark">Se requiere actualización</span></p>
+    <button class="btn btn-primary" @onclick="this.OnUpdateClickAsync">Actualizar</button>
 }
 else
 {
-    <p>Database status: <span class="badge bg-success">Up-to-date</span></p>
+    <p>Estado de la base de datos: <span class="badge bg-success">Actualizada</span></p>
     @if (!this._isDataInitialized)
     {
-        <p>Initialized game version: <span class="badge bg-warning text-dark">No initialized data found!</span></p>
+        <p>Versión de juego inicializada: <span class="badge bg-warning text-dark">¡No se encontraron datos inicializados!</span></p>
     }
     else
     {
-        <p>Initialized game version: <span class="badge bg-success">@this._gameClientVersion</span></p>
+        <p>Versión de juego inicializada: <span class="badge bg-success">@this._gameClientVersion</span></p>
     }
 
-    <button class="btn bg-warning text-dark" @onclick="this.OnReInstallClickAsync">Re-install</button>
+    <button class="btn bg-warning text-dark" @onclick="this.OnReInstallClickAsync">Reinstalar</button>
 }
