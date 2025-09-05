@@ -4,13 +4,13 @@
 
 @implements IDisposable;
 
-<PageTitle>OpenMU: Servers</PageTitle>
-<Breadcrumb IsFirstFromRoot="true" Caption="Servers"/>
-<h1>Servers</h1>
+<PageTitle>OpenMU: Servidores</PageTitle>
+<Breadcrumb IsFirstFromRoot="true" Caption="Servidores"/>
+<h1>Servidores</h1>
 
 @if (_servers == null)
 {
-    <p><em>Loading...</em></p>
+    <p><em>Cargando...</em></p>
 }
 else
 {
@@ -19,10 +19,10 @@ else
     <thead>
     <tr>
       <th></th>
-      <th class="col-sm-7">Server Name</th>
-      <th class="col-sm-1">Players</th>
-      <th class="col-sm-2">Current State</th>
-      <th class="col-sm-2">Action</th>
+      <th class="col-sm-7">Nombre del Servidor</th>
+      <th class="col-sm-1">Jugadores</th>
+      <th class="col-sm-2">Estado Actual</th>
+      <th class="col-sm-2">Acción</th>
     </tr>
     </thead>
     <tfoot>
@@ -38,10 +38,10 @@ else
       <td></td>
       <td>
         <NavLink class="btn btn-primary" href="create-game-server">
-          <span class="oi oi-plus"></span> Game Server
+          <span class="oi oi-plus"></span> Servidor de Juego
         </NavLink>
         <NavLink class="btn btn-primary" href="create-connect-server">
-            <span class="oi oi-plus"></span> Connect Server
+            <span class="oi oi-plus"></span> Servidor de Conexión
         </NavLink>
       </td>
       <td></td>
@@ -60,7 +60,7 @@ else
           {
             <button type="button" class="btn-warning" @onclick="this.OnReloadAndRestartClickAsync">
               <span class="oi oi-reload"></span>
-              Reload configuration and restart all Game Servers
+              Recargar configuración y reiniciar todos los Servidores de Juego
             </button>
           }
         }

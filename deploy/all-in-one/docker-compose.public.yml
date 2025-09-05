@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  openmu-startup:
+    environment:
+      # Anuncia la IP pública a los clientes (uso por Internet).
+      RESOLVE_IP: public
+

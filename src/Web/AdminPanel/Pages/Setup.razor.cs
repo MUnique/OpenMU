@@ -59,7 +59,7 @@ public partial class Setup
 
     private async Task OnReInstallClickAsync()
     {
-        if (await this.JsRuntime.InvokeAsync<bool>("confirm", "Are you sure? All the current data is getting deleted and freshly installed.").ConfigureAwait(false))
+        if (await this.JsRuntime.InvokeAsync<bool>("confirm", "¿Estás seguro? Todos los datos actuales serán eliminados y se instalarán nuevamente.").ConfigureAwait(false))
         {
             this.ShowInstall = true;
         }
