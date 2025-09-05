@@ -101,3 +101,31 @@ To simplify IP resolution for clients, additional compose overlays are provided:
   `docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.public.yml up -d`
 
 You can switch between them by recreating the `openmu-startup` service with the respective overlays.
+
+### When port 80 is in use (existing reverse proxy)
+
+If your host already uses port 80/443 (e.g., Nginx Proxy Manager), you have two options:
+
+1) Disable the bundled nginx and proxy via your reverse proxy:
+
+   - Start without our nginx service: `docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose.lan.yml up -d --build --scale nginx-80=0`
+   - In your reverse proxy, forward to `openmu-startup:8080` (container name and port) with WebSockets enabled.
+
+2) Map the admin panel to an alternate host port (e.g., 8082):
+
+   - `docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose.lan.yml -f docker-compose.admin-port.yml up -d --build --scale nginx-80=0`
+   - Access the admin panel at `http://<host>:8082/`.
+
+### Run without bundled nginx (use your existing reverse proxy)
+
+If you prefer to use your own nginx / reverse proxy, use the `docker-compose.no-nginx.yml` file which excludes the bundled nginx service and exposes the admin panel on host port 8082.
+
+- LAN:
+
+  `docker compose -f docker-compose.no-nginx.yml -f docker-compose.override.yml -f docker-compose.lan.yml up -d --build`
+
+- Public:
+
+  `docker compose -f docker-compose.no-nginx.yml -f docker-compose.public.yml up -d`
+
+Then, configure your reverse proxy to forward to `http://<host>:8082/` with WebSockets enabled.

@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+  openmu-startup:
+    image: munique/openmu
+    container_name: openmu-startup
+    ports:
+      # Admin Panel expuesto en 8082 del host (para que NPM/tu nginx lo consuma)
+      - "8082:8080"
+      # Puertos de juego y chat
+      - "55901:55901"
+      - "55902:55902"
+      - "55903:55903"
+      - "55904:55904"
+      - "55905:55905"
+      - "55906:55906"
+      - "44405:44405"
+      - "44406:44406"
+      - "55980:55980"
+    environment:
+      DB_HOST: database
+      ASPNETCORE_URLS: http://+:8080
+    working_dir: /app/
+    depends_on:
+      - database
+
+  database:
+    image: postgres
+    container_name: database
+    environment:
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: openmu
+      POSTGRES_USER: postgres
+    ports:
+      - "5432"
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+
+volumes:
+  dbdata:
+

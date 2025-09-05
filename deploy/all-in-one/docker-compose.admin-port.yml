@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  openmu-startup:
+    ports:
+      # Fija el puerto del panel a 8082 en el host.
+      - "8082:8080"
+      # Reexpone puertos del juego y chat como en el base file.
+      - "55901:55901"
+      - "55902:55902"
+      - "55903:55903"
+      - "55904:55904"
+      - "55905:55905"
+      - "55906:55906"
+      - "44405:44405"
+      - "44406:44406"
+      - "55980:55980"
+
