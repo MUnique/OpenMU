@@ -129,3 +129,22 @@ If you prefer to use your own nginx / reverse proxy, use the `docker-compose.no-
   `docker compose -f docker-compose.no-nginx.yml -f docker-compose.public.yml up -d`
 
 Then, configure your reverse proxy to forward to `http://<host>:8082/` with WebSockets enabled.
+
+### Attach to your existing Nginx Proxy (Docker network)
+
+If your Nginx Proxy Manager (or nginx) runs on an external Docker network (e.g. `proxy_net`), attach `openmu-startup` to that network so the proxy can reach it by container name:
+
+1) Ensure the network exists:
+
+   `docker network ls | grep proxy_net || docker network create proxy_net`
+
+2) Start OpenMU attached to `proxy_net`:
+
+   `docker compose -f docker-compose.no-nginx.yml -f docker-compose.override.yml -f docker-compose.lan.yml -f docker-compose.npm-net.yml up -d --build`
+
+3) In your proxy (NPM):
+
+   - Forward Hostname/IP: `openmu-startup`
+   - Forward Port: `8080`
+   - Scheme: `http`
+   - WebSockets: enabled

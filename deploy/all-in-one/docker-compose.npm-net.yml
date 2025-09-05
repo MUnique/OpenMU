@@ -1,0 +1,12 @@
+version: '3'
+
+networks:
+  proxy_net:
+    external: true
+
+services:
+  openmu-startup:
+    networks:
+      - default
+      - proxy_net
+
