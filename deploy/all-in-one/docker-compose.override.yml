@@ -11,8 +11,6 @@ services:
       # Para pruebas en red local, anunciar IP local a los clientes.
       # Cambiar a "public" si van a conectarse desde Internet.
       RESOLVE_IP: local
-    ports:
-      - "8081:8080"
 
   database:
     ports:
