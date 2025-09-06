@@ -1,0 +1,94 @@
+@page "/craftings"
+@using MUnique.OpenMU.DataModel.Configuration
+@using MUnique.OpenMU.DataModel.Configuration.ItemCrafting
+@using MUnique.OpenMU.Persistence
+@using Microsoft.AspNetCore.Components.QuickGrid
+
+@inject IDataSource<GameConfiguration> ConfigDataSource
+
+<PageTitle>OpenMU: Craftings</PageTitle>
+<Breadcrumb IsFirstFromRoot="true" Caption="Craftings"/>
+<h1>Craftings (Chaos Machine, etc.)</h1>
+
+@if (_viewModels is null)
+{
+    <span class="spinner-border" role="status" aria-hidden="true"></span>
+    <span class="sr-only">Cargando...</span>
+}
+else
+{
+    <QuickGrid Items="@Filtered" Pagination="@_pagination" Theme="none">
+        <PropertyColumn Title="NPC" Property="@(c => c.NpcName)" Sortable="true">
+            <HeaderTemplate>
+                <div>NPC</div>
+                <input class="small" type="search" placeholder="Buscar..." @bind="_npcFilter" @bind:event="oninput" />
+            </HeaderTemplate>
+        </PropertyColumn>
+        <PropertyColumn Title="Ventana" Property="@(c => c.NpcWindow)" Sortable="true">
+            <HeaderTemplate>
+                <div>Ventana</div>
+                <input class="small" type="search" placeholder="Buscar..." @bind="_windowFilter" @bind:event="oninput" />
+            </HeaderTemplate>
+        </PropertyColumn>
+        <PropertyColumn Title="Éxito %" Property="@(c => c.SuccessPercent)" Sortable="true" />
+        <PropertyColumn Title="Máx. %" Property="@(c => c.MaximumSuccessPercent)" Sortable="true" />
+        <PropertyColumn Title="Costo base" Property="@(c => c.Money)" Sortable="true" />
+        <PropertyColumn Title="Costo por %" Property="@(c => c.MoneyPerFinalSuccessPercentage)" Sortable="true" />
+        <PropertyColumn Title="Nº" Property="@(c => c.Crafting.Number)" Sortable="true" />
+        <PropertyColumn Title="Nombre" Property="@(c => c.Crafting.Name)" Sortable="true">
+            <HeaderTemplate>
+                <div>Nombre</div>
+                <input class="small" type="search" placeholder="Buscar..." @bind="_nameFilter" @bind:event="oninput" />
+            </HeaderTemplate>
+        </PropertyColumn>
+        <TemplateColumn Title="Acciones" Align="Align.Center">
+            <a class="btn btn-info" href="@($"edit-config/{typeof(ItemCrafting).FullName}/{context.Crafting.GetId()}")">Editar</a>
+        </TemplateColumn>
+    </QuickGrid>
+    <Paginator State="@_pagination" />
+}
+
+@code {
+    private List<CraftingViewModel>? _viewModels;
+    private QuickGridPaginationState _pagination = new();
+    private string _npcFilter = string.Empty;
+    private string _nameFilter = string.Empty;
+    private string _windowFilter = string.Empty;
+
+    private IEnumerable<CraftingViewModel> Filtered => _viewModels!
+        .Where(vm => string.IsNullOrWhiteSpace(_npcFilter) || vm.NpcName.Contains(_npcFilter, StringComparison.InvariantCultureIgnoreCase))
+        .Where(vm => string.IsNullOrWhiteSpace(_nameFilter) || (vm.Crafting.Name?.Contains(_nameFilter, StringComparison.InvariantCultureIgnoreCase) ?? false))
+        .Where(vm => string.IsNullOrWhiteSpace(_windowFilter) || vm.NpcWindow.Contains(_windowFilter, StringComparison.InvariantCultureIgnoreCase));
+
+    protected override async Task OnInitializedAsync()
+    {
+        var config = await this.ConfigDataSource.GetOwnerAsync(Guid.Empty).ConfigureAwait(false);
+        _viewModels = config.Monsters
+            .Where(m => m.ItemCraftings.Any())
+            .SelectMany(m => m.ItemCraftings.Select(c => new CraftingViewModel
+            {
+                Crafting = c,
+                NpcName = string.IsNullOrWhiteSpace(m.Designation) ? $"Monster #{m.Number}" : m.Designation,
+                NpcWindow = m.NpcWindow.ToString(),
+                SuccessPercent = c.SimpleCraftingSettings?.SuccessPercent ?? 0,
+                MaximumSuccessPercent = c.SimpleCraftingSettings?.MaximumSuccessPercent ?? 0,
+                Money = c.SimpleCraftingSettings?.Money ?? 0,
+                MoneyPerFinalSuccessPercentage = c.SimpleCraftingSettings?.MoneyPerFinalSuccessPercentage ?? 0,
+            }))
+            .OrderBy(vm => vm.NpcName)
+            .ThenBy(vm => vm.Crafting.Number)
+            .ToList();
+        await base.OnInitializedAsync();
+    }
+
+    private class CraftingViewModel
+    {
+        public ItemCrafting Crafting { get; set; } = null!;
+        public string NpcName { get; set; } = string.Empty;
+        public string NpcWindow { get; set; } = string.Empty;
+        public int SuccessPercent { get; set; }
+        public int MaximumSuccessPercent { get; set; }
+        public int Money { get; set; }
+        public int MoneyPerFinalSuccessPercentage { get; set; }
+    }
+}
