@@ -48,13 +48,25 @@ internal class TypedContext : EntityDataContext, ITypedContext
     /// </summary>
     public Type EditType { get; }
 
-    private IReadOnlySet<Type> EditTypes => ContextInfoPerEditType[this.EditType].EditTypes;
+    private IReadOnlySet<Type> EditTypes => this.GetOrInitializeContextInfo().EditTypes;
 
-    private IReadOnlySet<Type> BackReferenceTypes => ContextInfoPerEditType[this.EditType].BackReferenceTypes;
+    private IReadOnlySet<Type> BackReferenceTypes => this.GetOrInitializeContextInfo().BackReferenceTypes;
 
-    private IReadOnlySet<Type> ReadOnlyTypes => ContextInfoPerEditType[this.EditType].ReadOnlyTypes;
+    private IReadOnlySet<Type> ReadOnlyTypes => this.GetOrInitializeContextInfo().ReadOnlyTypes;
 
-    private string? GameConfigNavigationName => ContextInfoPerEditType[this.EditType].GameConfigNavigationName;
+    private string? GameConfigNavigationName => this.GetOrInitializeContextInfo().GameConfigNavigationName;
+
+    private ContextInfo GetOrInitializeContextInfo()
+    {
+        if (ContextInfoPerEditType.TryGetValue(this.EditType, out var info))
+        {
+            return info;
+        }
+
+        // Trigger model building to run OnModelCreating which fills ContextInfoPerEditType.
+        _ = this.Model; // accessing the model ensures it's initialized
+        return ContextInfoPerEditType[this.EditType];
+    }
 
     /// <inheritdoc />
     public bool IsIncluded(Type clrType)
