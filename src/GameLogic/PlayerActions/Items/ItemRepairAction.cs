@@ -30,7 +30,7 @@ public class ItemRepairAction
         var item = player.Inventory?.GetItem(slot);
         if (item is null)
         {
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("No Item there to repair.", MessageType.BlueNormal)).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("No hay ítems para reparar en ese espacio.", MessageType.BlueNormal)).ConfigureAwait(false);
             player.Logger.LogWarning("RepairItem: Player {0}, Itemslot {1} not filled", player.SelectedCharacter?.Name, slot);
             return;
         }
@@ -47,7 +47,7 @@ public class ItemRepairAction
         }
         else
         {
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("You don't have enough money to repair.", MessageType.BlueNormal)).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("No tienes suficiente zen para reparar.", MessageType.BlueNormal)).ConfigureAwait(false);
         }
     }
 
@@ -94,7 +94,7 @@ public class ItemRepairAction
             }
             else
             {
-                await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("You don't have enough money to repair.", MessageType.BlueNormal)).ConfigureAwait(false);
+                await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("No tienes suficiente zen para reparar.", MessageType.BlueNormal)).ConfigureAwait(false);
                 break;
             }
         }

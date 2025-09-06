@@ -15,17 +15,17 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which handles the command to add stat points.
 /// </summary>
 [Guid("D074E8AB-9D6E-49A4-956F-1F4818188AF1")]
-[PlugIn("Set Stat chat command", "Set stat points. Usage: /set (ene|agi|vit|str|cmd) (amount) (optional:character)")]
-[ChatCommandHelp(Command, "Set stat points. Usage: /set (ene|agi|vit|str|cmd) (amount) (optional:character)", typeof(Arguments), MinimumStatus)]
+[PlugIn("Set Stat chat command", "Establece puntos de atributo. Uso: /set (ene|agi|vit|str|cmd) (cantidad) (opcional:personaje)")]
+[ChatCommandHelp(Command, "Establece puntos de atributo. Uso: /set (ene|agi|vit|str|cmd) (cantidad) (opcional:personaje)", typeof(Arguments), MinimumStatus)]
 public class SetStatChatCommandPlugIn : ChatCommandPlugInBase<SetStatChatCommandPlugIn.Arguments>, IDisabledByDefault
 {
     private const string Command = "/set";
 
     private const CharacterStatus MinimumStatus = CharacterStatus.GameMaster;
-    private const string CharacterNotFoundMessage = "Character '{0}' not found.";
-    private const string InvalidStatWithLimitMessage = "Invalid {0} - must be between 0 and {1}.";
-    private const string InvalidStatNoLimitMessage = "Invalid {0} - must be bigger than 1.";
-    private const string StatSetMessage = "{0} set to {1}.";
+    private const string CharacterNotFoundMessage = "Personaje '{0}' no encontrado.";
+    private const string InvalidStatWithLimitMessage = "Valor inválido {0} - debe estar entre 0 y {1}.";
+    private const string InvalidStatNoLimitMessage = "Valor inválido {0} - debe ser mayor que 1.";
+    private const string StatSetMessage = "{0} establecido en {1}.";
 
     /// <inheritdoc />
     public override string Key => Command;
@@ -97,12 +97,12 @@ public class SetStatChatCommandPlugIn : ChatCommandPlugInBase<SetStatChatCommand
             "vit" => Stats.BaseVitality,
             "ene" => Stats.BaseEnergy,
             "cmd" => Stats.BaseLeadership,
-            _ => throw new ArgumentException($"Unknown stat: '{statType}'."),
+            _ => throw new ArgumentException($"Atributo desconocido: '{statType}'."),
         };
 
         if (selectedCharacter.Attributes.All(sa => sa.Definition != attribute))
         {
-            throw new ArgumentException($"The character has no stat attribute '{statType}'.");
+            throw new ArgumentException($"El personaje no tiene el atributo '{statType}'.");
         }
 
         return attribute;

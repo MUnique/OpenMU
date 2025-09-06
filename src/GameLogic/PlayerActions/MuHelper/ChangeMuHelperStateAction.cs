@@ -24,7 +24,7 @@ public class ChangeMuHelperStateAction
 
         if (configuration is null)
         {
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("MU Helper is disabled", MessageType.BlueNormal)).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("MU Helper está deshabilitado", MessageType.BlueNormal)).ConfigureAwait(false);
             return;
         }
 
@@ -37,7 +37,7 @@ public class ChangeMuHelperStateAction
                 await player.MuHelper.StopAsync().ConfigureAwait(false);
                 break;
             default: // unknown
-                await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync($"MU Helper can't handle status: {status}", MessageType.BlueNormal)).ConfigureAwait(false);
+                await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync($"MU Helper no puede manejar el estado: {status}", MessageType.BlueNormal)).ConfigureAwait(false);
                 break;
         }
     }

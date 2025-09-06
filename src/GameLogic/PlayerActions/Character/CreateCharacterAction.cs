@@ -104,7 +104,7 @@ public class CreateCharacterAction
             var message = ex.InnerException?.Message ?? ex.Message;
             if (message.Contains("IX_Character_Name") || message.Contains("23505"))
             {
-                await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("A character with the same name already exists.", MessageType.BlueNormal)).ConfigureAwait(false);
+                await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Ya existe un personaje con el mismo nombre.", MessageType.BlueNormal)).ConfigureAwait(false);
             }
 
             return null;

@@ -22,7 +22,7 @@ public class StoreItemListRequestAction
     {
         if (!(requestedPlayer.ShopStorage?.StoreOpen ?? false))
         {
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Player's Store not open.", MessageType.BlueNormal)).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("La tienda del jugador no está abierta.", MessageType.BlueNormal)).ConfigureAwait(false);
             return;
         }
 

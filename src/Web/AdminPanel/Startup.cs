@@ -5,9 +5,11 @@
 namespace MUnique.OpenMU.Web.AdminPanel;
 
 using System.IO;
+using System.Globalization;
 using Blazored.Modal;
 using Blazored.Toast;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -52,6 +54,15 @@ public class Startup
         services.AddRazorPages();
         services.AddServerSideBlazor();
 
+        services.AddLocalization();
+        services.Configure<RequestLocalizationOptions>(options =>
+        {
+            var supportedCultures = new[] { new CultureInfo("es-AR"), new CultureInfo("es-ES") };
+            options.DefaultRequestCulture = new RequestCulture("es-AR");
+            options.SupportedCultures = supportedCultures;
+            options.SupportedUICultures = supportedCultures;
+        });
+
         services.AddSignalR().AddJsonProtocol(o => o.PayloadSerializerOptions.Converters.Add(new TimeSpanConverter()));
 
         services.AddControllers()
@@ -89,6 +100,12 @@ public class Startup
             // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
             app.UseHsts();
         }
+
+        // Localization (default es-AR)
+        var locOptions = app.ApplicationServices.GetRequiredService<Microsoft.Extensions.Options.IOptions<RequestLocalizationOptions>>().Value;
+        CultureInfo.DefaultThreadCurrentCulture = locOptions.DefaultRequestCulture.Culture;
+        CultureInfo.DefaultThreadCurrentUICulture = locOptions.DefaultRequestCulture.UICulture;
+        app.UseRequestLocalization(locOptions);
 
         app.UseHttpsRedirection();
         app.UseStaticFiles();

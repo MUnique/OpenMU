@@ -104,14 +104,14 @@ public class SelfDefensePlugIn : IPeriodicTaskPlugIn, IAttackableGotHitPlugIn, I
 
     private async ValueTask BeginSelfDefenseAsync(Player attacker, Player defender)
     {
-        var message = $"Self defense is initiated by {attacker.Name}'s attack to {defender.Name}!";
+        var message = $"Se inicia defensa propia por el ataque de {attacker.Name} a {defender.Name}!";
         await defender.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal)).ConfigureAwait(false);
         await attacker.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal)).ConfigureAwait(false);
     }
 
     private async ValueTask EndSelfDefenseAsync(Player attacker, Player defender)
     {
-        var message = $"Self defense of {defender.Name} against {attacker.Name} diminishes.";
+        var message = $"La defensa propia de {defender.Name} contra {attacker.Name} finaliza.";
         await defender.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal)).ConfigureAwait(false);
         await attacker.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal)).ConfigureAwait(false);
     }

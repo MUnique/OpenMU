@@ -42,38 +42,38 @@ public class ResetCharacterAction
         var resetFeature = this._player.GameContext.FeaturePlugIns.GetPlugIn<ResetFeaturePlugIn>();
         if (resetFeature is null)
         {
-            await this.ShowMessageAsync("Reset is not enabled.").ConfigureAwait(false);
+            await this.ShowMessageAsync("El reset no está habilitado.").ConfigureAwait(false);
             return;
         }
 
         if (this._player.PlayerState.CurrentState != PlayerState.EnteredWorld && this._npc is null)
         {
-            await this.ShowMessageAsync("Cannot do reset with any windows opened.").ConfigureAwait(false);
+            await this.ShowMessageAsync("No se puede realizar un reset con ventanas abiertas.").ConfigureAwait(false);
             return;
         }
 
         if (this._player.Attributes is null || this._player.SelectedCharacter is null)
         {
-            await this.ShowMessageAsync("Not entered the game.").ConfigureAwait(false);
+            await this.ShowMessageAsync("No has ingresado al juego.").ConfigureAwait(false);
             return;
         }
 
         var configuration = resetFeature.Configuration;
         if (configuration is null)
         {
-            await this.ShowMessageAsync("Reset is not configured.").ConfigureAwait(false);
+            await this.ShowMessageAsync("El reset no está configurado.").ConfigureAwait(false);
             return;
         }
 
         if (this._player.Level < configuration.RequiredLevel)
         {
-            await this.ShowMessageAsync($"Required level for reset is {configuration.RequiredLevel}.").ConfigureAwait(false);
+            await this.ShowMessageAsync($"El nivel requerido para reset es {configuration.RequiredLevel}.").ConfigureAwait(false);
             return;
         }
 
         if (configuration.ResetLimit > 0 && (this.GetResetCount() + 1) > configuration.ResetLimit)
         {
-            await this.ShowMessageAsync($"Maximum resets of {configuration.ResetLimit} reached.").ConfigureAwait(false);
+            await this.ShowMessageAsync($"Se alcanzó el máximo de reseteos: {configuration.ResetLimit}.").ConfigureAwait(false);
             return;
         }
 
@@ -128,7 +128,7 @@ public class ResetCharacterAction
 
         if (!this._player.TryRemoveMoney(calculatedRequiredZen))
         {
-            await this.ShowMessageAsync($"You don't have enough money for reset, required zen is {calculatedRequiredZen}").ConfigureAwait(false);
+            await this.ShowMessageAsync($"No tienes suficiente zen para resetear, se requieren {calculatedRequiredZen}.").ConfigureAwait(false);
             return false;
         }
 

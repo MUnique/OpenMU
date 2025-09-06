@@ -12,7 +12,7 @@
 @if (this.ViewModels is null)
 {
     <span class="spinner-border" role="status" aria-hidden="true"></span>
-    <span class="sr-only">Loading...</span>
+    <span class="sr-only">Cargando...</span>
     return;
 }
 
@@ -25,7 +25,7 @@
                     <div class="sort-indicator" aria-hidden="true"></div>
                 </button>
                 <div class="col-search ml-5">
-                    <input class="small" type="search" autofocus @bind="@NameFilter" @bind:event="oninput" placeholder="Search ..."/>
+                    <input class="small" type="search" autofocus @bind="@NameFilter" @bind:event="oninput" placeholder="Buscar ..."/>
                 </div>
             </HeaderTemplate>
         </PropertyColumn>
@@ -34,11 +34,11 @@
             @{
                 var targetUrl = $"edit-config/{this.TypeString}/" + context.Id;
             }
-            <a href="@(targetUrl)" class="btn btn-info">Edit</a>
-            <button type="button" class="btn-danger" @onclick="@(() => this.OnDeleteButtonClickAsync(context))"><span class="oi oi-trash"></span> Delete</button>
+            <a href="@(targetUrl)" class="btn btn-info">Editar</a>
+            <button type="button" class="btn-danger" @onclick="@(() => this.OnDeleteButtonClickAsync(context))"><span class="oi oi-trash"></span> Eliminar</button>
         </TemplateColumn>
     </QuickGrid>
 </div>
 <Paginator State="@_pagination" />
 <hr />
-<button type="button" class="btn-outline-primary" @onclick="OnCreateButtonClickAsync"><span class="oi oi-plus"></span> Add New</button>
+<button type="button" class="btn-outline-primary" @onclick="OnCreateButtonClickAsync"><span class="oi oi-plus"></span> Agregar Nuevo</button>

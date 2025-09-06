@@ -677,7 +677,7 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
             {
                 if (this.Definition.MapCreationPolicy != MiniGameMapCreationPolicy.Shared)
                 {
-                    await this.ShowMessageAsync($"{this.Definition.Name} starts in {(int)enterDuration.TotalMinutes} minutes.").ConfigureAwait(false);
+                    await this.ShowMessageAsync($"{this.Definition.Name} comienza en {(int)enterDuration.TotalMinutes} minutos.").ConfigureAwait(false);
                 }
 
                 await Task.Delay(messagePeriod, cancellationToken).ConfigureAwait(false);
@@ -691,7 +691,7 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
             await this.CloseEntranceAsync().ConfigureAwait(false);
             if (this.PlayerCount < this.MinimumPlayerCount)
             {
-                await this.ShowMessageAsync($"Can't start with less than {this.MinimumPlayerCount} players.").ConfigureAwait(false);
+                await this.ShowMessageAsync($"No se puede iniciar con menos de {this.MinimumPlayerCount} jugadores.").ConfigureAwait(false);
                 if (this.Definition.EntranceFee > 0)
                 {
                     await this.ForEachPlayerAsync(async player => player.TryAddMoney(this.Definition.EntranceFee)).ConfigureAwait(false);
@@ -1018,7 +1018,7 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         {
             if (!this.IsItemAllowedToEquip(item))
             {
-                await player.ShowMessageAsync($"Can't enter event with equipped item '{item.Definition?.Name ?? item.ToString()}'.").ConfigureAwait(false);
+                await player.ShowMessageAsync($"No puedes entrar al evento con el ítem equipado '{item.Definition?.Name ?? item.ToString()}'.").ConfigureAwait(false);
                 result = false;
             }
         }

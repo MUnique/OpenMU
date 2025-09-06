@@ -14,14 +14,14 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which handles the command to get stat points.
 /// </summary>
 [Guid("F8CACA47-D486-45AE-814F-C6218AD87652")]
-[PlugIn("Get Stat chat command", "Get stat points. Usage: /get (ene|agi|vit|str|cmd) (optional:character)")]
-[ChatCommandHelp(Command, "Get stat points. Usage: /get (ene|agi|vit|str|cmd) (optional:character)", typeof(Arguments), MinimumStatus)]
+[PlugIn("Get Stat chat command", "Obtiene puntos de atributo. Uso: /get (ene|agi|vit|str|cmd) (opcional:personaje)")]
+[ChatCommandHelp(Command, "Obtiene puntos de atributo. Uso: /get (ene|agi|vit|str|cmd) (opcional:personaje)", typeof(Arguments), MinimumStatus)]
 public class GetStatChatCommandPlugIn : ChatCommandPlugInBase<GetStatChatCommandPlugIn.Arguments>, IDisabledByDefault
 {
     private const string Command = "/get";
     private const CharacterStatus MinimumStatus = CharacterStatus.GameMaster;
-    private const string CharacterNotFoundMessage = "Character '{0}' not found.";
-    private const string StatGetMessage = "Stat of '{0}': {1}.";
+    private const string CharacterNotFoundMessage = "Personaje '{0}' no encontrado.";
+    private const string StatGetMessage = "Atributo de '{0}': {1}.";
 
     /// <inheritdoc />
     public override string Key => Command;
@@ -74,12 +74,12 @@ public class GetStatChatCommandPlugIn : ChatCommandPlugInBase<GetStatChatCommand
             "vit" => Stats.BaseVitality,
             "ene" => Stats.BaseEnergy,
             "cmd" => Stats.BaseLeadership,
-            _ => throw new ArgumentException($"Unknown stat: '{statType}'."),
+            _ => throw new ArgumentException($"Atributo desconocido: '{statType}'."),
         };
 
         if (selectedCharacter.Attributes.All(sa => sa.Definition != attribute))
         {
-            throw new ArgumentException($"The character has no stat attribute '{statType}'.");
+            throw new ArgumentException($"El personaje no tiene el atributo '{statType}'.");
         }
 
         return attribute;

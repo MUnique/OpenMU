@@ -87,7 +87,7 @@ public sealed class EditMap : ComponentBase, IDisposable
         if (this._maps is { })
         {
             builder.OpenComponent<Breadcrumb>(0);
-            builder.AddAttribute(1, nameof(Breadcrumb.Caption), "Map Editor");
+            builder.AddAttribute(1, nameof(Breadcrumb.Caption), "Editor de Mapas");
             builder.CloseComponent();
             builder.OpenComponent<CascadingValue<IContext>>(10);
             builder.AddAttribute(12, nameof(CascadingValue<IContext>.Value), this._context);
@@ -197,8 +197,8 @@ public sealed class EditMap : ComponentBase, IDisposable
                 }
                 catch (Exception ex)
                 {
-                    this.Logger.LogError(ex, $"Could not load game maps: {ex.Message}{Environment.NewLine}{ex.StackTrace}");
-                    await this.ModalService.ShowMessageAsync("Error", "Could not load the map data. Check the logs for details.").ConfigureAwait(false);
+                    this.Logger.LogError(ex, $"No se pudieron cargar los mapas: {ex.Message}{Environment.NewLine}{ex.StackTrace}");
+                    await this.ModalService.ShowMessageAsync("Error", "No se pudieron cargar los datos del mapa. Revisa los logs para más detalles.").ConfigureAwait(false);
                 }
 
                 await showModalTask.ConfigureAwait(false);
@@ -224,13 +224,13 @@ public sealed class EditMap : ComponentBase, IDisposable
         {
             var context = await this.GameConfigurationSource.GetContextAsync().ConfigureAwait(true);
             var success = await context.SaveChangesAsync().ConfigureAwait(true);
-            var text = success ? "The changes have been saved." : "There were no changes to save.";
+            var text = success ? "Los cambios se han guardado." : "No hay cambios para guardar.";
             this.ToastService.ShowSuccess(text);
         }
         catch (Exception ex)
         {
-            this.Logger.LogError(ex, $"Error during saving");
-            this.ToastService.ShowError($"An unexpected error occured: {ex.Message}. See logs for more details.");
+            this.Logger.LogError(ex, $"Error al guardar");
+            this.ToastService.ShowError($"Ocurrió un error inesperado: {ex.Message}. Mira los logs para más detalles.");
         }
     }
 }

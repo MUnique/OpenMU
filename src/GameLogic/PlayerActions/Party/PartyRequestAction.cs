@@ -23,26 +23,26 @@ public class PartyRequestAction
         var isPartyMember = player.Party != null && !Equals(player.Party.PartyMaster, player);
         if (player.CurrentMiniGame?.Definition.AllowParty is false)
         {
-            await this.SendMessageToPlayerAsync(player, "A party is not possible during this event.", MessageType.BlueNormal).ConfigureAwait(false);
+            await this.SendMessageToPlayerAsync(player, "No es posible formar party durante este evento.", MessageType.BlueNormal).ConfigureAwait(false);
             return;
         }
 
         if (toRequest.Party != null || toRequest.LastPartyRequester != null)
         {
-            await this.SendMessageToPlayerAsync(player, $"{toRequest.Name} is already in a party.", MessageType.BlueNormal).ConfigureAwait(false);
+            await this.SendMessageToPlayerAsync(player, $"{toRequest.Name} ya está en un party.", MessageType.BlueNormal).ConfigureAwait(false);
             return;
         }
 
         if (isPartyMember)
         {
-            await this.SendMessageToPlayerAsync(player, "You are not the Party Master.", MessageType.BlueNormal).ConfigureAwait(false);
+            await this.SendMessageToPlayerAsync(player, "No eres el líder del party.", MessageType.BlueNormal).ConfigureAwait(false);
             return;
         }
 
         if (await toRequest.PlayerState.TryAdvanceToAsync(PlayerState.PartyRequest).ConfigureAwait(false))
         {
             await this.SendPartyRequestAsync(toRequest, player).ConfigureAwait(false);
-            await this.SendMessageToPlayerAsync(player, $"Requested {toRequest.Name} for Party.", MessageType.BlueNormal).ConfigureAwait(false);
+            await this.SendMessageToPlayerAsync(player, $"Has enviado una solicitud de party a {toRequest.Name}.", MessageType.BlueNormal).ConfigureAwait(false);
         }
     }
 

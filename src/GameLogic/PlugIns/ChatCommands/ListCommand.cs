@@ -11,8 +11,8 @@ using MUnique.OpenMU.PlugIns;
 /// A command which lists all available chat commands with their usage.
 /// </summary>
 [Guid("a5b0a3e5-bb2a-4287-821a-cd97714fe209")]
-[PlugIn("List command", "Lists all the commands.")]
-[ChatCommandHelp(Command, "Lists all the commands.", null)]
+[PlugIn("List command", "Lista todos los comandos.")]
+[ChatCommandHelp(Command, "Lista todos los comandos.", null)]
 public class ListCommand : IChatCommandPlugIn
 {
     private const string Command = "/list";

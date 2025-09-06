@@ -30,7 +30,7 @@ public class LetterSendAction
         var sendPrice = player.GameContext.Configuration.LetterSendPrice;
         if (player.Money < sendPrice)
         {
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Not enough Zen to send a letter.", MessageType.BlueNormal)).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("No tienes suficiente zen para enviar una carta.", MessageType.BlueNormal)).ConfigureAwait(false);
             await player.InvokeViewPlugInAsync<ILetterSendResultPlugIn>(p => p.LetterSendResultAsync(LetterSendSuccess.NotEnoughMoney, letterId)).ConfigureAwait(false);
             return;
         }
@@ -63,7 +63,7 @@ public class LetterSendAction
         {
             player.Logger.LogError(ex, "Unexpected error when trying to send a letter");
             await player.InvokeViewPlugInAsync<ILetterSendResultPlugIn>(p => p.LetterSendResultAsync(LetterSendSuccess.TryAgain, letterId)).ConfigureAwait(false);
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Oops, some error happened during sending the Letter.", MessageType.BlueNormal)).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Ups, ocurrió un error al enviar la carta.", MessageType.BlueNormal)).ConfigureAwait(false);
             return;
         }
 

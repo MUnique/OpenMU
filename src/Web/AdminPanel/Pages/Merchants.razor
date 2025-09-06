@@ -3,16 +3,16 @@
 @using Microsoft.AspNetCore.Components.QuickGrid;
 @using MUnique.OpenMU.Persistence
 
-<PageTitle>OpenMU: Merchants</PageTitle>
-<Breadcrumb IsFirstFromRoot="true" Caption="Merchants"/>
+<PageTitle>OpenMU: Comerciantes</PageTitle>
+<Breadcrumb IsFirstFromRoot="true" Caption="Comerciantes"/>
 
-<h1>Merchants</h1>
+<h1>Comerciantes</h1>
 
 
 @if (this.ViewModels is null)
 {
     <span class="spinner-border" role="status" aria-hidden="true"></span>
-    <span class="sr-only">Loading...</span>
+    <span class="sr-only">Cargando...</span>
     return;
 }
 
@@ -20,11 +20,11 @@
 {
     <div>
         <QuickGrid Items="@this.ViewModels" Pagination="@_merchantPagination" Theme="none">
-            <PropertyColumn Title="Name" Property="@(c => c.Name)" Sortable="true">
+            <PropertyColumn Title="Nombre" Property="@(c => c.Name)" Sortable="true">
             </PropertyColumn>
 
             <TemplateColumn Align="Align.Center">
-                <button type="button" class="btn-info" @onclick="@(() => this.OnMerchantEditClickAsync(context))">Edit</button>
+                <button type="button" class="btn-info" @onclick="@(() => this.OnMerchantEditClickAsync(context))">Editar</button>
             </TemplateColumn>
         </QuickGrid>
     </div>
@@ -33,7 +33,7 @@
 else
 {
     <div class="d-flex flex-row">
-        <button type="button" class="btn-lg btn-outline-dark mr-3" @onclick="this.OnBackButtonClickAsync">&lt; Back</button>
+        <button type="button" class="btn-lg btn-outline-dark mr-3" @onclick="this.OnBackButtonClickAsync">&lt; Volver</button>
         <h2>@this._selectedMerchant.Merchant.Designation</h2>
     </div>
     <hr/>
@@ -41,8 +41,8 @@ else
         <EditForm Model="this._selectedMerchant.Merchant" OnValidSubmit="this.OnSaveButtonClickAsync">
             <ItemStorageField @bind-Value="this._selectedMerchant.Merchant.MerchantStore" HideLabel="true"/>
             <hr />
-            <button type="submit" class="primary-button">Save changes</button>
-            <button type="button" class="cancel-button" @onclick="this.OnCancelButtonClickAsync">Discard changes</button>
+            <button type="submit" class="primary-button">Guardar cambios</button>
+            <button type="button" class="cancel-button" @onclick="this.OnCancelButtonClickAsync">Descartar cambios</button>
         </EditForm>
     </CascadingValue>
 }

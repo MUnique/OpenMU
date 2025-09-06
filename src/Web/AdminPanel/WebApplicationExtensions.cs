@@ -5,13 +5,16 @@
 namespace MUnique.OpenMU.Web.AdminPanel;
 
 using System.IO;
+using System.Globalization;
 using Blazored.Modal;
 using Blazored.Toast;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Persistence;
@@ -49,6 +52,14 @@ public static class WebApplicationExtensions
         builder.Services.AddServerSideBlazor();
 
         var services = builder.Services;
+        services.AddLocalization();
+        services.Configure<RequestLocalizationOptions>(options =>
+        {
+            var supportedCultures = new[] { new CultureInfo("es-AR"), new CultureInfo("es-ES") };
+            options.DefaultRequestCulture = new RequestCulture("es-AR");
+            options.SupportedCultures = supportedCultures;
+            options.SupportedUICultures = supportedCultures;
+        });
         services.AddControllers()
             .ConfigureApplicationPartManager(setup =>
                 setup.FeatureProviders.Add(new GenericControllerFeatureProvider()));
@@ -91,6 +102,12 @@ public static class WebApplicationExtensions
         {
             app.UseExceptionHandler("/Error");
         }
+
+        // Localization (default es-AR)
+        var locOptions = app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value;
+        CultureInfo.DefaultThreadCurrentCulture = locOptions.DefaultRequestCulture.Culture;
+        CultureInfo.DefaultThreadCurrentUICulture = locOptions.DefaultRequestCulture.UICulture;
+        app.UseRequestLocalization(locOptions);
 
         app.UseStaticFiles();
         app.UseStaticFiles(new StaticFileOptions
