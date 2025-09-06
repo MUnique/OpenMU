@@ -55,8 +55,26 @@ public static class WebApplicationExtensions
         services.AddLocalization();
         services.Configure<RequestLocalizationOptions>(options =>
         {
-            var supportedCultures = new[] { new CultureInfo("es-AR"), new CultureInfo("es-ES") };
-            options.DefaultRequestCulture = new RequestCulture("es-AR");
+            var preferredCultures = new[] { "es-AR", "es-ES" };
+            var supportedCultures = new List<CultureInfo>();
+            foreach (var name in preferredCultures)
+            {
+                try
+                {
+                    supportedCultures.Add(new CultureInfo(name));
+                }
+                catch (CultureNotFoundException)
+                {
+                    // Globalization-invariant mode or culture not available; skip.
+                }
+            }
+
+            if (supportedCultures.Count == 0)
+            {
+                supportedCultures.Add(CultureInfo.InvariantCulture);
+            }
+
+            options.DefaultRequestCulture = new RequestCulture(supportedCultures[0]);
             options.SupportedCultures = supportedCultures;
             options.SupportedUICultures = supportedCultures;
         });
@@ -103,7 +121,7 @@ public static class WebApplicationExtensions
             app.UseExceptionHandler("/Error");
         }
 
-        // Localization (default es-AR)
+        // Localization (fallbacks to InvariantCulture if globalization-invariant)
         var locOptions = app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value;
         CultureInfo.DefaultThreadCurrentCulture = locOptions.DefaultRequestCulture.Culture;
         CultureInfo.DefaultThreadCurrentUICulture = locOptions.DefaultRequestCulture.UICulture;
