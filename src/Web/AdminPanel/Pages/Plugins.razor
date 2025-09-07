@@ -33,16 +33,16 @@
             <td>
                 @if (item.IsActive)
                 {
-                    <Button class="btn-warning" @onclick="async () => await this._plugInController.DeactivateAsync(item)">Desactivar</Button>
+                    <button class="btn btn-warning" @onclick="async () => await this._plugInController.DeactivateAsync(item)">Desactivar</button>
                 }
                 else
                 {
-                    <Button class="btn-success" @onclick="async () => await this._plugInController.ActivateAsync(item)">Activar</Button>
+                    <button class="btn btn-success" @onclick="async () => await this._plugInController.ActivateAsync(item)">Activar</button>
                 }
 
                 @if (item.ConfigurationType is { })
                 {
-                    <Button class="btn-secondary" @onclick="() => this._plugInController.ShowPlugInConfigAsync(item)"><span class="oi oi-cog" aria-hidden="true"></span></Button>
+                    <button class="btn btn-secondary" @onclick="() => this._plugInController.ShowPlugInConfigAsync(item)"><span class="oi oi-cog" aria-hidden="true"></span></button>
                 }
             </td>
         </ItemTemplate>
