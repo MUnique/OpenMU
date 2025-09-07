@@ -17,7 +17,7 @@
 }
 else
 {
-    <QuickGrid Items="@Filtered" Pagination="@_pagination" Theme="none">
+    <QuickGrid TGridItem="CraftingViewModel" Items="@Filtered.AsQueryable()" Pagination="@_pagination" Theme="none">
         <PropertyColumn Title="NPC" Property="@(c => c.NpcName)" Sortable="true">
             <HeaderTemplate>
                 <div>NPC</div>
