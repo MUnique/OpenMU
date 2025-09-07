@@ -14,15 +14,15 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which sets a character's money.
 /// </summary>
 [Guid("00AA4F0E-911D-49FE-8D88-114C7496D383")]
-[PlugIn("Set money command", "Sets money of a player. Usage: /setmoney (amount) (optional:character)")]
-[ChatCommandHelp(Command, "Sets money of a player. Usage: /setmoney (amount) (optional:character)", null)]
+[PlugIn("Set money command", "Establece el Zen de un jugador. Uso: /setmoney (cantidad) (opcional:personaje)")]
+[ChatCommandHelp(Command, "Establece el Zen de un jugador. Uso: /setmoney (cantidad) (opcional:personaje)", null)]
 public class SetMoneyChatCommandPlugIn : ChatCommandPlugInBase<SetMoneyChatCommandPlugIn.Arguments>, IDisabledByDefault
 {
     private const string Command = "/setmoney";
     private const CharacterStatus MinimumStatus = CharacterStatus.GameMaster;
-    private const string CharacterNotFoundMessage = "Character '{0}' not found.";
-    private const string InvalidAmountMessage = "Invalid amount - must be between 0 and {0}.";
-    private const string MoneySetMessage = "Money set to {0}.";
+    private const string CharacterNotFoundMessage = "Personaje '{0}' no encontrado.";
+    private const string InvalidAmountMessage = "Cantidad inválida - debe estar entre 0 y {0}.";
+    private const string MoneySetMessage = "Zen establecido en {0}.";
 
     /// <inheritdoc />
     public override string Key => Command;

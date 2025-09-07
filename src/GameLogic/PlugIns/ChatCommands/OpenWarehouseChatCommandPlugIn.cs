@@ -19,13 +19,13 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which opens the warehouse NPC window.
 /// </summary>
 [Guid("62027B6B-D8E7-4DDB-A16B-7070D1BC4A56")]
-[PlugIn("Open Warehouse chat command", "Opens the warehouse.")]
-[ChatCommandHelp(Command, "Opens the warehouse.", null)]
+[PlugIn("Open Warehouse chat command", "Abre el baúl.")]
+[ChatCommandHelp(Command, "Abre el baúl.", null)]
 public class OpenWarehouseChatCommandPlugIn : ChatCommandPlugInBase<OpenWarehouseChatCommandPlugIn.Arguments>, ISupportCustomConfiguration<OpenWarehouseChatCommandPlugIn.OpenWarehouseChatCommandConfiguration>, ISupportDefaultCustomConfiguration, IDisabledByDefault
 {
     private const string Command = "/openware";
     private const CharacterStatus MinimumStatus = CharacterStatus.Normal;
-    private const string NoWarehouseNpcMessage = "No warehouse NPC found";
+    private const string NoWarehouseNpcMessage = "No se encontró NPC de baúl";
 
     private readonly TalkNpcAction _talkNpcAction = new();
 
@@ -95,6 +95,6 @@ public class OpenWarehouseChatCommandPlugIn : ChatCommandPlugInBase<OpenWarehous
         /// Gets or sets the message to show when the player does not have the required VIP level for this command (excluding GM).
         /// </summary>
         [Display(Name = "Insufficient VIP Level Message", Description = @"The message to show when the player does not have the required VIP level for this command (excluding GM).")]
-        public string InsufficientVipLevelMessage { get; set; } = "Insufficient VIP level to use this command";
+        public string InsufficientVipLevelMessage { get; set; } = "Nivel VIP insuficiente para usar este comando";
     }
 }

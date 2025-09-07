@@ -15,17 +15,17 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which sets a character's resets.
 /// </summary>
 [Guid("47A8644C-B6C5-439E-BAB0-C1A7AE72691C")]
-[PlugIn("Set resets command", "Sets resets of a player. Usage: /setresets (resets) (optional:character)")]
-[ChatCommandHelp(Command, "Sets resets of a player. Usage: /setresets (resets) (optional:character)", null)]
+[PlugIn("Set resets command", "Establece los resets de un jugador. Uso: /setresets (resets) (opcional:personaje)")]
+[ChatCommandHelp(Command, "Establece los resets de un jugador. Uso: /setresets (resets) (opcional:personaje)", null)]
 public class SetResetsChatCommandPlugIn : ChatCommandPlugInBase<SetResetsChatCommandPlugIn.Arguments>, IDisabledByDefault
 {
     private const string Command = "/setresets";
     private const CharacterStatus MinimumStatus = CharacterStatus.GameMaster;
-    private const string ResetPluginDisabledMessage = "The reset system is not enabled on this server.";
-    private const string CharacterNotFoundMessage = "Character '{0}' not found.";
-    private const string InvalidResetsWithLimitMessage = "Invalid resets - must be between 0 and {0}.";
-    private const string InvalidResetsNoLimitMessage = "Invalid resets - must be bigger than 0.";
-    private const string ResetsSetMessage = "Resets set to {0}.";
+    private const string ResetPluginDisabledMessage = "El sistema de resets no está habilitado en este servidor.";
+    private const string CharacterNotFoundMessage = "Personaje '{0}' no encontrado.";
+    private const string InvalidResetsWithLimitMessage = "Resets inválidos - deben estar entre 0 y {0}.";
+    private const string InvalidResetsNoLimitMessage = "Resets inválidos - deben ser mayores que 0.";
+    private const string ResetsSetMessage = "Resets establecidos en {0}.";
 
     /// <inheritdoc />
     public override string Key => Command;

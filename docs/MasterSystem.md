@@ -1,4 +1,9 @@
-﻿# Master System
+﻿# Master System / Sistema Maestro
+
+*Read this document in [English](#english) or [Español](#espanol).* 
+
+<a id="english"></a>
+## English
 
 ## What is it?
 
@@ -113,4 +118,107 @@ Some short notes about the client:
 ### Sending Master Skills (F3 53)
 
 * For code, see [UpdateMasterSkillsPlugIn](https://github.com/MUnique/OpenMU/tree/master/src/GameServer/RemoteView/Character/UpdateMasterSkillsPlugIn.cs).
+* Packet: [C2F353 - Master Skill List](Packets/C2-F3-53-MasterSkillList_by-server.md)
+
+<a id="espanol"></a>
+## Español
+
+## ¿Qué es?
+
+Cuando un personaje alcanza cierto level (usualmente level 400) y completa una
+quest, su character class cambia a una *master character class*. Esto desbloquea
+el *Master Skill Tree*, que permite distribuir points a master skills. Los points
+se otorgan por cada master level que el player alcanza (igual que antes, ganando
+experience).
+
+## Tipos de master skills
+
+Básicamente hay dos tipos de master skills en un skill tree:
+
+### Passive skills
+
+Cuando se aprenden, estas skills otorgan ciertos power-ups de forma pasiva. Por
+ejemplo, hay master skills para incrementar la máxima health o para aumentar el
+attack damage.
+
+### Active skills
+
+Al aprenderlas, estas skills aparecen en la skill list. La mayoría de este tipo
+reemplaza skills existentes. Las skills reemplazadas permanecen en segundo plano
+y no son visibles en el game client, pero su valor interno sigue aplicándose a
+la master skill. La master skill solo define cuánto damage o buff se agrega a la
+skill reemplazada.
+
+## Estructura del master skill tree
+
+El master skill tree consta de tres roots. Las skills se colocan en filas que
+definen el *rank* de una skill. Por defecto hay 5 ranks disponibles; sin embargo,
+el game client soporta hasta 9 ranks. Cada skill usualmente puede tener hasta 20
+levels, algunas solo 10; el client probablemente soporta más.
+
+Una skill puede depender de una skill del mismo rank o del rank previo del mismo
+root.
+
+Cada character class puede aprender diferentes skills, que a veces son exclusivas
+de la clase. Una skill puede estar disponible para múltiples character classes,
+pero la root y el rank de una skill siempre son los mismos para todas las
+character classes. La apariencia visual en el client puede diferir.
+
+## Requisitos para aprender una skill
+
+Para aprender una skill, el server (y el client) realiza las siguientes
+verificaciones:
+
+### Character class
+
+La skill debe estar definida para la clase del character.
+
+### Rank
+
+La skill debe estar en el primer rank o una skill del rank previo del mismo root
+debe estar al menos en level 10.
+
+### Required Skill
+
+Si la skill tiene required skills definidas (es opcional), estas skills deben
+estar al menos en level 10.
+
+## Client implementation
+
+Algunas notas breves sobre el client:
+
+* Existe un message para el master level, etc. (F3 50)
+  * Contiene health y mana. Si este packet no se envía, un master character
+    aparece sin health/mana.
+* Existe un message para las master skills aprendidas (F3 53)
+  * La información sobre cada skill contiene:
+    * Skill Number
+    * Skill Index
+      * Define dónde se ubica la skill en la interface del client
+      * Me pregunto por qué necesitan esto en el message, ya que el client ya
+        conoce el index de una skill
+      * Puede diferir entre character classes
+    * Current Level
+    * Valor de su efecto en el current level
+    * Valor de su efecto en el next level
+  * Incluso si no se aprendió ninguna skill, este message debe enviarse; de lo
+    contrario, puede contener la información master del master character jugado
+    anteriormente.
+
+## Server implementation
+
+### Adding Points
+
+* Para código, ver [AddMasterPointAction](https://github.com/MUnique/OpenMU/tree/master/src/GameLogic/PlayerActions/Character/AddMasterPointAction.cs).
+* Request Packet: [C1F352 - Add Master Skill Point](Packets/C1-F3-52-AddMasterSkillPoint_by-client.md)
+* Response Packet: [C1F352 - Master skill level update](Packets/C1-F3-52-MasterSkillLevelUpdate_by-server.md)
+
+### Sending Master Stats (F3 50)
+
+* Para código, ver [UpdateMasterStatsPlugIn](https://github.com/MUnique/OpenMU/tree/master/src/GameServer/RemoteView/Character/UpdateMasterStatsPlugIn.cs).
+* Request Packet: [C2F350 - Master Stats Update](Packets/C1-F3-50-MasterStatsUpdate_by-server.md)
+
+### Sending Master Skills (F3 53)
+
+* Para código, ver [UpdateMasterSkillsPlugIn](https://github.com/MUnique/OpenMU/tree/master/src/GameServer/RemoteView/Character/UpdateMasterSkillsPlugIn.cs).
 * Packet: [C2F353 - Master Skill List](Packets/C2-F3-53-MasterSkillList_by-server.md)

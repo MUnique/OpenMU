@@ -15,15 +15,15 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which sets a character's level.
 /// </summary>
 [Guid("4BE779C9-E6B6-47F2-BC23-2E71D82A6C1D")]
-[PlugIn("Set level command", "Sets level of a player. Usage: /setlevel (level) (optional:character)")]
-[ChatCommandHelp(Command, "Sets level of a player. Usage: /setlevel (level) (optional:character)", null)]
+[PlugIn("Set level command", "Establece el nivel de un jugador. Uso: /setlevel (nivel) (opcional:personaje)")]
+[ChatCommandHelp(Command, "Establece el nivel de un jugador. Uso: /setlevel (nivel) (opcional:personaje)", null)]
 public class SetLevelChatCommandPlugIn : ChatCommandPlugInBase<SetLevelChatCommandPlugIn.Arguments>, IDisabledByDefault
 {
     private const string Command = "/setlevel";
     private const CharacterStatus MinimumStatus = CharacterStatus.GameMaster;
-    private const string CharacterNotFoundMessage = "Character '{0}' not found.";
-    private const string InvalidLevelMessage = "Invalid level - must be between 1 and {0}.";
-    private const string LevelSetMessage = "Level set to {0}.";
+    private const string CharacterNotFoundMessage = "Personaje '{0}' no encontrado.";
+    private const string InvalidLevelMessage = "Nivel inválido - debe estar entre 1 y {0}.";
+    private const string LevelSetMessage = "Nivel establecido en {0}.";
 
     /// <inheritdoc />
     public override string Key => Command;

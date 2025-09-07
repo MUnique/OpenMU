@@ -15,15 +15,15 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which sets a character's master level.
 /// </summary>
 [Guid("E401CA16-7827-495B-9DD0-EABDFF39901E")]
-[PlugIn("Set master level command", "Sets master level of a player. Usage: /setmasterlevel (level) (optional:character)")]
-[ChatCommandHelp(Command, "Sets master level of a player. Usage: /setmasterlevel (level) (optional:character)", null)]
+[PlugIn("Set master level command", "Establece el nivel maestro de un jugador. Uso: /setmasterlevel (nivel) (opcional:personaje)")]
+[ChatCommandHelp(Command, "Establece el nivel maestro de un jugador. Uso: /setmasterlevel (nivel) (opcional:personaje)", null)]
 public class SetMasterLevelChatCommandPlugIn : ChatCommandPlugInBase<SetMasterLevelChatCommandPlugIn.Arguments>, IDisabledByDefault
 {
     private const string Command = "/setmasterlevel";
     private const CharacterStatus MinimumStatus = CharacterStatus.GameMaster;
-    private const string CharacterNotFoundMessage = "Character '{0}' not found.";
-    private const string InvalidLevelMessage = "Invalid level - must be between 1 and {0}.";
-    private const string MasterLevelSetMessage = "Master level set to {0}.";
+    private const string CharacterNotFoundMessage = "Personaje '{0}' no encontrado.";
+    private const string InvalidLevelMessage = "Nivel inválido - debe estar entre 1 y {0}.";
+    private const string MasterLevelSetMessage = "Nivel maestro establecido en {0}.";
 
     /// <inheritdoc />
     public override string Key => Command;

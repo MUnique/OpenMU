@@ -45,7 +45,7 @@ public class WhiteWizardInvasionPlugIn : BaseInvasionPlugIn<WhiteWizardInvasionC
         // Typical White Wizard cadence can vary; default to every 4 hours.
         TaskDuration = TimeSpan.FromMinutes(10),
         PreStartMessageDelay = TimeSpan.FromSeconds(3),
-        Message = "[{mapName}] White Wizard Invasion!",
+        Message = "[{mapName}] ¡Invasión de White Wizard!",
         Timetable = WhiteWizardInvasionConfiguration.GenerateTimeSequence(TimeSpan.FromHours(4)).ToList(),
     };
 
