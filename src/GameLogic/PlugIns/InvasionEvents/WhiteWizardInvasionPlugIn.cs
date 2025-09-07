@@ -69,6 +69,7 @@ public class WhiteWizardInvasionPlugIn : BaseInvasionPlugIn<WhiteWizardInvasionC
     private DropItemGroup? _attachedDropGroup;
     private bool _supportDropAttached;
     private DropItemGroup? _attachedSupportDropGroup;
+    private ushort _currentBossId = WhiteWizardId;
 
     /// <inheritdoc />
     protected override async ValueTask OnStartedAsync(InvasionGameServerState state)
@@ -76,13 +77,17 @@ public class WhiteWizardInvasionPlugIn : BaseInvasionPlugIn<WhiteWizardInvasionC
         var gameContext = state.Context;
         var cfg = this.Configuration ?? new WhiteWizardInvasionConfiguration();
 
-        // Attach custom drop group to White Wizard, if configured
+        // Determine boss id (fallback if not present) so we can attach drops to the correct monster.
+        var hasWhiteWizard = gameContext.Configuration.Monsters.Any(m => m.Number == WhiteWizardId);
+        this._currentBossId = hasWhiteWizard ? WhiteWizardId : (ushort)66; // Cursed King
+
+        // Attach custom drop group to the invasion boss, if configured
         if (cfg.UseCustomDrop && cfg.BossDropGroup is { })
         {
-            var wizardDef = gameContext.Configuration.Monsters.FirstOrDefault(m => m.Number == WhiteWizardId);
-            if (wizardDef is not null && !wizardDef.DropItemGroups.Contains(cfg.BossDropGroup))
+            var bossDef = gameContext.Configuration.Monsters.FirstOrDefault(m => m.Number == this._currentBossId);
+            if (bossDef is not null && !bossDef.DropItemGroups.Contains(cfg.BossDropGroup))
             {
-                wizardDef.DropItemGroups.Add(cfg.BossDropGroup);
+                bossDef.DropItemGroups.Add(cfg.BossDropGroup);
                 this._attachedDropGroup = cfg.BossDropGroup;
                 this._customDropAttached = true;
             }
@@ -111,9 +116,7 @@ public class WhiteWizardInvasionPlugIn : BaseInvasionPlugIn<WhiteWizardInvasionC
         // Determine maps to spawn on
         var maps = cfg.SpawnOnAllMaps ? (cfg.Maps?.Length > 0 ? cfg.Maps : this.PossibleMaps) : new[] { state.MapId };
 
-        // Determine boss id (fallback if not present)
-        var hasWhiteWizard = gameContext.Configuration.Monsters.Any(m => m.Number == WhiteWizardId);
-        var bossId = hasWhiteWizard ? WhiteWizardId : (ushort)66; // Cursed King
+        var bossId = this._currentBossId;
 
         foreach (var mapId in maps)
         {
@@ -163,11 +166,8 @@ public class WhiteWizardInvasionPlugIn : BaseInvasionPlugIn<WhiteWizardInvasionC
         // Detach custom drop group if we attached it
         if (this._customDropAttached && this._attachedDropGroup is { })
         {
-            var wizardDef = state.Context.Configuration.Monsters.FirstOrDefault(m => m.Number == WhiteWizardId);
-            if (wizardDef is not null)
-            {
-                wizardDef.DropItemGroups.Remove(this._attachedDropGroup);
-            }
+            var bossDef = state.Context.Configuration.Monsters.FirstOrDefault(m => m.Number == this._currentBossId);
+            bossDef?.DropItemGroups.Remove(this._attachedDropGroup);
 
             this._attachedDropGroup = null;
             this._customDropAttached = false;
