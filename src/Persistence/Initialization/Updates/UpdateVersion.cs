@@ -309,4 +309,9 @@ public enum UpdateVersion
     /// The version of the <see cref="FixEventItemsDropFromMonstersUpdatePlugIn095d"/>.
     /// </summary>
     FixEventItemsDropFromMonsters095d = 60,
+
+    /// <summary>
+    /// The version of the White Wizard monster and default invasion drop groups update.
+    /// </summary>
+    WhiteWizardAndInvasionDropsSeason6 = 61,
 }

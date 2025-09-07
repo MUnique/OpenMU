@@ -5,3 +5,60 @@
 <Breadcrumb IsFirstFromRoot="true" Caption="Inicio"/>
 
 Bienvenido al panel de administración de OpenMU.
+
+<hr />
+<div class="alert alert-light">
+    <h5>Actualizaciones de Configuración</h5>
+    <p>
+        Revisa y aplica nuevas actualizaciones de configuración sin reiniciar manualmente.
+    </p>
+    <NavLink class="btn btn-primary" href="config-updates">
+        <span class="oi oi-loop-circular" aria-hidden="true"></span>
+        &nbsp;Buscar y aplicar actualizaciones
+    </NavLink>
+    @if (_availableUpdateCount > 0)
+    {
+        <span class="badge badge-info ml-2">@_availableUpdateCount disponibles</span>
+    }
+    else if (_checked)
+    {
+        <span class="text-muted ml-2">Sin actualizaciones</span>
+    }
+    else
+    {
+        <span class="text-muted ml-2">Comprobando…</span>
+    }
+    
+</div>
+
+@code {
+    private int _availableUpdateCount;
+    private bool _checked;
+    
+    [Inject]
+    public MUnique.OpenMU.Web.AdminPanel.Services.SetupService SetupService { get; set; } = null!;
+    
+    [Inject]
+    public MUnique.OpenMU.Persistence.Initialization.Updates.DataUpdateService UpdateService { get; set; } = null!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var isInitialized = await this.SetupService.IsDataInitializedAsync().ConfigureAwait(false);
+            if (isInitialized)
+            {
+                var updates = await this.UpdateService.DetermineAvailableUpdatesAsync().ConfigureAwait(false);
+                _availableUpdateCount = updates.Count;
+            }
+        }
+        catch
+        {
+            // ignore on home page
+        }
+        finally
+        {
+            _checked = true;
+        }
+    }
+}

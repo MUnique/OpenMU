@@ -25,6 +25,14 @@ internal class InvasionMobsInitialization : Version095d.InvasionMobsInitializati
     }
 
     /// <inheritdoc />
+    public override void Initialize()
+    {
+        base.Initialize();
+        this.CreateWhiteWizard();
+        this.CreateWhiteWizardDefaultDropGroups();
+    }
+
+    /// <inheritdoc />
     protected override void InitializeGoldenInvasionMobs()
     {
         base.InitializeGoldenInvasionMobs();
@@ -262,6 +270,86 @@ internal class InvasionMobsInitialization : Version095d.InvasionMobsInitializati
             itemDrop.PossibleItems.Add(this.GameConfiguration.Items.First(item => item.Group == 12 && item.Number == 15)); // Jewel of Chaos
             monster.DropItemGroups.Add(itemDrop);
             this.GameConfiguration.DropItemGroups.Add(itemDrop);
+        }
+    }
+
+    private void CreateWhiteWizard()
+    {
+        // MonsterId 135 as used by the client (NpcName_Eng.txt)
+        if (this.GameConfiguration.Monsters.Any(m => m.Number == 135))
+        {
+            return; // already created
+        }
+
+        var monster = this.Context.CreateNew<MonsterDefinition>();
+        this.GameConfiguration.Monsters.Add(monster);
+        monster.Number = 135;
+        monster.Designation = "White Wizard";
+        monster.MoveRange = 3;
+        monster.AttackRange = 4;
+        monster.AttackSkill = this.GameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.EnergyBall);
+        monster.ViewRange = 7;
+        monster.MoveDelay = new TimeSpan(400 * TimeSpan.TicksPerMillisecond);
+        monster.AttackDelay = new TimeSpan(1600 * TimeSpan.TicksPerMillisecond);
+        monster.RespawnDelay = new TimeSpan(600 * TimeSpan.TicksPerSecond);
+        monster.Attribute = 2;
+        monster.NumberOfMaximumItemDrops = 1;
+
+        var attributes = new Dictionary<AttributeDefinition, float>
+        {
+            { Stats.Level, 90 },
+            { Stats.MaximumHealth, 40000 },
+            { Stats.MinimumPhysBaseDmg, 350 },
+            { Stats.MaximumPhysBaseDmg, 420 },
+            { Stats.DefenseBase, 260 },
+            { Stats.AttackRatePvm, 450 },
+            { Stats.DefenseRatePvm, 160 },
+            { Stats.PoisonResistance, 10f / 255 },
+            { Stats.IceResistance, 10f / 255 },
+            { Stats.WaterResistance, 10f / 255 },
+            { Stats.FireResistance, 10f / 255 },
+        };
+        monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
+        monster.SetGuid(monster.Number);
+    }
+
+    private void CreateWhiteWizardDefaultDropGroups()
+    {
+        // Create a default support drop group (for Orcs) if not existing yet
+        const string supportDropDescription = "WW Support Drop";
+        if (!this.GameConfiguration.DropItemGroups.Any(g => g.Description == supportDropDescription))
+        {
+            var supportGroup = this.Context.CreateNew<DropItemGroup>();
+            supportGroup.Description = supportDropDescription;
+            supportGroup.Chance = 1.0; // always drop from this group when attached
+
+            // Typical jewels
+            var bless = this.GameConfiguration.Items.First(i => i.Group == 14 && i.Number == 13);
+            var soul = this.GameConfiguration.Items.First(i => i.Group == 14 && i.Number == 14);
+            var chaos = this.GameConfiguration.Items.First(i => i.Group == 12 && i.Number == 15);
+            supportGroup.PossibleItems.Add(bless);
+            supportGroup.PossibleItems.Add(soul);
+            supportGroup.PossibleItems.Add(chaos);
+            this.GameConfiguration.DropItemGroups.Add(supportGroup);
+        }
+
+        // Create a default boss drop group if not existing yet
+        const string bossDropDescription = "White Wizard Boss Drop";
+        if (!this.GameConfiguration.DropItemGroups.Any(g => g.Description == bossDropDescription))
+        {
+            var bossGroup = this.Context.CreateNew<DropItemGroup>();
+            bossGroup.Description = bossDropDescription;
+            bossGroup.Chance = 1.0; // always drop when attached
+
+            // Better rewards: Guardian, Creation, Chaos, random excellent
+            var guardian = this.GameConfiguration.Items.First(i => i.Group == 14 && i.Number == 31); // Jewel of Guardian
+            var creation = this.GameConfiguration.Items.First(i => i.Group == 14 && i.Number == 22); // Jewel of Creation
+            var chaos = this.GameConfiguration.Items.First(i => i.Group == 12 && i.Number == 15);   // Jewel of Chaos
+            bossGroup.PossibleItems.Add(guardian);
+            bossGroup.PossibleItems.Add(creation);
+            bossGroup.PossibleItems.Add(chaos);
+
+            this.GameConfiguration.DropItemGroups.Add(bossGroup);
         }
     }
 }
