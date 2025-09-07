@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -116,28 +117,31 @@ public class WhiteWizardInvasionPlugIn : BaseInvasionPlugIn<WhiteWizardInvasionC
 
         foreach (var mapId in maps)
         {
-            // Support mobs per map
-            var supportMobs = new List<(ushort MonsterId, ushort Count)>();
+            var gameMap = await gameContext.GetMapAsync(mapId).ConfigureAwait(false);
+            if (gameMap is null)
+            {
+                continue;
+            }
+
+            var (centerX, centerY) = this.FindClusterCenter(gameMap);
+            var radius = cfg.ClusterRadius;
+
+            // Support mobs per map, clustered around the center
             if (cfg.OrcArcherPerMap > 0)
             {
-                supportMobs.Add((OrcArcherId, cfg.OrcArcherPerMap));
+                await this.SpawnClusterAsync(gameContext, gameMap, OrcArcherId, cfg.OrcArcherPerMap, centerX, centerY, radius).ConfigureAwait(false);
             }
 
             if (cfg.EliteOrcPerMap > 0)
             {
-                supportMobs.Add((EliteOrcId, cfg.EliteOrcPerMap));
+                await this.SpawnClusterAsync(gameContext, gameMap, EliteOrcId, cfg.EliteOrcPerMap, centerX, centerY, radius).ConfigureAwait(false);
             }
 
-            if (supportMobs.Count > 0)
-            {
-                await this.SpawnMobsAsync(gameContext, mapId, supportMobs).ConfigureAwait(false);
-            }
-
-            // Boss per map
+            // Boss per map, clustered and with kill announce
             if (cfg.BossCountPerMap > 0)
             {
-                var bosses = new (ushort MonsterId, ushort Count)[] { (bossId, cfg.BossCountPerMap) };
-                await this.SpawnMobsAsync(gameContext, mapId, bosses).ConfigureAwait(false);
+                var currentMapName = gameMap.Definition.Name;
+                await this.SpawnBossClusterAsync(state, gameContext, currentMapName, gameMap, bossId, cfg.BossCountPerMap, centerX, centerY, radius).ConfigureAwait(false);
             }
         }
     }
@@ -145,7 +149,15 @@ public class WhiteWizardInvasionPlugIn : BaseInvasionPlugIn<WhiteWizardInvasionC
     /// <inheritdoc />
     protected override async ValueTask OnFinishedAsync(InvasionGameServerState state)
     {
-        // First, finish and cleanup spawned mobs (base triggers Finished event handlers)
+        var cfg = this.Configuration ?? new WhiteWizardInvasionConfiguration();
+
+        // Optional delay before cleanup to let players see the result briefly
+        if (cfg.CleanupDelaySeconds > 0)
+        {
+            await Task.Delay(TimeSpan.FromSeconds(cfg.CleanupDelaySeconds)).ConfigureAwait(false);
+        }
+
+        // Then, finish and cleanup spawned mobs (base triggers Finished event handlers)
         await base.OnFinishedAsync(state).ConfigureAwait(false);
 
         // Detach custom drop group if we attached it
@@ -170,6 +182,121 @@ public class WhiteWizardInvasionPlugIn : BaseInvasionPlugIn<WhiteWizardInvasionC
 
             this._attachedSupportDropGroup = null;
             this._supportDropAttached = false;
+        }
+    }
+
+    private (byte X, byte Y) FindClusterCenter(GameMap gameMap)
+    {
+        // Try to find a random walkable, non-safezone center
+        for (int i = 0; i < 50; i++)
+        {
+            var x = (byte)Rand.NextInt(10, 246);
+            var y = (byte)Rand.NextInt(10, 246);
+            if (gameMap.Terrain.WalkMap[x, y] && !gameMap.Terrain.SafezoneMap[x, y])
+            {
+                return (x, y);
+            }
+        }
+
+        // Fallback to safezone spawn gate center or (128, 128)
+        var gate = gameMap.SafeZoneSpawnGate;
+        if (gate is { })
+        {
+            return ((byte)gate.X1, (byte)gate.Y1);
+        }
+
+        return (128, 128);
+    }
+
+    private async ValueTask SpawnClusterAsync(IGameContext context, GameMap gameMap, ushort monsterId, ushort count, byte centerX, byte centerY, byte radius)
+    {
+        if (context.Configuration.Monsters.FirstOrDefault(m => m.Number == monsterId) is not { } monsterDefinition)
+        {
+            return;
+        }
+
+        var x1 = (byte)Math.Max(0, centerX - radius);
+        var x2 = (byte)Math.Min(255, centerX + radius);
+        var y1 = (byte)Math.Max(0, centerY - radius);
+        var y2 = (byte)Math.Min(255, centerY + radius);
+
+        await this.CreateMonstersAsync(context, gameMap, monsterDefinition, x1, x2, y1, y2, count).ConfigureAwait(false);
+    }
+
+    private async ValueTask SpawnBossClusterAsync(InvasionGameServerState state, IGameContext context, string mapName, GameMap gameMap, ushort bossId, ushort count, byte centerX, byte centerY, byte radius)
+    {
+        if (context.Configuration.Monsters.FirstOrDefault(m => m.Number == bossId) is not { } monsterDefinition)
+        {
+            return;
+        }
+
+        state.ActiveBossCount += count;
+
+        var x1 = (byte)Math.Max(0, centerX - radius);
+        var x2 = (byte)Math.Min(255, centerX + radius);
+        var y1 = (byte)Math.Max(0, centerY - radius);
+        var y2 = (byte)Math.Min(255, centerY + radius);
+
+        var area = new MonsterSpawnArea
+        {
+            GameMap = gameMap.Definition,
+            MonsterDefinition = monsterDefinition,
+            SpawnTrigger = SpawnTrigger.OnceAtEventStart,
+            Quantity = 1,
+            X1 = x1,
+            X2 = x2,
+            Y1 = y1,
+            Y2 = y2,
+        };
+
+        while (count-- > 0)
+        {
+            var intelligence = new BasicMonsterIntelligence();
+            var monster = new Monster(area, monsterDefinition, gameMap, context.DropGenerator, intelligence, context.PlugInManager, context.PathFinderPool);
+            monster.Initialize();
+            await gameMap.AddAsync(monster).ConfigureAwait(false);
+            monster.OnSpawn();
+
+            // Cleanup hook
+            this.Finished += CleanUpOnFinish;
+            monster.Died += (_, _) => this.Finished -= CleanUpOnFinish;
+
+            // Kill announce hook
+            var configSnapshot = this.Configuration ?? new WhiteWizardInvasionConfiguration();
+            monster.Died += (_, death) =>
+            {
+                var killer = string.IsNullOrWhiteSpace(death.KillerName) ? "Un jugador" : death.KillerName;
+                var message = $"{killer} mató al White Wizard en {mapName}.";
+                _ = context.SendGlobalMessageAsync(message, Interfaces.MessageType.GoldenCenter);
+
+                // If this was the last boss, finish the invasion early.
+                state.ActiveBossCount--;
+                if (configSnapshot.FinishWhenAllBossesDead && state.ActiveBossCount <= 0)
+                {
+                    state.NextRunUtc = DateTime.UtcNow; // triggers early finish in next periodic tick
+                    var endMsg = $"La invasión del White Wizard ha finalizado en {mapName}.";
+                    _ = context.SendGlobalMessageAsync(endMsg, Interfaces.MessageType.GoldenCenter);
+                }
+            };
+
+#pragma warning disable VSTHRD100
+            async void CleanUpOnFinish(object? sender, EventArgs e)
+#pragma warning restore VSTHRD100
+            {
+                try
+                {
+                    this.Finished -= CleanUpOnFinish;
+                    if (monster is not null && !monster.IsDisposed)
+                    {
+                        await monster.CurrentMap.RemoveAsync(monster).ConfigureAwait(false);
+                        monster.Dispose();
+                    }
+                }
+                catch
+                {
+                    // ignore
+                }
+            }
         }
     }
 }

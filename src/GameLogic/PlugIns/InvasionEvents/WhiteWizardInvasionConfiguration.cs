@@ -59,4 +59,20 @@ public class WhiteWizardInvasionConfiguration : PeriodicInvasionConfiguration
     /// Gets or sets the custom drop group for support mobs (Orc Archer / Elite Orc) during the invasion.
     /// </summary>
     public DropItemGroup? SupportDropGroup { get; set; }
+
+    /// <summary>
+    /// Gets or sets the cluster radius around the selected center where mobs spawn.
+    /// </summary>
+    public byte ClusterRadius { get; set; } = 7;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the invasion should finish as soon as all bosses are killed.
+    /// </summary>
+    public bool FinishWhenAllBossesDead { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets the delay in seconds between finishing the event and cleaning up the spawned monsters.
+    /// This allows to show the final state to players for a short time.
+    /// </summary>
+    public int CleanupDelaySeconds { get; set; } = 0;
 }
