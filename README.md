@@ -1,9 +1,14 @@
-# OpenMU Project
+# OpenMU Project / Proyecto OpenMU
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/d0f57e29e7524dadb677561389256d8b)](https://www.codacy.com/gh/MUnique/OpenMU/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=MUnique/OpenMU&amp;utm_campaign=Badge_Grade)
 [![Gitter chat](https://badges.gitter.im/OpenMU-Project/gitter.svg)](https://gitter.im/OpenMU-Project/Lobby)
 [![Discord chat](https://img.shields.io/discord/669595902750490698?logo=discord)](https://discord.gg/2u5Agkd)
+
+*Read this README in [English](#english) or [Español](#espanol).*
+
+<a id="english"></a>
+## English
 
 | Platform       |Build Status          |
 |----------------|----------------------|
@@ -30,6 +35,17 @@ their countless derivates.
 
 There also exists a [blog](https://munique.net) which may contain some valuable
 information about this development.
+
+## Fork changelog
+
+This fork diverges from the original OpenMU project and introduces:
+
+- Bilingual documentation in English and Spanish.
+- LAN presets for Season 6 with deployment overlays for LAN, DNS and npm.
+- `proxynet` integration replacing nginx and fixing port configuration.
+- Additional Spanish translations and admin panel language fixes.
+- New crafting recipes plus fixes for craftings, skills and grid issues.
+- Updated White Wizard event data and related fixes.
 
 ## Current project state
 
@@ -128,3 +144,111 @@ his character or the sub-server. Maybe this was done for some performance
 reasons, as the original server would then save the character/account data.
 We think that's really annoying and see no real value in that, so we don't use
 a countdown.
+
+<a id="espanol"></a>
+## Español
+
+| Plataforma       | Estado de compilación          |
+|-----------------|-------------------------------|
+| Windows        | ![Windows Build Status](https://dev.azure.com/MUnique/OpenMU/_apis/build/status/MUnique.OpenMU?branchName=master) |
+| Linux (Docker) | [![Docker Build Status](https://dev.azure.com/MUnique/OpenMU/_apis/build/status/MUnique.OpenMU%20Docker?branchName=master)](https://hub.docker.com/r/munique/openmu)  |
+
+| Paquetes NuGet |   |
+|----------------|---|
+| MUnique.OpenMU.Network | [![NuGet Badge](https://img.shields.io/nuget/v/MUnique.OpenMU.Network)](https://www.nuget.org/packages/MUnique.OpenMU.Network/) |
+| MUnique.OpenMU.Network.Packets | [![NuGet Badge](https://img.shields.io/nuget/v/MUnique.OpenMU.Network.Packets)](https://www.nuget.org/packages/MUnique.OpenMU.Network.Packets/) |
+
+Este proyecto tiene como objetivo crear un servidor fácil de usar, ampliable y personalizable para un MMORPG llamado "MU Online".
+El servidor admite múltiples versiones del juego, pero el enfoque principal es la versión de la Season 6 Episode 3 utilizando el protocolo ENG (inglés). Además, el enfoque a largo plazo está en el [cliente de código abierto](https://github.com/sven-n/MuMain), que soporta un protocolo de red ligeramente ampliado.
+Sin embargo, partes del software también pueden ser adecuadas para el desarrollo de otros juegos, incluso de otro tipo.
+
+El código es una reescritura completa desde cero; no se basa en proyectos preexistentes ni en fuentes de servidor descompiladas ni en sus innumerables derivados.
+
+También existe un [blog](https://munique.net) que puede contener información valiosa sobre este desarrollo.
+
+## Cambios del fork
+
+Este fork se desvía del proyecto original OpenMU e introduce:
+
+- Documentación bilingüe en inglés y español.
+- Presets LAN para Season 6 con overlays de despliegue para LAN, DNS y npm.
+- Integración de `proxynet` reemplazando nginx y corrigiendo la configuración de puertos.
+- Traducciones adicionales al español y correcciones de idioma del panel de administración.
+- Nuevas recetas de crafteo y correcciones para crafteo, habilidades y problemas de cuadrícula.
+- Datos actualizados del evento White Wizard y correcciones relacionadas.
+
+## Estado actual del proyecto
+
+Este proyecto se encuentra actualmente en desarrollo sin ningún lanzamiento.
+Puedes probar el estado actual utilizando la imagen de docker disponible, mencionada también en la [guía rápida](QuickStart.md).
+
+## Licencia
+
+Este proyecto se publica bajo la licencia MIT (ver archivo LICENSE).
+
+## Tecnologías utilizadas
+
+El proyecto está escrito principalmente en C# y apunta a .NET 9.0.
+
+El panel de administración del servidor se aloja en un servidor web ASP.NET Core embebido (Kestrel) y se implementa como una aplicación Blazor Server.
+
+En este momento la capa de persistencia utiliza [Entity Framework Core](https://github.com/aspnet/EntityFrameworkCore) y [PostgreSQL](https://www.postgresql.org) como base de datos. Además, es posible iniciarlo en un modo no persistente en memoria.
+
+El proyecto soporta alojamiento distribuido basado en Dapr. Alternativamente, también puede alojarse en un solo proceso.
+
+## Despliegue
+
+Proporcionamos imágenes de Docker y archivos docker-compose para un despliegue sencillo.
+Por favor, echa un vistazo a la carpeta deploy de este proyecto.
+
+## Contribuciones
+
+Las contribuciones son bienvenidas si cumplen los siguientes criterios:
+
+* El idioma es inglés.
+* El código debe cumplir con StyleCop; este proyecto usa [StyleCop.Analyzers](https://www.nuget.org/packages/StyleCop.Analyzers/) para VS2022, por lo que deberías ver los problemas directamente como advertencias.
+* El estilo de codificación (nombres, etc.) y la calidad deben ajustarse al estado actual.
+* No debe incluir código copiado/convertido de la conocida fuente descompilada del servidor original.
+
+Si deseas contribuir, crea un nuevo issue para la característica o el error (si el issue aún no existe) para que podamos ver quién está trabajando en algo y discutir posibles soluciones.
+Si es algo pequeño, también puedes enviar un pull request sin añadir un issue.
+
+Además, las contribuciones de personas que no son desarrolladoras también son bienvenidas.
+Puedes probar el servidor, enviar issues o sugerencias, descripciones de paquetes o documentaciones sobre los conceptos y mecánicas del juego.
+Por favor, utiliza archivos/sintaxis markdown para este propósito.
+
+Si tienes preguntas al respecto, no dudes en preguntar en nuestro [canal de Discord](https://discord.gg/2u5Agkd) o creando un issue.
+
+## Cómo contribuir con código
+
+Si deseas contribuir con código, sigue los siguientes pasos:
+
+1. Haz un fork de este proyecto desde el proyecto original MUnique OpenMU.
+2. Crea una rama de características a partir de la rama master.
+3. Haz commit de tus cambios en tu rama.
+4. Envía un pull request a la rama master original.
+5. Relájate, espera la revisión de código y la fusión :)
+
+## Cómo usarlo
+
+Por favor, echa un vistazo a la [guía rápida](QuickStart.md).
+
+## Diferencias de jugabilidad con el servidor original
+
+Este proyecto no tiene como objetivo copiar al 100 % el comportamiento del servidor original de MU Online.
+Esto no es completamente posible, porque el servidor original está escrito en otro lenguaje de programación y tiene una arquitectura completamente diferente.
+En algunos aspectos nos facilitamos la vida en este proyecto y en otros tratamos de mejorar la jugabilidad.
+
+### Cálculos
+
+Los cálculos de los valores de atributos (como decremento del daño del personaje, etc.) se realizan con números de coma flotante de 32 bits y sin redondeo, a diferencia del servidor original en algunos lugares.
+Por ejemplo, los puntos de estadísticas distribuidos siempre tienen efecto, mientras que en el servidor original los efectos pueden redondearse hacia abajo.
+Si 4 puntos de fuerza otorgan 1 de daño base, el servidor original no calcula una fracción de daño para 3 puntos, mientras que OpenMU calcula 0.75 de daño.
+Este daño tiene efecto en cálculos posteriores.
+
+### Cuenta regresiva al cambiar de personaje o sub-servidor
+
+El servidor original utiliza una cuenta regresiva de cinco segundos cuando un jugador quiere cambiar de personaje o de sub-servidor.
+Quizás esto se hizo por razones de rendimiento, ya que el servidor original guardaba los datos del personaje/cuenta.
+Creemos que eso es muy molesto y no vemos un valor real en ello, así que no usamos cuenta regresiva.
+
