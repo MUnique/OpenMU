@@ -14,15 +14,15 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which sets a character's level-up points.
 /// </summary>
 [Guid("50EF670A-DF7A-4FEE-8E42-7C7A18A68941")]
-[PlugIn("Set level up points command", "Sets level up points of a player. Usage: /setleveluppoints (points) (optional:character)")]
-[ChatCommandHelp(Command, "Sets level up points of a player. Usage: /setleveluppoints (points) (optional:character)", null)]
+[PlugIn("Set level up points command", "Establece los puntos de nivel de un jugador. Uso: /setleveluppoints (puntos) (opcional:personaje)")]
+[ChatCommandHelp(Command, "Establece los puntos de nivel de un jugador. Uso: /setleveluppoints (puntos) (opcional:personaje)", null)]
 public class SetLevelUpPointsChatCommandPlugIn : ChatCommandPlugInBase<SetLevelUpPointsChatCommandPlugIn.Arguments>, IDisabledByDefault
 {
     private const string Command = "/setleveluppoints";
     private const CharacterStatus MinimumStatus = CharacterStatus.GameMaster;
-    private const string CharacterNotFoundMessage = "Character '{0}' not found.";
-    private const string InvalidLevelUpPointsMessage = "Invalid level-up points - must be bigger or equal to 0.";
-    private const string LevelUpPointsSetMessage = "Level-up points set to {0}.";
+    private const string CharacterNotFoundMessage = "Personaje '{0}' no encontrado.";
+    private const string InvalidLevelUpPointsMessage = "Puntos de nivel inválidos - deben ser mayores o iguales a 0.";
+    private const string LevelUpPointsSetMessage = "Puntos de nivel establecidos en {0}.";
 
     /// <inheritdoc />
     public override string Key => Command;

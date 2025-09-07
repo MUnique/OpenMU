@@ -20,14 +20,14 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which opens NPC windows.
 /// </summary>
 [Guid("D8AC2F15-AB30-4432-A042-A41ACA1B274D")]
-[PlugIn("NPC open merchant chat command", "Opens the merchant NPC store.")]
-[ChatCommandHelp(Command, "Opens the NPC store.", null)]
+[PlugIn("NPC open merchant chat command", "Abre la tienda del NPC comerciante.")]
+[ChatCommandHelp(Command, "Abre la tienda del NPC.", null)]
 public class NpcChatCommandPlugIn : ChatCommandPlugInBase<NpcChatCommandPlugIn.Arguments>, ISupportCustomConfiguration<NpcChatCommandPlugIn.NpcChatCommandConfiguration>, ISupportDefaultCustomConfiguration, IDisabledByDefault
 {
     private const string Command = "/npc";
     private const CharacterStatus MinimumStatus = CharacterStatus.Normal;
-    private const string InvalidNpcIdMessage = "Invalid NPC ID \"{0}\". Please provide a valid merchant NPC ID.";
-    private const string InvalidMerchantMessage = "Not a valid merchant NPC.";
+    private const string InvalidNpcIdMessage = "ID de NPC \"{0}\" inválido. Por favor proporciona un ID de comerciante válido.";
+    private const string InvalidMerchantMessage = "NPC no es un comerciante válido.";
 
     private readonly TalkNpcAction _talkNpcAction = new();
 

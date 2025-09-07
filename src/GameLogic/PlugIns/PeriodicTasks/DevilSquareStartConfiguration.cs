@@ -16,8 +16,8 @@ public class DevilSquareStartConfiguration : MiniGameStartConfiguration
         new()
         {
             PreStartMessageDelay = TimeSpan.Zero,
-            EntranceOpenedMessage = "Devil Square entrance is open and closes in {0} minute(s).",
-            EntranceClosedMessage = "Devil Square entrance closed.",
+            EntranceOpenedMessage = "La entrada de Devil Square está abierta y cierra en {0} minuto(s).",
+            EntranceClosedMessage = "La entrada de Devil Square se cerró.",
             TaskDuration = TimeSpan.FromMinutes(25),
             Timetable = PeriodicTaskConfiguration.GenerateTimeSequence(TimeSpan.FromMinutes(240)).ToList(),
         };

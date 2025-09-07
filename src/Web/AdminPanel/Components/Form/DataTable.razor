@@ -9,11 +9,11 @@
             @if (this._isLoading)
             {
                 <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                <span class="sr-only">Loading...</span>
+                <span class="sr-only">Cargando...</span>
             }
             else
             {
-                <span>Page @this.Page</span>
+                <span>Página @this.Page</span>
             }
         </button>
         <button disabled="@(!this._hasMoreEntries || this._isLoading)" class="btn btn-sm btn-primary" @onclick=@this.GetNextPageAsync><span class="oi oi-arrow-thick-right" aria-hidden="true" /></button>
@@ -38,7 +38,7 @@
         }
         else if (this._isLoading)
         {
-            <tr>Loading ...</tr>
+            <tr>Cargando ...</tr>
         }
     </tbody>
     <tfoot>

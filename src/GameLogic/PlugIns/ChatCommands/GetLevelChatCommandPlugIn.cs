@@ -15,14 +15,14 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin to get a character's level.
 /// </summary>
 [Guid("9D5C8FFE-EC32-48AC-8B6F-BB361AD184E5")]
-[PlugIn("Get level command", "Gets level of a player. Usage: /getlevel (optional:character)")]
-[ChatCommandHelp(Command, "Gets level of a player. Usage: /getlevel (optional:character)", null)]
+[PlugIn("Get level command", "Obtiene el nivel de un jugador. Uso: /getlevel (opcional:personaje)")]
+[ChatCommandHelp(Command, "Obtiene el nivel de un jugador. Uso: /getlevel (opcional:personaje)", null)]
 public class GetLevelChatCommandPlugIn : ChatCommandPlugInBase<GetLevelChatCommandPlugIn.Arguments>, IDisabledByDefault
 {
     private const string Command = "/getlevel";
     private const CharacterStatus MinimumStatus = CharacterStatus.GameMaster;
-    private const string CharacterNotFoundMessage = "Character '{0}' not found.";
-    private const string LevelGetMessage = "Level of '{0}': {1}.";
+    private const string CharacterNotFoundMessage = "Personaje '{0}' no encontrado.";
+    private const string LevelGetMessage = "Nivel de '{0}': {1}.";
 
     /// <inheritdoc />
     public override string Key => Command;

@@ -15,14 +15,14 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin to get a character's master level.
 /// </summary>
 [Guid("4CED4BF8-9D91-47F9-82DE-51E2646F77C8")]
-[PlugIn("Get master level command", "Gets master level of a player. Usage: /getmasterlevel (optional:character)")]
-[ChatCommandHelp(Command, "Gets master level of a player. Usage: /getmasterlevel (optional:character)", null)]
+[PlugIn("Get master level command", "Obtiene el nivel maestro de un jugador. Uso: /getmasterlevel (opcional:personaje)")]
+[ChatCommandHelp(Command, "Obtiene el nivel maestro de un jugador. Uso: /getmasterlevel (opcional:personaje)", null)]
 public class GetMasterLevelChatCommandPlugIn : ChatCommandPlugInBase<GetMasterLevelChatCommandPlugIn.Arguments>, IDisabledByDefault
 {
     private const string Command = "/getmasterlevel";
     private const CharacterStatus MinimumStatus = CharacterStatus.GameMaster;
-    private const string CharacterNotFoundMessage = "Character '{0}' not found.";
-    private const string MasterLevelGetMessage = "Master level of '{0}': {1}.";
+    private const string CharacterNotFoundMessage = "Personaje '{0}' no encontrado.";
+    private const string MasterLevelGetMessage = "Nivel maestro de '{0}': {1}.";
 
     /// <inheritdoc />
     public override string Key => Command;
