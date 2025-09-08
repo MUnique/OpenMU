@@ -10,6 +10,7 @@ using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.PlugIns;
+using MUnique.OpenMU.DataModel.Configuration;
 
 /// <summary>
 /// Action to perform a skill which is explicitly aimed to a target.
@@ -124,8 +125,17 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
         var effectApplied = false;
         if (skill.SkillType == SkillType.SummonMonster)
         {
+            MonsterDefinition? defaultDefinition = null;
             if (SummonSkillToMonsterMapping.TryGetValue(skill.Number, out var monsterNumber)
-                && player.GameContext.Configuration.Monsters.FirstOrDefault(m => m.Number == monsterNumber) is { } monsterDefinition)
+                && player.GameContext.Configuration.Monsters.FirstOrDefault(m => m.Number == monsterNumber) is { } mappedDefinition)
+            {
+                defaultDefinition = mappedDefinition;
+            }
+
+            var summonPlugin = player.GameContext.PlugInManager.GetPlugIn<ISummonConfigurationPlugIn>();
+            var monsterDefinition = summonPlugin?.CreateSummonMonsterDefinition(player, skill, defaultDefinition) ?? defaultDefinition;
+
+            if (monsterDefinition is not null)
             {
                 await player.CreateSummonedMonsterAsync(monsterDefinition).ConfigureAwait(false);
             }
