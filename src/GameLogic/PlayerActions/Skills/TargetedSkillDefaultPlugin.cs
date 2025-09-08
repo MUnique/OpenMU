@@ -132,7 +132,7 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
                 defaultDefinition = mappedDefinition;
             }
 
-            var summonPlugin = player.GameContext.PlugInManager.GetPlugIn<ISummonConfigurationPlugIn>();
+            var summonPlugin = player.GameContext.PlugInManager.GetPlugInPoint<ISummonConfigurationPlugIn>();
             var monsterDefinition = summonPlugin?.CreateSummonMonsterDefinition(player, skill, defaultDefinition) ?? defaultDefinition;
 
             if (monsterDefinition is not null)
