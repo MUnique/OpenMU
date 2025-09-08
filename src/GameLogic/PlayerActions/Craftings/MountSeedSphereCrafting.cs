@@ -34,9 +34,9 @@ public class MountSeedSphereCrafting : SimpleItemCraftingHandler
     public static byte SocketItemReference { get; } = 0x88;
 
     /// <inheritdoc />
-    public override CraftingResult? TryGetRequiredItems(Player player, out IList<CraftingRequiredItemLink> items, out byte successRate)
+    public override CraftingResult? TryGetRequiredItems(Player player, out IList<CraftingRequiredItemLink> items, out byte successRate, out byte bonusRate)
     {
-        var result = base.TryGetRequiredItems(player, out items, out successRate);
+        var result = base.TryGetRequiredItems(player, out items, out successRate, out bonusRate);
         if (result != default)
         {
             return result;

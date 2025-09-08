@@ -29,7 +29,7 @@ public class ShowItemCraftingResultPlugIn : IShowItemCraftingResultPlugIn
     }
 
     /// <inheritdoc />
-    public async ValueTask ShowResultAsync(CraftingResult result, Item? createdItem)
+    public async ValueTask ShowResultAsync(CraftingResult result, byte successRate, byte bonusRate, Item? createdItem)
     {
         var itemData = new byte[this._player.ItemSerializer.NeededSpace];
         if (createdItem is { })
@@ -37,7 +37,7 @@ public class ShowItemCraftingResultPlugIn : IShowItemCraftingResultPlugIn
             this._player.ItemSerializer.SerializeItem(itemData, createdItem);
         }
 
-        await this._player.Connection.SendItemCraftingResultAsync(Convert(result), itemData).ConfigureAwait(false);
+        await this._player.Connection.SendItemCraftingResultAsync(Convert(result), successRate, bonusRate, itemData).ConfigureAwait(false);
     }
 
     private static ItemCraftingResult.CraftingResult Convert(CraftingResult result)

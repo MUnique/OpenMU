@@ -38,7 +38,7 @@ internal class ChaosMixHandlerPlugIn : IPacketHandlerPlugIn
             var crafting = this._mixAction.FindAppropriateCraftingByItems(player);
             if (crafting is null)
             {
-                await player.InvokeViewPlugInAsync<IShowItemCraftingResultPlugIn>(p => p.ShowResultAsync(CraftingResult.IncorrectMixItems, null)).ConfigureAwait(false);
+                await player.InvokeViewPlugInAsync<IShowItemCraftingResultPlugIn>(p => p.ShowResultAsync(CraftingResult.IncorrectMixItems, 0, 0, null)).ConfigureAwait(false);
                 return;
             }
 
