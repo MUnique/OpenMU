@@ -27,9 +27,10 @@ public class SimpleItemCraftingHandler : BaseItemCraftingHandler
     }
 
     /// <inheritdoc />
-    public override CraftingResult? TryGetRequiredItems(Player player, out IList<CraftingRequiredItemLink> items, out byte successRate)
+    public override CraftingResult? TryGetRequiredItems(Player player, out IList<CraftingRequiredItemLink> items, out byte successRate, out byte bonusRate)
     {
         successRate = 0;
+        bonusRate = 0;
         int rate = this._settings.SuccessPercent;
         long totalCraftingPrice = 0;
         items = new List<CraftingRequiredItemLink>(this._settings.RequiredItems.Count);
@@ -117,6 +118,7 @@ public class SimpleItemCraftingHandler : BaseItemCraftingHandler
         }
 
         successRate = (byte)Math.Min(100, rate);
+        bonusRate = (byte)Math.Max(0, successRate - this._settings.SuccessPercent);
 
         return default;
     }

@@ -22437,11 +22437,29 @@ public readonly struct ItemCraftingResult
     }
 
     /// <summary>
+    /// Gets or sets the success rate.
+    /// </summary>
+    public byte SuccessRate
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the bonus rate.
+    /// </summary>
+    public byte BonusRate
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
+    }
+
+    /// <summary>
     /// Gets or sets the item data.
     /// </summary>
     public Span<byte> ItemData
     {
-        get => this._data.Slice(4).Span;
+        get => this._data.Slice(6).Span;
     }
 
     /// <summary>
@@ -22463,7 +22481,7 @@ public readonly struct ItemCraftingResult
     /// </summary>
     /// <param name="itemDataLength">The length in bytes of <see cref="ItemData"/> on which the required size depends.</param>
         
-    public static int GetRequiredSize(int itemDataLength) => itemDataLength + 4;
+    public static int GetRequiredSize(int itemDataLength) => itemDataLength + 6;
 }
 
 

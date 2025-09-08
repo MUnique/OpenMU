@@ -25,9 +25,9 @@ public class DinorantCrafting : SimpleItemCraftingHandler
     }
 
     /// <inheritdoc />
-    public override CraftingResult? TryGetRequiredItems(Player player, out IList<CraftingRequiredItemLink> items, out byte successRate)
+    public override CraftingResult? TryGetRequiredItems(Player player, out IList<CraftingRequiredItemLink> items, out byte successRate, out byte bonusRate)
     {
-        var craftingResult = base.TryGetRequiredItems(player, out items, out successRate);
+        var craftingResult = base.TryGetRequiredItems(player, out items, out successRate, out bonusRate);
         if (craftingResult is null)
         {
             var uniriaLink = items.Where(i => i.ItemRequirement.PossibleItems.Any(i => i.Name == "Horn of Uniria"));

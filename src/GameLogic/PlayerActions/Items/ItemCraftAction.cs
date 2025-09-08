@@ -27,7 +27,7 @@ public class ItemCraftAction
         var crafting = npcStats?.ItemCraftings.FirstOrDefault(c => c.Number == mixTypeId);
         if (crafting is null)
         {
-            await player.InvokeViewPlugInAsync<IShowItemCraftingResultPlugIn>(p => p.ShowResultAsync(CraftingResult.IncorrectMixItems, null)).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<IShowItemCraftingResultPlugIn>(p => p.ShowResultAsync(CraftingResult.IncorrectMixItems, 0, 0, null)).ConfigureAwait(false);
             return;
         }
 
@@ -37,22 +37,22 @@ public class ItemCraftAction
             this._craftingHandlerCache.Add(crafting, craftingHandler);
         }
 
-        (CraftingResult, Item?) result;
+        (CraftingResult Result, Item? Item, byte SuccessRate, byte BonusRate) result;
         try
         {
             result = await craftingHandler.DoMixAsync(player, socketSlot).ConfigureAwait(false);
         }
         catch
         {
-            result = (CraftingResult.LackingMixItems, null);
+            result = (CraftingResult.LackingMixItems, null, 0, 0);
         }
 
         var itemList = player.TemporaryStorage?.Items.ToList() ?? new List<Item>();
-        await player.InvokeViewPlugInAsync<IShowItemCraftingResultPlugIn>(p => p.ShowResultAsync(result.Item1, itemList.Count > 1 ? null : result.Item2)).ConfigureAwait(false);
+        await player.InvokeViewPlugInAsync<IShowItemCraftingResultPlugIn>(p => p.ShowResultAsync(result.Result, result.SuccessRate, result.BonusRate, itemList.Count > 1 ? null : result.Item)).ConfigureAwait(false);
         await player.InvokeViewPlugInAsync<IShowMerchantStoreItemListPlugIn>(
             p => p.ShowMerchantStoreItemListAsync(
                 itemList,
-                npcStats!.NpcWindow == NpcWindow.PetTrainer && result.Item1 != CraftingResult.Success ? StoreKind.ResurrectionFailed : StoreKind.ChaosMachine))
+                npcStats!.NpcWindow == NpcWindow.PetTrainer && result.Result != CraftingResult.Success ? StoreKind.ResurrectionFailed : StoreKind.ChaosMachine))
             .ConfigureAwait(false);
     }
 
@@ -75,7 +75,7 @@ public class ItemCraftAction
                     this._craftingHandlerCache.Add(itemCrafting, craftingHandler);
                 }
 
-                if (craftingHandler.TryGetRequiredItems(player, out _, out _) is null)
+                if (craftingHandler.TryGetRequiredItems(player, out _, out _, out _) is null)
                 {
                     return itemCrafting;
                 }

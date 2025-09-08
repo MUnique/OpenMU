@@ -8147,6 +8147,16 @@
         </Field>
         <Field>
           <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>SuccessRate</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>BonusRate</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
           <Type>Binary</Type>
           <Name>ItemData</Name>
         </Field>

@@ -19,9 +19,10 @@ public class FenrirUpgradeCraftingGold : BaseItemCraftingHandler
     private readonly ItemPriceCalculator _priceCalculator = new();
 
     /// <inheritdoc/>
-    public override CraftingResult? TryGetRequiredItems(Player player, out IList<CraftingRequiredItemLink> items, out byte successRateByItems)
+    public override CraftingResult? TryGetRequiredItems(Player player, out IList<CraftingRequiredItemLink> items, out byte successRateByItems, out byte bonusRate)
     {
         successRateByItems = 0;
+        bonusRate = 0;
         items = new List<CraftingRequiredItemLink>(4);
         var inputItems = player.TemporaryStorage!.Items.ToList();
         var itemsLevelAndOption4gold = inputItems
