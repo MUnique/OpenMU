@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("C1E5C063-9CF8-4FE7-9C0F-4BB6387E3C27")]
 [PlugInPoint("Summon configuration", "Provides monster definitions for summon skills.")]
-public interface ISummonConfigurationPlugIn : IPlugIn
+public interface ISummonConfigurationPlugIn
 {
     /// <summary>
     /// Creates the monster definition which should be used for the summon skill.
