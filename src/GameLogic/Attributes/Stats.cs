@@ -1215,6 +1215,11 @@ public class Stats
     public static AttributeDefinition IsDinorantEquipped { get; } = new(new Guid("C52B5CA4-34BA-4E31-963B-E37089671C37"), "Is Dinorant Equipped", string.Empty);
 
     /// <summary>
+    /// Gets the is pet skeleton equipped attribute definition.
+    /// </summary>
+    public static AttributeDefinition IsPetSkeletonEquipped { get; } = new(new Guid("56AA4FC4-33C6-47DC-9512-7B5F2AD829DA"), "Is Pet Skeleton Equipped", string.Empty);
+
+    /// <summary>
     /// Gets the MoonstonePendantEquipped attribute for entering Kanturu event.
     /// </summary>
     public static AttributeDefinition MoonstonePendantEquipped { get; } = new(new Guid("4BC010D0-9E75-4ECB-8963-08A3697278C3"), "Requirement of the Kanturu Event Map during the event.", "You can enter the Kanturu Event only with an equipped Moonstone Pendant.");

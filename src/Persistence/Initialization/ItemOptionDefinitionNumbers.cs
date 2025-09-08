@@ -221,19 +221,9 @@ internal static class ItemOptionDefinitionNumbers
     public static short ChristmasTransformationRing => 0x74;
 
     /// <summary>
-    /// Gets the robot knight transformation ring option number.
+    /// Gets the game master transformation ring option number.
     /// </summary>
-    public static short RobotKnightTransformationRing => 0x75;
-
-    /// <summary>
-    /// Gets the mini robot transformation ring option number.
-    /// </summary>
-    public static short MiniRobotTransformationRing => 0x76;
-
-    /// <summary>
-    /// Gets the great heavenly mage transformation ring option number.
-    /// </summary>
-    public static short GreatHeavenlyMageTransformationRing => 0x77;
+    public static short GameMasterTransformationRing => 0x75;
 
     /// <summary>
     /// Gets the dino option number.

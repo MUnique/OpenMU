@@ -59,12 +59,10 @@ public class Pets : InitializerBase
 
 #pragma warning disable SA1117 // Parameters should be on same line or separete lines
         this.CreatePet(64, 0, 1, 1, "Demon", 1, false, true,
-            (Stats.MinimumPhysBaseDmg, 1.4f, AggregateType.Multiplicate),
-            (Stats.MaximumPhysBaseDmg, 1.4f, AggregateType.Multiplicate),
-            (Stats.MinimumWizBaseDmg, 1.4f, AggregateType.Multiplicate),
-            (Stats.MaximumWizBaseDmg, 1.4f, AggregateType.Multiplicate),
-            (Stats.MinimumCurseBaseDmg, 1.4f, AggregateType.Multiplicate),
-            (Stats.MaximumCurseBaseDmg, 1.4f, AggregateType.Multiplicate),
+            (Stats.MinimumPhysBaseDmg, 1.3f, AggregateType.Multiplicate),
+            (Stats.MaximumPhysBaseDmg, 1.3f, AggregateType.Multiplicate),
+            (Stats.MinimumWizBaseDmg, 1.3f, AggregateType.Multiplicate),
+            (Stats.MaximumWizBaseDmg, 1.3f, AggregateType.Multiplicate),
             (Stats.AttackSpeedAny, 10f, AggregateType.AddRaw));
         this.CreatePet(65, 0, 1, 1, "Spirit of Guardian", 1, false, true,
             (Stats.DamageReceiveDecrement, 0.7f, AggregateType.Multiplicate),
@@ -73,7 +71,8 @@ public class Pets : InitializerBase
         this.CreatePet(80, 0, 1, 1, "Pet Panda", 1, false, true,
             (Stats.ExperienceRate, 1.5f, AggregateType.Multiplicate),
             (Stats.MasterExperienceRate, 1.5f, AggregateType.Multiplicate),
-            (Stats.DefenseFinal, 50f, AggregateType.AddRaw));
+            (Stats.DefenseFinal, 50f, AggregateType.AddRaw),
+            (Stats.MaximumHealth, 50f, AggregateType.AddRaw));
         this.CreatePet(106, 0, 1, 1, "Pet Unicorn", 28, false, true,
             (Stats.MoneyAmountRate, 1.5f, AggregateType.Multiplicate),
             (Stats.DefenseFinal, 50f, AggregateType.AddRaw));
@@ -82,10 +81,10 @@ public class Pets : InitializerBase
             (Stats.MaximumPhysBaseDmg, 1.2f, AggregateType.Multiplicate),
             (Stats.MinimumWizBaseDmg, 1.2f, AggregateType.Multiplicate),
             (Stats.MaximumWizBaseDmg, 1.2f, AggregateType.Multiplicate),
-            (Stats.MinimumCurseBaseDmg, 1.2f, AggregateType.Multiplicate),
-            (Stats.MaximumCurseBaseDmg, 1.2f, AggregateType.Multiplicate),
             (Stats.AttackSpeedAny, 10f, AggregateType.AddRaw),
-            (Stats.ExperienceRate, 1.3f, AggregateType.Multiplicate));
+            (Stats.ExperienceRate, 1.3f, AggregateType.Multiplicate),
+            (Stats.MasterExperienceRate, 1.3f, AggregateType.Multiplicate),
+            (Stats.IsPetSkeletonEquipped, 1, AggregateType.AddRaw));
 #pragma warning restore SA1011
 
         // Items which are required for crafting:

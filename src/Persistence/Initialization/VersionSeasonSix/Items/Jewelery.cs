@@ -66,9 +66,10 @@ internal class Jewelery : Version095d.Items.Jewelery
         */
 
 #pragma warning disable SA1117 // Parameters should be on same line or separete lines
+        // check if cow ring has additional 20% life
         var eliteSkeletonRing = this.CreateTransformationRing(39, "Elite Transfer Skeleton Ring", 10, 255, CharacterTransformationSkin.EliteSkillSoldier);
         eliteSkeletonRing.PossibleItemOptions.Add(
-            this.CreateItemOptionDefinition("Elite Transfer Skeleton Ring", ItemOptionDefinitionNumbers.EliteTransferSkeletonRing,
+            this.CreateItemOptionDefinition("Elite Transfer Skeleton Ring", ItemOptionDefinitionNumbers.EliteTransferSkeletonRing, // check client name
                 (Stats.DefenseBase, 1.1f, AggregateType.Multiplicate, default),
                 (Stats.MaximumHealth, 0, AggregateType.AddRaw, (Stats.TotalLevel, 1))));
         this.CreateTransformationRing(40, "Jack O'lantern Transformation Ring", 10, 100, CharacterTransformationSkin.JackOlantern);
@@ -76,21 +77,33 @@ internal class Jewelery : Version095d.Items.Jewelery
         christmasRing.PossibleItemOptions.Add(
             this.CreateItemOptionDefinition("Christmas Transformation Ring", ItemOptionDefinitionNumbers.ChristmasTransformationRing,
                 (Stats.BaseDamageBonus, 20, AggregateType.AddRaw)));
-        this.CreateTransformationRing(42, "Game Master Transformation Ring", 0, 255, CharacterTransformationSkin.GameMaster); // todo: add options
+        var gameMasterRing = this.CreateTransformationRing(42, "Game Master Transformation Ring", 0, 255, CharacterTransformationSkin.GameMaster);
+        gameMasterRing.PossibleItemOptions.Add(
+            this.CreateItemOptionDefinition("Game Master Transformation Ring", ItemOptionDefinitionNumbers.GameMasterTransformationRing,
+                (Stats.IceDamageBonus, 255, AggregateType.AddRaw),
+                (Stats.PoisonDamageBonus, 255, AggregateType.AddRaw),
+                (Stats.LightningDamageBonus, 255, AggregateType.AddRaw),
+                (Stats.FireDamageBonus, 255, AggregateType.AddRaw),
+                (Stats.EarthDamageBonus, 255, AggregateType.AddRaw),
+                (Stats.WindDamageBonus, 255, AggregateType.AddRaw),
+                (Stats.WaterDamageBonus, 255, AggregateType.AddRaw)));
         this.CreateTransformationRing(68, "Snowman Transformation Ring", 10, 100, CharacterTransformationSkin.Snowman);
         var pandaRing = this.CreateTransformationRing(76, "Panda Transformation Ring", 28, 255, CharacterTransformationSkin.Panda);
         pandaRing.PossibleItemOptions.Add(
             this.CreateItemOptionDefinition("Panda Transformation Ring", ItemOptionDefinitionNumbers.PandaRing,
                 (Stats.BaseDamageBonus, 30, AggregateType.AddRaw),
-                (Stats.CurseBaseDmg, 30, AggregateType.AddRaw),
                 (Stats.MoneyAmountRate, 1.5f, AggregateType.Multiplicate),
                 (Stats.FinalDamageBonus, 30, AggregateType.AddRaw)));
         var skeletonRing = this.CreateTransformationRing(122, "Skeleton Transformation Ring", 1, 255, CharacterTransformationSkin.Skeleton);
         skeletonRing.PossibleItemOptions.Add(
             this.CreateItemOptionDefinition("Skeleton Transformation Ring", ItemOptionDefinitionNumbers.SkeletonTransformationRing,
-                (Stats.BaseDamageBonus, 40, AggregateType.AddRaw),
-                (Stats.CurseBaseDmg, 40, AggregateType.AddRaw),
-                (Stats.ExperienceRate, 1.5f, AggregateType.Multiplicate))); // todo: exp rate only applies with equipped skeleton pet
+                (Stats.BaseDamageBonus, 40, AggregateType.AddRaw, default),
+                (Stats.ExperienceRate, 1.3f, AggregateType.Multiplicate, default),
+                (Stats.ExperienceRate, 1, AggregateType.Multiplicate, (Stats.IsPetSkeletonEquipped, 0.3f)),
+                (Stats.MasterExperienceRate, 1.3f, AggregateType.Multiplicate, default),
+                (Stats.MasterExperienceRate, 1, AggregateType.Multiplicate, (Stats.IsPetSkeletonEquipped, 0.3f))));
+
+        /* Next season rings
         var robotKnightRing = this.CreateTransformationRing(163, "Robot Knight Transformation Ring", 1, 255, (CharacterTransformationSkin)625);
         robotKnightRing.PossibleItemOptions.Add(
             this.CreateItemOptionDefinition("Robot Knight Transformation Ring", ItemOptionDefinitionNumbers.RobotKnightTransformationRing,
@@ -108,6 +121,7 @@ internal class Jewelery : Version095d.Items.Jewelery
             this.CreateItemOptionDefinition("Great Heavenly Mage Transformation Ring", ItemOptionDefinitionNumbers.GreatHeavenlyMageTransformationRing,
                 (Stats.BaseDamageBonus, 40, AggregateType.AddRaw),
                 (Stats.CurseBaseDmg, 40, AggregateType.AddRaw)));
+        */
     }
 #pragma warning restore SA1011
 

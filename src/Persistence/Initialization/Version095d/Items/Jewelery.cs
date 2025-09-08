@@ -50,6 +50,31 @@ internal class Jewelery : Version075.Items.Jewelery
     }
 
     /// <summary>
+    /// Creates the jewelery.
+    /// </summary>
+    /// <param name="number">The number.</param>
+    /// <param name="slot">The slot.</param>
+    /// <param name="dropsFromMonsters">if set to <c>true</c> [drops from monsters].</param>
+    /// <param name="name">The name.</param>
+    /// <param name="level">The level.</param>
+    /// <param name="durability">The durability.</param>
+    /// <param name="excellentOptionDefinition">The excellent option definition.</param>
+    /// <param name="resistanceAttribute">The resistance attribute.</param>
+    /// <param name="withHealthOption">if set to <c>true</c> [with health option].</param>
+    /// <returns>The created jewelery.</returns>
+    protected ItemDefinition CreateJewelery(byte number, int slot, bool dropsFromMonsters, string name, byte level, byte durability, ItemOptionDefinition? excellentOptionDefinition, AttributeDefinition? resistanceAttribute, bool withHealthOption = true)
+    {
+        var item = this.CreateJewelery(number, slot, dropsFromMonsters, name, level, durability, resistanceAttribute, withHealthOption);
+
+        if (excellentOptionDefinition != null)
+        {
+            item.PossibleItemOptions.Add(excellentOptionDefinition);
+        }
+
+        return item;
+    }
+
+    /// <summary>
     /// Creates a ring.
     /// </summary>
     /// <param name="number">The number.</param>
@@ -84,30 +109,5 @@ internal class Jewelery : Version075.Items.Jewelery
             : this.GameConfiguration.ExcellentWizardryAttackOptions();
 
         this.CreateJewelery(number, 9, true, name, level, durability, excellentOption, resistanceAttribute);
-    }
-
-    /// <summary>
-    /// Creates the jewelery.
-    /// </summary>
-    /// <param name="number">The number.</param>
-    /// <param name="slot">The slot.</param>
-    /// <param name="dropsFromMonsters">if set to <c>true</c> [drops from monsters].</param>
-    /// <param name="name">The name.</param>
-    /// <param name="level">The level.</param>
-    /// <param name="durability">The durability.</param>
-    /// <param name="excellentOptionDefinition">The excellent option definition.</param>
-    /// <param name="resistanceAttribute">The resistance attribute.</param>
-    /// <param name="withHealthOption">if set to <c>true</c> [with health option].</param>
-    /// <returns></returns>
-    protected ItemDefinition CreateJewelery(byte number, int slot, bool dropsFromMonsters, string name, byte level, byte durability, ItemOptionDefinition? excellentOptionDefinition, AttributeDefinition? resistanceAttribute, bool withHealthOption = true)
-    {
-        var item = this.CreateJewelery(number, slot, dropsFromMonsters, name, level, durability, resistanceAttribute, withHealthOption);
-
-        if (excellentOptionDefinition != null)
-        {
-            item.PossibleItemOptions.Add(excellentOptionDefinition);
-        }
-
-        return item;
     }
 }
