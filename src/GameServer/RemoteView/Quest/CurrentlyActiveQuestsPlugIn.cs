@@ -42,11 +42,16 @@ public class CurrentlyActiveQuestsPlugIn : ICurrentlyActiveQuestsPlugIn
 
         int Write()
         {
-            var activeQuests = character.QuestStates.Where(state => state.Group != QuestConstants.LegacyQuestGroup && state.ActiveQuest != null).Select(s => s.ActiveQuest!).ToList();
+            const int maxQuestsPerPacket = 62;
+            var activeQuests = character.QuestStates
+                .Where(state => state.Group != QuestConstants.LegacyQuestGroup && state.ActiveQuest != null)
+                .Select(s => s.ActiveQuest!)
+                .Take(maxQuestsPerPacket)
+                .ToList();
             var size = QuestStateListRef.GetRequiredSize(activeQuests.Count);
             var span = connection.Output.GetSpan(size)[..size];
             var message = new QuestStateListRef(span);
-            int i = 0;
+            byte i = 0;
             foreach (var activeQuest in activeQuests)
             {
                 var questIdentification = message[i];
@@ -55,6 +60,7 @@ public class CurrentlyActiveQuestsPlugIn : ICurrentlyActiveQuestsPlugIn
                 i++;
             }
 
+            message.QuestCount = i;
             return size;
         }
 
