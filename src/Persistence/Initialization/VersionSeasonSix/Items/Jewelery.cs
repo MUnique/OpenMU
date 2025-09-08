@@ -2,8 +2,6 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.GameLogic.PlayerActions.Guild;
-
 namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
 
 using MUnique.OpenMU.AttributeSystem;
@@ -136,18 +134,19 @@ internal class Jewelery : Version095d.Items.Jewelery
         optionDefinition.SetGuid(number);
         this.GameConfiguration.ItemOptions.Add(optionDefinition);
         optionDefinition.Name = name;
-        foreach (var (targetOption, value, aggregateType, (sourceAttribute, multiplier)) in options)
+        for (int i = 0; i < options.Length; i++)
         {
-            optionDefinition.PossibleOptions.Add(this.CreateItemOption(targetOption, value, aggregateType, number, (sourceAttribute, multiplier)));
+            var (targetOption, value, aggregateType, (sourceAttribute, multiplier)) = options[i];
+            optionDefinition.PossibleOptions.Add(this.CreateItemOption(targetOption, value, aggregateType, number, (sourceAttribute, multiplier), i));
         }
 
         return optionDefinition;
     }
 
-    private IncreasableItemOption CreateItemOption(AttributeDefinition targetOption, float value, AggregateType aggregateType, short number, (AttributeDefinition? SourceAttribute, float Multiplier) relatedAttribute)
+    private IncreasableItemOption CreateItemOption(AttributeDefinition targetOption, float value, AggregateType aggregateType, short number, (AttributeDefinition? SourceAttribute, float Multiplier) relatedAttribute, int subNumber = 0)
     {
         var itemOption = this.Context.CreateNew<IncreasableItemOption>();
-        itemOption.SetGuid(number, targetOption.Id.ExtractFirstTwoBytes());
+        itemOption.SetGuid(number, targetOption.Id.ExtractFirstTwoBytes(), (byte)subNumber);
         itemOption.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
         itemOption.PowerUpDefinition.TargetAttribute = targetOption.GetPersistent(this.GameConfiguration);
         itemOption.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
