@@ -43,9 +43,9 @@ public class SelfDefensePlugIn : IPeriodicTaskPlugIn, IAttackableGotHitPlugIn, I
     /// <inheritdoc />
     public void AttackableGotHit(IAttackable attackable, IAttacker attacker, HitInfo hitInfo)
     {
-        var defender = attackable as Player ?? (attackable as Monster)?.SummonedBy;
-        var attackerPlayer = attacker as Player ?? (attackable as Monster)?.SummonedBy;
-        if (defender is null || attackerPlayer is null)
+        var defender = attackable as Player ?? (attackable as ISummonable)?.SummonedBy;
+        var attackerPlayer = attacker as Player ?? (attacker as ISummonable)?.SummonedBy;
+        if (defender is null || attackerPlayer is null || defender == attackerPlayer)
         {
             return;
         }
