@@ -127,14 +127,17 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
         {
             MonsterDefinition? defaultDefinition = null;
             if (SummonSkillToMonsterMapping.TryGetValue(skill.Number, out var monsterNumber)
-                && player.GameContext.Configuration.Monsters.FirstOrDefault(m => m.Number == monsterNumber) is { } mappedDefinition)
+            && player.GameContext.Configuration.Monsters.FirstOrDefault(m => m.Number == monsterNumber) is { } mappedDefinition)
             {
                 defaultDefinition = mappedDefinition;
             }
 
-            var summonPlugin = player.GameContext.PlugInManager.GetPlugIn<ISummonConfigurationPlugIn>();
+            // ✅ pedir el plugin “keyed” por skill.Number
+            var summonPlugin = player.GameContext.PlugInManager
+                .GetStrategy<short, ISummonConfigurationPlugIn>(skill.Number);
 
-            var monsterDefinition = summonPlugin?.CreateSummonMonsterDefinition(player, skill, defaultDefinition) ?? defaultDefinition;
+            var monsterDefinition = summonPlugin?.CreateSummonMonsterDefinition(player, skill, defaultDefinition)
+                                    ?? defaultDefinition;
 
             if (monsterDefinition is not null)
             {
@@ -145,7 +148,6 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
         {
             effectApplied = await this.ApplySkillAsync(player, target, skillEntry!).ConfigureAwait(false);
         }
-
         await player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowSkillAnimationAsync(player, target, skill, effectApplied), true).ConfigureAwait(false);
     }
 

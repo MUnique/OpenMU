@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   nginx-80:
     image: nginx:alpine
