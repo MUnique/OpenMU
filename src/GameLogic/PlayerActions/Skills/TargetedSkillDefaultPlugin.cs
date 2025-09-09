@@ -1,4 +1,4 @@
-﻿// <copyright file="TargetedSkillDefaultPlugin.cs" company="MUnique">
+// <copyright file="TargetedSkillDefaultPlugin.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -132,7 +132,8 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
                 defaultDefinition = mappedDefinition;
             }
 
-            var summonPlugin = player.GameContext.PlugInManager.GetPlugInPoint<ISummonConfigurationPlugIn>();
+            var summonPlugin = player.GameContext.PlugInManager.GetPlugIn<ISummonConfigurationPlugIn>();
+
             var monsterDefinition = summonPlugin?.CreateSummonMonsterDefinition(player, skill, defaultDefinition) ?? defaultDefinition;
 
             if (monsterDefinition is not null)
@@ -259,6 +260,11 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
         {
             if (skill.SkillType == SkillType.DirectHit || skill.SkillType == SkillType.CastleSiegeSkill)
             {
+                if (target is Monster { SummonedBy: { } owner } && owner == player)
+                {
+                    continue;
+                }
+
                 if (player.Attributes![Stats.AmmunitionConsumptionRate] > player.Attributes[Stats.AmmunitionAmount])
                 {
                     break;
