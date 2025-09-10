@@ -1076,7 +1076,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         var experience = killedObject.CalculateBaseExperience(this.Attributes![Stats.TotalLevel]);
         experience *= this.GameContext.ExperienceRate;
-        experience *= this.Attributes[expRateAttribute];
+        experience *= (this.Attributes[expRateAttribute] + this.Attributes[Stats.BonusExperienceRate]);
         experience *= this.CurrentMap?.Definition.ExpMultiplier ?? 1;
         experience = Rand.NextInt((int)(experience * 0.8), (int)(experience * 1.2));
 

@@ -55,6 +55,7 @@ internal class Jewelery : InitializerBase
             "Transformation Ring",
             0,
             200,
+            20, // todo: PoisonBullFighter, ThunderLich and DeathCow require level 50
             CharacterTransformationSkin.BudgeDragon,
             CharacterTransformationSkin.Giant,
             CharacterTransformationSkin.SkeletonWarrior,
@@ -70,9 +71,10 @@ internal class Jewelery : InitializerBase
     /// <param name="name">The name.</param>
     /// <param name="dropLevel">The level.</param>
     /// <param name="durability">The durability.</param>
+    /// <param name="requiredlevel">The required level to wear.</param>
     /// <param name="transformationSkins">The transformation skins, per item level.</param>
     /// <returns>The definition of the created ring.</returns>
-    protected ItemDefinition CreateTransformationRing(byte number, string name, byte dropLevel, byte durability, params CharacterTransformationSkin[] transformationSkins)
+    protected ItemDefinition CreateTransformationRing(byte number, string name, byte dropLevel, byte durability, byte requiredlevel, params CharacterTransformationSkin[] transformationSkins)
     {
         var ring = this.Context.CreateNew<ItemDefinition>();
         this.GameConfiguration.Items.Add(ring);
@@ -85,6 +87,8 @@ internal class Jewelery : InitializerBase
         ring.MaximumItemLevel = (byte)(transformationSkins.Length - 1);
         ring.Width = 1;
         ring.Height = 1;
+
+        this.CreateItemRequirementIfNeeded(ring, Stats.Level, requiredlevel);
 
         var powerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
         ring.BasePowerUpAttributes.Add(powerUp);
