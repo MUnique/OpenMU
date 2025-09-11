@@ -8,6 +8,7 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Persistence.Initialization.Items;
 
 /// <summary>
 /// Initializer for jewelery (rings and pendants).
@@ -55,7 +56,7 @@ internal class Jewelery : InitializerBase
             "Transformation Ring",
             0,
             200,
-            20, // todo: PoisonBullFighter, ThunderLich and DeathCow require level 50
+            20, // It's actually lvl 50 for the last 3, which we enforce later on CompliesRequirements()
             CharacterTransformationSkin.BudgeDragon,
             CharacterTransformationSkin.Giant,
             CharacterTransformationSkin.SkeletonWarrior,

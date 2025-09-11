@@ -807,7 +807,14 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         foreach (var requirement in item.Definition.Requirements.Select(item.GetRequirement))
         {
-            if (this.Attributes![requirement.Item1] < requirement.Item2)
+            var value = requirement.Value;
+            if (item.Definition.Group == 13 && item.Definition.Number == 10 && requirement.Attr == Stats.Level && item.Level > 2)
+            {
+                // PoisonBullFighter, ThunderLich or DeathCow tranformation ring
+                value += 30;
+            }
+
+            if (this.Attributes![requirement.Attr] < value)
             {
                 return false;
             }
@@ -1076,7 +1083,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         var experience = killedObject.CalculateBaseExperience(this.Attributes![Stats.TotalLevel]);
         experience *= this.GameContext.ExperienceRate;
-        experience *= (this.Attributes[expRateAttribute] + this.Attributes[Stats.BonusExperienceRate]);
+        experience *= this.Attributes[expRateAttribute] + this.Attributes[Stats.BonusExperienceRate];
         experience *= this.CurrentMap?.Definition.ExpMultiplier ?? 1;
         experience = Rand.NextInt((int)(experience * 0.8), (int)(experience * 1.2));
 

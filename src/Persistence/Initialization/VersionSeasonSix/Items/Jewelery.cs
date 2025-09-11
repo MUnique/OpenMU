@@ -71,7 +71,8 @@ internal class Jewelery : Version095d.Items.Jewelery
                 (Stats.MaximumHealth, 0, AggregateType.AddRaw, (Stats.Level, 1))));
 
         this.CreateTransformationRing(40, "Jack O'lantern Transformation Ring", 10, 100, 10, CharacterTransformationSkin.JackOlantern);
-        this.CreateTransformationRing(41, "Christmas Transformation Ring", 1, 100, 1, CharacterTransformationSkin.Christmas, (Stats.BaseDamageBonus, 20, AggregateType.AddRaw));
+        this.CreateTransformationRing(41, "Christmas Transformation Ring", 1, 100, 0, CharacterTransformationSkin.Christmas,
+            (Stats.BaseDamageBonus, 20, AggregateType.AddRaw));
         this.CreateTransformationRing(42, "Game Master Transformation Ring", 0, 255, 0, CharacterTransformationSkin.GameMaster,
             (Stats.IceDamageBonus, 255, AggregateType.AddRaw),
             (Stats.PoisonDamageBonus, 255, AggregateType.AddRaw),
@@ -80,21 +81,21 @@ internal class Jewelery : Version095d.Items.Jewelery
             (Stats.EarthDamageBonus, 255, AggregateType.AddRaw),
             (Stats.WindDamageBonus, 255, AggregateType.AddRaw),
             (Stats.WaterDamageBonus, 255, AggregateType.AddRaw),
-            (Stats.IceResistance, 0.1f, AggregateType.Maximum),
-            (Stats.PoisonResistance, 0.1f, AggregateType.Maximum),
-            (Stats.LightningResistance, 0.1f, AggregateType.Maximum),
-            (Stats.FireResistance, 0.1f, AggregateType.Maximum),
-            (Stats.EarthResistance, 0.1f, AggregateType.Maximum),
-            (Stats.WindResistance, 0.1f, AggregateType.Maximum),
-            (Stats.WaterResistance, 0.1f, AggregateType.Maximum));
+            (Stats.IceResistance, 1, AggregateType.Maximum),
+            (Stats.PoisonResistance, 1, AggregateType.Maximum),
+            (Stats.LightningResistance, 1, AggregateType.Maximum),
+            (Stats.FireResistance, 1, AggregateType.Maximum),
+            (Stats.EarthResistance, 1, AggregateType.Maximum),
+            (Stats.WindResistance, 1, AggregateType.Maximum),
+            (Stats.WaterResistance, 1, AggregateType.Maximum));
         this.CreateTransformationRing(68, "Snowman Transformation Ring", 10, 100, 10, CharacterTransformationSkin.Snowman);
-        this.CreateTransformationRing(76, "Panda Transformation Ring", 28, 255, 1, CharacterTransformationSkin.Panda,
+        this.CreateTransformationRing(76, "Panda Transformation Ring", 28, 255, 0, CharacterTransformationSkin.Panda,
             (Stats.BaseDamageBonus, 30, AggregateType.AddRaw),
             (Stats.CurseBaseDmg, 30, AggregateType.AddRaw),
             (Stats.MoneyAmountRate, 1.5f, AggregateType.Multiplicate),
             (Stats.FinalDamageBonus, 30, AggregateType.AddRaw));
 
-        var skeletonRing = this.CreateTransformationRing(122, "Skeleton Transformation Ring", 1, 255, 1, CharacterTransformationSkin.Skeleton,
+        var skeletonRing = this.CreateTransformationRing(122, "Skeleton Transformation Ring", 1, 255, 0, CharacterTransformationSkin.Skeleton,
             (Stats.BaseDamageBonus, 40, AggregateType.AddRaw),
             (Stats.CurseBaseDmg, 40, AggregateType.AddRaw));
         skeletonRing.PossibleItemOptions.Add(
@@ -102,24 +103,17 @@ internal class Jewelery : Version095d.Items.Jewelery
                 (Stats.BonusExperienceRate, 0, AggregateType.AddRaw, (Stats.IsPetSkeletonEquipped, 0.3f))));
 
         /* Next season xfm rings
-        var robotKnightRing = this.CreateTransformationRing(163, "Robot Knight Transformation Ring", 1, 255, (CharacterTransformationSkin)625);
-        robotKnightRing.PossibleItemOptions.Add(
-            this.CreateItemOptionDefinition("Robot Knight Transformation Ring", ItemOptionDefinitionNumbers.RobotKnightTransformationRing,
-                (Stats.BaseDamageBonus, 30, AggregateType.AddRaw),
-                (Stats.CurseBaseDmg, 30, AggregateType.AddRaw),
-                (Stats.DefenseFinal, 10, AggregateType.AddRaw)));
-        var miniRobotRing = this.CreateTransformationRing(164, "Mini Robot Transformation Ring", 1, 255, (CharacterTransformationSkin)626);
-        miniRobotRing.PossibleItemOptions.Add(
-            this.CreateItemOptionDefinition("Mini Robot Transformation Ring", ItemOptionDefinitionNumbers.MiniRobotTransformationRing,
-                (Stats.BaseDamageBonus, 30, AggregateType.AddRaw),
-                (Stats.CurseBaseDmg, 30, AggregateType.AddRaw),
-                (Stats.AttackSpeedAny, 7, AggregateType.AddRaw)));
-        var greatHeavenlyMageRing = this.CreateTransformationRing(165, "Great Heavenly Mage Transformation Ring", 1, 255, (CharacterTransformationSkin)642);
-        greatHeavenlyMageRing.PossibleItemOptions.Add(
-            this.CreateItemOptionDefinition("Great Heavenly Mage Transformation Ring", ItemOptionDefinitionNumbers.GreatHeavenlyMageTransformationRing,
-                (Stats.BaseDamageBonus, 40, AggregateType.AddRaw),
-                (Stats.CurseBaseDmg, 40, AggregateType.AddRaw)));
-        */
+        var robotKnightRing = this.CreateTransformationRing(163, "Robot Knight Transformation Ring", 1, 255, ??, (CharacterTransformationSkin)625,
+            (Stats.BaseDamageBonus, 30, AggregateType.AddRaw),
+            (Stats.CurseBaseDmg, 30, AggregateType.AddRaw),
+            (Stats.DefenseFinal, 10, AggregateType.AddRaw));
+        var miniRobotRing = this.CreateTransformationRing(164, "Mini Robot Transformation Ring", 1, 255, ??, (CharacterTransformationSkin)626,
+            (Stats.BaseDamageBonus, 30, AggregateType.AddRaw),
+            (Stats.CurseBaseDmg, 30, AggregateType.AddRaw),
+            (Stats.AttackSpeedAny, 7, AggregateType.AddRaw));
+        var greatHeavenlyMageRing = this.CreateTransformationRing(165, "Great Heavenly Mage Transformation Ring", 1, 255, ??, (CharacterTransformationSkin)642,
+            (Stats.BaseDamageBonus, 40, AggregateType.AddRaw),
+            (Stats.CurseBaseDmg, 40, AggregateType.AddRaw));*/
 #pragma warning restore SA1011
     }
 
@@ -134,6 +128,7 @@ internal class Jewelery : Version095d.Items.Jewelery
             optionDefinition.PossibleOptions.Add(this.CreateItemOption(targetOption, value, aggregateType, number, (sourceAttribute, multiplier)));
         }
 
+        // Always add all options "randomly" when it drops ;)
         optionDefinition.AddChance = 1.0f;
         optionDefinition.AddsRandomly = true;
         optionDefinition.MaximumOptionsPerItem = options.Length;
@@ -144,7 +139,7 @@ internal class Jewelery : Version095d.Items.Jewelery
     private IncreasableItemOption CreateItemOption(AttributeDefinition targetOption, float value, AggregateType aggregateType, short number, (AttributeDefinition? SourceAttribute, float Multiplier) relatedAttribute)
     {
         var itemOption = this.Context.CreateNew<IncreasableItemOption>();
-        itemOption.SetGuid(number, targetOption.Id.ExtractFirstTwoBytes(), 0);
+        itemOption.SetGuid(number, targetOption.Id.ExtractFirstTwoBytes());
         itemOption.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
         itemOption.PowerUpDefinition.TargetAttribute = targetOption.GetPersistent(this.GameConfiguration);
         itemOption.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();

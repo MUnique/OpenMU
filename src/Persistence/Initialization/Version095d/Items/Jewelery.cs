@@ -41,7 +41,7 @@ internal class Jewelery : Version075.Items.Jewelery
             "Transformation Ring",
             0,
             200,
-            20, // todo: PoisonBullFighter, ThunderLich and DeathCow require level 50
+            20, // It's actually lvl 50 for the last 3, which we enforce later on CompliesRequirements()
             CharacterTransformationSkin.BudgeDragon,
             CharacterTransformationSkin.Giant,
             CharacterTransformationSkin.SkeletonWarrior,

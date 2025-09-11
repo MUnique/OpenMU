@@ -81,8 +81,7 @@ public class Pets : InitializerBase
         this.CreatePet(67, 0, 1, 1, "Pet Rudolf", 28, false, true);
         this.CreatePet(80, 0, 1, 1, "Pet Panda", 1, false, true,
             (Stats.BonusExperienceRate, 0.5f, AggregateType.AddRaw),
-            (Stats.DefenseFinal, 50f, AggregateType.AddRaw),
-            (Stats.MaximumHealth, 50f, AggregateType.AddRaw));
+            (Stats.DefenseFinal, 50f, AggregateType.AddRaw));
         this.CreatePet(106, 0, 1, 1, "Pet Unicorn", 28, false, true,
             (Stats.MoneyAmountRate, 1.5f, AggregateType.Multiplicate),
             (Stats.DefenseFinal, 50f, AggregateType.AddRaw));
