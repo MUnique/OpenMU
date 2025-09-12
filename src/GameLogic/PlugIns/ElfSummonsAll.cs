@@ -211,11 +211,14 @@ public abstract class ElfSummonCfgBase :
 
     public MonsterDefinition? CreateSummonMonsterDefinition(Player player, Skill skill, MonsterDefinition? defaultDefinition)
     {
-        // Best-effort: Pull latest configuration directly from GameConfiguration in case change events didn't arrive (e.g. separate process/container lifecycle).
+        // Best-effort: Pull latest configuration directly from persistence, bypassing caches,
+        // so cross-process/container changes apply without restart.
         try
         {
             var typeId = this.GetType().GUID;
-            var plugInConfig = player.GameContext.Configuration.PlugInConfigurations.FirstOrDefault(c => c.TypeId == typeId);
+            using var cfgCtx = player.GameContext.PersistenceContextProvider.CreateNewTypedContext(typeof(PlugInConfiguration), useCache: false);
+            var all = cfgCtx.GetAsync<PlugInConfiguration>().AsTask().GetAwaiter().GetResult();
+            var plugInConfig = all.FirstOrDefault(c => c.TypeId == typeId);
             if (plugInConfig is not null)
             {
                 var latest = plugInConfig.GetConfiguration<ElfSummonSkillConfiguration>(player.GameContext.PlugInManager.CustomConfigReferenceHandler);
@@ -227,7 +230,7 @@ public abstract class ElfSummonCfgBase :
         }
         catch
         {
-            // ignore
+            // ignore and continue with current in-memory config
         }
 
         return ElfSummonsConfigCore.Instance.Resolve(player, skill, defaultDefinition);
