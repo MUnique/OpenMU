@@ -13,6 +13,7 @@ using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Pathfinding;
+using MUnique.OpenMU.GameLogic.NPC;
 
 /// <summary>
 /// Action to attack with a skill which inflicts damage to an area of the current map of the player.
@@ -217,6 +218,9 @@ public class AreaSkillAttackAction
                     .Where(a => a != player)
                     .Where(a => !a.IsAtSafezone())
             ?? [];
+
+        // Don't hit own summoned monsters with area skills.
+        targetsInRange = targetsInRange.Where(a => a is not Monster { SummonedBy: { } owner } || owner != player);
 
         if (skill.AreaSkillSettings is { UseFrustumFilter: true } areaSkillSettings)
         {

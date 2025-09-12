@@ -543,8 +543,6 @@ public static class ConnectionExtensions
     /// </summary>
     /// <param name="connection">The connection.</param>
     /// <param name="changedPlayerId">The changed player id.</param>
-    /// <param name="successRate">The success rate in percent.</param>
-    /// <param name="bonusRate">The additional bonus rate in percent.</param>
     /// <param name="itemData">The item data.</param>
     /// <remarks>
     /// Is sent by the server when: The appearance of a player changed, all surrounding players are informed about it.
@@ -4583,6 +4581,8 @@ public static class ConnectionExtensions
     /// </summary>
     /// <param name="connection">The connection.</param>
     /// <param name="result">The result.</param>
+    /// <param name="successRate">The success rate.</param>
+    /// <param name="bonusRate">The bonus rate.</param>
     /// <param name="itemData">The item data.</param>
     /// <remarks>
     /// Is sent by the server when: After the player requested to execute an item crafting, e.g. at the chaos machine.

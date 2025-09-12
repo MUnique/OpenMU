@@ -30,7 +30,8 @@ public class MonsterAttributeHolder : IAttributeSystem
             { Stats.CurrentHealth, (m, v) => m.Health = (int)v },
         };
 
-    private static readonly ConcurrentDictionary<MonsterDefinition, IDictionary<AttributeDefinition, float>> MonsterStatAttributesCache = new();
+    // Avoid caching by MonsterDefinition equality (which is based on Id) because cloned definitions
+    // for summons may share the same Id but have different attribute values. We resolve per-instance.
 
     private readonly AttackableNpcBase _monster;
 
@@ -159,9 +160,11 @@ public class MonsterAttributeHolder : IAttributeSystem
 
     private static IDictionary<AttributeDefinition, float> GetStatAttributeOfMonster(MonsterDefinition monsterDefinition)
     {
-        return MonsterStatAttributesCache.GetOrAdd(monsterDefinition, monsterDef => monsterDef.Attributes.ToDictionary(
-                m => m.AttributeDefinition ?? throw Error.NotInitializedProperty(m, nameof(m.AttributeDefinition)),
-                m => m.Value));
+        // Build a fresh map for this concrete instance to respect any runtime-adjusted values
+        // (e.g. cloned summon definitions with modified stats).
+        return monsterDefinition.Attributes.ToDictionary(
+            m => m.AttributeDefinition ?? throw Error.NotInitializedProperty(m, nameof(m.AttributeDefinition)),
+            m => m.Value);
     }
 
     private IDictionary<AttributeDefinition, IComposableAttribute> GetAttributeDictionary()

@@ -47,6 +47,40 @@ This fork diverges from the original OpenMU project and introduces:
 - New crafting recipes plus fixes for craftings, skills and grid issues.
 - Updated White Wizard event data and related fixes.
 
+### Elf Summon Plug-in (Invocaciones Elfa)
+
+Este fork incluye un plugin configurable para cambiar las invocaciones de la Elfa (skills 30..36) y ajustar sus stats sin reiniciar el servidor.
+
+Ubicación del código: `src/GameLogic/PlugIns/ElfSummonsAll.cs`.
+
+Qué permite
+- Reemplazar el monstruo invocado por cada skill (30..36) o mantener el mapeo por defecto.
+- Ajustar multiplicadores de vida, daño mínimo/máximo y defensa por skill.
+- Aplicar cambios de configuración en caliente; basta con desinvocar y volver a invocar.
+
+Cómo habilitarlo
+- Compilar el proyecto (ver QuickStart) para que el tipo de plugin se descubra por reflección.
+- En el Panel de Administración: Plugins → filtrá por “Summon configuration”.
+- Vas a ver 7 entradas: “Elf Summon cfg … (30..36)”. Activá las que quieras usar.
+- Editá la “Custom Configuration” de cada una. Campos disponibles:
+  - `MonsterNumber` (int): 0 = usa el mapeo por defecto del servidor. >0 = número del monstruo a invocar.
+  - `HpMul` (float): multiplicador de vida.
+  - `MinDmgMul` (float): multiplicador de daño mínimo físico base.
+  - `MaxDmgMul` (float): multiplicador de daño máximo físico base.
+  - `DefMul` (float): multiplicador de defensa base.
+
+Notas importantes (si querés usar solo el plugin en otro repo)
+- Ajuste de cache de stats de monstruos (requerido para que se apliquen los multiplicadores en summons):
+  - En `src/GameLogic/Attributes/MonsterAttributeHolder.cs`, evitá cachear por `MonsterDefinition` (que iguala por Id), porque los clones de summon comparten Id. Tomá los atributos por instancia. Este fork ya incorpora este cambio.
+- Evitar daño a tu propia invocación con skills en área (recomendado):
+  - En `src/GameLogic/PlayerActions/Skills/AreaSkillAttackAction.cs` y `src/GameLogic/PlayerActions/Skills/AreaSkillHitAction.cs`, excluí de los targets a `Monster { SummonedBy == player }`. Este fork ya lo trae aplicado.
+- Hot‑reload de configuración: El Admin Panel ya propaga cambios al `PlugInManager`. No hace falta reiniciar; desinvocá y volvé a invocar para ver los nuevos stats.
+- HUD de “pet” (barra tipo Fenrir/Raven): Las invocaciones de elfa no usan el sistema de mascotas por ítem, por lo que el cliente no muestra esa barra. Ver el nombre/owner sí está soportado. Para HUD de pet se requieren cambios de cliente.
+
+Ejemplos de uso
+- Mantener el monstruo por defecto y solo subir la vida al doble: `{"MonsterNumber":0, "HpMul":2.0}`.
+- Cambiar el mob del skill 35 (Bali) a otro número y 50% más de daño: `{"MonsterNumber":123, "MinDmgMul":1.5, "MaxDmgMul":1.5}`.
+
 ## Current project state
 
 This project is currently under development without any release.
@@ -176,6 +210,40 @@ Este fork se desvía del proyecto original OpenMU e introduce:
 - Traducciones adicionales al español y correcciones de idioma del panel de administración.
 - Nuevas recetas de crafteo y correcciones para crafteo, habilidades y problemas de cuadrícula.
 - Datos actualizados del evento White Wizard y correcciones relacionadas.
+
+### Plugin de invocaciones de Elfa
+
+Este fork incluye un plugin configurable para cambiar las invocaciones de la Elfa (skills 30..36) y ajustar sus stats sin reiniciar el servidor.
+
+Ubicacion del codigo: `src/GameLogic/PlugIns/ElfSummonsAll.cs`.
+
+Que permite
+- Reemplazar el monstruo invocado por cada skill (30..36) o mantener el mapeo por defecto.
+- Ajustar multiplicadores de vida, dano minimo/maximo y defensa por skill.
+- Aplicar cambios de configuracion en caliente; basta con desinvocar y volver a invocar.
+
+Como habilitarlo
+- Compilar el proyecto (ver QuickStart) para que el tipo de plugin se descubra por reflexion.
+- En el Panel de Administracion: Plugins -> filtrar por "Summon configuration".
+- Vas a ver 7 entradas: "Elf Summon cfg ... (30..36)". Activa las que quieras usar.
+- Edita la "Custom Configuration" de cada una. Campos disponibles:
+  - `MonsterNumber` (int): 0 = usa el mapeo por defecto del servidor. >0 = numero del monstruo a invocar.
+  - `HpMul` (float): multiplicador de vida.
+  - `MinDmgMul` (float): multiplicador de dano minimo fisico base.
+  - `MaxDmgMul` (float): multiplicador de dano maximo fisico base.
+  - `DefMul` (float): multiplicador de defensa base.
+
+Notas importantes (si queres usar solo el plugin en otro repo)
+- Ajuste de cache de stats de monstruos (requerido para que se apliquen los multiplicadores en summons):
+  - En `src/GameLogic/Attributes/MonsterAttributeHolder.cs`, evita cachear por `MonsterDefinition` (que iguala por Id), porque los clones de summon comparten Id. Toma los atributos por instancia. Este fork ya incorpora este cambio.
+- Evitar dano a tu propia invocacion con skills en area (recomendado):
+  - En `src/GameLogic/PlayerActions/Skills/AreaSkillAttackAction.cs` y `src/GameLogic/PlayerActions/Skills/AreaSkillHitAction.cs`, exclui de los targets a `Monster { SummonedBy == player }`. Este fork ya lo trae aplicado.
+- Hot-reload de configuracion: El Admin Panel ya propaga cambios al `PlugInManager`. No hace falta reiniciar; desinvoca y volve a invocar para ver los nuevos stats.
+- HUD de "pet" (barra tipo Fenrir/Raven): Las invocaciones de elfa no usan el sistema de mascotas por item, por lo que el cliente no muestra esa barra. Ver el nombre/owner si esta soportado. Para HUD de pet se requieren cambios de cliente.
+
+Ejemplos de uso
+- Mantener el monstruo por defecto y solo subir la vida al doble: `{"MonsterNumber": 0, "HpMul": 2.0}`.
+- Cambiar el mob del skill 35 (Bali) a otro numero y 50% mas de dano: `{"MonsterNumber": 123, "MinDmgMul": 1.5, "MaxDmgMul": 1.5}`.
 
 ## Estado actual del proyecto
 

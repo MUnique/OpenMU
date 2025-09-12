@@ -44,31 +44,56 @@ public sealed class ElfSummonsConfigCore
 
     public MonsterDefinition? Resolve(Player player, Skill skill, MonsterDefinition? defaultDefinition)
     {
-        if (!this.Map.TryGetValue(skill.Number, out var cfg) || cfg.MonsterNumber is null)
+        if (!this.Map.TryGetValue(skill.Number, out var cfg))
         {
-            return null; // no reemplaza -> usa mapping por defecto
+            return null; // sin configuración -> usa mapping por defecto
         }
 
-        var baseDef = player.GameContext.Configuration.Monsters
-            .FirstOrDefault(m => m.Number == cfg.MonsterNumber.Value);
+        // Seleccionamos la definición base: o la configurada, o la por defecto del servidor.
+        MonsterDefinition? baseDef;
+        if (cfg.MonsterNumber is null)
+        {
+            // Mantener mapeo por defecto, pero permitir modificar stats del defaultDefinition
+            baseDef = defaultDefinition;
+        }
+        else
+        {
+            baseDef = player.GameContext.Configuration.Monsters
+                .FirstOrDefault(m => m.Number == cfg.MonsterNumber.Value)
+                      ?? defaultDefinition; // fallback al default si no existe la custom
+        }
+
         if (baseDef is null)
         {
-            return defaultDefinition;
+            // No hay nada que clonar; dejamos que el handler use su flujo por defecto
+            return null;
         }
 
         var clone = baseDef.Clone(player.GameContext.Configuration);
 
         var hp = clone.Attributes.FirstOrDefault(a => a.AttributeDefinition == Stats.MaximumHealth);
-        if (hp is not null && cfg.HpMul != 1.0f) hp.Value *= cfg.HpMul;
+        if (hp is not null && Math.Abs(cfg.HpMul - 1.0f) > float.Epsilon)
+        {
+            hp.Value *= cfg.HpMul;
+        }
 
         var minDmg = clone.Attributes.FirstOrDefault(a => a.AttributeDefinition == Stats.MinimumPhysBaseDmg);
-        if (minDmg is not null && cfg.MinDmgMul != 1.0f) minDmg.Value *= cfg.MinDmgMul;
+        if (minDmg is not null && Math.Abs(cfg.MinDmgMul - 1.0f) > float.Epsilon)
+        {
+            minDmg.Value *= cfg.MinDmgMul;
+        }
 
         var maxDmg = clone.Attributes.FirstOrDefault(a => a.AttributeDefinition == Stats.MaximumPhysBaseDmg);
-        if (maxDmg is not null && cfg.MaxDmgMul != 1.0f) maxDmg.Value *= cfg.MaxDmgMul;
+        if (maxDmg is not null && Math.Abs(cfg.MaxDmgMul - 1.0f) > float.Epsilon)
+        {
+            maxDmg.Value *= cfg.MaxDmgMul;
+        }
 
         var def = clone.Attributes.FirstOrDefault(a => a.AttributeDefinition == Stats.DefenseBase);
-        if (def is not null && cfg.DefMul != 1.0f) def.Value *= cfg.DefMul;
+        if (def is not null && Math.Abs(cfg.DefMul - 1.0f) > float.Epsilon)
+        {
+            def.Value *= cfg.DefMul;
+        }
 
         cfg.Customize?.Invoke(clone);
         return clone;

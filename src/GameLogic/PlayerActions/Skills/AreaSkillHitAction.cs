@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 
+using MUnique.OpenMU.GameLogic.NPC;
+
 /// <summary>
 /// Action to hit targets with an area skill, which requires explicit hits <seealso cref="SkillType.AreaSkillExplicitHits"/>.
 /// </summary>
@@ -29,6 +31,12 @@ public class AreaSkillHitAction
         {
             // It's possible, when the player did some area skill (Evil Spirit), and walked into the safezone.
             // We don't log it as hacker attempt, since the AreaSkillAttackAction already does handle this.
+        }
+
+        // Don't allow hitting own summoned monster.
+        if (target is Monster { SummonedBy: { } owner } && owner == player)
+        {
+            return;
         }
 
         if (target.CheckSkillTargetRestrictions(player, skill.Skill))
