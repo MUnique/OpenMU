@@ -238,7 +238,7 @@ public enum UpdateVersion
     /// <summary>
     /// The version of the <see cref="ElfSummonDefaultsUpdatePlugIn"/>.
     /// </summary>
-    ElfSummonDefaults = 46,
+    ElfSummonDefaults = 250,
 
     /// <summary>
     /// The version of the <see cref="FixItemOptionsAndAttackSpeedPlugIn075"/>.

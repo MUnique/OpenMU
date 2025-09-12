@@ -27,7 +27,7 @@ public class ElfSummonDefaultsUpdatePlugIn : UpdatePlugInBase
         new("A6E7C6A1-5D9A-4D7D-A001-000000000036"),
     ];
 
-    public override UpdateVersion Version => (UpdateVersion)46;
+    public override UpdateVersion Version => UpdateVersion.ElfSummonDefaults;
 
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
@@ -98,4 +98,3 @@ public class ElfSummonDefaultsUpdatePlugIn : UpdatePlugInBase
         return JsonSerializer.Serialize(result, new JsonSerializerOptions { WriteIndented = true });
     }
 }
-
