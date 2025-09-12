@@ -170,8 +170,8 @@ public class ElfSummonSkillConfiguration
     [System.ComponentModel.DataAnnotations.Range(0, 65535)]
     public int MonsterNumber { get; set; } = 0;
     // Dynamic scaling by Energy: scale = 1 + floor(Energy / EnergyPerStep) * PercentPerStep
-    public int EnergyPerStep { get; set; } = 0; // 0 = disabled
-    public float PercentPerStep { get; set; } = 0.0f; // e.g. 0.05 for +5% per 1000 energy
+    public int EnergyPerStep { get; set; } = 1000; // default enabled: per 1000 energy
+    public float PercentPerStep { get; set; } = 0.05f; // default: +5% per step
 }
 
 
@@ -215,8 +215,8 @@ public abstract class ElfSummonCfgBase :
                 entry.MonsterNumber = clamped;
             }
 
-            entry.EnergyPerStep = value.EnergyPerStep;
-            entry.PercentPerStep = value.PercentPerStep;
+            entry.EnergyPerStep = value.EnergyPerStep > 0 ? value.EnergyPerStep : 1000;
+            entry.PercentPerStep = value.PercentPerStep > 0 ? value.PercentPerStep : 0.05f;
         }
     }
 
