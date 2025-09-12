@@ -1,0 +1,13 @@
+services:
+
+  openmu-startup:
+    # Always build the image from your fork (remote git context)
+    # You can override the context with an env var OPENMU_FORK_CONTEXT
+    # Example value: https://github.com/EmanuelCatania/OpenMU-S2.git#master:src
+    image: openmu-fork:dev
+    build:
+      context: ${OPENMU_FORK_CONTEXT:-https://github.com/EmanuelCatania/OpenMU-S2.git#master:src}
+      dockerfile: Startup/Dockerfile
+    pull_policy: never
+    restart: "no"
+

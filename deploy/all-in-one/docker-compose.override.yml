@@ -1,9 +1,11 @@
 services:
 
   openmu-startup:
+    image: openmu-local:dev
     build:
       context: ../../src
       dockerfile: Startup/Dockerfile
+    pull_policy: never
     restart: "no"
     environment:
       # Para pruebas en red local, anunciar IP local a los clientes.
