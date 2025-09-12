@@ -47,41 +47,44 @@ This fork diverges from the original OpenMU project and introduces:
 - New crafting recipes plus fixes for craftings, skills and grid issues.
 - Updated White Wizard event data and related fixes.
 
-### Elf Summon Plug-in (Invocaciones Elfa)
+### Elf Summon Plug-in
 
-Este fork incluye un plugin configurable para cambiar las invocaciones de la Elfa (skills 30..36) y ajustar sus stats sin reiniciar el servidor.
+This fork includes a configurable plug-in to change Elf summons (skills 30..36) and tweak their stats without restarting the server.
 
-Ubicación del código: `src/GameLogic/PlugIns/ElfSummonsAll.cs`.
+Code location: `src/GameLogic/PlugIns/ElfSummonsAll.cs`.
 
-Qué permite
-- Reemplazar el monstruo invocado por cada skill (30..36) o mantener el mapeo por defecto.
-- Ajustar multiplicadores de vida, daño mínimo/máximo y defensa por skill.
-- Aplicar cambios de configuración en caliente; basta con desinvocar y volver a invocar.
+What it provides
+- Replace the summoned monster per skill (30..36) or keep the default mapping.
+- Adjust per-skill multipliers: HP, minimum/maximum physical base damage, and defense.
+- Dynamic scaling by Energy: `scale = 1 + floor(TotalEnergy / EnergyPerStep) * PercentPerStep` applied to HP/DMG/DEF.
+- Buff/regeneration skills also include your own summon (and party members� summons) when the target mode is self/party.
+- Apply configuration changes at runtime; just unsummon and summon again.
 
-Cómo habilitarlo
-- Compilar el proyecto (ver QuickStart) para que el tipo de plugin se descubra por reflección.
-- En el Panel de Administración: Plugins → filtrá por “Summon configuration”.
-- Vas a ver 7 entradas: “Elf Summon cfg … (30..36)”. Activá las que quieras usar.
-- Editá la “Custom Configuration” de cada una. Campos disponibles:
-  - `MonsterNumber` (int): 0 = usa el mapeo por defecto del servidor. >0 = número del monstruo a invocar.
-  - `HpMul` (float): multiplicador de vida.
-  - `MinDmgMul` (float): multiplicador de daño mínimo físico base.
-  - `MaxDmgMul` (float): multiplicador de daño máximo físico base.
-  - `DefMul` (float): multiplicador de defensa base.
+How to enable
+- Build the project (see QuickStart) so the plug-in type is discovered.
+- In the Admin Panel: Plugins ? filter by "Summon configuration".
+- You will see 7 entries: "Elf Summon cfg � (30..36)". Activate the ones you need.
+- Edit the "Custom Configuration" of each. Available fields:
+  - `MonsterNumber` (int): 0 = use the server default mapping; >0 = monster number to summon.
+  - `HpMul` (float): HP multiplier.
+  - `MinDmgMul` (float): minimum physical base damage multiplier.
+  - `MaxDmgMul` (float): maximum physical base damage multiplier.
+  - `DefMul` (float): base defense multiplier.
+  - `EnergyPerStep` (int): 0 to disable; otherwise size of each Energy step (e.g. 1000).
+  - `PercentPerStep` (float): added per step (e.g. 0.05 = +5%).
 
-Notas importantes (si querés usar solo el plugin en otro repo)
-- Ajuste de cache de stats de monstruos (requerido para que se apliquen los multiplicadores en summons):
-  - En `src/GameLogic/Attributes/MonsterAttributeHolder.cs`, evitá cachear por `MonsterDefinition` (que iguala por Id), porque los clones de summon comparten Id. Tomá los atributos por instancia. Este fork ya incorpora este cambio.
-- Evitar daño a tu propia invocación con skills en área (recomendado):
-  - En `src/GameLogic/PlayerActions/Skills/AreaSkillAttackAction.cs` y `src/GameLogic/PlayerActions/Skills/AreaSkillHitAction.cs`, excluí de los targets a `Monster { SummonedBy == player }`. Este fork ya lo trae aplicado.
-- Hot‑reload de configuración: El Admin Panel ya propaga cambios al `PlugInManager`. No hace falta reiniciar; desinvocá y volvé a invocar para ver los nuevos stats.
-- HUD de “pet” (barra tipo Fenrir/Raven): Las invocaciones de elfa no usan el sistema de mascotas por ítem, por lo que el cliente no muestra esa barra. Ver el nombre/owner sí está soportado. Para HUD de pet se requieren cambios de cliente.
+Important notes (for using this plug-in in another repo)
+- Monster stat cache adjustment (required so multipliers apply to summons):
+  - In `src/GameLogic/Attributes/MonsterAttributeHolder.cs`, don�t cache by `MonsterDefinition` (equals by Id). Summoned clones share Id; read attributes per-instance instead. Included in this fork.
+- Prevent damage to your own summon with area skills (recommended):
+  - In `src/GameLogic/PlayerActions/Skills/AreaSkillAttackAction.cs` and `src/GameLogic/PlayerActions/Skills/AreaSkillHitAction.cs`, exclude `Monster { SummonedBy == player }` from targets. Included in this fork.
+- Configuration hot-reload: On each summon creation, the plug-in fetches the latest CustomConfiguration from GameConfiguration. No restart required; just re-summon.
+- Pet HUD (Fenrir/Raven bar): Elf summons don�t use the item-pet system, so the stock client doesn�t show that bar. Name/owner display is supported. Pet HUD would require client changes.
 
-Ejemplos de uso
-- Mantener el monstruo por defecto y solo subir la vida al doble: `{"MonsterNumber":0, "HpMul":2.0}`.
-- Cambiar el mob del skill 35 (Bali) a otro número y 50% más de daño: `{"MonsterNumber":123, "MinDmgMul":1.5, "MaxDmgMul":1.5}`.
-
-## Current project state
+Examples
+- Keep default monster and double HP: `{"MonsterNumber": 0, "HpMul": 2.0}`.
+- +5% per 1000 Energy: `{"MonsterNumber": 0, "EnergyPerStep": 1000, "PercentPerStep": 0.05}`.
+- Change skill 35 (Bali) to another monster with +50% damage: `{"MonsterNumber": 123, "MinDmgMul": 1.5, "MaxDmgMul": 1.5}`.## Current project state
 
 This project is currently under development without any release.
 You can try the current state by using the available docker image, also
@@ -220,6 +223,8 @@ Ubicacion del codigo: `src/GameLogic/PlugIns/ElfSummonsAll.cs`.
 Que permite
 - Reemplazar el monstruo invocado por cada skill (30..36) o mantener el mapeo por defecto.
 - Ajustar multiplicadores de vida, dano minimo/maximo y defensa por skill.
+- Escalado dinamico por Energia: `scale = 1 + floor(TotalEnergy / EnergyPerStep) * PercentPerStep` aplicado a HP/DMG/DEF.
+- Los skills de Buff/Regeneration tambien incluyen a tu propio summon (y a los summons del party) cuando el target es self/party.
 - Aplicar cambios de configuracion en caliente; basta con desinvocar y volver a invocar.
 
 Como habilitarlo
@@ -232,20 +237,21 @@ Como habilitarlo
   - `MinDmgMul` (float): multiplicador de dano minimo fisico base.
   - `MaxDmgMul` (float): multiplicador de dano maximo fisico base.
   - `DefMul` (float): multiplicador de defensa base.
+  - `EnergyPerStep` (int): 0 para desactivar; si no, tamano de cada paso de Energia (p.ej. 1000).
+  - `PercentPerStep` (float): incremento por paso (p.ej. 0.05 = +5%).
 
 Notas importantes (si queres usar solo el plugin en otro repo)
 - Ajuste de cache de stats de monstruos (requerido para que se apliquen los multiplicadores en summons):
   - En `src/GameLogic/Attributes/MonsterAttributeHolder.cs`, evita cachear por `MonsterDefinition` (que iguala por Id), porque los clones de summon comparten Id. Toma los atributos por instancia. Este fork ya incorpora este cambio.
 - Evitar dano a tu propia invocacion con skills en area (recomendado):
   - En `src/GameLogic/PlayerActions/Skills/AreaSkillAttackAction.cs` y `src/GameLogic/PlayerActions/Skills/AreaSkillHitAction.cs`, exclui de los targets a `Monster { SummonedBy == player }`. Este fork ya lo trae aplicado.
-- Hot-reload de configuracion: El Admin Panel ya propaga cambios al `PlugInManager`. No hace falta reiniciar; desinvoca y volve a invocar para ver los nuevos stats.
+- Hot-reload de configuracion: En cada creacion del summon, el plugin lee la CustomConfiguration mas reciente desde GameConfiguration. No hace falta reiniciar; desinvoca y volve a invocar para ver los nuevos stats.
 - HUD de "pet" (barra tipo Fenrir/Raven): Las invocaciones de elfa no usan el sistema de mascotas por item, por lo que el cliente no muestra esa barra. Ver el nombre/owner si esta soportado. Para HUD de pet se requieren cambios de cliente.
 
 Ejemplos de uso
 - Mantener el monstruo por defecto y solo subir la vida al doble: `{"MonsterNumber": 0, "HpMul": 2.0}`.
-- Cambiar el mob del skill 35 (Bali) a otro numero y 50% mas de dano: `{"MonsterNumber": 123, "MinDmgMul": 1.5, "MaxDmgMul": 1.5}`.
-
-## Estado actual del proyecto
+- +5% por cada 1000 de Energia: `{"MonsterNumber": 0, "EnergyPerStep": 1000, "PercentPerStep": 0.05}`.
+- Cambiar el mob del skill 35 (Bali) a otro numero y 50% mas de dano: `{"MonsterNumber": 123, "MinDmgMul": 1.5, "MaxDmgMul": 1.5}`.## Estado actual del proyecto
 
 Este proyecto se encuentra actualmente en desarrollo sin ningún lanzamiento.
 Puedes probar el estado actual utilizando la imagen de docker disponible, mencionada también en la [guía rápida](QuickStart.md).
