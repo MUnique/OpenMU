@@ -71,37 +71,59 @@ public sealed class ElfSummonsConfigCore
 
         var clone = baseDef.Clone(player.GameContext.Configuration);
 
-        // Dynamic scaling by summoners TotalEnergy: scale = 1 + floor(Energy / EnergyPerStep) * PercentPerStep
+        // Dynamic scaling by summoners TotalEnergy only:
+        // scale = 1 + floor(Energy / EnergyPerStep) * PercentPerStep
         var energy = player.Attributes?[Stats.TotalEnergy] ?? 0;
         var steps = cfg.EnergyPerStep > 0 ? (int)(energy / cfg.EnergyPerStep) : 0;
         var energyScale = 1.0f + Math.Max(0, steps) * Math.Max(0, cfg.PercentPerStep);
 
+        // Apply scaling to base stats of the chosen monster
         var hp = clone.Attributes.FirstOrDefault(a => a.AttributeDefinition == Stats.MaximumHealth);
-        if (hp is not null)
+        if (hp is not null && Math.Abs(energyScale - 1.0f) > float.Epsilon)
         {
-            var mul = cfg.HpMul * energyScale;
-            if (Math.Abs(mul - 1.0f) > float.Epsilon) hp.Value *= mul;
+            hp.Value *= energyScale;
         }
 
+        // Physical base damage
         var minDmg = clone.Attributes.FirstOrDefault(a => a.AttributeDefinition == Stats.MinimumPhysBaseDmg);
-        if (minDmg is not null)
+        if (minDmg is not null && Math.Abs(energyScale - 1.0f) > float.Epsilon)
         {
-            var mul = cfg.MinDmgMul * energyScale;
-            if (Math.Abs(mul - 1.0f) > float.Epsilon) minDmg.Value *= mul;
+            minDmg.Value *= energyScale;
+        }
+        var maxDmg = clone.Attributes.FirstOrDefault(a => a.AttributeDefinition == Stats.MaximumPhysBaseDmg);
+        if (maxDmg is not null && Math.Abs(energyScale - 1.0f) > float.Epsilon)
+        {
+            maxDmg.Value *= energyScale;
         }
 
-        var maxDmg = clone.Attributes.FirstOrDefault(a => a.AttributeDefinition == Stats.MaximumPhysBaseDmg);
-        if (maxDmg is not null)
+        // Wizardry base damage (some monsters use wizardry damage)
+        var minWiz = clone.Attributes.FirstOrDefault(a => a.AttributeDefinition == Stats.MinimumWizBaseDmg);
+        if (minWiz is not null && Math.Abs(energyScale - 1.0f) > float.Epsilon)
         {
-            var mul = cfg.MaxDmgMul * energyScale;
-            if (Math.Abs(mul - 1.0f) > float.Epsilon) maxDmg.Value *= mul;
+            minWiz.Value *= energyScale;
+        }
+        var maxWiz = clone.Attributes.FirstOrDefault(a => a.AttributeDefinition == Stats.MaximumWizBaseDmg);
+        if (maxWiz is not null && Math.Abs(energyScale - 1.0f) > float.Epsilon)
+        {
+            maxWiz.Value *= energyScale;
+        }
+
+        // Curse base damage (rare cases)
+        var minCurse = clone.Attributes.FirstOrDefault(a => a.AttributeDefinition == Stats.MinimumCurseBaseDmg);
+        if (minCurse is not null && Math.Abs(energyScale - 1.0f) > float.Epsilon)
+        {
+            minCurse.Value *= energyScale;
+        }
+        var maxCurse = clone.Attributes.FirstOrDefault(a => a.AttributeDefinition == Stats.MaximumCurseBaseDmg);
+        if (maxCurse is not null && Math.Abs(energyScale - 1.0f) > float.Epsilon)
+        {
+            maxCurse.Value *= energyScale;
         }
 
         var def = clone.Attributes.FirstOrDefault(a => a.AttributeDefinition == Stats.DefenseBase);
-        if (def is not null)
+        if (def is not null && Math.Abs(energyScale - 1.0f) > float.Epsilon)
         {
-            var mul = cfg.DefMul * energyScale;
-            if (Math.Abs(mul - 1.0f) > float.Epsilon) def.Value *= mul;
+            def.Value *= energyScale;
         }
 
         cfg.Customize?.Invoke(clone);
@@ -111,11 +133,7 @@ public sealed class ElfSummonsConfigCore
     public sealed class SummonConfig
     {
         public ushort? MonsterNumber { get; set; }
-        public float HpMul { get; set; } = 1.0f;
-        public float MinDmgMul { get; set; } = 1.0f;
-        public float MaxDmgMul { get; set; } = 1.0f;
-        public float DefMul { get; set; } = 1.0f;
-        // Dynamic scaling by Energy: scale = 1 + floor(Energy / EnergyPerStep) * PercentPerStep
+        // Dynamic scaling by Energy only: scale = 1 + floor(Energy / EnergyPerStep) * PercentPerStep
         public int EnergyPerStep { get; set; } = 0; // 0 disables scaling
         public float PercentPerStep { get; set; } = 0.0f; // e.g. 0.05 for +5% per step
         public System.Action<MonsterDefinition>? Customize { get; set; }
@@ -134,11 +152,6 @@ public class ElfSummonSkillConfiguration
     [System.ComponentModel.DisplayName("Monster Number (0 = default)")]
     [System.ComponentModel.DataAnnotations.Range(0, 65535)]
     public int MonsterNumber { get; set; } = 0;
-
-    public float HpMul { get; set; } = 1.0f;
-    public float MinDmgMul { get; set; } = 1.0f;
-    public float MaxDmgMul { get; set; } = 1.0f;
-    public float DefMul { get; set; } = 1.0f;
     // Dynamic scaling by Energy: scale = 1 + floor(Energy / EnergyPerStep) * PercentPerStep
     public int EnergyPerStep { get; set; } = 0; // 0 = disabled
     public float PercentPerStep { get; set; } = 0.0f; // e.g. 0.05 for +5% per 1000 energy
@@ -185,10 +198,6 @@ public abstract class ElfSummonCfgBase :
                 entry.MonsterNumber = clamped;
             }
 
-            entry.HpMul    = value.HpMul;
-            entry.MinDmgMul = value.MinDmgMul;
-            entry.MaxDmgMul = value.MaxDmgMul;
-            entry.DefMul    = value.DefMul;
             entry.EnergyPerStep = value.EnergyPerStep;
             entry.PercentPerStep = value.PercentPerStep;
         }
@@ -200,10 +209,6 @@ public abstract class ElfSummonCfgBase :
         return new ElfSummonSkillConfiguration
         {
             MonsterNumber = entry.MonsterNumber.HasValue ? entry.MonsterNumber.Value : 0,
-            HpMul = entry.HpMul,
-            MinDmgMul = entry.MinDmgMul,
-            MaxDmgMul = entry.MaxDmgMul,
-            DefMul = entry.DefMul,
             EnergyPerStep = entry.EnergyPerStep,
             PercentPerStep = entry.PercentPerStep,
         };
