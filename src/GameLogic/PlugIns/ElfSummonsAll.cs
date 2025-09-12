@@ -71,28 +71,37 @@ public sealed class ElfSummonsConfigCore
 
         var clone = baseDef.Clone(player.GameContext.Configuration);
 
+        // Dynamic scaling by summoners TotalEnergy: scale = 1 + floor(Energy / EnergyPerStep) * PercentPerStep
+        var energy = player.Attributes?[Stats.TotalEnergy] ?? 0;
+        var steps = cfg.EnergyPerStep > 0 ? (int)(energy / cfg.EnergyPerStep) : 0;
+        var energyScale = 1.0f + Math.Max(0, steps) * Math.Max(0, cfg.PercentPerStep);
+
         var hp = clone.Attributes.FirstOrDefault(a => a.AttributeDefinition == Stats.MaximumHealth);
-        if (hp is not null && Math.Abs(cfg.HpMul - 1.0f) > float.Epsilon)
+        if (hp is not null)
         {
-            hp.Value *= cfg.HpMul;
+            var mul = cfg.HpMul * energyScale;
+            if (Math.Abs(mul - 1.0f) > float.Epsilon) hp.Value *= mul;
         }
 
         var minDmg = clone.Attributes.FirstOrDefault(a => a.AttributeDefinition == Stats.MinimumPhysBaseDmg);
-        if (minDmg is not null && Math.Abs(cfg.MinDmgMul - 1.0f) > float.Epsilon)
+        if (minDmg is not null)
         {
-            minDmg.Value *= cfg.MinDmgMul;
+            var mul = cfg.MinDmgMul * energyScale;
+            if (Math.Abs(mul - 1.0f) > float.Epsilon) minDmg.Value *= mul;
         }
 
         var maxDmg = clone.Attributes.FirstOrDefault(a => a.AttributeDefinition == Stats.MaximumPhysBaseDmg);
-        if (maxDmg is not null && Math.Abs(cfg.MaxDmgMul - 1.0f) > float.Epsilon)
+        if (maxDmg is not null)
         {
-            maxDmg.Value *= cfg.MaxDmgMul;
+            var mul = cfg.MaxDmgMul * energyScale;
+            if (Math.Abs(mul - 1.0f) > float.Epsilon) maxDmg.Value *= mul;
         }
 
         var def = clone.Attributes.FirstOrDefault(a => a.AttributeDefinition == Stats.DefenseBase);
-        if (def is not null && Math.Abs(cfg.DefMul - 1.0f) > float.Epsilon)
+        if (def is not null)
         {
-            def.Value *= cfg.DefMul;
+            var mul = cfg.DefMul * energyScale;
+            if (Math.Abs(mul - 1.0f) > float.Epsilon) def.Value *= mul;
         }
 
         cfg.Customize?.Invoke(clone);
@@ -106,6 +115,9 @@ public sealed class ElfSummonsConfigCore
         public float MinDmgMul { get; set; } = 1.0f;
         public float MaxDmgMul { get; set; } = 1.0f;
         public float DefMul { get; set; } = 1.0f;
+        // Dynamic scaling by Energy: scale = 1 + floor(Energy / EnergyPerStep) * PercentPerStep
+        public int EnergyPerStep { get; set; } = 0; // 0 disables scaling
+        public float PercentPerStep { get; set; } = 0.0f; // e.g. 0.05 for +5% per step
         public System.Action<MonsterDefinition>? Customize { get; set; }
     }
 }
@@ -127,6 +139,9 @@ public class ElfSummonSkillConfiguration
     public float MinDmgMul { get; set; } = 1.0f;
     public float MaxDmgMul { get; set; } = 1.0f;
     public float DefMul { get; set; } = 1.0f;
+    // Dynamic scaling by Energy: scale = 1 + floor(Energy / EnergyPerStep) * PercentPerStep
+    public int EnergyPerStep { get; set; } = 0; // 0 = disabled
+    public float PercentPerStep { get; set; } = 0.0f; // e.g. 0.05 for +5% per 1000 energy
 }
 
 
@@ -174,6 +189,8 @@ public abstract class ElfSummonCfgBase :
             entry.MinDmgMul = value.MinDmgMul;
             entry.MaxDmgMul = value.MaxDmgMul;
             entry.DefMul    = value.DefMul;
+            entry.EnergyPerStep = value.EnergyPerStep;
+            entry.PercentPerStep = value.PercentPerStep;
         }
     }
 
@@ -187,11 +204,34 @@ public abstract class ElfSummonCfgBase :
             MinDmgMul = entry.MinDmgMul,
             MaxDmgMul = entry.MaxDmgMul,
             DefMul = entry.DefMul,
+            EnergyPerStep = entry.EnergyPerStep,
+            PercentPerStep = entry.PercentPerStep,
         };
     }
 
     public MonsterDefinition? CreateSummonMonsterDefinition(Player player, Skill skill, MonsterDefinition? defaultDefinition)
-        => ElfSummonsConfigCore.Instance.Resolve(player, skill, defaultDefinition);
+    {
+        // Best-effort: Pull latest configuration directly from GameConfiguration in case change events didn't arrive (e.g. separate process/container lifecycle).
+        try
+        {
+            var typeId = this.GetType().GUID;
+            var plugInConfig = player.GameContext.Configuration.PlugInConfigurations.FirstOrDefault(c => c.TypeId == typeId);
+            if (plugInConfig is not null)
+            {
+                var latest = plugInConfig.GetConfiguration<ElfSummonSkillConfiguration>(player.GameContext.PlugInManager.CustomConfigReferenceHandler);
+                if (latest is not null)
+                {
+                    this.Configuration = latest; // updates core map
+                }
+            }
+        }
+        catch
+        {
+            // ignore
+        }
+
+        return ElfSummonsConfigCore.Instance.Resolve(player, skill, defaultDefinition);
+    }
 }
 
 #endregion

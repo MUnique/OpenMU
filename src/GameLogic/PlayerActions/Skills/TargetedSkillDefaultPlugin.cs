@@ -162,6 +162,18 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
     {
         if (skill.Target == SkillTarget.ImplicitPlayer)
         {
+            // Include own summon for buffs/regeneration
+            if (skill.SkillType is SkillType.Buff or SkillType.Regeneration)
+            {
+                var list = new List<IAttackable> { player };
+                var summon = player.Summon?.Item1;
+                if (summon is { IsAlive: true })
+                {
+                    list.Add(summon);
+                }
+                return list;
+            }
+
             return player.GetAsEnumerable();
         }
 
@@ -169,7 +181,41 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
         {
             if (player.Party != null)
             {
+                if (skill.SkillType is SkillType.Buff or SkillType.Regeneration)
+                {
+                    var result = new List<IAttackable>();
+                    foreach (var member in player.Party.PartyList.OfType<Player>())
+                    {
+                        if (player.Observers.Contains(member))
+                        {
+                            result.Add(member);
+                        }
+
+                        var memberSummon = member.Summon?.Item1;
+                        if (memberSummon is { IsAlive: true })
+                        {
+                            result.Add(memberSummon);
+                        }
+                    }
+
+                    if (result.Count > 0)
+                    {
+                        return result;
+                    }
+                }
+
                 return player.Party.PartyList.OfType<IAttackable>().Where(p => player.Observers.Contains((IWorldObserver)p));
+            }
+
+            if (skill.SkillType is SkillType.Buff or SkillType.Regeneration)
+            {
+                var list = new List<IAttackable> { player };
+                var summon = player.Summon?.Item1;
+                if (summon is { IsAlive: true })
+                {
+                    list.Add(summon);
+                }
+                return list;
             }
 
             return player.GetAsEnumerable();
