@@ -355,6 +355,28 @@ internal sealed class Program : IDisposable
         var typesWithCustomConfig = pluginManager.KnownPlugInTypes.Where(t => t.GetInterfaces().Contains(typeof(ISupportDefaultCustomConfiguration))).ToDictionary(t => t.GUID, t => t);
 
         using var notificationSuspension = context.SuspendChangeNotifications();
+
+        // 1) Remove configurations with unknown plugin type ids (e.g., leftovers from previous builds)
+        var knownTypeIds = new HashSet<Guid>(pluginManager.KnownPlugInTypes.Select(t => t.GUID));
+        var unknownConfigs = configs.Where(c => !knownTypeIds.Contains(c.TypeId)).ToList();
+        if (unknownConfigs.Count > 0)
+        {
+            foreach (var uc in unknownConfigs)
+            {
+                try
+                {
+                    _ = context.DeleteAsync(uc).AsTask().WaitAndUnwrapException();
+                }
+                catch (Exception ex)
+                {
+                    this._logger.Warning(ex, "Failed to delete unknown plug-in configuration with TypeId {typeId}", uc.TypeId);
+                }
+            }
+
+            // Update local list to reflect deletions
+            configs = configs.Except(unknownConfigs).ToList();
+            _ = context.SaveChangesAsync().AsTask().WaitAndUnwrapException();
+        }
         var typesWithMissingCustomConfigs = configs.Where(c => string.IsNullOrWhiteSpace(c.CustomConfiguration) && typesWithCustomConfig.ContainsKey(c.TypeId)).ToList();
         if (typesWithMissingCustomConfigs.Any())
         {

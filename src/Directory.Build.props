@@ -12,9 +12,17 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
         </PackageReference>
         
-    </ItemGroup>
+</ItemGroup>
 
-    <Choose>
+    <!-- Reduce analyzer noise and build time in Release builds -->
+    <PropertyGroup Condition="'$(Configuration)'=='Release'">
+        <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
+        <RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
+        <!-- Hide noisy non-critical warnings in Release to speed up and declutter logs -->
+        <NoWarn>$(NoWarn);CS1591;CS0162;CS0168;CS1711;CS1723;CS1696;CS0067</NoWarn>
+    </PropertyGroup>
+
+  <Choose>
         <When Condition="Exists('../SharedAssemblyInfo.cs')">
             <ItemGroup>
                 <Compile Include="..\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
