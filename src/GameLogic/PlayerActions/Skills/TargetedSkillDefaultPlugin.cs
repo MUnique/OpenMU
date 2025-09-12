@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 
 using System.Runtime.InteropServices;
+using System.Reflection;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlugIns;
@@ -139,6 +140,9 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
             var monsterDefinition = summonPlugin?.CreateSummonMonsterDefinition(player, skill, defaultDefinition)
                                     ?? defaultDefinition;
 
+            // Apply energy scaling as a fallback (and in addition), so it works even if the plugin is not activated
+            monsterDefinition = this.CloneAndScaleSummonDefinition(player, monsterDefinition, skill.Number);
+
             if (monsterDefinition is not null)
             {
                 await player.CreateSummonedMonsterAsync(monsterDefinition).ConfigureAwait(false);
@@ -149,6 +153,109 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
             effectApplied = await this.ApplySkillAsync(player, target, skillEntry!).ConfigureAwait(false);
         }
         await player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowSkillAnimationAsync(player, target, skill, effectApplied), true).ConfigureAwait(false);
+    }
+
+    private MonsterDefinition? CloneAndScaleSummonDefinition(Player player, MonsterDefinition? baseDefinition, short skillNumber)
+    {
+        if (baseDefinition is null)
+        {
+            return null;
+        }
+
+        var clone = baseDefinition.Clone(player.GameContext.Configuration);
+
+        // Read energy scaling settings from plugin configuration, even if plugin is inactive.
+        // Defaults if not configured.
+        int energyPerStep = 1000;
+        float percentPerStep = 0.05f;
+
+        try
+        {
+            var type = AppDomain.CurrentDomain
+                .GetAssemblies()
+                .SelectMany(a => a.DefinedTypes)
+                .FirstOrDefault(t => typeof(ISummonConfigurationPlugIn).IsAssignableFrom(t)
+                                     && !t.IsAbstract && !t.IsInterface
+                                     && this.TryGetSummonKey(t) == skillNumber);
+
+            var typeId = type?.GUID;
+            var plugInConfig = typeId is null ? null : player.GameContext.Configuration.PlugInConfigurations.FirstOrDefault(c => c.TypeId == typeId.Value);
+            if (plugInConfig is not null)
+            {
+                var parsed = plugInConfig.GetConfiguration<MUnique.OpenMU.GameLogic.PlugIns.ElfSummonSkillConfiguration>(player.GameContext.PlugInManager.CustomConfigReferenceHandler);
+                if (parsed is not null)
+                {
+                    if (parsed.EnergyPerStep > 0)
+                    {
+                        energyPerStep = parsed.EnergyPerStep;
+                    }
+
+                    if (parsed.PercentPerStep > 0)
+                    {
+                        percentPerStep = parsed.PercentPerStep;
+                    }
+                }
+            }
+        }
+        catch
+        {
+            // ignore and use defaults
+        }
+
+        var energy = player.Attributes?[Stats.TotalEnergy] ?? 0;
+        var steps = energyPerStep > 0 ? (int)(energy / energyPerStep) : 0;
+        var energyScale = 1.0f + Math.Max(0, steps) * Math.Max(0, percentPerStep);
+
+        if (Math.Abs(energyScale - 1.0f) < float.Epsilon)
+        {
+            return clone; // nothing to scale
+        }
+
+        void Scale(MUnique.OpenMU.AttributeSystem.AttributeDefinition stat)
+        {
+            var attr = clone.Attributes.FirstOrDefault(a => a.AttributeDefinition == stat);
+            if (attr is not null)
+            {
+                attr.Value *= energyScale;
+            }
+        }
+
+        // HP
+        Scale(Stats.MaximumHealth);
+        // Defense base
+        Scale(Stats.DefenseBase);
+        // Damage bases
+        Scale(Stats.MinimumPhysBaseDmg);
+        Scale(Stats.MaximumPhysBaseDmg);
+        Scale(Stats.MinimumWizBaseDmg);
+        Scale(Stats.MaximumWizBaseDmg);
+        Scale(Stats.MinimumCurseBaseDmg);
+        Scale(Stats.MaximumCurseBaseDmg);
+        // Rates to reduce MISS and improve survivability
+        Scale(Stats.AttackRatePvm);
+        Scale(Stats.DefenseRatePvm);
+        Scale(Stats.DefenseRatePvp);
+
+        return clone;
+    }
+
+    private short TryGetSummonKey(Type pluginType)
+    {
+        try
+        {
+            var instance = Activator.CreateInstance(pluginType);
+            var prop = pluginType.GetProperty("Key", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            if (prop?.GetValue(instance) is short k)
+            {
+                return k;
+            }
+        }
+        catch
+        {
+            // ignore
+        }
+
+        return short.MinValue;
     }
 
     /// <summary>

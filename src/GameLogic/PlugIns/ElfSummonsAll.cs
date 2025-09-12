@@ -69,80 +69,9 @@ public sealed class ElfSummonsConfigCore
             return null;
         }
 
+        // Only pick/clone the base monster definition here. Energy scaling is centralized
+        // in TargetedSkillDefaultPlugin so it applies even when this plug-in is inactive.
         var clone = baseDef.Clone(player.GameContext.Configuration);
-
-        // Dynamic scaling by summoners TotalEnergy only:
-        // scale = 1 + floor(Energy / EnergyPerStep) * PercentPerStep
-        var energy = player.Attributes?[Stats.TotalEnergy] ?? 0;
-        var steps = cfg.EnergyPerStep > 0 ? (int)(energy / cfg.EnergyPerStep) : 0;
-        var energyScale = 1.0f + Math.Max(0, steps) * Math.Max(0, cfg.PercentPerStep);
-
-        // Apply scaling to base stats of the chosen monster
-        var hp = clone.Attributes.FirstOrDefault(a => a.AttributeDefinition == Stats.MaximumHealth);
-        if (hp is not null && Math.Abs(energyScale - 1.0f) > float.Epsilon)
-        {
-            hp.Value *= energyScale;
-        }
-
-        // Physical base damage
-        var minDmg = clone.Attributes.FirstOrDefault(a => a.AttributeDefinition == Stats.MinimumPhysBaseDmg);
-        if (minDmg is not null && Math.Abs(energyScale - 1.0f) > float.Epsilon)
-        {
-            minDmg.Value *= energyScale;
-        }
-        var maxDmg = clone.Attributes.FirstOrDefault(a => a.AttributeDefinition == Stats.MaximumPhysBaseDmg);
-        if (maxDmg is not null && Math.Abs(energyScale - 1.0f) > float.Epsilon)
-        {
-            maxDmg.Value *= energyScale;
-        }
-
-        // Wizardry base damage (some monsters use wizardry damage)
-        var minWiz = clone.Attributes.FirstOrDefault(a => a.AttributeDefinition == Stats.MinimumWizBaseDmg);
-        if (minWiz is not null && Math.Abs(energyScale - 1.0f) > float.Epsilon)
-        {
-            minWiz.Value *= energyScale;
-        }
-        var maxWiz = clone.Attributes.FirstOrDefault(a => a.AttributeDefinition == Stats.MaximumWizBaseDmg);
-        if (maxWiz is not null && Math.Abs(energyScale - 1.0f) > float.Epsilon)
-        {
-            maxWiz.Value *= energyScale;
-        }
-
-        // Curse base damage (rare cases)
-        var minCurse = clone.Attributes.FirstOrDefault(a => a.AttributeDefinition == Stats.MinimumCurseBaseDmg);
-        if (minCurse is not null && Math.Abs(energyScale - 1.0f) > float.Epsilon)
-        {
-            minCurse.Value *= energyScale;
-        }
-        var maxCurse = clone.Attributes.FirstOrDefault(a => a.AttributeDefinition == Stats.MaximumCurseBaseDmg);
-        if (maxCurse is not null && Math.Abs(energyScale - 1.0f) > float.Epsilon)
-        {
-            maxCurse.Value *= energyScale;
-        }
-
-        var def = clone.Attributes.FirstOrDefault(a => a.AttributeDefinition == Stats.DefenseBase);
-        if (def is not null && Math.Abs(energyScale - 1.0f) > float.Epsilon)
-        {
-            def.Value *= energyScale;
-        }
-
-        // Attack/Defense rate scaling for better hit chance and survivability
-        var atkRate = clone.Attributes.FirstOrDefault(a => a.AttributeDefinition == Stats.AttackRatePvm);
-        if (atkRate is not null && Math.Abs(energyScale - 1.0f) > float.Epsilon)
-        {
-            atkRate.Value *= energyScale;
-        }
-        var defRatePvm = clone.Attributes.FirstOrDefault(a => a.AttributeDefinition == Stats.DefenseRatePvm);
-        if (defRatePvm is not null && Math.Abs(energyScale - 1.0f) > float.Epsilon)
-        {
-            defRatePvm.Value *= energyScale;
-        }
-        var defRatePvp = clone.Attributes.FirstOrDefault(a => a.AttributeDefinition == Stats.DefenseRatePvp);
-        if (defRatePvp is not null && Math.Abs(energyScale - 1.0f) > float.Epsilon)
-        {
-            defRatePvp.Value *= energyScale;
-        }
-
         cfg.Customize?.Invoke(clone);
         return clone;
     }
