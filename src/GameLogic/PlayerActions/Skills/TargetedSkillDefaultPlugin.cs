@@ -247,6 +247,15 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
         if (SummonDiagEnabled)
         {
             player.Logger.LogInformation($"[SUMMON] Energy={energy}, steps={steps}, energyPerStep={energyPerStep}, percentPerStep={percentPerStep}, scale={energyScale:0.###}");
+            try
+            {
+                var count = clone.Attributes?.Count ?? 0;
+                var present = clone.Attributes?.Select(a => a.AttributeDefinition?.Designation ?? a.AttributeDefinition?.Id.ToString() ?? "<null>")
+                    .Take(10).ToArray() ?? Array.Empty<string>();
+                player.Logger.LogInformation($"[SUMMON] AttrCount={count}, sample=[{string.Join(", ", present)}]");
+                player.Logger.LogInformation($"[SUMMON] StatIds: MaxHP={Stats.MaximumHealth.Id}, DefBase={Stats.DefenseBase.Id}, PhysMin={Stats.MinimumPhysBaseDmg.Id}, PhysMax={Stats.MaximumPhysBaseDmg.Id}");
+            }
+            catch { }
         }
 
         if (Math.Abs(energyScale - 1.0f) < float.Epsilon)
@@ -256,13 +265,13 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
 
         float GetValue(MUnique.OpenMU.AttributeSystem.AttributeDefinition stat)
         {
-            var attr = clone.Attributes.FirstOrDefault(a => a.AttributeDefinition == stat);
+            var attr = clone.Attributes?.FirstOrDefault(a => a.AttributeDefinition == stat);
             return attr?.Value ?? 0;
         }
 
         void Scale(MUnique.OpenMU.AttributeSystem.AttributeDefinition stat)
         {
-            var attr = clone.Attributes.FirstOrDefault(a => a.AttributeDefinition == stat);
+            var attr = clone.Attributes?.FirstOrDefault(a => a.AttributeDefinition == stat);
             if (attr is not null)
             {
                 attr.Value *= energyScale;
