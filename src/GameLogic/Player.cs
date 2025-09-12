@@ -1008,6 +1008,15 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.EnteredWorld).ConfigureAwait(false);
             this.IsAlive = true;
             await this.CurrentMap!.AddAsync(this).ConfigureAwait(false);
+
+            // Ensure summon is re-created on the current map as well.
+            if (this.Summon?.Item1 is { IsAlive: true } summon)
+            {
+                var definition = summon.Definition;
+                await summon.DisposeAsync().ConfigureAwait(false);
+                this.Summon = null;
+                await this.CreateSummonedMonsterAsync(definition).ConfigureAwait(false);
+            }
         }
         else
         {
@@ -1053,8 +1062,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         if (this.Summon?.Item1 is { IsAlive: true } summon)
         {
-            await this.CurrentMap.AddAsync(summon).ConfigureAwait(false);
-            summon.OnSpawn();
+            // Recreate the summon on the new map to keep internal map references consistent.
+            // The existing summon instance still references the old map in its immutable CurrentMap property.
+            var definition = summon.Definition;
+            await summon.DisposeAsync().ConfigureAwait(false);
+            this.Summon = null;
+            await this.CreateSummonedMonsterAsync(definition).ConfigureAwait(false);
         }
     }
 

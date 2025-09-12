@@ -203,8 +203,8 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
         }
 
         var energy = player.Attributes?[Stats.TotalEnergy] ?? 0;
-        var steps = energyPerStep > 0 ? (int)(energy / energyPerStep) : 0;
-        var energyScale = 1.0f + Math.Max(0, steps) * Math.Max(0, percentPerStep);
+        var ratio = energyPerStep > 0 ? (float)(energy / (float)energyPerStep) : 0f;
+        var energyScale = 1.0f + Math.Max(0f, ratio) * Math.Max(0, percentPerStep);
 
         if (Math.Abs(energyScale - 1.0f) < float.Epsilon)
         {
