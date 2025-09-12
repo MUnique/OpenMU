@@ -10,4 +10,6 @@ services:
       dockerfile: Startup/Dockerfile
     pull_policy: never
     restart: "no"
-
+    environment:
+      # Enable detailed summon diagnostics in server logs
+      SUMMON_DIAG: "true"

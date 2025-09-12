@@ -20,6 +20,10 @@ using MUnique.OpenMU.DataModel.Configuration;
 [Guid("eb2949fb-5ed2-407e-a4e8-e3015ed5692b")]
 public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
 {
+    private static readonly bool SummonDiagEnabled =
+        string.Equals(Environment.GetEnvironmentVariable("SUMMON_DIAG"), "1", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(Environment.GetEnvironmentVariable("SUMMON_DIAG"), "true", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(Environment.GetEnvironmentVariable("SUMMON_DIAG"), "yes", StringComparison.OrdinalIgnoreCase);
     private static readonly Dictionary<short, short> SummonSkillToMonsterMapping = new()
     {
         { 30, 26 }, // Goblin
@@ -152,6 +156,10 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
                     if (customDef is { })
                     {
                         baseDefinition = customDef;
+                        if (SummonDiagEnabled)
+                        {
+                            player.Logger.LogInformation($"[SUMMON] Override MonsterNumber by config for skill {skill.Number}: {customDef.Designation} ({customDef.Number})");
+                        }
                     }
                 }
             }
@@ -172,6 +180,10 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
 
             if (monsterDefinition is not null)
             {
+                if (SummonDiagEnabled)
+                {
+                    player.Logger.LogInformation($"[SUMMON] Creating summon for skill {skill.Number}: {monsterDefinition.Designation} ({monsterDefinition.Number})");
+                }
                 await player.CreateSummonedMonsterAsync(monsterDefinition).ConfigureAwait(false);
             }
         }
@@ -232,10 +244,20 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
         var energy = player.Attributes?[Stats.TotalEnergy] ?? 0;
         var steps = energyPerStep > 0 ? (int)(energy / energyPerStep) : 0;
         var energyScale = 1.0f + Math.Max(0, steps) * Math.Max(0, percentPerStep);
+        if (SummonDiagEnabled)
+        {
+            player.Logger.LogInformation($"[SUMMON] Energy={energy}, steps={steps}, energyPerStep={energyPerStep}, percentPerStep={percentPerStep}, scale={energyScale:0.###}");
+        }
 
         if (Math.Abs(energyScale - 1.0f) < float.Epsilon)
         {
             return clone; // nothing to scale
+        }
+
+        float GetValue(MUnique.OpenMU.AttributeSystem.AttributeDefinition stat)
+        {
+            var attr = clone.Attributes.FirstOrDefault(a => a.AttributeDefinition == stat);
+            return attr?.Value ?? 0;
         }
 
         void Scale(MUnique.OpenMU.AttributeSystem.AttributeDefinition stat)
@@ -262,6 +284,16 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
         Scale(Stats.AttackRatePvm);
         Scale(Stats.DefenseRatePvm);
         Scale(Stats.DefenseRatePvp);
+
+        if (SummonDiagEnabled)
+        {
+            player.Logger.LogInformation(
+                $"[SUMMON] Stats after scale: HP={GetValue(Stats.MaximumHealth):0}, DefBase={GetValue(Stats.DefenseBase):0}, " +
+                $"PhysMin/Max={GetValue(Stats.MinimumPhysBaseDmg):0}/{GetValue(Stats.MaximumPhysBaseDmg):0}, " +
+                $"WizMin/Max={GetValue(Stats.MinimumWizBaseDmg):0}/{GetValue(Stats.MaximumWizBaseDmg):0}, " +
+                $"CurseMin/Max={GetValue(Stats.MinimumCurseBaseDmg):0}/{GetValue(Stats.MaximumCurseBaseDmg):0}, " +
+                $"AtkRatePvM={GetValue(Stats.AttackRatePvm):0}, DefRatePvM={GetValue(Stats.DefenseRatePvm):0}, DefRatePvP={GetValue(Stats.DefenseRatePvp):0}");
+        }
 
         return clone;
     }

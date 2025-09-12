@@ -1607,6 +1607,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         if (!found && terrain.SafezoneMap[this.Position.X, this.Position.Y])
         {
             // Can't summon in safezone; silently abort.
+            this.Logger.LogInformation("[SUMMON] Abort: Player in safezone, no valid spawn tile for summon.");
             return;
         }
 
@@ -1622,6 +1623,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         {
             area.X1 = area.X2 = spawnPoint.X;
             area.Y1 = area.Y2 = spawnPoint.Y;
+            this.Logger.LogInformation($"[SUMMON] Spawning at {spawnPoint.X},{spawnPoint.Y} on map {gameMap.Definition.Number}");
         }
         else
         {
@@ -1630,6 +1632,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             area.X2 = (byte)Math.Min(this.Position.X + 3, byte.MaxValue);
             area.Y1 = (byte)Math.Max(this.Position.Y - 3, byte.MinValue);
             area.Y2 = (byte)Math.Min(this.Position.Y + 3, byte.MaxValue);
+            this.Logger.LogInformation($"[SUMMON] Using fallback area around player: X[{area.X1}-{area.X2}] Y[{area.Y1}-{area.Y2}] on map {gameMap.Definition.Number}");
         }
         var intelligence = new SummonedMonsterIntelligence(this);
         var monster = new Monster(area, definition, gameMap, NullDropGenerator.Instance, intelligence, this.GameContext.PlugInManager, this.GameContext.PathFinderPool);
