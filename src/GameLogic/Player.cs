@@ -1585,17 +1585,44 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             throw new InvalidOperationException("Can't add a summon for a player which isn't spawned yet.");
         }
 
+        // Find a valid spawn point close to the player (walkable and outside safezone).
+        Point spawnPoint = this.Position;
+        var terrain = gameMap.Terrain;
+        bool found = false;
+        for (var radius = 1; radius <= 5 && !found; radius++)
+        {
+            for (var attempts = 0; attempts < 12 && !found; attempts++)
+            {
+                var p = terrain.GetRandomCoordinate(this.Position, (byte)radius);
+                if (terrain.WalkMap[p.X, p.Y] && !terrain.SafezoneMap[p.X, p.Y])
+                {
+                    spawnPoint = p;
+                    found = true;
+                }
+            }
+        }
+
         var area = new MonsterSpawnArea
         {
             GameMap = gameMap.Definition,
             MonsterDefinition = definition,
             SpawnTrigger = SpawnTrigger.OnceAtEventStart,
             Quantity = 1,
-            X1 = (byte)Math.Max(this.Position.X - 3, byte.MinValue),
-            X2 = (byte)Math.Min(this.Position.X + 3, byte.MaxValue),
-            Y1 = (byte)Math.Max(this.Position.Y - 3, byte.MinValue),
-            Y2 = (byte)Math.Min(this.Position.Y + 3, byte.MaxValue),
         };
+
+        if (found)
+        {
+            area.X1 = area.X2 = spawnPoint.X;
+            area.Y1 = area.Y2 = spawnPoint.Y;
+        }
+        else
+        {
+            // Fallback: small area around player; may fail in safezone but it's the best effort.
+            area.X1 = (byte)Math.Max(this.Position.X - 3, byte.MinValue);
+            area.X2 = (byte)Math.Min(this.Position.X + 3, byte.MaxValue);
+            area.Y1 = (byte)Math.Max(this.Position.Y - 3, byte.MinValue);
+            area.Y2 = (byte)Math.Min(this.Position.Y + 3, byte.MaxValue);
+        }
         var intelligence = new SummonedMonsterIntelligence(this);
         var monster = new Monster(area, definition, gameMap, NullDropGenerator.Instance, intelligence, this.GameContext.PlugInManager, this.GameContext.PathFinderPool);
         area.MaximumHealthOverride = (int)monster.Attributes[Stats.MaximumHealth];

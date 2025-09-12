@@ -126,19 +126,46 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
         var effectApplied = false;
         if (skill.SkillType == SkillType.SummonMonster)
         {
-            MonsterDefinition? defaultDefinition = null;
+            MonsterDefinition? baseDefinition = null;
             if (SummonSkillToMonsterMapping.TryGetValue(skill.Number, out var monsterNumber)
             && player.GameContext.Configuration.Monsters.FirstOrDefault(m => m.Number == monsterNumber) is { } mappedDefinition)
             {
-                defaultDefinition = mappedDefinition;
+                baseDefinition = mappedDefinition;
+            }
+
+            // Allow MonsterNumber override from plug-in configuration even if the plug-in is not active.
+            try
+            {
+                var type = AppDomain.CurrentDomain
+                    .GetAssemblies()
+                    .SelectMany(a => a.DefinedTypes)
+                    .FirstOrDefault(t => typeof(ISummonConfigurationPlugIn).IsAssignableFrom(t)
+                                         && !t.IsAbstract && !t.IsInterface
+                                         && this.TryGetSummonKey(t) == skill.Number);
+
+                var typeId = type?.GUID;
+                var plugInConfig = typeId is null ? null : player.GameContext.Configuration.PlugInConfigurations.FirstOrDefault(c => c.TypeId == typeId.Value);
+                var parsed = plugInConfig?.GetConfiguration<MUnique.OpenMU.GameLogic.PlugIns.ElfSummonSkillConfiguration>(player.GameContext.PlugInManager.CustomConfigReferenceHandler);
+                if (parsed is { MonsterNumber: > 0 })
+                {
+                    var customDef = player.GameContext.Configuration.Monsters.FirstOrDefault(m => m.Number == (short)parsed.MonsterNumber);
+                    if (customDef is { })
+                    {
+                        baseDefinition = customDef;
+                    }
+                }
+            }
+            catch
+            {
+                // ignore - fall back to default mapping
             }
 
             // ✅ pedir el plugin “keyed” por skill.Number
             var summonPlugin = player.GameContext.PlugInManager
                 .GetStrategy<short, ISummonConfigurationPlugIn>(skill.Number);
 
-            var monsterDefinition = summonPlugin?.CreateSummonMonsterDefinition(player, skill, defaultDefinition)
-                                    ?? defaultDefinition;
+            var monsterDefinition = summonPlugin?.CreateSummonMonsterDefinition(player, skill, baseDefinition)
+                                    ?? baseDefinition;
 
             // Apply energy scaling as a fallback (and in addition), so it works even if the plugin is not activated
             monsterDefinition = this.CloneAndScaleSummonDefinition(player, monsterDefinition, skill.Number);
