@@ -1008,15 +1008,15 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.EnteredWorld).ConfigureAwait(false);
             this.IsAlive = true;
             await this.CurrentMap!.AddAsync(this).ConfigureAwait(false);
-
-            // Ensure summon is re-created on the current map as well.
-            if (this.Summon?.Item1 is { IsAlive: true } summon)
+            if (!this.CurrentMap.Terrain.SafezoneMap[this.SelectedCharacter.PositionX, this.SelectedCharacter.PositionY]
+                && this.Summon?.Item1 is { IsAlive: true } summon)
             {
                 var definition = summon.Definition;
                 await summon.DisposeAsync().ConfigureAwait(false);
                 this.Summon = null;
                 await this.CreateSummonedMonsterAsync(definition).ConfigureAwait(false);
             }
+
         }
         else
         {
@@ -1060,7 +1060,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             await this.WarpToSafezoneAsync().ConfigureAwait(false);
         }
 
-        if (this.Summon?.Item1 is { IsAlive: true } summon)
+        // Recreate summon only if not in safezone; otherwise skip until player leaves safezone.
+        if (!this.CurrentMap.Terrain.SafezoneMap[this.SelectedCharacter.PositionX, this.SelectedCharacter.PositionY]
+            && this.Summon?.Item1 is { IsAlive: true } summon)
         {
             // Recreate the summon on the new map to keep internal map references consistent.
             // The existing summon instance still references the old map in its immutable CurrentMap property.
@@ -1600,6 +1602,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                     found = true;
                 }
             }
+        }
+
+        if (!found && terrain.SafezoneMap[this.Position.X, this.Position.Y])
+        {
+            // Can't summon in safezone; silently abort.
+            return;
         }
 
         var area = new MonsterSpawnArea
