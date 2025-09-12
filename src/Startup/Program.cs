@@ -37,6 +37,7 @@ using MUnique.OpenMU.Web.Map.Map;
 using Nito.AsyncEx.Synchronous;
 using Serilog;
 using Serilog.Debugging;
+using MUnique.OpenMU.Startup.Logging;
 
 /// <summary>
 /// The startup class for an all-in-one game server.
@@ -65,8 +66,13 @@ internal sealed class Program : IDisposable
             .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", true, true)
             .Build();
 
+        var buffer = new InMemoryLogBuffer();
+        // Store buffer in a static service container by registering into DI later
+        ConsoleLog.Buffer = buffer;
+
         this._logger = new LoggerConfiguration()
             .ReadFrom.Configuration(configuration)
+            .WriteTo.Sink(new InMemorySerilogSink(buffer))
             .CreateLogger();
     }
 
@@ -242,7 +248,9 @@ internal sealed class Program : IDisposable
             builder.AddAdminPanel(includeMapApp: true);
         }
 
-        builder.Services.AddSingleton(this._servers)
+        builder.Services
+            .AddSingleton(ConsoleLog.Buffer)
+            .AddSingleton(this._servers)
             .AddSingleton<IConfigurationChangePublisher, ConfigurationChangeHandler>()
             .AddSingleton<IConfigurationChangeListener, ConfigurationChangeListener>()
             .AddSingleton<ConfigurationChangeMediator>()
@@ -296,6 +304,9 @@ internal sealed class Program : IDisposable
             .AddControllers().AddApplicationPart(typeof(ServerController).Assembly);
 
         var host = builder.Build();
+
+        // Expose log tail endpoint (minimal api)
+        host.MapGet("/api/logs/tail", (InMemoryLogBuffer buf, int? take) => buf.Tail(take ?? 200));
 
         // NpgsqlLoggingConfiguration.InitializeLogging(host.Services.GetRequiredService<ILoggerFactory>())
         this._logger.Information("Host created");

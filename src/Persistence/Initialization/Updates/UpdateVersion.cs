@@ -236,6 +236,11 @@ public enum UpdateVersion
     FixChaosMixesSeason6 = 45,
 
     /// <summary>
+    /// The version of the <see cref="ElfSummonDefaultsUpdatePlugIn"/>.
+    /// </summary>
+    ElfSummonDefaults = 46,
+
+    /// <summary>
     /// The version of the <see cref="FixItemOptionsAndAttackSpeedPlugIn075"/>.
     /// </summary>
     FixItemOptionsAndAttackSpeed075 = 46,

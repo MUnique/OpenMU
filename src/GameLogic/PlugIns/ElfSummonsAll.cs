@@ -126,6 +126,23 @@ public sealed class ElfSummonsConfigCore
             def.Value *= energyScale;
         }
 
+        // Attack/Defense rate scaling for better hit chance and survivability
+        var atkRate = clone.Attributes.FirstOrDefault(a => a.AttributeDefinition == Stats.AttackRatePvm);
+        if (atkRate is not null && Math.Abs(energyScale - 1.0f) > float.Epsilon)
+        {
+            atkRate.Value *= energyScale;
+        }
+        var defRatePvm = clone.Attributes.FirstOrDefault(a => a.AttributeDefinition == Stats.DefenseRatePvm);
+        if (defRatePvm is not null && Math.Abs(energyScale - 1.0f) > float.Epsilon)
+        {
+            defRatePvm.Value *= energyScale;
+        }
+        var defRatePvp = clone.Attributes.FirstOrDefault(a => a.AttributeDefinition == Stats.DefenseRatePvp);
+        if (defRatePvp is not null && Math.Abs(energyScale - 1.0f) > float.Epsilon)
+        {
+            defRatePvp.Value *= energyScale;
+        }
+
         cfg.Customize?.Invoke(clone);
         return clone;
     }
@@ -134,8 +151,8 @@ public sealed class ElfSummonsConfigCore
     {
         public ushort? MonsterNumber { get; set; }
         // Dynamic scaling by Energy only: scale = 1 + floor(Energy / EnergyPerStep) * PercentPerStep
-        public int EnergyPerStep { get; set; } = 0; // 0 disables scaling
-        public float PercentPerStep { get; set; } = 0.0f; // e.g. 0.05 for +5% per step
+        public int EnergyPerStep { get; set; } = 1000; // default: per 1000 Energy
+        public float PercentPerStep { get; set; } = 0.05f; // default: +5% per step
         public System.Action<MonsterDefinition>? Customize { get; set; }
     }
 }
