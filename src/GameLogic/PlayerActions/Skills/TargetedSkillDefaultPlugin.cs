@@ -12,6 +12,7 @@ using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.PlugIns;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.Persistence;
 
 /// <summary>
 /// Action to perform a skill which is explicitly aimed to a target.
@@ -202,6 +203,33 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
         }
 
         var clone = baseDefinition.Clone(player.GameContext.Configuration);
+
+        // Fallback: If attributes are not populated, try to load them from persistence (no cache).
+        if (clone.Attributes is null || clone.Attributes.Count == 0)
+        {
+            try
+            {
+                using var ctx = player.GameContext.PersistenceContextProvider.CreateNewTypedContext(typeof(MUnique.OpenMU.DataModel.Configuration.MonsterDefinition), useCache: false);
+                var all = ctx.GetAsync<MUnique.OpenMU.DataModel.Configuration.MonsterDefinition>().AsTask().GetAwaiter().GetResult();
+                var dbDef = all.FirstOrDefault(d => d.Number == baseDefinition.Number);
+                if (dbDef?.Attributes?.Any() == true)
+                {
+                    foreach (var a in dbDef.Attributes)
+                    {
+                        clone.Attributes?.Add(new MonsterAttribute { AttributeDefinition = a.AttributeDefinition, Value = a.Value });
+                    }
+
+                    if (SummonDiagEnabled)
+                    {
+                        player.Logger.LogInformation($"[SUMMON] Fallback loaded {clone.Attributes?.Count ?? 0} attributes for monster {dbDef.Designation} ({dbDef.Number})");
+                    }
+                }
+            }
+            catch
+            {
+                // ignore - we scale what we have
+            }
+        }
 
         // Read energy scaling settings from plugin configuration, even if plugin is inactive.
         // Defaults if not configured.
