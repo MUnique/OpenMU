@@ -81,13 +81,13 @@ internal class Jewelery : Version095d.Items.Jewelery
             (Stats.EarthDamageBonus, 255, AggregateType.AddRaw),
             (Stats.WindDamageBonus, 255, AggregateType.AddRaw),
             (Stats.WaterDamageBonus, 255, AggregateType.AddRaw),
-            (Stats.IceResistance, 1, AggregateType.Maximum),
-            (Stats.PoisonResistance, 1, AggregateType.Maximum),
-            (Stats.LightningResistance, 1, AggregateType.Maximum),
-            (Stats.FireResistance, 1, AggregateType.Maximum),
-            (Stats.EarthResistance, 1, AggregateType.Maximum),
-            (Stats.WindResistance, 1, AggregateType.Maximum),
-            (Stats.WaterResistance, 1, AggregateType.Maximum));
+            (Stats.IceResistance, 255, AggregateType.Maximum),
+            (Stats.PoisonResistance, 255, AggregateType.Maximum),
+            (Stats.LightningResistance, 255, AggregateType.Maximum),
+            (Stats.FireResistance, 255, AggregateType.Maximum),
+            (Stats.EarthResistance, 255, AggregateType.Maximum),
+            (Stats.WindResistance, 255, AggregateType.Maximum),
+            (Stats.WaterResistance, 255, AggregateType.Maximum));
         this.CreateTransformationRing(68, "Snowman Transformation Ring", 10, 100, 10, CharacterTransformationSkin.Snowman);
         this.CreateTransformationRing(76, "Panda Transformation Ring", 28, 255, 0, CharacterTransformationSkin.Panda,
             (Stats.BaseDamageBonus, 30, AggregateType.AddRaw),

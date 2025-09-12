@@ -8,14 +8,13 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
-using MUnique.OpenMU.Persistence.Initialization.Items;
 
 /// <summary>
 /// Initializer for jewelery (rings and pendants).
 /// </summary>
 internal class Jewelery : InitializerBase
 {
-    private static readonly float[] ResistanceIncreaseByLevel = { 0, 0.1f, 0.2f, 0.3f, 0.4f };
+    private static readonly float[] ResistanceIncreaseByLevel = { 0, 1, 2, 3, 4 };
     private ItemOptionDefinition? _healthRecoverOptionDefinition;
     private ItemLevelBonusTable? _resistancesBonusTable;
 
@@ -36,7 +35,7 @@ internal class Jewelery : InitializerBase
     public sealed override void Initialize()
     {
         this._healthRecoverOptionDefinition = this.CreateOption("Health recover for jewelery", Stats.HealthRecoveryMultiplier, 0.01f, ItemOptionDefinitionNumbers.JeweleryHealth);
-        this._resistancesBonusTable = this.CreateItemBonusTable(ResistanceIncreaseByLevel, "Elemental resistances (Jewelery)", "Defines the elemental resistances for jewelery. It's 10 % per item level.");
+        this._resistancesBonusTable = this.CreateItemBonusTable(ResistanceIncreaseByLevel, "Elemental resistances (Jewelery)", "Defines the elemental resistances for jewelery. It's 1 per item level.");
         this.CreateItems();
     }
 
@@ -169,7 +168,7 @@ internal class Jewelery : InitializerBase
 
         if (resistanceAttribute != null)
         {
-            var powerUp = this.CreateItemBasePowerUpDefinition(resistanceAttribute, 0.1f, AggregateType.Maximum);
+            var powerUp = this.CreateItemBasePowerUpDefinition(resistanceAttribute, 1f, AggregateType.Maximum);
             powerUp.BonusPerLevelTable = this._resistancesBonusTable;
             item.BasePowerUpAttributes.Add(powerUp);
         }
