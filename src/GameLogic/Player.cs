@@ -1060,9 +1060,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             await this.WarpToSafezoneAsync().ConfigureAwait(false);
         }
 
-        // Recreate summon only if not in safezone; otherwise skip until player leaves safezone.
-        if (!this.CurrentMap.Terrain.SafezoneMap[this.SelectedCharacter.PositionX, this.SelectedCharacter.PositionY]
-            && this.Summon?.Item1 is { IsAlive: true } summon)
+        // Recreate summon on the new map to keep internal map references consistent, even in safezone.
+        if (this.Summon?.Item1 is { IsAlive: true } summon)
         {
             // Recreate the summon on the new map to keep internal map references consistent.
             // The existing summon instance still references the old map in its immutable CurrentMap property.
@@ -1587,7 +1586,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             throw new InvalidOperationException("Can't add a summon for a player which isn't spawned yet.");
         }
 
-        // Find a valid spawn point close to the player (walkable and outside safezone).
+        // Find a valid spawn point close to the player (walkable). Prefer outside safezone, but allow safezone when the owner is there.
         Point spawnPoint = this.Position;
         var terrain = gameMap.Terrain;
         bool found = false;
@@ -1596,7 +1595,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             for (var attempts = 0; attempts < 12 && !found; attempts++)
             {
                 var p = terrain.GetRandomCoordinate(this.Position, (byte)radius);
-                if (terrain.WalkMap[p.X, p.Y] && !terrain.SafezoneMap[p.X, p.Y])
+                if (terrain.WalkMap[p.X, p.Y] && (!terrain.SafezoneMap[p.X, p.Y] || terrain.SafezoneMap[this.Position.X, this.Position.Y]))
                 {
                     spawnPoint = p;
                     found = true;
@@ -1604,11 +1603,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             }
         }
 
-        if (!found && terrain.SafezoneMap[this.Position.X, this.Position.Y])
+        // If still not found, try owner's current position if walkable.
+        if (!found && terrain.WalkMap[this.Position.X, this.Position.Y])
         {
-            // Can't summon in safezone; silently abort.
-            this.Logger.LogInformation("[SUMMON] Abort: Player in safezone, no valid spawn tile for summon.");
-            return;
+            spawnPoint = this.Position;
+            found = true;
         }
 
         var area = new MonsterSpawnArea
