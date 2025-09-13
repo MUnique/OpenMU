@@ -67,6 +67,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     private Lazy<ComboStateMachine>? _comboStateLazy;
 
+    // Stores the definition of a summon which should be recreated after a map change/warp.
+    private MonsterDefinition? _pendingSummonDefinition;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Player" /> class.
     /// </summary>di
@@ -1060,15 +1063,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             await this.WarpToSafezoneAsync().ConfigureAwait(false);
         }
 
-        // Recreate summon on the new map to keep internal map references consistent, even in safezone.
-        if (this.Summon?.Item1 is { IsAlive: true } summon)
+        // Recreate summon on the new map if we had one before warping (even in safezone).
+        if (this._pendingSummonDefinition is { } pending)
         {
-            // Recreate the summon on the new map to keep internal map references consistent.
-            // The existing summon instance still references the old map in its immutable CurrentMap property.
-            var definition = summon.Definition;
-            await summon.DisposeAsync().ConfigureAwait(false);
-            this.Summon = null;
-            await this.CreateSummonedMonsterAsync(definition).ConfigureAwait(false);
+            var toSpawn = pending;
+            this._pendingSummonDefinition = null;
+            await this.CreateSummonedMonsterAsync(toSpawn).ConfigureAwait(false);
         }
     }
 
@@ -1847,6 +1847,13 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return false;
         }
 
+        // If we have a summon, remove it cleanly and remember its definition to recreate later after the map change.
+        if (this.Summon?.Item1 is { IsAlive: true } summonBeforeWarp)
+        {
+            this._pendingSummonDefinition = summonBeforeWarp.Definition;
+            await this.RemoveSummonAsync().ConfigureAwait(false);
+        }
+
         if (willRespawnOnSameMap)
         {
             await currentMap.InitRespawnAsync(this).ConfigureAwait(false);
@@ -1860,10 +1867,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.IsTeleporting = false;
         await this._walker.StopAsync().ConfigureAwait(false);
         await this._observerToWorldViewAdapter.ClearObservingObjectsListAsync().ConfigureAwait(false);
-        if (this.Summon?.Item1 is { IsAlive: true } summon)
-        {
-            await currentMap.RemoveAsync(summon).ConfigureAwait(false);
-        }
+        // Summon (if any) was removed earlier and stored for re-creation.
 
         return true;
     }

@@ -588,7 +588,12 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
         {
             if (skill.SkillType == SkillType.DirectHit || skill.SkillType == SkillType.CastleSiegeSkill)
             {
-                // Allow attacking own summons intentionally (e.g. with CTRL). Aggro against owner is blocked in SummonedMonsterIntelligence.
+                // Block direct hits against own summon (client requires CTRL to send such an action for "basic"),
+                // keeping classic behavior. Aggro against owner is blocked in SummonedMonsterIntelligence anyway.
+                if (target is Monster { SummonedBy: { } owner } && owner == player)
+                {
+                    continue;
+                }
 
                 if (player.Attributes![Stats.AmmunitionConsumptionRate] > player.Attributes[Stats.AmmunitionAmount])
                 {

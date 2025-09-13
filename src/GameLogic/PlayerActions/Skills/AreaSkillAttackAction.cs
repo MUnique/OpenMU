@@ -219,7 +219,8 @@ public class AreaSkillAttackAction
                     .Where(a => !a.IsAtSafezone())
             ?? [];
 
-        // Allow area skills to hit own summoned monsters; their AI ignores aggro from the owner.
+        // Don't hit own summoned monsters with area skills (classic behavior; requires CTRL on direct hit only).
+        targetsInRange = targetsInRange.Where(a => a is not Monster { SummonedBy: { } owner } || owner != player);
 
         if (skill.AreaSkillSettings is { UseFrustumFilter: true } areaSkillSettings)
         {
