@@ -2,6 +2,7 @@
 
 @inject NavigationManager Nav
 @inject Microsoft.JSInterop.IJSRuntime JS
+@using System.Text.Json
 @using System.Threading
 
 <PageTitle>OpenMU: Logs en Vivo</PageTitle>
@@ -27,8 +28,8 @@
     <div class="card-footer small text-muted">
         Fuente: @_resolvedEndpoint
     </div>
-    <div class="card-body" style="max-height:60vh; overflow:auto; background:#111; color:#ddd; font-family:Consolas,monospace;">
-        <pre style="white-space: pre-wrap;">@_content</pre>
+    <div class="card-body" style="max-height:60vh; overflow:auto; background:#111; color:#f5f5f5; font-family:Consolas,monospace;">
+        <pre style="white-space: pre; line-height: 1.2;">@_content</pre>
     </div>
     <div class="card-footer">
         <span class="text-muted">@_lastUpdatedText</span>
@@ -95,7 +96,7 @@
             var url = BuildUrl();
             using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
             var text = await http.GetStringAsync(url, cts.Token).ConfigureAwait(false);
-            _content = text;
+            _content = NormalizeContent(text);
             _lastUpdatedUtc = DateTime.UtcNow;
         }
         catch (Exception ex)
@@ -160,7 +161,13 @@
         }
 
         var lines = (_content?.Split('\n') ?? Array.Empty<string>()).ToList();
-        lines.Add(data);
+        foreach (var l in NormalizeSsePayload(data))
+        {
+            if (!string.IsNullOrEmpty(l))
+            {
+                lines.Add(l);
+            }
+        }
         if (lines.Count > _take)
         {
             lines = lines.Skip(Math.Max(0, lines.Count - _take)).ToList();
@@ -197,6 +204,100 @@
                     }, null, TimeSpan.FromSeconds(3), TimeSpan.FromSeconds(3));
                 }
             });
+        }
+    }
+}
+
+@code {
+    private static string NormalizeContent(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return string.Empty;
+        }
+
+        text = text.Trim();
+        try
+        {
+            if (text.StartsWith("["))
+            {
+                var arr = JsonSerializer.Deserialize<string[]>(text);
+                if (arr is { Length: > 0 })
+                {
+                    return string.Join("\n", arr);
+                }
+            }
+            else if (text.StartsWith("\""))
+            {
+                // json string with escaped newlines
+                var s = JsonSerializer.Deserialize<string>(text) ?? string.Empty;
+                return s.Replace("\r\n", "\n");
+            }
+            else if (text.StartsWith("{"))
+            {
+                using var doc = JsonDocument.Parse(text);
+                if (doc.RootElement.TryGetProperty("lines", out var linesElem) && linesElem.ValueKind == JsonValueKind.Array)
+                {
+                    var lines = linesElem.EnumerateArray().Select(e => e.GetString() ?? string.Empty);
+                    return string.Join("\n", lines);
+                }
+            }
+        }
+        catch
+        {
+            // ignore, fallback below
+        }
+
+        // If string contains literal \n and not real newlines, unescape
+        if (!text.Contains('\n') && text.Contains("\\n"))
+        {
+            text = text.Replace("\\n", "\n");
+        }
+        return text;
+    }
+
+    private static IEnumerable<string> NormalizeSsePayload(string data)
+    {
+        if (string.IsNullOrEmpty(data))
+        {
+            yield break;
+        }
+
+        data = data.Trim();
+        if (data.StartsWith("["))
+        {
+            string[]? arr = null;
+            try { arr = JsonSerializer.Deserialize<string[]>(data); } catch { }
+            if (arr is { Length: > 0 })
+            {
+                foreach (var l in arr)
+                {
+                    yield return l;
+                }
+                yield break;
+            }
+        }
+        else if (data.StartsWith("\""))
+        {
+            string? single = null;
+            try { single = JsonSerializer.Deserialize<string>(data); } catch { }
+            if (single is not null)
+            {
+                foreach (var l in (single.Replace("\r\n", "\n").Split('\n')))
+                {
+                    yield return l;
+                }
+                yield break;
+            }
+        }
+
+        if (data.Contains("\\n") && !data.Contains('\n'))
+        {
+            data = data.Replace("\\n", "\n");
+        }
+        foreach (var l in data.Split('\n'))
+        {
+            yield return l;
         }
     }
 }
