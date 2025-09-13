@@ -31,6 +31,8 @@ internal static class MonsterDefinitionAttributeCache
                 // Load using the AdminPanel-like data source (includes children according to GameConfigurationHelper)
                 var ds = new GameConfigurationDataSource(gameContext.LoggerFactory.CreateLogger<GameConfigurationDataSource>(), gameContext.PersistenceContextProvider);
                 var ownerObj = ds.GetOwnerAsync(default).AsTask().GetAwaiter().GetResult();
+                // Force-load child collections like the Admin Panel does (builds internal dictionary by enumerating children)
+                _ = ds.GetAll<MonsterAttribute>();
                 if (ownerObj is GameConfiguration owner)
                 {
                     foreach (var def in owner.Monsters)
