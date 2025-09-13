@@ -2,6 +2,7 @@ namespace MUnique.OpenMU.GameLogic;
 
 using System.Collections.Concurrent;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.Persistence;
 
 /// <summary>
 /// Caches monster base attributes by monster number, loaded once from persistence (similar to AdminPanel data source).
@@ -27,10 +28,10 @@ internal static class MonsterDefinitionAttributeCache
 
             try
             {
-                // Load using the GameConfiguration aggregate root (same approach as Admin Panel IDataSource)
-                using var ctx = gameContext.PersistenceContextProvider.CreateNewTypedContext(typeof(GameConfiguration), useCache: false);
-                var owner = ctx.GetAsync<GameConfiguration>().AsTask().GetAwaiter().GetResult().FirstOrDefault();
-                if (owner is not null)
+                // Load using the AdminPanel-like data source (includes children according to GameConfigurationHelper)
+                var ds = new GameConfigurationDataSource(gameContext.LoggerFactory.CreateLogger<GameConfigurationDataSource>(), gameContext.PersistenceContextProvider);
+                var ownerObj = ds.GetOwnerAsync(default).AsTask().GetAwaiter().GetResult();
+                if (ownerObj is GameConfiguration owner)
                 {
                     foreach (var def in owner.Monsters)
                     {
