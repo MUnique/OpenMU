@@ -27,15 +27,19 @@ internal static class MonsterDefinitionAttributeCache
 
             try
             {
-                using var ctx = gameContext.PersistenceContextProvider.CreateNewTypedContext(typeof(MonsterDefinition), useCache: false);
-                var all = ctx.GetAsync<MonsterDefinition>().AsTask().GetAwaiter().GetResult();
-                foreach (var def in all)
+                // Load using the GameConfiguration aggregate root (same approach as Admin Panel IDataSource)
+                using var ctx = gameContext.PersistenceContextProvider.CreateNewTypedContext(typeof(GameConfiguration), useCache: false);
+                var owner = ctx.GetAsync<GameConfiguration>().AsTask().GetAwaiter().GetResult().FirstOrDefault();
+                if (owner is not null)
                 {
-                    if (def?.Attributes is { Count: > 0 })
+                    foreach (var def in owner.Monsters)
                     {
-                        Cache[def.Number] = def.Attributes
-                            .Select(a => new MonsterAttribute { AttributeDefinition = a.AttributeDefinition, Value = a.Value })
-                            .ToList();
+                        if (def?.Attributes is { Count: > 0 })
+                        {
+                            Cache[def.Number] = def.Attributes
+                                .Select(a => new MonsterAttribute { AttributeDefinition = a.AttributeDefinition, Value = a.Value })
+                                .ToList();
+                        }
                     }
                 }
             }
@@ -65,4 +69,3 @@ internal static class MonsterDefinitionAttributeCache
         return false;
     }
 }
-
