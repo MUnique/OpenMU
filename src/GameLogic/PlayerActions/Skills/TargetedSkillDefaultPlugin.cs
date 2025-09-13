@@ -204,6 +204,33 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
 
         var clone = baseDefinition.Clone(player.GameContext.Configuration);
 
+        static void AddAttributeCorrectly(IGameContext context, ICollection<MonsterAttribute>? target, MUnique.OpenMU.AttributeSystem.AttributeDefinition? definition, float value)
+        {
+            if (target is null || definition is null)
+            {
+                return;
+            }
+
+            // Resolve AttributeDefinition to the instance within the current game configuration, if present.
+            var resolvedDef = context.Configuration.Attributes.FirstOrDefault(a => a.Id == definition.Id) ?? definition;
+
+            var collectionType = target.GetType();
+            if (collectionType.IsGenericType && collectionType.GetGenericTypeDefinition() == typeof(MUnique.OpenMU.Persistence.CollectionAdapter<,>))
+            {
+                var efItemType = collectionType.GetGenericArguments()[1];
+                if (Activator.CreateInstance(efItemType) is MonsterAttribute efAttr)
+                {
+                    efAttr.AttributeDefinition = resolvedDef;
+                    efAttr.Value = value;
+                    target.Add(efAttr);
+                    return;
+                }
+            }
+
+            // Fallback: Plain collection which accepts base type.
+            target.Add(new MonsterAttribute { AttributeDefinition = resolvedDef, Value = value });
+        }
+
         // Fallback 1: If attributes are not populated, try to take them from any map spawn which uses the same monster number.
         if (clone.Attributes is null || clone.Attributes.Count == 0)
         {
@@ -218,7 +245,7 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
                 {
                     foreach (var a in refDef.Attributes)
                     {
-                        clone.Attributes?.Add(new MonsterAttribute { AttributeDefinition = a.AttributeDefinition, Value = a.Value });
+                        AddAttributeCorrectly(player.GameContext, clone.Attributes, a.AttributeDefinition, a.Value);
                     }
 
                     if (SummonDiagEnabled)
@@ -250,7 +277,7 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
                 {
                     foreach (var a in dbDef.Attributes)
                     {
-                        clone.Attributes?.Add(new MonsterAttribute { AttributeDefinition = a.AttributeDefinition, Value = a.Value });
+                        AddAttributeCorrectly(player.GameContext, clone.Attributes, a.AttributeDefinition, a.Value);
                     }
 
                     if (SummonDiagEnabled)
