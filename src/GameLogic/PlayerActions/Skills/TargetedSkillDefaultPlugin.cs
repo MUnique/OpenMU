@@ -292,35 +292,51 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
             }
         }
 
-        // Read energy scaling settings from plugin configuration, even if plugin is inactive.
+        // Read energy scaling settings (panel-driven). Prefer in-memory map kept in sync by PlugInManager.
         // Defaults if not configured.
         int energyPerStep = 1000;
         float percentPerStep = 0.05f;
 
         try
         {
-            var type = AppDomain.CurrentDomain
-                .GetAssemblies()
-                .SelectMany(a => a.DefinedTypes)
-                .FirstOrDefault(t => typeof(ISummonConfigurationPlugIn).IsAssignableFrom(t)
-                                     && !t.IsAbstract && !t.IsInterface
-                                     && this.TryGetSummonKey(t) == skillNumber);
-
-            var typeId = type?.GUID;
-            var plugInConfig = typeId is null ? null : player.GameContext.Configuration.PlugInConfigurations.FirstOrDefault(c => c.TypeId == typeId.Value);
-            if (plugInConfig is not null)
+            if (MUnique.OpenMU.GameLogic.PlugIns.ElfSummonsConfigCore.Instance.Map.TryGetValue(skillNumber, out var entry))
             {
-                var parsed = plugInConfig.GetConfiguration<MUnique.OpenMU.GameLogic.PlugIns.ElfSummonSkillConfiguration>(player.GameContext.PlugInManager.CustomConfigReferenceHandler);
-                if (parsed is not null)
+                if (entry.EnergyPerStep > 0)
                 {
-                    if (parsed.EnergyPerStep > 0)
-                    {
-                        energyPerStep = parsed.EnergyPerStep;
-                    }
+                    energyPerStep = entry.EnergyPerStep;
+                }
 
-                    if (parsed.PercentPerStep > 0)
+                if (entry.PercentPerStep > 0)
+                {
+                    percentPerStep = entry.PercentPerStep;
+                }
+            }
+            else
+            {
+                // Fallback: Read directly from plugin configuration store.
+                var type = AppDomain.CurrentDomain
+                    .GetAssemblies()
+                    .SelectMany(a => a.DefinedTypes)
+                    .FirstOrDefault(t => typeof(ISummonConfigurationPlugIn).IsAssignableFrom(t)
+                                         && !t.IsAbstract && !t.IsInterface
+                                         && this.TryGetSummonKey(t) == skillNumber);
+
+                var typeId = type?.GUID;
+                var plugInConfig = typeId is null ? null : player.GameContext.Configuration.PlugInConfigurations.FirstOrDefault(c => c.TypeId == typeId.Value);
+                if (plugInConfig is not null)
+                {
+                    var parsed = plugInConfig.GetConfiguration<MUnique.OpenMU.GameLogic.PlugIns.ElfSummonSkillConfiguration>(player.GameContext.PlugInManager.CustomConfigReferenceHandler);
+                    if (parsed is not null)
                     {
-                        percentPerStep = parsed.PercentPerStep;
+                        if (parsed.EnergyPerStep > 0)
+                        {
+                            energyPerStep = parsed.EnergyPerStep;
+                        }
+
+                        if (parsed.PercentPerStep > 0)
+                        {
+                            percentPerStep = parsed.PercentPerStep;
+                        }
                     }
                 }
             }
