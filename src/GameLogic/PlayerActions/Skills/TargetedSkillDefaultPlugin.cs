@@ -204,7 +204,41 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
 
         var clone = baseDefinition.Clone(player.GameContext.Configuration);
 
-        // Fallback: If attributes are not populated, try to load them from persistence (no cache).
+        // Fallback 1: If attributes are not populated, try to take them from any map spawn which uses the same monster number.
+        if (clone.Attributes is null || clone.Attributes.Count == 0)
+        {
+            try
+            {
+                var refDef = player.GameContext.Configuration.Maps
+                    .SelectMany(m => m.MonsterSpawns)
+                    .Select(s => s.MonsterDefinition)
+                    .FirstOrDefault(d => d is { } && d.Number == baseDefinition.Number && d.Attributes?.Any() == true);
+
+                if (refDef?.Attributes?.Any() == true)
+                {
+                    foreach (var a in refDef.Attributes)
+                    {
+                        clone.Attributes?.Add(new MonsterAttribute { AttributeDefinition = a.AttributeDefinition, Value = a.Value });
+                    }
+
+                    if (SummonDiagEnabled)
+                    {
+                        player.Logger.LogInformation($"[SUMMON] Fallback-from-map loaded {clone.Attributes?.Count ?? 0} attributes for monster {refDef.Designation} ({refDef.Number})");
+                    }
+                }
+                else
+                {
+                    // Try unified cache (loads once from persistence similar to admin panel data source)
+                    if (MonsterDefinitionAttributeCache.TryFillAttributes(player.GameContext, baseDefinition.Number, clone) && SummonDiagEnabled)
+                    {
+                        player.Logger.LogInformation($"[SUMMON] Fallback-from-cache loaded {clone.Attributes?.Count ?? 0} attributes for monster {baseDefinition.Designation} ({baseDefinition.Number})");
+                    }
+                }
+            }
+            catch { }
+        }
+
+        // Fallback 2: Try to load them from persistence (no cache).
         if (clone.Attributes is null || clone.Attributes.Count == 0)
         {
             try
