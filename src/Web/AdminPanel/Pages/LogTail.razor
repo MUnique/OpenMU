@@ -23,13 +23,23 @@
                 <input class="form-check-input" type="checkbox" id="autoRefresh" @bind="_autoRefresh" />
                 <label class="form-check-label" for="autoRefresh">Auto-actualizar</label>
             </div>
+
+            <label class="mx-3 mb-0">Color:</label>
+            <select class="form-control mr-3" style="min-width:170px" value="@_theme" @onchange="OnThemeChanged">
+                <option value="green">Consola (verde)</option>
+                <option value="white">Blanco sobre negro</option>
+                <option value="light">Claro (negro sobre blanco)</option>
+            </select>
+
+            <label class="mr-2 mb-0">Fuente:</label>
+            <input class="form-control" style="width:90px" type="number" min="10" max="24" @bind-value="_fontSize" />
         </div>
     </div>
     <div class="card-footer small text-muted">
         Fuente: @_resolvedEndpoint
     </div>
-    <div class="card-body" style="max-height:60vh; overflow:auto; background:#111; color:#fff; font-family:Consolas,monospace;">
-        <pre style="white-space: pre; line-height: 1.2;">@_content</pre>
+    <div class="card-body" style="@ContentStyle">
+        <pre style="white-space: pre; line-height: 1.25; color: inherit; font-size: inherit;">@_content</pre>
     </div>
     <div class="card-footer">
         <span class="text-muted">@_lastUpdatedText</span>
@@ -49,6 +59,13 @@
     private Microsoft.JSInterop.DotNetObjectReference<LogTail>? _selfRef;
     private string? _sseId;
 
+    // UI Appearance
+    private string _theme = "green"; // green | white | light
+    private int _fontSize = 13;
+    private string _bg = "#0b0b0b";
+    private string _fg = "#00ff66";
+    private string ContentStyle => $"max-height:60vh; overflow:auto; background:{_bg}; color:{_fg}; font-family:Consolas,monospace; font-size:{_fontSize}px;";
+
     private string _lastUpdatedText => _lastUpdatedUtc == default ? string.Empty : $"Actualizado: {_lastUpdatedUtc:HH:mm:ss}";
 
     protected override async Task OnInitializedAsync()
@@ -58,6 +75,8 @@
         _resolvedEndpoint = string.IsNullOrWhiteSpace(env) ? "/api/logs/tail" : env!;
         var sse = Environment.GetEnvironmentVariable("LOG_TAIL_SSE_URL");
         _sseEndpoint = string.IsNullOrWhiteSpace(sse) ? null : sse;
+
+        ApplyTheme();
 
         if (_sseEndpoint is not null)
         {
@@ -299,5 +318,34 @@
         {
             yield return l;
         }
+    }
+
+    private void ApplyTheme()
+    {
+        switch (_theme)
+        {
+            case "green":
+                _bg = "#0b0b0b";
+                _fg = "#00ff66";
+                break;
+            case "white":
+                _bg = "#000000";
+                _fg = "#ffffff";
+                break;
+            case "light":
+                _bg = "#ffffff";
+                _fg = "#000000";
+                break;
+            default:
+                _bg = "#111";
+                _fg = "#fff";
+                break;
+        }
+    }
+
+    private void OnThemeChanged(ChangeEventArgs e)
+    {
+        _theme = e?.Value?.ToString() ?? _theme;
+        ApplyTheme();
     }
 }
