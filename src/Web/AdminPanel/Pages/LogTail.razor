@@ -1,0 +1,202 @@
+@page "/logs/tail"
+
+@inject NavigationManager Nav
+@inject Microsoft.JSInterop.IJSRuntime JS
+@using System.Threading
+
+<PageTitle>OpenMU: Logs en Vivo</PageTitle>
+<Breadcrumb IsFirstFromRoot="true" Caption="Logs en Vivo"/>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <div class="form-inline">
+            <label class="mr-2">Líneas:</label>
+            <input class="form-control mr-3" style="width:100px" type="number" min="50" max="5000" step="50" @bind-value="_take" />
+
+            <label class="mr-2">Filtro:</label>
+            <input class="form-control mr-3" style="width:280px" @bind-value="_filter" placeholder="texto a buscar (opcional)" />
+
+            <button class="btn btn-primary mr-2" @onclick="RefreshAsync">Actualizar</button>
+
+            <div class="form-check ml-3">
+                <input class="form-check-input" type="checkbox" id="autoRefresh" @bind="_autoRefresh" />
+                <label class="form-check-label" for="autoRefresh">Auto-actualizar</label>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer small text-muted">
+        Fuente: @_resolvedEndpoint
+    </div>
+    <div class="card-body" style="max-height:60vh; overflow:auto; background:#111; color:#ddd; font-family:Consolas,monospace;">
+        <pre style="white-space: pre-wrap;">@_content</pre>
+    </div>
+    <div class="card-footer">
+        <span class="text-muted">@_lastUpdatedText</span>
+    </div>
+    
+</div>
+
+@code {
+    private int _take = 200;
+    private string? _filter;
+    private string _content = string.Empty;
+    private bool _autoRefresh = true;
+    private System.Threading.Timer? _timer;
+    private string _resolvedEndpoint = string.Empty;
+    private DateTime _lastUpdatedUtc;
+    private string? _sseEndpoint;
+    private Microsoft.JSInterop.DotNetObjectReference<LogTail>? _selfRef;
+    private string? _sseId;
+
+    private string _lastUpdatedText => _lastUpdatedUtc == default ? string.Empty : $"Actualizado: {_lastUpdatedUtc:HH:mm:ss}";
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Endpoint configurable por variable de entorno LOG_TAIL_URL; default relativo a AdminPanel.
+        var env = Environment.GetEnvironmentVariable("LOG_TAIL_URL");
+        _resolvedEndpoint = string.IsNullOrWhiteSpace(env) ? "/api/logs/tail" : env!;
+        var sse = Environment.GetEnvironmentVariable("LOG_TAIL_SSE_URL");
+        _sseEndpoint = string.IsNullOrWhiteSpace(sse) ? null : sse;
+
+        if (_sseEndpoint is not null)
+        {
+            // Usar SSE si está configurado; mantiene conexión con mínimo tráfico.
+            await StartSseAsync();
+        }
+        else
+        {
+            await RefreshAsync();
+            _timer = new System.Threading.Timer(async _ =>
+            {
+                if (_autoRefresh)
+                {
+                    await InvokeAsync(RefreshAsync);
+                }
+            }, null, TimeSpan.FromSeconds(3), TimeSpan.FromSeconds(3));
+        }
+    }
+
+    public void Dispose()
+    {
+        _timer?.Dispose();
+        if (_sseId is not null)
+        {
+            _ = JS.InvokeVoidAsync("logtail.stop", _sseId);
+            _selfRef?.Dispose();
+            _sseId = null;
+        }
+    }
+
+    private async Task RefreshAsync()
+    {
+        try
+        {
+            using var http = new HttpClient();
+            var url = BuildUrl();
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+            var text = await http.GetStringAsync(url, cts.Token).ConfigureAwait(false);
+            _content = text;
+            _lastUpdatedUtc = DateTime.UtcNow;
+        }
+        catch (Exception ex)
+        {
+            _content = $"[ERROR] No se pudo obtener logs: {ex.Message}";
+        }
+    }
+
+    private string BuildUrl()
+    {
+        var sep = _resolvedEndpoint.Contains("?") ? "&" : "?";
+        var url = $"{_resolvedEndpoint}{sep}take={_take}";
+        if (!string.IsNullOrWhiteSpace(_filter))
+        {
+            url += "&q=" + Uri.EscapeDataString(_filter);
+        }
+
+        var isAbs = _resolvedEndpoint.StartsWith("http", StringComparison.OrdinalIgnoreCase);
+        var absolute = isAbs ? new Uri(url) : new Uri(new Uri(Nav.BaseUri), url);
+        return absolute.ToString();
+    }
+
+    private async Task StartSseAsync()
+    {
+        if (_sseEndpoint is null)
+        {
+            return;
+        }
+
+        // Reiniciar conexión
+        if (_sseId is not null)
+        {
+            await JS.InvokeVoidAsync("logtail.stop", _sseId);
+            _selfRef?.Dispose();
+            _sseId = null;
+        }
+
+        var sep = _sseEndpoint.Contains("?") ? "&" : "?";
+        var url = $"{_sseEndpoint}{sep}take={_take}";
+        if (!string.IsNullOrWhiteSpace(_filter))
+        {
+            url += "&q=" + Uri.EscapeDataString(_filter);
+        }
+        var isAbs = _sseEndpoint.StartsWith("http", StringComparison.OrdinalIgnoreCase);
+        var absolute = isAbs ? new Uri(url) : new Uri(new Uri(Nav.BaseUri), url);
+        _selfRef = Microsoft.JSInterop.DotNetObjectReference.Create(this);
+        _sseId = await JS.InvokeAsync<string?>("logtail.start", _selfRef, absolute.ToString());
+        _lastUpdatedUtc = DateTime.UtcNow;
+    }
+
+    [Microsoft.JSInterop.JSInvokable]
+    public Task OnSseMessage(string data)
+    {
+        // Aplica filtro en cliente si corresponde y limita a _take líneas
+        if (string.IsNullOrEmpty(data))
+        {
+            return Task.CompletedTask;
+        }
+        if (!string.IsNullOrWhiteSpace(_filter) && (data.IndexOf(_filter, StringComparison.OrdinalIgnoreCase) < 0))
+        {
+            return Task.CompletedTask;
+        }
+
+        var lines = (_content?.Split('\n') ?? Array.Empty<string>()).ToList();
+        lines.Add(data);
+        if (lines.Count > _take)
+        {
+            lines = lines.Skip(Math.Max(0, lines.Count - _take)).ToList();
+        }
+        _content = string.Join('\n', lines);
+        _lastUpdatedUtc = DateTime.UtcNow;
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    [Microsoft.JSInterop.JSInvokable]
+    public Task OnSseOpened()
+    {
+        // SSE abierto con éxito.
+        return Task.CompletedTask;
+    }
+
+    [Microsoft.JSInterop.JSInvokable]
+    public async Task OnSseError()
+    {
+        // Si falla al inicio y no hay contenido, hacer fallback a polling.
+        if (string.IsNullOrEmpty(_content))
+        {
+            await InvokeAsync(async () =>
+            {
+                if (_timer is null)
+                {
+                    _timer = new System.Threading.Timer(async _ =>
+                    {
+                        if (_autoRefresh)
+                        {
+                            await InvokeAsync(RefreshAsync);
+                        }
+                    }, null, TimeSpan.FromSeconds(3), TimeSpan.FromSeconds(3));
+                }
+            });
+        }
+    }
+}

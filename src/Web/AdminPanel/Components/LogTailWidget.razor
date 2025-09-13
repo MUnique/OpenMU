@@ -1,0 +1,149 @@
+@using System.Threading
+@inject NavigationManager Nav
+@inject Microsoft.JSInterop.IJSRuntime JS
+
+<div class="card mt-3">
+  <div class="card-header d-flex align-items-center justify-content-between">
+    <div>
+      <span class="oi oi-terminal mr-1"></span>
+      Logs (compacto)
+      <small class="text-muted ml-2">@_lastUpdatedText</small>
+    </div>
+    <div>
+      <button class="btn btn-sm btn-outline-secondary mr-2" @onclick="RefreshAsync">Actualizar</button>
+      <div class="form-check form-check-inline m-0">
+        <input class="form-check-input" type="checkbox" id="autoRefreshCompact" @bind="_auto" />
+        <label class="form-check-label" for="autoRefreshCompact">Auto</label>
+      </div>
+      <a class="btn btn-sm btn-primary ml-2" href="logs/tail">Ver completo</a>
+    </div>
+  </div>
+  <div class="card-body p-2" style="max-height: 220px; overflow:auto; background:#111; color:#ddd; font-family:Consolas,monospace;">
+    <pre class="m-0" style="white-space: pre-wrap;">@_content</pre>
+  </div>
+</div>
+
+@code {
+  private readonly int _take = 100; // compacto
+  private string _content = string.Empty;
+  private System.Threading.Timer? _timer;
+  private bool _auto; // por defecto apagado para ahorrar recursos
+  private string _endpoint = string.Empty;
+  private DateTime _lastUpdatedUtc;
+  private string? _sseEndpoint;
+  private Microsoft.JSInterop.DotNetObjectReference<LogTailWidget>? _selfRef;
+  private string? _sseId;
+  private string _lastUpdatedText => _lastUpdatedUtc == default ? string.Empty : _lastUpdatedUtc.ToLocalTime().ToString("HH:mm:ss");
+
+  protected override async Task OnInitializedAsync()
+  {
+    var env = Environment.GetEnvironmentVariable("LOG_TAIL_URL");
+    _endpoint = string.IsNullOrWhiteSpace(env) ? "/api/logs/tail" : env!;
+    var sse = Environment.GetEnvironmentVariable("LOG_TAIL_SSE_URL");
+    _sseEndpoint = string.IsNullOrWhiteSpace(sse) ? null : sse;
+
+    // No auto por defecto; el user puede activarlo. Timer a baja frecuencia.
+    _timer = new System.Threading.Timer(async _ =>
+    {
+        if (_auto)
+        {
+            await InvokeAsync(RefreshAsync);
+        }
+    }, null, TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
+
+    // Primera carga liviana, pero la dejamos manual para ahorrar recursos.
+  }
+
+  public void Dispose()
+  {
+    _timer?.Dispose();
+    if (_sseId is not null)
+    {
+        _ = JS.InvokeVoidAsync("logtail.stop", _sseId);
+        _selfRef?.Dispose();
+        _sseId = null;
+    }
+  }
+
+  private async Task RefreshAsync()
+  {
+    try
+    {
+        using var http = new HttpClient();
+        var sep = _endpoint.Contains("?") ? "&" : "?";
+        var url = $"{_endpoint}{sep}take={_take}";
+        var isAbs = _endpoint.StartsWith("http", StringComparison.OrdinalIgnoreCase);
+        var absolute = isAbs ? new Uri(url) : new Uri(new Uri(Nav.BaseUri), url);
+        var txt = await http.GetStringAsync(absolute);
+        _content = txt;
+        _lastUpdatedUtc = DateTime.UtcNow;
+    }
+    catch (Exception ex)
+    {
+        _content = $"[ERROR] {_endpoint}: {ex.Message}";
+    }
+  }
+
+  private async Task StartSseAsync()
+  {
+    if (_sseEndpoint is null)
+    {
+        return;
+    }
+    if (_sseId is not null)
+    {
+        await JS.InvokeVoidAsync("logtail.stop", _sseId);
+        _selfRef?.Dispose();
+        _sseId = null;
+    }
+    var sep = _sseEndpoint.Contains("?") ? "&" : "?";
+    var url = $"{_sseEndpoint}{sep}take={_take}";
+    var isAbs = _sseEndpoint.StartsWith("http", StringComparison.OrdinalIgnoreCase);
+    var absolute = isAbs ? new Uri(url) : new Uri(new Uri(Nav.BaseUri), url);
+    _selfRef = Microsoft.JSInterop.DotNetObjectReference.Create(this);
+    _sseId = await JS.InvokeAsync<string?>("logtail.start", _selfRef, absolute.ToString());
+  }
+
+  [Microsoft.JSInterop.JSInvokable]
+  public Task OnSseMessage(string data)
+  {
+    var lines = (_content?.Split('\n') ?? Array.Empty<string>()).ToList();
+    lines.Add(data);
+    if (lines.Count > _take)
+    {
+        lines = lines.Skip(Math.Max(0, lines.Count - _take)).ToList();
+    }
+    _content = string.Join('\n', lines);
+    _lastUpdatedUtc = DateTime.UtcNow;
+    StateHasChanged();
+    return Task.CompletedTask;
+  }
+
+  [Microsoft.JSInterop.JSInvokable]
+  public Task OnSseOpened() => Task.CompletedTask;
+
+  [Microsoft.JSInterop.JSInvokable]
+  public async Task OnSseError()
+  {
+    // Si el widget está en Auto y no tenemos datos, cambiamos a polling ligero.
+    if (_auto && string.IsNullOrEmpty(_content))
+    {
+        await RefreshAsync();
+    }
+  }
+
+  protected override async Task OnParametersSetAsync()
+  {
+    // Si el usuario enciende Auto y hay SSE, usamos SSE; si no, no mantenemos conexión.
+    if (_auto && _sseEndpoint is not null && _sseId is null)
+    {
+        await StartSseAsync();
+    }
+    else if (!_auto && _sseId is not null)
+    {
+        await JS.InvokeVoidAsync("logtail.stop", _sseId);
+        _selfRef?.Dispose();
+        _sseId = null;
+    }
+  }
+}
