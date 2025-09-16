@@ -309,4 +309,9 @@ public enum UpdateVersion
     /// The version of the <see cref="FixEventItemsDropFromMonstersUpdatePlugIn095d"/>.
     /// </summary>
     FixEventItemsDropFromMonsters095d = 60,
+
+    /// <summary>
+    /// The version of the <see cref="FixItemRequirementsPlugIn2"/>.
+    /// </summary>
+    FixItemRequirements2 = 61,
 }
