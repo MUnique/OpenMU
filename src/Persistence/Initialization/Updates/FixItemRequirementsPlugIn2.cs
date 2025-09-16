@@ -56,7 +56,7 @@ public class FixItemRequirementsPlugIn2 : UpdatePlugInBase
     public override bool IsMandatory => true;
 
     /// <inheritdoc />
-    public override DateTime CreatedAt => new(2024, 12, 17, 12, 0, 0, DateTimeKind.Utc);
+    public override DateTime CreatedAt => new(2025, 09, 16, 19, 44, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
