@@ -241,23 +241,23 @@ public class GameContext : AsyncDisposable, IGameContext
     {
         var miniGameKey = MiniGameMapKey.Create(miniGameDefinition, requester);
 
-        if (this._miniGames.TryGetValue(miniGameKey, out var miniGameContext))
+        if (this._miniGames.TryGetValue(miniGameKey, out var miniGameContext) && miniGameContext is { IsDisposed: false, IsDisposing: false })
         {
-            if (miniGameContext.IsDisposed)
-            {
-                this._miniGames.Remove(miniGameKey);
-            }
-            else
-            {
-                return miniGameContext;
-            }
+            return miniGameContext;
         }
 
         using (await this._mapInitializerLock.LockAsync().ConfigureAwait(false))
         {
             if (this._miniGames.TryGetValue(miniGameKey, out miniGameContext))
             {
-                return miniGameContext;
+                if (miniGameContext.IsDisposed)
+                {
+                    this._miniGames.Remove(miniGameKey);
+                }
+                else
+                {
+                    return miniGameContext;
+                }
             }
 
             switch (miniGameDefinition.Type)
