@@ -662,14 +662,14 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.AddPassiveMasterSkillDefinition(SkillNumber.PvPDefenceRateInc, Stats.DefenseRatePvp, AggregateType.AddRaw, Formula61408, 1, 1);
         this.AddPassiveMasterSkillDefinition(SkillNumber.MaximumSDincrease, Stats.MaximumShield, AggregateType.AddRaw, Formula51173, 2, 1);
         this.AddPassiveMasterSkillDefinition(SkillNumber.AutomaticManaRecInc, Stats.ManaRecoveryMultiplier, AggregateType.AddRaw, FormulaRecoveryIncrease181, Formula181, 2, 1, SkillNumber.Undefined, SkillNumber.Undefined, 20);
-        this.AddPassiveMasterSkillDefinition(SkillNumber.PoisonResistanceInc, Stats.PoisonResistance, AggregateType.AddRaw, Formula120Value, Formula120, 2, 1);
+        this.AddPassiveMasterSkillDefinition(SkillNumber.PoisonResistanceInc, Stats.PoisonResistance, AggregateType.AddRaw, Formula120, Formula120, 2, 1);
         this.AddPassiveMasterSkillDefinition(SkillNumber.DurabilityReduction2, Stats.ItemDurationIncrease, AggregateType.Multiplicate, Formula1204, 3, 1, SkillNumber.DurabilityReduction1);
         this.AddMasterSkillDefinition(SkillNumber.SdRecoverySpeedInc, SkillNumber.MaximumSDincrease, SkillNumber.Undefined, 1, 3, SkillNumber.Undefined, 20, Formula120);
         this.AddPassiveMasterSkillDefinition(SkillNumber.AutomaticHpRecInc, Stats.HealthRecoveryMultiplier, AggregateType.AddRaw, FormulaRecoveryIncrease120, Formula120, 3, 1, SkillNumber.AutomaticManaRecInc, SkillNumber.Undefined, 20);
-        this.AddPassiveMasterSkillDefinition(SkillNumber.LightningResistanceInc, Stats.LightningResistance, AggregateType.AddRaw, Formula120Value, Formula120, 2, 1, requiredSkill1: SkillNumber.PoisonResistanceInc);
+        this.AddPassiveMasterSkillDefinition(SkillNumber.LightningResistanceInc, Stats.LightningResistance, AggregateType.AddRaw, Formula120, Formula120, 2, 1, requiredSkill1: SkillNumber.PoisonResistanceInc);
         this.AddPassiveMasterSkillDefinition(SkillNumber.DefenseIncrease, Stats.DefenseBase, AggregateType.AddFinal, Formula6020, 4, 1);
         this.AddPassiveMasterSkillDefinition(SkillNumber.AutomaticAgRecInc, Stats.AbilityRecoveryMultiplier, AggregateType.AddRaw, FormulaRecoveryIncrease120, Formula120, 4, 1, SkillNumber.AutomaticHpRecInc, SkillNumber.Undefined, 20);
-        this.AddPassiveMasterSkillDefinition(SkillNumber.IceResistanceIncrease, Stats.IceResistance, AggregateType.AddRaw, Formula120Value, Formula120, 2, 1, requiredSkill1: SkillNumber.LightningResistanceInc);
+        this.AddPassiveMasterSkillDefinition(SkillNumber.IceResistanceIncrease, Stats.IceResistance, AggregateType.AddRaw, Formula120, Formula120, 2, 1, requiredSkill1: SkillNumber.LightningResistanceInc);
         this.AddPassiveMasterSkillDefinition(SkillNumber.DurabilityReduction3, Stats.ItemDurationIncrease, AggregateType.Multiplicate, Formula1204, 5, 1, SkillNumber.DurabilityReduction2);
         this.AddPassiveMasterSkillDefinition(SkillNumber.DefenseSuccessRateInc, Stats.DefenseRatePvm, AggregateType.Multiplicate, $"1 + {Formula120} / 100", 5, 1, SkillNumber.DefenseIncrease);
 

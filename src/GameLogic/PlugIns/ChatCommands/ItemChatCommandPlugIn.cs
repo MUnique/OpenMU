@@ -43,7 +43,7 @@ public class ItemChatCommandPlugIn : ChatCommandPlugInBase<ItemChatCommandArgs>
     private static Item CreateItem(Player gameMaster, ItemChatCommandArgs arguments)
     {
         var item = new TemporaryItem();
-        item.Definition = GetItemDefination(gameMaster, arguments);
+        item.Definition = GetItemDefinition(gameMaster, arguments);
         item.Durability = item.IsStackable() ? 1 : item.Definition.Durability;
         item.HasSkill = item.Definition.Skill != null && arguments.Skill;
         item.Level = GetItemLevel(item.Definition, arguments);
@@ -57,7 +57,7 @@ public class ItemChatCommandPlugIn : ChatCommandPlugInBase<ItemChatCommandArgs>
         return item;
     }
 
-    private static ItemDefinition GetItemDefination(Player gameMaster, ItemChatCommandArgs arguments)
+    private static ItemDefinition GetItemDefinition(Player gameMaster, ItemChatCommandArgs arguments)
     {
         return gameMaster.GameContext.Configuration.Items
                    .FirstOrDefault(def => def.Group == arguments.Group && def.Number == arguments.Number)
