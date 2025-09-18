@@ -212,6 +212,18 @@ public class PlugInContainerBase<TPlugIn> : IPlugInContainer<TPlugIn>
                 .GetProperty(nameof(ISupportCustomConfiguration<object>.Configuration))
                 ?.SetMethod
                 ?.Invoke(plugIn, new[] { typedCustomConfiguration });
+
+            // Nudge plugins which support forced start to apply changes immediately
+            // (e.g. periodic task plugins). We avoid a project dependency by using
+            // reflection to look for a parameterless method named "ForceStart".
+            try
+            {
+                plugIn.GetType().GetMethod("ForceStart", Type.EmptyTypes)?.Invoke(plugIn, null);
+            }
+            catch
+            {
+                // Best-effort: if a plugin exposes ForceStart and throws, ignore here.
+            }
         }
     }
 }
