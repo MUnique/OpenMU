@@ -20,9 +20,9 @@ public class ObjectCollectionFieldBuilder : BaseComponentBuilder, IComponentBuil
 
     /// <inheritdoc/>
     public bool CanBuildComponent(PropertyInfo propertyInfo) =>
-        propertyInfo.PropertyType.IsInterface
-        && propertyInfo.PropertyType.IsGenericType
-        && propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>)
+        propertyInfo.PropertyType.IsGenericType
+        && propertyInfo.PropertyType.GetGenericTypeDefinition() is { } genericType
+        && (genericType == typeof(ICollection<>) || genericType == typeof(IList<>) || genericType == typeof(List<>))
         && !propertyInfo.PropertyType.GenericTypeArguments[0].IsValueType;
 
     private int BuiltItemTableField(object model, RenderTreeBuilder builder, PropertyInfo propertyInfo, int i, IChangeNotificationService notificationService)
