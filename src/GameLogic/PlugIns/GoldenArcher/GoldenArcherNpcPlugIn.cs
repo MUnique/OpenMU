@@ -77,22 +77,32 @@ public class GoldenArcherNpcPlugIn : IPlayerTalkToNpcPlugIn,
         var tokensToConsume = Math.Min(tokenCount, maxAccept);
 
         // Determine reward tier
-        if (tokensToConsume >= cfg.TopTierExact && cfg.TopTierItemDefinition is not null)
+        if (tokensToConsume >= cfg.TopTierExact && (cfg.TopTierItemGroup > 0 || cfg.TopTierItemNumber > 0))
         {
             tokensToConsume = cfg.TopTierExact; // consume exact 255 for top reward
             await this.ConsumeTokensAsync(player, allTokens, tokensToConsume).ConfigureAwait(false);
-            var item = new TemporaryItem
+            var topDef = player.GameContext.Configuration.Items.FirstOrDefault(i => i.Group == cfg.TopTierItemGroup && i.Number == cfg.TopTierItemNumber);
+            if (topDef is null)
             {
-                Definition = cfg.TopTierItemDefinition,
-                Level = cfg.TopTierItemLevel,
-                Durability = 1,
-            };
-            await this.GiveOrDropAsync(player, item, $"Premio por {tokensToConsume} {tokenDef.Name}: {item.Definition?.Name} +{item.Level}").ConfigureAwait(false);
+                await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(
+                    "Configuración inválida del premio de 255 tokens.", MessageType.BlueNormal)).ConfigureAwait(false);
+            }
+            else
+            {
+                var item = new TemporaryItem
+                {
+                    Definition = topDef,
+                    Level = cfg.TopTierItemLevel,
+                    Durability = 1,
+                };
+                await this.GiveOrDropAsync(player, item, $"Premio por {tokensToConsume} {tokenDef.Name}: {item.Definition?.Name} +{item.Level}").ConfigureAwait(false);
+            }
         }
-        else if (tokensToConsume >= 200 && cfg.AdvancedTierDropGroup is not null)
+        else if (tokensToConsume >= 200 && !string.IsNullOrWhiteSpace(cfg.AdvancedTierDropGroupDescription))
         {
             await this.ConsumeTokensAsync(player, allTokens, tokensToConsume).ConfigureAwait(false);
-            var rewardItem = player.GameContext.DropGenerator.GenerateItemDrop(cfg.AdvancedTierDropGroup);
+            var group = player.GameContext.Configuration.DropItemGroups.FirstOrDefault(g => string.Equals(g.Description, cfg.AdvancedTierDropGroupDescription, StringComparison.OrdinalIgnoreCase));
+            var rewardItem = group is null ? null : player.GameContext.DropGenerator.GenerateItemDrop(group);
             if (rewardItem is null)
             {
                 await player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync(
@@ -103,10 +113,11 @@ public class GoldenArcherNpcPlugIn : IPlayerTalkToNpcPlugIn,
                 await this.GiveOrDropAsync(player, rewardItem, $"Premio por {tokensToConsume} {tokenDef.Name}: {rewardItem.Definition?.Name}").ConfigureAwait(false);
             }
         }
-        else if (tokensToConsume >= 100 && cfg.HighTierDropGroup is not null)
+        else if (tokensToConsume >= 100 && !string.IsNullOrWhiteSpace(cfg.HighTierDropGroupDescription))
         {
             await this.ConsumeTokensAsync(player, allTokens, tokensToConsume).ConfigureAwait(false);
-            var rewardItem = player.GameContext.DropGenerator.GenerateItemDrop(cfg.HighTierDropGroup);
+            var group = player.GameContext.Configuration.DropItemGroups.FirstOrDefault(g => string.Equals(g.Description, cfg.HighTierDropGroupDescription, StringComparison.OrdinalIgnoreCase));
+            var rewardItem = group is null ? null : player.GameContext.DropGenerator.GenerateItemDrop(group);
             if (rewardItem is null)
             {
                 await player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync(
@@ -117,16 +128,25 @@ public class GoldenArcherNpcPlugIn : IPlayerTalkToNpcPlugIn,
                 await this.GiveOrDropAsync(player, rewardItem, $"Premio por {tokensToConsume} {tokenDef.Name}: {rewardItem.Definition?.Name}").ConfigureAwait(false);
             }
         }
-        else if (tokensToConsume >= 10 && cfg.MidTierItemDefinition is not null)
+        else if (tokensToConsume >= 10 && (cfg.MidTierItemGroup > 0 || cfg.MidTierItemNumber > 0))
         {
             await this.ConsumeTokensAsync(player, allTokens, tokensToConsume).ConfigureAwait(false);
-            var item = new TemporaryItem
+            var midDef = player.GameContext.Configuration.Items.FirstOrDefault(i => i.Group == cfg.MidTierItemGroup && i.Number == cfg.MidTierItemNumber);
+            if (midDef is null)
             {
-                Definition = cfg.MidTierItemDefinition,
-                Level = cfg.MidTierItemLevel,
-                Durability = 1,
-            };
-            await this.GiveOrDropAsync(player, item, $"Premio por {tokensToConsume} {tokenDef.Name}: {item.Definition?.Name} +{item.Level}").ConfigureAwait(false);
+                await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(
+                    "Configuración inválida del premio de 10..99 tokens.", MessageType.BlueNormal)).ConfigureAwait(false);
+            }
+            else
+            {
+                var item = new TemporaryItem
+                {
+                    Definition = midDef,
+                    Level = cfg.MidTierItemLevel,
+                    Durability = 1,
+                };
+                await this.GiveOrDropAsync(player, item, $"Premio por {tokensToConsume} {tokenDef.Name}: {item.Definition?.Name} +{item.Level}").ConfigureAwait(false);
+            }
         }
         else
         {
@@ -226,26 +246,32 @@ public class GoldenArcherNpcPlugIn : IPlayerTalkToNpcPlugIn,
     public int LowTierMoneyPerToken { get; set; } = 10000;
 
     // Mid tier: 10..99 tokens => usually Box of Heaven (Box of Luck +7)
-    [Display(Name = "Mid tier item definition (10..99)")]
-    public ItemDefinition? MidTierItemDefinition { get; set; }
+    [Display(Name = "Mid tier item group (10..99)")]
+    public byte MidTierItemGroup { get; set; }
+
+    [Display(Name = "Mid tier item number (10..99)")]
+    public short MidTierItemNumber { get; set; }
 
     [Display(Name = "Mid tier item level")]
     public byte MidTierItemLevel { get; set; } = 7;
 
     // High tier: 100..199 tokens => basic jewels drop group
-    [Display(Name = "High tier drop group (100..199)")]
-    public DropItemGroup? HighTierDropGroup { get; set; }
+    [Display(Name = "High tier drop group description (100..199)")]
+    public string? HighTierDropGroupDescription { get; set; }
 
     // Advanced tier: 200..254 tokens => Packed Jewels
-    [Display(Name = "Advanced tier drop group (200..254)")]
-    public DropItemGroup? AdvancedTierDropGroup { get; set; }
+    [Display(Name = "Advanced tier drop group description (200..254)")]
+    public string? AdvancedTierDropGroupDescription { get; set; }
 
     // Top tier: exactly 255 tokens => Box of Kundun (+5) by default
     [Display(Name = "Top tier exact tokens")]
     public int TopTierExact { get; set; } = 255;
 
-    [Display(Name = "Top tier item definition")]
-    public ItemDefinition? TopTierItemDefinition { get; set; }
+    [Display(Name = "Top tier item group")]
+    public byte TopTierItemGroup { get; set; }
+
+    [Display(Name = "Top tier item number")]
+    public short TopTierItemNumber { get; set; }
 
     [Display(Name = "Top tier item level")]
     public byte TopTierItemLevel { get; set; } = 12;

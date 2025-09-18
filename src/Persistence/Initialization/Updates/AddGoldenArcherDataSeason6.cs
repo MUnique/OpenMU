@@ -160,20 +160,20 @@ public class AddGoldenArcherDataSeason6 : UpdatePlugInBase
 
         plug.IsActive = true;
 
-        var boxOfLuck = gameConfiguration.Items.FirstOrDefault(i => i.Name == "Box of Luck");
-
         var cfg = new GoldenArcherNpcPlugInConfiguration
         {
             TokenItemDefinition = token,
             MaximumAcceptedTokens = 255,
             LowTierMoneyPerToken = 10000,
-            MidTierItemDefinition = boxOfLuck, // Level 7 => Box of Heaven
-            MidTierItemLevel = 7,
-            HighTierDropGroup = reward,
-            AdvancedTierDropGroup = packed,
+            MidTierItemGroup = 14, // Box of Luck group
+            MidTierItemNumber = 11, // Box of Luck number
+            MidTierItemLevel = 7,   // => Box of Heaven
+            HighTierDropGroupDescription = reward.Description,
+            AdvancedTierDropGroupDescription = packed.Description,
             TopTierExact = 255,
-            TopTierItemDefinition = boxOfLuck, // Level 12 => Box of Kundun+5
-            TopTierItemLevel = 12,
+            TopTierItemGroup = 14,
+            TopTierItemNumber = 11,
+            TopTierItemLevel = 12, // => Box of Kundun +5
         };
 
         // Store with id-based references so the game server can resolve them by data source later.
