@@ -54,7 +54,7 @@ public class GoldenArcherNpcPlugIn : IPlayerTalkToNpcPlugIn,
             return;
         }
 
-        var tokenDef = cfg.TokenItemDefinition!;
+        var tokenDef = cfg.TokenItemDefinition;
 
         // Find token items in inventory
         var inventory = player.Inventory;
@@ -63,12 +63,28 @@ public class GoldenArcherNpcPlugIn : IPlayerTalkToNpcPlugIn,
             return;
         }
 
-        var allTokens = inventory.Items.Where(i => ReferenceEquals(i.Definition, tokenDef)).ToList();
+        bool MatchesToken(Item? item)
+        {
+            if (item?.Definition is null)
+            {
+                return false;
+            }
+
+            if (tokenDef is not null)
+            {
+                return ReferenceEquals(item.Definition, tokenDef);
+            }
+
+            return item.Definition.Group == cfg.TokenItemGroup && item.Definition.Number == cfg.TokenItemNumber;
+        }
+
+        var allTokens = inventory.Items.Where(MatchesToken).ToList();
         var tokenCount = allTokens.Count;
+        var tokenName = tokenDef?.Name ?? "token";
         if (tokenCount <= 0)
         {
             await player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync(
-                $"No tienes {tokenDef.Name}.", npc)).ConfigureAwait(false);
+                $"No tienes {tokenName}.", npc)).ConfigureAwait(false);
             eventArgs.LeavesDialogOpen = false;
             return;
         }
@@ -95,7 +111,7 @@ public class GoldenArcherNpcPlugIn : IPlayerTalkToNpcPlugIn,
                     Level = cfg.TopTierItemLevel,
                     Durability = 1,
                 };
-                await this.GiveOrDropAsync(player, item, $"Premio por {tokensToConsume} {tokenDef.Name}: {item.Definition?.Name} +{item.Level}").ConfigureAwait(false);
+                await this.GiveOrDropAsync(player, item, $"Premio por {tokensToConsume} {tokenName}: {item.Definition?.Name} +{item.Level}").ConfigureAwait(false);
             }
         }
         else if (tokensToConsume >= 200 && !string.IsNullOrWhiteSpace(cfg.AdvancedTierDropGroupDescription))
@@ -110,7 +126,7 @@ public class GoldenArcherNpcPlugIn : IPlayerTalkToNpcPlugIn,
             }
             else
             {
-                await this.GiveOrDropAsync(player, rewardItem, $"Premio por {tokensToConsume} {tokenDef.Name}: {rewardItem.Definition?.Name}").ConfigureAwait(false);
+                await this.GiveOrDropAsync(player, rewardItem, $"Premio por {tokensToConsume} {tokenName}: {rewardItem.Definition?.Name}").ConfigureAwait(false);
             }
         }
         else if (tokensToConsume >= 100 && !string.IsNullOrWhiteSpace(cfg.HighTierDropGroupDescription))
@@ -125,7 +141,7 @@ public class GoldenArcherNpcPlugIn : IPlayerTalkToNpcPlugIn,
             }
             else
             {
-                await this.GiveOrDropAsync(player, rewardItem, $"Premio por {tokensToConsume} {tokenDef.Name}: {rewardItem.Definition?.Name}").ConfigureAwait(false);
+                await this.GiveOrDropAsync(player, rewardItem, $"Premio por {tokensToConsume} {tokenName}: {rewardItem.Definition?.Name}").ConfigureAwait(false);
             }
         }
         else if (tokensToConsume >= 10 && (cfg.MidTierItemGroup > 0 || cfg.MidTierItemNumber > 0))
@@ -145,7 +161,7 @@ public class GoldenArcherNpcPlugIn : IPlayerTalkToNpcPlugIn,
                     Level = cfg.MidTierItemLevel,
                     Durability = 1,
                 };
-                await this.GiveOrDropAsync(player, item, $"Premio por {tokensToConsume} {tokenDef.Name}: {item.Definition?.Name} +{item.Level}").ConfigureAwait(false);
+                await this.GiveOrDropAsync(player, item, $"Premio por {tokensToConsume} {tokenName}: {item.Definition?.Name} +{item.Level}").ConfigureAwait(false);
             }
         }
         else
@@ -163,7 +179,7 @@ public class GoldenArcherNpcPlugIn : IPlayerTalkToNpcPlugIn,
             }
 
             await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(
-                $"Recibiste {money:N0} Zen por entregar {tokensToConsume} {tokenDef.Name}.", MessageType.BlueNormal)).ConfigureAwait(false);
+                $"Recibiste {money:N0} Zen por entregar {tokensToConsume} {tokenName}.", MessageType.BlueNormal)).ConfigureAwait(false);
         }
 
         eventArgs.LeavesDialogOpen = false; // finish interaction
@@ -173,7 +189,7 @@ public class GoldenArcherNpcPlugIn : IPlayerTalkToNpcPlugIn,
     public object CreateDefaultConfig() => CreateDefaultConfiguration();
 
     private static bool IsConfigurationValid(GoldenArcherNpcPlugInConfiguration cfg)
-        => cfg.TokenItemDefinition is not null;
+        => cfg.TokenItemDefinition is not null || (cfg.TokenItemGroup > 0 || cfg.TokenItemNumber > 0);
 
     private static GoldenArcherNpcPlugInConfiguration CreateDefaultConfiguration()
     {
@@ -234,6 +250,12 @@ public class GoldenArcherNpcPlugIn : IPlayerTalkToNpcPlugIn,
     /// </summary>
     [Display(Name = "Token Item (e.g. Rena)")]
     public ItemDefinition? TokenItemDefinition { get; set; }
+
+    [Display(Name = "Token item group (fallback)")]
+    public byte TokenItemGroup { get; set; }
+
+    [Display(Name = "Token item number (fallback)")]
+    public short TokenItemNumber { get; set; }
 
     /// <summary>
     /// Gets or sets the maximum accepted tokens per exchange (1..255).

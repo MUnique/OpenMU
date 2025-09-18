@@ -163,6 +163,8 @@ public class AddGoldenArcherDataSeason6 : UpdatePlugInBase
         var cfg = new GoldenArcherNpcPlugInConfiguration
         {
             TokenItemDefinition = token,
+            TokenItemGroup = 14,
+            TokenItemNumber = 21,
             MaximumAcceptedTokens = 255,
             LowTierMoneyPerToken = 10000,
             MidTierItemGroup = 14, // Box of Luck group
