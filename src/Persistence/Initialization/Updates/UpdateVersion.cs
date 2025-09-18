@@ -319,4 +319,9 @@ public enum UpdateVersion
     /// The version of the White Wizard monster and default invasion drop groups update.
     /// </summary>
     WhiteWizardAndInvasionDropsSeason6 = 61,
+
+    /// <summary>
+    /// The version of the Golden Archer data update (adds Rena item and a default reward drop group).
+    /// </summary>
+    GoldenArcherDataSeason6 = 62,
 }

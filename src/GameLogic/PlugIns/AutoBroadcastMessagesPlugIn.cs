@@ -23,8 +23,18 @@ public class AutoBroadcastMessagesPlugIn : IPeriodicTaskPlugIn, ISupportCustomCo
 {
     private static readonly ConcurrentDictionary<IGameContext, PerContextState> States = new();
 
+    private AutoBroadcastMessagesConfiguration? _configuration;
+
     /// <inheritdoc />
-    public AutoBroadcastMessagesConfiguration? Configuration { get; set; }
+    public AutoBroadcastMessagesConfiguration? Configuration
+    {
+        get => this._configuration;
+        set
+        {
+            this._configuration = value;
+            this.RecalculateSchedules();
+        }
+    }
 
     /// <inheritdoc />
     public object CreateDefaultConfig()
@@ -52,13 +62,7 @@ public class AutoBroadcastMessagesPlugIn : IPeriodicTaskPlugIn, ISupportCustomCo
     }
 
     /// <inheritdoc />
-    public void ForceStart()
-    {
-        foreach (var state in States.Values)
-        {
-            state.ForceNow = true;
-        }
-    }
+    public void ForceStart() => this.RecalculateSchedules();
 
     /// <inheritdoc />
     public async ValueTask ExecuteTaskAsync(GameContext gameContext)
@@ -106,6 +110,32 @@ public class AutoBroadcastMessagesPlugIn : IPeriodicTaskPlugIn, ISupportCustomCo
         }
 
         state.ForceNow = false;
+    }
+
+    private void RecalculateSchedules()
+    {
+        var config = this.Configuration;
+        if (config is null)
+        {
+            return;
+        }
+
+        var now = DateTime.UtcNow;
+        foreach (var state in States.Values)
+        {
+            state.NextRunByIndex.Clear();
+            for (var i = 0; i < config.Messages.Count; i++)
+            {
+                var entry = config.Messages[i];
+                if (!entry.Enabled || string.IsNullOrWhiteSpace(entry.Message))
+                {
+                    continue;
+                }
+
+                state.NextRunByIndex[i] = now + entry.InitialDelay;
+            }
+            state.ForceNow = false;
+        }
     }
 
     private class PerContextState
@@ -166,4 +196,3 @@ public class BroadcastMessageEntry
     [Display(Name = "Type")]
     public MessageType MessageType { get; set; } = MessageType.GoldenCenter;
 }
-
