@@ -27,10 +27,14 @@ public class ObjectCollectionFieldBuilder : BaseComponentBuilder, IComponentBuil
 
     private int BuiltItemTableField(object model, RenderTreeBuilder builder, PropertyInfo propertyInfo, int i, IChangeNotificationService notificationService)
     {
+        var elementType = propertyInfo.PropertyType.GenericTypeArguments[0];
+        var valueType = typeof(ICollection<>).MakeGenericType(elementType);
+        var componentGeneric = typeof(ItemTable<>).MakeGenericType(elementType);
+
         var method = this.GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy)
             .Where(m => m.Name == nameof(this.BuildField))
             .First(m => m.ContainsGenericParameters && m.GetGenericArguments().Length == 2)
-            .MakeGenericMethod(propertyInfo.PropertyType, typeof(ItemTable<>).MakeGenericType(propertyInfo.PropertyType.GenericTypeArguments[0]));
+            .MakeGenericMethod(valueType, componentGeneric);
         var parameters = new[] { model, propertyInfo, builder, i, notificationService };
         return (int)method.Invoke(this, parameters)!;
     }
