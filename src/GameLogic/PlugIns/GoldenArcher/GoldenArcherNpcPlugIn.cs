@@ -72,7 +72,8 @@ public class GoldenArcherNpcPlugIn : IPlayerTalkToNpcPlugIn,
 
             if (tokenDef is not null)
             {
-                return ReferenceEquals(item.Definition, tokenDef);
+                // Compare by group/number to avoid reference identity mismatches.
+                return item.Definition.Group == tokenDef.Group && item.Definition.Number == tokenDef.Number;
             }
 
             return item.Definition.Group == cfg.TokenItemGroup && item.Definition.Number == cfg.TokenItemNumber;
