@@ -124,6 +124,7 @@ public class GoldenArcherNpcPlugIn : IPlayerTalkToNpcPlugIn,
                 return;
             }
 
+            tokensToConsume = 200;
             applyReward = async () => await this.GiveOrDropAsync(player, rewardItem, $"Premio por {tokensToConsume} {tokenName}: {rewardItem.Definition?.Name}").ConfigureAwait(false);
         }
         else if (tokensToConsume >= 100 && !string.IsNullOrWhiteSpace(cfg.HighTierDropGroupDescription))
@@ -136,6 +137,7 @@ public class GoldenArcherNpcPlugIn : IPlayerTalkToNpcPlugIn,
                 return;
             }
 
+            tokensToConsume = 100;
             applyReward = async () => await this.GiveOrDropAsync(player, rewardItem, $"Premio por {tokensToConsume} {tokenName}: {rewardItem.Definition?.Name}").ConfigureAwait(false);
         }
         else if (tokensToConsume >= 10 && (cfg.MidTierItemGroup > 0 || cfg.MidTierItemNumber > 0))
@@ -153,6 +155,7 @@ public class GoldenArcherNpcPlugIn : IPlayerTalkToNpcPlugIn,
                 var item = new TemporaryItem { Definition = midDef, Level = cfg.MidTierItemLevel, Durability = 1 };
                 await this.GiveOrDropAsync(player, item, $"Premio por {tokensToConsume} {tokenName}: {item.Definition?.Name} +{item.Level}").ConfigureAwait(false);
             };
+            tokensToConsume = 10;
         }
         else
         {
