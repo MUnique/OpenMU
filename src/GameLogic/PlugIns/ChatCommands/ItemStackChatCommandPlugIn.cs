@@ -46,16 +46,17 @@ public sealed class ItemStackChatCommandPlugIn : ChatCommandPlugInBase<ItemStack
 
         if (isStackable)
         {
-            // Create a persistent item right away to avoid context/type mismatches.
             var item = gameMaster.PersistenceContext.CreateNew<Item>();
             item.Definition = def;
             item.Level = args.Level;
             item.Durability = Math.Min(args.Count, (int)def.Durability);
 
-            if (await gameMaster.Inventory!.AddItemAsync(item).ConfigureAwait(false))
+            var slot = gameMaster.Inventory!.CheckInvSpace(item);
+            if (slot is not null && await gameMaster.Inventory.AddItemAsync(slot.Value, item).ConfigureAwait(false))
             {
                 created = (int)item.Durability;
-                await gameMaster.InvokeViewPlugInAsync<IItemAppearPlugIn>(p => p.ItemAppearAsync(item)).ConfigureAwait(false);
+                var finalItem = gameMaster.Inventory.GetItem(slot.Value) ?? item;
+                await gameMaster.InvokeViewPlugInAsync<IItemAppearPlugIn>(p => p.ItemAppearAsync(finalItem)).ConfigureAwait(false);
             }
         }
         else
@@ -66,12 +67,14 @@ public sealed class ItemStackChatCommandPlugIn : ChatCommandPlugInBase<ItemStack
                 item.Definition = def;
                 item.Level = args.Level;
                 item.Durability = def.Durability;
-                if (!await gameMaster.Inventory!.AddItemAsync(item).ConfigureAwait(false))
+                var slot = gameMaster.Inventory!.CheckInvSpace(item);
+                if (slot is null || !await gameMaster.Inventory.AddItemAsync(slot.Value, item).ConfigureAwait(false))
                 {
                     break;
                 }
                 created++;
-                await gameMaster.InvokeViewPlugInAsync<IItemAppearPlugIn>(p => p.ItemAppearAsync(item)).ConfigureAwait(false);
+                var finalItem = gameMaster.Inventory.GetItem(slot.Value) ?? item;
+                await gameMaster.InvokeViewPlugInAsync<IItemAppearPlugIn>(p => p.ItemAppearAsync(finalItem)).ConfigureAwait(false);
             }
         }
 

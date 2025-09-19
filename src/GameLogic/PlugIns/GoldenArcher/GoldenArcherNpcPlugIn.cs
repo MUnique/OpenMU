@@ -268,10 +268,13 @@ public class GoldenArcherNpcPlugIn : IPlayerTalkToNpcPlugIn,
     private async ValueTask GiveOrDropAsync(Player player, Item item, string message)
     {
         var inventory = player.Inventory!;
-        if (await inventory.AddItemAsync(item).ConfigureAwait(false))
+        // Determine the target slot up-front to be able to fetch the persisted item afterwards.
+        var targetSlot = inventory.CheckInvSpace(item);
+        if (targetSlot is not null && await inventory.AddItemAsync(targetSlot.Value, item).ConfigureAwait(false))
         {
+            var finalItem = inventory.GetItem(targetSlot.Value) ?? item;
             await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal)).ConfigureAwait(false);
-            await player.InvokeViewPlugInAsync<IItemAppearPlugIn>(p => p.ItemAppearAsync(item)).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<IItemAppearPlugIn>(p => p.ItemAppearAsync(finalItem)).ConfigureAwait(false);
             return;
         }
 
