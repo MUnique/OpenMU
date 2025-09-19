@@ -57,6 +57,19 @@ public class Storage : IStorage
                 }
             });
 
+        // Proactively remove invalid items (without a definition) from this storage range.
+        // Such items cause log spam ("Item 'Slot X: ' has no definition.") and blocked
+        // visual slots on the client. They can occur when temporary items were not
+        // persisted correctly or misconfigured by data. It's safe to remove them here.
+        var invalidItems = this.ItemStorage.Items
+            .Where(item => item.ItemSlot <= lastSlot && item.ItemSlot >= slotOffset)
+            .Where(item => item.Definition is null)
+            .ToList();
+        if (invalidItems.Count > 0)
+        {
+            invalidItems.ForEach(item => this.ItemStorage.Items.Remove(item));
+        }
+
         if (unfittingItems is null)
         {
             return;

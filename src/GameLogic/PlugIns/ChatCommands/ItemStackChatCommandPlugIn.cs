@@ -46,12 +46,11 @@ public sealed class ItemStackChatCommandPlugIn : ChatCommandPlugInBase<ItemStack
 
         if (isStackable)
         {
-            var item = new TemporaryItem
-            {
-                Definition = def,
-                Level = args.Level,
-                Durability = Math.Min(args.Count, (int)def.Durability),
-            };
+            // Create a persistent item right away to avoid context/type mismatches.
+            var item = gameMaster.PersistenceContext.CreateNew<Item>();
+            item.Definition = def;
+            item.Level = args.Level;
+            item.Durability = Math.Min(args.Count, (int)def.Durability);
 
             if (await gameMaster.Inventory!.AddItemAsync(item).ConfigureAwait(false))
             {
@@ -62,12 +61,10 @@ public sealed class ItemStackChatCommandPlugIn : ChatCommandPlugInBase<ItemStack
         {
             for (int i = 0; i < args.Count; i++)
             {
-                var item = new TemporaryItem
-                {
-                    Definition = def,
-                    Level = args.Level,
-                    Durability = def.Durability,
-                };
+                var item = gameMaster.PersistenceContext.CreateNew<Item>();
+                item.Definition = def;
+                item.Level = args.Level;
+                item.Durability = def.Durability;
                 if (!await gameMaster.Inventory!.AddItemAsync(item).ConfigureAwait(false))
                 {
                     break;
