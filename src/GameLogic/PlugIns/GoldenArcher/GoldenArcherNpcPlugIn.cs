@@ -79,7 +79,8 @@ public class GoldenArcherNpcPlugIn : IPlayerTalkToNpcPlugIn,
         }
 
         var allTokens = inventory.Items.Where(MatchesToken).ToList();
-        var tokenCount = allTokens.Count;
+        // Count pieces: for stackables, durability is the amount; otherwise, each item counts as 1.
+        var tokenCount = allTokens.Sum(i => i.IsStackable() ? (int)i.Durability : 1);
         var tokenName = tokenDef?.Name ?? "token";
         if (tokenCount <= 0)
         {
@@ -207,9 +208,39 @@ public class GoldenArcherNpcPlugIn : IPlayerTalkToNpcPlugIn,
 
     private async ValueTask ConsumeTokensAsync(Player player, IList<Item> tokens, int count)
     {
-        for (int i = 0; i < count && i < tokens.Count; i++)
+        var remaining = count;
+        foreach (var t in tokens)
         {
-            await player.DestroyInventoryItemAsync(tokens[i]).ConfigureAwait(false);
+            if (remaining <= 0)
+            {
+                break;
+            }
+
+            if (t.IsStackable())
+            {
+                var take = (int)Math.Min(remaining, (int)t.Durability);
+                if (take <= 0)
+                {
+                    continue;
+                }
+
+                if (take == (int)t.Durability)
+                {
+                    remaining -= take;
+                    await player.DestroyInventoryItemAsync(t).ConfigureAwait(false);
+                }
+                else
+                {
+                    t.Durability -= take;
+                    remaining -= take;
+                    await player.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(t, true)).ConfigureAwait(false);
+                }
+            }
+            else
+            {
+                remaining--;
+                await player.DestroyInventoryItemAsync(t).ConfigureAwait(false);
+            }
         }
     }
 

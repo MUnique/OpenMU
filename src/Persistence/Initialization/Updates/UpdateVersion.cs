@@ -324,4 +324,19 @@ public enum UpdateVersion
     /// The version of the Golden Archer data update (adds Rena item and a default reward drop group).
     /// </summary>
     GoldenArcherDataSeason6 = 62,
+
+    /// <summary>
+    /// The version of the Rena global drop on Season 1 maps (Version 0.75).
+    /// </summary>
+    RenaGlobalDrop075 = 63,
+
+    /// <summary>
+    /// The version of the Rena global drop on Season 1 maps (Version 0.95d).
+    /// </summary>
+    RenaGlobalDrop095d = 64,
+
+    /// <summary>
+    /// The version of the Rena global drop on Season 1 maps (Season 6 data).
+    /// </summary>
+    RenaGlobalDropSeason6 = 65,
 }
