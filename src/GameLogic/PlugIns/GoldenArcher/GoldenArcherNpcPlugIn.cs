@@ -94,94 +94,91 @@ public class GoldenArcherNpcPlugIn : IPlayerTalkToNpcPlugIn,
         var maxAccept = Math.Clamp(cfg.MaximumAcceptedTokens, 1, 255);
         var tokensToConsume = Math.Min(tokenCount, maxAccept);
 
-        // Determine reward tier
+        // Determine reward tier and validate before consuming tokens
+        Func<ValueTask>? applyReward = null;
+
         if (tokensToConsume >= cfg.TopTierExact && (cfg.TopTierItemGroup > 0 || cfg.TopTierItemNumber > 0))
         {
-            tokensToConsume = cfg.TopTierExact; // consume exact 255 for top reward
-            await this.ConsumeTokensAsync(player, allTokens, tokensToConsume).ConfigureAwait(false);
             var topDef = player.GameContext.Configuration.Items.FirstOrDefault(i => i.Group == cfg.TopTierItemGroup && i.Number == cfg.TopTierItemNumber);
             if (topDef is null)
             {
                 await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(
                     "Configuración inválida del premio de 255 tokens.", MessageType.BlueNormal)).ConfigureAwait(false);
+                return;
             }
-            else
+
+            tokensToConsume = cfg.TopTierExact; // consume exact 255 for top reward
+            applyReward = async () =>
             {
-                var item = new TemporaryItem
-                {
-                    Definition = topDef,
-                    Level = cfg.TopTierItemLevel,
-                    Durability = 1,
-                };
+                var item = new TemporaryItem { Definition = topDef, Level = cfg.TopTierItemLevel, Durability = 1 };
                 await this.GiveOrDropAsync(player, item, $"Premio por {tokensToConsume} {tokenName}: {item.Definition?.Name} +{item.Level}").ConfigureAwait(false);
-            }
+            };
         }
         else if (tokensToConsume >= 200 && !string.IsNullOrWhiteSpace(cfg.AdvancedTierDropGroupDescription))
         {
-            await this.ConsumeTokensAsync(player, allTokens, tokensToConsume).ConfigureAwait(false);
             var group = player.GameContext.Configuration.DropItemGroups.FirstOrDefault(g => string.Equals(g.Description, cfg.AdvancedTierDropGroupDescription, StringComparison.OrdinalIgnoreCase));
             var rewardItem = group is null ? null : player.GameContext.DropGenerator.GenerateItemDrop(group);
             if (rewardItem is null)
             {
-                await player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync(
-                    "No has recibido premio esta vez.", npc)).ConfigureAwait(false);
+                await player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync("No has recibido premio esta vez.", npc)).ConfigureAwait(false);
+                return;
             }
-            else
-            {
-                await this.GiveOrDropAsync(player, rewardItem, $"Premio por {tokensToConsume} {tokenName}: {rewardItem.Definition?.Name}").ConfigureAwait(false);
-            }
+
+            applyReward = async () => await this.GiveOrDropAsync(player, rewardItem, $"Premio por {tokensToConsume} {tokenName}: {rewardItem.Definition?.Name}").ConfigureAwait(false);
         }
         else if (tokensToConsume >= 100 && !string.IsNullOrWhiteSpace(cfg.HighTierDropGroupDescription))
         {
-            await this.ConsumeTokensAsync(player, allTokens, tokensToConsume).ConfigureAwait(false);
             var group = player.GameContext.Configuration.DropItemGroups.FirstOrDefault(g => string.Equals(g.Description, cfg.HighTierDropGroupDescription, StringComparison.OrdinalIgnoreCase));
             var rewardItem = group is null ? null : player.GameContext.DropGenerator.GenerateItemDrop(group);
             if (rewardItem is null)
             {
-                await player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync(
-                    "No has recibido premio esta vez.", npc)).ConfigureAwait(false);
+                await player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync("No has recibido premio esta vez.", npc)).ConfigureAwait(false);
+                return;
             }
-            else
-            {
-                await this.GiveOrDropAsync(player, rewardItem, $"Premio por {tokensToConsume} {tokenName}: {rewardItem.Definition?.Name}").ConfigureAwait(false);
-            }
+
+            applyReward = async () => await this.GiveOrDropAsync(player, rewardItem, $"Premio por {tokensToConsume} {tokenName}: {rewardItem.Definition?.Name}").ConfigureAwait(false);
         }
         else if (tokensToConsume >= 10 && (cfg.MidTierItemGroup > 0 || cfg.MidTierItemNumber > 0))
         {
-            await this.ConsumeTokensAsync(player, allTokens, tokensToConsume).ConfigureAwait(false);
             var midDef = player.GameContext.Configuration.Items.FirstOrDefault(i => i.Group == cfg.MidTierItemGroup && i.Number == cfg.MidTierItemNumber);
             if (midDef is null)
             {
                 await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(
                     "Configuración inválida del premio de 10..99 tokens.", MessageType.BlueNormal)).ConfigureAwait(false);
+                return;
             }
-            else
+
+            applyReward = async () =>
             {
-                var item = new TemporaryItem
-                {
-                    Definition = midDef,
-                    Level = cfg.MidTierItemLevel,
-                    Durability = 1,
-                };
+                var item = new TemporaryItem { Definition = midDef, Level = cfg.MidTierItemLevel, Durability = 1 };
                 await this.GiveOrDropAsync(player, item, $"Premio por {tokensToConsume} {tokenName}: {item.Definition?.Name} +{item.Level}").ConfigureAwait(false);
-            }
+            };
         }
         else
         {
-            await this.ConsumeTokensAsync(player, allTokens, tokensToConsume).ConfigureAwait(false);
             var money = (uint)Math.Max(0, (long)cfg.LowTierMoneyPerToken * tokensToConsume);
-            if (!player.TryAddMoney((int)money))
+            applyReward = async () =>
             {
-                if (player.CurrentMap is { } map)
+                if (!player.TryAddMoney((int)money))
                 {
-                    var dropPoint = map.Terrain.GetRandomCoordinate(player.Position, 1);
-                    var dropped = new DroppedMoney(money, dropPoint, map);
-                    await map.AddAsync(dropped).ConfigureAwait(false);
+                    if (player.CurrentMap is { } map)
+                    {
+                        var dropPoint = map.Terrain.GetRandomCoordinate(player.Position, 1);
+                        var dropped = new DroppedMoney(money, dropPoint, map);
+                        await map.AddAsync(dropped).ConfigureAwait(false);
+                    }
                 }
-            }
 
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(
-                $"Recibiste {money:N0} Zen por entregar {tokensToConsume} {tokenName}.", MessageType.BlueNormal)).ConfigureAwait(false);
+                await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(
+                    $"Recibiste {money:N0} Zen por entregar {tokensToConsume} {tokenName}.", MessageType.BlueNormal)).ConfigureAwait(false);
+            };
+        }
+
+        // Consume and apply
+        await this.ConsumeTokensAsync(player, allTokens, tokensToConsume).ConfigureAwait(false);
+        if (applyReward is not null)
+        {
+            await applyReward().ConfigureAwait(false);
         }
 
         eventArgs.LeavesDialogOpen = false; // finish interaction
