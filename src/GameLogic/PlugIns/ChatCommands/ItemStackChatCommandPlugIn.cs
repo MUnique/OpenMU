@@ -55,6 +55,7 @@ public sealed class ItemStackChatCommandPlugIn : ChatCommandPlugInBase<ItemStack
             if (await gameMaster.Inventory!.AddItemAsync(item).ConfigureAwait(false))
             {
                 created = (int)item.Durability;
+                await gameMaster.InvokeViewPlugInAsync<IItemAppearPlugIn>(p => p.ItemAppearAsync(item)).ConfigureAwait(false);
             }
         }
         else
@@ -70,6 +71,7 @@ public sealed class ItemStackChatCommandPlugIn : ChatCommandPlugInBase<ItemStack
                     break;
                 }
                 created++;
+                await gameMaster.InvokeViewPlugInAsync<IItemAppearPlugIn>(p => p.ItemAppearAsync(item)).ConfigureAwait(false);
             }
         }
 

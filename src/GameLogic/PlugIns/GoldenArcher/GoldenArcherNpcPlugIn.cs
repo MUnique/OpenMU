@@ -174,11 +174,31 @@ public class GoldenArcherNpcPlugIn : IPlayerTalkToNpcPlugIn,
             };
         }
 
-        // Consume and apply
-        await this.ConsumeTokensAsync(player, allTokens, tokensToConsume).ConfigureAwait(false);
-        if (applyReward is not null)
+        // Apply reward first; consume tokens afterwards so players don't lose
+        // items in case of unexpected errors while granting the reward.
+        // In normal cases, granting the reward either adds to inventory or
+        // drops it on the ground and shows a message.
+        try
         {
-            await applyReward().ConfigureAwait(false);
+            if (applyReward is not null)
+            {
+                await applyReward().ConfigureAwait(false);
+            }
+            else
+            {
+                await player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync(
+                    "No has recibido premio esta vez.", npc)).ConfigureAwait(false);
+                return;
+            }
+
+            await this.ConsumeTokensAsync(player, allTokens, tokensToConsume).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            player.Logger.LogError(ex, "GoldenArcher reward failed for player {player}", player);
+            await player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync(
+                "Ha ocurrido un error al entregar el premio. Inténtalo de nuevo.", npc)).ConfigureAwait(false);
+            return;
         }
 
         eventArgs.LeavesDialogOpen = false; // finish interaction
