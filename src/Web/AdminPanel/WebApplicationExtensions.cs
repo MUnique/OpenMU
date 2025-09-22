@@ -22,6 +22,8 @@ using MUnique.OpenMU.Persistence.Initialization.Updates;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix;
 using MUnique.OpenMU.Web.AdminPanel.Models;
 using MUnique.OpenMU.Web.AdminPanel.Services;
+using MUnique.OpenMU.Web.AdminPanel.Localization;
+using MUnique.OpenMU.Localization;
 
 /// <summary>
 /// Extensions for the <see cref="WebApplicationBuilder"/>.
@@ -53,6 +55,14 @@ public static class WebApplicationExtensions
 
         var services = builder.Services;
         services.AddLocalization();
+        services.AddScoped(sp =>
+        {
+            var options = new LocalizationOptions
+            {
+                ResourceDirectory = Path.Combine(builder.Environment.ContentRootPath, "Localization"),
+            };
+            return new LocalizationService(options);
+        });
         services.Configure<RequestLocalizationOptions>(options =>
         {
             var preferredCultures = new[] { "es-AR", "es-ES" };

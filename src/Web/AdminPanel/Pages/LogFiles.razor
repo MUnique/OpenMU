@@ -1,16 +1,19 @@
-﻿@page "/logfiles"
+@page "/logfiles"
 
 @using System.IO
+@using MUnique.OpenMU.Web.AdminPanel.Localization
 
-<PageTitle>OpenMU: Archivos de Log</PageTitle>
-<Breadcrumb IsFirstFromRoot="true" Caption="Archivos de Log"/>
+@inherits LocalizedComponentBase
+
+<PageTitle>@this.Localization["LogFiles_Title"]</PageTitle>
+<Breadcrumb IsFirstFromRoot="true" Caption="@this.Localization["LogFiles_Breadcrumb"]"/>
 <div>
     <table>
         <thead>
         <tr>
-            <th>Nombre de archivo</th>
-            <th>Última actualización</th>
-            <th>Tamaño</th>
+            <th>@this.Localization["LogFiles_Name"]</th>
+            <th>@this.Localization["LogFiles_LastUpdated"]</th>
+            <th>@this.Localization["LogFiles_Size"]</th>
         </tr>
         </thead>
         <tbody>
@@ -50,7 +53,7 @@
             (< 1024 << 10)  => $"{Math.Round(size / 1024D, 2)} KiB",
             (< 1024 << 20) => $"{Math.Round(size * 1D / (1024 << 10), 2)} MiB",
             (< 1024L << 30) => $"{Math.Round(size * 1D / (1024L << 20), 2)} GiB",
-            _ => $"{size} bytes"
+            _ => $"{size} {this.Localization.GetString("LogFiles_Bytes")}"
             };
     }
 }

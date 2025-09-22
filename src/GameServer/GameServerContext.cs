@@ -11,6 +11,7 @@ using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
+using MUnique.OpenMU.Localization;
 using Nito.AsyncEx;
 
 /// <summary>
@@ -36,6 +37,7 @@ public class GameServerContext : GameContext, IGameServerContext
     /// <param name="plugInManager">The plug in manager.</param>
     /// <param name="dropGenerator">The drop generator.</param>
     /// <param name="changeMediator">The change mediator.</param>
+    /// <param name="localization">The localization service.</param>
     public GameServerContext(
         GameServerDefinition gameServerDefinition,
         IGuildServer guildServer,
@@ -47,7 +49,8 @@ public class GameServerContext : GameContext, IGameServerContext
         ILoggerFactory loggerFactory,
         PlugInManager plugInManager,
         IDropGenerator dropGenerator,
-        IConfigurationChangeMediator changeMediator)
+        IConfigurationChangeMediator changeMediator,
+        LocalizationService localization)
         : base(
             gameServerDefinition.GameConfiguration ?? throw new InvalidOperationException("GameServerDefinition requires a GameConfiguration"),
             persistenceContextProvider,
@@ -64,6 +67,7 @@ public class GameServerContext : GameContext, IGameServerContext
         this.LoginServer = loginServer;
         this.FriendServer = friendServer;
         this.ServerConfiguration = gameServerDefinition.ServerConfiguration ?? throw new InvalidOperationException("GameServerDefinition requires a ServerConfiguration");
+        this.Localization = localization;
     }
 
     /// <summary>
@@ -88,6 +92,9 @@ public class GameServerContext : GameContext, IGameServerContext
 
     /// <inheritdoc/>
     public GameServerConfiguration ServerConfiguration { get; }
+
+    /// <inheritdoc/>
+    public LocalizationService Localization { get; }
 
     /// <inheritdoc />
     public override float ExperienceRate => base.ExperienceRate * this._gameServerDefinition.ExperienceRate;

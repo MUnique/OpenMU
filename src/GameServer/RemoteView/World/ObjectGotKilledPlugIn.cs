@@ -43,7 +43,8 @@ public class ObjectGotKilledPlugIn : IObjectGotKilledPlugIn
         await connection.SendObjectGotKilledAsync(killedId, skillId, killerId).ConfigureAwait(false);
         if (this._player == killed && killer is Player killerPlayer && this._player.DuelRoom is null)
         {
-            await this._player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync($"You got killed by {killerPlayer.Name}", MessageType.BlueNormal)).ConfigureAwait(false);
+            var message = this._player.GameServerContext.Localization.GetString("Server_Message_KilledByPlayer", killerPlayer.Name);
+            await this._player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal)).ConfigureAwait(false);
         }
     }
 }

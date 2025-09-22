@@ -39,11 +39,13 @@ public class StartWhiteWizardInvasionChatCommandPlugIn : IChatCommandPlugIn
             {
                 // ForceStart is defined on PeriodicTaskBasePlugIn; use reflection to avoid generic constraints
                 ww.GetType().GetMethod("ForceStart")?.Invoke(ww, Array.Empty<object>());
-                await player.ShowMessageAsync("White Wizard invasion will start shortly.").ConfigureAwait(false);
+                var message = player.GetLocalizedMessage("Chat_Message_WhiteWizardStarting", "White Wizard invasion will start shortly.");
+                await player.ShowMessageAsync(message).ConfigureAwait(false);
                 return;
             }
         }
 
-        await player.ShowMessageAsync("White Wizard invasion plugin not found or inactive.").ConfigureAwait(false);
+        var notFound = player.GetLocalizedMessage("Chat_Message_WhiteWizardUnavailable", "White Wizard invasion plug-in not found or inactive.");
+        await player.ShowMessageAsync(notFound).ConfigureAwait(false);
     }
 }

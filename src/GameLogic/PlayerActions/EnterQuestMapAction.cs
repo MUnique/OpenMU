@@ -81,7 +81,8 @@ public abstract class EnterQuestMapAction
         if (this._price > 0 && !player.TryRemoveMoney(this._price))
         {
             player.Logger.LogError($"Not enough money to enter the map.");
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync($"No tienes suficiente zen para entrar a {targetMap.Name}.", MessageType.BlueNormal)).ConfigureAwait(false);
+            var message = player.GetLocalizedMessage("QuestMap_Message_NotEnoughZen", "You don't have enough zen to enter {0}.", targetMap.Name);
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal)).ConfigureAwait(false);
             return;
         }
 

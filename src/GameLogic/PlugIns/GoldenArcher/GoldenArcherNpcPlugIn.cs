@@ -46,9 +46,10 @@ public class GoldenArcherNpcPlugIn : IPlayerTalkToNpcPlugIn,
 
         if (!IsConfigurationValid(cfg))
         {
-            await player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync(
-                "Golden Archer no está configurado. Configura el ítem token y el grupo de premios en Admin Panel → Plugins.",
-                npc)).ConfigureAwait(false);
+            var message = player.GetLocalizedMessage(
+                "GoldenArcher_Message_NotConfigured",
+                "Golden Archer is not configured. Configure the token item and reward group in the Admin Panel → Plugins.");
+            await player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync(message, npc)).ConfigureAwait(false);
             // Keep dialog open so the client shows NPC bubble; no need to change state.
             eventArgs.LeavesDialogOpen = false;
             return;
@@ -82,11 +83,11 @@ public class GoldenArcherNpcPlugIn : IPlayerTalkToNpcPlugIn,
         var allTokens = inventory.Items.Where(MatchesToken).ToList();
         // Count pieces: for stackables, durability is the amount; otherwise, each item counts as 1.
         var tokenCount = allTokens.Sum(i => i.IsStackable() ? (int)i.Durability : 1);
-        var tokenName = tokenDef?.Name ?? "token";
+        var tokenName = tokenDef?.Name ?? player.GetLocalizedMessage("GoldenArcher_Token_DefaultName", "token");
         if (tokenCount <= 0)
         {
-            await player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync(
-                $"No tienes {tokenName}.", npc)).ConfigureAwait(false);
+            var message = player.GetLocalizedMessage("GoldenArcher_Message_NoTokens", "You don't have any {0}.", tokenName);
+            await player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync(message, npc)).ConfigureAwait(false);
             eventArgs.LeavesDialogOpen = false;
             return;
         }
@@ -102,8 +103,8 @@ public class GoldenArcherNpcPlugIn : IPlayerTalkToNpcPlugIn,
             var topDef = player.GameContext.Configuration.Items.FirstOrDefault(i => i.Group == cfg.TopTierItemGroup && i.Number == cfg.TopTierItemNumber);
             if (topDef is null)
             {
-                await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(
-                    "Configuración inválida del premio de 255 tokens.", MessageType.BlueNormal)).ConfigureAwait(false);
+                var message = player.GetLocalizedMessage("GoldenArcher_Message_InvalidTopRewardConfig", "Invalid configuration for the 255-token reward.");
+                await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal)).ConfigureAwait(false);
                 return;
             }
 
@@ -111,7 +112,15 @@ public class GoldenArcherNpcPlugIn : IPlayerTalkToNpcPlugIn,
             applyReward = async () =>
             {
                 var item = new TemporaryItem { Definition = topDef, Level = cfg.TopTierItemLevel, Durability = 1 };
-                await this.GiveOrDropAsync(player, item, $"Premio por {tokensToConsume} {tokenName}: {item.Definition?.Name} +{item.Level}").ConfigureAwait(false);
+                await this.GiveOrDropAsync(
+                    player,
+                    item,
+                    "GoldenArcher_Message_ItemRewardWithLevel",
+                    "Reward for delivering {0} {1}: {2} +{3}",
+                    tokensToConsume,
+                    tokenName,
+                    item.Definition?.Name ?? string.Empty,
+                    item.Level).ConfigureAwait(false);
             };
         }
         else if (tokensToConsume >= 200 && !string.IsNullOrWhiteSpace(cfg.AdvancedTierDropGroupDescription))
@@ -120,12 +129,20 @@ public class GoldenArcherNpcPlugIn : IPlayerTalkToNpcPlugIn,
             var rewardItem = group is null ? null : player.GameContext.DropGenerator.GenerateItemDrop(group);
             if (rewardItem is null)
             {
-                await player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync("No has recibido premio esta vez.", npc)).ConfigureAwait(false);
+                var message = player.GetLocalizedMessage("GoldenArcher_Message_NoReward", "You didn't receive a reward this time.");
+                await player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync(message, npc)).ConfigureAwait(false);
                 return;
             }
 
             tokensToConsume = 200;
-            applyReward = async () => await this.GiveOrDropAsync(player, rewardItem, $"Premio por {tokensToConsume} {tokenName}: {rewardItem.Definition?.Name}").ConfigureAwait(false);
+            applyReward = async () => await this.GiveOrDropAsync(
+                player,
+                rewardItem,
+                "GoldenArcher_Message_ItemReward",
+                "Reward for delivering {0} {1}: {2}",
+                tokensToConsume,
+                tokenName,
+                rewardItem.Definition?.Name ?? string.Empty).ConfigureAwait(false);
         }
         else if (tokensToConsume >= 100 && !string.IsNullOrWhiteSpace(cfg.HighTierDropGroupDescription))
         {
@@ -133,27 +150,43 @@ public class GoldenArcherNpcPlugIn : IPlayerTalkToNpcPlugIn,
             var rewardItem = group is null ? null : player.GameContext.DropGenerator.GenerateItemDrop(group);
             if (rewardItem is null)
             {
-                await player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync("No has recibido premio esta vez.", npc)).ConfigureAwait(false);
+                var message = player.GetLocalizedMessage("GoldenArcher_Message_NoReward", "You didn't receive a reward this time.");
+                await player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync(message, npc)).ConfigureAwait(false);
                 return;
             }
 
             tokensToConsume = 100;
-            applyReward = async () => await this.GiveOrDropAsync(player, rewardItem, $"Premio por {tokensToConsume} {tokenName}: {rewardItem.Definition?.Name}").ConfigureAwait(false);
+            applyReward = async () => await this.GiveOrDropAsync(
+                player,
+                rewardItem,
+                "GoldenArcher_Message_ItemReward",
+                "Reward for delivering {0} {1}: {2}",
+                tokensToConsume,
+                tokenName,
+                rewardItem.Definition?.Name ?? string.Empty).ConfigureAwait(false);
         }
         else if (tokensToConsume >= 10 && (cfg.MidTierItemGroup > 0 || cfg.MidTierItemNumber > 0))
         {
             var midDef = player.GameContext.Configuration.Items.FirstOrDefault(i => i.Group == cfg.MidTierItemGroup && i.Number == cfg.MidTierItemNumber);
             if (midDef is null)
             {
-                await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(
-                    "Configuración inválida del premio de 10..99 tokens.", MessageType.BlueNormal)).ConfigureAwait(false);
+                var message = player.GetLocalizedMessage("GoldenArcher_Message_InvalidMidRewardConfig", "Invalid configuration for the 10-99 token reward.");
+                await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal)).ConfigureAwait(false);
                 return;
             }
 
             applyReward = async () =>
             {
                 var item = new TemporaryItem { Definition = midDef, Level = cfg.MidTierItemLevel, Durability = 1 };
-                await this.GiveOrDropAsync(player, item, $"Premio por {tokensToConsume} {tokenName}: {item.Definition?.Name} +{item.Level}").ConfigureAwait(false);
+                await this.GiveOrDropAsync(
+                    player,
+                    item,
+                    "GoldenArcher_Message_ItemRewardWithLevel",
+                    "Reward for delivering {0} {1}: {2} +{3}",
+                    tokensToConsume,
+                    tokenName,
+                    item.Definition?.Name ?? string.Empty,
+                    item.Level).ConfigureAwait(false);
             };
             tokensToConsume = 10;
         }
@@ -172,8 +205,13 @@ public class GoldenArcherNpcPlugIn : IPlayerTalkToNpcPlugIn,
                     }
                 }
 
-                await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(
-                    $"Recibiste {money:N0} Zen por entregar {tokensToConsume} {tokenName}.", MessageType.BlueNormal)).ConfigureAwait(false);
+                var message = player.GetLocalizedMessage(
+                    "GoldenArcher_Message_MoneyReward",
+                    "You received {0:N0} zen for delivering {1} {2}.",
+                    money,
+                    tokensToConsume,
+                    tokenName);
+                await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal)).ConfigureAwait(false);
             };
         }
 
@@ -189,8 +227,8 @@ public class GoldenArcherNpcPlugIn : IPlayerTalkToNpcPlugIn,
             }
             else
             {
-                await player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync(
-                    "No has recibido premio esta vez.", npc)).ConfigureAwait(false);
+                var message = player.GetLocalizedMessage("GoldenArcher_Message_NoReward", "You didn't receive a reward this time.");
+                await player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync(message, npc)).ConfigureAwait(false);
                 return;
             }
 
@@ -199,8 +237,8 @@ public class GoldenArcherNpcPlugIn : IPlayerTalkToNpcPlugIn,
         catch (Exception ex)
         {
             player.Logger.LogError(ex, "GoldenArcher reward failed for player {player}", player);
-            await player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync(
-                "Ha ocurrido un error al entregar el premio. Inténtalo de nuevo.", npc)).ConfigureAwait(false);
+            var message = player.GetLocalizedMessage("GoldenArcher_Message_Error", "An error occurred while delivering the reward. Please try again.");
+            await player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync(message, npc)).ConfigureAwait(false);
             return;
         }
 
@@ -265,15 +303,16 @@ public class GoldenArcherNpcPlugIn : IPlayerTalkToNpcPlugIn,
         }
     }
 
-    private async ValueTask GiveOrDropAsync(Player player, Item item, string message)
+    private async ValueTask GiveOrDropAsync(Player player, Item item, string messageKey, string fallback, params object?[] arguments)
     {
+        var localizedMessage = player.GetLocalizedMessage(messageKey, fallback, arguments);
         var inventory = player.Inventory!;
         // Determine the target slot up-front to be able to fetch the persisted item afterwards.
         var targetSlot = inventory.CheckInvSpace(item);
         if (targetSlot is not null && await inventory.AddItemAsync(targetSlot.Value, item).ConfigureAwait(false))
         {
             var finalItem = inventory.GetItem(targetSlot.Value) ?? item;
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal)).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(localizedMessage, MessageType.BlueNormal)).ConfigureAwait(false);
             await player.InvokeViewPlugInAsync<IItemAppearPlugIn>(p => p.ItemAppearAsync(finalItem)).ConfigureAwait(false);
             return;
         }
@@ -283,13 +322,13 @@ public class GoldenArcherNpcPlugIn : IPlayerTalkToNpcPlugIn,
             var dropPoint = map.Terrain.GetRandomCoordinate(player.Position, 1);
             var dropped = new DroppedItem(item, dropPoint, map, player);
             await map.AddAsync(dropped).ConfigureAwait(false);
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(
-                message + " (dejado en el suelo por inventario lleno)", MessageType.BlueNormal)).ConfigureAwait(false);
+            var dropMessage = player.GetLocalizedMessage("GoldenArcher_Message_ItemDropped", "{0} (dropped on the ground because the inventory is full)", localizedMessage);
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(dropMessage, MessageType.BlueNormal)).ConfigureAwait(false);
         }
         else
         {
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(
-                "No se pudo entregar el premio.", MessageType.BlueNormal)).ConfigureAwait(false);
+            var failure = player.GetLocalizedMessage("GoldenArcher_Message_DeliveryFailed", "The reward could not be delivered.");
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(failure, MessageType.BlueNormal)).ConfigureAwait(false);
         }
     }
 }

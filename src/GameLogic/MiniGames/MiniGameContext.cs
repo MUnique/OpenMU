@@ -533,7 +533,8 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
             case MiniGameRewardType.Money:
                 if (!player.TryAddMoney(reward.RewardAmount))
                 {
-                    await player.ShowMessageAsync("Couldn't add reward money, inventory is full.").ConfigureAwait(false);
+                    var rewardFull = player.GetLocalizedMessage("MiniGame_Message_RewardInventoryFull", "Couldn't add reward money, inventory is full.");
+                    await player.ShowMessageAsync(rewardFull).ConfigureAwait(false);
                 }
 
                 return (0, reward.RewardAmount);
@@ -677,7 +678,14 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
             {
                 if (this.Definition.MapCreationPolicy != MiniGameMapCreationPolicy.Shared)
                 {
-                    await this.ShowMessageAsync($"{this.Definition.Name} comienza en {(int)enterDuration.TotalMinutes} minutos.").ConfigureAwait(false);
+                    var minutesRemaining = (int)enterDuration.TotalMinutes;
+                    await this.ShowLocalizedMessageAsync(
+                            "MiniGame_Message_StartCountdown",
+                            "{0} will start in {1} minutes.",
+                            MessageType.GoldenCenter,
+                            this.Definition.Name,
+                            minutesRemaining)
+                        .ConfigureAwait(false);
                 }
 
                 await Task.Delay(messagePeriod, cancellationToken).ConfigureAwait(false);
@@ -691,7 +699,12 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
             await this.CloseEntranceAsync().ConfigureAwait(false);
             if (this.PlayerCount < this.MinimumPlayerCount)
             {
-                await this.ShowMessageAsync($"No se puede iniciar con menos de {this.MinimumPlayerCount} jugadores.").ConfigureAwait(false);
+                await this.ShowLocalizedMessageAsync(
+                        "MiniGame_Message_MinPlayers",
+                        "Cannot start with fewer than {0} players.",
+                        MessageType.GoldenCenter,
+                        this.MinimumPlayerCount)
+                    .ConfigureAwait(false);
                 if (this.Definition.EntranceFee > 0)
                 {
                     await this.ForEachPlayerAsync(async player => player.TryAddMoney(this.Definition.EntranceFee)).ConfigureAwait(false);
@@ -774,6 +787,16 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     private async ValueTask ShowMessageAsync(string message, MessageType messageType = MessageType.GoldenCenter)
     {
         await this.ForEachPlayerAsync(player => player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, messageType)).AsTask()).ConfigureAwait(false);
+    }
+
+    private async ValueTask ShowLocalizedMessageAsync(string key, string fallback, MessageType messageType = MessageType.GoldenCenter, params object?[] arguments)
+    {
+        await this.ForEachPlayerAsync(player =>
+            player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p =>
+            {
+                var message = player.GetLocalizedMessage(key, fallback, arguments);
+                return p.ShowMessageAsync(message, messageType);
+            }).AsTask()).ConfigureAwait(false);
     }
 
     private async ValueTask StopAsync()
@@ -1018,7 +1041,11 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         {
             if (!this.IsItemAllowedToEquip(item))
             {
-                await player.ShowMessageAsync($"No puedes entrar al evento con el ítem equipado '{item.Definition?.Name ?? item.ToString()}'.").ConfigureAwait(false);
+                var message = player.GetLocalizedMessage(
+                    "MiniGame_Message_ItemNotAllowed",
+                    "You can't enter the event with the equipped item '{0}'.",
+                    item.Definition?.Name ?? item.ToString());
+                await player.ShowMessageAsync(message).ConfigureAwait(false);
                 result = false;
             }
         }

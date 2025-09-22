@@ -28,7 +28,8 @@ public sealed class ItemStackChatCommandPlugIn : ChatCommandPlugInBase<ItemStack
     {
         if (args.Count <= 0)
         {
-            await this.ShowMessageToAsync(gameMaster, "Count must be > 0").ConfigureAwait(false);
+            var message = gameMaster.GetLocalizedMessage("Chat_ItemStack_CountPositive", "Count must be greater than zero.");
+            await this.ShowMessageToAsync(gameMaster, message).ConfigureAwait(false);
             return;
         }
 
@@ -37,7 +38,8 @@ public sealed class ItemStackChatCommandPlugIn : ChatCommandPlugInBase<ItemStack
 
         if (def is null)
         {
-            await this.ShowMessageToAsync(gameMaster, $"Item {args.Group} {args.Number} not found.").ConfigureAwait(false);
+            var message = gameMaster.GetLocalizedMessage("Chat_ItemStack_ItemNotFound", "Item {0} {1} not found.", args.Group, args.Number);
+            await this.ShowMessageToAsync(gameMaster, message).ConfigureAwait(false);
             return;
         }
 
@@ -78,8 +80,20 @@ public sealed class ItemStackChatCommandPlugIn : ChatCommandPlugInBase<ItemStack
             }
         }
 
-        await this.ShowMessageToAsync(gameMaster, created > 0
-            ? $"[{this.Key}] Created {created}x {def.Name}"
-            : $"[{this.Key}] No space to create items").ConfigureAwait(false);
+        if (created > 0)
+        {
+            var success = gameMaster.GetLocalizedMessage(
+                "Chat_ItemStack_Success",
+                "[{0}] Created {1}x {2}",
+                this.Key,
+                created,
+                def.Name ?? string.Empty);
+            await this.ShowMessageToAsync(gameMaster, success).ConfigureAwait(false);
+        }
+        else
+        {
+            var failure = gameMaster.GetLocalizedMessage("Chat_ItemStack_NoSpace", "[{0}] No space to create items", this.Key);
+            await this.ShowMessageToAsync(gameMaster, failure).ConfigureAwait(false);
+        }
     }
 }
