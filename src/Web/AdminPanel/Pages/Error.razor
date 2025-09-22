@@ -1,15 +1,18 @@
-﻿@page "/error"
+@page "/error"
+@using MUnique.OpenMU.Web.AdminPanel.Localization
 
-<PageTitle>Error</PageTitle>
-<h1 class="text-danger">Error.</h1>
-<h2 class="text-danger">Ocurrió un error al procesar tu solicitud.</h2>
+@inherits LocalizedComponentBase
 
-<h3>Modo de Desarrollo</h3>
+<PageTitle>@this.Localization["Error_Title"]</PageTitle>
+<h1 class="text-danger">@this.Localization["Error_Header"]</h1>
+<h2 class="text-danger">@this.Localization["Error_SubHeader"]</h2>
+
+<h3>@this.Localization["Error_DevModeHeading"]</h3>
 <p>
-    Cambiar al entorno <strong>Development</strong> mostrará más información detallada sobre el error ocurrido.
+    @((MarkupString)this.Localization["Error_DevModeDescription1"])
     <br />
-    <strong>El entorno Development no debe estar habilitado en producción.</strong>
-    Podría exponer información sensible de las excepciones a los usuarios.
-    Para depuración local, habilita el entorno <strong>Development</strong> estableciendo la variable de entorno <strong>ASPNETCORE_ENVIRONMENT</strong> en <strong>Development</strong>
-    y reiniciando la aplicación.
-.</p>
+    <strong>@this.Localization["Error_DevModeWarning"]</strong>
+    @this.Localization["Error_DevModeDescription2"]
+    @((MarkupString)this.Localization["Error_DevModeDescription3"])
+    @this.Localization["Error_DevModeDescription4"]
+</p>

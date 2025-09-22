@@ -20,6 +20,7 @@ using MUnique.OpenMU.GameLogic.Views.Messenger;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
+using MUnique.OpenMU.Localization;
 using Nito.AsyncEx;
 
 /// <summary>
@@ -47,6 +48,7 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
     /// <param name="loggerFactory">The logger factory.</param>
     /// <param name="plugInManager">The plug in manager.</param>
     /// <param name="changeMediator"> The change mediatior.</param>
+    /// <param name="localization">The localization service.</param>
     public GameServer(
         GameServerDefinition gameServerDefinition,
         IGuildServer guildServer,
@@ -56,7 +58,8 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
         IFriendServer friendServer,
         ILoggerFactory loggerFactory,
         PlugInManager plugInManager,
-        IConfigurationChangeMediator changeMediator)
+        IConfigurationChangeMediator changeMediator,
+        LocalizationService localization)
     {
         this.Id = gameServerDefinition.ServerID;
         this.Description = gameServerDefinition.Description;
@@ -67,7 +70,7 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
             var gameConfiguration = gameServerDefinition.GameConfiguration ?? throw Error.NotInitializedProperty(gameServerDefinition, nameof(gameServerDefinition.GameConfiguration));
             var dropGenerator = new DefaultDropGenerator(gameConfiguration, Rand.GetRandomizer());
             var mapInitializer = new GameServerMapInitializer(gameServerDefinition, loggerFactory.CreateLogger<GameServerMapInitializer>(), dropGenerator, changeMediator);
-            this._gameContext = new GameServerContext(gameServerDefinition, guildServer, eventPublisher, loginServer, friendServer, persistenceContextProvider, mapInitializer, loggerFactory, plugInManager, dropGenerator, changeMediator);
+            this._gameContext = new GameServerContext(gameServerDefinition, guildServer, eventPublisher, loginServer, friendServer, persistenceContextProvider, mapInitializer, loggerFactory, plugInManager, dropGenerator, changeMediator, localization);
             this._gameContext.GameMapCreated += (_, _) => this.OnPropertyChanged(nameof(this.Context));
             this._gameContext.GameMapRemoved += (_, _) => this.OnPropertyChanged(nameof(this.Context));
             mapInitializer.PlugInManager = this._gameContext.PlugInManager;
@@ -270,7 +273,8 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
         var player = this._gameContext.GetPlayerByCharacterName(playerName);
         if (player != null)
         {
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("You got disconnected by a game master.", MessageType.BlueNormal)).ConfigureAwait(false);
+            var message = this.Context.Localization["Server_Message_DisconnectGameMaster"];
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal)).ConfigureAwait(false);
             await player.DisconnectAsync().ConfigureAwait(false);
             return true;
         }
@@ -285,7 +289,8 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
         var player = players.FirstOrDefault(p => p.Account?.LoginName == accountName);
         if (player != null)
         {
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("You got disconnected by an administrator.", MessageType.BlueNormal)).ConfigureAwait(false);
+            var message = this.Context.Localization["Server_Message_DisconnectAdmin"];
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal)).ConfigureAwait(false);
             await player.DisconnectAsync().ConfigureAwait(false);
             return true;
         }
@@ -300,7 +305,8 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
         if (player?.Account is not null)
         {
             player.Account.State = AccountState.TemporarilyBanned;
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Your account has been temporarily banned by a game master.", MessageType.BlueNormal)).ConfigureAwait(false);
+            var message = this.Context.Localization["Server_Message_TemporaryBan"];
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal)).ConfigureAwait(false);
             await player.DisconnectAsync().ConfigureAwait(false);
             return true;
         }
@@ -330,7 +336,8 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
 
         if (affectedPlayer is not null)
         {
-            await affectedPlayer.ShowMessageAsync("Another user attempted to login this account. If it wasn't you, we suggest you to change your password.").ConfigureAwait(false);
+            var message = this.Context.Localization["Server_Message_LoginAttempt"];
+            await affectedPlayer.ShowMessageAsync(message).ConfigureAwait(false);
         }
     }
 

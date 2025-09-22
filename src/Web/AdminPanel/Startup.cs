@@ -18,6 +18,8 @@ using Microsoft.Extensions.Hosting;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Web.AdminPanel.Models;
 using MUnique.OpenMU.Web.AdminPanel.Services;
+using MUnique.OpenMU.Web.AdminPanel.Localization;
+using MUnique.OpenMU.Localization;
 
 /// <summary>
 /// The startup class for the blazor app.
@@ -55,11 +57,20 @@ public class Startup
         services.AddServerSideBlazor();
 
         services.AddLocalization();
+        services.AddScoped(sp =>
+        {
+            var env = sp.GetRequiredService<IWebHostEnvironment>();
+            var options = new LocalizationOptions
+            {
+                ResourceDirectory = Path.Combine(env.ContentRootPath, "Localization"),
+            };
+            return new LocalizationService(options);
+        });
         services.Configure<RequestLocalizationOptions>(options =>
         {
-            var preferredCultures = new[] { "es-AR", "es-ES" };
+            var cultureNames = new[] { "en-US", "es-ES" };
             var supportedCultures = new List<CultureInfo>();
-            foreach (var name in preferredCultures)
+            foreach (var name in cultureNames)
             {
                 try
                 {
@@ -76,7 +87,7 @@ public class Startup
                 supportedCultures.Add(CultureInfo.InvariantCulture);
             }
 
-            options.DefaultRequestCulture = new RequestCulture(supportedCultures[0]);
+            options.DefaultRequestCulture = new RequestCulture("en-US");
             options.SupportedCultures = supportedCultures;
             options.SupportedUICultures = supportedCultures;
         });

@@ -53,19 +53,22 @@ public class MuHelper : AsyncDisposable
     {
         if (this._runTask is not null)
         {
-            await this._player.ShowMessageAsync("MU Helper ya está en ejecución.").ConfigureAwait(false);
+            var message = this._player.GetLocalizedMessage("MuHelper_Message_AlreadyRunning", "MU Helper is already running.");
+            await this._player.ShowMessageAsync(message).ConfigureAwait(false);
             return false;
         }
 
         if (this._player.Level < this._configuration.MinLevel)
         {
-            await this._player.ShowMessageAsync($"MU Helper puede usarse a partir del nivel {this._configuration.MinLevel}.").ConfigureAwait(false);
+            var message = this._player.GetLocalizedMessage("MuHelper_Message_MinLevel", "MU Helper can be used from level {0}.", this._configuration.MinLevel);
+            await this._player.ShowMessageAsync(message).ConfigureAwait(false);
             return false;
         }
 
         if (this._player.Level > this._configuration.MaxLevel)
         {
-            await this._player.ShowMessageAsync($"MU Helper no puede usarse después del nivel {this._configuration.MaxLevel}.").ConfigureAwait(false);
+            var message = this._player.GetLocalizedMessage("MuHelper_Message_MaxLevel", "MU Helper cannot be used after level {0}.", this._configuration.MaxLevel);
+            await this._player.ShowMessageAsync(message).ConfigureAwait(false);
             return false;
         }
 
@@ -74,7 +77,8 @@ public class MuHelper : AsyncDisposable
 
         if (!this._player.TryRemoveMoney(requiredMoney))
         {
-            await this._player.ShowMessageAsync($"MU Helper requiere {this._player.MuHelper.CalculateRequiredMoney()} zen.").ConfigureAwait(false);
+            var message = this._player.GetLocalizedMessage("MuHelper_Message_NotEnoughZen", "MU Helper requires {0} zen.", requiredMoney);
+            await this._player.ShowMessageAsync(message).ConfigureAwait(false);
             return false;
         }
 

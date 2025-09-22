@@ -42,38 +42,44 @@ public class ResetCharacterAction
         var resetFeature = this._player.GameContext.FeaturePlugIns.GetPlugIn<ResetFeaturePlugIn>();
         if (resetFeature is null)
         {
-            await this.ShowMessageAsync("El reset no está habilitado.").ConfigureAwait(false);
+            var message = this._player.GetLocalizedMessage("Reset_Message_Disabled", "Reset is not enabled.");
+            await this.ShowMessageAsync(message).ConfigureAwait(false);
             return;
         }
 
         if (this._player.PlayerState.CurrentState != PlayerState.EnteredWorld && this._npc is null)
         {
-            await this.ShowMessageAsync("No se puede realizar un reset con ventanas abiertas.").ConfigureAwait(false);
+            var message = this._player.GetLocalizedMessage("Reset_Message_WindowsOpen", "Cannot perform a reset while windows are open.");
+            await this.ShowMessageAsync(message).ConfigureAwait(false);
             return;
         }
 
         if (this._player.Attributes is null || this._player.SelectedCharacter is null)
         {
-            await this.ShowMessageAsync("No has ingresado al juego.").ConfigureAwait(false);
+            var message = this._player.GetLocalizedMessage("Reset_Message_NotInGame", "You have not entered the game.");
+            await this.ShowMessageAsync(message).ConfigureAwait(false);
             return;
         }
 
         var configuration = resetFeature.Configuration;
         if (configuration is null)
         {
-            await this.ShowMessageAsync("El reset no está configurado.").ConfigureAwait(false);
+            var message = this._player.GetLocalizedMessage("Reset_Message_NotConfigured", "Reset feature is not configured.");
+            await this.ShowMessageAsync(message).ConfigureAwait(false);
             return;
         }
 
         if (this._player.Level < configuration.RequiredLevel)
         {
-            await this.ShowMessageAsync($"El nivel requerido para reset es {configuration.RequiredLevel}.").ConfigureAwait(false);
+            var message = this._player.GetLocalizedMessage("Reset_Message_LevelRequirement", "The required level for reset is {0}.", configuration.RequiredLevel);
+            await this.ShowMessageAsync(message).ConfigureAwait(false);
             return;
         }
 
         if (configuration.ResetLimit > 0 && (this.GetResetCount() + 1) > configuration.ResetLimit)
         {
-            await this.ShowMessageAsync($"Se alcanzó el máximo de reseteos: {configuration.ResetLimit}.").ConfigureAwait(false);
+            var message = this._player.GetLocalizedMessage("Reset_Message_LimitReached", "Maximum resets reached: {0}.", configuration.ResetLimit);
+            await this.ShowMessageAsync(message).ConfigureAwait(false);
             return;
         }
 
@@ -128,7 +134,8 @@ public class ResetCharacterAction
 
         if (!this._player.TryRemoveMoney(calculatedRequiredZen))
         {
-            await this.ShowMessageAsync($"No tienes suficiente zen para resetear, se requieren {calculatedRequiredZen}.").ConfigureAwait(false);
+            var message = this._player.GetLocalizedMessage("Reset_Message_NotEnoughZen", "You don't have enough zen to reset, {0} required.", calculatedRequiredZen);
+            await this.ShowMessageAsync(message).ConfigureAwait(false);
             return false;
         }
 

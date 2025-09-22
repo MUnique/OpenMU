@@ -1,24 +1,27 @@
-﻿@page "/config-updates"
+@page "/config-updates"
+@using MUnique.OpenMU.Web.AdminPanel.Localization
 
-<PageTitle>OpenMU: Actualizaciones de Configuración</PageTitle>
-<Breadcrumb IsFirstFromRoot="true" Caption="Actualizaciones de Configuración"/>
-<h3>Actualizaciones de Configuración</h3>
+@inherits LocalizedComponentBase
+
+<PageTitle>@this.Localization["Updates_Title"]</PageTitle>
+<Breadcrumb IsFirstFromRoot="true" Caption="@this.Localization["Updates_Breadcrumb"]"/>
+<h3>@this.Localization["Updates_Heading"]</h3>
 
 @if (!this.SetupService.IsInstalled || this.SetupService.IsUpdateRequired)
 {
-    <div class="alert alert-info" role="alert">Por favor, primero instala las actualizaciones de base de datos en la <NavLink href="setup">página de Configuración</NavLink>.</div>
+    <div class="alert alert-info" role="alert">@this.Localization["Updates_NeedsSetupPrefix"] <NavLink href="setup">@this.Localization["Updates_SetupLink"]</NavLink>.</div>
     return;
 }
 @if (!this._availableUpdates.Any())
 {
-    <div class="alert alert-success" role="alert">No hay actualizaciones de configuración disponibles.</div>
+    <div class="alert alert-success" role="alert">@this.Localization["Updates_NoneAvailable"]</div>
     return;
 }
 
 <div class="alert alert-light">
-    <p>Hay nuevas actualizaciones de configuración disponibles. Puedes seleccionar cuáles aplicar a tu configuración.</p>
-    <p>Las actualizaciones obligatorias siempre se aplican y no pueden deseleccionarse.</p>
-    <p>Las actualizaciones requieren reiniciar el proceso del servidor para tomar efecto.</p>
+    <p>@this.Localization["Updates_Info1"]</p>
+    <p>@this.Localization["Updates_Info2"]</p>
+    <p>@this.Localization["Updates_Info3"]</p>
 </div>
 
 @foreach (var update in this._availableUpdates)
@@ -27,7 +30,7 @@
         @if (update.State == UpdateState.Started)
         {
             <div class="spinner-border text-secondary spinner-border-sm" role="status">
-                <span class="sr-only">Actualizando...</span>
+                <span class="sr-only">@this.Localization["Updates_Applying"]</span>
             </div>
         }
         else if (update.State == UpdateState.Failed)
@@ -58,23 +61,23 @@
 {
     <button class="btn btn-primary" type="button" disabled>
         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-        Aplicando actualizaciones...
+        @this.Localization["Updates_ApplyingProgress"]
     </button>
 }
 else if (this._overallState == UpdateState.Failed)
 {
     <button class="btn btn-primary" type="button" disabled>
         <span class="oi oi-bolt" role="status" aria-hidden="true"></span>
-        ¡Falló la actualización!
+        @this.Localization["Updates_Failed"]
     </button>
 }
 else if (this._availableUpdates.Any(u => u.Selected))
 {
-    <button class="btn btn-primary" type="button" @onclick="this.OnUpdateClickAsync">Aplicar actualizaciones seleccionadas</button>
+    <button class="btn btn-primary" type="button" @onclick="this.OnUpdateClickAsync">@this.Localization["Updates_ApplySelected"]</button>
 }
 else
 {
-    <button class="btn btn-primary" type="button" disabled>Aplicar actualizaciones seleccionadas</button>
+    <button class="btn btn-primary" type="button" disabled>@this.Localization["Updates_ApplySelected"]</button>
 }
 
 @if (this._exception is { } exception)

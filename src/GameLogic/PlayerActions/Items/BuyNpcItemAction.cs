@@ -47,7 +47,8 @@ public class BuyNpcItemAction
         var storeItem = npcDefinition.MerchantStore.Items.FirstOrDefault(i => i.ItemSlot == slot);
         if (storeItem is null)
         {
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Ítem desconocido", MessageType.BlueNormal)).ConfigureAwait(false);
+            var message = player.GetLocalizedMessage("NpcShop_Message_UnknownItem", "Unknown item.");
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal)).ConfigureAwait(false);
             await player.InvokeViewPlugInAsync<IBuyNpcItemFailedPlugIn>(p => p.BuyNpcItemFailedAsync()).ConfigureAwait(false);
             return;
         }
@@ -69,14 +70,16 @@ public class BuyNpcItemAction
             var toSlot = player.Inventory!.CheckInvSpace(storeItem);
             if (toSlot is null)
             {
-                await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Inventario lleno", MessageType.BlueNormal)).ConfigureAwait(false);
+                var message = player.GetLocalizedMessage("Inventory_Message_Full", "Inventory full.");
+                await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal)).ConfigureAwait(false);
                 await player.InvokeViewPlugInAsync<IBuyNpcItemFailedPlugIn>(p => p.BuyNpcItemFailedAsync()).ConfigureAwait(false);
                 return;
             }
 
             if (!this.CheckMoney(player, storeItem))
             {
-                await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("No tienes suficiente zen", MessageType.BlueNormal)).ConfigureAwait(false);
+                var message = player.GetLocalizedMessage("NpcShop_Message_NotEnoughZen", "You don't have enough zen.");
+                await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal)).ConfigureAwait(false);
                 await player.InvokeViewPlugInAsync<IBuyNpcItemFailedPlugIn>(p => p.BuyNpcItemFailedAsync()).ConfigureAwait(false);
                 return;
             }

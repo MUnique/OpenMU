@@ -1,3 +1,7 @@
+@using MUnique.OpenMU.Web.AdminPanel.Localization
+
+@inherits LocalizedComponentBase
+
 <CascadingBlazoredModal>
     <Router AppAssembly="@typeof(Program).Assembly">
         <Found Context="routeData">
@@ -5,7 +9,7 @@
         </Found>
         <NotFound>
             <LayoutView Layout="@typeof(MainLayout)">
-                <p>Sorry, there's nothing at this address.</p>
+                <p>@this.Localization["App_NotFound"]</p>
             </LayoutView>
         </NotFound>
     </Router>

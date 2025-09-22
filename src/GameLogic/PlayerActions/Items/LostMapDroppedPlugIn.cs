@@ -41,20 +41,23 @@ public sealed class LostMapDroppedPlugIn : IItemDropPlugIn
 
         if (item.Level is < 1 or > 7)
         {
-            await player.ShowMessageAsync("The lost map is not valid.").ConfigureAwait(false);
+            var message = player.GetLocalizedMessage("LostMap_Message_InvalidMap", "The lost map is not valid.");
+            await player.ShowMessageAsync(message).ConfigureAwait(false);
             return;
         }
 
         if (player.CurrentMiniGame is not null)
         {
-            await player.ShowMessageAsync("Cannot create kalima gate on event map.").ConfigureAwait(false);
+            var message = player.GetLocalizedMessage("LostMap_Message_EventMap", "Cannot create Kalima gate on event map.");
+            await player.ShowMessageAsync(message).ConfigureAwait(false);
             return;
         }
 
         var gatePosition = target;
         if (player.IsAtSafezone() || player.CurrentMap?.Terrain.SafezoneMap[gatePosition.X, gatePosition.Y] is true)
         {
-            await player.ShowMessageAsync("Cannot create kalima gate in safe zone.").ConfigureAwait(false);
+            var message = player.GetLocalizedMessage("LostMap_Message_SafeZone", "Cannot create Kalima gate in safe zone.");
+            await player.ShowMessageAsync(message).ConfigureAwait(false);
             return;
         }
 
@@ -62,7 +65,8 @@ public sealed class LostMapDroppedPlugIn : IItemDropPlugIn
         var gateNpcDef = player.GameContext.Configuration.Monsters.FirstOrDefault(def => def.Number == gateNpcNumber);
         if (gateNpcDef is null)
         {
-            await player.ShowMessageAsync("The gate npc is not defined.").ConfigureAwait(false);
+            var message = player.GetLocalizedMessage("LostMap_Message_NpcMissing", "The gate NPC is not defined.");
+            await player.ShowMessageAsync(message).ConfigureAwait(false);
             return;
         }
 
@@ -81,7 +85,8 @@ public sealed class LostMapDroppedPlugIn : IItemDropPlugIn
         var targetGate = player.GameContext.Configuration.Maps.FirstOrDefault(g => g.Number == KalimaMapNumbers[item.Level - 1])?.ExitGates.FirstOrDefault();
         if (targetGate is null)
         {
-            await player.ShowMessageAsync("The kalima entrance wasn't found.").ConfigureAwait(false);
+            var message = player.GetLocalizedMessage("LostMap_Message_EntranceNotFound", "The Kalima entrance wasn't found.");
+            await player.ShowMessageAsync(message).ConfigureAwait(false);
             return;
         }
 
