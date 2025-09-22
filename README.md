@@ -1,7 +1,7 @@
-# OpenMU Project / Proyecto OpenMU
+﻿# OpenMU Project / Proyecto OpenMU
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/d0f57e29e7524dadb677561389256d8b)](https://www.codacy.com/gh/MUnique/OpenMU/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=MUnique/OpenMU&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/d0f57e29e7524dadb677561389256d8b)](https://www.codacy.com/gh/MUnique/OpenMU/dashboard?utm_source=github.com&utm_medium=referral&utm_content=MUnique/OpenMU&utm_campaign=Badge_Grade)
 [![Gitter chat](https://badges.gitter.im/OpenMU-Project/gitter.svg)](https://gitter.im/OpenMU-Project/Lobby)
 [![Discord chat](https://img.shields.io/discord/669595902750490698?logo=discord)](https://discord.gg/2u5Agkd)
 
@@ -42,7 +42,7 @@ This fork diverges from the original OpenMU project and introduces:
 
 - Bilingual documentation in English and Spanish.
 - LAN presets for Season 6 with deployment overlays for LAN, DNS and npm.
-- `proxynet` integration replacing nginx and fixing port configuration.
+- proxynet integration replacing nginx and fixing port configuration.
 - Additional Spanish translations and admin panel language fixes.
 - New crafting recipes plus fixes for craftings, skills and grid issues.
 - Updated White Wizard event data and related fixes.
@@ -51,33 +51,35 @@ This fork diverges from the original OpenMU project and introduces:
 
 This fork includes a configurable plug-in to change Elf summons (skills 30..36) and scale their stats by Energy without restarting the server.
 
-Code location: `src/GameLogic/PlugIns/ElfSummonsAll.cs`.
+Code location: src/GameLogic/PlugIns/ElfSummonsAll.cs.
 
 What it provides
 - Replace the summoned monster per skill (30..36) or keep the default mapping.
 - Dynamic scaling by Energy applied to the base stats of the chosen monster (HP, base damage Phys/Wiz/Curse, DefenseBase):
-  `scale = 1 + floor(TotalEnergy / EnergyPerStep) * PercentPerStep`.
-- Buff/regeneration skills also include your own summon (and party members� summons) when the target mode is self/party.
+  scale = 1 + floor(TotalEnergy / EnergyPerStep) * PercentPerStep.
+- Buff/regeneration skills also include your own summon (and party members' summons) when the target mode is self/party.
 - Apply configuration changes at runtime; just unsummon and summon again.
 
 How to enable
-- In the Admin Panel: Plugins ? filter by "Summon configuration".
-- You will see 7 entries: "Elf Summon cfg � (30..36)". Activate the ones you need.
+- In the Admin Panel: Plugins → filter by "Summon configuration".
+- You will see 7 entries: "Elf Summon cfg ... (30..36)". Activate the ones you need.
 - Edit the "Custom Configuration" of each. Available fields:
-  - `MonsterNumber` (int): 0 = use the server default mapping; >0 = monster number to summon.
-  - `EnergyPerStep` (int): 0 to disable; otherwise size of each Energy step (e.g. 1000).
-  - `PercentPerStep` (float): added per step (e.g. 0.05 = +5%).
+  - MonsterNumber (int): 0 = use the server default mapping; >0 = monster number to summon.
+  - EnergyPerStep (int): 0 to disable; otherwise size of each Energy step (e.g. 1000).
+  - PercentPerStep (float): added per step (e.g. 0.05 = +5%).
 
 Important notes (for using this plug-in in another repo)
 - Monster stat cache adjustment (required so scaling applies to summons):
-  - In `src/GameLogic/Attributes/MonsterAttributeHolder.cs`, don�t cache by `MonsterDefinition` (equals by Id). Summoned clones share Id; read attributes per-instance instead. Included in this fork.
+  - In src/GameLogic/Attributes/MonsterAttributeHolder.cs, don't cache by MonsterDefinition (equals by Id). Summoned clones share Id; read attributes per-instance instead. Included in this fork.
 - Prevent damage to your own summon with area skills (recommended):
-  - In `src/GameLogic/PlayerActions/Skills/AreaSkillAttackAction.cs` and `src/GameLogic/PlayerActions/Skills/AreaSkillHitAction.cs`, exclude `Monster { SummonedBy == player }` from targets. Included in this fork.
+  - In src/GameLogic/PlayerActions/Skills/AreaSkillAttackAction.cs and src/GameLogic/PlayerActions/Skills/AreaSkillHitAction.cs, exclude Monster { SummonedBy == player } from targets. Included in this fork.
 - Configuration hot-reload: On each summon creation, the plug-in fetches the latest CustomConfiguration from the database (no cache). No restart required; just re-summon.
-- Pet HUD (Fenrir/Raven bar): Elf summons don�t use the item-pet system, so the stock client doesn�t show that bar. Name/owner display is supported. Pet HUD would require client changes.
+- Pet HUD (Fenrir/Raven bar): Elf summons don't use the item-pet system, so the stock client doesn't show that bar. Name/owner display is supported. Pet HUD would require client changes.
 
 Examples
-- +5% per 1000 Energy using default monster: `{"MonsterNumber": 0, "EnergyPerStep": 1000, "PercentPerStep": 0.05}`.## Current project state
+- +5% per 1000 Energy using default monster: {"MonsterNumber": 0, "EnergyPerStep": 1000, "PercentPerStep": 0.05}.
+
+## Current project state
 
 This project is currently under development without any release.
 You can try the current state by using the available docker image, also
@@ -111,12 +113,9 @@ Please take a look at the deploy-folder of this project.
 Contributions are welcome if they meet the following criteria:
 
 * Language is english.
-
 * Code should be StyleCop compliant - this project uses the [StyleCop.Analyzers](https://www.nuget.org/packages/StyleCop.Analyzers/)
   for VS2022 so you should see issues directly as warnings.
-
 * Coding style (naming, etc.) and quality should fit to the current state.
-
 * No code copied/converted from the well-known decompiled source of the
     original server.
 
@@ -202,42 +201,44 @@ Este fork se desvía del proyecto original OpenMU e introduce:
 
 - Documentación bilingüe en inglés y español.
 - Presets LAN para Season 6 con overlays de despliegue para LAN, DNS y npm.
-- Integración de `proxynet` reemplazando nginx y corrigiendo la configuración de puertos.
+- Integración de proxynet reemplazando nginx y corrigiendo la configuración de puertos.
 - Traducciones adicionales al español y correcciones de idioma del panel de administración.
 - Nuevas recetas de crafteo y correcciones para crafteo, habilidades y problemas de cuadrícula.
 - Datos actualizados del evento White Wizard y correcciones relacionadas.
 
 ### Plugin de invocaciones de Elfa
 
-Este fork incluye un plugin configurable para cambiar las invocaciones de la Elfa (skills 30..36) y escalar sus stats en base a la Energ�a, sin reiniciar el servidor.
+Este fork incluye un plugin configurable para cambiar las invocaciones de la Elfa (skills 30..36) y escalar sus stats en base a la Energía, sin reiniciar el servidor.
 
-Ubicacion del codigo: `src/GameLogic/PlugIns/ElfSummonsAll.cs`.
+Ubicación del código: src/GameLogic/PlugIns/ElfSummonsAll.cs.
 
-Que permite
+Qué permite
 - Reemplazar el monstruo invocado por cada skill (30..36) o mantener el mapeo por defecto.
-- Escalado por Energia aplicado a los stats base del monstruo elegido (HP, da�o base Fis/Wiz/Curse, DefenseBase):
-  `scale = 1 + floor(TotalEnergy / EnergyPerStep) * PercentPerStep`.
-- Los skills de Buff/Regeneration incluyen al summon propio (y los del party) cuando el target es self/party.
-- Cambios de configuracion en caliente; basta con desinvocar y volver a invocar.
+- Escalado por Energía aplicado a los stats base del monstruo elegido (HP, daño base Fis/Wiz/Curse, DefenseBase):
+  scale = 1 + floor(TotalEnergy / EnergyPerStep) * PercentPerStep.
+- Los skills de Buff/Regeneración incluyen al summon propio (y los del party) cuando el target es self/party.
+- Cambios de configuración en caliente; basta con desinvocar y volver a invocar.
 
-Como habilitarlo
-- En el Panel de Administracion: Plugins -> filtrar por "Summon configuration".
-- Vas a ver 7 entradas: "Elf Summon cfg ... (30..36)". Activa las que quieras usar.
+Cómo habilitarlo
+- En el Panel de Administración: Plugins → filtrar por "Summon configuration".
+- Verás 7 entradas: "Elf Summon cfg ... (30..36)". Activa las que quieras usar.
 - Edita la "Custom Configuration" de cada una. Campos disponibles:
-  - `MonsterNumber` (int): 0 = usa el mapeo por defecto del servidor; >0 = numero de monstruo a invocar.
-  - `EnergyPerStep` (int): 0 para desactivar; si no, tama�o de cada paso de Energia (p.ej. 1000).
-  - `PercentPerStep` (float): incremento por paso (p.ej. 0.05 = +5%).
+  - MonsterNumber (int): 0 = usa el mapeo por defecto del servidor; >0 = número de monstruo a invocar.
+  - EnergyPerStep (int): 0 para desactivar; si no, tamaño de cada paso de Energía (p.ej. 1000).
+  - PercentPerStep (float): incremento por paso (p.ej. 0.05 = +5%).
 
-Notas importantes (si queres usar solo el plugin en otro repo)
-- Ajuste de cache de stats de monstruos (requerido para que el escalado aplique):
-  - En `src/GameLogic/Attributes/MonsterAttributeHolder.cs`, evita cachear por `MonsterDefinition` (igual por Id). Los clones del summon comparten Id; leer por instancia. Incluido en este fork.
-- Evitar da�o al propio summon con skills en area (recomendado):
-  - En `src/GameLogic/PlayerActions/Skills/AreaSkillAttackAction.cs` y `src/GameLogic/PlayerActions/Skills/AreaSkillHitAction.cs`, excluir `Monster { SummonedBy == player }` de los targets. Incluido en este fork.
-- Hot-reload: En cada creacion del summon, el plugin lee la CustomConfiguration mas reciente desde la base de datos (sin cache). No hace falta reiniciar; desinvoca y volve a invocar.
-- HUD de "pet": Las invocaciones de elfa no usan el sistema de mascotas por item, por lo que el cliente no muestra esa barra.
+Notas importantes (si quieres usar solo el plugin en otro repo)
+- Ajuste de caché de stats de monstruos (requerido para que el escalado aplique):
+  - En src/GameLogic/Attributes/MonsterAttributeHolder.cs, evita cachear por MonsterDefinition (igual por Id). Los clones del summon comparten Id; lee por instancia. Incluido en este fork.
+- Evitar daño al propio summon con skills en área (recomendado):
+  - En src/GameLogic/PlayerActions/Skills/AreaSkillAttackAction.cs y src/GameLogic/PlayerActions/Skills/AreaSkillHitAction.cs, excluir Monster { SummonedBy == player } de los targets. Incluido en este fork.
+- Hot-reload: En cada creación del summon, el plugin lee la CustomConfiguration más reciente desde la base de datos (sin caché). No hace falta reiniciar; desinvoca y vuelve a invocar.
+- HUD de "pet": Las invocaciones de elfa no usan el sistema de mascotas por ítem, por lo que el cliente no muestra esa barra.
 
 Ejemplos de uso
-- +5% por cada 1000 de Energia usando el mob por defecto: `{"MonsterNumber": 0, "EnergyPerStep": 1000, "PercentPerStep": 0.05}`.## Estado actual del proyecto
+- +5% por cada 1000 de Energía usando el mob por defecto: {"MonsterNumber": 0, "EnergyPerStep": 1000, "PercentPerStep": 0.05}.
+
+## Estado actual del proyecto
 
 Este proyecto se encuentra actualmente en desarrollo sin ningún lanzamiento.
 Puedes probar el estado actual utilizando la imagen de docker disponible, mencionada también en la [guía rápida](QuickStart.md).
@@ -311,4 +312,3 @@ Este daño tiene efecto en cálculos posteriores.
 El servidor original utiliza una cuenta regresiva de cinco segundos cuando un jugador quiere cambiar de personaje o de sub-servidor.
 Quizás esto se hizo por razones de rendimiento, ya que el servidor original guardaba los datos del personaje/cuenta.
 Creemos que eso es muy molesto y no vemos un valor real en ello, así que no usamos cuenta regresiva.
-
