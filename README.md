@@ -45,7 +45,9 @@ This fork diverges from the original OpenMU project and introduces:
 - proxynet integration replacing nginx and fixing port configuration.
 - Additional Spanish translations and admin panel language fixes.
 - New crafting recipes plus fixes for craftings, skills and grid issues.
-- Updated White Wizard event data and related fixes.
+- White Wizard monster + default invasion drop groups.
+- Golden Archer essentials (Rena token, rewards, packed jewels) preconfigured.
+- Rena global drop on Season 1 maps for 0.75 / 0.95d / Season 6.
 
 ### Elf Summon Plug-in
 
@@ -78,6 +80,36 @@ Important notes (for using this plug-in in another repo)
 
 Examples
 - +5% per 1000 Energy using default monster: {"MonsterNumber": 0, "EnergyPerStep": 1000, "PercentPerStep": 0.05}.
+
+### Rena & Golden Archer
+
+What’s included
+- Rena token (group 14, number 21) added if missing.
+- Drop groups: "Golden Archer Rewards" and "Golden Archer Packed Jewels" with common jewels.
+- Golden Archer NPC plug-in preconfigured and enabled (uses Rena as token; Box of Luck/Heaven and reward groups).
+
+Global Rena Drops on S1 maps
+- Optional updates per version: "Add Rena Global Drop (0.75)", "(0.95d)", "(Season 6)".
+- Adds drop group "Rena Global Drop (S1 maps)" to Lorencia, Noria, Devias, Dungeon, Lost Tower, Atlans, Arena, Exile.
+- Default chance: 0.2% per kill (editable in Admin Panel by editing the drop group Chance).
+
+How to apply/update
+- Admin Panel → Updates: select
+  - "Golden Archer: Rena + Reward Group"
+  - "Add Rena Global Drop (…version…)"
+  and click Apply. They are non-mandatory and safe to re-run.
+
+Notes
+- To use the Golden Archer, ensure the NPC exists in your game setup; the plug-in is already enabled and uses the configured drop groups.
+
+### White Wizard & Invasions
+
+What’s included
+- Adds White Wizard monster (id 135) if missing, and default drop groups for support mobs and boss.
+- Designed for Season 6 data; safe to apply over existing configs.
+
+How to apply/update
+- Admin Panel → Updates: select "White Wizard Monster and Invasion Drops" and Apply.
 
 ## Current project state
 
@@ -204,7 +236,9 @@ Este fork se desvía del proyecto original OpenMU e introduce:
 - Integración de proxynet reemplazando nginx y corrigiendo la configuración de puertos.
 - Traducciones adicionales al español y correcciones de idioma del panel de administración.
 - Nuevas recetas de crafteo y correcciones para crafteo, habilidades y problemas de cuadrícula.
-- Datos actualizados del evento White Wizard y correcciones relacionadas.
+- Mago Blanco (White Wizard) + grupos de drop por defecto para la invasión.
+- Golden Archer listo (token Rena, recompensas y joyas empaquetadas) preconfigurado.
+- Drop global de Rena en mapas de Season 1 para 0.75 / 0.95d / Season 6.
 
 ### Plugin de invocaciones de Elfa
 
@@ -237,6 +271,36 @@ Notas importantes (si quieres usar solo el plugin en otro repo)
 
 Ejemplos de uso
 - +5% por cada 1000 de Energía usando el mob por defecto: {"MonsterNumber": 0, "EnergyPerStep": 1000, "PercentPerStep": 0.05}.
+
+### Rena y Golden Archer
+
+Qué incluye
+- Token Rena (grupo 14, número 21) si falta.
+- Grupos de drop: "Golden Archer Rewards" y "Golden Archer Packed Jewels" con joyas comunes.
+- Plug-in del NPC Golden Archer preconfigurado y habilitado (usa Rena como ficha; Box of Luck/Heaven y grupos de recompensa).
+
+Drop global de Rena en mapas S1
+- Updates opcionales por versión: "Add Rena Global Drop (0.75)", "(0.95d)", "(Season 6)".
+- Agrega el grupo "Rena Global Drop (S1 maps)" a Lorencia, Noria, Devias, Dungeon, Lost Tower, Atlans, Arena, Exile.
+- Chance por defecto: 0.2% por mob (editable en el Admin Panel editando el Chance del grupo).
+
+Cómo aplicarlo/actualizar
+- Admin Panel → Updates: seleccionar
+  - "Golden Archer: Rena + Reward Group"
+  - "Add Rena Global Drop (…versión…)"
+  y aplicar. No son obligatorios y son seguros de re-ejecutar.
+
+Notas
+- Para usar el Golden Archer, asegurate de tener el NPC en el mapa/escenario; el plug-in ya está habilitado y usa los grupos configurados.
+
+### White Wizard e Invasiones
+
+Qué incluye
+- Agrega el monstruo White Wizard (id 135) si falta y grupos de drops por defecto para mobs de soporte y el boss.
+- Diseñado para datos de Season 6; es seguro aplicarlo sobre configuraciones existentes.
+
+Cómo aplicarlo/actualizar
+- Admin Panel → Updates: seleccionar "White Wizard Monster and Invasion Drops" y aplicar.
 
 ## Estado actual del proyecto
 
