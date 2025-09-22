@@ -50,7 +50,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\DataModel\MUnique.OpenMU.DataModel.csproj" />
     <ProjectReference Include="..\..\GameLogic\MUnique.OpenMU.GameLogic.csproj" />
-    <ProjectReference Include="..\Localization\MUnique.OpenMU.Localization.csproj" />
+    <ProjectReference Include="..\..\Localization\MUnique.OpenMU.Localization.csproj" />
     <ProjectReference Include="..\..\Persistence\Initialization\MUnique.OpenMU.Persistence.Initialization.csproj" />
     <ProjectReference Include="..\..\Persistence\MUnique.OpenMU.Persistence.csproj" />
     <ProjectReference Include="..\ItemEditor\MUnique.OpenMU.Web.ItemEditor.csproj" />
@@ -96,7 +96,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="..\Localization\Resources\strings.*.json">
+    <Content Include="..\..\Localization\Resources\strings.*.json">
       <Link>Localization\%(FileName)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

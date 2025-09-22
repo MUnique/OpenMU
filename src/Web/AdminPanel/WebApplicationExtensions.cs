@@ -23,7 +23,6 @@ using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix;
 using MUnique.OpenMU.Web.AdminPanel.Models;
 using MUnique.OpenMU.Web.AdminPanel.Services;
 using MUnique.OpenMU.Web.AdminPanel.Localization;
-using MUnique.OpenMU.Localization;
 
 /// <summary>
 /// Extensions for the <see cref="WebApplicationBuilder"/>.
@@ -57,11 +56,11 @@ public static class WebApplicationExtensions
         services.AddLocalization();
         services.AddScoped(sp =>
         {
-            var options = new LocalizationOptions
+            var options = new MUnique.OpenMU.Localization.LocalizationOptions
             {
                 ResourceDirectory = Path.Combine(builder.Environment.ContentRootPath, "Localization"),
             };
-            return new LocalizationService(options);
+            return new MUnique.OpenMU.Localization.LocalizationService(options);
         });
         services.Configure<RequestLocalizationOptions>(options =>
         {

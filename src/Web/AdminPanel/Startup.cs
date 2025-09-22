@@ -19,7 +19,6 @@ using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Web.AdminPanel.Models;
 using MUnique.OpenMU.Web.AdminPanel.Services;
 using MUnique.OpenMU.Web.AdminPanel.Localization;
-using MUnique.OpenMU.Localization;
 
 /// <summary>
 /// The startup class for the blazor app.
@@ -60,11 +59,11 @@ public class Startup
         services.AddScoped(sp =>
         {
             var env = sp.GetRequiredService<IWebHostEnvironment>();
-            var options = new LocalizationOptions
+            var options = new MUnique.OpenMU.Localization.LocalizationOptions
             {
                 ResourceDirectory = Path.Combine(env.ContentRootPath, "Localization"),
             };
-            return new LocalizationService(options);
+            return new MUnique.OpenMU.Localization.LocalizationService(options);
         });
         services.Configure<RequestLocalizationOptions>(options =>
         {
