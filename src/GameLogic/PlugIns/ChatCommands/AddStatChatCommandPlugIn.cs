@@ -51,7 +51,8 @@ public class AddStatChatCommandPlugIn : IChatCommandPlugIn
 
             if (player.CurrentMiniGame is not null)
             {
-                await player.ShowMessageAsync("No se permite añadir múltiples puntos durante un mini juego.").ConfigureAwait(false);
+                var message = player.GetLocalizedMessage("Chat_AddStat_NotAllowedDuringMiniGame", "Adding multiple points is not allowed during a mini-game.");
+                await player.ShowMessageAsync(message).ConfigureAwait(false);
                 return;
             }
 
@@ -72,12 +73,12 @@ public class AddStatChatCommandPlugIn : IChatCommandPlugIn
             "vit" => Stats.BaseVitality,
             "ene" => Stats.BaseEnergy,
             "cmd" => Stats.BaseLeadership,
-            _ => throw new ArgumentException($"Atributo desconocido: '{statType}'."),
+            _ => throw new ArgumentException(player.GetLocalizedMessage("Chat_AddStat_UnknownAttribute", "Unknown attribute: '{0}'.", statType)),
         };
 
         if (player.SelectedCharacter!.Attributes.All(sa => sa.Definition != attribute))
         {
-            throw new ArgumentException($"El personaje no tiene el atributo '{statType}'.");
+            throw new ArgumentException(player.GetLocalizedMessage("Chat_AddStat_AttributeMissing", "The character doesn't have the attribute '{0}'.", statType));
         }
 
         return attribute;

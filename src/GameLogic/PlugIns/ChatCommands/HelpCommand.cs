@@ -34,7 +34,8 @@ public class HelpCommand : IChatCommandPlugIn
                 .FirstOrDefault(x => x.Command.Equals("/" + commandName, StringComparison.InvariantCultureIgnoreCase));
             if (commandPluginAttribute is null)
             {
-                await player.ShowMessageAsync($"El comando '{commandName}' no existe.").ConfigureAwait(false);
+                var message = player.GetLocalizedMessage("Chat_Help_CommandNotFound", "Command '{0}' does not exist.", commandName);
+                await player.ShowMessageAsync(message).ConfigureAwait(false);
                 return;
             }
 

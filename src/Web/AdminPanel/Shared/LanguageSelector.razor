@@ -1,0 +1,56 @@
+@using MUnique.OpenMU.Web.AdminPanel.Localization
+
+@inject NavigationManager Nav
+@inherits LocalizedComponentBase
+
+<div class="language-selector form-inline">
+    <label class="mr-2" for="languageSelector">@this.Localization["LanguageSelector_Label"]</label>
+    <select id="languageSelector" class="form-control" @bind="this.SelectedLanguage">
+        @foreach (var language in this.Localization.AvailableLanguages)
+        {
+            <option value="@language">@this.GetLanguageName(language)</option>
+        }
+    </select>
+</div>
+
+@code {
+    private string SelectedLanguage
+    {
+        get => this.Localization.CurrentLanguage;
+        set
+        {
+            if (string.Equals(this.Localization.CurrentLanguage, value, StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            this.Localization.SetLanguage(value);
+            _ = this.NotifyServerAsync(value);
+        }
+    }
+
+    private string GetLanguageName(string code)
+    {
+        return code switch
+        {
+            "en" => this.Localization["LanguageSelector_English"],
+            "es" => this.Localization["LanguageSelector_Spanish"],
+            _ => code,
+        };
+    }
+
+    private async Task NotifyServerAsync(string language)
+    {
+        try
+        {
+            using var client = new HttpClient();
+            var uri = new Uri(new Uri(this.Nav.BaseUri), $"api/localization/{language}");
+            using var response = await client.PostAsync(uri, new StringContent(string.Empty)).ConfigureAwait(false);
+            response.EnsureSuccessStatusCode();
+        }
+        catch
+        {
+            // Ignore errors; server language will remain unchanged if the request fails.
+        }
+    }
+}

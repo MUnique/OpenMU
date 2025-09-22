@@ -49,7 +49,8 @@ public class ItemConsumeAction
         if (consumeHandler is null)
         {
             await player.InvokeViewPlugInAsync<IRequestedItemConsumptionFailedPlugIn>(p => p.RequestedItemConsumptionFailedAsync()).ConfigureAwait(false);
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Using this item is not implemented.", MessageType.BlueNormal)).ConfigureAwait(false);
+            var message = player.GetLocalizedMessage("ItemConsume_Message_NotImplemented", "Using this item is not implemented.");
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal)).ConfigureAwait(false);
             return;
         }
 

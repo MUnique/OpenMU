@@ -9,6 +9,7 @@ using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.IO;
 using System.Text.Json.Serialization;
+using System.Linq;
 using System.Threading;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
@@ -38,6 +39,7 @@ using Nito.AsyncEx.Synchronous;
 using Serilog;
 using Serilog.Debugging;
 using MUnique.OpenMU.Startup.Logging;
+using MUnique.OpenMU.Localization;
 
 /// <summary>
 /// The startup class for an all-in-one game server.
@@ -248,7 +250,29 @@ internal sealed class Program : IDisposable
             builder.AddAdminPanel(includeMapApp: true);
         }
 
+        var localizationLanguages = (builder.Configuration.GetSection("Localization:Languages").Get<string[]>() ?? new[] { "en", "es" })
+            .Select(l => l.ToLowerInvariant())
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+
         builder.Services
+            .AddSingleton(sp =>
+            {
+                var options = new LocalizationOptions
+                {
+                    ResourceDirectory = Path.Combine(builder.Environment.ContentRootPath, "Localization"),
+                    DefaultLanguage = builder.Configuration["Localization:DefaultLanguage"] ?? "en",
+                    AvailableLanguages = localizationLanguages,
+                };
+                var localizationService = new LocalizationService(options);
+                var configuredLanguage = builder.Configuration["Localization:CurrentLanguage"];
+                if (!string.IsNullOrWhiteSpace(configuredLanguage))
+                {
+                    localizationService.SetLanguage(configuredLanguage);
+                }
+
+                return localizationService;
+            })
             .AddSingleton(ConsoleLog.Buffer)
             .AddSingleton(this._servers)
             .AddSingleton<IConfigurationChangePublisher, ConfigurationChangeHandler>()

@@ -1,25 +1,28 @@
-﻿@page "/logged-in"
+@page "/logged-in"
 @using MUnique.OpenMU.Web.AdminPanel.Services
+@using MUnique.OpenMU.Web.AdminPanel.Localization
+
+@inherits LocalizedComponentBase
 
 @inject LoggedInAccountService AccountService;
 
-<PageTitle>OpenMU: Cuentas en Línea</PageTitle>
-<Breadcrumb IsFirstFromRoot="true" Caption="Cuentas en Línea"/>
-<h1>Cuentas en Línea</h1>
+<PageTitle>@this.Localization["LoggedIn_Title"]</PageTitle>
+<Breadcrumb IsFirstFromRoot="true" Caption="@this.Localization["LoggedIn_Breadcrumb"]"/>
+<h1>@this.Localization["LoggedIn_Heading"]</h1>
 
 <div>
   <DataTable TItem=@LoggedInAccount>
     <TableHeader>
-      <th class="col-1">Usuario</th>
-      <th class="col-1">ID-Servidor</th>
-      <th class="col-1">Acciones</th>
+      <th class="col-1">@this.Localization["LoggedIn_User"]</th>
+      <th class="col-1">@this.Localization["LoggedIn_ServerId"]</th>
+      <th class="col-1">@this.Localization["LoggedIn_Actions"]</th>
     </TableHeader>
     <ItemTemplate Context="item">
       <td>@item.LoginName</td>
       <td>@item.Server</td>
       <td>
         <button class="btn btn-warning" type="button" @onclick="() => this.AccountService.SetAccountOfflineAsync(item)">
-          <span class="oi oi-bolt" aria-hidden="true" /> Desconectar
+          <span class="oi oi-bolt" aria-hidden="true" /> @this.Localization["LoggedIn_Disconnect"]
         </button>
       </td>
     </ItemTemplate>

@@ -24,7 +24,8 @@ public class TradeMoneyAction
         // Check if Trade is open
         if (player.PlayerState.CurrentState != PlayerState.TradeOpened)
         {
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Uncheck trade accept button first", MessageType.BlueNormal)).ConfigureAwait(false);
+            var message = player.GetLocalizedMessage("Trade_Message_UncheckAccept", "Uncheck the trade accept button first.");
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal)).ConfigureAwait(false);
             return;
         }
 

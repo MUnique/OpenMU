@@ -33,6 +33,7 @@
     <ProjectReference Include="..\AttributeSystem\MUnique.OpenMU.AttributeSystem.csproj" />
     <ProjectReference Include="..\DataModel\MUnique.OpenMU.DataModel.csproj" />
     <ProjectReference Include="..\Interfaces\MUnique.OpenMU.Interfaces.csproj" />
+    <ProjectReference Include="..\Localization\MUnique.OpenMU.Localization.csproj" />
     <ProjectReference Include="..\Pathfinding\MUnique.OpenMU.Pathfinding.csproj" />
     <ProjectReference Include="..\Persistence\MUnique.OpenMU.Persistence.csproj" />
     <ProjectReference Include="..\PlugIns\MUnique.OpenMU.PlugIns.csproj" />

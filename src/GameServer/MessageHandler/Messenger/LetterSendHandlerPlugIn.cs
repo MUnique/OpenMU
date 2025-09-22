@@ -34,7 +34,9 @@ internal class LetterSendHandlerPlugIn : IPacketHandlerPlugIn
         LetterSendRequest message = packet;
         if (packet.Length < 83)
         {
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Letter invalid.", MessageType.BlueNormal)).ConfigureAwait(false);
+            var localization = (player.GameContext as IGameServerContext)?.Localization;
+            var invalid = localization?["Server_Message_InvalidLetter"] ?? "Letter invalid.";
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(invalid, MessageType.BlueNormal)).ConfigureAwait(false);
             await player.InvokeViewPlugInAsync<ILetterSendResultPlugIn>(p => p.LetterSendResultAsync(LetterSendSuccess.TryAgain, message.LetterId)).ConfigureAwait(false);
             return;
         }

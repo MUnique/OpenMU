@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
-using System.Globalization;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views.Character;
@@ -21,10 +20,6 @@ public class SetLevelChatCommandPlugIn : ChatCommandPlugInBase<SetLevelChatComma
 {
     private const string Command = "/setlevel";
     private const CharacterStatus MinimumStatus = CharacterStatus.GameMaster;
-    private const string CharacterNotFoundMessage = "Personaje '{0}' no encontrado.";
-    private const string InvalidLevelMessage = "Nivel inválido - debe estar entre 1 y {0}.";
-    private const string LevelSetMessage = "Nivel establecido en {0}.";
-
     /// <inheritdoc />
     public override string Key => Command;
 
@@ -41,7 +36,8 @@ public class SetLevelChatCommandPlugIn : ChatCommandPlugInBase<SetLevelChatComma
             if (targetPlayer?.SelectedCharacter is null ||
                 !targetPlayer.SelectedCharacter.Name.Equals(characterName, StringComparison.OrdinalIgnoreCase))
             {
-                await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, CharacterNotFoundMessage, characterName)).ConfigureAwait(false);
+                var message = player.GetLocalizedMessage("Chat_SetLevel_CharacterNotFound", "Character '{0}' not found.", characterName);
+                await this.ShowMessageToAsync(player, message).ConfigureAwait(false);
                 return;
             }
         }
@@ -53,14 +49,16 @@ public class SetLevelChatCommandPlugIn : ChatCommandPlugInBase<SetLevelChatComma
 
         if (arguments is null || arguments.Level < 1 || arguments.Level > targetPlayer.GameContext.Configuration.MaximumLevel)
         {
-            await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, InvalidLevelMessage, targetPlayer.GameContext.Configuration.MaximumLevel)).ConfigureAwait(false);
+            var message = player.GetLocalizedMessage("Chat_SetLevel_InvalidLevel", "Invalid level - must be between 1 and {0}.", targetPlayer.GameContext.Configuration.MaximumLevel);
+            await this.ShowMessageToAsync(player, message).ConfigureAwait(false);
             return;
         }
 
         targetPlayer.Attributes![Stats.Level] = checked(arguments.Level);
         await targetPlayer.InvokeViewPlugInAsync<IUpdateLevelPlugIn>(p => p.UpdateLevelAsync()).ConfigureAwait(false);
         await targetPlayer.ForEachWorldObserverAsync<IShowEffectPlugIn>(p => p.ShowEffectAsync(targetPlayer, IShowEffectPlugIn.EffectType.LevelUp), true).ConfigureAwait(false);
-        await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, LevelSetMessage, arguments.Level)).ConfigureAwait(false);
+        var confirmation = player.GetLocalizedMessage("Chat_SetLevel_Success", "Level set to {0}.", arguments.Level);
+        await this.ShowMessageToAsync(player, confirmation).ConfigureAwait(false);
     }
 
     /// <summary>
