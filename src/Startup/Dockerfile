@@ -1,4 +1,5 @@
 ARG ASPNET_IMAGE=mcr.microsoft.com/dotnet/aspnet:9.0-alpine
+ARG SDK_IMAGE=mcr.microsoft.com/dotnet/sdk:9.0-alpine
 FROM ${ASPNET_IMAGE} AS base
 WORKDIR /app
 EXPOSE 8080
@@ -11,7 +12,6 @@ EXPOSE 55906
 EXPOSE 44405
 EXPOSE 55980
 
-ARG SDK_IMAGE=mcr.microsoft.com/dotnet/sdk:9.0-alpine
 FROM --platform=$BUILDPLATFORM ${SDK_IMAGE} AS build
 ENV DOTNET_CLI_TELEMETRY_OPTOUT=1 \
     DOTNET_NOLOGO=1 \
