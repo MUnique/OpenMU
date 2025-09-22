@@ -316,27 +316,32 @@ public enum UpdateVersion
     FixEventItemsDropFromMonsters095d = 60,
 
     /// <summary>
+    /// The version of the <see cref="FixItemRequirementsPlugIn2"/>.
+    /// </summary>
+    FixItemRequirements2 = 61,
+
+    /// <summary>
     /// The version of the White Wizard monster and default invasion drop groups update.
     /// </summary>
-    WhiteWizardAndInvasionDropsSeason6 = 61,
+    WhiteWizardAndInvasionDropsSeason6 = 62,
 
     /// <summary>
     /// The version of the Golden Archer data update (adds Rena item and a default reward drop group).
     /// </summary>
-    GoldenArcherDataSeason6 = 62,
+    GoldenArcherDataSeason6 = 63,
 
     /// <summary>
     /// The version of the Rena global drop on Season 1 maps (Version 0.75).
     /// </summary>
-    RenaGlobalDrop075 = 63,
+    RenaGlobalDrop075 = 64,
 
     /// <summary>
     /// The version of the Rena global drop on Season 1 maps (Version 0.95d).
     /// </summary>
-    RenaGlobalDrop095d = 64,
+    RenaGlobalDrop095d = 65,
 
     /// <summary>
     /// The version of the Rena global drop on Season 1 maps (Season 6 data).
     /// </summary>
-    RenaGlobalDropSeason6 = 65,
+    RenaGlobalDropSeason6 = 66,
 }
