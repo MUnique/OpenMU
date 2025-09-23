@@ -28,7 +28,10 @@ WORKDIR "/src/Startup"
 RUN dotnet build "MUnique.OpenMU.Startup.csproj" -c Release -o /app/build -p:ci=true -v m
 
 FROM build AS publish
-RUN dotnet publish "MUnique.OpenMU.Startup.csproj" -c Release -o /app/publish -p:ci=true
+RUN dotnet publish "MUnique.OpenMU.Startup.csproj" -c Release -o /app/publish -p:ci=true \
+    && mkdir -p /app/publish/Localization \
+    && cp -f /src/Web/AdminPanel/Localization/strings.*.json /app/publish/Localization/ 2>/dev/null || true \
+    && cp -f /src/Localization/Resources/strings.*.json /app/publish/Localization/ 2>/dev/null || true
 
 FROM base AS final
 WORKDIR /app

@@ -14,7 +14,7 @@ public abstract class LocalizedComponentBase : ComponentBase, IDisposable
     /// Gets or sets the localization service.
     /// </summary>
     [Inject]
-    protected LocalizationService Localization { get; set; } = null!;
+    protected MUnique.OpenMU.Localization.LocalizationService Localization { get; set; } = null!;
 
     /// <inheritdoc />
     protected override void OnInitialized()
