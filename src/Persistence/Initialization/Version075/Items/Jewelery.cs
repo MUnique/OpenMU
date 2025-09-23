@@ -55,7 +55,7 @@ internal class Jewelery : InitializerBase
             "Transformation Ring",
             0,
             200,
-            20, // It's actually lvl 50 for the last 3, which we enforce later on CompliesRequirements()
+            20, // It's actually lvl 50 for the last 3
             CharacterTransformationSkin.BudgeDragon,
             CharacterTransformationSkin.Giant,
             CharacterTransformationSkin.SkeletonWarrior,

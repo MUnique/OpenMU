@@ -807,14 +807,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         foreach (var requirement in item.Definition.Requirements.Select(item.GetRequirement))
         {
-            var value = requirement.Value;
-            if (item.Definition.Group == 13 && item.Definition.Number == 10 && requirement.Attr == Stats.Level && item.Level > 2)
-            {
-                // PoisonBullFighter, ThunderLich or DeathCow tranformation ring
-                value += 30;
-            }
-
-            if (this.Attributes![requirement.Attr] < value)
+            if (this.Attributes![requirement.Attr] < requirement.Value)
             {
                 return false;
             }
