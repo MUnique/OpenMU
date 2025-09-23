@@ -54,14 +54,17 @@ public static class WebApplicationExtensions
 
         var services = builder.Services;
         services.AddLocalization();
-        services.AddScoped(sp =>
-        {
-            var options = new MUnique.OpenMU.Localization.LocalizationOptions
+        // Prefer the Startup registration; only add if missing.
+        Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAddSingleton(
+            services,
+            provider =>
             {
-                ResourceDirectory = Path.Combine(builder.Environment.ContentRootPath, "Localization"),
-            };
-            return new MUnique.OpenMU.Localization.LocalizationService(options);
-        });
+                var options = new MUnique.OpenMU.Localization.LocalizationOptions
+                {
+                    ResourceDirectory = Path.Combine(builder.Environment.ContentRootPath, "Localization"),
+                };
+                return new MUnique.OpenMU.Localization.LocalizationService(options);
+            });
         services.Configure<RequestLocalizationOptions>(options =>
         {
             var preferredCultures = new[] { "es-AR", "es-ES" };

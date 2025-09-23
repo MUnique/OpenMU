@@ -95,11 +95,6 @@
     </Content>
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Include="..\..\Localization\Resources\strings.*.json">
-      <Link>Localization\%(FileName)%(Extension)</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
+  
 
 </Project>

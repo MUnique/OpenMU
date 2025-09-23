@@ -56,15 +56,18 @@ public class Startup
         services.AddServerSideBlazor();
 
         services.AddLocalization();
-        services.AddScoped(sp =>
-        {
-            var env = sp.GetRequiredService<IWebHostEnvironment>();
-            var options = new MUnique.OpenMU.Localization.LocalizationOptions
+        // Prefer the Startup registration; only add if missing.
+        Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAddSingleton(
+            services,
+            provider =>
             {
-                ResourceDirectory = Path.Combine(env.ContentRootPath, "Localization"),
-            };
-            return new MUnique.OpenMU.Localization.LocalizationService(options);
-        });
+                var env = provider.GetRequiredService<IWebHostEnvironment>();
+                var options = new MUnique.OpenMU.Localization.LocalizationOptions
+                {
+                    ResourceDirectory = Path.Combine(env.ContentRootPath, "Localization"),
+                };
+                return new MUnique.OpenMU.Localization.LocalizationService(options);
+            });
         services.Configure<RequestLocalizationOptions>(options =>
         {
             var cultureNames = new[] { "en-US", "es-ES" };
