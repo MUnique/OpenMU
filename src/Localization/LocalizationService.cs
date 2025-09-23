@@ -165,19 +165,45 @@ public class LocalizationService
 
     private static CultureInfo CreateCulture(string language)
     {
-        try
+        static bool TryGet(string name, out CultureInfo culture)
         {
-            return CultureInfo.GetCultureInfo(language);
-        }
-        catch (CultureNotFoundException)
-        {
-            return language switch
+            try
             {
-                "en" => CultureInfo.GetCultureInfo("en-US"),
-                "es" => CultureInfo.GetCultureInfo("es-ES"),
-                _ => CultureInfo.InvariantCulture,
-            };
+                culture = CultureInfo.GetCultureInfo(name);
+                return true;
+            }
+            catch
+            {
+                culture = CultureInfo.InvariantCulture;
+                return false;
+            }
         }
+
+        if (string.IsNullOrWhiteSpace(language))
+        {
+            return CultureInfo.InvariantCulture;
+        }
+
+        var normalized = language.Trim();
+        if (TryGet(normalized, out var result))
+        {
+            return result;
+        }
+
+        // Try common fallbacks for known languages
+        var lower = normalized.ToLowerInvariant();
+        if (lower is "en" && TryGet("en-US", out result))
+        {
+            return result;
+        }
+
+        if (lower is "es" && TryGet("es-ES", out result))
+        {
+            return result;
+        }
+
+        // As a last resort, return invariant culture in globalization-invariant environments
+        return CultureInfo.InvariantCulture;
     }
 
     private static IReadOnlyDictionary<string, string> Empty { get; } = new Dictionary<string, string>();

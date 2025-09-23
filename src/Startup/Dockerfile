@@ -1,6 +1,10 @@
 ARG ASPNET_IMAGE=mcr.microsoft.com/dotnet/aspnet:9.0-alpine
 ARG SDK_IMAGE=mcr.microsoft.com/dotnet/sdk:9.0-alpine
 FROM ${ASPNET_IMAGE} AS base
+# Enable full globalization support (avoid invariant-only mode)
+RUN apk add --no-cache icu-libs icu-data-full tzdata \
+    && rm -rf /var/cache/apk/*
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 WORKDIR /app
 EXPOSE 8080
 EXPOSE 55901
