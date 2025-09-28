@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix;
 
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Quests;
+using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameServer.MessageHandler.Quests;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
@@ -55,6 +56,86 @@ internal class Quests : InitializerBase
         this.IntoTheDarknessZone();
 
         this.CreateNewQuests();
+
+        // Wandering Merchant Zyro event quests (Inventory/Vault expansion).
+        this.CreateZyroExpansionQuests();
+    }
+
+    private const short ZyroNpcNumber = 568;
+
+    private const short ZyroQuestGroup = 200; // event quest group id for Zyro
+
+    private void CreateZyroExpansionQuests()
+    {
+        // 1) Vault Expansion (Lv 400, 5 resets, 100m zen, Ancient Figurine)
+        // Note: Resets requirement is not part of QuestDefinition; see comment below.
+        var vault = this.CreateQuest(
+            name: "Vault Expansion",
+            @group: ZyroQuestGroup,
+            startingNumber: 10,
+            number: 10,
+            refuseNumber: 11,
+            minimumLevel: 400,
+            maximumLevel: 400,
+            npcNumber: ZyroNpcNumber);
+
+        vault.RequiredStartMoney = 100_000_000;
+
+        // Ancient Figurine: drop from Death Knight (40) and Death Gorgon (35) -> approximate by level range
+        // (DK lvl ~62, DG ~57) to keep drop restricted while quest is active.
+        this.AddItemRequirement(vault, 14, 95 /* Ancient Figurine */, 0, 57, 62);
+
+        var vaultReward = this.Context.CreateNew<QuestReward>();
+        vaultReward.RewardType = QuestRewardType.Item;
+        var vaultItemTemplate = this.Context.CreateNew<Item>();
+        vaultItemTemplate.Definition = this.GameConfiguration.Items.First(i => i.Group == 14 && i.Number == 91); // Vault Expansion Certificate
+        vaultReward.ItemReward = vaultItemTemplate;
+        vault.Rewards.Add(vaultReward);
+
+        // 2) First Inventory Expansion (Lv 400, 10 resets, 200m zen, Magic Cloth)
+        var inv1 = this.CreateQuest(
+            name: "Inventory Expansion (1st)",
+            @group: ZyroQuestGroup,
+            startingNumber: 20,
+            number: 20,
+            refuseNumber: 21,
+            minimumLevel: 400,
+            maximumLevel: 400,
+            npcNumber: ZyroNpcNumber);
+
+        inv1.RequiredStartMoney = 200_000_000;
+
+        // Magic Cloth: from Atlans Silver Valkyrie (52) or Lizard King (48) -> level range [68..70].
+        this.AddItemRequirement(inv1, 14, 93 /* Magic Cloth */, 0, 68, 70);
+
+        var invReward = this.Context.CreateNew<QuestReward>();
+        invReward.RewardType = QuestRewardType.Item;
+        var invItemTemplate = this.Context.CreateNew<Item>();
+        invItemTemplate.Definition = this.GameConfiguration.Items.First(i => i.Group == 14 && i.Number == 92); // Magic Backpack (Inventory Expansion)
+        invReward.ItemReward = invItemTemplate;
+        inv1.Rewards.Add(invReward);
+
+        // 3) Second Inventory Expansion (Lv 400, 15 resets, 300m zen, Space Cloth)
+        var inv2 = this.CreateQuest(
+            name: "Inventory Expansion (2nd)",
+            @group: ZyroQuestGroup,
+            startingNumber: 30,
+            number: 30,
+            refuseNumber: 31,
+            minimumLevel: 400,
+            maximumLevel: 400,
+            npcNumber: ZyroNpcNumber);
+
+        inv2.RequiredStartMoney = 300_000_000;
+        // Space Cloth: Icarus Alquamos(69) / Queen Rainer(70) -> levels ~75..82
+        this.AddItemRequirement(inv2, 14, 94 /* Space Cloth */, 0, 75, 82);
+
+        var inv2Reward = this.Context.CreateNew<QuestReward>();
+        inv2Reward.RewardType = QuestRewardType.Item;
+        var inv2ItemTemplate = this.Context.CreateNew<Item>();
+        inv2ItemTemplate.Definition = this.GameConfiguration.Items.First(i => i.Group == 14 && i.Number == 92); // Magic Backpack (Inventory Expansion)
+        inv2Reward.ItemReward = inv2ItemTemplate;
+        inv2.Rewards.Add(inv2Reward);
     }
 
     private QuestDefinition CreateQuest(string name, short @group, short startingNumber, short number,
