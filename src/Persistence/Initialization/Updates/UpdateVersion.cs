@@ -309,4 +309,19 @@ public enum UpdateVersion
     /// The version of the <see cref="FixEventItemsDropFromMonstersUpdatePlugIn095d"/>.
     /// </summary>
     FixEventItemsDropFromMonsters095d = 60,
+
+    /// <summary>
+    /// The version of the <see cref="FixJeweleryPetsDamageCalcsPlugIn075"/>.
+    /// </summary>
+    FixJeweleryPetsDamageCalcs075 = 61,
+
+    /// <summary>
+    /// The version of the <see cref="FixJeweleryPetsDamageCalcsPlugIn095D"/>.
+    /// </summary>
+    FixJeweleryPetsDamageCalcs095d = 62,
+
+    /// <summary>
+    /// The version of the <see cref="FixJeweleryPetsDamageCalcsPlugInSeason6"/>.
+    /// </summary>
+    FixJeweleryPetsDamageCalcsSeason6 = 63,
 }
