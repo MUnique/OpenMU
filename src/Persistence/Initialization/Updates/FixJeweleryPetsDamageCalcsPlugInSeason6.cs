@@ -39,15 +39,26 @@ public class FixJeweleryPetsDamageCalcsPlugInSeason6 : FixJeweleryPetsDamageCalc
         var jewelery = miscItems.Where(i => jeweleryItemSlots.Contains(i.ItemSlot));
         var pets = miscItems.Where(i => petItemSlot.Equals(i.ItemSlot));
 
+        // Remove next season rings
+        foreach (var jeweleryItem in jewelery.ToList())
+        {
+            if (jeweleryItem.Number is 163 or 164 or 165)
+            {
+                gameConfiguration.Items.Remove(jeweleryItem);
+            }
+        }
+
         // Update jewelery
 #pragma warning disable SA1116, SA1117 // Parameters must be on same line or separate lines
         var eliteSkeletonRing = jewelery.First(i => i.Number == 39);
         this.AddLevelRequirement(context, gameConfiguration, eliteSkeletonRing, 10);
-        eliteSkeletonRing.PossibleItemOptions.Clear();
-        CreateItemBasePowerUps(eliteSkeletonRing,
-            (Stats.DefenseBase, 1.1f, AggregateType.Multiplicate));
-        CreateItemOptionDefinition(eliteSkeletonRing, "Elite Skeleton Transformation Ring", ItemOptionDefinitionNumbers.EliteSkeletonTransformationRing,
+        if (eliteSkeletonRing.PossibleItemOptions.FirstOrDefault() is { } eliteSkeletonRingItemOptDef)
+        {
+            CreateItemBasePowerUps(eliteSkeletonRing,
+                (Stats.DefenseBase, 1.1f, AggregateType.Multiplicate));
+            CreateItemOptionDefinition(eliteSkeletonRingItemOptDef, "Elite Skeleton Transformation Ring", ItemOptionDefinitionNumbers.EliteSkeletonTransformationRing,
                 (Stats.MaximumHealth, 0, AggregateType.AddRaw, (Stats.Level, 1)));
+        }
 
         var jackOlanternRing = jewelery.First(i => i.Number == 40);
         this.AddLevelRequirement(context, gameConfiguration, jackOlanternRing, 10);
@@ -85,12 +96,14 @@ public class FixJeweleryPetsDamageCalcsPlugInSeason6 : FixJeweleryPetsDamageCalc
             (Stats.FinalDamageBonus, 30, AggregateType.AddRaw));
 
         var skeletonRing = jewelery.First(i => i.Number == 122);
-        skeletonRing.PossibleItemOptions.Clear();
-        CreateItemBasePowerUps(skeletonRing,
-            (Stats.BaseDamageBonus, 40, AggregateType.AddRaw),
-            (Stats.CurseBaseDmg, 40, AggregateType.AddRaw));
-        CreateItemOptionDefinition(skeletonRing, "Skeleton Transformation Ring", ItemOptionDefinitionNumbers.SkeletonTransformationRing,
-                (Stats.BonusExperienceRate, 0, AggregateType.AddRaw, (Stats.IsPetSkeletonEquipped, 0.3f)));
+        if (skeletonRing.PossibleItemOptions.FirstOrDefault() is { } skeletonRingItemOptDef)
+        {
+            CreateItemBasePowerUps(skeletonRing,
+                (Stats.BaseDamageBonus, 40, AggregateType.AddRaw),
+                (Stats.CurseBaseDmg, 40, AggregateType.AddRaw));
+            CreateItemOptionDefinition(skeletonRingItemOptDef, "Skeleton Transformation Ring", ItemOptionDefinitionNumbers.SkeletonTransformationRing,
+                    (Stats.BonusExperienceRate, 0, AggregateType.AddRaw, (Stats.IsPetSkeletonEquipped, 0.3f)));
+        }
 
         var wizardsRing = jewelery.First(i => i.Number == 20);
         wizardsRing.PossibleItemOptions.Clear();
@@ -151,23 +164,41 @@ public class FixJeweleryPetsDamageCalcsPlugInSeason6 : FixJeweleryPetsDamageCalc
             }
         }
 
-        void CreateItemOptionDefinition(ItemDefinition item, string name, short number, params (AttributeDefinition TargetOption, float Value, AggregateType AggregateType, (AttributeDefinition? SourceAttribute, float Multiplier))[] options)
+        void CreateItemOptionDefinition(ItemOptionDefinition itemOptionDef, string name, short number, (AttributeDefinition TargetOption, float Value, AggregateType AggregateType, (AttributeDefinition SourceAttribute, float Multiplier)) option)
         {
-            var optionDefinition = context.CreateNew<ItemOptionDefinition>();
-            optionDefinition.SetGuid(number);
-            gameConfiguration.ItemOptions.Add(optionDefinition);
-            optionDefinition.Name = name;
-            foreach (var (targetOption, value, aggregateType, (sourceAttribute, multiplier)) in options)
+            itemOptionDef.Name = name;
+
+            foreach (var possibleOption in itemOptionDef.PossibleOptions.ToList())
             {
-                optionDefinition.PossibleOptions.Add(CreateItemOption(targetOption, value, aggregateType, number, (sourceAttribute, multiplier)));
+                if (possibleOption.PowerUpDefinition?.TargetAttribute != option.TargetOption)
+                {
+                    itemOptionDef.PossibleOptions.Remove(possibleOption);
+                }
+            }
+
+            if (itemOptionDef.PossibleOptions.Count == 0)
+            {
+                itemOptionDef.PossibleOptions.Add(CreateItemOption(option.TargetOption, option.Value, option.AggregateType, number, (option.Item4.SourceAttribute, option.Item4.Multiplier)));
+            }
+            else
+            {
+                // Update existing option
+                var possibleOption = itemOptionDef.PossibleOptions.First();
+                possibleOption.PowerUpDefinition!.Boost!.ConstantValue.Value = option.Value;
+                possibleOption.PowerUpDefinition.Boost.ConstantValue.AggregateType = option.AggregateType;
+
+                var attributeRelationship = context.CreateNew<AttributeRelationship>();
+                attributeRelationship.SetGuid(number, option.TargetOption.Id.ExtractFirstTwoBytes(), 0);
+                attributeRelationship.InputAttribute = option.Item4.SourceAttribute.GetPersistent(gameConfiguration);
+                attributeRelationship.InputOperator = InputOperator.Multiply;
+                attributeRelationship.InputOperand = option.Item4.Multiplier;
+                possibleOption.PowerUpDefinition.Boost.RelatedValues.Add(attributeRelationship);
             }
 
             // Always add all options "randomly" when it drops ;)
-            optionDefinition.AddChance = 1.0f;
-            optionDefinition.AddsRandomly = true;
-            optionDefinition.MaximumOptionsPerItem = options.Length;
-
-            item.PossibleItemOptions.Add(optionDefinition);
+            itemOptionDef.AddChance = 1.0f;
+            itemOptionDef.AddsRandomly = true;
+            itemOptionDef.MaximumOptionsPerItem = 1;
         }
 
         IncreasableItemOption CreateItemOption(AttributeDefinition targetOption, float value, AggregateType aggregateType, short number, (AttributeDefinition? SourceAttribute, float Multiplier) relatedAttribute)
