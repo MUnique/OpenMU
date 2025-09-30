@@ -60,7 +60,7 @@ public abstract class FixJeweleryPetsDamageCalcsPlugInBase : UpdatePlugInBase
         var jewelery = gameConfiguration.Items.Where(i => i.Group == (byte)ItemGroups.Misc1 && jeweleryItemSlots.Contains(i.ItemSlot));
 
         var xfmRing = jewelery.First(i => i.Number == 10); // Transformation Ring
-        this.AddLevelRequirement(context, gameConfiguration, xfmRing, 10);
+        this.AddLevelRequirement(context, gameConfiguration, xfmRing, 20);
 
         foreach (var jeweleryItem in jewelery)
         {
