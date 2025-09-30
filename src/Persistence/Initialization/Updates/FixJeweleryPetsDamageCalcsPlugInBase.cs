@@ -11,19 +11,19 @@ using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Persistence.Initialization.Items;
 
 /// <summary>
-/// This update fixes jewelery items and pet options related to damage.
+/// This update fixes jewelery items resistance values.
 /// </summary>
 public abstract class FixJeweleryPetsDamageCalcsPlugInBase : UpdatePlugInBase
 {
     /// <summary>
     /// The plug in name.
     /// </summary>
-    internal const string PlugInName = "Fix Jewelery and Pets Damage Calculations";
+    internal const string PlugInName = "Fix Jewelery Resistance Calculations";
 
     /// <summary>
     /// The plug in description.
     /// </summary>
-    internal const string PlugInDescription = "This update fixes jewelery items and pet options related to damage.";
+    internal const string PlugInDescription = "This update fixes jewelery items resistance values.";
 
     /// <inheritdoc />
     public override string Name => PlugInName;
@@ -35,7 +35,7 @@ public abstract class FixJeweleryPetsDamageCalcsPlugInBase : UpdatePlugInBase
     public override bool IsMandatory => true;
 
     /// <inheritdoc />
-    public override DateTime CreatedAt => new(2025, 09, 29, 16, 0, 0, DateTimeKind.Utc);
+    public override DateTime CreatedAt => new(2025, 09, 30, 16, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)

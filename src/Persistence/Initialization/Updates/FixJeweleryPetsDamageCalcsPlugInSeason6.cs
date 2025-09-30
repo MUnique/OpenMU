@@ -15,12 +15,28 @@ using MUnique.OpenMU.Persistence.Initialization.Skills;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// This update fixes jewelery items and pet options related to damage.
+/// This update fixes jewelery items and pet options related to damage, and jewelery resistance values.
 /// </summary>
 [PlugIn(PlugInName, PlugInDescription)]
 [Guid("DD5B0424-89DB-4DE4-A1BB-B294F2C1FCE6")]
 public class FixJeweleryPetsDamageCalcsPlugInSeason6 : FixJeweleryPetsDamageCalcsPlugInBase
 {
+    /// <summary>
+    /// The plug in description.
+    /// </summary>
+    internal new const string PlugInName = "Fix Jewelery and Pets Damage Calculations";
+
+    /// <summary>
+    /// The plug in description.
+    /// </summary>
+    internal new const string PlugInDescription = "This update fixes jewelery items and pet options related to damage, and jewelery resistance values.";
+
+    /// <inheritdoc />
+    public override string Name => PlugInName;
+
+    /// <inheritdoc />
+    public override string Description => PlugInDescription;
+
     /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
