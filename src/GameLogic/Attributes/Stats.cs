@@ -791,7 +791,10 @@ public class Stats
     /// <summary>
     /// Gets the soul barrier skill damage receive decrement attribute definition.
     /// </summary>
-    public static AttributeDefinition SoulBarrierReceiveDecrement { get; } = new(new Guid("CBC5404A-6232-4BF3-9B85-9AA0AE0F9BA4"), "Soul Barrier Damage Receive Decrement", "The soul barrier skill receive damage multiplier which is multiplied with the final damage and subtracted from it.");
+    public static AttributeDefinition SoulBarrierReceiveDecrement { get; } = new(new Guid("CBC5404A-6232-4BF3-9B85-9AA0AE0F9BA4"), "Soul Barrier Damage Receive Decrement", "The soul barrier skill receive damage multiplier which is multiplied with the final damage and subtracted from it.")
+    {
+        MaximumValue = 0.7f,
+    };
 
     /// <summary>
     /// Gets the soul barrier skill mana toll per successful received hit attribute definition.
