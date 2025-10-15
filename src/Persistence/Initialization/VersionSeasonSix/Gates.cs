@@ -195,7 +195,7 @@ public class Gates : InitializerBase
         targetGates.Add(266, this.CreateExitGate(maps[7], 16, 19, 17, 20, 0));
 
         // Tarkan
-        targetGates.Add(57, this.CreateExitGate(maps[8], 187, 54, 203, 69, 0, true));
+        targetGates.Add(57, this.CreateExitGate(maps[8], 187, 63, 203, 69, 0, true));
         targetGates.Add(77, this.CreateExitGate(maps[8], 91, 160, 93, 161, 0));
         targetGates.Add(54, this.CreateExitGate(maps[8], 248, 40, 251, 44, 7));
         targetGates.Add(128, this.CreateExitGate(maps[8], 7, 199, 7, 201, 0));
