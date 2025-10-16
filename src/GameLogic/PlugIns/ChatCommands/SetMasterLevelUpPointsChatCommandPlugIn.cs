@@ -14,15 +14,15 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which sets a character's master level-up points.
 /// </summary>
 [Guid("69AC0B9E-1063-448E-ABD6-C5837A1E8A4B")]
-[PlugIn("Set master level up points command", "Sets master level up points of a player. Usage: /setmasterleveluppoints (points) (optional:character)")]
-[ChatCommandHelp(Command, "Sets master level up points of a player. Usage: /setmasterleveluppoints (points) (optional:character)", null)]
+[PlugIn("Set master level up points command", "Establece los puntos de nivel maestro de un jugador. Uso: /setmasterleveluppoints (puntos) (opcional:personaje)")]
+[ChatCommandHelp(Command, "Establece los puntos de nivel maestro de un jugador. Uso: /setmasterleveluppoints (puntos) (opcional:personaje)", null)]
 public class SetMasterLevelUpPointsChatCommandPlugIn : ChatCommandPlugInBase<SetMasterLevelUpPointsChatCommandPlugIn.Arguments>, IDisabledByDefault
 {
     private const string Command = "/setmasterleveluppoints";
     private const CharacterStatus MinimumStatus = CharacterStatus.GameMaster;
-    private const string CharacterNotFoundMessage = "Character '{0}' not found.";
-    private const string InvalidMasterLevelUpPointsMessage = "Invalid master level-up points - must be bigger or equal to 0.";
-    private const string MasterLevelUpPointsSetMessage = "Master level-up points set to {0}.";
+    private const string CharacterNotFoundMessage = "Personaje '{0}' no encontrado.";
+    private const string InvalidMasterLevelUpPointsMessage = "Puntos de nivel maestro inválidos - deben ser mayores o iguales a 0.";
+    private const string MasterLevelUpPointsSetMessage = "Puntos de nivel maestro establecidos en {0}.";
 
     /// <inheritdoc />
     public override string Key => Command;

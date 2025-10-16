@@ -66,6 +66,7 @@ public class GameConfigurationInitializer : GameConfigurationInitializerBase
         new Potions(this.Context, this.GameConfiguration).Initialize();
         new Jewels(this.Context, this.GameConfiguration).Initialize();
         new Misc(this.Context, this.GameConfiguration).Initialize();
+        new Expansions(this.Context, this.GameConfiguration).Initialize();
         new PackedJewels(this.Context, this.GameConfiguration).Initialize();
         new Jewelery(this.Context, this.GameConfiguration).Initialize();
         new AncientSets(this.Context, this.GameConfiguration).Initialize();

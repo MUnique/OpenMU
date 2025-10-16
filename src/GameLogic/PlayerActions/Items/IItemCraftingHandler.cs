@@ -17,8 +17,8 @@ public interface IItemCraftingHandler
     /// </summary>
     /// <param name="player">The mixing player.</param>
     /// <param name="socketSlot">The socket slot index for the <see cref="MountSeedSphereCrafting"/> and <see cref="RemoveSeedSphereCrafting"/>. It's a 0-based index.</param>
-    /// <returns>The crafting result and the resulting item; if there are multiple, only the last one is returned.</returns>
-    ValueTask<(CraftingResult Result, Item? Item)> DoMixAsync(Player player, byte socketSlot);
+    /// <returns>The crafting result, success information and the resulting item; if there are multiple, only the last one is returned.</returns>
+    ValueTask<(CraftingResult Result, Item? Item, byte SuccessRate, byte BonusRate)> DoMixAsync(Player player, byte socketSlot);
 
     /// <summary>
     /// Tries to get the required items for this crafting.
@@ -28,6 +28,7 @@ public interface IItemCraftingHandler
     /// <param name="player">The player.</param>
     /// <param name="items">The items.</param>
     /// <param name="successRateByItems">The success rate by items.</param>
+    /// <param name="bonusRate">The bonus rate.</param>
     /// <returns><c>null</c>, if the required items could be get; Otherwise, the corresponding error is returned.</returns>
-    CraftingResult? TryGetRequiredItems(Player player, out IList<CraftingRequiredItemLink> items, out byte successRateByItems);
+    CraftingResult? TryGetRequiredItems(Player player, out IList<CraftingRequiredItemLink> items, out byte successRateByItems, out byte bonusRate);
 }

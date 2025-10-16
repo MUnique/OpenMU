@@ -52,7 +52,7 @@ public class PersistentObjectsLookupController : ILookupController
             if (this._gameConfigurationSource.IsSupporting(typeof(T))
                 && persistenceContext?.IsSupporting(typeof(T)) is not true)
             {
-                values = this._gameConfigurationSource.GetAll<T>();
+                values = this._gameConfigurationSource.GetAll<T>().ToList();
             }
             else
             {
@@ -65,7 +65,8 @@ public class PersistentObjectsLookupController : ILookupController
                     return Enumerable.Empty<T>();
                 }
 
-                values = await effectiveContext.GetAsync<T>().ConfigureAwait(false);
+                // Materialize to avoid accessing a disposed context later during enumeration.
+                values = (await effectiveContext.GetAsync<T>().ConfigureAwait(false)).ToList();
             }
 
             if (string.IsNullOrEmpty(text))

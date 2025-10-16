@@ -1,0 +1,351 @@
+@page "/logs/tail"
+
+@inject NavigationManager Nav
+@inject Microsoft.JSInterop.IJSRuntime JS
+@using System.Text.Json
+@using System.Threading
+
+<PageTitle>OpenMU: Logs en Vivo</PageTitle>
+<Breadcrumb IsFirstFromRoot="true" Caption="Logs en Vivo"/>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <div class="form-inline">
+            <label class="mr-2">Líneas:</label>
+            <input class="form-control mr-3" style="width:100px" type="number" min="50" max="5000" step="50" @bind-value="_take" />
+
+            <label class="mr-2">Filtro:</label>
+            <input class="form-control mr-3" style="width:280px" @bind-value="_filter" placeholder="texto a buscar (opcional)" />
+
+            <button class="btn btn-primary mr-2" @onclick="RefreshAsync">Actualizar</button>
+
+            <div class="form-check ml-3">
+                <input class="form-check-input" type="checkbox" id="autoRefresh" @bind="_autoRefresh" />
+                <label class="form-check-label" for="autoRefresh">Auto-actualizar</label>
+            </div>
+
+            <label class="mx-3 mb-0">Color:</label>
+            <select class="form-control mr-3" style="min-width:170px" value="@_theme" @onchange="OnThemeChanged">
+                <option value="green">Consola (verde)</option>
+                <option value="white">Blanco sobre negro</option>
+                <option value="light">Claro (negro sobre blanco)</option>
+            </select>
+
+            <label class="mr-2 mb-0">Fuente:</label>
+            <input class="form-control" style="width:90px" type="number" min="10" max="24" @bind-value="_fontSize" />
+        </div>
+    </div>
+    <div class="card-footer small text-muted">
+        Fuente: @_resolvedEndpoint
+    </div>
+    <div class="card-body" style="@ContentStyle">
+        <pre style="white-space: pre; line-height: 1.25; color: inherit; font-size: inherit;">@_content</pre>
+    </div>
+    <div class="card-footer">
+        <span class="text-muted">@_lastUpdatedText</span>
+    </div>
+    
+</div>
+
+@code {
+    private int _take = 200;
+    private string? _filter;
+    private string _content = string.Empty;
+    private bool _autoRefresh = true;
+    private System.Threading.Timer? _timer;
+    private string _resolvedEndpoint = string.Empty;
+    private DateTime _lastUpdatedUtc;
+    private string? _sseEndpoint;
+    private Microsoft.JSInterop.DotNetObjectReference<LogTail>? _selfRef;
+    private string? _sseId;
+
+    // UI Appearance
+    private string _theme = "green"; // green | white | light
+    private int _fontSize = 13;
+    private string _bg = "#0b0b0b";
+    private string _fg = "#00ff66";
+    private string ContentStyle => $"max-height:60vh; overflow:auto; background:{_bg}; color:{_fg}; font-family:Consolas,monospace; font-size:{_fontSize}px;";
+
+    private string _lastUpdatedText => _lastUpdatedUtc == default ? string.Empty : $"Actualizado: {_lastUpdatedUtc:HH:mm:ss}";
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Endpoint configurable por variable de entorno LOG_TAIL_URL; default relativo a AdminPanel.
+        var env = Environment.GetEnvironmentVariable("LOG_TAIL_URL");
+        _resolvedEndpoint = string.IsNullOrWhiteSpace(env) ? "/api/logs/tail" : env!;
+        var sse = Environment.GetEnvironmentVariable("LOG_TAIL_SSE_URL");
+        _sseEndpoint = string.IsNullOrWhiteSpace(sse) ? null : sse;
+
+        ApplyTheme();
+
+        if (_sseEndpoint is not null)
+        {
+            // Usar SSE si está configurado; mantiene conexión con mínimo tráfico.
+            await StartSseAsync();
+        }
+        else
+        {
+            await RefreshAsync();
+            _timer = new System.Threading.Timer(async _ =>
+            {
+                if (_autoRefresh)
+                {
+                    await InvokeAsync(RefreshAsync);
+                }
+            }, null, TimeSpan.FromSeconds(3), TimeSpan.FromSeconds(3));
+        }
+    }
+
+    public void Dispose()
+    {
+        _timer?.Dispose();
+        if (_sseId is not null)
+        {
+            _ = JS.InvokeVoidAsync("logtail.stop", _sseId);
+            _selfRef?.Dispose();
+            _sseId = null;
+        }
+    }
+
+    private async Task RefreshAsync()
+    {
+        try
+        {
+            using var http = new HttpClient();
+            var url = BuildUrl();
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+            var text = await http.GetStringAsync(url, cts.Token).ConfigureAwait(false);
+            _content = NormalizeContent(text);
+            _lastUpdatedUtc = DateTime.UtcNow;
+        }
+        catch (Exception ex)
+        {
+            _content = $"[ERROR] No se pudo obtener logs: {ex.Message}";
+        }
+    }
+
+    private string BuildUrl()
+    {
+        var sep = _resolvedEndpoint.Contains("?") ? "&" : "?";
+        var url = $"{_resolvedEndpoint}{sep}take={_take}";
+        if (!string.IsNullOrWhiteSpace(_filter))
+        {
+            url += "&q=" + Uri.EscapeDataString(_filter);
+        }
+
+        var isAbs = _resolvedEndpoint.StartsWith("http", StringComparison.OrdinalIgnoreCase);
+        var absolute = isAbs ? new Uri(url) : new Uri(new Uri(Nav.BaseUri), url);
+        return absolute.ToString();
+    }
+
+    private async Task StartSseAsync()
+    {
+        if (_sseEndpoint is null)
+        {
+            return;
+        }
+
+        // Reiniciar conexión
+        if (_sseId is not null)
+        {
+            await JS.InvokeVoidAsync("logtail.stop", _sseId);
+            _selfRef?.Dispose();
+            _sseId = null;
+        }
+
+        var sep = _sseEndpoint.Contains("?") ? "&" : "?";
+        var url = $"{_sseEndpoint}{sep}take={_take}";
+        if (!string.IsNullOrWhiteSpace(_filter))
+        {
+            url += "&q=" + Uri.EscapeDataString(_filter);
+        }
+        var isAbs = _sseEndpoint.StartsWith("http", StringComparison.OrdinalIgnoreCase);
+        var absolute = isAbs ? new Uri(url) : new Uri(new Uri(Nav.BaseUri), url);
+        _selfRef = Microsoft.JSInterop.DotNetObjectReference.Create(this);
+        _sseId = await JS.InvokeAsync<string?>("logtail.start", _selfRef, absolute.ToString());
+        _lastUpdatedUtc = DateTime.UtcNow;
+    }
+
+    [Microsoft.JSInterop.JSInvokable]
+    public Task OnSseMessage(string data)
+    {
+        // Aplica filtro en cliente si corresponde y limita a _take líneas
+        if (string.IsNullOrEmpty(data))
+        {
+            return Task.CompletedTask;
+        }
+        if (!string.IsNullOrWhiteSpace(_filter) && (data.IndexOf(_filter, StringComparison.OrdinalIgnoreCase) < 0))
+        {
+            return Task.CompletedTask;
+        }
+
+        var lines = (_content?.Split('\n') ?? Array.Empty<string>()).ToList();
+        foreach (var l in NormalizeSsePayload(data))
+        {
+            if (!string.IsNullOrEmpty(l))
+            {
+                lines.Add(l);
+            }
+        }
+        if (lines.Count > _take)
+        {
+            lines = lines.Skip(Math.Max(0, lines.Count - _take)).ToList();
+        }
+        _content = string.Join('\n', lines);
+        _lastUpdatedUtc = DateTime.UtcNow;
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    [Microsoft.JSInterop.JSInvokable]
+    public Task OnSseOpened()
+    {
+        // SSE abierto con éxito.
+        return Task.CompletedTask;
+    }
+
+    [Microsoft.JSInterop.JSInvokable]
+    public async Task OnSseError()
+    {
+        // Si falla al inicio y no hay contenido, hacer fallback a polling.
+        if (string.IsNullOrEmpty(_content))
+        {
+            await InvokeAsync(async () =>
+            {
+                if (_timer is null)
+                {
+                    _timer = new System.Threading.Timer(async _ =>
+                    {
+                        if (_autoRefresh)
+                        {
+                            await InvokeAsync(RefreshAsync);
+                        }
+                    }, null, TimeSpan.FromSeconds(3), TimeSpan.FromSeconds(3));
+                }
+            });
+        }
+    }
+}
+
+@code {
+    private static string NormalizeContent(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return string.Empty;
+        }
+
+        text = text.Trim();
+        try
+        {
+            if (text.StartsWith("["))
+            {
+                var arr = JsonSerializer.Deserialize<string[]>(text);
+                if (arr is { Length: > 0 })
+                {
+                    return string.Join("\n", arr);
+                }
+            }
+            else if (text.StartsWith("\""))
+            {
+                // json string with escaped newlines
+                var s = JsonSerializer.Deserialize<string>(text) ?? string.Empty;
+                return s.Replace("\r\n", "\n");
+            }
+            else if (text.StartsWith("{"))
+            {
+                using var doc = JsonDocument.Parse(text);
+                if (doc.RootElement.TryGetProperty("lines", out var linesElem) && linesElem.ValueKind == JsonValueKind.Array)
+                {
+                    var lines = linesElem.EnumerateArray().Select(e => e.GetString() ?? string.Empty);
+                    return string.Join("\n", lines);
+                }
+            }
+        }
+        catch
+        {
+            // ignore, fallback below
+        }
+
+        // If string contains literal \n and not real newlines, unescape
+        if (!text.Contains('\n') && text.Contains("\\n"))
+        {
+            text = text.Replace("\\n", "\n");
+        }
+        return text;
+    }
+
+    private static IEnumerable<string> NormalizeSsePayload(string data)
+    {
+        if (string.IsNullOrEmpty(data))
+        {
+            yield break;
+        }
+
+        data = data.Trim();
+        if (data.StartsWith("["))
+        {
+            string[]? arr = null;
+            try { arr = JsonSerializer.Deserialize<string[]>(data); } catch { }
+            if (arr is { Length: > 0 })
+            {
+                foreach (var l in arr)
+                {
+                    yield return l;
+                }
+                yield break;
+            }
+        }
+        else if (data.StartsWith("\""))
+        {
+            string? single = null;
+            try { single = JsonSerializer.Deserialize<string>(data); } catch { }
+            if (single is not null)
+            {
+                foreach (var l in (single.Replace("\r\n", "\n").Split('\n')))
+                {
+                    yield return l;
+                }
+                yield break;
+            }
+        }
+
+        if (data.Contains("\\n") && !data.Contains('\n'))
+        {
+            data = data.Replace("\\n", "\n");
+        }
+        foreach (var l in data.Split('\n'))
+        {
+            yield return l;
+        }
+    }
+
+    private void ApplyTheme()
+    {
+        switch (_theme)
+        {
+            case "green":
+                _bg = "#0b0b0b";
+                _fg = "#00ff66";
+                break;
+            case "white":
+                _bg = "#000000";
+                _fg = "#ffffff";
+                break;
+            case "light":
+                _bg = "#ffffff";
+                _fg = "#000000";
+                break;
+            default:
+                _bg = "#111";
+                _fg = "#fff";
+                break;
+        }
+    }
+
+    private void OnThemeChanged(ChangeEventArgs e)
+    {
+        _theme = e?.Value?.ToString() ?? _theme;
+        ApplyTheme();
+    }
+}

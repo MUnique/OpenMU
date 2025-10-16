@@ -122,7 +122,13 @@ public sealed class SkillList : ISkillList, IDisposable
 
     private async ValueTask AddItemSkillAsync(Skill skill)
     {
-        if (!skill.QualifiedCharacters.Contains(this._player.SelectedCharacter!.CharacterClass!))
+        // During disconnect/shutdown, SelectedCharacter or its CharacterClass may be transiently null.
+        if (this._player.SelectedCharacter?.CharacterClass is null)
+        {
+            return;
+        }
+
+        if (!skill.QualifiedCharacters.Contains(this._player.SelectedCharacter.CharacterClass))
         {
             return;
         }

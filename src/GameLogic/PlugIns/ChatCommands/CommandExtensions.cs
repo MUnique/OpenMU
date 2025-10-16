@@ -49,7 +49,7 @@ public static class CommandExtensions
 
         if (arguments.Count < requiredArgumentCount)
         {
-            throw new ArgumentException($"The command needs {requiredArgumentCount} arguments and was given {arguments.Count}.", nameof(command));
+            throw new ArgumentException($"El comando requiere {requiredArgumentCount} argumentos y se recibieron {arguments.Count}.", nameof(command));
         }
 
         for (var i = 0; i < Math.Min(arguments.Count, properties.Count); i++)
@@ -166,11 +166,11 @@ public static class CommandExtensions
             return;
         }
 
-        // One or many required properties were not used
+        // Uno o varios argumentos obligatorios no fueron usados
         var stringBuilder = new StringBuilder();
         foreach (var requiredProperty in requiredProperties)
         {
-            stringBuilder.AppendLine($"The required argument named {requiredProperty.Name} was not used.");
+            stringBuilder.AppendLine($"El argumento obligatorio '{requiredProperty.Name}' no fue especificado.");
         }
 
         throw new ArgumentException(stringBuilder.ToString());
@@ -190,7 +190,7 @@ public static class CommandExtensions
         }
         catch
         {
-            throw new ArgumentException($"The argument {propertyInfo.Name} was given a invalid type, it expects the value to be of the type {propertyInfo.PropertyType.Name}.");
+            throw new ArgumentException($"El argumento {propertyInfo.Name} tiene un tipo inválido, se esperaba {propertyInfo.PropertyType.Name}.");
         }
     }
 }

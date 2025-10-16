@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic;
 
 using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Localization;
 
 /// <summary>
 /// The context of a game server.
@@ -45,6 +46,11 @@ public interface IGameServerContext : IGameContext
     /// Gets the server configuration.
     /// </summary>
     GameServerConfiguration ServerConfiguration { get; }
+
+    /// <summary>
+    /// Gets the localization service for server messages.
+    /// </summary>
+    LocalizationService Localization { get; }
 
     /// <summary>
     /// Executes an action for each player of the guild.

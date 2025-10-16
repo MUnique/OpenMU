@@ -1,0 +1,7 @@
+services:
+  openmu-startup:
+    environment:
+      # Anuncia explícitamente la IP LAN del host al cliente.
+      # Ajusta este valor a la IP correcta del servidor en tu red.
+      RESOLVE_IP: "192.168.100.200"
+

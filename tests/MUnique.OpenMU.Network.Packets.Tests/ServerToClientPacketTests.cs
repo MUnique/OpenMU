@@ -4666,7 +4666,7 @@ public class PacketStructureTests
         // Test GetRequiredSize method with sample data
         const int testBinaryLength = 10;
         var calculatedSize = ItemCraftingResultRef.GetRequiredSize(testBinaryLength);
-        var expectedMinSize = testBinaryLength + 4;
+        var expectedMinSize = testBinaryLength + 6;
         
         Assert.That(calculatedSize, Is.GreaterThanOrEqualTo(expectedMinSize), 
             "GetRequiredSize calculation incorrect for binary field");

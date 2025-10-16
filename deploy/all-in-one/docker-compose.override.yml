@@ -1,14 +1,16 @@
-version: '3'
-
 services:
 
   openmu-startup:
+    image: openmu-local:dev
     build:
       context: ../../src
       dockerfile: Startup/Dockerfile
+    pull_policy: never
     restart: "no"
-    ports:
-      - "8081:8080"
+    environment:
+      # Para pruebas en red local, anunciar IP local a los clientes.
+      # Cambiar a "public" si van a conectarse desde Internet.
+      RESOLVE_IP: local
 
   database:
     ports:

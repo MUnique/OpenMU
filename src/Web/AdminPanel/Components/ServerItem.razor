@@ -41,48 +41,48 @@
     </td>
     <td>@this.GetStateCaption()</td>
     <td>
-      <div class="btn-group" role="group" aria-label="Server control">
+      <div class="btn-group" role="group" aria-label="Control del servidor">
       @if (this.Server.ServerState == ServerState.Started)
       {
-        <button type="button" class="btn-secondary" title="Start" disabled>
+        <button type="button" class="btn-secondary" title="Iniciar" disabled>
           <span class="oi oi-media-play"></span>
         </button>
-        <button type="button" class="btn-warning" title="Stop" @onclick="this.OnPauseClickAsync">
+        <button type="button" class="btn-warning" title="Detener" @onclick="this.OnPauseClickAsync">
           <span class="oi oi-media-pause"></span>
         </button>
         @if (this.Server.Type is ServerType.GameServer or ServerType.ConnectServer)
         {
-          <button type="button" class="btn-secondary" title="Remove" disabled>
+          <button type="button" class="btn-secondary" title="Eliminar" disabled>
             <span class="oi oi-trash"></span>
           </button>
         }
       }
       else if ((this.Server.ServerState == ServerState.Stopped))
       {
-        <button type="button" class="btn-success" title="Start" @onclick="this.OnStartClickAsync">
+        <button type="button" class="btn-success" title="Iniciar" @onclick="this.OnStartClickAsync">
           <span class="oi oi-media-play"></span>
         </button>
-        <button type="button" class="btn-secondary" title="Stop" disabled>
+        <button type="button" class="btn-secondary" title="Detener" disabled>
           <span class="oi oi-media-pause"></span>
         </button>
         @if (this.Server.Type is ServerType.GameServer or ServerType.ConnectServer)
         {
-          <button type="button" class="btn-danger" title="Remove" @onclick="this.OnDeleteServerClickAsync">
+          <button type="button" class="btn-danger" title="Eliminar" @onclick="this.OnDeleteServerClickAsync">
             <span class="oi oi-trash"></span>
           </button>
         }
       }
       else
       {
-        <button type="button" class="btn-secondary" title="Start" disabled>
+        <button type="button" class="btn-secondary" title="Iniciar" disabled>
           <span class="oi oi-media-play"></span>
         </button>
-        <button type="button" class="btn-secondary" title="Stop" disabled>
+        <button type="button" class="btn-secondary" title="Detener" disabled>
           <span class="oi oi-media-pause"></span>
         </button>
         @if (this.Server.Type is ServerType.GameServer or ServerType.ConnectServer)
         {
-                  <button type="button" class="btn-secondary" title="Remove" disabled>
+                  <button type="button" class="btn-secondary" title="Eliminar" disabled>
             <span class="oi oi-trash"></span>
           </button>
         }
@@ -192,8 +192,8 @@
       }
 
       var dialogResult = await this.ModalService.ShowQuestionAsync(
-        "Remove Server",
-        "The server will be deleted from the database. Are you sure to proceed?");
+        "Eliminar Servidor",
+        "El servidor será eliminado de la base de datos. ¿Deseas continuar?");
       if (!dialogResult)
       {
         return;
@@ -233,15 +233,15 @@
         switch (this.Server.ServerState)
         {
             case ServerState.Stopped:
-                return "Stopped";
+                return "Detenido";
             case ServerState.Starting:
-                return "Starting ...";
+                return "Iniciando ...";
             case ServerState.Started:
-                return "Started";
+                return "Iniciado";
             case ServerState.Stopping:
-                return "Stopping ...";
+                return "Deteniendo ...";
             case ServerState.Timeout:
-                return "Timeout";
+                return "Tiempo agotado";
         }
 
         return string.Empty;

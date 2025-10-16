@@ -13,6 +13,8 @@ public interface IShowItemCraftingResultPlugIn : IViewPlugIn
     /// Shows the crafting result.
     /// </summary>
     /// <param name="result">The crafting result.</param>
+    /// <param name="successRate">The success rate in percent.</param>
+    /// <param name="bonusRate">The additional bonus rate in percent.</param>
     /// <param name="createdItem">The created item.</param>
-    ValueTask ShowResultAsync(CraftingResult result, Item? createdItem);
+    ValueTask ShowResultAsync(CraftingResult result, byte successRate, byte bonusRate, Item? createdItem);
 }

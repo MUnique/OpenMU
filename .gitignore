@@ -198,6 +198,7 @@ _pkginfo.txt
 # Others
 ClientBin/
 ~$*
+deploy/all-in-one/docker-compose.public-ip.yml
 *~
 *.dbmdl
 *.dbproj.schemaview
@@ -316,3 +317,7 @@ src/AdminPanel/wwwroot/content/js/app.js.map
 
 # Mac OS filesystem files
 .DS_Store
+
+# Local MU client sources (do not commit)
+/_MuMain/
+/MuMain/

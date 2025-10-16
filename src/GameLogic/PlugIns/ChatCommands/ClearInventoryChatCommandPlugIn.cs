@@ -20,13 +20,13 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which clears a character's inventory.
 /// </summary>
 [Guid("1E895A6F-3056-4A78-BA64-96E24363B8BC")]
-[PlugIn("Clear Inventory chat command", "Clears inventory. Usage: /clearinv (optional:character)")]
-[ChatCommandHelp(Command, "Clears inventory.", null, MinimumStatus)]
+[PlugIn("Clear Inventory chat command", "Limpia el inventario. Uso: /clearinv (opcional:personaje)")]
+[ChatCommandHelp(Command, "Limpia el inventario.", null, MinimumStatus)]
 public class ClearInventoryChatCommandPlugIn : ChatCommandPlugInBase<ClearInventoryChatCommandPlugIn.Arguments>, ISupportCustomConfiguration<ClearInventoryChatCommandPlugIn.ClearInventoryConfiguration>, ISupportDefaultCustomConfiguration, IDisabledByDefault
 {
     private const string Command = "/clearinv";
     private const CharacterStatus MinimumStatus = CharacterStatus.Normal;
-    private const string CharacterNotFoundMessage = "Character '{0}' not found.";
+    private const string CharacterNotFoundMessage = "Personaje '{0}' no encontrado.";
     private const int ConfirmationTimeoutSeconds = 10;
     private readonly Dictionary<Guid, DateTime> pendingConfirmations = new();
 

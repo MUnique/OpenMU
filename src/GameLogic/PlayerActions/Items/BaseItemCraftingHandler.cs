@@ -16,25 +16,25 @@ using MUnique.OpenMU.GameLogic.Views.NPC;
 public abstract class BaseItemCraftingHandler : IItemCraftingHandler
 {
     /// <inheritdoc/>
-    public async ValueTask<(CraftingResult Result, Item? Item)> DoMixAsync(Player player, byte socketSlot)
+    public async ValueTask<(CraftingResult Result, Item? Item, byte SuccessRate, byte BonusRate)> DoMixAsync(Player player, byte socketSlot)
     {
         using var loggerScope = player.Logger.BeginScope(this.GetType());
         if (player.TemporaryStorage is null)
         {
-            return (CraftingResult.Failed, null);
+            return (CraftingResult.Failed, null, 0, 0);
         }
 
-        if (this.TryGetRequiredItems(player, out var items, out var successRate) is { } error)
+        if (this.TryGetRequiredItems(player, out var items, out var successRate, out var bonusRate) is { } error)
         {
-            return (error, null);
+            return (error, null, successRate, bonusRate);
         }
 
-        player.Logger.LogInformation("Crafting success chance: {successRate} %", successRate);
+        player.Logger.LogInformation("Crafting success chance: {successRate} % (+{bonusRate})", successRate, bonusRate);
 
         var price = this.GetPrice(successRate, items);
         if (!player.TryRemoveMoney(price))
         {
-            return (CraftingResult.NotEnoughMoney, null);
+            return (CraftingResult.NotEnoughMoney, null, successRate, bonusRate);
         }
 
         await player.InvokeViewPlugInAsync<IUpdateMoneyPlugIn>(p => p.UpdateMoneyAsync()).ConfigureAwait(false);
@@ -42,30 +42,30 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
         var success = Rand.NextRandomBool(successRate);
         if (success)
         {
-            player.Logger.LogInformation("Crafting succeeded with success chance: {successRate} %", successRate);
+            player.Logger.LogInformation("Crafting succeeded with success chance: {successRate} % (+{bonusRate})", successRate, bonusRate);
             if (await this.DoTheMixAsync(items, player, socketSlot, successRate).ConfigureAwait(false) is { } item)
             {
                 player.Logger.LogInformation("Crafted item: {item}", item);
                 player.BackupInventory = null;
 
-                return (CraftingResult.Success, item);
+                return (CraftingResult.Success, item, successRate, bonusRate);
             }
 
             player.Logger.LogInformation("Crafting handler failed to mix the items.");
-            return (CraftingResult.Failed, null);
+            return (CraftingResult.Failed, null, successRate, bonusRate);
         }
 
-        player.Logger.LogInformation("Crafting failed with success chance: {successRate} %", successRate);
+        player.Logger.LogInformation("Crafting failed with success chance: {successRate} % (+{bonusRate})", successRate, bonusRate);
         foreach (var i in items)
         {
             await this.RequiredItemChangeAsync(player, i, false).ConfigureAwait(false);
         }
 
-        return (CraftingResult.Failed, null);
+        return (CraftingResult.Failed, null, successRate, bonusRate);
     }
 
     /// <inheritdoc/>
-    public abstract CraftingResult? TryGetRequiredItems(Player player, out IList<CraftingRequiredItemLink> items, out byte successRateByItems);
+    public abstract CraftingResult? TryGetRequiredItems(Player player, out IList<CraftingRequiredItemLink> items, out byte successRateByItems, out byte bonusRate);
 
     /// <summary>
     /// Gets the price based on the success rate and the required items.

@@ -241,6 +241,12 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
 
         await this.ForEachWorldObserverAsync<IObjectGotKilledPlugIn>(p => p.ObjectGotKilledAsync(this, attacker), true).ConfigureAwait(false);
 
+        // Do not award experience or drop items for summoned monsters.
+        if (this is Monster { SummonedBy: { } })
+        {
+            return;
+        }
+
         var player = this.GetHitNotificationTarget(attacker);
         if (player is { })
         {

@@ -236,6 +236,11 @@ public enum UpdateVersion
     FixChaosMixesSeason6 = 45,
 
     /// <summary>
+    /// The version of the <see cref="ElfSummonDefaultsUpdatePlugIn"/>.
+    /// </summary>
+    ElfSummonDefaults = 250,
+
+    /// <summary>
     /// The version of the <see cref="FixItemOptionsAndAttackSpeedPlugIn075"/>.
     /// </summary>
     FixItemOptionsAndAttackSpeed075 = 46,
@@ -314,4 +319,29 @@ public enum UpdateVersion
     /// The version of the <see cref="FixItemRequirementsPlugIn2"/>.
     /// </summary>
     FixItemRequirements2 = 61,
+
+    /// <summary>
+    /// The version of the White Wizard monster and default invasion drop groups update.
+    /// </summary>
+    WhiteWizardAndInvasionDropsSeason6 = 62,
+
+    /// <summary>
+    /// The version of the Golden Archer data update (adds Rena item and a default reward drop group).
+    /// </summary>
+    GoldenArcherDataSeason6 = 63,
+
+    /// <summary>
+    /// The version of the Rena global drop on Season 1 maps (Version 0.75).
+    /// </summary>
+    RenaGlobalDrop075 = 64,
+
+    /// <summary>
+    /// The version of the Rena global drop on Season 1 maps (Version 0.95d).
+    /// </summary>
+    RenaGlobalDrop095d = 65,
+
+    /// <summary>
+    /// The version of the Rena global drop on Season 1 maps (Season 6 data).
+    /// </summary>
+    RenaGlobalDropSeason6 = 66,
 }

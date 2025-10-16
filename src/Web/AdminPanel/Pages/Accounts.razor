@@ -5,28 +5,28 @@
 
 @inject AccountService _accountService;
 
-<PageTitle>OpenMU: Accounts</PageTitle>
-<Breadcrumb IsFirstFromRoot="true" Caption="Accounts" />
-<h1>Accounts</h1>
+<PageTitle>OpenMU: Cuentas</PageTitle>
+<Breadcrumb IsFirstFromRoot="true" Caption="Cuentas" />
+<h1>Cuentas</h1>
 
 <div>
     <DataTable TItem=@Account>
         <TableHeader>
-            <th class="col-1">Login Name</th>
-            <th class="col-1">State</th>
+            <th class="col-1">Usuario</th>
+            <th class="col-1">Estado</th>
             <th class="col-2">E-Mail</th>
-            <th class="col-2">Action</th>
+            <th class="col-2">Acción</th>
         </TableHeader>
         <ItemTemplate Context="item">
             <td>@item.LoginName</td>
             <td>@item.State</td>
             <td>@item.EMail</td>
             <td>
-                <NavLink href="@($"edit-account/{item.GetId()}/{typeof(Account).FullName}/{item.GetId()}")">Edit</NavLink>
+                <NavLink href="@($"edit-account/{item.GetId()}/{typeof(Account).FullName}/{item.GetId()}")">Editar</NavLink>
             </td>
         </ItemTemplate>
         <TableFooter>
-            <td><button type="button" class="btn btn-sm btn-success" @onclick="@this._accountService.CreateNewInModalDialogAsync">Create</button></td>
+            <td><button type="button" class="btn btn-sm btn-success" @onclick="@this._accountService.CreateNewInModalDialogAsync">Crear</button></td>
             <td></td>
             <td></td>
             <td></td>

@@ -20,11 +20,11 @@ public abstract class BannableChatMessageBaseProcessor : IChatMessageProcessor
         {
             if (remainingChatBan.TotalMinutes >= 1)
             {
-                await this.SendMessageToPlayerAsync(sender, $"Chat Ban: {(int)Math.Ceiling(remainingChatBan.TotalMinutes)} minute(s) remaining.", MessageType.BlueNormal).ConfigureAwait(false);
+                await this.SendMessageToPlayerAsync(sender, $"Chat bloqueado: quedan {(int)Math.Ceiling(remainingChatBan.TotalMinutes)} minuto(s).", MessageType.BlueNormal).ConfigureAwait(false);
             }
             else
             {
-                await this.SendMessageToPlayerAsync(sender, $"Chat Ban: {(int)Math.Ceiling(remainingChatBan.TotalSeconds)} second(s) remaining.", MessageType.BlueNormal).ConfigureAwait(false);
+                await this.SendMessageToPlayerAsync(sender, $"Chat bloqueado: quedan {(int)Math.Ceiling(remainingChatBan.TotalSeconds)} segundo(s).", MessageType.BlueNormal).ConfigureAwait(false);
             }
 
             return;

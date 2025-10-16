@@ -1,11 +1,14 @@
-﻿@inherits LayoutComponentBase
+@using MUnique.OpenMU.Web.AdminPanel.Localization
+
+@inherits LocalizedLayoutComponentBase
 
 <NavMenu />
 <BlazoredToasts />
 <div class="main">
   <div class="top-row px-4">
     <BreadcrumbNavigation />
-    <a href="https://munique.net" target="_blank">About</a>
+    <LanguageSelector />
+    <a href="https://munique.net" target="_blank">@this.Localization["MainLayout_About"]</a>
   </div>
 
     <div class="content px-4">

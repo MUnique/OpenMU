@@ -16,6 +16,7 @@ using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
 using MUnique.OpenMU.Web.AdminPanel.Services;
+using MUnique.OpenMU.Localization;
 
 /// <summary>
 /// A container which keeps all <see cref="IGameServer"/>s in one <see cref="IHostedService"/>.
@@ -35,6 +36,7 @@ public sealed class GameServerContainer : ServerContainerBase, IGameServerInstan
     private readonly IConfigurationChangeMediator _changeMediator;
     private readonly IDictionary<int, IGameServer> _gameServers;
     private readonly IEventPublisher _eventPublisher;
+    private readonly LocalizationService _localization;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GameServerContainer" /> class.
@@ -51,6 +53,7 @@ public sealed class GameServerContainer : ServerContainerBase, IGameServerInstan
     /// <param name="plugInManager">The plug in manager.</param>
     /// <param name="setupService">The setup service.</param>
     /// <param name="changeMediator">The change mediator.</param>
+    /// <param name="localization">The localization service.</param>
     public GameServerContainer(
         ILoggerFactory loggerFactory,
         IList<IManageableServer> servers,
@@ -63,7 +66,8 @@ public sealed class GameServerContainer : ServerContainerBase, IGameServerInstan
         IIpAddressResolver ipResolver,
         PlugInManager plugInManager,
         SetupService setupService,
-        IConfigurationChangeMediator changeMediator)
+        IConfigurationChangeMediator changeMediator,
+        LocalizationService localization)
         : base(setupService, loggerFactory.CreateLogger<GameServerContainer>())
     {
         this._loggerFactory = loggerFactory;
@@ -77,6 +81,7 @@ public sealed class GameServerContainer : ServerContainerBase, IGameServerInstan
         this._ipResolver = ipResolver;
         this._plugInManager = plugInManager;
         this._changeMediator = changeMediator;
+        this._localization = localization;
 
         this._logger = this._loggerFactory.CreateLogger<GameServerContainer>();
         this._eventPublisher = new InMemoryEventPublisher(this._gameServers, this._friendServer, this._guildServer);
@@ -166,7 +171,7 @@ public sealed class GameServerContainer : ServerContainerBase, IGameServerInstan
     private void InitializeGameServer(GameServerDefinition gameServerDefinition)
     {
         using var loggerScope = this._logger.BeginScope("GameServer: {0}", gameServerDefinition.ServerID);
-        var gameServer = new GameServer(gameServerDefinition, this._guildServer, this._eventPublisher, this._loginServer, this._persistenceContextProvider, this._friendServer, this._loggerFactory, this._plugInManager, this._changeMediator);
+        var gameServer = new GameServer(gameServerDefinition, this._guildServer, this._eventPublisher, this._loginServer, this._persistenceContextProvider, this._friendServer, this._loggerFactory, this._plugInManager, this._changeMediator, this._localization);
         foreach (var endpoint in gameServerDefinition.Endpoints)
         {
             gameServer.AddListener(new DefaultTcpGameServerListener(endpoint, gameServer.CreateServerInfo(), gameServer.Context, this._connectServerContainer.GetObserver(endpoint.Client!), this._ipResolver, this._loggerFactory));

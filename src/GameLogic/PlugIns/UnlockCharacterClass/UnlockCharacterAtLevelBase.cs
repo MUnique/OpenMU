@@ -23,7 +23,7 @@ public abstract class UnlockCharacterAtLevelBase : ICharacterLevelUpPlugIn
     {
         this._classNumber = classNumber;
         this._minimumLevel = minimumLevel;
-        this._warningMessage = $"Couldn't unlock {className}, because it couldn't be found in the configuration.";
+        this._warningMessage = $"No se pudo desbloquear {className}, porque no se encontró en la configuración.";
     }
 
     /// <inheritdoc />

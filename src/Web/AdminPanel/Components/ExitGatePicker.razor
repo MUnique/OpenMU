@@ -3,34 +3,34 @@
 
 <div class="input-group border rounded">
     <div class="input-group-prepend">
-        <span class="" id="targetMapLabel">Target:</span>
+        <span class="" id="targetMapLabel">Destino:</span>
     </div>
     
       @if (!this._maps.Any())
       {
         <div class="form-control border-0 p-0 ml-1">
           <div class="spinner-border text-secondary" role="status">
-            <span class="sr-only">Loading...</span>
+            <span class="sr-only">Cargando...</span>
           </div>
         </div>
       }
       else
       {
         <div class="form-control border-0 p-0 ml-1">
-          <select title="Target map" @onchange=this.OnMapSelectedAsync id="targetMapSelect" autocomplete="off">
+          <select title="Mapa destino" @onchange=this.OnMapSelectedAsync id="targetMapSelect" autocomplete="off">
             @foreach (var map in this._maps)
             {
-              <option value="@map.GetId()" selected=@(object.Equals(this.Map, map))>Map: @map.ToString()</option>
+              <option value="@map.GetId()" selected=@(object.Equals(this.Map, map))>Mapa: @map.ToString()</option>
             }
           </select>
         </div>
         @if (this.Map?.ExitGates.Any() ?? false)
         {
           <div class="form-control border-0 p-0 ml-3">
-            <select title="Gate" @onchange=this.OnGateSelectedAsync id="targetGateSelect" autocomplete="off">
+            <select title="Portal" @onchange=this.OnGateSelectedAsync id="targetGateSelect" autocomplete="off">
               @foreach (var gate in this.Map?.ExitGates ?? [])
               {
-                <option value="@gate.GetId()" selected=@(object.Equals(this.SelectedGate, gate))>Gate: @gate.ToString()</option>
+                <option value="@gate.GetId()" selected=@(object.Equals(this.SelectedGate, gate))>Portal: @gate.ToString()</option>
               }
             </select>
           </div>

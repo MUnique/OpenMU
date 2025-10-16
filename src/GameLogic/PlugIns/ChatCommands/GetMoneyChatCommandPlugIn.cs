@@ -14,14 +14,14 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin to get a character's money.
 /// </summary>
 [Guid("207F5872-33AB-4764-B67F-95AB7C6313E3")]
-[PlugIn("Get money command", "Gets money of a player. Usage: /getmoney (optional:character)")]
-[ChatCommandHelp(Command, "Gets money of a player. Usage: /getmoney (optional:character)", null)]
+[PlugIn("Get money command", "Obtiene el Zen de un jugador. Uso: /getmoney (opcional:personaje)")]
+[ChatCommandHelp(Command, "Obtiene el Zen de un jugador. Uso: /getmoney (opcional:personaje)", null)]
 public class GetMoneyChatCommandPlugIn : ChatCommandPlugInBase<GetMoneyChatCommandPlugIn.Arguments>, IDisabledByDefault
 {
     private const string Command = "/getmoney";
     private const CharacterStatus MinimumStatus = CharacterStatus.GameMaster;
-    private const string CharacterNotFoundMessage = "Character '{0}' not found.";
-    private const string MoneyGetMessage = "Money of '{0}': {1}.";
+    private const string CharacterNotFoundMessage = "Personaje '{0}' no encontrado.";
+    private const string MoneyGetMessage = "Zen de '{0}': {1}.";
 
     /// <inheritdoc />
     public override string Key => Command;
