@@ -812,7 +812,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         foreach (var requirement in item.Definition.Requirements.Select(item.GetRequirement))
         {
-            if (this.Attributes![requirement.Item1] < requirement.Item2)
+            if (this.Attributes![requirement.Attr] < requirement.Value)
             {
                 return false;
             }
@@ -1081,7 +1081,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         var experience = killedObject.CalculateBaseExperience(this.Attributes![Stats.TotalLevel]);
         experience *= this.GameContext.ExperienceRate;
-        experience *= this.Attributes[expRateAttribute];
+        experience *= this.Attributes[expRateAttribute] + this.Attributes[Stats.BonusExperienceRate];
         experience *= this.CurrentMap?.Definition.ExpMultiplier ?? 1;
         experience = Rand.NextInt((int)(experience * 0.8), (int)(experience * 1.2));
 

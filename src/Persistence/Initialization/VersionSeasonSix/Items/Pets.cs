@@ -36,13 +36,22 @@ public class Pets : InitializerBase
     /// <inheritdoc />
     public override void Initialize()
     {
-        this.CreatePet(0, 0, 1, 1, "Guardian Angel", 23, true, true, (Stats.DamageReceiveDecrement, 0.8f, AggregateType.Multiplicate), (Stats.MaximumHealth, 50f, AggregateType.AddRaw));
-        this.CreatePet(1, 0, 1, 1, "Imp", 28, true, true, (Stats.AttackDamageIncrease, 1.3f, AggregateType.Multiplicate));
+#pragma warning disable SA1117 // Parameters should be on same line or separete lines
+        this.CreatePet(0, 0, 1, 1, "Guardian Angel", 23, true, true,
+            (Stats.DamageReceiveDecrement, 0.8f, AggregateType.Multiplicate),
+            (Stats.MaximumHealth, 50f, AggregateType.AddRaw));
+        this.CreatePet(1, 0, 1, 1, "Imp", 28, true, true,
+            (Stats.AttackDamageIncrease, 1.3f, AggregateType.Multiplicate));
         this.CreatePet(2, 0, 1, 1, "Horn of Uniria", 25, true, true);
-        var dinorant = this.CreatePet(3, SkillNumber.FireBreath, 1, 1, "Horn of Dinorant", 110, false, true, (Stats.IsDinorantEquipped, 1, AggregateType.AddRaw), (Stats.DamageReceiveDecrement, 0.9f, AggregateType.Multiplicate), (Stats.AttackDamageIncrease, 1.15f, AggregateType.Multiplicate));
+
+        var dinorant = this.CreatePet(3, SkillNumber.FireBreath, 1, 1, "Horn of Dinorant", 110, false, true,
+            (Stats.IsDinorantEquipped, 1, AggregateType.AddRaw),
+            (Stats.DamageReceiveDecrement, 0.9f, AggregateType.Multiplicate),
+            (Stats.AttackDamageIncrease, 1.15f, AggregateType.Multiplicate));
         this.AddDinorantOptions(dinorant);
 
-        var darkHorse = this.CreatePet(4, SkillNumber.Earthshake, 1, 1, "Dark Horse", 218, false, false, (Stats.IsHorseEquipped, 1, AggregateType.AddRaw));
+        var darkHorse = this.CreatePet(4, SkillNumber.Earthshake, 1, 1, "Dark Horse", 218, false, false,
+            (Stats.IsHorseEquipped, 1, AggregateType.AddRaw));
         this.AddDarkHorseOptions(darkHorse);
         this.GameConfiguration.DetermineCharacterClasses(CharacterClasses.AllLords).ForEach(darkHorse.QualifiedCharacters.Add);
         darkHorse.PetExperienceFormula = PetExperienceFormula;
@@ -54,15 +63,39 @@ public class Pets : InitializerBase
         darkRaven.MaximumItemLevel = 50;
         this.GameConfiguration.DetermineCharacterClasses(CharacterClasses.AllLords).ForEach(darkRaven.QualifiedCharacters.Add);
 
-        var fenrir = this.CreatePet(37, SkillNumber.PlasmaStorm, 2, 2, "Horn of Fenrir", 300, false, true, (Stats.CanFly, 1.0f, AggregateType.AddRaw));
+        var fenrir = this.CreatePet(37, SkillNumber.PlasmaStorm, 2, 2, "Horn of Fenrir", 300, false, true,
+            (Stats.CanFly, 1.0f, AggregateType.AddRaw));
         this.AddFenrirOptions(fenrir);
 
-        this.CreatePet(64, 0, 1, 1, "Demon", 1, false, true, (Stats.AttackDamageIncrease, 1.4f, AggregateType.Multiplicate), (Stats.AttackSpeed, 10f, AggregateType.AddRaw));
-        this.CreatePet(65, 0, 1, 1, "Spirit of Guardian", 1, false, true, (Stats.DamageReceiveDecrement, 0.7f, AggregateType.Multiplicate), (Stats.MaximumHealth, 50f, AggregateType.AddRaw));
+        this.CreatePet(64, 0, 1, 1, "Demon", 1, false, true,
+            (Stats.MinimumPhysBaseDmg, 1.4f, AggregateType.Multiplicate),
+            (Stats.MaximumPhysBaseDmg, 1.4f, AggregateType.Multiplicate),
+            (Stats.MinimumWizBaseDmg, 1.4f, AggregateType.Multiplicate),
+            (Stats.MaximumWizBaseDmg, 1.4f, AggregateType.Multiplicate),
+            (Stats.MinimumCurseBaseDmg, 1.4f, AggregateType.Multiplicate),
+            (Stats.MaximumCurseBaseDmg, 1.4f, AggregateType.Multiplicate),
+            (Stats.AttackSpeedAny, 10f, AggregateType.AddRaw));
+        this.CreatePet(65, 0, 1, 1, "Spirit of Guardian", 1, false, true,
+            (Stats.DamageReceiveDecrement, 0.7f, AggregateType.Multiplicate),
+            (Stats.MaximumHealth, 50f, AggregateType.AddRaw));
         this.CreatePet(67, 0, 1, 1, "Pet Rudolf", 28, false, true);
-        this.CreatePet(80, 0, 1, 1, "Pet Panda", 1, false, true, (Stats.ExperienceRate, 1.5f, AggregateType.Multiplicate), (Stats.MasterExperienceRate, 1.5f, AggregateType.Multiplicate), (Stats.DefenseBase, 50f, AggregateType.AddRaw));
-        this.CreatePet(106, 0, 1, 1, "Pet Unicorn", 28, false, true, (Stats.MoneyAmountRate, 1.5f, AggregateType.Multiplicate), (Stats.DefenseBase, 50f, AggregateType.AddRaw));
-        this.CreatePet(123, 0, 1, 1, "Pet Skeleton", 1, false, true, (Stats.AttackDamageIncrease, 1.2f, AggregateType.Multiplicate), (Stats.AttackSpeed, 10f, AggregateType.AddRaw), (Stats.ExperienceRate, 1.3f, AggregateType.Multiplicate));
+        this.CreatePet(80, 0, 1, 1, "Pet Panda", 1, false, true,
+            (Stats.BonusExperienceRate, 0.5f, AggregateType.AddRaw),
+            (Stats.DefenseFinal, 50f, AggregateType.AddRaw));
+        this.CreatePet(106, 0, 1, 1, "Pet Unicorn", 28, false, true,
+            (Stats.MoneyAmountRate, 1.5f, AggregateType.Multiplicate),
+            (Stats.DefenseFinal, 50f, AggregateType.AddRaw));
+        this.CreatePet(123, 0, 1, 1, "Pet Skeleton", 1, false, true,
+            (Stats.MinimumPhysBaseDmg, 1.2f, AggregateType.Multiplicate),
+            (Stats.MaximumPhysBaseDmg, 1.2f, AggregateType.Multiplicate),
+            (Stats.MinimumWizBaseDmg, 1.2f, AggregateType.Multiplicate),
+            (Stats.MaximumWizBaseDmg, 1.2f, AggregateType.Multiplicate),
+            (Stats.MinimumCurseBaseDmg, 1.2f, AggregateType.Multiplicate),
+            (Stats.MaximumCurseBaseDmg, 1.2f, AggregateType.Multiplicate),
+            (Stats.AttackSpeedAny, 10f, AggregateType.AddRaw),
+            (Stats.BonusExperienceRate, 0.3f, AggregateType.AddRaw),
+            (Stats.IsPetSkeletonEquipped, 1, AggregateType.AddRaw));
+#pragma warning restore SA1011
 
         // Items which are required for crafting:
         this.CreateSpirit();
@@ -184,7 +217,7 @@ public class Pets : InitializerBase
         pet.Width = width;
         pet.Height = height;
         pet.Name = name;
-        pet.DropLevel = (byte)System.Math.Min(255, dropLevelAndLevelRequirement);
+        pet.DropLevel = (byte)Math.Min(255, dropLevelAndLevelRequirement);
         pet.DropsFromMonsters = dropsFromMonsters;
         pet.Durability = 255;
         pet.ItemSlot = this.GameConfiguration.ItemSlotTypes.First(st => st.ItemSlots.Contains(8));
@@ -224,7 +257,7 @@ public class Pets : InitializerBase
         dinoOptionDefinition.Name = "Dinorant Options";
         dinoOptionDefinition.AddChance = 0.3f;
         dinoOptionDefinition.AddsRandomly = true;
-        dinoOptionDefinition.MaximumOptionsPerItem = 1;     // There is second rollout for an additional bonus option to the first
+        dinoOptionDefinition.MaximumOptionsPerItem = 1;     // There is a second rollout for an additional bonus option to the first
 
         dinoOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.Option, 4, Stats.DamageReceiveDecrement, 0.95f, AggregateType.Multiplicate, ItemOptionDefinitionNumbers.Dino));  // Level 1
         dinoOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.Option, 4, Stats.MaximumAbility, 50f, AggregateType.AddFinal, ItemOptionDefinitionNumbers.Dino));    // Level 2

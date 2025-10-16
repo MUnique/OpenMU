@@ -112,6 +112,12 @@ public class Stats
     public static AttributeDefinition ExperienceRate { get; } = new(new Guid("1AD454D4-BEF9-416E-BC49-82A5B0277FC7"), "Experience Rate", "Defines the experience rate multiplier of a character. By default it's 1.0 and may be modified by seals or other stuff.");
 
     /// <summary>
+    /// Gets the bonus experience rate attribute definition, which is added to <see cref="ExperienceRate"/> or <see cref="MasterExperienceRate"/>.
+    /// </summary>
+    /// <remarks>So far includes skeleton xfm ring, pet panda, pet skeleton bonus.</remarks>
+    public static AttributeDefinition BonusExperienceRate { get; } = new(new Guid("D48A9D05-533A-4556-9FC3-F71C8BEC4B8E"), "Bonus Experience Rate", "The bonus experience rate which is added to the base experience rate multiplier.");
+
+    /// <summary>
     /// Gets the master level definition.
     /// </summary>
     public static AttributeDefinition MasterLevel { get; } = new(new Guid("70CD8C10-391A-4C51-9AA4-A854600E3A9F"), "Master Level", "The level of the character.");
@@ -286,7 +292,7 @@ public class Stats
     /// <summary>
     /// Gets the the min and max curse base DMG attribute definition.
     /// </summary>
-    /// <remarks>Includes xfm rings curse damage bonus (panda, skeleton, robot knight, mini robot, great heavenly mage).</remarks>
+    /// <remarks>Includes xfm rings curse damage bonus (panda, skeleton).</remarks>
     public static AttributeDefinition CurseBaseDmg { get; } = new(new Guid("60868001-6A67-408C-BFDB-320670A9A682"), "Curse Base Damage (min and max)", string.Empty);
 
     /// <summary>
@@ -1213,6 +1219,11 @@ public class Stats
     /// Gets the is dinorant equipped attribute definition.
     /// </summary>
     public static AttributeDefinition IsDinorantEquipped { get; } = new(new Guid("C52B5CA4-34BA-4E31-963B-E37089671C37"), "Is Dinorant Equipped", string.Empty);
+
+    /// <summary>
+    /// Gets the is pet skeleton equipped attribute definition.
+    /// </summary>
+    public static AttributeDefinition IsPetSkeletonEquipped { get; } = new(new Guid("56AA4FC4-33C6-47DC-9512-7B5F2AD829DA"), "Is Pet Skeleton Equipped", string.Empty);
 
     /// <summary>
     /// Gets the MoonstonePendantEquipped attribute for entering Kanturu event.
