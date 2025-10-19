@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using System.ComponentModel;
+
 namespace MUnique.OpenMU.DataModel.Entities;
 
 using MUnique.OpenMU.AttributeSystem;
@@ -69,6 +71,12 @@ public class Account
     /// Gets or sets the e mail address.
     /// </summary>
     public string EMail { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the iso code (ISO 639-2/3) of the preferred language of the player.
+    /// </summary>
+    [DefaultValue("en")]
+    public string LanguageIsoCode { get; set; } = "en";
 
     /// <summary>
     /// Gets or sets the date and time until which the chat ban is in effect.
