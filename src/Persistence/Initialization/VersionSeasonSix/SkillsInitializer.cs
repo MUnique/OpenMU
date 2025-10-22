@@ -597,32 +597,30 @@ internal class SkillsInitializer : SkillsInitializerBase
             this.AddAttributeRelationship(lordSkillNumber, Stats.SkillBaseDamageBonus, 1.0f / 50, Stats.TotalEnergy);
         }
 
-        this.AddAttributeRelationship(SkillNumber.MultiShot, Stats.SkillBaseMultiplier, 0.8f, Stats.Level, InputOperator.Minimum);
+        this.AddAttributeRelationship(SkillNumber.MultiShot, Stats.SkillBaseMultiplier, 0.4f, Stats.SkillMultiplier); // 0.8
 
         // Final damage
-        // These are only relevant for a starting RF because that class has a starting SkillMultiplier of 0.5
-        // DK, MG and DL always have a skill multiplier >= 2
-        this.AddAttributeRelationship(SkillNumber.FallingSlash, Stats.SkillFinalMultiplier, 2.0f, Stats.SkillMultiplier, InputOperator.Maximum);
-        this.AddAttributeRelationship(SkillNumber.Lunge, Stats.SkillFinalMultiplier, 2.0f, Stats.SkillMultiplier, InputOperator.Maximum);
-        this.AddAttributeRelationship(SkillNumber.Uppercut, Stats.SkillFinalMultiplier, 2.0f, Stats.SkillMultiplier, InputOperator.Maximum);
-        this.AddAttributeRelationship(SkillNumber.Cyclone, Stats.SkillFinalMultiplier, 2.0f, Stats.SkillMultiplier, InputOperator.Maximum);
-        this.AddAttributeRelationship(SkillNumber.Slash, Stats.SkillFinalMultiplier, 2.0f, Stats.SkillMultiplier, InputOperator.Maximum);
+        // The following is to enforce a multiplier of 2 for DL and RF (RF can only use FallingSlash).
+        // For a DK the value will be negative and therefore it will be disregarded.
+        this.AddAttributeRelationship(SkillNumber.FallingSlash, Stats.SkillFinalMultiplier, 2.0f, Stats.MaximumHealth, InputOperator.Minimum);
+        this.AddAttributeRelationship(SkillNumber.FallingSlash, Stats.SkillFinalMultiplier, -6, Stats.PointsPerLevelUp, InputOperator.Add, AggregateType.Multiplicate);
+        this.AddAttributeRelationship(SkillNumber.Lunge, Stats.SkillFinalMultiplier, 2.0f, Stats.MaximumHealth, InputOperator.Minimum);
+        this.AddAttributeRelationship(SkillNumber.Lunge, Stats.SkillFinalMultiplier, -6, Stats.PointsPerLevelUp, InputOperator.Add, AggregateType.Multiplicate);
+        this.AddAttributeRelationship(SkillNumber.Uppercut, Stats.SkillFinalMultiplier, 2.0f, Stats.MaximumHealth, InputOperator.Minimum);
+        this.AddAttributeRelationship(SkillNumber.Uppercut, Stats.SkillFinalMultiplier, -6, Stats.PointsPerLevelUp, InputOperator.Add, AggregateType.Multiplicate);
+        this.AddAttributeRelationship(SkillNumber.Cyclone, Stats.SkillFinalMultiplier, 2.0f, Stats.MaximumHealth, InputOperator.Minimum);
+        this.AddAttributeRelationship(SkillNumber.Cyclone, Stats.SkillFinalMultiplier, -6, Stats.PointsPerLevelUp, InputOperator.Add, AggregateType.Multiplicate);
 
-        this.AddAttributeRelationship(SkillNumber.TripleShot, Stats.SkillFinalMultiplier, 1.0f, Stats.Level, InputOperator.Minimum);
-        this.AddAttributeRelationship(SkillNumber.MultiShot, Stats.SkillFinalMultiplier, 1.0f, Stats.Level, InputOperator.Minimum);
+        this.AddAttributeRelationship(SkillNumber.TripleShot, Stats.SkillFinalMultiplier, 0.5f, Stats.SkillMultiplier); // 1.0
+        this.AddAttributeRelationship(SkillNumber.MultiShot, Stats.SkillFinalMultiplier, 0.5f, Stats.SkillMultiplier);  // 1.0
 
         this.AddAttributeRelationship(SkillNumber.Explosion223, Stats.SkillFinalDamageBonus, Stats.IsBookEquipped, Stats.ExplosionBonusDmg);
         this.AddAttributeRelationship(SkillNumber.Requiem, Stats.SkillFinalDamageBonus, Stats.IsBookEquipped, Stats.RequiemBonusDmg);
         this.AddAttributeRelationship(SkillNumber.Pollution, Stats.SkillFinalDamageBonus, Stats.IsBookEquipped, Stats.PollutionBonusDmg);
 
-        var totalLevelMinus300 = this.Context.CreateNew<AttributeDefinition>(Guid.NewGuid(), "TotalLevel minus 300", string.Empty);
-        this.GameConfiguration.Attributes.Add(totalLevelMinus300);
-        var levelBonus = this.Context.CreateNew<AttributeDefinition>(Guid.NewGuid(), "Level divided by 5", string.Empty);
-        this.GameConfiguration.Attributes.Add(levelBonus);
-        this.AddAttributeRelationship(SkillNumber.PlasmaStorm, totalLevelMinus300, -300, Stats.TotalLevel, InputOperator.Add);
-        this.AddAttributeRelationship(SkillNumber.PlasmaStorm, levelBonus, 0.2f, totalLevelMinus300);
-        this.AddAttributeRelationship(SkillNumber.PlasmaStorm, Stats.SkillFinalMultiplier, 0.01, levelBonus);
-        this.AddAttributeRelationship(SkillNumber.PlasmaStorm, Stats.SkillFinalMultiplier, 2.0f, Stats.Level, InputOperator.Minimum);
+        this.AddAttributeRelationship(SkillNumber.PlasmaStorm, Stats.SkillFinalMultiplier, 0.002f, Stats.TotalLevel);
+        this.AddAttributeRelationship(SkillNumber.PlasmaStorm, Stats.SkillFinalMultiplier, -0.6f, Stats.MaximumHealth, InputOperator.Minimum); // 0.002 * 300(min lvl)
+        this.AddAttributeRelationship(SkillNumber.PlasmaStorm, Stats.SkillFinalMultiplier, 2.0f, Stats.MaximumHealth, InputOperator.Minimum);
 
         this.AddAttributeRelationship(SkillNumber.ChaoticDiseier, Stats.SkillFinalMultiplier, 0.8f, Stats.SkillMultiplier);
 
@@ -630,31 +628,22 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.AddAttributeRelationship(SkillNumber.BeastUppercut, Stats.SkillFinalMultiplier, 1.0f, Stats.VitalitySkillMultiplier);
         this.AddAttributeRelationship(SkillNumber.ChainDrive, Stats.SkillFinalMultiplier, 1.0f, Stats.VitalitySkillMultiplier);
         this.AddAttributeRelationship(SkillNumber.Charge, Stats.SkillFinalMultiplier, 1.0f, Stats.VitalitySkillMultiplier);
-
         this.AddAttributeRelationship(SkillNumber.PhoenixShot, Stats.SkillFinalMultiplier, 1.0f, Stats.VitalitySkillMultiplier);
-        this.AddAttributeRelationship(SkillNumber.PhoenixShot, Stats.SkillFinalMultiplier, 1.5f, Stats.Level, InputOperator.Minimum);
 
-        this.AddAttributeRelationship(SkillNumber.DarkSide, Stats.SkillFinalMultiplier, 1.0f, Stats.SkillMultiplier);
-        this.AddAttributeRelationship(SkillNumber.DarkSide, Stats.SkillFinalMultiplier, 0.5f, Stats.Level, InputOperator.Minimum);
+        this.AddAttributeRelationship(SkillNumber.DarkSide, Stats.SkillFinalMultiplier, 0.5f, Stats.SkillMultiplier, InputOperator.Add);
         this.AddAttributeRelationship(SkillNumber.DarkSide, Stats.SkillFinalMultiplier, 1.0f / 800, Stats.TotalAgility);
 
-        // To-do: DragonSlasher has dependent multipliers:
-        // if (defender is Player)
-        // {
-        //     dmg = (int)(dmg * skillMultiplier);
-        // }
-        // else
-        // {
-        //     dmg = (int)(((dmg * skillMultiplier) + 100) * 3);
-        // }
+        this.AddAttributeRelationship(SkillNumber.DragonRoar, Stats.SkillFinalMultiplier, 1.0f, Stats.SkillMultiplier);
+        this.AddAttributeRelationship(SkillNumber.DragonSlasher, Stats.SkillFinalMultiplier, 1.0f, Stats.SkillMultiplier);
+        this.AddAttributeRelationship(SkillNumber.DragonSlasher, Stats.SkillFinalMultiplier, 2.0f, Stats.MaximumHealth, InputOperator.Minimum, AggregateType.Multiplicate);
     }
 
     private void AddAttributeRelationship(SkillNumber skillNumber, AttributeDefinition targetAttribute, object multiplier, AttributeDefinition sourceAttribute, InputOperator inputOperator = InputOperator.Multiply, AggregateType aggregateType = AggregateType.AddRaw)
     {
         var skill = this.GameConfiguration.Skills.First(s => s.Number == (int)skillNumber);
-        AttributeRelationship relationship = multiplier is float
-            ? relationship = CharacterClassHelper.CreateAttributeRelationship(this.Context, this.GameConfiguration, targetAttribute, (float)multiplier, sourceAttribute, inputOperator, aggregateType)
-            : relationship = CharacterClassHelper.CreateAttributeRelationship(this.Context, this.GameConfiguration, targetAttribute, (AttributeDefinition)multiplier, sourceAttribute, inputOperator, aggregateType);
+        AttributeRelationship relationship = multiplier is AttributeDefinition
+            ? CharacterClassHelper.CreateAttributeRelationship(this.Context, this.GameConfiguration, targetAttribute, (AttributeDefinition)multiplier, sourceAttribute, inputOperator, aggregateType)
+            : CharacterClassHelper.CreateAttributeRelationship(this.Context, this.GameConfiguration, targetAttribute, Convert.ToSingle(multiplier), sourceAttribute, inputOperator, aggregateType);
 
         skill.AttributeRelationships.Add(relationship);
     }

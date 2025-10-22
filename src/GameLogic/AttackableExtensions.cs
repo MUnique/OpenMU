@@ -193,25 +193,21 @@ public static class AttackableExtensions
 
         if (skill != null)
         {
-            if (damageFactor > 0)
-            {
-                dmg = (int)(dmg * damageFactor);
-            }
-            else if (skill.EnsureSkillAttributes(attacker.Attributes) is { } skillAttributes)
+            var multiplier = attacker.Attributes[Stats.SkillMultiplier];
+
+            if (skill.EnsureSkillAttributes(attacker.Attributes) is { } skillAttributes)
             {
                 // Skills with specific attributes
                 dmg += (int)skillAttributes[Stats.SkillFinalDamageBonus];
 
-                var multiplier = skillAttributes[Stats.SkillFinalMultiplier];
-                if (multiplier > 0)
+                var skillMultiplier = skillAttributes[Stats.SkillFinalMultiplier];
+                if (skillMultiplier > 0)
                 {
-                    dmg = (int)(dmg * multiplier);
+                    multiplier = skillAttributes[Stats.SkillFinalMultiplier];
                 }
             }
-            else
-            {
-                dmg = (int)(dmg * attacker.Attributes[Stats.SkillMultiplier]);
-            }
+
+            dmg = (int)(dmg * multiplier * damageFactor);
         }
         else if (attacker.Attributes[Stats.IsDinorantEquipped] > 0)
         {
