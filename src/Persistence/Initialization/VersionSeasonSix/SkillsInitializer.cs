@@ -600,16 +600,10 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.AddAttributeRelationship(SkillNumber.MultiShot, Stats.SkillBaseMultiplier, 0.4f, Stats.SkillMultiplier); // 0.8
 
         // Final damage
-        // The following is to enforce a multiplier of 2 for DL and RF (RF can only use FallingSlash).
-        // For a DK the value will be negative and therefore it will be disregarded.
-        this.AddAttributeRelationship(SkillNumber.FallingSlash, Stats.SkillFinalMultiplier, 2.0f, Stats.MaximumHealth, InputOperator.Minimum);
-        this.AddAttributeRelationship(SkillNumber.FallingSlash, Stats.SkillFinalMultiplier, -6, Stats.PointsPerLevelUp, InputOperator.Add, AggregateType.Multiplicate);
-        this.AddAttributeRelationship(SkillNumber.Lunge, Stats.SkillFinalMultiplier, 2.0f, Stats.MaximumHealth, InputOperator.Minimum);
-        this.AddAttributeRelationship(SkillNumber.Lunge, Stats.SkillFinalMultiplier, -6, Stats.PointsPerLevelUp, InputOperator.Add, AggregateType.Multiplicate);
-        this.AddAttributeRelationship(SkillNumber.Uppercut, Stats.SkillFinalMultiplier, 2.0f, Stats.MaximumHealth, InputOperator.Minimum);
-        this.AddAttributeRelationship(SkillNumber.Uppercut, Stats.SkillFinalMultiplier, -6, Stats.PointsPerLevelUp, InputOperator.Add, AggregateType.Multiplicate);
-        this.AddAttributeRelationship(SkillNumber.Cyclone, Stats.SkillFinalMultiplier, 2.0f, Stats.MaximumHealth, InputOperator.Minimum);
-        this.AddAttributeRelationship(SkillNumber.Cyclone, Stats.SkillFinalMultiplier, -6, Stats.PointsPerLevelUp, InputOperator.Add, AggregateType.Multiplicate);
+        // Originally, for DL and RF, a constant multiplier of 2 exists for early game, non-class specific weapon skills.
+        // In OpenMU they might be able to do more damage with such skills, if their Stats.SkillMultiplier increases above 2.
+        // Since this only applies to early game weapons, this is acceptable.
+        this.AddAttributeRelationship(SkillNumber.FallingSlash, Stats.SkillFinalMultiplier, 2.0f, Stats.SkillMultiplier, InputOperator.Maximum); // For RF
 
         this.AddAttributeRelationship(SkillNumber.TripleShot, Stats.SkillFinalMultiplier, 0.5f, Stats.SkillMultiplier); // 1.0
         this.AddAttributeRelationship(SkillNumber.MultiShot, Stats.SkillFinalMultiplier, 0.5f, Stats.SkillMultiplier);  // 1.0
