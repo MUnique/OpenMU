@@ -197,7 +197,6 @@ public static class AttackableExtensions
 
             if (skill.EnsureSkillAttributes(attacker.Attributes) is { } skillAttributes)
             {
-                // Skills with specific attributes
                 dmg += (int)skillAttributes[Stats.SkillFinalDamageBonus];
 
                 var skillMultiplier = skillAttributes[Stats.SkillFinalMultiplier];
