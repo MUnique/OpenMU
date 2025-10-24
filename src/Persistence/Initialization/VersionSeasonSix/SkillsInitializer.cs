@@ -608,9 +608,9 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.AddAttributeRelationship(SkillNumber.TripleShot, Stats.SkillFinalMultiplier, 0.5f, Stats.SkillMultiplier); // 1.0
         this.AddAttributeRelationship(SkillNumber.MultiShot, Stats.SkillFinalMultiplier, 0.5f, Stats.SkillMultiplier);  // 1.0
 
-        this.AddAttributeRelationship(SkillNumber.Explosion223, Stats.SkillFinalDamageBonus, Stats.IsBookEquipped, Stats.ExplosionBonusDmg);
-        this.AddAttributeRelationship(SkillNumber.Requiem, Stats.SkillFinalDamageBonus, Stats.IsBookEquipped, Stats.RequiemBonusDmg);
-        this.AddAttributeRelationship(SkillNumber.Pollution, Stats.SkillFinalDamageBonus, Stats.IsBookEquipped, Stats.PollutionBonusDmg);
+        this.AddAttributeRelationship(SkillNumber.Explosion223, Stats.SkillFinalDamageBonus, 1.0f, Stats.ExplosionBonusDmg);
+        this.AddAttributeRelationship(SkillNumber.Requiem, Stats.SkillFinalDamageBonus, 1.0f, Stats.RequiemBonusDmg);
+        this.AddAttributeRelationship(SkillNumber.Pollution, Stats.SkillFinalDamageBonus, 1.0f, Stats.PollutionBonusDmg);
 
         this.AddAttributeRelationship(SkillNumber.PlasmaStorm, Stats.SkillFinalMultiplier, 0.002f, Stats.TotalLevel);
         this.AddAttributeRelationship(SkillNumber.PlasmaStorm, Stats.SkillFinalMultiplier, -0.6f, Stats.MaximumHealth, InputOperator.Minimum); // 0.002 * 300(min lvl)
@@ -631,12 +631,10 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.AddAttributeRelationship(SkillNumber.DragonSlasher, Stats.SkillFinalMultiplier, 1.0f, Stats.SkillMultiplier);
     }
 
-    private void AddAttributeRelationship(SkillNumber skillNumber, AttributeDefinition targetAttribute, object multiplier, AttributeDefinition sourceAttribute, InputOperator inputOperator = InputOperator.Multiply, AggregateType aggregateType = AggregateType.AddRaw)
+    private void AddAttributeRelationship(SkillNumber skillNumber, AttributeDefinition targetAttribute, float multiplier, AttributeDefinition sourceAttribute, InputOperator inputOperator = InputOperator.Multiply, AggregateType aggregateType = AggregateType.AddRaw)
     {
         var skill = this.GameConfiguration.Skills.First(s => s.Number == (int)skillNumber);
-        AttributeRelationship relationship = multiplier is AttributeDefinition
-            ? CharacterClassHelper.CreateAttributeRelationship(this.Context, this.GameConfiguration, targetAttribute, (AttributeDefinition)multiplier, sourceAttribute, inputOperator, aggregateType)
-            : CharacterClassHelper.CreateAttributeRelationship(this.Context, this.GameConfiguration, targetAttribute, Convert.ToSingle(multiplier), sourceAttribute, inputOperator, aggregateType);
+        var relationship = CharacterClassHelper.CreateAttributeRelationship(this.Context, this.GameConfiguration, targetAttribute, multiplier, sourceAttribute, inputOperator, aggregateType);
 
         skill.AttributeRelationships.Add(relationship);
     }

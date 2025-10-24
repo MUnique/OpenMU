@@ -55,6 +55,7 @@ public class IncreaseHealthEffectInitializer : InitializerBase
         boostPerEnergy.InputOperand = 1f / 10f;
 
         powerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+        powerUpDefinition.Boost.ConstantValue.Value = 16f;
         powerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.AddFinal;
         powerUpDefinition.Boost.RelatedValues.Add(boostPerEnergy);
     }
