@@ -203,7 +203,12 @@ public static class AttackableExtensions
                 var skillMultiplier = skillAttributes[Stats.SkillFinalMultiplier];
                 if (skillMultiplier > 0)
                 {
-                    multiplier = skillAttributes[Stats.SkillFinalMultiplier];
+                    multiplier = skillMultiplier;
+
+                    if (skill.Skill!.Number == 265 && !isPvp) // DragonSlasher
+                    {
+                        multiplier *= 3;
+                    }
                 }
             }
 

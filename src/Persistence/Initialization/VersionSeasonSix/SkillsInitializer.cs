@@ -600,7 +600,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.AddAttributeRelationship(SkillNumber.MultiShot, Stats.SkillBaseMultiplier, 0.4f, Stats.SkillMultiplier); // 0.8
 
         // Final damage
-        // Originally, for DL and RF, a constant multiplier of 2 exists for early game, non-class specific weapon skills.
+        // Originally, starting weapon skills for DL (FallingSlash, Lunge, Uppercut, Cyclone) and RF (FallingSlash) have a constant multiplier of 2.
         // In OpenMU they might be able to do more damage with such skills, if their Stats.SkillMultiplier increases above 2.
         // Since this only applies to early game weapons, this is acceptable.
         this.AddAttributeRelationship(SkillNumber.FallingSlash, Stats.SkillFinalMultiplier, 2.0f, Stats.SkillMultiplier, InputOperator.Maximum); // For RF
@@ -629,7 +629,6 @@ internal class SkillsInitializer : SkillsInitializerBase
 
         this.AddAttributeRelationship(SkillNumber.DragonRoar, Stats.SkillFinalMultiplier, 1.0f, Stats.SkillMultiplier);
         this.AddAttributeRelationship(SkillNumber.DragonSlasher, Stats.SkillFinalMultiplier, 1.0f, Stats.SkillMultiplier);
-        this.AddAttributeRelationship(SkillNumber.DragonSlasher, Stats.SkillFinalMultiplier, 2.0f, Stats.MaximumHealth, InputOperator.Minimum, AggregateType.Multiplicate);
     }
 
     private void AddAttributeRelationship(SkillNumber skillNumber, AttributeDefinition targetAttribute, object multiplier, AttributeDefinition sourceAttribute, InputOperator inputOperator = InputOperator.Multiply, AggregateType aggregateType = AggregateType.AddRaw)
