@@ -597,7 +597,7 @@ internal class SkillsInitializer : SkillsInitializerBase
             this.AddAttributeRelationship(lordSkillNumber, Stats.SkillBaseDamageBonus, 1.0f / 50, Stats.TotalEnergy);
         }
 
-        this.AddAttributeRelationship(SkillNumber.MultiShot, Stats.SkillBaseMultiplier, 0.4f, Stats.SkillMultiplier); // 0.8
+        this.AddAttributeRelationship(SkillNumber.MultiShot, Stats.SkillBaseMultiplier, 0.8f, Stats.SkillMultiplier);
 
         // Final damage
         // Originally, starting weapon skills for DL (FallingSlash, Lunge, Uppercut, Cyclone) and RF (FallingSlash) have a constant multiplier of 2.
@@ -605,8 +605,9 @@ internal class SkillsInitializer : SkillsInitializerBase
         // Since this only applies to early game weapons, this is acceptable.
         this.AddAttributeRelationship(SkillNumber.FallingSlash, Stats.SkillFinalMultiplier, 2.0f, Stats.SkillMultiplier, InputOperator.Maximum); // For RF
 
-        this.AddAttributeRelationship(SkillNumber.TripleShot, Stats.SkillFinalMultiplier, 0.5f, Stats.SkillMultiplier); // 1.0
-        this.AddAttributeRelationship(SkillNumber.MultiShot, Stats.SkillFinalMultiplier, 0.5f, Stats.SkillMultiplier);  // 1.0
+        this.AddAttributeRelationship(SkillNumber.IceArrow, Stats.SkillFinalMultiplier, 2, Stats.SkillMultiplier);
+        this.AddAttributeRelationship(SkillNumber.Penetration, Stats.SkillFinalMultiplier, 2, Stats.SkillMultiplier);
+        this.AddAttributeRelationship(SkillNumber.Starfall, Stats.SkillFinalMultiplier, 2, Stats.SkillMultiplier);
 
         this.AddAttributeRelationship(SkillNumber.Explosion223, Stats.SkillFinalDamageBonus, 1.0f, Stats.ExplosionBonusDmg);
         this.AddAttributeRelationship(SkillNumber.Requiem, Stats.SkillFinalDamageBonus, 1.0f, Stats.RequiemBonusDmg);
