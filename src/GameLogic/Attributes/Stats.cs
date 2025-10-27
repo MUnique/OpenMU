@@ -329,7 +329,7 @@ public class Stats
     /// <summary>
     /// Gets the final damage (any type) bonus attribute definition.
     /// </summary>
-    /// <remarks>So far includes the ancient set option.</remarks>
+    /// <remarks>Includes the ancient set option and the panda ring bonus.</remarks>
     public static AttributeDefinition FinalDamageBonus { get; } = new(new Guid("88316AEC-1D82-4103-BF09-CA6A3C0B177A"), "Late Damage Bonus (any type)", "A bonus value which gets added to the final damage value during the damage calculation.");
 
     /// <summary>

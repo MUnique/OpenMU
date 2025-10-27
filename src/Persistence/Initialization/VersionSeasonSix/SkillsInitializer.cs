@@ -660,7 +660,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         new SoulPotionEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         new BlessPotionEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         new BerserkerEffectInitializer(this.Context, this.GameConfiguration).Initialize();
-        new KillingBlowEffectInitializer(this.Context, this.GameConfiguration).Initialize();
+        new WeaknessEffectInitializer(this.Context, this.GameConfiguration).Initialize();
     }
 
     private void MapSkillsToEffects()

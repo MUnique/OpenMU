@@ -1,4 +1,4 @@
-﻿// <copyright file="KillingBlowEffectInitializer.cs" company="MUnique">
+﻿// <copyright file="WeaknessEffectInitializer.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -10,16 +10,16 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
 
 /// <summary>
-/// Initializer for the killing blow skill effect.
+/// Initializer for the weakness effect, which can result from Killing Blow (RF) or Weakness (Sum) skills.
 /// </summary>
-public class KillingBlowEffectInitializer : InitializerBase
+public class WeaknessEffectInitializer : InitializerBase
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="KillingBlowEffectInitializer"/> class.
+    /// Initializes a new instance of the <see cref="WeaknessEffectInitializer"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
     /// <param name="gameConfiguration">The game configuration.</param>
-    public KillingBlowEffectInitializer(IContext context, GameConfiguration gameConfiguration)
+    public WeaknessEffectInitializer(IContext context, GameConfiguration gameConfiguration)
         : base(context, gameConfiguration)
     {
     }
@@ -30,7 +30,7 @@ public class KillingBlowEffectInitializer : InitializerBase
         var magicEffect = this.Context.CreateNew<MagicEffectDefinition>();
         this.GameConfiguration.MagicEffects.Add(magicEffect);
         magicEffect.Number = (short)MagicEffectNumber.Weakness;
-        magicEffect.Name = "Killing Blow Skill Effect";
+        magicEffect.Name = "Weakness Effect";
         magicEffect.InformObservers = true;
         magicEffect.SendDuration = false;
         magicEffect.StopByDeath = true;
