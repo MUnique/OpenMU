@@ -605,9 +605,9 @@ internal class SkillsInitializer : SkillsInitializerBase
         // Since this only applies to early game weapons, this is acceptable.
         this.AddAttributeRelationship(SkillNumber.FallingSlash, Stats.SkillFinalMultiplier, 2.0f, Stats.SkillMultiplier, InputOperator.Maximum); // For RF
 
-        this.AddAttributeRelationship(SkillNumber.IceArrow, Stats.SkillFinalMultiplier, 2, Stats.SkillMultiplier);
-        this.AddAttributeRelationship(SkillNumber.Penetration, Stats.SkillFinalMultiplier, 2, Stats.SkillMultiplier);
-        this.AddAttributeRelationship(SkillNumber.Starfall, Stats.SkillFinalMultiplier, 2, Stats.SkillMultiplier);
+        this.AddAttributeRelationship(SkillNumber.IceArrow, Stats.SkillFinalMultiplier, 2.0f, Stats.SkillMultiplier);
+        this.AddAttributeRelationship(SkillNumber.Penetration, Stats.SkillFinalMultiplier, 2.0f, Stats.SkillMultiplier);
+        this.AddAttributeRelationship(SkillNumber.Starfall, Stats.SkillFinalMultiplier, 2.0f, Stats.SkillMultiplier);
 
         this.AddAttributeRelationship(SkillNumber.Explosion223, Stats.SkillFinalDamageBonus, 1.0f, Stats.ExplosionBonusDmg);
         this.AddAttributeRelationship(SkillNumber.Requiem, Stats.SkillFinalDamageBonus, 1.0f, Stats.RequiemBonusDmg);
