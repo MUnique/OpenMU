@@ -108,6 +108,50 @@ public interface IGuildServer
     /// </summary>
     /// <param name="guildId">The identifier of the guild.</param>
     ValueTask IncreaseGuildScoreAsync(uint guildId);
+
+    /// <summary>
+    /// Creates an alliance between two guilds. The requesting guild becomes or uses its existing alliance.
+    /// </summary>
+    /// <param name="requestingGuildId">The identifier of the requesting guild.</param>
+    /// <param name="targetGuildId">The identifier of the target guild to add to the alliance.</param>
+    /// <returns>True if the alliance was created successfully; False otherwise.</returns>
+    ValueTask<bool> CreateAllianceAsync(uint requestingGuildId, uint targetGuildId);
+
+    /// <summary>
+    /// Removes a guild from its alliance.
+    /// </summary>
+    /// <param name="guildId">The identifier of the guild to remove from the alliance.</param>
+    /// <returns>True if the guild was removed successfully; False otherwise.</returns>
+    ValueTask<bool> RemoveFromAllianceAsync(uint guildId);
+
+    /// <summary>
+    /// Gets all guilds that are part of the same alliance as the specified guild.
+    /// </summary>
+    /// <param name="guildId">The identifier of the guild.</param>
+    /// <returns>A list of guild IDs that are in the same alliance.</returns>
+    ValueTask<IImmutableList<uint>> GetAllianceMemberGuildIdsAsync(uint guildId);
+
+    /// <summary>
+    /// Gets the alliance master guild ID for a given guild.
+    /// </summary>
+    /// <param name="guildId">The identifier of the guild.</param>
+    /// <returns>The alliance master guild ID, or 0 if the guild is not in an alliance.</returns>
+    ValueTask<uint> GetAllianceMasterGuildIdAsync(uint guildId);
+
+    /// <summary>
+    /// Creates a hostility relationship between two guilds.
+    /// </summary>
+    /// <param name="requestingGuildId">The identifier of the requesting guild.</param>
+    /// <param name="targetGuildId">The identifier of the target guild.</param>
+    /// <returns>True if the hostility was created successfully; False otherwise.</returns>
+    ValueTask<bool> CreateHostilityAsync(uint requestingGuildId, uint targetGuildId);
+
+    /// <summary>
+    /// Removes a hostility relationship between two guilds.
+    /// </summary>
+    /// <param name="guildId">The identifier of the guild.</param>
+    /// <returns>True if the hostility was removed successfully; False otherwise.</returns>
+    ValueTask<bool> RemoveHostilityAsync(uint guildId);
 }
 
 /// <summary>

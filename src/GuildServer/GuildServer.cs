@@ -252,6 +252,209 @@ public class GuildServer : IGuildServer
         return guildMember?.Status ?? GuildPosition.Undefined;
     }
 
+    /// <inheritdoc />
+    public async ValueTask<bool> CreateAllianceAsync(uint requestingGuildId, uint targetGuildId)
+    {
+        if (!this._guildDictionary.TryGetValue(requestingGuildId, out var requestingContainer) ||
+            !this._guildDictionary.TryGetValue(targetGuildId, out var targetContainer))
+        {
+            this._logger.LogWarning($"One of the guilds not found for alliance creation: {requestingGuildId}, {targetGuildId}");
+            return false;
+        }
+
+        // Check if target guild is already in an alliance
+        if (targetContainer.Guild.AllianceGuild is not null)
+        {
+            this._logger.LogWarning($"Target guild {targetGuildId} is already in an alliance");
+            return false;
+        }
+
+        // Check if target guild has hostility
+        if (targetContainer.Guild.Hostility is not null)
+        {
+            this._logger.LogWarning($"Target guild {targetGuildId} has a hostility relationship");
+            return false;
+        }
+
+        // Determine the alliance master
+        Guild allianceMaster;
+        if (requestingContainer.Guild.AllianceGuild is null)
+        {
+            // Requesting guild is not in an alliance, so it becomes the master
+            allianceMaster = requestingContainer.Guild;
+        }
+        else
+        {
+            // Requesting guild is already in an alliance, use its alliance master
+            allianceMaster = requestingContainer.Guild.AllianceGuild;
+        }
+
+        // Check alliance size limit (1 master + max 3 members = 4 total)
+        var currentAllianceSize = this._guildDictionary.Values.Count(g => g.Guild.AllianceGuild?.Id == allianceMaster.Id || g.Guild.Id == allianceMaster.Id);
+        if (currentAllianceSize >= 4)
+        {
+            this._logger.LogWarning($"Alliance is full. Master: {allianceMaster.Name}");
+            return false;
+        }
+
+        // Add target guild to alliance
+        targetContainer.Guild.AllianceGuild = allianceMaster;
+        await targetContainer.DatabaseContext.SaveChangesAsync().ConfigureAwait(false);
+
+        this._logger.LogInformation($"Guild {targetContainer.Guild.Name} joined alliance with master {allianceMaster.Name}");
+        return true;
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<bool> RemoveFromAllianceAsync(uint guildId)
+    {
+        if (!this._guildDictionary.TryGetValue(guildId, out var guildContainer))
+        {
+            this._logger.LogWarning($"Guild {guildId} not found for alliance removal");
+            return false;
+        }
+
+        if (guildContainer.Guild.AllianceGuild is null)
+        {
+            // Guild is not in an alliance, but check if it's a master with members
+            var membersInAlliance = this._guildDictionary.Values
+                .Where(g => g.Guild.AllianceGuild?.Id == guildContainer.Guild.Id)
+                .ToList();
+
+            if (membersInAlliance.Any())
+            {
+                // This guild is an alliance master with members, remove all members
+                foreach (var member in membersInAlliance)
+                {
+                    member.Guild.AllianceGuild = null;
+                    await member.DatabaseContext.SaveChangesAsync().ConfigureAwait(false);
+                }
+
+                this._logger.LogInformation($"Alliance master {guildContainer.Guild.Name} disbanded alliance, removing {membersInAlliance.Count} members");
+            }
+
+            return true;
+        }
+
+        // Remove guild from alliance
+        guildContainer.Guild.AllianceGuild = null;
+        await guildContainer.DatabaseContext.SaveChangesAsync().ConfigureAwait(false);
+
+        this._logger.LogInformation($"Guild {guildContainer.Guild.Name} left alliance");
+        return true;
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<IImmutableList<uint>> GetAllianceMemberGuildIdsAsync(uint guildId)
+    {
+        if (!this._guildDictionary.TryGetValue(guildId, out var guildContainer))
+        {
+            return ImmutableList<uint>.Empty;
+        }
+
+        var allianceMasterId = guildContainer.Guild.AllianceGuild?.Id ?? guildContainer.Guild.Id;
+
+        // Get all guilds in the same alliance (including the master)
+        var allianceGuilds = this._guildDictionary
+            .Where(kvp => kvp.Value.Guild.Id == allianceMasterId || kvp.Value.Guild.AllianceGuild?.Id == allianceMasterId)
+            .Select(kvp => kvp.Key)
+            .ToImmutableList();
+
+        return allianceGuilds;
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<uint> GetAllianceMasterGuildIdAsync(uint guildId)
+    {
+        if (!this._guildDictionary.TryGetValue(guildId, out var guildContainer))
+        {
+            return 0;
+        }
+
+        if (guildContainer.Guild.AllianceGuild is not null)
+        {
+            // This guild is a member, find the master's short ID
+            var masterId = guildContainer.Guild.AllianceGuild.Id;
+            var masterContainer = this._guildDictionary.FirstOrDefault(kvp => kvp.Value.Guild.Id == masterId);
+            return masterContainer.Key;
+        }
+
+        // Check if this guild is itself a master
+        var hasMembers = this._guildDictionary.Values.Any(g => g.Guild.AllianceGuild?.Id == guildContainer.Guild.Id);
+        return hasMembers ? guildId : 0;
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<bool> CreateHostilityAsync(uint requestingGuildId, uint targetGuildId)
+    {
+        if (!this._guildDictionary.TryGetValue(requestingGuildId, out var requestingContainer) ||
+            !this._guildDictionary.TryGetValue(targetGuildId, out var targetContainer))
+        {
+            this._logger.LogWarning($"One of the guilds not found for hostility creation: {requestingGuildId}, {targetGuildId}");
+            return false;
+        }
+
+        // Check if either guild is in an alliance (mutual exclusivity rule)
+        if (requestingContainer.Guild.AllianceGuild is not null)
+        {
+            this._logger.LogWarning($"Requesting guild {requestingGuildId} is in an alliance and cannot have hostility");
+            return false;
+        }
+
+        if (targetContainer.Guild.AllianceGuild is not null)
+        {
+            this._logger.LogWarning($"Target guild {targetGuildId} is in an alliance and cannot have hostility");
+            return false;
+        }
+
+        // Check if hostility already exists
+        if (requestingContainer.Guild.Hostility?.Id == targetContainer.Guild.Id)
+        {
+            return true; // Already hostile
+        }
+
+        // Create bidirectional hostility
+        requestingContainer.Guild.Hostility = targetContainer.Guild;
+        targetContainer.Guild.Hostility = requestingContainer.Guild;
+
+        await requestingContainer.DatabaseContext.SaveChangesAsync().ConfigureAwait(false);
+        await targetContainer.DatabaseContext.SaveChangesAsync().ConfigureAwait(false);
+
+        this._logger.LogInformation($"Hostility created between {requestingContainer.Guild.Name} and {targetContainer.Guild.Name}");
+        return true;
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<bool> RemoveHostilityAsync(uint guildId)
+    {
+        if (!this._guildDictionary.TryGetValue(guildId, out var guildContainer))
+        {
+            this._logger.LogWarning($"Guild {guildId} not found for hostility removal");
+            return false;
+        }
+
+        if (guildContainer.Guild.Hostility is null)
+        {
+            return true; // No hostility to remove
+        }
+
+        // Find the hostile guild and remove bidirectional hostility
+        var hostileGuildId = guildContainer.Guild.Hostility.Id;
+        var hostileContainer = this._guildDictionary.Values.FirstOrDefault(g => g.Guild.Id == hostileGuildId);
+
+        guildContainer.Guild.Hostility = null;
+        await guildContainer.DatabaseContext.SaveChangesAsync().ConfigureAwait(false);
+
+        if (hostileContainer is not null)
+        {
+            hostileContainer.Guild.Hostility = null;
+            await hostileContainer.DatabaseContext.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        this._logger.LogInformation($"Hostility removed for guild {guildContainer.Guild.Name}");
+        return true;
+    }
+
     /// <summary>
     /// Removes a guild from the server and the database.
     /// First we are trying to get the guild out of our dictionary.

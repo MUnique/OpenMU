@@ -313,6 +313,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public GuildWarContext? GuildWarContext { get; set; }
 
     /// <summary>
+    /// Gets or sets the pending alliance request.
+    /// </summary>
+    public PendingAllianceRequest? PendingAllianceRequest { get; set; }
+
+    /// <summary>
     /// Gets the skill list.
     /// </summary>
     public ISkillList? SkillList { get; private set; }

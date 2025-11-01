@@ -116,14 +116,31 @@ public class GameServerContext : GameContext, IGameServerContext
     /// <inheritdoc />
     public async ValueTask ForEachAlliancePlayerAsync(uint guildId, Func<Player, Task> action)
     {
-        if (!this._playersByGuild.TryGetValue(guildId, out var playerList))
+        // Get all guilds in the alliance
+        var allianceGuildIds = await this.GuildServer.GetAllianceMemberGuildIdsAsync(guildId).ConfigureAwait(false);
+
+        if (allianceGuildIds.Count == 0)
         {
+            // Not in an alliance, just iterate the single guild
+            if (!this._playersByGuild.TryGetValue(guildId, out var singlePlayerList))
+            {
+                return;
+            }
+
+            using var singleReadLock = await singlePlayerList.Lock.ReaderLockAsync();
+            await singlePlayerList.Select(action).WhenAll().ConfigureAwait(false);
             return;
         }
 
-        // TODO: iterate other guilds of the alliance as well; maybe introduce another dictionary with alliance players
-        using var readLock = await playerList.Lock.ReaderLockAsync();
-        await playerList.Select(action).WhenAll().ConfigureAwait(false);
+        // Iterate all guilds in the alliance
+        foreach (var allianceGuildId in allianceGuildIds)
+        {
+            if (this._playersByGuild.TryGetValue(allianceGuildId, out var playerList))
+            {
+                using var readLock = await playerList.Lock.ReaderLockAsync();
+                await playerList.Select(action).WhenAll().ConfigureAwait(false);
+            }
+        }
     }
 
     /// <inheritdoc/>

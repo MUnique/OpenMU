@@ -93,6 +93,11 @@ public class GameMap
     public Guid Id { get; }
 
     /// <summary>
+    /// Gets or sets the castle siege context for this map.
+    /// </summary>
+    public CastleSiege.CastleSiegeContext? CastleSiegeContext { get; set; }
+
+    /// <summary>
     /// Gets the object with the specified identifier.
     /// </summary>
     /// <param name="id">The identifier.</param>
