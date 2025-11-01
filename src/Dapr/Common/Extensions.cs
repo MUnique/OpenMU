@@ -49,9 +49,9 @@ public static class Extensions
         }
 
         return services
-            .AddSingleton<IMigratableDatabaseContextProvider, PersistenceContextProvider>()
-            .AddSingleton(s => (PersistenceContextProvider)s.GetService<IMigratableDatabaseContextProvider>()!)
-            .AddSingleton(s => (IPersistenceContextProvider)s.GetService<IMigratableDatabaseContextProvider>()!)
+            .AddSingleton<IDatabaseSchemaProvider, PersistenceContextProvider>()
+            .AddSingleton(s => (PersistenceContextProvider)s.GetService<IDatabaseSchemaProvider>()!)
+            .AddSingleton(s => (IPersistenceContextProvider)s.GetService<IDatabaseSchemaProvider>()!)
             .AddSingleton(s => new Lazy<IPersistenceContextProvider>(s.GetRequiredService<IPersistenceContextProvider>));
     }
 
@@ -75,7 +75,7 @@ public static class Extensions
     /// <param name="plugInConfigurations">The list of plug in configurations, where the loaded configurations will be added.</param>
     public static async ValueTask TryLoadPlugInConfigurationsAsync(this IServiceProvider serviceProvider, List<PlugInConfiguration> plugInConfigurations)
     {
-        if (serviceProvider.GetService<IMigratableDatabaseContextProvider>() is not { } persistenceContextProvider)
+        if (serviceProvider.GetService<IDatabaseSchemaProvider>() is not { } persistenceContextProvider)
         {
             throw new Exception($"{nameof(IPersistenceContextProvider)} not registered.");
         }

@@ -118,6 +118,21 @@ public class Account
     public bool IsVaultExtended { get; set; }
 
     /// <summary>
+    /// Gets or sets the WCoinC (Cash Coin) balance for the cash shop.
+    /// </summary>
+    public int WCoinC { get; set; }
+
+    /// <summary>
+    /// Gets or sets the WCoinP (Prepaid Coin) balance for the cash shop.
+    /// </summary>
+    public int WCoinP { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Goblin Points balance for the cash shop.
+    /// </summary>
+    public int GoblinPoints { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating whether this instance is a template account
     /// and therefore read-only within the game server.
     /// </summary>

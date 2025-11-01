@@ -117,6 +117,18 @@ public partial class MiniGameDefinition
     public bool AllowParty { get; set; }
 
     /// <summary>
+    /// Gets or sets the number of Jewel of Bless items to drop during Chaos Castle.
+    /// Only applicable when <see cref="Type"/> is <see cref="MiniGameType.ChaosCastle"/>.
+    /// </summary>
+    public int BlessJewelDropCount { get; set; }
+
+    /// <summary>
+    /// Gets or sets the number of Jewel of Soul items to drop during Chaos Castle.
+    /// Only applicable when <see cref="Type"/> is <see cref="MiniGameType.ChaosCastle"/>.
+    /// </summary>
+    public int SoulJewelDropCount { get; set; }
+
+    /// <summary>
     /// Gets or sets the entrance gate to the mini game map.
     /// </summary>
     [Required]

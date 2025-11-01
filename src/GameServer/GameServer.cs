@@ -8,10 +8,12 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Microsoft.Extensions.Logging;
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Guild;
@@ -505,7 +507,34 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
         {
             this._logger.LogError(ex, "Couldn't Save at Disconnect. Player: {player}", this);
 
-            // TODO: Log Character/Account values, to be able to restore players data if necessary.
+            // Log Character/Account values for data recovery if save fails
+            try
+            {
+                var character = player.SelectedCharacter;
+                var account = player.Account;
+
+                this._logger.LogCritical(
+                    "CRITICAL - Player data not saved on disconnect. " +
+                    "Account: {AccountName}, " +
+                    "Character: {CharacterName}, " +
+                    "Level: {Level}, Experience: {Experience}, " +
+                    "Map: {MapName}, Position: ({X}, {Y}), " +
+                    "Money: {Money}, " +
+                    "InventoryItems: {InventoryItemCount}",
+                    account?.LoginName ?? "Unknown",
+                    character?.Name ?? "Unknown",
+                    player.Attributes?[Stats.Level] ?? 0,
+                    character?.Experience ?? 0,
+                    player.CurrentMap?.Definition?.Name ?? "Unknown",
+                    player.Position.X,
+                    player.Position.Y,
+                    player.Money,
+                    character?.Inventory?.Items?.Count ?? 0);
+            }
+            catch
+            {
+                // Suppress any errors during emergency logging to avoid cascading failures
+            }
         }
     }
 

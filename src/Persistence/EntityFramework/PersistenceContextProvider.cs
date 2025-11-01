@@ -15,7 +15,7 @@ using Npgsql;
 /// <summary>
 /// The persistence context provider for the persistence implemented with entity framework core.
 /// </summary>
-public class PersistenceContextProvider : IMigratableDatabaseContextProvider
+public class PersistenceContextProvider : IDatabaseSchemaProvider
 {
     private readonly ILoggerFactory _loggerFactory;
     private IConfigurationChangeListener? _changeListener;

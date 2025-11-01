@@ -257,8 +257,8 @@ internal sealed class Program : IDisposable
                     s.GetService<ILoggerFactory>() ?? throw new Exception($"{nameof(ILoggerFactory)} not registered."),
                     s.GetService<IConfigurationChangeListener>() ?? throw new Exception($"{nameof(IConfigurationChangeListener)} not registered."))
                     .WaitAndUnwrapException())
-            .AddSingleton<IPersistenceContextProvider>(s => s.GetService<IMigratableDatabaseContextProvider>()!)
-            .AddSingleton<Lazy<IPersistenceContextProvider>>(s => new(() => s.GetService<IMigratableDatabaseContextProvider>()!))
+            .AddSingleton<IPersistenceContextProvider>(s => s.GetService<IDatabaseSchemaProvider>()!)
+            .AddSingleton<Lazy<IPersistenceContextProvider>>(s => new(() => s.GetService<IDatabaseSchemaProvider>()!))
             .AddSingleton<ILoginServer, LoginServer>()
             .AddSingleton<IGuildServer, GuildServer>()
             .AddSingleton<IFriendServer, FriendServer>()
@@ -442,11 +442,11 @@ internal sealed class Program : IDisposable
         return parameter.Substring(parameter.IndexOf(':') + 1);
     }
 
-    private async Task<IMigratableDatabaseContextProvider> DeterminePersistenceContextProviderAsync(string[] args, ILoggerFactory loggerFactory, IConfigurationChangeListener changeListener)
+    private async Task<IDatabaseSchemaProvider> DeterminePersistenceContextProviderAsync(string[] args, ILoggerFactory loggerFactory, IConfigurationChangeListener changeListener)
     {
         var version = this.GetVersionParameter(args);
 
-        IMigratableDatabaseContextProvider contextProvider;
+        IDatabaseSchemaProvider contextProvider;
         if (args.Contains("-demo"))
         {
             contextProvider = new InMemoryPersistenceContextProvider(null); // TODO pass change mediator or whatever
@@ -462,7 +462,7 @@ internal sealed class Program : IDisposable
         return contextProvider;
     }
 
-    private async Task<IMigratableDatabaseContextProvider> PrepareRepositoryProviderAsync(bool reinit, string version, ILoggerFactory loggerFactory, IConfigurationChangeListener changeListener)
+    private async Task<IDatabaseSchemaProvider> PrepareRepositoryProviderAsync(bool reinit, string version, ILoggerFactory loggerFactory, IConfigurationChangeListener changeListener)
     {
         var contextProvider = new PersistenceContextProvider(loggerFactory, changeListener);
         if (reinit || !await contextProvider.DatabaseExistsAsync().ConfigureAwait(false))

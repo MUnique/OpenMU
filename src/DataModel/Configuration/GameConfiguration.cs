@@ -260,6 +260,12 @@ public partial class GameConfiguration
     [MemberOfAggregate]
     public virtual ICollection<MiniGameDefinition> MiniGameDefinitions { get; protected set; } = null!;
 
+    /// <summary>
+    /// Gets or sets the cash shop products.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<CashShopProduct> CashShopProducts { get; protected set; } = null!;
+
     /// <inheritdoc />
     public override string ToString()
     {

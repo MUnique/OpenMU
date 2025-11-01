@@ -1,4 +1,4 @@
-﻿// <copyright file="IMigratableDatabaseContextProvider.cs" company="MUnique">
+﻿// <copyright file="IDatabaseSchemaProvider.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 namespace MUnique.OpenMU.Persistence;
@@ -6,10 +6,9 @@ namespace MUnique.OpenMU.Persistence;
 using System.Threading;
 
 /// <summary>
-/// Provider for persistence contexts which supports database creation and migration.
-/// TODO: find better name? ;-)
+/// Provider for persistence contexts which supports database schema management, including creation, migration, and updates.
 /// </summary>
-public interface IMigratableDatabaseContextProvider : IPersistenceContextProvider
+public interface IDatabaseSchemaProvider : IPersistenceContextProvider
 {
     /// <summary>
     /// Determines if the database exists already, by checking if any migration has been applied.

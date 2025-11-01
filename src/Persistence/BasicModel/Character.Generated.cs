@@ -181,6 +181,24 @@ public partial class Character : MUnique.OpenMU.DataModel.Entities.Character, II
         set => base.Inventory = value;
     }
 
+    /// <summary>
+    /// Gets the raw object of <see cref="CashShopStorage" />.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonPropertyName("cashShopStorage")]
+    public ItemStorage RawCashShopStorage
+    {
+        get => base.CashShopStorage as ItemStorage;
+        set => base.CashShopStorage = value;
+    }
+
+    /// <inheritdoc/>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Entities.ItemStorage CashShopStorage
+    {
+        get => base.CashShopStorage;
+        set => base.CashShopStorage = value;
+    }
+
 
     /// <inheritdoc/>
     public override bool Equals(object obj)

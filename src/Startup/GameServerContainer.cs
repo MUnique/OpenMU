@@ -125,7 +125,7 @@ public sealed class GameServerContainer : ServerContainerBase, IGameServerInstan
         await base.BeforeStartAsync(onDatabaseInit, cancellationToken);
         if (!onDatabaseInit)
         {
-            (this._persistenceContextProvider as IMigratableDatabaseContextProvider)?.ResetCache();
+            (this._persistenceContextProvider as IDatabaseSchemaProvider)?.ResetCache();
         }
     }
 

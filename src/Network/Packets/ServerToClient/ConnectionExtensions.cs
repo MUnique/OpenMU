@@ -6180,4 +6180,178 @@ public static class ConnectionExtensions
         }
 
         await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CashShopPointsResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="wCoinC">The w coin c.</param>
+    /// <param name="wCoinP">The w coin p.</param>
+    /// <param name="goblinPoints">The goblin points.</param>
+    /// <remarks>
+    /// Is sent by the server when: Response to cash shop points request.
+    /// Causes reaction on client side: Client displays the available cash points.
+    /// </remarks>
+    public static async ValueTask SendCashShopPointsResponseAsync(this IConnection? connection, uint @wCoinC, uint @wCoinP, uint @goblinPoints)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CashShopPointsResponseRef.Length;
+            var packet = new CashShopPointsResponseRef(connection.Output.GetSpan(length)[..length]);
+            packet.WCoinC = @wCoinC;
+            packet.WCoinP = @wCoinP;
+            packet.GoblinPoints = @goblinPoints;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CashShopOpenStateResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="isAvailable">The is available.</param>
+    /// <remarks>
+    /// Is sent by the server when: Response to cash shop open/close state request.
+    /// Causes reaction on client side: Client opens or closes the cash shop interface.
+    /// </remarks>
+    public static async ValueTask SendCashShopOpenStateResponseAsync(this IConnection? connection, bool @isAvailable)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CashShopOpenStateResponseRef.Length;
+            var packet = new CashShopOpenStateResponseRef(connection.Output.GetSpan(length)[..length]);
+            packet.IsAvailable = @isAvailable;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CashShopItemBuyResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="productId">The product id.</param>
+    /// <remarks>
+    /// Is sent by the server when: Response to cash shop item purchase request.
+    /// Causes reaction on client side: Client displays purchase result.
+    /// </remarks>
+    public static async ValueTask SendCashShopItemBuyResponseAsync(this IConnection? connection, byte @result, uint @productId)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CashShopItemBuyResponseRef.Length;
+            var packet = new CashShopItemBuyResponseRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+            packet.ProductId = @productId;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CashShopItemGiftResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <remarks>
+    /// Is sent by the server when: Response to cash shop gift request.
+    /// Causes reaction on client side: Client displays gift result.
+    /// </remarks>
+    public static async ValueTask SendCashShopItemGiftResponseAsync(this IConnection? connection, byte @result)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CashShopItemGiftResponseRef.Length;
+            var packet = new CashShopItemGiftResponseRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CashShopItemConsumeResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <remarks>
+    /// Is sent by the server when: Response to cash shop item consume request.
+    /// Causes reaction on client side: Client displays consume result.
+    /// </remarks>
+    public static async ValueTask SendCashShopItemConsumeResponseAsync(this IConnection? connection, byte @result)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CashShopItemConsumeResponseRef.Length;
+            var packet = new CashShopItemConsumeResponseRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CashShopItemDeleteResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <remarks>
+    /// Is sent by the server when: Response to cash shop item delete request.
+    /// Causes reaction on client side: Client displays delete result.
+    /// </remarks>
+    public static async ValueTask SendCashShopItemDeleteResponseAsync(this IConnection? connection, byte @result)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CashShopItemDeleteResponseRef.Length;
+            var packet = new CashShopItemDeleteResponseRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
     }}

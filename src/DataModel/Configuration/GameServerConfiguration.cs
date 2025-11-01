@@ -14,6 +14,11 @@ using MUnique.OpenMU.Annotations;
 public partial class GameServerConfiguration
 {
     /// <summary>
+    /// Gets or sets the description of the game server.
+    /// </summary>
+    public string Description { get; set; } = string.Empty;
+
+    /// <summary>
     /// Gets or sets the maximum number of players which can connect.
     /// </summary>
     public short MaximumPlayers { get; set; }
@@ -26,6 +31,8 @@ public partial class GameServerConfiguration
     /// <inheritdoc />
     public override string ToString()
     {
-        return $"Default ({this.MaximumPlayers} players)"; // TODO Add Description field
+        return string.IsNullOrWhiteSpace(this.Description)
+            ? $"Server ({this.MaximumPlayers} players)"
+            : $"{this.Description} ({this.MaximumPlayers} players)";
     }
 }

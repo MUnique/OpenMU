@@ -137,31 +137,11 @@ internal static class QuestDefinitionExtensions
     {
         var requirement = context.CreateNew<QuestItemRequirement>();
         requirement.MinimumNumber = itemCount;
-        var item = context.CreateNew<Item>();
-        item.Definition = gameConfiguration.Items.First(def => def.Group == itemGroup && def.Number == itemNumber);
-        item.HasSkill = item.Definition.Skill != null && hasSkill;
-        item.Durability = durability;
-        item.Level = itemLevel;
-        if (hasLuck
-            && item.Definition.PossibleItemOptions.SelectMany(o => o.PossibleOptions)
-                .FirstOrDefault(o => o.OptionType == ItemOptionTypes.Luck) is { } luckOption)
-        {
-            var optionLink = context.CreateNew<ItemOptionLink>();
-            optionLink.ItemOption = luckOption;
-            item.ItemOptions.Add(optionLink);
-        }
 
-        if (itemOption > 0
-            && item.Definition.PossibleItemOptions.SelectMany(o => o.PossibleOptions)
-                .FirstOrDefault(o => o.OptionType == ItemOptionTypes.Option) is { } optionOption)
-        {
-            var optionLink = context.CreateNew<ItemOptionLink>();
-            optionLink.ItemOption = optionOption;
-            optionLink.Level = itemOption / 4;
-            item.ItemOptions.Add(optionLink);
-        }
-
-        requirement.Item = item.Definition; // TODO?
+        // QuestItemRequirement only needs the ItemDefinition, not a full Item instance.
+        // Item-specific properties (durability, level, options) are not validated by the quest system.
+        // Level validation, if needed, should be configured via DropItemGroup.ItemLevel instead.
+        requirement.Item = gameConfiguration.Items.First(def => def.Group == itemGroup && def.Number == itemNumber);
 
         questDefinition.RequiredItems.Add(requirement);
         return questDefinition;

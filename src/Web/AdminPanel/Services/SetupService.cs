@@ -17,7 +17,7 @@ using Nito.AsyncEx.Synchronous;
 /// </summary>
 public class SetupService
 {
-    private readonly IMigratableDatabaseContextProvider _contextProvider;
+    private readonly IDatabaseSchemaProvider _contextProvider;
 
     private readonly PlugInManager _plugInManager;
 
@@ -28,7 +28,7 @@ public class SetupService
     /// </summary>
     /// <param name="contextProvider">The context provider.</param>
     /// <param name="plugInManager">The plug in manager.</param>
-    public SetupService(IMigratableDatabaseContextProvider contextProvider, PlugInManager plugInManager)
+    public SetupService(IDatabaseSchemaProvider contextProvider, PlugInManager plugInManager)
     {
         this._contextProvider = contextProvider;
         this._plugInManager = plugInManager;

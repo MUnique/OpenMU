@@ -143,6 +143,32 @@ internal partial class Character : MUnique.OpenMU.DataModel.Entities.Character, 
         }
     }
 
+    /// <summary>
+    /// Gets or sets the identifier of <see cref="CashShopStorage"/>.
+    /// </summary>
+    public Guid? CashShopStorageId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="CashShopStorage" />.
+    /// </summary>
+    [ForeignKey(nameof(CashShopStorageId))]
+    public ItemStorage RawCashShopStorage
+    {
+        get => base.CashShopStorage as ItemStorage;
+        set => base.CashShopStorage = value;
+    }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Entities.ItemStorage CashShopStorage
+    {
+        get => base.CashShopStorage;set
+        {
+            base.CashShopStorage = value;
+            this.CashShopStorageId = this.RawCashShopStorage?.Id;
+        }
+    }
+
 
     /// <inheritdoc/>
     public override bool Equals(object obj)

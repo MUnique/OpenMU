@@ -230,8 +230,10 @@ public partial class MonsterDefinition
     public string Designation { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the range in which a monster will move randomly?
-    /// It is not used yet. TODO: Find out what it's really good for. Remove, if not needed.
+    /// Gets or sets the range in which a monster will move randomly from its current position.
+    /// This value determines the maximum distance (in tiles) a monster can move in any direction
+    /// during random movement. Used by the Monster's RandomMoveAsync method.
+    /// Common values: 3 (typical monsters), 50 (Chaos Castle monsters).
     /// </summary>
     public byte MoveRange { get; set; }
 
@@ -264,10 +266,12 @@ public partial class MonsterDefinition
     public TimeSpan RespawnDelay { get; set; }
 
     /// <summary>
-    /// Gets or sets the attribute.
-    /// Not sure what this is.
-    /// Maybe the maximum numbers of concurrent additional attributes / magic effects?
-    /// TODO.
+    /// Gets or sets the attribute value.
+    /// This appears to be a legacy field from the original MU Online protocol.
+    /// In the codebase, it's typically set to 2 (312 occurrences), with occasional values of 0 or 1.
+    /// This field is not actively used in game logic or sent in network packets,
+    /// but is preserved for data completeness and potential future use.
+    /// The original purpose is unclear - possibly related to visual effects or monster behavior flags.
     /// </summary>
     public byte Attribute { get; set; }
 

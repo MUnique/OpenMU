@@ -8,9 +8,10 @@ namespace MUnique.OpenMU.AttributeSystem;
 /// An attribute relationship element which takes several input elements which are summed up and multiplied.
 /// Calculated values are cached for a better performance.
 /// </summary>
-public class AttributeRelationshipElement : SimpleElement
+public class AttributeRelationshipElement : SimpleElement, IDisposable
 {
     private float? _cachedValue;
+    private bool _disposed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AttributeRelationshipElement" /> class.
@@ -29,7 +30,6 @@ public class AttributeRelationshipElement : SimpleElement
         }
 
         inputOperand.ValueChanged += this.ElementChanged;
-        // TODO: Is Dispose required?
     }
 
     /// <summary>
@@ -84,5 +84,24 @@ public class AttributeRelationshipElement : SimpleElement
                 this.InputOperand.Value),
             _ => throw new InvalidOperationException($"Input operator {this.InputOperator} unknown"),
         };
+    }
+
+    /// <summary>
+    /// Disposes this instance and unsubscribes from all event subscriptions to prevent memory leaks.
+    /// </summary>
+    public void Dispose()
+    {
+        if (this._disposed)
+        {
+            return;
+        }
+
+        foreach (var element in this.InputElements)
+        {
+            element.ValueChanged -= this.ElementChanged;
+        }
+
+        this.InputOperand.ValueChanged -= this.ElementChanged;
+        this._disposed = true;
     }
 }

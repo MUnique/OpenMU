@@ -17,6 +17,14 @@ public static class ItemExtensions
 {
     private const byte ShieldItemGroup = 6;
 
+    // Archangel weapon identifiers (Group, Number)
+    private static readonly (byte Group, byte Number)[] ArchangelWeaponIds =
+    {
+        (0, 19), // Divine Sword of Archangel
+        (0, 13), // Divine Scepter of Archangel
+        (4, 18), // Divine Crossbow of Archangel
+    };
+
     private static readonly byte[] AdditionalDurabilityPerLevel = { 0, 1, 2, 3, 4, 6, 8, 10, 12, 14, 17, 21, 26, 32, 39, 47 };
 
     private static readonly IDictionary<AttributeDefinition, AttributeDefinition> RequirementAttributeMapping = new Dictionary<AttributeDefinition, AttributeDefinition>
@@ -66,8 +74,8 @@ public static class ItemExtensions
         }
         else if (item.IsExcellent())
         {
-            // TODO: archangel weapons, but I guess it's not a big issue if we don't, because of their already high durability
-            result += 15;
+            // Archangel weapons get +20 durability (same as Ancient items), other excellent items get +15
+            result += item.IsArchangelWeapon() ? 20 : 15;
         }
         else
         {
@@ -100,6 +108,23 @@ public static class ItemExtensions
     public static bool IsExcellent(this Item item)
     {
         return item.ItemOptions.Any(link => link.ItemOption?.OptionType == ItemOptionTypes.Excellent);
+    }
+
+    /// <summary>
+    /// Determines whether this instance is an Archangel weapon (Divine Sword/Scepter/Crossbow of Archangel).
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <returns>
+    ///   <c>true</c> if the specified item is an Archangel weapon; otherwise, <c>false</c>.
+    /// </returns>
+    public static bool IsArchangelWeapon(this Item item)
+    {
+        if (item.Definition is null)
+        {
+            return false;
+        }
+
+        return ArchangelWeaponIds.Any(id => id.Group == item.Definition.Group && id.Number == item.Definition.Number);
     }
 
     /// <summary>

@@ -98,6 +98,19 @@ internal class ChaosCastleInitializer : InitializerBase
         chaosCastle.EntranceFee = entranceFee;
         chaosCastle.AllowParty = false;
 
+        // Set jewel drop counts based on level
+        (chaosCastle.BlessJewelDropCount, chaosCastle.SoulJewelDropCount) = level switch
+        {
+            1 => (0, 2),
+            2 => (1, 1),
+            3 => (1, 2),
+            4 => (1, 2),
+            5 => (2, 1),
+            6 => (2, 2),
+            7 => (2, 3),
+            _ => (0, 0),
+        };
+
         this.CreateRewards(level, chaosCastle);
         this.CreateEvents(chaosCastle);
 

@@ -215,7 +215,7 @@ public static class PlayerState
 
     /// <summary>
     /// Gets the guild request state. When this state is active, the player has requested for guild.
-    /// TODO: set this state.
+    /// Note: This state is currently unused. Guild requests are tracked via the <see cref="Player.LastGuildRequester"/> property instead.
     /// </summary>
     public static State GuildRequest { get; }
 

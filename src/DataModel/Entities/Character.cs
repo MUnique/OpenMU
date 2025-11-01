@@ -253,6 +253,12 @@ public class Character
     public virtual ItemStorage? Inventory { get; set; }
 
     /// <summary>
+    /// Gets or sets the cash shop storage.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ItemStorage? CashShopStorage { get; set; }
+
+    /// <summary>
     /// Gets or sets the drop item groups.
     /// </summary>
     public virtual ICollection<DropItemGroup> DropItemGroups { get; protected set; } = null!;

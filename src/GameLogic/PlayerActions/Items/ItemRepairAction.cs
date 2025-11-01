@@ -21,10 +21,38 @@ public class ItemRepairAction
     public async ValueTask RepairItemAsync(Player player, byte slot)
     {
         using var loggerScope = player.Logger.BeginScope(this.GetType());
-        if (slot == InventoryConstants.PetSlot && player.OpenedNpc is null)
+
+        // Pet repairs require a Pet Trainer NPC
+        if (slot == InventoryConstants.PetSlot)
         {
-            player.Logger.LogWarning("Cheater Warning: Player tried to repair pet slot, without opened NPC. Character: [{0}], Account: [{1}]", player.SelectedCharacter?.Name, player.Account?.LoginName);
-            return;
+            if (player.OpenedNpc is null)
+            {
+                player.Logger.LogWarning("Cheater Warning: Player tried to repair pet slot, without opened NPC. Character: [{0}], Account: [{1}]", player.SelectedCharacter?.Name, player.Account?.LoginName);
+                return;
+            }
+
+            if (player.OpenedNpc.Definition.NpcWindow != NpcWindow.PetTrainer)
+            {
+                player.Logger.LogWarning("Cheater Warning: Player tried to repair pet with non-pet-trainer NPC. Character: [{0}], Account: [{1}], NPC: [{2}]",
+                    player.SelectedCharacter?.Name, player.Account?.LoginName, player.OpenedNpc.Definition.Designation);
+                return;
+            }
+        }
+        // Regular item repairs require a Merchant NPC
+        else
+        {
+            if (player.OpenedNpc is null)
+            {
+                player.Logger.LogWarning("Cheater Warning: Player tried to repair item, without opened NPC. Character: [{0}], Account: [{1}]", player.SelectedCharacter?.Name, player.Account?.LoginName);
+                return;
+            }
+
+            if (player.OpenedNpc.Definition.NpcWindow is not (NpcWindow.Merchant or NpcWindow.Merchant1))
+            {
+                player.Logger.LogWarning("Cheater Warning: Player tried to repair item with non-merchant NPC. Character: [{0}], Account: [{1}], NPC: [{2}]",
+                    player.SelectedCharacter?.Name, player.Account?.LoginName, player.OpenedNpc.Definition.Designation);
+                return;
+            }
         }
 
         var item = player.Inventory?.GetItem(slot);
@@ -65,9 +93,17 @@ public class ItemRepairAction
         {
             // probably cheater
             player.Logger.LogWarning("Cheater Warning: Player tried to repair all items, without opened NPC. Character: [{0}], Account: [{1}]", player.SelectedCharacter?.Name, player.Account?.LoginName);
+            return;
         }
 
-        // TODO: Check if NPC is able to repair all items. Maybe specified by npc dialog type
+        // Only merchants (NpcWindow.Merchant or NpcWindow.Merchant1) can repair items
+        if (player.OpenedNpc.Definition.NpcWindow is not (NpcWindow.Merchant or NpcWindow.Merchant1))
+        {
+            player.Logger.LogWarning("Cheater Warning: Player tried to repair items with non-merchant NPC. Character: [{0}], Account: [{1}], NPC: [{2}]",
+                player.SelectedCharacter?.Name, player.Account?.LoginName, player.OpenedNpc.Definition.Designation);
+            return;
+        }
+
         for (byte i = InventoryConstants.FirstEquippableItemSlotIndex; i <= InventoryConstants.LastEquippableItemSlotIndex; i++)
         {
             if (i == InventoryConstants.PetSlot)

@@ -41,12 +41,23 @@ public class ChaosCastleDropGenerator : IDropGenerator
     {
         this._gameContext = gameContext;
 
-        // TODO: This should rather be configurable...
         var blessDefinition = this._gameContext.Configuration.Items.First(item => item is { Group: 14, Number: 13 });
         var soulDefinition = this._gameContext.Configuration.Items.First(item => item is { Group: 14, Number: 14 });
-        var drops = MonsterJewelDropsPerLevel[context.Definition.GameLevel];
-        AddItems(drops.Blesses, blessDefinition);
-        AddItems(drops.Souls, soulDefinition);
+
+        // Use configured drop counts if available, otherwise fall back to hardcoded values
+        int blessCount = context.Definition.BlessJewelDropCount;
+        int soulCount = context.Definition.SoulJewelDropCount;
+
+        if (blessCount == 0 && soulCount == 0 && context.Definition.GameLevel > 0 && context.Definition.GameLevel < MonsterJewelDropsPerLevel.Count)
+        {
+            // Fallback to hardcoded values for backward compatibility
+            var drops = MonsterJewelDropsPerLevel[context.Definition.GameLevel];
+            blessCount = drops.Blesses;
+            soulCount = drops.Souls;
+        }
+
+        AddItems(blessCount, blessDefinition);
+        AddItems(soulCount, soulDefinition);
 
         void AddItems(int count, ItemDefinition definition)
         {

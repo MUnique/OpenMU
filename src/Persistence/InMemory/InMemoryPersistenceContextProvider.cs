@@ -14,7 +14,7 @@ using MUnique.OpenMU.Interfaces;
 /// A context provider which uses in-memory repositories to hold its data, e.g. for testing or demo purposes.
 /// Changes in one context directly have effect in other contexts! Calling SaveChanges or not doesn't matter.
 /// </summary>
-public class InMemoryPersistenceContextProvider : IMigratableDatabaseContextProvider
+public class InMemoryPersistenceContextProvider : IDatabaseSchemaProvider
 {
     private readonly IConfigurationChangePublisher? _changePublisher;
     private InMemoryRepositoryProvider _repositoryProvider = new ();

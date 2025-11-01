@@ -44,31 +44,53 @@ public enum DatabaseRole
 
 /// <summary>
 /// The database connection configurator which loads the configuration from a file.
-/// TODO: Make class non-static.
 /// </summary>
-public static class ConnectionConfigurator
+public class ConnectionConfigurator
 {
-    private static IDatabaseConnectionSettingProvider? _provider;
+    private static ConnectionConfigurator? _instance;
+
+    private IDatabaseConnectionSettingProvider? _provider;
 
     /// <summary>
-    /// Gets a value indicating whether this instance is initialized.
+    /// Initializes a new instance of the <see cref="ConnectionConfigurator"/> class.
     /// </summary>
-    public static bool IsInitialized => _provider is not null;
-
-    private static IDatabaseConnectionSettingProvider Provider => _provider ?? throw new InvalidOperationException("Call Initialize before.");
+    /// <param name="provider">The <see cref="IDatabaseConnectionSettingProvider"/> which provides the required connection settings.</param>
+    public ConnectionConfigurator(IDatabaseConnectionSettingProvider provider)
+    {
+        this._provider = provider ?? throw new ArgumentNullException(nameof(provider));
+    }
 
     /// <summary>
-    /// Initializes this instance.
+    /// Gets the singleton instance for backward compatibility.
+    /// Use constructor injection in new code instead.
+    /// </summary>
+    public static ConnectionConfigurator Instance => _instance ?? throw new InvalidOperationException("Call Initialize before accessing Instance.");
+
+    /// <summary>
+    /// Gets a value indicating whether the singleton instance is initialized.
+    /// </summary>
+    public static bool IsInitialized => _instance is not null;
+
+    /// <summary>
+    /// Gets a value indicating whether this instance has a provider.
+    /// </summary>
+    public bool HasProvider => this._provider is not null;
+
+    private IDatabaseConnectionSettingProvider Provider => this._provider ?? throw new InvalidOperationException("Provider is not set.");
+
+    /// <summary>
+    /// Initializes the singleton instance for backward compatibility.
+    /// Use constructor injection in new code instead.
     /// </summary>
     /// <param name="provider">The <see cref="IDatabaseConnectionSettingProvider"/> which provides the required connection settings.</param>
     public static void Initialize(IDatabaseConnectionSettingProvider provider)
     {
-        if (_provider is not null)
+        if (_instance is not null)
         {
-            throw new InvalidOperationException("provider is initialized already");
+            throw new InvalidOperationException("Instance is initialized already");
         }
 
-        _provider = provider;
+        _instance = new ConnectionConfigurator(provider);
     }
 
     /// <summary>
@@ -76,10 +98,24 @@ public static class ConnectionConfigurator
     /// </summary>
     /// <param name="role">The role.</param>
     /// <returns>The name of the role from the configured connection string.</returns>
-    public static string GetRoleName(DatabaseRole role)
+    public static string GetRoleName(DatabaseRole role) => Instance.GetRoleNameCore(role);
+
+    /// <summary>
+    /// Gets the password password of the role from the configured connection string.
+    /// </summary>
+    /// <param name="role">The role.</param>
+    /// <returns>The password password of the role from the configured connection string.</returns>
+    public static string GetRolePassword(DatabaseRole role) => Instance.GetRolePasswordCore(role);
+
+    /// <summary>
+    /// Gets the name of the role from the configured connection string.
+    /// </summary>
+    /// <param name="role">The role.</param>
+    /// <returns>The name of the role from the configured connection string.</returns>
+    public string GetRoleNameCore(DatabaseRole role)
     {
-        Provider.Initialization?.WaitWithoutException();
-        var settings = Provider.GetConnectionSetting(GetContextTypeOfRole(role));
+        this.Provider.Initialization?.WaitWithoutException();
+        var settings = this.Provider.GetConnectionSetting(GetContextTypeOfRole(role));
         return Regex.Match(settings.ConnectionString!, "User Id=([^;]+?);").Groups[1].Value;
     }
 
@@ -88,10 +124,10 @@ public static class ConnectionConfigurator
     /// </summary>
     /// <param name="role">The role.</param>
     /// <returns>The password password of the role from the configured connection string.</returns>
-    public static string GetRolePassword(DatabaseRole role)
+    public string GetRolePasswordCore(DatabaseRole role)
     {
-        Provider.Initialization?.WaitWithoutException();
-        var settings = Provider.GetConnectionSetting(GetContextTypeOfRole(role));
+        this.Provider.Initialization?.WaitWithoutException();
+        var settings = this.Provider.GetConnectionSetting(GetContextTypeOfRole(role));
         return Regex.Match(settings.ConnectionString!, "Password=([^;]+?);").Groups[1].Value;
     }
 
@@ -101,7 +137,7 @@ public static class ConnectionConfigurator
     /// <param name="context">The context.</param>
     /// <param name="optionsBuilder">The options builder.</param>
     /// <exception cref="NotImplementedException">At the moment only Npgsql engine (PostgreSQL) is implemented.</exception>
-    internal static void Configure(this DbContext context, DbContextOptionsBuilder optionsBuilder)
+    public void Configure(DbContext context, DbContextOptionsBuilder optionsBuilder)
     {
         // see https://github.com/dotnet/efcore/issues/34431
         optionsBuilder.ConfigureWarnings(a => a.Ignore(RelationalEventId.PendingModelChangesWarning));
@@ -112,8 +148,8 @@ public static class ConnectionConfigurator
             type = type.GetGenericTypeDefinition();
         }
 
-        Provider.Initialization?.WaitWithoutException();
-        if (Provider.GetConnectionSetting(type) is { } setting)
+        this.Provider.Initialization?.WaitWithoutException();
+        if (this.Provider.GetConnectionSetting(type) is { } setting)
         {
             switch (setting.DatabaseEngine)
             {
@@ -141,5 +177,21 @@ public static class ConnectionConfigurator
             DatabaseRole.Friend => typeof(FriendContext),
             _ => throw new ArgumentException($"Role {role} unknown."),
         };
+    }
+}
+
+/// <summary>
+/// Extension methods for <see cref="ConnectionConfigurator"/>.
+/// </summary>
+internal static class ConnectionConfiguratorExtensions
+{
+    /// <summary>
+    /// Configures the specified options builder using the singleton instance.
+    /// </summary>
+    /// <param name="context">The context.</param>
+    /// <param name="optionsBuilder">The options builder.</param>
+    internal static void Configure(this DbContext context, DbContextOptionsBuilder optionsBuilder)
+    {
+        ConnectionConfigurator.Instance.Configure(context, optionsBuilder);
     }
 }

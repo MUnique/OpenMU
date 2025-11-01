@@ -893,6 +893,225 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <summary>
+    /// Tries to buy an item from the cash shop.
+    /// </summary>
+    /// <param name="productId">The product identifier.</param>
+    /// <param name="coinType">Type of the coin (0=WCoinC, 1=WCoinP, 2=GoblinPoints).</param>
+    /// <returns>The result of the purchase attempt.</returns>
+    public async ValueTask<Views.CashShop.CashShopBuyResult> TryBuyCashShopItemAsync(int productId, int coinType)
+    {
+        var product = this.GameContext?.Configuration?.CashShopProducts.FirstOrDefault(p => p.ProductId == productId);
+        if (product is null || !product.IsAvailable)
+        {
+            return Views.CashShop.CashShopBuyResult.ProductNotFound;
+        }
+
+        var price = coinType switch
+        {
+            0 => product.PriceWCoinC,
+            1 => product.PriceWCoinP,
+            2 => product.PriceGoblinPoints,
+            _ => 0
+        };
+
+        if (price <= 0)
+        {
+            return Views.CashShop.CashShopBuyResult.Failed;
+        }
+
+        if (!this.TryRemoveCashPoints(coinType, price))
+        {
+            return Views.CashShop.CashShopBuyResult.InsufficientFunds;
+        }
+
+        if (!await this.TryAddItemToCashShopStorageAsync(product).ConfigureAwait(false))
+        {
+            this.TryAddCashPoints(coinType, price);
+            return Views.CashShop.CashShopBuyResult.StorageFull;
+        }
+
+        return Views.CashShop.CashShopBuyResult.Success;
+    }
+
+    /// <summary>
+    /// Tries to send a gift from the cash shop to another player.
+    /// </summary>
+    /// <param name="productId">The product identifier.</param>
+    /// <param name="receiverName">Name of the receiver.</param>
+    /// <param name="message">The message.</param>
+    /// <param name="coinType">Type of the coin.</param>
+    /// <returns>The result of the gift attempt.</returns>
+    public async ValueTask<Views.CashShop.CashShopGiftResult> TrySendCashShopGiftAsync(int productId, string receiverName, string message, int coinType)
+    {
+        var product = this.GameContext?.Configuration?.CashShopProducts.FirstOrDefault(p => p.ProductId == productId);
+        if (product is null || !product.IsAvailable)
+        {
+            return Views.CashShop.CashShopGiftResult.Failed;
+        }
+
+        var price = coinType switch
+        {
+            0 => product.PriceWCoinC,
+            1 => product.PriceWCoinP,
+            2 => product.PriceGoblinPoints,
+            _ => 0
+        };
+
+        if (!this.TryRemoveCashPoints(coinType, price))
+        {
+            return Views.CashShop.CashShopGiftResult.InsufficientFunds;
+        }
+
+        var receiver = this.GameContext?.GetPlayerByCharacterName(receiverName);
+        if (receiver is null)
+        {
+            this.TryAddCashPoints(coinType, price);
+            return Views.CashShop.CashShopGiftResult.ReceiverNotFound;
+        }
+
+        if (!await receiver.TryAddItemToCashShopStorageAsync(product).ConfigureAwait(false))
+        {
+            this.TryAddCashPoints(coinType, price);
+            return Views.CashShop.CashShopGiftResult.ReceiverStorageFull;
+        }
+
+        return Views.CashShop.CashShopGiftResult.Success;
+    }
+
+    /// <summary>
+    /// Tries to delete an item from the cash shop storage.
+    /// </summary>
+    /// <param name="slot">The slot.</param>
+    /// <returns><c>true</c> if successful; otherwise, <c>false</c>.</returns>
+    public async ValueTask<bool> TryDeleteCashShopStorageItemAsync(byte slot)
+    {
+        if (this.SelectedCharacter?.CashShopStorage is null)
+        {
+            return false;
+        }
+
+        var item = this.SelectedCharacter.CashShopStorage.Items.FirstOrDefault(i => i.ItemSlot == slot);
+        if (item is null)
+        {
+            return false;
+        }
+
+        this.SelectedCharacter.CashShopStorage.Items.Remove(item);
+        await this.PersistenceContext.DeleteAsync(item).ConfigureAwait(false);
+        return true;
+    }
+
+    /// <summary>
+    /// Tries to consume an item from the cash shop storage.
+    /// </summary>
+    /// <param name="slot">The slot.</param>
+    /// <returns><c>true</c> if successful; otherwise, <c>false</c>.</returns>
+    public async ValueTask<bool> TryConsumeCashShopStorageItemAsync(byte slot)
+    {
+        if (this.SelectedCharacter?.CashShopStorage is null)
+        {
+            return false;
+        }
+
+        var item = this.SelectedCharacter.CashShopStorage.Items.FirstOrDefault(i => i.ItemSlot == slot);
+        if (item is null)
+        {
+            return false;
+        }
+
+        if (this.Inventory?.FreeSlots.Any() != true)
+        {
+            return false;
+        }
+
+        var targetSlot = this.Inventory.FreeSlots.First();
+        item.ItemSlot = targetSlot;
+
+        this.SelectedCharacter.CashShopStorage.Items.Remove(item);
+        await this.Inventory.AddItemAsync(item).ConfigureAwait(false);
+
+        return true;
+    }
+
+    private bool TryRemoveCashPoints(int coinType, int amount)
+    {
+        if (this.Account is null)
+        {
+            return false;
+        }
+
+        switch (coinType)
+        {
+            case 0 when this.Account.WCoinC >= amount:
+                this.Account.WCoinC -= amount;
+                return true;
+            case 1 when this.Account.WCoinP >= amount:
+                this.Account.WCoinP -= amount;
+                return true;
+            case 2 when this.Account.GoblinPoints >= amount:
+                this.Account.GoblinPoints -= amount;
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private bool TryAddCashPoints(int coinType, int amount)
+    {
+        if (this.Account is null)
+        {
+            return false;
+        }
+
+        switch (coinType)
+        {
+            case 0:
+                this.Account.WCoinC += amount;
+                break;
+            case 1:
+                this.Account.WCoinP += amount;
+                break;
+            case 2:
+                this.Account.GoblinPoints += amount;
+                break;
+            default:
+                return false;
+        }
+
+        return true;
+    }
+
+    private async ValueTask<bool> TryAddItemToCashShopStorageAsync(DataModel.Configuration.CashShopProduct product)
+    {
+        if (this.SelectedCharacter?.CashShopStorage is null || product.Item is null)
+        {
+            return false;
+        }
+
+        if (this.SelectedCharacter.CashShopStorage.Items.Count >= 240)
+        {
+            return false;
+        }
+
+        var item = this.PersistenceContext.CreateNew<DataModel.Entities.Item>();
+        item.Definition = product.Item;
+        item.Level = product.ItemLevel;
+        item.Durability = product.Durability;
+        var storage = this.SelectedCharacter.CashShopStorage as IStorage;
+        var freeSlot = storage?.FreeSlots.FirstOrDefault();
+        if (!freeSlot.HasValue || freeSlot.Value > 239)
+        {
+            await this.PersistenceContext.DeleteAsync(item).ConfigureAwait(false);
+            return false;
+        }
+
+        item.ItemSlot = freeSlot.Value;
+        this.SelectedCharacter.CashShopStorage.Items.Add(item);
+
+        return true;
+    }
+
+    /// <summary>
     /// Tries to add the money from the players inventory.
     /// </summary>
     /// <param name="value">The value which should be added.</param>

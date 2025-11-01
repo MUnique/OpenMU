@@ -11,9 +11,14 @@ using Microsoft.Extensions.Logging;
 
 /// <summary>
 /// Implementation of <see cref="IContext"/> for the entity framework <see cref="PersistenceContextProvider"/>.
+/// This class serves as a concrete type for instantiation and provides a convenience constructor that defaults to ownership mode.
 /// </summary>
 /// <remarks>
-/// TODO: Check if this class can be removed. It doesn't seem to have any additional logic to <see cref="EntityFrameworkContext"/>.
+/// While this class doesn't add functionality beyond <see cref="EntityFrameworkContextBase"/>, it provides:
+/// - A specific type for dependency injection and logging
+/// - A convenience constructor with sensible defaults (isOwner=true)
+/// - Type identification in the repository provider system
+/// Removing it would require refactoring all call sites to use EntityFrameworkContextBase directly with explicit parameters.
 /// </remarks>
 internal class CachingEntityFrameworkContext : EntityFrameworkContextBase
 {

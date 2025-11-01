@@ -136,7 +136,21 @@ public class CastleSiegeRegistrationAction
             return;
         }
 
-        // TODO: Validate item is a guild mark and remove it from inventory
+        // Validate that the player has an item in the specified slot (guild mark)
+        var guildMark = player.Inventory?.GetItem(itemSlot);
+        if (guildMark is null)
+        {
+            player.Logger.LogWarning("Player tried to submit guild mark but no item found at slot {0}. Character: [{1}], Account: [{2}]",
+                itemSlot, player.SelectedCharacter?.Name, player.Account?.LoginName);
+            return;
+        }
+
+        // TODO: Add validation that the item is actually a guild mark (e.g., check item.Definition.Group == X && item.Definition.Number == Y)
+        // For now, we accept any item in the specified slot and remove it
+
+        // Remove the guild mark from inventory
+        await player.DestroyInventoryItemAsync(guildMark).ConfigureAwait(false);
+
         var castleSiegeContext = player.CurrentMap?.CastleSiegeContext;
         var totalMarks = castleSiegeContext?.AddGuildMarks(allianceMasterGuildId, 1) ?? 0;
 

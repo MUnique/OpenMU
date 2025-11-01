@@ -25,7 +25,7 @@ public partial class NavMenu : IDisposable
     private int _availableConfigUpdates;
 
     [Inject]
-    private IMigratableDatabaseContextProvider PersistenceContextProvider { get; set; } = null!;
+    private IDatabaseSchemaProvider PersistenceContextProvider { get; set; } = null!;
 
     [Inject]
     private SetupService SetupService { get; set; } = null!;
