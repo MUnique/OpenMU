@@ -50,7 +50,7 @@ public class ShowLetterPlugIn : IShowLetterPlugIn
                 Message = letter.Message,
             };
 
-            // TODO: Somewhere is the GM-Sign defined.
+            // The GM sign is the CharacterStatus.GameMaster value (32) in the appearance data.
             if (letter.SenderAppearance is not null)
             {
                 appearanceSerializer.WriteAppearanceData(result.SenderAppearance, letter.SenderAppearance, false);

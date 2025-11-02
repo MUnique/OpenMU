@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.DataModel.Entities;
 
+using System.ComponentModel.DataAnnotations;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 
@@ -120,16 +121,19 @@ public class Account
     /// <summary>
     /// Gets or sets the WCoinC (Cash Coin) balance for the cash shop.
     /// </summary>
+    [Range(0, int.MaxValue)]
     public int WCoinC { get; set; }
 
     /// <summary>
     /// Gets or sets the WCoinP (Prepaid Coin) balance for the cash shop.
     /// </summary>
+    [Range(0, int.MaxValue)]
     public int WCoinP { get; set; }
 
     /// <summary>
     /// Gets or sets the Goblin Points balance for the cash shop.
     /// </summary>
+    [Range(0, int.MaxValue)]
     public int GoblinPoints { get; set; }
 
     /// <summary>

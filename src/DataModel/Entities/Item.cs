@@ -67,6 +67,12 @@ public partial class Item
     public int PetExperience { get; set; }
 
     /// <summary>
+    /// Gets or sets the gift message.
+    /// When this item was sent as a gift from the cash shop, this contains the message from the sender.
+    /// </summary>
+    public string? GiftMessage { get; set; }
+
+    /// <summary>
     /// Assigns the values of another item to this item.
     /// </summary>
     /// <param name="otherItem">The other item.</param>

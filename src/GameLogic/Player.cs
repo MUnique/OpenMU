@@ -901,9 +901,15 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public async ValueTask<Views.CashShop.CashShopBuyResult> TryBuyCashShopItemAsync(int productId, int coinType)
     {
         var product = this.GameContext?.Configuration?.CashShopProducts.FirstOrDefault(p => p.ProductId == productId);
-        if (product is null || !product.IsAvailable)
+        if (product is null || !product.IsCurrentlyAvailable)
         {
             return Views.CashShop.CashShopBuyResult.ProductNotFound;
+        }
+
+        if (product.Item is null)
+        {
+            this.Logger.LogWarning("Cash shop product {0} has no item definition. Character: [{1}], Account: [{2}]", productId, this.SelectedCharacter?.Name, this.Account?.LoginName);
+            return Views.CashShop.CashShopBuyResult.Failed;
         }
 
         var price = coinType switch
@@ -944,8 +950,14 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public async ValueTask<Views.CashShop.CashShopGiftResult> TrySendCashShopGiftAsync(int productId, string receiverName, string message, int coinType)
     {
         var product = this.GameContext?.Configuration?.CashShopProducts.FirstOrDefault(p => p.ProductId == productId);
-        if (product is null || !product.IsAvailable)
+        if (product is null || !product.IsCurrentlyAvailable)
         {
+            return Views.CashShop.CashShopGiftResult.Failed;
+        }
+
+        if (product.Item is null)
+        {
+            this.Logger.LogWarning("Cash shop product {0} has no item definition. Character: [{1}], Account: [{2}]", productId, this.SelectedCharacter?.Name, this.Account?.LoginName);
             return Views.CashShop.CashShopGiftResult.Failed;
         }
 

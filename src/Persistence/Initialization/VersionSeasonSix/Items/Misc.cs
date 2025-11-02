@@ -27,6 +27,7 @@ public class Misc : InitializerBase
     {
         this.CreateLifeStone();
         this.CreateGoldenCherryBlossomBranch();
+        this.CreateSignOfLord();
         this.CreateLostMap();
         this.CreateSymbolOfKundun();
     }
@@ -109,6 +110,21 @@ public class Misc : InitializerBase
         itemDefinition.Durability = 255;
         itemDefinition.Width = 1;
         itemDefinition.Height = 2;
+        itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
+        this.GameConfiguration.Items.Add(itemDefinition);
+    }
+
+    private void CreateSignOfLord()
+    {
+        var itemDefinition = this.Context.CreateNew<ItemDefinition>();
+        itemDefinition.Name = "Sign of Lord";
+        itemDefinition.Number = 18;
+        itemDefinition.Group = 14;
+        itemDefinition.DropLevel = 0;
+        itemDefinition.DropsFromMonsters = false;
+        itemDefinition.Durability = 1;
+        itemDefinition.Width = 1;
+        itemDefinition.Height = 1;
         itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
         this.GameConfiguration.Items.Add(itemDefinition);
     }

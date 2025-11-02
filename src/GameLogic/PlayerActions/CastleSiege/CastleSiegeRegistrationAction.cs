@@ -145,8 +145,13 @@ public class CastleSiegeRegistrationAction
             return;
         }
 
-        // TODO: Add validation that the item is actually a guild mark (e.g., check item.Definition.Group == X && item.Definition.Number == Y)
-        // For now, we accept any item in the specified slot and remove it
+        // Validate that the item is actually a guild mark (Sign of Lord: Group 14, Number 18)
+        if (guildMark.Definition?.Group != 14 || guildMark.Definition?.Number != 18)
+        {
+            player.Logger.LogWarning("Player tried to submit invalid item as guild mark. Item: Group {0}, Number {1}. Character: [{2}], Account: [{3}]",
+                guildMark.Definition?.Group, guildMark.Definition?.Number, player.SelectedCharacter?.Name, player.Account?.LoginName);
+            return;
+        }
 
         // Remove the guild mark from inventory
         await player.DestroyInventoryItemAsync(guildMark).ConfigureAwait(false);

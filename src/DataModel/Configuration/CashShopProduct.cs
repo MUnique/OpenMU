@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration;
 
+using System.ComponentModel.DataAnnotations;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 
 /// <summary>
@@ -29,16 +30,19 @@ public class CashShopProduct
     /// <summary>
     /// Gets or sets the price in WCoinC.
     /// </summary>
+    [Range(0, 1000000)]
     public int PriceWCoinC { get; set; }
 
     /// <summary>
     /// Gets or sets the price in WCoinP.
     /// </summary>
+    [Range(0, 1000000)]
     public int PriceWCoinP { get; set; }
 
     /// <summary>
     /// Gets or sets the price in Goblin Points.
     /// </summary>
+    [Range(0, 1000000)]
     public int PriceGoblinPoints { get; set; }
 
     /// <summary>
@@ -65,6 +69,47 @@ public class CashShopProduct
     /// Gets or sets a value indicating whether this product is available for purchase.
     /// </summary>
     public bool IsAvailable { get; set; }
+
+    /// <summary>
+    /// Gets or sets the date and time from which this product is available.
+    /// If null, there is no start date restriction.
+    /// </summary>
+    public DateTime? AvailableFrom { get; set; }
+
+    /// <summary>
+    /// Gets or sets the date and time until which this product is available.
+    /// If null, there is no end date restriction.
+    /// </summary>
+    public DateTime? AvailableUntil { get; set; }
+
+    /// <summary>
+    /// Gets a value indicating whether this product is currently available for purchase,
+    /// considering both the IsAvailable flag and the date range restrictions.
+    /// </summary>
+    public bool IsCurrentlyAvailable
+    {
+        get
+        {
+            if (!this.IsAvailable)
+            {
+                return false;
+            }
+
+            var now = DateTime.UtcNow;
+
+            if (this.AvailableFrom.HasValue && now < this.AvailableFrom.Value)
+            {
+                return false;
+            }
+
+            if (this.AvailableUntil.HasValue && now > this.AvailableUntil.Value)
+            {
+                return false;
+            }
+
+            return true;
+        }
+    }
 
     /// <summary>
     /// Gets or sets a value indicating whether this product is a featured/event item.

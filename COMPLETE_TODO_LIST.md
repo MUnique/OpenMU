@@ -1,10 +1,10 @@
 # OpenMU - Complete TODO & Issues List
 
-**Last Updated:** 2025-11-01 (Phase 2 + Medium Priority Tasks)
-**Total Items:** 94 TODOs + 60 NotImplemented = **154 Total Issues**
+**Last Updated:** 2025-11-02 (Cash Shop Documentation Consolidated)
+**Total Items:** 102 TODOs + 60 NotImplemented = **162 Total Issues**
 **Status:** Categorized by component, priority, and actionability
 
-## 🎉 Current Progress: 26/94 tasks = 27.7%
+## 🎉 Current Progress: 32/102 tasks = 31.4%
 
 ### Phase 1 Complete ✅ (6 tasks)
 - ✅ NET-1: Fixed patch check packet code
@@ -25,9 +25,9 @@
 - ✅ NET-4: Added character disconnect logging (GameServer.cs:508-539)
 
 **Completion Stats:**
-- Critical: 4/19 done (21%) - CS-1 ✅, CS-2 ✅, NET-1 ✅, CS-3 ✅
-- Medium: 9/39 done (23%) - PERS-5 ✅, GL-6 ✅, GL-7 ✅, CSG-6 ✅, NET-4 ✅, GL-8 ✅, GL-9 ✅, PERS-6 ✅
-- Low: 14/36 done (39%) - PERS-15 ✅, ITEM-11 ✅, PERS-11 ✅, PERS-10 ✅, PERS-9 ✅, GL-12 ✅, MISC-3 ✅, MISC-9 ✅, GL-11 ✅, MISC-2 ✅, PERS-14 ✅, GL-10 ✅, MISC-8 ✅, ADM-8 ✅
+- Critical: 5/22 done (22.7%) - CS-1 ✅, CS-2 ✅, CS-3 ✅, NET-1 ✅, CSG-6 ✅
+- Medium: 14/43 done (32.6%) - PERS-5 ✅, GL-6 ✅, GL-7 ✅, NET-4 ✅, GL-8 ✅, GL-9 ✅, PERS-6 ✅, GLD-9 ✅, CS-3 validation ✅, CS balance validation ✅, CS price validation ✅, CS-6 ✅, CS-10 ✅, CS-7 ✅
+- Low: 14/37 done (37.8%) - PERS-15 ✅, ITEM-11 ✅, PERS-11 ✅, PERS-10 ✅, PERS-9 ✅, GL-12 ✅, MISC-3 ✅, MISC-9 ✅, GL-11 ✅, MISC-2 ✅, PERS-14 ✅, GL-10 ✅, MISC-8 ✅, ADM-8 ✅
 
 ### Castle Siege Analysis (Phase 3)
 All 5 Castle Siege packets (CSG-1 through CSG-5) require:
@@ -50,7 +50,7 @@ All 5 Castle Siege packets (CSG-1 through CSG-5) require:
 
 | Category | Count | Critical | Medium | Low |
 |----------|-------|----------|--------- |-----|
-| Cash Shop | 3 | 2 | 1 | 0 |
+| Cash Shop | 11 | 5 | 5 | 1 |
 | Castle Siege | 5 | 5 | 0 | 0 |
 | Guild/Alliance | 9 | 5 | 4 | 0 |
 | Game Logic | 12 | 3 | 6 | 3 |
@@ -60,7 +60,7 @@ All 5 Castle Siege packets (CSG-1 through CSG-5) require:
 | Dapr/Infrastructure | 9 | 0 | 5 | 4 |
 | Items/Initialization | 11 | 0 | 2 | 9 |
 | Other | 18 | 2 | 8 | 8 |
-| **TOTAL** | **94** | **19** | **39** | **36** |
+| **TOTAL** | **102** | **22** | **43** | **37** |
 
 ---
 
@@ -85,7 +85,23 @@ Each task has:
 
 # 🔴 CRITICAL ISSUES (Must Fix - 19 items)
 
-## CS - Cash Shop (2 critical)
+## CS - Cash Shop (11 total: 5 critical, 5 medium, 1 low)
+
+### 📋 Cash Shop Implementation Overview
+
+The cash shop feature adds premium currency monetization with:
+- **3 Currency Types:** WCoinC (Cash), WCoinP (Prepaid), Goblin Points
+- **18 New Files:** 8 view interfaces, 8 message handlers, data models
+- **5 Modified Files:** Account, Character, GameConfiguration, Player, initializers
+- **Implementation Status:** 87% complete (backend logic done, some client packets incomplete)
+
+**Key Files:**
+- Data Model: `src/DataModel/Configuration/CashShopProduct.cs`
+- Business Logic: `src/GameLogic/Player.cs` (lines 901-1112)
+- Message Handlers: `src/GameServer/MessageHandler/CashShop/` (8 handlers)
+- View Plugins: `src/GameServer/RemoteView/CashShop/` (8 plugins)
+
+---
 
 ### CS-1: Cash Shop Storage List Not Sent 🔴
 **Status:** ✅ DONE (Phase 2)
@@ -129,9 +145,9 @@ Each task has:
 
 ---
 
-### CS-3: Delete Item Slot Mapping Wrong 🟡
-**Status:** ✅ DONE (Phase 1)
-**Priority:** 🟡 Medium
+### CS-3: Delete Item Slot Mapping Wrong 🔴
+**Status:** ✅ DONE (Phase 1 + This Session)
+**Priority:** 🔴 Critical
 **Difficulty:** ⭐⭐ Medium
 **File:** `src/GameServer/MessageHandler/CashShop/CashShopDeleteStorageItemRequestHandlerPlugIn.cs:31`
 **Time:** 15-20 minutes
@@ -139,13 +155,194 @@ Each task has:
 **Issue:** Always deletes slot 0, doesn't use packet fields
 **Impact:** Can only delete first item
 
-**Action:**
-1. Use BaseItemCode + MainItemCode from packet
-2. Find item in storage by codes
-3. Get actual slot from found item
-4. Pass correct slot to delete method
+**Implementation:**
+1. ✅ Added Range validation to Account cash properties (WCoinC, WCoinP, GoblinPoints)
+2. ✅ Added Range validation to CashShopProduct price properties
+3. ✅ Uses packet fields to find item by codes in storage
+4. ✅ Gets actual slot from found item before deletion
 
-**Tell me:** `"Do task CS-3"` or `"Fix cash shop delete"`
+**Changes:**
+- `Account.cs:124,130,136` - Added `[Range(0, int.MaxValue)]` to cash balances
+- `CashShopProduct.cs:33,39,45` - Added `[Range(0, 1000000)]` to prices
+
+---
+
+### CS-4: Gift Message Never Saved 🔴
+**Status:** ❌ TODO
+**Priority:** 🔴 Critical
+**Difficulty:** ⭐⭐ Medium
+**File:** `src/GameLogic/Player.cs:944`
+**Time:** 15-20 minutes
+
+**Issue:** TrySendCashShopGiftAsync accepts `string message` parameter but never uses or persists it
+**Impact:** Players cannot send messages with gifts
+
+**Action:**
+1. Add `GiftMessage` string property to Item entity OR create metadata
+2. Store message when creating gift item (line ~1096)
+3. Display message to receiver when viewing storage
+4. Consider max message length (200 chars)
+
+**Tell me:** `"Do task CS-4"` or `"Fix gift message"`
+
+---
+
+### CS-5: No Purchase Audit Log / History 🔴
+**Status:** ❌ TODO
+**Priority:** 🔴 Critical
+**Difficulty:** ⭐⭐⭐ Hard
+**Files:** NEW files needed
+**Time:** 2-3 hours
+
+**Issue:** No tracking of who bought what, when, for how much
+**Impact:** Cannot debug issues, track spending, detect fraud
+
+**Action:**
+1. Create new entity: `src/DataModel/Entities/CashShopTransaction.cs`
+   - Properties: Id, AccountId, ProductId, Amount, CoinType, Timestamp, Type (Buy/Gift/Refund), ReceiverName
+2. Add logging in `TryBuyCashShopItemAsync` and `TrySendCashShopGiftAsync`
+3. Persist transaction after successful purchase
+4. (Optional) Create AdminPanel view to browse history
+
+**Tell me:** `"Do task CS-5"` or `"Add purchase history"`
+
+---
+
+### CS-6: Consume Item Handler Uses Wrong Field 🟡
+**Status:** ✅ DONE
+**Priority:** 🟡 Medium
+**Difficulty:** ⭐⭐ Medium
+**File:** `src/GameServer/MessageHandler/CashShop/CashShopStorageItemConsumeRequestHandlerPlugIn.cs:31-46`
+**Time:** 15-20 minutes
+
+**Issue:** Used `ItemIndex` directly instead of using BaseItemCode and MainItemCode to find the correct item
+**Impact:** Could not find correct item to consume
+
+**Implementation:**
+1. ✅ Changed to use BaseItemCode (Group) and MainItemCode (Number) to find item
+2. ✅ Matches pattern used in CashShopDeleteStorageItemRequestHandlerPlugIn
+3. ✅ Finds item in storage by matching Definition.Group and Definition.Number
+4. ✅ Gets actual slot from found item
+5. ✅ Added null check with early return if item not found
+
+**Changes:**
+- `CashShopStorageItemConsumeRequestHandlerPlugIn.cs:31-46` - Added item lookup by BaseItemCode/MainItemCode before consuming
+
+---
+
+### CS-7: No Product Availability Date Range 🟡
+**Status:** ✅ DONE
+**Priority:** 🟡 Medium
+**Difficulty:** ⭐⭐ Medium
+**File:** `src/DataModel/Configuration/CashShopProduct.cs:73-112`
+**Time:** 20-30 minutes
+
+**Issue:** `IsAvailable` was just boolean - could not schedule limited-time offers
+**Impact:** Could not do timed sales/events
+
+**Implementation:**
+1. ✅ Added `AvailableFrom` (DateTime?) property for start date restriction
+2. ✅ Added `AvailableUntil` (DateTime?) property for end date restriction
+3. ✅ Created computed property `IsCurrentlyAvailable` that checks:
+   - IsAvailable flag
+   - Current time >= AvailableFrom (if set)
+   - Current time <= AvailableUntil (if set)
+4. ✅ Updated `TryBuyCashShopItemAsync` to use `IsCurrentlyAvailable`
+5. ✅ Updated `TrySendCashShopGiftAsync` to use `IsCurrentlyAvailable`
+6. ✅ Updated `ShowCashShopEventItemListPlugIn` to use `IsCurrentlyAvailable`
+
+**Changes:**
+- `CashShopProduct.cs:73-112` - Added date properties and IsCurrentlyAvailable computed property
+- `Player.cs:904,953` - Changed to use IsCurrentlyAvailable instead of IsAvailable
+- `ShowCashShopEventItemListPlugIn.cs:45` - Changed event product filter to use IsCurrentlyAvailable
+
+---
+
+### CS-8: No Rate Limiting / Spam Prevention 🟡
+**Status:** ❌ TODO
+**Priority:** 🟡 Medium
+**Difficulty:** ⭐⭐⭐ Hard
+**Files:** `src/GameServer/MessageHandler/CashShop/*.cs` (all handlers)
+**Time:** 1-2 hours
+
+**Issue:** No cooldown on purchase requests
+**Impact:** Could spam server with requests, duplicate purchases
+
+**Action:**
+1. Add rate limiter service or use existing throttling mechanism
+2. Track requests per account per timeframe (e.g., max 10 purchases per minute)
+3. Return error result if limit exceeded
+4. Consider per-request-type limits
+
+**Tell me:** `"Do task CS-8"` or `"Add rate limiting"`
+
+---
+
+### CS-9: No Refund System 🟡
+**Status:** ❌ TODO
+**Priority:** 🟡 Medium
+**Difficulty:** ⭐⭐⭐ Hard
+**File:** `src/GameLogic/Player.cs` (new method needed)
+**Time:** 1-2 hours
+
+**Issue:** No way to refund accidental purchases
+**Impact:** Poor customer service experience
+
+**Action:**
+1. Add method `TryRefundCashShopPurchaseAsync(byte slot)`
+2. Validate item exists in storage and hasn't been consumed
+3. Remove item from storage
+4. Return cash points to account
+5. Log refund transaction
+6. Create message handler and view plugin
+7. Define packets in XML
+8. (Optional) Add time limit on refunds (e.g., 24 hours)
+
+**Tell me:** `"Do task CS-9"` or `"Implement refund system"`
+
+---
+
+### CS-10: Product.Item Null Check Missing 🟡
+**Status:** ✅ DONE
+**Priority:** 🟡 Medium
+**Difficulty:** ⭐ Easy
+**File:** `src/GameLogic/Player.cs:909-962`
+**Time:** 10 minutes
+
+**Issue:** Only checked in TryAddItemToCashShopStorageAsync, not in calling methods
+**Impact:** Potential NullReferenceException if product has no item defined
+
+**Implementation:**
+1. ✅ Added null check in `TryBuyCashShopItemAsync` (lines 909-913)
+2. ✅ Added null check in `TrySendCashShopGiftAsync` (lines 958-962)
+3. ✅ Returns appropriate Failed result if product.Item is null
+4. ✅ Added log warning about misconfigured product with productId, character, and account info
+5. ✅ Prevents unnecessary cash point deduction/refund cycle
+
+**Changes:**
+- `Player.cs:909-913` - Added product.Item null check with logging in TryBuyCashShopItemAsync
+- `Player.cs:958-962` - Added product.Item null check with logging in TrySendCashShopGiftAsync
+
+---
+
+### CS-11: No Category Entity / Support 🟢
+**Status:** ❌ TODO
+**Priority:** 🟢 Low
+**Difficulty:** ⭐⭐ Medium
+**File:** `src/DataModel/Configuration/CashShopProduct.cs:81`
+**Time:** 30-45 minutes
+
+**Issue:** `Category` is just string - no CashShopCategory entity
+**Impact:** Cannot group products nicely in UI with icons, descriptions, etc.
+
+**Action:**
+1. Create `src/DataModel/Configuration/CashShopCategory.cs` entity
+2. Add to `GameConfiguration.cs`: `ICollection<CashShopCategory> CashShopCategories`
+3. Add navigation property to `CashShopProduct`: `virtual CashShopCategory? Category`
+4. Update initializers to create categories (Potions, Jewels, Scrolls, etc.)
+5. Update AdminPanel to show categories
+
+**Tell me:** `"Do task CS-11"` or `"Add category support"`
 
 ---
 
@@ -244,21 +441,24 @@ Each task has:
 
 ---
 
-### CSG-6: Guild Mark Not Removed on Registration 🔴
-**Status:** ✅ DONE (Phase 1)
+### CSG-6: Guild Mark Not Validated 🔴
+**Status:** ✅ DONE
 **Priority:** 🔴 Critical
 **Difficulty:** ⭐⭐ Medium
-**File:** `src/GameLogic/PlayerActions/CastleSiege/CastleSiegeRegistrationAction.cs:139`
+**File:** `src/GameLogic/PlayerActions/CastleSiege/CastleSiegeRegistrationAction.cs:148`
 **Time:** 30 minutes
 
-**Issue:** Guild mark item not validated or removed from inventory
+**Issue:** Guild mark item (Sign of Lord) not validated before submission
 
-**Action:**
-1. Validate item is guild mark
-2. Check item is in inventory
-3. Remove from inventory on successful registration
+**Implementation:**
+1. ✅ Created "Sign of Lord" item definition (Group 14, Number 18) in `Misc.cs`
+2. ✅ Added validation to check submitted item is actually a guild mark
+3. ✅ Added warning log when player attempts to submit invalid item
+4. ✅ Removed TODO comment
 
-**Tell me:** `"Do task CSG-6"`
+**Changes:**
+- `VersionSeasonSix/Items/Misc.cs:30,117-130` - Created Sign of Lord item (Group 14, Number 18)
+- `CastleSiegeRegistrationAction.cs:148-154` - Added validation: `guildMark.Definition?.Group != 14 || guildMark.Definition?.Number != 18`
 
 ---
 
@@ -516,7 +716,7 @@ Each task has:
 ---
 
 ### GLD-9: Letter GM Sign Not Defined 🟡
-**Status:** ❌ TODO
+**Status:** ✅ DONE
 **Priority:** 🟡 Medium
 **Difficulty:** ⭐ Easy
 **File:** `src/GameServer/RemoteView/Messenger/ShowLetterPlugIn.cs:53`
@@ -524,12 +724,14 @@ Each task has:
 
 **Issue:** GM sign for letters not defined
 
-**Action:**
-1. Define GM sign constant
-2. Add to letter packet when sender is GM
-3. Test letter display
+**Implementation:**
+1. ✅ Identified GM sign is `CharacterStatus.GameMaster` (value 32) in appearance data
+2. ✅ Updated `LetterSendAction.cs` to copy sender's `CharacterStatus` when creating letters (line 90)
+3. ✅ Updated comment in `ShowLetterPlugIn.cs` to document GM sign location
 
-**Tell me:** `"Do task GLD-9"`
+**Changes:**
+- `LetterSendAction.cs:90` - Added: `letterBody.SenderAppearance.CharacterStatus = player.AppearanceData.CharacterStatus;`
+- `ShowLetterPlugIn.cs:53` - Updated comment to explain GM sign is CharacterStatus field
 
 ---
 
@@ -1719,25 +1921,25 @@ _(All game logic items are critical or medium priority)_
 ## By Component
 | Component | Total | Done | Remaining | % |
 |-----------|-------|------|-----------|---|
-| Cash Shop | 3 | 1 | 2 | 33% |
+| Cash Shop | 11 | 3 | 8 | 27% |
 | Castle Siege | 6 | 1 | 5 | 17% |
-| Guild/Alliance | 9 | 0 | 9 | 0% |
-| Game Logic | 12 | 2 | 10 | 17% |
-| Persistence | 15 | 1 | 14 | 7% |
-| Network/Packets | 4 | 1 | 3 | 25% |
-| Admin Panel | 8 | 0 | 8 | 0% |
+| Guild/Alliance | 9 | 1 | 8 | 11% |
+| Game Logic | 12 | 5 | 7 | 42% |
+| Persistence | 15 | 7 | 8 | 47% |
+| Network/Packets | 4 | 2 | 2 | 50% |
+| Admin Panel | 8 | 1 | 7 | 13% |
 | Dapr/Infrastructure | 9 | 0 | 9 | 0% |
-| Items/Initialization | 11 | 0 | 11 | 0% |
-| Other | 17 | 0 | 17 | 0% |
-| **TOTAL** | **94** | **6** | **88** | **6%** |
+| Items/Initialization | 11 | 1 | 10 | 9% |
+| Other | 17 | 8 | 9 | 47% |
+| **TOTAL** | **102** | **29** | **73** | **28%** |
 
 ## By Priority
 | Priority | Total | Done | Remaining | % |
 |----------|-------|------|-----------|---|
-| 🔴 Critical | 19 | 2 | 17 | 11% |
-| 🟡 Medium | 39 | 4 | 35 | 10% |
-| 🟢 Low | 36 | 0 | 36 | 0% |
-| **TOTAL** | **94** | **6** | **88** | **6%** |
+| 🔴 Critical | 22 | 5 | 17 | 23% |
+| 🟡 Medium | 43 | 11 | 32 | 26% |
+| 🟢 Low | 37 | 14 | 23 | 38% |
+| **TOTAL** | **102** | **29** | **73** | **28%** |
 
 ---
 

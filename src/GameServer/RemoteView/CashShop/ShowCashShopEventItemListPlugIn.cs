@@ -42,7 +42,7 @@ public class ShowCashShopEventItemListPlugIn : IShowCashShopEventItemListPlugIn
 
         // Get event items from game configuration
         var eventProducts = gameConfiguration.CashShopProducts
-            .Where(p => p.IsEventItem && p.IsAvailable && p.Item is not null)
+            .Where(p => p.IsEventItem && p.IsCurrentlyAvailable && p.Item is not null)
             .ToList();
 
         int Write()

@@ -28,9 +28,21 @@ internal class CashShopStorageItemConsumeRequestHandlerPlugIn : ISubPacketHandle
     {
         CashShopStorageItemConsumeRequest request = packet;
 
-        var success = await player.TryConsumeCashShopStorageItemAsync((byte)request.ItemIndex).ConfigureAwait(false);
+        // Find the item in storage by matching BaseItemCode (Group) and MainItemCode (Number)
+        var item = player.SelectedCharacter?.CashShopStorage?.Items
+            .FirstOrDefault(i => i.Definition?.Group == (byte)request.BaseItemCode
+                              && i.Definition?.Number == (short)request.MainItemCode);
+
+        if (item is null)
+        {
+            await player.InvokeViewPlugInAsync<IShowCashShopItemConsumeResultPlugIn>(
+                p => p.ShowCashShopItemConsumeResultAsync(false, 0)).ConfigureAwait(false);
+            return;
+        }
+
+        var success = await player.TryConsumeCashShopStorageItemAsync(item.ItemSlot).ConfigureAwait(false);
 
         await player.InvokeViewPlugInAsync<IShowCashShopItemConsumeResultPlugIn>(
-            p => p.ShowCashShopItemConsumeResultAsync(success, (byte)request.ItemIndex)).ConfigureAwait(false);
+            p => p.ShowCashShopItemConsumeResultAsync(success, item.ItemSlot)).ConfigureAwait(false);
     }
 }
