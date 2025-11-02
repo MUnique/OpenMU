@@ -67,6 +67,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     private Lazy<ComboStateMachine>? _comboStateLazy;
 
+    private readonly Dictionary<string, DateTime> _lastCashShopOperations = new();
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Player" /> class.
     /// </summary>di
@@ -900,15 +902,24 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <returns>The result of the purchase attempt.</returns>
     public async ValueTask<Views.CashShop.CashShopBuyResult> TryBuyCashShopItemAsync(int productId, int coinType)
     {
+        // Rate limiting: Prevent spam purchases (2 second cooldown)
+        if (this.IsCashShopOperationRateLimited("Purchase", cooldownSeconds: 2))
+        {
+            this.LogCashShopTransaction(productId, 0, (byte)coinType, DataModel.Entities.CashShopTransactionType.Purchase, false, null, "Rate limited - too many requests");
+            return Views.CashShop.CashShopBuyResult.Failed;
+        }
+
         var product = this.GameContext?.Configuration?.CashShopProducts.FirstOrDefault(p => p.ProductId == productId);
         if (product is null || !product.IsCurrentlyAvailable)
         {
+            this.LogCashShopTransaction(productId, 0, (byte)coinType, DataModel.Entities.CashShopTransactionType.Purchase, false, null, "Product not found or unavailable");
             return Views.CashShop.CashShopBuyResult.ProductNotFound;
         }
 
         if (product.Item is null)
         {
             this.Logger.LogWarning("Cash shop product {0} has no item definition. Character: [{1}], Account: [{2}]", productId, this.SelectedCharacter?.Name, this.Account?.LoginName);
+            this.LogCashShopTransaction(productId, 0, (byte)coinType, DataModel.Entities.CashShopTransactionType.Purchase, false, null, "Product has no item definition");
             return Views.CashShop.CashShopBuyResult.Failed;
         }
 
@@ -922,20 +933,24 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         if (price <= 0)
         {
+            this.LogCashShopTransaction(productId, price, (byte)coinType, DataModel.Entities.CashShopTransactionType.Purchase, false, null, "Invalid price");
             return Views.CashShop.CashShopBuyResult.Failed;
         }
 
         if (!this.TryRemoveCashPoints(coinType, price))
         {
+            this.LogCashShopTransaction(productId, price, (byte)coinType, DataModel.Entities.CashShopTransactionType.Purchase, false, null, "Insufficient funds");
             return Views.CashShop.CashShopBuyResult.InsufficientFunds;
         }
 
         if (!await this.TryAddItemToCashShopStorageAsync(product).ConfigureAwait(false))
         {
             this.TryAddCashPoints(coinType, price);
+            this.LogCashShopTransaction(productId, price, (byte)coinType, DataModel.Entities.CashShopTransactionType.Purchase, false, null, "Storage full - refunded");
             return Views.CashShop.CashShopBuyResult.StorageFull;
         }
 
+        this.LogCashShopTransaction(productId, price, (byte)coinType, DataModel.Entities.CashShopTransactionType.Purchase, true);
         return Views.CashShop.CashShopBuyResult.Success;
     }
 
@@ -949,15 +964,24 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <returns>The result of the gift attempt.</returns>
     public async ValueTask<Views.CashShop.CashShopGiftResult> TrySendCashShopGiftAsync(int productId, string receiverName, string message, int coinType)
     {
+        // Rate limiting: Prevent spam gifting (3 second cooldown, stricter than purchases)
+        if (this.IsCashShopOperationRateLimited("Gift", cooldownSeconds: 3))
+        {
+            this.LogCashShopTransaction(productId, 0, (byte)coinType, DataModel.Entities.CashShopTransactionType.Gift, false, receiverName, "Rate limited - too many requests");
+            return Views.CashShop.CashShopGiftResult.Failed;
+        }
+
         var product = this.GameContext?.Configuration?.CashShopProducts.FirstOrDefault(p => p.ProductId == productId);
         if (product is null || !product.IsCurrentlyAvailable)
         {
+            this.LogCashShopTransaction(productId, 0, (byte)coinType, DataModel.Entities.CashShopTransactionType.Gift, false, receiverName, "Product not found or unavailable");
             return Views.CashShop.CashShopGiftResult.Failed;
         }
 
         if (product.Item is null)
         {
             this.Logger.LogWarning("Cash shop product {0} has no item definition. Character: [{1}], Account: [{2}]", productId, this.SelectedCharacter?.Name, this.Account?.LoginName);
+            this.LogCashShopTransaction(productId, 0, (byte)coinType, DataModel.Entities.CashShopTransactionType.Gift, false, receiverName, "Product has no item definition");
             return Views.CashShop.CashShopGiftResult.Failed;
         }
 
@@ -971,6 +995,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         if (!this.TryRemoveCashPoints(coinType, price))
         {
+            this.LogCashShopTransaction(productId, price, (byte)coinType, DataModel.Entities.CashShopTransactionType.Gift, false, receiverName, "Insufficient funds");
             return Views.CashShop.CashShopGiftResult.InsufficientFunds;
         }
 
@@ -978,15 +1003,18 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         if (receiver is null)
         {
             this.TryAddCashPoints(coinType, price);
+            this.LogCashShopTransaction(productId, price, (byte)coinType, DataModel.Entities.CashShopTransactionType.Gift, false, receiverName, "Receiver not found - refunded");
             return Views.CashShop.CashShopGiftResult.ReceiverNotFound;
         }
 
-        if (!await receiver.TryAddItemToCashShopStorageAsync(product).ConfigureAwait(false))
+        if (!await receiver.TryAddItemToCashShopStorageAsync(product, message).ConfigureAwait(false))
         {
             this.TryAddCashPoints(coinType, price);
+            this.LogCashShopTransaction(productId, price, (byte)coinType, DataModel.Entities.CashShopTransactionType.Gift, false, receiverName, "Receiver storage full - refunded");
             return Views.CashShop.CashShopGiftResult.ReceiverStorageFull;
         }
 
+        this.LogCashShopTransaction(productId, price, (byte)coinType, DataModel.Entities.CashShopTransactionType.Gift, true, receiverName);
         return Views.CashShop.CashShopGiftResult.Success;
     }
 
@@ -997,6 +1025,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <returns><c>true</c> if successful; otherwise, <c>false</c>.</returns>
     public async ValueTask<bool> TryDeleteCashShopStorageItemAsync(byte slot)
     {
+        // Rate limiting: Prevent spam deletes (1 second cooldown)
+        if (this.IsCashShopOperationRateLimited("Delete", cooldownSeconds: 1))
+        {
+            return false;
+        }
+
         if (this.SelectedCharacter?.CashShopStorage is null)
         {
             return false;
@@ -1020,6 +1054,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <returns><c>true</c> if successful; otherwise, <c>false</c>.</returns>
     public async ValueTask<bool> TryConsumeCashShopStorageItemAsync(byte slot)
     {
+        // Rate limiting: Prevent spam consumes (1 second cooldown)
+        if (this.IsCashShopOperationRateLimited("Consume", cooldownSeconds: 1))
+        {
+            return false;
+        }
+
         if (this.SelectedCharacter?.CashShopStorage is null)
         {
             return false;
@@ -1043,6 +1083,75 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         await this.Inventory.AddItemAsync(item).ConfigureAwait(false);
 
         return true;
+    }
+
+    /// <summary>
+    /// Tries to refund an item from the cash shop storage.
+    /// </summary>
+    /// <param name="slot">The slot of the item to refund.</param>
+    /// <param name="refundTimeLimit">The time limit in hours for refunds (default: 24 hours). Set to 0 to disable time limit.</param>
+    /// <returns>The result of the refund attempt.</returns>
+    public async ValueTask<Views.CashShop.CashShopRefundResult> TryRefundCashShopItemAsync(byte slot, int refundTimeLimit = 24)
+    {
+        // Rate limiting: Prevent spam refunds (5 second cooldown, very strict)
+        if (this.IsCashShopOperationRateLimited("Refund", cooldownSeconds: 5))
+        {
+            return Views.CashShop.CashShopRefundResult.Failed;
+        }
+
+        if (this.SelectedCharacter?.CashShopStorage is null || this.Account is null)
+        {
+            return Views.CashShop.CashShopRefundResult.Failed;
+        }
+
+        var item = this.SelectedCharacter.CashShopStorage.Items.FirstOrDefault(i => i.ItemSlot == slot);
+        if (item?.Definition is null)
+        {
+            return Views.CashShop.CashShopRefundResult.ItemNotFound;
+        }
+
+        // Find the original purchase transaction for this item
+        // We need to match by product and approximate timing
+        var now = DateTime.UtcNow;
+        var recentTransactions = this.Account.CashShopTransactions
+            .Where(t => t.TransactionType == DataModel.Entities.CashShopTransactionType.Purchase
+                     && t.Success
+                     && t.ProductId > 0)
+            .OrderByDescending(t => t.Timestamp)
+            .ToList();
+
+        // Find a matching transaction (we'll use the most recent successful purchase as a fallback)
+        var purchaseTransaction = recentTransactions.FirstOrDefault();
+        if (purchaseTransaction is null)
+        {
+            this.LogCashShopTransaction(0, 0, 0, DataModel.Entities.CashShopTransactionType.Refund, false, null, "No purchase transaction found");
+            return Views.CashShop.CashShopRefundResult.Failed;
+        }
+
+        // Check time limit if enabled
+        if (refundTimeLimit > 0)
+        {
+            var timeSincePurchase = now - purchaseTransaction.Timestamp;
+            if (timeSincePurchase.TotalHours > refundTimeLimit)
+            {
+                this.LogCashShopTransaction(purchaseTransaction.ProductId, purchaseTransaction.Amount, purchaseTransaction.CoinType,
+                    DataModel.Entities.CashShopTransactionType.Refund, false, null, $"Refund time limit exceeded ({timeSincePurchase.TotalHours:F1} hours old)");
+                return Views.CashShop.CashShopRefundResult.TimeLimitExceeded;
+            }
+        }
+
+        // Remove item from storage
+        this.SelectedCharacter.CashShopStorage.Items.Remove(item);
+        await this.PersistenceContext.DeleteAsync(item).ConfigureAwait(false);
+
+        // Refund the cash points
+        this.TryAddCashPoints(purchaseTransaction.CoinType, purchaseTransaction.Amount);
+
+        // Log the refund transaction
+        this.LogCashShopTransaction(purchaseTransaction.ProductId, purchaseTransaction.Amount, purchaseTransaction.CoinType,
+            DataModel.Entities.CashShopTransactionType.Refund, true, null, $"Refund successful - original purchase at {purchaseTransaction.Timestamp:yyyy-MM-dd HH:mm:ss}");
+
+        return Views.CashShop.CashShopRefundResult.Success;
     }
 
     private bool TryRemoveCashPoints(int coinType, int amount)
@@ -1093,7 +1202,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         return true;
     }
 
-    private async ValueTask<bool> TryAddItemToCashShopStorageAsync(DataModel.Configuration.CashShopProduct product)
+    private async ValueTask<bool> TryAddItemToCashShopStorageAsync(DataModel.Configuration.CashShopProduct product, string? giftMessage = null)
     {
         if (this.SelectedCharacter?.CashShopStorage is null || product.Item is null)
         {
@@ -1109,6 +1218,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         item.Definition = product.Item;
         item.Level = product.ItemLevel;
         item.Durability = product.Durability;
+
+        // Store gift message if provided (truncate to 200 characters max)
+        if (!string.IsNullOrWhiteSpace(giftMessage))
+        {
+            item.GiftMessage = giftMessage.Length > 200 ? giftMessage.Substring(0, 200) : giftMessage;
+        }
         var storage = this.SelectedCharacter.CashShopStorage as IStorage;
         var freeSlot = storage?.FreeSlots.FirstOrDefault();
         if (!freeSlot.HasValue || freeSlot.Value > 239)
@@ -1121,6 +1236,63 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.SelectedCharacter.CashShopStorage.Items.Add(item);
 
         return true;
+    }
+
+    /// <summary>
+    /// Logs a cash shop transaction for audit purposes.
+    /// </summary>
+    /// <param name="productId">The product identifier.</param>
+    /// <param name="amount">The amount spent.</param>
+    /// <param name="coinType">The type of coin used.</param>
+    /// <param name="transactionType">The type of transaction.</param>
+    /// <param name="success">Whether the transaction was successful.</param>
+    /// <param name="receiverName">The name of the receiver (for gifts).</param>
+    /// <param name="notes">Optional notes about the transaction.</param>
+    private void LogCashShopTransaction(int productId, int amount, byte coinType, DataModel.Entities.CashShopTransactionType transactionType, bool success, string? receiverName = null, string? notes = null)
+    {
+        if (this.Account is null)
+        {
+            return;
+        }
+
+        var transaction = this.PersistenceContext.CreateNew<DataModel.Entities.CashShopTransaction>();
+        transaction.Account = this.Account;
+        transaction.ProductId = productId;
+        transaction.Amount = amount;
+        transaction.CoinType = coinType;
+        transaction.Timestamp = DateTime.UtcNow;
+        transaction.TransactionType = transactionType;
+        transaction.CharacterName = this.SelectedCharacter?.Name ?? string.Empty;
+        transaction.ReceiverName = receiverName;
+        transaction.Success = success;
+        transaction.Notes = notes;
+
+        this.Account.CashShopTransactions.Add(transaction);
+    }
+
+    /// <summary>
+    /// Checks if a cash shop operation is rate limited.
+    /// </summary>
+    /// <param name="operationType">The type of operation (e.g., "Purchase", "Gift", "Delete", "Consume").</param>
+    /// <param name="cooldownSeconds">The cooldown period in seconds (default: 2 seconds for most operations).</param>
+    /// <returns><c>true</c> if the operation is rate limited and should be blocked; otherwise, <c>false</c>.</returns>
+    private bool IsCashShopOperationRateLimited(string operationType, int cooldownSeconds = 2)
+    {
+        var now = DateTime.UtcNow;
+
+        if (this._lastCashShopOperations.TryGetValue(operationType, out var lastTime))
+        {
+            var timeSinceLastOperation = now - lastTime;
+            if (timeSinceLastOperation.TotalSeconds < cooldownSeconds)
+            {
+                this.Logger.LogWarning("Cash shop operation '{0}' rate limited. Last operation was {1:F2} seconds ago. Character: [{2}], Account: [{3}]",
+                    operationType, timeSinceLastOperation.TotalSeconds, this.SelectedCharacter?.Name, this.Account?.LoginName);
+                return true;
+            }
+        }
+
+        this._lastCashShopOperations[operationType] = now;
+        return false;
     }
 
     /// <summary>

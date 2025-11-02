@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Chat;
 
 using System.ComponentModel;
 using MUnique.OpenMU.GameLogic.PlugIns;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// A chat message processor for alliance chat.

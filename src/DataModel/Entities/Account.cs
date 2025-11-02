@@ -137,6 +137,13 @@ public class Account
     public int GoblinPoints { get; set; }
 
     /// <summary>
+    /// Gets or sets the cash shop transaction history for audit and tracking purposes.
+    /// </summary>
+    [MemberOfAggregate]
+    [HiddenAtCreation]
+    public virtual ICollection<CashShopTransaction> CashShopTransactions { get; protected set; } = null!;
+
+    /// <summary>
     /// Gets or sets a value indicating whether this instance is a template account
     /// and therefore read-only within the game server.
     /// </summary>

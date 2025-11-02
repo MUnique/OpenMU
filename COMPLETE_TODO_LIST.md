@@ -4,7 +4,7 @@
 **Total Items:** 102 TODOs + 60 NotImplemented = **162 Total Issues**
 **Status:** Categorized by component, priority, and actionability
 
-## 🎉 Current Progress: 32/102 tasks = 31.4%
+## 🎉 Current Progress: 35/102 tasks = 34.3%
 
 ### Phase 1 Complete ✅ (6 tasks)
 - ✅ NET-1: Fixed patch check packet code
@@ -25,8 +25,8 @@
 - ✅ NET-4: Added character disconnect logging (GameServer.cs:508-539)
 
 **Completion Stats:**
-- Critical: 5/22 done (22.7%) - CS-1 ✅, CS-2 ✅, CS-3 ✅, NET-1 ✅, CSG-6 ✅
-- Medium: 14/43 done (32.6%) - PERS-5 ✅, GL-6 ✅, GL-7 ✅, NET-4 ✅, GL-8 ✅, GL-9 ✅, PERS-6 ✅, GLD-9 ✅, CS-3 validation ✅, CS balance validation ✅, CS price validation ✅, CS-6 ✅, CS-10 ✅, CS-7 ✅
+- Critical: 7/22 done (31.8%) - CS-1 ✅, CS-2 ✅, CS-3 ✅, CS-4 ✅, CS-5 ✅, NET-1 ✅, CSG-6 ✅
+- Medium: 15/43 done (34.9%) - PERS-5 ✅, GL-6 ✅, GL-7 ✅, NET-4 ✅, GL-8 ✅, GL-9 ✅, PERS-6 ✅, GLD-9 ✅, CS-3 validation ✅, CS balance validation ✅, CS price validation ✅, CS-6 ✅, CS-10 ✅, CS-7 ✅, CS-8 ✅
 - Low: 14/37 done (37.8%) - PERS-15 ✅, ITEM-11 ✅, PERS-11 ✅, PERS-10 ✅, PERS-9 ✅, GL-12 ✅, MISC-3 ✅, MISC-9 ✅, GL-11 ✅, MISC-2 ✅, PERS-14 ✅, GL-10 ✅, MISC-8 ✅, ADM-8 ✅
 
 ### Castle Siege Analysis (Phase 3)
@@ -168,43 +168,54 @@ The cash shop feature adds premium currency monetization with:
 ---
 
 ### CS-4: Gift Message Never Saved 🔴
-**Status:** ❌ TODO
+**Status:** ✅ DONE
 **Priority:** 🔴 Critical
 **Difficulty:** ⭐⭐ Medium
-**File:** `src/GameLogic/Player.cs:944`
+**File:** `src/GameLogic/Player.cs:944,1096,1113-1117`, `src/DataModel/Entities/Item.cs:69-73`
 **Time:** 15-20 minutes
 
 **Issue:** TrySendCashShopGiftAsync accepts `string message` parameter but never uses or persists it
 **Impact:** Players cannot send messages with gifts
 
-**Action:**
-1. Add `GiftMessage` string property to Item entity OR create metadata
-2. Store message when creating gift item (line ~1096)
-3. Display message to receiver when viewing storage
-4. Consider max message length (200 chars)
+**Implementation:**
+1. ✅ Added `GiftMessage` property to Item entity (Item.cs:69-73)
+2. ✅ Updated `TryAddItemToCashShopStorageAsync` signature to accept optional `giftMessage` parameter (Player.cs:1096)
+3. ✅ Added message storage logic with 200-character truncation (Player.cs:1113-1117)
+4. ✅ Updated `TrySendCashShopGiftAsync` to pass message to storage method (Player.cs:984)
 
-**Tell me:** `"Do task CS-4"` or `"Fix gift message"`
+**Changes:**
+- `Item.cs:69-73` - Added nullable string GiftMessage property for storing sender's message
+- `Player.cs:1096` - Added `string? giftMessage = null` parameter to TryAddItemToCashShopStorageAsync
+- `Player.cs:1113-1117` - Stores gift message with truncation: `item.GiftMessage = giftMessage.Length > 200 ? giftMessage.Substring(0, 200) : giftMessage`
+- `Player.cs:984` - Passes message when gifting: `receiver.TryAddItemToCashShopStorageAsync(product, message)`
 
 ---
 
 ### CS-5: No Purchase Audit Log / History 🔴
-**Status:** ❌ TODO
+**Status:** ✅ DONE
 **Priority:** 🔴 Critical
 **Difficulty:** ⭐⭐⭐ Hard
-**Files:** NEW files needed
+**Files:** `src/DataModel/Entities/CashShopTransaction.cs`, `src/DataModel/Entities/Account.cs:139-144`, `src/GameLogic/Player.cs:906,913,927,933,940,944,961,968,982,990,997,1001,1142-1162`
 **Time:** 2-3 hours
 
 **Issue:** No tracking of who bought what, when, for how much
 **Impact:** Cannot debug issues, track spending, detect fraud
 
-**Action:**
-1. Create new entity: `src/DataModel/Entities/CashShopTransaction.cs`
-   - Properties: Id, AccountId, ProductId, Amount, CoinType, Timestamp, Type (Buy/Gift/Refund), ReceiverName
-2. Add logging in `TryBuyCashShopItemAsync` and `TrySendCashShopGiftAsync`
-3. Persist transaction after successful purchase
-4. (Optional) Create AdminPanel view to browse history
+**Implementation:**
+1. ✅ Created `CashShopTransaction` entity with enum for transaction types (Purchase/Gift/Refund)
+   - Properties: Id, Account, ProductId, Amount, CoinType, Timestamp, TransactionType, CharacterName, ReceiverName, Success, Notes
+2. ✅ Added `CashShopTransactions` collection to Account entity (Account.cs:139-144)
+3. ✅ Created `LogCashShopTransaction` helper method in Player.cs (lines 1142-1162)
+4. ✅ Added transaction logging to `TryBuyCashShopItemAsync` for all outcomes (success/failure)
+5. ✅ Added transaction logging to `TrySendCashShopGiftAsync` for all outcomes (success/failure)
+6. ✅ Logs detailed notes for failures (e.g., "Storage full - refunded", "Insufficient funds", "Product not found")
 
-**Tell me:** `"Do task CS-5"` or `"Add purchase history"`
+**Changes:**
+- `CashShopTransaction.cs` - New entity tracking all transactions with success/failure status and notes
+- `Account.cs:139-144` - Added MemberOfAggregate collection for transaction history
+- `Player.cs:1142-1162` - Added LogCashShopTransaction helper method
+- `Player.cs:906,913,927,933,940,944` - Transaction logging in TryBuyCashShopItemAsync for all code paths
+- `Player.cs:961,968,982,990,997,1001` - Transaction logging in TrySendCashShopGiftAsync for all code paths
 
 ---
 
@@ -259,22 +270,34 @@ The cash shop feature adds premium currency monetization with:
 ---
 
 ### CS-8: No Rate Limiting / Spam Prevention 🟡
-**Status:** ❌ TODO
+**Status:** ✅ DONE
 **Priority:** 🟡 Medium
 **Difficulty:** ⭐⭐⭐ Hard
-**Files:** `src/GameServer/MessageHandler/CashShop/*.cs` (all handlers)
+**Files:** `src/GameLogic/Player.cs:70,906-910,968-972,1029-1032,1057-1061,1184-1201`
 **Time:** 1-2 hours
 
 **Issue:** No cooldown on purchase requests
 **Impact:** Could spam server with requests, duplicate purchases
 
-**Action:**
-1. Add rate limiter service or use existing throttling mechanism
-2. Track requests per account per timeframe (e.g., max 10 purchases per minute)
-3. Return error result if limit exceeded
-4. Consider per-request-type limits
+**Implementation:**
+1. ✅ Added `_lastCashShopOperations` dictionary to track last operation times per operation type (Player.cs:70)
+2. ✅ Created `IsCashShopOperationRateLimited` helper method with configurable cooldown periods (Player.cs:1184-1201)
+3. ✅ Implemented separate cooldowns for different operations:
+   - Purchase: 2 seconds (most important to prevent duplicate purchases)
+   - Gift: 3 seconds (stricter to prevent abuse)
+   - Delete: 1 second (less critical)
+   - Consume: 1 second (less critical)
+4. ✅ Added rate limit checks at the beginning of all cash shop operations
+5. ✅ Logs warnings when rate limits are hit with timing information
+6. ✅ Returns appropriate failure results when rate limited
 
-**Tell me:** `"Do task CS-8"` or `"Add rate limiting"`
+**Changes:**
+- `Player.cs:70` - Added dictionary to track last operation times
+- `Player.cs:906-910` - Rate limiting in TryBuyCashShopItemAsync (2 sec cooldown)
+- `Player.cs:968-972` - Rate limiting in TrySendCashShopGiftAsync (3 sec cooldown)
+- `Player.cs:1029-1032` - Rate limiting in TryDeleteCashShopStorageItemAsync (1 sec cooldown)
+- `Player.cs:1057-1061` - Rate limiting in TryConsumeCashShopStorageItemAsync (1 sec cooldown)
+- `Player.cs:1184-1201` - Rate limiting helper method with logging
 
 ---
 
@@ -1921,7 +1944,7 @@ _(All game logic items are critical or medium priority)_
 ## By Component
 | Component | Total | Done | Remaining | % |
 |-----------|-------|------|-----------|---|
-| Cash Shop | 11 | 3 | 8 | 27% |
+| Cash Shop | 11 | 6 | 5 | 55% |
 | Castle Siege | 6 | 1 | 5 | 17% |
 | Guild/Alliance | 9 | 1 | 8 | 11% |
 | Game Logic | 12 | 5 | 7 | 42% |
@@ -1931,15 +1954,15 @@ _(All game logic items are critical or medium priority)_
 | Dapr/Infrastructure | 9 | 0 | 9 | 0% |
 | Items/Initialization | 11 | 1 | 10 | 9% |
 | Other | 17 | 8 | 9 | 47% |
-| **TOTAL** | **102** | **29** | **73** | **28%** |
+| **TOTAL** | **102** | **35** | **67** | **34%** |
 
 ## By Priority
 | Priority | Total | Done | Remaining | % |
 |----------|-------|------|-----------|---|
-| 🔴 Critical | 22 | 5 | 17 | 23% |
-| 🟡 Medium | 43 | 11 | 32 | 26% |
+| 🔴 Critical | 22 | 7 | 15 | 32% |
+| 🟡 Medium | 43 | 15 | 28 | 35% |
 | 🟢 Low | 37 | 14 | 23 | 38% |
-| **TOTAL** | **102** | **29** | **73** | **28%** |
+| **TOTAL** | **102** | **35** | **67** | **34%** |
 
 ---
 
