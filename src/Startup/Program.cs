@@ -449,7 +449,7 @@ internal sealed class Program : IDisposable
         IDatabaseSchemaProvider contextProvider;
         if (args.Contains("-demo"))
         {
-            contextProvider = new InMemoryPersistenceContextProvider(null); // TODO pass change mediator or whatever
+            contextProvider = new InMemoryPersistenceContextProvider(IConfigurationChangePublisher.None);
             await this.InitializeDataAsync(version, loggerFactory, contextProvider).ConfigureAwait(false);
         }
         else

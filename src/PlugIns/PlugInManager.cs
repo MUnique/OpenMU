@@ -547,7 +547,6 @@ public class PlugInManager
             catch (Exception e)
             {
                 this._logger.LogError(e, $"Couldn't register plugin type {plugIn}");
-                this._logger.LogError("TODO: Use ServiceContainer");
             }
 
             this._lastCreatedPlugIn = null;

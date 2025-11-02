@@ -38,7 +38,6 @@ public class BlessPotionEffectInitializer : InitializerBase
         magicEffect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.Duration.ConstantValue.Value = 120;
 
-        // TODO: This should only apply to castle gates and statues!
         var powerUp = this.Context.CreateNew<PowerUpDefinition>();
         magicEffect.PowerUpDefinitions.Add(powerUp);
         powerUp.TargetAttribute = Stats.AttackDamageIncrease.GetPersistent(this.GameConfiguration);

@@ -12,6 +12,17 @@ using MUnique.OpenMU.GameLogic.PlugIns;
 /// </summary>
 public class ChatMessageAllianceProcessor : BannableChatMessageBaseProcessor
 {
+    private readonly IEventPublisher _eventPublisher;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ChatMessageAllianceProcessor"/> class.
+    /// </summary>
+    /// <param name="eventPublisher">The event publisher.</param>
+    public ChatMessageAllianceProcessor(IEventPublisher eventPublisher)
+    {
+        this._eventPublisher = eventPublisher ?? throw new ArgumentNullException(nameof(eventPublisher));
+    }
+
     /// <inheritdoc />
     public override async ValueTask SubclassProcessMessageAsync(Player sender, (string Message, string PlayerName) content)
     {
@@ -22,12 +33,11 @@ public class ChatMessageAllianceProcessor : BannableChatMessageBaseProcessor
             return;
         }
 
-        if (!(sender.GuildStatus != null && (sender.GameContext as IGameServerContext)?.EventPublisher is { } publisher))
+        if (sender.GuildStatus is null)
         {
             return;
         }
 
-        // TODO: Use DI to get the IEventPublisher
-        await publisher.AllianceMessageAsync(sender.GuildStatus.GuildId, sender.SelectedCharacter!.Name, content.Message).ConfigureAwait(false);
+        await this._eventPublisher.AllianceMessageAsync(sender.GuildStatus.GuildId, sender.SelectedCharacter!.Name, content.Message).ConfigureAwait(false);
     }
 }

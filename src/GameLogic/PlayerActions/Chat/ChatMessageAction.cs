@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Chat;
 
 using MUnique.OpenMU.GameLogic.Views;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Action to send chat messages.
@@ -17,7 +18,8 @@ public class ChatMessageAction
     /// <summary>
     /// Initializes a new instance of the <see cref="ChatMessageAction"/> class.
     /// </summary>
-    public ChatMessageAction()
+    /// <param name="eventPublisher">The event publisher.</param>
+    public ChatMessageAction(IEventPublisher eventPublisher)
     {
         this._messagePrefixes = new SortedDictionary<string, ChatMessageType>(new ReverseComparer())
         {
@@ -34,7 +36,7 @@ public class ChatMessageAction
             { ChatMessageType.Command, new ChatMessageCommandProcessor() },
             { ChatMessageType.Whisper, new ChatMessageWhisperProcessor() },
             { ChatMessageType.Party, new ChatMessagePartyProcessor() },
-            { ChatMessageType.Alliance, new ChatMessageAllianceProcessor() },
+            { ChatMessageType.Alliance, new ChatMessageAllianceProcessor(eventPublisher) },
             { ChatMessageType.Guild, new ChatMessageGuildProcessor() },
             { ChatMessageType.GlobalNotification, new ChatMessageGlobalNotificationProcessor() },
             { ChatMessageType.Normal, new ChatMessageNormalProcessor() },

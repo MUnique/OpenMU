@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.DataModel;
 
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
+using org.mariuszgromada.math.mxparser;
 
 /// <summary>
 /// Extensions for <see cref="Item"/>.
@@ -72,13 +73,24 @@ public static class ItemExtensions
 
     /// <summary>
     /// Gets the dark raven leadership requirement, based on pet level.
-    /// TODO: Make somehow configurable?
+    /// Uses the PetLeadershipFormula from the item definition if configured,
+    /// otherwise falls back to the default formula: level * 15 + 185.
     /// </summary>
     /// <param name="item">The item.</param>
     /// <param name="petLevel">The pet level.</param>
     /// <returns>The required leadership.</returns>
     public static int GetDarkRavenLeadershipRequirement(this Item item, int petLevel)
     {
+        var formula = item.Definition?.PetLeadershipFormula;
+        if (!string.IsNullOrWhiteSpace(formula))
+        {
+            var argument = new Argument("level", petLevel);
+            var expression = new Expression(formula);
+            expression.addArguments(argument);
+            return (int)expression.calculate();
+        }
+
+        // Default formula for Dark Raven
         return petLevel * 15 + 185;
     }
 

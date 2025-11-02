@@ -7,6 +7,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
 
 using System.Runtime.InteropServices;
+using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.PlugIns;
@@ -27,6 +28,13 @@ public class SiegePotionConsumeHandlerPlugIn : ApplyMagicEffectConsumeHandlerPlu
         if (item.Level == 0
             && player.GameContext.Configuration.MagicEffects.FirstOrDefault(e => e.Number == 10) is { } blessEffectDefinition)
         {
+            // Bless potion should only work on castle gates and statues
+            if (player.OpenedNpc?.Definition.ObjectKind is not (NpcObjectKind.Gate or NpcObjectKind.Statue))
+            {
+                await player.ShowMessageAsync("Potion of Bless can only be used on castle gates and statues.").ConfigureAwait(false);
+                return false;
+            }
+
             return await base.ConsumeItemAsyncCore(player, item, targetItem, fruitUsage, blessEffectDefinition).ConfigureAwait(false);
         }
 

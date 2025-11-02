@@ -54,7 +54,7 @@ public class NpcChatCommandPlugIn : ChatCommandPlugInBase<NpcChatCommandPlugIn.A
         }
 
         var configuration = this.Configuration ??= (NpcChatCommandConfiguration)this.CreateDefaultConfig();
-        var npcDefinition = configuration.OpenMerchantNpc;
+        MonsterDefinition? npcDefinition = null;
 
         if (player.SelectedCharacter?.CharacterStatus >= CharacterStatus.GameMaster && arguments?.NpcId is { } npcIdStr)
         {
@@ -67,6 +67,11 @@ public class NpcChatCommandPlugIn : ChatCommandPlugInBase<NpcChatCommandPlugIn.A
                 await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, InvalidNpcIdMessage, npcIdStr)).ConfigureAwait(false);
                 return;
             }
+        }
+        else
+        {
+            // Use first available merchant NPC from configured list
+            npcDefinition = configuration.MerchantNpcs.FirstOrDefault(npc => npc.MerchantStore is not null);
         }
 
         if (npcDefinition is null)
@@ -111,11 +116,11 @@ public class NpcChatCommandPlugIn : ChatCommandPlugInBase<NpcChatCommandPlugIn.A
     public class NpcChatCommandConfiguration
     {
         /// <summary>
-        /// Gets or sets the NPC ID of the NPC to open the merchant store.
+        /// Gets or sets the list of possible NPC merchants that can be opened.
+        /// The first available merchant NPC will be used by default.
         /// </summary>
-        // TODO: Change to a list of possible NPCs merchants
-        [Display(Name = "NPC ID", Description = @"The ID of the NPC to open the merchant store. Default: Potion Girl Amy - 253.")]
-        public MonsterDefinition? OpenMerchantNpc { get; set; }
+        [Display(Name = "Merchant NPCs", Description = @"The list of possible NPC merchants to open. Default: Potion Girl Amy - 253.")]
+        public ICollection<MonsterDefinition> MerchantNpcs { get; protected set; } = null!;
 
         /// <summary>
         /// Gets or sets the minimum VIP level to use the command.

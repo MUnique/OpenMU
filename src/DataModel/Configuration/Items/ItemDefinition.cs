@@ -95,6 +95,14 @@ public partial class ItemDefinition
     public string? PetExperienceFormula { get; set; }
 
     /// <summary>
+    /// Gets or sets the formula to calculate the required leadership for a specific pet level.
+    /// Only applies, if this item is actually a trainable pet (e.g., Dark Raven).
+    /// The variable for the pet level is "level".
+    /// Default formula for Dark Raven: "level * 15 + 185"
+    /// </summary>
+    public string? PetLeadershipFormula { get; set; }
+
+    /// <summary>
     /// Gets or sets the effect which is applied when this item is consumed.
     /// Creating a consume handler plugin is not required when this effect definition is set.
     /// </summary>

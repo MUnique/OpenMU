@@ -18,9 +18,10 @@ public class SellItemToNpcAction
     /// <summary>
     /// Initializes a new instance of the <see cref="SellItemToNpcAction"/> class.
     /// </summary>
-    public SellItemToNpcAction()
+    /// <param name="itemPriceCalculator">The item price calculator.</param>
+    public SellItemToNpcAction(ItemPriceCalculator itemPriceCalculator)
     {
-        this._itemPriceCalculator = new ItemPriceCalculator(); // TODO: DI? Calculator into gameContext?
+        this._itemPriceCalculator = itemPriceCalculator ?? throw new ArgumentNullException(nameof(itemPriceCalculator));
     }
 
     /// <summary>
