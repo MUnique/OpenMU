@@ -1,6 +1,6 @@
 # OpenMU - Complete TODO & Issues List
 
-**Last Updated:** 2025-11-05 (Pet movement speed implemented, TODO list audited)
+**Last Updated:** 2025-11-06 (Pet movement speed implemented, TODO list audited and synchronized with codebase)
 **Total Items:** 106 TODOs + 60 NotImplemented = **166 Total Issues**
 **Status:** Categorized by component, priority, and actionability
 
@@ -877,21 +877,25 @@ The cash shop feature adds premium currency monetization with:
 
 ---
 
-### GL-5: Pets Not Considered in Combat 🟡
-**Status:** ❌ TODO
+### GL-5: Pet Movement Speed Not Considered 🟡
+**Status:** ✅ DONE
 **Priority:** 🟡 Medium
-**Difficulty:** ⭐⭐⭐ Hard
-**File:** `src/GameLogic/Player.cs:2112`
-**Time:** 3 hours
+**Difficulty:** ⭐⭐ Medium
+**File:** `src/GameLogic/Player.cs:2301`
+**Time:** 30 minutes
 
-**Issue:** Pet damage/stats not included in calculations
+**Issue:** Pets (Dinorant, Dark Horse, Fenrir) equipped in slot 8 should provide faster movement speed like wings, but were not considered
 
-**Action:**
-1. Include pet attributes in combat
-2. Add pet attack damage
-3. Test with various pets
+**Implementation:**
+1. ✅ Added check for items in slot 8 (pet slot)
+2. ✅ Checks for IsDinorantEquipped attribute
+3. ✅ Checks for IsHorseEquipped attribute
+4. ✅ Checks for CanFly attribute (Fenrir)
+5. ✅ Returns 300ms delay (same as wings) for pets
+6. ✅ Removed TODO comment from Player.cs line 2301
 
-**Tell me:** `"Do task GL-5"`
+**Changes:**
+- `Player.cs:2290-2315` - Added pet movement speed logic to GetStepDelay()
 
 ---
 
@@ -994,6 +998,24 @@ The cash shop feature adds premium currency monetization with:
 - Now properly refreshes alliance UI for all remaining members when a guild is deleted
 
 **Tell me:** `"Do task GL-13"` (ALREADY COMPLETE)
+
+---
+
+### GL-14: Summoned Monster Defense Increase Not Implemented 🟢
+**Status:** ❌ TODO
+**Priority:** 🟢 Low
+**Difficulty:** ⭐⭐ Medium
+**File:** `src/GameLogic/Player.cs:2009`
+**Time:** 30 minutes
+
+**Issue:** Stats.SummonedMonsterDefenseIncrease attribute is not applied when summoning monsters
+
+**Action:**
+1. Apply SummonedMonsterDefenseIncrease attribute similar to SummonedMonsterHealthIncrease
+2. Update monster defense based on summoner's attributes
+3. Remove TODO comment
+
+**Tell me:** `"Do task GL-14"`
 
 ---
 
@@ -1822,6 +1844,63 @@ The cash shop feature adds premium currency monetization with:
 
 ---
 
+### ITEM-12: Master Skill Mace Stun Probability Not Implemented 🟢
+**Status:** ❌ TODO
+**Priority:** 🟢 Low
+**Difficulty:** ⭐⭐⭐ Hard
+**File:** `src/Persistence/Initialization/VersionSeasonSix/SkillsInitializer.cs:699`
+**Time:** 2-3 hours
+
+**Issue:** Probability of stunning the target for 2 seconds according to the assigned Skill Level while using a Mace is not implemented
+
+**Action:**
+1. Implement mace stun probability based on master skill level
+2. Add stun effect mechanics for mace weapons
+3. Test with different skill levels
+4. Remove TODO comment
+
+**Tell me:** `"Do task ITEM-12"`
+
+---
+
+### ITEM-13: Master Skill Spear Double Damage Probability Not Implemented 🟢
+**Status:** ❌ TODO
+**Priority:** 🟢 Low
+**Difficulty:** ⭐⭐⭐ Hard
+**File:** `src/Persistence/Initialization/VersionSeasonSix/SkillsInitializer.cs:702`
+**Time:** 2-3 hours
+
+**Issue:** Probability of Double Damage while using a Spear according to the assigned Skill Level is not implemented
+
+**Action:**
+1. Implement spear double damage probability based on master skill level
+2. Add critical hit mechanics for spear weapons
+3. Test with different skill levels
+4. Remove TODO comment
+
+**Tell me:** `"Do task ITEM-13"`
+
+---
+
+### ITEM-14: Master Skill Gloves Double Damage Probability Not Implemented 🟢
+**Status:** ❌ TODO
+**Priority:** 🟢 Low
+**Difficulty:** ⭐⭐⭐ Hard
+**File:** `src/Persistence/Initialization/VersionSeasonSix/SkillsInitializer.cs:845`
+**Time:** 2-3 hours
+
+**Issue:** Probability of Double Damage while using gloves according to the assigned Skill Level is not implemented
+
+**Action:**
+1. Implement gloves double damage probability based on master skill level
+2. Add critical hit mechanics for glove weapons
+3. Test with different skill levels
+4. Remove TODO comment
+
+**Tell me:** `"Do task ITEM-14"`
+
+---
+
 ## ADM - Admin Panel (5 low)
 
 ### ADM-4: Exports Class Should Be Interface 🟢
@@ -2150,25 +2229,25 @@ _(All game logic items are critical or medium priority)_
 ## By Component
 | Component | Total | Done | Remaining | % |
 |-----------|-------|------|-----------|---|
-| Cash Shop | 11 | 8 | 3 | 73% |
+| Cash Shop | 11 | 11 | 0 | 100% |
 | Castle Siege | 6 | 1 | 5 | 17% |
-| Guild/Alliance | 9 | 2 | 7 | 22% |
-| Game Logic | 12 | 5 | 7 | 42% |
+| Guild/Alliance | 9 | 3 | 6 | 33% |
+| Game Logic | 15 | 7 | 8 | 47% |
 | Persistence | 15 | 11 | 4 | 73% |
 | Network/Packets | 4 | 2 | 2 | 50% |
 | Admin Panel | 8 | 3 | 5 | 38% |
 | Dapr/Infrastructure | 9 | 0 | 9 | 0% |
-| Items/Initialization | 11 | 8 | 3 | 73% |
-| Other | 17 | 10 | 7 | 59% |
-| **TOTAL** | **102** | **50** | **52** | **49%** |
+| Items/Initialization | 15 | 8 | 7 | 53% |
+| Other | 18 | 11 | 7 | 61% |
+| **TOTAL** | **106** | **53** | **53** | **50%** |
 
 ## By Priority
 | Priority | Total | Done | Remaining | % |
 |----------|-------|------|-----------|---|
 | 🔴 Critical | 22 | 7 | 15 | 32% |
-| 🟡 Medium | 43 | 21 | 22 | 49% |
-| 🟢 Low | 37 | 23 | 14 | 62% |
-| **TOTAL** | **102** | **50** | **52** | **49%** |
+| 🟡 Medium | 45 | 23 | 22 | 51% |
+| 🟢 Low | 39 | 23 | 16 | 59% |
+| **TOTAL** | **106** | **53** | **53** | **50%** |
 
 ---
 
