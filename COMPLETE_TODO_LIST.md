@@ -630,21 +630,29 @@ The cash shop feature adds premium currency monetization with:
 ## GL - Game Logic (3 critical)
 
 ### GL-1: Character Class Unlocking Hardcoded 🔴
-**Status:** ❌ TODO
+**Status:** ✅ DONE
 **Priority:** 🔴 Critical
 **Difficulty:** ⭐⭐⭐ Hard
 **Files:**
-- `src/GameLogic/PlugIns/UnlockCharacterClass/UnlockRageFighterAtLevel150.cs:12`
-- `src/GameLogic/PlugIns/UnlockCharacterClass/UnlockSummonerAtLevel1.cs:12`
+- `src/GameLogic/PlugIns/UnlockCharacterClass/UnlockRageFighter.cs` (renamed from UnlockRageFighterAtLevel150.cs)
+- `src/GameLogic/PlugIns/UnlockCharacterClass/UnlockSummoner.cs` (renamed from UnlockSummonerAtLevel1.cs)
+- `src/GameLogic/PlugIns/UnlockCharacterClass/UnlockMagicGladiator.cs` (renamed from UnlockMagicGladiatorAtLevel220.cs)
+- `src/GameLogic/PlugIns/UnlockCharacterClass/UnlockDarkLord.cs` (renamed from UnlockDarkLordAtLevel250.cs)
 **Time:** 2-3 hours
 
 **Issue:** Level requirements hardcoded in class names
 
-**Action:**
-1. Add configuration for unlock level
-2. Remove "AtLevel150" suffix from class names
-3. Make level configurable in game config
-4. Update database initializers
+**Implementation:**
+1. ✅ Renamed 4 unlock plugin classes removing "AtLevel###" suffixes
+2. ✅ Level requirements already configured via CharacterClass.LevelRequirementByCreation property
+3. ✅ Base class UnlockCharacterAtLevelBase already uses configurable level from database
+4. ✅ Plugin names updated to match new class names
+
+**Changes:**
+- Renamed UnlockSummonerAtLevel1 → UnlockSummoner
+- Renamed UnlockRageFighterAtLevel150 → UnlockRageFighter  
+- Renamed UnlockMagicGladiatorAtLevel220 → UnlockMagicGladiator
+- Renamed UnlockDarkLordAtLevel250 → UnlockDarkLord
 
 **Tell me:** `"Do task GL-1"` or `"Fix class unlock config"`
 
