@@ -1,10 +1,10 @@
 # OpenMU - Complete TODO & Issues List
 
-**Last Updated:** 2025-11-05 (Alliance notification on guild deletion implemented)
-**Total Items:** 103 TODOs + 60 NotImplemented = **163 Total Issues**
+**Last Updated:** 2025-11-05 (Pet movement speed implemented, TODO list audited)
+**Total Items:** 106 TODOs + 60 NotImplemented = **166 Total Issues**
 **Status:** Categorized by component, priority, and actionability
 
-## 🎉 Current Progress: 52/103 tasks = 50.5%
+## 🎉 Current Progress: 53/106 tasks = 50.0%
 
 ### Phase 1 Complete ✅ (6 tasks)
 - ✅ NET-1: Fixed patch check packet code
@@ -27,8 +27,8 @@
 
 **Completion Stats:**
 - Critical: 7/22 done (31.8%) - CS-1 ✅, CS-2 ✅, CS-3 ✅, CS-4 ✅, CS-5 ✅, NET-1 ✅, CSG-6 ✅
-- Medium: 22/43 done (51.2%) - PERS-5 ✅, GL-6 ✅, GL-7 ✅, NET-4 ✅, GL-8 ✅, GL-9 ✅, PERS-6 ✅, GLD-9 ✅, CS-3 validation ✅, CS balance validation ✅, CS price validation ✅, CS-6 ✅, CS-10 ✅, CS-7 ✅, CS-8 ✅, CS-9 ✅, PERS-1 ✅, PERS-2 ✅, PERS-3 ✅, ITEM-2 ✅, GLD-6 ✅, GL-13 ✅
-- Low: 23/37 done (62.2%) - PERS-15 ✅, ITEM-11 ✅, PERS-11 ✅, PERS-10 ✅, PERS-9 ✅, GL-12 ✅, MISC-3 ✅, MISC-9 ✅, GL-11 ✅, MISC-2 ✅, PERS-14 ✅, GL-10 ✅, MISC-8 ✅, ADM-8 ✅, CS-11 ✅, ITEM-4 ✅, ITEM-5 ✅, ITEM-6 ✅, ITEM-7 ✅, ITEM-8 ✅, ITEM-9 ✅, ADM-5 ✅, ADM-4 ✅
+- Medium: 23/45 done (51.1%) - PERS-5 ✅, GL-6 ✅, GL-7 ✅, NET-4 ✅, GL-8 ✅, GL-9 ✅, PERS-6 ✅, GLD-9 ✅, CS-3 validation ✅, CS balance validation ✅, CS price validation ✅, CS-6 ✅, CS-10 ✅, CS-7 ✅, CS-8 ✅, CS-9 ✅, PERS-1 ✅, PERS-2 ✅, PERS-3 ✅, ITEM-2 ✅, GLD-6 ✅, GL-13 ✅, GL-5 ✅
+- Low: 23/39 done (59.0%) - PERS-15 ✅, ITEM-11 ✅, PERS-11 ✅, PERS-10 ✅, PERS-9 ✅, GL-12 ✅, MISC-3 ✅, MISC-9 ✅, GL-11 ✅, MISC-2 ✅, PERS-14 ✅, GL-10 ✅, MISC-8 ✅, ADM-8 ✅, CS-11 ✅, ITEM-4 ✅, ITEM-5 ✅, ITEM-6 ✅, ITEM-7 ✅, ITEM-8 ✅, ITEM-9 ✅, ADM-5 ✅, ADM-4 ✅
 
 ### Castle Siege Analysis (Phase 3)
 All 5 Castle Siege packets (CSG-1 through CSG-5) require:
@@ -54,14 +54,14 @@ All 5 Castle Siege packets (CSG-1 through CSG-5) require:
 | Cash Shop | 11 | 5 | 5 | 1 |
 | Castle Siege | 5 | 5 | 0 | 0 |
 | Guild/Alliance | 9 | 5 | 4 | 0 |
-| Game Logic | 13 | 3 | 7 | 3 |
+| Game Logic | 15 | 3 | 8 | 4 |
 | Persistence | 15 | 0 | 8 | 7 |
 | Network/Packets | 4 | 2 | 2 | 0 |
 | Admin Panel | 8 | 0 | 3 | 5 |
 | Dapr/Infrastructure | 9 | 0 | 5 | 4 |
-| Items/Initialization | 11 | 0 | 2 | 9 |
+| Items/Initialization | 12 | 0 | 3 | 9 |
 | Other | 18 | 2 | 8 | 8 |
-| **TOTAL** | **103** | **22** | **44** | **37** |
+| **TOTAL** | **106** | **22** | **45** | **39** |
 
 ---
 

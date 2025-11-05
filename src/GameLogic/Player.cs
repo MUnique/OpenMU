@@ -2298,7 +2298,19 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return TimeSpan.FromMilliseconds(300);
         }
 
-        // TODO: Consider pets etc.
+        // Pets in slot 8 (Dinorant, Dark Horse, Fenrir) also provide faster movement
+        if (this.Inventory?.EquippedItems.Any(item => item.Definition?.ItemSlot?.ItemSlots.Contains(8) ?? false) ?? false)
+        {
+            var hasDinorant = this.Attributes?[Stats.IsDinorantEquipped] > 0;
+            var hasHorse = this.Attributes?[Stats.IsHorseEquipped] > 0;
+            var canFly = this.Attributes?[Stats.CanFly] > 0; // Fenrir
+
+            if (hasDinorant || hasHorse || canFly)
+            {
+                return TimeSpan.FromMilliseconds(300);
+            }
+        }
+
         return TimeSpan.FromMilliseconds(500);
     }
 
