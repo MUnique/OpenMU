@@ -40,6 +40,24 @@ public partial class CashShopProduct : MUnique.OpenMU.DataModel.Configuration.Ca
         set => base.Item = value;
     }
 
+    /// <summary>
+    /// Gets the raw object of <see cref="CategoryObject" />.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonPropertyName("categoryObject")]
+    public CashShopCategory RawCategoryObject
+    {
+        get => base.CategoryObject as CashShopCategory;
+        set => base.CategoryObject = value;
+    }
+
+    /// <inheritdoc/>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Configuration.CashShopCategory CategoryObject
+    {
+        get => base.CategoryObject;
+        set => base.CategoryObject = value;
+    }
+
 
     /// <inheritdoc/>
     public override bool Equals(object obj)

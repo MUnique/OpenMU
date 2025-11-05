@@ -68,9 +68,10 @@ internal class ConfigurationTypeRepository<T> : IRepository<T>, IConfigurationTy
     public ValueTask<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        this.EnsureCacheForCurrentConfiguration();
 
-        var dictionary = this._cache[this.GetCurrentGameConfiguration()];
+        var configuration = this.GetCurrentGameConfiguration();
+        var dictionary = this.GetOrCreateCache(configuration);
+        
         if (dictionary.TryGetValue(id, out var result))
         {
             return ValueTask.FromResult<T?>(result);
@@ -111,33 +112,66 @@ internal class ConfigurationTypeRepository<T> : IRepository<T>, IConfigurationTy
     }
 
     /// <summary>
-    /// Ensures the cache for the current configuration.
-    /// TODO: Call this at a better place and time - so that we can remove this check before every GetById
+    /// Gets or creates the cache for the specified configuration.
+    /// Uses ConcurrentDictionary pattern for thread-safe lazy initialization per configuration.
     /// </summary>
-    public void EnsureCacheForCurrentConfiguration()
+    /// <param name="configuration">The game configuration.</param>
+    /// <returns>The cache dictionary for the configuration.</returns>
+    private IDictionary<Guid, T> GetOrCreateCache(GameConfiguration configuration)
     {
-        var configuration = this.GetCurrentGameConfiguration();
-        if (this._cache.ContainsKey(configuration))
+        // ConcurrentDictionary.GetOrAdd is thread-safe and only creates the value once
+        if (this._cache is ConcurrentDictionary<GameConfiguration, IDictionary<Guid, T>> concurrentCache)
         {
-            return;
+            return concurrentCache.GetOrAdd(configuration, config =>
+            {
+                var dictionary = this._collectionSelector(config)
+                    .Where(item => item is IIdentifiable)
+                    .ToDictionary(item => ((IIdentifiable)item).Id, item => item);
+                
+                foreach (var item in dictionary.Values)
+                {
+                    ConfigurationIdReferenceResolver.Instance.AddReference((IIdentifiable)item);
+                }
+
+                return dictionary;
+            });
+        }
+
+        // Fallback for non-concurrent dictionary (shouldn't happen with current implementation)
+        if (this._cache.TryGetValue(configuration, out var existingDictionary))
+        {
+            return existingDictionary;
         }
 
         lock (this._cache)
         {
-            if (this._cache.ContainsKey(configuration))
+            if (this._cache.TryGetValue(configuration, out existingDictionary))
             {
-                return;
+                return existingDictionary;
             }
 
             var dictionary = this._collectionSelector(configuration)
                 .Where(item => item is IIdentifiable)
                 .ToDictionary(item => ((IIdentifiable)item).Id, item => item);
-            this._cache.Add(configuration, dictionary);
+            this._cache[configuration] = dictionary;
+            
             foreach (var item in dictionary.Values)
             {
                 ConfigurationIdReferenceResolver.Instance.AddReference((IIdentifiable)item);
             }
+
+            return dictionary;
         }
+    }
+
+    /// <summary>
+    /// Ensures the cache for the current configuration.
+    /// This method now simply delegates to GetOrCreateCache for the current configuration.
+    /// </summary>
+    public void EnsureCacheForCurrentConfiguration()
+    {
+        var configuration = this.GetCurrentGameConfiguration();
+        this.GetOrCreateCache(configuration);
     }
 
     /// <inheritdoc />

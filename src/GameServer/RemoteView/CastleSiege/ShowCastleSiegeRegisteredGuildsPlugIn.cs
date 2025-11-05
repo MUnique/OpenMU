@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.CastleSiege;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic.Views.CastleSiege;
 using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.PlugIns;
 
@@ -33,14 +34,30 @@ public class ShowCastleSiegeRegisteredGuildsPlugIn : IShowCastleSiegeRegisteredG
             return;
         }
 
-        // TODO: Implement proper packet sending when server-to-client castle siege guild list packets are defined
-        var guildList = string.Join(", ", registeredGuilds.Select(g => $"{g.Guild.Name} ({g.MarksSubmitted} marks)"));
-        var message = registeredGuilds.Any()
-            ? $"Registered guilds: {guildList}"
-            : "No guilds registered for castle siege";
+        var guildList = registeredGuilds.ToList();
+        var guildCount = (byte)guildList.Count;
 
-        await connection.SendServerMessageAsync(
-            ServerMessage.MessageType.GoldenCenter,
-            message).ConfigureAwait(false);
+        int Write()
+        {
+            var size = CastleSiegeRegisteredGuildsRef.GetRequiredSize(guildCount);
+            var span = connection.Output.GetSpan(size)[..size];
+            var packet = new CastleSiegeRegisteredGuildsRef(span)
+            {
+                GuildCount = guildCount,
+            };
+
+            for (int i = 0; i < guildList.Count; i++)
+            {
+                var guild = guildList[i];
+                var guildBlock = packet[i];
+                guildBlock.GuildName = guild.Guild.Name ?? string.Empty;
+                guildBlock.MarksSubmitted = (uint)guild.MarksSubmitted;
+                guildBlock.IsAllianceMaster = 1; // All registered guilds are alliance masters
+            }
+
+            return size;
+        }
+
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 }

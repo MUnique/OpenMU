@@ -41,6 +41,15 @@ public class GuildChangeToGameServerPublisher : IGuildChangePublisher
     }
 
     /// <inheritdoc />
+    public async ValueTask GuildWarEndedAsync(uint guildId1, uint guildId2)
+    {
+        foreach (var gameServer in this._gameServers.Values)
+        {
+            await gameServer.GuildWarEndedAsync(guildId1, guildId2).ConfigureAwait(false);
+        }
+    }
+
+    /// <inheritdoc />
     public async ValueTask AssignGuildToPlayerAsync(byte serverId, string characterName, GuildMemberStatus status)
     {
         if (this._gameServers.TryGetValue(serverId, out var gameServer))

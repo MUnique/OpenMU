@@ -117,9 +117,17 @@ public class CashShopProduct
     public bool IsEventItem { get; set; }
 
     /// <summary>
-    /// Gets or sets the category of the product.
+    /// Gets or sets the category of the product (legacy string-based category).
+    /// For new implementations, use <see cref="CategoryObject"/> instead.
     /// </summary>
+    [Obsolete("Use CategoryObject instead for structured category support.")]
     public string Category { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the category object for this product.
+    /// Provides structured category information with icons, descriptions, and display order.
+    /// </summary>
+    public virtual CashShopCategory? CategoryObject { get; set; }
 
     /// <summary>
     /// Gets or sets the product name for display.

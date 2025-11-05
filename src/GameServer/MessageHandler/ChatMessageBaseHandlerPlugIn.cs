@@ -14,8 +14,6 @@ using MUnique.OpenMU.Network.Packets.ClientToServer;
 /// </summary>
 internal abstract class ChatMessageBaseHandlerPlugIn : IPacketHandlerPlugIn
 {
-    private readonly ChatMessageAction _messageAction = new();
-
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;
 
@@ -30,7 +28,13 @@ internal abstract class ChatMessageBaseHandlerPlugIn : IPacketHandlerPlugIn
     /// <inheritdoc/>
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
+        if (player.GameContext is not IGameServerContext gameServerContext)
+        {
+            return;
+        }
+
+        var messageAction = new ChatMessageAction(gameServerContext.EventPublisher);
         WhisperMessage message = packet;
-        await this._messageAction.ChatMessageAsync(player, message.ReceiverName, message.Message, this.IsWhisper).ConfigureAwait(false);
+        await messageAction.ChatMessageAsync(player, message.ReceiverName, message.Message, this.IsWhisper).ConfigureAwait(false);
     }
 }

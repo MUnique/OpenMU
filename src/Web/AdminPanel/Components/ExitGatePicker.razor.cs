@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Components;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Web.Map.Map;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.PixelFormats;

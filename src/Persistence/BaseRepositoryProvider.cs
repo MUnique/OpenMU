@@ -17,6 +17,11 @@ public class BaseRepositoryProvider : IRepositoryProvider
     protected IDictionary<Type, object> Repositories { get; } = new Dictionary<Type, object>();
 
     /// <summary>
+    /// Gets the cached repository adapters for each entity type.
+    /// </summary>
+    private IDictionary<Type, object> AdapterCache { get; } = new Dictionary<Type, object>();
+
+    /// <summary>
     /// Gets the repository of the specified generic type.
     /// </summary>
     /// <typeparam name="T">The generic type.</typeparam>
@@ -30,8 +35,17 @@ public class BaseRepositoryProvider : IRepositoryProvider
             return null;
         }
 
-        // TODO: Not always an adapter is required. Also, the adapter could be cached.
-        return new RepositoryAdapter<T>(repository);
+        // Check if we already have a cached adapter for this type
+        var type = typeof(T);
+        if (this.AdapterCache.TryGetValue(type, out var cachedAdapter))
+        {
+            return (IRepository<T>)cachedAdapter;
+        }
+
+        // Create and cache a new adapter
+        var adapter = new RepositoryAdapter<T>(repository);
+        this.AdapterCache[type] = adapter;
+        return adapter;
     }
 
     /// <summary>

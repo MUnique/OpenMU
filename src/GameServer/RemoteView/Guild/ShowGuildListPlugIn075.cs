@@ -42,6 +42,29 @@ public class ShowGuildListPlugIn075 : IShowGuildListPlugIn
             .ThenBy(p => p.PlayerName)
             .ToList();
         var playerCount = sortedPlayers.Count;
+
+        // Get guild war information  
+        byte currentScore = 0;
+        byte totalScore = 0;
+
+        if (this._player.GuildWarContext is { } warContext)
+        {
+            // Active guild war
+            currentScore = warContext.ThisScore;
+            totalScore = warContext.Score.MaximumScore;
+        }
+        else if (this._player.GuildStatus is { } guildStatus)
+        {
+            // Check for hostility relationship
+            var guildServer = this._player.GameServerContext.GuildServer;
+            var guild = await guildServer.GetGuildAsync(guildStatus.GuildId).ConfigureAwait(false);
+            if (guild?.Hostility is not null)
+            {
+                currentScore = (byte)Math.Min(255, Math.Max(0, guild.Score));
+                totalScore = (byte)Math.Min(255, Math.Max(0, guild.Hostility.Score));
+            }
+        }
+
         int Write()
         {
             var size = GuildList075Ref.GetRequiredSize(playerCount);
@@ -50,8 +73,8 @@ public class ShowGuildListPlugIn075 : IShowGuildListPlugIn
             {
                 GuildMemberCount = (byte)playerCount,
                 IsInGuild = playerCount > 0,
-                CurrentScore = 0, // TODO
-                TotalScore = 0, // TODO
+                CurrentScore = currentScore,
+                TotalScore = totalScore,
             };
 
             int i = 0;

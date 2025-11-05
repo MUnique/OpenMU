@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Items;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.PlayerActions.Items;
+using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.Network.Packets.ClientToServer;
 using MUnique.OpenMU.PlugIns;
 
@@ -17,7 +18,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("8bbf8737-8731-4975-baa8-e14f77451b85")]
 internal class SellItemToNpcHandlerPlugIn : IPacketHandlerPlugIn
 {
-    private readonly SellItemToNpcAction _sellAction = new();
+    private readonly ItemPriceCalculator _priceCalculator = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;
@@ -28,7 +29,8 @@ internal class SellItemToNpcHandlerPlugIn : IPacketHandlerPlugIn
     /// <inheritdoc/>
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
+        var sellAction = new SellItemToNpcAction(this._priceCalculator);
         SellItemToNpcRequest message = packet;
-        await this._sellAction.SellItemAsync(player, message.ItemSlot).ConfigureAwait(false);
+        await sellAction.SellItemAsync(player, message.ItemSlot).ConfigureAwait(false);
     }
 }

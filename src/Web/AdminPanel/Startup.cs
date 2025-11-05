@@ -60,6 +60,7 @@ public class Startup
 
         services.AddBlazoredModal();
         services.AddBlazoredToast();
+        services.AddSingleton<IExports, Exports>();
         services.AddScoped<AccountService>();
         services.AddScoped<IDataService<Account>>(serviceProvider => serviceProvider.GetService<AccountService>()!);
 

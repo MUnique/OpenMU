@@ -33,25 +33,6 @@ public class ShowAllianceResponsePlugIn : IShowAllianceResponsePlugIn
             return;
         }
 
-        // TODO: Implement proper packet sending when server-to-client alliance packets are defined
-        var message = response switch
-        {
-            AllianceResponse.Success => $"Alliance with {targetGuildName} successful",
-            AllianceResponse.Failed => $"Alliance with {targetGuildName} failed",
-            AllianceResponse.RequestSent => $"Alliance request sent to {targetGuildName}",
-            AllianceResponse.NotInGuild => "You are not in a guild",
-            AllianceResponse.NotTheGuildMaster => "Only the guild master can manage alliances",
-            AllianceResponse.GuildNotFound => $"Guild {targetGuildName} not found",
-            AllianceResponse.GuildMasterOffline => $"{targetGuildName} guild master is offline",
-            AllianceResponse.HasHostility => "Cannot form alliance with hostile relationship",
-            AllianceResponse.AllianceFull => "Alliance is full",
-            AllianceResponse.AlreadyInAlliance => $"{targetGuildName} is already in an alliance",
-            AllianceResponse.Removed => $"Removed from alliance by {targetGuildName}",
-            _ => "Alliance operation completed"
-        };
-
-        await connection.SendServerMessageAsync(
-            ServerMessage.MessageType.GoldenCenter,
-            message).ConfigureAwait(false);
+        await connection.SendAllianceJoinResponseAsync((AllianceJoinResponse.AllianceJoinResult)response).ConfigureAwait(false);
     }
 }

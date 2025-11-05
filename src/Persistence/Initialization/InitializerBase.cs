@@ -83,6 +83,25 @@ public abstract class InitializerBase : IInitializer
     }
 
     /// <summary>
+    /// Creates an item requirement with per-level scaling, if the required value is greater than 0.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <param name="attribute">The attribute.</param>
+    /// <param name="requiredValue">The base required value.</param>
+    /// <param name="perLevelIncrease">The additional requirement per item level.</param>
+    protected void CreateItemRequirementIfNeeded(ItemDefinition item, AttributeDefinition attribute, int requiredValue, int perLevelIncrease)
+    {
+        if (requiredValue == 0)
+        {
+            return;
+        }
+
+        var requirement = this.CreateRequirement(attribute, requiredValue);
+        requirement.MinimumValuePerItemLevel = perLevelIncrease;
+        item.Requirements.Add(requirement);
+    }
+
+    /// <summary>
     /// Gets the character class of the specified number.
     /// </summary>
     /// <param name="classNumber">The class number.</param>

@@ -261,6 +261,12 @@ public partial class GameConfiguration
     public virtual ICollection<MiniGameDefinition> MiniGameDefinitions { get; protected set; } = null!;
 
     /// <summary>
+    /// Gets or sets the cash shop categories.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<CashShopCategory> CashShopCategories { get; protected set; } = null!;
+
+    /// <summary>
     /// Gets or sets the cash shop products.
     /// </summary>
     [MemberOfAggregate]

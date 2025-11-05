@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameServer.RemoteView.Guild;
 
 using System.Runtime.InteropServices;
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Views.Guild;
 using MUnique.OpenMU.PlugIns;
 
@@ -26,8 +27,29 @@ public class ShowAllianceListUpdatePlugIn : IShowAllianceListUpdatePlugIn
     /// <inheritdoc/>
     public async ValueTask UpdateAllianceListAsync()
     {
-        // TODO: Implement proper packet sending when server-to-client alliance packets are defined
-        // This should refresh the alliance UI on the client
-        await ValueTask.CompletedTask;
+        var guildStatus = this._player.GuildStatus;
+        if (guildStatus?.GuildId is not { } guildId)
+        {
+            return;
+        }
+
+        if (this._player.GameContext is not IGameServerContext serverContext)
+        {
+            return;
+        }
+
+        var allianceGuildIds = await serverContext.GuildServer.GetAllianceMemberGuildIdsAsync(guildId).ConfigureAwait(false);
+        var allianceGuilds = new List<Interfaces.Guild>();
+
+        foreach (var allianceGuildId in allianceGuildIds)
+        {
+            var guild = await serverContext.GuildServer.GetGuildAsync(allianceGuildId).ConfigureAwait(false);
+            if (guild is not null)
+            {
+                allianceGuilds.Add(guild);
+            }
+        }
+
+        await this._player.InvokeViewPlugInAsync<IShowAllianceListPlugIn>(p => p.ShowAllianceListAsync(allianceGuilds)).ConfigureAwait(false);
     }
 }

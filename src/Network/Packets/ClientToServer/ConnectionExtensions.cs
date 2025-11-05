@@ -2213,6 +2213,34 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="CashShopItemRefundRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="itemSlot">The item slot.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player wants to refund an item from the cash shop storage.
+    /// Causes reaction on server side: The server refunds the item and returns cash points to the player's account.
+    /// </remarks>
+    public static async ValueTask SendCashShopItemRefundRequestAsync(this IConnection? connection, byte @itemSlot)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CashShopItemRefundRequestRef.Length;
+            var packet = new CashShopItemRefundRequestRef(connection.Output.GetSpan(length)[..length]);
+            packet.ItemSlot = @itemSlot;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="UnlockVault" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>

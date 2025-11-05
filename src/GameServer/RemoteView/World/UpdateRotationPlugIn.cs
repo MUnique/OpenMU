@@ -5,7 +5,9 @@
 namespace MUnique.OpenMU.GameServer.RemoteView.World;
 
 using System.Runtime.InteropServices;
+using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Views.Character;
+using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -24,9 +26,8 @@ public class UpdateRotationPlugIn : IUpdateRotationPlugIn
     public UpdateRotationPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public ValueTask UpdateRotationAsync()
+    public async ValueTask UpdateRotationAsync()
     {
-        //// TODO: Implement Rotation, packet: { 0xc1, 0x04, 0x0F, 0x12 }
-        return ValueTask.CompletedTask;
+        await this._player.Connection.SendUpdateRotationAsync(this._player.Rotation.ToPacketByte()).ConfigureAwait(false);
     }
 }

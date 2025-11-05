@@ -1579,6 +1579,24 @@ public class PacketStructureTests
     }
 
     /// <summary>
+    /// Tests the packet size calculation for CashShopItemRefundRequest.
+    /// </summary>
+    [Test]
+    public void CashShopItemRefundRequest_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 5;
+        var actualLength = CashShopItemRefundRequestRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'ItemSlot' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'ItemSlot' exceeds packet boundary");
+    }
+
+    /// <summary>
     /// Tests the packet size calculation for UnlockVault.
     /// </summary>
     [Test]

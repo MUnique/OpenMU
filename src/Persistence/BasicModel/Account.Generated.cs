@@ -47,6 +47,27 @@ public partial class Account : MUnique.OpenMU.DataModel.Entities.Account, IIdent
     }
 
     /// <summary>
+    /// Gets the raw collection of <see cref="CashShopTransactions" />.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonPropertyName("cashShopTransactions")]
+    public ICollection<CashShopTransaction> RawCashShopTransactions { get; } = new List<CashShopTransaction>();
+    
+    /// <inheritdoc/>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override ICollection<MUnique.OpenMU.DataModel.Entities.CashShopTransaction> CashShopTransactions
+    {
+        get => base.CashShopTransactions ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Entities.CashShopTransaction, CashShopTransaction>(this.RawCashShopTransactions);
+        protected set
+        {
+            this.CashShopTransactions.Clear();
+            foreach (var item in value)
+            {
+                this.CashShopTransactions.Add(item);
+            }
+        }
+    }
+
+    /// <summary>
     /// Gets the raw collection of <see cref="Characters" />.
     /// </summary>
     [System.Text.Json.Serialization.JsonPropertyName("characters")]

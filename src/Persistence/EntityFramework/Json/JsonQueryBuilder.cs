@@ -13,11 +13,10 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 /// <summary>
 /// A query builder which creates a query to return a whole object graph as json by using postgres json functions.
 /// </summary>
-/// <remarks>
-/// TODO: Make the resulting query more readable by adding indenting for subqueries.
-/// </remarks>
 public class JsonQueryBuilder
 {
+    private const int IndentSize = 2;
+
     /// <summary>
     /// Builds the json query for the given entity type.
     /// </summary>
@@ -37,10 +36,10 @@ public class JsonQueryBuilder
     {
         //Debug.WriteLine($"Building the json query for {entityType.Name}.");
         var stringBuilder = new StringBuilder();
-        stringBuilder.Append("select result.\"Id\" \"$id\", result.\"Id\" id, row_to_json(result) as ").AppendLine(entityType.GetTableName())
-            .AppendLine("from (");
-        this.AddTypeToQuery(entityType, stringBuilder, "a");
-        stringBuilder.AppendLine(") result");
+        this.AppendLine(stringBuilder, $"select result.\"Id\" \"$id\", result.\"Id\" id, row_to_json(result) as {entityType.GetTableName()}", 0);
+        this.AppendLine(stringBuilder, "from (", 0);
+        this.AddTypeToQuery(entityType, stringBuilder, "a", 1);
+        this.AppendLine(stringBuilder, ") result", 0);
         var result = stringBuilder.ToString();
         //Debug.WriteLine("Finished building the json query for {0}. Result: {1}", entityType.Name, result);
 
@@ -61,14 +60,34 @@ public class JsonQueryBuilder
         return entityType.GetNavigations();
     }
 
-    private void AddTypeToQuery(IEntityType entityType, StringBuilder stringBuilder, string alias)
+    private void AppendLine(StringBuilder stringBuilder, string text, int indentLevel)
     {
-        stringBuilder.Append("select ").Append(alias).Append(".\"Id\" as \"$id\", ").Append(alias).Append(".*");
-        this.AddNavigationsToQuery(entityType, stringBuilder, alias);
-        stringBuilder.Append(" from ").Append(entityType.GetSchema()).Append('.').Append('"').Append(entityType.GetTableName()).Append("\" ").AppendLine(alias);
+        if (indentLevel > 0)
+        {
+            stringBuilder.Append(' ', indentLevel * IndentSize);
+        }
+
+        stringBuilder.AppendLine(text);
     }
 
-    private void AddNavigationsToQuery(IEntityType entityType, StringBuilder stringBuilder, string parentAlias)
+    private void Append(StringBuilder stringBuilder, string text, int indentLevel)
+    {
+        if (indentLevel > 0)
+        {
+            stringBuilder.Append(' ', indentLevel * IndentSize);
+        }
+
+        stringBuilder.Append(text);
+    }
+
+    private void AddTypeToQuery(IEntityType entityType, StringBuilder stringBuilder, string alias, int indentLevel)
+    {
+        this.Append(stringBuilder, $"select {alias}.\"Id\" as \"$id\", {alias}.*", indentLevel);
+        this.AddNavigationsToQuery(entityType, stringBuilder, alias, indentLevel);
+        this.AppendLine(stringBuilder, $" from {entityType.GetSchema()}.\"{entityType.GetTableName()}\" {alias}", 0);
+    }
+
+    private void AddNavigationsToQuery(IEntityType entityType, StringBuilder stringBuilder, string parentAlias, int indentLevel)
     {
         var navigationAlias = this.GetNextAlias(parentAlias);
         if (navigationAlias == "i")
@@ -84,11 +103,11 @@ public class JsonQueryBuilder
         {
             if (navigation.IsCollection)
             {
-                this.AddCollection(navigation, entityType, stringBuilder, parentAlias);
+                this.AddCollection(navigation, entityType, stringBuilder, parentAlias, indentLevel);
             }
             else //// it's a foreign key
             {
-                this.AddNavigation(navigation, stringBuilder, parentAlias);
+                this.AddNavigation(navigation, stringBuilder, parentAlias, indentLevel);
             }
         }
     }
@@ -98,7 +117,7 @@ public class JsonQueryBuilder
         return ((char)(parentAlias[0] + 1)).ToString(CultureInfo.InvariantCulture);
     }
 
-    private void AddNavigation(INavigation navigation, StringBuilder stringBuilder, string parentAlias)
+    private void AddNavigation(INavigation navigation, StringBuilder stringBuilder, string parentAlias, int indentLevel)
     {
         if (navigation.ForeignKey.DeclaringEntityType != navigation.DeclaringEntityType)
         {
@@ -133,15 +152,17 @@ public class JsonQueryBuilder
         }
         else
         {
-            stringBuilder.Append("select row_to_json(").Append(navigationAlias).Append(") from (");
-            this.AddTypeToQuery(targetType, stringBuilder, navigationAlias);
-            stringBuilder.Append(") ").Append(navigationAlias).Append(" where ").Append(navigationAlias).Append(".\"").Append(targetType.GetPrimaryKeyColumnName()).Append("\" = ").Append(parentAlias).Append(".\"").Append(foreignKey.Name).AppendLine("\"");
+            stringBuilder.AppendLine();
+            this.AppendLine(stringBuilder, $"select row_to_json({navigationAlias}) from (", indentLevel + 1);
+            this.AddTypeToQuery(targetType, stringBuilder, navigationAlias, indentLevel + 2);
+            this.Append(stringBuilder, $") {navigationAlias} where {navigationAlias}.\"{targetType.GetPrimaryKeyColumnName()}\" = {parentAlias}.\"{foreignKey.Name}\"", indentLevel + 1);
         }
 
-        stringBuilder.Append(") as \"").Append(navigation.Name).AppendLine("\"");
+        stringBuilder.AppendLine();
+        this.Append(stringBuilder, $") as \"{navigation.Name}\"", 0);
     }
 
-    private void AddCollection(INavigation navigation, IEntityType entityType, StringBuilder stringBuilder, string parentAlias)
+    private void AddCollection(INavigation navigation, IEntityType entityType, StringBuilder stringBuilder, string parentAlias, int indentLevel)
     {
         var keyProperty = navigation.ForeignKey.Properties[0];
         var navigationType = keyProperty.DeclaringEntityType;
@@ -154,38 +175,39 @@ public class JsonQueryBuilder
 
         if (primaryKey.Properties.Count > 1)
         {
-            this.AddManyToManyCollection(navigationType, entityType, stringBuilder, parentAlias, keyProperty);
+            this.AddManyToManyCollection(navigationType, entityType, stringBuilder, parentAlias, keyProperty, indentLevel);
         }
         else
         {
-            this.AddOneToManyCollection(navigation, navigationType, stringBuilder, parentAlias, keyProperty);
+            this.AddOneToManyCollection(navigation, navigationType, stringBuilder, parentAlias, keyProperty, indentLevel);
         }
 
-        stringBuilder.Append(") as \"").Append(navigation.Name.Replace("Joined", string.Empty)).AppendLine("\"");
+        stringBuilder.AppendLine();
+        this.Append(stringBuilder, $") as \"{navigation.Name.Replace("Joined", string.Empty)}\"", 0);
     }
 
-    private void AddOneToManyCollection(INavigation navigation, IEntityType navigationType, StringBuilder stringBuilder, string parentAlias, IProperty keyProperty)
+    private void AddOneToManyCollection(INavigation navigation, IEntityType navigationType, StringBuilder stringBuilder, string parentAlias, IProperty keyProperty, int indentLevel)
     {
         var primaryKeyName = navigationType.GetDeclaredPrimaryKeyColumnName();
 
         var navigationAlias = this.GetNextAlias(parentAlias);
 
-        stringBuilder.AppendLine(", (")
-            .Append("select array_to_json(array_agg(row_to_json(").Append(navigationAlias).AppendLine("))) from (");
+        stringBuilder.AppendLine(", (");
+        this.AppendLine(stringBuilder, $"select array_to_json(array_agg(row_to_json({navigationAlias}))) from (", indentLevel + 1);
 
         if (navigation.IsMemberOfAggregate())
         {
-            this.AddTypeToQuery(navigationType, stringBuilder, navigationAlias);
-            stringBuilder.Append(") ").AppendLine(navigationAlias)
-                .Append("where ").Append(navigationAlias).Append(".\"").Append(keyProperty.Name).Append("\" = ").Append(parentAlias).Append(".\"").Append(primaryKeyName).AppendLine("\"");
+            this.AddTypeToQuery(navigationType, stringBuilder, navigationAlias, indentLevel + 2);
+            this.AppendLine(stringBuilder, $") {navigationAlias}", indentLevel + 1);
+            this.Append(stringBuilder, $"where {navigationAlias}.\"{keyProperty.Name}\" = {parentAlias}.\"{primaryKeyName}\"", indentLevel + 1);
         }
         else
         {
             var primaryKeyColumnName = navigationType.GetPrimaryKeyColumnName(); // It's always one property, usually called "Id"
-            stringBuilder.Append("select \"").Append(primaryKeyColumnName).AppendLine("\" as \"$ref\"");
-            stringBuilder.Append("from ").Append(navigationType.GetSchema()).Append(".\"").Append(navigationType.GetTableName()).AppendLine("\" ")
-                .Append("where \"").Append(keyProperty.Name).Append("\" = ").Append(parentAlias).Append(".\"").Append(primaryKeyName).AppendLine("\"")
-                .Append(") as ").AppendLine(navigationAlias);
+            this.AppendLine(stringBuilder, $"select \"{primaryKeyColumnName}\" as \"$ref\"", indentLevel + 2);
+            this.AppendLine(stringBuilder, $"from {navigationType.GetSchema()}.\"{navigationType.GetTableName()}\"", indentLevel + 2);
+            this.AppendLine(stringBuilder, $"where \"{keyProperty.Name}\" = {parentAlias}.\"{primaryKeyName}\"", indentLevel + 2);
+            this.Append(stringBuilder, $") as {navigationAlias}", indentLevel + 1);
         }
     }
 
@@ -202,7 +224,8 @@ public class JsonQueryBuilder
     /// <param name="stringBuilder">The string builder which is used to create the query string.</param>
     /// <param name="parentAlias">The parent alias, required to reference the primary key of the <paramref name="entityType"/>.</param>
     /// <param name="keyProperty">The key property.</param>
-    private void AddManyToManyCollection(IEntityType navigationType, IEntityType entityType, StringBuilder stringBuilder, string parentAlias, IProperty keyProperty)
+    /// <param name="indentLevel">The current indentation level.</param>
+    private void AddManyToManyCollection(IEntityType navigationType, IEntityType entityType, StringBuilder stringBuilder, string parentAlias, IProperty keyProperty, int indentLevel)
     {
         var navigationAlias = this.GetNextAlias(parentAlias);
         var entityTypePrimaryKeyName = entityType.GetPrimaryKeyColumnName(); // usually "Id"
@@ -211,12 +234,12 @@ public class JsonQueryBuilder
         var referenceColumnToOtherEntity = otherEntityTypeForeignKey?.GetColumnName() ?? otherEntityTypeKey?.GetColumnName()
             ?? throw new InvalidOperationException("No reference column available.");
 
-        stringBuilder.AppendLine(", (")
-            .Append("select array_to_json(array_agg(row_to_json(").Append(navigationAlias).AppendLine("))) from (");
+        stringBuilder.AppendLine(", (");
+        this.AppendLine(stringBuilder, $"select array_to_json(array_agg(row_to_json({navigationAlias}))) from (", indentLevel + 1);
 
-        stringBuilder.Append("select \"").Append(referenceColumnToOtherEntity).AppendLine("\" as \"$ref\"")
-            .Append("from ").Append(navigationType.GetSchema()).Append(".\"").Append(navigationType.GetTableName()).AppendLine("\" ")
-            .Append("where ").Append('"').Append(keyProperty.Name).Append("\" = ").Append(parentAlias).Append(".\"").Append(entityTypePrimaryKeyName).AppendLine("\"")
-            .Append(") as ").AppendLine(navigationAlias);
+        this.AppendLine(stringBuilder, $"select \"{referenceColumnToOtherEntity}\" as \"$ref\"", indentLevel + 2);
+        this.AppendLine(stringBuilder, $"from {navigationType.GetSchema()}.\"{navigationType.GetTableName()}\"", indentLevel + 2);
+        this.AppendLine(stringBuilder, $"where \"{keyProperty.Name}\" = {parentAlias}.\"{entityTypePrimaryKeyName}\"", indentLevel + 2);
+        this.Append(stringBuilder, $") as {navigationAlias}", indentLevel + 1);
     }
 }

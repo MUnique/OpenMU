@@ -452,6 +452,15 @@ public class GuildServer : IGuildServer
         }
 
         this._logger.LogInformation($"Hostility removed for guild {guildContainer.Guild.Name}");
+
+        // Notify game servers that the hostility ended
+        var shortGuildId1 = guildContainer.Id;
+        var shortGuildId2 = hostileContainer?.Id ?? 0;
+        if (shortGuildId2 > 0)
+        {
+            await this._changePublisher.GuildWarEndedAsync(shortGuildId1, shortGuildId2).ConfigureAwait(false);
+        }
+
         return true;
     }
 
@@ -466,13 +475,25 @@ public class GuildServer : IGuildServer
     /// <param name="guildContainer">The container of the guild which should be deleted.</param>
     private async ValueTask DeleteGuildAsync(GuildContainer guildContainer)
     {
+        // Check if the guild has a hostility and notify game servers before deletion
+        uint? hostileGuildId = null;
+        if (guildContainer.Guild.Hostility is not null)
+        {
+            var hostileGuild = this._guildDictionary.Values.FirstOrDefault(g => g.Guild.Id == guildContainer.Guild.Hostility.Id);
+            hostileGuildId = hostileGuild?.Id;
+        }
+
         await guildContainer.DatabaseContext.DeleteAsync(guildContainer.Guild).ConfigureAwait(false);
         await guildContainer.DatabaseContext.SaveChangesAsync().ConfigureAwait(false);
         this.RemoveGuildContainer(guildContainer);
 
         await this._changePublisher.GuildDeletedAsync(guildContainer.Id).ConfigureAwait(false);
 
-        // TODO: Inform gameServers that guildwar/hostility ended
+        // Notify game servers that the guild war/hostility ended (if any existed)
+        if (hostileGuildId.HasValue)
+        {
+            await this._changePublisher.GuildWarEndedAsync(guildContainer.Id, hostileGuildId.Value).ConfigureAwait(false);
+        }
     }
 
     private async ValueTask<uint> GuildMemberEnterGameAsync(Guid guildId, Guid characterId, byte serverId)

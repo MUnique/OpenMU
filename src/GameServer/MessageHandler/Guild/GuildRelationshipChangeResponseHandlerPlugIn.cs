@@ -18,6 +18,7 @@ using MUnique.OpenMU.PlugIns;
 internal class GuildRelationshipChangeResponseHandlerPlugIn : IPacketHandlerPlugIn
 {
     private readonly AllianceResponseAction _allianceResponseAction = new();
+    private readonly HostilityResponseAction _hostilityResponseAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;
@@ -36,7 +37,7 @@ internal class GuildRelationshipChangeResponseHandlerPlugIn : IPacketHandlerPlug
         }
         else if (response.RelationshipType == GuildRelationshipType.Hostility && response.RequestType == GuildRequestType.Join)
         {
-            // TODO: Implement hostility response
+            await this._hostilityResponseAction.RespondToHostilityAsync(player, response.Response).ConfigureAwait(false);
         }
     }
 }

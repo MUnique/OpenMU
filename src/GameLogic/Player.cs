@@ -320,6 +320,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public PendingAllianceRequest? PendingAllianceRequest { get; set; }
 
     /// <summary>
+    /// Gets or sets the pending hostility request.
+    /// </summary>
+    public PendingHostilityRequest? PendingHostilityRequest { get; set; }
+
+    /// <summary>
     /// Gets the skill list.
     /// </summary>
     public ISkillList? SkillList { get; private set; }

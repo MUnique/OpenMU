@@ -8,9 +8,10 @@ using System.Runtime.InteropServices;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// Unlocks the Dark Lord character class as soon as the first character of an account reaches level 250.
+/// Unlocks the Dark Lord character class when the configured level requirement is met.
+/// The level requirement is configured in the CharacterClass.LevelRequirementByCreation property.
 /// </summary>
-[PlugIn(nameof(UnlockDarkLordAtLevel250), "Unlocks the Dark Lord character class as soon as the first character of an account reaches level 250.")]
+[PlugIn(nameof(UnlockDarkLordAtLevel250), "Unlocks the Dark Lord character class when the configured level requirement is met.")]
 [Guid("2DFFD75A-765D-4FA7-93DD-9890CA0F04F0")]
 public class UnlockDarkLordAtLevel250 : UnlockCharacterAtLevelBase
 {
@@ -20,7 +21,7 @@ public class UnlockDarkLordAtLevel250 : UnlockCharacterAtLevelBase
     /// Initializes a new instance of the <see cref="UnlockDarkLordAtLevel250"/> class.
     /// </summary>
     public UnlockDarkLordAtLevel250()
-        : base(DarkLordNumber, 250, "Dark Lord")
+        : base(DarkLordNumber, "Dark Lord")
     {
     }
 }

@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameServer.RemoteView.CastleSiege;
 
 using System.Runtime.InteropServices;
+using MUnique.OpenMU.GameLogic.CastleSiege;
 using MUnique.OpenMU.GameLogic.Views.CastleSiege;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.PlugIns;
@@ -32,9 +33,9 @@ public class ShowCastleSiegeStatusPlugIn : IShowCastleSiegeStatusPlugIn
             return;
         }
 
-        // TODO: Implement proper packet sending when server-to-client castle siege packets are defined
-        await connection.SendServerMessageAsync(
-            ServerMessage.MessageType.GoldenCenter,
-            $"Castle Siege Status - Owner: {ownerGuildName}, Status: {siegeStatus}").ConfigureAwait(false);
+        // Parse the siege status string to enum value
+        var stateValue = Enum.TryParse<CastleSiegeState>(siegeStatus, out var state) ? (byte)state : (byte)0;
+
+        await connection.SendCastleSiegeStatusAsync(ownerGuildName, stateValue).ConfigureAwait(false);
     }
 }

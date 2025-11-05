@@ -179,4 +179,88 @@ public class GuildServer : IGuildServer
             this._logger.LogError(ex, "Unexpected error when sending a guild score increase.");
         }
     }
+
+    /// <inheritdoc />
+    public async ValueTask<bool> CreateAllianceAsync(uint requestingGuildId, uint targetGuildId)
+    {
+        try
+        {
+            return await this._daprClient.InvokeMethodAsync<GuildRelationshipArguments, bool>(this._targetAppId, nameof(this.CreateAllianceAsync), new GuildRelationshipArguments(requestingGuildId, targetGuildId)).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, "Unexpected error when creating an alliance.");
+            return false;
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<bool> RemoveFromAllianceAsync(uint guildId)
+    {
+        try
+        {
+            return await this._daprClient.InvokeMethodAsync<uint, bool>(this._targetAppId, nameof(this.RemoveFromAllianceAsync), guildId).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, "Unexpected error when removing from alliance.");
+            return false;
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<IEnumerable<uint>> GetAllianceMemberGuildIdsAsync(uint guildId)
+    {
+        try
+        {
+            return await this._daprClient.InvokeMethodAsync<uint, IEnumerable<uint>>(this._targetAppId, nameof(this.GetAllianceMemberGuildIdsAsync), guildId).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, "Unexpected error when getting alliance member guild IDs.");
+            return Enumerable.Empty<uint>();
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<uint> GetAllianceMasterGuildIdAsync(uint guildId)
+    {
+        try
+        {
+            return await this._daprClient.InvokeMethodAsync<uint, uint>(this._targetAppId, nameof(this.GetAllianceMasterGuildIdAsync), guildId).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, "Unexpected error when getting alliance master guild ID.");
+            return 0;
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<bool> CreateHostilityAsync(uint requestingGuildId, uint targetGuildId)
+    {
+        try
+        {
+            return await this._daprClient.InvokeMethodAsync<GuildRelationshipArguments, bool>(this._targetAppId, nameof(this.CreateHostilityAsync), new GuildRelationshipArguments(requestingGuildId, targetGuildId)).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, "Unexpected error when creating hostility.");
+            return false;
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<bool> RemoveHostilityAsync(uint guildId)
+    {
+        try
+        {
+            return await this._daprClient.InvokeMethodAsync<uint, bool>(this._targetAppId, nameof(this.RemoveHostilityAsync), guildId).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, "Unexpected error when removing hostility.");
+            return false;
+        }
+    }
 }

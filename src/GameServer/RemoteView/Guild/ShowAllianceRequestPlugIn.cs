@@ -32,10 +32,6 @@ public class ShowAllianceRequestPlugIn : IShowAllianceRequestPlugIn
             return;
         }
 
-        // TODO: Implement proper packet sending when server-to-client alliance packets are defined
-        // For now, we send a message through the chat system as notification
-        await connection.SendServerMessageAsync(
-            ServerMessage.MessageType.GoldenCenter,
-            $"Alliance request from {requesterGuildName}").ConfigureAwait(false);
+        await connection.SendAllianceJoinRequestAsync(requesterGuildName).ConfigureAwait(false);
     }
 }

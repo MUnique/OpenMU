@@ -17,6 +17,7 @@ using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Web.AdminPanel.Interop;
 using MUnique.OpenMU.Web.AdminPanel.Services;
+using MUnique.OpenMU.Web.Map.Map;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 

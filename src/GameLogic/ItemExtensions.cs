@@ -293,7 +293,8 @@ public static class ItemExtensions
         {
             if (!item.IsWearable())
             {
-                return (totalAttribute, requirement.MinimumValue);
+                var baseValue = requirement.MinimumValue + (requirement.MinimumValuePerItemLevel * item.Level);
+                return (totalAttribute, baseValue);
             }
 
             var multiplier = 3;
@@ -333,10 +334,15 @@ public static class ItemExtensions
                 }
             }
 
+            // Add per-level requirement increase (applies to wearable items too)
+            value += requirement.MinimumValuePerItemLevel * item.Level;
+
             return (totalAttribute, value);
         }
 
-        return (requirement.Attribute, requirement.MinimumValue);
+        // For non-mapped requirements (like simple level requirements), add per-level increase
+        var finalValue = requirement.MinimumValue + (requirement.MinimumValuePerItemLevel * item.Level);
+        return (requirement.Attribute, finalValue);
     }
 
     /// <summary>

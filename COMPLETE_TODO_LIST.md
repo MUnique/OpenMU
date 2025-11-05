@@ -4,7 +4,7 @@
 **Total Items:** 102 TODOs + 60 NotImplemented = **162 Total Issues**
 **Status:** Categorized by component, priority, and actionability
 
-## 🎉 Current Progress: 35/102 tasks = 34.3%
+## 🎉 Current Progress: 50/102 tasks = 49.0%
 
 ### Phase 1 Complete ✅ (6 tasks)
 - ✅ NET-1: Fixed patch check packet code
@@ -21,13 +21,14 @@
 - ⏸️ GL-3: Item drop on death (Hard, 2 hrs) - Requires death mechanics implementation
 - ⏸️ NET-2: Rotation updates (Hard, 1-2 hrs) - Packet not yet defined in XML
 
-### Medium Priority Tasks (1 complete)
+### Medium Priority Tasks (2 complete)
 - ✅ NET-4: Added character disconnect logging (GameServer.cs:508-539)
+- ✅ CS-9: Implemented cash shop refund system with time limits and full transaction logging
 
 **Completion Stats:**
 - Critical: 7/22 done (31.8%) - CS-1 ✅, CS-2 ✅, CS-3 ✅, CS-4 ✅, CS-5 ✅, NET-1 ✅, CSG-6 ✅
-- Medium: 15/43 done (34.9%) - PERS-5 ✅, GL-6 ✅, GL-7 ✅, NET-4 ✅, GL-8 ✅, GL-9 ✅, PERS-6 ✅, GLD-9 ✅, CS-3 validation ✅, CS balance validation ✅, CS price validation ✅, CS-6 ✅, CS-10 ✅, CS-7 ✅, CS-8 ✅
-- Low: 14/37 done (37.8%) - PERS-15 ✅, ITEM-11 ✅, PERS-11 ✅, PERS-10 ✅, PERS-9 ✅, GL-12 ✅, MISC-3 ✅, MISC-9 ✅, GL-11 ✅, MISC-2 ✅, PERS-14 ✅, GL-10 ✅, MISC-8 ✅, ADM-8 ✅
+- Medium: 21/43 done (48.8%) - PERS-5 ✅, GL-6 ✅, GL-7 ✅, NET-4 ✅, GL-8 ✅, GL-9 ✅, PERS-6 ✅, GLD-9 ✅, CS-3 validation ✅, CS balance validation ✅, CS price validation ✅, CS-6 ✅, CS-10 ✅, CS-7 ✅, CS-8 ✅, CS-9 ✅, PERS-1 ✅, PERS-2 ✅, PERS-3 ✅, ITEM-2 ✅, GLD-6 ✅
+- Low: 23/37 done (62.2%) - PERS-15 ✅, ITEM-11 ✅, PERS-11 ✅, PERS-10 ✅, PERS-9 ✅, GL-12 ✅, MISC-3 ✅, MISC-9 ✅, GL-11 ✅, MISC-2 ✅, PERS-14 ✅, GL-10 ✅, MISC-8 ✅, ADM-8 ✅, CS-11 ✅, ITEM-4 ✅, ITEM-5 ✅, ITEM-6 ✅, ITEM-7 ✅, ITEM-8 ✅, ITEM-9 ✅, ADM-5 ✅, ADM-4 ✅
 
 ### Castle Siege Analysis (Phase 3)
 All 5 Castle Siege packets (CSG-1 through CSG-5) require:
@@ -302,26 +303,44 @@ The cash shop feature adds premium currency monetization with:
 ---
 
 ### CS-9: No Refund System 🟡
-**Status:** ❌ TODO
+**Status:** ✅ DONE
 **Priority:** 🟡 Medium
 **Difficulty:** ⭐⭐⭐ Hard
-**File:** `src/GameLogic/Player.cs` (new method needed)
+**Files:** 
+- `src/GameLogic/Player.cs:1094-1154` (refund method)
+- `src/GameLogic/Views/CashShop/CashShopRefundResult.cs` (enum)
+- `src/GameLogic/Views/CashShop/IShowCashShopItemRefundResultPlugIn.cs` (interface)
+- `src/GameServer/RemoteView/CashShop/ShowCashShopItemRefundResultPlugIn.cs` (view plugin)
+- `src/GameServer/MessageHandler/CashShop/CashShopItemRefundRequestHandlerPlugIn.cs` (handler)
+- `src/Network/Packets/ClientToServer/ClientToServerPackets.xml` (client packet)
+- `src/Network/Packets/ServerToClient/ServerToClientPackets.xml` (server packet)
 **Time:** 1-2 hours
 
 **Issue:** No way to refund accidental purchases
 **Impact:** Poor customer service experience
 
-**Action:**
-1. Add method `TryRefundCashShopPurchaseAsync(byte slot)`
-2. Validate item exists in storage and hasn't been consumed
-3. Remove item from storage
-4. Return cash points to account
-5. Log refund transaction
-6. Create message handler and view plugin
-7. Define packets in XML
-8. (Optional) Add time limit on refunds (e.g., 24 hours)
+**Implementation:**
+1. ✅ Created `CashShopRefundResult` enum with Success, ItemNotFound, TimeLimitExceeded, Failed values
+2. ✅ Implemented `TryRefundCashShopItemAsync(byte slot, int refundTimeLimit = 24)` method in Player.cs
+3. ✅ Added rate limiting (5 second cooldown, strictest of all cash shop operations)
+4. ✅ Validates item exists in storage and hasn't been consumed
+5. ✅ Finds original purchase transaction for accurate refund amount
+6. ✅ Checks time limit (default 24 hours, configurable, or disabled with 0)
+7. ✅ Removes item from storage and returns cash points to account
+8. ✅ Logs refund transaction with full details
+9. ✅ Created message handler `CashShopItemRefundRequestHandlerPlugIn`
+10. ✅ Created view plugin `ShowCashShopItemRefundResultPlugIn`
+11. ✅ Defined client packet (Code D2, SubCode 14) in ClientToServerPackets.xml
+12. ✅ Defined server response packet (Code D2, SubCode 14) in ServerToClientPackets.xml
 
-**Tell me:** `"Do task CS-9"` or `"Implement refund system"`
+**Features:**
+- Configurable time limit for refunds (default 24 hours)
+- Transaction history matching to ensure accurate refund amounts
+- Full audit trail in CashShopTransactions table
+- Rate limiting to prevent abuse (5 sec cooldown)
+- Proper error handling for all edge cases
+
+**Tell me:** `"Do task CS-9"` or `"Implement refund system"` (ALREADY COMPLETE)
 
 ---
 
@@ -349,23 +368,50 @@ The cash shop feature adds premium currency monetization with:
 ---
 
 ### CS-11: No Category Entity / Support 🟢
-**Status:** ❌ TODO
+**Status:** ✅ DONE
 **Priority:** 🟢 Low
 **Difficulty:** ⭐⭐ Medium
-**File:** `src/DataModel/Configuration/CashShopProduct.cs:81`
+**Files:**
+- `src/DataModel/Configuration/CashShopCategory.cs` (new entity)
+- `src/DataModel/Configuration/GameConfiguration.cs:267-269` (categories collection)
+- `src/DataModel/Configuration/CashShopProduct.cs:121-131` (navigation property)
+- `src/Persistence/Initialization/VersionSeasonSix/CashShopCategoriesInitializer.cs` (initializer)
+- `src/Persistence/Initialization/Version095d/CashShopCategoriesInitializer.cs` (initializer)
+- `src/Persistence/Initialization/VersionSeasonSix/GameConfigurationInitializer.cs:88` (integration)
+- `src/Persistence/Initialization/Version095d/GameConfigurationInitializer.cs:68` (integration)
 **Time:** 30-45 minutes
 
 **Issue:** `Category` is just string - no CashShopCategory entity
 **Impact:** Cannot group products nicely in UI with icons, descriptions, etc.
 
-**Action:**
-1. Create `src/DataModel/Configuration/CashShopCategory.cs` entity
-2. Add to `GameConfiguration.cs`: `ICollection<CashShopCategory> CashShopCategories`
-3. Add navigation property to `CashShopProduct`: `virtual CashShopCategory? Category`
-4. Update initializers to create categories (Potions, Jewels, Scrolls, etc.)
-5. Update AdminPanel to show categories
+**Implementation:**
+1. ✅ Created `CashShopCategory` entity with properties:
+   - CategoryId (int) - Unique identifier
+   - Name (string) - Display name
+   - Description (string) - Category description
+   - IconId (string?) - Icon identifier for UI
+   - DisplayOrder (int) - Sort order (lower numbers first)
+   - IsVisible (bool) - Visibility flag
+2. ✅ Added `CashShopCategories` collection to GameConfiguration
+3. ✅ Added `CategoryObject` navigation property to CashShopProduct
+4. ✅ Marked legacy string `Category` property as Obsolete
+5. ✅ Created CashShopCategoriesInitializer for both VersionSeasonSix and Version095d
+6. ✅ Initialized 5 default categories: Consumables, Jewels, Event Items, Buffs & Boosts, Special
+7. ✅ Integrated category initialization in GameConfigurationInitializer (called before products)
 
-**Tell me:** `"Do task CS-11"` or `"Add category support"`
+**Default Categories:**
+1. Consumables (DisplayOrder: 10) - Potions, scrolls, etc.
+2. Jewels (DisplayOrder: 20) - Enhancement jewels and stones
+3. Event Items (DisplayOrder: 30) - Limited-time event products
+4. Buffs & Boosts (DisplayOrder: 40) - Experience boosters and buff items
+5. Special (DisplayOrder: 50) - Unique and special products
+
+**Notes:**
+- Categories are created before products to ensure proper referencing
+- Legacy string `Category` field maintained for backward compatibility
+- AdminPanel will need updates to display category UI (separate task)
+
+**Tell me:** `"Do task CS-11"` or `"Add category support"` (ALREADY COMPLETE)
 
 ---
 
@@ -683,7 +729,7 @@ The cash shop feature adds premium currency monetization with:
 ## GLD - Guild (4 medium)
 
 ### GLD-6: Guild List Missing Guild War Info 🟡
-**Status:** ❌ TODO
+**Status:** ✅ DONE
 **Priority:** 🟡 Medium
 **Difficulty:** ⭐⭐ Medium
 **Files:**
@@ -693,12 +739,17 @@ The cash shop feature adds premium currency monetization with:
 
 **Issue:** RivalGuildName, CurrentScore, TotalScore hardcoded to empty/0
 
-**Action:**
-1. Query guild war relationships
-2. Calculate scores
-3. Include in guild list packet
+**Implementation:**
+1. ✅ Added logic to query guild war context for active wars
+2. ✅ Added fallback to check hostility relationship via IGuildServer
+3. ✅ Populated RivalGuildName from GuildWarContext.EnemyTeamName or Hostility.Name
+4. ✅ Populated CurrentScore/TotalScore from war context or guild scores
+5. ✅ Applied same logic to both ShowGuildListPlugIn and ShowGuildListPlugIn075
 
-**Tell me:** `"Do task GLD-6"`
+**Changes:**
+- `ShowGuildListPlugIn.cs`: Added war/hostility checks before Write() delegate (lines 31-69)
+- `ShowGuildListPlugIn075.cs`: Added war/hostility checks before Write() delegate (lines 31-63)
+- Both versions now display guild war information correctly
 
 ---
 
@@ -877,56 +928,82 @@ The cash shop feature adds premium currency monetization with:
 ## PERS - Persistence (8 medium)
 
 ### PERS-1: ConfigurationTypeRepository Init Check Every Time 🟡
-**Status:** ❌ TODO
+**Status:** ✅ DONE
 **Priority:** 🟡 Medium
 **Difficulty:** ⭐⭐⭐ Hard
-**File:** `src/Persistence/EntityFramework/ConfigurationTypeRepository.cs:115`
+**File:** `src/Persistence/EntityFramework/ConfigurationTypeRepository.cs:68-115`
 **Time:** 2 hours
 
 **Issue:** Initialization check runs before every GetById
+**Impact:** Performance overhead from redundant dictionary lookups
 
-**Action:**
-1. Move initialization to better place
-2. Cache initialization state
-3. Only check once per context
+**Implementation:**
+1. ✅ Created `GetOrCreateCache` method that uses ConcurrentDictionary.GetOrAdd pattern
+2. ✅ Removed initialization check from `GetByIdAsync` - now just calls GetOrCreateCache once
+3. ✅ Leverages ConcurrentDictionary's thread-safe lazy initialization
+4. ✅ Cache is only created once per configuration, reused for all subsequent GetById calls
+5. ✅ Kept `EnsureCacheForCurrentConfiguration` for backward compatibility (now delegates to GetOrCreateCache)
+6. ✅ Added fallback for non-concurrent dictionaries with proper locking
 
-**Tell me:** `"Do task PERS-1"`
+**Optimization:**
+- **Before:** `ContainsKey` check + cache lookup on every GetById
+- **After:** Direct GetOrAdd with lazy initialization - one-time overhead per configuration
+
+**Tell me:** `"Do task PERS-1"` (ALREADY COMPLETE)
 
 ---
 
 ### PERS-2: JSON Query Builder Not Readable 🟡
-**Status:** ❌ TODO
+**Status:** ✅ DONE
 **Priority:** 🟡 Medium
 **Difficulty:** ⭐⭐⭐ Hard
-**File:** `src/Persistence/EntityFramework/Json/JsonQueryBuilder.cs:17`
+**File:** `src/Persistence/EntityFramework/Json/JsonQueryBuilder.cs:17-249`
 **Time:** 3 hours
 
 **Issue:** Generated JSON queries lack indentation
+**Impact:** Difficult to debug complex queries
 
-**Action:**
-1. Add indenting for subqueries
-2. Make output more readable
-3. Easier debugging
+**Implementation:**
+1. ✅ Added `IndentSize` constant (2 spaces per level)
+2. ✅ Created `AppendLine(StringBuilder, string, int indentLevel)` helper method
+3. ✅ Created `Append(StringBuilder, string, int indentLevel)` helper method
+4. ✅ Updated all query building methods to accept `indentLevel` parameter
+5. ✅ Applied proper indentation throughout query generation:
+   - `BuildJsonQueryForEntity` - top level (indent 0)
+   - `AddTypeToQuery` - main query body (indent 1)
+   - Subqueries increase indent by 1 at each nesting level
+   - `AddNavigation`, `AddCollection` - nested properly
+   - `AddOneToManyCollection`, `AddManyToManyCollection` - deep nesting (indent +2, +3)
+6. ✅ Removed TODO comment
 
-**Tell me:** `"Do task PERS-2"`
+**Result:** Generated SQL queries now have readable indentation making debugging much easier
+
+**Tell me:** `"Do task PERS-2"` (ALREADY COMPLETE)
 
 ---
 
 ### PERS-3: Adapter Always Created, Not Cached 🟡
-**Status:** ❌ TODO
+**Status:** ✅ DONE
 **Priority:** 🟡 Medium
 **Difficulty:** ⭐⭐⭐ Hard
-**File:** `src/Persistence/BaseRepositoryProvider.cs:33`
+**File:** `src/Persistence/BaseRepositoryProvider.cs:18,23-42`
 **Time:** 2 hours
 
 **Issue:** Adapter created every time, should be cached
+**Impact:** Performance overhead from creating new RepositoryAdapter instances on every GetRepository<T>() call
 
-**Action:**
-1. Add adapter cache
-2. Reuse adapters when possible
-3. Improve performance
+**Implementation:**
+1. ✅ Added `AdapterCache` private dictionary to store cached adapters by type
+2. ✅ Updated `GetRepository<T>()` method to check cache before creating adapter
+3. ✅ New adapters are created only once per type and cached for reuse
+4. ✅ Uses `TryGetValue` pattern for efficient cache lookup
+5. ✅ Removed TODO comment
 
-**Tell me:** `"Do task PERS-3"`
+**Performance Improvement:**
+- **Before:** New RepositoryAdapter<T> created on every GetRepository<T>() call
+- **After:** Adapter created once per type, reused from cache on subsequent calls
+
+**Tell me:** `"Do task PERS-3"` (ALREADY COMPLETE)
 
 ---
 
@@ -1242,20 +1319,24 @@ The cash shop feature adds premium currency monetization with:
 ---
 
 ### ITEM-2: Merchant Store Incomplete Classes 🟡
-**Status:** ❌ TODO
+**Status:** ✅ DONE
 **Priority:** 🟡 Medium
 **Difficulty:** ⭐⭐ Medium
 **File:** `src/Persistence/Initialization/VersionSeasonSix/MerchantStores.cs:60`
 **Time:** 2 hours
 
-**Issue:** Archer and Spearman not in merchant stores
+**Issue:** "Archer and Spearman" TODO comment in potion girl merchant store
 
-**Action:**
-1. Add Archer items to stores
-2. Add Spearman items to stores
-3. Configure prices
+**Implementation:**
+1. ✅ Reviewed TODO comment context and merchant store contents
+2. ✅ Verified that Bolt (crossbow ammo) and Arrow (bow ammo) are already present in store
+3. ✅ Confirmed "Archer and Spearman" aren't actual character classes in MU Online
+4. ✅ Compared with Version075 implementation - no additional items needed
+5. ✅ Removed outdated TODO comment
 
-**Tell me:** `"Do task ITEM-2"`
+**Resolution:** The TODO was misleading/outdated. Archer ammunition (Bolts for crossbow, Arrows for bow) is already fully implemented in the potion girl store (slots 24-29). No additional items were needed.
+
+**Tell me:** `"Do task ITEM-2"` (ALREADY COMPLETE)
 
 ---
 
@@ -1482,110 +1563,137 @@ The cash shop feature adds premium currency monetization with:
 ---
 
 ### ITEM-4: Jewelry Level Requirements Increase 🟢
-**Status:** ❌ TODO
+**Status:** ✅ DONE
 **Priority:** 🟢 Low
 **Difficulty:** ⭐⭐ Medium
-**File:** `src/Persistence/Initialization/Version075/Items/Jewelery.cs:161`
+**Files:**
+- `src/DataModel/Configuration/Items/AttributeRequirement.cs:25-38` (added MinimumValuePerItemLevel)
+- `src/Persistence/Initialization/InitializerBase.cs:74-106` (added overload for per-level requirements)
+- `src/GameLogic/ItemExtensions.cs:288-345` (GetRequirement method updated)
+- `src/Persistence/Initialization/Version075/Items/Jewelery.cs:161` (applied to jewelry)
 **Time:** 1 hour
 
 **Issue:** Requirement increases with item level not configured
+**Impact:** Item requirements not scaling properly with upgrades
 
-**Action:**
-1. Add level scaling formula
-2. Update jewelry definitions
-3. Test requirements
+**Implementation:**
+1. ✅ Added `MinimumValuePerItemLevel` property to AttributeRequirement entity
+2. ✅ Added overload to `CreateItemRequirementIfNeeded` accepting per-level increase parameter
+3. ✅ Updated `GetRequirement` method in ItemExtensions to calculate per-level increases
+4. ✅ Applied 5-level increase per item level to jewelry items
+5. ✅ Updated ToString() to display per-level scaling in requirements
 
-**Tell me:** `"Do task ITEM-4"`
+**Formula:** Base requirement + (MinimumValuePerItemLevel × Item Level)
+**Example:** Ring with level 20 requirement and +5/level: +0=20, +1=25, +2=30, +3=35, +4=40
+
+**Tell me:** `"Do task ITEM-4"` (ALREADY COMPLETE)
 
 ---
 
 ### ITEM-5: Wings Level Requirements Increase (075) 🟢
-**Status:** ❌ TODO
+**Status:** ✅ DONE
 **Priority:** 🟢 Low
 **Difficulty:** ⭐⭐ Medium
 **File:** `src/Persistence/Initialization/Version075/Items/Wings.cs:99`
 **Time:** 1 hour
 
 **Issue:** Each wing level increases requirement by 5 levels
+**Impact:** Wing requirements not scaling with upgrades
 
-**Action:**
-1. Implement level scaling
-2. Update wing definitions
-3. Test requirements
+**Implementation:**
+1. ✅ Applied per-level increase (5 levels) to all wings in Version075
+2. ✅ Uses same MinimumValuePerItemLevel system as jewelry
 
-**Tell me:** `"Do task ITEM-5"`
+**Formula:** Base requirement + (5 × Wing Level)
+**Example:** 180-level wings: +0=180, +1=185, +2=190, +3=195, etc.
+
+**Tell me:** `"Do task ITEM-5"` (ALREADY COMPLETE)
 
 ---
 
 ### ITEM-6: Wings Level Requirements Increase (095d) 🟢
-**Status:** ❌ TODO
+**Status:** ✅ DONE
 **Priority:** 🟢 Low
 **Difficulty:** ⭐⭐ Medium
 **File:** `src/Persistence/Initialization/Version095d/Items/Wings.cs:98`
 **Time:** 1 hour
 
 **Issue:** Each wing level increases requirement by 5 levels
+**Impact:** Wing requirements not scaling with upgrades
 
-**Action:**
-1. Implement level scaling
-2. Update wing definitions
-3. Test requirements
+**Implementation:**
+1. ✅ Applied per-level increase (5 levels) to all wings in Version095d
+2. ✅ Uses same MinimumValuePerItemLevel system as jewelry
 
-**Tell me:** `"Do task ITEM-6"`
+**Formula:** Base requirement + (5 × Wing Level)
+
+**Tell me:** `"Do task ITEM-6"` (ALREADY COMPLETE)
 
 ---
 
 ### ITEM-7: Wings Level Requirements Increase (S6) 🟢
-**Status:** ❌ TODO
+**Status:** ✅ DONE
 **Priority:** 🟢 Low
 **Difficulty:** ⭐⭐ Medium
 **File:** `src/Persistence/Initialization/VersionSeasonSix/Items/Wings.cs:211`
 **Time:** 1 hour
 
 **Issue:** Each wing level increases requirement by 5 levels
+**Impact:** Wing requirements not scaling with upgrades
 
-**Action:**
-1. Implement level scaling
-2. Update wing definitions
-3. Test requirements
+**Implementation:**
+1. ✅ Applied per-level increase (5 levels) to all wings in VersionSeasonSix
+2. ✅ Uses same MinimumValuePerItemLevel system as jewelry
+3. ✅ Works with Season 6's higher maximum item level (15)
 
-**Tell me:** `"Do task ITEM-7"`
+**Formula:** Base requirement + (5 × Wing Level)
+**Example:** 400-level wings: +0=400, +1=405, +2=410, ..., +15=475
+
+**Tell me:** `"Do task ITEM-7"` (ALREADY COMPLETE)
 
 ---
 
 ### ITEM-8: Orbs Skill Numbers Need Assignment 🟢
-**Status:** ❌ TODO
+**Status:** ✅ DONE
 **Priority:** 🟢 Low
 **Difficulty:** ⭐⭐ Medium
-**File:** `src/Persistence/Initialization/VersionSeasonSix/Items/Orbs.cs:33`
+**File:** `src/Persistence/Initialization/VersionSeasonSix/Items/Orbs.cs:37-67`
 **Time:** 2 hours
 
 **Issue:** Skill numbers marked as TODO in orb creation
 
-**Action:**
-1. Assign correct skill numbers to orbs
-2. Update initializer
-3. Test orb skills
+**Implementation:**
+1. ✅ Verified all orbs have correct SkillNumber values assigned
+2. ✅ All skill assignments are complete (TwistingSlash, Heal, GreaterDefense, GreaterDamage, SummonGoblin, RagefulBlow, Impale, SwellLife, FireSlash, Penetration, IceArrow, DeathStab, StrikeofDestruction, MultiShot, Recovery, FlameStrike)
+3. ✅ Scrolls in same group also properly configured (FireBurst, Summon, IncreaseCriticalDamage, ElectricSpike, FireScream, ChaoticDiseier)
+4. ✅ TODO in comment was just for code generation regex, not an actual task
 
-**Tell me:** `"Do task ITEM-8"`
+**Note:** Task was already complete - all orbs have proper skill assignments
+
+**Tell me:** `"Do task ITEM-8"` (ALREADY COMPLETE)
 
 ---
 
 ### ITEM-9: Scrolls Skill Numbers Need Assignment 🟢
-**Status:** ❌ TODO
+**Status:** ✅ DONE
 **Priority:** 🟢 Low
 **Difficulty:** ⭐⭐ Medium
-**File:** `src/Persistence/Initialization/VersionSeasonSix/Items/Scrolls.cs:33`
+**File:** `src/Persistence/Initialization/VersionSeasonSix/Items/Scrolls.cs:38-72`
 **Time:** 2 hours
 
 **Issue:** Skill numbers marked as TODO in scroll creation
 
-**Action:**
-1. Assign correct skill numbers to scrolls
-2. Update initializer
-3. Test scroll skills
+**Implementation:**
+1. ✅ Verified all scrolls have correct skill number values assigned
+2. ✅ All 37 scrolls properly configured with their respective skill numbers (1-40, 214-268)
+3. ✅ Includes Dark Wizard scrolls (Poison, Meteorite, Lightning, Fire Ball, Flame, Teleport, Ice, Twister, Evil Spirit, Hellfire, Power Wave, Aqua Beam, Cometfall, Inferno)
+4. ✅ Includes Summoner parchments (Chain Lightning, Drain Life, Lightning Shock, Damage Reflection, Berserker, Sleep, Weakness, Innovation)
+5. ✅ Includes advanced scrolls (Wizardry Enhance, Gigantic Storm, Chain Drive, Dark Side, Dragon Roar, Dragon Slasher, Ignore Defense, Increase Health, Increase Block)
+6. ✅ TODO in comment was just for code generation regex, not an actual task
 
-**Tell me:** `"Do task ITEM-9"`
+**Note:** Task was already complete - all scrolls have proper skill assignments
+
+**Tell me:** `"Do task ITEM-9"` (ALREADY COMPLETE)
 
 ---
 
@@ -1635,7 +1743,7 @@ The cash shop feature adds premium currency monetization with:
 ## ADM - Admin Panel (5 low)
 
 ### ADM-4: Exports Class Should Be Interface 🟢
-**Status:** ❌ TODO
+**Status:** ✅ DONE
 **Priority:** 🟢 Low
 **Difficulty:** ⭐⭐ Medium
 **File:** `src/Web/AdminPanel/Exports.cs:13`
@@ -1643,17 +1751,24 @@ The cash shop feature adds premium currency monetization with:
 
 **Issue:** Static class, should be interface for DI
 
-**Action:**
-1. Create IExports interface
-2. Implement as service
-3. Inject into layout
+**Implementation:**
+1. ✅ Created `IExports` interface with Scripts, ScriptMappings, and Stylesheets properties
+2. ✅ Converted `Exports` from static class to instance class implementing `IExports`
+3. ✅ Refactored properties to use lazy initialization to avoid circular references
+4. ✅ Registered `IExports` as singleton service in Startup.cs
+5. ✅ Updated `_Host.cshtml` to inject `IExports` and use it instead of static references
+6. ✅ Removed TODO comment
 
-**Tell me:** `"Do task ADM-4"`
+**Changes:**
+- Created: `src/Web/AdminPanel/IExports.cs` - Interface definition
+- Modified: `src/Web/AdminPanel/Exports.cs` - Instance class with lazy properties
+- Modified: `src/Web/AdminPanel/Startup.cs` - Added `services.AddSingleton<IExports, Exports>()`
+- Modified: `src/Web/AdminPanel/Pages/_Host.cshtml` - Injected and used IExports service
 
 ---
 
 ### ADM-5: Map Terrain Code Duplicated 🟢
-**Status:** ❌ TODO
+**Status:** ✅ DONE
 **Priority:** 🟢 Low
 **Difficulty:** ⭐⭐ Medium
 **File:** `src/Web/AdminPanel/GameMapTerrainExtensions.cs:13`
@@ -1661,12 +1776,21 @@ The cash shop feature adds premium currency monetization with:
 
 **Issue:** Code duplicated, should be in common project
 
-**Action:**
-1. Move to shared project
-2. Update references
-3. Remove duplicate
+**Implementation:**
+1. ✅ Identified duplicate GameMapTerrainExtensions.ToImage() in two locations:
+   - `src/Web/AdminPanel/GameMapTerrainExtensions.cs`
+   - `src/Web/Map/Map/GameMapTerrainExtensions.cs`
+2. ✅ Kept the version in Map project (lower-level dependency)
+3. ✅ Deleted duplicate from AdminPanel project
+4. ✅ Updated AdminPanel references to use Map project's extension:
+   - Added `using MUnique.OpenMU.Web.Map.Map;` to ExitGatePicker.razor.cs
+   - Added `using MUnique.OpenMU.Web.Map.Map;` to MapEditor.razor.cs
+5. ✅ Verified builds successfully with no errors
 
-**Tell me:** `"Do task ADM-5"`
+**Changes:**
+- Deleted: `src/Web/AdminPanel/GameMapTerrainExtensions.cs`
+- Updated: `src/Web/AdminPanel/Components/ExitGatePicker.razor.cs` (added using)
+- Updated: `src/Web/AdminPanel/Components/MapEditor.razor.cs` (added using)
 
 ---
 
@@ -1944,25 +2068,25 @@ _(All game logic items are critical or medium priority)_
 ## By Component
 | Component | Total | Done | Remaining | % |
 |-----------|-------|------|-----------|---|
-| Cash Shop | 11 | 6 | 5 | 55% |
+| Cash Shop | 11 | 8 | 3 | 73% |
 | Castle Siege | 6 | 1 | 5 | 17% |
-| Guild/Alliance | 9 | 1 | 8 | 11% |
+| Guild/Alliance | 9 | 2 | 7 | 22% |
 | Game Logic | 12 | 5 | 7 | 42% |
-| Persistence | 15 | 7 | 8 | 47% |
+| Persistence | 15 | 11 | 4 | 73% |
 | Network/Packets | 4 | 2 | 2 | 50% |
-| Admin Panel | 8 | 1 | 7 | 13% |
+| Admin Panel | 8 | 3 | 5 | 38% |
 | Dapr/Infrastructure | 9 | 0 | 9 | 0% |
-| Items/Initialization | 11 | 1 | 10 | 9% |
-| Other | 17 | 8 | 9 | 47% |
-| **TOTAL** | **102** | **35** | **67** | **34%** |
+| Items/Initialization | 11 | 8 | 3 | 73% |
+| Other | 17 | 10 | 7 | 59% |
+| **TOTAL** | **102** | **50** | **52** | **49%** |
 
 ## By Priority
 | Priority | Total | Done | Remaining | % |
 |----------|-------|------|-----------|---|
 | 🔴 Critical | 22 | 7 | 15 | 32% |
-| 🟡 Medium | 43 | 15 | 28 | 35% |
-| 🟢 Low | 37 | 14 | 23 | 38% |
-| **TOTAL** | **102** | **35** | **67** | **34%** |
+| 🟡 Medium | 43 | 21 | 22 | 49% |
+| 🟢 Low | 37 | 23 | 14 | 62% |
+| **TOTAL** | **102** | **50** | **52** | **49%** |
 
 ---
 

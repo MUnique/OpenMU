@@ -9,56 +9,73 @@ using System.Collections.Immutable;
 /// <summary>
 /// Class which holds the script exports of this project.
 /// </summary>
-/// <remarks>
-/// TODO: Instead of a static class, create an interface, so we can inject an instance into the layout.
-///       For example, we could further add some common Components which render the Scripts, Stylesheets, etc.
-/// </remarks>
-public static class Exports
+public class Exports : IExports
 {
+    private readonly Lazy<ImmutableList<string>> _scripts;
+    private readonly Lazy<ImmutableList<(string Key, string Path)>> _scriptMappings;
+    private readonly Lazy<ImmutableList<string>> _stylesheets;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Exports"/> class.
+    /// </summary>
+    public Exports()
+    {
+        this._scripts = new Lazy<ImmutableList<string>>(() =>
+        {
+            var adminPanelScripts = this.AdminPanelScripts.ToList();
+            return AdminPanelEnvironment.IsHostingEmbedded
+                ? Web.Map.Exports.Scripts.Concat(adminPanelScripts).ToImmutableList()
+                : adminPanelScripts.ToImmutableList();
+        });
+
+        this._scriptMappings = new Lazy<ImmutableList<(string Key, string Path)>>(() =>
+        {
+            return AdminPanelEnvironment.IsHostingEmbedded
+                ? Web.Map.Exports.ScriptMappings.ToImmutableList()
+                : ImmutableList<(string Key, string Path)>.Empty;
+        });
+
+        this._stylesheets = new Lazy<ImmutableList<string>>(() =>
+        {
+            var adminPanelStylesheets = this.AdminPanelStylesheets.ToList();
+            return AdminPanelEnvironment.IsHostingEmbedded
+                ? Web.Map.Exports.Stylesheets.Concat(adminPanelStylesheets).ToImmutableList()
+                : adminPanelStylesheets.ToImmutableList();
+        });
+    }
+
     /// <summary>
     /// Gets the url prefix to the scripts of this project.
     /// </summary>
-    private static string Prefix { get; } = $"_content/{typeof(Exports).Namespace}";
+    private string Prefix { get; } = $"_content/{typeof(Exports).Namespace}";
 
-    private static IEnumerable<string> AdminPanelScripts
+    private IEnumerable<string> AdminPanelScripts
     {
         get
         {
             yield return "_content/Blazored.Typeahead/blazored-typeahead.js";
             yield return "_content/Blazored.Modal/blazored.modal.js";
             yield return "_content/BlazorInputFile/inputfile.js";
-            yield return $"{Prefix}/js/map.js";
+            yield return $"{this.Prefix}/js/map.js";
         }
     }
 
-    private static IEnumerable<string> AdminPanelStylesheets
+    private IEnumerable<string> AdminPanelStylesheets
     {
         get
         {
             yield return "_content/Blazored.Typeahead/blazored-typeahead.css";
             yield return "_content/Blazored.Modal/blazored-modal.css";
-            yield return $"{Prefix}/css/site.css";
+            yield return $"{this.Prefix}/css/site.css";
         }
     }
 
-    /// <summary>
-    /// Gets the scripts.
-    /// </summary>
-    public static ImmutableList<string> Scripts { get; } = AdminPanelEnvironment.IsHostingEmbedded
-        ? Web.Map.Exports.Scripts.Concat(AdminPanelScripts).ToImmutableList()
-        : AdminPanelScripts.ToImmutableList();
+    /// <inheritdoc/>
+    public ImmutableList<string> Scripts => this._scripts.Value;
 
-    /// <summary>
-    /// Gets the script mappings.
-    /// </summary>
-    public static ImmutableList<(string Key, string Path)> ScriptMappings { get; } = AdminPanelEnvironment.IsHostingEmbedded
-        ? Web.Map.Exports.ScriptMappings.ToImmutableList()
-        : ImmutableList<(string Key, string Path)>.Empty;
+    /// <inheritdoc/>
+    public ImmutableList<(string Key, string Path)> ScriptMappings => this._scriptMappings.Value;
 
-    /// <summary>
-    /// Gets the stylesheets.
-    /// </summary>
-    public static ImmutableList<string> Stylesheets { get; } = AdminPanelEnvironment.IsHostingEmbedded
-        ? Web.Map.Exports.Stylesheets.Concat(AdminPanelStylesheets).ToImmutableList()
-        : AdminPanelStylesheets.ToImmutableList();
+    /// <inheritdoc/>
+    public ImmutableList<string> Stylesheets => this._stylesheets.Value;
 }

@@ -83,6 +83,7 @@ public class GameConfigurationInitializer : GameConfigurationInitializerBase
         new DevilSquareInitializer(this.Context, this.GameConfiguration).Initialize();
         new BloodCastleInitializer(this.Context, this.GameConfiguration).Initialize();
         new ChaosCastleInitializer(this.Context, this.GameConfiguration).Initialize();
+        new CashShopCategoriesInitializer(this.Context, this.GameConfiguration).Initialize();
         new CashShopProductsInitializer(this.Context, this.GameConfiguration).Initialize();
     }
 

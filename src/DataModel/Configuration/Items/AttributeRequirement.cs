@@ -24,9 +24,21 @@ public partial class AttributeRequirement
     /// </summary>
     public int MinimumValue { get; set; }
 
+    /// <summary>
+    /// Gets or sets the additional requirement per item level.
+    /// For example, if MinimumValue is 20 and MinimumValuePerItemLevel is 5,
+    /// then level 0 requires 20, level 1 requires 25, level 2 requires 30, etc.
+    /// </summary>
+    public int MinimumValuePerItemLevel { get; set; }
+
     /// <inheritdoc />
     public override string ToString()
     {
+        if (this.MinimumValuePerItemLevel > 0)
+        {
+            return $"{this.Attribute}: {this.MinimumValue} (+{this.MinimumValuePerItemLevel}/level)";
+        }
+
         return $"{this.Attribute}: {this.MinimumValue}";
     }
 }

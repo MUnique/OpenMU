@@ -32,9 +32,6 @@ public class ShowCastleSiegeMarkSubmittedPlugIn : IShowCastleSiegeMarkSubmittedP
             return;
         }
 
-        // TODO: Implement proper packet sending when server-to-client castle siege packets are defined
-        await connection.SendServerMessageAsync(
-            ServerMessage.MessageType.GoldenCenter,
-            $"Guild mark submitted. Total marks: {totalMarksSubmitted}").ConfigureAwait(false);
+        await connection.SendCastleSiegeMarkSubmittedAsync((uint)totalMarksSubmitted).ConfigureAwait(false);
     }
 }

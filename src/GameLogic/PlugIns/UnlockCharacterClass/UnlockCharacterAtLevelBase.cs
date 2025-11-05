@@ -10,36 +10,42 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.UnlockCharacterClass;
 public abstract class UnlockCharacterAtLevelBase : ICharacterLevelUpPlugIn
 {
     private readonly byte _classNumber;
-    private readonly int _minimumLevel;
     private readonly string _warningMessage;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="UnlockCharacterAtLevelBase"/> class.
     /// </summary>
     /// <param name="classNumber">The class number.</param>
-    /// <param name="minimumLevel">The minimum level.</param>
     /// <param name="className">Name of the class.</param>
-    protected UnlockCharacterAtLevelBase(byte classNumber, int minimumLevel, string className)
+    protected UnlockCharacterAtLevelBase(byte classNumber, string className)
     {
         this._classNumber = classNumber;
-        this._minimumLevel = minimumLevel;
         this._warningMessage = $"Couldn't unlock {className}, because it couldn't be found in the configuration.";
     }
 
     /// <inheritdoc />
     public void CharacterLeveledUp(Player player)
     {
-        if (player.Level >= this._minimumLevel
-            && player.Account is { } account
-            && account.UnlockedCharacterClasses.All(c => c.Number != this._classNumber))
+        if (player.Account is not { } account)
         {
-            var unlockedClass = player.GameContext.Configuration.CharacterClasses.FirstOrDefault(c => c.Number == this._classNumber);
-            if (unlockedClass is null)
-            {
-                player.Logger.LogWarning(this._warningMessage);
-                return;
-            }
+            return;
+        }
 
+        if (account.UnlockedCharacterClasses.Any(c => c.Number == this._classNumber))
+        {
+            return;
+        }
+
+        var unlockedClass = player.GameContext.Configuration.CharacterClasses.FirstOrDefault(c => c.Number == this._classNumber);
+        if (unlockedClass is null)
+        {
+            player.Logger.LogWarning(this._warningMessage);
+            return;
+        }
+
+        // Check if player level meets the configured requirement
+        if (player.Level >= unlockedClass.LevelRequirementByCreation)
+        {
             account.UnlockedCharacterClasses.Add(unlockedClass);
         }
     }

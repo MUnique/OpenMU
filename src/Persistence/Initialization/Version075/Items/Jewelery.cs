@@ -158,8 +158,8 @@ internal class Jewelery : InitializerBase
         item.Height = 1;
         item.Durability = durability;
 
-        //// TODO: Requirement increases with item level
-        this.CreateItemRequirementIfNeeded(item, Stats.Level, level);
+        // Level requirement increases by 5 per item level (e.g., level 20 ring: +0=20, +1=25, +2=30, +3=35, +4=40)
+        this.CreateItemRequirementIfNeeded(item, Stats.Level, level, perLevelIncrease: 5);
 
         if (withHealthOption)
         {

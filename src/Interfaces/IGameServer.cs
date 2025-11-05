@@ -76,6 +76,13 @@ public interface IGameServer : IManageableServer, IFriendSystemSubscriber
     ValueTask GuildDeletedAsync(uint guildId);
 
     /// <summary>
+    /// Notifies the game server that a guild war or hostility has ended between two guilds.
+    /// </summary>
+    /// <param name="guildId1">The first guild identifier.</param>
+    /// <param name="guildId2">The second guild identifier.</param>
+    ValueTask GuildWarEndedAsync(uint guildId1, uint guildId2);
+
+    /// <summary>
     /// Notifies the game server that a guild member got removed from a guild.
     /// </summary>
     /// <param name="playerName">Name of the player which got removed from a guild.</param>

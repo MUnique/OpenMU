@@ -125,6 +125,150 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="UpdateRotation" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="rotation">The rotation direction of the character.</param>
+    /// <remarks>
+    /// Is sent by the server when: The player's rotation has been updated after entering a map or teleporting.
+    /// Causes reaction on client side: The game client updates the player's rotation/direction.
+    /// </remarks>
+    public static async ValueTask SendUpdateRotationAsync(this IConnection? connection, byte @rotation)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = UpdateRotationRef.Length;
+            var packet = new UpdateRotationRef(connection.Output.GetSpan(length)[..length]);
+            packet.Rotation = @rotation;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CastleSiegeRegistrationResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result code: 0=Success, 1=Unregistered, 2=NotInGuild, 3=NotTheGuildMaster, 4=NotInAlliance, 5=NotAllianceMaster, 6=RegistrationClosed, 7=AlreadyRegistered, 8=NotRegistered</param>
+    /// <remarks>
+    /// Is sent by the server when: After a guild attempts to register or unregister for castle siege.
+    /// Causes reaction on client side: The client shows a message indicating the result of the registration attempt.
+    /// </remarks>
+    public static async ValueTask SendCastleSiegeRegistrationResultAsync(this IConnection? connection, byte @result)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CastleSiegeRegistrationResultRef.Length;
+            var packet = new CastleSiegeRegistrationResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CastleSiegeRegistrationState" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="isRegistered">True if the player's alliance is registered for castle siege, false otherwise.</param>
+    /// <param name="totalMarksSubmitted">The total number of guild marks submitted by the alliance.</param>
+    /// <remarks>
+    /// Is sent by the server when: When a player requests the castle siege registration state or after performing registration-related actions.
+    /// Causes reaction on client side: The client shows whether the player's alliance is registered and the total marks submitted.
+    /// </remarks>
+    public static async ValueTask SendCastleSiegeRegistrationStateAsync(this IConnection? connection, bool @isRegistered, uint @totalMarksSubmitted)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CastleSiegeRegistrationStateRef.Length;
+            var packet = new CastleSiegeRegistrationStateRef(connection.Output.GetSpan(length)[..length]);
+            packet.IsRegistered = @isRegistered;
+            packet.TotalMarksSubmitted = @totalMarksSubmitted;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CastleSiegeStatus" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="ownerGuildName">The name of the guild that currently owns the castle (8 characters, space-padded).</param>
+    /// <param name="state">The current state of the castle siege: 0=Inactive, 1=RegistrationOpen, 2=InProgress, 3=Ended</param>
+    /// <remarks>
+    /// Is sent by the server when: When a player requests the current castle siege status.
+    /// Causes reaction on client side: The client displays the current siege status including owner guild and state.
+    /// </remarks>
+    public static async ValueTask SendCastleSiegeStatusAsync(this IConnection? connection, string @ownerGuildName, byte @state)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CastleSiegeStatusRef.Length;
+            var packet = new CastleSiegeStatusRef(connection.Output.GetSpan(length)[..length]);
+            packet.OwnerGuildName = @ownerGuildName;
+            packet.State = @state;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CastleSiegeMarkSubmitted" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="totalMarksSubmitted">The total number of guild marks submitted by the alliance.</param>
+    /// <remarks>
+    /// Is sent by the server when: After a player submitted a guild mark (Sign of Lord item) for castle siege registration.
+    /// Causes reaction on client side: The client shows the total number of submitted marks for the player's alliance.
+    /// </remarks>
+    public static async ValueTask SendCastleSiegeMarkSubmittedAsync(this IConnection? connection, uint @totalMarksSubmitted)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CastleSiegeMarkSubmittedRef.Length;
+            var packet = new CastleSiegeMarkSubmittedRef(connection.Output.GetSpan(length)[..length]);
+            packet.TotalMarksSubmitted = @totalMarksSubmitted;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="AddCharacterToScopeExtended" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
@@ -6348,6 +6492,90 @@ public static class ConnectionExtensions
         {
             var length = CashShopItemDeleteResponseRef.Length;
             var packet = new CashShopItemDeleteResponseRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CashShopItemRefundResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <remarks>
+    /// Is sent by the server when: Response to cash shop item refund request.
+    /// Causes reaction on client side: Client displays refund result.
+    /// </remarks>
+    public static async ValueTask SendCashShopItemRefundResponseAsync(this IConnection? connection, byte @result)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CashShopItemRefundResponseRef.Length;
+            var packet = new CashShopItemRefundResponseRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="AllianceJoinRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="requesterGuildName">The name of the guild requesting the alliance (8 characters, space-padded).</param>
+    /// <remarks>
+    /// Is sent by the server when: A guild master requested an alliance with another guild. This message is sent to the target guild master.
+    /// Causes reaction on client side: The target guild master gets a message box with the request.
+    /// </remarks>
+    public static async ValueTask SendAllianceJoinRequestAsync(this IConnection? connection, string @requesterGuildName)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = AllianceJoinRequestRef.Length;
+            var packet = new AllianceJoinRequestRef(connection.Output.GetSpan(length)[..length]);
+            packet.RequesterGuildName = @requesterGuildName;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="AllianceJoinResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <remarks>
+    /// Is sent by the server when: After processing an alliance request. This message is sent back to the requesting guild master.
+    /// Causes reaction on client side: The requester gets a corresponding message showing the result.
+    /// </remarks>
+    public static async ValueTask SendAllianceJoinResponseAsync(this IConnection? connection, AllianceJoinResponse.AllianceJoinResult @result)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = AllianceJoinResponseRef.Length;
+            var packet = new AllianceJoinResponseRef(connection.Output.GetSpan(length)[..length]);
             packet.Result = @result;
 
             return packet.Header.Length;

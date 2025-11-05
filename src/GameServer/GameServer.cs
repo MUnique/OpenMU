@@ -388,6 +388,29 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
     }
 
     /// <inheritdoc/>
+    public async ValueTask GuildWarEndedAsync(uint guildId1, uint guildId2)
+    {
+        // Refresh guild list for all members of both guilds to show updated war/hostility status
+        await this._gameContext.ForEachGuildPlayerAsync(guildId1, async player =>
+        {
+            if (player.GuildStatus is not null && this._gameContext is IGameServerContext serverContext)
+            {
+                var guildList = await serverContext.GuildServer.GetGuildListAsync(player.GuildStatus.GuildId).ConfigureAwait(false);
+                await player.InvokeViewPlugInAsync<IShowGuildListPlugIn>(p => p.ShowGuildListAsync(guildList)).ConfigureAwait(false);
+            }
+        }).ConfigureAwait(false);
+
+        await this._gameContext.ForEachGuildPlayerAsync(guildId2, async player =>
+        {
+            if (player.GuildStatus is not null && this._gameContext is IGameServerContext serverContext)
+            {
+                var guildList = await serverContext.GuildServer.GetGuildListAsync(player.GuildStatus.GuildId).ConfigureAwait(false);
+                await player.InvokeViewPlugInAsync<IShowGuildListPlugIn>(p => p.ShowGuildListAsync(guildList)).ConfigureAwait(false);
+            }
+        }).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
     public async ValueTask GuildPlayerKickedAsync(string playerName)
     {
         var player = this._gameContext.GetPlayerByCharacterName(playerName);

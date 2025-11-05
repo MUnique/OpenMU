@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Guild;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic.Views.Guild;
 using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.PlugIns;
 
@@ -33,10 +34,31 @@ public class ShowAllianceListPlugIn : IShowAllianceListPlugIn
             return;
         }
 
-        // TODO: Implement proper packet sending when server-to-client alliance packets are defined
-        var guildNames = string.Join(", ", allianceGuilds.Select(g => g.Name));
-        await connection.SendServerMessageAsync(
-            ServerMessage.MessageType.GoldenCenter,
-            $"Alliance members: {guildNames}").ConfigureAwait(false);
+        var guildList = allianceGuilds.ToList();
+        var guildCount = (byte)guildList.Count;
+
+        int Write()
+        {
+            var size = AllianceListRef.GetRequiredSize(guildCount);
+            var span = connection.Output.GetSpan(size)[..size];
+            var packet = new AllianceListRef(span)
+            {
+                GuildCount = guildCount,
+            };
+
+            for (int i = 0; i < guildList.Count; i++)
+            {
+                var guild = guildList[i];
+                var guildEntry = packet[i];
+                guildEntry.GuildName = guild.Name ?? string.Empty;
+
+                // A guild is the alliance master if it has no AllianceGuild (i.e., it IS the alliance master)
+                guildEntry.IsMasterGuild = (byte)(guild.AllianceGuild == null ? 1 : 0);
+            }
+
+            return size;
+        }
+
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 }

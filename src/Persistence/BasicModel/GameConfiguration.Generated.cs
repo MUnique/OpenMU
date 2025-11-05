@@ -425,6 +425,27 @@ public partial class GameConfiguration : MUnique.OpenMU.DataModel.Configuration.
     }
 
     /// <summary>
+    /// Gets the raw collection of <see cref="CashShopCategories" />.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonPropertyName("cashShopCategories")]
+    public ICollection<CashShopCategory> RawCashShopCategories { get; } = new List<CashShopCategory>();
+    
+    /// <inheritdoc/>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override ICollection<MUnique.OpenMU.DataModel.Configuration.CashShopCategory> CashShopCategories
+    {
+        get => base.CashShopCategories ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.CashShopCategory, CashShopCategory>(this.RawCashShopCategories);
+        protected set
+        {
+            this.CashShopCategories.Clear();
+            foreach (var item in value)
+            {
+                this.CashShopCategories.Add(item);
+            }
+        }
+    }
+
+    /// <summary>
     /// Gets the raw collection of <see cref="CashShopProducts" />.
     /// </summary>
     [System.Text.Json.Serialization.JsonPropertyName("cashShopProducts")]

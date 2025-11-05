@@ -18,6 +18,7 @@ using MUnique.OpenMU.PlugIns;
 internal class GuildRelationshipChangeRequestHandlerPlugIn : IPacketHandlerPlugIn
 {
     private readonly AllianceRequestAction _allianceRequestAction = new();
+    private readonly HostilityRequestAction _hostilityRequestAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;
@@ -43,7 +44,14 @@ internal class GuildRelationshipChangeRequestHandlerPlugIn : IPacketHandlerPlugI
         }
         else if (request.RelationshipType == GuildRelationshipType.Hostility && request.RequestType == GuildRequestType.Join)
         {
-            // TODO: Implement hostility request
+            // Get the target player by ID to find their guild name
+            var targetPlayer = player.CurrentMap?.GetObject(request.TargetPlayerId) as Player;
+            if (targetPlayer?.GuildStatus is { } guildStatus
+                && targetPlayer.GameContext is IGameServerContext serverContext
+                && await serverContext.GuildServer.GetGuildAsync(guildStatus.GuildId).ConfigureAwait(false) is { Name: not null } targetGuild)
+            {
+                await this._hostilityRequestAction.RequestHostilityAsync(player, targetGuild.Name).ConfigureAwait(false);
+            }
         }
     }
 }

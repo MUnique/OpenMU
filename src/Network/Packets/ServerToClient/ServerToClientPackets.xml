@@ -363,6 +363,159 @@
       </Fields>
     </Packet>
     <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>0F</Code>
+      <SubCode>12</SubCode>
+      <Name>UpdateRotation</Name>
+      <Length>5</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The player's rotation has been updated after entering a map or teleporting.</SentWhen>
+      <CausedReaction>The game client updates the player's rotation/direction.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Rotation</Name>
+          <Description>The rotation direction of the character.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>B2</Code>
+      <SubCode>01</SubCode>
+      <Name>CastleSiegeRegistrationResult</Name>
+      <Length>5</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a guild attempts to register or unregister for castle siege.</SentWhen>
+      <CausedReaction>The client shows a message indicating the result of the registration attempt.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Result</Name>
+          <Description>The result code: 0=Success, 1=Unregistered, 2=NotInGuild, 3=NotTheGuildMaster, 4=NotInAlliance, 5=NotAllianceMaster, 6=RegistrationClosed, 7=AlreadyRegistered, 8=NotRegistered</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>B2</Code>
+      <SubCode>02</SubCode>
+      <Name>CastleSiegeRegistrationState</Name>
+      <Length>9</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>When a player requests the castle siege registration state or after performing registration-related actions.</SentWhen>
+      <CausedReaction>The client shows whether the player's alliance is registered and the total marks submitted.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Boolean</Type>
+          <Name>IsRegistered</Name>
+          <Description>True if the player's alliance is registered for castle siege, false otherwise.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>TotalMarksSubmitted</Name>
+          <Description>The total number of guild marks submitted by the alliance.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>B2</Code>
+      <SubCode>03</SubCode>
+      <Name>CastleSiegeStatus</Name>
+      <Length>14</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>When a player requests the current castle siege status.</SentWhen>
+      <CausedReaction>The client displays the current siege status including owner guild and state.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>String</Type>
+          <Length>8</Length>
+          <Name>OwnerGuildName</Name>
+          <Description>The name of the guild that currently owns the castle (8 characters, space-padded).</Description>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>Byte</Type>
+          <Name>State</Name>
+          <Description>The current state of the castle siege: 0=Inactive, 1=RegistrationOpen, 2=InProgress, 3=Ended</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>B2</Code>
+      <SubCode>04</SubCode>
+      <Name>CastleSiegeMarkSubmitted</Name>
+      <Length>7</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a player submitted a guild mark (Sign of Lord item) for castle siege registration.</SentWhen>
+      <CausedReaction>The client shows the total number of submitted marks for the player's alliance.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>TotalMarksSubmitted</Name>
+          <Description>The total number of guild marks submitted by the alliance.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C2Header</HeaderType>
+      <Code>B4</Code>
+      <Name>CastleSiegeRegisteredGuilds</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a guild master requested the list of registered guilds for castle siege.</SentWhen>
+      <CausedReaction>The client displays the list of registered guilds with their submitted marks.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>GuildCount</Name>
+          <Description>The number of registered guilds.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Structure[]</Type>
+          <TypeName>RegisteredGuild</TypeName>
+          <Name>Guilds</Name>
+          <ItemCountField>GuildCount</ItemCountField>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>RegisteredGuild</Name>
+          <Description>Contains the data of one registered guild for castle siege.</Description>
+          <Length>13</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>String</Type>
+              <Name>GuildName</Name>
+              <Length>8</Length>
+            </Field>
+            <Field>
+              <Index>8</Index>
+              <Type>IntegerLittleEndian</Type>
+              <Name>MarksSubmitted</Name>
+              <Description>The number of guild marks submitted by this guild's alliance.</Description>
+            </Field>
+            <Field>
+              <Index>12</Index>
+              <Type>Byte</Type>
+              <Name>IsAllianceMaster</Name>
+              <Description>1 if this guild is the alliance master, 0 otherwise.</Description>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
+    </Packet>
+    <Packet>
       <HeaderType>C2Header</HeaderType>
       <Code>12</Code>
       <Name>AddCharacterToScopeExtended</Name>
@@ -10977,6 +11130,166 @@
           <Name>Result</Name>
         </Field>
       </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>D2</Code>
+      <SubCode>14</SubCode>
+      <Name>CashShopItemRefundResponse</Name>
+      <Length>5</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>Response to cash shop item refund request.</SentWhen>
+      <CausedReaction>Client displays refund result.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Result</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>E5</Code>
+      <Name>AllianceJoinRequest</Name>
+      <Length>11</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>A guild master requested an alliance with another guild. This message is sent to the target guild master.</SentWhen>
+      <CausedReaction>The target guild master gets a message box with the request.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>String</Type>
+          <Name>RequesterGuildName</Name>
+          <Length>8</Length>
+          <Description>The name of the guild requesting the alliance (8 characters, space-padded).</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>E6</Code>
+      <Name>AllianceJoinResponse</Name>
+      <Length>4</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After processing an alliance request. This message is sent back to the requesting guild master.</SentWhen>
+      <CausedReaction>The requester gets a corresponding message showing the result.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Enum</Type>
+          <TypeName>AllianceJoinResult</TypeName>
+          <Name>Result</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>AllianceJoinResult</Name>
+          <Description>The result of an alliance operation.</Description>
+          <Values>
+            <EnumValue>
+              <Name>NotInGuild</Name>
+              <Description>The player is not in a guild.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>NotTheGuildMaster</Name>
+              <Description>The player is not the guild master.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>GuildNotFound</Name>
+              <Description>The target guild was not found.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>GuildMasterOffline</Name>
+              <Description>The guild master is offline.</Description>
+              <Value>3</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>RequestSent</Name>
+              <Description>The request was sent successfully.</Description>
+              <Value>4</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Success</Name>
+              <Description>The alliance was created successfully.</Description>
+              <Value>5</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Failed</Name>
+              <Description>The operation failed.</Description>
+              <Value>6</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>HasHostility</Name>
+              <Description>The guild has a hostility relationship.</Description>
+              <Value>7</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>AllianceFull</Name>
+              <Description>The alliance is full.</Description>
+              <Value>8</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>AlreadyInAlliance</Name>
+              <Description>The guild is already in an alliance.</Description>
+              <Value>9</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Removed</Name>
+              <Description>The guild was removed from the alliance.</Description>
+              <Value>10</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C2Header</HeaderType>
+      <Code>E9</Code>
+      <Name>AllianceList</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a player requested the list of guilds in their alliance.</SentWhen>
+      <CausedReaction>The client displays the alliance guild list.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>GuildCount</Name>
+          <Description>The number of guilds in the alliance.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Structure[]</Type>
+          <TypeName>AllianceGuild</TypeName>
+          <Name>Guilds</Name>
+          <ItemCountField>GuildCount</ItemCountField>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>AllianceGuild</Name>
+          <Description>Information about one guild in the alliance.</Description>
+          <Length>9</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>String</Type>
+              <Name>GuildName</Name>
+              <Length>8</Length>
+              <Description>The name of the guild (8 characters, space-padded).</Description>
+            </Field>
+            <Field>
+              <Index>8</Index>
+              <Type>Byte</Type>
+              <Name>IsMasterGuild</Name>
+              <Description>1 if this guild is the alliance master, 0 otherwise.</Description>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
     </Packet>
   </Packets>
   <Enums>

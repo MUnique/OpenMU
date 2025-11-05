@@ -1609,6 +1609,23 @@
     </Packet>
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>D2</Code>
+      <SubCode>14</SubCode>
+      <Name>CashShopItemRefundRequest</Name>
+      <Length>5</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player wants to refund an item from the cash shop storage.</SentWhen>
+      <CausedReaction>The server refunds the item and returns cash points to the player's account.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>ItemSlot</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>83</Code>
       <SubCode>00</SubCode>
       <Name>UnlockVault</Name>

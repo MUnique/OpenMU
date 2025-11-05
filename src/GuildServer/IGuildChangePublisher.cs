@@ -24,6 +24,13 @@ public interface IGuildChangePublisher
     ValueTask GuildDeletedAsync(uint guildId);
 
     /// <summary>
+    /// Notifies the game servers that a guild war or hostility has ended between two guilds.
+    /// </summary>
+    /// <param name="guildId1">The first guild identifier.</param>
+    /// <param name="guildId2">The second guild identifier.</param>
+    ValueTask GuildWarEndedAsync(uint guildId1, uint guildId2);
+
+    /// <summary>
     /// Assigns a guild to a player.
     /// </summary>
     /// <param name="serverId">The server identifier.</param>

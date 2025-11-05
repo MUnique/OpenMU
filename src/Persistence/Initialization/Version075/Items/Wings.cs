@@ -96,8 +96,8 @@ public class Wings : WingsInitializerBase
         wing.ItemSlot = this.GameConfiguration.ItemSlotTypes.First(st => st.ItemSlots.Contains(7));
         wing.SetGuid(wing.Group, wing.Number);
 
-        //// TODO: each level increases the requirement by 5 Levels
-        this.CreateItemRequirementIfNeeded(wing, Stats.Level, levelRequirement);
+        // Each level increases the requirement by 5 levels (e.g., level 180 wings: +0=180, +1=185, +2=190, etc.)
+        this.CreateItemRequirementIfNeeded(wing, Stats.Level, levelRequirement, perLevelIncrease: 5);
 
         if (defense > 0)
         {

@@ -860,6 +860,590 @@ public readonly struct WeatherStatusUpdate
 
 
 /// <summary>
+/// Is sent by the server when: The player's rotation has been updated after entering a map or teleporting.
+/// Causes reaction on client side: The game client updates the player's rotation/direction.
+/// </summary>
+public readonly struct UpdateRotation
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="UpdateRotation"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public UpdateRotation(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="UpdateRotation"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private UpdateRotation(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0x0F;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x12;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 5;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the rotation direction of the character.
+    /// </summary>
+    public byte Rotation
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="UpdateRotation"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator UpdateRotation(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="UpdateRotation"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(UpdateRotation packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: After a guild attempts to register or unregister for castle siege.
+/// Causes reaction on client side: The client shows a message indicating the result of the registration attempt.
+/// </summary>
+public readonly struct CastleSiegeRegistrationResult
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeRegistrationResult"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CastleSiegeRegistrationResult(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeRegistrationResult"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CastleSiegeRegistrationResult(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xB2;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x01;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 5;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result code: 0=Success, 1=Unregistered, 2=NotInGuild, 3=NotTheGuildMaster, 4=NotInAlliance, 5=NotAllianceMaster, 6=RegistrationClosed, 7=AlreadyRegistered, 8=NotRegistered
+    /// </summary>
+    public byte Result
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleSiegeRegistrationResult"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CastleSiegeRegistrationResult(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CastleSiegeRegistrationResult"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CastleSiegeRegistrationResult packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: When a player requests the castle siege registration state or after performing registration-related actions.
+/// Causes reaction on client side: The client shows whether the player's alliance is registered and the total marks submitted.
+/// </summary>
+public readonly struct CastleSiegeRegistrationState
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeRegistrationState"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CastleSiegeRegistrationState(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeRegistrationState"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CastleSiegeRegistrationState(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xB2;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x02;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 9;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets true if the player's alliance is registered for castle siege, false otherwise.
+    /// </summary>
+    public bool IsRegistered
+    {
+        get => this._data.Span[4..].GetBoolean();
+        set => this._data.Span[4..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the total number of guild marks submitted by the alliance.
+    /// </summary>
+    public uint TotalMarksSubmitted
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[5..]);
+        set => WriteUInt32LittleEndian(this._data.Span[5..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleSiegeRegistrationState"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CastleSiegeRegistrationState(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CastleSiegeRegistrationState"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CastleSiegeRegistrationState packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: When a player requests the current castle siege status.
+/// Causes reaction on client side: The client displays the current siege status including owner guild and state.
+/// </summary>
+public readonly struct CastleSiegeStatus
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeStatus"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CastleSiegeStatus(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeStatus"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CastleSiegeStatus(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xB2;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x03;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 14;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the name of the guild that currently owns the castle (8 characters, space-padded).
+    /// </summary>
+    public string OwnerGuildName
+    {
+        get => this._data.Span.ExtractString(4, 8, System.Text.Encoding.UTF8);
+        set => this._data.Slice(4, 8).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets or sets the current state of the castle siege: 0=Inactive, 1=RegistrationOpen, 2=InProgress, 3=Ended
+    /// </summary>
+    public byte State
+    {
+        get => this._data.Span[12];
+        set => this._data.Span[12] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleSiegeStatus"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CastleSiegeStatus(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CastleSiegeStatus"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CastleSiegeStatus packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: After a player submitted a guild mark (Sign of Lord item) for castle siege registration.
+/// Causes reaction on client side: The client shows the total number of submitted marks for the player's alliance.
+/// </summary>
+public readonly struct CastleSiegeMarkSubmitted
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeMarkSubmitted"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CastleSiegeMarkSubmitted(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeMarkSubmitted"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CastleSiegeMarkSubmitted(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xB2;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x04;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 7;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the total number of guild marks submitted by the alliance.
+    /// </summary>
+    public uint TotalMarksSubmitted
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[4..]);
+        set => WriteUInt32LittleEndian(this._data.Span[4..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleSiegeMarkSubmitted"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CastleSiegeMarkSubmitted(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CastleSiegeMarkSubmitted"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CastleSiegeMarkSubmitted packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: After a guild master requested the list of registered guilds for castle siege.
+/// Causes reaction on client side: The client displays the list of registered guilds with their submitted marks.
+/// </summary>
+public readonly struct CastleSiegeRegisteredGuilds
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeRegisteredGuilds"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CastleSiegeRegisteredGuilds(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CastleSiegeRegisteredGuilds"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CastleSiegeRegisteredGuilds(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (ushort)data.Length;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC2;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xB4;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C2Header Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the number of registered guilds.
+    /// </summary>
+    public byte GuildCount
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets the <see cref="RegisteredGuild"/> of the specified index.
+    /// </summary>
+        public RegisteredGuild this[int index] => new (this._data.Slice(5 + index * RegisteredGuild.Length));
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CastleSiegeRegisteredGuilds"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CastleSiegeRegisteredGuilds(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CastleSiegeRegisteredGuilds"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CastleSiegeRegisteredGuilds packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="RegisteredGuild"/>.
+    /// </summary>
+    /// <param name="guildsCount">The count of <see cref="RegisteredGuild"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int guildsCount) => guildsCount * RegisteredGuild.Length + 5;
+
+
+/// <summary>
+/// Contains the data of one registered guild for castle siege..
+/// </summary>
+public readonly struct RegisteredGuild
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RegisteredGuild"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public RegisteredGuild(Memory<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 13;
+
+    /// <summary>
+    /// Gets or sets the guild name.
+    /// </summary>
+    public string GuildName
+    {
+        get => this._data.Span.ExtractString(0, 8, System.Text.Encoding.UTF8);
+        set => this._data.Slice(0, 8).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets or sets the number of guild marks submitted by this guild's alliance.
+    /// </summary>
+    public uint MarksSubmitted
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[8..]);
+        set => WriteUInt32LittleEndian(this._data.Span[8..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets 1 if this guild is the alliance master, 0 otherwise.
+    /// </summary>
+    public byte IsAllianceMaster
+    {
+        get => this._data.Span[12];
+        set => this._data.Span[12] = value;
+    }
+}
+}
+
+
+/// <summary>
 /// Is sent by the server when: One or more character got into the observed scope of the player.
 /// Causes reaction on client side: The client adds the character to the shown map.
 /// </summary>
@@ -30870,6 +31454,438 @@ public readonly struct CashShopItemDeleteResponse
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
     public static implicit operator Memory<byte>(CashShopItemDeleteResponse packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: Response to cash shop item refund request.
+/// Causes reaction on client side: Client displays refund result.
+/// </summary>
+public readonly struct CashShopItemRefundResponse
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CashShopItemRefundResponse"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CashShopItemRefundResponse(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CashShopItemRefundResponse"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CashShopItemRefundResponse(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xD2;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x14;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 5;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public byte Result
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CashShopItemRefundResponse"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CashShopItemRefundResponse(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CashShopItemRefundResponse"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CashShopItemRefundResponse packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: A guild master requested an alliance with another guild. This message is sent to the target guild master.
+/// Causes reaction on client side: The target guild master gets a message box with the request.
+/// </summary>
+public readonly struct AllianceJoinRequest
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AllianceJoinRequest"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public AllianceJoinRequest(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AllianceJoinRequest"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private AllianceJoinRequest(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xE5;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 11;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1Header Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the name of the guild requesting the alliance (8 characters, space-padded).
+    /// </summary>
+    public string RequesterGuildName
+    {
+        get => this._data.Span.ExtractString(3, 8, System.Text.Encoding.UTF8);
+        set => this._data.Slice(3, 8).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="AllianceJoinRequest"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator AllianceJoinRequest(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="AllianceJoinRequest"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(AllianceJoinRequest packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: After processing an alliance request. This message is sent back to the requesting guild master.
+/// Causes reaction on client side: The requester gets a corresponding message showing the result.
+/// </summary>
+public readonly struct AllianceJoinResponse
+{
+    /// <summary>
+    /// The result of an alliance operation.
+    /// </summary>
+    public enum AllianceJoinResult
+    {
+        /// <summary>
+        /// The player is not in a guild.
+        /// </summary>
+            NotInGuild = 0,
+
+        /// <summary>
+        /// The player is not the guild master.
+        /// </summary>
+            NotTheGuildMaster = 1,
+
+        /// <summary>
+        /// The target guild was not found.
+        /// </summary>
+            GuildNotFound = 2,
+
+        /// <summary>
+        /// The guild master is offline.
+        /// </summary>
+            GuildMasterOffline = 3,
+
+        /// <summary>
+        /// The request was sent successfully.
+        /// </summary>
+            RequestSent = 4,
+
+        /// <summary>
+        /// The alliance was created successfully.
+        /// </summary>
+            Success = 5,
+
+        /// <summary>
+        /// The operation failed.
+        /// </summary>
+            Failed = 6,
+
+        /// <summary>
+        /// The guild has a hostility relationship.
+        /// </summary>
+            HasHostility = 7,
+
+        /// <summary>
+        /// The alliance is full.
+        /// </summary>
+            AllianceFull = 8,
+
+        /// <summary>
+        /// The guild is already in an alliance.
+        /// </summary>
+            AlreadyInAlliance = 9,
+
+        /// <summary>
+        /// The guild was removed from the alliance.
+        /// </summary>
+            Removed = 10,
+    }
+
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AllianceJoinResponse"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public AllianceJoinResponse(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AllianceJoinResponse"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private AllianceJoinResponse(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xE6;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 4;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1Header Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public AllianceJoinResponse.AllianceJoinResult Result
+    {
+        get => (AllianceJoinResult)this._data.Span[3];
+        set => this._data.Span[3] = (byte)value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="AllianceJoinResponse"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator AllianceJoinResponse(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="AllianceJoinResponse"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(AllianceJoinResponse packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: After a player requested the list of guilds in their alliance.
+/// Causes reaction on client side: The client displays the alliance guild list.
+/// </summary>
+public readonly struct AllianceList
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AllianceList"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public AllianceList(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AllianceList"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private AllianceList(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (ushort)data.Length;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC2;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xE9;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C2Header Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the number of guilds in the alliance.
+    /// </summary>
+    public byte GuildCount
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets the <see cref="AllianceGuild"/> of the specified index.
+    /// </summary>
+        public AllianceGuild this[int index] => new (this._data.Slice(5 + index * AllianceGuild.Length));
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="AllianceList"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator AllianceList(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="AllianceList"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(AllianceList packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="AllianceGuild"/>.
+    /// </summary>
+    /// <param name="guildsCount">The count of <see cref="AllianceGuild"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int guildsCount) => guildsCount * AllianceGuild.Length + 5;
+
+
+/// <summary>
+/// Information about one guild in the alliance..
+/// </summary>
+public readonly struct AllianceGuild
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AllianceGuild"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public AllianceGuild(Memory<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 9;
+
+    /// <summary>
+    /// Gets or sets the name of the guild (8 characters, space-padded).
+    /// </summary>
+    public string GuildName
+    {
+        get => this._data.Span.ExtractString(0, 8, System.Text.Encoding.UTF8);
+        set => this._data.Slice(0, 8).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets or sets 1 if this guild is the alliance master, 0 otherwise.
+    /// </summary>
+    public byte IsMasterGuild
+    {
+        get => this._data.Span[8];
+        set => this._data.Span[8] = value;
+    }
+}
 }
     /// <summary>
     /// Defines the role of a guild member.

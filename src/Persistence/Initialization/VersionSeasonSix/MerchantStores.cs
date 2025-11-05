@@ -57,8 +57,6 @@ internal partial class NpcInitialization
             this.ItemHelper.CreateWeapon(28, ItemGroups.Bows, 15, 1, 0, false, false, null), // Arrow +1
             this.ItemHelper.CreateWeapon(29, ItemGroups.Bows, 15, 2, 0, false, false, null), // Arrow +2
 
-            //// TODO: insert Archer and Spearman
-
             this.ItemHelper.CreateItem(32, 10, 14, 1, 0), // Town Portal Scroll
             this.ItemHelper.CreateItem(33, 29, 13, 1, 0), // Armor of Guardsman
         };

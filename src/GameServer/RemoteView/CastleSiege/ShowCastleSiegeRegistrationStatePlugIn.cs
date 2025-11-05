@@ -32,13 +32,6 @@ public class ShowCastleSiegeRegistrationStatePlugIn : IShowCastleSiegeRegistrati
             return;
         }
 
-        // TODO: Implement proper packet sending when server-to-client castle siege packets are defined
-        var message = isRegistered
-            ? $"Registered for castle siege. Total marks submitted: {totalMarksSubmitted}"
-            : "Not registered for castle siege";
-
-        await connection.SendServerMessageAsync(
-            ServerMessage.MessageType.GoldenCenter,
-            message).ConfigureAwait(false);
+        await connection.SendCastleSiegeRegistrationStateAsync(isRegistered, (uint)totalMarksSubmitted).ConfigureAwait(false);
     }
 }

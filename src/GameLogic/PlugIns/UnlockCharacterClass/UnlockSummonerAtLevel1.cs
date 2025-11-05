@@ -8,10 +8,10 @@ using System.Runtime.InteropServices;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// Unlocks the Summoner character class as soon as the first character of an account reaches level 1.
-/// TODO: Add configuration for the level and change name; remove the "AtLevel1" suffix.
+/// Unlocks the Summoner character class when the configured level requirement is met.
+/// The level requirement is configured in the CharacterClass.LevelRequirementByCreation property.
 /// </summary>
-[PlugIn(nameof(UnlockSummonerAtLevel1), "Unlocks the Summoner character class as soon as the first character of an account reaches level 1.")]
+[PlugIn(nameof(UnlockSummonerAtLevel1), "Unlocks the Summoner character class when the configured level requirement is met.")]
 [Guid("2DFFD751-7651-4FA1-93D1-9890CA0F04F1")]
 public class UnlockSummonerAtLevel1 : UnlockCharacterAtLevelBase
 {
@@ -21,7 +21,7 @@ public class UnlockSummonerAtLevel1 : UnlockCharacterAtLevelBase
     /// Initializes a new instance of the <see cref="UnlockSummonerAtLevel1"/> class.
     /// </summary>
     public UnlockSummonerAtLevel1()
-        : base(SummonerNumber, 1, "Summoner")
+        : base(SummonerNumber, "Summoner")
     {
     }
 }

@@ -1,7 +1,9 @@
 ﻿@page "/"
 @using MUnique.OpenMU.Web.AdminPanel
+@using System.Text
 @namespace MUnique.OpenMU.AdminPanel.Pages
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@inject IExports Exports
 @{
     Layout = null;
 }
@@ -39,17 +41,17 @@
     <script src="_content/Blazored.Modal/blazored.modal.js"></script>
     <script src="_content/BlazorInputFile/inputfile.js"></script>
 
-@foreach (var scriptSrc in Web.Map.Exports.Scripts)
+@foreach (var scriptSrc in Exports.Scripts)
 {
     <script src="@scriptSrc"></script>
 }
 
-@if (Web.Map.Exports.ScriptMappings.Any())
+@if (Exports.ScriptMappings.Any())
 {
     var sb = new StringBuilder();
     sb.AppendLine("System.config({").AppendLine("    map: {");
     bool isFirst = true;
-    foreach (var scriptMapping in Web.Map.Exports.ScriptMappings)
+    foreach (var scriptMapping in Exports.ScriptMappings)
     {
         if (!isFirst)
         {

@@ -37,6 +37,32 @@ public class ShowGuildListPlugIn : IShowGuildListPlugIn
         }
 
         var playerCount = players.Count();
+        
+        // Get guild war information
+        string rivalGuildName = string.Empty;
+        byte currentScore = 0;
+        byte totalScore = 0;
+
+        if (this._player.GuildWarContext is { } warContext)
+        {
+            // Active guild war
+            rivalGuildName = warContext.EnemyTeamName;
+            currentScore = warContext.ThisScore;
+            totalScore = warContext.Score.MaximumScore;
+        }
+        else if (this._player.GuildStatus is { } guildStatus)
+        {
+            // Check for hostility relationship
+            var guildServer = this._player.GameServerContext.GuildServer;
+            var guild = await guildServer.GetGuildAsync(guildStatus.GuildId).ConfigureAwait(false);
+            if (guild?.Hostility is { } hostileGuild)
+            {
+                rivalGuildName = hostileGuild.Name ?? string.Empty;
+                currentScore = (byte)Math.Min(255, Math.Max(0, guild.Score));
+                totalScore = (byte)Math.Min(255, Math.Max(0, hostileGuild.Score));
+            }
+        }
+
         int Write()
         {
             var size = GuildListRef.GetRequiredSize(playerCount);
@@ -45,9 +71,9 @@ public class ShowGuildListPlugIn : IShowGuildListPlugIn
             {
                 GuildMemberCount = (byte)playerCount,
                 IsInGuild = playerCount > 0,
-                RivalGuildName = string.Empty, // TODO
-                CurrentScore = 0, // TODO
-                TotalScore = 0, // TODO
+                RivalGuildName = rivalGuildName,
+                CurrentScore = currentScore,
+                TotalScore = totalScore,
             };
 
             int i = 0;
