@@ -381,10 +381,38 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
     /// <inheritdoc/>
     public async ValueTask GuildDeletedAsync(uint guildId)
     {
+        // Before removing the guild, check if it was part of an alliance
+        uint? allianceMasterGuildId = null;
+        if (this._gameContext is IGameServerContext serverContext)
+        {
+            try
+            {
+                allianceMasterGuildId = await serverContext.GuildServer.GetAllianceMasterGuildIdAsync(guildId).ConfigureAwait(false);
+            }
+            catch
+            {
+                // Guild might already be deleted or not found, ignore
+            }
+        }
+
         await this._gameContext.RemoveGuildAsync(guildId).ConfigureAwait(false);
         await this._gameContext.ForEachGuildPlayerAsync(guildId, p => this.RemovePlayerFromGuildAsync(p, false).AsTask()).ConfigureAwait(false);
 
-        //// todo: alliance things?
+        // If the deleted guild was part of an alliance, notify all alliance members to update their alliance list
+        if (allianceMasterGuildId.HasValue && allianceMasterGuildId.Value != 0 && this._gameContext is IGameServerContext context)
+        {
+            // Get all guilds in the alliance
+            var allianceGuildIds = await context.GuildServer.GetAllianceMemberGuildIdsAsync(allianceMasterGuildId.Value).ConfigureAwait(false);
+
+            // Notify all online members of the alliance guilds to refresh their alliance list
+            foreach (var allianceGuildId in allianceGuildIds)
+            {
+                await this._gameContext.ForEachGuildPlayerAsync(allianceGuildId, async player =>
+                {
+                    await player.InvokeViewPlugInAsync<IShowAllianceListUpdatePlugIn>(p => p.UpdateAllianceListAsync()).ConfigureAwait(false);
+                }).ConfigureAwait(false);
+            }
+        }
     }
 
     /// <inheritdoc/>

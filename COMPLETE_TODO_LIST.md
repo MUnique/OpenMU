@@ -1,10 +1,10 @@
 # OpenMU - Complete TODO & Issues List
 
-**Last Updated:** 2025-11-02 (Cash Shop Documentation Consolidated)
-**Total Items:** 102 TODOs + 60 NotImplemented = **162 Total Issues**
+**Last Updated:** 2025-11-05 (Alliance notification on guild deletion implemented)
+**Total Items:** 103 TODOs + 60 NotImplemented = **163 Total Issues**
 **Status:** Categorized by component, priority, and actionability
 
-## 🎉 Current Progress: 50/102 tasks = 49.0%
+## 🎉 Current Progress: 52/103 tasks = 50.5%
 
 ### Phase 1 Complete ✅ (6 tasks)
 - ✅ NET-1: Fixed patch check packet code
@@ -27,7 +27,7 @@
 
 **Completion Stats:**
 - Critical: 7/22 done (31.8%) - CS-1 ✅, CS-2 ✅, CS-3 ✅, CS-4 ✅, CS-5 ✅, NET-1 ✅, CSG-6 ✅
-- Medium: 21/43 done (48.8%) - PERS-5 ✅, GL-6 ✅, GL-7 ✅, NET-4 ✅, GL-8 ✅, GL-9 ✅, PERS-6 ✅, GLD-9 ✅, CS-3 validation ✅, CS balance validation ✅, CS price validation ✅, CS-6 ✅, CS-10 ✅, CS-7 ✅, CS-8 ✅, CS-9 ✅, PERS-1 ✅, PERS-2 ✅, PERS-3 ✅, ITEM-2 ✅, GLD-6 ✅
+- Medium: 22/43 done (51.2%) - PERS-5 ✅, GL-6 ✅, GL-7 ✅, NET-4 ✅, GL-8 ✅, GL-9 ✅, PERS-6 ✅, GLD-9 ✅, CS-3 validation ✅, CS balance validation ✅, CS price validation ✅, CS-6 ✅, CS-10 ✅, CS-7 ✅, CS-8 ✅, CS-9 ✅, PERS-1 ✅, PERS-2 ✅, PERS-3 ✅, ITEM-2 ✅, GLD-6 ✅, GL-13 ✅
 - Low: 23/37 done (62.2%) - PERS-15 ✅, ITEM-11 ✅, PERS-11 ✅, PERS-10 ✅, PERS-9 ✅, GL-12 ✅, MISC-3 ✅, MISC-9 ✅, GL-11 ✅, MISC-2 ✅, PERS-14 ✅, GL-10 ✅, MISC-8 ✅, ADM-8 ✅, CS-11 ✅, ITEM-4 ✅, ITEM-5 ✅, ITEM-6 ✅, ITEM-7 ✅, ITEM-8 ✅, ITEM-9 ✅, ADM-5 ✅, ADM-4 ✅
 
 ### Castle Siege Analysis (Phase 3)
@@ -54,14 +54,14 @@ All 5 Castle Siege packets (CSG-1 through CSG-5) require:
 | Cash Shop | 11 | 5 | 5 | 1 |
 | Castle Siege | 5 | 5 | 0 | 0 |
 | Guild/Alliance | 9 | 5 | 4 | 0 |
-| Game Logic | 12 | 3 | 6 | 3 |
+| Game Logic | 13 | 3 | 7 | 3 |
 | Persistence | 15 | 0 | 8 | 7 |
 | Network/Packets | 4 | 2 | 2 | 0 |
 | Admin Panel | 8 | 0 | 3 | 5 |
 | Dapr/Infrastructure | 9 | 0 | 5 | 4 |
 | Items/Initialization | 11 | 0 | 2 | 9 |
 | Other | 18 | 2 | 8 | 8 |
-| **TOTAL** | **102** | **22** | **43** | **37** |
+| **TOTAL** | **103** | **22** | **44** | **37** |
 
 ---
 
@@ -856,7 +856,7 @@ The cash shop feature adds premium currency monetization with:
 
 ---
 
-## GL - Game Logic (6 medium)
+## GL - Game Logic (7 medium)
 
 ### GL-4: Trade Context Object Needed 🟡
 **Status:** ❌ TODO
@@ -969,6 +969,31 @@ The cash shop feature adds premium currency monetization with:
 4. ✅ Removed TODO comment
 
 **Tell me:** `"Do task GL-9"`
+
+---
+
+### GL-13: Alliance Notification Missing on Guild Deletion 🟡
+**Status:** ✅ DONE
+**Priority:** 🟡 Medium
+**Difficulty:** ⭐⭐ Medium
+**File:** `src/GameServer/GameServer.cs:387`
+**Time:** 1 hour
+
+**Issue:** When a guild is deleted, alliance members are not notified to update their alliance list
+
+**Implementation:**
+1. ✅ Added alliance check before guild removal in `GuildDeletedAsync`
+2. ✅ Query alliance master guild ID from GuildServer for the deleted guild
+3. ✅ Get all alliance member guild IDs after guild removal
+4. ✅ Notify all online members of alliance guilds to refresh their alliance list
+5. ✅ Added try-catch to handle cases where guild is already deleted
+6. ✅ Removed TODO comment from GameServer.cs:387
+
+**Changes:**
+- `GameServer.cs:381-413` - Added alliance handling logic before and after guild removal
+- Now properly refreshes alliance UI for all remaining members when a guild is deleted
+
+**Tell me:** `"Do task GL-13"` (ALREADY COMPLETE)
 
 ---
 
@@ -1348,7 +1373,7 @@ The cash shop feature adds premium currency monetization with:
 ## ITEM - Items/Initialization (2 medium)
 
 ### ITEM-1: Fire Scream Explosion Damage Not Added 🟡
-**Status:** ❌ TODO
+**Status:** ✅ DONE
 **Priority:** 🟡 Medium
 **Difficulty:** ⭐⭐⭐ Hard
 **File:** `src/Persistence/Initialization/VersionSeasonSix/SkillsInitializer.cs:177`
@@ -1356,12 +1381,22 @@ The cash shop feature adds premium currency monetization with:
 
 **Issue:** FireScream's explosion (Explosion79) damage effect missing
 
-**Action:**
-1. Add Explosion79 damage effect
-2. Configure area and damage
-3. Test skill
+**Implementation:**
+1. ✅ Created `FireScreamSkillPlugIn.cs` implementing `IAreaSkillPlugIn` interface
+2. ✅ Plugin key: 78 (FireScream skill number)
+3. ✅ After FireScream hits, triggers Explosion79 (skill #79) at target position
+4. ✅ Explosion attacks all targets in range (distance: 2) around the hit target
+5. ✅ 100ms delay before explosion for visual effect
+6. ✅ Removed TODO comment from SkillsInitializer.cs line 178
 
-**Tell me:** `"Do task ITEM-1"`
+**Technical Details:**
+- **File:** `src/GameLogic/PlayerActions/Skills/FireScreamSkillPlugIn.cs`
+- **Pattern:** Similar to ChainLightningSkillPlugIn - uses `AfterTargetGotAttackedAsync` callback
+- **Explosion Skill:** Defined at line 179 of SkillsInitializer.cs (distance: 2, Physical damage)
+- **Area of Effect:** Uses `GetAttackablesInRange` to find targets within explosion radius
+- **Safety Checks:** Skips targets in safe zones and the attacker itself
+
+**Tell me:** `"Do task ITEM-1"` (ALREADY COMPLETE)
 
 ---
 
