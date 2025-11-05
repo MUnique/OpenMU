@@ -733,7 +733,7 @@ The cash shop feature adds premium currency monetization with:
 ---
 
 ### NET-2: Rotation Update Not Implemented 🔴
-**Status:** ❌ TODO
+**Status:** ✅ DONE
 **Priority:** 🔴 Critical
 **Difficulty:** ⭐⭐⭐ Hard
 **File:** `src/GameServer/RemoteView/World/UpdateRotationPlugIn.cs:29`
@@ -741,10 +741,17 @@ The cash shop feature adds premium currency monetization with:
 
 **Issue:** Character rotation not sent to other players
 
-**Action:**
-1. Implement rotation packet (0xC1, 0x04, 0x0F, 0x12)
-2. Send on rotation change
-3. Update nearby players
+**Implementation:**
+1. ✅ Created IShowRotationPlugIn interface for broadcasting rotation changes to observers
+2. ✅ Implemented ShowRotationPlugIn that sends UpdateRotation packet (0xC1, 0x0F, 0x12) to observers
+3. ✅ Updated CharacterWalkBaseHandlerPlugIn to notify observers when rotation changes without walking
+4. ✅ Short walk packets (length <= 6) now broadcast rotation changes to nearby players
+5. ✅ Prevents sending rotation update to the player themselves (they already know from client input)
+
+**Changes:**
+- Created `IShowRotationPlugIn.cs`: New World view plugin interface for rotation broadcasts
+- Created `ShowRotationPlugIn.cs`: Implementation that sends UpdateRotation packet to observers
+- Updated `CharacterWalkBaseHandlerPlugIn.cs`: Added ForEachWorldObserverAsync call for rotation-only changes
 
 **Tell me:** `"Do task NET-2"` or `"Implement rotation updates"`
 
@@ -780,7 +787,7 @@ The cash shop feature adds premium currency monetization with:
 ---
 
 ### GLD-7: Guild Hostility Response Not Implemented 🟡
-**Status:** ❌ TODO
+**Status:** ✅ DONE
 **Priority:** 🟡 Medium
 **Difficulty:** ⭐⭐⭐ Hard
 **File:** `src/GameServer/MessageHandler/Guild/GuildRelationshipChangeResponseHandlerPlugIn.cs:39`
@@ -788,17 +795,24 @@ The cash shop feature adds premium currency monetization with:
 
 **Issue:** Cannot respond to hostility requests
 
-**Action:**
-1. Implement hostility response logic
-2. Accept or reject hostility
-3. Notify requesting guild
+**Implementation:**
+1. ✅ HostilityResponseAction fully implemented with accept/reject logic
+2. ✅ Validates player is guild master before responding
+3. ✅ Checks if target guild already has hostility
+4. ✅ Creates hostility via GuildServer.CreateHostilityAsync
+5. ✅ Notifies both guild masters with success/failure response
+6. ✅ Refreshes guild list for all members of both guilds
+
+**Changes:**
+- `HostilityResponseAction.cs`: Complete implementation (lines 1-119)
+- Handler calls RespondToHostilityAsync when response type is Hostility+Join
 
 **Tell me:** `"Do task GLD-7"`
 
 ---
 
 ### GLD-8: Guild War End Not Broadcast 🟡
-**Status:** ❌ TODO
+**Status:** ✅ DONE
 **Priority:** 🟡 Medium
 **Difficulty:** ⭐⭐⭐ Hard
 **File:** `src/GuildServer/GuildServer.cs:475`
@@ -806,10 +820,17 @@ The cash shop feature adds premium currency monetization with:
 
 **Issue:** Game servers not informed when guild war/hostility ends
 
-**Action:**
-1. Broadcast war end event to all game servers
-2. Update guild relationships
-3. Notify online guild members
+**Implementation:**
+1. ✅ GuildServer.RemoveHostilityAsync calls GuildWarEndedAsync (line 462)
+2. ✅ DeleteGuildAsync also broadcasts GuildWarEndedAsync if guild had hostility (line 493)
+3. ✅ GameServer.GuildWarEndedAsync receives broadcast (line 391)
+4. ✅ Refreshes guild list for all online members of both guilds (lines 394-418)
+5. ✅ Bidirectional hostility properly removed from both guilds
+
+**Changes:**
+- `GuildServer.cs:462` - Broadcasts war end event after removing hostility
+- `GuildServer.cs:493` - Broadcasts war end event when guild with hostility is deleted
+- `GameServer.cs:391-418` - Handles broadcast and refreshes guild lists
 
 **Tell me:** `"Do task GLD-8"`
 

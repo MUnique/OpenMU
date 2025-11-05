@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler;
 
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Network.Packets.ClientToServer;
 using MUnique.OpenMU.Pathfinding;
 
@@ -44,7 +45,11 @@ internal abstract class CharacterWalkBaseHandlerPlugIn : IPacketHandlerPlugIn
         }
         else
         {
+            // Short walk packet - player is just changing rotation without moving
             player.Rotation = request.TargetRotation.ParseAsDirection();
+            
+            // Notify observers about the rotation change
+            await player.ForEachWorldObserverAsync<IShowRotationPlugIn>(p => p.ShowRotationAsync(player), false).ConfigureAwait(false);
         }
     }
 
