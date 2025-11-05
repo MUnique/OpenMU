@@ -659,38 +659,54 @@ The cash shop feature adds premium currency monetization with:
 ---
 
 ### GL-2: Area Skill Hit Validation Missing 🔴
-**Status:** ❌ TODO
+**Status:** ✅ DONE
 **Priority:** 🔴 Critical
 **Difficulty:** ⭐⭐⭐⭐ Very Hard
 **Files:**
-- `src/GameServer/MessageHandler/AreaSkillHitHandlerPlugIn075.cs:17`
-- `src/GameServer/MessageHandler/AreaSkillHitHandlerPlugIn095.cs:18`
+- `src/GameServer/MessageHandler/AreaSkillHitHandlerPlugIn075.cs`
+- `src/GameServer/MessageHandler/AreaSkillHitHandlerPlugIn095.cs`
 **Time:** 3-4 hours
 
 **Issue:** No validation that AreaSkillAttackAction was performed before hits
 
-**Action:**
-1. Track active area skills per player
-2. Validate skill was cast before allowing hits
-3. Prevent skill hit spam exploit
+**Implementation:**
+1. ✅ Added validation for AreaSkillExplicitHits skill type in both handlers
+2. ✅ 095 handler: Uses SkillHitValidator.IsHitValid with Counter field for proper validation
+3. ✅ 075 handler: Validates LastRegisteredSkillId matches (no counter field in protocol)
+4. ✅ Prevents area skill hit spam exploit by requiring prior skill cast
+5. ✅ Added proper using statements for SkillType and logging
+
+**Changes:**
+- `AreaSkillHitHandlerPlugIn095.cs`: Added counter-based validation for explicit hit skills
+- `AreaSkillHitHandlerPlugIn075.cs`: Added skill ID validation with hacker logging
+- Both handlers now check if skill was performed before allowing damage
 
 **Tell me:** `"Do task GL-2"` or `"Fix area skill validation"`
 
 ---
 
 ### GL-3: Player Disconnect Doesn't Drop Items 🔴
-**Status:** ❌ TODO
+**Status:** ✅ DONE
 **Priority:** 🔴 Critical
 **Difficulty:** ⭐⭐⭐ Hard
-**File:** `src/GameLogic/Player.cs:2226`
+**File:** `src/GameLogic/Player.cs`
 **Time:** 2 hours
 
 **Issue:** Items not dropped when player dies/disconnects
 
-**Action:**
-1. Implement item drop on death
-2. Handle disconnect scenario
-3. Drop to ground or return to inventory
+**Implementation:**
+1. ✅ Added DropItemsOnDeathAsync method to Player class
+2. ✅ Called from OnDeathAsync after killer handling (line 2415)
+3. ✅ Drops all equipped items (EquippedItems collection) on death
+4. ✅ Each item: removed from inventory, detached from persistence, dropped near death location
+5. ✅ Uses GetRandomCoordinate(position, 2) for drop positioning within 2-tile radius
+6. ✅ Creates DroppedItem objects using existing infrastructure
+7. ✅ Error handling per item prevents cascade failures
+
+**Changes:**
+- `Player.cs`: Added DropItemsOnDeathAsync call in OnDeathAsync (line 2415)
+- `Player.cs`: Implemented DropItemsOnDeathAsync method (lines 2457-2491)
+- Follows same pattern as monster drops for consistency
 
 **Tell me:** `"Do task GL-3"` or `"Fix item drop on death"`
 
