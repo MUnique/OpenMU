@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild;
 
+using MUnique.OpenMU.GameLogic.GuildWar;
 using MUnique.OpenMU.GameLogic.Views.Guild;
 using MUnique.OpenMU.Interfaces;
 
@@ -68,7 +69,7 @@ public class HostilityRequestAction
             RequesterPlayerName = player.Name!,
         };
 
-        await targetGuildMaster.InvokeViewPlugInAsync<IShowAllianceRequestPlugIn>(p => p.ShowRequestAsync(guild.Name!)).ConfigureAwait(false);
+        await targetGuildMaster.InvokeViewPlugInAsync<IShowGuildWarRequestPlugIn>(p => p.ShowRequestAsync(guild.Name!, GuildWarType.Normal)).ConfigureAwait(false);
         await player.InvokeViewPlugInAsync<IShowAllianceResponsePlugIn>(p => p.ShowResponseAsync(AllianceResponse.RequestSent, targetGuildName)).ConfigureAwait(false);
     }
 }

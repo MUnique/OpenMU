@@ -607,7 +607,7 @@ The cash shop feature adds premium currency monetization with:
 ---
 
 ### GLD-5: Guild Hostility Request Not Implemented 🔴
-**Status:** ❌ TODO
+**Status:** ✅ DONE
 **Priority:** 🔴 Critical
 **Difficulty:** ⭐⭐⭐⭐ Very Hard
 **File:** `src/GameServer/MessageHandler/Guild/GuildRelationshipChangeRequestHandlerPlugIn.cs:46`
@@ -615,11 +615,13 @@ The cash shop feature adds premium currency monetization with:
 
 **Issue:** Cannot declare guild wars/hostility
 
-**Action:**
-1. Implement hostility request logic
-2. Validate guilds exist
-3. Create relationship record
-4. Notify both guilds
+**Implementation:**
+1. ✅ Fixed HostilityRequestAction to use IShowGuildWarRequestPlugIn instead of IShowAllianceRequestPlugIn
+2. ✅ Sends GuildWarRequest packet (code 0x61) with GuildWarType.Normal parameter
+3. ✅ Uses proper guild war UI flow instead of alliance UI
+
+**Changes:**
+- `HostilityRequestAction.cs`: Changed from alliance plugin to war plugin, sends GuildWarType.Normal
 
 **Tell me:** `"Do task GLD-5"`
 

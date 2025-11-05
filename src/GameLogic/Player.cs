@@ -2412,7 +2412,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             await killerAfterKilled.AfterKilledPlayerAsync(this).ConfigureAwait(false);
         }
 
-        // TODO: Drop items
+        await this.DropItemsOnDeathAsync().ConfigureAwait(false);
+
         async Task RespawnAsync(CancellationToken cancellationToken)
         {
             try
@@ -2450,6 +2451,42 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         if (this.LastDeath is { } deathInformation)
         {
             this.Died?.Invoke(this, deathInformation);
+        }
+    }
+
+    private async ValueTask DropItemsOnDeathAsync()
+    {
+        if (this.CurrentMap is null || this.Inventory is null)
+        {
+            return;
+        }
+
+        // Get all items from equipment slots (items that are worn)
+        var equippedItems = this.Inventory.EquippedItems.ToList();
+
+        foreach (var item in equippedItems)
+        {
+            try
+            {
+                // Remove from inventory
+                await this.Inventory.RemoveItemAsync(item).ConfigureAwait(false);
+
+                // Detach from persistence context
+                this.PersistenceContext.Detach(item);
+
+                // Find a valid drop position near the player
+                var dropPosition = this.CurrentMap.Terrain.GetRandomCoordinate(this.Position, 2);
+
+                // Create dropped item
+                var droppedItem = new DroppedItem(item, dropPosition, this.CurrentMap, this);
+                await this.CurrentMap.AddAsync(droppedItem).ConfigureAwait(false);
+
+                this.Logger.LogInformation("Player {0} dropped item {1} at {2} on death", this.Name, item, dropPosition);
+            }
+            catch (Exception ex)
+            {
+                this.Logger.LogError(ex, "Error dropping item {0} on death for player {1}", item, this.Name);
+            }
         }
     }
 
