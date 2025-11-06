@@ -937,7 +937,7 @@ The cash shop feature adds premium currency monetization with:
 ## GL - Game Logic (7 medium)
 
 ### GL-4: Trade Context Object Needed 🟡
-**Status:** ❌ TODO
+**Status:** ✅ DONE
 **Priority:** 🟡 Medium
 **Difficulty:** ⭐⭐⭐⭐ Very Hard
 **File:** `src/GameLogic/Player.cs:248`
@@ -945,13 +945,25 @@ The cash shop feature adds premium currency monetization with:
 
 **Issue:** Trading logic spread across Player class, needs refactoring
 
-**Action:**
-1. Create TradeContext class
-2. Move trade logic to context
-3. Better state management
-4. Cleaner separation of concerns
+**Implementation:**
+1. ✅ Created TradeContext class that encapsulates trading state and logic
+2. ✅ Moved trading properties (TradingPartner, TradingMoney) to use TradeContext delegation
+3. ✅ Added convenient methods for trade validation and state management:
+   - CanTrade, IsTrading, IsInTradeState properties
+   - CancelTradeIfNeededAsync(), CanStartTrade(), ValidateTradeItems()
+   - CreateInventoryBackup(), RestoreInventoryFromBackupAsync()
+   - GetTradedItemsValue() for trade value calculation
+4. ✅ Refactored CloseTradeIfNeededAsync() to use TradeContext
+5. ✅ Maintained backward compatibility with ITrader interface
+6. ✅ Better separation of concerns - trading logic isolated from Player class
 
-**Tell me:** `"Do task GL-4"`
+**Changes:**
+- `src/GameLogic/TradeContext.cs` - New class with all trading state and logic
+- `src/GameLogic/Player.cs:253-267` - Replaced direct properties with TradeContext delegation
+- `src/GameLogic/Player.cs:84` - Initialize TradeContext in constructor
+- `src/GameLogic/Player.cs:3001-3004` - Updated CloseTradeIfNeededAsync to use TradeContext
+
+**Tell me:** `"Do task GL-4"` (ALREADY COMPLETE)
 
 ---
 
@@ -1351,7 +1363,7 @@ Separated synchronous predicate filtering (RemoveAll) from async alliance checki
 ---
 
 ### PERS-7: Friend Server Direct Dependency 🟡
-**Status:** ❌ TODO
+**Status:** ✅ DONE
 **Priority:** 🟡 Medium
 **Difficulty:** ⭐⭐⭐ Hard
 **File:** `src/FriendServer/FriendServer.cs:146`
@@ -1359,12 +1371,27 @@ Separated synchronous predicate filtering (RemoveAll) from async alliance checki
 
 **Issue:** Direct dependency to chat server
 
-**Action:**
-1. Create interface for chat server
-2. Inject via DI
-3. Remove direct dependency
+**Implementation:**
+1. ✅ Created IChatRoomRequestPublisher interface for chat room creation requests
+2. ✅ Created DirectChatRoomRequestPublisher that maintains existing behavior via direct chat server calls
+3. ✅ Updated FriendServer constructor to accept IChatRoomRequestPublisher instead of IChatServer
+4. ✅ Refactored CreateFriendChatRoomAsync to use publisher.PublishChatRoomCreationRequestAsync
+5. ✅ Refactored InviteFriendToChatRoomAsync to use publisher.PublishChatRoomInvitationRequestAsync
+6. ✅ Updated dependency injection in all Program.cs files (Startup, GameServer.Host, FriendServer.Host)
+7. ✅ Updated test files to use new interface with mocked implementation
+8. ✅ Removed TODO comment and direct chat server dependency
 
-**Tell me:** `"Do task PERS-7"`
+**Changes:**
+- `src/Interfaces/IChatRoomRequestPublisher.cs` - New interface for pub/sub pattern
+- `src/FriendServer/DirectChatRoomRequestPublisher.cs` - Implementation that calls chat server directly  
+- `src/FriendServer/FriendServer.cs:29,146-147,167` - Updated constructor and methods to use publisher
+- Updated DI registrations in Startup, GameServer.Host, and FriendServer.Host Program.cs files
+- `tests/MUnique.OpenMU.Tests/FriendServerTest.cs:47` - Updated test to use mocked publisher
+
+**Architecture:** 
+Now follows dependency injection pattern with interface abstraction. Future implementations can use actual pub/sub systems (Redis, RabbitMQ, etc.) without changing FriendServer code.
+
+**Tell me:** `"Do task PERS-7"` (ALREADY COMPLETE)
 
 ---
 

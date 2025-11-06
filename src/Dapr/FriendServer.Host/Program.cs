@@ -14,7 +14,8 @@ var builder = DaprService.CreateBuilder("FriendServer", args);
 
 // Add services to the container.
 var services = builder.Services;
-services.AddSingleton<IFriendServer, FriendServer>()
+services.AddSingleton<IChatRoomRequestPublisher, DirectChatRoomRequestPublisher>()
+    .AddSingleton<IFriendServer, FriendServer>()
     .AddSingleton<IChatServer, ChatServer>()
     .AddSingleton<IFriendNotifier, FriendNotifier>()
     .AddPeristenceProvider();

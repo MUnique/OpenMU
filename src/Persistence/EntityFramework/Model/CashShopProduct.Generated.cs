@@ -50,6 +50,32 @@ internal partial class CashShopProduct : MUnique.OpenMU.DataModel.Configuration.
         }
     }
 
+    /// <summary>
+    /// Gets or sets the identifier of <see cref="CategoryObject"/>.
+    /// </summary>
+    public Guid? CategoryObjectId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="CategoryObject" />.
+    /// </summary>
+    [ForeignKey(nameof(CategoryObjectId))]
+    public CashShopCategory RawCategoryObject
+    {
+        get => base.CategoryObject as CashShopCategory;
+        set => base.CategoryObject = value;
+    }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Configuration.CashShopCategory CategoryObject
+    {
+        get => base.CategoryObject;set
+        {
+            base.CategoryObject = value;
+            this.CategoryObjectId = this.RawCategoryObject?.Id;
+        }
+    }
+
 
     /// <inheritdoc/>
     public override bool Equals(object obj)

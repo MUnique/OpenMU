@@ -17,19 +17,19 @@ public class FriendServer : IFriendServer
     private readonly IPersistenceContextProvider _persistenceContextProvider;
     private readonly ILogger<FriendServer> _logger;
     private readonly IFriendNotifier _friendNotifier;
-    private readonly IChatServer _chatServer;
+    private readonly IChatRoomRequestPublisher _chatRoomRequestPublisher;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FriendServer" /> class.
     /// </summary>
     /// <param name="friendNotifier">The friend notifier.</param>
-    /// <param name="chatServer">The chat server.</param>
+    /// <param name="chatRoomRequestPublisher">The chat room request publisher.</param>
     /// <param name="persistenceContextProvider">The persistence context provider.</param>
     /// <param name="logger">The logger.</param>
-    public FriendServer(IFriendNotifier friendNotifier, IChatServer chatServer, IPersistenceContextProvider persistenceContextProvider, ILogger<FriendServer> logger)
+    public FriendServer(IFriendNotifier friendNotifier, IChatRoomRequestPublisher chatRoomRequestPublisher, IPersistenceContextProvider persistenceContextProvider, ILogger<FriendServer> logger)
     {
         this._friendNotifier = friendNotifier;
-        this._chatServer = chatServer;
+        this._chatRoomRequestPublisher = chatRoomRequestPublisher;
         this._persistenceContextProvider = persistenceContextProvider;
         this._logger = logger;
         this.OnlineFriends = new Dictionary<string, OnlineFriend>();
@@ -143,20 +143,7 @@ public class FriendServer : IFriendServer
             return;
         }
 
-        // TODO: Remove direct dependency to the chat server.
-        //       Instead of calling the chat server directly here, we could publish a request
-        //       to create the chat room to an pub/sub-system. An available chat server could then
-        //       process the request and notify the corresponding game servers.
-        var roomId = await this._chatServer.CreateChatRoomAsync().ConfigureAwait(false);
-        if (await this._chatServer.RegisterClientAsync(roomId, playerName).ConfigureAwait(false) is { } authenticationInfoPlayer)
-        {
-            await this._friendNotifier.ChatRoomCreatedAsync(player.ServerId, authenticationInfoPlayer, friendName).ConfigureAwait(false);
-        }
-
-        if (await this._chatServer.RegisterClientAsync(roomId, friendName).ConfigureAwait(false) is { } authenticationInfoFriend)
-        {
-            await this._friendNotifier.ChatRoomCreatedAsync(friend.ServerId, authenticationInfoFriend, playerName).ConfigureAwait(false);
-        }
+        await this._chatRoomRequestPublisher.PublishChatRoomCreationRequestAsync(playerName, friendName, player.ServerId, friend.ServerId).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -182,14 +169,7 @@ public class FriendServer : IFriendServer
             return false;
         }
 
-        var authenticationInfoFriend = await this._chatServer.RegisterClientAsync(roomId, friendName).ConfigureAwait(false);
-        if (authenticationInfoFriend is not null)
-        {
-            await this._friendNotifier.ChatRoomCreatedAsync(friend.ServerId, authenticationInfoFriend, playerName).ConfigureAwait(false);
-            return true;
-        }
-
-        return false;
+        return await this._chatRoomRequestPublisher.PublishChatRoomInvitationRequestAsync(playerName, friendName, roomId, player.ServerId, friend.ServerId).ConfigureAwait(false);
     }
 
     /// <remarks>Note, that the ServerId is not filled by this implementation. The player will receive it separately when the subscription is created.</remarks>

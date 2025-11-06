@@ -261,6 +261,7 @@ internal sealed class Program : IDisposable
             .AddSingleton<Lazy<IPersistenceContextProvider>>(s => new(() => s.GetService<IDatabaseSchemaProvider>()!))
             .AddSingleton<ILoginServer, LoginServer>()
             .AddSingleton<IGuildServer, GuildServer>()
+            .AddSingleton<IChatRoomRequestPublisher, DirectChatRoomRequestPublisher>()
             .AddSingleton<IFriendServer, FriendServer>()
             .AddSingleton<ChatServer>()
             .AddSingleton<IChatServer>(s => s.GetService<ChatServer>()!)

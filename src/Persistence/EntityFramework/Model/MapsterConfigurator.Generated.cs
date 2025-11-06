@@ -44,6 +44,9 @@ public static class MapsterConfigurator
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Entities.AppearanceData, MUnique.OpenMU.DataModel.Entities.AppearanceData>()
             .Include<AppearanceData, BasicModel.AppearanceData>();
 
+        Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Entities.CashShopTransaction, MUnique.OpenMU.DataModel.Entities.CashShopTransaction>()
+            .Include<CashShopTransaction, BasicModel.CashShopTransaction>();
+
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Entities.Character, MUnique.OpenMU.DataModel.Entities.Character>()
             .Include<Character, BasicModel.Character>();
 
@@ -82,6 +85,9 @@ public static class MapsterConfigurator
 
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.BattleZoneDefinition, MUnique.OpenMU.DataModel.Configuration.BattleZoneDefinition>()
             .Include<BattleZoneDefinition, BasicModel.BattleZoneDefinition>();
+
+        Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.CashShopCategory, MUnique.OpenMU.DataModel.Configuration.CashShopCategory>()
+            .Include<CashShopCategory, BasicModel.CashShopCategory>();
 
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Configuration.CashShopProduct, MUnique.OpenMU.DataModel.Configuration.CashShopProduct>()
             .Include<CashShopProduct, BasicModel.CashShopProduct>();

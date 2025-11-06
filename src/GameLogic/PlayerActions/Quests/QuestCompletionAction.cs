@@ -164,7 +164,18 @@ public class QuestCompletionAction
                 await player.InvokeViewPlugInAsync<IUpdateMoneyPlugIn>(p => p.UpdateMoneyAsync()).ConfigureAwait(false);
                 break;
             case QuestRewardType.GensAttribution:
-                // not yet implemented.
+                // TODO: Implement Gens Attribution system.
+                // For now, we'll log that the player received gens contribution points.
+                // In a full implementation, this would add to a gens contribution attribute
+                // and be tied to the guild family system (Duprian/Vanert).
+                player.Logger.LogInformation(
+                    "Player {PlayerName} received {GensPoints} gens contribution points from quest {QuestName}. (Not yet fully implemented)",
+                    player.Name,
+                    reward.Value,
+                    quest.Name);
+
+                // Show reward notification to the player
+                await player.InvokeViewPlugInAsync<ILegacyQuestRewardPlugIn>(p => p.ShowAsync(player, QuestRewardType.GensAttribution, reward.Value, null)).ConfigureAwait(false);
                 break;
             case QuestRewardType.Skill:
                 if (reward.SkillReward is not { } skill)
@@ -188,6 +199,10 @@ public class QuestCompletionAction
                     player.Logger.LogWarning($"Skill {skill} is already learned.");
                 }
 
+                break;
+            case QuestRewardType.Undefined:
+                // Undefined rewards do nothing
+                player.Logger.LogDebug("Quest {QuestName} has an undefined reward type - no reward given", quest.Name);
                 break;
             default:
                 player.Logger.LogWarning("Unknown reward type: {0}", reward.RewardType);

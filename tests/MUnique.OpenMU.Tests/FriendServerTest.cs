@@ -44,7 +44,8 @@ public sealed class FriendServerTest
         };
         this._persistenceContextProvider = new InMemoryPersistenceContextProvider();
         var notifier = new FriendNotifierToGameServer(gameServers); // todo: mock this
-        this._friendServer = new FriendServer.FriendServer(notifier, new Mock<IChatServer>().Object, this._persistenceContextProvider, NullLogger<FriendServer.FriendServer>.Instance);
+        var chatRoomRequestPublisher = new Mock<IChatRoomRequestPublisher>().Object;
+        this._friendServer = new FriendServer.FriendServer(notifier, chatRoomRequestPublisher, this._persistenceContextProvider, NullLogger<FriendServer.FriendServer>.Instance);
         var context = this._persistenceContextProvider.CreateNewContext();
         this._player1 = context.CreateNew<Character>();
         this._player1.Name = "player1";

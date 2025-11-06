@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using MUnique.OpenMU.Dapr.Common;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.FriendServer;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameServer.Host;
 using MUnique.OpenMU.Interfaces;
@@ -36,6 +37,7 @@ services.AddSingleton<GameServer>()
     .AddSingleton<ILoginServer, LoginServer>()
     .AddSingleton<IGuildServer, GuildServer>()
     .AddSingleton<IEventPublisher, EventPublisher>()
+    .AddSingleton<IChatRoomRequestPublisher, DirectChatRoomRequestPublisher>()
     .AddSingleton<IFriendServer, FriendServer>()
     .AddSingleton<GameServerInitializer>()
     .AddSingleton<IObservableGameServer, ObservableGameServerAdapter>()

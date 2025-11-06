@@ -71,7 +71,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Player" /> class.
-    /// </summary>di
+    /// </summary>
     /// <param name="gameContext">The game context.</param>
     public Player(IGameContext gameContext)
     {
@@ -82,6 +82,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         this.MagicEffectList = new MagicEffectsList(this);
         this._appearanceData = new AppearanceDataAdapter(this);
+        this.TradeContext = new TradeContext(this);
         this.PlayerState.StateChanged += async args => await (this.GameContext.PlugInManager.GetPlugInPoint<IPlayerStateChangedPlugIn>()?.PlayerStateChangedAsync(this, args.PreviousState, args.CurrentStateState) ?? ValueTask.CompletedTask).ConfigureAwait(false);
         this.PlayerState.StateChanges += async args => await (this.GameContext.PlugInManager.GetPlugInPoint<IPlayerStateChangingPlugIn>()?.PlayerStateChangingAsync(this, args) ?? ValueTask.CompletedTask).ConfigureAwait(false);
         this._observerToWorldViewAdapter = new ObserverToWorldViewAdapter(this, this.InfoRange);
@@ -247,13 +248,24 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <inheritdoc/>
     public StateMachine PlayerState { get; } = new(GameLogic.PlayerState.Initial);
 
-    // TODO: TradeContext-object?
+    /// <summary>
+    /// Gets the trade context that manages trading state and logic for this player.
+    /// </summary>
+    public TradeContext TradeContext { get; }
 
     /// <inheritdoc/>
-    public ITrader? TradingPartner { get; set; }
+    public ITrader? TradingPartner
+    {
+        get => this.TradeContext.TradingPartner;
+        set => this.TradeContext.TradingPartner = value;
+    }
 
     /// <inheritdoc/>
-    public int TradingMoney { get; set; }
+    public int TradingMoney
+    {
+        get => this.TradeContext.TradingMoney;
+        set => this.TradeContext.TradingMoney = value;
+    }
 
     /// <summary>
     /// Gets or sets the duel room in which the player is currently fighting or spectating.
@@ -2988,12 +3000,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     private async ValueTask CloseTradeIfNeededAsync()
     {
-        if (this.PlayerState.CurrentState == GameLogic.PlayerState.TradeButtonPressed
-            || this.PlayerState.CurrentState == GameLogic.PlayerState.TradeOpened)
-        {
-            var cancelAction = new TradeCancelAction();
-            await cancelAction.CancelTradeAsync(this).ConfigureAwait(false);
-        }
+        await this.TradeContext.CancelTradeIfNeededAsync().ConfigureAwait(false);
     }
 
     private sealed class TemporaryItemStorage : ItemStorage

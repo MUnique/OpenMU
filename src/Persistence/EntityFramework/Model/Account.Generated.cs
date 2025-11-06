@@ -34,6 +34,15 @@ internal partial class Account : MUnique.OpenMU.DataModel.Entities.Account, IIde
     public Guid Id { get; set; }
     
     /// <summary>
+    /// Gets the raw collection of <see cref="CashShopTransactions" />.
+    /// </summary>
+    public ICollection<CashShopTransaction> RawCashShopTransactions { get; } = new EntityFramework.List<CashShopTransaction>();
+    
+    /// <inheritdoc/>
+    [NotMapped]
+    public override ICollection<MUnique.OpenMU.DataModel.Entities.CashShopTransaction> CashShopTransactions => base.CashShopTransactions ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Entities.CashShopTransaction, CashShopTransaction>(this.RawCashShopTransactions);
+
+    /// <summary>
     /// Gets the raw collection of <see cref="Characters" />.
     /// </summary>
     public ICollection<Character> RawCharacters { get; } = new EntityFramework.List<Character>();

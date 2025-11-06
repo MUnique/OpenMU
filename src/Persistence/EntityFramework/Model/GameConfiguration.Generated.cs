@@ -200,6 +200,15 @@ internal partial class GameConfiguration : MUnique.OpenMU.DataModel.Configuratio
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.MiniGameDefinition> MiniGameDefinitions => base.MiniGameDefinitions ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.MiniGameDefinition, MiniGameDefinition>(this.RawMiniGameDefinitions);
 
     /// <summary>
+    /// Gets the raw collection of <see cref="CashShopCategories" />.
+    /// </summary>
+    public ICollection<CashShopCategory> RawCashShopCategories { get; } = new EntityFramework.List<CashShopCategory>();
+    
+    /// <inheritdoc/>
+    [NotMapped]
+    public override ICollection<MUnique.OpenMU.DataModel.Configuration.CashShopCategory> CashShopCategories => base.CashShopCategories ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.CashShopCategory, CashShopCategory>(this.RawCashShopCategories);
+
+    /// <summary>
     /// Gets the raw collection of <see cref="CashShopProducts" />.
     /// </summary>
     public ICollection<CashShopProduct> RawCashShopProducts { get; } = new EntityFramework.List<CashShopProduct>();
