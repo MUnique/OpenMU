@@ -57,7 +57,7 @@ public abstract class TrapIntelligenceBase : INpcIntelligence, IDisposable
         get
         {
             List<IWorldObserver> tempObservers;
-            using (this.Trap.ObserverLock.ReaderLock()) // todo: async?
+            using (this.Trap.ObserverLock.ReaderLock()) // Property getters are synchronous by design, so synchronous lock is appropriate
             {
                 tempObservers = new List<IWorldObserver>(this.Trap.Observers);
             }

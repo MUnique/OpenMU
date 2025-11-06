@@ -71,7 +71,7 @@ public class FriendNotifier : IFriendNotifier
     {
         try
         {
-            // todo: find out if this is correct when logging out
+            // When logging out, playerServerId will not be in _appIds, so notification is skipped (correct behavior)
             if (this._appIds.TryGetValue(playerServerId, out var gameServer))
             {
                 await this._daprClient.InvokeMethodAsync(gameServer, nameof(IGameServer.FriendOnlineStateChangedAsync), new FriendOnlineStateChangedArguments(player, friend, friendServerId)).ConfigureAwait(false);

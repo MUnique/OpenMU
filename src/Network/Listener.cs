@@ -147,7 +147,7 @@ public class Listener
 
             if (cancel is null || !cancel.Cancel)
             {
-                socket.NoDelay = true; // todo: option?
+                socket.NoDelay = true; // Disable Nagle's algorithm for low latency (required for real-time game server)
                 var connection = this.CreateConnection(socket);
 
                 if (this.ClientAccepted is { } clientAccepted)

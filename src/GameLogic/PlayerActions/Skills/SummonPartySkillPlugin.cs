@@ -7,8 +7,10 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 using System.Runtime.InteropServices;
 using System.Threading;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.CastleSiege;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.World;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.PlugIns;
 
@@ -60,6 +62,21 @@ public class SummonPartySkillPlugin : TargetedSkillPluginBase
                 cancellationToken.ThrowIfCancellationRequested();
 
                 targetPlayers.RemoveAll(target => !this.CanPlayerSummonTarget(player, target));
+
+                // During castle siege, filter out players not in the same alliance
+                if (this.IsCastleSiegeActive(player))
+                {
+                    var filteredPlayers = new List<Player>();
+                    foreach (var target in targetPlayers)
+                    {
+                        if (await this.AreInSameAllianceAsync(player, target).ConfigureAwait(false))
+                        {
+                            filteredPlayers.Add(target);
+                        }
+                    }
+
+                    targetPlayers = filteredPlayers;
+                }
 
                 foreach (var targetPlayer in targetPlayers)
                 {
@@ -132,9 +149,10 @@ public class SummonPartySkillPlugin : TargetedSkillPluginBase
 
     private bool CanPlayerSummon(Player player)
     {
-        return player.Party is not null 
+        return player.Party is not null
                && player.OpenedNpc is null
                && player.CurrentMiniGame is null;
+
         // todo, not in:
         // * Kalima
         // * kanturu boss (39)
@@ -151,7 +169,6 @@ public class SummonPartySkillPlugin : TargetedSkillPluginBase
             && target.TradingPartner is null
             && target.CurrentMiniGame is null;
 
-        // todo: not during castle siege for players which are not in the same ally
         if (!allowedByState)
         {
             return false;
@@ -169,5 +186,33 @@ public class SummonPartySkillPlugin : TargetedSkillPluginBase
         }
 
         return warpInfo.LevelRequirement <= totalLevel;
+    }
+
+    private bool IsCastleSiegeActive(Player player)
+    {
+        return player.CurrentMap?.CastleSiegeContext?.State == CastleSiegeState.InProgress;
+    }
+
+    private async Task<bool> AreInSameAllianceAsync(Player player1, Player player2)
+    {
+        if (player1.GuildStatus is not { } guild1 || player2.GuildStatus is not { } guild2)
+        {
+            return false;
+        }
+
+        if (guild1.GuildId == guild2.GuildId)
+        {
+            return true; // Same guild means same alliance
+        }
+
+        if (player1.GameContext is not IGameServerContext serverContext)
+        {
+            return false;
+        }
+
+        var alliance1 = await serverContext.GuildServer.GetAllianceMasterGuildIdAsync(guild1.GuildId).ConfigureAwait(false);
+        var alliance2 = await serverContext.GuildServer.GetAllianceMasterGuildIdAsync(guild2.GuildId).ConfigureAwait(false);
+
+        return alliance1 != 0 && alliance1 == alliance2;
     }
 }

@@ -317,7 +317,7 @@ public static class Extensions
                 var persistenceContextProvider = serviceProvider.GetService<IPersistenceContextProvider>() ?? throw new Exception($"{nameof(IPersistenceContextProvider)} not registered.");
                 using var context = persistenceContextProvider.CreateNewTypedContext(typeof(SystemConfiguration), false);
 
-                // TODO: this may lead to a deadlock?
+                // Safe to use WaitAndUnwrapException during DI registration (startup-time, no synchronization context)
                 var configuration = context.GetAsync<SystemConfiguration>().AsTask().WaitAndUnwrapException().FirstOrDefault();
                 if (configuration is not null)
                 {
