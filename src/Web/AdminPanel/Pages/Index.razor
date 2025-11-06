@@ -1,7 +1,200 @@
 ﻿@page "/"
+@using MUnique.OpenMU.Interfaces
+@using System.ComponentModel
+@using MUnique.OpenMU.DataModel.Configuration
 
-<h1>OpenMU AdminPanel</h1>
-<PageTitle>OpenMU AdminPanel</PageTitle>
-<Breadcrumb IsFirstFromRoot="true" Caption="Home"/>
+<PageTitle>OpenMU AdminPanel - Dashboard</PageTitle>
+<Breadcrumb IsFirstFromRoot="true" Caption="Dashboard"/>
 
-Welcome to the admin panel of OpenMU.
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h1 class="dashboard-title">
+            <span class="oi oi-dashboard"></span>
+            OpenMU AdminPanel
+        </h1>
+        <p class="dashboard-subtitle">Manage your OpenMU server infrastructure</p>
+    </div>
+
+    <div class="dashboard-stats row">
+        @if (_servers != null)
+        {
+            <div class="col-md-3">
+                <div class="stat-card stat-card-primary">
+                    <div class="stat-icon">
+                        <span class="oi oi-project"></span>
+                    </div>
+                    <div class="stat-content">
+                        <h3>@_servers.Count()</h3>
+                        <p>Total Servers</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card stat-card-success">
+                    <div class="stat-icon">
+                        <span class="oi oi-media-play"></span>
+                    </div>
+                    <div class="stat-content">
+                        <h3>@_servers.Count(s => s.ServerState == ServerState.Started)</h3>
+                        <p>Running Servers</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card stat-card-info">
+                    <div class="stat-icon">
+                        <span class="oi oi-people"></span>
+                    </div>
+                    <div class="stat-content">
+                        <h3>@_servers.Sum(s => s.CurrentConnections)</h3>
+                        <p>Online Players</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card stat-card-warning">
+                    <div class="stat-icon">
+                        <span class="oi oi-graph"></span>
+                    </div>
+                    <div class="stat-content">
+                        <h3>@(Math.Round(_servers.Where(s => s.MaximumConnections > 0).Average(s => (double)s.CurrentConnections / s.MaximumConnections * 100), 1))%</h3>
+                        <p>Avg Load</p>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="col-12">
+                <div class="loading-container">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                    <p class="mt-2">Loading server statistics...</p>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="dashboard-content row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <span class="oi oi-project"></span>
+                        Server Status Overview
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @if (_servers != null && _servers.Any())
+                    {
+                        <div class="server-grid">
+                            @foreach (var server in _servers.OrderBy(s => s.Type).ThenBy(s => s.Description))
+                            {
+                                <div class="server-item @GetServerStatusClass(server)">
+                                    <div class="server-header">
+                                        <span class="server-type-icon">
+                                            @if (server.Type == ServerType.GameServer)
+                                            {
+                                                <span class="oi oi-target"></span>
+                                            }
+                                            else if (server.Type == ServerType.ConnectServer)
+                                            {
+                                                <span class="oi oi-wifi"></span>
+                                            }
+                                            else
+                                            {
+                                                <span class="oi oi-chat"></span>
+                                            }
+                                        </span>
+                                        <h6 class="server-name">@server.Description</h6>
+                                        <span class="server-status @GetServerStatusBadgeClass(server)">
+                                            @GetServerStatusText(server)
+                                        </span>
+                                    </div>
+                                    <div class="server-details">
+                                        <div class="detail-item">
+                                            <span class="oi oi-people"></span>
+                                            @server.CurrentConnections/@(server.MaximumConnections < int.MaxValue ? server.MaximumConnections.ToString() : "∞")
+                                        </div>
+                                        @if (server.Type == ServerType.GameServer)
+                                        {
+                                            <div class="detail-item">
+                                                <span class="oi oi-map"></span>
+                                                Game Server
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else if (_servers != null)
+                    {
+                        <div class="empty-state">
+                            <span class="oi oi-info"></span>
+                            <p>No servers configured yet.</p>
+                            <a href="/servers" class="btn btn-primary">Configure Servers</a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <span class="oi oi-flash"></span>
+                        Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="quick-actions">
+                        <a href="/servers" class="btn btn-outline-primary btn-block mb-2">
+                            <span class="oi oi-project"></span>
+                            Manage Servers
+                        </a>
+                        <a href="/accounts" class="btn btn-outline-secondary btn-block mb-2">
+                            <span class="oi oi-people"></span>
+                            View Accounts
+                        </a>
+                        <a href="/logged-in" class="btn btn-outline-info btn-block mb-2">
+                            <span class="oi oi-eye"></span>
+                            Online Players
+                        </a>
+                        <a href="/setup" class="btn btn-outline-warning btn-block">
+                            <span class="oi oi-cog"></span>
+                            Server Setup
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <span class="oi oi-info"></span>
+                        System Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="system-info">
+                        <div class="info-item">
+                            <strong>Version:</strong>
+                            <span>OpenMU 1.6+</span>
+                        </div>
+                        <div class="info-item">
+                            <strong>Uptime:</strong>
+                            <span>@GetSystemUptime()</span>
+                        </div>
+                        <div class="info-item">
+                            <strong>Environment:</strong>
+                            <span>@System.Environment.MachineName</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

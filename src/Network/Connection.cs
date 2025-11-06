@@ -30,6 +30,8 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
     private static readonly Counter<long> OutgoingBytesCounter = ConnectionMeter.CreateCounter<long>("OutgoingBytes", "bytes");
     private static readonly Counter<long> InvalidBlocksCounter = ConnectionMeter.CreateCounter<long>("InvalidBlocks");
     private static readonly Counter<long> ConnectionCounter = ConnectionMeter.CreateCounter<long>("ConnectionCount");
+    private static readonly Counter<long> ConnectionTimeoutCounter = ConnectionMeter.CreateCounter<long>("ConnectionTimeouts");
+    private static readonly Counter<long> ConnectionReconnectCounter = ConnectionMeter.CreateCounter<long>("ConnectionReconnects");
 
     /// <summary>
     /// The start of an RDP connection attempt.
@@ -40,13 +42,28 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
     /// </remarks>
     private static readonly byte[] RdpConnectionAttemptHeader = { 0x03, 0x00, 0x00 };
 
+    /// <summary>
+    /// Default connection timeout in milliseconds.
+    /// </summary>
+    private static readonly TimeSpan DefaultConnectionTimeout = TimeSpan.FromMinutes(5);
+
+    /// <summary>
+    /// Default heartbeat interval in milliseconds.
+    /// </summary>
+    private static readonly TimeSpan DefaultHeartbeatInterval = TimeSpan.FromSeconds(30);
+
     private readonly IPipelinedEncryptor? _encryptionPipe;
     private readonly ILogger<Connection> _logger;
     private readonly EndPoint _remoteEndPoint;
+    private readonly CancellationTokenSource _connectionCancellation;
+    private readonly Timer? _heartbeatTimer;
+    private readonly Timer? _connectionTimeoutTimer;
 
     private IDuplexPipe? _duplexPipe;
     private bool _disconnected;
     private PipeWriter? _outputWriter;
+    private DateTime _lastActivity;
+    private volatile bool _isHealthy = true;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Connection" /> class.
@@ -64,6 +81,16 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
         this._remoteEndPoint = this.SocketConnection?.Socket.RemoteEndPoint ?? new IPEndPoint(IPAddress.Any, 0);
         this.LocalEndPoint = this.SocketConnection?.Socket.LocalEndPoint;
         this.OutputLock = new();
+        
+        // Initialize connection management fields
+        this._connectionCancellation = new CancellationTokenSource();
+        this._lastActivity = DateTime.UtcNow;
+        
+        // Setup heartbeat timer to monitor connection health
+        this._heartbeatTimer = new Timer(this.CheckConnectionHealth, null, (int)DefaultHeartbeatInterval.TotalMilliseconds, (int)DefaultHeartbeatInterval.TotalMilliseconds);
+        
+        // Setup connection timeout timer
+        this._connectionTimeoutTimer = new Timer(this.CheckConnectionTimeout, null, (int)DefaultConnectionTimeout.TotalMilliseconds, (int)DefaultConnectionTimeout.TotalMilliseconds);
     }
 
     /// <inheritdoc />
@@ -88,6 +115,16 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
     public AsyncLock OutputLock { get; }
 
     /// <summary>
+    /// Gets a value indicating whether the connection is healthy.
+    /// </summary>
+    public bool IsHealthy => this._isHealthy && this.Connected;
+
+    /// <summary>
+    /// Gets the last activity time of the connection.
+    /// </summary>
+    public DateTime LastActivity => this._lastActivity;
+
+    /// <summary>
     /// Gets the name of the meter.
     /// </summary>
     internal static string MeterName => typeof(Connection).FullName ?? nameof(Connection);
@@ -100,12 +137,92 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
     /// <inheritdoc/>
     public override string ToString() => this._remoteEndPoint?.ToString() ?? $"{base.ToString()} {this.GetHashCode()}";
 
+    /// <summary>
+    /// Checks the connection health and updates internal health status.
+    /// </summary>
+    /// <param name="state">The state object.</param>
+    private void CheckConnectionHealth(object? state)
+    {
+        if (this._disconnected || this._connectionCancellation.IsCancellationRequested)
+        {
+            return;
+        }
+
+        try
+        {
+            // Check if the connection is still responsive
+            var timeSinceLastActivity = DateTime.UtcNow - this._lastActivity;
+            if (timeSinceLastActivity > DefaultHeartbeatInterval.Add(TimeSpan.FromSeconds(10)))
+            {
+                this._logger.LogWarning("Connection health check: No activity for {TimeSinceLastActivity} from {EndPoint}", timeSinceLastActivity, this._remoteEndPoint);
+                this._isHealthy = false;
+            }
+            else
+            {
+                this._isHealthy = true;
+            }
+
+            // Additional socket-level health checks if available
+            if (this.SocketConnection?.Socket is { } socket)
+            {
+                if (!socket.Connected)
+                {
+                    this._logger.LogWarning("Connection health check: Socket connection issues detected for {EndPoint}", this._remoteEndPoint);
+                    this._isHealthy = false;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, "Error during connection health check for {EndPoint}", this._remoteEndPoint);
+            this._isHealthy = false;
+        }
+    }
+
+    /// <summary>
+    /// Checks for connection timeout and triggers disconnect if necessary.
+    /// </summary>
+    /// <param name="state">The state object.</param>
+    private void CheckConnectionTimeout(object? state)
+    {
+        if (this._disconnected || this._connectionCancellation.IsCancellationRequested)
+        {
+            return;
+        }
+
+        try
+        {
+            var timeSinceLastActivity = DateTime.UtcNow - this._lastActivity;
+            if (timeSinceLastActivity > DefaultConnectionTimeout)
+            {
+                this._logger.LogInformation("Connection timeout detected for {EndPoint}, disconnecting after {TimeSinceLastActivity} of inactivity", this._remoteEndPoint, timeSinceLastActivity);
+                ConnectionTimeoutCounter.Add(1, new KeyValuePair<string, object?>("RemoteEndPoint", this._remoteEndPoint));
+                
+                // Trigger async disconnect without blocking the timer thread
+                _ = Task.Run(async () => await this.DisconnectAsync().ConfigureAwait(false), this._connectionCancellation.Token);
+            }
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, "Error during connection timeout check for {EndPoint}", this._remoteEndPoint);
+        }
+    }
+
+    /// <summary>
+    /// Updates the last activity timestamp.
+    /// </summary>
+    private void UpdateLastActivity()
+    {
+        this._lastActivity = DateTime.UtcNow;
+    }
+
     /// <inheritdoc/>
     public async Task BeginReceiveAsync()
     {
         try
         {
             ConnectionCounter.Add(1);
+            this.UpdateLastActivity(); // Update activity on connection start
             await this.ReadSourceAsync().ConfigureAwait(false);
         }
         catch (OperationCanceledException)
@@ -133,6 +250,24 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
 
         ConnectionCounter.Add(-1);
         this._logger.LogDebug("Disconnecting...");
+        
+        // Cancel any ongoing operations
+        if (!this._connectionCancellation.IsCancellationRequested)
+        {
+            await this._connectionCancellation.CancelAsync().ConfigureAwait(false);
+        }
+
+        // Dispose timers
+        if (this._heartbeatTimer is not null)
+        {
+            await this._heartbeatTimer.DisposeAsync().ConfigureAwait(false);
+        }
+
+        if (this._connectionTimeoutTimer is not null)
+        {
+            await this._connectionTimeoutTimer.DisposeAsync().ConfigureAwait(false);
+        }
+
         if (this._duplexPipe is not null)
         {
             await this.Source.CompleteAsync().ConfigureAwait(false);
@@ -151,6 +286,7 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
     public void Dispose()
     {
         this.DisconnectAsync().AsTask().WaitAndUnwrapException();
+        this._connectionCancellation?.Dispose();
         this.PacketReceived = null;
         this.Disconnected = null;
     }
@@ -201,6 +337,7 @@ public sealed class Connection : PacketPipeReaderBase, IConnection
     protected override async ValueTask<bool> ReadPacketAsync(ReadOnlySequence<byte> packet)
     {
         IncomingBytesCounter.Add(packet.Length);
+        this.UpdateLastActivity(); // Update activity on packet received
 
         using var activity = ActivitySource.CreateActivity("Read Packet", ActivityKind.Server);
         activity?.SetTag("remoteEndPoint", this._remoteEndPoint)

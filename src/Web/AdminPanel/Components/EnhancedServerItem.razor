@@ -1,0 +1,149 @@
+@using MUnique.OpenMU.Interfaces
+@using System.ComponentModel
+@using MUnique.OpenMU.DataModel.Configuration
+@using Microsoft.AspNetCore.Components.Routing
+@implements IDisposable
+
+@if (this._isDeleted)
+{
+    return;
+}
+
+<div class="server-card @GetServerCardClass()" id="@Server.Id">
+    <div class="server-card-header">
+        <div class="server-info">
+            <div class="server-icon">
+                @if (this.Server.Type == ServerType.GameServer)
+                {
+                    <span class="oi oi-target" title="Game Server"></span>
+                }
+                else if (this.Server.Type == ServerType.ConnectServer)
+                {
+                    <span class="oi oi-wifi" title="Connect Server"></span>
+                }
+                else if (this.Server.Type == ServerType.ChatServer)
+                {
+                    <span class="oi oi-chat" title="Chat Server"></span>
+                }
+            </div>
+            <div class="server-details">
+                <h6 class="server-name">
+                    @switch (this.Server.Type)
+                    {
+                        case ServerType.GameServer:
+                            <NavLink href="@("edit-config/" + typeof(GameServerDefinition).FullName + "/" + this.Server.ConfigurationId)">
+                                @this.Server.Description
+                            </NavLink>
+                            break;
+                        case ServerType.ConnectServer:
+                            <NavLink href="@("edit-connectionServer/" + this.Server.ConfigurationId)">
+                                @this.Server.Description
+                            </NavLink>
+                            break;
+                        case ServerType.ChatServer:
+                            <NavLink href="@("edit-config/" + typeof(ChatServerDefinition).FullName + "/" + this.Server.ConfigurationId)">
+                                @this.Server.Description
+                            </NavLink>
+                            break;
+                        default:
+                            @this.Server.Description
+                            break;
+                    }
+                </h6>
+                <div class="server-meta">
+                    <span class="server-type">@GetServerTypeDisplay()</span>
+                    @if (this.Server.Type == ServerType.GameServer)
+                    {
+                        <a href="/gameServer/@(this.Server.Id)/" target="_blank" class="server-link" title="View Game Map">
+                            <span class="oi oi-external-link"></span>
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="server-status">
+            <span class="status-indicator @GetStatusIndicatorClass()"></span>
+            <span class="badge @GetStatusBadgeClass()">@GetStateCaption()</span>
+        </div>
+    </div>
+
+    <div class="server-card-body">
+        <div class="server-metrics">
+            <div class="metric">
+                <span class="metric-icon oi oi-people"></span>
+                <div class="metric-content">
+                    <div class="metric-value">@this.Server.CurrentConnections</div>
+                    <div class="metric-label">Connected</div>
+                </div>
+            </div>
+            <div class="metric">
+                <span class="metric-icon oi oi-monitor"></span>
+                <div class="metric-content">
+                    <div class="metric-value">@(this.Server.MaximumConnections < int.MaxValue ? this.Server.MaximumConnections.ToString() : "∞")</div>
+                    <div class="metric-label">Max Capacity</div>
+                </div>
+            </div>
+            @if (this.Server.CurrentConnections > 0 && this.Server.MaximumConnections < int.MaxValue)
+            {
+                <div class="metric">
+                    <span class="metric-icon oi oi-graph"></span>
+                    <div class="metric-content">
+                        <div class="metric-value">@(Math.Round((double)this.Server.CurrentConnections / this.Server.MaximumConnections * 100, 1))%</div>
+                        <div class="metric-label">Load</div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="server-actions">
+            <div class="btn-group" role="group" aria-label="Server control">
+                @if (this.Server.ServerState == ServerState.Started)
+                {
+                    <button type="button" class="btn btn-sm btn-secondary" title="Start" disabled>
+                        <span class="oi oi-media-play"></span>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-warning" title="Stop" @onclick="this.OnPauseClickAsync">
+                        <span class="oi oi-media-pause"></span>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-danger" title="Shutdown" @onclick="this.OnStopClickAsync">
+                        <span class="oi oi-media-stop"></span>
+                    </button>
+                }
+                else
+                {
+                    <button type="button" class="btn btn-sm btn-success" title="Start" @onclick="this.OnStartClickAsync">
+                        <span class="oi oi-media-play"></span>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-secondary" title="Stop" disabled>
+                        <span class="oi oi-media-pause"></span>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-secondary" title="Shutdown" disabled>
+                        <span class="oi oi-media-stop"></span>
+                    </button>
+                }
+                
+                @if (this.DeleteAction != null)
+                {
+                    <button type="button" class="btn btn-sm btn-outline-danger" title="Delete" @onclick="this.OnDeleteClickAsync">
+                        <span class="oi oi-trash"></span>
+                    </button>
+                }
+            </div>
+        </div>
+    </div>
+
+    @if (this.Server.CurrentConnections > 0)
+    {
+        <div class="server-card-footer">
+            <div class="progress">
+                <div class="progress-bar @GetProgressBarClass()" 
+                     role="progressbar" 
+                     style="width: @(this.Server.MaximumConnections > 0 ? Math.Min((double)this.Server.CurrentConnections / this.Server.MaximumConnections * 100, 100) : 0)%" 
+                     aria-valuenow="@this.Server.CurrentConnections" 
+                     aria-valuemin="0" 
+                     aria-valuemax="@this.Server.MaximumConnections">
+                </div>
+            </div>
+        </div>
+    }
+</div>

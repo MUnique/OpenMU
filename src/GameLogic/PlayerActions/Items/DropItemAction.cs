@@ -14,6 +14,16 @@ using static MUnique.OpenMU.GameLogic.PlugIns.IItemDropPlugIn;
 /// </summary>
 public class DropItemAction
 {
+    private readonly ItemDropValidator _validator;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DropItemAction"/> class.
+    /// </summary>
+    public DropItemAction()
+    {
+        this._validator = new ItemDropValidator();
+    }
+
     /// <summary>
     /// Drops the item.
     /// </summary>
@@ -24,9 +34,21 @@ public class DropItemAction
     {
         var item = player.Inventory?.GetItem(slot);
 
-        if (item is null
-            || !(player.CurrentMap?.Terrain.WalkMap[target.X, target.Y] ?? false))
+        if (item is null)
         {
+            await player.InvokeViewPlugInAsync<IItemDropResultPlugIn>(p => p.ItemDropResultAsync(slot, false)).ConfigureAwait(false);
+            return;
+        }
+
+        // Enhanced validation using the new validator
+        var validationResult = this._validator.ValidateItemDrop(player, item, target);
+        if (!validationResult.IsValid)
+        {
+            player.Logger.LogWarning(
+                "Item drop validation failed for player {PlayerId} at slot {Slot}: {Error}",
+                player.Id,
+                slot,
+                validationResult.ErrorMessage);
             await player.InvokeViewPlugInAsync<IItemDropResultPlugIn>(p => p.ItemDropResultAsync(slot, false)).ConfigureAwait(false);
             return;
         }
