@@ -52,14 +52,14 @@ All 5 Castle Siege packets (CSG-1 through CSG-5) require:
 | Category | Count | Critical | Medium | Low |
 |----------|-------|----------|--------- |-----|
 | Cash Shop | 11 | 5 | 5 | 1 |
-| Castle Siege | 5 | 5 | 0 | 0 |
+| Castle Siege | 6 | 5 | 0 | 1 |
 | Guild/Alliance | 9 | 5 | 4 | 0 |
 | Game Logic | 15 | 3 | 8 | 4 |
 | Persistence | 15 | 0 | 8 | 7 |
 | Network/Packets | 4 | 2 | 2 | 0 |
 | Admin Panel | 8 | 0 | 3 | 5 |
 | Dapr/Infrastructure | 9 | 0 | 5 | 4 |
-| Items/Initialization | 12 | 0 | 3 | 9 |
+| Items/Initialization | 15 | 0 | 3 | 12 |
 | Other | 18 | 2 | 8 | 8 |
 | **TOTAL** | **106** | **22** | **45** | **39** |
 
