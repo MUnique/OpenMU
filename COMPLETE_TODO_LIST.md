@@ -1,10 +1,10 @@
 # OpenMU - Complete TODO & Issues List
 
-**Last Updated:** 2025-11-06 (Pet movement speed implemented, TODO list audited and synchronized with codebase)
+**Last Updated:** 2025-11-06 (Summoned monster defense increase implemented)
 **Total Items:** 106 TODOs + 60 NotImplemented = **166 Total Issues**
 **Status:** Categorized by component, priority, and actionability
 
-## 🎉 Current Progress: 53/106 tasks = 50.0%
+## 🎉 Current Progress: 54/106 tasks = 50.9%
 
 ### Phase 1 Complete ✅ (6 tasks)
 - ✅ NET-1: Fixed patch check packet code
@@ -28,7 +28,7 @@
 **Completion Stats:**
 - Critical: 7/22 done (31.8%) - CS-1 ✅, CS-2 ✅, CS-3 ✅, CS-4 ✅, CS-5 ✅, NET-1 ✅, CSG-6 ✅
 - Medium: 23/45 done (51.1%) - PERS-5 ✅, GL-6 ✅, GL-7 ✅, NET-4 ✅, GL-8 ✅, GL-9 ✅, PERS-6 ✅, GLD-9 ✅, CS-3 validation ✅, CS balance validation ✅, CS price validation ✅, CS-6 ✅, CS-10 ✅, CS-7 ✅, CS-8 ✅, CS-9 ✅, PERS-1 ✅, PERS-2 ✅, PERS-3 ✅, ITEM-2 ✅, GLD-6 ✅, GL-13 ✅, GL-5 ✅
-- Low: 23/39 done (59.0%) - PERS-15 ✅, ITEM-11 ✅, PERS-11 ✅, PERS-10 ✅, PERS-9 ✅, GL-12 ✅, MISC-3 ✅, MISC-9 ✅, GL-11 ✅, MISC-2 ✅, PERS-14 ✅, GL-10 ✅, MISC-8 ✅, ADM-8 ✅, CS-11 ✅, ITEM-4 ✅, ITEM-5 ✅, ITEM-6 ✅, ITEM-7 ✅, ITEM-8 ✅, ITEM-9 ✅, ADM-5 ✅, ADM-4 ✅
+- Low: 24/39 done (61.5%) - PERS-15 ✅, ITEM-11 ✅, PERS-11 ✅, PERS-10 ✅, PERS-9 ✅, GL-12 ✅, MISC-3 ✅, MISC-9 ✅, GL-11 ✅, MISC-2 ✅, PERS-14 ✅, GL-10 ✅, MISC-8 ✅, ADM-8 ✅, CS-11 ✅, ITEM-4 ✅, ITEM-5 ✅, ITEM-6 ✅, ITEM-7 ✅, ITEM-8 ✅, ITEM-9 ✅, ADM-5 ✅, ADM-4 ✅, GL-14 ✅
 
 ### Castle Siege Analysis (Phase 3)
 All 5 Castle Siege packets (CSG-1 through CSG-5) require:
@@ -1002,7 +1002,7 @@ The cash shop feature adds premium currency monetization with:
 ---
 
 ### GL-14: Summoned Monster Defense Increase Not Implemented 🟢
-**Status:** ❌ TODO
+**Status:** ✅ DONE
 **Priority:** 🟢 Low
 **Difficulty:** ⭐⭐ Medium
 **File:** `src/GameLogic/Player.cs:2009`
@@ -1010,12 +1010,15 @@ The cash shop feature adds premium currency monetization with:
 
 **Issue:** Stats.SummonedMonsterDefenseIncrease attribute is not applied when summoning monsters
 
-**Action:**
-1. Apply SummonedMonsterDefenseIncrease attribute similar to SummonedMonsterHealthIncrease
-2. Update monster defense based on summoner's attributes
-3. Remove TODO comment
+**Implementation:**
+1. ✅ Applied SummonedMonsterDefenseIncrease attribute similar to SummonedMonsterHealthIncrease
+2. ✅ Calculates defense increase: baseDefense × SummonedMonsterDefenseIncrease attribute
+3. ✅ Updates monster's DefenseBase attribute with increased value
+4. ✅ Added null check to only apply if increase > 0
+5. ✅ Removed TODO comment from Player.cs:2009
 
-**Tell me:** `"Do task GL-14"`
+**Changes:**
+- `Player.cs:2009-2015` - Added defense increase calculation and application
 
 ---
 
@@ -2232,22 +2235,22 @@ _(All game logic items are critical or medium priority)_
 | Cash Shop | 11 | 11 | 0 | 100% |
 | Castle Siege | 6 | 1 | 5 | 17% |
 | Guild/Alliance | 9 | 3 | 6 | 33% |
-| Game Logic | 15 | 7 | 8 | 47% |
+| Game Logic | 15 | 8 | 7 | 53% |
 | Persistence | 15 | 11 | 4 | 73% |
 | Network/Packets | 4 | 2 | 2 | 50% |
 | Admin Panel | 8 | 3 | 5 | 38% |
 | Dapr/Infrastructure | 9 | 0 | 9 | 0% |
 | Items/Initialization | 15 | 8 | 7 | 53% |
 | Other | 18 | 11 | 7 | 61% |
-| **TOTAL** | **106** | **53** | **53** | **50%** |
+| **TOTAL** | **106** | **54** | **52** | **51%** |
 
 ## By Priority
 | Priority | Total | Done | Remaining | % |
 |----------|-------|------|-----------|---|
 | 🔴 Critical | 22 | 7 | 15 | 32% |
 | 🟡 Medium | 45 | 23 | 22 | 51% |
-| 🟢 Low | 39 | 23 | 16 | 59% |
-| **TOTAL** | **106** | **53** | **53** | **50%** |
+| 🟢 Low | 39 | 24 | 15 | 62% |
+| **TOTAL** | **106** | **54** | **52** | **51%** |
 
 ---
 

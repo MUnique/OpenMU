@@ -2006,7 +2006,14 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         area.MaximumHealthOverride = (int)monster.Attributes[Stats.MaximumHealth];
         area.MaximumHealthOverride += (int)(monster.Attributes[Stats.MaximumHealth] * this.Attributes?[Stats.SummonedMonsterHealthIncrease] ?? 0);
 
-        // todo: Stats.SummonedMonsterDefenseIncrease
+        // Apply defense increase if the summoner has this attribute
+        var baseDefense = monster.Attributes[Stats.DefenseBase];
+        var defenseIncrease = baseDefense * (this.Attributes?[Stats.SummonedMonsterDefenseIncrease] ?? 0);
+        if (defenseIncrease > 0)
+        {
+            monster.Attributes[Stats.DefenseBase] = baseDefense + defenseIncrease;
+        }
+
         this.Summon = (monster, intelligence);
         monster.Initialize();
         await gameMap.AddAsync(monster).ConfigureAwait(false);
