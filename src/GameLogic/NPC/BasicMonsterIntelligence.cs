@@ -138,9 +138,29 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
         possibleTargets.AddRange(summons);
         var closestTarget = possibleTargets.MinBy(a => a.GetDistanceTo(this.Npc));
 
-        return closestTarget;
+        if (closestTarget is null)
+        {
+            return null;
+        }
 
-        // todo: check the walk distance
+        // Check if the target is within acceptable walk distance from spawn area
+        var spawnArea = this.Monster.SpawnArea;
+        var spawnCenterX = (spawnArea.X1 + spawnArea.X2) / 2.0;
+        var spawnCenterY = (spawnArea.Y1 + spawnArea.Y2) / 2.0;
+        var spawnCenter = new Point((byte)spawnCenterX, (byte)spawnCenterY);
+        
+        // Calculate maximum allowed distance: spawn area radius + view range + some buffer
+        var spawnAreaRadius = Math.Max(spawnArea.X2 - spawnArea.X1, spawnArea.Y2 - spawnArea.Y1) / 2.0;
+        var maxWalkDistance = spawnAreaRadius + this.Npc.Definition.ViewRange + 5;
+        
+        var distanceFromSpawnCenter = closestTarget.GetDistanceTo(spawnCenter);
+        if (distanceFromSpawnCenter > maxWalkDistance)
+        {
+            // Target is too far from spawn area, don't chase it
+            return null;
+        }
+
+        return closestTarget;
     }
 
     /// <summary>
