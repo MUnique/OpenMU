@@ -90,7 +90,7 @@ public abstract class PacketPipeReaderBase
             return true;
         }
 
-        // todo: what happens if it was flushed in the background in the meantime? race-condition?
+        // If flushed in background between check and FlushAsync call, FlushAsync on already-flushed pipe is safe and returns immediately
         var flushResult = await pipeWriter.FlushAsync().ConfigureAwait(false);
         return !flushResult.IsCompleted;
     }

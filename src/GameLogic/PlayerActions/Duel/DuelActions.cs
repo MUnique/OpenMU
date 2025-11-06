@@ -200,7 +200,11 @@ public class DuelActions
 
         if (duelRoom.IsDuelist(player))
         {
-            // todo: log this attempt?
+            player.Logger.LogWarning(
+                "Player {character} (Account: {account}) attempted to quit duel channel while being an active duelist in room {room}. This should not be possible.",
+                player.Name,
+                player.Account?.LoginName,
+                duelRoom.Index);
             return;
         }
 

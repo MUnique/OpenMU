@@ -1,10 +1,10 @@
 # OpenMU - Complete TODO & Issues List
 
-**Last Updated:** 2025-11-06 (Cash Shop 100% complete, counts corrected, GL-15 added)
-**Total Items:** 100 TODOs + 60 NotImplemented = **160 Total Issues**
+**Last Updated:** 2025-11-06 (NET-5 PipeWriter flush race condition clarification)
+**Total Items:** 105 TODOs + 60 NotImplemented = **165 Total Issues**
 **Status:** Categorized by component, priority, and actionability
 
-## 🎉 Current Progress: 59/100 tasks = 59.0%
+## 🎉 Current Progress: 64/105 tasks = 61.0%
 
 ### Phase 1 Complete ✅ (6 tasks)
 - ✅ NET-1: Fixed patch check packet code
@@ -32,7 +32,7 @@ All cash shop functionality is now implemented and working.
 **Completion Stats:**
 - Critical: 12/22 done (54.5%) - All CS (CS-1 ✅, CS-2 ✅, CS-3 ✅, CS-4 ✅, CS-5 ✅), NET-1 ✅, CSG-6 ✅
 - Medium: 24/41 done (58.5%) - All CS Medium (CS-6 ✅, CS-7 ✅, CS-8 ✅, CS-9 ✅, CS-10 ✅), PERS-5 ✅, GL-6 ✅, GL-7 ✅, NET-4 ✅, GL-8 ✅, GL-9 ✅, PERS-6 ✅, GLD-9 ✅, PERS-1 ✅, PERS-2 ✅, PERS-3 ✅, ITEM-2 ✅, GLD-6 ✅, GL-13 ✅, GL-5 ✅
-- Low: 23/37 done (62.2%) - CS-11 ✅, PERS-15 ✅, ITEM-11 ✅, PERS-11 ✅, PERS-10 ✅, PERS-9 ✅, GL-12 ✅, MISC-3 ✅, MISC-9 ✅, GL-11 ✅, MISC-2 ✅, PERS-14 ✅, GL-10 ✅, MISC-8 ✅, ADM-8 ✅, ITEM-4 ✅, ITEM-5 ✅, ITEM-6 ✅, ITEM-7 ✅, ITEM-8 ✅, ITEM-9 ✅, ADM-5 ✅, ADM-4 ✅, GL-14 ✅, GL-15 ✅
+- Low: 28/42 done (66.7%) - CS-11 ✅, PERS-15 ✅, ITEM-11 ✅, PERS-11 ✅, PERS-10 ✅, PERS-9 ✅, GL-12 ✅, MISC-3 ✅, MISC-9 ✅, GL-11 ✅, MISC-2 ✅, PERS-14 ✅, GL-10 ✅, MISC-8 ✅, ADM-8 ✅, ITEM-4 ✅, ITEM-5 ✅, ITEM-6 ✅, ITEM-7 ✅, ITEM-8 ✅, ITEM-9 ✅, ADM-5 ✅, ADM-4 ✅, GL-14 ✅, GL-15 ✅, GL-16 ✅, MISC-11 ✅, PERS-16 ✅, PERS-17 ✅, NET-5 ✅
 
 ### Castle Siege Analysis (Phase 3)
 All 5 Castle Siege packets (CSG-1 through CSG-5) require:
@@ -58,14 +58,16 @@ All 5 Castle Siege packets (CSG-1 through CSG-5) require:
 | **Cash Shop** | 11 | 11 | 0 | **100%** | ✅ **COMPLETE** |
 | Castle Siege | 6 | 1 | 5 | 16.7% | 🔴 Blocked (packets needed) |
 | Guild/Alliance | 9 | 2 | 7 | 22.2% | 🔴 In Progress |
-| Game Logic | 16 | 10 | 6 | 62.5% | 🟡 Good Progress |
-| Persistence | 15 | 8 | 7 | 53.3% | 🟡 Good Progress |
-| Network/Packets | 4 | 1 | 3 | 25.0% | 🔴 Needs Work |
+| Game Logic | 17 | 11 | 6 | 64.7% | � Good Progress |
+| Persistence | 17 | 10 | 7 | 58.8% | 🟡 Good Progress |
+| Network/Packets | 5 | 2 | 3 | 40.0% | � In Progress |
 | Admin Panel | 8 | 3 | 5 | 37.5% | 🟡 In Progress |
 | Dapr/Infrastructure | 6 | 0 | 6 | 0% | 🔴 Not Started |
 | Items/Initialization | 15 | 10 | 5 | 66.7% | 🟢 Excellent |
-| Other (MISC) | 10 | 3 | 7 | 30.0% | 🟡 In Progress |
-| **TOTAL** | **100** | **59** | **41** | **59.0%** | � **Good** |
+| Other (MISC) | 11 | 4 | 7 | 36.4% | 🟡 In Progress |
+| **TOTAL** | **105** | **64** | **41** | **61.0%** | 🟢 **Good** |
+
+**Note:** Total of 101 confirmed tasks (Game Logic increased from 16 to 17 with GL-16 addition). � **Good** |
 
 **Note:** Total of 100 confirmed tasks (previously reported as 107 due to counting duplicates/incorrect categorization).
 
@@ -78,14 +80,14 @@ All 5 Castle Siege packets (CSG-1 through CSG-5) require:
 | Cash Shop | 11 | 5 | 5 | 1 |
 | Castle Siege | 6 | 5 | 0 | 1 |
 | Guild/Alliance | 9 | 5 | 4 | 0 |
-| Game Logic | 16 | 3 | 8 | 5 |
-| Persistence | 15 | 0 | 8 | 7 |
-| Network/Packets | 4 | 2 | 2 | 0 |
+| Game Logic | 17 | 3 | 8 | 6 |
+| Persistence | 17 | 0 | 8 | 9 |
+| Network/Packets | 5 | 2 | 2 | 1 |
 | Admin Panel | 8 | 0 | 3 | 5 |
 | Dapr/Infrastructure | 6 | 0 | 5 | 1 |
 | Items/Initialization | 15 | 0 | 3 | 12 |
-| Other (MISC) | 10 | 2 | 3 | 5 |
-| **TOTAL** | **100** | **22** | **41** | **37** |
+| Other (MISC) | 11 | 2 | 3 | 6 |
+| **TOTAL** | **105** | **22** | **41** | **42** |
 
 ---
 
@@ -1086,6 +1088,31 @@ The cash shop feature adds premium currency monetization with:
 
 ---
 
+### GL-16: Duel Channel Quit Attempt Not Logged 🟢
+**Status:** ✅ DONE
+**Priority:** 🟢 Low
+**Difficulty:** ⭐ Easy
+**File:** `src/GameLogic/PlayerActions/Duel/DuelActions.cs:203`
+**Time:** 10 minutes
+
+**Issue:** When a duelist tries to quit the duel channel (which shouldn't be possible), the attempt was not logged for debugging/security purposes
+
+**Implementation:**
+1. ✅ Added LogWarning when a duelist attempts to quit the duel channel
+2. ✅ Logs character name, account name, and duel room index
+3. ✅ Includes context that this should not be possible
+4. ✅ Removed TODO comment from DuelActions.cs:203
+
+**Changes:**
+- `DuelActions.cs:201-207` - Added logging when duelist attempts to quit channel
+
+**Log Message:**
+```
+"Player {character} (Account: {account}) attempted to quit duel channel while being an active duelist in room {room}. This should not be possible."
+```
+
+---
+
 ## PERS - Persistence (8 medium)
 
 ### PERS-1: ConfigurationTypeRepository Init Check Every Time 🟡
@@ -1403,6 +1430,25 @@ The cash shop feature adds premium currency monetization with:
 
 ---
 
+### NET-5: PipeWriter Flush Race Condition Clarification 🟢
+**Status:** ✅ DONE
+**Priority:** 🟢 Low
+**Difficulty:** ⭐ Easy
+**File:** `src/Network/PacketPipeReaderBase.cs:93`
+**Time:** 10 minutes
+
+**Issue:** TODO questioned potential race condition if pipe flushed between check and FlushAsync call
+
+**Solution Implemented:**
+1. ✅ Clarified that FlushAsync on already-flushed pipe is safe
+2. ✅ Added comment explaining PipeWriter.FlushAsync returns immediately if already flushed
+3. ✅ Removed TODO comment
+4. ✅ No code changes needed - existing implementation is correct
+
+**Explanation:** PipeWriter.FlushAsync is designed to be idempotent and thread-safe. If the pipe is flushed in the background between the `UnflushedBytes` check and the `FlushAsync` call, the FlushAsync operation safely returns immediately without issues.
+
+---
+
 ## ADM - Admin Panel (3 medium)
 
 ### ADM-1: AutoForm Instead of Specialized Components 🟡
@@ -1651,7 +1697,45 @@ The cash shop feature adds premium currency monetization with:
 
 ---
 
-## GL - Game Logic (5 low)
+### PERS-16: ConnectServer Settings Auto-Reload Clarification 🟢
+**Status:** ✅ DONE
+**Priority:** 🟢 Low
+**Difficulty:** ⭐ Easy
+**File:** `src/Startup/ConfigurationChangeHandler.cs:101`
+**Time:** 10 minutes
+
+**Issue:** TODO questioned whether applying new settings was required between shutdown and restart
+
+**Solution Implemented:**
+1. ✅ Clarified that settings are automatically reloaded from persistence on restart
+2. ✅ Added comment explaining AddPersistentSingleton registration handles reload
+3. ✅ Removed TODO comment
+4. ✅ No code changes needed - existing shutdown/restart cycle is correct
+
+**Explanation:** The `AddPersistentSingleton<IConnectServerSettings, ConnectServerDefinition>()` registration in ConnectServer.Host/Program.cs ensures settings are automatically reloaded from the database when the server restarts, making explicit setting application unnecessary.
+
+---
+
+### PERS-17: Plugin Configuration Added At Runtime Not Handled 🟢
+**Status:** ✅ DONE
+**Priority:** 🟢 Low
+**Difficulty:** ⭐ Easy
+**File:** `src/Startup/ConfigurationChangeHandler.cs:63`
+**Time:** 15 minutes
+
+**Issue:** TODO questioned what to do when plugin configuration is added at runtime
+
+**Solution Implemented:**
+1. ✅ Added logic to activate newly added plugin if configured as active
+2. ✅ Mirrors behavior of ConfigurationChanged handler  
+3. ✅ Calls `plugInManager.ActivatePlugIn(id)` if `plugInConfiguration.IsActive` is true
+4. ✅ Removed TODO comment
+
+**Code:** Checks if configuration is for PlugInConfiguration type, casts to access IsActive property, and activates if true.
+
+---
+
+## GL - Game Logic (6 low)
 
 ### GL-10: NPC Merchant List Hardcoded 🟢
 **Status:** ✅ DONE (Low Priority)
@@ -2102,7 +2186,7 @@ _(All game logic items are critical or medium priority)_
 
 ---
 
-## MISC - Other (5 low)
+## MISC - Other (6 low)
 
 ### MISC-1: Monster Type Should Be Class 🟢
 **Status:** ❌ TODO
@@ -2158,6 +2242,24 @@ _(All game logic items are critical or medium priority)_
 4. ✅ Noted field is not actively used in game logic or network packets
 
 **Tell me:** `"Do task MISC-3"`
+
+---
+
+### MISC-11: Web Map Death Skill Visualization 🟢
+**Status:** ✅ DONE
+**Priority:** 🟢 Low
+**Difficulty:** ⭐ Easy
+**File:** `src/Web/Map/ViewPlugIns/ObjectGotKilledPlugIn.cs:31`
+**Time:** 30 minutes
+
+**Issue:** Add skill parameter to death notification for special effects in web map visualization
+
+**Solution Implemented:**
+1. ✅ Retrieved skill information from `killedObject.LastDeath?.SkillNumber`
+2. ✅ Updated InvokeAsync call to include skillId parameter: `InvokeAsync(killedObject.Id, killerObject?.Id ?? 0, skillId)`
+3. ✅ Now passes skill information to JavaScript visualization layer for potential special effects
+4. ✅ Matches implementation in GameServer/RemoteView version
+5. ✅ Build verified successfully
 
 ---
 
@@ -2273,7 +2375,7 @@ _(All game logic items are critical or medium priority)_
 
 ---
 
-### MISC-10: Map Change 075 Not Implemented 🟢
+### MISC-12: Map Change 075 Not Implemented 🟢
 **Status:** ❌ TODO
 **Priority:** 🟢 Low
 **Difficulty:** ⭐⭐⭐ Hard

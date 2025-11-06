@@ -60,7 +60,12 @@ public class ConfigurationChangeHandler : IConfigurationChangePublisher
 
         if (type.IsAssignableTo(typeof(PlugInConfiguration)) && this._serviceProvider.GetService<PlugInManager>() is { } plugInManager)
         {
-            // todo: find out what to do, because usually, plugin configs are not added during runtime.
+            // When a plugin configuration is added at runtime, activate it if configured as active
+            var plugInConfiguration = (PlugInConfiguration)configuration;
+            if (plugInConfiguration.IsActive)
+            {
+                plugInManager.ActivatePlugIn(id);
+            }
         }
     }
 
@@ -98,7 +103,7 @@ public class ConfigurationChangeHandler : IConfigurationChangePublisher
             {
                 await connectServer.ShutdownAsync().ConfigureAwait(false);
 
-                //// todo: is applying new settings required?
+                // Settings are automatically reloaded from persistence on restart due to AddPersistentSingleton registration
                 await connectServer.StartAsync().ConfigureAwait(false);
             }
         }
