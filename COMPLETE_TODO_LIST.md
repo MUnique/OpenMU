@@ -1,6 +1,6 @@
 ﻿# OpenMU - Complete TODO & Issues List
 
-**Last Updated:** 2025-11-06 (CSG-1 through CSG-5 + GLD-1 through GLD-4 already implemented)
+**Last Updated:** 2025-11-06 (Party summon map restrictions implemented)
 **Total Items:** 105 TODOs + 60 NotImplemented = **165 Total Issues**
 **Status:** Categorized by component, priority, and actionability
 
@@ -23,6 +23,13 @@
 
 ### Cash Shop Complete ✅ (11/11 tasks - 100%)
 All cash shop functionality is now implemented and working.
+
+### Bonus Implementation ✨
+- ✅ **Party Summon Map Restrictions**: Implemented map-based restrictions for Dark Lord summon skill
+  - Added `DisablePartySummon` property to `GameMapDefinition`
+  - Enabled for all Kalima maps (24-30), Kanturu boss (39), Raklion boss (58)
+  - Prevents summon abuse in special event zones
+  - Resolved TODO in SummonPartySkillPlugin.cs
 
 ### Medium Priority Tasks Complete
 - ✅ NET-4: Added character disconnect logging

@@ -107,6 +107,12 @@ public partial class GameMapDefinition
     [MemberOfAggregate]
     public virtual ICollection<PowerUpDefinition> CharacterPowerUpDefinitions { get; protected set; } = null!;
 
+    /// <summary>
+    /// Gets or sets a value indicating whether party summon is disabled on this map.
+    /// This is typically true for special event maps like Kalima, Kanturu, Raklion, and Pandora.
+    /// </summary>
+    public bool DisablePartySummon { get; set; }
+
     /// <inheritdoc/>
     public override string ToString()
     {

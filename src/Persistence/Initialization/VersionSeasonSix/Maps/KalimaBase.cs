@@ -22,6 +22,13 @@ internal abstract class KalimaBase : BaseMapInitializer
     }
 
     /// <inheritdoc/>
+    protected override void AdditionalInitialization(GameMapDefinition mapDefinition)
+    {
+        base.AdditionalInitialization(mapDefinition);
+        mapDefinition.DisablePartySummon = true; // Prevent party summon in Kalima
+    }
+
+    /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()
     {
         yield return this.CreateMonsterSpawn(1, this.NpcDictionary[259], 007, 019, Direction.South); // Oracle Layla

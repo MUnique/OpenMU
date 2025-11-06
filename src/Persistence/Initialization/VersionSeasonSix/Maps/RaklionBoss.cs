@@ -43,6 +43,13 @@ internal class RaklionBoss : BaseMapInitializer
     /// <inheritdoc/>
     protected override byte SafezoneMapNumber => Raklion.Number;
 
+    /// <inheritdoc/>
+    protected override void AdditionalInitialization(GameMapDefinition mapDefinition)
+    {
+        base.AdditionalInitialization(mapDefinition);
+        mapDefinition.DisablePartySummon = true; // Prevent party summon during Raklion boss event
+    }
+
     /// <inheritdoc />
     protected override IEnumerable<MonsterSpawnArea> CreateMonsterSpawns()
     {

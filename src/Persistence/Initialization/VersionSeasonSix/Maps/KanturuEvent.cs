@@ -39,6 +39,13 @@ internal class KanturuEvent : BaseMapInitializer
     protected override string MapName => Name;
 
     /// <inheritdoc/>
+    protected override void AdditionalInitialization(GameMapDefinition mapDefinition)
+    {
+        base.AdditionalInitialization(mapDefinition);
+        mapDefinition.DisablePartySummon = true; // Prevent party summon during Kanturu event
+    }
+
+    /// <inheritdoc/>
     protected override void CreateMapAttributeRequirements()
     {
         // It's only required during the event. Events are not implemented yet - probably we need multiple GameMapDefinitions, for each state of a map.

@@ -151,14 +151,8 @@ public class SummonPartySkillPlugin : TargetedSkillPluginBase
     {
         return player.Party is not null
                && player.OpenedNpc is null
-               && player.CurrentMiniGame is null;
-
-        // todo, not in:
-        // * Kalima
-        // * kanturu boss (39)
-        // * raklion boss when state is RAKLION_STATE_CLOSE_DOOR, RAKLION_STATE_ALL_USER_DIE, RAKLION_STATE_NOTIFY_4, RAKLION_STATE_END
-        // * not during pandora box event
-        // -> we could add some kind of flag in the map definition to check for this
+               && player.CurrentMiniGame is null
+               && !player.CurrentMap!.Definition.DisablePartySummon;
     }
 
     private bool CanPlayerSummonTarget(Player player, Player target)
