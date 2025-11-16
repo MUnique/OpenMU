@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   nginx-80:
     image: nginx:alpine
@@ -13,7 +11,10 @@ services:
       - openmu-startup
 
   openmu-startup:
-    image: munique/openmu
+    build:
+      context: ../../src
+      dockerfile: Startup/Dockerfile
+    image: munique/openmu:local
     container_name: openmu-startup
     ports:
       - "8080"
@@ -33,10 +34,11 @@ services:
     volumes:
       - ./.htpasswd:/etc/nginx/.htpasswd
     depends_on:
-      - database
+      database:
+        condition: service_healthy
 
   database:
-    image: postgres
+    image: postgres:16
     container_name: database
     environment:
       POSTGRES_PASSWORD: admin
@@ -46,6 +48,11 @@ services:
       - "5432"
     volumes:
       - dbdata:/var/lib/postgresql/data #store data on volume
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d openmu"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
 volumes:
   dbdata:

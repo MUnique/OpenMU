@@ -24,6 +24,7 @@ RUN dotnet publish "MUnique.OpenMU.Startup.csproj" -c Release -o /app/publish -p
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+COPY --from=build /src/Persistence/EntityFramework/Migrations ./Persistence/EntityFramework/Migrations
 
 RUN mkdir /app/logs
 RUN chmod 777 /app/logs
