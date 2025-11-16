@@ -49,10 +49,11 @@ services:
     volumes:
       - dbdata:/var/lib/postgresql/data #store data on volume
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d openmu"]
-      interval: 5s
+      test: ["CMD", "pg_isready", "-U", "postgres", "-d", "openmu"]
+      interval: 10s
       timeout: 5s
-      retries: 10
+      retries: 5
+      start_period: 30s
 
 volumes:
   dbdata:
