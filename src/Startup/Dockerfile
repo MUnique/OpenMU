@@ -26,6 +26,8 @@ WORKDIR /app
 COPY --from=publish /app/publish .
 COPY --from=build /src/Persistence/EntityFramework/Migrations ./Persistence/EntityFramework/Migrations
 
+RUN apk add --no-cache curl
+
 RUN mkdir /app/logs
 RUN chmod 777 /app/logs
 

@@ -8,7 +8,8 @@ services:
       - ./nginx/nginx.dev.conf:/etc/nginx/nginx.conf:ro
       - ./.htpasswd:/etc/nginx/.htpasswd
     depends_on:
-      - openmu-startup
+      openmu-startup:
+        condition: service_healthy
 
   openmu-startup:
     build:
@@ -36,6 +37,12 @@ services:
     depends_on:
       database:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
 
   database:
     image: postgres:16

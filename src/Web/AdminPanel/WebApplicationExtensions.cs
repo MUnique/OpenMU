@@ -104,6 +104,7 @@ public static class WebApplicationExtensions
         app.MapFallbackToPage("/_Host");
 
         app.MapControllers();
+        app.MapHealthChecks("/health");
 
         AdminPanelEnvironment.IsHostingEmbedded = true;
 
