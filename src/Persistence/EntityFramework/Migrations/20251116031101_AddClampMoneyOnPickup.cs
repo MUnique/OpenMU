@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -29,4 +29,3 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
         }
     }
 }
-
