@@ -37,7 +37,7 @@ public class UpdateCharacterStatsExtendedPlugIn : IUpdateCharacterStatsPlugIn
             return;
         }
 
-        var maxAttackSpeed = this._player.GameContext.Configuration.Attributes.FirstOrDefault(a => a == Stats.AttackSpeed)?.MaximumValue ?? 1500;
+        var maxAttackSpeed = this._player.GameContext.Configuration.Attributes.FirstOrDefault(a => a == Stats.AttackSpeed)?.MaximumValue ?? 200;
         await connection.SendCharacterInformationExtendedAsync(
                 this._player.Position.X,
                 this._player.Position.Y,
