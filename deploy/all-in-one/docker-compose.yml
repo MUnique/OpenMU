@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   nginx-80:
     image: nginx:alpine
@@ -45,7 +43,7 @@ services:
     ports:
       - "5432"
     volumes:
-      - dbdata:/var/lib/postgresql/data #store data on volume
+      - dbdata:/var/lib/postgresql #store data on volume
 
 volumes:
   dbdata:
