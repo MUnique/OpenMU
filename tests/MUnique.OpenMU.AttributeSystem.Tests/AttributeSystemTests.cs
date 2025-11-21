@@ -259,6 +259,32 @@ public class AttributeSystemTests
     }
 
     /// <summary>
+    /// Tests if a changed maximum value is respected for a ComposableAttribute when requesting it from the AttributeSystem.
+    /// </summary>
+    [Test]
+    public void MaximumValueIsRespectedFromStoredDefinitionForComposableAttribute()
+    {
+        // Create an attribute definition with a maximum value
+        var attackSpeedDefinition = new AttributeDefinition(Guid.NewGuid(), "AttackSpeed", "Attack speed attribute")
+        {
+            MaximumValue = 300,
+        };
+
+        // Add a base attribute which will create a ComposableAttribute
+        const int highValue = 5000;
+        this._baseAttributes.Add(new ConstValueAttribute(highValue, attackSpeedDefinition));
+
+        var system = this.CreateAttributeSystem();
+
+        // Create a different instance of the attribute definition
+        var differentInstanceOfDefinition = new AttributeDefinition(attackSpeedDefinition.Id, "AttackSpeed", "Attack speed attribute");
+
+        // The system should return the maximum value from the stored definition, not exceed it
+        var value = system[differentInstanceOfDefinition];
+        Assert.That(value, Is.EqualTo(300));
+    }
+
+    /// <summary>
     /// Creates the attribute system for testing, initialized with <see cref="_statAttributes"/>, <see cref="_baseAttributes"/> and <see cref="_relationShips"/>.
     /// </summary>
     /// <returns>The created attribute system, initialized with <see cref="_statAttributes"/>, <see cref="_baseAttributes"/> and <see cref="_relationShips"/>.</returns>
