@@ -63,6 +63,15 @@ public partial class GameConfiguration
     public int MaximumVaultMoney { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether money pickup should be clamped to the maximum inventory money limit instead of failing when the limit would be exceeded.
+    /// </summary>
+    /// <remarks>
+    /// When <c>true</c>, if picking up money would exceed the maximum inventory money, the player will receive as much as possible (up to the limit) instead of the pickup failing completely.
+    /// When <c>false</c>, the pickup will fail if it would exceed the maximum (default behavior).
+    /// </remarks>
+    public bool ClampMoneyOnPickup { get; set; }
+
+    /// <summary>
     /// Gets or sets the experience formula per level. The variable name for the level is "level".
     /// </summary>
     public string? ExperienceFormula { get; set; }

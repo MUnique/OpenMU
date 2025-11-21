@@ -67,6 +67,8 @@ public sealed class DroppedMoney : AsyncDisposable, ILocateable
     public async ValueTask<bool> TryPickUpByAsync(Player player)
     {
         player.Logger.LogDebug("Player {0} tries to pick up {1}", player, this);
+        int amountToAdd = 0;
+        var clampMoneyOnPickup = player.GameContext?.Configuration?.ClampMoneyOnPickup ?? false;
         using (await this._pickupLock.LockAsync())
         {
             if (!this._availableToPick)
@@ -75,16 +77,50 @@ public sealed class DroppedMoney : AsyncDisposable, ILocateable
                 return false;
             }
 
-            if (!player.TryAddMoney((int)this.Amount))
+            if (clampMoneyOnPickup)
             {
-                player.Logger.LogDebug("Money could not be added to the inventory, Player {0}, Money {1}", player, this);
-                return false;
+                // Calculate how much can actually be added (clamp to max)
+                var maxMoney = player.GameContext?.Configuration?.MaximumInventoryMoney ?? int.MaxValue;
+                var currentMoney = player.Money;
+                amountToAdd = (int)Math.Min(this.Amount, (uint)Math.Max(0, maxMoney - currentMoney));
+
+                if (amountToAdd <= 0)
+                {
+                    player.Logger.LogDebug("Player is at maximum money limit, Player {0}, Money {1}", player, this);
+                    return false;
+                }
+
+                // Add the clamped amount
+                if (!player.TryAddMoney(amountToAdd))
+                {
+                    player.Logger.LogDebug("Money could not be added to the inventory, Player {0}, Money {1}", player, this);
+                    return false;
+                }
+            }
+            else
+            {
+                // Original behavior: fail if it would exceed the maximum
+                if (!player.TryAddMoney((int)this.Amount))
+                {
+                    player.Logger.LogDebug("Money could not be added to the inventory, Player {0}, Money {1}", player, this);
+                    return false;
+                }
+
+                amountToAdd = (int)this.Amount;
             }
 
             this._availableToPick = false;
         }
 
-        player.Logger.LogInformation("Money '{0}' was picked up by player '{1}' and added to his inventory.", this, player);
+        if (clampMoneyOnPickup && amountToAdd < this.Amount)
+        {
+            player.Logger.LogInformation("Money '{0}' was partially picked up by player '{1}' - added {2} out of {3} (player at max limit).", this, player, amountToAdd, this.Amount);
+        }
+        else
+        {
+            player.Logger.LogInformation("Money '{0}' was picked up by player '{1}' and added to his inventory.", this, player);
+        }
+
         await this.DisposeAsync().ConfigureAwait(false);
 
         return true;
