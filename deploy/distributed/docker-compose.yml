@@ -106,7 +106,7 @@ services:
     ports:
       - "5432"
     volumes:
-      - dbdata:/var/lib/postgresql/data
+      - dbdata:/var/lib/postgresql
 
   zipkin:
     image: openzipkin/zipkin
