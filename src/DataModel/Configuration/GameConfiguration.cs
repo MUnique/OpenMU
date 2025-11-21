@@ -34,6 +34,12 @@ public partial class GameConfiguration
     public float ExperienceRate { get; set; }
 
     /// <summary>
+    /// Gets or sets the money drop rate of the game.
+    /// This multiplier is applied to all money drops, allowing independent control from the experience rate.
+    /// </summary>
+    public float MoneyDropRate { get; set; }
+
+    /// <summary>
     /// Gets or sets the minimum monster level which are required to be killed
     /// in order to gain master experience for master character classes.
     /// </summary>
