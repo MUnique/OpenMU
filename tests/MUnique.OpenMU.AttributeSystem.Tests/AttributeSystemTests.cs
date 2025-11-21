@@ -232,6 +232,33 @@ public class AttributeSystemTests
     }
 
     /// <summary>
+    /// Tests if a changed maximum value of an attribute is considered when requesting it from the AttributeSystem.
+    /// </summary>
+    [Test]
+    public void MaximumValueIsRespectedFromStoredDefinition()
+    {
+        // Create an attribute definition with a maximum value
+        var attackSpeedDefinition = new AttributeDefinition(Guid.NewGuid(), "AttackSpeed", "Attack speed attribute")
+        {
+            MaximumValue = 300,
+        };
+
+        // Add a stat attribute with a very high value (exceeding the maximum)
+        const int highValue = 5000;
+        this._statAttributes.Add(new StatAttribute(attackSpeedDefinition, highValue));
+
+        var system = this.CreateAttributeSystem();
+
+        // Create a different instance of the attribute definition (simulating what happens when
+        // the definition is retrieved from a different source, like a database)
+        var differentInstanceOfDefinition = new AttributeDefinition(attackSpeedDefinition.Id, "AttackSpeed", "Attack speed attribute");
+
+        // The system should return the maximum value from the stored definition, not exceed it
+        var value = system[differentInstanceOfDefinition];
+        Assert.That(value, Is.EqualTo(300));
+    }
+
+    /// <summary>
     /// Creates the attribute system for testing, initialized with <see cref="_statAttributes"/>, <see cref="_baseAttributes"/> and <see cref="_relationShips"/>.
     /// </summary>
     /// <returns>The acreated attribute system, initialized with <see cref="_statAttributes"/>, <see cref="_baseAttributes"/> and <see cref="_relationShips"/>.</returns>
