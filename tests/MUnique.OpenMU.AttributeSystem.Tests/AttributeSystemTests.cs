@@ -261,7 +261,7 @@ public class AttributeSystemTests
     /// <summary>
     /// Creates the attribute system for testing, initialized with <see cref="_statAttributes"/>, <see cref="_baseAttributes"/> and <see cref="_relationShips"/>.
     /// </summary>
-    /// <returns>The acreated attribute system, initialized with <see cref="_statAttributes"/>, <see cref="_baseAttributes"/> and <see cref="_relationShips"/>.</returns>
+    /// <returns>The created attribute system, initialized with <see cref="_statAttributes"/>, <see cref="_baseAttributes"/> and <see cref="_relationShips"/>.</returns>
     private AttributeSystem CreateAttributeSystem()
     {
         return new(this._statAttributes, this._baseAttributes, this._relationShips);
