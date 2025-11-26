@@ -402,7 +402,10 @@ public class Stats
     /// <summary>
     /// Gets the magic speed attribute definition which is used for some skills.
     /// </summary>
-    public static AttributeDefinition MagicSpeed { get; } = new(new Guid("AE32AA45-9C18-43B3-9F7B-648FD7F4B0AD"), "Magic Speed", string.Empty);
+    public static AttributeDefinition MagicSpeed { get; } = new(new Guid("AE32AA45-9C18-43B3-9F7B-648FD7F4B0AD"), "Magic Speed", string.Empty)
+    {
+        MaximumValue = 200,
+    };
 
     /// <summary>
     /// Gets the wizardry base (min and max) damage increase attribute definition>.

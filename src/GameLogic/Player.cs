@@ -1190,7 +1190,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             var remainingExp = experience - exp;
             if (remainingExp > 0 && this.Attributes![Stats.Level] < this.GameContext.Configuration.MaximumLevel)
             {
-                await this.AddExperienceAsync((int)remainingExp, killedObject).ConfigureAwait(false);
+                // Only apply overflow if the configuration allows it
+                if (!this.GameContext.Configuration.PreventExperienceOverflow)
+                {
+                    await this.AddExperienceAsync((int)remainingExp, killedObject).ConfigureAwait(false);
+                }
             }
         }
     }

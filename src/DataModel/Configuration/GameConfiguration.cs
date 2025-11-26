@@ -34,6 +34,14 @@ public partial class GameConfiguration
     public float ExperienceRate { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether experience overflow should be prevented.
+    /// When <c>true</c>, if gaining experience would exceed the amount needed for the next level,
+    /// only the necessary experience for the next level is gained, and the overflow is discarded.
+    /// When <c>false</c>, excess experience is applied to subsequent levels (default behavior).
+    /// </summary>
+    public bool PreventExperienceOverflow { get; set; }
+
+    /// <summary>
     /// Gets or sets the money drop rate of the game.
     /// This multiplier is applied to all money drops, allowing independent control from the experience rate.
     /// </summary>
