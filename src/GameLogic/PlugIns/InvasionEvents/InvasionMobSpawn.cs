@@ -19,7 +19,7 @@ public record InvasionMobSpawn(
     ushort Count,
     ushort? MapId = null,
     byte? X1 = null,
-    byte? X2 = null,
     byte? Y1 = null,
+    byte? X2 = null,
     byte? Y2 = null);
 
