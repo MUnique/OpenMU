@@ -33,7 +33,7 @@ public class GoldenInvasionPlugIn : BaseInvasionPlugIn<PeriodicInvasionConfigura
     public GoldenInvasionPlugIn()
         : base(
             MapEventType.GoldenDragonInvasion,
-            new InvasionMobSpawn[]
+            new InvasionMobSpawn
             {
                 new(GoldenBudgeDragonId, 20, MapId: LorenciaId),
                 new(GoldenGoblinId, 20, MapId: NoriaId),
@@ -44,7 +44,7 @@ public class GoldenInvasionPlugIn : BaseInvasionPlugIn<PeriodicInvasionConfigura
                 new(GoldenWheelId, 20, MapId: TarkanId),
                 new(GoldenTantallosId, 10, MapId: TarkanId),
             },
-            new InvasionMobSpawn[] { new(GoldenDragonId, 10) })
+            new InvasionMobSpawn { new(GoldenDragonId, 10) })
     {
     }
 
