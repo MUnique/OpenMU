@@ -46,6 +46,7 @@ public abstract class GameConfigurationInitializerBase : InitializerBase
         this.GameConfiguration.MaximumInventoryMoney = int.MaxValue;
         this.GameConfiguration.MaximumVaultMoney = int.MaxValue;
         this.GameConfiguration.PreventExperienceOverflow = false;
+        this.GameConfiguration.ClampMoneyOnPickup = false;
         this.GameConfiguration.RecoveryInterval = 3000;
         this.GameConfiguration.MaximumLetters = 50;
         this.GameConfiguration.LetterSendPrice = 1000;
