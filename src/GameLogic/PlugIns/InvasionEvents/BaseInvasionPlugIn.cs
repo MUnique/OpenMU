@@ -49,11 +49,11 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
     /// <param name="mapEventType">Type of the map event.</param>
     /// <param name="mobs">The mobs which spawn on specific maps (MapId is not null).</param>
     /// <param name="mobsOnSelectedMap">The mobs which always spawn on event starting on the selected map (MapId is null).</param>
-    protected BaseInvasionPlugIn(MapEventType? mapEventType, InvasionMobSpawn[]? mobs, InvasionMobSpawn[] mobsOnSelectedMap)
+    protected BaseInvasionPlugIn(MapEventType? mapEventType, InvasionMobSpawn[]? mobs, InvasionMobSpawn[]? mobsOnSelectedMap)
     {
         this._mapEventType = mapEventType;
         this._mobs = mobs ?? [];
-        this._mobsOnSelectedMap = mobsOnSelectedMap;
+        this._mobsOnSelectedMap = mobsOnSelectedMap ?? [];
     }
 
     /// <summary>
