@@ -39,8 +39,8 @@ public class MoveChatCommandPlugIn : ChatCommandPlugInBase<MoveChatCommandArgs>
 
             if (!targetPlayer.Name.Equals(sender.Name))
             {
-                await this.ShowMessageToAsync(targetPlayer, "You have been moved by the game master.").ConfigureAwait(false);
-                await this.ShowMessageToAsync(sender, $"[{this.Key}] {targetPlayer.Name} has been moved to {exitGate!.Map!.Name} at {targetPlayer.Position.X}, {targetPlayer.Position.Y}").ConfigureAwait(false);
+                await targetPlayer.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MovedByGameMaster)).ConfigureAwait(false);
+                await sender.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MovedPlayerResult), this.Key, targetPlayer.Name, exitGate!.Map!.Name, targetPlayer.Position.X, targetPlayer.Position.Y).ConfigureAwait(false);
             }
         }
         else

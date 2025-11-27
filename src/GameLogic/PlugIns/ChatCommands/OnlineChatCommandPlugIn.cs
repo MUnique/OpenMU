@@ -45,6 +45,6 @@ public class OnlineChatCommandPlugIn : ChatCommandPlugInBase<EmptyChatCommandArg
             return Task.CompletedTask;
         }).ConfigureAwait(false);
 
-        await this.ShowMessageToAsync(gameMasterPlayer, $"[{this.Key}] {totalGameMastersCount} GM(s) and {totalCharactersCount} player(s) online").ConfigureAwait(false);
+        await gameMasterPlayer.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.OnlineCountInfo), this.Key, totalGameMastersCount, totalCharactersCount).ConfigureAwait(false);
     }
 }

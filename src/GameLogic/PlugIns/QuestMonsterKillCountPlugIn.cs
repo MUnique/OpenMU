@@ -4,10 +4,9 @@
 
 namespace MUnique.OpenMU.GameLogic.PlugIns;
 
+using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic.NPC;
-using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
-using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -63,7 +62,8 @@ public class QuestMonsterKillCountPlugIn : IAttackableGotKilledPlugIn, ISupportC
                         requirementState.KillCount,
                         killRequirement.MinimumNumber);
 
-                    await player.ShowMessageAsync(message).ConfigureAwait(false);
+                    // TODO: Localize
+                    await player.ShowBlueMessageAsync(message).ConfigureAwait(false);
                 }
             }
         }

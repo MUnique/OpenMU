@@ -8,6 +8,8 @@ using System.IO;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.Arguments;
+using MUnique.OpenMU.GameLogic.Views;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -87,5 +89,17 @@ public class CharInfoChatCommandPlugIn : ChatCommandPlugInBase<CharInfoChatComma
 
             await this.ShowMessageToAsync(gameMaster, line).ConfigureAwait(false);
         }
+    }
+
+    /// <summary>
+    /// Shows a message to a player.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="message">The message.</param>
+    /// <param name="messageType">The message type.</param>
+    [Obsolete("Use localized messages")]
+    private ValueTask ShowMessageToAsync(Player player, string message, MessageType messageType = MessageType.BlueNormal)
+    {
+        return player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, messageType));
     }
 }

@@ -41,9 +41,9 @@ public class ChatUnbanCharChatCommandPlugIn : ChatCommandPlugInBase<ChatUnbanCha
         await this.ChangeAccountChatBanUntilAsync(player, null).ConfigureAwait(false);
 
         // Send unban notice to Game Master
-        await this.ShowMessageToAsync(gameMaster, $"[{this.Key}] The chat ban for the account from {arguments.CharacterName} has been removed.").ConfigureAwait(false);
+        await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.ChatBanRemoved), this.Key, arguments.CharacterName).ConfigureAwait(false);
 
         // Send unban notice to character
-        await this.ShowMessageToAsync(player, $"Your chat ban has been removed by a gamemaster.").ConfigureAwait(false);
+        await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.YourChatBanRemovedByGameMaster)).ConfigureAwait(false);
     }
 }

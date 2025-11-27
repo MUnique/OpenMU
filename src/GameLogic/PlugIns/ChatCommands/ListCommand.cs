@@ -30,7 +30,7 @@ public class ListCommand : IChatCommandPlugIn
 
         foreach (var commandUsage in commands.Select(x => x.Usage))
         {
-            await player.ShowMessageAsync(commandUsage).ConfigureAwait(false);
+            await player.ShowBlueMessageAsync(commandUsage).ConfigureAwait(false);
         }
     }
 }

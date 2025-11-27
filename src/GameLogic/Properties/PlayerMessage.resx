@@ -1,21 +1,303 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
-  <resheader name="version"><value>2.0</value></resheader>
-  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
-  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
-  <data name="PlayerEnteredGameMessage" xml:space="preserve"><value>{0} entered the game.</value></data>
-  <data name="CommandNeedsArguments" xml:space="preserve"><value>The command needs {0} arguments and was given {1}.</value></data>
-  <data name="RequiredArgumentNotUsed" xml:space="preserve"><value>The required argument named {0} was not used.</value></data>
-  <data name="ArgumentInvalidType" xml:space="preserve"><value>The argument {0} was given an invalid type, it expects the value to be of the type {1}.</value></data>
-  <data name="CharacterNameRequired" xml:space="preserve"><value>Character name is required.</value></data>
-  <data name="CharacterNotFound" xml:space="preserve"><value>Character {0} not found.</value></data>
-  <data name="GuildNotFound" xml:space="preserve"><value>Guild {0} not found.</value></data>
-  <data name="NameRequired" xml:space="preserve"><value>Name is required.</value></data>
-  <data name="LoginNameRequired" xml:space="preserve"><value>Login name is required.</value></data>
-  <data name="AccountNotFound" xml:space="preserve"><value>Account not found.</value></data>
-  <data name="AccountPropertyNotFound" xml:space="preserve"><value>Account property not found.</value></data>
-  <data name="CommandDoesNotExist" xml:space="preserve"><value>The command '{0}' does not exists.</value></data>
-  <data name="MapNotFound" xml:space="preserve"><value>Map {0} not found.</value></data>
-  <data name="CharacterNameAlreadyExists" xml:space="preserve"><value>A character with the same name already exists.</value></data>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="PlayerEnteredGameMessage" xml:space="preserve">
+    <value>{0} entered the game.</value>
+  </data>
+  <data name="CommandNeedsArguments" xml:space="preserve">
+    <value>The command needs {0} arguments and was given {1}.</value>
+  </data>
+  <data name="RequiredArgumentNotUsed" xml:space="preserve">
+    <value>The required argument named {0} was not used.</value>
+  </data>
+  <data name="ArgumentInvalidType" xml:space="preserve">
+    <value>The argument {0} was given an invalid type, it expects the value to be of the type {1}.</value>
+  </data>
+  <data name="CharacterNameRequired" xml:space="preserve">
+    <value>Character name is required.</value>
+  </data>
+  <data name="CharacterNotFound" xml:space="preserve">
+    <value>Character '{0}' not found.</value>
+  </data>
+  <data name="GuildNotFound" xml:space="preserve">
+    <value>Guild {0} not found.</value>
+  </data>
+  <data name="NameRequired" xml:space="preserve">
+    <value>Name is required.</value>
+  </data>
+  <data name="LoginNameRequired" xml:space="preserve">
+    <value>Login name is required.</value>
+  </data>
+  <data name="AccountNotFound" xml:space="preserve">
+    <value>Account not found.</value>
+  </data>
+  <data name="AccountPropertyNotFound" xml:space="preserve">
+    <value>Account property not found.</value>
+  </data>
+  <data name="CommandDoesNotExist" xml:space="preserve">
+    <value>The command '{0}' does not exist.</value>
+  </data>
+  <data name="MapNotFound" xml:space="preserve">
+    <value>Map {0} not found.</value>
+  </data>
+  <data name="CharacterNameAlreadyExists" xml:space="preserve">
+    <value>A character with the same name already exists.</value>
+  </data>
+  <data name="AwardMoneyFailByFullInventory" xml:space="preserve">
+      <value>Couldn't add reward money, inventory is full.</value>
+    </data>
+  <data name="CantEnterEventWithItem" xml:space="preserve">
+    <value>Can't enter event with equipped item '{0}'.</value>
+  </data>
+  <data name="MuHelperAlreadyRunning" xml:space="preserve">
+    <value>MU Helper is already running.</value>
+  </data>
+  <data name="MuHelperMinimumLevel" xml:space="preserve">
+    <value>MU Helper can be used after level {0}.</value>
+  </data>
+  <data name="MuHelperMaximumLevel" xml:space="preserve">
+    <value>MU Helper cannot be used after level {0}.</value>
+  </data>
+  <data name="MuHelperRequiresMoney" xml:space="preserve">
+    <value>MU Helper requires {0} zen.</value>
+  </data>
+  <data name="AlreadyInDuel" xml:space="preserve">
+    <value>You are already in a duel.</value>
+  </data>
+  <data name="OtherPlayerAlreadyInDuel" xml:space="preserve">
+    <value>The other player is already in a duel.</value>
+  </data>
+  <data name="DuelChannelIsFull" xml:space="preserve">
+    <value>The duel channel is full.</value>
+  </data>
+  <data name="DuelRequestMustBeOnSameMap" xml:space="preserve">
+    <value>You can only duel players which are in the same map.</value>
+  </data>
+  <data name="NoDuelDuringMiniGame" xml:space="preserve">
+    <value>You cannot start a duel during a mini game.</value>
+  </data>
+  <data name="NoDuelWhileBeingPlayerKiller" xml:space="preserve">
+    <value>You cannot start a duel while you are a player killer.</value>
+  </data>
+  <data name="NoDuelWithPlayerKiller" xml:space="preserve">
+    <value>You cannot start a duel with a player killer.</value>
+  </data>
+  <data name="NoDuelDuringGuildWar" xml:space="preserve">
+    <value>You cannot start a duel during guild war.</value>
+  </data>
+  <data name="NoDuelDuringSelfDefense" xml:space="preserve">
+    <value>You cannot start a duel with active self-defense.</value>
+  </data>
+  <data name="NoDuelWithOpenedNpcDialog" xml:space="preserve">
+    <value>You cannot start a duel when a NPC dialog is opened.</value>
+  </data>
+  <data name="NoDuelWithWrongState" xml:space="preserve">
+    <value>You cannot start a duel when one of the players has the wrong state.</value>
+  </data>
+  <data name="ItemEffectNotFound" xml:space="preserve">
+    <value>Effect for item not found.</value>
+  </data>
+  <data name="InvalidLostMap" xml:space="preserve">
+    <value>The lost map is not valid.</value>
+  </data>
+  <data name="NoKalimaGateOnEventMap" xml:space="preserve">
+    <value>Cannot create kalima gate on event map.</value>
+  </data>
+  <data name="NoKalimaGateInSafezone" xml:space="preserve">
+    <value>Cannot create kalima gate in safe zone.</value>
+  </data>
+  <data name="UndefinedGateNpc" xml:space="preserve">
+    <value>The gate npc is not defined.</value>
+  </data>
+  <data name="KalimaEntranceNotFound" xml:space="preserve">
+    <value>The kalima entrance wasn't found.</value>
+  </data>
+  <data name="EventMapCreatedOnEntranceWithoutTimetable" xml:space="preserve">
+    <value>Event map is created on entrance. No fixed time table.</value>
+  </data>
+  <data name="EventNotImplementedYet" xml:space="preserve">
+    <value>This event is not implemented yet.</value>
+  </data>
+  <data name="AddingMultiplePointsWhileMiniGameNotAllowed" xml:space="preserve">
+    <value>Adding multiple points is not allowed when playing a mini game.</value>
+  </data>
+  <data name="LoginAttemptWarning" xml:space="preserve">
+    <value>Another user attempted to login this account. If it wasn't you, we suggest you to change your password.</value>
+  </data>
+  <data name="RequestedLanguageNotFound" xml:space="preserve">
+    <value>Requested language '{0}' not found.</value>
+  </data>
+  <data name="LanguageChanged" xml:space="preserve">
+    <value>Language has been changed to '{0}' ({1}).</value>
+  </data>
+  <data name="AvailableLanguagesCaption" xml:space="preserve">
+    <value>Available languages:</value>
+  </data>
+  <data name="AccountHasBeenBanned" xml:space="preserve">
+    <value>[{0}] Account {1} has been banned.</value>
+  </data>
+  <data name="AccountOfHasBeenBanned" xml:space="preserve">
+    <value>[{0}] Account of {1} has been banned.</value>
+  </data>
+  <data name="AccountChatBannedResult" xml:space="preserve">
+    <value>[{0}] Account of {1} chat banned for {2} minutes</value>
+  </data>
+  <data name="YouAreChatBanned" xml:space="preserve">
+    <value>You are chat banned for {0} minutes</value>
+  </data>
+  <data name="YourChatBanRemovedByGameMaster" xml:space="preserve">
+    <value>Your chat ban has been removed by a game master.</value>
+  </data>
+  <data name="ChatBanRemoved" xml:space="preserve">
+    <value>[{0}] The chat ban for the account from {1} has been removed.</value>
+  </data>
+  <data name="MonsterNotFoundByNumber" xml:space="preserve">
+    <value>Monster with number {0} not found.</value>
+  </data>
+  <data name="MonsterCreatedByGameMaster" xml:space="preserve">
+    <value>Monster with number {0} created, id: {1}.</value>
+  </data>
+  <data name="CommandResultPlayerDisconnected" xml:space="preserve">
+    <value>[{0}] {1} has been disconnected.</value>
+  </data>
+  <data name="LevelInformation" xml:space="preserve">
+    <value>Level of '{0}': {1}.</value>
+  </data>
+  <data name="LevelUpPointsInfo" xml:space="preserve">
+    <value>Level-up points of '{0}': {1}.</value>
+  </data>
+  <data name="MasterLevelInfo" xml:space="preserve">
+    <value>Master level of '{0}': {1}.</value>
+  </data>
+  <data name="MasterLevelUpPointsInfo" xml:space="preserve">
+    <value>Master level-up points of '{0}': {1}.</value>
+  </data>
+  <data name="MoneyInfo" xml:space="preserve">
+    <value>Money of '{0}': {1}.</value>
+  </data>
+  <data name="ResetsInfo" xml:space="preserve">
+    <value>Resets of '{0}': {1}.</value>
+  </data>
+  <data name="ResetSystemInactive" xml:space="preserve">
+    <value>The reset system is not enabled on this server.</value>
+  </data>
+  <data name="StatPointInfo" xml:space="preserve">
+    <value>Stat of '{0}': {1}.</value>
+  </data>
+  <data name="GuildDisconnectResult" xml:space="preserve">
+    <value>[{0}] {1} has been disconnected.</value>
+  </data>
+  <data name="MovedByGameMaster" xml:space="preserve">
+    <value>You have been moved by the game master.</value>
+  </data>
+  <data name="MovedPlayerResult" xml:space="preserve">
+    <value>[{0}] {1} has been moved to {2} at {3}, {4}</value>
+  </data>
+  <data name="ItemCreatedResult" xml:space="preserve">
+    <value>[{0}] {1} created</value>
+  </data>
+  <data name="ItemGroupNumberNotExists" xml:space="preserve">
+    <value>{0} {1} does not exist.</value>
+  </data>
+  <data name="ItemLevelExceeded" xml:space="preserve">
+    <value>Level cannot be greater than {0}.</value>
+  </data>
+  <data name="MonsterNotFoundById" xml:space="preserve">
+    <value>Monster with id {0} not found.</value>
+  </data>
+  <data name="InvalidMerchantId" xml:space="preserve">
+    <value>Invalid NPC ID "{0}". Please provide a valid merchant NPC ID.</value>
+  </data>
+  <data name="NpcIsNotMerchant" xml:space="preserve">
+    <value>Not a valid merchant NPC.</value>
+  </data>
+  <data name="OnlineCountInfo" xml:space="preserve">
+    <value>[{0}] {1} GM(s) and {2} player(s) online</value>
+  </data>
+  <data name="NoWarehouseNpcFound" xml:space="preserve">
+    <value>No warehouse NPC found</value>
+  </data>
+  <data name="PlayerKillLevelRangeError" xml:space="preserve">
+    <value>PK level must be between {0} and {1}.</value>
+  </data>
+  <data name="PlayerKillCountMustBePositive" xml:space="preserve">
+    <value>PK count must be greater than zero.</value>
+  </data>
+  <data name="PlayerKillStateChangeResult" xml:space="preserve">
+    <value>[{0}] The state of {1} has been changed to {2} with {3} murders for {4} minutes</value>
+  </data>
+  <data name="PkStatusClearedByGameMaster" xml:space="preserve">
+    <value>Your player kills have been cleaned by the game master.</value>
+  </data>
+  <data name="PkClearedResult" xml:space="preserve">
+    <value>[{0}] {1} kills have been cleaned.</value>
+  </data>
+  <data name="NpcNotFoundById" xml:space="preserve">
+    <value>NPC with id {0} not found.</value>
+  </data>
+  <data name="NpcRemovedById" xml:space="preserve">
+    <value>NPC with id {0} removed.</value>
+  </data>
+  <data name="InvalidCharacterLevel" xml:space="preserve">
+    <value>Invalid level - must be between 1 and {0}.</value>
+  </data>
+  <data name="SetLevelResult" xml:space="preserve">
+    <value>Level set to {0}.</value>
+  </data>
+  <data name="InvalidLevelUpPoints" xml:space="preserve">
+    <value>Invalid level-up points - must be bigger or equal to 0.</value>
+  </data>
+  <data name="SetLevelUpPointsResult" xml:space="preserve">
+    <value>Level-up points set to {0}.</value>
+  </data>
+  <data name="SetMasterLevelResult" xml:space="preserve">
+    <value>Master level set to {0}.</value>
+  </data>
+  <data name="InvalidMasterLevelUpPoints" xml:space="preserve">
+    <value>Invalid master level-up points - must be bigger or equal to 0.</value>
+  </data>
+  <data name="SetMasterLevelUpPointsResult" xml:space="preserve">
+    <value>Master level-up points set to {0}.</value>
+  </data>
+  <data name="InvalidMoneyAmount" xml:space="preserve">
+    <value>Invalid money amount - must be between 0 and {0}.</value>
+  </data>
+  <data name="SetMoneyResult" xml:space="preserve">
+    <value>Money set to {0}.</value>
+  </data>
+  <data name="InvalidResetsAmount" xml:space="preserve">
+    <value>Invalid resets - must be bigger than 0.</value>
+  </data>
+  <data name="InvalidResetsWithLimits" xml:space="preserve">
+    <value>Invalid resets - must be between 0 and {0}.</value>
+  </data>
+  <data name="SetResetsResult" xml:space="preserve">
+    <value>Resets set to {0}.</value>
+  </data>
+  <data name="InvalidStatValue" xml:space="preserve">
+    <value>Invalid {0} - must be bigger than 1.</value>
+  </data>
+  <data name="InvalidStatValueRange" xml:space="preserve">
+    <value>Invalid {0} - must be between 0 and {1}.</value>
+  </data>
+  <data name="SetStatResult" xml:space="preserve">
+    <value>{0} set to {1} for player {2}.</value>
+  </data>
+  <data name="UnbanAccountResult" xml:space="preserve">
+    <value>[{0}] Account {1} has been unbanned.</value>
+  </data>
+  <data name="UnbanAccountOfCharacterResult" xml:space="preserve">
+    <value>[{0}] Account of {1} has been unbanned.</value>
+  </data>
 </root>

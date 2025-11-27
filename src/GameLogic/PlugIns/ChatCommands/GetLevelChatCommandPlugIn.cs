@@ -4,11 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
-using System.Globalization;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic.Attributes;
-using MUnique.OpenMU.GameLogic.Views.Character;
-using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -21,8 +18,6 @@ public class GetLevelChatCommandPlugIn : ChatCommandPlugInBase<GetLevelChatComma
 {
     private const string Command = "/getlevel";
     private const CharacterStatus MinimumStatus = CharacterStatus.GameMaster;
-    private const string CharacterNotFoundMessage = "Character '{0}' not found.";
-    private const string LevelGetMessage = "Level of '{0}': {1}.";
 
     /// <inheritdoc />
     public override string Key => Command;
@@ -40,7 +35,7 @@ public class GetLevelChatCommandPlugIn : ChatCommandPlugInBase<GetLevelChatComma
             if (targetPlayer?.SelectedCharacter is null ||
                 !targetPlayer.SelectedCharacter.Name.Equals(characterName, StringComparison.OrdinalIgnoreCase))
             {
-                await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, CharacterNotFoundMessage, characterName)).ConfigureAwait(false);
+                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CharacterNotFound), characterName).ConfigureAwait(false);
                 return;
             }
         }
@@ -50,7 +45,7 @@ public class GetLevelChatCommandPlugIn : ChatCommandPlugInBase<GetLevelChatComma
             return;
         }
 
-        await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, LevelGetMessage, targetPlayer.SelectedCharacter.Name, targetPlayer.Attributes![Stats.Level])).ConfigureAwait(false);
+        await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.LevelInformation), targetPlayer.SelectedCharacter.Name, targetPlayer.Attributes![Stats.Level]).ConfigureAwait(false);
     }
 
     /// <summary>

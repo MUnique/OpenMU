@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
-using System.Globalization;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.Attributes;
@@ -22,10 +21,6 @@ public class SetStatChatCommandPlugIn : ChatCommandPlugInBase<SetStatChatCommand
     private const string Command = "/set";
 
     private const CharacterStatus MinimumStatus = CharacterStatus.GameMaster;
-    private const string CharacterNotFoundMessage = "Character '{0}' not found.";
-    private const string InvalidStatWithLimitMessage = "Invalid {0} - must be between 0 and {1}.";
-    private const string InvalidStatNoLimitMessage = "Invalid {0} - must be bigger than 1.";
-    private const string StatSetMessage = "{0} set to {1}.";
 
     /// <inheritdoc />
     public override string Key => Command;
@@ -36,56 +31,44 @@ public class SetStatChatCommandPlugIn : ChatCommandPlugInBase<SetStatChatCommand
     /// <inheritdoc />
     protected override async ValueTask DoHandleCommandAsync(Player player, Arguments arguments)
     {
-        try
+        if (arguments is null)
         {
-            if (arguments is null)
+            return;
+        }
+
+        var targetPlayer = player;
+        if (arguments.CharacterName is { } characterName)
+        {
+            targetPlayer = player.GameContext.GetPlayerByCharacterName(characterName);
+            if (targetPlayer?.SelectedCharacter is null ||
+                !targetPlayer.SelectedCharacter.Name.Equals(characterName, StringComparison.OrdinalIgnoreCase))
             {
+                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CharacterNotFound), characterName).ConfigureAwait(false);
                 return;
             }
-
-            var targetPlayer = player;
-            if (arguments.CharacterName is { } characterName)
-            {
-                targetPlayer = player.GameContext.GetPlayerByCharacterName(characterName);
-                if (targetPlayer?.SelectedCharacter is null ||
-                    !targetPlayer.SelectedCharacter.Name.Equals(characterName, StringComparison.OrdinalIgnoreCase))
-                {
-                    await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, CharacterNotFoundMessage, characterName)).ConfigureAwait(false);
-                    return;
-                }
-            }
-
-            if (targetPlayer.SelectedCharacter is not { } selectedCharacter)
-            {
-                return;
-            }
-
-            var attribute = this.GetAttribute(selectedCharacter, arguments.StatType);
-            if (attribute.MaximumValue is null)
-            {
-                if (arguments.Amount < 0)
-                {
-                    await this.ShowMessageToAsync(player, InvalidStatNoLimitMessage).ConfigureAwait(false);
-                    return;
-                }
-            }
-            else
-            {
-                if (attribute.MaximumValue < 0 || arguments.Amount > attribute.MaximumValue)
-                {
-                    await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, InvalidStatWithLimitMessage, attribute.MaximumValue)).ConfigureAwait(false);
-                    return;
-                }
-            }
-
-            targetPlayer.Attributes![attribute] = arguments.Amount;
-            await targetPlayer.InvokeViewPlugInAsync<IUpdateCharacterBaseStatsPlugIn>(p => p.UpdateCharacterBaseStatsAsync()).ConfigureAwait(false);
-            await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, StatSetMessage, targetPlayer.SelectedCharacter.Name, arguments.Amount)).ConfigureAwait(false);
         }
-        catch (ArgumentException e)
+
+        if (targetPlayer.SelectedCharacter is not { } selectedCharacter)
         {
-            await player.ShowMessageAsync(e.Message).ConfigureAwait(false);
+            return;
         }
+
+        var attribute = this.GetAttribute(selectedCharacter, arguments.StatType);
+        if (attribute.MaximumValue is null && arguments.Amount < 0)
+        {
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.InvalidStatValue), arguments.StatType).ConfigureAwait(false);
+            return;
+        }
+
+        if (attribute.MaximumValue < 0 || arguments.Amount > attribute.MaximumValue)
+        {
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.InvalidStatValueRange), arguments.StatType, attribute.MaximumValue).ConfigureAwait(false);
+            return;
+        }
+
+        targetPlayer.Attributes![attribute] = arguments.Amount;
+        await targetPlayer.InvokeViewPlugInAsync<IUpdateCharacterBaseStatsPlugIn>(p => p.UpdateCharacterBaseStatsAsync()).ConfigureAwait(false);
+        await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.SetStatResult), arguments.StatType, arguments.Amount, targetPlayer.SelectedCharacter.Name).ConfigureAwait(false);
     }
 
     private AttributeDefinition GetAttribute(Character selectedCharacter, string? statType)

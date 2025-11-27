@@ -31,7 +31,7 @@ internal class CreateMonsterChatCommand : ChatCommandPlugInBase<CreateMonsterCha
         var monsterDef = gameMaster.GameContext.Configuration.Monsters.FirstOrDefault(m => m.Number == arguments.MonsterNumber);
         if (monsterDef is null)
         {
-            await this.ShowMessageToAsync(gameMaster, $"Monster with number {arguments.MonsterNumber} not found.").ConfigureAwait(false);
+            await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MonsterNotFoundByNumber), arguments.MonsterNumber).ConfigureAwait(false);
             return;
         }
 
@@ -56,6 +56,6 @@ internal class CreateMonsterChatCommand : ChatCommandPlugInBase<CreateMonsterCha
         await gameMap.AddAsync(monster).ConfigureAwait(false);
         monster.OnSpawn();
 
-        await this.ShowMessageToAsync(gameMaster, $"Monster with number {arguments.MonsterNumber} created, id: {monster.Id}.").ConfigureAwait(false);
+        await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MonsterCreatedByGameMaster), arguments.MonsterNumber, monster.Id).ConfigureAwait(false);
     }
 }

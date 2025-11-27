@@ -4,10 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
-using System.Globalization;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic.Views.Character;
-using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -20,9 +18,6 @@ public class SetMasterLevelUpPointsChatCommandPlugIn : ChatCommandPlugInBase<Set
 {
     private const string Command = "/setmasterleveluppoints";
     private const CharacterStatus MinimumStatus = CharacterStatus.GameMaster;
-    private const string CharacterNotFoundMessage = "Character '{0}' not found.";
-    private const string InvalidMasterLevelUpPointsMessage = "Invalid master level-up points - must be bigger or equal to 0.";
-    private const string MasterLevelUpPointsSetMessage = "Master level-up points set to {0}.";
 
     /// <inheritdoc />
     public override string Key => Command;
@@ -35,7 +30,7 @@ public class SetMasterLevelUpPointsChatCommandPlugIn : ChatCommandPlugInBase<Set
     {
         if (arguments is null)
         {
-            await this.ShowMessageToAsync(player, InvalidMasterLevelUpPointsMessage).ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.InvalidMasterLevelUpPoints)).ConfigureAwait(false);
             return;
         }
 
@@ -46,7 +41,7 @@ public class SetMasterLevelUpPointsChatCommandPlugIn : ChatCommandPlugInBase<Set
             if (targetPlayer?.SelectedCharacter is null ||
                 !targetPlayer.SelectedCharacter.Name.Equals(characterName, StringComparison.OrdinalIgnoreCase))
             {
-                await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, CharacterNotFoundMessage, characterName)).ConfigureAwait(false);
+                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CharacterNotFound), characterName).ConfigureAwait(false);
                 return;
             }
         }
@@ -58,13 +53,13 @@ public class SetMasterLevelUpPointsChatCommandPlugIn : ChatCommandPlugInBase<Set
 
         if (arguments.MasterLevelUpPoints < 0)
         {
-            await this.ShowMessageToAsync(player, InvalidMasterLevelUpPointsMessage).ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.InvalidMasterLevelUpPoints)).ConfigureAwait(false);
             return;
         }
 
         targetPlayer.SelectedCharacter.MasterLevelUpPoints = checked(arguments.MasterLevelUpPoints);
         await targetPlayer.InvokeViewPlugInAsync<IUpdateLevelPlugIn>(p => p.UpdateMasterLevelAsync()).ConfigureAwait(false);
-        await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, MasterLevelUpPointsSetMessage, arguments.MasterLevelUpPoints)).ConfigureAwait(false);
+        await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.SetMasterLevelUpPointsResult), arguments.MasterLevelUpPoints).ConfigureAwait(false);
     }
 
     /// <summary>

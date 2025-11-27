@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.Arguments;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -36,7 +37,7 @@ public class ItemChatCommandPlugIn : ChatCommandPlugInBase<ItemChatCommandArgs>
             var dropCoordinates = gameMaster.CurrentMap.Terrain.GetRandomCoordinate(gameMaster.Position, 1);
             var droppedItem = new DroppedItem(item, dropCoordinates, gameMaster.CurrentMap, gameMaster);
             await gameMaster.CurrentMap.AddAsync(droppedItem).ConfigureAwait(false);
-            await this.ShowMessageToAsync(gameMaster, $"[{this.Key}] {item} created").ConfigureAwait(false);
+            await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.ItemCreatedResult), this.Key, item).ConfigureAwait(false);
         }
     }
 
@@ -61,14 +62,21 @@ public class ItemChatCommandPlugIn : ChatCommandPlugInBase<ItemChatCommandArgs>
     {
         return gameMaster.GameContext.Configuration.Items
                    .FirstOrDefault(def => def.Group == arguments.Group && def.Number == arguments.Number)
-               ?? throw new ArgumentException($"{arguments.Group} {arguments.Number} does not exist.");
+               ?? throw new LocalizableException<ArgumentException, PlayerMessage>(
+                   new(string.Format(PlayerMessage.ItemGroupNumberNotExists, arguments.Group, arguments.Number)),
+                   nameof(PlayerMessage.ItemGroupNumberNotExists),
+                   arguments.Group,
+                   arguments.Number);
     }
 
     private static byte GetItemLevel(ItemDefinition itemDefinition, ItemChatCommandArgs arguments)
     {
         if (arguments.Level > itemDefinition.MaximumItemLevel)
         {
-            throw new ArgumentException($"Level cannot be greater than {itemDefinition.MaximumItemLevel}.");
+            throw new LocalizableException<ArgumentException, PlayerMessage>(
+                new(string.Format(PlayerMessage.ItemLevelExceeded, itemDefinition.MaximumItemLevel)),
+                nameof(PlayerMessage.ItemLevelExceeded),
+                itemDefinition.MaximumItemLevel);
         }
 
         return arguments.Level;

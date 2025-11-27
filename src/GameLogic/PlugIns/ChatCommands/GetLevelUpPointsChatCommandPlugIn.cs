@@ -4,10 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
-using System.Globalization;
 using System.Runtime.InteropServices;
-using MUnique.OpenMU.GameLogic.Views.Character;
-using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -20,8 +17,6 @@ public class GetLevelUpPointsChatCommandPlugIn : ChatCommandPlugInBase<GetLevelU
 {
     private const string Command = "/getleveluppoints";
     private const CharacterStatus MinimumStatus = CharacterStatus.GameMaster;
-    private const string CharacterNotFoundMessage = "Character '{0}' not found.";
-    private const string LevelUpPointsGetMessage = "Level-up points of '{0}': {1}.";
 
     /// <inheritdoc />
     public override string Key => Command;
@@ -39,7 +34,7 @@ public class GetLevelUpPointsChatCommandPlugIn : ChatCommandPlugInBase<GetLevelU
             if (targetPlayer?.SelectedCharacter is null ||
                 !targetPlayer.SelectedCharacter.Name.Equals(characterName, StringComparison.OrdinalIgnoreCase))
             {
-                await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, CharacterNotFoundMessage, characterName)).ConfigureAwait(false);
+                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CharacterNotFound), characterName).ConfigureAwait(false);
                 return;
             }
         }
@@ -49,7 +44,7 @@ public class GetLevelUpPointsChatCommandPlugIn : ChatCommandPlugInBase<GetLevelU
             return;
         }
 
-        await this.ShowMessageToAsync(player, string.Format(LevelUpPointsGetMessage, targetPlayer.SelectedCharacter.Name, targetPlayer.SelectedCharacter.LevelUpPoints)).ConfigureAwait(false);
+        await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.LevelUpPointsInfo), targetPlayer.SelectedCharacter.Name, targetPlayer.SelectedCharacter.LevelUpPoints).ConfigureAwait(false);
     }
 
     /// <summary>

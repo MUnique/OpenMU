@@ -23,6 +23,6 @@ public class ShowMessageToAllWhenPlayerEnteredWorldPlugIn : IPlayerStateChangedP
             return;
         }
 
-        await player.GameContext.SendGlobalMessageAsync($"{selectedCharacter.Name} entered the game.", MessageType.BlueNormal).ConfigureAwait(false);
+        await player.GameContext.ShowGlobalLocalizedMessageAsync(MessageType.BlueNormal, nameof(PlayerMessage.PlayerEnteredGameMessage), selectedCharacter.Name).ConfigureAwait(false);
     }
 }

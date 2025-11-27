@@ -29,6 +29,6 @@ public class UnBanCharChatCommandPlugIn : ChatCommandPlugInBase<BanCharChatComma
     {
         await this.ChangeAccountStateByCharacterNameAsync(gameMaster, arguments.CharacterName ?? string.Empty, AccountState.Normal).ConfigureAwait(false);
 
-        await this.ShowMessageToAsync(gameMaster, $"[{this.Key}] Account from {arguments.CharacterName} has been unbanned.").ConfigureAwait(false);
+        await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.UnbanAccountOfCharacterResult), this.Key, arguments.CharacterName).ConfigureAwait(false);
     }
 }

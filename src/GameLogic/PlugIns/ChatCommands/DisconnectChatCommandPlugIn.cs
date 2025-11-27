@@ -32,7 +32,7 @@ public class DisconnectChatCommandPlugIn : ChatCommandPlugInBase<DisconnectChatC
 
         if (!player.Name.Equals(gameMaster.Name))
         {
-            await this.ShowMessageToAsync(gameMaster, $"[{this.Key}] {player.Name} has been disconnected.").ConfigureAwait(false);
+            await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CommandResultPlayerDisconnected), this.Key, player.Name).ConfigureAwait(false);
         }
     }
 }

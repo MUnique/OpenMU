@@ -21,8 +21,6 @@ public class GetMasterLevelChatCommandPlugIn : ChatCommandPlugInBase<GetMasterLe
 {
     private const string Command = "/getmasterlevel";
     private const CharacterStatus MinimumStatus = CharacterStatus.GameMaster;
-    private const string CharacterNotFoundMessage = "Character '{0}' not found.";
-    private const string MasterLevelGetMessage = "Master level of '{0}': {1}.";
 
     /// <inheritdoc />
     public override string Key => Command;
@@ -40,7 +38,7 @@ public class GetMasterLevelChatCommandPlugIn : ChatCommandPlugInBase<GetMasterLe
             if (targetPlayer?.SelectedCharacter is null ||
                 !targetPlayer.SelectedCharacter.Name.Equals(characterName, StringComparison.OrdinalIgnoreCase))
             {
-                await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, CharacterNotFoundMessage, characterName)).ConfigureAwait(false);
+                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CharacterNotFound), characterName).ConfigureAwait(false);
                 return;
             }
         }
@@ -50,7 +48,7 @@ public class GetMasterLevelChatCommandPlugIn : ChatCommandPlugInBase<GetMasterLe
             return;
         }
 
-        await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, MasterLevelGetMessage, targetPlayer.SelectedCharacter.Name, targetPlayer.Attributes![Stats.MasterLevel])).ConfigureAwait(false);
+        await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MasterLevelInfo), targetPlayer.SelectedCharacter.Name, targetPlayer.Attributes![Stats.MasterLevel]).ConfigureAwait(false);
     }
 
     /// <summary>

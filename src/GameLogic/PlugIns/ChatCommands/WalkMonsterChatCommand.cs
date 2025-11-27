@@ -31,7 +31,7 @@ internal class WalkMonsterChatCommand : ChatCommandPlugInBase<MoveMonsterCommand
         var monster = gameMaster.ObservingBuckets.SelectMany(b => b).OfType<Monster>().FirstOrDefault(m => m.Id == arguments.Id);
         if (monster is null)
         {
-            await this.ShowMessageToAsync(gameMaster, $"Monster with id {arguments.Id} not found.").ConfigureAwait(false);
+            await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MonsterNotFoundById), arguments.Id).ConfigureAwait(false);
             return;
         }
 

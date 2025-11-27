@@ -52,7 +52,7 @@
 
   <ItemGroup>
     <EmbeddedResource Update="Properties\PlayerMessage.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>PlayerMessage.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>

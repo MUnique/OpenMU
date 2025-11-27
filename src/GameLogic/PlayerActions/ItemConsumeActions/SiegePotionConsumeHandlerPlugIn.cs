@@ -41,7 +41,7 @@ public class SiegePotionConsumeHandlerPlugIn : ApplyMagicEffectConsumeHandlerPlu
         }
         else
         {
-            await player.ShowMessageAsync("Effect for item not found.").ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.ItemEffectNotFound)).ConfigureAwait(false);
         }
 
         return false;

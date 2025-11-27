@@ -5,15 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
 using System.ComponentModel.DataAnnotations;
-using System.Globalization;
 using System.Runtime.InteropServices;
-using MUnique.OpenMU.DataModel.Configuration;
-using MUnique.OpenMU.GameLogic.Attributes;
-using MUnique.OpenMU.GameLogic.NPC;
-using MUnique.OpenMU.GameLogic.PlayerActions;
-using MUnique.OpenMU.GameLogic.Views;
-using MUnique.OpenMU.GameLogic.Views.Inventory;
-using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -26,7 +18,6 @@ public class ClearInventoryChatCommandPlugIn : ChatCommandPlugInBase<ClearInvent
 {
     private const string Command = "/clearinv";
     private const CharacterStatus MinimumStatus = CharacterStatus.Normal;
-    private const string CharacterNotFoundMessage = "Character '{0}' not found.";
     private const int ConfirmationTimeoutSeconds = 10;
     private readonly Dictionary<Guid, DateTime> pendingConfirmations = new();
 
@@ -65,7 +56,7 @@ public class ClearInventoryChatCommandPlugIn : ChatCommandPlugInBase<ClearInvent
                 if (targetPlayer?.SelectedCharacter is null ||
                     !targetPlayer.SelectedCharacter.Name.Equals(characterName, StringComparison.OrdinalIgnoreCase))
                 {
-                    await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, CharacterNotFoundMessage, characterName)).ConfigureAwait(false);
+                    await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CharacterNotFound), characterName).ConfigureAwait(false);
                     return;
                 }
             }
@@ -82,7 +73,7 @@ public class ClearInventoryChatCommandPlugIn : ChatCommandPlugInBase<ClearInvent
             if (!this.pendingConfirmations.TryGetValue(playerId, out var confirmationTime) || (DateTime.UtcNow - confirmationTime).TotalSeconds > ConfirmationTimeoutSeconds)
             {
                 this.pendingConfirmations[playerId] = DateTime.UtcNow;
-                await this.ShowMessageToAsync(player, configuration.ConfirmationMessage).ConfigureAwait(false);
+                await player.ShowBlueMessageAsync(configuration.ConfirmationMessage).ConfigureAwait(false);
                 return;
             }
 
@@ -101,7 +92,7 @@ public class ClearInventoryChatCommandPlugIn : ChatCommandPlugInBase<ClearInvent
 
         if (removeMoney && !player.TryRemoveMoney(configuration.MoneyCost))
         {
-            await this.ShowMessageToAsync(player, configuration.NotEnoughMoneyMessage).ConfigureAwait(false);
+            await player.ShowBlueMessageAsync(configuration.NotEnoughMoneyMessage).ConfigureAwait(false);
             return;
         }
 
@@ -110,7 +101,7 @@ public class ClearInventoryChatCommandPlugIn : ChatCommandPlugInBase<ClearInvent
             await targetPlayer.DestroyInventoryItemAsync(item).ConfigureAwait(false);
         }
 
-        await this.ShowMessageToAsync(player, configuration.InventoryClearedMessage).ConfigureAwait(false);
+        await player.ShowBlueMessageAsync(configuration.InventoryClearedMessage).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -126,6 +117,7 @@ public class ClearInventoryChatCommandPlugIn : ChatCommandPlugInBase<ClearInvent
 
     /// <summary>
     /// The configuration of a <see cref="ClearInventoryChatCommandPlugIn"/>.
+    /// TODO: Make localizable.
     /// </summary>
     public class ClearInventoryConfiguration
     {

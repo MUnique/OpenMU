@@ -39,7 +39,7 @@ public class GuildDisconnectChatCommandPlugIn : ChatCommandPlugInBase<GuildDisco
 
             if (!guildPlayer.Name.Equals(gameMaster.Name))
             {
-                await this.ShowMessageToAsync(gameMaster, $"[{this.Key}] {guildPlayer.Name} has been disconnected.").ConfigureAwait(false);
+                await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.GuildDisconnectResult), this.Key, guildPlayer.Name).ConfigureAwait(false);
             }
         }).ConfigureAwait(false);
     }

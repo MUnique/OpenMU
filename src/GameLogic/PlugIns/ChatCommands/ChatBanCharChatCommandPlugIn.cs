@@ -46,9 +46,9 @@ public class ChatBanCharChatCommandPlugIn : ChatCommandPlugInBase<ChatBanCharCha
         await this.ChangeAccountChatBanUntilAsync(player, DateTime.UtcNow.AddMinutes(arguments.DurationMinutes)).ConfigureAwait(false);
 
         // Send ban notice to Game Master
-        await this.ShowMessageToAsync(gameMaster, $"[{this.Key}] Account from {arguments.CharacterName} chat banned for {arguments.DurationMinutes} minutes").ConfigureAwait(false);
+        await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.AccountChatBannedResult), this.Key, arguments.CharacterName, arguments.DurationMinutes).ConfigureAwait(false);
 
         // Send ban notice to character
-        await this.ShowMessageToAsync(player, $"You are chat banned for {arguments.DurationMinutes} minutes").ConfigureAwait(false);
+        await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.YouAreChatBanned), arguments.DurationMinutes).ConfigureAwait(false);
     }
 }

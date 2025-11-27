@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic;
 
 using System;
+using System.Globalization;
 using System.Threading;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Attributes;
@@ -18,6 +19,7 @@ using MUnique.OpenMU.GameLogic.PlayerActions.Items;
 using MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 using MUnique.OpenMU.GameLogic.PlayerActions.Trade;
 using MUnique.OpenMU.GameLogic.PlugIns;
+using MUnique.OpenMU.GameLogic.Properties;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
@@ -84,6 +86,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.PlayerState.StateChanges += async args => await (this.GameContext.PlugInManager.GetPlugInPoint<IPlayerStateChangingPlugIn>()?.PlayerStateChangingAsync(this, args) ?? ValueTask.CompletedTask).ConfigureAwait(false);
         this._observerToWorldViewAdapter = new ObserverToWorldViewAdapter(this, this.InfoRange);
         this._muHelperLazy = new Lazy<MuHelper.MuHelper>(() => new MuHelper.MuHelper(this));
+        this.Culture = CultureInfo.CurrentCulture;
     }
 
     /// <summary>
@@ -146,6 +149,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     /// <inheritdoc />
     public bool IsTemplatePlayer => this.Account?.IsTemplate is true;
+
+    /// <summary>
+    /// Gets the culture setting of the player.
+    /// </summary>
+    public CultureInfo Culture { get; internal set; }
 
     /// <summary>
     /// Gets the skill hit validator.
@@ -225,9 +233,16 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             {
                 this._account = value;
                 this._accountLoggingScope?.Dispose();
-                this._accountLoggingScope = this.Logger.BeginScope("Account: {Name}", this._account!.LoginName);
-                this.IsVaultLocked = !string.IsNullOrWhiteSpace(this._account.VaultPassword);
-                this.LogInvalidVaultItems();
+                if (this._account is { } account)
+                {
+                    this._accountLoggingScope = this.Logger.BeginScope("Account: {Name}", this._account.LoginName);
+                    this.IsVaultLocked = !string.IsNullOrWhiteSpace(this._account.VaultPassword);
+                    this.Culture = CultureInfo.GetCultures(CultureTypes.AllCultures)
+                        .FirstOrDefault(cu => cu.TwoLetterISOLanguageName == account.LanguageIsoCode
+                                              || cu.ThreeLetterISOLanguageName == account.LanguageIsoCode)
+                        ?? CultureInfo.CurrentCulture;
+                    this.LogInvalidVaultItems();
+                }
             }
         }
     }
@@ -610,6 +625,42 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         return selfDefenses.Any(sd =>
             this.GameContext.SelfDefenseState.TryGetValue(sd, out var timeout)
             && timeout >= DateTime.UtcNow);
+    }
+
+    /// <summary>
+    /// Gets the localized message.
+    /// </summary>
+    /// <param name="resourceName">Name of the resource.</param>
+    /// <param name="formatArguments">The format arguments.</param>
+    /// <returns>The localized message.</returns>
+    public string GetLocalizedMessage(string resourceName, params ReadOnlySpan<object?> formatArguments)
+    {
+        if (formatArguments.Length > 0)
+        {
+             return string.Format(PlayerMessage.ResourceManager.GetString(resourceName, this.Culture) ?? string.Empty, formatArguments);
+        }
+
+        return PlayerMessage.ResourceManager.GetString(resourceName, this.Culture) ?? string.Empty;
+    }
+
+    /// <summary>
+    /// Easier way to show a localized blue message to the player.
+    /// </summary>
+    /// <param name="messageKey">The message resource key.</param>
+    /// <param name="arguments">The parameters for the message.</param>
+    public ValueTask ShowLocalizedBlueMessageAsync(string messageKey, params ReadOnlySpan<object?> arguments)
+    {
+        var message = this.GetLocalizedMessage(messageKey, arguments);
+        return this.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal));
+    }
+
+    /// <summary>
+    /// Easier way to show a blue message to the player.
+    /// </summary>
+    /// <param name="message">The message resource key.</param>
+    public ValueTask ShowBlueMessageAsync(string message)
+    {
+        return this.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal));
     }
 
     /// <inheritdoc/>

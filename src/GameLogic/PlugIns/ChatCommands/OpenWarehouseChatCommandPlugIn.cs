@@ -6,13 +6,10 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices;
-using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlayerActions;
-using MUnique.OpenMU.GameLogic.Views;
-using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -25,7 +22,6 @@ public class OpenWarehouseChatCommandPlugIn : ChatCommandPlugInBase<OpenWarehous
 {
     private const string Command = "/openware";
     private const CharacterStatus MinimumStatus = CharacterStatus.Normal;
-    private const string NoWarehouseNpcMessage = "No warehouse NPC found";
 
     private readonly TalkNpcAction _talkNpcAction = new();
 
@@ -55,7 +51,7 @@ public class OpenWarehouseChatCommandPlugIn : ChatCommandPlugInBase<OpenWarehous
 
         if (configuration.MinimumVipLevel > 0 && (player.Attributes?[Stats.IsVip] ?? 0) < configuration.MinimumVipLevel)
         {
-            await this.ShowMessageToAsync(player, configuration.InsufficientVipLevelMessage).ConfigureAwait(false);
+            await player.ShowBlueMessageAsync(configuration.InsufficientVipLevelMessage).ConfigureAwait(false);
             return;
         }
 
@@ -63,7 +59,7 @@ public class OpenWarehouseChatCommandPlugIn : ChatCommandPlugInBase<OpenWarehous
         {
             if (player.SelectedCharacter?.CharacterStatus >= CharacterStatus.GameMaster)
             {
-                await this.ShowMessageToAsync(player, NoWarehouseNpcMessage).ConfigureAwait(false);
+                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.NoWarehouseNpcFound)).ConfigureAwait(false);
             }
 
             return;

@@ -41,8 +41,8 @@ public class GuildMoveChatCommandPlugIn : ChatCommandPlugInBase<GuildMoveChatCom
 
             if (!guildPlayer.Name.Equals(gameMaster.Name))
             {
-                await this.ShowMessageToAsync(guildPlayer, "You have been moved by the game master.").ConfigureAwait(false);
-                await this.ShowMessageToAsync(gameMaster, $"[{this.Key}] {guildPlayer.Name} has been moved to {exitGate!.Map!.Name} at {guildPlayer.Position.X}, {guildPlayer.Position.Y}").ConfigureAwait(false);
+                await guildPlayer.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MovedByGameMaster)).ConfigureAwait(false);
+                await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MovedPlayerResult), this.Key, guildPlayer.Name, exitGate!.Map!.Name, guildPlayer.Position.X, guildPlayer.Position.Y).ConfigureAwait(false);
             }
         }).ConfigureAwait(false);
     }

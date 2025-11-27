@@ -34,15 +34,16 @@ public class HelpCommand : IChatCommandPlugIn
                 .FirstOrDefault(x => x.Command.Equals("/" + commandName, StringComparison.InvariantCultureIgnoreCase));
             if (commandPluginAttribute is null)
             {
-                await player.ShowMessageAsync($"The command '{commandName}' does not exists.").ConfigureAwait(false);
+                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CommandDoesNotExist), commandName ?? string.Empty).ConfigureAwait(false);
                 return;
             }
 
-            await player.ShowMessageAsync(commandPluginAttribute.Usage).ConfigureAwait(false);
+            // TODO: Localize
+            await player.ShowBlueMessageAsync(commandPluginAttribute.Usage).ConfigureAwait(false);
         }
         catch (ArgumentException e)
         {
-            await player.ShowMessageAsync(e.Message).ConfigureAwait(false);
+            await player.ShowBlueMessageAsync(e.Message).ConfigureAwait(false);
         }
     }
 

@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
-using System.Globalization;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.Attributes;
@@ -20,8 +19,6 @@ public class GetStatChatCommandPlugIn : ChatCommandPlugInBase<GetStatChatCommand
 {
     private const string Command = "/get";
     private const CharacterStatus MinimumStatus = CharacterStatus.GameMaster;
-    private const string CharacterNotFoundMessage = "Character '{0}' not found.";
-    private const string StatGetMessage = "Stat of '{0}': {1}.";
 
     /// <inheritdoc />
     public override string Key => Command;
@@ -32,37 +29,30 @@ public class GetStatChatCommandPlugIn : ChatCommandPlugInBase<GetStatChatCommand
     /// <inheritdoc />
     protected override async ValueTask DoHandleCommandAsync(Player player, Arguments arguments)
     {
-        try
+        if (arguments is null)
         {
-            if (arguments is null)
+            return;
+        }
+
+        var targetPlayer = player;
+        if (arguments.CharacterName is { } characterName)
+        {
+            targetPlayer = player.GameContext.GetPlayerByCharacterName(characterName);
+            if (targetPlayer?.SelectedCharacter is null ||
+                !targetPlayer.SelectedCharacter.Name.Equals(characterName, StringComparison.OrdinalIgnoreCase))
             {
+                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CharacterNotFound), characterName).ConfigureAwait(false);
                 return;
             }
-
-            var targetPlayer = player;
-            if (arguments.CharacterName is { } characterName)
-            {
-                targetPlayer = player.GameContext.GetPlayerByCharacterName(characterName);
-                if (targetPlayer?.SelectedCharacter is null ||
-                    !targetPlayer.SelectedCharacter.Name.Equals(characterName, StringComparison.OrdinalIgnoreCase))
-                {
-                    await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, CharacterNotFoundMessage, characterName)).ConfigureAwait(false);
-                    return;
-                }
-            }
-
-            if (targetPlayer.SelectedCharacter is not { } selectedCharacter)
-            {
-                return;
-            }
-
-            var attribute = this.GetAttribute(selectedCharacter, arguments.StatType);
-            await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, StatGetMessage, selectedCharacter.Name, targetPlayer.Attributes![attribute])).ConfigureAwait(false);
         }
-        catch (ArgumentException e)
+
+        if (targetPlayer.SelectedCharacter is not { } selectedCharacter)
         {
-            await player.ShowMessageAsync(e.Message).ConfigureAwait(false);
+            return;
         }
+
+        var attribute = this.GetAttribute(selectedCharacter, arguments.StatType);
+        await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.StatPointInfo), selectedCharacter.Name, targetPlayer.Attributes![attribute]).ConfigureAwait(false);
     }
 
     private AttributeDefinition GetAttribute(Character selectedCharacter, string? statType)

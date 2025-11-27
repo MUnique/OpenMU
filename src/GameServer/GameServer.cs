@@ -12,7 +12,7 @@ using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
-using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
+using MUnique.OpenMU.GameLogic.Properties;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Guild;
 using MUnique.OpenMU.GameLogic.Views.Login;
@@ -330,7 +330,7 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
 
         if (affectedPlayer is not null)
         {
-            await affectedPlayer.ShowMessageAsync("Another user attempted to login this account. If it wasn't you, we suggest you to change your password.").ConfigureAwait(false);
+            await affectedPlayer.ShowBlueMessageAsync(PlayerMessage.LoginAttemptWarning).ConfigureAwait(false);
         }
     }
 

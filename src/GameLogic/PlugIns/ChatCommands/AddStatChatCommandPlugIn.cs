@@ -33,34 +33,27 @@ public class AddStatChatCommandPlugIn : IChatCommandPlugIn
     /// <inheritdoc />
     public virtual async ValueTask HandleCommandAsync(Player player, string command)
     {
-        try
+        if (player.SelectedCharacter is null)
         {
-            if (player.SelectedCharacter is null)
-            {
-                return;
-            }
-
-            var arguments = command.ParseArguments<Arguments>();
-            var attribute = this.GetAttribute(player, arguments.StatType);
-            var selectedCharacter = player.SelectedCharacter;
-
-            if (!selectedCharacter.CanIncreaseStats(arguments.Amount))
-            {
-                return;
-            }
-
-            if (player.CurrentMiniGame is not null)
-            {
-                await player.ShowMessageAsync("Adding multiple points is not allowed when playing a mini game.").ConfigureAwait(false);
-                return;
-            }
-
-            await this._action.IncreaseStatsAsync(player, attribute, arguments.Amount).ConfigureAwait(false);
+            return;
         }
-        catch (ArgumentException e)
+
+        var arguments = command.ParseArguments<Arguments>();
+        var attribute = this.GetAttribute(player, arguments.StatType);
+        var selectedCharacter = player.SelectedCharacter;
+
+        if (!selectedCharacter.CanIncreaseStats(arguments.Amount))
         {
-            await player.ShowMessageAsync(e.Message).ConfigureAwait(false);
+            return;
         }
+
+        if (player.CurrentMiniGame is not null)
+        {
+            await player.ShowLocalizedBlueMessageAsync(PlayerMessage.AddingMultiplePointsWhileMiniGameNotAllowed).ConfigureAwait(false);
+            return;
+        }
+
+        await this._action.IncreaseStatsAsync(player, attribute, arguments.Amount).ConfigureAwait(false);
     }
 
     private AttributeDefinition GetAttribute(Player player, string? statType)

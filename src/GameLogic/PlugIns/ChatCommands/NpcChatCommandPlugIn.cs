@@ -5,15 +5,11 @@
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
 using System.ComponentModel.DataAnnotations;
-using System.Globalization;
 using System.Runtime.InteropServices;
-using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlayerActions;
-using MUnique.OpenMU.GameLogic.Views;
-using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -26,8 +22,6 @@ public class NpcChatCommandPlugIn : ChatCommandPlugInBase<NpcChatCommandPlugIn.A
 {
     private const string Command = "/npc";
     private const CharacterStatus MinimumStatus = CharacterStatus.Normal;
-    private const string InvalidNpcIdMessage = "Invalid NPC ID \"{0}\". Please provide a valid merchant NPC ID.";
-    private const string InvalidMerchantMessage = "Not a valid merchant NPC.";
 
     private readonly TalkNpcAction _talkNpcAction = new();
 
@@ -64,7 +58,7 @@ public class NpcChatCommandPlugIn : ChatCommandPlugInBase<NpcChatCommandPlugIn.A
             }
             else
             {
-                await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, InvalidNpcIdMessage, npcIdStr)).ConfigureAwait(false);
+                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.InvalidMerchantId), npcIdStr).ConfigureAwait(false);
                 return;
             }
         }
@@ -74,11 +68,11 @@ public class NpcChatCommandPlugIn : ChatCommandPlugInBase<NpcChatCommandPlugIn.A
             return;
         }
 
-        if (npcDefinition!.MerchantStore is null)
+        if (npcDefinition.MerchantStore is null)
         {
             if (player.SelectedCharacter?.CharacterStatus >= CharacterStatus.GameMaster)
             {
-                await this.ShowMessageToAsync(player, InvalidMerchantMessage).ConfigureAwait(false);
+                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.NpcIsNotMerchant)).ConfigureAwait(false);
             }
 
             return;
@@ -86,7 +80,7 @@ public class NpcChatCommandPlugIn : ChatCommandPlugInBase<NpcChatCommandPlugIn.A
 
         if (configuration.MinimumVipLevel > 0 && (player.Attributes?[Stats.IsVip] ?? 0) < configuration.MinimumVipLevel)
         {
-            await this.ShowMessageToAsync(player, configuration.InsufficientVipLevelMessage).ConfigureAwait(false);
+            await player.ShowBlueMessageAsync(configuration.InsufficientVipLevelMessage).ConfigureAwait(false);
             return;
         }
 

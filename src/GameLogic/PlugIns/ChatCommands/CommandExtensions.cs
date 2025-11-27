@@ -6,9 +6,6 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
 using System.Globalization;
 using System.Reflection;
-using MUnique.OpenMU.GameLogic.Views;
-using MUnique.OpenMU.Interfaces;
-using MUnique.OpenMU.Persistence;
 
 /// <summary>
 /// Extensions to make the process of creating more commands easier.
@@ -127,16 +124,6 @@ public static class CommandExtensions
 
             yield return (property.Name, property.PropertyType.Name, validValues);
         }
-    }
-
-    /// <summary>
-    /// Easier way to show a message to a player.
-    /// </summary>
-    /// <param name="player">The player.</param>
-    /// <param name="message">The message.</param>
-    public static ValueTask ShowMessageAsync(this Player player, string message)
-    {
-        return player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal));
     }
 
     private static void ReadNamedArguments(object instance, IList<PropertyInfo> properties, IList<string> arguments)
