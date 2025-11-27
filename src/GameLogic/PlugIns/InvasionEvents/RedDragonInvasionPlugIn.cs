@@ -20,7 +20,7 @@ public class RedDragonInvasionPlugIn : BaseInvasionPlugIn<PeriodicInvasionConfig
     /// Initializes a new instance of the <see cref="RedDragonInvasionPlugIn"/> class.
     /// </summary>
     public RedDragonInvasionPlugIn()
-        : base(MapEventType.RedDragonInvasion, null, new[] { (RedDragonId, (ushort)5) })
+        : base(MapEventType.RedDragonInvasion, null, [new(RedDragonId, 5)])
     {
     }
 

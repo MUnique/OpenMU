@@ -32,14 +32,14 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
     protected const ushort NoriaId = 3;
 
     /// <summary>
-    /// Gets mobs which spawn on event starting only on the selected map.
+    /// Gets mobs which spawn on event starting only on the selected map (MapId is null).
     /// </summary>
-    private readonly (ushort MonsterId, ushort Count)[] _mobsOnSelectedMap;
+    private readonly InvasionMobSpawn[] _mobsOnSelectedMap;
 
     /// <summary>
-    /// Gets mobs which spawn on event starting.
+    /// Gets mobs which spawn on event starting on specific maps (MapId is not null).
     /// </summary>
-    private readonly (ushort MapId, ushort MonsterId, ushort Count)[] _mobs;
+    private readonly InvasionMobSpawn[] _mobs;
 
     private readonly MapEventType? _mapEventType;
 
@@ -47,13 +47,13 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
     /// Initializes a new instance of the <see cref="BaseInvasionPlugIn{TConfiguration}" /> class.
     /// </summary>
     /// <param name="mapEventType">Type of the map event.</param>
-    /// <param name="mobs">The mobs which spawn on event starting only on the selected map.</param>
-    /// <param name="mobsOnSelectedMap">The mobs which always spawn on event starting on the selected map.</param>
-    protected BaseInvasionPlugIn(MapEventType? mapEventType, (ushort MapId, ushort MonsterId, ushort Count)[]? mobs, (ushort MonsterId, ushort Count)[] mobsOnSelectedMap)
+    /// <param name="mobs">The mobs which spawn on specific maps (MapId is not null).</param>
+    /// <param name="mobsOnSelectedMap">The mobs which always spawn on event starting on the selected map (MapId is null).</param>
+    protected BaseInvasionPlugIn(MapEventType? mapEventType, InvasionMobSpawn[]? mobs, InvasionMobSpawn[]? mobsOnSelectedMap)
     {
         this._mapEventType = mapEventType;
         this._mobs = mobs ?? [];
-        this._mobsOnSelectedMap = mobsOnSelectedMap;
+        this._mobsOnSelectedMap = mobsOnSelectedMap ?? [];
     }
 
     /// <summary>
@@ -147,7 +147,7 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
     /// <param name="gameContext">The game context.</param>
     /// <param name="mapId">The map id.</param>
     /// <param name="mobs">The mobs.</param>
-    protected async ValueTask SpawnMobsAsync(IGameContext gameContext, ushort mapId, IEnumerable<(ushort MonsterId, ushort Count)> mobs)
+    protected async ValueTask SpawnMobsAsync(IGameContext gameContext, ushort mapId, IEnumerable<InvasionMobSpawn> mobs)
     {
         var gameMap = await gameContext.GetMapAsync(mapId).ConfigureAwait(false);
 
@@ -157,15 +157,21 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
         }
 
         var logger = gameContext.LoggerFactory.CreateLogger(this.GetType());
-        foreach (var (mobId, mobsCount) in mobs)
+        foreach (var mob in mobs)
         {
-            if (gameContext.Configuration.Monsters.FirstOrDefault(m => m.Number == mobId) is { } monsterDefinition)
+            if (gameContext.Configuration.Monsters.FirstOrDefault(m => m.Number == mob.MonsterId) is { } monsterDefinition)
             {
-                await this.CreateMonstersAsync(gameContext, gameMap, monsterDefinition, 10, 240, 10, 240, mobsCount).ConfigureAwait(false);
+                // Use custom coordinates if provided, otherwise use default (10, 240, 10, 240)
+                var spawnX1 = mob.X1 ?? 10;
+                var spawnX2 = mob.X2 ?? 240;
+                var spawnY1 = mob.Y1 ?? 10;
+                var spawnY2 = mob.Y2 ?? 240;
+
+                await this.CreateMonstersAsync(gameContext, gameMap, monsterDefinition, spawnX1, spawnX2, spawnY1, spawnY2, mob.Count).ConfigureAwait(false);
             }
             else
             {
-                logger.LogDebug("Skipping spawning of monster with number {mobId}, because monster definition wasn't found.", mobId);
+                logger.LogDebug("Skipping spawning of monster with number {mobId}, because monster definition wasn't found.", mob.MonsterId);
             }
         }
     }
@@ -281,10 +287,10 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
     {
         var gameContext = state.Context;
 
-        foreach (var group in this._mobs.GroupBy(tuple => tuple.MapId))
+        foreach (var group in this._mobs.GroupBy(mob => mob.MapId!.Value))
         {
             var mapId = group.Key;
-            var mobs = group.Select(group => (group.MonsterId, group.Count));
+            var mobs = group;
 
             await this.SpawnMobsAsync(gameContext, mapId, mobs).ConfigureAwait(false);
         }
