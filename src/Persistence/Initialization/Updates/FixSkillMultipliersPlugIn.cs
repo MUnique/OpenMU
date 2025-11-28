@@ -29,7 +29,7 @@ public class FixSkillMultipliersPlugIn : UpdatePlugInBase
     /// <summary>
     /// The plug in description.
     /// </summary>
-    internal const string PlugInDescription = "This update fixes RF skill multipliers and adds specific skill multipliers.";
+    internal const string PlugInDescription = "This update fixes RF skill multipliers and adds skill-specific multipliers.";
 
     /// <inheritdoc />
     public override string Name => PlugInName;
@@ -218,7 +218,7 @@ public class FixSkillMultipliersPlugIn : UpdatePlugInBase
         void AddAttributeRelationship(SkillNumber skillNumber, AttributeDefinition targetAttribute, float multiplier, AttributeDefinition sourceAttribute, InputOperator inputOperator = InputOperator.Multiply, AggregateType aggregateType = AggregateType.AddRaw)
         {
             var skill = gameConfiguration.Skills.First(s => s.Number == (int)skillNumber);
-            var relationship = CharacterClassHelper.CreateAttributeRelationship(context, gameConfiguration, targetAttribute, multiplier, sourceAttribute, aggregateType: aggregateType);
+            var relationship = CharacterClassHelper.CreateAttributeRelationship(context, gameConfiguration, targetAttribute, multiplier, sourceAttribute, inputOperator, aggregateType);
             skill.AttributeRelationships.Add(relationship);
         }
 
