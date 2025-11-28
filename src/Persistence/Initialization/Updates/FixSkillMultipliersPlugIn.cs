@@ -233,7 +233,7 @@ public class FixSkillMultipliersPlugIn : UpdatePlugInBase
             windTomeStr.TargetAttribute = requiemBonusDmg;
         }
 
-        if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.FireTomeStrengthener)?.MasterDefinition is { } lightningTomeStr)
+        if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.LightningTomeStren)?.MasterDefinition is { } lightningTomeStr)
         {
             lightningTomeStr.TargetAttribute = pollutionBonusDmg;
         }
