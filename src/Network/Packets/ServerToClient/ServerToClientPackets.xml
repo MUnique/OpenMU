@@ -10770,6 +10770,23 @@
         </Enum>
       </Enums>
     </Packet>
+    <Packet>
+      <HeaderType>C2HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
+      <SubCode>42</SubCode>
+      <Name>ItemPostInfo</Name>
+      <Length>5</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>A client requested the details of a posted item.</SentWhen>
+      <CausedReaction>The tooltip of the posted item is shown to the player.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>5</Index>
+          <Type>Binary</Type>
+          <Name>ItemData</Name>
+        </Field>
+      </Fields>
+    </Packet>
   </Packets>
   <Enums>
     <Enum>

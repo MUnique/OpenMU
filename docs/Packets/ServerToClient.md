@@ -220,6 +220,7 @@
   * [C1 F3 40 - ShowChristmasFireworks (by server)](C1-F3-40-ShowChristmasFireworks_by-server.md)
   * [C1 F3 40 - PlayFanfareSound (by server)](C1-F3-40-PlayFanfareSound_by-server.md)
   * [C1 F3 40 - ShowSwirl (by server)](C1-F3-40-ShowSwirl_by-server.md)
+  * [C2 F3 42 - ItemPostInfo (by server)](C2-F3-42-ItemPostInfo_by-server.md)
   * [C1 F3 50 - MasterStatsUpdate (by server)](C1-F3-50-MasterStatsUpdate_by-server.md)
   * [C1 F3 50 - MasterStatsUpdateExtended (by server)](C1-F3-50-MasterStatsUpdateExtended_by-server.md)
   * [C1 F3 51 - MasterCharacterLevelUpdate (by server)](C1-F3-51-MasterCharacterLevelUpdate_by-server.md)

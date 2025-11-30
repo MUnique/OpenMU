@@ -4251,6 +4251,47 @@
       <Fields>
       </Fields>
     </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
+      <SubCode>40</SubCode>
+      <Name>ItemPostRequest</Name>
+      <Length>6</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player posts an item to the chat.</SentWhen>
+      <CausedReaction>The item gets stored with an id which is broadcasted in a chat message.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>ItemStorageKind</TypeName>
+          <Name>StorageType</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>ItemSlot</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
+      <SubCode>41</SubCode>
+      <Name>ItemPostInfoRequest</Name>
+      <Length>8</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player hovers a posted item link in the chat.</SentWhen>
+      <CausedReaction>The server responds with the serialized item data.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Integer</Type>
+          <Format>BigEndian4Bytes</Format>
+          <Name>PostId</Name>
+        </Field>
+      </Fields>
+    </Packet>
   </Packets>
   <Enums>
     <Enum>

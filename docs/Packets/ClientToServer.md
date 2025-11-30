@@ -178,6 +178,8 @@
   * [C1 F3 12 - ClientReadyAfterMapChange (by client)](C1-F3-12-ClientReadyAfterMapChange_by-client.md)
   * [C1 F3 15 - FocusCharacter (by client)](C1-F3-15-FocusCharacter_by-client.md)
   * [C1 F3 30 - SaveKeyConfiguration (by client)](C1-F3-30-SaveKeyConfiguration_by-client.md)
+  * [C1 F3 40 - ItemPostRequest (by client)](C1-F3-40-ItemPostRequest_by-client.md)
+  * [C1 F3 41 - ItemPostInfoRequest (by client)](C1-F3-41-ItemPostInfoRequest_by-client.md)
   * [C1 F3 52 - AddMasterSkillPoint (by client)](C1-F3-52-AddMasterSkillPoint_by-client.md)
   * [C1 F6 0A - QuestSelectRequest (by client)](C1-F6-0A-QuestSelectRequest_by-client.md)
   * [C1 F6 0B - QuestProceedRequest (by client)](C1-F6-0B-QuestProceedRequest_by-client.md)
