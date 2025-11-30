@@ -223,9 +223,9 @@ public partial class Skill
     /// </summary>
     /// <remarks>
     /// For example, horse skill:
-    ///  * new AttributeRelationship(Stats.SkillDamageBonus, 1.0f / 10, Stats.TotalStrength)
-    ///  * new AttributeRelationship(Stats.SkillDamageBonus, 1.0f / 5, Stats.TotalLeadership)
-    ///  * new AttributeRelationship(Stats.SkillDamageBonus, 10, Stats.HorseLevel).
+    ///  * new AttributeRelationship(Stats.SkillBaseDamageBonus, 1.0f / 10, Stats.TotalStrength)
+    ///  * new AttributeRelationship(Stats.SkillBaseDamageBonus, 1.0f / 5, Stats.TotalLeadership)
+    ///  * new AttributeRelationship(Stats.SkillBaseDamageBonus, 10, Stats.HorseLevel).
     /// </remarks>
     [MemberOfAggregate]
     public virtual ICollection<AttributeRelationship> AttributeRelationships { get; protected set; } = null!;
