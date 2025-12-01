@@ -33,18 +33,17 @@ public class GoldenInvasionPlugIn : BaseInvasionPlugIn<PeriodicInvasionConfigura
     public GoldenInvasionPlugIn()
         : base(
             MapEventType.GoldenDragonInvasion,
-            new (ushort MapId, ushort MonsterId, ushort Count)[]
-            {
-                (LorenciaId, GoldenBudgeDragonId, 20),
-                (NoriaId, GoldenGoblinId, 20),
-                (DeviasId, GoldenSoldierId, 20),
-                (DeviasId, GoldenTitanId, 10),
-                (AtlansId, GoldenVeparId, 20),
-                (AtlansId, GoldenLizardKingId, 10),
-                (TarkanId, GoldenWheelId, 20),
-                (TarkanId, GoldenTantallosId, 10),
-            },
-            new (ushort MonsterId, ushort Count)[] { (GoldenDragonId, 10) })
+            [
+                new(GoldenBudgeDragonId, 20, MapId: LorenciaId),
+                new(GoldenGoblinId, 20, MapId: NoriaId),
+                new(GoldenSoldierId, 20, MapId: DeviasId),
+                new(GoldenTitanId, 10, MapId: DeviasId),
+                new(GoldenVeparId, 20, MapId: AtlansId),
+                new(GoldenLizardKingId, 10, MapId: AtlansId),
+                new(GoldenWheelId, 20, MapId: TarkanId),
+                new(GoldenTantallosId, 10, MapId: TarkanId),
+            ],
+            [new(GoldenDragonId, 10)])
     {
     }
 
