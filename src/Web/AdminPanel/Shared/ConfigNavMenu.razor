@@ -11,7 +11,7 @@
     {
         <div>
             <NavLink href="@($"edit-config/{typeof(SystemConfiguration).FullName}/")">System</NavLink>
-            <NavLink href="@($"edit-config/{typeof(GameClientDefinition).FullName}/")">Game Client</NavLink>
+            <NavLink href="@($"edit-config-grid/{typeof(GameClientDefinition).FullName}/")">Game Clients</NavLink>
             <hr/>
             <NavLink href="@($"edit-config/{typeof(GameConfiguration).FullName}/{this.GameConfigurationId}/hide-collections")">General</NavLink>
             <NavLink href="@($"edit-config-grid/{typeof(MonsterDefinition).FullName}/")">Monsters</NavLink>
@@ -19,6 +19,7 @@
             <NavLink href="@($"edit-config-grid/{typeof(CharacterClass).FullName}/")">Character Classes</NavLink>
             <NavLink href="@($"edit-config-grid/{typeof(Skill).FullName}/")">Skills</NavLink>
             <NavLink href="@($"edit-config-grid/{typeof(ItemDefinition).FullName}/")">Items</NavLink>
+            <NavLink href="@($"edit-config-grid/{typeof(DropItemGroup).FullName}/")">Drop Item Groups</NavLink>
             <NavLink href="@($"edit-config-grid/{typeof(GameMapDefinition).FullName}/")">Maps</NavLink>
             <NavLink href="@($"edit-config-grid/{typeof(MiniGameDefinition).FullName}/")">Mini Games</NavLink>
             <NavLink href="@($"edit-config-grid/{typeof(WarpInfo).FullName}/")">Warp List</NavLink>

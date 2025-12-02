@@ -11,7 +11,6 @@ using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
-using MUnique.OpenMU.Persistence;
 using QuestReward = MUnique.OpenMU.DataModel.Configuration.Quests.QuestReward;
 
 /// <summary>
@@ -118,7 +117,70 @@ public static class QuestStructExtensions
         message.RewardCount = (byte)r;
     }
 
+    /// <summary>
+    /// Assigns the <paramref name="questState"/> to this <paramref name="message"/>.
+    /// </summary>
+    /// <param name="message">The message.</param>
+    /// <param name="questState">State of the quest.</param>
+    /// <param name="player">The player.</param>
+    internal static void AssignActiveQuestData(this QuestStateExtendedRef message, CharacterQuestState? questState, RemotePlayer player)
+    {
+        var activeQuest = questState?.ActiveQuest;
+        if (activeQuest is null)
+        {
+            return;
+        }
+
+        message.QuestNumber = (ushort)activeQuest.Number;
+
+        var itemSerializer = player.ItemSerializer;
+        if (activeQuest.RequiredItems.Any())
+        {
+            message.ConditionCount = (byte)activeQuest.RequiredItems.Count;
+            int i = 0;
+            foreach (var requiredItem in activeQuest.RequiredItems)
+            {
+                requiredItem.AssignTo(message.GetQuestConditionExtended(i), player);
+                i++;
+            }
+        }
+        else if (activeQuest.RequiredMonsterKills.Any())
+        {
+            message.ConditionCount = (byte)activeQuest.RequiredMonsterKills.Count;
+            int i = 0;
+            foreach (var requiredKill in activeQuest.RequiredMonsterKills)
+            {
+                requiredKill.AssignTo(message.GetQuestConditionExtended(i), questState!);
+                i++;
+            }
+        }
+        else
+        {
+            // no requirement states available
+        }
+
+        int r = 0;
+        foreach (var reward in activeQuest.Rewards)
+        {
+            reward.AssignTo(message.GetQuestRewardExtended(r), itemSerializer);
+            r++;
+        }
+
+        message.RewardCount = (byte)r;
+    }
+
     private static void AssignTo(this QuestItemRequirement itemRequirement, QuestConditionRef condition, RemotePlayer player)
+    {
+        condition.Type = ConditionType.Item;
+        condition.RequiredCount = (uint)itemRequirement.MinimumNumber;
+        condition.CurrentCount = (uint)(player.Inventory?.Items.Count(item => Equals(item.Definition, itemRequirement.Item)) ?? 0);
+        condition.RequirementId = itemRequirement.Item!.GetItemType();
+        var temporaryItem = new TemporaryItem { Definition = itemRequirement.Item };
+        temporaryItem.Durability = temporaryItem.GetMaximumDurabilityOfOnePiece();
+        player.ItemSerializer.SerializeItem(condition.RequiredItemData, temporaryItem);
+    }
+
+    private static void AssignTo(this QuestItemRequirement itemRequirement, QuestConditionExtendedRef condition, RemotePlayer player)
     {
         condition.Type = ConditionType.Item;
         condition.RequiredCount = (uint)itemRequirement.MinimumNumber;
@@ -137,7 +199,26 @@ public static class QuestStructExtensions
         condition.CurrentCount = (uint)(questState.RequirementStates.FirstOrDefault(s => s.Requirement != null && s.Requirement.Equals(killRequirement))?.KillCount ?? 0);
     }
 
+    private static void AssignTo(this QuestMonsterKillRequirement killRequirement, QuestConditionExtendedRef condition, CharacterQuestState questState)
+    {
+        condition.Type = ConditionType.MonsterKills;
+        condition.RequiredCount = (uint)killRequirement.MinimumNumber;
+        condition.RequirementId = (ushort)killRequirement.Monster!.Number;
+        condition.CurrentCount = (uint)(questState.RequirementStates.FirstOrDefault(s => s.Requirement != null && s.Requirement.Equals(killRequirement))?.KillCount ?? 0);
+    }
+
     private static void AssignTo(this QuestReward questReward, Network.Packets.ServerToClient.QuestRewardRef rewardStruct, IItemSerializer itemSerializer)
+    {
+        rewardStruct.Type = questReward.RewardType.Convert();
+        rewardStruct.RewardCount = (uint)questReward.Value;
+        if (questReward.RewardType == QuestRewardType.Item && questReward.ItemReward is { } itemReward)
+        {
+            rewardStruct.RewardId = itemReward.Definition!.GetItemType();
+            itemSerializer.SerializeItem(rewardStruct.RewardedItemData, itemReward);
+        }
+    }
+
+    private static void AssignTo(this QuestReward questReward, Network.Packets.ServerToClient.QuestRewardExtendedRef rewardStruct, IItemSerializer itemSerializer)
     {
         rewardStruct.Type = questReward.RewardType.Convert();
         rewardStruct.RewardCount = (uint)questReward.Value;

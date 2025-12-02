@@ -6,9 +6,9 @@ namespace MUnique.OpenMU.GameLogic;
 
 using System.Diagnostics;
 using System.Threading;
+using MUnique.OpenMU.Pathfinding;
 using Nito.AsyncEx;
 using Nito.AsyncEx.Synchronous;
-using MUnique.OpenMU.Pathfinding;
 
 /// <summary>
 /// Class which manages walking for instances of <see cref="ISupportWalk"/>.
@@ -17,7 +17,7 @@ public sealed class Walker : IDisposable
 {
     private readonly ISupportWalk _walkSupporter;
     private readonly Func<TimeSpan> _stepDelay;
-    private readonly Queue<WalkingStep> _nextSteps = new (5);
+    private readonly Queue<WalkingStep> _nextSteps = new(5);
 
     /// <summary>
     /// This array keeps all steps of the current walk.
@@ -32,6 +32,7 @@ public sealed class Walker : IDisposable
     private int _currentWalkStepCount;
     private CancellationTokenSource? _walkCts;
     private bool _isDisposed;
+    private Guid _currentWalkToken;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Walker" /> class.
@@ -51,15 +52,16 @@ public sealed class Walker : IDisposable
     public Point CurrentTarget { get; private set; }
 
     /// <summary>
-    /// Starts to walk to the specified target with the specified steps.
+    /// Initializes a new walk to the specified target with the specified steps.
     /// </summary>
     /// <param name="target">The target coordinates.</param>
     /// <param name="steps">The steps.</param>
-    public async ValueTask WalkToAsync(Point target, Memory<WalkingStep> steps)
+    /// <returns>A walk token, if it was initialized.</returns>
+    public async ValueTask<Guid> InitializeWalkToAsync(Point target, Memory<WalkingStep> steps)
     {
         if (this._isDisposed)
         {
-            return;
+            return Guid.Empty;
         }
 
         if (steps.Length > 16)
@@ -84,6 +86,25 @@ public sealed class Walker : IDisposable
 
         this.CurrentTarget = target;
         EnqueueSteps();
+
+        var walkToken = Guid.CreateVersion7();
+        this._currentWalkToken = walkToken;
+        return walkToken;
+    }
+
+    /// <summary>
+    /// Starts the previously initialized walk.
+    /// </summary>
+    /// <param name="walkToken">The walk token.</param>
+    public async ValueTask StartWalkAsync(Guid walkToken)
+    {
+        using var writerLock = await this._walkLock.WriterLockAsync();
+
+        if (walkToken != this._currentWalkToken)
+        {
+            // Another walk request was initialized in the meantime.
+            return;
+        }
 
         var cts = new CancellationTokenSource();
         this._walkCts = cts;
@@ -117,7 +138,7 @@ public sealed class Walker : IDisposable
     {
         var count = 0;
         using var readerLock = await this._walkLock.ReaderLockAsync();
-        foreach (var direction in this._currentWalkSteps[.._currentWalkStepCount])
+        foreach (var direction in this._currentWalkSteps[..this._currentWalkStepCount])
         {
             steps.Span[count] = direction;
             count++;
@@ -140,6 +161,7 @@ public sealed class Walker : IDisposable
             this._walkCts = null;
             this._nextSteps.Clear();
             this._currentWalkStepCount = 0;
+            this._currentWalkToken = Guid.Empty;
             this.CurrentTarget = default;
         }
     }

@@ -43,7 +43,7 @@ internal class AnimationHandlerPlugIn : IPacketHandlerPlugIn
             0x80 => CharacterPose.Sitting,
             0x81 => CharacterPose.Leaning,
             0x82 => CharacterPose.Hanging,
-            _ => default
+            _ => default,
         };
 
         await player.ForEachWorldObserverAsync<IShowAnimationPlugIn>(p => p.ShowAnimationAsync(player, animation, null, rotation), false).ConfigureAwait(false);

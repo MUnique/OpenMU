@@ -17,7 +17,7 @@ public class PetInfoRequestAction
     /// <param name="player">The player.</param>
     /// <param name="slot">The slot.</param>
     /// <param name="petStorageLocation">The pet storage location.</param>
-    public async ValueTask RequestPetInfo(Player player, byte slot, PetStorageLocation petStorageLocation)
+    public async ValueTask RequestPetInfoAsync(Player player, byte slot, PetStorageLocation petStorageLocation)
     {
         var targetStorage = this.DetermineStorage(player, petStorageLocation);
         if (targetStorage is null)

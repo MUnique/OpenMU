@@ -31,7 +31,7 @@ public static class DirectionExtensions
             Direction.NorthWest => new Point((byte)(origin.X - 1), origin.Y),
             Direction.SouthEast => new Point((byte)(origin.X + 1), origin.Y),
             Direction.SouthWest => new Point(origin.X, (byte)(origin.Y - 1)),
-            _ => throw new ArgumentException($"Direction value {direction} is not defined", nameof(direction))
+            _ => throw new ArgumentException($"Direction value {direction} is not defined", nameof(direction)),
         };
     }
 
@@ -64,7 +64,7 @@ public static class DirectionExtensions
             4 => Direction.SouthEast,
             5 => Direction.East,
             6 => Direction.NorthEast,
-            _ => Direction.Undefined
+            _ => Direction.Undefined,
         };
     }
 }

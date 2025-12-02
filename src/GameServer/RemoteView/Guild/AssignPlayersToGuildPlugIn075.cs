@@ -22,7 +22,7 @@ using MUnique.OpenMU.PlugIns;
 public class AssignPlayersToGuildPlugIn075 : BaseGuildInfoPlugIn<AssignPlayersToGuildPlugIn075>, IAssignPlayersToGuildPlugIn
 {
     private readonly RemotePlayer _player;
-    private readonly HashSet<uint> _transmittedGuilds = new ();
+    private readonly HashSet<uint> _transmittedGuilds = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AssignPlayersToGuildPlugIn075"/> class.

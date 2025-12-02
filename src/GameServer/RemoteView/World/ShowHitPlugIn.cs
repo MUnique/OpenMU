@@ -99,33 +99,33 @@ public class ShowHitPlugIn : IShowHitPlugIn
         }
     }
 
-    private ObjectHit.DamageKind GetDamageKind(DamageAttributes attributes)
+    private DamageKind GetDamageKind(DamageAttributes attributes)
     {
         if (attributes.HasFlag(DamageAttributes.IgnoreDefense))
         {
-            return ObjectHit.DamageKind.IgnoreDefenseCyan;
+            return DamageKind.IgnoreDefenseCyan;
         }
 
         if (attributes.HasFlag(DamageAttributes.Excellent))
         {
-            return ObjectHit.DamageKind.ExcellentLightGreen;
+            return DamageKind.ExcellentLightGreen;
         }
 
         if (attributes.HasFlag(DamageAttributes.Critical))
         {
-            return ObjectHit.DamageKind.CriticalBlue;
+            return DamageKind.CriticalBlue;
         }
 
         if (attributes.HasFlag(DamageAttributes.Reflected))
         {
-            return ObjectHit.DamageKind.ReflectedDarkPink;
+            return DamageKind.ReflectedDarkPink;
         }
 
         if (attributes.HasFlag(DamageAttributes.Poison))
         {
-            return ObjectHit.DamageKind.PoisonDarkGreen;
+            return DamageKind.PoisonDarkGreen;
         }
 
-        return ObjectHit.DamageKind.NormalRed;
+        return DamageKind.NormalRed;
     }
 }

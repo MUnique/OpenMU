@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075.Items;
 
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.Persistence.Initialization.Skills;
 
 /// <summary>
 /// Class which contains item definitions for jewels.
@@ -52,6 +53,7 @@ public class Potions : InitializerBase
         alcohol.Width = 1;
         alcohol.Height = 2;
         alcohol.SetGuid(alcohol.Group, alcohol.Number);
+        alcohol.ConsumeEffect = this.GameConfiguration.MagicEffects.First(effect => effect.Number == (short)MagicEffectNumber.Alcohol);
         return alcohol;
     }
 

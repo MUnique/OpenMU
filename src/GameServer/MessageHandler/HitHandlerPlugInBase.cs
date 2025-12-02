@@ -14,7 +14,7 @@ using MUnique.OpenMU.Network.Packets.ClientToServer;
 /// </summary>
 internal abstract class HitHandlerPlugInBase : IPacketHandlerPlugIn
 {
-    private readonly HitAction _hitAction = new ();
+    private readonly HitAction _hitAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;

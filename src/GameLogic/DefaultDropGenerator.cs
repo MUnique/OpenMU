@@ -27,6 +27,8 @@ public class DefaultDropGenerator : IDropGenerator
 
     private readonly AsyncLock _lock = new();
 
+    private readonly byte _maxItemOptionLevelDrop;
+
     private readonly IList<ItemDefinition> _ancientItems;
 
     private readonly IList<ItemDefinition> _droppableItems;
@@ -41,6 +43,7 @@ public class DefaultDropGenerator : IDropGenerator
     public DefaultDropGenerator(GameConfiguration config, IRandomizer randomizer)
     {
         this._randomizer = randomizer;
+        this._maxItemOptionLevelDrop = config.MaximumItemOptionLevelDrop < 1 || config.MaximumItemOptionLevelDrop > 4 ? (byte)3 : config.MaximumItemOptionLevelDrop;
         this._droppableItems = config.Items.Where(i => i.DropsFromMonsters).ToList();
         this._ancientItems = this._droppableItems.Where(
             i => i.PossibleItemSetGroups.Any(
@@ -123,15 +126,18 @@ public class DefaultDropGenerator : IDropGenerator
             return (null, null, ItemDropEffect.Undefined);
         }
 
-        if (@group is ItemDropItemGroup itemDropItemGroup)
+        var dropEffect = ItemDropEffect.Undefined;
+        if (group is ItemDropItemGroup itemDropItemGroup)
         {
+            dropEffect = itemDropItemGroup.DropEffect;
+
             if (group.ItemType == SpecialItemType.Money)
             {
-                return (null, (uint)itemDropItemGroup.MoneyAmount, itemDropItemGroup.DropEffect);
+                return (null, (uint)itemDropItemGroup.MoneyAmount, dropEffect);
             }
         }
 
-        return (this.GenerateItemDrop(group), null, ItemDropEffect.Undefined);
+        return (this.GenerateItemDrop(group), null, dropEffect);
     }
 
     /// <summary>
@@ -150,6 +156,7 @@ public class DefaultDropGenerator : IDropGenerator
         }
 
         item.Level = GetItemLevelByMonsterLevel(item.Definition!, monsterLvl);
+        item.Durability = item.GetMaximumDurabilityOfOnePiece();
         return item;
     }
 
@@ -159,8 +166,9 @@ public class DefaultDropGenerator : IDropGenerator
     /// <param name="item">The item.</param>
     protected void ApplyRandomOptions(Item item)
     {
-        item.Durability = item.GetMaximumDurabilityOfOnePiece();
-        foreach (var option in item.Definition!.PossibleItemOptions.Where(o => o.AddsRandomly))
+        foreach (var option in item.Definition!.PossibleItemOptions.Where(o =>
+            o.AddsRandomly &&
+            !o.PossibleOptions.Any(po => object.Equals(po.OptionType, ItemOptionTypes.Excellent))))
         {
             this.ApplyOption(item, option);
         }
@@ -179,16 +187,17 @@ public class DefaultDropGenerator : IDropGenerator
     /// <summary>
     /// Gets a random excellent item.
     /// </summary>
-    /// <param name="monsterLvl">The monster level.</param>
+    /// <param name="monsterLvl">The monster level, if it's a monster drop.</param>
+    /// <param name="possibleItems">The possible items, if the drop is from an item box (e.g. box of kundun).</param>
     /// <returns>A random excellent item.</returns>
-    protected Item? GenerateRandomExcellentItem(int monsterLvl)
+    protected Item? GenerateRandomExcellentItem(int monsterLvl = 0, ICollection<ItemDefinition>? possibleItems = null)
     {
-        if (monsterLvl < 25)
+        if (monsterLvl < 25 && possibleItems is null)
         {
             return null;
         }
 
-        var possible = this.GetPossibleList(monsterLvl - 25);
+        var possible = possibleItems ?? this.GetPossibleList(monsterLvl - 25);
         var item = this.GenerateRandomItem(possible);
         if (item is null)
         {
@@ -198,6 +207,7 @@ public class DefaultDropGenerator : IDropGenerator
         item.HasSkill = item.CanHaveSkill(); // every excellent item got skill
 
         this.AddRandomExcOptions(item);
+        item.Durability = item.GetMaximumDurabilityOfOnePiece();
         return item;
     }
 
@@ -216,6 +226,7 @@ public class DefaultDropGenerator : IDropGenerator
         item.HasSkill = item.CanHaveSkill(); // every ancient item got skill
 
         this.ApplyRandomAncientOption(item);
+        item.Durability = item.GetMaximumDurabilityOfOnePiece();
         return item;
     }
 
@@ -266,13 +277,21 @@ public class DefaultDropGenerator : IDropGenerator
 
     private Item? GenerateItemDrop(DropItemGroup selectedGroup, ICollection<ItemDefinition> possibleItems)
     {
-        var item = selectedGroup.ItemType == SpecialItemType.Ancient
-            ? this.GenerateRandomAncient()
-            : this.GenerateRandomItem(possibleItems);
+        var item = selectedGroup.ItemType switch
+        {
+            SpecialItemType.Ancient => this.GenerateRandomAncient(),
+            SpecialItemType.Excellent => this.GenerateRandomExcellentItem(possibleItems: possibleItems),
+            _ => this.GenerateRandomItem(possibleItems),
+        };
 
         if (item is null)
         {
             return null;
+        }
+
+        if (item.Durability == 0)
+        {
+            item.Durability = item.GetMaximumDurabilityOfOnePiece();
         }
 
         if (selectedGroup is ItemDropItemGroup itemDropItemGroup)
@@ -289,11 +308,6 @@ public class DefaultDropGenerator : IDropGenerator
         }
 
         item.Level = Math.Min(item.Level, item.Definition!.MaximumItemLevel);
-
-        if (selectedGroup.ItemType == SpecialItemType.Excellent)
-        {
-            this.AddRandomExcOptions(item);
-        }
 
         return item;
     }
@@ -314,7 +328,9 @@ public class DefaultDropGenerator : IDropGenerator
                 var itemOptionLink = new ItemOptionLink
                 {
                     ItemOption = newOption,
-                    Level = newOption?.LevelDependentOptions.Select(l => l.Level).SelectRandom() ?? 0
+                    Level = newOption?.LevelDependentOptions.Select(ldo => ldo.Level)
+                        .Concat(newOption.LevelDependentOptions.Count > 0 ? [1] : []) // For base def/dmg opts level 1 is not an ItemOptionOfLevel entry
+                        .Distinct().Where(l => l <= this._maxItemOptionLevelDrop).SelectRandom() ?? 0,
                 };
                 item.ItemOptions.Add(itemOptionLink);
             }

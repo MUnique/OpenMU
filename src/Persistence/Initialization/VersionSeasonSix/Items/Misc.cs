@@ -53,7 +53,7 @@ public class Misc : InitializerBase
         itemDefinition.Number = 29;
         itemDefinition.Group = 14;
         itemDefinition.DropLevel = 0;
-        itemDefinition.DropsFromMonsters = true;
+        itemDefinition.DropsFromMonsters = false;
         itemDefinition.Durability = 5;
         itemDefinition.Width = 1;
         itemDefinition.Height = 1;

@@ -37,4 +37,10 @@ public partial class WarpInfo
     /// </summary>
     [Required]
     public virtual ExitGate? Gate { get; set; }
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return this.Name;
+    }
 }

@@ -7,7 +7,6 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Pathfinding;
-using System.Xml.Linq;
 
 /// <summary>
 /// The base of every chat command plug in.

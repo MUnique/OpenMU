@@ -24,13 +24,13 @@ public static class LoggerExtensions
     /// Begins a logical operation scope.
     /// </summary>
     /// <param name="logger">The logger.</param>
-    /// <param name="values">The key value pairs which describe the scope.</param>
+    /// <param name="gameContext">The game context.</param>
     /// <returns>An <see cref="T:System.IDisposable" /> that ends the logical operation scope on dispose.</returns>
     public static IDisposable? BeginScope(this ILogger logger, IGameContext gameContext)
     {
         if (gameContext is IGameServerContext gameServerContext)
         {
-            return logger.BeginScope("GameServer", gameServerContext.Id);
+            return logger.BeginScope("GameServer {id}", gameServerContext.Id);
         }
 
         return null;

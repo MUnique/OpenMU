@@ -69,7 +69,7 @@ public abstract class PacketPipeReaderBase
         catch (Exception e)
         {
             await this.OnCompleteAsync(e).ConfigureAwait(false);
-            throw;
+            return;
         }
 
         await this.OnCompleteAsync(null).ConfigureAwait(false);

@@ -7,23 +7,6 @@ namespace MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.Views;
 
 /// <summary>
-/// Interface of a view whose implementation informs about the status of a blood castle event.
-/// </summary>
-public interface IBloodCastleStateViewPlugin : IViewPlugIn
-{
-    /// <summary>
-    /// Update the state of the blood castle event.
-    /// </summary>
-    /// <param name="status">The status of the blood castle event.</param>
-    /// <param name="remainingTime">The remaining time of the blood castle event.</param>
-    /// <param name="maxMonster">Maximum number of monsters to kill.</param>
-    /// <param name="curMonster">Current number of monsters killed.</param>
-    /// <param name="questItemOwner">The player which picked up the quest item.</param>
-    /// <param name="questItem">The quest item which was dropped by the statue.</param>
-    ValueTask UpdateStateAsync(BloodCastleStatus status, TimeSpan remainingTime, int maxMonster, int curMonster, IIdentifiable? questItemOwner, Item? questItem);
-}
-
-/// <summary>
 /// The status of a blood castle event.
 /// </summary>
 public enum BloodCastleStatus
@@ -47,4 +30,21 @@ public enum BloodCastleStatus
     /// The event has ended.
     /// </summary>
     Ended,
+}
+
+/// <summary>
+/// Interface of a view whose implementation informs about the status of a blood castle event.
+/// </summary>
+public interface IBloodCastleStateViewPlugin : IViewPlugIn
+{
+    /// <summary>
+    /// Update the state of the blood castle event.
+    /// </summary>
+    /// <param name="status">The status of the blood castle event.</param>
+    /// <param name="remainingTime">The remaining time of the blood castle event.</param>
+    /// <param name="maxMonster">Maximum number of monsters to kill.</param>
+    /// <param name="curMonster">Current number of monsters killed.</param>
+    /// <param name="questItemOwner">The player which picked up the quest item.</param>
+    /// <param name="questItem">The quest item which was dropped by the statue.</param>
+    ValueTask UpdateStateAsync(BloodCastleStatus status, TimeSpan remainingTime, int maxMonster, int curMonster, IIdentifiable? questItemOwner, Item? questItem);
 }

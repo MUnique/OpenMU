@@ -9965,6 +9965,16 @@ mark {
   flex: 1;
 }
 
+.breadcrumb-nav {
+  flex: 1;
+  padding-top: 1em;
+  justify-content: flex-start;
+}
+
+.breadcrumb-nav ol {
+  background-color: transparent;
+}
+
 .main .top-row, .main app > nav > div:first-child {
   background-color: #f7f7f7;
   border-bottom: 1px solid #d6d5d5;
@@ -10456,6 +10466,10 @@ tr:nth-child(50) {
   animation-fill-mode: forwards;
 }
 
+.quickgrid tbody tr:has(td:empty) {
+  display: none;
+}
+
 app {
   position: relative;
   display: flex;
@@ -10874,12 +10888,6 @@ mark {
     transform: rotate(360deg);
   }
 }
-
-.map-container {
-    display: flex;
-    gap: 1rem;
-}
-
 .map-host {
   position: relative;
   user-select: none;
@@ -10893,18 +10901,17 @@ mark {
   left: 0px;
 }
 
-.map-content {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
 .map-object-select {
   position: relative;
+  left: 800px;
+  top: -25px;
+  width: 40%;
 }
 
 .map-object-form {
   position: relative;
+  left: 800px;
+  width: 40%;
 }
 
 .map-object, .spawn, .spawn-single, .spawn-area, .gate-exit, .gate-enter {

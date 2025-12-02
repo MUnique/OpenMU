@@ -35,6 +35,17 @@ internal static class ItemOptionDefinitionNumbers
     public static short CurseAttack => 0x05;
 
     /// <summary>
+    /// Gets the defense option option number.
+    /// </summary>
+    public static short DefenseRateOption => 0x06;
+
+    /// <summary>
+    /// Gets the physical and wizardry attack option number.
+    /// </summary>
+    /// <remarks>Used for MG "magic swords", which always increase both damage types simultaneously.</remarks>
+    public static short PhysicalAndWizardryAttack => 0x07;
+
+    /// <summary>
     /// Gets the jewelery health option number.
     /// </summary>
     public static short JeweleryHealth => 0x10;
@@ -43,6 +54,7 @@ internal static class ItemOptionDefinitionNumbers
     /// Gets the excellent defense option number.
     /// </summary>
     public static short ExcellentDefense => 0x12;
+
     /// <summary>
     /// Gets the excellent physical option number.
     /// </summary>
@@ -147,6 +159,7 @@ internal static class ItemOptionDefinitionNumbers
     /// Gets the wing defense option number.
     /// </summary>
     public static short WingDefense => 0x60;
+
     /// <summary>
     /// Gets the wing physical option number.
     /// </summary>
@@ -161,6 +174,7 @@ internal static class ItemOptionDefinitionNumbers
     /// Gets the wing curse option number.
     /// </summary>
     public static short WingCurse => 0x63;
+
     /// <summary>
     /// Gets the wing health recover option number.
     /// </summary>
@@ -170,6 +184,7 @@ internal static class ItemOptionDefinitionNumbers
     /// Gets the wing2nd option number.
     /// </summary>
     public static short Wing2nd => 0x65;
+
     /// <summary>
     /// Gets the cape option number.
     /// </summary>
@@ -181,19 +196,14 @@ internal static class ItemOptionDefinitionNumbers
     public static short Wing3rd => 0x67;
 
     /// <summary>
-    /// Gets the elite transfer skeleton ring option number.
+    /// Gets the elite elite skeleton transformation ring option number.
     /// </summary>
-    public static short EliteTransferSkeletonRing => 0x70;
+    public static short EliteSkeletonTransformationRing => 0x70;
 
     /// <summary>
     /// Gets the skeleton transformation ring option number.
     /// </summary>
     public static short SkeletonTransformationRing => 0x71;
-
-    /// <summary>
-    /// Gets the panda ring option number.
-    /// </summary>
-    public static short PandaRing => 0x72;
 
     /// <summary>
     /// Gets the wizard ring option number.
@@ -209,4 +219,9 @@ internal static class ItemOptionDefinitionNumbers
     /// Gets the fenrir option number.
     /// </summary>
     public static short Fenrir => 0x81;
+
+    /// <summary>
+    /// Gets the dark horse option number.
+    /// </summary>
+    public static short Horse => 0x82;
 }

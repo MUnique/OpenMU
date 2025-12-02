@@ -29,7 +29,7 @@ public partial class MasterSkillDefinition
 
     /// <summary>
     /// Gets or sets the rank.
-    /// The rang determines on which level the skill is located.
+    /// The rank determines on which level the skill is located.
     /// A skill at a higher rank can be learned, if there is at least
     /// one skill of the same tree root at the direct rank below,
     /// with a level same or greater than 10.
@@ -83,4 +83,15 @@ public partial class MasterSkillDefinition
     /// The attack damage is also inherited and increased by the damage AND value of the master skill.
     /// </summary>
     public virtual Skill? ReplacedSkill { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the <see cref="ValueFormula"/> applies to the duration of the <see cref="ReplacedSkill"/>.
+    /// </summary>
+    public bool ExtendsDuration { get; set; }
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return "Master Skill Definition";
+    }
 }

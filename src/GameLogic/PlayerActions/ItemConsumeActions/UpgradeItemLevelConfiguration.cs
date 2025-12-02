@@ -7,6 +7,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
 
 using System.ComponentModel.DataAnnotations;
+using MUnique.OpenMU.DataModel.Configuration.Items;
 
 /// <summary>
 /// Configuration for a <see cref="UpgradeItemLevelJewelConsumeHandlerPlugIn{TConfig}"/>.
@@ -35,6 +36,22 @@ public class UpgradeItemLevelConfiguration
     /// </summary>
     [Display(Name = "Item Maximum Level", Description = "The maximum item level which the item has to have before applying the jewel.")]
     public byte MaximumLevel { get; set; }
+
+    /// <summary>
+    /// Gets or sets the amount of levels which the item will be upgraded by.
+    /// </summary>
+    [Display(Name = "Add Levels Amount", Description = "How many times to add a level to the item (will become maximum allowed level).")]
+    public byte LevelAmount { get; set; } = 1;
+
+    /// <summary>
+    /// Gets or sets the items which are allowed to be upgraded. If empty, all items are allowed except those in <see cref="DisallowedItems"/>.
+    /// </summary>
+    public ICollection<ItemDefinition> AllowedItems { get; set; } = new List<ItemDefinition>();
+
+    /// <summary>
+    /// Gets or sets the items which are not allowed to be upgraded.
+    /// </summary>
+    public ICollection<ItemDefinition> DisallowedItems { get; set; } = new List<ItemDefinition>();
 
     /// <summary>
     /// Gets or sets the item level after which the item will drop to level 0 when it fails.

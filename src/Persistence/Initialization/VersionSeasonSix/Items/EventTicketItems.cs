@@ -26,8 +26,8 @@ internal class EventTicketItems : InitializerBase
     public override void Initialize()
     {
         // Blood Castle:
-        this.CreateEventItem(16, 13, 1, 2, "Scroll of Archangel", true, 8, 2, 32, 45, 57, 68, 76, 84, 95);
-        this.CreateEventItem(17, 13, 1, 2, "Blood Bone", true, 8, 2, 32, 45, 57, 68, 76, 84, 95);
+        this.CreateEventItem(16, 13, 1, 2, "Scroll of Archangel", false, 8, 2, 32, 45, 57, 68, 76, 84, 95);
+        this.CreateEventItem(17, 13, 1, 2, "Blood Bone", false, 8, 2, 32, 45, 57, 68, 76, 84, 95);
         this.CreateEventItem(18, 13, 2, 2, "Invisibility Cloak", false, 8);
         this.CreateEventItem(19, 13, 1, 2, "Weapon of Archangel", false);
 
@@ -35,17 +35,17 @@ internal class EventTicketItems : InitializerBase
         this.CreateEventItem(29, 13, 2, 2, "Armor of Guardsman", false);
 
         // Illusion Temple:
-        this.CreateEventItem(49, 13, 1, 1, "Old Scroll", true, 6, 66, 72, 78, 84, 90, 96);
-        this.CreateEventItem(50, 13, 1, 2, "Illusion Sorcerer Covenant", true, 6, 70, 76, 82, 88, 94, 100);
+        this.CreateEventItem(49, 13, 1, 1, "Old Scroll", false, 6, 66, 72, 78, 84, 90, 96);
+        this.CreateEventItem(50, 13, 1, 2, "Illusion Sorcerer Covenant", false, 6, 70, 76, 82, 88, 94, 100);
         this.CreateEventItem(51, 13, 2, 2, "Scroll of Blood", false, 6);
 
         // Devil Square:
-        this.CreateEventItem(17, 14, 1, 1, "Devil's Eye", true, 7, 2, 36, 47, 60, 70, 80, 90);
-        this.CreateEventItem(18, 14, 1, 1, "Devil's Key", true, 7, 2, 36, 47, 60, 70, 80, 90);
+        this.CreateEventItem(17, 14, 1, 1, "Devil's Eye", false, 7, 2, 36, 47, 60, 70, 80, 90);
+        this.CreateEventItem(18, 14, 1, 1, "Devil's Key", false, 7, 2, 36, 47, 60, 70, 80, 90);
         this.CreateEventItem(19, 14, 1, 1, "Devil's Invitation", false, 7);
 
         // Imperial Guardian
-        var scrapOfPaper = this.CreateEventItem(101, 14, 1, 1, "Suspicious Scrap of Paper", true, 0, 32);
+        var scrapOfPaper = this.CreateEventItem(101, 14, 1, 1, "Suspicious Scrap of Paper", false, 0, 32);
         scrapOfPaper.Durability = 5;
         this.CreateEventItem(102, 14, 1, 1, "Gaion's Order", false);
         this.CreateEventItem(103, 14, 1, 1, "First Secromicon Fragment", false);

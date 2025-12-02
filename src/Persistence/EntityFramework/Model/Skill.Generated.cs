@@ -52,6 +52,15 @@ internal partial class Skill : MUnique.OpenMU.DataModel.Configuration.Skill, IId
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement> ConsumeRequirements => base.ConsumeRequirements ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement, AttributeRequirement>(this.RawConsumeRequirements);
 
     /// <summary>
+    /// Gets the raw collection of <see cref="AttributeRelationships" />.
+    /// </summary>
+    public ICollection<AttributeRelationship> RawAttributeRelationships { get; } = new EntityFramework.List<AttributeRelationship>();
+    
+    /// <inheritdoc/>
+    [NotMapped]
+    public override ICollection<MUnique.OpenMU.AttributeSystem.AttributeRelationship> AttributeRelationships => base.AttributeRelationships ??= new CollectionAdapter<MUnique.OpenMU.AttributeSystem.AttributeRelationship, AttributeRelationship>(this.RawAttributeRelationships);
+
+    /// <summary>
     /// Gets or sets the identifier of <see cref="ElementalModifierTarget"/>.
     /// </summary>
     public Guid? ElementalModifierTargetId { get; set; }
@@ -126,6 +135,32 @@ internal partial class Skill : MUnique.OpenMU.DataModel.Configuration.Skill, IId
         {
             base.MasterDefinition = value;
             this.MasterDefinitionId = this.RawMasterDefinition?.Id;
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the identifier of <see cref="AreaSkillSettings"/>.
+    /// </summary>
+    public Guid? AreaSkillSettingsId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="AreaSkillSettings" />.
+    /// </summary>
+    [ForeignKey(nameof(AreaSkillSettingsId))]
+    public AreaSkillSettings RawAreaSkillSettings
+    {
+        get => base.AreaSkillSettings as AreaSkillSettings;
+        set => base.AreaSkillSettings = value;
+    }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Configuration.AreaSkillSettings AreaSkillSettings
+    {
+        get => base.AreaSkillSettings;set
+        {
+            base.AreaSkillSettings = value;
+            this.AreaSkillSettingsId = this.RawAreaSkillSettings?.Id;
         }
     }
 

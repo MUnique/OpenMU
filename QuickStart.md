@@ -4,36 +4,32 @@ General requirements:
 
 * Free TCP ports:
   * 80 (admin panel)
-  * 55901, 55902, 55903 (game servers)
-  * 44405 (connect server)
+  * 55901 - 55906 (game servers)
+  * 44405 - 44406 (connect servers)
+    * 44405: default connection port for the original client
+    * 44406: connection port especially for the [open source client](https://github.com/sven-n/MuMain)
   * 55980 (chat server)
 
-* A game client (check our Discord FAQs)
+* A game client (check [our Discord](https://discord.gg/2u5Agkd) FAQs)
 * Knowledge or way to start the game client, so that it connects to the server. Our Launcher will do that.
 
-  * Launcher binaries: [MUnique.OpenMU.ClientLauncher v0.8.0.zip](https://github.com/MUnique/OpenMU/releases/download/v0.8.0/MUnique.OpenMU.ClientLauncher_0.8.0.zip)
-    * It requires the [.NET 8 runtime](https://dotnet.microsoft.com/download/dotnet/8.0)
+  * Launcher binaries: [MUnique.OpenMU.ClientLauncher v0.9.6.zip](https://github.com/MUnique/OpenMU/releases/download/v0.9.0/MUnique.OpenMU.ClientLauncher_0.9.6.zip)
+    * It requires the [.NET 9 runtime](https://dotnet.microsoft.com/download/dotnet/9.0)
   * If your server and client runs on your local host, use any IP of 127.x.x.x, except 127.0.0.1, because this one is blocked by the client. For example, you could use 127.127.127.127
 
 This guide describes two ways of starting the server. Use Docker, if you just
 want to play around. If you want to develop or debug the server, choose the
 manual way.
 
+As you can see on the connect server ports, the server is initialized for two different clients by default.
+They can connect to the same game servers through different ports. However, if you connect to the wrong port,
+it may currently still work all correctly, you'll just get warnings in the logs. However, as soon as
+we change encryption keys or methods, this will change.
+
 ## Docker
 
 Please take a look at the deploy-folder of this project. There you'll find a more
 detailed guide about how to set up this project.
-
-### Demo Mode
-
-If you just want to play around with the server, you can find the newest docker
-all-in-one image on the Docker Hub: <https://hub.docker.com/r/munique/openmu>
-
-To pull and run the latest docker image, run this command:
-`docker run --name openmu -d -p 80:8080 -p 44405:44405 -p 55901:55901 -p 55902:55902 -p 55903:55903 -p 55980:55980 munique/openmu:latest -demo`
-
-The last argument is there to start the server in demo mode, without a
-database. To use a postgres database, you can use docker-compose.
 
 ### Environment Variables
 
@@ -59,16 +55,16 @@ Requirements:
 
   * PostgreSQL installed
 
-  * Visual Studio 2022 (17.8+) installed, with workloads for ASP.NET Web development
+  * Visual Studio 2022 (17.12+) installed, with workloads for ASP.NET Web development
     and .NET Desktop development. Please keep it up-to-date to prevent any issues.
   
   * Visual Stuido Extension "Web Compiler 2022+", if you plan to edit SCSS files
     for the admin panel.
     * https://marketplace.visualstudio.com/items?itemName=Failwyn.WebCompiler64
 
-  * [.NET SDK 8](https://dotnet.microsoft.com/download/dotnet/8.0)
-    (it should be included in Visual Studio 17.8+)
-    * `winget install Microsoft.DotNet.SDK.8`
+  * [.NET SDK 9](https://dotnet.microsoft.com/download/dotnet/9.0)
+    (it should be included in Visual Studio 17.12+)
+    * `winget install Microsoft.DotNet.SDK.9`
 
   * [NodeJS 16+](https://nodejs.org) installed
     * `winget install OpenJS.NodeJS.LTS`
@@ -96,8 +92,8 @@ If you have that, you'll need to do:
   * Optional: You can reinitialize the database by adding a ```-reinit``` parameter.
 
 * When the Admin Panel is initialized, go to <http://localhost/>. Then you
-  should see three gameservers, the chat server and the connect server. Start
-  the connect server and at least one gameserver.
+  should see three gameservers, the chat server and two connect servers. Start
+  the connect servers and at least one gameserver.
 
 * If you update to a newer state of the master-branch, it could be possible
     that you have to update the database and configuration.

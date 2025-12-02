@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Items;
 
 using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
+using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.GameLogic.Views.NPC;
@@ -42,9 +43,11 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
         if (success)
         {
             player.Logger.LogInformation("Crafting succeeded with success chance: {successRate} %", successRate);
-            if (await this.DoTheMixAsync(items, player, socketSlot).ConfigureAwait(false) is { } item)
+            if (await this.DoTheMixAsync(items, player, socketSlot, successRate).ConfigureAwait(false) is { } item)
             {
                 player.Logger.LogInformation("Crafted item: {item}", item);
+                player.BackupInventory = null;
+
                 return (CraftingResult.Success, item);
             }
 
@@ -61,6 +64,9 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
         return (CraftingResult.Failed, null);
     }
 
+    /// <inheritdoc/>
+    public abstract CraftingResult? TryGetRequiredItems(Player player, out IList<CraftingRequiredItemLink> items, out byte successRateByItems);
+
     /// <summary>
     /// Gets the price based on the success rate and the required items.
     /// </summary>
@@ -70,24 +76,14 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
     protected abstract int GetPrice(byte successRate, IList<CraftingRequiredItemLink> requiredItems);
 
     /// <summary>
-    /// Tries to get the required items for this crafting.
-    /// If they can't be get or something is wrong, a <see cref="CraftingResult"/> with the
-    /// corresponding error is returned. Otherwise, it's <c>null</c>.
-    /// </summary>
-    /// <param name="player">The player.</param>
-    /// <param name="items">The items.</param>
-    /// <param name="successRateByItems">The success rate by items.</param>
-    /// <returns><c>null</c>, if the required items could be get; Otherwise, the corresponding error is returned.</returns>
-    protected abstract CraftingResult? TryGetRequiredItems(Player player, out IList<CraftingRequiredItemLink> items, out byte successRateByItems);
-
-    /// <summary>
     /// Creates the result items or modifies referenced required items as a result.
     /// </summary>
     /// <param name="requiredItems">The required items.</param>
     /// <param name="player">The player.</param>
     /// <param name="socketSlot">The slot of the socket.</param>
+    /// <param name="successRate">The success rate of the combination.</param>
     /// <returns>The created or modified items.</returns>
-    protected abstract ValueTask<List<Item>> CreateOrModifyResultItemsAsync(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot);
+    protected abstract ValueTask<List<Item>> CreateOrModifyResultItemsAsync(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot, byte successRate);
 
     /// <summary>
     /// Performs the crafting with the specified items.
@@ -95,17 +91,18 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
     /// <param name="requiredItems">The required items.</param>
     /// <param name="player">The player.</param>
     /// <param name="socketSlot">The slot of the socket.</param>
+    /// <param name="successRate">The success rate of the combination.</param>
     /// <returns>
     /// The created or modified item. If there are multiple, only the last one is returned.
     /// </returns>
-    private async ValueTask<Item?> DoTheMixAsync(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot)
+    private async ValueTask<Item?> DoTheMixAsync(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot, byte successRate)
     {
         foreach (var requiredItemLink in requiredItems)
         {
             await this.RequiredItemChangeAsync(player, requiredItemLink, true).ConfigureAwait(false);
         }
 
-        var resultItems = await this.CreateOrModifyResultItemsAsync(requiredItems, player, socketSlot).ConfigureAwait(false);
+        var resultItems = await this.CreateOrModifyResultItemsAsync(requiredItems, player, socketSlot, successRate).ConfigureAwait(false);
         return resultItems.LastOrDefault();
     }
 
@@ -132,20 +129,56 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
                 }
 
                 break;
-            case MixResult.DowngradedRandom:
+            case MixResult.ChaosWeaponAndFirstWingsDowngradedRandom:
                 itemLink.Items.ForEach(item =>
                 {
                     var previousLevel = item.Level;
-                    item.Level = (byte)Rand.NextInt(0, item.Level);
-                    player.Logger.LogDebug("Item {0} was downgraded from {1} to {2}.", item, previousLevel, item.Level);
+                    var hadSkill = item.HasSkill;
+                    var optionLowered = false;
+                    var previousMaxDurability = item.GetMaximumDurabilityOfOnePiece();
+
+                    item.Level = (byte)Rand.NextInt(0, previousLevel);
+                    if (item.HasSkill && !item.IsExcellent() && Rand.NextRandomBool())
+                    {
+                        item.HasSkill = false;
+                    }
+
+                    if (item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.Option) is { } optionLink && Rand.NextRandomBool())
+                    {
+                        optionLowered = true;
+                        if (optionLink.Level > 1)
+                        {
+                            optionLink.Level--;
+                        }
+                        else
+                        {
+                            item.ItemOptions.Remove(optionLink);
+                        }
+                    }
+
+                    item.Durability = item.GetMaximumDurabilityOfOnePiece() * item.Durability / previousMaxDurability;
+                    player.Logger.LogDebug(
+                        "Item {0} was downgraded from level {1} to {2}. Skill removed: {3}. Item option lowered by 1 level: {4}.",
+                        item,
+                        previousLevel,
+                        item.Level,
+                        hadSkill && !item.HasSkill,
+                        optionLowered);
                 });
 
                 break;
-            case MixResult.DowngradedTo0:
+            case MixResult.ThirdWingsDowngradedRandom:
                 itemLink.Items.ForEach(item =>
                 {
-                    player.Logger.LogDebug("Item {0} is getting downgraded to level 0.", item);
-                    item.Level = 0;
+                    var previousLevel = item.Level;
+                    item.Level -= (byte)(Rand.NextRandomBool() ? 2 : 3);
+                    if (item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.Option) is { } optionLink)
+                    {
+                        item.ItemOptions.Remove(optionLink);
+                    }
+
+                    item.Durability = item.GetMaximumDurabilityOfOnePiece();
+                    player.Logger.LogDebug("Item {0} was downgraded from level {1} to {2}. Item option was removed.", item, previousLevel, item.Level);
                 });
 
                 break;

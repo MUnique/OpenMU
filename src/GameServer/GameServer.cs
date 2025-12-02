@@ -2,8 +2,6 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using Nito.AsyncEx;
-
 namespace MUnique.OpenMU.GameServer;
 
 using System.ComponentModel;
@@ -14,6 +12,7 @@ using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Guild;
 using MUnique.OpenMU.GameLogic.Views.Login;
@@ -21,6 +20,7 @@ using MUnique.OpenMU.GameLogic.Views.Messenger;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
+using Nito.AsyncEx;
 
 /// <summary>
 /// The game server to which game clients can connect.
@@ -46,6 +46,7 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
     /// <param name="friendServer">The friend server.</param>
     /// <param name="loggerFactory">The logger factory.</param>
     /// <param name="plugInManager">The plug in manager.</param>
+    /// <param name="changeMediator"> The change mediatior.</param>
     public GameServer(
         GameServerDefinition gameServerDefinition,
         IGuildServer guildServer,
@@ -321,6 +322,18 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
         await this.Context.RegisterGuildMemberAsync(player).ConfigureAwait(false);
     }
 
+    /// <inheritdoc />
+    public async ValueTask PlayerAlreadyLoggedInAsync(byte serverId, string loginName)
+    {
+        var players = await this._gameContext.GetPlayersAsync().ConfigureAwait(false);
+        var affectedPlayer = players.FirstOrDefault(p => p.Account?.LoginName == loginName);
+
+        if (affectedPlayer is not null)
+        {
+            await affectedPlayer.ShowMessageAsync("Another user attempted to login this account. If it wasn't you, we suggest you to change your password.").ConfigureAwait(false);
+        }
+    }
+
     /// <inheritdoc/>
     public ValueTask SendGlobalMessageAsync(string message, MessageType messageType)
     {
@@ -388,7 +401,7 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
     /// Creates an instance of <see cref="ServerInfo"/> with the data of this instance.
     /// </summary>
     /// <returns>The created <see cref="ServerInfo"/>.</returns>
-    public ServerInfo CreateServerInfo() => new (this.Id, this.Description, this.CurrentConnections, this.MaximumConnections);
+    public ServerInfo CreateServerInfo() => new(this.Id, this.Description, this.CurrentConnections, this.MaximumConnections);
 
     /// <inheritdoc/>
     public override string ToString()
@@ -429,9 +442,13 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
 
     private async ValueTask OnPlayerDisconnectedAsync(Player remotePlayer)
     {
-        await this.SaveSessionOfPlayerAsync(remotePlayer).ConfigureAwait(false);
-        await this.SetOfflineAtLoginServerAsync(remotePlayer).ConfigureAwait(false);
-        remotePlayer.Dispose();
+        if (!remotePlayer.IsTemplatePlayer)
+        {
+            await this.SaveSessionOfPlayerAsync(remotePlayer).ConfigureAwait(false);
+            await this.SetOfflineAtLoginServerAsync(remotePlayer).ConfigureAwait(false);
+        }
+
+        await remotePlayer.DisposeAsync().ConfigureAwait(false);
         this.OnPropertyChanged(nameof(this.CurrentConnections));
     }
 
@@ -454,7 +471,32 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
     {
         try
         {
-            if (!await player.PersistenceContext.SaveChangesAsync().ConfigureAwait(false))
+            // Recover items placed in an NPC or trade dialog when player is disconnected
+            if (player.BackupInventory is not null)
+            {
+                player.Inventory!.Clear();
+                player.BackupInventory.RestoreItemStates();
+                foreach (var item in player.BackupInventory.Items)
+                {
+                    await player.Inventory.AddItemAsync(item.ItemSlot, item).ConfigureAwait(false);
+                }
+
+                player.Inventory.ItemStorage.Money = player.BackupInventory.Money;
+            }
+            else if (player is { TemporaryStorage: { } storage, Inventory: { } inventory })
+            {
+                if (!await inventory.TryTakeAllAsync(storage).ConfigureAwait(false))
+                {
+                    // This should never happen since the space is checked before mixing
+                    this._logger.LogWarning($"Could not take fit items of player {player}");
+                }
+            }
+            else
+            {
+                // nothing else to restore.
+            }
+
+            if (!await player.SaveProgressAsync().ConfigureAwait(false))
             {
                 this._logger.LogWarning($"Could not save session of player {player}");
             }

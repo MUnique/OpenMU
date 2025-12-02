@@ -1,0 +1,26 @@
+﻿@page "/create-game-server"
+
+@using MUnique.OpenMU.Persistence
+
+<PageTitle>OpenMU: Create Game Server</PageTitle>
+<Breadcrumb Caption="Create Game Server"/>
+<h1>Create Game Server Definition</h1>
+
+
+@if (this._viewModel is null)
+{
+    <span class="spinner-border" role="status" aria-hidden="true"></span>
+    <span class="sr-only">Loading...</span>
+    return;
+}
+
+@if (this._initState is { })
+{
+  <span class="spinner-border" role="status" aria-hidden="true"></span>
+  <span class="sr-only">@this._initState</span>
+  return;
+}
+
+
+<AutoForm Model="this._viewModel" OnValidSubmit="this.OnSaveButtonClickAsync"></AutoForm>
+

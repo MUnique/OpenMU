@@ -20,10 +20,10 @@ public abstract class BaseGuildInfoPlugIn<T>
     /// The cache for already serialized guilds. This data doesn't change, but is requested often.
     /// </summary>
     // ReSharper disable once StaticMemberInGenericType That's what we want
-    private static readonly ConcurrentDictionary<uint, Memory<byte>> Cache = new ();
+    private static readonly ConcurrentDictionary<uint, Memory<byte>> Cache = new();
 
     // ReSharper disable once StaticMemberInGenericType That's what we want
-    private static readonly HashSet<IGameServerContext> AppendedGuildDeletedSenders = new ();
+    private static readonly HashSet<IGameServerContext> AppendedGuildDeletedSenders = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BaseGuildInfoPlugIn{T}"/> class.

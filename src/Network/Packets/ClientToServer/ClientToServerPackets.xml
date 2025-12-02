@@ -496,6 +496,39 @@
     </Packet>
     <Packet>
       <HeaderType>C3Header</HeaderType>
+      <Code>24</Code>
+      <Name>ItemMoveRequestExtended</Name>
+      <Length>7</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player requests to move an item within or between his available item storage, such as inventory, vault, trade or chaos machine.</SentWhen>
+      <CausedReaction></CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Enum</Type>
+          <TypeName>ItemStorageKind</TypeName>
+          <Name>FromStorage</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>FromSlot</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Enum</Type>
+          <TypeName>ItemStorageKind</TypeName>
+          <Name>ToStorage</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>ToSlot</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3Header</HeaderType>
       <Code>26</Code>
       <Name>ConsumeItemRequest</Name>
       <Length>6</Length>
@@ -1860,7 +1893,7 @@
       <HeaderType>C1Header</HeaderType>
       <Code>41</Code>
       <Name>PartyInviteResponse</Name>
-      <Length>4</Length>
+      <Length>6</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A player was invited by another player to join a party and this player sent the response back.</SentWhen>
       <CausedReaction>If the sender accepts the request, it's added to the party.</CausedReaction>
@@ -2952,7 +2985,7 @@
       <HeaderType>C1Header</HeaderType>
       <Code>66</Code>
       <Name>GuildInfoRequest</Name>
-      <Length>6</Length>
+      <Length>8</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A player gets another player into view range which is in a guild, and the guild identifier is unknown (=not cached yet by previous requests) to him.</SentWhen>
       <CausedReaction>The server sends a response which includes the guild name and emblem.</CausedReaction>
@@ -4154,7 +4187,7 @@
       <Code>AA</Code>
       <SubCode>02</SubCode>
       <Name>DuelStartResponse</Name>
-      <Length>16</Length>
+      <Length>17</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>A player requested to start a duel with the sending player.</SentWhen>
       <CausedReaction>Depending on the response, the server starts the duel, or not.</CausedReaction>

@@ -5,10 +5,9 @@
 namespace MUnique.OpenMU.GameLogic;
 
 using System.Collections;
-using Nito.AsyncEx;
-using MUnique.OpenMU.GameLogic.Views.World;
-using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.AttributeSystem;
+using MUnique.OpenMU.GameLogic.Views.World;
+using Nito.AsyncEx;
 
 /// <summary>
 /// The list of magic effects of a player instance. Automatically applies the power-ups of the effects to the player.
@@ -185,6 +184,14 @@ public class MagicEffectsList : AsyncDisposable
         //// This doesn't only save traffic, it also looks better in game.
         magicEffect.Duration = effect.Duration;
         magicEffect.ResetTimer();
+
+        if (magicEffect.PowerUpElements.Select(e => e.Element)
+            .SequenceEqual(effect.PowerUpElements.Select(e => e.Element)))
+        {
+            // if the effect power ups are the same, we can leave it like that
+            return;
+        }
+
         foreach (var powerUp in magicEffect.PowerUpElements)
         {
             this._owner.Attributes.RemoveElement(powerUp.Element, powerUp.Target);

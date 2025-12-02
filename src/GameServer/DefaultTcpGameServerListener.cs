@@ -58,7 +58,7 @@ public class DefaultTcpGameServerListener : IGameServerListener
 
     private INetworkEncryptionFactoryPlugIn? EncryptionFactoryPlugIn { get; set; }
 
-    private ClientVersion ClientVersion => new (this._endPoint.Client!.Season, this._endPoint.Client.Episode, this._endPoint.Client.Language);
+    private ClientVersion ClientVersion => new(this._endPoint.Client!.Season, this._endPoint.Client.Episode, this._endPoint.Client.Language);
 
     /// <inheritdoc/>
     public async ValueTask StartAsync()
@@ -121,7 +121,7 @@ public class DefaultTcpGameServerListener : IGameServerListener
         this.EncryptionFactoryPlugIn = null;
     }
 
-#pragma warning disable VSTHRD100 Exceptions are handled.
+#pragma warning disable VSTHRD100 // Exceptions are handled.
     private async void OnResolverConfigurationChanged(object? sender, EventArgs e)
 #pragma warning restore VSTHRD100
     {

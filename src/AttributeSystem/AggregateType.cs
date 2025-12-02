@@ -15,7 +15,7 @@ public enum AggregateType
     AddRaw,
 
     /// <summary>
-    /// Multiplicates the value.
+    /// Multiplicates the raw base value.
     /// </summary>
     Multiplicate,
 
@@ -23,4 +23,9 @@ public enum AggregateType
     /// Adds the value to the final value.
     /// </summary>
     AddFinal,
+
+    /// <summary>
+    /// Adds only the highest available value to the raw base value (jewelry element resistance).
+    /// </summary>
+    Maximum,
 }

@@ -147,7 +147,7 @@ public class Gates : InitializerBase
         // Dungeon
         targetGates.Add(2, this.CreateExitGate(maps[1], 107, 247, 110, 247, 1));
         targetGates.Add(6, this.CreateExitGate(maps[1], 231, 126, 234, 127, 1));
-        targetGates.Add(8, this.CreateExitGate(maps[1], 240, 148, 241, 151, 3));
+        targetGates.Add(8, this.CreateExitGate(maps[1], 240, 149, 241, 151, 3));
         targetGates.Add(10, this.CreateExitGate(maps[1], 3, 83, 4, 86, 3));
         targetGates.Add(12, this.CreateExitGate(maps[1], 3, 16, 6, 17, 3));
         targetGates.Add(14, this.CreateExitGate(maps[1], 29, 125, 30, 126, 1));
@@ -195,7 +195,7 @@ public class Gates : InitializerBase
         targetGates.Add(266, this.CreateExitGate(maps[7], 16, 19, 17, 20, 0));
 
         // Tarkan
-        targetGates.Add(57, this.CreateExitGate(maps[8], 187, 54, 203, 69, 0, true));
+        targetGates.Add(57, this.CreateExitGate(maps[8], 187, 63, 203, 69, 0, true));
         targetGates.Add(77, this.CreateExitGate(maps[8], 91, 160, 93, 161, 0));
         targetGates.Add(54, this.CreateExitGate(maps[8], 248, 40, 251, 44, 7));
         targetGates.Add(128, this.CreateExitGate(maps[8], 7, 199, 7, 201, 0));

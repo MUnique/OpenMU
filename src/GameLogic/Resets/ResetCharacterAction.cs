@@ -4,10 +4,12 @@
 
 namespace MUnique.OpenMU.GameLogic.Resets;
 
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlayerActions;
 using MUnique.OpenMU.GameLogic.Views;
+using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.GameLogic.Views.Login;
 using MUnique.OpenMU.GameLogic.Views.NPC;
 using MUnique.OpenMU.Interfaces;
@@ -19,7 +21,7 @@ public class ResetCharacterAction
 {
     private readonly Player _player;
     private readonly NonPlayerCharacter? _npc;
-    private readonly LogoutAction _logoutAction = new ();
+    private readonly LogoutAction _logoutAction = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ResetCharacterAction"/> class.
@@ -84,8 +86,19 @@ public class ResetCharacterAction
         this._player.Attributes[Stats.Level] = configuration.LevelAfterReset;
         this._player.SelectedCharacter.Experience = 0;
         this.UpdateStats(configuration);
-        await this.MoveHomeAsync().ConfigureAwait(false);
-        await this._logoutAction.LogoutAsync(this._player, LogoutType.BackToCharacterSelection).ConfigureAwait(false);
+        if (configuration.MoveHome)
+        {
+            await this.MoveHomeAsync().ConfigureAwait(false);
+        }
+
+        if (configuration.LogOut)
+        {
+            await this._logoutAction.LogoutAsync(this._player, LogoutType.BackToCharacterSelection).ConfigureAwait(false);
+        }
+        else
+        {
+            await this.UpdateClientStatsAsync(configuration).ConfigureAwait(false);
+        }
     }
 
     private ValueTask ShowMessageAsync(string message)
@@ -124,7 +137,7 @@ public class ResetCharacterAction
 
     private void UpdateStats(ResetConfiguration configuration)
     {
-        var calculatedPointsPerReset = this.GetResetPoints(configuration);
+        var calculatedPointsPerReset = Math.Max(0, this.GetResetPoints(configuration));
         if (configuration.MultiplyPointsByResetCount)
         {
             calculatedPointsPerReset *= this.GetResetCount();
@@ -137,7 +150,14 @@ public class ResetCharacterAction
                 .ForEach(s => this._player.Attributes![s.Attribute] = s.BaseValue);
         }
 
-        this._player.SelectedCharacter!.LevelUpPoints = Math.Max(0, calculatedPointsPerReset);
+        if (configuration.ReplacePointsPerReset)
+        {
+            this._player.SelectedCharacter!.LevelUpPoints = calculatedPointsPerReset;
+        }
+        else
+        {
+            this._player.SelectedCharacter!.LevelUpPoints += calculatedPointsPerReset;
+        }
     }
 
     private int GetResetPoints(ResetConfiguration configuration)
@@ -162,5 +182,15 @@ public class ResetCharacterAction
             this._player.SelectedCharacter.CurrentMap = spawnGate.Map;
             this._player.Rotation = spawnGate.Direction;
         }
+    }
+
+    private async ValueTask UpdateClientStatsAsync(ResetConfiguration configuration)
+    {
+        if (configuration.ResetStats)
+        {
+            await this._player.InvokeViewPlugInAsync<IUpdateCharacterBaseStatsPlugIn>(p => p.UpdateCharacterBaseStatsAsync()).ConfigureAwait(false);
+        }
+
+        await this._player.InvokeViewPlugInAsync<IUpdateLevelPlugIn>(p => p.UpdateLevelAsync()).ConfigureAwait(false);
     }
 }

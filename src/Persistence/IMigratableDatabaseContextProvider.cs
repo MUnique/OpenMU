@@ -65,4 +65,9 @@ public interface IMigratableDatabaseContextProvider : IPersistenceContextProvide
     /// </summary>
     /// <returns>The disposable which should be disposed when the data creation process is finished.</returns>
     Task<IDisposable> ReCreateDatabaseAsync();
+
+    /// <summary>
+    /// Resets the cache of this instance.
+    /// </summary>
+    void ResetCache();
 }

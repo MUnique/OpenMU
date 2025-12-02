@@ -8,7 +8,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
 
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.Attributes;
-using MUnique.OpenMU.GameLogic.Views.Character;
 
 /// <summary>
 /// The consume handler for a potion that recovers health.
@@ -20,11 +19,4 @@ public abstract class HealthPotionConsumeHandlerPlugIn : RecoverConsumeHandlerPl
 
     /// <inheritdoc/>
     protected override AttributeDefinition CurrentAttribute => Stats.CurrentHealth;
-
-    /// <inheritdoc />
-    protected override async ValueTask OnAfterRecoverAsync(Player player)
-    {
-        // maybe instead of calling UpdateCurrentHealth etc. provide a more general method where we pass this.CurrentAttribute. The view can then decide what to do with it.
-        await player.InvokeViewPlugInAsync<IUpdateCurrentHealthPlugIn>(p => p.UpdateCurrentHealthAsync()).ConfigureAwait(false);
-    }
 }

@@ -34,11 +34,28 @@ public class QuestStateResponsePlugIn : IQuestStateResponsePlugIn
     {
         if (questState is null || questState.Group == QuestConstants.LegacyQuestGroup)
         {
-            questState ??= this._player.SelectedCharacter?.QuestStates.FirstOrDefault(state => state.Group == QuestConstants.LegacyQuestGroup);
-            await questState.SendLegacyQuestStateAsync(this._player).ConfigureAwait(false);
+            await this.ShowLegacyQuestStateAsync(this._player.SelectedCharacter?.QuestStates.FirstOrDefault(state => state.Group == QuestConstants.LegacyQuestGroup)).ConfigureAwait(false);
             return;
         }
 
+        await this.ShowNewQuestStateAsync(questState).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Shows the legacy quest state.
+    /// </summary>
+    /// <param name="questState">State of the quest.</param>
+    protected virtual async ValueTask ShowLegacyQuestStateAsync(CharacterQuestState? questState)
+    {
+        await questState.SendLegacyQuestStateAsync(this._player).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Shows the quest state of the new quest system.
+    /// </summary>
+    /// <param name="questState">State of the quest.</param>
+    protected virtual async ValueTask ShowNewQuestStateAsync(CharacterQuestState questState)
+    {
         var connection = this._player.Connection;
         if (connection is null)
         {

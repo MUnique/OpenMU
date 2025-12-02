@@ -236,6 +236,11 @@ internal enum MagicEffectNumber : short
     Blind = 0x49,
 
     /// <summary>
+    /// The weakness effect, which decreases the attacker's physical damage.
+    /// </summary>
+    Weakness = 0x4C,
+
+    /// <summary>
     /// The cherry blossom wine effect (+ 700 Mana).
     /// </summary>
     CherryBlossomWine = 0x4E,
@@ -249,6 +254,11 @@ internal enum MagicEffectNumber : short
     /// The cherry blossom flower petal effect (+ 40 dmg).
     /// </summary>
     CherryBlossomFlowerPetal = 0x50,
+
+    /// <summary>
+    /// The berserker buff effect.
+    /// </summary>
+    Berserker = 0x51,
 
     /// <summary>
     /// The wiz enhance effect.
@@ -289,6 +299,11 @@ internal enum MagicEffectNumber : short
     /// Internal.
     /// </remarks>
     ShieldSkill = 200,
+
+    /// <summary>
+    /// The alcohol effect number.
+    /// </summary>
+    Alcohol = 201,
 
     #endregion
 

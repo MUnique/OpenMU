@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore;
 using MUnique.OpenMU.GameLogic.Views;
+using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Network.Packets.ClientToServer;
 using MUnique.OpenMU.PlugIns;
@@ -21,7 +22,7 @@ using MUnique.OpenMU.PlugIns;
 [BelongsToGroup(StoreHandlerGroupPlugIn.GroupKey)]
 internal class PlayerShopBuyRequestPacketHandlerPlugIn : ISubPacketHandlerPlugIn
 {
-    private readonly BuyRequestAction _buyAction = new ();
+    private readonly BuyRequestAction _buyAction = new();
 
     /// <inheritdoc />
     public bool IsEncryptionExpected => true;
@@ -38,14 +39,14 @@ internal class PlayerShopBuyRequestPacketHandlerPlugIn : ISubPacketHandlerPlugIn
         if (player.CurrentMap?.GetObject(message.PlayerId) is not Player requestedPlayer)
         {
             player.Logger.LogDebug("Player not found: {0}", message.PlayerId);
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Open Store: Player not found.", MessageType.BlueNormal)).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<IPlayerShopBuyRequestResultPlugIn>(p => p.ShowResultAsync(null, ItemBuyResult.NotAvailable, null)).ConfigureAwait(false);
             return;
         }
 
         if (message.PlayerName != requestedPlayer.SelectedCharacter?.Name)
         {
-            player.Logger.LogDebug("Player Names dont match: {0} != {1}", message.PlayerName, requestedPlayer.SelectedCharacter?.Name);
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync($"Player Names don't match. {message.PlayerName} <> {requestedPlayer.SelectedCharacter?.Name}", MessageType.BlueNormal)).ConfigureAwait(false);
+            player.Logger.LogDebug("Player Names don't match: {0} != {1}", message.PlayerName, requestedPlayer.SelectedCharacter?.Name);
+            await player.InvokeViewPlugInAsync<IPlayerShopBuyRequestResultPlugIn>(p => p.ShowResultAsync(null, ItemBuyResult.NameMismatchOrPriceMissing, null)).ConfigureAwait(false);
             return;
         }
 

@@ -4,12 +4,18 @@
 
 namespace MUnique.OpenMU.Web.AdminPanel.Pages;
 
+using System.Collections;
 using System.ComponentModel;
 using System.Threading;
+using Blazored.Modal;
+using Blazored.Modal.Services;
+using Blazored.Toast.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.QuickGrid;
+using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Web.AdminPanel.Components.Form;
 
 /// <summary>
 /// Razor page which shows objects of the specified type in a grid.
@@ -40,6 +46,30 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
     /// </summary>
     [Inject]
     public NavigationManager NavigationManager { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the persistence context provider which loads and saves the object.
+    /// </summary>
+    [Inject]
+    public IPersistenceContextProvider PersistenceContextProvider { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the modal service.
+    /// </summary>
+    [Inject]
+    public IModalService ModalService { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the toast service.
+    /// </summary>
+    [Inject]
+    public IToastService ToastService { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the logger.
+    /// </summary>
+    [Inject]
+    public ILogger<EditConfigGrid> Logger { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the type.
@@ -103,9 +133,19 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
             throw new InvalidOperationException($"Only types of namespace {nameof(MUnique)} can be edited on this page.");
         }
 
-        await this.DataSource.GetOwnerAsync(default, cancellationToken).ConfigureAwait(true);
-        cancellationToken.ThrowIfCancellationRequested();
-        var data = this.DataSource.GetAll(this.Type!);
+        IEnumerable data;
+        var gameConfiguration = await this.DataSource.GetOwnerAsync(default, cancellationToken).ConfigureAwait(true);
+        if (this.DataSource.IsSupporting(this.Type))
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            data = this.DataSource.GetAll(this.Type!);
+        }
+        else
+        {
+            using var context = this.PersistenceContextProvider.CreateNewTypedContext(this.Type, true, gameConfiguration);
+            data = await context.GetAsync(this.Type, cancellationToken).ConfigureAwait(false);
+        }
+
         this._viewModels = data.OfType<object>()
             .Select(o => new ViewModel(o))
             .OrderBy(o => o.Name)
@@ -122,6 +162,61 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
     {
         return AppDomain.CurrentDomain.GetAssemblies().Where(assembly => assembly.FullName?.StartsWith(nameof(MUnique)) ?? false)
             .Select(assembly => assembly.GetType(this.TypeString)).FirstOrDefault(t => t != null);
+    }
+
+    private async Task OnDeleteButtonClickAsync(ViewModel viewModel)
+    {
+        try
+        {
+            var dialogResult = await this.ModalService.ShowQuestionAsync("Are you sure?", $"You're about to delete '{viewModel.Name}. Are you sure?");
+            if (!dialogResult)
+            {
+                return;
+            }
+
+            var cancellationToken = this._disposeCts?.Token ?? default;
+            var gameConfiguration = await this.DataSource.GetOwnerAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+            using var deleteContext = this.PersistenceContextProvider.CreateNewContext(gameConfiguration);
+            deleteContext.Attach(viewModel.Parent);
+            await deleteContext.DeleteAsync(viewModel.Parent).ConfigureAwait(false);
+            await deleteContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            this.ToastService.ShowSuccess($"Deleted '{viewModel.Name}' successfully.");
+            this._viewModels = null;
+            this._loadTask = Task.Run(() => this.LoadDataAsync(cancellationToken), cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            this.Logger.LogError(ex, $"Couldn't delete '{viewModel.Name}', probably because it's referenced by another object.");
+            this.ToastService.ShowError($"Couldn't delete '{viewModel.Name}', probably because it's referenced by another object. For details, see log");
+        }
+    }
+
+    private async Task OnCreateButtonClickAsync()
+    {
+        var cancellationToken = this._disposeCts?.Token ?? default;
+        var gameConfiguration = await this.DataSource.GetOwnerAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+        using var creationContext = this.PersistenceContextProvider.CreateNewTypedContext(this.Type!, true, gameConfiguration);
+        var newObject = creationContext.CreateNew(this.Type!);
+        var parameters = new ModalParameters();
+        var modalType = typeof(ModalCreateNew<>).MakeGenericType(this.Type!);
+
+        parameters.Add(nameof(ModalCreateNew<object>.Item), newObject);
+        var options = new ModalOptions
+        {
+            DisableBackgroundCancel = true,
+        };
+
+        var modal = this.ModalService.Show(modalType, $"Create", parameters, options);
+        var result = await modal.Result.ConfigureAwait(false);
+        if (!result.Cancelled)
+        {
+            await creationContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            await this.DataSource.DiscardChangesAsync().ConfigureAwait(false);
+
+            this.ToastService.ShowSuccess("New object successfully created.");
+            this._viewModels = null;
+            this._loadTask = Task.Run(() => this.LoadDataAsync(cancellationToken), cancellationToken);
+        }
     }
 
     /// <summary>

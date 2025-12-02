@@ -50,7 +50,7 @@ internal class Level400 : AccountInitializerBase
         character.LevelUpPoints -= 2000; // for the added strength and agility
         character.MasterLevelUpPoints = 100; // To test master skill tree
 
-        character.Inventory!.Items.Add(this.CreateWeapon(InventoryConstants.LeftHandSlot, 2, 13, 15, 4, true, true, Stats.ExcellentDamageChance)); // Exc AA Scepter+15+16+L+ExcDmg
+        character.Inventory!.Items.Add(this.CreateWeapon(InventoryConstants.LeftHandSlot, 2, 13, 15, 4, true, true)); // AA Scepter+15+16+L
 
         // Sunlight Set+15+16+L:
         character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.ArmorSlot, 33, 8, null, 15, 4, true));
@@ -58,9 +58,9 @@ internal class Level400 : AccountInitializerBase
         character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.PantsSlot, 33, 9, null, 15, 4, true));
         character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.GlovesSlot, 33, 10, null, 15, 4, true));
         character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.BootsSlot, 33, 11, null, 15, 4, true));
+        character.Inventory.Items.Add(this.CreateFullOptionJewellery(InventoryConstants.PendantSlot, 13)); // Exc Pendant of Fire
         character.Inventory.Items.Add(this.CreateWings(InventoryConstants.WingsSlot, 40, 15)); // Cape of Emperor +15
-
-        character.Inventory.Items.Add(this.CreatePet(InventoryConstants.PetSlot, 4)); // Horse
+        character.Inventory.Items.Add(this.CreateHorse(InventoryConstants.PetSlot));
 
         this.AddDarkLordItems(character.Inventory);
         this.AddTestJewelsAndPotions(character.Inventory);
@@ -78,7 +78,7 @@ internal class Level400 : AccountInitializerBase
         character.LevelUpPoints += 180; // after level 220, one point more
         character.MasterLevelUpPoints = 100; // To test master skill tree
 
-        character.Inventory!.Items.Add(this.CreateWeapon(InventoryConstants.LeftHandSlot, 0, 19, 15, 4, true, true, Stats.ExcellentDamageChance)); // Exc AA Sword+15+16+L+ExcDmg
+        character.Inventory!.Items.Add(this.CreateWeapon(InventoryConstants.LeftHandSlot, 0, 19, 15, 4, true, true)); // AA Sword+15+16+L
         character.Inventory.Items.Add(this.CreateWeapon(InventoryConstants.RightHandSlot, 0, 22, 15, 4, true, true)); // Bone Blade+15+16+L
 
         // Dragon Knight Set+15+16+L:
@@ -87,6 +87,7 @@ internal class Level400 : AccountInitializerBase
         character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.PantsSlot, 29, 9, null, 15, 4, true));
         character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.GlovesSlot, 29, 10, null, 15, 4, true));
         character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.BootsSlot, 29, 11, null, 15, 4, true));
+        character.Inventory.Items.Add(this.CreateFullOptionJewellery(InventoryConstants.PendantSlot, 13)); // Exc Pendant of Fire
         character.Inventory.Items.Add(this.CreateWings(InventoryConstants.WingsSlot, 36, 15)); // Wing of Storm +15
         character.Inventory.Items.Add(this.CreateFenrir(InventoryConstants.PetSlot, ItemOptionTypes.GoldFenrir));
 
@@ -113,6 +114,7 @@ internal class Level400 : AccountInitializerBase
         character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.PantsSlot, 32, 9, null, 15, 4, true));
         character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.GlovesSlot, 32, 10, null, 15, 4, true));
         character.Inventory.Items.Add(this.CreateArmorItem(InventoryConstants.BootsSlot, 32, 11, null, 15, 4, true));
+        character.Inventory.Items.Add(this.CreateFullOptionJewellery(InventoryConstants.PendantSlot, 13)); // Exc Pendant of Fire
         character.Inventory.Items.Add(this.CreateWings(InventoryConstants.WingsSlot, 39, 15)); // Wing of Ruin +15
         character.Inventory.Items.Add(this.CreateFenrir(InventoryConstants.PetSlot, ItemOptionTypes.GoldFenrir));
 

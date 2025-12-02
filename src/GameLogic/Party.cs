@@ -6,11 +6,11 @@ namespace MUnique.OpenMU.GameLogic;
 
 using System.Diagnostics.Metrics;
 using System.Threading;
-using Nito.AsyncEx;
-using Nito.AsyncEx.Synchronous;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Party;
+using Nito.AsyncEx;
+using Nito.AsyncEx.Synchronous;
 
 /// <summary>
 /// The party object. Contains a group of players who can chat with each other, and get information about the health status of their party mates.
@@ -114,6 +114,7 @@ public sealed class Party : Disposable
         this.PartyList.Add(newPartyMate);
         newPartyMate.Party = this;
         await this.SendPartyListAsync().ConfigureAwait(false);
+        await this.UpdateNearbyCountAsync().ConfigureAwait(false);
         return true;
     }
 
@@ -147,7 +148,7 @@ public sealed class Party : Disposable
     /// </returns>
     public async ValueTask<int> DistributeExperienceAfterKillAsync(IAttackable killedObject, IObservable killer)
     {
-        using var _ = await this._distributionLock.LockAsync();
+        using var d = await this._distributionLock.LockAsync();
         try
         {
             return await this.InternalDistributeExperienceAfterKillAsync(killedObject, killer).ConfigureAwait(false);
@@ -166,7 +167,7 @@ public sealed class Party : Disposable
     /// <param name="amount">The amount of money which should be distributed.</param>
     public async ValueTask DistributeMoneyAfterKillAsync(IAttackable killedObject, IPartyMember killer, uint amount)
     {
-        using var _ = await this._distributionLock.LockAsync();
+        using var d = await this._distributionLock.LockAsync();
         try
         {
             this._distributionList.AddRange(this.PartyList.OfType<Player>().Where(p => p.CurrentMap == killer.CurrentMap && !p.IsAtSafezone() && p.Attributes is { }));
@@ -186,7 +187,7 @@ public sealed class Party : Disposable
     /// <returns>The list of <see cref="DropItemGroup"/> which should be considered when generating a drop.</returns>
     public async ValueTask<IList<DropItemGroup>> GetQuestDropItemGroupsAsync(IPartyMember killer)
     {
-        using var _ = await this._distributionLock.LockAsync();
+        using var d = await this._distributionLock.LockAsync();
         try
         {
             using (await killer.ObserverLock.ReaderLockAsync().ConfigureAwait(false))
@@ -263,7 +264,7 @@ public sealed class Party : Disposable
             return count;
         }
 
-        var totalLevel = this._distributionList.Sum(p => (int)p.Attributes![Stats.Level] + p.Attributes![Stats.MasterLevel]);
+        var totalLevel = this._distributionList.Sum(p => (int)p.Attributes![Stats.TotalLevel]);
         var averageLevel = totalLevel / count;
         var averageExperience = killedObject.CalculateBaseExperience(averageLevel);
         var totalAverageExperience = averageExperience * count * Math.Pow(1.05, count - 1);
@@ -278,13 +279,13 @@ public sealed class Party : Disposable
             {
                 if (player.SelectedCharacter?.CharacterClass?.IsMasterClass ?? false)
                 {
-                    var expMaster = (int)(randomizedTotalExperiencePerLevel * (player.Attributes![Stats.MasterLevel] + player.Attributes![Stats.Level]) * player.Attributes[Stats.MasterExperienceRate]);
+                    var expMaster = (int)(randomizedTotalExperiencePerLevel * player.Attributes![Stats.TotalLevel] * (player.Attributes[Stats.MasterExperienceRate] + player.Attributes[Stats.BonusExperienceRate]));
                     await player.AddMasterExperienceAsync(expMaster, killedObject).ConfigureAwait(false);
                 }
             }
             else
             {
-                var exp = (int)(randomizedTotalExperiencePerLevel * player.Attributes![Stats.Level] * player.Attributes[Stats.ExperienceRate]);
+                var exp = (int)(randomizedTotalExperiencePerLevel * player.Attributes![Stats.Level] * (player.Attributes[Stats.ExperienceRate] + player.Attributes[Stats.BonusExperienceRate]));
                 await player.AddExperienceAsync(exp, killedObject).ConfigureAwait(false);
             }
         }
@@ -312,6 +313,11 @@ public sealed class Party : Disposable
         }
 
         await this.SendPartyListAsync().ConfigureAwait(false);
+        await this.UpdateNearbyCountAsync().ConfigureAwait(false);
+        if (player is Player actualPlayer && actualPlayer.Attributes is { } attributes)
+        {
+            attributes[Stats.NearbyPartyMemberCount] = 0;
+        }
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
@@ -343,6 +349,33 @@ public sealed class Party : Disposable
         catch (Exception ex)
         {
             this._logger.LogDebug(ex, "Unexpected error during health update");
+        }
+    }
+
+    private async ValueTask UpdateNearbyCountAsync()
+    {
+        if (this.PartyList.Count == 0)
+        {
+            return;
+        }
+
+        for (byte i = 0; i < this.PartyList.Count; i++)
+        {
+            try
+            {
+                if (this.PartyList[i] is not Player player || player.Attributes is not { } attributes)
+                {
+                    continue;
+                }
+
+                using var readerLock = await player.ObserverLock.ReaderLockAsync().ConfigureAwait(false);
+
+                attributes[Stats.NearbyPartyMemberCount] = this.PartyList.Count(player.Observers.Contains);
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogDebug(ex, "Error updating {statsName}", nameof(Stats.NearbyPartyMemberCount));
+            }
         }
     }
 

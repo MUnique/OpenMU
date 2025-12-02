@@ -14,7 +14,7 @@ using MUnique.OpenMU.Interfaces;
 /// </summary>
 public class BuyRequestAction
 {
-    private readonly CloseStoreAction _closeStoreAction = new ();
+    private readonly CloseStoreAction _closeStoreAction = new();
 
     /// <summary>
     /// Buys the item from another player shop.
@@ -25,16 +25,23 @@ public class BuyRequestAction
     public async ValueTask BuyItemAsync(Player player, Player requestedPlayer, byte slot)
     {
         using var loggerScope = player.Logger.BeginScope(this.GetType());
+        if (requestedPlayer.IsTemplatePlayer || player.IsTemplatePlayer)
+        {
+            await player.InvokeViewPlugInAsync<IPlayerShopBuyRequestResultPlugIn>(p => p.ShowResultAsync(requestedPlayer, ItemBuyResult.ItemBlock, null)).ConfigureAwait(false);
+            return;
+        }
+
         if (!(requestedPlayer.ShopStorage?.StoreOpen ?? false))
         {
             player.Logger.LogDebug("Store not open, Character {0}", requestedPlayer.SelectedCharacter?.Name);
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Player's Store not open.", MessageType.BlueNormal)).ConfigureAwait(false); // Code: 3
+            await player.InvokeViewPlugInAsync<IPlayerShopBuyRequestResultPlugIn>(p => p.ShowResultAsync(requestedPlayer, ItemBuyResult.ShopNotOpened, null)).ConfigureAwait(false);
             return;
         }
 
         if (slot < InventoryConstants.FirstStoreItemSlotIndex)
         {
             player.Logger.LogWarning("Store Slot too low: {0}, possible hacker", slot);
+            await player.InvokeViewPlugInAsync<IPlayerShopBuyRequestResultPlugIn>(p => p.ShowResultAsync(requestedPlayer, ItemBuyResult.InvalidShopSlot, null)).ConfigureAwait(false);
             return;
         }
 
@@ -42,7 +49,7 @@ public class BuyRequestAction
         if (item?.StorePrice is null)
         {
             player.Logger.LogDebug("Item unavailable, Slot {0}", slot);
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Item unavailable.", MessageType.BlueNormal)).ConfigureAwait(false); // Code 5?
+            await player.InvokeViewPlugInAsync<IPlayerShopBuyRequestResultPlugIn>(p => p.ShowResultAsync(requestedPlayer, ItemBuyResult.NameMismatchOrPriceMissing, null)).ConfigureAwait(false);
             return;
         }
 
@@ -50,7 +57,7 @@ public class BuyRequestAction
 
         if (player.Money < itemPrice)
         {
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Not enough Zen.", MessageType.BlueNormal)).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<IPlayerShopBuyRequestResultPlugIn>(p => p.ShowResultAsync(requestedPlayer, ItemBuyResult.LackOfMoney, null)).ConfigureAwait(false);
             return;
         }
 
@@ -58,7 +65,8 @@ public class BuyRequestAction
         var freeslot = player.Inventory?.CheckInvSpace(item);
         if (freeslot is null)
         {
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Not enough Space in your Inventory.", MessageType.BlueNormal)).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<IPlayerShopBuyRequestResultPlugIn>(p => p.ShowResultAsync(requestedPlayer, ItemBuyResult.MoneyOverflowOrNotEnoughSpace, null)).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Not enough space in your inventory.", MessageType.BlueNormal)).ConfigureAwait(false);
             return;
         }
 
@@ -68,14 +76,14 @@ public class BuyRequestAction
             if (!requestedPlayer.ShopStorage.StoreOpen)
             {
                 player.Logger.LogDebug("Store not open anymore, Character {0}", requestedPlayer.SelectedCharacter?.Name);
-                await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Player's Store not open anymore.", MessageType.BlueNormal)).ConfigureAwait(false);
+                await player.InvokeViewPlugInAsync<IPlayerShopBuyRequestResultPlugIn>(p => p.ShowResultAsync(requestedPlayer, ItemBuyResult.ShopNotOpened, null)).ConfigureAwait(false);
                 return;
             }
 
             item = requestedPlayer.ShopStorage.GetItem(slot);
             if (item is null)
             {
-                await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Sorry, Item was sold in the meantime.", MessageType.BlueNormal)).ConfigureAwait(false);
+                await player.InvokeViewPlugInAsync<IPlayerShopBuyRequestResultPlugIn>(p => p.ShowResultAsync(requestedPlayer, ItemBuyResult.InvalidShopSlot, null)).ConfigureAwait(false);
                 return;
             }
 
@@ -96,7 +104,7 @@ public class BuyRequestAction
                     requestedPlayer.PersistenceContext.Detach(item);
                     await itemContext.SaveChangesAsync().ConfigureAwait(false);
                     player.PersistenceContext.Attach(item);
-                    await player.InvokeViewPlugInAsync<IItemBoughtFromPlayerShopPlugIn>(p => p.ItemBoughtFromPlayerShopAsync(item)).ConfigureAwait(false);
+                    await player.InvokeViewPlugInAsync<IPlayerShopBuyRequestResultPlugIn>(p => p.ShowResultAsync(requestedPlayer, ItemBuyResult.Success, item)).ConfigureAwait(false);
                     await player.InvokeViewPlugInAsync<IUpdateMoneyPlugIn>(p => p.UpdateMoneyAsync()).ConfigureAwait(false);
                     itemSold = true;
 
@@ -104,6 +112,7 @@ public class BuyRequestAction
                 }
                 else
                 {
+                    await player.InvokeViewPlugInAsync<IPlayerShopBuyRequestResultPlugIn>(p => p.ShowResultAsync(requestedPlayer, ItemBuyResult.MoneyOverflowOrNotEnoughSpace, null)).ConfigureAwait(false);
                     await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("The inventory of the seller is full.", MessageType.BlueNormal)).ConfigureAwait(false);
                     player.TryAddMoney(itemPrice);
                 }

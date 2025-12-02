@@ -21,5 +21,5 @@ internal class TalkNpcHandlerPlugIn : TalkNpcHandlerPlugInBase
     public override bool IsEncryptionExpected => true;
 
     /// <inheritdoc/>
-    protected override TalkNpcAction TalkNpcAction { get; } = new ();
+    protected override TalkNpcAction TalkNpcAction { get; } = new();
 }

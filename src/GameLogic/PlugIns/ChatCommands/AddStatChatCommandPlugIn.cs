@@ -22,16 +22,16 @@ public class AddStatChatCommandPlugIn : IChatCommandPlugIn
 
     private const CharacterStatus MinimumStatus = CharacterStatus.Normal;
 
-    private readonly IncreaseStatsAction _action = new ();
+    private readonly IncreaseStatsAction _action = new();
 
     /// <inheritdoc />
-    public string Key => Command;
+    public virtual string Key => Command;
 
     /// <inheritdoc />
-    public CharacterStatus MinCharacterStatusRequirement => MinimumStatus;
+    public virtual CharacterStatus MinCharacterStatusRequirement => MinimumStatus;
 
     /// <inheritdoc />
-    public async ValueTask HandleCommandAsync(Player player, string command)
+    public virtual async ValueTask HandleCommandAsync(Player player, string command)
     {
         try
         {

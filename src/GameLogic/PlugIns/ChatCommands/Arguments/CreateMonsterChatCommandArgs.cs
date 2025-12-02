@@ -16,7 +16,7 @@ public class CreateMonsterChatCommandArgs : ArgumentsBase
     public short MonsterNumber { get; set; }
 
     /// <summary>
-    /// Gets or sets a flag, if the created monster should be intelligent (walking, attacking), or should do nothing at all.
+    /// Gets or sets a value indicating whether the created monster should be intelligent (walking, attacking), or should do nothing at all.
     /// </summary>
     [Argument("intelligence", false)]
     public bool IsIntelligent { get; set; }

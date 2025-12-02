@@ -46,16 +46,18 @@ public class ItemMovedPlugIn : IItemMovedPlugIn
 
         int Write()
         {
-            var size = ItemMovedRef.GetRequiredSize(ItemMovedRef.GetRequiredSize(itemSerializer.NeededSpace));
+            var size = ItemMovedRef.GetRequiredSize(itemSerializer.NeededSpace);
             var span = connection.Output.GetSpan(size)[..size];
             var message = new ItemMovedRef(span)
             {
                 TargetStorageType = targetStorage,
                 TargetSlot = toSlot,
             };
-            itemSerializer.SerializeItem(message.ItemData, item);
+            var itemSize = itemSerializer.SerializeItem(message.ItemData, item);
 
-            return size;
+            var actualSize = ItemMovedRef.GetRequiredSize(itemSize);
+            span.Slice(0, actualSize).SetPacketSize();
+            return actualSize;
         }
 
         await connection.SendAsync(Write).ConfigureAwait(false);

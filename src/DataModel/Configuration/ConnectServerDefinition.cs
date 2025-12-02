@@ -112,4 +112,29 @@ public partial class ConnectServerDefinition : IConnectServerSettings
     /// Gets or sets the maximum server list requests per connection.
     /// </summary>
     public int MaxServerListRequests { get; set; }
+
+    /// <summary>
+    /// Initializes the defaults.
+    /// </summary>
+    public void InitializeDefaults()
+    {
+        this.DisconnectOnUnknownPacket = true;
+        this.MaximumReceiveSize = 6;
+        this.Timeout = new TimeSpan(0, 1, 0);
+        this.CurrentPatchVersion = new byte[] { 1, 3, 0x2B };
+        this.PatchAddress = "patch.muonline.webzen.com";
+        this.MaxConnectionsPerAddress = 30;
+        this.CheckMaxConnectionsPerAddress = true;
+        this.MaxConnections = 10000;
+        this.ListenerBacklog = 100;
+        this.MaxFtpRequests = 1;
+        this.MaxIpRequests = 5;
+        this.MaxServerListRequests = 20;
+    }
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return this.Description;
+    }
 }

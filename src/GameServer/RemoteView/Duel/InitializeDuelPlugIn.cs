@@ -1,5 +1,6 @@
-﻿using MUnique.OpenMU.GameServer.RemoteView.World;
-using MUnique.OpenMU.Persistence;
+﻿// <copyright file="InitializeDuelPlugIn.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
 
 namespace MUnique.OpenMU.GameServer.RemoteView.Duel;
 
@@ -7,6 +8,7 @@ using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Duel;
+using MUnique.OpenMU.GameServer.RemoteView.World;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.PlugIns;
@@ -19,7 +21,6 @@ using MUnique.OpenMU.PlugIns;
 [MinimumClient(4, 0, ClientLanguage.Invariant)]
 public class InitializeDuelPlugIn : IInitializeDuelPlugIn
 {
-    
     private readonly RemotePlayer _player;
 
     /// <summary>

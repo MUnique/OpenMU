@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 
 /// <summary>
@@ -127,5 +128,81 @@ public static class CharacterClassHelper
         {
             yield return characterClasses.First(c => c.Number == (int)CharacterClassNumber.FairyElf);
         }
+    }
+
+    /// <summary>
+    /// Creates the attribute relationship.
+    /// </summary>
+    /// <param name="context">The context.</param>
+    /// <param name="gameConfiguration">The game configuration.</param>
+    /// <param name="targetAttribute">The target attribute.</param>
+    /// <param name="multiplier">The multiplier.</param>
+    /// <param name="sourceAttribute">The source attribute.</param>
+    /// <param name="inputOperator">The input operator.</param>
+    /// <param name="aggregateType">The aggregate type with which the relationship will effect the <paramref name="targetAttribute"/>.</param>
+    /// <returns>The attribute relationship.</returns>
+    public static AttributeRelationship CreateAttributeRelationship(IContext context, GameConfiguration gameConfiguration, AttributeDefinition targetAttribute, float multiplier, AttributeDefinition sourceAttribute, InputOperator inputOperator = InputOperator.Multiply, AggregateType aggregateType = AggregateType.AddRaw)
+    {
+        return context.CreateNew<AttributeRelationship>(
+            targetAttribute.GetPersistent(gameConfiguration) ?? targetAttribute,
+            multiplier,
+            sourceAttribute.GetPersistent(gameConfiguration) ?? sourceAttribute,
+            inputOperator,
+            default(AttributeDefinition?),
+            aggregateType);
+    }
+
+    /// <summary>
+    /// Creates the attribute relationship.
+    /// </summary>
+    /// <param name="context">The context.</param>
+    /// <param name="gameConfiguration">The game configuration.</param>
+    /// <param name="targetAttribute">The target attribute.</param>
+    /// <param name="multiplierAttribute">The multiplier attribute.</param>
+    /// <param name="sourceAttribute">The source attribute.</param>
+    /// <param name="inputOperator">The input operator.</param>
+    /// <param name="aggregateType">The aggregate type with which the relationship will effect the <paramref name="targetAttribute"/>.</param>
+    /// <returns>The attribute relationship.</returns>
+    public static AttributeRelationship CreateAttributeRelationship(IContext context, GameConfiguration gameConfiguration, AttributeDefinition targetAttribute, AttributeDefinition multiplierAttribute, AttributeDefinition sourceAttribute, InputOperator inputOperator = InputOperator.Multiply, AggregateType aggregateType = AggregateType.AddRaw)
+    {
+        return context.CreateNew<AttributeRelationship>(
+            targetAttribute.GetPersistent(gameConfiguration) ?? targetAttribute,
+            0f,
+            sourceAttribute.GetPersistent(gameConfiguration) ?? sourceAttribute,
+            inputOperator,
+            multiplierAttribute.GetPersistent(gameConfiguration) ?? multiplierAttribute,
+            aggregateType);
+    }
+
+    /// <summary>
+    /// Creates the conditional relationship between attributes.
+    /// </summary>
+    /// <param name="context">The context.</param>
+    /// <param name="gameConfiguration">The game configuration.</param>
+    /// <param name="targetAttribute">The target attribute.</param>
+    /// <param name="conditionalAttribute">The conditional attribute.</param>
+    /// <param name="sourceAttribute">The source attribute.</param>
+    /// <param name="aggregateType">The aggregate type with which the relationship will effect the <paramref name="targetAttribute"/>.</param>
+    /// <returns>The attribute relationship.</returns>
+    public static AttributeRelationship CreateConditionalRelationship(IContext context, GameConfiguration gameConfiguration, AttributeDefinition targetAttribute, AttributeDefinition conditionalAttribute, AttributeDefinition sourceAttribute, AggregateType aggregateType = AggregateType.AddRaw)
+    {
+        return context.CreateNew<AttributeRelationship>(
+            targetAttribute.GetPersistent(gameConfiguration) ?? targetAttribute,
+            conditionalAttribute.GetPersistent(gameConfiguration) ?? conditionalAttribute,
+            sourceAttribute.GetPersistent(gameConfiguration) ?? sourceAttribute,
+            aggregateType);
+    }
+
+    /// <summary>
+    /// Creates the constant value attribute.
+    /// </summary>
+    /// <param name="context">The context.</param>
+    /// <param name="gameConfiguration">The game configuration.</param>
+    /// <param name="value">The value.</param>
+    /// <param name="attribute">The attribute.</param>
+    /// <returns>The constant value attribute.</returns>
+    public static ConstValueAttribute CreateConstValueAttribute(IContext context, GameConfiguration gameConfiguration, float value, AttributeDefinition attribute)
+    {
+        return context.CreateNew<ConstValueAttribute>(value, attribute.GetPersistent(gameConfiguration));
     }
 }

@@ -28,13 +28,13 @@ public class DevilSquareTicketCrafting : BaseEventTicketCrafting
             5 => 1100000,
             6 => 1600000,
             7 => 2000000,
-            _ => 100000
+            _ => 100000,
         };
     }
 
     /// <inheritdoc />
     protected override byte GetSuccessRate(int eventLevel)
     {
-        return (byte)(80 - (eventLevel * 5));
+        return (byte)(eventLevel < 5 ? 80 : 70); // Future to-do: There is a +10% increase if Crywolf event is beaten
     }
 }

@@ -34,7 +34,7 @@ public class Pets : InitializerBase
         this.CreatePet(1, 0, "Imp", 28, true, (Stats.AttackDamageIncrease, 1.3f, AggregateType.Multiplicate));
         this.CreatePet(2, 0, "Horn of Uniria", 25, true);
 
-        var dinorant = this.CreatePet(3, SkillNumber.FireBreath, "Horn of Dinorant", 110, false, (Stats.DamageReceiveDecrement, 0.9f, AggregateType.Multiplicate), (Stats.AttackDamageIncrease, 1.15f, AggregateType.Multiplicate), (Stats.CanFly, 1.0f, AggregateType.AddRaw));
+        var dinorant = this.CreatePet(3, SkillNumber.FireBreath, "Horn of Dinorant", 110, false, (Stats.IsDinorantEquipped, 1, AggregateType.AddRaw), (Stats.DamageReceiveDecrement, 0.9f, AggregateType.Multiplicate), (Stats.AttackDamageIncrease, 1.15f, AggregateType.Multiplicate));
         this.AddDinorantOptions(dinorant);
     }
 
@@ -82,13 +82,13 @@ public class Pets : InitializerBase
         this.GameConfiguration.ItemOptions.Add(dinoOptionDefinition);
 
         dinoOptionDefinition.Name = "Dinorant Options";
-        dinoOptionDefinition.AddChance = 0.1f;
+        dinoOptionDefinition.AddChance = 0.3f;
         dinoOptionDefinition.AddsRandomly = true;
-        dinoOptionDefinition.MaximumOptionsPerItem = 1;
+        dinoOptionDefinition.MaximumOptionsPerItem = 1;     // There is a second rollout for an additional bonus option to the first
 
-        dinoOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.Excellent, 1, Stats.DamageReceiveDecrement, 0.95f, AggregateType.Multiplicate));
-        dinoOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.Excellent, 2, Stats.MaximumAbility, 50f, AggregateType.AddFinal));
-        dinoOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.Excellent, 4, Stats.AttackSpeed, 5f, AggregateType.AddFinal));
+        dinoOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.Option, 4, Stats.DamageReceiveDecrement, 0.95f, AggregateType.Multiplicate));
+        dinoOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.Option, 4, Stats.MaximumAbility, 50f, AggregateType.AddFinal));
+        dinoOptionDefinition.PossibleOptions.Add(this.CreateOption(ItemOptionTypes.Option, 4, Stats.AttackSpeedAny, 5f, AggregateType.AddFinal));
 
         dinorant.PossibleItemOptions.Add(dinoOptionDefinition);
     }

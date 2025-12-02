@@ -14,7 +14,7 @@ using MUnique.OpenMU.Network.Packets.ClientToServer;
 /// </summary>
 internal abstract class ChatMessageBaseHandlerPlugIn : IPacketHandlerPlugIn
 {
-    private readonly ChatMessageAction _messageAction = new ();
+    private readonly ChatMessageAction _messageAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;

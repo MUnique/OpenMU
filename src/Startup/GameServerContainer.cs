@@ -20,7 +20,7 @@ using MUnique.OpenMU.Web.AdminPanel.Services;
 /// <summary>
 /// A container which keeps all <see cref="IGameServer"/>s in one <see cref="IHostedService"/>.
 /// </summary>
-public sealed class GameServerContainer : ServerContainerBase, IDisposable
+public sealed class GameServerContainer : ServerContainerBase, IGameServerInstanceManager, IDisposable
 {
     private readonly ILogger<GameServerContainer> _logger;
     private readonly ILoggerFactory _loggerFactory;
@@ -92,24 +92,53 @@ public sealed class GameServerContainer : ServerContainerBase, IDisposable
     }
 
     /// <inheritdoc />
+    public async ValueTask InitializeGameServerAsync(byte serverId)
+    {
+        using var persistenceContext = this._persistenceContextProvider.CreateNewConfigurationContext();
+        var gameServerDefinitions = await persistenceContext.GetAsync<GameServerDefinition>().ConfigureAwait(false);
+        var gameServerDefinition = gameServerDefinitions.FirstOrDefault(def => def.ServerID == serverId)
+                                   ?? throw new InvalidOperationException($"GameServerDefinition of server {serverId} was not found.");
+
+        this.InitializeGameServer(gameServerDefinition);
+    }
+
+    /// <inheritdoc />
+    public async ValueTask RemoveGameServerAsync(byte serverId)
+    {
+        using var loggerScope = this._logger.BeginScope("GameServer: {0}", serverId);
+        if (this._gameServers.TryGetValue(serverId, out var gameServer))
+        {
+            await gameServer.ShutdownAsync().ConfigureAwait(false);
+            this._gameServers.Remove(serverId);
+            this._servers.Remove(gameServer);
+            this._logger.LogInformation($"Game Server {gameServer.Id} - [{gameServer.Description}] removed");
+        }
+        else
+        {
+            this._logger.LogInformation($"Game Server {serverId} not found");
+        }
+    }
+
+    /// <inheritdoc />
+    protected override async ValueTask BeforeStartAsync(bool onDatabaseInit, CancellationToken cancellationToken)
+    {
+        await base.BeforeStartAsync(onDatabaseInit, cancellationToken);
+        if (!onDatabaseInit)
+        {
+            (this._persistenceContextProvider as IMigratableDatabaseContextProvider)?.ResetCache();
+        }
+    }
+
+    /// <inheritdoc />
     protected override async Task StartInnerAsync(CancellationToken cancellationToken)
     {
         using var persistenceContext = this._persistenceContextProvider.CreateNewConfigurationContext();
         await this.LoadGameClientDefinitionsAsync(persistenceContext).ConfigureAwait(false);
 
-        var gameServerDefinitions = await persistenceContext.GetAsync<GameServerDefinition>().ConfigureAwait(false);
+        var gameServerDefinitions = await persistenceContext.GetAsync<GameServerDefinition>(cancellationToken).ConfigureAwait(false);
         foreach (var gameServerDefinition in gameServerDefinitions)
         {
-            using var loggerScope = this._logger.BeginScope("GameServer: {0}", gameServerDefinition.ServerID);
-            var gameServer = new GameServer(gameServerDefinition, this._guildServer, this._eventPublisher, this._loginServer, this._persistenceContextProvider, this._friendServer, this._loggerFactory, this._plugInManager, this._changeMediator);
-            foreach (var endpoint in gameServerDefinition.Endpoints)
-            {
-                gameServer.AddListener(new DefaultTcpGameServerListener(endpoint, gameServer.CreateServerInfo(), gameServer.Context, this._connectServerContainer.GetObserver(endpoint.Client!), this._ipResolver, this._loggerFactory));
-            }
-
-            this._servers.Add(gameServer);
-            this._gameServers.Add(gameServer.Id, gameServer);
-            this._logger.LogInformation($"Game Server {gameServer.Id} - [{gameServer.Description}] initialized");
+            this.InitializeGameServer(gameServerDefinition);
         }
     }
 
@@ -132,6 +161,20 @@ public sealed class GameServerContainer : ServerContainerBase, IDisposable
         }
 
         this._gameServers.Clear();
+    }
+
+    private void InitializeGameServer(GameServerDefinition gameServerDefinition)
+    {
+        using var loggerScope = this._logger.BeginScope("GameServer: {0}", gameServerDefinition.ServerID);
+        var gameServer = new GameServer(gameServerDefinition, this._guildServer, this._eventPublisher, this._loginServer, this._persistenceContextProvider, this._friendServer, this._loggerFactory, this._plugInManager, this._changeMediator);
+        foreach (var endpoint in gameServerDefinition.Endpoints)
+        {
+            gameServer.AddListener(new DefaultTcpGameServerListener(endpoint, gameServer.CreateServerInfo(), gameServer.Context, this._connectServerContainer.GetObserver(endpoint.Client!), this._ipResolver, this._loggerFactory));
+        }
+
+        this._servers.Add(gameServer);
+        this._gameServers.Add(gameServer.Id, gameServer);
+        this._logger.LogInformation($"Game Server {gameServer.Id} - [{gameServer.Description}] initialized");
     }
 
     private async ValueTask LoadGameClientDefinitionsAsync(IContext persistenceContext)

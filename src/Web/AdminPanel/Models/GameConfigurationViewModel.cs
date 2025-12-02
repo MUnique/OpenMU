@@ -57,6 +57,12 @@ public class GameConfigurationViewModel
     public int MaximumVaultMoney { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether money pickup should be clamped to the maximum inventory money limit instead of failing when the limit would be exceeded.
+    /// </summary>
+    [Display(Name = "Clamp money on pickup", Description = "When enabled, players will receive as much money as possible (up to the limit) when picking up money that would exceed the maximum, instead of the pickup failing completely.")]
+    public bool ClampMoneyOnPickup { get; set; }
+
+    /// <summary>
     /// Gets or sets the interval for attribute recoveries. See also MUnique.OpenMU.GameLogic.Attributes.Stats.Regeneration.
     /// </summary>
     public int RecoveryInterval { get; set; }
@@ -98,6 +104,11 @@ public class GameConfigurationViewModel
     /// Gets or sets a value indicating whether if a monster should drop or adds money to the character directly.
     /// </summary>
     public bool ShouldDropMoney { get; set; }
+
+    /// <summary>
+    /// Gets or sets the maximum droppable item option level.
+    /// </summary>
+    public byte MaximumItemOptionLevelDrop { get; set; }
 
     /// <summary>
     /// Gets or sets the accumulated damage which needs to be done to decrease <see cref="Item.Durability"/> of a defending item by 1.

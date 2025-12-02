@@ -4,6 +4,8 @@
 
 @implements IDisposable;
 
+<PageTitle>OpenMU: Servers</PageTitle>
+<Breadcrumb IsFirstFromRoot="true" Caption="Servers"/>
 <h1>Servers</h1>
 
 @if (_servers == null)
@@ -13,37 +15,78 @@
 else
 {
 <div>
-    <table>
-        <thead>
-            <tr>
-                <th></th>
-                <th class="col-sm-7">Server Name</th>
-                <th class="col-sm-1">Players</th>
-                <th class="col-sm-2">Current State</th>
-                <th class="col-sm-2">Action</th>
-            </tr>
-        </thead>
-        <tfoot>
-            <TotalOnlineCounter Servers=@_servers />
-        </tfoot>
-        <tbody>
-            @foreach (var server in this._servers.OrderBy(s => s.Type).ThenBy(s => s.Description))
-            {
-                <ServerItem Server=@server />
-            }
-        </tbody>
-    </table>
+  <table>
+    <thead>
+    <tr>
+      <th></th>
+      <th class="col-sm-7">Server Name</th>
+      <th class="col-sm-1">Players</th>
+      <th class="col-sm-2">Current State</th>
+      <th class="col-sm-2">Action</th>
+    </tr>
+    </thead>
+    <tfoot>
+    <TotalOnlineCounter Servers=@_servers />
+    </tfoot>
+    <tbody>
+    @foreach (var server in this._servers.OrderBy(s => s.Type).ThenBy(s => s.Description))
+    {
+      <ServerItem Server=@server/>
+    }
+    
+    <tr>
+      <td></td>
+      <td>
+        <NavLink class="btn btn-primary" href="create-game-server">
+          <span class="oi oi-plus"></span> Game Server
+        </NavLink>
+        <NavLink class="btn btn-primary" href="create-connect-server">
+            <span class="oi oi-plus"></span> Connect Server
+        </NavLink>
+      </td>
+      <td></td>
+      <td></td>
+      <td>
+        @if (this.ServerInstanceManager is not null)
+        {
+          @if (this._isRestarting)
+          {
+            <button type="button" class="btn-warning" disabled="disabled">
+              <div class="spinner-border text-secondary" role="status">
+              </div>
+            </button>
+          }
+          else
+          {
+            <button type="button" class="btn-warning" @onclick="this.OnReloadAndRestartClickAsync">
+              <span class="oi oi-reload"></span>
+              Reload configuration and restart all Game Servers
+            </button>
+          }
+        }
+      </td>
+    </tr>
+    </tbody>
+  </table>
 </div>
 }
 
 @code {
     private IList<IManageableServer>? _servers;
 
+    private bool _isRestarting;
+
     /// <summary>
     /// Gets or sets the <see cref="IServerProvider"/>.
     /// </summary>
     [Inject]
     public IServerProvider ServerProvider { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the <see cref="IGameServerInstanceManager"/>.
+    /// </summary>
+    [Inject]
+    public IGameServerInstanceManager? ServerInstanceManager { get; set; }
 
     /// <inheritdoc />
     public void Dispose()
@@ -66,5 +109,18 @@ else
             this._servers = this.ServerProvider.Servers;
             this.InvokeAsync(this.StateHasChanged);
         }
+    }
+
+    private async Task OnReloadAndRestartClickAsync()
+    {
+      this._isRestarting = true;
+      try
+      {
+            await this.ServerInstanceManager!.RestartAllAsync(false);
+      }
+      finally
+      {
+        this._isRestarting = false;
+      }
     }
 }

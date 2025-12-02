@@ -1,9 +1,15 @@
 ﻿@using System.ComponentModel
 @using MUnique.OpenMU.DataModel.Configuration
 @using MUnique.OpenMU.Interfaces
+@using MUnique.OpenMU.Persistence
 @implements IDisposable
 
-<tr class=@(this.Server.ServerState == ServerState.Started ? "success" : "warning") >
+@if (this._isDeleted)
+{
+  return;
+}
+
+<tr class=@(this.Server.ServerState == ServerState.Started ? "success" : "warning") id=@Server.Id>
     <td>
         @if (this.Server.Type == ServerType.GameServer)
         {
@@ -35,27 +41,96 @@
     </td>
     <td>@this.GetStateCaption()</td>
     <td>
-        @if (this.IsActionAvailable())
+      <div class="btn-group" role="group" aria-label="Server control">
+      @if (this.Server.ServerState == ServerState.Started)
+      {
+        <button type="button" class="btn-secondary" title="Start" disabled>
+          <span class="oi oi-media-play"></span>
+        </button>
+        <button type="button" class="btn-warning" title="Stop" @onclick="this.OnPauseClickAsync">
+          <span class="oi oi-media-pause"></span>
+        </button>
+        @if (this.Server.Type is ServerType.GameServer or ServerType.ConnectServer)
         {
-            <button type="button" @onclick="@OnActionClick" class=@this.GetActionClass()>@this.GetActionCaption()</button>
+          <button type="button" class="btn-secondary" title="Remove" disabled>
+            <span class="oi oi-trash"></span>
+          </button>
         }
-        else
+      }
+      else if ((this.Server.ServerState == ServerState.Stopped))
+      {
+        <button type="button" class="btn-success" title="Start" @onclick="this.OnStartClickAsync">
+          <span class="oi oi-media-play"></span>
+        </button>
+        <button type="button" class="btn-secondary" title="Stop" disabled>
+          <span class="oi oi-media-pause"></span>
+        </button>
+        @if (this.Server.Type is ServerType.GameServer or ServerType.ConnectServer)
         {
-            <button type="button" class=@this.GetActionClass() disabled>@this.GetActionCaption()</button>
+          <button type="button" class="btn-danger" title="Remove" @onclick="this.OnDeleteServerClickAsync">
+            <span class="oi oi-trash"></span>
+          </button>
         }
-        
+      }
+      else
+      {
+        <button type="button" class="btn-secondary" title="Start" disabled>
+          <span class="oi oi-media-play"></span>
+        </button>
+        <button type="button" class="btn-secondary" title="Stop" disabled>
+          <span class="oi oi-media-pause"></span>
+        </button>
+        @if (this.Server.Type is ServerType.GameServer or ServerType.ConnectServer)
+        {
+                  <button type="button" class="btn-secondary" title="Remove" disabled>
+            <span class="oi oi-trash"></span>
+          </button>
+        }
+      }
+      </div>
+
     </td>
 </tr>
 
 @code {
 
-    private bool _isExpanded;
+    private bool _isDeleted;
 
     /// <summary>
     /// Gets or sets the server which is shown in this component.
     /// </summary>
     [Parameter]
     public IManageableServer Server { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the <see cref="IGameServerInstanceManager"/>.
+    /// </summary>
+    [Inject]
+    public IGameServerInstanceManager GameServerInstanceManager { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the <see cref="IConnectServerInstanceManager"/>.
+    /// </summary>
+    [Inject]
+    public IConnectServerInstanceManager ConnectServerInstanceManager { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the <see cref="IPersistenceContextProvider"/>.
+    /// </summary>
+    [Inject]
+    public IPersistenceContextProvider ContextProvider { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the data source for the game configuration.
+    /// </summary>
+    [Inject]
+    public IDataSource<GameConfiguration> DataSource { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the modal service.
+    /// </summary>
+    [Inject]
+    public IModalService ModalService { get; set; } = null!;
 
     /// <inheritdoc />
     public void Dispose()
@@ -68,6 +143,13 @@
     {
         base.OnInitialized();
         this.Server.PropertyChanged += this.OnServerPropertyChanged;
+    }
+
+    /// <inheritdoc />
+    protected override void OnParametersSet()
+    {
+      base.OnParametersSet();
+      this._isDeleted = false;
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
@@ -84,21 +166,6 @@
 
     }
 
-    private string GetExpandIconClass()
-    {
-        if (this._isExpanded)
-        {
-            return "oi oi-minus";
-        }
-
-        if (this.Server.Type == ServerType.GameServer)
-        {
-            return "oi oi-plus";
-        }
-
-        return "oi oi-cog";
-    }
-
     private string GetActionClass()
     {
         if (this.Server.ServerState == ServerState.Started)
@@ -107,35 +174,58 @@
             return "btn-warning";
     }
 
-    private async Task OnExpandClick(MouseEventArgs eventArgs)
+    private async Task OnPauseClickAsync()
     {
-        this._isExpanded = !this._isExpanded;
-        await this.InvokeAsync(this.StateHasChanged);
+        await this.Server.StopAsync(default);
     }
 
-    private Task OnActionClick(MouseEventArgs eventArgs)
+    private async Task OnStartClickAsync()
     {
-        if (this.Server.ServerState == ServerState.Started)
-        {
-            return this.Server.StopAsync(default);
-        }
-        else
-        {
-            return this.Server.StartAsync(default);
-        }
+      await this.Server.StartAsync(default);
     }
 
-    private bool IsActionAvailable()
+    private async Task OnDeleteServerClickAsync()
     {
-        return (this.Server.ServerState == ServerState.Started || this.Server.ServerState == ServerState.Stopped);
+      if (this.Server.Type is not (ServerType.GameServer or ServerType.ConnectServer))
+      {
+        return;
+      }
+
+      var dialogResult = await this.ModalService.ShowQuestionAsync(
+        "Remove Server",
+        "The server will be deleted from the database. Are you sure to proceed?");
+      if (!dialogResult)
+      {
+        return;
+      }
+
+      await this.Server.StopAsync(default);
+      if (this.Server.Type == ServerType.GameServer)
+      {
+        await this.GameServerInstanceManager.RemoveGameServerAsync((byte)this.Server.Id);
+        await this.DeleteAsync<GameServerDefinition>(s => s.ServerID == this.Server.Id);
+      }
+      else
+      {
+        await this.ConnectServerInstanceManager.RemoveConnectServerAsync(this.Server.ConfigurationId);
+        await this.DeleteAsync<ConnectServerDefinition>(s => s.ConfigurationId == this.Server.ConfigurationId);
+      }
     }
 
-    private string GetActionCaption()
+    private async ValueTask DeleteAsync<T>(Predicate<T> predicate)
+      where T : class
     {
-        if (this.Server.ServerState == ServerState.Started)
-            return "Shutdown";
-        else
-            return "Start";
+      var gameConfiguration = await this.DataSource.GetOwnerAsync().ConfigureAwait(false);
+      using var context = this.ContextProvider.CreateNewTypedContext(typeof(T), true, gameConfiguration);
+      var definitions = await context.GetAsync<T>().ConfigureAwait(false);
+      var definition = definitions.FirstOrDefault(def => predicate(def));
+
+      if (definition is not null)
+      {
+        await context.DeleteAsync(definition).ConfigureAwait(false);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+        this._isDeleted = true;
+      }
     }
 
     private string GetStateCaption()

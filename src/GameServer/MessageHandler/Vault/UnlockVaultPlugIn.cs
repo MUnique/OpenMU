@@ -18,7 +18,7 @@ using MUnique.OpenMU.PlugIns;
 [BelongsToGroup(VaultLockGroupPlugIn.GroupKey)]
 internal class UnlockVaultPlugIn : ISubPacketHandlerPlugIn
 {
-    private readonly UnlockVaultAction _unlockVaultAction = new ();
+    private readonly UnlockVaultAction _unlockVaultAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;

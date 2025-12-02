@@ -111,7 +111,7 @@ public abstract class ArmorInitializerBase : InitializerBase
 
     protected void CreateShield(byte number, byte slot, byte skill, byte width, byte height, string name, byte dropLevel, int defense, int defenseRate, byte durability, int levelRequirement, int strengthRequirement, int agilityRequirement, int energyRequirement, int vitalityRequirement, int leadershipRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel, int ragefighterClassLevel)
     {
-        var shield = this.CreateArmor(number, slot, width, height, name, dropLevel, 0, durability, levelRequirement, strengthRequirement, agilityRequirement, energyRequirement, vitalityRequirement, leadershipRequirement, darkWizardClassLevel, darkKnightClassLevel, elfClassLevel, magicGladiatorClassLevel, darkLordClassLevel, summonerClassLevel, ragefighterClassLevel);
+        var shield = this.CreateArmor(number, slot, width, height, name, dropLevel, 0, durability, levelRequirement, strengthRequirement, agilityRequirement, energyRequirement, vitalityRequirement, leadershipRequirement, darkWizardClassLevel, darkKnightClassLevel, elfClassLevel, magicGladiatorClassLevel, darkLordClassLevel, summonerClassLevel, ragefighterClassLevel, true);
         if (skill != 0)
         {
             shield.Skill = this.GameConfiguration.Skills.First(s => s.Number == skill);
@@ -119,7 +119,7 @@ public abstract class ArmorInitializerBase : InitializerBase
 
         if (defense > 0)
         {
-            var powerUp = this.CreateItemBasePowerUpDefinition(Stats.DefenseBase, defense, AggregateType.AddRaw);
+            var powerUp = this.CreateItemBasePowerUpDefinition(Stats.DefenseShield, defense, AggregateType.AddRaw);
             powerUp.BonusPerLevelTable = this._shieldDefenseIncreaseTable;
             shield.BasePowerUpAttributes.Add(powerUp);
         }
@@ -135,6 +135,52 @@ public abstract class ArmorInitializerBase : InitializerBase
         isShieldEquipped.TargetAttribute = Stats.IsShieldEquipped.GetPersistent(this.GameConfiguration);
         isShieldEquipped.BaseValue = 1;
         shield.BasePowerUpAttributes.Add(isShieldEquipped);
+
+        shield.PossibleItemOptions.Add(this.GameConfiguration.GetDefenseRateOption());
+    }
+
+    protected ItemDefinition CreateGloves(byte number, string name, byte dropLevel, int defense, int attackSpeed, byte durability, int strengthRequirement, int agilityRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel)
+    {
+        var gloves = this.CreateArmor(number, 5, 2, 2, name, dropLevel, defense, durability, strengthRequirement, agilityRequirement, darkWizardClassLevel, darkKnightClassLevel, elfClassLevel);
+        if (attackSpeed > 0)
+        {
+            gloves.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.AttackSpeedAny, attackSpeed, AggregateType.AddRaw));
+        }
+
+        return gloves;
+    }
+
+    protected ItemDefinition CreateGloves(byte number, string name, byte dropLevel, int defense, int attackSpeed, byte durability, int levelRequirement, int strengthRequirement, int agilityRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel)
+    {
+        var gloves = this.CreateArmor(number, 5, 2, 2, name, dropLevel, defense, durability, levelRequirement, strengthRequirement, agilityRequirement, 0, 0, 0, darkWizardClassLevel, darkKnightClassLevel, elfClassLevel, magicGladiatorClassLevel, darkLordClassLevel, summonerClassLevel, 0);
+        if (attackSpeed > 0)
+        {
+            gloves.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.AttackSpeedAny, attackSpeed, AggregateType.AddRaw));
+        }
+
+        return gloves;
+    }
+
+    protected ItemDefinition CreateBoots(byte number, byte slot, byte width, byte height, string name, byte dropLevel, int defense, int walkSpeed, byte durability, int strengthRequirement, int agilityRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel)
+    {
+        var boots = this.CreateArmor(number, 6, 2, 2, name, dropLevel, defense, durability, strengthRequirement, agilityRequirement, darkWizardClassLevel, darkKnightClassLevel, elfClassLevel);
+        if (walkSpeed > 0)
+        {
+            boots.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.WalkSpeed, walkSpeed, AggregateType.AddRaw));
+        }
+
+        return boots;
+    }
+
+    protected ItemDefinition CreateBoots(byte number, string name, byte dropLevel, int defense, int walkSpeed, byte durability, int levelRequirement, int strengthRequirement, int agilityRequirement, int energyRequirement, int vitalityRequirement, int leadershipRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel, int ragefighterClassLevel)
+    {
+        var boots = this.CreateArmor(number, 6, 2, 2, name, dropLevel, defense, durability, levelRequirement, strengthRequirement, agilityRequirement, energyRequirement, vitalityRequirement, leadershipRequirement, darkWizardClassLevel, darkKnightClassLevel, elfClassLevel, magicGladiatorClassLevel, darkLordClassLevel, summonerClassLevel, ragefighterClassLevel);
+        if (walkSpeed > 0)
+        {
+            boots.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.WalkSpeed, walkSpeed, AggregateType.AddRaw));
+        }
+
+        return boots;
     }
 
     protected ItemDefinition CreateArmor(byte number, byte slot, byte width, byte height, string name, byte dropLevel, int defense, byte durability, int strengthRequirement, int agilityRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel)
@@ -150,7 +196,7 @@ public abstract class ArmorInitializerBase : InitializerBase
         return this.CreateArmor(number, slot, width, height, name, dropLevel, defense, durability, 0, strengthRequirement, agilityRequirement, 0, 0, 0, darkWizardClassLevel, darkKnightClassLevel, elfClassLevel, magicGladiatorClassLevel, 0, 0, 0);
     }
 
-    protected ItemDefinition CreateArmor(byte number, byte slot, byte width, byte height, string name, byte dropLevel, int defense, byte durability, int levelRequirement, int strengthRequirement, int agilityRequirement, int energyRequirement, int vitalityRequirement, int leadershipRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel, int ragefighterClassLevel)
+    protected ItemDefinition CreateArmor(byte number, byte slot, byte width, byte height, string name, byte dropLevel, int defense, byte durability, int levelRequirement, int strengthRequirement, int agilityRequirement, int energyRequirement, int vitalityRequirement, int leadershipRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel, int ragefighterClassLevel, bool isShield = false)
     {
         var armor = this.Context.CreateNew<ItemDefinition>();
         this.GameConfiguration.Items.Add(armor);
@@ -185,7 +231,12 @@ public abstract class ArmorInitializerBase : InitializerBase
         }
 
         armor.PossibleItemOptions.Add(this.GameConfiguration.GetLuck());
-        armor.PossibleItemOptions.Add(this.GameConfiguration.GetDefenseOption());
+
+        if (!isShield)
+        {
+            armor.PossibleItemOptions.Add(this.GameConfiguration.GetDefenseOption());
+        }
+
         if (this.GameConfiguration.ItemOptions.FirstOrDefault(o => o.Name == ExcellentOptions.DefenseOptionsName) is { } excellentOption)
         {
             armor.PossibleItemOptions.Add(excellentOption);

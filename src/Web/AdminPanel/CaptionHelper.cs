@@ -23,7 +23,8 @@ public static class CaptionHelper
     public static string SeparateWords(string input)
     {
         return WordSeparatorRegex.Replace(input, "$1 $2")
-            .Replace(" Definition", "s");
+            .Replace(" Definitions", "s", StringComparison.InvariantCulture)
+            .Replace(" Definition", "s", StringComparison.InvariantCulture);
     }
 
     /// <summary>
@@ -50,7 +51,9 @@ public static class CaptionHelper
     public static string GetPluralizedTypeCaption(Type type)
     {
         var result = GetTypeCaption(type);
-        return result.Replace(" Definition", "s", StringComparison.InvariantCulture);
+        return result
+            .Replace(" Definitions", "s", StringComparison.InvariantCulture)
+            .Replace(" Definition", "s", StringComparison.InvariantCulture);
     }
 
     /// <summary>

@@ -69,51 +69,70 @@ internal partial class CharacterClassInitialization : InitializerBase
         return definition;
     }
 
-    private AttributeRelationship CreateAttributeRelationship(AttributeDefinition targetAttribute, float multiplier, AttributeDefinition sourceAttribute, InputOperator inputOperator = InputOperator.Multiply)
+    private AttributeRelationship CreateAttributeRelationship(AttributeDefinition targetAttribute, float multiplier, AttributeDefinition sourceAttribute, InputOperator inputOperator = InputOperator.Multiply, AggregateType aggregateType = AggregateType.AddRaw)
     {
-        return this.Context.CreateNew<AttributeRelationship>(targetAttribute.GetPersistent(this.GameConfiguration) ?? targetAttribute, multiplier, sourceAttribute.GetPersistent(this.GameConfiguration) ?? sourceAttribute, inputOperator, default(AttributeDefinition?));
+        return CharacterClassHelper.CreateAttributeRelationship(this.Context, this.GameConfiguration, targetAttribute, multiplier, sourceAttribute, inputOperator, aggregateType);
     }
 
-    private AttributeRelationship CreateAttributeRelationship(AttributeDefinition targetAttribute, AttributeDefinition multiplierAttribute, AttributeDefinition sourceAttribute, InputOperator inputOperator = InputOperator.Multiply)
+    private AttributeRelationship CreateAttributeRelationship(AttributeDefinition targetAttribute, AttributeDefinition multiplierAttribute, AttributeDefinition sourceAttribute, InputOperator inputOperator = InputOperator.Multiply, AggregateType aggregateType = AggregateType.AddRaw)
     {
-        return this.Context.CreateNew<AttributeRelationship>(
-            targetAttribute.GetPersistent(this.GameConfiguration) ?? targetAttribute,
-            0f,
-            sourceAttribute.GetPersistent(this.GameConfiguration) ?? sourceAttribute,
-            inputOperator,
-            multiplierAttribute.GetPersistent(this.GameConfiguration) ?? multiplierAttribute);
+        return CharacterClassHelper.CreateAttributeRelationship(this.Context, this.GameConfiguration, targetAttribute, multiplierAttribute, sourceAttribute, inputOperator, aggregateType);
     }
 
-    private AttributeRelationship CreateConditionalRelationship(AttributeDefinition targetAttribute, AttributeDefinition conditionalAttribute, AttributeDefinition sourceAttribute)
+    private AttributeRelationship CreateConditionalRelationship(AttributeDefinition targetAttribute, AttributeDefinition conditionalAttribute, AttributeDefinition sourceAttribute, AggregateType aggregateType = AggregateType.AddRaw)
     {
-        return this.Context.CreateNew<AttributeRelationship>(
-            targetAttribute.GetPersistent(this.GameConfiguration) ?? targetAttribute,
-            conditionalAttribute.GetPersistent(this.GameConfiguration) ?? conditionalAttribute,
-            sourceAttribute.GetPersistent(this.GameConfiguration) ?? sourceAttribute);
+        return CharacterClassHelper.CreateConditionalRelationship(this.Context, this.GameConfiguration, targetAttribute, conditionalAttribute, sourceAttribute, aggregateType);
     }
 
     private ConstValueAttribute CreateConstValueAttribute(float value, AttributeDefinition attribute)
     {
-        return this.Context.CreateNew<ConstValueAttribute>(value, attribute.GetPersistent(this.GameConfiguration));
+        return CharacterClassHelper.CreateConstValueAttribute(this.Context, this.GameConfiguration, value, attribute);
     }
 
     private void AddCommonAttributeRelationships(ICollection<AttributeRelationship> attributeRelationships)
     {
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.TotalLevel, 1, Stats.Level));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.TotalLevel, 1, Stats.MasterLevel));
+
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.TotalStrength, 1, Stats.BaseStrength));
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.TotalAgility, 1, Stats.BaseAgility));
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.TotalVitality, 1, Stats.BaseVitality));
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.TotalEnergy, 1, Stats.BaseEnergy));
 
-        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.DefensePvm, 1, Stats.DefenseBase));
-        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.DefensePvp, 1, Stats.DefenseBase));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.DefenseBase, 1, Stats.DefenseShield));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.DefenseFinal, 0.5f, Stats.DefenseBase));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.DefensePvm, 1, Stats.DefenseFinal));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.DefensePvp, 1, Stats.DefenseFinal));
 
-        attributeRelationships.Add(this.CreateConditionalRelationship(Stats.DefenseBase, Stats.IsShieldEquipped, Stats.BonusDefenseWithShield));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.AttackSpeedAny, 1, Stats.AttackSpeedByWeapon));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.AttackSpeed, 1, Stats.AttackSpeedAny));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.MagicSpeed, 1, Stats.AttackSpeedAny));
+
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.MinimumPhysBaseDmg, 1, Stats.MinimumPhysBaseDmgByWeapon));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.MaximumPhysBaseDmg, 1, Stats.MaximumPhysBaseDmgByWeapon));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.MinimumPhysBaseDmg, 1, Stats.BaseMinDamageBonus));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.MaximumPhysBaseDmg, 1, Stats.BaseMaxDamageBonus));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.PhysicalBaseDmg, 1, Stats.BaseDamageBonus));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.MinimumPhysBaseDmg, 1, Stats.PhysicalBaseDmg));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.MaximumPhysBaseDmg, 1, Stats.PhysicalBaseDmg));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.MinimumPhysBaseDmg, 1, Stats.PhysicalBaseDmgIncrease, aggregateType: AggregateType.Multiplicate));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.MaximumPhysBaseDmg, 1, Stats.PhysicalBaseDmgIncrease, aggregateType: AggregateType.Multiplicate));
+
+        // If two weapons are equipped (DK, MG, Sum, RF) we subtract the half of the sum of the speeds again from the attack speed
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.AreTwoWeaponsEquipped, 1, Stats.EquippedWeaponCount));
+        var tempSpeed = this.Context.CreateNew<AttributeDefinition>(Guid.NewGuid(), "Temp Half weapon attack speed", string.Empty);
+        this.GameConfiguration.Attributes.Add(tempSpeed);
+        attributeRelationships.Add(this.CreateAttributeRelationship(tempSpeed, -0.5f, Stats.AttackSpeedByWeapon));
+        attributeRelationships.Add(this.CreateConditionalRelationship(Stats.AttackSpeedAny, Stats.AreTwoWeaponsEquipped, tempSpeed));
 
         var tempDefense = this.Context.CreateNew<AttributeDefinition>(Guid.NewGuid(), "Temp Defense Bonus multiplier with Shield", string.Empty);
         this.GameConfiguration.Attributes.Add(tempDefense);
-        attributeRelationships.Add(this.CreateAttributeRelationship(tempDefense, Stats.IsShieldEquipped, Stats.DefenseIncreaseWithEquippedShield));
-        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.DefensePvm, tempDefense, Stats.DefenseBase));
-        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.DefensePvp, tempDefense, Stats.DefenseBase));
+        attributeRelationships.Add(this.CreateConditionalRelationship(tempDefense, Stats.IsShieldEquipped, Stats.DefenseIncreaseWithEquippedShield));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.DefenseFinal, 1, tempDefense, InputOperator.Add, AggregateType.Multiplicate));
+
+        attributeRelationships.Add(this.CreateConditionalRelationship(Stats.DefenseFinal, Stats.DefenseShield, Stats.ShieldItemDefenseIncrease));
+        attributeRelationships.Add(this.CreateConditionalRelationship(Stats.DefenseFinal, Stats.IsShieldEquipped, Stats.BonusDefenseWithShield, AggregateType.AddFinal));
+        attributeRelationships.Add(this.CreateConditionalRelationship(Stats.DefenseRatePvm, Stats.IsShieldEquipped, Stats.BonusDefenseRateWithShield, AggregateType.AddFinal));
 
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.HealthRecoveryMultiplier, 0.01f, Stats.IsInSafezone));
         if (this.UseClassicPvp)
@@ -127,6 +146,7 @@ internal partial class CharacterClassInitialization : InitializerBase
         }
 
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.MaximumGuildSize, 0.1f, Stats.Level));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.CanFly, 1, Stats.IsDinorantEquipped));
     }
 
     private void AddCommonBaseAttributeValues(ICollection<ConstValueAttribute> baseAttributeValues, bool isMaster)
@@ -134,12 +154,14 @@ internal partial class CharacterClassInitialization : InitializerBase
         baseAttributeValues.Add(this.CreateConstValueAttribute(1.0f / 27.5f, Stats.ManaRecoveryMultiplier));
         baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.DamageReceiveDecrement));
         baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.AttackDamageIncrease));
-        baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.TwoHandedWeaponDamageIncrease));
         baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.MoneyAmountRate));
         baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.ExperienceRate));
         baseAttributeValues.Add(this.CreateConstValueAttribute(0.03f, Stats.PoisonDamageMultiplier));
         baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.ItemDurationIncrease));
         baseAttributeValues.Add(this.CreateConstValueAttribute(2, Stats.AbilityRecoveryAbsolute));
+        baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.PhysicalBaseDmgIncrease));
+        baseAttributeValues.Add(this.CreateConstValueAttribute(-1, Stats.AreTwoWeaponsEquipped));
+        baseAttributeValues.Add(this.CreateConstValueAttribute(-1, Stats.HasDoubleWield));
 
         if (isMaster)
         {
@@ -151,5 +173,20 @@ internal partial class CharacterClassInitialization : InitializerBase
         {
             baseAttributeValues.Add(this.CreateConstValueAttribute(0.01f, Stats.ShieldRecoveryMultiplier));
         }
+    }
+
+    /// <summary>
+    /// Adds double wield attribute relationships applicable to characters that can double wield (DK, MG, and RF).
+    /// A double wield grants 110% physical attack damage (55% base damage, later doubled on damage calculations).
+    /// </summary>
+    private void AddDoubleWieldAttributeRelationships(ICollection<AttributeRelationship> attributeRelationships)
+    {
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.HasDoubleWield, 1, Stats.DoubleWieldWeaponCount, InputOperator.Maximum));
+        var tempDoubleWield = this.Context.CreateNew<AttributeDefinition>(Guid.NewGuid(), "Temp Double Wield multiplier", string.Empty);
+        this.GameConfiguration.Attributes.Add(tempDoubleWield);
+        attributeRelationships.Add(this.CreateAttributeRelationship(tempDoubleWield, -0.45f, Stats.HasDoubleWield));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.PhysicalBaseDmgIncrease, 1, tempDoubleWield, InputOperator.Add, AggregateType.Multiplicate));
+        attributeRelationships.Add(this.CreateConditionalRelationship(Stats.MinimumPhysBaseDmgByWeapon, Stats.HasDoubleWield, Stats.MinPhysBaseDmgByRightWeapon));
+        attributeRelationships.Add(this.CreateConditionalRelationship(Stats.MaximumPhysBaseDmgByWeapon, Stats.HasDoubleWield, Stats.MaxPhysBaseDmgByRightWeapon));
     }
 }

@@ -27,4 +27,10 @@ public partial class SkillComboDefinition
     /// </summary>
     [MemberOfAggregate]
     public virtual ICollection<SkillComboStep> Steps { get; protected set; } = null!;
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return this.Name;
+    }
 }

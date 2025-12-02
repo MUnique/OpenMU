@@ -25,13 +25,16 @@ using MUnique.OpenMU.PlugIns;
 [MinimumClient(5, 0, ClientLanguage.Invariant)]
 public class NewPlayersInScopePlugIn : INewPlayersInScopePlugIn
 {
-    private readonly RemotePlayer _player;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="NewPlayersInScopePlugIn"/> class.
     /// </summary>
     /// <param name="player">The player.</param>
-    public NewPlayersInScopePlugIn(RemotePlayer player) => this._player = player;
+    public NewPlayersInScopePlugIn(RemotePlayer player) => this.Player = player;
+
+    /// <summary>
+    /// Gets the player of this view.
+    /// </summary>
+    protected RemotePlayer Player { get; }
 
     /// <inheritdoc/>
     public async ValueTask NewPlayersInScopeAsync(IEnumerable<Player> newPlayers, bool isSpawned = true)
@@ -45,55 +48,24 @@ public class NewPlayersInScopePlugIn : INewPlayersInScopePlugIn
 
         if (shopPlayers != null)
         {
-            await this._player.InvokeViewPlugInAsync<IShowShopsOfPlayersPlugIn>(p => p.ShowShopsOfPlayersAsync(shopPlayers)).ConfigureAwait(false);
+            await this.Player.InvokeViewPlugInAsync<IShowShopsOfPlayersPlugIn>(p => p.ShowShopsOfPlayersAsync(shopPlayers)).ConfigureAwait(false);
         }
 
         if (guildPlayers != null)
         {
-            await this._player.InvokeViewPlugInAsync<IAssignPlayersToGuildPlugIn>(p => p.AssignPlayersToGuildAsync(guildPlayers, true)).ConfigureAwait(false);
+            await this.Player.InvokeViewPlugInAsync<IAssignPlayersToGuildPlugIn>(p => p.AssignPlayersToGuildAsync(guildPlayers, true)).ConfigureAwait(false);
         }
     }
 
-    private async ValueTask<(IList<Player>? ShopPlayers, IList<Player>? GuildPlayers)> SendCharactersAsync(IEnumerable<Player> newPlayers, bool isSpawned)
+    /// <summary>
+    /// Sends information about a new player which has come into view.
+    /// </summary>
+    /// <param name="newPlayer">The new player.</param>
+    /// <param name="isSpawned">If the player has spawned.</param>
+    /// <returns>A <see cref="ValueTask"/>.</returns>
+    protected virtual async ValueTask SendCharacterAsync(Player newPlayer, bool isSpawned)
     {
-        IList<Player>? shopPlayers = null;
-        IList<Player>? guildPlayers = null;
-
-        var connection = this._player.Connection;
-        if (connection is null)
-        {
-            return (shopPlayers, guildPlayers);
-        }
-
-        var newPlayerList = newPlayers.ToList();
-        foreach (var newPlayer in newPlayerList)
-        {
-            if (newPlayer.Attributes?[Stats.TransformationSkin] == 0)
-            {
-                await this.SendCharacterAsync(newPlayer, isSpawned).ConfigureAwait(false);
-            }
-            else
-            {
-                await this.SendTransformedCharacterAsync(newPlayer, isSpawned).ConfigureAwait(false);
-            }
-
-            if (newPlayer.ShopStorage?.StoreOpen ?? false)
-            {
-                (shopPlayers ??= new List<Player>()).Add(newPlayer);
-            }
-
-            if (newPlayer.GuildStatus != null)
-            {
-                (guildPlayers ??= new List<Player>()).Add(newPlayer);
-            }
-        }
-
-        return (shopPlayers, guildPlayers);
-    }
-
-    private async ValueTask SendCharacterAsync(Player newPlayer, bool isSpawned)
-    {
-        var connection = this._player.Connection;
+        var connection = this.Player.Connection;
         if (connection is null)
         {
             return;
@@ -107,7 +79,7 @@ public class NewPlayersInScopePlugIn : INewPlayersInScopePlugIn
 
         int Write()
         {
-            var appearanceSerializer = this._player.AppearanceSerializer;
+            var appearanceSerializer = this.Player.AppearanceSerializer;
             var activeEffects = newPlayer.MagicEffectList.VisibleEffects;
             const int estimatedEffectsPerPlayer = 5;
             var estimatedSizePerCharacter = AddCharactersToScope.CharacterData.GetRequiredSize(Math.Max(estimatedEffectsPerPlayer, activeEffects.Count));
@@ -120,7 +92,7 @@ public class NewPlayersInScopePlugIn : INewPlayersInScopePlugIn
             };
 
             var playerBlock = packet[0];
-            playerBlock.Id = newPlayer.GetId(this._player);
+            playerBlock.Id = newPlayer.GetId(this.Player);
             if (isSpawned)
             {
                 playerBlock.Id |= 0x8000;
@@ -162,9 +134,46 @@ public class NewPlayersInScopePlugIn : INewPlayersInScopePlugIn
         await connection.SendAsync(Write).ConfigureAwait(false);
     }
 
+    private async ValueTask<(IList<Player>? ShopPlayers, IList<Player>? GuildPlayers)> SendCharactersAsync(IEnumerable<Player> newPlayers, bool isSpawned)
+    {
+        IList<Player>? shopPlayers = null;
+        IList<Player>? guildPlayers = null;
+
+        var connection = this.Player.Connection;
+        if (connection is null)
+        {
+            return (shopPlayers, guildPlayers);
+        }
+
+        var newPlayerList = newPlayers.ToList();
+        foreach (var newPlayer in newPlayerList)
+        {
+            if (newPlayer.Attributes?[Stats.TransformationSkin] == 0)
+            {
+                await this.SendCharacterAsync(newPlayer, isSpawned).ConfigureAwait(false);
+            }
+            else
+            {
+                await this.SendTransformedCharacterAsync(newPlayer, isSpawned).ConfigureAwait(false);
+            }
+
+            if (newPlayer.ShopStorage?.StoreOpen ?? false)
+            {
+                (shopPlayers ??= new List<Player>()).Add(newPlayer);
+            }
+
+            if (newPlayer.GuildStatus != null)
+            {
+                (guildPlayers ??= new List<Player>()).Add(newPlayer);
+            }
+        }
+
+        return (shopPlayers, guildPlayers);
+    }
+
     private async ValueTask SendTransformedCharacterAsync(Player newPlayer, bool isSpawned)
     {
-        var connection = this._player.Connection;
+        var connection = this.Player.Connection;
         if (connection is null)
         {
             return;
@@ -178,7 +187,7 @@ public class NewPlayersInScopePlugIn : INewPlayersInScopePlugIn
 
         int Write()
         {
-            var appearanceSerializer = this._player.AppearanceSerializer;
+            var appearanceSerializer = this.Player.AppearanceSerializer;
             var activeEffects = newPlayer.MagicEffectList.VisibleEffects;
             const int estimatedEffectsPerPlayer = 5;
             var estimatedSizePerCharacter = AddTransformedCharactersToScopeRef.CharacterDataRef.GetRequiredSize(Math.Max(estimatedEffectsPerPlayer, activeEffects.Count));
@@ -190,7 +199,7 @@ public class NewPlayersInScopePlugIn : INewPlayersInScopePlugIn
             };
 
             var playerBlock = packet[0];
-            playerBlock.Id = newPlayer.GetId(this._player);
+            playerBlock.Id = newPlayer.GetId(this.Player);
             if (isSpawned)
             {
                 playerBlock.Id |= 0x8000;

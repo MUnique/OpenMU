@@ -8,7 +8,7 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 
 /// <summary>
-/// Initialization of character classes data for Version 0.75.
+/// Initialization of character classes data for Version 0.95d.
 /// </summary>
 internal class CharacterClassInitialization : Initialization.CharacterClasses.CharacterClassInitialization
 {

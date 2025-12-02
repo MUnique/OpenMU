@@ -18,13 +18,30 @@ public class ApplyMagicEffectConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn
     /// <inheritdoc />
     public override async ValueTask<bool> ConsumeItemAsync(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
     {
-        if (!await base.ConsumeItemAsync(player, item, targetItem, fruitUsage).ConfigureAwait(false))
+        if (item.Definition?.ConsumeEffect is not { } effectDefinition)
         {
             return false;
         }
 
-        if (item.Definition?.ConsumeEffect is not { } effectDefinition
-            || !effectDefinition.PowerUpDefinitions.Any()
+        return await this.ConsumeItemAsyncCore(player, item, targetItem, fruitUsage, effectDefinition).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Consumes the item at the specified slot with the specified effect and reduces its durability by one.
+    /// If the durability has reached 0, the item is getting destroyed.
+    /// If a target slot is specified, the consumption targets the item on this slot (e.g. upgrade of an item by a jewel).
+    /// </summary>
+    /// <param name="player">The player which is consuming.</param>
+    /// <param name="item">The item which gets consumed.</param>
+    /// <param name="targetItem">The item which is the target of the consumption (e.g. upgrade target of a jewel).</param>
+    /// <param name="fruitUsage">In case the item is a fruit, this parameter defines how the fruit should be used.</param>
+    /// <param name="effectDefinition">The effect definition.</param>
+    /// <returns>
+    /// The success of the consumption.
+    /// </returns>
+    protected async ValueTask<bool> ConsumeItemAsyncCore(Player player, Item item, Item? targetItem, FruitUsage fruitUsage, MagicEffectDefinition effectDefinition)
+    {
+        if (!effectDefinition.PowerUpDefinitions.Any()
             || effectDefinition.Duration?.ConstantValue.Value is not { } durationInSeconds)
         {
             return false;
@@ -40,6 +57,11 @@ public class ApplyMagicEffectConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn
             .Select(def => new MagicEffect.ElementWithTarget(player.Attributes!.CreateElement(def), def.TargetAttribute!))
             .ToArray();
         if (boosts.Length == 0)
+        {
+            return false;
+        }
+
+        if (!await base.ConsumeItemAsync(player, item, targetItem, fruitUsage).ConfigureAwait(false))
         {
             return false;
         }

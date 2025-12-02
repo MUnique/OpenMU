@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Pages;
 using System.Reflection;
 using System.Threading;
 using Blazored.Modal.Services;
+using Blazored.Toast.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.AspNetCore.Components.Routing;
@@ -45,6 +46,8 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
         NotFound,
 
         Error,
+
+        Cancelled,
     }
 
     /// <summary>
@@ -72,6 +75,12 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
     public IModalService ModalService { get; set; } = null!;
 
     /// <summary>
+    /// Gets or sets the toast service.
+    /// </summary>
+    [Inject]
+    public IToastService ToastService { get; set; } = null!;
+
+    /// <summary>
     /// Gets or sets the configuration data source.
     /// </summary>
     [Inject]
@@ -82,6 +91,12 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
     /// </summary>
     [Inject]
     public NavigationManager NavigationManager { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the navigation history.
+    /// </summary>
+    [Inject]
+    public NavigationHistory NavigationHistory { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the java script runtime.
@@ -163,13 +178,14 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
 
         var downloadMarkup = this.GetDownloadMarkup();
         var editorsMarkup = this.GetEditorsMarkup();
-        builder.AddMarkupContent(0, $"<h1>Edit {CaptionHelper.GetTypeCaption(this.Type!)}</h1>{downloadMarkup}{editorsMarkup}\r\n");
-        builder.OpenComponent<CascadingValue<IContext>>(1);
-        builder.AddAttribute(2, nameof(CascadingValue<IContext>.Value), this._persistenceContext);
-        builder.AddAttribute(3, nameof(CascadingValue<IContext>.IsFixed), this._isOwningContext);
-        builder.AddAttribute(4, nameof(CascadingValue<IContext>.ChildContent), (RenderFragment)(builder2 =>
+
+        builder.AddMarkupContent(10, $"<h1>Edit {CaptionHelper.GetTypeCaption(this.Type!)}</h1>{downloadMarkup}{editorsMarkup}\r\n");
+        builder.OpenComponent<CascadingValue<IContext>>(11);
+        builder.AddAttribute(12, nameof(CascadingValue<IContext>.Value), this._persistenceContext);
+        builder.AddAttribute(13, nameof(CascadingValue<IContext>.IsFixed), this._isOwningContext);
+        builder.AddAttribute(14, nameof(CascadingValue<IContext>.ChildContent), (RenderFragment)(builder2 =>
         {
-            var sequence = 4;
+            var sequence = 14;
             this.AddFormToRenderTree(builder2, ref sequence);
         }));
 
@@ -189,7 +205,7 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
     /// <param name="builder">The builder.</param>
     /// <param name="currentSequence">The current sequence.</param>
     protected abstract void AddFormToRenderTree(RenderTreeBuilder builder, ref int currentSequence);
-    
+
     /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -213,6 +229,11 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
             }).ConfigureAwait(false);
         }
 
+        if (this._loadingState == DataLoadingState.Loaded && this.Model is { } model)
+        {
+            this.NavigationHistory.AddCurrentPageToHistory(model.GetName());
+        }
+
         await base.OnAfterRenderAsync(firstRender).ConfigureAwait(true);
     }
 
@@ -221,26 +242,25 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
     /// </summary>
     protected async Task SaveChangesAsync()
     {
-        string text;
         try
         {
             if (this._persistenceContext is { } context)
             {
                 var success = await context.SaveChangesAsync().ConfigureAwait(true);
-                text = success ? "The changes have been saved." : "There were no changes to save.";
+                var text = success ? "The changes have been saved." : "There were no changes to save.";
+                this.ToastService.ShowSuccess(text);
             }
             else
             {
-                text = "Failed, context not initialized";
+                this.ToastService.ShowError("Failed, context not initialized");
             }
         }
         catch (Exception ex)
         {
             this.Logger?.LogError(ex, $"Error during saving {this.Id}");
-            text = $"An unexpected error occured: {ex.Message}.";
+            var text = $"An unexpected error occured: {ex.Message}.";
+            this.ToastService.ShowError(text);
         }
-
-        await this.ModalService.ShowMessageAsync("Save", text).ConfigureAwait(true);
     }
 
     /// <summary>
@@ -323,8 +343,7 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
             {
                 this._isOwningContext = true;
                 var gameConfiguration = await this.ConfigDataSource.GetOwnerAsync(Guid.Empty, cancellationToken).ConfigureAwait(true);
-                var createContextMethod = typeof(IPersistenceContextProvider).GetMethod(nameof(IPersistenceContextProvider.CreateNewTypedContext))!.MakeGenericMethod(this.Type);
-                this._persistenceContext = (IContext)createContextMethod.Invoke(this.PersistenceContextProvider, new object[] { true, gameConfiguration})!;
+                this._persistenceContext = this.PersistenceContextProvider.CreateNewTypedContext(this.Type, true, gameConfiguration);
             }
 
             cancellationToken.ThrowIfCancellationRequested();
@@ -347,6 +366,11 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
                 this._loadingState = this.Model is not null
                     ? DataLoadingState.Loaded
                     : DataLoadingState.NotFound;
+            }
+            catch (OperationCanceledException)
+            {
+                this._loadingState = DataLoadingState.Cancelled;
+                throw;
             }
             catch (Exception ex)
             {

@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.Persistence.Initialization.Version075.Items;
 
 using MUnique.OpenMU.AttributeSystem;
-using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
@@ -15,7 +14,7 @@ using MUnique.OpenMU.GameLogic.Attributes;
 /// </summary>
 internal class Jewelery : InitializerBase
 {
-    private static readonly float[] ResistanceIncreaseByLevel = { 0, 0.1f, 0.2f, 0.3f, 0.4f };
+    private static readonly float[] ResistanceIncreaseByLevel = { 0, 1, 2, 3, 4 };
     private ItemOptionDefinition? _healthRecoverOptionDefinition;
     private ItemLevelBonusTable? _resistancesBonusTable;
 
@@ -30,10 +29,13 @@ internal class Jewelery : InitializerBase
     }
 
     /// <inheritdoc/>
+    protected override int MaximumOptionLevel => 3;
+
+    /// <inheritdoc/>
     public sealed override void Initialize()
     {
         this._healthRecoverOptionDefinition = this.CreateOption("Health recover for jewelery", Stats.HealthRecoveryMultiplier, 0.01f, ItemOptionDefinitionNumbers.JeweleryHealth);
-        this._resistancesBonusTable = this.CreateItemBonusTable(ResistanceIncreaseByLevel, "Elemental resistances (Jewelery)", "Defines the elemental resistances for jewelery. It's 10 % per item level.");
+        this._resistancesBonusTable = this.CreateItemBonusTable(ResistanceIncreaseByLevel, "Elemental resistances (Jewelery)", "Defines the elemental resistances for jewelery. It's 1 per item level.");
         this.CreateItems();
     }
 
@@ -53,6 +55,7 @@ internal class Jewelery : InitializerBase
             "Transformation Ring",
             0,
             200,
+            20, // It's actually lvl 50 for the last 3
             CharacterTransformationSkin.BudgeDragon,
             CharacterTransformationSkin.Giant,
             CharacterTransformationSkin.SkeletonWarrior,
@@ -68,9 +71,10 @@ internal class Jewelery : InitializerBase
     /// <param name="name">The name.</param>
     /// <param name="dropLevel">The level.</param>
     /// <param name="durability">The durability.</param>
+    /// <param name="requiredlevel">The required level to wear.</param>
     /// <param name="transformationSkins">The transformation skins, per item level.</param>
     /// <returns>The definition of the created ring.</returns>
-    protected ItemDefinition CreateTransformationRing(byte number, string name, byte dropLevel, byte durability, params CharacterTransformationSkin[] transformationSkins)
+    protected ItemDefinition CreateTransformationRing(byte number, string name, byte dropLevel, byte durability, byte requiredlevel, params CharacterTransformationSkin[] transformationSkins)
     {
         var ring = this.Context.CreateNew<ItemDefinition>();
         this.GameConfiguration.Items.Add(ring);
@@ -83,6 +87,8 @@ internal class Jewelery : InitializerBase
         ring.MaximumItemLevel = (byte)(transformationSkins.Length - 1);
         ring.Width = 1;
         ring.Height = 1;
+
+        this.CreateItemRequirementIfNeeded(ring, Stats.Level, requiredlevel);
 
         var powerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
         ring.BasePowerUpAttributes.Add(powerUp);
@@ -162,8 +168,9 @@ internal class Jewelery : InitializerBase
 
         if (resistanceAttribute != null)
         {
-            var powerUp = this.CreateItemBasePowerUpDefinition(resistanceAttribute, 0.1f, AggregateType.AddRaw);
+            var powerUp = this.CreateItemBasePowerUpDefinition(resistanceAttribute, 1f, AggregateType.Maximum);
             powerUp.BonusPerLevelTable = this._resistancesBonusTable;
+            item.BasePowerUpAttributes.Add(powerUp);
         }
 
         foreach (var characterClass in this.GameConfiguration.CharacterClasses)

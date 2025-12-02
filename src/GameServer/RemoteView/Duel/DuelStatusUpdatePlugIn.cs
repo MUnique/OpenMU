@@ -1,4 +1,8 @@
-﻿namespace MUnique.OpenMU.GameServer.RemoteView.Duel;
+﻿// <copyright file="DuelStatusUpdatePlugIn.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.GameServer.RemoteView.Duel;
 
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic;

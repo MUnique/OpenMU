@@ -61,6 +61,8 @@ public class ComposableAttribute : BaseAttribute, IComposableAttribute
         var rawValues = this.Elements.Where(e => e.AggregateType == AggregateType.AddRaw).Sum(e => e.Value);
         var multiValues = this.Elements.Where(e => e.AggregateType == AggregateType.Multiplicate).Select(e => e.Value).Concat(Enumerable.Repeat(1.0F, 1)).Aggregate((a, b) => a * b);
         var finalValues = this.Elements.Where(e => e.AggregateType == AggregateType.AddFinal).Sum(e => e.Value);
+        var maxValues = this.Elements.Where(e => e.AggregateType == AggregateType.Maximum).MaxBy(e => e.Value)?.Value ?? 0;
+        rawValues += maxValues;
 
         if (multiValues == 0 && this.Elements.All(e => e.AggregateType != AggregateType.Multiplicate))
         {
@@ -75,7 +77,13 @@ public class ComposableAttribute : BaseAttribute, IComposableAttribute
             // nothing to do
         }
 
-        this._cachedValue = (rawValues * multiValues + finalValues);
+        var newValue = (rawValues * multiValues) + finalValues;
+        if (this.Definition.MaximumValue.HasValue)
+        {
+            newValue = Math.Min(this.Definition.MaximumValue.Value, newValue);
+        }
+
+        this._cachedValue = newValue;
 
         return this._cachedValue.Value;
     }

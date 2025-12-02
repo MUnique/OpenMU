@@ -56,7 +56,6 @@ internal class CreateMonsterChatCommand : ChatCommandPlugInBase<CreateMonsterCha
         await gameMap.AddAsync(monster).ConfigureAwait(false);
         monster.OnSpawn();
 
-
         await this.ShowMessageToAsync(gameMaster, $"Monster with number {arguments.MonsterNumber} created, id: {monster.Id}.").ConfigureAwait(false);
     }
 }

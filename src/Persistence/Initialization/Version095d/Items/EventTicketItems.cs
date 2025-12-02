@@ -26,8 +26,8 @@ internal class EventTicketItems : InitializerBase
     public override void Initialize()
     {
         // Devil Square:
-        this.CreateEventItem(17, 14, 1, 1, "Devil's Eye", 4, true,  2, 36, 47, 60);
-        this.CreateEventItem(18, 14, 1, 1, "Devil's Key", 4, true, 2, 36, 47, 60);
+        this.CreateEventItem(17, 14, 1, 1, "Devil's Eye", 4, false,  2, 36, 47, 60);
+        this.CreateEventItem(18, 14, 1, 1, "Devil's Key", 4, false, 2, 36, 47, 60);
         this.CreateEventItem(19, 14, 1, 1, "Devil's Invitation", 4, false);
     }
 

@@ -133,7 +133,7 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
             var plugInConfiguration = this.Context.CreateNew<PlugInConfiguration>();
             plugInConfiguration.SetGuid(plugInType.GUID);
             plugInConfiguration.TypeId = plugInType.GUID;
-            plugInConfiguration.IsActive = true;
+            plugInConfiguration.IsActive = !plugInType.IsAssignableTo(typeof(IDisabledByDefault));
             this.GameConfiguration.PlugInConfigurations.Add(plugInConfiguration);
 
             if (plugInType.GetInterfaces().Contains(typeof(ISupportDefaultCustomConfiguration)))
@@ -168,8 +168,8 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
                 plugInConfiguration.IsActive = false;
             }
 
-            // Resets are disabled by default.
-            if (plugInType == typeof(ResetFeaturePlugIn))
+            // Disable plugins marked as disabled by default.
+            if (plugInType.IsAssignableTo(typeof(IDisabledByDefault)))
             {
                 plugInConfiguration.IsActive = false;
             }
@@ -227,28 +227,23 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
 
     private async ValueTask CreateConnectServerDefinitionAsync()
     {
-        var client = (await this.Context.GetAsync<GameClientDefinition>().ConfigureAwait(false)).First();
-        var connectServer = this.Context.CreateNew<ConnectServerDefinition>();
-        connectServer.SetGuid(1);
-        connectServer.Client = client;
-        connectServer.ClientListenerPort = 44405;
-        connectServer.Description = $"Connect Server ({new ClientVersion(client.Season, client.Episode, client.Language)})";
-        connectServer.DisconnectOnUnknownPacket = true;
-        connectServer.MaximumReceiveSize = 6;
-        connectServer.Timeout = new TimeSpan(0, 1, 0);
-        connectServer.CurrentPatchVersion = new byte[] { 1, 3, 0x2B };
-        connectServer.PatchAddress = "patch.muonline.webzen.com";
-        connectServer.MaxConnectionsPerAddress = 30;
-        connectServer.CheckMaxConnectionsPerAddress = true;
-        connectServer.MaxConnections = 10000;
-        connectServer.ListenerBacklog = 100;
-        connectServer.MaxFtpRequests = 1;
-        connectServer.MaxIpRequests = 5;
-        connectServer.MaxServerListRequests = 20;
+        var port = 44405;
+        var clients = await this.Context.GetAsync<GameClientDefinition>().ConfigureAwait(false);
+        foreach (var client in clients.OrderBy(c => c.Season))
+        {
+            var connectServer = this.Context.CreateNew<ConnectServerDefinition>();
+            connectServer.InitializeDefaults();
+            connectServer.SetGuid(client.Season, client.Episode);
+            connectServer.Client = client;
+            connectServer.ClientListenerPort = port;
+            connectServer.Description = $"Connect Server ({client.Description})";
+            port++;
+        }
     }
 
     private async ValueTask CreateGameServerDefinitionsAsync(GameServerConfiguration gameServerConfiguration, int numberOfServers)
     {
+        var port = 55901;
         for (int i = 0; i < numberOfServers; i++)
         {
             var server = this.Context!.CreateNew<GameServerDefinition>();
@@ -264,8 +259,9 @@ public abstract class DataInitializationBase : IDataInitializationPlugIn
                 var endPoint = this.Context.CreateNew<GameServerEndpoint>();
                 endPoint.SetGuid((short)i, (short)server.Endpoints.Count);
                 endPoint.Client = client;
-                endPoint.NetworkPort = 55901 + i;
+                endPoint.NetworkPort = port;
                 server.Endpoints.Add(endPoint);
+                port++;
             }
         }
     }

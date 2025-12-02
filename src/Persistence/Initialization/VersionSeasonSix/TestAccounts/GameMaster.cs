@@ -53,7 +53,7 @@ internal class GameMaster : Level400
         character.LevelUpPoints = 2000;
         character.MasterLevelUpPoints = 100; // To test master skill tree
 
-        character.Inventory!.Items.Add(this.CreateWeapon(InventoryConstants.LeftHandSlot, 2, 13, 15, 4, true, true, Stats.ExcellentDamageChance)); // Exc AA Scepter+15+16+L+ExcDmg
+        character.Inventory!.Items.Add(this.CreateWeapon(InventoryConstants.LeftHandSlot, 2, 13, 15, 4, true, true)); // AA Scepter+15+16+L
         character.Inventory.Items.Add(this.CreateFullAncient(InventoryConstants.ArmorSlot, ItemGroups.Armor, 26, 15, "Agnis")); // Agnis Armor+13+16+L
         character.Inventory.Items.Add(this.CreateFullAncient(InventoryConstants.HelmSlot, ItemGroups.Helm, 26, 15, "Agnis")); // Agnis Helm+13+16+L
         character.Inventory.Items.Add(this.CreateFullAncient(InventoryConstants.PantsSlot, ItemGroups.Pants, 26, 15, "Broy")); // Broy Pants+13+16+L
@@ -61,10 +61,10 @@ internal class GameMaster : Level400
         character.Inventory.Items.Add(this.CreateFullAncient(InventoryConstants.BootsSlot, ItemGroups.Boots, 26, 15, "Broy")); // Broy Boots+13+16+L
         character.Inventory.Items.Add(this.CreateFullAncient(InventoryConstants.PendantSlot, ItemGroups.Misc1, 25, 0, "Broy")); // Broy Pendant of Ice
         character.Inventory.Items.Add(this.CreateFullAncient(InventoryConstants.Ring1Slot, ItemGroups.Misc1, 9, 0, "Agnis")); // Agnis Ring of Poison
-        character.Inventory.Items.Add(this.CreateFullOptionJewellery(InventoryConstants.Ring2Slot, 9)); // Ring of Poison
+        character.Inventory.Items.Add(this.CreateFullOptionJewellery(InventoryConstants.PendantSlot, 13)); // Exc Pendant of Fire
+        character.Inventory.Items.Add(this.CreateFullOptionJewellery(InventoryConstants.Ring2Slot, 9)); // Exc Ring of Poison
         character.Inventory.Items.Add(this.CreateWings(InventoryConstants.WingsSlot, 40, 15)); // Cape of Emperor +15
-
-        character.Inventory.Items.Add(this.CreatePet(InventoryConstants.PetSlot, 4)); // Horse
+        character.Inventory.Items.Add(this.CreateHorse(InventoryConstants.PetSlot));
 
         this.AddDarkLordItems(character.Inventory);
 

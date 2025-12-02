@@ -161,7 +161,176 @@ public enum UpdateVersion
     AddItemDropGroupForJewelsSeason6 = 30,
 
     /// <summary>
+    /// The version of the <see cref="FixMaxManaAndAbilityJewelryOptionsUpdateSeason6"/>.
+    /// </summary>
+    FixMaxManaAndAbilityJewelryOptionsSeason6 = 31,
+
+    /// <summary>
+    /// The version of the <see cref="FixWingsDmgRatesUpdatePlugIn075"/>.
+    /// </summary>
+    FixWingsDmgRatesPlugIn075 = 32,
+
+    /// <summary>
+    /// The version of the <see cref="FixWingsDmgRatesUpdatePlugIn095D"/>.
+    /// </summary>
+    FixWingsDmgRatesPlugIn095d = 33,
+
+    /// <summary>
+    /// The version of the <see cref="FixWingsDmgRatesUpdatePlugInSeason6"/>.
+    /// </summary>
+    FixWingsDmgRatesPlugInSeason6 = 34,
+
+    /// <summary>
+    /// The version of the <see cref="AddHarmonyOptionWeightsUpdateSeason6"/>.
+    /// </summary>
+    AddHarmonyOptionWeightsSeason6 = 35,
+
+    /// <summary>
+    /// The version of the <see cref="FixDuelArenaSafezoneMapUpdate"/>.
+    /// </summary>
+    FixDuelArenaSafezoneMap = 36,
+
+    /// <summary>
+    /// The version of the <see cref="FixAttackSpeedCalculationUpdate"/>.
+    /// </summary>
+    FixAttackSpeedCalculation = 37,
+
+    /// <summary>
+    /// The version of the <see cref="AddAreaSkillSettingsUpdatePlugIn"/>.
+    /// </summary>
+    AddAreaSkillSettings = 38,
+
+    /// <summary>
+    /// The version of the <see cref="FixItemRequirementsPlugIn"/>.
+    /// </summary>
+    FixItemRequirements = 39,
+
+    /// <summary>
+    /// The version of the <see cref="FixWingsDmgRatesUpdatePlugIn075"/>.
+    /// </summary>
+    FixWeaponRisePercentage075 = 40,
+
+    /// <summary>
+    /// The version of the <see cref="FixWingsDmgRatesUpdatePlugIn095D"/>.
+    /// </summary>
+    FixWeaponRisePercentage095d = 41,
+
+    /// <summary>
+    /// The version of the <see cref="FixWingsDmgRatesUpdatePlugInSeason6"/>.
+    /// </summary>
+    FixWeaponRisePercentageSeason6 = 42,
+
+    /// <summary>
+    /// The version of the <see cref="FixChaosMixesUpdatePlugIn075"/>.
+    /// </summary>
+    FixChaosMixes075 = 43,
+
+    /// <summary>
+    /// The version of the <see cref="FixChaosMixesPlugIn095D"/>.
+    /// </summary>
+    FixChaosMixes095d = 44,
+
+    /// <summary>
+    /// The version of the <see cref="FixChaosMixesPlugInSeason6"/>.
+    /// </summary>
+    FixChaosMixesSeason6 = 45,
+
+    /// <summary>
+    /// The version of the <see cref="FixItemOptionsAndAttackSpeedPlugIn075"/>.
+    /// </summary>
+    FixItemOptionsAndAttackSpeed075 = 46,
+
+    /// <summary>
+    /// The version of the <see cref="FixItemOptionsAndAttackSpeedPlugIn095D"/>.
+    /// </summary>
+    FixItemOptionsAndAttackSpeed095d = 47,
+
+    /// <summary>
+    /// The version of the <see cref="FixItemOptionsAndAttackSpeedPlugInSeason6"/>.
+    /// </summary>
+    FixItemOptionsAndAttackSpeedSeason6 = 48,
+
+    /// <summary>
+    /// The version of the <see cref="Updates.FixHorseFenrirOptionsSoulBarrierPlugIn"/>.
+    /// </summary>
+    FixHorseFenrirOptionsSoulBarrierPlugIn = 49,
+
+    /// <summary>
+    /// The version of the <see cref="FixCharStatsForceWavePlugIn075"/>.
+    /// </summary>
+    FixCharStatsForceWave075 = 50,
+
+    /// <summary>
+    /// The version of the <see cref="FixCharStatsForceWavePlugIn095D"/>.
+    /// </summary>
+    FixCharStatsForceWave095d = 51,
+
+    /// <summary>
+    /// The version of the <see cref="FixCharStatsForceWavePlugInSeason6"/>.
+    /// </summary>
+    FixCharStatsForceWaveSeason6 = 52,
+
+    /// <summary>
+    /// The version of the <see cref="FixDefenseCalcsPlugIn075"/>.
+    /// </summary>
+    FixDefenseCalcs075 = 53,
+
+    /// <summary>
+    /// The version of the <see cref="FixDefenseCalcsPlugIn095D"/>.
+    /// </summary>
+    FixDefenseCalcs095d = 54,
+
+    /// <summary>
+    /// The version of the <see cref="FixDefenseCalcsPlugInSeason6"/>.
+    /// </summary>
+    FixDefenseCalcsSeason6 = 55,
+
+    /// <summary>
+    /// The version of the <see cref="FixDamageCalcsPlugIn075"/>.
+    /// </summary>
+    FixDamageCalcs075 = 56,
+
+    /// <summary>
+    /// The version of the <see cref="FixDamageCalcsPlugIn095D"/>.
+    /// </summary>
+    FixDamageCalcs095d = 57,
+
+    /// <summary>
+    /// The version of the <see cref="FixDamageCalcsPlugInSeason6"/>.
+    /// </summary>
+    FixDamageCalcsSeason6 = 58,
+
+    /// <summary>
+    /// The version of the <see cref="FixEventItemsDropFromMonstersUpdatePlugInSeason6"/>.
+    /// </summary>
+    FixEventItemsDropFromMonstersSeason6 = 59,
+
+    /// <summary>
+    /// The version of the <see cref="FixEventItemsDropFromMonstersUpdatePlugIn095d"/>.
+    /// </summary>
+    FixEventItemsDropFromMonsters095d = 60,
+
+    /// The version of the <see cref="FixItemRequirementsPlugIn2"/>.
+    /// </summary>
+    FixItemRequirements2 = 61,
+
+    /// <summary>
+    /// The version of the <see cref="FixJeweleryPetsDamageCalcsPlugIn075"/>.
+    /// </summary>
+    FixJeweleryPetsDamageCalcs075 = 62,
+
+    /// <summary>
+    /// The version of the <see cref="FixJeweleryPetsDamageCalcsPlugIn095D"/>.
+    /// </summary>
+    FixJeweleryPetsDamageCalcs095d = 63,
+
+    /// <summary>
+    /// The version of the <see cref="FixJeweleryPetsDamageCalcsPlugInSeason6"/>.
+    /// </summary>
+    FixJeweleryPetsDamageCalcsSeason6 = 64,
+
+    /// <summary>
     /// The version of the <see cref="FixSleepSkillUpdate"/>.
     /// </summary>
-    FixSleepSkillSeason6 = 31,
+    FixSleepSkillSeason6 = 65,
 }

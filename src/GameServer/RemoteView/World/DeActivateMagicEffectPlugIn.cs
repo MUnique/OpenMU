@@ -23,10 +23,10 @@ using MUnique.OpenMU.PlugIns;
 [MinimumClient(0, 90, ClientLanguage.Invariant)]
 public class DeActivateMagicEffectPlugIn : IActivateMagicEffectPlugIn, IDeactivateMagicEffectPlugIn
 {
-    private static readonly ReadOnlyDictionary<AttributeDefinition, EffectItemConsumption.EffectType> EffectTypeMapping = new (
+    private static readonly ReadOnlyDictionary<AttributeDefinition, EffectItemConsumption.EffectType> EffectTypeMapping = new(
         new Dictionary<AttributeDefinition, EffectItemConsumption.EffectType>
         {
-            { Stats.AttackSpeed, EffectItemConsumption.EffectType.AttackSpeed },
+            { Stats.AttackSpeedAny, EffectItemConsumption.EffectType.AttackSpeed },
             { Stats.BaseDamageBonus, EffectItemConsumption.EffectType.Damage },
             { Stats.DefenseBase, EffectItemConsumption.EffectType.Defense },
             { Stats.MaximumHealth, EffectItemConsumption.EffectType.MaximumHealth },

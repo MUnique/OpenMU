@@ -18,7 +18,7 @@ using MUnique.OpenMU.PlugIns;
 [BelongsToGroup(QuestGroupHandlerPlugIn.GroupKey)]
 public class BuffRequestHandlerPlugIn : ISubPacketHandlerPlugIn
 {
-    private readonly ElfSoldierBuffRequestAction _buffRequestAction = new ();
+    private readonly ElfSoldierBuffRequestAction _buffRequestAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;

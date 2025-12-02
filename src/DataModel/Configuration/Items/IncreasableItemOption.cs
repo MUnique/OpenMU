@@ -23,7 +23,7 @@ public enum LevelType
     /// It's increased by the level of the item which has the option.
     /// </summary>
     /// <remarks>
-    /// As far as I know, this is only required for wing options, e.g. 'Increase max HP +50~115'. That's why <see cref="OptionLevel"/> is the default, too.
+    /// As far as I know, this is only required for wing options, e.g. 'Increase max HP +50~125'. That's why <see cref="OptionLevel"/> is the default, too.
     /// </remarks>
     ItemLevel,
 }
@@ -41,6 +41,13 @@ public partial class IncreasableItemOption : ItemOption
     /// The type of the level.
     /// </value>
     public LevelType LevelType { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value which is considered when randomizing the option to an item.
+    /// </summary>
+    /// <remarks>This is used for Jewel of Harmony options rollout.</remarks>
+    /// <value>The statistical weight.</value>
+    public byte Weight { get; set; }
 
     /// <summary>
     /// Gets or sets the level dependent options for option levels over 1.

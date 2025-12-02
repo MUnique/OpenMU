@@ -1,4 +1,4 @@
-﻿// <copyright file="SkillList.cs" company="MUnique">
+// <copyright file="SkillList.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -64,7 +64,7 @@ public sealed class SkillList : ISkillList, IDisposable
     /// <inheritdoc/>
     public byte SkillCount => (byte)this._availableSkills.Count;
 
-    private List<IDisposable> PassivePowerUps => this._passivePowerUps ??= new ();
+    private List<IDisposable> PassivePowerUps => this._passivePowerUps ??= new();
 
     /// <inheritdoc />
     public void Dispose()
@@ -122,6 +122,11 @@ public sealed class SkillList : ISkillList, IDisposable
 
     private async ValueTask AddItemSkillAsync(Skill skill)
     {
+        if (!skill.QualifiedCharacters.Contains(this._player.SelectedCharacter!.CharacterClass!))
+        {
+            return;
+        }
+
         var skillEntry = new SkillEntry
         {
             Skill = skill,

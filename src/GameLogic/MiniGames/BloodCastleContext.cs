@@ -26,7 +26,7 @@ using Nito.Disposables.Internals;
 ///   * The statue drops an archangel weapon as quest item. This item has to be brought back to the archangel NPC.
 /// The game has a time limit of usually 15 or 20 minutes.
 /// After the time is up, or the quest item has been brought back, the players get some rewards:
-/// 
+///
 /// Experience:
 ///   1. For each remaining second, a bonus experience is given as experience.
 ///   2. The player or party which destroyed the gate, gets extra experience. Dead party members get the half of the exp as bonus.
@@ -51,7 +51,12 @@ public sealed class BloodCastleContext : MiniGameContext
     private const short CastleGateNumber = 131;
     private const short StatueOfSaintNumber = 132;
 
-    private readonly ConcurrentDictionary<string, PlayerGameState> _gameStates = new ();
+    /// <summary>
+    /// Dialog category for the NPC interactions.
+    /// </summary>
+    private const byte DialogCategoryMain = 1;
+
+    private readonly ConcurrentDictionary<string, PlayerGameState> _gameStates = new();
 
     private IReadOnlyCollection<(string Name, int Score, int BonusExp, int BonusMoney)>? _highScoreTable;
     private TimeSpan _remainingTime;
@@ -63,22 +68,6 @@ public sealed class BloodCastleContext : MiniGameContext
     private Item? _questItem;
 
     /// <summary>
-    /// Dialog category for the NPC interactions.
-    /// </summary>
-    private const byte DialogCategoryMain = 1;
-
-    /// <summary>
-    /// Dialog numbers for different interactions with the NPC.
-    /// </summary>
-    private enum DialogNumber : byte
-    {
-        EventWinner = 0x17,
-        EventNotRunning = 0x18,
-        EventQuestItemMissing = 0x18,
-        EventFinished = 0x2E
-    }
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="BloodCastleContext"/> class.
     /// </summary>
     /// <param name="key">The key of this context.</param>
@@ -88,6 +77,17 @@ public sealed class BloodCastleContext : MiniGameContext
     public BloodCastleContext(MiniGameMapKey key, MiniGameDefinition definition, IGameContext gameContext, IMapInitializer mapInitializer)
         : base(key, definition, gameContext, mapInitializer)
     {
+    }
+
+    /// <summary>
+    /// Dialog numbers for different interactions with the NPC.
+    /// </summary>
+    private enum DialogNumber : byte
+    {
+        EventWinner = 0x17,
+        EventNotRunning = 0x18,
+        EventQuestItemMissing = 0x18,
+        EventFinished = 0x2E,
     }
 
     /// <inheritdoc />

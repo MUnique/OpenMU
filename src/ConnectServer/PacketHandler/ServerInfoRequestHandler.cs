@@ -46,8 +46,9 @@ internal class ServerInfoRequestHandler : IPacketHandler<Client>
         var serverItem = this._connectServer.ServerList.GetItem(serverId);
         var isGameServerOnSameMachineAsConnectServer = (serverItem?.EndPoint.Address).IsOnSameHost();
         var isClientConnectedOnNonRegisteredAddress = !object.Equals(serverItem?.EndPoint.Address, localIpEndPoint?.Address);
-
+        bool.TryParse(Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER"), out var isRunningOnDocker);
         if (isGameServerOnSameMachineAsConnectServer
+            && !isRunningOnDocker
             && isClientConnectedOnNonRegisteredAddress) // only if we can't use the cached data
         {
             int WritePacket()
@@ -56,7 +57,7 @@ internal class ServerInfoRequestHandler : IPacketHandler<Client>
                 _ = new ConnectionInfoRef(data)
                 {
                     IpAddress = localIpEndPoint!.Address.ToString(),
-                    Port = (ushort)serverItem!.EndPoint.Port
+                    Port = (ushort)serverItem!.EndPoint.Port,
                 };
                 return data.Length;
             }

@@ -6,10 +6,11 @@ namespace MUnique.OpenMU.Web.AdminPanel.Pages;
 
 using System.ComponentModel;
 using System.Threading;
-using Blazored.Modal.Services;
+using Blazored.Toast.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.QuickGrid;
 using Microsoft.AspNetCore.Components.Routing;
+using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
@@ -43,10 +44,10 @@ public partial class Merchants : ComponentBase, IAsyncDisposable
     public IPersistenceContextProvider ContextProvider { get; set; } = null!;
 
     /// <summary>
-    /// Gets or sets the modal service.
+    /// Gets or sets the toast service.
     /// </summary>
     [Inject]
-    public IModalService ModalService { get; set; } = null!;
+    public IToastService ToastService { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the navigation manager.
@@ -59,6 +60,12 @@ public partial class Merchants : ComponentBase, IAsyncDisposable
     /// </summary>
     [Inject]
     public IJSRuntime JavaScript { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the logger.
+    /// </summary>
+    [Inject]
+    public ILogger<Merchants> Logger { get; set; } = null!;
 
     private IQueryable<MerchantStorageViewModel>? ViewModels => this._viewModels?.AsQueryable();
 
@@ -149,25 +156,24 @@ public partial class Merchants : ComponentBase, IAsyncDisposable
 
     private async Task OnSaveButtonClickAsync()
     {
-        string text;
         try
         {
             if (this._persistenceContext is { } context)
             {
                 var success = await context.SaveChangesAsync().ConfigureAwait(true);
-                text = success ? "The changes have been saved." : "There were no changes to save.";
+                var text = success ? "The changes have been saved." : "There were no changes to save.";
+                this.ToastService.ShowSuccess(text);
             }
             else
             {
-                text = "Failed, context not initialized";
+                this.ToastService.ShowError("Failed, context not initialized.");
             }
         }
         catch (Exception ex)
         {
-            text = $"An unexpected error occurred: {ex.Message}.";
+            this.Logger.LogError(ex, $"An unexpected error occurred on save: {ex.Message}");
+            this.ToastService.ShowError($"An unexpected error occurred: {ex.Message}");
         }
-
-        await this.ModalService.ShowMessageAsync("Save", text).ConfigureAwait(true);
     }
 
     private async Task OnCancelButtonClickAsync()

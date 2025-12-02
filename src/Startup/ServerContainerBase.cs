@@ -43,6 +43,19 @@ public abstract class ServerContainerBase : IHostedService
     }
 
     /// <summary>
+    /// Restarts all servers of this container.
+    /// </summary>
+    /// <param name="onDatabaseInit">If set to <c>true</c>, this method is called during a database initialization.</param>
+    /// <returns></returns>
+    public virtual async ValueTask RestartAllAsync(bool onDatabaseInit)
+    {
+        await this.StopAsync(default).ConfigureAwait(false);
+        await this.BeforeStartAsync(onDatabaseInit, default).ConfigureAwait(false);
+        await this.StartAsync(default).ConfigureAwait(false);
+        await this.StartListenersAsync(default).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Starts the hosted service.
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
@@ -60,13 +73,22 @@ public abstract class ServerContainerBase : IHostedService
     /// <param name="cancellationToken">The cancellation token.</param>
     protected abstract Task StartListenersAsync(CancellationToken cancellationToken);
 
+    /// <summary>
+    /// Befores the start asynchronous.
+    /// </summary>
+    /// <param name="onDatabaseInit">If set to <c>true</c>, this method is called during a database initialization.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns></returns>
+    protected virtual async ValueTask BeforeStartAsync(bool onDatabaseInit, CancellationToken cancellationToken)
+    {
+        // can be overwritten
+    }
+
     private async ValueTask OnDatabaseInitializedAsync()
     {
         try
         {
-            await this.StopAsync(default).ConfigureAwait(false);
-            await this.StartAsync(default).ConfigureAwait(false);
-            await this.StartListenersAsync(default).ConfigureAwait(false);
+            await this.RestartAllAsync(true);
         }
         catch (Exception exception)
         {

@@ -53,4 +53,20 @@ public static class ModalExtensions
         var modal = modalService.Show<ModalMessage>(title, messageParams);
         return modal.Result;
     }
+
+    /// <summary>
+    /// Shows a message in a modal dialog.
+    /// </summary>
+    /// <param name="modalService">The modal service.</param>
+    /// <param name="title">The title.</param>
+    /// <param name="question">The question.</param>
+    public static async Task<bool> ShowQuestionAsync(this IModalService modalService, string title, string question)
+    {
+        var messageParams = new ModalParameters();
+        messageParams.Add(nameof(ModalQuestion.Question), question);
+        
+        var modal = modalService.Show<ModalQuestion>(title, messageParams);
+        var result = await modal.Result.ConfigureAwait(false);
+        return result.Data is true;
+    }
 }

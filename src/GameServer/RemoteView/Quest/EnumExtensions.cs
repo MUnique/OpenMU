@@ -26,7 +26,7 @@ public static class EnumExtensions
             QuestRewardType.Money => RewardType.Money,
             QuestRewardType.GensAttribution => RewardType.GensContribution,
             QuestRewardType.Undefined => RewardType.None,
-            _ => throw new ArgumentException($"Unknown reward type {questRewardType}.")
+            _ => throw new ArgumentException($"Unknown reward type {questRewardType}."),
         };
     }
 }

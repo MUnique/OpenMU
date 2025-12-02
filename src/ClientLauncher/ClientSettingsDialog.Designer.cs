@@ -170,7 +170,6 @@
             clientResolutionComboBox.Dock = System.Windows.Forms.DockStyle.Bottom;
             clientResolutionComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             clientResolutionComboBox.FormattingEnabled = true;
-            clientResolutionComboBox.Items.AddRange(new object[] { "Default (800 x 600)", "800 x 600", "1024 x 768", "1280 x 1024" });
             clientResolutionComboBox.Location = new System.Drawing.Point(4, 19);
             clientResolutionComboBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             clientResolutionComboBox.Name = "clientResolutionComboBox";

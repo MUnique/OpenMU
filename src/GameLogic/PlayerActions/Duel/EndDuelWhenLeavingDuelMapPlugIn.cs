@@ -17,6 +17,12 @@ public class EndDuelWhenLeavingDuelMapPlugIn : IObjectRemovedFromMapPlugIn
 {
     private readonly DuelActions _duelActions = new();
 
+    /// <summary>
+    /// Handles the logic for when a player leaves the duel map.
+    /// </summary>
+    /// <param name="map">The game map.</param>
+    /// <param name="removedObject">The player who left.</param>
+    /// <returns>The value task with the result.</returns>
     public async ValueTask ObjectRemovedFromMapAsync(GameMap map, ILocateable removedObject)
     {
         if (removedObject is not Player player)
@@ -33,10 +39,11 @@ public class EndDuelWhenLeavingDuelMapPlugIn : IObjectRemovedFromMapPlugIn
         var removedFromDuelMap = duelRoom.Area.FirstPlayerGate?.Map == map.Definition;
         if (removedFromDuelMap
             && duelRoom.IsDuelist(player)
-            && duelRoom.State is DuelState.DuelStarted
+            && duelRoom.State is (DuelState.DuelStarted or DuelState.DuelAccepted)
             && player.IsAlive)
         {
             await duelRoom.CancelDuelAsync().ConfigureAwait(false);
+            
             return;
         }
 

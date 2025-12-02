@@ -87,7 +87,7 @@ public static class ItemExtensions
     /// </returns>
     public static bool IsAncient(this Item item)
     {
-        return item.ItemOptions.Any(link => link.ItemOption?.OptionType == ItemOptionTypes.AncientBonus);
+        return item.ItemSetGroups.Any(itemSet => itemSet.AncientSetDiscriminator > 0);
     }
 
     /// <summary>
@@ -100,6 +100,19 @@ public static class ItemExtensions
     public static bool IsExcellent(this Item item)
     {
         return item.ItemOptions.Any(link => link.ItemOption?.OptionType == ItemOptionTypes.Excellent);
+    }
+
+    /// <summary>
+    /// Determines whether this instance is a "380 item", that is, if it can be upgraded with Jewel of Guardian.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <returns>
+    ///   <c>true</c> if the specified item is a "380 item"; otherwise, <c>false</c>.
+    /// </returns>
+    public static bool IsGuardian(this Item item)
+    {
+        return item.Definition!.PossibleItemOptions.Any(pio => pio.PossibleOptions
+            .Any(po => po.OptionType == ItemOptionTypes.GuardianOption));
     }
 
     /// <summary>
@@ -125,26 +138,38 @@ public static class ItemExtensions
     }
 
     /// <summary>
+    /// Determines whether this item is a jewelry (pendant or ring) item.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <returns>
+    ///   <c>true</c> if the specified item is jewelry; otherwise, <c>false</c>.
+    /// </returns>
+    public static bool IsJewelry(this Item item)
+    {
+        return item.ItemSlot >= InventoryConstants.PendantSlot && item.ItemSlot <= InventoryConstants.Ring2Slot;
+    }
+
+    /// <summary>
     /// Determines whether this instance is a is weapon which deals physical damage.
     /// </summary>
     /// <param name="item">The item.</param>
     /// <param name="minimumDmg">The minimum physical damage of the weapon.</param>
     /// <returns>
-    ///   <c>true</c> if this instance is a is weapon which deals physical damage; otherwise, <c>false</c>.
+    ///   <c>true</c> if this instance is a weapon which deals physical damage; otherwise, <c>false</c>.
     /// </returns>
     public static bool IsPhysicalWeapon(this Item item, [NotNullWhen(true)] out float? minimumDmg)
     {
-        minimumDmg = item.Definition?.BasePowerUpAttributes.FirstOrDefault(a => a.TargetAttribute == Stats.MinimumPhysBaseDmg)?.BaseValue;
+        minimumDmg = item.Definition?.BasePowerUpAttributes.FirstOrDefault(a => a.TargetAttribute == Stats.MinimumPhysBaseDmgByWeapon)?.BaseValue;
         return minimumDmg is not null;
     }
 
     /// <summary>
-    /// Determines whether this instance is a weapon which deals wizardry damage.
+    /// Determines whether this instance is a weapon which increases wizardry damage.
     /// </summary>
     /// <param name="item">The item.</param>
-    /// <param name="staffRise">The staff rise percentage of the weapon.</param>
+    /// <param name="staffRise">The staff/sword/stick's wizardry damage rise percentage.</param>
     /// <returns>
-    ///   <c>true</c> if this instance is a is weapon which deals wizardry damage; otherwise, <c>false</c>.
+    ///   <c>true</c> if this instance is a weapon which increases wizardry damage; otherwise, <c>false</c>.
     /// </returns>
     public static bool IsWizardryWeapon(this Item item, [NotNullWhen(true)] out float? staffRise)
     {
@@ -156,14 +181,28 @@ public static class ItemExtensions
     /// Determines whether this instance is a scepter which increases raven damage.
     /// </summary>
     /// <param name="item">The item.</param>
-    /// <param name="stickRise">The stick rise percentage of the weapon.</param>
+    /// <param name="scepterRise">The scepter's pet attack rise percentage.</param>
     /// <returns>
     ///   <c>true</c> if this instance is a scepter which increases raven damage; otherwise, <c>false</c>.
     /// </returns>
-    public static bool IsScepter(this Item item, [NotNullWhen(true)] out float? stickRise)
+    public static bool IsScepter(this Item item, [NotNullWhen(true)] out float? scepterRise)
     {
-        stickRise = item.Definition?.BasePowerUpAttributes.FirstOrDefault(a => a.TargetAttribute == Stats.ScepterRise)?.BaseValue;
-        return stickRise is not null;
+        scepterRise = item.Definition?.BasePowerUpAttributes.FirstOrDefault(a => a.TargetAttribute == Stats.ScepterRise)?.BaseValue;
+        return scepterRise is not null;
+    }
+
+    /// <summary>
+    /// Determines whether this instance is a book which increases curse damage.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <param name="bookRise">The book's curse damage rise percentage.</param>
+    /// <returns>
+    ///   <c>true</c> if this instance is a book which increases curse damage; otherwise, <c>false</c>.
+    /// </returns>
+    public static bool IsBook(this Item item, [NotNullWhen(true)] out float? bookRise)
+    {
+        bookRise = item.Definition?.BasePowerUpAttributes.FirstOrDefault(a => a.TargetAttribute == Stats.BookRise)?.BaseValue;
+        return bookRise is not null;
     }
 
     /// <summary>
@@ -221,7 +260,7 @@ public static class ItemExtensions
     /// <remarks>
     /// Some requirements are depending on item level, drop level and item options.
     /// </remarks>
-    public static (AttributeDefinition, int) GetRequirement(this Item item, AttributeRequirement requirement)
+    public static (AttributeDefinition Attr, int Value) GetRequirement(this Item item, AttributeRequirement requirement)
     {
         requirement.ThrowNotInitializedProperty(requirement.Attribute is null, nameof(requirement.Attribute));
 
@@ -293,6 +332,13 @@ public static class ItemExtensions
             .Select(option => option.ItemOption!.OptionType!)
             .Distinct()
             .ForEach(appearance.VisibleOptions.Add);
+        if (item.IsAncient())
+        {
+            // 1. The ancient option is not included in the item.ItemOptions.
+            // 2. The bonus option is not always existing for ancient items. And it's not marked as visible.
+            // -> we check it based on the item set group.
+            appearance.VisibleOptions.Add(ItemOptionTypes.AncientOption);
+        }
         return appearance;
     }
 
@@ -301,14 +347,15 @@ public static class ItemExtensions
     /// </summary>
     /// <param name="itemAppearance">The item appearance.</param>
     /// <param name="persistenceContext">The persistence context where the object should be added.</param>
+    /// <param name="gameConfiguration">The game configuration.</param>
     /// <returns>A persistent instance of the given <see cref="ItemAppearance"/>.</returns>
-    public static ItemAppearance MakePersistent(this ItemAppearance itemAppearance, IContext persistenceContext)
+    public static ItemAppearance MakePersistent(this ItemAppearance itemAppearance, IContext persistenceContext, GameConfiguration gameConfiguration)
     {
         var persistent = persistenceContext.CreateNew<ItemAppearance>();
         persistent.ItemSlot = itemAppearance.ItemSlot;
         persistent.Definition = itemAppearance.Definition;
         persistent.Level = itemAppearance.Level;
-        itemAppearance.VisibleOptions.Distinct().ForEach(o => persistent.VisibleOptions.Add(o));
+        itemAppearance.VisibleOptions.Distinct().ForEach(o => persistent.VisibleOptions.Add(gameConfiguration.ItemOptionTypes.First(iot => iot.Equals(o))));
         return persistent;
     }
 

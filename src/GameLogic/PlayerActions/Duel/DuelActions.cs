@@ -1,4 +1,8 @@
-﻿namespace MUnique.OpenMU.GameLogic.PlayerActions.Duel;
+﻿// <copyright file="DuelActions.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.GameLogic.PlayerActions.Duel;
 
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Entities;
@@ -144,7 +148,7 @@ public class DuelActions
     /// </summary>
     /// <param name="player">The player.</param>
     /// <param name="requestedDuelIndex">Index of the requested duel.</param>
-    /// <returns></returns>
+    /// <returns>The value task with the result.</returns>
     public async ValueTask HandleDuelChannelJoinRequestAsync(Player player, byte requestedDuelIndex)
     {
         var config = player.GameContext.Configuration.DuelConfiguration;
@@ -176,13 +180,17 @@ public class DuelActions
             return;
         }
 
-        if (!await duelRoom.TryAddSpectatorAsync(player))
+        if (!await duelRoom.TryAddSpectatorAsync(player).ConfigureAwait(false))
         {
             await player.ShowMessageAsync("The duel channel is full.").ConfigureAwait(false);
         }
-
     }
 
+    /// <summary>
+    /// Handles the duel channel quit request asynchronous.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <returns>The value task with the result.</returns>
     public async ValueTask HandleDuelChannelQuitRequestAsync(Player player)
     {
         if (player.DuelRoom is not { } duelRoom)

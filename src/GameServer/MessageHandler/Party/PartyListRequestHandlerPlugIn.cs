@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("2650e346-69ef-4a9e-82ba-5f0b9591a548")]
 internal class PartyListRequestHandlerPlugIn : IPacketHandlerPlugIn
 {
-    private readonly PartyListRequestAction _action = new ();
+    private readonly PartyListRequestAction _action = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;

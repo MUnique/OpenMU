@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("ddc7e221-c3a9-47c3-881e-dc59beecc03e")]
 internal class GuildKickPlayerHandlerPlugIn : IPacketHandlerPlugIn
 {
-    private readonly GuildKickPlayerAction _kickAction = new ();
+    private readonly GuildKickPlayerAction _kickAction = new();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;

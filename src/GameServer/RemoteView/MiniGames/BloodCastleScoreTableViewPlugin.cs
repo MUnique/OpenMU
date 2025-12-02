@@ -4,10 +4,10 @@
 
 namespace MUnique.OpenMU.GameServer.RemoteView.MiniGames;
 
+using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.PlugIns;
-using System.Runtime.InteropServices;
 
 /// <summary>
 /// The default implementation of the <see cref="IBloodCastleScoreTableViewPlugin"/> which is forwarding everything to the game client with specific data packets.

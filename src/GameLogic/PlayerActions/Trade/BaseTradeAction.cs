@@ -56,6 +56,7 @@ public class BaseTradeAction
                 }
 
                 trader.Inventory.ItemStorage.Money = trader.BackupInventory.Money;
+                trader.BackupInventory = null;
             }
         }
 

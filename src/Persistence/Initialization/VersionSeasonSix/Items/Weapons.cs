@@ -32,15 +32,25 @@ internal class Weapons : InitializerBase
     /// </summary>
     private static readonly float[] DamageIncreaseByLevel = { 0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 31, 36, 42, 49, 57, 66 };
 
-    private static readonly float[] StaffRiseIncreaseByLevel = { 0, 3, 7, 10, 14, 17, 21, 24, 28, 31, 35, 40, 45, 50, 56, 63 };
+    private static readonly float[] StaffRiseIncreaseByLevelEven = { 0, 3, 7, 10, 14, 17, 21, 24, 28, 31, 35, 40, 45, 50, 56, 63 }; // Staff/stick with even magic power
+    private static readonly float[] StaffRiseIncreaseByLevelOdd = { 0, 4, 7, 11, 14, 18, 21, 25, 28, 32, 36, 40, 45, 51, 57, 63 }; // Staff/stick with odd magic power
 
-    private static readonly float[] ScepterRiseIncreaseByLevel = { 0, 2, 3, 5, 6, 8, 9, 11, 12, 14, 16, 18, 21, 25, 29, 33 };
+    private static readonly float[] ScepterRiseIncreaseByLevelEven = { 0, 1, 3, 4, 6, 7, 9, 10, 12, 13, 15, 18, 21, 24, 28, 33 }; // Scepter with even magic power
+    private static readonly float[] ScepterRiseIncreaseByLevelOdd = { 0, 2, 3, 5, 6, 8, 9, 11, 12, 14, 16, 18, 21, 25, 29, 33 }; // Scepter with odd magic power
+
+    private static readonly float[] AmmunitionDamageIncreaseByLevel = { 0, 0.03f, 0.05f, 0.07f }; // Bolts/Arrows
+    private static readonly float[] AmmunitionManaLossAfterHitByLevel = { 5, 7, 10, 15 }; // Only if Infinity Arrow effect is active
 
     private ItemLevelBonusTable? _weaponDamageIncreaseTable;
 
-    private ItemLevelBonusTable? _staffRiseTable;
+    private ItemLevelBonusTable? _staffRiseTableEven;
+    private ItemLevelBonusTable? _staffRiseTableOdd;
 
-    private ItemLevelBonusTable? _scepterRiseTable;
+    private ItemLevelBonusTable? _scepterRiseTableEven;
+    private ItemLevelBonusTable? _scepterRiseTableOdd;
+
+    private ItemLevelBonusTable? _ammunitionDamageIncreaseTable;
+    private ItemLevelBonusTable? _ammunitionManaLossAfterHitTable;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Weapons" /> class.
@@ -70,7 +80,7 @@ internal class Weapons : InitializerBase
     {
         get
         {
-            return this.GameConfiguration.ItemOptions.First(iod => iod.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Option && o.PowerUpDefinition?.TargetAttribute == Stats.MaximumPhysBaseDmg));
+            return this.GameConfiguration.ItemOptions.First(iod => iod.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Option && o.PowerUpDefinition?.TargetAttribute == Stats.PhysicalBaseDmg));
         }
     }
 
@@ -81,7 +91,7 @@ internal class Weapons : InitializerBase
     {
         get
         {
-            return this.GameConfiguration.ItemOptions.First(iod => iod.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Option && o.PowerUpDefinition?.TargetAttribute == Stats.MaximumWizBaseDmg));
+            return this.GameConfiguration.ItemOptions.First(iod => iod.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Option && o.PowerUpDefinition?.TargetAttribute == Stats.WizardryBaseDmg));
         }
     }
 
@@ -92,7 +102,18 @@ internal class Weapons : InitializerBase
     {
         get
         {
-            return this.GameConfiguration.ItemOptions.First(iod => iod.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Option && o.PowerUpDefinition?.TargetAttribute == Stats.MaximumCurseBaseDmg));
+            return this.GameConfiguration.ItemOptions.First(iod => iod.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Option && o.PowerUpDefinition?.TargetAttribute == Stats.CurseBaseDmg));
+        }
+    }
+
+    /// <summary>
+    /// Gets the physical and wizardry damage option definition.
+    /// </summary>
+    protected ItemOptionDefinition PhysicalAndWizardryDamageOption
+    {
+        get
+        {
+            return this.GameConfiguration.ItemOptions.First(iod => iod.PossibleOptions.Any(o => o.OptionType == ItemOptionTypes.Option && o.PowerUpDefinition?.TargetAttribute == Stats.BaseDamageBonus));
         }
     }
 
@@ -106,8 +127,12 @@ internal class Weapons : InitializerBase
     public override void Initialize()
     {
         this._weaponDamageIncreaseTable = this.CreateItemBonusTable(DamageIncreaseByLevel, "Damage Increase (Weapons)", "The damage increase by weapon level. It increases by 3 per level, and 1 more after level 10.");
-        this._staffRiseTable = this.CreateItemBonusTable(StaffRiseIncreaseByLevel, "Staff Rise", "The staff rise bonus per item level.");
-        this._scepterRiseTable = this.CreateItemBonusTable(ScepterRiseIncreaseByLevel, "Scepter Rise", "The scepter rise bonus per item level.");
+        this._staffRiseTableEven = this.CreateItemBonusTable(StaffRiseIncreaseByLevelEven, "Staff Rise (even)", "The staff rise bonus per item level for even magic power staves.");
+        this._staffRiseTableOdd = this.CreateItemBonusTable(StaffRiseIncreaseByLevelOdd, "Staff Rise (odd)", "The staff rise bonus per item level for odd magic power staves.");
+        this._scepterRiseTableEven = this.CreateItemBonusTable(ScepterRiseIncreaseByLevelEven, "Scepter Rise (even)", "The scepter rise bonus per item level for even magic power scepters.");
+        this._scepterRiseTableOdd = this.CreateItemBonusTable(ScepterRiseIncreaseByLevelOdd, "Scepter Rise (odd)", "The scepter rise bonus per item level for odd magic power scepters.");
+        this._ammunitionDamageIncreaseTable = this.CreateItemBonusTable(AmmunitionDamageIncreaseByLevel, "Damage Increase % (Bolts/Arrows)", "The damage increase % per ammunition item level.");
+        this._ammunitionManaLossAfterHitTable = this.CreateItemBonusTable(AmmunitionManaLossAfterHitByLevel, "Mana Loss After Hit (Bolts/Arrows)", "The mana loss per skill hit per ammunition item level due to infinity arrow efect.");
 
         this.CreateWeapon(0, 0, 0, 0, 1, 2, true, "Kris", 6, 6, 11, 50, 20, 0, 0, 40, 40, 0, 0, 1, 1, 1, 1, 1, 1, 1);
         this.CreateWeapon(0, 1, 0, 0, 1, 3, true, "Short Sword", 3, 3, 7, 20, 22, 0, 0, 60, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1);
@@ -128,7 +153,7 @@ internal class Weapons : InitializerBase
         this.CreateWeapon(0, 16, 0, 22, 1, 4, true, "Sword of Destruction", 82, 82, 90, 35, 84, 0, 0, 160, 60, 0, 0, 0, 1, 0, 1, 0, 0, 0);
         this.CreateWeapon(0, 17, 0, 23, 2, 4, true, "Dark Breaker", 104, 128, 153, 40, 89, 0, 0, 180, 50, 0, 0, 0, 2, 0, 0, 0, 0, 0);
         this.CreateWeapon(0, 18, 0, 23, 2, 3, true, "Thunder Blade", 105, 140, 168, 40, 86, 0, 0, 180, 50, 0, 0, 0, 0, 0, 1, 0, 0, 0);
-        this.CreateWeapon(0, 19, 0, 22, 1, 4, false, "Divine Sword of Archangel", 86, 120, 130, 35, 168, 0, 0, 140, 50, 0, 0, 0, 1, 0, 1, 1, 0, 0);
+        this.CreateWeapon(0, 19, 0, 22, 1, 4, false, "Divine Sword of Archangel", 86, 220, 230, 45, 168, 0, 0, 140, 50, 0, 0, 0, 1, 0, 1, 1, 0, 0);
         this.CreateWeapon(0, 20, 0, 22, 1, 4, true, "Knight Blade", 140, 107, 115, 35, 90, 0, 0, 116, 38, 0, 0, 0, 2, 0, 0, 0, 0, 0);
         this.CreateWeapon(0, 21, 0, 56, 2, 4, true, "Dark Reign Blade", 140, 115, 142, 40, 100, 115, 0, 116, 53, 9, 0, 0, 0, 0, 1, 0, 0, 0);
         this.CreateWeapon(0, 22, 0, 22, 1, 4, true, "Bone Blade", 147, 122, 135, 40, 95, 0, 380, 100, 35, 0, 0, 0, 2, 0, 0, 0, 0, 0);
@@ -142,7 +167,7 @@ internal class Weapons : InitializerBase
         this.CreateWeapon(0, 32, 0, 260, 1, 2, true, "Sacred Glove", 52, 52, 58, 25, 65, 0, 0, 85, 35, 0, 0, 0, 0, 0, 0, 0, 0, 1);
         this.CreateWeapon(0, 33, 0, 261, 1, 2, true, "Storm Hard Glove", 82, 82, 88, 30, 77, 0, 0, 100, 50, 0, 0, 0, 0, 0, 0, 0, 0, 1);
         this.CreateWeapon(0, 34, 0, 260, 1, 2, true, "Piercing Blade Glove", 105, 95, 101, 35, 86, 0, 0, 120, 60, 0, 0, 0, 0, 0, 0, 0, 0, 1);
-        this.CreateWeapon(0, 35, 0, 270, 1, 2, false, "Phoenix Soul Star", 147, 122, 128, 40, 98, 0, 0, 101, 51, 0, 0, 0, 0, 0, 0, 0, 0, 1);
+        this.CreateWeapon(0, 35, 0, 270, 1, 2, false, "Phoenix Soul Star", 147, 122, 128, 40, 98, 0, 380, 101, 51, 0, 0, 0, 0, 0, 0, 0, 0, 1);
 
         this.CreateWeapon(1, 0, 0, 0, 1, 3, true, "Small Axe", 1, 1, 6, 20, 18, 0, 0, 50, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1);
         this.CreateWeapon(1, 1, 0, 0, 1, 3, true, "Hand Axe", 4, 4, 9, 30, 20, 0, 0, 70, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1);
@@ -159,7 +184,7 @@ internal class Weapons : InitializerBase
         this.CreateWeapon(2, 2, 0, 0, 1, 3, true, "Flail", 22, 22, 32, 15, 32, 0, 0, 80, 50, 0, 0, 0, 1, 0, 1, 1, 0, 1);
         this.CreateWeapon(2, 3, 0, 19, 2, 3, true, "Great Hammer", 38, 45, 56, 15, 50, 0, 0, 150, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1);
         this.CreateWeapon(2, 4, 0, 19, 2, 3, true, "Crystal Morning Star", 66, 78, 107, 30, 72, 0, 0, 130, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1);
-        this.CreateWeapon(2, 5, 0, 23, 1, 4, true, "Crystal Sword", 72, 89, 120, 40, 76, 0, 0, 130, 70, 0, 0, 1, 1, 1, 1, 0, 0, 0);
+        this.CreateWeapon(2, 5, 0, 23, 2, 4, true, "Crystal Sword", 72, 89, 120, 40, 76, 0, 0, 130, 70, 0, 0, 1, 1, 1, 1, 0, 0, 0);
         this.CreateWeapon(2, 6, 0, 23, 2, 4, false, "Chaos Dragon Axe", 75, 102, 130, 35, 80, 0, 0, 140, 50, 0, 0, 0, 1, 0, 1, 0, 0, 0);
         this.CreateWeapon(2, 7, 0, 0, 1, 3, true, "Elemental Mace", 90, 62, 80, 50, 50, 0, 0, 15, 42, 0, 0, 0, 0, 2, 0, 0, 0, 0);
         this.CreateWeapon(2, 8, 0, 66, 1, 3, true, "Battle Scepter", 54, 41, 52, 45, 40, 3, 0, 80, 17, 0, 0, 0, 0, 0, 0, 1, 0, 0);
@@ -167,10 +192,10 @@ internal class Weapons : InitializerBase
         this.CreateWeapon(2, 10, 0, 66, 1, 4, true, "Great Scepter", 82, 74, 85, 45, 65, 35, 0, 100, 21, 0, 0, 0, 0, 0, 0, 1, 0, 0);
         this.CreateWeapon(2, 11, 0, 66, 1, 4, true, "Lord Scepter", 98, 91, 102, 40, 72, 52, 0, 105, 23, 0, 0, 0, 0, 0, 0, 1, 0, 0);
         this.CreateWeapon(2, 12, 0, 66, 1, 4, true, "Great Lord Scepter", 140, 108, 120, 40, 84, 67, 0, 90, 20, 0, 0, 0, 0, 0, 0, 1, 0, 0);
-        this.CreateWeapon(2, 13, 0, 66, 1, 4, false, "Divine Scepter of Archangel", 150, 120, 143, 40, 90, 78, 0, 75, 16, 0, 0, 0, 0, 0, 0, 1, 0, 0);
+        this.CreateWeapon(2, 13, 0, 66, 1, 4, false, "Divine Scepter of Archangel", 150, 200, 223, 45, 90, 138, 0, 75, 16, 0, 0, 0, 0, 0, 0, 1, 0, 0);
         this.CreateWeapon(2, 14, 0, 66, 1, 4, true, "Soleil Scepter", 146, 130, 153, 40, 95, 84, 380, 80, 15, 0, 0, 0, 0, 0, 0, 1, 0, 0);
         this.CreateWeapon(2, 15, 0, 66, 1, 4, true, "Shining Scepter", 110, 99, 111, 40, 78, 60, 0, 108, 22, 0, 0, 0, 0, 0, 0, 1, 0, 0);
-        this.CreateWeapon(2, 16, 0, 0, 1, 3, true, "Frost mace", 121, 106, 146, 50, 80, 0, 0, 27, 19, 0, 0, 0, 0, 2, 0, 0, 0, 0);
+        this.CreateWeapon(2, 16, 0, 0, 1, 3, true, "Frost Mace", 121, 106, 146, 50, 80, 0, 0, 27, 19, 0, 0, 0, 0, 2, 0, 0, 0, 0);
         this.CreateWeapon(2, 17, 0, 66, 1, 4, true, "Absolute Scepter", 135, 114, 132, 40, 90, 72, 0, 119, 24, 0, 0, 0, 0, 0, 0, 1, 0, 0);
         this.CreateWeapon(2, 18, 0, 66, 1, 4, false, "Stryker Scepter", 147, 112, 124, 40, 86, 70, 0, 87, 20, 0, 0, 0, 0, 0, 0, 1, 0, 0);
         // this.CreateWeapon(2, 22, 0, 0, 1, 3, true, "Mace of The king", 54, 132, 153, 45, 40, 3, 0, 80, 17, 0, 0, 0, 1, 1, 1, 1, 0, 0);
@@ -188,13 +213,13 @@ internal class Weapons : InitializerBase
         this.CreateWeapon(3, 10, 0, 22, 2, 4, true, "Dragon Spear", 92, 112, 140, 35, 85, 0, 0, 170, 60, 0, 0, 0, 2, 0, 0, 0, 0, 0);
         this.CreateWeapon(3, 11, 0, 22, 2, 4, false, "Beuroba", 147, 190, 226, 40, 90, 0, 0, 152, 25, 0, 0, 0, 2, 0, 1, 0, 0, 0);
 
-        this.CreateWeapon(4, 0, 1, 24, 2, 3, true, "Short Bow", 2, 3, 5, 30, 20, 0, 0, 21, 24, 0, 0, 0, 0, 1, 0, 0, 0, 0);
-        this.CreateWeapon(4, 1, 1, 24, 2, 3, true, "Bow", 8, 9, 13, 30, 24, 0, 0, 27, 41, 0, 0, 0, 0, 1, 0, 0, 0, 0);
-        this.CreateWeapon(4, 2, 1, 24, 2, 3, true, "Elven Bow", 16, 17, 24, 30, 28, 0, 0, 34, 63, 0, 0, 0, 0, 1, 0, 0, 0, 0);
-        this.CreateWeapon(4, 3, 1, 24, 2, 3, true, "Battle Bow", 26, 28, 37, 30, 36, 0, 0, 43, 90, 0, 0, 0, 0, 1, 0, 0, 0, 0);
-        this.CreateWeapon(4, 4, 1, 24, 2, 4, true, "Tiger Bow", 40, 42, 52, 30, 43, 0, 0, 56, 140, 0, 0, 0, 0, 1, 0, 0, 0, 0);
-        this.CreateWeapon(4, 5, 1, 24, 2, 4, true, "Silver Bow", 56, 59, 71, 40, 48, 0, 0, 70, 188, 0, 0, 0, 0, 1, 0, 0, 0, 0);
-        this.CreateWeapon(4, 6, 1, 24, 2, 4, false, "Chaos Nature Bow", 75, 88, 106, 35, 68, 0, 0, 110, 357, 0, 0, 0, 0, 1, 0, 0, 0, 0);
+        this.CreateWeapon(4, 0, 1, 24, 2, 3, true, "Short Bow", 2, 3, 5, 30, 20, 0, 0, 20, 80, 0, 0, 0, 0, 1, 0, 0, 0, 0);
+        this.CreateWeapon(4, 1, 1, 24, 2, 3, true, "Bow", 8, 9, 13, 30, 24, 0, 0, 30, 90, 0, 0, 0, 0, 1, 0, 0, 0, 0);
+        this.CreateWeapon(4, 2, 1, 24, 2, 3, true, "Elven Bow", 16, 17, 24, 30, 28, 0, 0, 30, 90, 0, 0, 0, 0, 1, 0, 0, 0, 0);
+        this.CreateWeapon(4, 3, 1, 24, 2, 3, true, "Battle Bow", 26, 28, 37, 30, 36, 0, 0, 30, 90, 0, 0, 0, 0, 1, 0, 0, 0, 0);
+        this.CreateWeapon(4, 4, 1, 24, 2, 4, true, "Tiger Bow", 40, 42, 52, 30, 43, 0, 0, 30, 100, 0, 0, 0, 0, 1, 0, 0, 0, 0);
+        this.CreateWeapon(4, 5, 1, 24, 2, 4, true, "Silver Bow", 56, 59, 71, 40, 48, 0, 0, 30, 100, 0, 0, 0, 0, 1, 0, 0, 0, 0);
+        this.CreateWeapon(4, 6, 1, 24, 2, 4, false, "Chaos Nature Bow", 75, 88, 106, 35, 68, 0, 0, 40, 150, 0, 0, 0, 0, 1, 0, 0, 0, 0);
         this.CreateWeapon(4, 7, 1, 0, 1, 1, false, "Bolt", 0, 0, 0, 0, 255, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0);
         this.CreateWeapon(4, 8, 0, 24, 2, 2, true, "Crossbow", 4, 5, 8, 40, 22, 0, 0, 20, 90, 0, 0, 0, 0, 1, 0, 0, 0, 0);
         this.CreateWeapon(4, 9, 0, 24, 2, 2, true, "Golden Crossbow", 12, 13, 19, 40, 26, 0, 0, 30, 90, 0, 0, 0, 0, 1, 0, 0, 0, 0);
@@ -206,7 +231,7 @@ internal class Weapons : InitializerBase
         this.CreateWeapon(4, 15, 0, 0, 1, 1, false, "Arrows", 0, 0, 0, 0, 255, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0);
         this.CreateWeapon(4, 16, 0, 24, 2, 4, true, "Saint Crossbow", 84, 102, 127, 35, 72, 0, 0, 50, 160, 0, 0, 0, 0, 1, 0, 0, 0, 0);
         this.CreateWeapon(4, 17, 1, 24, 2, 4, true, "Celestial Bow", 92, 127, 155, 35, 76, 0, 0, 54, 198, 0, 0, 0, 0, 2, 0, 0, 0, 0);
-        this.CreateWeapon(4, 18, 0, 24, 2, 3, false, "Divine CB of Archangel", 100, 144, 166, 35, 200, 0, 0, 40, 110, 0, 0, 0, 0, 1, 0, 0, 0, 0);
+        this.CreateWeapon(4, 18, 0, 24, 2, 3, false, "Divine Crossbow of Archangel", 100, 224, 246, 45, 200, 0, 0, 40, 110, 0, 0, 0, 0, 1, 0, 0, 0, 0);
         this.CreateWeapon(4, 19, 0, 24, 2, 3, true, "Great Reign Crossbow", 100, 150, 172, 40, 80, 0, 0, 61, 285, 0, 0, 0, 0, 2, 0, 0, 0, 0);
         this.CreateWeapon(4, 20, 1, 24, 2, 4, true, "Arrow Viper Bow", 135, 166, 190, 45, 86, 0, 0, 52, 245, 0, 0, 0, 0, 2, 0, 0, 0, 0);
         this.CreateWeapon(4, 21, 1, 24, 2, 4, true, "Sylph Wind Bow", 147, 177, 200, 45, 93, 0, 380, 46, 210, 0, 0, 0, 0, 2, 0, 0, 0, 0);
@@ -224,7 +249,7 @@ internal class Weapons : InitializerBase
         this.CreateWeapon(5, 7, 0, 0, 2, 4, false, "Chaos Lightning Staff", 75, 47, 48, 30, 70, 94, 0, 60, 10, 0, 0, 1, 0, 0, 1, 0, 0, 0);
         this.CreateWeapon(5, 8, 0, 0, 2, 4, true, "Staff of Destruction", 90, 50, 54, 30, 85, 101, 0, 60, 10, 0, 0, 1, 0, 0, 1, 0, 0, 0);
         this.CreateWeapon(5, 9, 0, 0, 1, 4, true, "Dragon Soul Staff", 100, 46, 48, 30, 91, 92, 0, 52, 16, 0, 0, 2, 0, 0, 0, 0, 0, 0);
-        this.CreateWeapon(5, 10, 0, 0, 1, 4, false, "Divine Staff of Archangel", 104, 53, 55, 20, 182, 106, 0, 36, 4, 0, 0, 1, 0, 0, 1, 0, 0, 0);
+        this.CreateWeapon(5, 10, 0, 0, 1, 4, false, "Divine Staff of Archangel", 104, 153, 165, 30, 182, 156, 0, 36, 4, 0, 0, 1, 0, 0, 1, 0, 0, 0);
         this.CreateWeapon(5, 11, 0, 0, 1, 4, true, "Staff of Kundun", 140, 55, 61, 30, 95, 110, 0, 45, 16, 0, 0, 2, 0, 0, 1, 0, 0, 0);
         this.CreateWeapon(5, 12, 0, 0, 1, 4, true, "Grand Viper Staff", 147, 66, 74, 30, 100, 130, 380, 39, 13, 0, 0, 2, 0, 0, 0, 0, 0, 0);
         this.CreateWeapon(5, 13, 0, 0, 1, 4, true, "Platina Staff", 110, 51, 53, 30, 78, 120, 0, 50, 16, 0, 0, 2, 0, 0, 0, 0, 0, 0);
@@ -234,12 +259,12 @@ internal class Weapons : InitializerBase
         this.CreateWeapon(5, 17, 0, 0, 1, 4, true, "Ancient Stick", 78, 38, 40, 25, 81, 76, 0, 50, 19, 0, 0, 0, 0, 0, 0, 0, 1, 0);
         this.CreateWeapon(5, 18, 0, 0, 1, 4, true, "Demonic Stick", 100, 46, 48, 30, 91, 92, 0, 54, 15, 0, 0, 0, 0, 0, 0, 0, 2, 0);
         this.CreateWeapon(5, 19, 0, 0, 1, 4, true, "Storm Blitz Stick", 110, 51, 53, 30, 95, 110, 380, 64, 15, 0, 0, 0, 0, 0, 0, 0, 2, 0);
-        this.CreateWeapon(5, 20, 0, 0, 1, 4, true, "Eternal Wing Stick", 130, 56, 58, 25, 100, 113, 0, 60, 25, 0, 0, 0, 0, 0, 0, 0, 2, 0);
+        this.CreateWeapon(5, 20, 0, 0, 1, 4, true, "Eternal Wing Stick", 147, 66, 74, 30, 100, 106, 380, 57, 13, 0, 0, 0, 0, 0, 0, 0, 2, 0);
         this.CreateWeapon(5, 21, 1, 223, 1, 2, true, "Book of Sahamutt", 52, 0, 0, 25, 60, 46, 0, 0, 20, 135, 0, 0, 0, 0, 0, 0, 1, 0);
         this.CreateWeapon(5, 22, 1, 224, 1, 2, true, "Book of Neil", 59, 0, 0, 25, 65, 59, 0, 0, 25, 168, 0, 0, 0, 0, 0, 0, 1, 0);
         this.CreateWeapon(5, 23, 1, 225, 1, 2, true, "Book of Lagle", 65, 0, 0, 25, 50, 72, 0, 0, 30, 201, 0, 0, 0, 0, 0, 0, 1, 0);
-        this.CreateWeapon(5, 30, 0, 0, 1, 4, true, "Deadly Staff", 138, 57, 59, 30, 91, 126, 0, 47, 18, 0, 0, 0, 0, 0, 1, 0, 0, 0);
-        this.CreateWeapon(5, 31, 0, 0, 1, 4, true, "Imperial Staff", 137, 57, 61, 30, 182, 124, 0, 48, 14, 0, 0, 2, 0, 0, 0, 0, 0, 0);
+        this.CreateWeapon(5, 30, 0, 0, 1, 4, true, "Deadly Staff", 138, 57, 59, 30, 91, 126, 380, 47, 18, 0, 0, 0, 0, 0, 1, 0, 0, 0);
+        this.CreateWeapon(5, 31, 0, 0, 1, 4, true, "Imperial Staff", 137, 57, 61, 30, 182, 124, 380, 48, 14, 0, 0, 2, 0, 0, 0, 0, 0, 0);
         this.CreateWeapon(5, 33, 0, 0, 1, 4, false, "Chromatic Staff", 147, 55, 57, 30, 78, 124, 0, 50, 12, 0, 0, 2, 0, 0, 1, 0, 0, 0);
         this.CreateWeapon(5, 34, 0, 0, 1, 4, false, "Raven Stick", 147, 70, 78, 30, 98, 130, 0, 50, 14, 0, 0, 0, 0, 0, 0, 0, 2, 0);
         this.CreateWeapon(5, 36, 0, 0, 1, 4, false, "Divine Stick of Archangel", 104, 153, 165, 30, 182, 146, 0, 55, 13, 0, 0, 0, 0, 0, 0, 0, 1, 0);
@@ -263,7 +288,7 @@ internal class Weapons : InitializerBase
     /// <param name="maximumDamage">The maximum damage.</param>
     /// <param name="attackSpeed">The attack speed.</param>
     /// <param name="durability">The durability.</param>
-    /// <param name="staffRise">The staff rise.</param>
+    /// <param name="magicPower">The magic power.</param>
     /// <param name="levelRequirement">The level requirement.</param>
     /// <param name="strengthRequirement">The strength requirement.</param>
     /// <param name="agilityRequirement">The agility requirement.</param>
@@ -278,7 +303,7 @@ internal class Weapons : InitializerBase
     /// <param name="ragefighterClass">The ragefighter class.</param>
     protected void CreateWeapon(byte @group, byte number, byte slot, int skillNumber, byte width, byte height,
         bool dropsFromMonsters, string name, byte dropLevel, int minimumDamage, int maximumDamage, int attackSpeed,
-        byte durability, int staffRise, int levelRequirement, int strengthRequirement, int agilityRequirement,
+        byte durability, int magicPower, int levelRequirement, int strengthRequirement, int agilityRequirement,
         int energyRequirement, int vitalityRequirement,
         int wizardClass, int knightClass, int elfClass, int magicGladiatorClass, int darkLordClass, int summonerClass, int ragefighterClass)
     {
@@ -294,7 +319,7 @@ internal class Weapons : InitializerBase
         item.MaximumItemLevel = MaximumItemLevel;
         item.DropsFromMonsters = dropsFromMonsters;
         item.SetGuid(item.Group, item.Number);
-        if (slot == 0 && knightClass > 0 && width == 1)
+        if (slot == 0 && (knightClass > 0 || magicGladiatorClass > 0 || ragefighterClass > 0) && width == 1)
         {
             item.ItemSlot = this.GameConfiguration.ItemSlotTypes.First(t => t.ItemSlots.Contains(0) && t.ItemSlots.Contains(1));
         }
@@ -313,15 +338,32 @@ internal class Weapons : InitializerBase
         var qualifiedCharacterClasses = this.GameConfiguration.DetermineCharacterClasses(wizardClass, knightClass, elfClass, magicGladiatorClass, darkLordClass, summonerClass, ragefighterClass);
         qualifiedCharacterClasses.ToList().ForEach(item.QualifiedCharacters.Add);
 
-        var minDamagePowerUp = this.CreateItemBasePowerUpDefinition(Stats.MinimumPhysBaseDmgByWeapon, minimumDamage, AggregateType.AddRaw);
-        minDamagePowerUp.BonusPerLevelTable = this._weaponDamageIncreaseTable;
-        item.BasePowerUpAttributes.Add(minDamagePowerUp);
+        if (height == 1) // bolts and arrows
+        {
+            var damagePowerUp = this.CreateItemBasePowerUpDefinition(Stats.AmmunitionDamageBonus, 0f, AggregateType.AddRaw);
+            damagePowerUp.BonusPerLevelTable = this._ammunitionDamageIncreaseTable;
+            item.BasePowerUpAttributes.Add(damagePowerUp);
 
-        var maxDamagePowerUp = this.CreateItemBasePowerUpDefinition(Stats.MaximumPhysBaseDmgByWeapon, maximumDamage, AggregateType.AddRaw);
-        maxDamagePowerUp.BonusPerLevelTable = this._weaponDamageIncreaseTable;
-        item.BasePowerUpAttributes.Add(maxDamagePowerUp);
+            var manaCostPowerUp = this.CreateItemBasePowerUpDefinition(Stats.SkillExtraManaCost, 0f, AggregateType.AddRaw);
+            manaCostPowerUp.BonusPerLevelTable = this._ammunitionManaLossAfterHitTable;
+            item.BasePowerUpAttributes.Add(manaCostPowerUp);
 
-        var speedPowerUp = this.CreateItemBasePowerUpDefinition(Stats.AttackSpeed, attackSpeed, AggregateType.AddRaw);
+            item.IsAmmunition = true;
+            return;
+        }
+
+        if (minimumDamage > 0)
+        {
+            var minDamagePowerUp = this.CreateItemBasePowerUpDefinition(Stats.MinimumPhysBaseDmgByWeapon, minimumDamage, AggregateType.AddRaw);
+            minDamagePowerUp.BonusPerLevelTable = this._weaponDamageIncreaseTable;
+            item.BasePowerUpAttributes.Add(minDamagePowerUp);
+
+            var maxDamagePowerUp = this.CreateItemBasePowerUpDefinition(Stats.MaximumPhysBaseDmgByWeapon, maximumDamage, AggregateType.AddRaw);
+            maxDamagePowerUp.BonusPerLevelTable = this._weaponDamageIncreaseTable;
+            item.BasePowerUpAttributes.Add(maxDamagePowerUp);
+        }
+
+        var speedPowerUp = this.CreateItemBasePowerUpDefinition(Stats.AttackSpeedByWeapon, attackSpeed, AggregateType.AddRaw);
         item.BasePowerUpAttributes.Add(speedPowerUp);
 
         this.CreateItemRequirementIfNeeded(item, Stats.Level, levelRequirement);
@@ -332,57 +374,76 @@ internal class Weapons : InitializerBase
 
         item.PossibleItemOptions.Add(this.Luck);
 
-        if (staffRise == 0)
+        if (magicPower == 0 || darkLordClass > 0 || group == (int)ItemGroups.Swords)
         {
-            item.PossibleItemOptions.Add(this.PhysicalDamageOption);
             item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == ExcellentOptions.PhysicalAttackOptionsName));
             item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == HarmonyOptions.PhysicalAttackOptionsName));
+
+            if (skillNumber == (int)SkillNumber.PowerSlash)
+            {
+                // MG "magic swords" have a double item option, and wizardry rise, functioning as both sword and staff
+                item.PossibleItemOptions.Add(this.PhysicalAndWizardryDamageOption);
+
+                var swordRisePowerUp = this.CreateItemBasePowerUpDefinition(Stats.StaffRise, magicPower / 2.0f, AggregateType.AddRaw);
+                swordRisePowerUp.BonusPerLevelTable = magicPower % 2 == 0 ? this._staffRiseTableEven : this._staffRiseTableOdd;
+                item.BasePowerUpAttributes.Add(swordRisePowerUp);
+            }
+            else
+            {
+                item.PossibleItemOptions.Add(this.PhysicalDamageOption);
+
+                if (skillNumber == (int)SkillNumber.ForceWave)
+                {
+                    var scepterRisePowerUp = this.CreateItemBasePowerUpDefinition(Stats.ScepterRise, magicPower / 2.0f, AggregateType.AddRaw);
+                    scepterRisePowerUp.BonusPerLevelTable = magicPower % 2 == 0 ? this._scepterRiseTableEven : this._scepterRiseTableOdd;
+                    item.BasePowerUpAttributes.Add(scepterRisePowerUp);
+                }
+            }
         }
         else
         {
-            if (summonerClass > 0)
+            item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == ExcellentOptions.WizardryAttackOptionsName));
+            item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == HarmonyOptions.WizardryAttackOptionsName));
+
+            if (summonerClass > 0 && slot == 1)
             {
                 item.PossibleItemOptions.Add(this.CurseDamageOption);
-                item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == ExcellentOptions.CurseAttackOptionsName));
-                item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == HarmonyOptions.CurseAttackOptionsName));
-                //// TODO: Is there something similar as the staff rise?
+
+                var bookRisePowerUp = this.CreateItemBasePowerUpDefinition(Stats.BookRise, magicPower / 2.0f, AggregateType.AddRaw);
+                bookRisePowerUp.BonusPerLevelTable = magicPower % 2 == 0 ? this._staffRiseTableEven : this._staffRiseTableOdd;
+                item.BasePowerUpAttributes.Add(bookRisePowerUp);
             }
             else
             {
                 item.PossibleItemOptions.Add(this.WizardryDamageOption);
-                item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == ExcellentOptions.WizardryAttackOptionsName));
-                item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name == HarmonyOptions.WizardryAttackOptionsName));
 
-                if (darkLordClass > 0)
-                {
-                    var scepterRisePowerUp = this.CreateItemBasePowerUpDefinition(Stats.ScepterRise, staffRise, AggregateType.AddRaw);
-                    scepterRisePowerUp.BonusPerLevelTable = this._scepterRiseTable;
-                    item.BasePowerUpAttributes.Add(scepterRisePowerUp);
-                }
-                else
-                {
-                    var staffRisePowerUp = this.CreateItemBasePowerUpDefinition(Stats.StaffRise, staffRise, AggregateType.AddRaw);
-                    staffRisePowerUp.BonusPerLevelTable = this._staffRiseTable;
-                    item.BasePowerUpAttributes.Add(staffRisePowerUp);
-                }
+                var staffRisePowerUp = this.CreateItemBasePowerUpDefinition(Stats.StaffRise, magicPower / 2.0f, AggregateType.AddRaw);
+                staffRisePowerUp.BonusPerLevelTable = magicPower % 2 == 0 ? this._staffRiseTableEven : this._staffRiseTableOdd;
+                item.BasePowerUpAttributes.Add(staffRisePowerUp);
             }
         }
 
-        if (group == (int)ItemGroups.Bows && height > 1)
+        item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.EquippedWeaponCount, 1, AggregateType.AddRaw));
+
+        if (group < (int)ItemGroups.Spears && width == 1)
         {
-            item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.AmmunitionConsumptionRate, 1, AggregateType.AddRaw));
+            item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.DoubleWieldWeaponCount, 1, AggregateType.AddRaw));
         }
 
-        item.IsAmmunition = group == (int)ItemGroups.Bows && height == 1;
+        if (group == (int)ItemGroups.Bows)
+        {
+            item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.AmmunitionConsumptionRate, 1, AggregateType.AddRaw));
+            item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(slot == 0 ? Stats.IsCrossBowEquipped : Stats.IsBowEquipped, 1, AggregateType.AddRaw));
+        }
 
-        if (group != (int)ItemGroups.Bows && width == 2)
+        if (group < (int)ItemGroups.Bows && width == 2)
         {
             item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsTwoHandedWeaponEquipped, 1, AggregateType.AddRaw));
         }
 
-        if (group == (int)ItemGroups.Swords)
+        if (group == (int)ItemGroups.Swords || (group == (int)ItemGroups.Scepters && number == 5)) // Crystal Sword
         {
-            if (ragefighterClass == 0 || number < 3)
+            if (ragefighterClass == 0 || number < 2)
             {
                 if (width == 1)
                 {
@@ -422,19 +483,18 @@ internal class Weapons : InitializerBase
 
         if (group == (int)ItemGroups.Staff)
         {
-            if (wizardClass == 0 && summonerClass > 0)
+            if (wizardClass == 0 && summonerClass > 0 && slot == 0)
             {
                 item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsStickEquipped, 1, AggregateType.AddRaw));
             }
-            else
+            else if (wizardClass > 0 || magicGladiatorClass > 0)
             {
                 item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(width == 1 ? Stats.IsOneHandedStaffEquipped : Stats.IsTwoHandedStaffEquipped, 1, AggregateType.AddRaw));
             }
-        }
-
-        if (group == (int)ItemGroups.Bows && !item.IsAmmunition)
-        {
-            item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(slot == 0 ? Stats.IsCrossBowEquipped : Stats.IsBowEquipped, 1, AggregateType.AddRaw));
+            else
+            {
+                item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsBookEquipped, 1, AggregateType.AddRaw));
+            }
         }
     }
 
@@ -444,6 +504,7 @@ internal class Weapons : InitializerBase
 
         var boneBlade = this.GameConfiguration.Items.First(i => i.Number == 22 && i.Group == (int)ItemGroups.Swords);
         var explosionBlade = this.GameConfiguration.Items.First(i => i.Number == 23 && i.Group == (int)ItemGroups.Swords);
+        var phoenixSoulStar = this.GameConfiguration.Items.First(i => i.Number == 35 && i.Group == (int)ItemGroups.Swords);
         var soleilScepter = this.GameConfiguration.Items.First(i => i.Number == 14 && i.Group == (int)ItemGroups.Scepters);
         var sylphWindBow = this.GameConfiguration.Items.First(i => i.Number == 21 && i.Group == (int)ItemGroups.Bows);
         var viperStaff = this.GameConfiguration.Items.First(i => i.Number == 12 && i.Group == (int)ItemGroups.Staff);
@@ -451,6 +512,7 @@ internal class Weapons : InitializerBase
 
         boneBlade.PossibleItemOptions.Add(weaponOption);
         explosionBlade.PossibleItemOptions.Add(weaponOption);
+        phoenixSoulStar.PossibleItemOptions.Add(weaponOption);
         soleilScepter.PossibleItemOptions.Add(weaponOption);
         sylphWindBow.PossibleItemOptions.Add(weaponOption);
         viperStaff.PossibleItemOptions.Add(weaponOption);

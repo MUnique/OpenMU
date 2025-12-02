@@ -85,11 +85,12 @@ public class ObjectMovedPlugIn : IObjectMovedPlugIn
     /// </summary>
     /// <param name="connection">The connection.</param>
     /// <param name="objectId">The object identifier.</param>
+    /// <param name="sourcePoint">The origin point.</param>
     /// <param name="targetPoint">The target point.</param>
     /// <param name="steps">The steps.</param>
     /// <param name="rotation">The rotation.</param>
     /// <param name="stepsLength">Length of the steps.</param>
-    protected virtual async ValueTask SendWalkAsync(IConnection connection, ushort objectId, Point targetPoint, Memory<Direction> steps, Direction rotation, int stepsLength)
+    protected virtual async ValueTask SendWalkAsync(IConnection connection, ushort objectId, Point sourcePoint, Point targetPoint, Memory<Direction> steps, Direction rotation, int stepsLength)
     {
         int Write()
         {
@@ -156,7 +157,7 @@ public class ObjectMovedPlugIn : IObjectMovedPlugIn
             targetPoint = obj.Position;
         }
 
-        await this.SendWalkAsync(connection, objectId, targetPoint, steps, rotation, stepsLength).ConfigureAwait(false);
+        await this.SendWalkAsync(connection, objectId, obj.Position, targetPoint, steps, rotation, stepsLength).ConfigureAwait(false);
     }
 
     private void SetStepData(ObjectWalkedRef walkPacket, Span<Direction> steps, int stepsSize)
@@ -198,7 +199,7 @@ public class ObjectMovedPlugIn : IObjectMovedPlugIn
         }
     }
 
-    private byte GetWalkCode()
+    protected byte GetWalkCode()
     {
         if (this._player.ClientVersion.Season == 0)
         {

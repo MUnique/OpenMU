@@ -12,7 +12,7 @@ using org.mariuszgromada.math.mxparser;
 /// </summary>
 public static class MasterSkillExtensions
 {
-    private static readonly ConcurrentDictionary<string, float[]> ValueResultCache = new ();
+    private static readonly ConcurrentDictionary<string, float[]> ValueResultCache = new();
 
     /// <summary>
     /// Calculates the effective value of the specified skill, depending on its formula and level.
@@ -39,15 +39,51 @@ public static class MasterSkillExtensions
         return skillEntry.Skill?.MasterDefinition.CalculateDisplayValue(level) ?? 0;
     }
 
+    /// <summary>
+    /// Gets the base <see cref="Skill"/> of a <see cref="SkillEntry"/>.
+    /// </summary>
+    /// <param name="skillEntry">The <see cref="SkillEntry"/>.</param>
+    /// <returns>The base <see cref="Skill"/>.</returns>
     public static Skill GetBaseSkill(this SkillEntry skillEntry)
     {
-        var skill = skillEntry.Skill!;
-        while (skill?.MasterDefinition?.ReplacedSkill is { } replacedSkill)
+        return skillEntry.Skill!.GetBaseSkill();
+    }
+
+    /// <summary>
+    /// Gets the base <see cref="Skill"/> of a <see cref="Skill"/>.
+    /// </summary>
+    /// <param name="skill">The <see cref="Skill"/>.</param>
+    /// <returns>The base <see cref="Skill"/>.</returns>
+    public static Skill GetBaseSkill(this Skill skill)
+    {
+        while (skill.MasterDefinition?.ReplacedSkill is { } replacedSkill)
         {
             skill = replacedSkill;
         }
 
-        return skill!;
+        return skill;
+    }
+
+    /// <summary>
+    /// Gets the base <see cref="Skill"/>s of a <see cref="Skill"/>.
+    /// </summary>
+    /// <param name="skill">The <see cref="Skill"/>.</param>
+    /// <param name="onlyMasterSkills">If set to <c>true</c>, only master skills are returned.</param>
+    /// <returns>The base <see cref="Skill"/>.</returns>
+    public static IEnumerable<Skill> GetBaseSkills(this Skill skill, bool onlyMasterSkills = false)
+    {
+        while (skill.MasterDefinition?.ReplacedSkill is { } replacedSkill)
+        {
+            if (onlyMasterSkills && replacedSkill.MasterDefinition is null)
+            {
+                yield break;
+            }
+            else
+            {
+                skill = replacedSkill;
+                yield return skill;
+            }
+        }
     }
 
     private static float CalculateValue(this MasterSkillDefinition? skillDefinition, int level) => skillDefinition?.ValueFormula.GetValue(level, skillDefinition.MaximumLevel) ?? 0;

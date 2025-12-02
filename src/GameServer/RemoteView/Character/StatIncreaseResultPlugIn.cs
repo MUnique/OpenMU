@@ -6,8 +6,11 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character;
 
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.AttributeSystem;
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views.Character;
+using MUnique.OpenMU.GameLogic.Views.Inventory;
+using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.PlugIns;
 
@@ -27,7 +30,7 @@ public class StatIncreaseResultPlugIn : IStatIncreaseResultPlugIn
     public StatIncreaseResultPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public async ValueTask StatIncreaseResultAsync(AttributeDefinition attribute, bool success)
+    public async ValueTask StatIncreaseResultAsync(AttributeDefinition attribute, ushort addedPoints)
     {
         var connection = this._player.Connection;
         if (connection is null)
@@ -35,15 +38,39 @@ public class StatIncreaseResultPlugIn : IStatIncreaseResultPlugIn
             return;
         }
 
-        await connection.SendCharacterStatIncreaseResponseAsync(
-            success,
-            attribute.GetStatType(),
-            attribute == Stats.BaseEnergy
-                ? (ushort)this._player.Attributes![Stats.MaximumMana]
-                : attribute == Stats.BaseVitality
-                    ? (ushort)this._player.Attributes![Stats.MaximumHealth]
-                    : default,
-            (ushort)this._player.Attributes![Stats.MaximumShield],
-            (ushort)this._player.Attributes[Stats.MaximumAbility]).ConfigureAwait(false);
+        if (addedPoints <= 1)
+        {
+#pragma warning disable SA1118 // Parameter should not span multiple lines
+            await connection.SendCharacterStatIncreaseResponseAsync(
+                addedPoints > 0,
+                attribute.GetStatType(),
+                attribute == Stats.BaseEnergy
+                    ? (ushort)this._player.Attributes![Stats.MaximumMana]
+                    : attribute == Stats.BaseVitality
+                        ? (ushort)this._player.Attributes![Stats.MaximumHealth]
+                        : default,
+                (ushort)this._player.Attributes![Stats.MaximumShield],
+                (ushort)this._player.Attributes[Stats.MaximumAbility]).ConfigureAwait(false);
+#pragma warning restore SA1118 // Parameter should not span multiple lines
+            return;
+        }
+
+        // Workaround with multiple points for older clients
+        var player = this._player;
+        var map = player.CurrentMap!;
+
+        await player.InvokeViewPlugInAsync<IObjectsOutOfScopePlugIn>(p => p.ObjectsOutOfScopeAsync(player.GetAsEnumerable())).ConfigureAwait(false);
+        await player.InvokeViewPlugInAsync<IUpdateCharacterStatsPlugIn>(p => p.UpdateCharacterStatsAsync()).ConfigureAwait(false);
+        await player.InvokeViewPlugInAsync<IUpdateInventoryListPlugIn>(p => p.UpdateInventoryListAsync()).ConfigureAwait(false);
+        var currentGate = new Persistence.BasicModel.ExitGate
+        {
+            Map = map.Definition,
+            X1 = player.Position.X,
+            X2 = player.Position.X,
+            Y1 = player.Position.Y,
+            Y2 = player.Position.Y,
+        };
+
+        await player.WarpToAsync(currentGate).ConfigureAwait(false);
     }
 }

@@ -5,9 +5,9 @@
 namespace MUnique.OpenMU.GameLogic;
 
 using System.Diagnostics;
-using Nito.AsyncEx;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Views.World;
+using Nito.AsyncEx;
 
 /// <summary>
 /// Adapts the incoming calls from the <see cref="IBucketMapObserver"/> to the available view plugins.
