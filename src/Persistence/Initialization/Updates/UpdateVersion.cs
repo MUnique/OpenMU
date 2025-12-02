@@ -310,6 +310,7 @@ public enum UpdateVersion
     /// </summary>
     FixEventItemsDropFromMonsters095d = 60,
 
+    /// <summary>
     /// The version of the <see cref="FixItemRequirementsPlugIn2"/>.
     /// </summary>
     FixItemRequirements2 = 61,
@@ -330,7 +331,12 @@ public enum UpdateVersion
     FixJeweleryPetsDamageCalcsSeason6 = 64,
 
     /// <summary>
+    /// The version of the <see cref="FixSkillMultipliersPlugIn"/>.
+    /// </summary>
+    FixSkillMultipliers = 65,
+
+    /// <summary>
     /// The version of the <see cref="FixSleepSkillUpdate"/>.
     /// </summary>
-    FixSleepSkillSeason6 = 65,
+    FixSleepSkillSeason6 = 66,
 }

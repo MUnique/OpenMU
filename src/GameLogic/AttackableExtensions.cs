@@ -193,7 +193,25 @@ public static class AttackableExtensions
 
         if (skill != null)
         {
-            dmg = (int)(dmg * attacker.Attributes[Stats.SkillMultiplier]);
+            var multiplier = attacker.Attributes[Stats.SkillMultiplier];
+
+            if (skill.EnsureSkillAttributes(attacker.Attributes) is { } skillAttributes)
+            {
+                dmg += (int)skillAttributes[Stats.SkillFinalDamageBonus];
+
+                var skillMultiplier = skillAttributes[Stats.SkillFinalMultiplier];
+                if (skillMultiplier > 0)
+                {
+                    multiplier = skillMultiplier;
+
+                    if (skill.Skill!.Number == 265 && !isPvp) // DragonSlasher
+                    {
+                        multiplier *= 3;
+                    }
+                }
+            }
+
+            dmg = (int)(dmg * multiplier * damageFactor);
         }
         else if (attacker.Attributes[Stats.IsDinorantEquipped] > 0)
         {
@@ -663,10 +681,10 @@ public static class AttackableExtensions
 
         if (skillEntry.EnsureSkillAttributes(attackerStats) is { } skillAttributes)
         {
-            skillMinimumDamage += (int)skillAttributes[Stats.SkillDamageBonus];
-            skillMaximumDamage += (int)skillAttributes[Stats.SkillDamageBonus];
+            skillMinimumDamage += (int)skillAttributes[Stats.SkillBaseDamageBonus];
+            skillMaximumDamage += (int)skillAttributes[Stats.SkillBaseDamageBonus];
 
-            var multiplier = skillAttributes[Stats.SkillMultiplier];
+            var multiplier = skillAttributes[Stats.SkillBaseMultiplier];
             if (multiplier > 0)
             {
                 skillMinimumDamage = (int)(skillMinimumDamage * multiplier);
