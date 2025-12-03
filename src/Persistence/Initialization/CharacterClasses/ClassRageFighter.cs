@@ -87,6 +87,8 @@ internal partial class CharacterClassInitialization
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumPhysBaseDmg, 1.0f / 5, Stats.TotalStrength));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MinimumPhysBaseDmg, 1.0f / 15, Stats.TotalVitality));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumPhysBaseDmg, 1.0f / 12, Stats.TotalVitality));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.SkillMultiplier, 0.001f, Stats.TotalEnergy));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.VitalitySkillMultiplier, 0.001f, Stats.TotalVitality));
 
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.FenrirBaseDmg, 1.0f / 5, Stats.TotalStrength));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.FenrirBaseDmg, 1.0f / 5, Stats.TotalAgility));
@@ -95,7 +97,8 @@ internal partial class CharacterClassInitialization
 
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(57, Stats.MaximumHealth));
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(7, Stats.MaximumMana));
-        result.BaseAttributeValues.Add(this.CreateConstValueAttribute(2, Stats.SkillMultiplier));
+        result.BaseAttributeValues.Add(this.CreateConstValueAttribute(0.5f, Stats.SkillMultiplier));
+        result.BaseAttributeValues.Add(this.CreateConstValueAttribute(0.5f, Stats.VitalitySkillMultiplier));
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f / 33f, Stats.AbilityRecoveryMultiplier));
 
         this.AddCommonBaseAttributeValues(result.BaseAttributeValues, isMaster);
