@@ -52,10 +52,43 @@ public partial class MagicEffectDefinition
     public bool SendDuration { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the duration of the effect depends on the target's level.
+    /// </summary>
+    public bool DurationDependsOnTargetLevel { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets a value by which the effect target's (monster) level should be divided in case <see cref="DurationDependsOnTargetLevel"/> is <c>true</c>.
+    /// </summary>
+    public float TargetLevelDivisor { get; set; } = 1f;
+
+    /// <summary>
+    /// Gets or sets a value by which the effect target's (player) level should be divided in case <see cref="DurationDependsOnTargetLevel"/> is <c>true</c>.
+    /// </summary>
+    public float TargetLevelDivisorPvp { get; set; } = 1f;
+
+    /// <summary>
+    /// Gets or sets the chance of applying the effect, in decimals.
+    /// </summary>
+    [MemberOfAggregate]
+    public PowerUpDefinitionValue? Chance { get; set; }
+
+    /// <summary>
+    /// Gets or sets the chance of applying the effect in PvP, in decimals.
+    /// </summary>
+    [MemberOfAggregate]
+    public PowerUpDefinitionValue? ChancePvp { get; set; }
+
+    /// <summary>
     /// Gets or sets the duration which describes how long the <see cref="PowerUpDefinitions"/> apply, in seconds.
     /// </summary>
     [MemberOfAggregate]
     public virtual PowerUpDefinitionValue? Duration { get; set; }
+
+    /// <summary>
+    /// Gets or sets the duration which describes how long the <see cref="PowerUpDefinitions"/> apply to PVP, in seconds.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual PowerUpDefinitionValue? DurationPvp { get; set; }
 
     /// <summary>
     /// Gets or sets the power up definitions which are used to create the actual power up element.

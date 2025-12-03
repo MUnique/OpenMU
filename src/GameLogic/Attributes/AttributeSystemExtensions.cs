@@ -19,6 +19,11 @@ public static class AttributeSystemExtensions
     private static AttributeDefinition DurationDummy { get; } = new(new Guid("23D069C3-24D8-4277-8FDC-D82F0AF64037"), "Duration Dummy", "A dummy attribute to be used internally for durations.");
 
     /// <summary>
+    /// Gets the attribute for a dummy attribute to be used internally for chances.
+    /// </summary>
+    private static AttributeDefinition ChanceDummy { get; } = new(new Guid("E6B9E6A5-5800-40EA-80B7-14C2C06392A6"), "Chance Dummy", "A dummy attribute to be used internally for chances.");
+
+    /// <summary>
     /// Creates a new element on this attribute system with the specified power up value.
     /// </summary>
     /// <param name="attributeSystem">The attribute system.</param>
@@ -27,6 +32,17 @@ public static class AttributeSystemExtensions
     public static IElement CreateDurationElement(this IAttributeSystem attributeSystem, PowerUpDefinitionValue powerUpDefinition)
     {
         return attributeSystem.CreateElement(powerUpDefinition, DurationDummy);
+    }
+
+    /// <summary>
+    /// Creates a new element on this attribute system with the specified power up value.
+    /// </summary>
+    /// <param name="attributeSystem">The attribute system.</param>
+    /// <param name="powerUpDefinition">The power up definition.</param>
+    /// <returns>The added element.</returns>
+    public static IElement CreateChanceElement(this IAttributeSystem attributeSystem, PowerUpDefinitionValue powerUpDefinition)
+    {
+        return attributeSystem.CreateElement(powerUpDefinition, ChanceDummy);
     }
 
     /// <summary>

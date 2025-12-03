@@ -1464,8 +1464,14 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         int i = 0;
         var result = new (AttributeDefinition Target, IElement BuffPowerUp)[skill.MagicEffectDef.PowerUpDefinitions.Count];
         var durationElement = this.Attributes!.CreateDurationElement(skill.MagicEffectDef.Duration);
+        var durationElementPvp = skill.MagicEffectDef.DurationPvp is { } durationPvp ? this.Attributes!.CreateDurationElement(durationPvp) : durationElement;
+        var chanceElement = skillEntry.Skill.MagicEffectDef!.Chance is { } chance ? this.Attributes!.CreateChanceElement(chance) : new ConstantElement(1.0f);
+        var chanceElementPvp = skillEntry.Skill.MagicEffectDef.ChancePvp is { } chancePvp ? this.Attributes!.CreateChanceElement(chancePvp) : chanceElement;
         AddSkillPowersToResult(skill);
         skillEntry.PowerUpDuration = durationElement;
+        skillEntry.PowerUpDurationPvp = durationElementPvp;
+        skillEntry.PowerUpChance = chanceElement;
+        skillEntry.PowerUpChancePvp = chanceElementPvp;
         skillEntry.PowerUps = result;
 
         void AddSkillPowersToResult(Skill skill)

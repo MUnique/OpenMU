@@ -8,6 +8,7 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Pet;
@@ -309,7 +310,13 @@ public static class AttackableExtensions
             player.CreateMagicEffectPowerUp(skillEntry);
         }
 
-        await target.ApplyMagicEffectAsync(attacker, skillEntry.Skill!.MagicEffectDef!, skillEntry.PowerUpDuration!, skillEntry.PowerUps!).ConfigureAwait(false);
+        float chance = attacker is Player ? skillEntry.PowerUpChancePvp!.Value : skillEntry.PowerUpChance!.Value;
+        if (!Rand.NextRandomBool(Convert.ToDouble(chance)))
+        {
+            return;
+        }
+
+        await target.ApplyMagicEffectAsync(attacker, skillEntry.Skill!.MagicEffectDef!, attacker is Player ? skillEntry.PowerUpDurationPvp! : skillEntry.PowerUpDuration!, skillEntry.PowerUps!).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -773,10 +780,24 @@ public static class AttackableExtensions
     /// <param name="powerUps">The power ups of the effect.</param>
     private static async ValueTask ApplyMagicEffectAsync(this IAttackable target, IAttacker attacker, MagicEffectDefinition magicEffectDefinition, IElement duration, params (AttributeDefinition Target, IElement Boost)[] powerUps)
     {
+        float levelDeduction = 0;
+        if (magicEffectDefinition.DurationDependsOnTargetLevel)
+        {
+            levelDeduction = target is Player
+                ? target.Attributes[Stats.Level] / magicEffectDefinition.TargetLevelDivisorPvp
+                : target.Attributes[Stats.Level] / magicEffectDefinition.TargetLevelDivisor;
+        }
+
+        TimeSpan durationSpan = TimeSpan.FromSeconds(duration.Value - levelDeduction);
+        if (durationSpan < TimeSpan.FromSeconds(1))
+        {
+            return;
+        }
+
         var isPoisonEffect = magicEffectDefinition.PowerUpDefinitions.Any(e => e.TargetAttribute == Stats.IsPoisoned);
         var magicEffect = isPoisonEffect
-            ? new PoisonMagicEffect(powerUps[0].Boost, magicEffectDefinition, TimeSpan.FromSeconds(duration.Value), attacker, target)
-            : new MagicEffect(TimeSpan.FromSeconds(duration.Value), magicEffectDefinition, powerUps.Select(p => new MagicEffect.ElementWithTarget(p.Boost, p.Target)).ToArray());
+            ? new PoisonMagicEffect(powerUps[0].Boost, magicEffectDefinition, durationSpan, attacker, target)
+            : new MagicEffect(durationSpan, magicEffectDefinition, powerUps.Select(p => new MagicEffect.ElementWithTarget(p.Boost, p.Target)).ToArray());
 
         await target.MagicEffectList.AddEffectAsync(magicEffect).ConfigureAwait(false);
         if (target is ISupportWalk walkSupporter
