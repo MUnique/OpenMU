@@ -38,6 +38,58 @@ internal partial class MagicEffectDefinition : MUnique.OpenMU.DataModel.Configur
     public override ICollection<MUnique.OpenMU.DataModel.Attributes.PowerUpDefinition> PowerUpDefinitions => base.PowerUpDefinitions ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Attributes.PowerUpDefinition, PowerUpDefinition>(this.RawPowerUpDefinitions);
 
     /// <summary>
+    /// Gets or sets the identifier of <see cref="Chance"/>.
+    /// </summary>
+    public Guid? ChanceId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="Chance" />.
+    /// </summary>
+    [ForeignKey(nameof(ChanceId))]
+    public PowerUpDefinitionValue RawChance
+    {
+        get => base.Chance as PowerUpDefinitionValue;
+        set => base.Chance = value;
+    }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Attributes.PowerUpDefinitionValue Chance
+    {
+        get => base.Chance;set
+        {
+            base.Chance = value;
+            this.ChanceId = this.RawChance?.Id;
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the identifier of <see cref="ChancePvp"/>.
+    /// </summary>
+    public Guid? ChancePvpId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="ChancePvp" />.
+    /// </summary>
+    [ForeignKey(nameof(ChancePvpId))]
+    public PowerUpDefinitionValue RawChancePvp
+    {
+        get => base.ChancePvp as PowerUpDefinitionValue;
+        set => base.ChancePvp = value;
+    }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Attributes.PowerUpDefinitionValue ChancePvp
+    {
+        get => base.ChancePvp;set
+        {
+            base.ChancePvp = value;
+            this.ChancePvpId = this.RawChancePvp?.Id;
+        }
+    }
+
+    /// <summary>
     /// Gets or sets the identifier of <see cref="Duration"/>.
     /// </summary>
     public Guid? DurationId { get; set; }
@@ -60,6 +112,32 @@ internal partial class MagicEffectDefinition : MUnique.OpenMU.DataModel.Configur
         {
             base.Duration = value;
             this.DurationId = this.RawDuration?.Id;
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the identifier of <see cref="DurationPvp"/>.
+    /// </summary>
+    public Guid? DurationPvpId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="DurationPvp" />.
+    /// </summary>
+    [ForeignKey(nameof(DurationPvpId))]
+    public PowerUpDefinitionValue RawDurationPvp
+    {
+        get => base.DurationPvp as PowerUpDefinitionValue;
+        set => base.DurationPvp = value;
+    }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Attributes.PowerUpDefinitionValue DurationPvp
+    {
+        get => base.DurationPvp;set
+        {
+            base.DurationPvp = value;
+            this.DurationPvpId = this.RawDurationPvp?.Id;
         }
     }
 

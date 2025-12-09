@@ -65,7 +65,10 @@ public static class GameConfigurationHelper
         { typeof(JewelMix), c => c.JewelMixes },
         { typeof(MagicEffectDefinition), c => c.MagicEffects },
         {
-            typeof(PowerUpDefinitionValue), c => c.MagicEffects.Select(e => e.Duration).WhereNotNull()
+            typeof(PowerUpDefinitionValue), c => c.MagicEffects.Select(e => e.Duration)
+                .Concat(c.MagicEffects.Select(e => e.DurationPvp))
+                .Concat(c.MagicEffects.Select(e => e.Chance))
+                .Concat(c.MagicEffects.Select(e => e.ChancePvp)).WhereNotNull()
                 .Concat(Enumerables![typeof(PowerUpDefinition)](c).OfType<PowerUpDefinition>().Select(p => p.Boost).WhereNotNull())
         },
         { typeof(SimpleElement), c => Enumerables![typeof(PowerUpDefinitionValue)](c).OfType<PowerUpDefinitionValue>().Select(v => v.ConstantValue).WhereNotNull() },

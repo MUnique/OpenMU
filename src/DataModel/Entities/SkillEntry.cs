@@ -56,7 +56,7 @@ public class SkillEntry : INotifyPropertyChanged
     /// It is an IElement, because the duration can be dependent from the player attributes.
     /// </remarks>
     [Transient]
-    public IElement? PowerUpDuration { get; set; }
+    public (IElement PowerUpDuration, float? MaximumDuration)? PowerUpDuration { get; set; }
 
     /// <summary>
     /// Gets or sets the duration of the <see cref="PowerUps"/> for PvP.
@@ -65,7 +65,7 @@ public class SkillEntry : INotifyPropertyChanged
     /// It is an IElement, because the duration can be dependent from the player attributes.
     /// </remarks>
     [Transient]
-    public IElement? PowerUpDurationPvp { get; set; }
+    public (IElement PowerUpDuration, float? MaximumDuration)? PowerUpDurationPvp { get; set; }
 
     /// <summary>
     /// Gets or sets the chance of applying the <see cref="PowerUps"/>.

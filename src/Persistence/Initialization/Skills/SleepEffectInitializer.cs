@@ -10,7 +10,7 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
 
 /// <summary>
-/// Initializer for the sleep buff effect.
+/// Initializer for the sleep effect.
 /// </summary>
 public class SleepEffectInitializer : InitializerBase
 {
@@ -29,14 +29,14 @@ public class SleepEffectInitializer : InitializerBase
     {
         var magicEffect = this.Context.CreateNew<MagicEffectDefinition>();
         this.GameConfiguration.MagicEffects.Add(magicEffect);
-        magicEffect.Number = (short)MagicEffectNumber.Berserker;
-        magicEffect.Name = "Sleep Buff Skill Effect";
+        magicEffect.Number = (short)MagicEffectNumber.Sleep;
+        magicEffect.Name = "Sleep Skill Effect";
         magicEffect.InformObservers = true;
         magicEffect.SendDuration = false;
         magicEffect.StopByDeath = true;
         magicEffect.DurationDependsOnTargetLevel = true;
-        magicEffect.TargetLevelDivisor = 20;
-        magicEffect.TargetLevelDivisorPvp = 100;
+        magicEffect.MonsterTargetLevelDivisor = 20;
+        magicEffect.PlayerTargetLevelDivisor = 100;
 
         magicEffect.Chance = this.Context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.Chance.ConstantValue.Value = 0.2f; // 20%
@@ -70,6 +70,7 @@ public class SleepEffectInitializer : InitializerBase
 
         magicEffect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.Duration.ConstantValue.Value = 5; // 5 Seconds
+        magicEffect.Duration.MaximumValue = 20; // 20 Seconds
 
         var durationPerEnergy = this.Context.CreateNew<AttributeRelationship>();
         durationPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
@@ -79,6 +80,7 @@ public class SleepEffectInitializer : InitializerBase
 
         magicEffect.DurationPvp = this.Context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.DurationPvp.ConstantValue.Value = 4; // 4 Seconds
+        magicEffect.DurationPvp.MaximumValue = 10; // 10 Seconds
 
         var durationPerEnergyPvp = this.Context.CreateNew<AttributeRelationship>();
         durationPerEnergyPvp.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
@@ -91,5 +93,11 @@ public class SleepEffectInitializer : InitializerBase
         durationPerLevelPvp.InputOperator = InputOperator.Multiply;
         durationPerLevelPvp.InputOperand = 1f / 100f; // 100 levels adds 1s
         magicEffect.DurationPvp.RelatedValues.Add(durationPerLevelPvp);
+
+        var isAsleep = this.Context.CreateNew<PowerUpDefinition>();
+        magicEffect.PowerUpDefinitions.Add(isAsleep);
+        isAsleep.TargetAttribute = Stats.IsAsleep.GetPersistent(this.GameConfiguration);
+        isAsleep.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+        isAsleep.Boost.ConstantValue.Value = 1;
     }
 }

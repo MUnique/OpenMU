@@ -67,6 +67,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         { SkillNumber.ExpansionofWizardry, MagicEffectNumber.WizEnhance },
         { SkillNumber.Berserker, MagicEffectNumber.Berserker },
         { SkillNumber.KillingBlow, MagicEffectNumber.Weakness },
+        { SkillNumber.Sleep, MagicEffectNumber.Sleep },
     };
 
     private readonly IDictionary<byte, MasterSkillRoot> _masterSkillRoots;
@@ -662,6 +663,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         new BlessPotionEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         new BerserkerEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         new WeaknessEffectInitializer(this.Context, this.GameConfiguration).Initialize();
+        new SleepEffectInitializer(this.Context, this.GameConfiguration).Initialize();
     }
 
     private void MapSkillsToEffects()

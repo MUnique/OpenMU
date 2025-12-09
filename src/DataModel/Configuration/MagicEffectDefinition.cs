@@ -54,29 +54,35 @@ public partial class MagicEffectDefinition
     /// <summary>
     /// Gets or sets a value indicating whether the duration of the effect depends on the target's level.
     /// </summary>
-    public bool DurationDependsOnTargetLevel { get; set; } = false;
+    public bool DurationDependsOnTargetLevel { get; set; }
 
     /// <summary>
     /// Gets or sets a value by which the effect target's (monster) level should be divided in case <see cref="DurationDependsOnTargetLevel"/> is <c>true</c>.
     /// </summary>
-    public float TargetLevelDivisor { get; set; } = 1f;
+    public float MonsterTargetLevelDivisor { get; set; } = 1f;
 
     /// <summary>
     /// Gets or sets a value by which the effect target's (player) level should be divided in case <see cref="DurationDependsOnTargetLevel"/> is <c>true</c>.
     /// </summary>
-    public float TargetLevelDivisorPvp { get; set; } = 1f;
+    public float PlayerTargetLevelDivisor { get; set; } = 1f;
 
     /// <summary>
     /// Gets or sets the chance of applying the effect, in decimals.
     /// </summary>
+    /// <remarks>
+    /// Results in a value of 1.0 if not set.
+    /// </remarks>
     [MemberOfAggregate]
-    public PowerUpDefinitionValue? Chance { get; set; }
+    public virtual PowerUpDefinitionValue? Chance { get; set; }
 
     /// <summary>
     /// Gets or sets the chance of applying the effect in PvP, in decimals.
     /// </summary>
+    /// <remarks>
+    /// Results in the same value as <see cref="Chance"/> if not set.
+    /// </remarks>
     [MemberOfAggregate]
-    public PowerUpDefinitionValue? ChancePvp { get; set; }
+    public virtual PowerUpDefinitionValue? ChancePvp { get; set; }
 
     /// <summary>
     /// Gets or sets the duration which describes how long the <see cref="PowerUpDefinitions"/> apply, in seconds.
@@ -85,8 +91,11 @@ public partial class MagicEffectDefinition
     public virtual PowerUpDefinitionValue? Duration { get; set; }
 
     /// <summary>
-    /// Gets or sets the duration which describes how long the <see cref="PowerUpDefinitions"/> apply to PVP, in seconds.
+    /// Gets or sets the duration which describes how long the <see cref="PowerUpDefinitions"/> apply to PvP, in seconds.
     /// </summary>
+    /// <remarks>
+    /// Results in the same value as <see cref="Duration"/> if not set.
+    /// </remarks>
     [MemberOfAggregate]
     public virtual PowerUpDefinitionValue? DurationPvp { get; set; }
 

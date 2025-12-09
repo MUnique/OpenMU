@@ -1465,11 +1465,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         var result = new (AttributeDefinition Target, IElement BuffPowerUp)[skill.MagicEffectDef.PowerUpDefinitions.Count];
         var durationElement = this.Attributes!.CreateDurationElement(skill.MagicEffectDef.Duration);
         var durationElementPvp = skill.MagicEffectDef.DurationPvp is { } durationPvp ? this.Attributes!.CreateDurationElement(durationPvp) : durationElement;
-        var chanceElement = skillEntry.Skill.MagicEffectDef!.Chance is { } chance ? this.Attributes!.CreateChanceElement(chance) : new ConstantElement(1.0f);
-        var chanceElementPvp = skillEntry.Skill.MagicEffectDef.ChancePvp is { } chancePvp ? this.Attributes!.CreateChanceElement(chancePvp) : chanceElement;
+        var chanceElement = skill.MagicEffectDef.Chance is { } chance ? this.Attributes!.CreateChanceElement(chance) : new ConstantElement(1.0f);
+        var chanceElementPvp = skill.MagicEffectDef.ChancePvp is { } chancePvp ? this.Attributes!.CreateChanceElement(chancePvp) : chanceElement;
         AddSkillPowersToResult(skill);
-        skillEntry.PowerUpDuration = durationElement;
-        skillEntry.PowerUpDurationPvp = durationElementPvp;
+        skillEntry.PowerUpDuration = (durationElement, skill.MagicEffectDef.Duration.MaximumValue);
+        skillEntry.PowerUpDurationPvp = (durationElementPvp, skill.MagicEffectDef.DurationPvp?.MaximumValue);
         skillEntry.PowerUpChance = chanceElement;
         skillEntry.PowerUpChancePvp = chanceElementPvp;
         skillEntry.PowerUps = result;

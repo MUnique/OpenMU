@@ -310,13 +310,14 @@ public static class AttackableExtensions
             player.CreateMagicEffectPowerUp(skillEntry);
         }
 
-        float chance = attacker is Player ? skillEntry.PowerUpChancePvp!.Value : skillEntry.PowerUpChance!.Value;
+        float chance = target is Player ? skillEntry.PowerUpChancePvp!.Value : skillEntry.PowerUpChance!.Value;
         if (!Rand.NextRandomBool(Convert.ToDouble(chance)))
         {
             return;
         }
 
-        await target.ApplyMagicEffectAsync(attacker, skillEntry.Skill!.MagicEffectDef!, attacker is Player ? skillEntry.PowerUpDurationPvp! : skillEntry.PowerUpDuration!, skillEntry.PowerUps!).ConfigureAwait(false);
+        var duration = ((IElement, float?))(target is Player ? skillEntry.PowerUpDurationPvp! : skillEntry.PowerUpDuration!);
+        await target.ApplyMagicEffectAsync(attacker, skillEntry.Skill!.MagicEffectDef!, duration, skillEntry.PowerUps!).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -430,7 +431,7 @@ public static class AttackableExtensions
             && targetAttribute is not null)
         {
             // power-up is the wrong term here... it's more like a power-down ;-)
-            await target.ApplyMagicEffectAsync(attacker, effectDefinition, duration, (targetAttribute, powerUp)).ConfigureAwait(false);
+            await target.ApplyMagicEffectAsync(attacker, effectDefinition, (duration, null), (targetAttribute, powerUp)).ConfigureAwait(false);
             applied = true;
         }
 
@@ -778,17 +779,19 @@ public static class AttackableExtensions
     /// <param name="magicEffectDefinition">The magic effect definition.</param>
     /// <param name="duration">The duration.</param>
     /// <param name="powerUps">The power ups of the effect.</param>
-    private static async ValueTask ApplyMagicEffectAsync(this IAttackable target, IAttacker attacker, MagicEffectDefinition magicEffectDefinition, IElement duration, params (AttributeDefinition Target, IElement Boost)[] powerUps)
+    private static async ValueTask ApplyMagicEffectAsync(this IAttackable target, IAttacker attacker, MagicEffectDefinition magicEffectDefinition, (IElement DurElement, float? MaxDur) duration, params (AttributeDefinition Target, IElement Boost)[] powerUps)
     {
-        float levelDeduction = 0;
+        float finalDuration = duration.DurElement.Value;
+
         if (magicEffectDefinition.DurationDependsOnTargetLevel)
         {
-            levelDeduction = target is Player
-                ? target.Attributes[Stats.Level] / magicEffectDefinition.TargetLevelDivisorPvp
-                : target.Attributes[Stats.Level] / magicEffectDefinition.TargetLevelDivisor;
+            finalDuration -= target is Player
+                ? target.Attributes[Stats.Level] / magicEffectDefinition.PlayerTargetLevelDivisor
+                : target.Attributes[Stats.Level] / magicEffectDefinition.MonsterTargetLevelDivisor;
         }
 
-        TimeSpan durationSpan = TimeSpan.FromSeconds(duration.Value - levelDeduction);
+        finalDuration = Math.Min(finalDuration, duration.MaxDur ?? float.MaxValue);
+        TimeSpan durationSpan = TimeSpan.FromSeconds(finalDuration);
         if (durationSpan < TimeSpan.FromSeconds(1))
         {
             return;
