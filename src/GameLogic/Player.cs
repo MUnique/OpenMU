@@ -1869,9 +1869,30 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         try
         {
-            if (!await this.Inventory.TryTakeAllAsync(this.TemporaryStorage).ConfigureAwait(false))
+            // First try the normal way
+            if (await this.Inventory.TryTakeAllAsync(this.TemporaryStorage).ConfigureAwait(false))
             {
-                this.Logger.LogWarning("Failed to return all items from temporary storage to inventory. Some items may be lost.");
+                this.Logger.LogDebug("Successfully returned all items from temporary storage to inventory");
+            }
+            else
+            {
+                // If normal way fails, force-add remaining items one by one
+                this.Logger.LogWarning("Could not return all items via TryTakeAllAsync, attempting to force-add remaining items");
+                
+                var remainingItems = this.TemporaryStorage.Items.ToList();
+                foreach (var item in remainingItems)
+                {
+                    await this.TemporaryStorage.RemoveItemAsync(item).ConfigureAwait(false);
+                    
+                    // Try to add to inventory
+                    if (!await this.Inventory.AddItemAsync(item).ConfigureAwait(false))
+                    {
+                        // As a last resort, try to add to the character's item storage directly
+                        this.Logger.LogError("Failed to return item {item} to inventory. Item will be added to character storage directly.", item);
+                        this.SelectedCharacter?.Inventory?.Items.Add(item);
+                        item.ItemSlot = 0; // Reset slot since we don't know where it should go
+                    }
+                }
             }
         }
         catch (Exception ex)
