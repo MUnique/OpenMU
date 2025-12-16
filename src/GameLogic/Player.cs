@@ -1869,7 +1869,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         try
         {
-            // First try the normal way - this includes rollback if it fails
+            // Try the normal way - TryTakeAllAsync automatically rolls back all changes
+            // if any item cannot be added, leaving items in TemporaryStorage for fallback
             if (await this.Inventory.TryTakeAllAsync(this.TemporaryStorage).ConfigureAwait(false))
             {
                 this.Logger.LogDebug("Successfully returned all items from temporary storage to inventory");
@@ -1877,14 +1878,14 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             else
             {
                 // TryTakeAllAsync failed and rolled back - items are still in TemporaryStorage
-                // Log this critical situation - items will be lost
+                // Log this critical situation - items may be lost if fallback also fails
                 this.Logger.LogError(
-                    "CRITICAL: Could not return {count} items from temporary storage to inventory due to full inventory. Items will be lost: {items}",
+                    "CRITICAL: Could not return {count} items from temporary storage to inventory due to full inventory. Attempting fallback. Items: {items}",
                     items.Count,
                     string.Join(", ", items.Select(i => $"{i.Definition?.Name ?? "Unknown"}(Slot:{i.ItemSlot})")));
                 
-                // Try one more time to force-add items individually
-                foreach (var item in this.TemporaryStorage.Items.ToList())
+                // Try one more time to force-add items individually using the captured list
+                foreach (var item in items)
                 {
                     await this.TemporaryStorage.RemoveItemAsync(item).ConfigureAwait(false);
                     if (!await this.Inventory.AddItemAsync(item).ConfigureAwait(false))
