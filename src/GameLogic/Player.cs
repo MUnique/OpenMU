@@ -1854,7 +1854,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     private async ValueTask ReturnTemporaryStorageItemsAsync()
     {
-        if (this.TemporaryStorage is null || this.Inventory is null)
+        if (this.TemporaryStorage is null || this.Inventory is null || this.SelectedCharacter is null)
         {
             return;
         }
@@ -1869,28 +1869,27 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         try
         {
-            // First try the normal way
+            // First try the normal way - this includes rollback if it fails
             if (await this.Inventory.TryTakeAllAsync(this.TemporaryStorage).ConfigureAwait(false))
             {
                 this.Logger.LogDebug("Successfully returned all items from temporary storage to inventory");
             }
             else
             {
-                // If normal way fails, force-add remaining items one by one
-                this.Logger.LogWarning("Could not return all items via TryTakeAllAsync, attempting to force-add remaining items");
+                // TryTakeAllAsync failed and rolled back - items are still in TemporaryStorage
+                // Log this critical situation - items will be lost
+                this.Logger.LogError(
+                    "CRITICAL: Could not return {count} items from temporary storage to inventory due to full inventory. Items will be lost: {items}",
+                    items.Count,
+                    string.Join(", ", items.Select(i => $"{i.Definition?.Name ?? "Unknown"}(Slot:{i.ItemSlot})")));
                 
-                var remainingItems = this.TemporaryStorage.Items.ToList();
-                foreach (var item in remainingItems)
+                // Try one more time to force-add items individually
+                foreach (var item in this.TemporaryStorage.Items.ToList())
                 {
                     await this.TemporaryStorage.RemoveItemAsync(item).ConfigureAwait(false);
-                    
-                    // Try to add to inventory
                     if (!await this.Inventory.AddItemAsync(item).ConfigureAwait(false))
                     {
-                        // As a last resort, try to add to the character's item storage directly
-                        this.Logger.LogError("Failed to return item {item} to inventory. Item will be added to character storage directly.", item);
-                        this.SelectedCharacter?.Inventory?.Items.Add(item);
-                        item.ItemSlot = 0; // Reset slot since we don't know where it should go
+                        this.Logger.LogError("Failed to return item {item} to inventory. Item is lost.", item);
                     }
                 }
             }
