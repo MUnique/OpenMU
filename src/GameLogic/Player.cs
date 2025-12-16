@@ -1722,6 +1722,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             await party.KickMySelfAsync(this).ConfigureAwait(false);
         }
 
+        await this.ReturnTemporaryStorageItemsAsync().ConfigureAwait(false);
+
         await this.SetSelectedCharacterAsync(null).ConfigureAwait(false);
         await this.MagicEffectList.ClearAllEffectsAsync().ConfigureAwait(false);
 
@@ -1848,6 +1850,38 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             await this.CurrentMap.RemoveAsync(this).ConfigureAwait(false);
             this.CurrentMap = null;
         }
+    }
+
+    private async ValueTask ReturnTemporaryStorageItemsAsync()
+    {
+        if (this.TemporaryStorage is null || this.Inventory is null)
+        {
+            return;
+        }
+
+        var items = this.TemporaryStorage.Items.ToList();
+        if (items.Count == 0)
+        {
+            return;
+        }
+
+        this.Logger.LogInformation("Returning {count} items from temporary storage to inventory for player {player}", items.Count, this.Name);
+
+        try
+        {
+            if (!await this.Inventory.TryTakeAllAsync(this.TemporaryStorage).ConfigureAwait(false))
+            {
+                this.Logger.LogWarning("Failed to return all items from temporary storage to inventory. Some items may be lost.");
+            }
+        }
+        catch (Exception ex)
+        {
+            this.Logger.LogError(ex, "Error returning items from temporary storage to inventory");
+        }
+
+        // Clear the opened NPC reference after returning items
+        this.OpenedNpc = null;
+        this.Vault = null;
     }
 
     private async ValueTask RegenerateHeroStateAsync()
