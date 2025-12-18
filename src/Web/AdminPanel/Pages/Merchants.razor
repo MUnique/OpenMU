@@ -1,18 +1,20 @@
 ﻿@page "/merchants"
 
+@using MUnique.OpenMU.Web.AdminPanel.Properties
 @using Microsoft.AspNetCore.Components.QuickGrid;
+@using MUnique.OpenMU.Interfaces
 @using MUnique.OpenMU.Persistence
 
-<PageTitle>OpenMU: Merchants</PageTitle>
-<Breadcrumb IsFirstFromRoot="true" Caption="Merchants"/>
+<PageTitle>OpenMU: @Resources.Merchants</PageTitle>
+<Breadcrumb IsFirstFromRoot="true" Caption=@Resources.Merchants/>
 
-<h1>Merchants</h1>
+<h1>@Resources.Merchants</h1>
 
 
 @if (this.ViewModels is null)
 {
     <span class="spinner-border" role="status" aria-hidden="true"></span>
-    <span class="sr-only">Loading...</span>
+    <span class="sr-only">@Resources.Loading</span>
     return;
 }
 
@@ -24,7 +26,7 @@
             </PropertyColumn>
 
             <TemplateColumn Align="Align.Center">
-                <button type="button" class="btn-info" @onclick="@(() => this.OnMerchantEditClickAsync(context))">Edit</button>
+                <button type="button" class="btn-info" @onclick="@(() => this.OnMerchantEditClickAsync(context))">@Resources.Edit</button>
             </TemplateColumn>
         </QuickGrid>
     </div>
@@ -33,16 +35,16 @@
 else
 {
     <div class="d-flex flex-row">
-        <button type="button" class="btn-lg btn-outline-dark mr-3" @onclick="this.OnBackButtonClickAsync">&lt; Back</button>
-        <h2>@this._selectedMerchant.Merchant.Designation</h2>
+        <button type="button" class="btn-lg btn-outline-dark mr-3" @onclick="this.OnBackButtonClickAsync">&lt; @Resources.Back</button>
+        <h2>@((LocalizedString?)this._selectedMerchant.Merchant.Designation)</h2>
     </div>
     <hr/>
     <CascadingValue TValue="IContext" Value="this._persistenceContext">
         <EditForm Model="this._selectedMerchant.Merchant" OnValidSubmit="this.OnSaveButtonClickAsync">
             <ItemStorageField @bind-Value="this._selectedMerchant.Merchant.MerchantStore" HideLabel="true"/>
             <hr />
-            <button type="submit" class="primary-button">Save changes</button>
-            <button type="button" class="cancel-button" @onclick="this.OnCancelButtonClickAsync">Discard changes</button>
+            <button type="submit" class="primary-button">@Resources.SaveChanges</button>
+            <button type="button" class="cancel-button" @onclick="this.OnCancelButtonClickAsync">@Resources.DiscardChanges</button>
         </EditForm>
     </CascadingValue>
 }

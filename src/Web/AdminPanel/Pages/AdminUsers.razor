@@ -1,18 +1,23 @@
 ﻿@page "/users"
+@using MUnique.OpenMU.DataModel
+@using MUnique.OpenMU.DataModel.Entities
+@using MUnique.OpenMU.Web.AdminPanel.Properties
 @using MUnique.OpenMU.Web.AdminPanel.Services
 
 
 @inject IUserService UserService;
-
-<PageTitle>OpenMU: Admin Users</PageTitle>
-<Breadcrumb IsFirstFromRoot="true" Caption="Admin Users"/>
-<h1>Admin Users</h1>
+@{
+  var title = @MUnique.OpenMU.Web.AdminPanel.Properties.Resources.AdminUsers;
+}
+<PageTitle>OpenMU: @title</PageTitle>
+<Breadcrumb IsFirstFromRoot="true" Caption="@title"/>
+<h1>@title</h1>
 
 <div>
     <table>
         <thead>
-        <th class="col-10">Login Name</th>
-        <th class="col-1">Actions</th>
+        <th class="col-10">@typeof(Account).GetPropertyCaption(nameof(Account.LoginName))</th>
+        <th class="col-1">@Resources.Actions</th>
         <th class="col-1"></th>
         </thead>
         <tbody>
@@ -22,12 +27,12 @@
             <tr>
                 <td>@user</td>
                 <td>
-                    <button type="button" class="btn btn-sm btn-primary" @onclick="async () => await this.UserService.ChangePasswordInModalDialogAsync(user)">Change password</button>
+                    <button type="button" class="btn btn-sm btn-primary" @onclick="async () => await this.UserService.ChangePasswordInModalDialogAsync(user)">@Resources.ChangePassword</button>
                 </td>
                 <td>
                     @if (users.Count > 1)
                     {
-                        <button type="button" class="btn btn-sm btn-danger" @onclick="async () => await this.UserService.DeleteUserAsync(user)">Delete</button>
+                        <button type="button" class="btn btn-sm btn-danger" @onclick="async () => await this.UserService.DeleteUserAsync(user)">@Resources.Delete</button>
                     }
                 </td>
             </tr>
@@ -35,7 +40,7 @@
         </tbody>
         
         <tfoot>
-            <td><button type="button" class="btn btn-sm btn-success" @onclick="@this.UserService.CreateNewInModalDialogAsync">Create User</button></td>
+            <td><button type="button" class="btn btn-sm btn-success" @onclick="@this.UserService.CreateNewInModalDialogAsync">@Resources.CreateUser</button></td>
             <td></td>
             <td></td>
         </tfoot>

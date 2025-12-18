@@ -2,12 +2,11 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Web.AdminPanel.Components;
+namespace MUnique.OpenMU.Web.AdminPanel.Components.ConnectServer;
 
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using MUnique.OpenMU.DataModel.Configuration;
-using MUnique.OpenMU.Web.AdminPanel.Models;
 
 /// <summary>
 /// Edit component for the <see cref="ConnectServerDefinition"/>.

@@ -1,5 +1,6 @@
 ﻿@using MUnique.OpenMU.DataModel.Configuration
 @using MUnique.OpenMU.Persistence;
+@using MUnique.OpenMU.Web.Map.Properties
 
 <nav>
     <div>
@@ -15,12 +16,12 @@
 
             <li>
                 <NavLink href="" Match="NavLinkMatch.All">
-                    <span class="oi oi-home" aria-hidden="true"></span> Home
+                    <span class="oi oi-home" aria-hidden="true"></span> @(Resources.Home)
                 </NavLink>
             </li>
             <li>
                 <NavLink href="maps">
-                    <span class="oi oi-project" aria-hidden="true"></span> Maps
+                    <span class="oi oi-project" aria-hidden="true"></span> @(Resources.Maps)
                 </NavLink>
             </li>
         </ul>

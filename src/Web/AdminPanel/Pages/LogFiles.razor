@@ -1,16 +1,17 @@
 ﻿@page "/logfiles"
 
 @using System.IO
+@using MUnique.OpenMU.Web.AdminPanel.Properties
 
-<PageTitle>OpenMU: Log Files</PageTitle>
-<Breadcrumb IsFirstFromRoot="true" Caption="Log Files"/>
+<PageTitle>OpenMU: @Resources.LogFiles</PageTitle>
+<Breadcrumb IsFirstFromRoot="true" Caption="@Resources.LogFiles"/>
 <div>
     <table>
         <thead>
         <tr>
-            <th>File name</th>
-            <th>Last update</th>
-            <th>Size</th>
+            <th>@Resources.FileName</th>
+            <th>@Resources.LastUpdate</th>
+            <th>@Resources.Size</th>
         </tr>
         </thead>
         <tbody>

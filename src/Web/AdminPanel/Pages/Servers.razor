@@ -1,16 +1,18 @@
 ﻿@page "/servers"
-@using MUnique.OpenMU.Interfaces
+
 @using System.ComponentModel
+@using MUnique.OpenMU.Interfaces
+@using MUnique.OpenMU.Web.AdminPanel.Properties
 
 @implements IDisposable;
 
-<PageTitle>OpenMU: Servers</PageTitle>
-<Breadcrumb IsFirstFromRoot="true" Caption="Servers"/>
-<h1>Servers</h1>
+<PageTitle>OpenMU: @Resources.Servers</PageTitle>
+<Breadcrumb IsFirstFromRoot="true" Caption="@Resources.Servers"/>
+<h1>@Resources.Servers</h1>
 
 @if (_servers == null)
 {
-    <p><em>Loading...</em></p>
+    <p><em>@Resources.Loading</em></p>
 }
 else
 {
@@ -19,10 +21,10 @@ else
     <thead>
     <tr>
       <th></th>
-      <th class="col-sm-7">Server Name</th>
-      <th class="col-sm-1">Players</th>
-      <th class="col-sm-2">Current State</th>
-      <th class="col-sm-2">Action</th>
+      <th class="col-sm-7">@Resources.ServerName</th>
+      <th class="col-sm-1">@Resources.PlayerCount</th>
+      <th class="col-sm-2">@Resources.CurrentState</th>
+      <th class="col-sm-2">@Resources.Action</th>
     </tr>
     </thead>
     <tfoot>
@@ -38,10 +40,10 @@ else
       <td></td>
       <td>
         <NavLink class="btn btn-primary" href="create-game-server">
-          <span class="oi oi-plus"></span> Game Server
+          <span class="oi oi-plus"></span> @Resources.GameServer
         </NavLink>
         <NavLink class="btn btn-primary" href="create-connect-server">
-            <span class="oi oi-plus"></span> Connect Server
+            <span class="oi oi-plus"></span> @Resources.ConnectServer
         </NavLink>
       </td>
       <td></td>
@@ -60,7 +62,7 @@ else
           {
             <button type="button" class="btn-warning" @onclick="this.OnReloadAndRestartClickAsync">
               <span class="oi oi-reload"></span>
-              Reload configuration and restart all Game Servers
+              @Resources.ReloadConfigurationAndRestartAllGameServers
             </button>
           }
         }

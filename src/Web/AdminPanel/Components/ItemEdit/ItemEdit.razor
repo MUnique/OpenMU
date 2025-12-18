@@ -1,6 +1,7 @@
 ﻿@using MUnique.OpenMU.DataModel
 @using MUnique.OpenMU.DataModel.Configuration.Items
 @using MUnique.OpenMU.GameLogic
+@using MUnique.OpenMU.Web.AdminPanel.Properties
 @using MUnique.OpenMU.Web.AdminPanel.Services
 
 @if (this._viewModel is null)
@@ -52,9 +53,9 @@
         @if (this._viewModel.AncientBonus is { } ancientBonus)
         {
             <div>
-                <label for="ancientBonusLevel">Ancient Option Level: </label>
+                <label for="ancientBonusLevel">@MUnique.OpenMU.Web.AdminPanel.Properties.Resources.AncientOptionLevel: </label>
                 <InputNumber id="ancientBonusLevel" min="1" max="2" @bind-Value="@ancientBonus.Level" />
-                <span>Bonus: @ancientBonus</span>
+                <span>@MUnique.OpenMU.Web.AdminPanel.Properties.Resources.Bonus: @ancientBonus</span>
             </div>
         }
     }
@@ -165,7 +166,7 @@
                 <NumberField
                     Min="1"
                     Max="@socketOption.Option.LevelDependentOptions.Max(o => o.Level)"
-                    Label="Option Level:" @bind-Value="socket.Level" />
+                    Label="@(Resources.OptionLevel + ":")" @bind-Value="socket.Level" />
             }
             else
             {
@@ -189,12 +190,12 @@
     {
         <LookupField
             @bind-Value="@this._viewModel.FenrirOption"
-            ExplicitLookupController="@(new EnumerableLookupController(ViewModel.FenrirOptions))" />
+            ExplicitLookupController="@(new EnumerableLookupController(ItemViewModel.FenrirOptions))" />
     }
     
     @if (this._viewModel.PossibleGuardianOption is { })
     {
-        <BooleanField Label="Has Guardian Option (Level 380 PvP)" @bind-Value="@this._viewModel.HasGuardianOption" />
+        <BooleanField Label=@MUnique.OpenMU.Web.AdminPanel.Properties.Resources.HasGuardianOption @bind-Value="@this._viewModel.HasGuardianOption" />
     }
 
     <ValidationSummary />

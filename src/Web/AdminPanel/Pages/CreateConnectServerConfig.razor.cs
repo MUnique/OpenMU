@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Components;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Web.AdminPanel.Properties;
 
 /// <summary>
 /// Razor page which shows objects of the specified type in a grid.
@@ -140,39 +141,39 @@ public partial class CreateConnectServerConfig : ComponentBase, IAsyncDisposable
             var existingServerDefinitions = (await saveContext.GetAsync<ConnectServerDefinition>().ConfigureAwait(false)).ToList();
             if (existingServerDefinitions.Any(def => def.ServerId == this._viewModel?.ServerId))
             {
-                this.ToastService.ShowError($"Server with Id {this._viewModel?.ServerId} already exists. Please use another value.");
+                this.ToastService.ShowError(string.Format(Resources.ServerWithIdAlreadyExists, this._viewModel?.ServerId));
                 return;
             }
 
             if (existingServerDefinitions.Any(def => def.ClientListenerPort == this._viewModel?.NetworkPort))
             {
-                this.ToastService.ShowError($"A server with tcp port {this._viewModel?.NetworkPort} already exists. Please use another tcp port.");
+                this.ToastService.ShowError(string.Format(Resources.ServerWithPortAlreadyExists, this._viewModel?.NetworkPort));
                 return;
             }
 
-            this._initState = "Creating Configuration ...";
+            this._initState = Resources.CreatingConfigurationInfo;
             await this.InvokeAsync(this.StateHasChanged);
             var connectServerDefinition = await this.CreateDefinitionByViewModelAsync(saveContext).ConfigureAwait(false);
-            this._initState = "Saving Configuration ...";
+            this._initState = Resources.SavingConfigurationInfo;
             await this.InvokeAsync(this.StateHasChanged);
             var success = await saveContext.SaveChangesAsync().ConfigureAwait(true);
 
             // if success, init new game server instance
             if (success)
             {
-                this.ToastService.ShowSuccess("The connection server configuration has been saved. Initializing connect server ...");
-                this._initState = "Initializing Connect Server ...";
+                this.ToastService.ShowSuccess(Resources.ConnectionServerConfigurationSaved);
+                this._initState = Resources.InitializingConnectServerInfo;
                 await this.InvokeAsync(this.StateHasChanged);
                 await this.ServerInstanceManager.InitializeConnectServerAsync(connectServerDefinition.ConfigurationId);
                 this.NavigationManager.NavigateTo("servers");
                 return;
             }
 
-            this.ToastService.ShowError("No changes have been saved.");
+            this.ToastService.ShowError(Resources.NoChangesSaved);
         }
         catch (Exception ex)
         {
-            this.ToastService.ShowError($"An unexpected error occurred: {ex.Message}.");
+            this.ToastService.ShowError(string.Format(Resources.UnexpectedErrorOccurred, ex.Message));
         }
 
         this._initState = null;
