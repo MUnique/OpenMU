@@ -16,7 +16,8 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which opens NPC windows.
 /// </summary>
 [Guid("D8AC2F15-AB30-4432-A042-A41ACA1B274D")]
-[PlugIn("NPC open merchant chat command", "Opens the merchant NPC store.")]
+[PlugIn]
+[Display(Name = "NPC open merchant chat command", Description = "Opens the merchant NPC store.")]
 [ChatCommandHelp(Command, "Opens the NPC store.", null)]
 public class NpcChatCommandPlugIn : ChatCommandPlugInBase<NpcChatCommandPlugIn.Arguments>, ISupportCustomConfiguration<NpcChatCommandPlugIn.NpcChatCommandConfiguration>, ISupportDefaultCustomConfiguration, IDisabledByDefault
 {

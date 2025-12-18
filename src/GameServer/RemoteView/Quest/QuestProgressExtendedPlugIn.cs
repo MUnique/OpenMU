@@ -15,7 +15,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The extended implementation of the <see cref="IQuestProgressPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn(nameof(QuestProgressExtendedPlugIn), "The extended implementation of the IQuestProgressPlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = nameof(QuestProgressExtendedPlugIn), Description = "The extended implementation of the IQuestProgressPlugIn which is forwarding everything to the game client with specific data packets.")]
 [Guid("30446944-29C6-48EE-A62E-3B724E7E444D")]
 [MinimumClient(106, 3, ClientLanguage.Invariant)]
 public class QuestProgressExtendedPlugIn : IQuestProgressPlugIn

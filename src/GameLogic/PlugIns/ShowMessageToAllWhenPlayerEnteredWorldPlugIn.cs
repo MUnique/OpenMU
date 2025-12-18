@@ -11,7 +11,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// A plugin which shows a message to all players when a player enters the game.
 /// </summary>
-[PlugIn(nameof(ShowMessageToAllWhenPlayerEnteredWorldPlugIn), "Shows a message to all players when a player enters the game.")]
+[PlugIn]
+[Display(Name = nameof(ShowMessageToAllWhenPlayerEnteredWorldPlugIn), Description = "Shows a message to all players when a player enters the game.")]
 [Guid("12784A17-1085-408E-99CE-5233FDA2B177")]
 public class ShowMessageToAllWhenPlayerEnteredWorldPlugIn : IPlayerStateChangedPlugIn
 {

@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Handles the trade money packets.
 /// </summary>
-[PlugIn("TradeMoneyHandlerPlugIn", "Handles the trade money packets.")]
+[PlugIn]
+[Display(Name = "TradeMoneyHandlerPlugIn", Description = "Handles the trade money packets.")]
 [Guid("3c18f0ca-4ad8-4e07-a111-0acbe81256ca")]
 internal class TradeMoneyHandlerPlugIn : IPacketHandlerPlugIn
 {

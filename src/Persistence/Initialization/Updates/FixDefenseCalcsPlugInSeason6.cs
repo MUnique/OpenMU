@@ -16,7 +16,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// This update fixes character stats, magic effects, and options related to defense.
 /// </summary>
-[PlugIn(PlugInName, PlugInDescription)]
+[PlugIn]
+[Display(Name = PlugInName, Description = PlugInDescription)]
 [Guid("447FA95B-091B-4950-B1F3-F4EB6D20DE19")]
 public class FixDefenseCalcsPlugInSeason6 : FixDefenseCalcsPlugInBase
 {

@@ -14,7 +14,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IShowAvailableQuestsPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn("Quest - Show available quests", "The default implementation of the IShowAvailableQuestsPlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = "Quest - Show available quests", Description = "The default implementation of the IShowAvailableQuestsPlugIn which is forwarding everything to the game client with specific data packets.")]
 [Guid("63C7B3E2-EF66-49BB-A9F8-EFBD2389588F")]
 public class ShowAvailableQuestsPlugIn : IShowAvailableQuestsPlugIn
 {

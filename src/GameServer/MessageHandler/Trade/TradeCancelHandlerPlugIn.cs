@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Handles the trade cancel packets.
 /// </summary>
-[PlugIn("TradeCancelHandlerPlugIn", "Handles the trade cancel packets.")]
+[PlugIn]
+[Display(Name = "TradeCancelHandlerPlugIn", Description = "Handles the trade cancel packets.")]
 [Guid("13c7ba03-0ec2-4f41-bc0a-30fb9a035240")]
 internal class TradeCancelHandlerPlugIn : IPacketHandlerPlugIn
 {

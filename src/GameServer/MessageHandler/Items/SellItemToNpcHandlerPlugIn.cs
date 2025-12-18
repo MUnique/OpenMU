@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Handler for item sale to npc packets.
 /// </summary>
-[PlugIn("SellItemToNpcHandlerPlugIn", "Handler for item sale to npc packets.")]
+[PlugIn]
+[Display(Name = "SellItemToNpcHandlerPlugIn", Description = "Handler for item sale to npc packets.")]
 [Guid("8bbf8737-8731-4975-baa8-e14f77451b85")]
 internal class SellItemToNpcHandlerPlugIn : IPacketHandlerPlugIn
 {

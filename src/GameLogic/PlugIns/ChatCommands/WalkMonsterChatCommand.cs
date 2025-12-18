@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// Chat command to let a monster walk to specific coordinates.
 /// </summary>
 [Guid("1852FED5-8184-431E-8C5F-5131356D348F")]
-[PlugIn("Walk remote monster chat command", "Handles the chat command '/walkmonster <id> <x> <y>'. Walks a previously created monster which can be remote controlled by the GM.")]
+[PlugIn]
+[Display(Name = "Walk remote monster chat command", Description = "Handles the chat command '/walkmonster <id> <x> <y>'. Walks a previously created monster which can be remote controlled by the GM.")]
 [ChatCommandHelp(Command, "Walks a previously created monster which can be remote controlled by the game master.", typeof(MoveMonsterCommandArgs), CharacterStatus.GameMaster)]
 internal class WalkMonsterChatCommand : ChatCommandPlugInBase<MoveMonsterCommandArgs>
 {

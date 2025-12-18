@@ -12,7 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which handles the startds command.
 /// </summary>
 [Guid("3684DC79-D81E-4033-AB2C-537334CF0BB6")]
-[PlugIn(nameof(StartDevilSquareEventChatCommandPlugIn), "Handles the chat command '/startds'. Starts the devil square event at the next possible time.")]
+[PlugIn]
+[Display(Name = nameof(StartDevilSquareEventChatCommandPlugIn), Description = "Handles the chat command '/startds'. Starts the devil square event at the next possible time.")]
 [ChatCommandHelp(Command, "Starts the devil square event at the next possible time.", CharacterStatus.GameMaster)]
 public class StartDevilSquareEventChatCommandPlugIn : IChatCommandPlugIn
 {

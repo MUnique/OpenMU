@@ -12,7 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// The consume handler for the harmony jewel.
 /// </summary>
 [Guid("DAC3E5C2-FF0F-4773-AFBF-EBDC0C35336D")]
-[PlugIn(nameof(HarmonyJewelConsumeHandlerPlugIn), "Plugin which handles the jewel of harmony consumption.")]
+[PlugIn]
+[Display(Name = nameof(HarmonyJewelConsumeHandlerPlugIn), Description = "Plugin which handles the jewel of harmony consumption.")]
 public class HarmonyJewelConsumeHandlerPlugIn : ItemUpgradeConsumeHandlerPlugIn
 {
     /// <summary>

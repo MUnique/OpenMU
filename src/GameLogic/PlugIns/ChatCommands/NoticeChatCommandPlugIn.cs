@@ -12,7 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which handles post commands by sending a golden notice message to all players.
 /// </summary>
 [Guid("2BFC9464-4B76-4D76-8CE1-69B712B65E6C")]
-[PlugIn("Notice chat command", "Handles the chat command '/goldnotice message'. Sends a global golden notice message to all players of the game.")]
+[PlugIn]
+[Display(Name = "Notice chat command", Description = "Handles the chat command '/goldnotice message'. Sends a global golden notice message to all players of the game.")]
 public class NoticeChatCommandPlugIn : IChatCommandPlugIn
 {
     private const string CommandKey = "/goldnotice";

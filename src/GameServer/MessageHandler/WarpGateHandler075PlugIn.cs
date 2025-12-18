@@ -16,7 +16,8 @@ using MUnique.OpenMU.PlugIns;
 /// Handler for warp gate packets.
 /// This one is called when a player has entered a gate area, and sends a gate enter request.
 /// </summary>
-[PlugIn(nameof(WarpGateHandler075PlugIn), "Handler for warp gate packets.")]
+[PlugIn]
+[Display(Name = nameof(WarpGateHandler075PlugIn), Description = "Handler for warp gate packets.")]
 [Guid("264CFC8C-30D1-4536-97FD-6811A9544997")]
 internal class WarpGateHandler075PlugIn : IPacketHandlerPlugIn
 {

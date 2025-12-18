@@ -11,7 +11,8 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which sets a character's money.
 /// </summary>
 [Guid("00AA4F0E-911D-49FE-8D88-114C7496D383")]
-[PlugIn("Set money command", "Sets money of a player. Usage: /setmoney (amount) (optional:character)")]
+[PlugIn]
+[Display(Name = "Set money command", Description = "Sets money of a player. Usage: /setmoney (amount) (optional:character)")]
 [ChatCommandHelp(Command, "Sets money of a player. Usage: /setmoney (amount) (optional:character)", null)]
 public class SetMoneyChatCommandPlugIn : ChatCommandPlugInBase<SetMoneyChatCommandPlugIn.Arguments>, IDisabledByDefault
 {

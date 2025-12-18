@@ -15,7 +15,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IShowShopItemListPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn("ShowShopItemListPlugIn", "The default implementation of the IShowShopItemListPlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = "ShowShopItemListPlugIn", Description = "The default implementation of the IShowShopItemListPlugIn which is forwarding everything to the game client with specific data packets.")]
 [Guid("14220c30-8a5e-458b-8fb5-f4c6bbc2c4a9")]
 public class ShowShopItemListPlugIn : IShowShopItemListPlugIn
 {

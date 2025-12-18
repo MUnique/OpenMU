@@ -12,7 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which handles chatunban command.
 /// </summary>
 [Guid("82E74664-7700-433B-9428-90C17CC71350")]
-[PlugIn("Chat Ban Character command", "Handles the chat command '/chatunban <characterName>'. Unbans the account of a character from chatting.")]
+[PlugIn]
+[Display(Name = "Chat Ban Character command", Description = "Handles the chat command '/chatunban <characterName>'. Unbans the account of a character from chatting.")]
 [ChatCommandHelp(Command, "Unbans the account of a character from chatting", typeof(ChatUnbanCharChatCommandArgs), CharacterStatus.GameMaster)]
 public class ChatUnbanCharChatCommandPlugIn : ChatCommandPlugInBase<ChatUnbanCharChatCommandArgs>
 {

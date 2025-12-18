@@ -16,7 +16,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Handler for pet info request packets.
 /// </summary>
-[PlugIn(nameof(PetInfoRequestHandlerPlugIn), "Handler for pet info request packets.")]
+[PlugIn]
+[Display(Name = nameof(PetInfoRequestHandlerPlugIn), Description = "Handler for pet info request packets.")]
 [Guid("DA535FF5-A23D-4C36-877F-73D1D811F146")]
 [MinimumClient(0, 97, ClientLanguage.Invariant)]
 internal class PetInfoRequestHandlerPlugIn : IPacketHandlerPlugIn

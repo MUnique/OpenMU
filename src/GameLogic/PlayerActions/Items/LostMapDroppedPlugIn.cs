@@ -16,7 +16,8 @@ using MonsterSpawnArea = MUnique.OpenMU.Persistence.BasicModel.MonsterSpawnArea;
 /// This plugin transforms a stack of symbol of kundun into a lost map.
 /// todo: implement plugin configuration to resolve magic numbers.
 /// </summary>
-[PlugIn(nameof(LostMapDroppedPlugIn), "This plugin handles the drop of the lost map item. It creates the gate to the kalima map.")]
+[PlugIn]
+[Display(Name = nameof(LostMapDroppedPlugIn), Description = "This plugin handles the drop of the lost map item. It creates the gate to the kalima map.")]
 [Guid("F6DB10E0-AE7F-4BC6-914F-B858763C5CF7")]
 public sealed class LostMapDroppedPlugIn : IItemDropPlugIn
 {

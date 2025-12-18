@@ -12,7 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IQuestStepInfoPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn("Quest - Step Info", "The default implementation of the IQuestStepInfoPlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = "Quest - Step Info", Description = "The default implementation of the IQuestStepInfoPlugIn which is forwarding everything to the game client with specific data packets.")]
 [Guid("099AACF3-2933-486C-83DE-01A340DACAA6")]
 public class QuestStepInfoPlugIn : IQuestStepInfoPlugIn
 {

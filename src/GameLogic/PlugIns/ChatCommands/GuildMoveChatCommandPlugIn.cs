@@ -12,7 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which handles gm move commands.
 /// </summary>
 [Guid("9163C3EA-6722-4E55-A109-20C163C05266")]
-[PlugIn("Guild move chat command", "Handles the chat command '/guildmove <guild> <map> <x?> <y?>'. Move the character from a guild to a specified map and coordinates.")]
+[PlugIn]
+[Display(Name = "Guild move chat command", Description = "Handles the chat command '/guildmove <guild> <map> <x?> <y?>'. Move the character from a guild to a specified map and coordinates.")]
 [ChatCommandHelp(Command, "Move the character from a guild to a specified map and coordinates.", typeof(GuildMoveChatCommandArgs), CharacterStatus.GameMaster)]
 public class GuildMoveChatCommandPlugIn : ChatCommandPlugInBase<GuildMoveChatCommandArgs>
 {

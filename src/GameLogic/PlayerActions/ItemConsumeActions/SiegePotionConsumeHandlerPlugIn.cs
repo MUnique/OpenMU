@@ -15,7 +15,8 @@ using MUnique.OpenMU.PlugIns;
 /// The alcohol consume handler.
 /// </summary>
 [Guid("9D50CE95-5354-43A7-8DD5-9D6953700DFA")]
-[PlugIn(nameof(SiegePotionConsumeHandlerPlugIn), "Plugin which handles the siege potion consumption.")]
+[PlugIn]
+[Display(Name = nameof(SiegePotionConsumeHandlerPlugIn), Description = "Plugin which handles the siege potion consumption.")]
 public class SiegePotionConsumeHandlerPlugIn : ApplyMagicEffectConsumeHandlerPlugIn
 {
     /// <inheritdoc />

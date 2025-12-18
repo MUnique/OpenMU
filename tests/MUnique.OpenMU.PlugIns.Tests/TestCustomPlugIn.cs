@@ -4,13 +4,13 @@
 
 namespace MUnique.OpenMU.PlugIns.Tests;
 
+using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices;
 
 /// <summary>
 /// A test implementation of <see cref="ITestCustomPlugIn"/>.
 /// </summary>
-[PlugIn(nameof(TestCustomPlugIn), "")]
+[PlugIn]
+[Display(Name = nameof(TestCustomPlugIn))]
 [Guid("77CF382A-2F87-4642-889A-85BF6D76E218")]
-public class TestCustomPlugIn : ITestCustomPlugIn
-{
-}
+public class TestCustomPlugIn : ITestCustomPlugIn;

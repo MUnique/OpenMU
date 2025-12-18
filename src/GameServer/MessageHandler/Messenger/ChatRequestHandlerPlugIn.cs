@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Handler for chat request packets.
 /// </summary>
-[PlugIn("ChatRequestHandlerPlugIn", "Handler for chat request packets.")]
+[PlugIn]
+[Display(Name = "ChatRequestHandlerPlugIn", Description = "Handler for chat request packets.")]
 [Guid("acf9263f-ba71-4d84-b8f8-84e494eb4462")]
 internal class ChatRequestHandlerPlugIn : IPacketHandlerPlugIn
 {

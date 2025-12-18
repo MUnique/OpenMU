@@ -11,7 +11,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Handler for player store related packets.
 /// </summary>
-[PlugIn("StoreHandlerGroupPlugIn", "Handler for player store related packets.")]
+[PlugIn]
+[Display(Name = "StoreHandlerGroupPlugIn", Description = "Handler for player store related packets.")]
 [Guid("8C6DBAB0-FED6-4F4C-9924-6243FEB4E1F2")]
 internal class StoreHandlerGroupPlugIn : GroupPacketHandlerPlugIn
 {

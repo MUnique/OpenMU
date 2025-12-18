@@ -16,7 +16,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IShowSkillAnimationPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn(nameof(ShowSkillAnimationPlugIn095), "The default implementation of the IShowSkillAnimationPlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = nameof(ShowSkillAnimationPlugIn095), Description = "The default implementation of the IShowSkillAnimationPlugIn which is forwarding everything to the game client with specific data packets.")]
 [Guid("105E727A-A8B5-4050-B6FE-1CC5F5DDC9E4")]
 [MinimumClient(0, 95, ClientLanguage.Invariant)]
 public class ShowSkillAnimationPlugIn095 : IShowSkillAnimationPlugIn

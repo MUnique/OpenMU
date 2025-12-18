@@ -15,7 +15,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Packet handler which handles requests for the item list of another player (3F 05).
 /// </summary>
-[PlugIn("Player Shop - Request Item List", "Packet handler which handles requests for the item list of another player (3F 05).")]
+[PlugIn]
+[Display(Name = "Player Shop - Request Item List", Description = "Packet handler which handles requests for the item list of another player (3F 05).")]
 [Guid("5A87AD36-1778-4CA4-AE08-B7BC12135C1B")]
 [BelongsToGroup(StoreHandlerGroupPlugIn.GroupKey)]
 internal class PlayerShopRequestItemListPacketHandlerPlugIn : ISubPacketHandlerPlugIn

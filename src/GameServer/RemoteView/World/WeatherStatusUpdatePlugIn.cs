@@ -12,7 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IWeatherStatusUpdatePlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn("Weather status update", "The default implementation of the IWeatherStatusUpdatePlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = "Weather status update", Description = "The default implementation of the IWeatherStatusUpdatePlugIn which is forwarding everything to the game client with specific data packets.")]
 [Guid("44369927-4EE4-47D7-9C6C-DD74FC824071")]
 public class WeatherStatusUpdatePlugIn : IWeatherStatusUpdatePlugIn
 {

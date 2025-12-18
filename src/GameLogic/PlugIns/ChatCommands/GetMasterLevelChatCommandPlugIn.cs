@@ -15,7 +15,8 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin to get a character's master level.
 /// </summary>
 [Guid("4CED4BF8-9D91-47F9-82DE-51E2646F77C8")]
-[PlugIn("Get master level command", "Gets master level of a player. Usage: /getmasterlevel (optional:character)")]
+[PlugIn]
+[Display(Name = "Get master level command", Description = "Gets master level of a player. Usage: /getmasterlevel (optional:character)")]
 [ChatCommandHelp(Command, "Gets master level of a player. Usage: /getmasterlevel (optional:character)", null)]
 public class GetMasterLevelChatCommandPlugIn : ChatCommandPlugInBase<GetMasterLevelChatCommandPlugIn.Arguments>, IDisabledByDefault
 {

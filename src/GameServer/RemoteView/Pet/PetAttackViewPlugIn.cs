@@ -15,7 +15,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the chat view which is forwarding everything to the game client which specific data packets.
 /// </summary>
-[PlugIn(nameof(PetAttackViewPlugIn), "View plugin to show pet attacks.")]
+[PlugIn]
+[Display(Name = nameof(PetAttackViewPlugIn), Description = "View plugin to show pet attacks.")]
 [Guid("1796C164-ABB8-4AD5-89E2-EA905D20036D")]
 internal class PetAttackViewPlugIn : IPetAttackViewPlugIn
 {

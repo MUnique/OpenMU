@@ -12,7 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which handles unbanchar commands.
 /// </summary>
 [Guid("2830B01B-57A4-4925-AB6B-242C242B96C9")]
-[PlugIn("Unban Character command", "Handles the chat command '/unbanchar <char>'. Unbans the account of a character from the game.")]
+[PlugIn]
+[Display(Name = "Unban Character command", Description = "Handles the chat command '/unbanchar <char>'. Unbans the account of a character from the game.")]
 [ChatCommandHelp(Command, "Unbans the account of a character from the game.", typeof(UnBanCharChatCommandArgs), CharacterStatus.GameMaster)]
 public class UnBanCharChatCommandPlugIn : ChatCommandPlugInBase<BanCharChatCommandArgs>
 {

@@ -16,7 +16,8 @@ using MUnique.OpenMU.PlugIns;
 /// The default implementation of the <see cref="IMuHelperConfigurationUpdatePlugIn"/>
 /// which sends the new MU Helper status to the client.
 /// </summary>
-[PlugIn(nameof(MuHelperConfigurationUpdatePlugIn), "Sends the new MU Helper status to the client.")]
+[PlugIn]
+[Display(Name = nameof(MuHelperConfigurationUpdatePlugIn), Description = "Sends the new MU Helper status to the client.")]
 [Guid("E152E151-543C-437E-8BFD-2D92391822F5")]
 public class MuHelperConfigurationUpdatePlugIn : IMuHelperConfigurationUpdatePlugIn
 {

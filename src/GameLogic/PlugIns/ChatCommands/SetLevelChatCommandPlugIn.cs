@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which sets a character's level.
 /// </summary>
 [Guid("4BE779C9-E6B6-47F2-BC23-2E71D82A6C1D")]
-[PlugIn("Set level command", "Sets level of a player. Usage: /setlevel (level) (optional:character)")]
+[PlugIn]
+[Display(Name = "Set level command", Description = "Sets level of a player. Usage: /setlevel (level) (optional:character)")]
 [ChatCommandHelp(Command, "Sets level of a player. Usage: /setlevel (level) (optional:character)", null)]
 public class SetLevelChatCommandPlugIn : ChatCommandPlugInBase<SetLevelChatCommandPlugIn.Arguments>, IDisabledByDefault
 {

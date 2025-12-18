@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which handles pk clear commands.
 /// </summary>
 [Guid("EB97A8F6-F6BD-460A-BCBE-253BF679361A")]
-[PlugIn("PK clear chat command", "Handles the chat command '/pkclear <char>'. Clears the player kill count.")]
+[PlugIn]
+[Display(Name = "PK clear chat command", Description = "Handles the chat command '/pkclear <char>'. Clears the player kill count.")]
 [ChatCommandHelp(Command, "Clears the player kill count.", typeof(PkClearChatCommandArgs), CharacterStatus.GameMaster)]
 public class PkClearChatCommandPlugIn : ChatCommandPlugInBase<PkClearChatCommandArgs>
 {

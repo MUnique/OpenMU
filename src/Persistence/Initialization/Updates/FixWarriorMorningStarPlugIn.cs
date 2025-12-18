@@ -8,7 +8,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// This update fixes the weapon of the warrior ancient set. The Hand Axe is replaced by the Morning Star.
 /// </summary>
-[PlugIn(PlugInName, PlugInDescription)]
+[PlugIn]
+[Display(Name = PlugInName, Description = PlugInDescription)]
 [Guid("65BA79B5-1DBF-4C97-9628-0D8A429A8C88")]
 public class FixWarriorMorningStarPlugIn : UpdatePlugInBase
 {

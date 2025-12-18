@@ -11,7 +11,8 @@ using MUnique.OpenMU.PlugIns;
 /// Unlocks the Summoner character class as soon as the first character of an account reaches level 1.
 /// TODO: Add configuration for the level and change name; remove the "AtLevel1" suffix.
 /// </summary>
-[PlugIn(nameof(UnlockSummonerAtLevel1), "Unlocks the Summoner character class as soon as the first character of an account reaches level 1.")]
+[PlugIn]
+[Display(Name = nameof(UnlockSummonerAtLevel1), Description = "Unlocks the Summoner character class as soon as the first character of an account reaches level 1.")]
 [Guid("2DFFD751-7651-4FA1-93D1-9890CA0F04F1")]
 public class UnlockSummonerAtLevel1 : UnlockCharacterAtLevelBase
 {

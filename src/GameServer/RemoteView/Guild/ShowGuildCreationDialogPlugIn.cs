@@ -12,7 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IShowGuildCreationDialogPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn("ShowGuildCreationDialogPlugIn", "The default implementation of the IShowGuildCreationDialogPlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = "ShowGuildCreationDialogPlugIn", Description = "The default implementation of the IShowGuildCreationDialogPlugIn which is forwarding everything to the game client with specific data packets.")]
 [Guid("ed6fbe5f-7a27-477d-b238-e6e77cf113d8")]
 public class ShowGuildCreationDialogPlugIn : IShowGuildCreationDialogPlugIn
 {

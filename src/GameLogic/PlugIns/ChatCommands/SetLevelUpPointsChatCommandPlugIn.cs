@@ -14,7 +14,8 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which sets a character's level-up points.
 /// </summary>
 [Guid("50EF670A-DF7A-4FEE-8E42-7C7A18A68941")]
-[PlugIn("Set level up points command", "Sets level up points of a player. Usage: /setleveluppoints (points) (optional:character)")]
+[PlugIn]
+[Display(Name = "Set level up points command", Description = "Sets level up points of a player. Usage: /setleveluppoints (points) (optional:character)")]
 [ChatCommandHelp(Command, "Sets level up points of a player. Usage: /setleveluppoints (points) (optional:character)", null)]
 public class SetLevelUpPointsChatCommandPlugIn : ChatCommandPlugInBase<SetLevelUpPointsChatCommandPlugIn.Arguments>, IDisabledByDefault
 {

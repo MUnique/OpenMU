@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Packet handler for character delete packets (0xF3, 0x02 identifier).
 /// </summary>
-[PlugIn("Character - Delete", "Packet handler for character delete packets (0xF3, 0x02 identifier).")]
+[PlugIn]
+[Display(Name = "Character - Delete", Description = "Packet handler for character delete packets (0xF3, 0x02 identifier).")]
 [Guid("5391D003-E244-42E8-AF30-33CB0654B66A")]
 [BelongsToGroup(CharacterGroupHandlerPlugIn.GroupKey)]
 internal class CharacterDeletePacketHandlerPlugIn : ISubPacketHandlerPlugIn

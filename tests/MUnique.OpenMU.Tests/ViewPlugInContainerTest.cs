@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Tests;
 
+using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
@@ -130,7 +131,8 @@ public class ViewPlugInContainerTest
     /// <summary>
     /// A plugin which is version/language invariant.
     /// </summary>
-    [PlugIn("Season Invariant Test PlugIn", "")]
+    [PlugIn]
+    [Display(Name = "Season Invariant Test PlugIn")]
     [Guid("96A3FED8-0112-4CFC-A717-70EEEEBE859A")]
     public class InvariantSeasonPlugIn : ISomeViewPlugIn
     {
@@ -146,7 +148,8 @@ public class ViewPlugInContainerTest
     /// <summary>
     /// A test plugin for season 1.
     /// </summary>
-    [PlugIn("Season 1 Test PlugIn", "")]
+    [PlugIn]
+    [Display(Name = "Season 1 Test PlugIn")]
     [Guid("8CA21647-85D5-43BB-A8F9-3543D0E02176")]
     [MinimumClient(1, 0, ClientLanguage.English)]
     public class Season1PlugIn : ISomeViewPlugIn
@@ -163,7 +166,8 @@ public class ViewPlugInContainerTest
     /// <summary>
     /// A test plugin for season 6.
     /// </summary>
-    [PlugIn("Season 6 Test PlugIn", "")]
+    [PlugIn]
+    [Display(Name = "Season 6 Test PlugIn")]
     [Guid("7C029691-BB22-4B5D-BE96-924537E43EB2")]
     [MinimumClient(6, 3, ClientLanguage.English)]
     public class Season6PlugIn : ISomeViewPlugIn
@@ -180,7 +184,8 @@ public class ViewPlugInContainerTest
     /// <summary>
     /// A test plugin for season 6, with invariant language.
     /// </summary>
-    [PlugIn("Season 6 Test PlugIn, Invariant language", "")]
+    [PlugIn]
+    [Display(Name = "Season 6 Test PlugIn, Invariant language")]
     [Guid("D58A6AC6-A804-4321-9422-0911EDC82867")]
     [MinimumClient(6, 3, ClientLanguage.Invariant)]
     public class Season6PlugInInvariant : ISomeViewPlugIn
@@ -197,7 +202,8 @@ public class ViewPlugInContainerTest
     /// <summary>
     /// A test plugin for season 6, but for another client language.
     /// </summary>
-    [PlugIn("Season 6 Test PlugIn", "")]
+    [PlugIn]
+    [Display(Name = "Season 6 Test PlugIn")]
     [Guid("05C47D9E-F0A0-48B3-9FFF-22CF43B20494")]
     [MinimumClient(6, 3, (ClientLanguage)42)]
     public class Season6PlugInOfSomeOtherLanguage : ISomeViewPlugIn
@@ -214,7 +220,8 @@ public class ViewPlugInContainerTest
     /// <summary>
     /// Test plugin for season 9.
     /// </summary>
-    [PlugIn("Season 9 Test PlugIn", "")]
+    [PlugIn]
+    [Display(Name = "Season 9 Test PlugIn")]
     [Guid("82AC1C9A-F3D0-4196-A3CD-6CB36AA2D914")]
     [MinimumClient(9, 2, ClientLanguage.English)]
     public class Season9PlugIn : ISomeViewPlugIn

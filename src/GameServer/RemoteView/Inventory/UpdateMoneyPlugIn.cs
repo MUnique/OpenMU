@@ -12,7 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IUpdateMoneyPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn("UpdateMoneyPlugIn", "The default implementation of the IUpdateMoneyPlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = "UpdateMoneyPlugIn", Description = "The default implementation of the IUpdateMoneyPlugIn which is forwarding everything to the game client with specific data packets.")]
 [Guid("7a13a613-7098-4407-8ef5-39bae08ce12d")]
 public class UpdateMoneyPlugIn : IUpdateMoneyPlugIn
 {

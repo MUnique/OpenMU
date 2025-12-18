@@ -10,7 +10,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The stop nova skill action.
 /// </summary>
-[PlugIn(nameof(NovaSkillStopPlugin), "Handles the stopping of nova skill of the wizard class.")]
+[PlugIn]
+[Display(Name = nameof(NovaSkillStopPlugin), Description = "Handles the stopping of nova skill of the wizard class.")]
 [Guid("3cb98892-b3ce-42de-8956-5ed5625c6285")]
 public class NovaSkillStopPlugin : TargetedSkillPluginBase
 {

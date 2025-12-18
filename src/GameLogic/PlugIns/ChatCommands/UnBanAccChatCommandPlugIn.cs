@@ -12,7 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which handles banacc commands.
 /// </summary>
 [Guid("FCBC9CC0-3C8F-45E2-96DF-9C55BE30C5D9")]
-[PlugIn("Unban Account command", "Handles the chat command '/unbanacc <acc>'. Unbans an account from the game.")]
+[PlugIn]
+[Display(Name = "Unban Account command", Description = "Handles the chat command '/unbanacc <acc>'. Unbans an account from the game.")]
 [ChatCommandHelp(Command, "Unbans an account from the game.", typeof(UnBanAccChatCommandArgs), CharacterStatus.GameMaster)]
 public class UnBanAccChatCommandPlugIn : ChatCommandPlugInBase<UnBanAccChatCommandArgs>
 {

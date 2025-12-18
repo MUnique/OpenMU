@@ -12,7 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which handles the startds command.
 /// </summary>
 [Guid("7177533A-F147-407E-97B0-C4D8E1AC1AF4")]
-[PlugIn(nameof(StartBloodCastleEventChatCommandPlugIn), "Handles the chat command '/startbc'. Starts the blood castle event at the next possible time.")]
+[PlugIn]
+[Display(Name = nameof(StartBloodCastleEventChatCommandPlugIn), Description = "Handles the chat command '/startbc'. Starts the blood castle event at the next possible time.")]
 [ChatCommandHelp(Command, "Starts the blood castle event at the next possible time.", CharacterStatus.GameMaster)]
 public class StartBloodCastleEventChatCommandPlugIn : IChatCommandPlugIn
 {

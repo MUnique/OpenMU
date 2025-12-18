@@ -12,7 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// This update fixes the wings damage absorption and increase bonus level tables values for a <see cref="CombinedElement"/> (sum) calculation, instead of a compound calculation
 /// for season 6.
 /// </summary>
-[PlugIn(PlugInName, PlugInDescription)]
+[PlugIn]
+[Display(Name = PlugInName, Description = PlugInDescription)]
 [Guid("03F49890-CB0E-40B7-A590-174BBA1962F4")]
 public class FixWingsDmgRatesUpdatePlugInSeason6 : FixWingsDmgRatesUpdatePlugInBase
 {

@@ -12,7 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IGuildKickResultPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn("GuildKickResultPlugIn", "The default implementation of the IGuildKickResultPlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = "GuildKickResultPlugIn", Description = "The default implementation of the IGuildKickResultPlugIn which is forwarding everything to the game client with specific data packets.")]
 [Guid("0e91e131-12c4-4add-9439-febb7d444083")]
 public class GuildKickResultPlugIn : IGuildKickResultPlugIn
 {

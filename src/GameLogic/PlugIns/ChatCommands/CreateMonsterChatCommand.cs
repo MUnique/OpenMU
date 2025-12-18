@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command to create a new monster which can be remote controlled.
 /// </summary>
 [Guid("BF4DA282-8CFE-4110-B1C5-A01D3F224FAB")]
-[PlugIn("Create monster chat command", "Handles the chat command '/createmonster <number> <intelligent>'. Creates a monster which can be remote controlled by the GM.")]
+[PlugIn]
+[Display(Name = "Create monster chat command", Description = "Handles the chat command '/createmonster <number> <intelligent>'. Creates a monster which can be remote controlled by the GM.")]
 [ChatCommandHelp(Command, "Creates a monster which can be remote controlled by the game master.", typeof(CreateMonsterChatCommandArgs), CharacterStatus.GameMaster)]
 internal class CreateMonsterChatCommand : ChatCommandPlugInBase<CreateMonsterChatCommandArgs>
 {

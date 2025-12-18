@@ -15,7 +15,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IInitializeMessengerPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn("InitializeMessengerPlugIn", "The default implementation of the IInitializeMessengerPlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = "InitializeMessengerPlugIn", Description = "The default implementation of the IInitializeMessengerPlugIn which is forwarding everything to the game client with specific data packets.")]
 [Guid("cb079c23-e90c-473d-87ae-317937158924")]
 public class InitializeMessengerPlugIn : IInitializeMessengerPlugIn
 {

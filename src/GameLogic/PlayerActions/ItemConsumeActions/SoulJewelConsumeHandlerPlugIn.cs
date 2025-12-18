@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// Consume handler for the Jewel of Soul which increases the item level by one until the level of 9 with a chance of 50%.
 /// </summary>
 [Guid("A76CDA49-1C56-401A-96D1-294D9A68A7B9")]
-[PlugIn(nameof(SoulJewelConsumeHandlerPlugIn), "Plugin which handles the jewel of soul consumption.")]
+[PlugIn]
+[Display(Name = nameof(SoulJewelConsumeHandlerPlugIn), Description = "Plugin which handles the jewel of soul consumption.")]
 public class SoulJewelConsumeHandlerPlugIn : UpgradeItemLevelJewelConsumeHandlerPlugIn<UpgradeItemLevelConfiguration>
 {
     /// <summary>

@@ -17,7 +17,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IShowChainLightningPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn(nameof(ShowChainLightningPlugIn), "The default implementation of the IShowChainLightningPlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = nameof(ShowChainLightningPlugIn), Description = "The default implementation of the IShowChainLightningPlugIn which is forwarding everything to the game client with specific data packets.")]
 [Guid("8A78EE23-7AD5-4D08-BE17-B0F6B0CB7309")]
 [MinimumClient(4, 0, ClientLanguage.Invariant)]
 public class ShowChainLightningPlugIn : IShowChainLightningPlugIn

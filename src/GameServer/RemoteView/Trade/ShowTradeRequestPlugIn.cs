@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IShowTradeRequestPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn("ShowTradeRequestPlugIn", "The default implementation of the IShowTradeRequestPlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = "ShowTradeRequestPlugIn", Description = "The default implementation of the IShowTradeRequestPlugIn which is forwarding everything to the game client with specific data packets.")]
 [Guid("2e6e8c0e-8220-46e3-931a-630d596178ca")]
 public class ShowTradeRequestPlugIn : IShowTradeRequestPlugIn
 {

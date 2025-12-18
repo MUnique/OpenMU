@@ -15,7 +15,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IUpdateCharacterStatsPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn("UpdateCharacterStatsPlugIn 0.75", "The default implementation of the IUpdateCharacterStatsPlugIn which is forwarding everything to the game client with specific data packets for version 0.75.")]
+[PlugIn]
+[Display(Name = "UpdateCharacterStatsPlugIn 0.75", Description = "The default implementation of the IUpdateCharacterStatsPlugIn which is forwarding everything to the game client with specific data packets for version 0.75.")]
 [Guid("C180561D-E055-41CA-817C-44E7A985937C")]
 [MinimumClient(0, 75, ClientLanguage.Invariant)]
 public class UpdateCharacterStatsPlugIn075 : IUpdateCharacterStatsPlugIn

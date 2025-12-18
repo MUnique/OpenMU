@@ -14,7 +14,8 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which handles xmas fireworks effect commands.
 /// </summary>
 [Guid("0E23E4CE-6E7B-4F29-92D8-04A1335EC722")]
-[PlugIn("Show xmas fireworks effect chat command", "Handles the chat command '/xmasfireworks <x> <y>'. Shows an christmas fireworks effect at the specified coordinates.")]
+[PlugIn]
+[Display(Name = "Show xmas fireworks effect chat command", Description = "Handles the chat command '/xmasfireworks <x> <y>'. Shows an christmas fireworks effect at the specified coordinates.")]
 [ChatCommandHelp(Command, "Shows an christmas fireworks effect at the specified coordinates.", typeof(CoordinatesCommandArgs), CharacterStatus.GameMaster)]
 public class ShowXmasFireworksEffectChatCommandPlugIn : ChatCommandPlugInBase<CoordinatesCommandArgs>
 {

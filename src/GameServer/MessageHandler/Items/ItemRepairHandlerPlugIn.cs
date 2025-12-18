@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Handler for item repair packets.
 /// </summary>
-[PlugIn("ItemRepairHandlerPlugIn", "Handler for item repair packets.")]
+[PlugIn]
+[Display(Name = "ItemRepairHandlerPlugIn", Description = "Handler for item repair packets.")]
 [Guid("85b4a195-c90c-47f8-bae2-833b5d2ef398")]
 internal class ItemRepairHandlerPlugIn : IPacketHandlerPlugIn
 {

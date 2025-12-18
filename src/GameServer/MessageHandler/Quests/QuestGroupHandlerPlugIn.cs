@@ -11,7 +11,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Packet handler for quest packets (0xF6 identifier).
 /// </summary>
-[PlugIn("Quest Packet Handler", "Packet handler for quest packets (0xF6 identifier).")]
+[PlugIn]
+[Display(Name = "Quest Packet Handler", Description = "Packet handler for quest packets (0xF6 identifier).")]
 [Guid("2641F83A-42D3-42B0-BD2F-63AD0E3A380F")]
 internal class QuestGroupHandlerPlugIn : GroupPacketHandlerPlugIn
 {

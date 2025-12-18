@@ -12,7 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// This updates adds the new <see cref="SystemConfiguration"/> with default settings
 /// for season 6.
 /// </summary>
-[PlugIn(PlugInName, PlugInDescription)]
+[PlugIn]
+[Display(Name = PlugInName, Description = PlugInDescription)]
 [Guid("7231172F-51AD-4129-9003-C1ACC7E04147")]
 public class SystemConfigurationAddedPlugInSeason6 : SystemConfigurationAddedPlugInBase
 {

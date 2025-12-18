@@ -15,7 +15,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Handles the trade request packets.
 /// </summary>
-[PlugIn("TradeRequestHandlerPlugIn", "Handles the trade request packets.")]
+[PlugIn]
+[Display(Name = "TradeRequestHandlerPlugIn", Description = "Handles the trade request packets.")]
 [Guid("f2b8c4c0-2e9d-4f1f-8c42-76b0312e4021")]
 internal class TradeRequestHandlerPlugIn : IPacketHandlerPlugIn
 {

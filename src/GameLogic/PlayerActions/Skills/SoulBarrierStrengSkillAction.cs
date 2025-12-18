@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The Soul Barrier Strengthener skill action.
 /// </summary>
-[PlugIn(nameof(SoulBarrierStrengSkillAction), "Handles the soul barrier strengthener skill of the grand master.")]
+[PlugIn]
+[Display(Name = nameof(SoulBarrierStrengSkillAction), Description = "Handles the soul barrier strengthener skill of the grand master.")]
 [Guid("05fdea2a-ac92-4b2c-8305-001e97ec26a8")]
 public class SoulBarrierStrengSkillAction : TargetedSkillDefaultPlugin
 {

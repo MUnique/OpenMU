@@ -12,7 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IShowGuildMasterDialogPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn("ShowGuildMasterDialogPlugIn", "The default implementation of the IShowGuildMasterDialogPlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = "ShowGuildMasterDialogPlugIn", Description = "The default implementation of the IShowGuildMasterDialogPlugIn which is forwarding everything to the game client with specific data packets.")]
 [Guid("77d430e0-8bed-425b-8bb5-7bbafa9bfbff")]
 public class ShowGuildMasterDialogPlugIn : IShowGuildMasterDialogPlugIn
 {

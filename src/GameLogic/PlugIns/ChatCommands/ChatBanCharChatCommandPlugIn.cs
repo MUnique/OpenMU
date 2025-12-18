@@ -12,7 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which handles chatban command.
 /// </summary>
 [Guid("287AE9A6-E434-4E52-A791-8AAD267A8E05")]
-[PlugIn("Chat Ban Character command", "Handles the chat command '/chatban <characterName> <durationMinutes>'. Bans the account of a character from chatting for the specified minutes.")]
+[PlugIn]
+[Display(Name = "Chat Ban Character command", Description = "Handles the chat command '/chatban <characterName> <durationMinutes>'. Bans the account of a character from chatting for the specified minutes.")]
 [ChatCommandHelp(Command, "Bans the account of a character from chatting for the specified minutes.", typeof(ChatBanCharChatCommandArgs), CharacterStatus.GameMaster)]
 public class ChatBanCharChatCommandPlugIn : ChatCommandPlugInBase<ChatBanCharChatCommandArgs>
 {

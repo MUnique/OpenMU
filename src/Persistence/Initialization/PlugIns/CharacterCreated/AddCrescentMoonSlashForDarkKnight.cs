@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// Adds the crescent moon slash skill (active in castle siege) to a created dark knight character.
 /// </summary>
 [Guid("2BB94D35-0DEF-4458-84AC-ECAAE6E896BE")]
-[PlugIn(nameof(AddCrescentMoonSlashForDarkKnight), "Adds the crescent moon slash skill (active in castle siege) to a created dark knight character.")]
+[PlugIn]
+[Display(Name = nameof(AddCrescentMoonSlashForDarkKnight), Description = "Adds the crescent moon slash skill (active in castle siege) to a created dark knight character.")]
 public class AddCrescentMoonSlashForDarkKnight : AddInitialSkillPlugInBase
 {
     /// <summary>

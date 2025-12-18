@@ -10,7 +10,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// This plugin enables Golden Invasion feature.
 /// </summary>
-[PlugIn(nameof(GoldenInvasionPlugIn), "Handle Golden Invasion event")]
+[PlugIn]
+[Display(Name = nameof(GoldenInvasionPlugIn), Description = "Handle Golden Invasion event")]
 [Guid("06D18A9E-2919-4C17-9DBC-6E4F7756495C")]
 public class GoldenInvasionPlugIn : BaseInvasionPlugIn<PeriodicInvasionConfiguration>, ISupportDefaultCustomConfiguration
 {

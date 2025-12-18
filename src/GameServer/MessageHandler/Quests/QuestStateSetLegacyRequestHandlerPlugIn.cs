@@ -15,7 +15,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Packet handler for the quest state set request for the legacy quest system (0xA2 identifier).
 /// </summary>
-[PlugIn("Quest state set request (legacy)", "Packet handler for the quest state set request for the legacy quest system (0xA2 identifier).")]
+[PlugIn]
+[Display(Name = "Quest state set request (legacy)", Description = "Packet handler for the quest state set request for the legacy quest system (0xA2 identifier).")]
 [Guid("3D8D1510-E92C-4D0E-9282-1A932B1B8195")]
 public class QuestStateSetLegacyRequestHandlerPlugIn : IPacketHandlerPlugIn
 {

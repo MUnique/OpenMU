@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Updates the state of the weather of each hosted map in a random way and notifies players which enter a map about the current weather.
 /// </summary>
-[PlugIn(nameof(WeatherUpdatePlugIn), "Updates the state of the weather of each hosted map in a random way.")]
+[PlugIn]
+[Display(Name = nameof(WeatherUpdatePlugIn), Description = "Updates the state of the weather of each hosted map in a random way.")]
 [Guid("3E702A15-653A-48EF-899C-4CDB2239A90C")]
 public class WeatherUpdatePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
 {

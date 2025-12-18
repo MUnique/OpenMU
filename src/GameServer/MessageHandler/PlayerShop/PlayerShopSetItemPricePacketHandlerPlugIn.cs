@@ -14,7 +14,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Packet handler which sets prices for an item in the player shop (3F 01).
 /// </summary>
-[PlugIn("Player Shop - Set Price", "Packet handler which sets prices for an item in the player shop (3F 01).")]
+[PlugIn]
+[Display(Name = "Player Shop - Set Price", Description = "Packet handler which sets prices for an item in the player shop (3F 01).")]
 [Guid("0E78ADBD-4B3D-4D3E-B5B1-34FA66BFC854")]
 [BelongsToGroup(StoreHandlerGroupPlugIn.GroupKey)]
 internal class PlayerShopSetItemPricePacketHandlerPlugIn : ISubPacketHandlerPlugIn

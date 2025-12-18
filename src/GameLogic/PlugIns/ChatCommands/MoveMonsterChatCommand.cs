@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// Chat command to instantly move a monster to specific coordinates.
 /// </summary>
 [Guid("B3DE58F3-B604-4F59-9122-E686AD90BE7B")]
-[PlugIn("Move remote monster chat command", "Handles the chat command '/movemonster <id> <x> <y>'. Moves a previously created monster which can be remote controlled by the GM.")]
+[PlugIn]
+[Display(Name = "Move remote monster chat command", Description = "Handles the chat command '/movemonster <id> <x> <y>'. Moves a previously created monster which can be remote controlled by the GM.")]
 [ChatCommandHelp(Command, "Moves a previously created monster which can be remote controlled by the game master.", typeof(MoveMonsterCommandArgs), CharacterStatus.GameMaster)]
 internal class MoveMonsterChatCommand : ChatCommandPlugInBase<MoveMonsterCommandArgs>
 {
