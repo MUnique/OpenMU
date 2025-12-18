@@ -30,6 +30,6 @@ public class BanCharChatCommandPlugIn : ChatCommandPlugInBase<BanCharChatCommand
     {
         await this.ChangeAccountStateByCharacterNameAsync(gameMaster, arguments.CharacterName ?? string.Empty, AccountState.Banned).ConfigureAwait(false);
 
-        await this.ShowMessageToAsync(gameMaster, $"[{this.Key}] Account from {arguments.CharacterName} has been banned.").ConfigureAwait(false);
+        await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.AccountOfHasBeenBanned), this.Key, arguments.CharacterName).ConfigureAwait(false);
     }
 }
