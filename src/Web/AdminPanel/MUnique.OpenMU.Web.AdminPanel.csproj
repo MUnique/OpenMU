@@ -6,6 +6,12 @@
     <WarningsAsErrors>nullable;CS4014;VSTHRD110;VSTHRD100</WarningsAsErrors>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <!-- Set base path for static web assets to avoid conflicts when referenced by other web apps.
+         Required for .NET 10+ where WebApp-to-WebApp references are unsupported.
+         Also resolves asset path conflicts in .NET 9 when AdminPanel and Map both have wwwroot/css/site.css.
+         Note: Standalone Program.cs in this project won't serve assets correctly.
+         Use Startup or AdminPanel.Host projects to run the admin panel. -->
+    <StaticWebAssetBasePath>_content/$(MSBuildProjectName)</StaticWebAssetBasePath>
   </PropertyGroup>
 
   <ItemGroup>
