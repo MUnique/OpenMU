@@ -2,16 +2,14 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using System.IO;
-
 namespace MUnique.OpenMU.SourceGenerators;
 
+using System.Diagnostics;
+using System.IO;
+using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System.Diagnostics;
-using System.Reflection;
-using System.Text.RegularExpressions;
 
 /// <summary>
 /// A <see cref="ISourceGenerator"/> which creates resource strings for all classes and properties of
@@ -39,6 +37,8 @@ public class ResourceGenerator : ISourceGenerator
             //// Debugger.Launch();
         }
 
+        var declaredTypes = new List<(BaseTypeDeclarationSyntax, INamedTypeSymbol)>();
+
         var sb = this.StartResourceFile();
         foreach (SyntaxTree tree in context.Compilation.SyntaxTrees)
         {
@@ -46,7 +46,8 @@ public class ResourceGenerator : ISourceGenerator
             foreach (var declaredClass in tree
                          .GetRoot()
                          .DescendantNodes()
-                         .OfType<ClassDeclarationSyntax>())
+                         .OfType<ClassDeclarationSyntax>()
+                         .OrderBy(c => c.Identifier.Text))
             {
                 var declaredClassSymbol = semanticModel.GetDeclaredSymbol(declaredClass);
                 if (declaredClassSymbol is null)
@@ -54,13 +55,14 @@ public class ResourceGenerator : ISourceGenerator
                     continue;
                 }
 
-                this.AppendResourceStrings(sb, declaredClass, declaredClassSymbol);
+                declaredTypes.Add((declaredClass, declaredClassSymbol));
             }
 
             foreach (var declaredClass in tree
                          .GetRoot()
                          .DescendantNodes()
-                         .OfType<EnumDeclarationSyntax>())
+                         .OfType<EnumDeclarationSyntax>()
+                         .OrderBy(c => c.Identifier.Text))
             {
                 var declaredClassSymbol = semanticModel.GetDeclaredSymbol(declaredClass);
                 if (declaredClassSymbol is null)
@@ -68,8 +70,14 @@ public class ResourceGenerator : ISourceGenerator
                     continue;
                 }
 
-                this.AppendResourceStrings(sb, declaredClass, declaredClassSymbol);
+                declaredTypes.Add((declaredClass, declaredClassSymbol));
             }
+        }
+
+        foreach (var (declarationSyntax, namedTypeSymbol) in declaredTypes
+                     .OrderBy(tuple => tuple.Item1.Identifier.Text))
+        {
+            this.AppendResourceStrings(sb, declarationSyntax, namedTypeSymbol);
         }
 
         sb.AppendLine("</root>");
@@ -104,6 +112,19 @@ public class ResourceGenerator : ISourceGenerator
 
                        """);
         return sb;
+    }
+
+    private void AppendResourceStrings(StringBuilder sb, BaseTypeDeclarationSyntax annotatedClass, INamedTypeSymbol declaredClassSymbol)
+    {
+        switch (annotatedClass)
+        {
+            case ClassDeclarationSyntax classDecl:
+                this.AppendResourceStrings(sb, classDecl, declaredClassSymbol);
+                break;
+            case EnumDeclarationSyntax enumDecl:
+                this.AppendResourceStrings(sb, enumDecl, declaredClassSymbol);
+                break;
+        }
     }
 
     private void AppendResourceStrings(StringBuilder sb, ClassDeclarationSyntax annotatedClass, INamedTypeSymbol declaredClassSymbol)
