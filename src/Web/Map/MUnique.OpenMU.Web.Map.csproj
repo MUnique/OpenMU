@@ -9,6 +9,10 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <DocumentationFile></DocumentationFile>
+    <!-- Set base path for static web assets to avoid conflicts when referenced by other web apps.
+         This is required for .NET 10 compatibility where WebApp-to-WebApp references are not supported.
+         Note: This means the standalone Program.cs in this project won't work correctly for serving assets.
+         Use GameServer.Host project to run the map viewer. -->
     <StaticWebAssetBasePath>_content/$(MSBuildProjectName)</StaticWebAssetBasePath>
 
     <!--UseRazorSourceGenerator>false</UseRazorSourceGenerator-->
