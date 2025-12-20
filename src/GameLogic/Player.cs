@@ -1722,6 +1722,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             await party.KickMySelfAsync(this).ConfigureAwait(false);
         }
 
+        await this.RestoreTemporaryStorageItemsAsync().ConfigureAwait(false);
+
+        this.OpenedNpc = null;
+
         await this.SetSelectedCharacterAsync(null).ConfigureAwait(false);
         await this.MagicEffectList.ClearAllEffectsAsync().ConfigureAwait(false);
 
@@ -1847,6 +1851,75 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         {
             await this.CurrentMap.RemoveAsync(this).ConfigureAwait(false);
             this.CurrentMap = null;
+        }
+    }
+
+    /// <summary>
+    /// Restores the temporary storage items placed in an NPC or trade dialog when player is disconnected.
+    /// </summary>
+    private async ValueTask RestoreTemporaryStorageItemsAsync()
+    {
+        try
+        {
+            if (this.Inventory is not { } inventory)
+            {
+                return;
+            }
+
+            if (this.BackupInventory is { } backupInventory)
+            {
+                inventory.Clear();
+                backupInventory.RestoreItemStates();
+                foreach (var item in backupInventory.Items)
+                {
+                    await inventory.AddItemAsync(item.ItemSlot, item).ConfigureAwait(false);
+                }
+
+                inventory.ItemStorage.Money = backupInventory.Money;
+                this.BackupInventory = null;
+                this.TemporaryStorage = null;
+                return;
+            }
+
+            if (this.TemporaryStorage is not { ItemStorage.Items.Count: > 0 } temporaryStorage)
+            {
+                // nothing to restore.
+                return;
+            }
+
+            var count = temporaryStorage.ItemStorage.Items.Count;
+            this.Logger.LogInformation("Returning {count} items from temporary storage to inventory for player {player}", count, this.Name);
+
+            if (await inventory.TryTakeAllAsync(temporaryStorage).ConfigureAwait(false))
+            {
+                this.Logger.LogInformation("Returned {count} items from temporary storage to inventory for player {player}", count, this.Name);
+                this.TemporaryStorage = null;
+                return;
+            }
+
+            // We should never get so far, since the space is checked before doing anything with the temporary storage.
+            // Log this critical situation - items may be lost if fallback also fails
+            var items = temporaryStorage.Items.ToList();
+            this.Logger.LogError(
+                "CRITICAL: Could not return {count} items from temporary storage to inventory due to full inventory. Attempting fallback. Items: {items}",
+                items.Count,
+                string.Join(", ", items.Select(i => $"{i.Definition?.Name ?? "Unknown"}(Slot:{i.ItemSlot})")));
+
+            // Try one more time to force-add items individually using the captured list
+            foreach (var item in items)
+            {
+                await this.TemporaryStorage.RemoveItemAsync(item).ConfigureAwait(false);
+                if (!await this.Inventory.AddItemAsync(item).ConfigureAwait(false))
+                {
+                    this.Logger.LogError("Failed to return item {item} to inventory. Item is lost. id: {itemid}", item, item.GetId());
+                }
+            }
+
+            this.TemporaryStorage = null;
+        }
+        catch (Exception ex)
+        {
+            this.Logger.LogError(ex, "Error returning items from temporary storage to inventory");
         }
     }
 
