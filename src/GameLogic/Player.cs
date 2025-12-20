@@ -1859,6 +1859,14 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return;
         }
 
+        // If BackupInventory exists, GameServer.SaveSessionOfPlayerAsync will handle restoring items
+        // from the backup, so we should not move items from TemporaryStorage here.
+        if (this.BackupInventory is not null)
+        {
+            this.Logger.LogDebug("BackupInventory exists, skipping TemporaryStorage cleanup (will be handled by SaveSessionOfPlayerAsync)");
+            return;
+        }
+
         var items = this.TemporaryStorage.Items.ToList();
         if (items.Count == 0)
         {
