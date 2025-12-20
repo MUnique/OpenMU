@@ -1722,7 +1722,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             await party.KickMySelfAsync(this).ConfigureAwait(false);
         }
 
-        await this.ReturnTemporaryStorageItemsAsync().ConfigureAwait(false);
+        await this.RestoreTemporaryStorageItemsAsync().ConfigureAwait(false);
+
+        this.OpenedNpc = null;
 
         await this.SetSelectedCharacterAsync(null).ConfigureAwait(false);
         await this.MagicEffectList.ClearAllEffectsAsync().ConfigureAwait(false);
@@ -1852,65 +1854,73 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
     }
 
-    private async ValueTask ReturnTemporaryStorageItemsAsync()
+    /// <summary>
+    /// Restores the temporary storage items placed in an NPC or trade dialog when player is disconnected.
+    /// </summary>
+    private async ValueTask RestoreTemporaryStorageItemsAsync()
     {
-        if (this.TemporaryStorage is null || this.Inventory is null || this.SelectedCharacter is null)
-        {
-            return;
-        }
-
-        // If BackupInventory exists, GameServer.SaveSessionOfPlayerAsync will handle restoring items
-        // from the backup, so we should not move items from TemporaryStorage here.
-        if (this.BackupInventory is not null)
-        {
-            this.Logger.LogDebug("BackupInventory exists, skipping TemporaryStorage cleanup (will be handled by SaveSessionOfPlayerAsync)");
-            return;
-        }
-
-        var items = this.TemporaryStorage.Items.ToList();
-        if (items.Count == 0)
-        {
-            return;
-        }
-
-        this.Logger.LogInformation("Returning {count} items from temporary storage to inventory for player {player}", items.Count, this.Name);
-
         try
         {
-            // Try the normal way - TryTakeAllAsync automatically rolls back all changes
-            // if any item cannot be added, leaving items in TemporaryStorage for fallback
-            if (await this.Inventory.TryTakeAllAsync(this.TemporaryStorage).ConfigureAwait(false))
+            if (this.Inventory is not { } inventory)
             {
-                this.Logger.LogDebug("Successfully returned all items from temporary storage to inventory");
+                return;
             }
-            else
+
+            if (this.BackupInventory is { } backupInventory)
             {
-                // TryTakeAllAsync failed and rolled back - items are still in TemporaryStorage
-                // Log this critical situation - items may be lost if fallback also fails
-                this.Logger.LogError(
-                    "CRITICAL: Could not return {count} items from temporary storage to inventory due to full inventory. Attempting fallback. Items: {items}",
-                    items.Count,
-                    string.Join(", ", items.Select(i => $"{i.Definition?.Name ?? "Unknown"}(Slot:{i.ItemSlot})")));
-                
-                // Try one more time to force-add items individually using the captured list
-                foreach (var item in items)
+                inventory.Clear();
+                backupInventory.RestoreItemStates();
+                foreach (var item in backupInventory.Items)
                 {
-                    await this.TemporaryStorage.RemoveItemAsync(item).ConfigureAwait(false);
-                    if (!await this.Inventory.AddItemAsync(item).ConfigureAwait(false))
-                    {
-                        this.Logger.LogError("Failed to return item {item} to inventory. Item is lost.", item);
-                    }
+                    await inventory.AddItemAsync(item.ItemSlot, item).ConfigureAwait(false);
+                }
+
+                inventory.ItemStorage.Money = backupInventory.Money;
+                this.BackupInventory = null;
+                this.TemporaryStorage = null;
+                return;
+            }
+
+            if (this.TemporaryStorage is not { ItemStorage.Items.Count: > 0 } temporaryStorage)
+            {
+                // nothing to restore.
+                return;
+            }
+
+            var count = temporaryStorage.ItemStorage.Items.Count;
+            this.Logger.LogInformation("Returning {count} items from temporary storage to inventory for player {player}", count, this.Name);
+
+            if (await inventory.TryTakeAllAsync(temporaryStorage).ConfigureAwait(false))
+            {
+                this.Logger.LogInformation("Returned {count} items from temporary storage to inventory for player {player}", count, this.Name);
+                this.TemporaryStorage = null;
+                return;
+            }
+
+            // We should never get so far, since the space is checked before doing anything with the temporary storage.
+            // Log this critical situation - items may be lost if fallback also fails
+            var items = temporaryStorage.Items.ToList();
+            this.Logger.LogError(
+                "CRITICAL: Could not return {count} items from temporary storage to inventory due to full inventory. Attempting fallback. Items: {items}",
+                items.Count,
+                string.Join(", ", items.Select(i => $"{i.Definition?.Name ?? "Unknown"}(Slot:{i.ItemSlot})")));
+
+            // Try one more time to force-add items individually using the captured list
+            foreach (var item in items)
+            {
+                await this.TemporaryStorage.RemoveItemAsync(item).ConfigureAwait(false);
+                if (!await this.Inventory.AddItemAsync(item).ConfigureAwait(false))
+                {
+                    this.Logger.LogError("Failed to return item {item} to inventory. Item is lost. id: {itemid}", item, item.GetId());
                 }
             }
+
+            this.TemporaryStorage = null;
         }
         catch (Exception ex)
         {
             this.Logger.LogError(ex, "Error returning items from temporary storage to inventory");
         }
-
-        // Clear the opened NPC reference after returning items
-        this.OpenedNpc = null;
-        this.Vault = null;
     }
 
     private async ValueTask RegenerateHeroStateAsync()
