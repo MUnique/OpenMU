@@ -9,8 +9,8 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Persistence;
-using MUnique.OpenMU.Web.AdminPanel.Components.Form;
-using MUnique.OpenMU.Web.AdminPanel.Components.ItemEdit;
+using MUnique.OpenMU.Web.Shared.Components.Form;
+using MUnique.OpenMU.Web.Shared.Components.ItemEdit;
 
 /// <summary>
 /// The edit page for account data.

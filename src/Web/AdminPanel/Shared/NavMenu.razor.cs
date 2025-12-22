@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Components;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
 using MUnique.OpenMU.Web.AdminPanel.Services;
+using MUnique.OpenMU.Web.Shared.Services;
 
 /// <summary>
 /// Navigation menu of the admin panel.
