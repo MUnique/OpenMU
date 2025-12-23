@@ -19,6 +19,8 @@ using MUnique.OpenMU.Pathfinding;
 /// </summary>
 public static class AttackableExtensions
 {
+    private const double MaximumElementalResistance = 255.0;
+
     private static readonly IDictionary<AttributeDefinition, AttributeDefinition> ReductionModifiers =
         new Dictionary<AttributeDefinition, AttributeDefinition>
         {
@@ -345,8 +347,8 @@ public static class AttackableExtensions
             return false;
         }
 
-        var resistance = target.Attributes[modifier];
-        if (resistance >= 1.0f || !Rand.NextRandomBool(1.0f - resistance))
+        var normalizedResistance = NormalizeElementalResistance(target.Attributes[modifier]);
+        if (normalizedResistance >= 1.0 || !Rand.NextRandomBool(1.0 - normalizedResistance))
         {
             return false;
         }
@@ -390,8 +392,8 @@ public static class AttackableExtensions
             return false;
         }
 
-        var resistance = target.Attributes[modifier];
-        if (resistance >= 1.0f || !Rand.NextRandomBool(1.0f - resistance))
+        var normalizedResistance = NormalizeElementalResistance(target.Attributes[modifier]);
+        if (normalizedResistance >= 1.0 || !Rand.NextRandomBool(1.0 - normalizedResistance))
         {
             return false;
         }
@@ -416,6 +418,11 @@ public static class AttackableExtensions
         }
 
         return applied;
+    }
+
+    private static double NormalizeElementalResistance(double resistance)
+    {
+        return Math.Min(1.0, Math.Max(0.0, resistance / MaximumElementalResistance));
     }
 
     /// <summary>
