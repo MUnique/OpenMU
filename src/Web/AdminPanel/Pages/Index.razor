@@ -1,32 +1,35 @@
-﻿@page "/"
+@page "/"
+@using MUnique.OpenMU.Web.AdminPanel.Localization
 
-<h1>Panel de Administración OpenMU</h1>
-<PageTitle>Panel de Administración OpenMU</PageTitle>
-<Breadcrumb IsFirstFromRoot="true" Caption="Inicio"/>
+@inherits LocalizedComponentBase
 
-Bienvenido al panel de administración de OpenMU.
+<h1>@this.Localization["Home_Title"]</h1>
+<PageTitle>@this.Localization["Home_Title"]</PageTitle>
+<Breadcrumb IsFirstFromRoot="true" Caption="@this.Localization["Home_Breadcrumb"]"/>
+
+@this.Localization["Home_Welcome"]
 
 <hr />
 <div class="alert alert-light">
-    <h5>Actualizaciones de Configuración</h5>
+    <h5>@this.Localization["Home_UpdatesHeading"]</h5>
     <p>
-        Revisa y aplica nuevas actualizaciones de configuración sin reiniciar manualmente.
+        @this.Localization["Home_UpdatesDescription"]
     </p>
     <NavLink class="btn btn-primary" href="config-updates">
         <span class="oi oi-loop-circular" aria-hidden="true"></span>
-        &nbsp;Buscar y aplicar actualizaciones
+        &nbsp;@this.Localization["Home_UpdatesButton"]
     </NavLink>
     @if (_availableUpdateCount > 0)
     {
-        <span class="badge badge-info ml-2">@_availableUpdateCount disponibles</span>
+        <span class="badge badge-info ml-2">@_availableUpdateCount @this.Localization["Home_UpdatesAvailableSuffix"]</span>
     }
     else if (_checked)
     {
-        <span class="text-muted ml-2">Sin actualizaciones</span>
+        <span class="text-muted ml-2">@this.Localization["Home_NoUpdates"]</span>
     }
     else
     {
-        <span class="text-muted ml-2">Comprobando…</span>
+        <span class="text-muted ml-2">@this.Localization["Home_Checking"]</span>
     }
     
 </div>

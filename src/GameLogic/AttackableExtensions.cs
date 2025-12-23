@@ -19,6 +19,8 @@ using MUnique.OpenMU.Pathfinding;
 /// </summary>
 public static class AttackableExtensions
 {
+    private const double MaximumElementalResistance = 255.0;
+
     private static readonly IDictionary<AttributeDefinition, AttributeDefinition> ReductionModifiers =
         new Dictionary<AttributeDefinition, AttributeDefinition>
         {
@@ -416,6 +418,11 @@ public static class AttackableExtensions
         }
 
         return applied;
+    }
+
+    private static double NormalizeElementalResistance(double resistance)
+    {
+        return Math.Min(1.0, Math.Max(0.0, resistance / MaximumElementalResistance));
     }
 
     /// <summary>

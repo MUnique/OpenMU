@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic;
 
 using System;
+using System.Globalization;
 using System.Threading;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Attributes;
@@ -2646,6 +2647,34 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         {
             await AddExpToPetAsync(attackPet, petExperience).ConfigureAwait(false);
         }
+    }
+
+    /// <summary>
+    /// Gets a localized message using the players current game context.
+    /// </summary>
+    /// <param name="key">The localization key.</param>
+    /// <param name="fallback">The fallback text if no localization is available.</param>
+    /// <param name="arguments">Optional formatting arguments.</param>
+    /// <returns>The localized message.</returns>
+    public string GetLocalizedMessage(string key, string fallback, params object?[] arguments)
+    {
+        if (this.GameContext is IGameServerContext gameServerContext)
+        {
+            var localized = gameServerContext.Localization.GetString(key, arguments);
+            if (!string.Equals(localized, key, StringComparison.Ordinal))
+            {
+                return localized;
+            }
+
+            return Format(fallback, gameServerContext.Localization.CurrentCulture, arguments);
+        }
+
+        return Format(fallback, CultureInfo.InvariantCulture, arguments);
+    }
+
+    private static string Format(string text, CultureInfo culture, params object?[] arguments)
+    {
+        return arguments.Length > 0 ? string.Format(culture, text, arguments) : text;
     }
 
     private async ValueTask CloseTradeIfNeededAsync()

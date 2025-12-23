@@ -12,6 +12,8 @@ using MUnique.OpenMU.GameLogic.Views.World;
 /// </summary>
 public class HitAction
 {
+    private const double MaximumElementalResistance = 255.0;
+
     /// <summary>
     /// Hits the specified target by the specified player.
     /// </summary>
@@ -102,5 +104,10 @@ public class HitAction
         }
 
         return (skill, effectApplied);
+    }
+
+    private static double NormalizeElementalResistance(double resistance)
+    {
+        return Math.Min(1.0, Math.Max(0.0, resistance / MaximumElementalResistance));
     }
 }

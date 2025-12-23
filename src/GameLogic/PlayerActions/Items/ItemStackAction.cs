@@ -56,7 +56,8 @@ public class ItemStackAction
         }
         else
         {
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Te faltan joyas.", MessageType.BlueNormal)).ConfigureAwait(false);
+            var message = player.GetLocalizedMessage("ItemStack_Message_NotEnoughJewels", "You don't have enough jewels.");
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal)).ConfigureAwait(false);
         }
     }
 
@@ -83,13 +84,15 @@ public class ItemStackAction
         var stacked = player.Inventory?.GetItem(slot);
         if (stacked is null)
         {
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("No se encontró la joya apilada.", MessageType.BlueNormal)).ConfigureAwait(false);
+            var message = player.GetLocalizedMessage("ItemStack_Message_StackNotFound", "The stacked jewel was not found.");
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal)).ConfigureAwait(false);
             return;
         }
 
         if (stacked.Definition != mix.MixedJewel)
         {
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("El ítem seleccionado no es una joya apilada.", MessageType.BlueNormal)).ConfigureAwait(false);
+            var message = player.GetLocalizedMessage("ItemStack_Message_WrongItem", "The selected item is not a stacked jewel.");
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal)).ConfigureAwait(false);
             return;
         }
 
@@ -98,7 +101,8 @@ public class ItemStackAction
         var freeSlots = player.Inventory!.FreeSlots.Take(pieces).ToList();
         if (freeSlots.Count < pieces)
         {
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("No hay suficiente espacio en el inventario.", MessageType.BlueNormal)).ConfigureAwait(false);
+            var message = player.GetLocalizedMessage("Inventory_Message_NotEnoughSpace", "There is not enough space in the inventory.");
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal)).ConfigureAwait(false);
             return;
         }
 

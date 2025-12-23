@@ -80,7 +80,12 @@ public class TalkNpcAction
                     }
                     else
                     {
-                        await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync($"Hablar con este NPC ({npcStats.Number}, {npcStats.Designation}) aún no está implementado.", MessageType.BlueNormal)).ConfigureAwait(false);
+                        var message = player.GetLocalizedMessage(
+                            "Npc_Message_NotImplemented",
+                            "Talking to this NPC ({0}, {1}) is not implemented yet.",
+                            npcStats.Number,
+                            npcStats.Designation ?? string.Empty);
+                        await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal)).ConfigureAwait(false);
                     }
 
                     await player.PlayerState.TryAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
@@ -151,7 +156,8 @@ public class TalkNpcAction
 
         if (!quests.Any())
         {
-            await player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync("I have no quests for you.", player.OpenedNpc)).ConfigureAwait(false);
+            var message = player.GetLocalizedMessage("Npc_LegacyQuest_None", "I have no quests for you.");
+            await player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync(message, player.OpenedNpc)).ConfigureAwait(false);
             player.OpenedNpc = null;
             await player.PlayerState.TryAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
             return;
@@ -159,9 +165,8 @@ public class TalkNpcAction
 
         if (quests.All(quest => quest.MinimumCharacterLevel > player.Level))
         {
-            await player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync(
-                "I have nothing to do for you. Come back with more power.",
-                player.OpenedNpc)).ConfigureAwait(false);
+            var message = player.GetLocalizedMessage("Npc_LegacyQuest_TooLowLevel", "I have nothing to do for you. Come back with more power.");
+            await player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync(message, player.OpenedNpc)).ConfigureAwait(false);
             player.OpenedNpc = null;
             await player.PlayerState.TryAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
             return;
@@ -172,9 +177,8 @@ public class TalkNpcAction
         var questState = player.GetQuestState(questGroup ?? 0);
         if (questState?.LastFinishedQuest?.Number >= maxQuestNumber)
         {
-            await player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync(
-                "I have nothing to do for you. You solved all my quests already.",
-                player.OpenedNpc)).ConfigureAwait(false);
+            var message = player.GetLocalizedMessage("Npc_LegacyQuest_AllCompleted", "I have nothing to do for you. You solved all my quests already.");
+            await player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync(message, player.OpenedNpc)).ConfigureAwait(false);
             player.OpenedNpc = null;
             await player.PlayerState.TryAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
             return;
@@ -187,13 +191,15 @@ public class TalkNpcAction
     {
         if (player.Level < 100)
         {
-            await player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync("Your level should be at least level 100", player.OpenedNpc!)).ConfigureAwait(false);
+            var message = player.GetLocalizedMessage("Npc_GuildMaster_LevelRequirement", "Your level should be at least level 100.");
+            await player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync(message, player.OpenedNpc!)).ConfigureAwait(false);
             return false;
         }
 
         if (player.GuildStatus != null)
         {
-            await player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync("You already belong to a guild", player.OpenedNpc!)).ConfigureAwait(false);
+            var message = player.GetLocalizedMessage("Npc_GuildMaster_AlreadyInGuild", "You already belong to a guild.");
+            await player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync(message, player.OpenedNpc!)).ConfigureAwait(false);
             return false;
         }
 

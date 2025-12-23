@@ -49,6 +49,25 @@ This fork diverges from the original OpenMU project and introduces:
 - Golden Archer essentials (Rena token, rewards, packed jewels) preconfigured.
 - Rena global drop on Season 1 maps for 0.75 / 0.95d / Season 6.
 
+### Recent updates (2025‑09)
+
+- Docker images hardened and easier to debug:
+  - `src/Startup/Dockerfile` now accepts `ASPNET_IMAGE`/`SDK_IMAGE` build args, installs ICU (`icu-libs`, `icu-data-full`) and sets `DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false` to enable proper cultures on Alpine.
+  - Uses `ARG APP_UID` (default `1000`) to avoid failures when no user id is provided.
+  - Builds with `-v m` for detailed logs and copies `strings.*.json` to `/app/Localization` during publish.
+- Localization refactor:
+  - New robust `LocalizationService` (core) with safe culture fallback to Invariant when ICU is unavailable.
+  - Single DI registration (singleton) shared by server and Admin Panel.
+  - Admin components explicitly inject the core service to avoid type ambiguity.
+  - Language selector changes the server language at runtime (affects in‑game messages which use localization APIs).
+- Admin Panel reliability:
+  - Fixed blank page caused by ambiguous DI type for `LocalizationService`.
+  - Added simple log tail endpoint: `GET /api/logs/tail?take=200`.
+- Build fixes:
+  - Removed duplicate assembly attributes in `src/Localization` by setting `<GenerateAssemblyInfo>false</...>`.
+  - Fixed Linux path casing and project reference for Admin Panel localization resources.
+  - Minor C# fix in `LetterSendAction` to avoid variable shadowing under `-p:ci=true`.
+
 ### Elf Summon Plug-in
 
 This fork includes a configurable plug-in to change Elf summons (skills 30..36) and scale their stats by Energy without restarting the server.
@@ -139,6 +158,56 @@ hosted in one process as well.
 
 We provide Docker images and docker-compose files for easy deployment.
 Please take a look at the deploy-folder of this project.
+
+### Deploy from a remote fork (compose overlay)
+
+- Overlays in `deploy/all-in-one` allow building the image directly from your fork using a remote git context.
+- Required env var: `OPENMU_FORK_CONTEXT` in the form `https://github.com/<user>/OpenMU-<fork>.git#<branch>:src`.
+- Example commands (server):
+  - `export OPENMU_FORK_CONTEXT="https://github.com/EmanuelCatania/OpenMU-S2.git#master:src"`
+  - `docker compose -f docker-compose.no-nginx.yml -f docker-compose.override.yml -f docker-compose.public-dns.yml -f docker-compose.npm-net.yml -f docker-compose.from-fork.yml build --no-cache --progress=plain --build-arg APP_UID=1000 openmu-startup`
+  - `docker compose -f docker-compose.no-nginx.yml -f docker-compose.public-dns.yml -f docker-compose.npm-net.yml -f docker-compose.from-fork.yml up -d --no-deps --force-recreate openmu-startup`
+
+Notes
+- `src/Startup/Dockerfile` installs ICU (`icu-libs`, `icu-data-full`) and sets `DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false` to enable real cultures on Alpine.
+- If you are behind a proxy (NPM/Cloudflare), enable WebSockets for `/_blazor` and avoid orange cloud (DNS only) for the host.
+
+## Localization
+
+- Core service: `src/Localization/LocalizationService.cs` reads `strings.*.json` from a configurable `ResourceDirectory` (defaults to `/app/Localization` in Docker).
+- Admin Panel components inject the core service and react to language changes (`LanguageChanged` event).
+- Changing the language from the UI updates the singleton service used by the server as well; server messages which call `GetLocalizedMessage(...)` reflect the new language immediately.
+- On restart the language falls back to the configuration in `src/Startup/appsettings.json` (`Localization:DefaultLanguage`, `Localization:CurrentLanguage`).
+- When ICU is not available, cultures gracefully fall back to `InvariantCulture` so the server keeps running.
+
+## Troubleshooting
+
+- Build: `base name (${SDK_IMAGE}) should not be blank`
+  - Declare `ARG SDK_IMAGE=...` before the first `FROM`. Already fixed in `src/Startup/Dockerfile`.
+- Build: duplicate assembly attributes (CS0579) in Localization
+  - Set `<GenerateAssemblyInfo>false</GenerateAssemblyInfo>` in `src/Localization/MUnique.OpenMU.Localization.csproj`. Already applied.
+- Runtime: crash with `CultureNotFoundException` in globalization‑invariant mode
+  - The Dockerfile installs ICU and sets `DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false`. Alternatively, the service now falls back to `InvariantCulture`.
+- Admin Panel: blank page and console error `Cannot provide a value for property 'Localization' ...`
+  - Caused by ambiguous DI type; components explicitly inject the core service (`MUnique.OpenMU.Localization.LocalizationService`). Fixed in `src/Web/AdminPanel/Localization/LocalizedComponentBase.cs` and `src/Web/AdminPanel/Localization/LocalizedLayoutComponentBase.cs`.
+- Admin Panel: 404 for `/_content/...` or SignalR disconnects
+  - Ensure your proxy forwards static assets and enables WebSockets for `/_blazor`. Try direct access to the host/port to isolate proxy issues.
+- Logs
+  - Tail recent logs over HTTP: `GET /api/logs/tail?take=200`.
+  - Or use `docker logs -n 200 openmu-startup`.
+
+### Deploy from a remote fork (compose overlay)
+
+- Overlays in `deploy/all-in-one` allow building the image directly from your fork using a remote git context.
+- Required env var: `OPENMU_FORK_CONTEXT` in the form `https://github.com/<user>/OpenMU-<fork>.git#<branch>:src`.
+- Example commands (server):
+  - `export OPENMU_FORK_CONTEXT="https://github.com/EmanuelCatania/OpenMU-S2.git#master:src"`
+  - `docker compose -f docker-compose.no-nginx.yml -f docker-compose.override.yml -f docker-compose.public-dns.yml -f docker-compose.npm-net.yml -f docker-compose.from-fork.yml build --no-cache --progress=plain --build-arg APP_UID=1000 openmu-startup`
+  - `docker compose -f docker-compose.no-nginx.yml -f docker-compose.public-dns.yml -f docker-compose.npm-net.yml -f docker-compose.from-fork.yml up -d --no-deps --force-recreate openmu-startup`
+
+Notes
+- `src/Startup/Dockerfile` installs ICU (`icu-libs`, `icu-data-full`) and sets `DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false` to enable real cultures on Alpine.
+- If you are behind a proxy (NPM/Cloudflare), enable WebSockets for `/_blazor` and avoid orange cloud (DNS only) for the host.
 
 ## Contributions
 

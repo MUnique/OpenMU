@@ -34,7 +34,8 @@ public class IncreaseStatsAction
 
         if (!selectedCharacter.CanIncreaseStats(amount))
         {
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("No tienes suficientes puntos de nivel disponibles.", MessageType.BlueNormal)).ConfigureAwait(false);
+            var message = player.GetLocalizedMessage("Stats_Message_NotEnoughPoints", "You don't have enough level-up points available.");
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal)).ConfigureAwait(false);
             return;
         }
 
@@ -48,7 +49,8 @@ public class IncreaseStatsAction
                 amount = (ushort)(maximumValue - current);
                 if (amount == 0)
                 {
-                    await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync($"Se alcanzó el máximo de {attributeDef.Attribute?.MaximumValue} {attributeDef.Attribute?.Designation}.", MessageType.BlueNormal)).ConfigureAwait(false);
+                    var message = player.GetLocalizedMessage("Stats_Message_MaximumReached", "Maximum of {0} {1} reached.", attributeDef.Attribute?.MaximumValue ?? 0, attributeDef.Attribute?.Designation ?? string.Empty);
+                    await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal)).ConfigureAwait(false);
                     return;
                 }
             }
@@ -60,7 +62,8 @@ public class IncreaseStatsAction
         }
         else
         {
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Atributo no disponible.", MessageType.BlueNormal)).ConfigureAwait(false);
+            var message = player.GetLocalizedMessage("Stats_Message_AttributeUnavailable", "Attribute not available.");
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal)).ConfigureAwait(false);
         }
     }
 }

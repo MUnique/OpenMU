@@ -6,7 +6,10 @@
     using MUnique.OpenMU.GameServer;
     using MUnique.OpenMU.Interfaces;
     using MUnique.OpenMU.Persistence;
+    using MUnique.OpenMU.Localization;
     using System.Text.Json;
+    using System;
+    using System.Linq;
 
     /// <summary>
     /// Server API controller
@@ -14,13 +17,59 @@
     [Route("api/")]
     public class ServerController : Controller
     {
-        private IDictionary<int, IGameServer> _gameServers;
+        private readonly IDictionary<int, IGameServer> _gameServers;
+        private readonly LocalizationService _localization;
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="gameServers"></param>
-        public ServerController(IDictionary<int, IGameServer> gameServers) => _gameServers = gameServers;
+        /// <param name="localization">The localization service.</param>
+        public ServerController(IDictionary<int, IGameServer> gameServers, LocalizationService localization)
+        {
+            this._gameServers = gameServers;
+            this._localization = localization;
+        }
+
+        /// <summary>
+        /// Gets the current server localization settings.
+        /// </summary>
+        /// <returns>The current language and available languages.</returns>
+        [HttpGet]
+        [Route("localization")]
+        public IActionResult GetLocalization()
+        {
+            var payload = new
+            {
+                current = this._localization.CurrentLanguage,
+                available = this._localization.AvailableLanguages,
+            };
+
+            return this.Ok(payload);
+        }
+
+        /// <summary>
+        /// Changes the language used by the game servers.
+        /// </summary>
+        /// <param name="language">The target language code.</param>
+        /// <returns>The updated localization state.</returns>
+        [HttpPost]
+        [Route("localization/{language}")]
+        public IActionResult SetLocalization(string language)
+        {
+            if (string.IsNullOrWhiteSpace(language))
+            {
+                return this.BadRequest("Language must be provided.");
+            }
+
+            if (!this._localization.AvailableLanguages.Contains(language, StringComparer.OrdinalIgnoreCase))
+            {
+                return this.BadRequest($"Language '{language}' is not supported.");
+            }
+
+            this._localization.SetLanguage(language);
+            return this.Ok(new { current = this._localization.CurrentLanguage });
+        }
 
         /// <summary>
         /// 
