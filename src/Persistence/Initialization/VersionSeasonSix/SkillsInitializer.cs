@@ -70,6 +70,8 @@ internal class SkillsInitializer : SkillsInitializerBase
         { SkillNumber.Sleep, MagicEffectNumber.Sleep },
         { SkillNumber.Weakness, MagicEffectNumber.WeaknessSummoner },
         { SkillNumber.Innovation, MagicEffectNumber.Innovation },
+        { SkillNumber.BeastUppercut, MagicEffectNumber.DefenseReductionBeastUppercut },
+        { SkillNumber.PhoenixShot, MagicEffectNumber.DecreaseBlock },
     };
 
     private readonly IDictionary<byte, MasterSkillRoot> _masterSkillRoots;
@@ -213,17 +215,17 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.CreateSkill(SkillNumber.ChaoticDiseier, "Chaotic Diseier", CharacterClasses.AllLords, DamageType.Physical, 190, 6, 15, 50, 100, 16, skillType: SkillType.AreaSkillAutomaticHits);
         this.AddAreaSkillSettings(SkillNumber.ChaoticDiseier, true, 1.5f, 1.5f, 6f);
         this.CreateSkill(SkillNumber.DoppelgangerSelfExplosion, "Doppelganger Self Explosion", CharacterClasses.AllMGs, DamageType.Wizardry, 140, 3, 25, 20, 100, elementalModifier: ElementalType.Fire);
-        this.CreateSkill(SkillNumber.KillingBlow, "Killing Blow", CharacterClasses.AllFighters, DamageType.Physical, distance: 2, manaConsumption: 9, elementalModifier: ElementalType.Earth);
-        this.CreateSkill(SkillNumber.BeastUppercut, "Beast Uppercut", CharacterClasses.AllFighters, DamageType.Physical, distance: 2, manaConsumption: 9, elementalModifier: ElementalType.Fire);
-        this.CreateSkill(SkillNumber.ChainDrive, "Chain Drive", CharacterClasses.AllFighters, DamageType.Physical, distance: 4, abilityConsumption: 20, manaConsumption: 15, levelRequirement: 150, elementalModifier: ElementalType.Ice);
+        this.CreateSkill(SkillNumber.KillingBlow, "Killing Blow", CharacterClasses.AllFighters, DamageType.Physical, distance: 2, manaConsumption: 9, elementalModifier: ElementalType.Earth, hitsPerAttack: 4); // 1 packet => 1*4 hits
+        this.CreateSkill(SkillNumber.BeastUppercut, "Beast Uppercut", CharacterClasses.AllFighters, DamageType.Physical, distance: 2, manaConsumption: 9, elementalModifier: ElementalType.Fire, hitsPerAttack: 2);  // 2 packets => 2*2 hits
+        this.CreateSkill(SkillNumber.ChainDrive, "Chain Drive", CharacterClasses.AllFighters, DamageType.Physical, distance: 4, abilityConsumption: 20, manaConsumption: 15, levelRequirement: 150, elementalModifier: ElementalType.Ice, hitsPerAttack: 4); // 2 packets => 2*4 hits
         this.CreateSkill(SkillNumber.DarkSide, "Dark Side", CharacterClasses.AllFighters, DamageType.Physical, distance: 4, manaConsumption: 70, levelRequirement: 180, elementalModifier: ElementalType.Wind);
-        this.CreateSkill(SkillNumber.DragonRoar, "Dragon Roar", CharacterClasses.AllFighters, DamageType.Physical, distance: 3, abilityConsumption: 30, manaConsumption: 50, levelRequirement: 150, elementalModifier: ElementalType.Earth, skillType: SkillType.AreaSkillAutomaticHits);
+        this.CreateSkill(SkillNumber.DragonRoar, "Dragon Roar", CharacterClasses.AllFighters, DamageType.Physical, distance: 3, abilityConsumption: 30, manaConsumption: 50, levelRequirement: 150, elementalModifier: ElementalType.Earth, skillType: SkillType.AreaSkillExplicitTarget, hitsPerAttack: 4); // 1 packet => 1*4 hits
         this.CreateSkill(SkillNumber.DragonSlasher, "Dragon Slasher", CharacterClasses.AllFighters, DamageType.Physical, distance: 4, abilityConsumption: 100, manaConsumption: 100, levelRequirement: 200, elementalModifier: ElementalType.Wind);
         this.CreateSkill(SkillNumber.IgnoreDefense, "Ignore Defense", CharacterClasses.AllFighters, DamageType.Physical, distance: 3, abilityConsumption: 10, manaConsumption: 50, levelRequirement: 120, energyRequirement: 404, skillType: SkillType.Buff, skillTarget: SkillTarget.ImplicitPlayer);
         this.CreateSkill(SkillNumber.IncreaseHealth, "Increase Health", CharacterClasses.AllFighters, DamageType.Physical, distance: 7, abilityConsumption: 10, manaConsumption: 50, levelRequirement: 80, energyRequirement: 132, skillType: SkillType.Buff, skillTarget: SkillTarget.ImplicitParty);
         this.CreateSkill(SkillNumber.IncreaseBlock, "Increase Block", CharacterClasses.AllFighters, DamageType.Physical, distance: 7, abilityConsumption: 10, manaConsumption: 50, levelRequirement: 50, energyRequirement: 80, skillType: SkillType.Buff, skillTarget: SkillTarget.ImplicitParty);
         this.CreateSkill(SkillNumber.Charge, "Charge", CharacterClasses.AllFighters, DamageType.Physical, 90, 4, 15, 20);
-        this.CreateSkill(SkillNumber.PhoenixShot, "Phoenix Shot", CharacterClasses.AllFighters, DamageType.Physical, distance: 4, manaConsumption: 30, elementalModifier: ElementalType.Earth, skillType: SkillType.AreaSkillExplicitTarget);
+        this.CreateSkill(SkillNumber.PhoenixShot, "Phoenix Shot", CharacterClasses.AllFighters, DamageType.Physical, distance: 4, manaConsumption: 30, elementalModifier: ElementalType.Earth, skillType: SkillType.AreaSkillExplicitTarget, hitsPerAttack: 4); // 1 packet => 1*4 hits
 
         // Generic monster skills:
         this.CreateSkill(SkillNumber.MonsterSkill, "Generic Monster Skill", distance: 5, skillType: SkillType.Other);
@@ -670,6 +672,8 @@ internal class SkillsInitializer : SkillsInitializerBase
         new SleepEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         new WeaknessSummonerEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         new InnovationEffectInitializer(this.Context, this.GameConfiguration).Initialize();
+        new DefenseReductionBeastUppercutEffectInitializer(this.Context, this.GameConfiguration).Initialize();
+        new DecreaseBlockEffectInitializer(this.Context, this.GameConfiguration).Initialize();
     }
 
     private void MapSkillsToEffects()
@@ -685,6 +689,9 @@ internal class SkillsInitializer : SkillsInitializerBase
             {
                 case (short)MagicEffectNumber.WeaknessSummoner:
                     effect.Number = (short)MagicEffectNumber.Weakness;
+                    break;
+                case (short)MagicEffectNumber.DefenseReductionBeastUppercut:
+                    effect.Number = (short)MagicEffectNumber.DefenseReduction;
                     break;
                 default:
                     // no change needed

@@ -262,9 +262,14 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
 
                 if (!target.IsAtSafezone() && !player.IsAtSafezone() && target != player)
                 {
-                    await target.AttackByAsync(player, skillEntry, isCombo).ConfigureAwait(false);
+                    await target.AttackByAsync(player, skillEntry, isCombo, 1, skill.NumberOfHitsPerAttack > 1 ? false : null).ConfigureAwait(false);
                     player.LastAttackedTarget.SetTarget(target);
                     success = await target.TryApplyElementalEffectsAsync(player, skillEntry).ConfigureAwait(false) || success;
+
+                    for (int hit = 2; hit <= skill.NumberOfHitsPerAttack; hit++)
+                    {
+                        await target.AttackByAsync(player, skillEntry, isCombo, 1, hit == skill.NumberOfHitsPerAttack).ConfigureAwait(false);
+                    }
                 }
             }
             else if (skill.MagicEffectDef != null)

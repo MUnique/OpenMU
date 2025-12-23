@@ -6316,6 +6316,24 @@ public readonly ref struct ObjectHitRef
     }
 
     /// <summary>
+    /// Gets or sets the is rage fighter streak hit.
+    /// </summary>
+    public bool IsRageFighterStreakHit
+    {
+        get => this._data[7..].GetBoolean(4);
+        set => this._data[7..].SetBoolean(value, 4);
+    }
+
+    /// <summary>
+    /// Gets or sets the is rage fighter streak final hit.
+    /// </summary>
+    public bool IsRageFighterStreakFinalHit
+    {
+        get => this._data[7..].GetBoolean(5);
+        set => this._data[7..].SetBoolean(value, 5);
+    }
+
+    /// <summary>
     /// Gets or sets the is double damage.
     /// </summary>
     public bool IsDoubleDamage
@@ -6419,6 +6437,24 @@ public readonly ref struct ObjectHitExtendedRef
     {
         get => (DamageKind)this._data[3..].GetByteValue(4, 0);
         set => this._data[3..].SetByteValue((byte)value, 4, 0);
+    }
+
+    /// <summary>
+    /// Gets or sets the is rage fighter streak hit.
+    /// </summary>
+    public bool IsRageFighterStreakHit
+    {
+        get => this._data[3..].GetBoolean(4);
+        set => this._data[3..].SetBoolean(value, 4);
+    }
+
+    /// <summary>
+    /// Gets or sets the is rage fighter streak final hit.
+    /// </summary>
+    public bool IsRageFighterStreakFinalHit
+    {
+        get => this._data[3..].GetBoolean(5);
+        set => this._data[3..].SetBoolean(value, 5);
     }
 
     /// <summary>

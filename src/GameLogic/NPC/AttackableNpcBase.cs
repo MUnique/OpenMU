@@ -64,7 +64,7 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
     /// <value>
     ///   <c>true</c> if teleporting; otherwise, <c>false</c>.
     /// </value>
-    /// <remarks>Teleporting for monsters oor npcs is not implemented yet.</remarks>
+    /// <remarks>Teleporting for monsters or npcs is not implemented yet.</remarks>
     public bool IsTeleporting => false;
 
     /// <inheritdoc />
@@ -98,7 +98,7 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
                                   || (this.SpawnArea.SpawnTrigger == SpawnTrigger.AutomaticDuringWave && (this._eventStateProvider?.IsSpawnWaveActive(this.SpawnArea.WaveNumber) ?? false));
 
     /// <inheritdoc />
-    public async ValueTask<HitInfo?> AttackByAsync(IAttacker attacker, SkillEntry? skill, bool isCombo, double damageFactor = 1.0)
+    public async ValueTask<HitInfo?> AttackByAsync(IAttacker attacker, SkillEntry? skill, bool isCombo, double damageFactor = 1.0, bool? isStreakFinalHit = null)
     {
         if (this.Definition.ObjectKind == NpcObjectKind.Guard)
         {
@@ -111,7 +111,7 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
         }
 
         var hitInfo = await attacker.CalculateDamageAsync(this, skill, isCombo, damageFactor).ConfigureAwait(false);
-        await this.HitAsync(hitInfo, attacker, skill?.Skill).ConfigureAwait(false);
+        await this.HitAsync(hitInfo, attacker, skill?.Skill, isStreakFinalHit).ConfigureAwait(false);
         if (hitInfo.HealthDamage > 0)
         {
             attacker.ApplyAmmunitionConsumption(hitInfo);
@@ -175,7 +175,12 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
     /// <param name="hitInfo">The hit information.</param>
     /// <param name="attacker">The attacker.</param>
     /// <param name="skill">The skill.</param>
-    protected async ValueTask HitAsync(HitInfo hitInfo, IAttacker attacker, Skill? skill)
+    /// <param name="isFinalStreakHit">
+    ///     Not <c>null</c> when it's a rage fighter multiple hit skill:
+    ///     <c>true</c>, if it's the final hit;
+    ///     <c>false</c>, for other hits.
+    /// </param>
+    protected async ValueTask HitAsync(HitInfo hitInfo, IAttacker attacker, Skill? skill, bool? isFinalStreakHit = null)
     {
         if (!this.IsAlive)
         {
@@ -187,6 +192,16 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
         var player = this.GetHitNotificationTarget(attacker);
         if (player is not null)
         {
+            if (isFinalStreakHit.HasValue)
+            {
+                hitInfo.Attributes |= DamageAttributes.RageFighterStreakHit;
+
+                if (isFinalStreakHit.Value || killed)
+                {
+                    hitInfo.Attributes |= DamageAttributes.RageFighterStreakFinalHit;
+                }
+            }
+
             await player.InvokeViewPlugInAsync<IShowHitPlugIn>(p => p.ShowHitAsync(this, hitInfo)).ConfigureAwait(false);
             player.GameContext.PlugInManager.GetPlugInPoint<IAttackableGotHitPlugIn>()?.AttackableGotHit(this, attacker, hitInfo);
         }
