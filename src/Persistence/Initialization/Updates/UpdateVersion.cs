@@ -334,9 +334,4 @@ public enum UpdateVersion
     /// The version of the <see cref="FixSkillMultipliersPlugIn"/>.
     /// </summary>
     FixSkillMultipliers = 65,
-
-    /// <summary>
-    /// The version of the <see cref="FixSleepSkillUpdate"/>.
-    /// </summary>
-    FixSleepSkillSeason6 = 66,
 }
