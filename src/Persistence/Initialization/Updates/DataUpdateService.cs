@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Persistence.Initialization.Updates;
 
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.Persistence.Initialization.Version097d;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -110,6 +111,7 @@ public class DataUpdateService
             (6, 3) => VersionSeasonSix.DataInitialization.Id,
             (0, 75) => Version075.DataInitialization.Id,
             (0, 95) => Version095d.DataInitialization.Id,
+            (0, 97) => DataInitialization.Id,
             _ => throw new InvalidOperationException($"Unknown client version: {clientDefinition}."),
         };
     }
