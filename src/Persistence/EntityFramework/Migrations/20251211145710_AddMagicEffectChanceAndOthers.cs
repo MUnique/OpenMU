@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -15,6 +16,13 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config",
                 table: "PowerUpDefinitionValue",
                 type: "real",
+                nullable: true);
+
+            migrationBuilder.AddColumn<Guid>(
+                name: "MagicEffectDefinitionId1",
+                schema: "config",
+                table: "PowerUpDefinition",
+                type: "uuid",
                 nullable: true);
 
             migrationBuilder.AddColumn<Guid>(
@@ -63,6 +71,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 defaultValue: 0f);
 
             migrationBuilder.CreateIndex(
+                name: "IX_PowerUpDefinition_MagicEffectDefinitionId1",
+                schema: "config",
+                table: "PowerUpDefinition",
+                column: "MagicEffectDefinitionId1");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_MagicEffectDefinition_ChanceId",
                 schema: "config",
                 table: "MagicEffectDefinition",
@@ -110,6 +124,16 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 column: "DurationPvpId",
                 principalSchema: "config",
                 principalTable: "PowerUpDefinitionValue",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_PowerUpDefinition_MagicEffectDefinition_MagicEffectDefinit~1",
+                schema: "config",
+                table: "PowerUpDefinition",
+                column: "MagicEffectDefinitionId1",
+                principalSchema: "config",
+                principalTable: "MagicEffectDefinition",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
         }
@@ -132,6 +156,16 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 schema: "config",
                 table: "MagicEffectDefinition");
 
+            migrationBuilder.DropForeignKey(
+                name: "FK_PowerUpDefinition_MagicEffectDefinition_MagicEffectDefinit~1",
+                schema: "config",
+                table: "PowerUpDefinition");
+
+            migrationBuilder.DropIndex(
+                name: "IX_PowerUpDefinition_MagicEffectDefinitionId1",
+                schema: "config",
+                table: "PowerUpDefinition");
+
             migrationBuilder.DropIndex(
                 name: "IX_MagicEffectDefinition_ChanceId",
                 schema: "config",
@@ -151,6 +185,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 name: "MaximumValue",
                 schema: "config",
                 table: "PowerUpDefinitionValue");
+
+            migrationBuilder.DropColumn(
+                name: "MagicEffectDefinitionId1",
+                schema: "config",
+                table: "PowerUpDefinition");
 
             migrationBuilder.DropColumn(
                 name: "ChanceId",

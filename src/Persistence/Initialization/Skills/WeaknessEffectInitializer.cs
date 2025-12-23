@@ -10,7 +10,7 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
 
 /// <summary>
-/// Initializer for the weakness effect, which can result from Killing Blow (RF) or Weakness (Sum) skills.
+/// Initializer for the weakness effect which results from Killing Blow (RF) skill.
 /// </summary>
 public class WeaknessEffectInitializer : InitializerBase
 {
@@ -30,12 +30,16 @@ public class WeaknessEffectInitializer : InitializerBase
         var magicEffect = this.Context.CreateNew<MagicEffectDefinition>();
         this.GameConfiguration.MagicEffects.Add(magicEffect);
         magicEffect.Number = (short)MagicEffectNumber.Weakness;
-        magicEffect.Name = "Weakness Effect";
+        magicEffect.Name = "Weakness Effect (Killing Blow)";
         magicEffect.InformObservers = true;
         magicEffect.SendDuration = false;
         magicEffect.StopByDeath = true;
         magicEffect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.Duration.ConstantValue.Value = 10; // 10 seconds
+
+        // Chance to apply the effect
+        magicEffect.Chance = this.Context.CreateNew<PowerUpDefinitionValue>();
+        magicEffect.Chance.ConstantValue.Value = 0.1f; // 10%
 
         // Target's physical damage decreases by 5%
         var decDmgPowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();

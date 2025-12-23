@@ -105,6 +105,15 @@ public partial class MagicEffectDefinition
     [MemberOfAggregate]
     public virtual ICollection<PowerUpDefinition> PowerUpDefinitions { get; protected set; } = null!;
 
+    /// <summary>
+    /// Gets or sets the power up definitions which are used to create the actual power up element for PvP.
+    /// </summary>
+    /// <remarks>
+    /// Results in the same collection as <see cref="PowerUpDefinitions"/> if not set.
+    /// </remarks>
+    [MemberOfAggregate]
+    public virtual ICollection<PowerUpDefinition> PowerUpDefinitionsPvp { get; protected set; } = null!;
+
     /// <inheritdoc />
     public override string ToString()
     {

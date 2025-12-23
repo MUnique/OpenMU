@@ -47,6 +47,27 @@ public partial class MagicEffectDefinition : MUnique.OpenMU.DataModel.Configurat
     }
 
     /// <summary>
+    /// Gets the raw collection of <see cref="PowerUpDefinitionsPvp" />.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonPropertyName("powerUpDefinitionsPvp")]
+    public ICollection<PowerUpDefinition> RawPowerUpDefinitionsPvp { get; } = new List<PowerUpDefinition>();
+    
+    /// <inheritdoc/>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override ICollection<MUnique.OpenMU.DataModel.Attributes.PowerUpDefinition> PowerUpDefinitionsPvp
+    {
+        get => base.PowerUpDefinitionsPvp ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Attributes.PowerUpDefinition, PowerUpDefinition>(this.RawPowerUpDefinitionsPvp);
+        protected set
+        {
+            this.PowerUpDefinitionsPvp.Clear();
+            foreach (var item in value)
+            {
+                this.PowerUpDefinitionsPvp.Add(item);
+            }
+        }
+    }
+
+    /// <summary>
     /// Gets the raw object of <see cref="Chance" />.
     /// </summary>
     [System.Text.Json.Serialization.JsonPropertyName("chance")]

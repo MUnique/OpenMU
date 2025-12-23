@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 {
     [DbContext(typeof(EntityDataContext))]
-    [Migration("20251208181437_AddMagicEffectChanceAndOthers")]
+    [Migration("20251211145710_AddMagicEffectChanceAndOthers")]
     partial class AddMagicEffectChanceAndOthers
     {
         /// <inheritdoc />
@@ -2835,6 +2835,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<Guid?>("MagicEffectDefinitionId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("MagicEffectDefinitionId1")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid?>("TargetAttributeId")
                         .HasColumnType("uuid");
 
@@ -2846,6 +2849,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasIndex("GameMapDefinitionId");
 
                     b.HasIndex("MagicEffectDefinitionId");
+
+                    b.HasIndex("MagicEffectDefinitionId1");
 
                     b.HasIndex("TargetAttributeId");
 
@@ -4658,6 +4663,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasForeignKey("MagicEffectDefinitionId")
                         .OnDelete(DeleteBehavior.Cascade);
 
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.MagicEffectDefinition", null)
+                        .WithMany("RawPowerUpDefinitionsPvp")
+                        .HasForeignKey("MagicEffectDefinitionId1")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasConstraintName("FK_PowerUpDefinition_MagicEffectDefinition_MagicEffectDefinit~1");
+
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeDefinition", "RawTargetAttribute")
                         .WithMany()
                         .HasForeignKey("TargetAttributeId");
@@ -5089,6 +5100,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MagicEffectDefinition", b =>
                 {
                     b.Navigation("RawPowerUpDefinitions");
+
+                    b.Navigation("RawPowerUpDefinitionsPvp");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MasterSkillDefinition", b =>

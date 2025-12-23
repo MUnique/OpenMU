@@ -46,6 +46,7 @@ public static class GameConfigurationHelper
                 .Concat(c.ItemOptions.SelectMany(o => o.PossibleOptions.Select(p => p.PowerUpDefinition).WhereNotNull()))
                 .Concat(c.ItemOptions.SelectMany(o => o.PossibleOptions.SelectMany(p => p.LevelDependentOptions.Select(l => l.PowerUpDefinition).WhereNotNull())))
                 .Concat(c.MagicEffects.SelectMany(m => m.PowerUpDefinitions))
+                .Concat(c.MagicEffects.SelectMany(m => m.PowerUpDefinitionsPvp))
         },
         { typeof(ItemBasePowerUpDefinition), c => c.Items.SelectMany(i => i.BasePowerUpAttributes) },
         { typeof(ItemDropItemGroup), c => c.Items.SelectMany(i => i.DropItems) },

@@ -68,6 +68,8 @@ internal class SkillsInitializer : SkillsInitializerBase
         { SkillNumber.Berserker, MagicEffectNumber.Berserker },
         { SkillNumber.KillingBlow, MagicEffectNumber.Weakness },
         { SkillNumber.Sleep, MagicEffectNumber.Sleep },
+        { SkillNumber.Weakness, MagicEffectNumber.WeaknessSummoner },
+        { SkillNumber.Innovation, MagicEffectNumber.Innovation },
     };
 
     private readonly IDictionary<byte, MasterSkillRoot> _masterSkillRoots;
@@ -192,8 +194,10 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.CreateSkill(SkillNumber.DamageReflection, "Damage Reflection", CharacterClasses.AllSummoners, distance: 5, abilityConsumption: 10, manaConsumption: 40, energyRequirement: 375);
         this.CreateSkill(SkillNumber.Berserker, "Berserker", CharacterClasses.AllSummoners, distance: 5, abilityConsumption: 50, manaConsumption: 100, energyRequirement: 620, skillType: SkillType.Buff, targetRestriction: SkillTargetRestriction.Self);
         this.CreateSkill(SkillNumber.Sleep, "Sleep", CharacterClasses.AllSummoners, distance: 6, abilityConsumption: 3, manaConsumption: 20, energyRequirement: 180, skillType: SkillType.Buff);
-        this.CreateSkill(SkillNumber.Weakness, "Weakness", CharacterClasses.AllSummoners, distance: 6, abilityConsumption: 15, manaConsumption: 50, energyRequirement: 663);
-        this.CreateSkill(SkillNumber.Innovation, "Innovation", CharacterClasses.AllSummoners, distance: 6, abilityConsumption: 15, manaConsumption: 70, energyRequirement: 912);
+        this.CreateSkill(SkillNumber.Weakness, "Weakness", CharacterClasses.AllSummoners, distance: 6, abilityConsumption: 15, manaConsumption: 50, energyRequirement: 663, skillType: SkillType.Buff);
+        this.AddAreaSkillSettings(SkillNumber.Weakness, false, 0, 0, 0, maximumHitsPerAttack: 5, useTargetAreaFilter: true, targetAreaDiameter: 10);
+        this.CreateSkill(SkillNumber.Innovation, "Innovation", CharacterClasses.AllSummoners, distance: 6, abilityConsumption: 15, manaConsumption: 70, energyRequirement: 912, skillType: SkillType.Buff);
+        this.AddAreaSkillSettings(SkillNumber.Innovation, false, 0, 0, 0, maximumHitsPerAttack: 5, useTargetAreaFilter: true, targetAreaDiameter: 10);
         this.CreateSkill(SkillNumber.Explosion223, "Explosion", CharacterClasses.AllSummoners, DamageType.Curse, 40, 6, 5, 90, energyRequirement: 100, elementalModifier: ElementalType.Fire); // Book of Samut's skill
         this.CreateSkill(SkillNumber.Requiem, "Requiem", CharacterClasses.AllSummoners, DamageType.Curse, 65, 6, 10, 110, energyRequirement: 99, elementalModifier: ElementalType.Wind); // Book of Neil's skill
         this.CreateSkill(SkillNumber.Pollution, "Pollution", CharacterClasses.AllSummoners, DamageType.Curse, 80, 6, 15, 120, energyRequirement: 115, elementalModifier: ElementalType.Lightning); // Book of Lagle's skill
@@ -664,6 +668,8 @@ internal class SkillsInitializer : SkillsInitializerBase
         new BerserkerEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         new WeaknessEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         new SleepEffectInitializer(this.Context, this.GameConfiguration).Initialize();
+        new WeaknessSummonerEffectInitializer(this.Context, this.GameConfiguration).Initialize();
+        new InnovationEffectInitializer(this.Context, this.GameConfiguration).Initialize();
     }
 
     private void MapSkillsToEffects()
@@ -673,6 +679,17 @@ internal class SkillsInitializer : SkillsInitializerBase
             var skill = this.GameConfiguration.Skills.First(s => s.Number == (short)effectOfSkill.Key);
             var effect = this.GameConfiguration.MagicEffects.First(e => e.Number == (short)effectOfSkill.Value);
             skill.MagicEffectDef = effect;
+
+            // After the mapping, we override the internal effect number to the client's
+            switch (effect.Number)
+            {
+                case (short)MagicEffectNumber.WeaknessSummoner:
+                    effect.Number = (short)MagicEffectNumber.Weakness;
+                    break;
+                default:
+                    // no change needed
+                    break;
+            }
         }
     }
 

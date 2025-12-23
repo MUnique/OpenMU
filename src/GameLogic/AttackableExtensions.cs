@@ -65,6 +65,11 @@ public static class AttackableExtensions
         {
             var defenseAttribute = defender.GetDefenseAttribute(attacker);
             defense = (int)defender.Attributes[defenseAttribute];
+            defense -= (int)(defense * defender.Attributes[Stats.InnovationDefDecrement]);
+            if (defense < 0)
+            {
+                defense = 0;
+            }
         }
 
         attacker.GetBaseDmg(skill, out int baseMinDamage, out int baseMaxDamage, out DamageType damageType);
@@ -317,7 +322,8 @@ public static class AttackableExtensions
         }
 
         var duration = ((IElement, float?))(target is Player ? skillEntry.PowerUpDurationPvp! : skillEntry.PowerUpDuration!);
-        await target.ApplyMagicEffectAsync(attacker, skillEntry.Skill!.MagicEffectDef!, duration, skillEntry.PowerUps!).ConfigureAwait(false);
+        var powerUps = target is Player ? skillEntry.PowerUpsPvp! : skillEntry.PowerUps!;
+        await target.ApplyMagicEffectAsync(attacker, skillEntry.Skill!.MagicEffectDef!, duration, powerUps).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -397,7 +403,7 @@ public static class AttackableExtensions
     }
 
     /// <summary>
-    /// Applies the elemental effects of a players skill to the target.
+    /// Applies the elemental effects of a monster's skill to the target.
     /// </summary>
     /// <param name="target">The target.</param>
     /// <param name="attacker">The attacker.</param>

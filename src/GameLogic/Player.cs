@@ -1461,23 +1461,31 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             throw new InvalidOperationException($"Skill {skill.Name} ({skill.Number}) has no duration in MagicEffectDef.");
         }
 
-        int i = 0;
         var result = new (AttributeDefinition Target, IElement BuffPowerUp)[skill.MagicEffectDef.PowerUpDefinitions.Count];
+        var resultPvp = new (AttributeDefinition Target, IElement BuffPowerUp)[skill.MagicEffectDef.PowerUpDefinitionsPvp.Count];
         var durationElement = this.Attributes!.CreateDurationElement(skill.MagicEffectDef.Duration);
         var durationElementPvp = skill.MagicEffectDef.DurationPvp is { } durationPvp ? this.Attributes!.CreateDurationElement(durationPvp) : durationElement;
         var chanceElement = skill.MagicEffectDef.Chance is { } chance ? this.Attributes!.CreateChanceElement(chance) : new ConstantElement(1.0f);
         var chanceElementPvp = skill.MagicEffectDef.ChancePvp is { } chancePvp ? this.Attributes!.CreateChanceElement(chancePvp) : chanceElement;
-        AddSkillPowersToResult(skill);
+        AddSkillPowersToResult(skill, skill.MagicEffectDef.PowerUpDefinitions, ref result);
+        AddSkillPowersToResult(skill, skill.MagicEffectDef.PowerUpDefinitionsPvp, ref resultPvp);
         skillEntry.PowerUpDuration = (durationElement, skill.MagicEffectDef.Duration.MaximumValue);
         skillEntry.PowerUpDurationPvp = (durationElementPvp, skill.MagicEffectDef.DurationPvp?.MaximumValue);
         skillEntry.PowerUpChance = chanceElement;
         skillEntry.PowerUpChancePvp = chanceElementPvp;
         skillEntry.PowerUps = result;
+        skillEntry.PowerUpsPvp = resultPvp.Count() > 0 ? resultPvp : result;
 
-        void AddSkillPowersToResult(Skill skill)
+        void AddSkillPowersToResult(Skill skill, ICollection<PowerUpDefinition> powerUps, ref (AttributeDefinition Target, IElement BuffPowerUp)[] result)
         {
+            if (powerUps.Count() == 0)
+            {
+                return;
+            }
+
+            int i = 0;
             var durationExtended = false;
-            foreach (var powerUpDef in skill.MagicEffectDef!.PowerUpDefinitions)
+            foreach (var powerUpDef in powerUps)
             {
                 IElement powerUp;
                 if (skillEntry.Level > 0)

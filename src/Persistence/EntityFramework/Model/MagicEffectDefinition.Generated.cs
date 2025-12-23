@@ -38,6 +38,15 @@ internal partial class MagicEffectDefinition : MUnique.OpenMU.DataModel.Configur
     public override ICollection<MUnique.OpenMU.DataModel.Attributes.PowerUpDefinition> PowerUpDefinitions => base.PowerUpDefinitions ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Attributes.PowerUpDefinition, PowerUpDefinition>(this.RawPowerUpDefinitions);
 
     /// <summary>
+    /// Gets the raw collection of <see cref="PowerUpDefinitionsPvp" />.
+    /// </summary>
+    public ICollection<PowerUpDefinition> RawPowerUpDefinitionsPvp { get; } = new EntityFramework.List<PowerUpDefinition>();
+    
+    /// <inheritdoc/>
+    [NotMapped]
+    public override ICollection<MUnique.OpenMU.DataModel.Attributes.PowerUpDefinition> PowerUpDefinitionsPvp => base.PowerUpDefinitionsPvp ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Attributes.PowerUpDefinition, PowerUpDefinition>(this.RawPowerUpDefinitionsPvp);
+
+    /// <summary>
     /// Gets or sets the identifier of <see cref="Chance"/>.
     /// </summary>
     public Guid? ChanceId { get; set; }

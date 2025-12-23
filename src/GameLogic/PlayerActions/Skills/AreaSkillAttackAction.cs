@@ -46,7 +46,7 @@ public class AreaSkillAttackAction
             return;
         }
 
-        if (skill.SkillType is SkillType.AreaSkillAutomaticHits or SkillType.AreaSkillExplicitTarget
+        if (skill.SkillType is SkillType.AreaSkillAutomaticHits or SkillType.AreaSkillExplicitTarget or SkillType.Buff
             || (skill.SkillType is SkillType.AreaSkillExplicitHits && hitImplicitlyForExplicitSkill))
         {
             // todo: delayed automatic hits, like evil spirit, flame, triple shot... when hitImplicitlyForExplicitSkill = true.
@@ -248,6 +248,13 @@ public class AreaSkillAttackAction
     private async ValueTask ApplySkillAsync(Player player, SkillEntry skillEntry, IAttackable target, Point targetAreaCenter, bool isCombo)
     {
         skillEntry.ThrowNotInitializedProperty(skillEntry.Skill is null, nameof(skillEntry.Skill));
+        var skill = skillEntry.Skill;
+
+        if (skillEntry.Skill.SkillType == SkillType.Buff)
+        {
+            await target.ApplyMagicEffectAsync(player, skillEntry).ConfigureAwait(false);
+            return;
+        }
 
         var hitInfo = await target.AttackByAsync(player, skillEntry, isCombo).ConfigureAwait(false);
         await target.TryApplyElementalEffectsAsync(player, skillEntry).ConfigureAwait(false);

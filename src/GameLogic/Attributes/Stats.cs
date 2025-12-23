@@ -921,6 +921,11 @@ public class Stats
     public static AttributeDefinition WeaknessPhysDmgDecrement { get; } = new(new Guid("37497650-139B-4DA1-9FB6-27AEB8F04CF6"), "Weakness Physical Damage Decrement", "The inflicted physical damage decrement due to the magic effects of weakness or killing blow skills, which is multiplied with the final damage and subtracted from it.");
 
     /// <summary>
+    /// Gets the innovation defense decrement due to Summoner's innovation skill attribute definition.
+    /// </summary>
+    public static AttributeDefinition InnovationDefDecrement { get; } = new(new Guid("D8B3B1C9-B409-4A07-8F4D-8F315DCB173A"), "Innovation Defense Decrement", "The defense decrement due to the magic effect of innovation skill, which is multiplied with the final defense and subtracted from it.");
+
+    /// <summary>
     /// Gets the 'is shield equipped' attribute definition.
     /// </summary>
     public static AttributeDefinition IsShieldEquipped { get; } = new(new Guid("394DFAA0-B18D-44DA-A99D-094BC5E7C9C5"), "Is Shield Equipped", string.Empty);

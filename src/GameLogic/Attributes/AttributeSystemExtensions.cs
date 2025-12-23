@@ -77,7 +77,7 @@ public static class AttributeSystemExtensions
                     r.GetOperandElement(attributeSystem),
                     r.InputOperator)
                 {
-                    AggregateType = result.AggregateType,
+                    AggregateType = r.AggregateType,
                 })
                 .Cast<IElement>();
 
