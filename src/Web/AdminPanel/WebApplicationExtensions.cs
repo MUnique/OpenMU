@@ -23,6 +23,7 @@ using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix;
 using MUnique.OpenMU.Web.AdminPanel.Models;
 using MUnique.OpenMU.Web.AdminPanel.Services;
 using MUnique.OpenMU.Web.AdminPanel.Localization;
+using Version097dInitialization = MUnique.OpenMU.Persistence.Initialization.Version097d.DataInitialization;
 
 /// <summary>
 /// Extensions for the <see cref="WebApplicationBuilder"/>.
@@ -42,6 +43,7 @@ public static class WebApplicationExtensions
     {
         // Ensure that DataInitialization plugins will get collected - for the setup functionality.
         _ = DataInitialization.Id;
+        _ = Version097dInitialization.Id;
 
         var mvcBuilder = builder.Services.AddRazorPages();
         if (includeMapApp)

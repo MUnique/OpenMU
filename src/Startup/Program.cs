@@ -29,6 +29,7 @@ using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.EntityFramework;
 using MUnique.OpenMU.Persistence.Initialization;
 using MUnique.OpenMU.Persistence.Initialization.Version075;
+using Version097dInitialization = MUnique.OpenMU.Persistence.Initialization.Version097d.DataInitialization;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
 using MUnique.OpenMU.Web.AdminPanel;
@@ -237,6 +238,7 @@ internal sealed class Program : IDisposable
         // Ensure GameLogic and GameServer Assemblies are loaded
         _ = GameLogic.Rand.NextInt(1, 2);
         _ = DataInitialization.Id;
+        _ = Version097dInitialization.Id;
         _ = OpenMU.GameServer.ClientVersionResolver.DefaultVersion;
 
         var addAdminPanel = this.IsAdminPanelEnabled(args);
