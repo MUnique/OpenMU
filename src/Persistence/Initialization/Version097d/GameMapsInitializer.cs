@@ -5,8 +5,8 @@
 namespace MUnique.OpenMU.Persistence.Initialization.Version097d;
 
 using MUnique.OpenMU.DataModel.Configuration;
-using MUnique.OpenMU.Persistence.Initialization.Version095d.Maps;
-using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
+using Maps095 = MUnique.OpenMU.Persistence.Initialization.Version095d.Maps;
+using MapsS6 = MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 
 /// <summary>
 /// Initializes the <see cref="GameMapDefinition"/>s.
@@ -28,24 +28,24 @@ public class GameMapsInitializer : GameMapsInitializerBase
     {
         get
         {
-            yield return typeof(Lorencia);
+            yield return typeof(Maps095.Lorencia);
             yield return typeof(Version075.Maps.Dungeon);
-            yield return typeof(Devias);
-            yield return typeof(Noria);
+            yield return typeof(Maps095.Devias);
+            yield return typeof(Maps095.Noria);
             yield return typeof(Version075.Maps.LostTower);
             yield return typeof(Version075.Maps.Exile);
             yield return typeof(Version075.Maps.Arena);
             yield return typeof(Version075.Maps.Atlans);
-            yield return typeof(Tarkan);
-            yield return typeof(Icarus);
-            yield return typeof(DevilSquare1);
-            yield return typeof(DevilSquare2);
-            yield return typeof(DevilSquare3);
-            yield return typeof(DevilSquare4);
-            yield return typeof(BloodCastle1);
-            yield return typeof(ChaosCastle1);
-            yield return typeof(ChaosCastle2);
-            yield return typeof(ChaosCastle3);
+            yield return typeof(Maps095.Tarkan);
+            yield return typeof(Maps095.Icarus);
+            yield return typeof(Maps095.DevilSquare1);
+            yield return typeof(Maps095.DevilSquare2);
+            yield return typeof(Maps095.DevilSquare3);
+            yield return typeof(Maps095.DevilSquare4);
+            yield return typeof(MapsS6.BloodCastle1);
+            yield return typeof(MapsS6.ChaosCastle1);
+            yield return typeof(MapsS6.ChaosCastle2);
+            yield return typeof(MapsS6.ChaosCastle3);
         }
     }
 }
