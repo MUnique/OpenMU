@@ -59,14 +59,9 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
             return (CraftingResult.Failed, null, successRate, bonusRate);
         }
 
-<<<<<<< HEAD
         player.Logger.LogInformation("Crafting failed with success chance: {successRate} % (+{bonusRate})", successRate, bonusRate);
-=======
-        player.Logger.LogInformation("Crafting failed with success chance: {successRate} %", successRate);
-
         // Reset backup inventory to avoid items are restored after failure and sudden disconnect of the client.
         player.BackupInventory = null;
->>>>>>> upstream/master
         foreach (var i in items)
         {
             await this.RequiredItemChangeAsync(player, i, false).ConfigureAwait(false);
