@@ -34,8 +34,8 @@ public class WhiteWizardInvasionPlugIn : BaseInvasionPlugIn<WhiteWizardInvasionC
     public WhiteWizardInvasionPlugIn()
         : base(
             mapEventType: null, // MapEventType currently supports Red/Golden dragon only
-            mobs: System.Array.Empty<(ushort MapId, ushort MonsterId, ushort Count)>(),
-            mobsOnSelectedMap: System.Array.Empty<(ushort MonsterId, ushort Count)>())
+            mobs: System.Array.Empty<InvasionMobSpawn>(),
+            mobsOnSelectedMap: System.Array.Empty<InvasionMobSpawn>())
     {
     }
 
