@@ -77,8 +77,8 @@ public class HitAction
         }
 
         var modifier = skill.ElementalModifierTarget!;
-        var normalizedResistance = NormalizeElementalResistance(target.Attributes[modifier]);
-        if (normalizedResistance >= 1.0 || !Rand.NextRandomBool(1.0 - normalizedResistance))
+        var resistance = target.Attributes[modifier];
+        if (resistance >= 255 || !Rand.NextRandomBool(1 / (resistance + 1)))
         {
             return (skill, effectApplied);
         }

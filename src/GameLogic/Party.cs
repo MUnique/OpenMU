@@ -264,7 +264,7 @@ public sealed class Party : Disposable
             return count;
         }
 
-        var totalLevel = this._distributionList.Sum(p => (int)p.Attributes![Stats.Level] + p.Attributes![Stats.MasterLevel]);
+        var totalLevel = this._distributionList.Sum(p => (int)p.Attributes![Stats.TotalLevel]);
         var averageLevel = totalLevel / count;
         var averageExperience = killedObject.CalculateBaseExperience(averageLevel);
         var totalAverageExperience = averageExperience * count * Math.Pow(1.05, count - 1);
@@ -279,13 +279,13 @@ public sealed class Party : Disposable
             {
                 if (player.SelectedCharacter?.CharacterClass?.IsMasterClass ?? false)
                 {
-                    var expMaster = (int)(randomizedTotalExperiencePerLevel * (player.Attributes![Stats.MasterLevel] + player.Attributes![Stats.Level]) * player.Attributes[Stats.MasterExperienceRate]);
+                    var expMaster = (int)(randomizedTotalExperiencePerLevel * player.Attributes![Stats.TotalLevel] * (player.Attributes[Stats.MasterExperienceRate] + player.Attributes[Stats.BonusExperienceRate]));
                     await player.AddMasterExperienceAsync(expMaster, killedObject).ConfigureAwait(false);
                 }
             }
             else
             {
-                var exp = (int)(randomizedTotalExperiencePerLevel * player.Attributes![Stats.Level] * player.Attributes[Stats.ExperienceRate]);
+                var exp = (int)(randomizedTotalExperiencePerLevel * player.Attributes![Stats.Level] * (player.Attributes[Stats.ExperienceRate] + player.Attributes[Stats.BonusExperienceRate]));
                 await player.AddExperienceAsync(exp, killedObject).ConfigureAwait(false);
             }
         }

@@ -196,19 +196,14 @@ internal static class ItemOptionDefinitionNumbers
     public static short Wing3rd => 0x67;
 
     /// <summary>
-    /// Gets the elite transfer skeleton ring option number.
+    /// Gets the elite elite skeleton transformation ring option number.
     /// </summary>
-    public static short EliteTransferSkeletonRing => 0x70;
+    public static short EliteSkeletonTransformationRing => 0x70;
 
     /// <summary>
     /// Gets the skeleton transformation ring option number.
     /// </summary>
     public static short SkeletonTransformationRing => 0x71;
-
-    /// <summary>
-    /// Gets the panda ring option number.
-    /// </summary>
-    public static short PandaRing => 0x72;
 
     /// <summary>
     /// Gets the wizard ring option number.

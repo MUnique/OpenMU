@@ -315,12 +315,12 @@ public enum UpdateVersion
     /// </summary>
     FixEventItemsDropFromMonsters095d = 60,
 
-    /// <summary>
     /// The version of the <see cref="FixItemRequirementsPlugIn2"/>.
     /// </summary>
     FixItemRequirements2 = 61,
 
     /// <summary>
+<<<<<<< HEAD
     /// The version of the White Wizard monster and default invasion drop groups update.
     /// </summary>
     WhiteWizardAndInvasionDropsSeason6 = 62,
@@ -345,3 +345,19 @@ public enum UpdateVersion
     /// </summary>
     RenaGlobalDropSeason6 = 66,
 }
+=======
+    /// The version of the <see cref="FixJeweleryPetsDamageCalcsPlugIn075"/>.
+    /// </summary>
+    FixJeweleryPetsDamageCalcs075 = 62,
+
+    /// <summary>
+    /// The version of the <see cref="FixJeweleryPetsDamageCalcsPlugIn095D"/>.
+    /// </summary>
+    FixJeweleryPetsDamageCalcs095d = 63,
+
+    /// <summary>
+    /// The version of the <see cref="FixJeweleryPetsDamageCalcsPlugInSeason6"/>.
+    /// </summary>
+    FixJeweleryPetsDamageCalcsSeason6 = 64,
+}
+>>>>>>> upstream/master
