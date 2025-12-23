@@ -244,12 +244,12 @@ internal enum MagicEffectNumber : short
     Blind = 0x49,
 
     /// <summary>
-    /// The weakness effect, which decreases the target's physical damage.
+    /// The weakness effect, which decreases the physical damage.
     /// </summary>
     Weakness = 0x4C,
 
     /// <summary>
-    /// The innovation effect, which decreases the target's defense.
+    /// The innovation effect, which decreases the defense.
     /// </summary>
     Innovation = 0x4D,
 
