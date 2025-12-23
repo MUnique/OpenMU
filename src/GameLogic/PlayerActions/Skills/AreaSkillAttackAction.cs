@@ -129,13 +129,18 @@ public class AreaSkillAttackAction
 
         for (int attackRound = 0; attackRound < areaSkillSettings.MaximumNumberOfHitsPerTarget; attackRound++)
         {
-            if (attackCount > maxAttacks)
+            if (attackCount >= maxAttacks)
             {
                 break;
             }
 
             foreach (var target in targets)
             {
+                if (attackCount >= maxAttacks)
+                {
+                    break;
+                }
+
                 if (target.Id == extraTargetId)
                 {
                     extraTarget = target;
@@ -201,7 +206,7 @@ public class AreaSkillAttackAction
         if (skill.SkillType == SkillType.AreaSkillExplicitTarget)
         {
             if (extraTarget?.CheckSkillTargetRestrictions(player, skill) is true
-                && player.IsInRange(extraTarget.Position, skill.Range + 2)
+                && player.IsInRange(extraTarget.Position, skill.Range)
                 && !extraTarget.IsAtSafezone())
             {
                 yield return extraTarget;
