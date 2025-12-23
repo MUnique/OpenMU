@@ -346,7 +346,7 @@ public static class AttackableExtensions
         }
 
         var resistance = target.Attributes[modifier];
-        if (resistance >= 1.0f || !Rand.NextRandomBool(1.0f - resistance))
+        if (resistance >= 255 || !Rand.NextRandomBool(1 / (resistance + 1)))
         {
             return false;
         }
@@ -391,7 +391,7 @@ public static class AttackableExtensions
         }
 
         var resistance = target.Attributes[modifier];
-        if (resistance >= 1.0f || !Rand.NextRandomBool(1.0f - resistance))
+        if (resistance >= 255 || !Rand.NextRandomBool(1 / (resistance + 1)))
         {
             return false;
         }

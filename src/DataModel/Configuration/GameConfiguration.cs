@@ -34,6 +34,14 @@ public partial class GameConfiguration
     public float ExperienceRate { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether experience overflow should be prevented.
+    /// When <c>true</c>, if gaining experience would exceed the amount needed for the next level,
+    /// only the necessary experience for the next level is gained, and the overflow is discarded.
+    /// When <c>false</c>, excess experience is applied to subsequent levels (default behavior).
+    /// </summary>
+    public bool PreventExperienceOverflow { get; set; }
+
+    /// <summary>
     /// Gets or sets the minimum monster level which are required to be killed
     /// in order to gain master experience for master character classes.
     /// </summary>
@@ -61,6 +69,15 @@ public partial class GameConfiguration
     /// Gets or sets the maximum vault money value.
     /// </summary>
     public int MaximumVaultMoney { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether money pickup should be clamped to the maximum inventory money limit instead of failing when the limit would be exceeded.
+    /// </summary>
+    /// <remarks>
+    /// When <c>true</c>, if picking up money would exceed the maximum inventory money, the player will receive as much as possible (up to the limit) instead of the pickup failing completely.
+    /// When <c>false</c>, the pickup will fail if it would exceed the maximum (default behavior).
+    /// </remarks>
+    public bool ClampMoneyOnPickup { get; set; }
 
     /// <summary>
     /// Gets or sets the experience formula per level. The variable name for the level is "level".

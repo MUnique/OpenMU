@@ -282,7 +282,7 @@ public partial class Skill
     /// <summary>
     /// Gets or sets the elemental modifier target attribute.
     /// If this is set, hitting the target (successfully or not) may apply additional effects.
-    /// A value of <c>1.0f</c> means, the target is immune to effects of this element.
+    /// A value of <c>255</c> means, the target is immune to effects of this element.
     /// </summary>
     public virtual AttributeDefinition? ElementalModifierTarget { get; set; }
 
