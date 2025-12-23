@@ -347,8 +347,8 @@ public static class AttackableExtensions
             return false;
         }
 
-        var normalizedResistance = NormalizeElementalResistance(target.Attributes[modifier]);
-        if (normalizedResistance >= 1.0 || !Rand.NextRandomBool(1.0 - normalizedResistance))
+        var resistance = target.Attributes[modifier];
+        if (resistance >= 255 || !Rand.NextRandomBool(1 / (resistance + 1)))
         {
             return false;
         }
@@ -392,8 +392,8 @@ public static class AttackableExtensions
             return false;
         }
 
-        var normalizedResistance = NormalizeElementalResistance(target.Attributes[modifier]);
-        if (normalizedResistance >= 1.0 || !Rand.NextRandomBool(1.0 - normalizedResistance))
+        var resistance = target.Attributes[modifier];
+        if (resistance >= 255 || !Rand.NextRandomBool(1 / (resistance + 1)))
         {
             return false;
         }

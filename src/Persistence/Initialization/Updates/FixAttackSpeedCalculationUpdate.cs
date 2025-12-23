@@ -137,6 +137,7 @@ public class FixAttackSpeedCalculationUpdate : UpdatePlugInBase
         AddStatIfNotExists(context, gameConfiguration, Stats.WalkSpeed);
 
         Stats.AttackSpeed.GetPersistent(gameConfiguration).MaximumValue = Stats.AttackSpeed.MaximumValue;
+        Stats.MagicSpeed.GetPersistent(gameConfiguration).MaximumValue = Stats.MagicSpeed.MaximumValue;
 
         foreach (var characterClass in gameConfiguration.CharacterClasses)
         {
