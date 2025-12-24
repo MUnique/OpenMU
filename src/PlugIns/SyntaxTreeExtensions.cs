@@ -26,10 +26,11 @@ public static class SyntaxTreeExtensions
                 return _assemblyReferences;
             }
 
-            var nitoAssemblies = Directory.EnumerateFiles(new FileInfo(typeof(SyntaxTreeExtensions).Assembly.Location).DirectoryName!, "Nito.*.dll")
-                .Select(path => Assembly.LoadFrom(path))
+            // Force Nito assemblies to be loaded, so they are part of the trusted platform assemblies.
+            _ = Directory.EnumerateFiles(new FileInfo(typeof(SyntaxTreeExtensions).Assembly.Location).DirectoryName!, "Nito.*.dll")
+                .Select(Assembly.LoadFrom)
                 .ToList();
-            
+
             var loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies()
                 .Where(a => !a.IsDynamic)
                 .Select(a => a.Location)

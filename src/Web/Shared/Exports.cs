@@ -20,26 +20,6 @@ public static class Exports
     /// </summary>
     private static string Prefix { get; } = $"_content/{typeof(Exports).Namespace}";
 
-    private static IEnumerable<string> SharedScripts
-    {
-        get
-        {
-            yield return "_content/Blazored.Typeahead/blazored-typeahead.js";
-            //yield return "_content/Blazored.Modal/blazored.modal.js";
-            yield return "_content/BlazorInputFile/inputfile.js";
-        }
-    }
-
-    private static IEnumerable<string> SharedStylesheets
-    {
-        get
-        {
-            yield return "_content/Blazored.Typeahead/blazored-typeahead.css";
-            //yield return "_content/Blazored.Modal/blazored-modal.css";
-            yield return $"_content/MUnique.OpenMU.Web.Shared/css/shared.css";
-        }
-    }
-
     /// <summary>
     /// Gets the scripts.
     /// </summary>
@@ -54,4 +34,22 @@ public static class Exports
     /// Gets the stylesheets.
     /// </summary>
     public static ImmutableList<string> Stylesheets { get; } = SharedStylesheets.ToImmutableList();
+
+    private static IEnumerable<string> SharedScripts
+    {
+        get
+        {
+            yield return "_content/Blazored.Typeahead/blazored-typeahead.js";
+            yield return "_content/BlazorInputFile/inputfile.js";
+        }
+    }
+
+    private static IEnumerable<string> SharedStylesheets
+    {
+        get
+        {
+            yield return "_content/Blazored.Typeahead/blazored-typeahead.css";
+            yield return $"{Prefix}/css/shared.css";
+        }
+    }
 }

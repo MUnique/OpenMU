@@ -7,7 +7,6 @@ namespace MUnique.OpenMU.Web.Shared.ComponentBuilders;
 using System.Reflection;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
-using MUnique.OpenMU.Web.Shared;
 using MUnique.OpenMU.Web.Shared.Services;
 
 /// <summary>
