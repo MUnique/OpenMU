@@ -114,7 +114,7 @@ public class PacketHandlerPlugInContainer<THandler> : StrategyPlugInProvider<byt
         }
 
         using var loggingScope = this.Logger.BeginScope(("EventId", handler.GetType().Name));
-        var headerType = ArrayExtensions.NormalizePacketHeader(packet.Span[0]);
+        var headerType = MUnique.OpenMU.Network.ArrayExtensions.NormalizePacketHeader(packet.Span[0]);
         if (handler.IsEncryptionExpected && (headerType < 0xC3))
         {
             this.Logger.LogWarning($"Packet was not encrypted and will not be handled: {packet.Span.AsString()}");
