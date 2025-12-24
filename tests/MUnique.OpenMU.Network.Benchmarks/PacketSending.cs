@@ -29,10 +29,10 @@ public class PacketSending
     /// <summary>
     /// Sends packets at the connection with Spans.
     /// </summary>
-    /// <param name="cancellationToken">The cancellation token.</param>
     [Benchmark]
-    public async ValueTask SendSpanAsync(CancellationToken cancellationToken)
+    public async ValueTask SendSpanAsync()
     {
+        CancellationToken cancellationToken = default;
         var duplexPipe = new DuplexPipe();
         using var connection = new Connection(duplexPipe, null, null, new NullLogger<Connection>());
         for (int i = 0; i < this.PacketCount && !cancellationToken.IsCancellationRequested; i++)
@@ -53,10 +53,10 @@ public class PacketSending
     /// <summary>
     /// Sends packets at the connection with Spans.
     /// </summary>
-    /// <param name="cancellationToken">The cancellation token.</param>
     [Benchmark]
-    public async ValueTask SendSpanInlineAsync(CancellationToken cancellationToken)
+    public async ValueTask SendSpanInlineAsync()
     {
+        CancellationToken cancellationToken = default;
         var duplexPipe = new DuplexPipe();
         using var connection = new Connection(duplexPipe, null, null, new NullLogger<Connection>());
         for (int i = 0; i < this.PacketCount && !cancellationToken.IsCancellationRequested; i++)

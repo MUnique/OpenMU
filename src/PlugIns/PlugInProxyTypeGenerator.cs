@@ -86,7 +86,7 @@ internal class PlugInProxyTypeGenerator
         var typeSyntax = ClassDeclaration(proxyTypeName)
             .AddModifiers(Token(SyntaxKind.PublicKeyword))
             .AddBaseListTypes(
-                SimpleBaseType(ParseTypeName($"{nameof(PlugInContainerBase<object>).Split('`').First()}<{typeName}>")),
+                SimpleBaseType(ParseTypeName($"{nameof(PlugInContainerBase<>)}<{typeName}>")),
                 SimpleBaseType(ParseTypeName(typeName)));
         typeSyntax = typeSyntax.AddMembers(this.ImplementConstructor(proxyTypeName));
         foreach (var method in type.GetMethods().Where(m => m.ReturnType == typeof(void)))

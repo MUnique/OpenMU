@@ -19,13 +19,13 @@ public static class Exports
     /// <summary>
     /// Gets the scripts.
     /// </summary>
-    public static ImmutableList<string> Scripts { get; } = new[]
-    {
+    public static ImmutableList<string> Scripts { get; } = [
+        .. Web.Shared.Exports.Scripts,
         $"{Prefix}/js/system-production.js",
-        $"{Prefix}/js/map.js",
-        $"{Prefix}/js/app.js",
+        $"{Prefix}/js/map-launcher.js",
+        $"{Prefix}/js/MUnique.OpenMU.Web.Map.js",
         $"{Prefix}/js/Stats.js",
-    }.ToImmutableList();
+    ];
 
     /// <summary>
     /// Gets the script mappings.
@@ -39,5 +39,5 @@ public static class Exports
     /// <summary>
     /// Gets the stylesheets.
     /// </summary>
-    public static ImmutableList<string> Stylesheets { get; } = [];
+    public static ImmutableList<string> Stylesheets => Web.Shared.Exports.Stylesheets;
 }

@@ -34,6 +34,7 @@ using MUnique.OpenMU.Web.AdminPanel;
 using MUnique.OpenMU.Web.AdminPanel.Services;
 using MUnique.OpenMU.Web.API;
 using MUnique.OpenMU.Web.Map.Map;
+using MUnique.OpenMU.Web.Shared;
 using Nito.AsyncEx.Synchronous;
 using Serilog;
 using Serilog.Debugging;

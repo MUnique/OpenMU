@@ -2,6 +2,9 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using MUnique.OpenMU.Web.Shared.Models;
+using MUnique.OpenMU.Web.Shared.Services;
+
 namespace MUnique.OpenMU.Web.AdminPanel;
 
 using System.IO;
@@ -92,6 +95,7 @@ public static class WebApplicationExtensions
             app.UseExceptionHandler("/Error");
         }
 
+        app.MapStaticAssets();
         app.UseStaticFiles();
         app.UseStaticFiles(new StaticFileOptions
         {

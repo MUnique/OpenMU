@@ -15,9 +15,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Persistence;
-using MUnique.OpenMU.Web.AdminPanel;
-using MUnique.OpenMU.Web.AdminPanel.Components;
-using MUnique.OpenMU.Web.AdminPanel.Shared;
+using MUnique.OpenMU.Web.Shared;
+using MUnique.OpenMU.Web.Shared.Components;
 
 /// <summary>
 /// A page, which shows an <see cref="MapEditor"/> for all <see cref="GameConfiguration.Maps"/>.
