@@ -8,6 +8,7 @@ using System.Buffers;
 using System.Diagnostics;
 using System.IO.Pipelines;
 using System.Runtime.InteropServices;
+using MUnique.OpenMU.Network;
 using static System.Buffers.Binary.BinaryPrimitives;
 
 /// <summary>
@@ -88,7 +89,8 @@ public class PipelinedSimpleModulusDecryptor : PipelinedSimpleModulusBase, IPipe
         // usage. If the previous span was used up, a new piece of memory is getting provided for us.
         packet.Slice(0, 3).CopyTo(this.HeaderBuffer);
 
-        if (this.HeaderBuffer[0] < 0xC3)
+        var headerType = ArrayExtensions.NormalizePacketHeader(this.HeaderBuffer[0]);
+        if (headerType < 0xC3)
         {
             // we just have to write-through
             this.CopyDataIntoWriter(this.Pipe.Writer, packet);

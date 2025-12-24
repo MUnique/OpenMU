@@ -10,6 +10,23 @@ namespace MUnique.OpenMU.Network;
 public static class ArrayExtensions
 {
     /// <summary>
+    /// Normalizes alternative packet header prefixes to the standard MU headers.
+    /// </summary>
+    /// <param name="packetPrefix">The packet header byte.</param>
+    /// <returns>The normalized packet header byte.</returns>
+    public static byte NormalizePacketHeader(byte packetPrefix)
+    {
+        return packetPrefix switch
+        {
+            0x41 => 0xC1,
+            0x42 => 0xC2,
+            0x43 => 0xC3,
+            0x44 => 0xC4,
+            _ => packetPrefix,
+        };
+    }
+
+    /// <summary>
     /// Extracts a string of an byte array with the specified encoding.
     /// </summary>
     /// <param name="array">The byte array.</param>
@@ -127,7 +144,7 @@ public static class ArrayExtensions
     /// <returns>The size of the header.</returns>
     public static int GetPacketHeaderSize(byte packetPrefix)
     {
-        switch (packetPrefix)
+        switch (NormalizePacketHeader(packetPrefix))
         {
             case 0xC1:
             case 0xC3:
@@ -175,7 +192,7 @@ public static class ArrayExtensions
     /// <returns>The size of a packet.</returns>
     public static int GetPacketSize(this Span<byte> packet)
     {
-        switch (packet[0])
+        switch (NormalizePacketHeader(packet[0]))
         {
             case 0xC1:
             case 0xC3:
@@ -207,7 +224,7 @@ public static class ArrayExtensions
     public static void SetPacketSize(this Span<byte> packet)
     {
         var size = packet.Length;
-        switch (packet[0])
+        switch (NormalizePacketHeader(packet[0]))
         {
             case 0xC1:
             case 0xC3:

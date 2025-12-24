@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameServer.RemoteView;
+using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets;
 using MUnique.OpenMU.PlugIns;
 
@@ -113,7 +114,8 @@ public class PacketHandlerPlugInContainer<THandler> : StrategyPlugInProvider<byt
         }
 
         using var loggingScope = this.Logger.BeginScope(("EventId", handler.GetType().Name));
-        if (handler.IsEncryptionExpected && (packet.Span[0] < 0xC3))
+        var headerType = ArrayExtensions.NormalizePacketHeader(packet.Span[0]);
+        if (handler.IsEncryptionExpected && (headerType < 0xC3))
         {
             this.Logger.LogWarning($"Packet was not encrypted and will not be handled: {packet.Span.AsString()}");
             return;
