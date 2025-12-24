@@ -58,7 +58,7 @@ public class DataInitialization : DataInitializationBase
         version097Definition.Episode = 97;
         version097Definition.Language = ClientLanguage.English;
         version097Definition.Version = new byte[] { 0x30, 0x39, 0x37, 0x31, 0x31 };
-        version097Definition.Serial = Encoding.ASCII.GetBytes("b9xGyHABOa9m2NHY");
+        version097Definition.Serial = Encoding.ASCII.GetBytes("TbYehR2hFUPBKgZj");
         version097Definition.Description = "Version 0.97 Client";
     }
 }
