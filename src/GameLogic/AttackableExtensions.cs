@@ -791,9 +791,11 @@ public static class AttackableExtensions
 
         if (magicEffectDefinition.DurationDependsOnTargetLevel)
         {
-            finalDuration -= target is Player
-                ? target.Attributes[Stats.Level] / magicEffectDefinition.PlayerTargetLevelDivisor
-                : target.Attributes[Stats.Level] / magicEffectDefinition.MonsterTargetLevelDivisor;
+            var divisor = target is Player ? magicEffectDefinition.PlayerTargetLevelDivisor : magicEffectDefinition.MonsterTargetLevelDivisor;
+            if (divisor != 0)
+            {
+                finalDuration -= target.Attributes[Stats.Level] / divisor;
+            }
         }
 
         finalDuration = Math.Min(finalDuration, duration.MaxDur ?? float.MaxValue);

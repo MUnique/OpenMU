@@ -105,7 +105,7 @@ public class WeaknessSummonerEffectInitializer : InitializerBase
         decDmgPowerUpDefinition.Boost.MaximumValue = 0.73f; // based on 4k total energy cap -- to-do: check zTeam
 
         var decDmgPerEnergy = this.Context.CreateNew<AttributeRelationship>();
-        decDmgPerEnergy.InputAttribute = Stats.Level.GetPersistent(this.GameConfiguration);
+        decDmgPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
         decDmgPerEnergy.InputOperator = InputOperator.Multiply;
         decDmgPerEnergy.InputOperand = 1f / 5800f; // 58 energy further decreases 0.01
         decDmgPowerUpDefinition.Boost.RelatedValues.Add(decDmgPerEnergy);
@@ -118,7 +118,7 @@ public class WeaknessSummonerEffectInitializer : InitializerBase
         decDmgPowerUpDefinitionPvp.Boost.MaximumValue = 1f; // -- to-do: check zTeam
 
         var decDmgPerEnergyPvp = this.Context.CreateNew<AttributeRelationship>();
-        decDmgPerEnergyPvp.InputAttribute = Stats.Level.GetPersistent(this.GameConfiguration);
+        decDmgPerEnergyPvp.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
         decDmgPerEnergyPvp.InputOperator = InputOperator.Multiply;
         decDmgPerEnergyPvp.InputOperand = 1f / 9300f; // 93 energy further decreases 0.01
         decDmgPowerUpDefinitionPvp.Boost.RelatedValues.Add(decDmgPerEnergyPvp);

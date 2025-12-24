@@ -638,7 +638,7 @@ public class Stats
     /// <summary>
     /// Gets the explosion skill MST bonus damage, which rises with fire tome strengthener and is added late stage.
     /// </summary>
-    public static AttributeDefinition ExplosionBonusDmg { get; } = new(new Guid("543E01C2-5C61-4473-ACF9-8A63A987A230"), "Explosion Bonus Damage (MST)", "The explosion skill (book of samut) bonus damage, which rises with fire stome strengthener and is added at a late stage.");
+    public static AttributeDefinition ExplosionBonusDmg { get; } = new(new Guid("543E01C2-5C61-4473-ACF9-8A63A987A230"), "Explosion Bonus Damage (MST)", "The explosion skill (book of samut) bonus damage, which rises with fire tome strengthener and is added at a late stage.");
 
     /// <summary>
     /// Gets the requiem skill MST bonus damage, which rises with wind tome strengthener and is added late stage.

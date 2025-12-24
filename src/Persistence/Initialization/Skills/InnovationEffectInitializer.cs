@@ -103,11 +103,11 @@ public class InnovationEffectInitializer : InitializerBase
         decDefPowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
         decDefPowerUpDefinition.Boost.ConstantValue.Value = 0.20f; // 20% decrease
 
-        var decDefPvmPerEnergy = this.Context.CreateNew<AttributeRelationship>();
-        decDefPvmPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
-        decDefPvmPerEnergy.InputOperator = InputOperator.Multiply;
-        decDefPvmPerEnergy.InputOperand = 1f / 9000f; // 90 energy further decreases 0.01
-        decDefPowerUpDefinition.Boost.RelatedValues.Add(decDefPvmPerEnergy);
+        var decDefPerEnergy = this.Context.CreateNew<AttributeRelationship>();
+        decDefPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
+        decDefPerEnergy.InputOperator = InputOperator.Multiply;
+        decDefPerEnergy.InputOperand = 1f / 9000f; // 90 energy further decreases 0.01
+        decDefPowerUpDefinition.Boost.RelatedValues.Add(decDefPerEnergy);
 
         var decDefPowerUpDefinitionPvp = this.Context.CreateNew<PowerUpDefinition>();
         magicEffect.PowerUpDefinitionsPvp.Add(decDefPowerUpDefinitionPvp);
@@ -115,10 +115,10 @@ public class InnovationEffectInitializer : InitializerBase
         decDefPowerUpDefinitionPvp.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
         decDefPowerUpDefinitionPvp.Boost.ConstantValue.Value = 0.12f; // 12% decrease
 
-        var decDefPvmPerEnergyPvp = this.Context.CreateNew<AttributeRelationship>();
-        decDefPvmPerEnergyPvp.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
-        decDefPvmPerEnergyPvp.InputOperator = InputOperator.Multiply;
-        decDefPvmPerEnergyPvp.InputOperand = 1f / 11000f; // 110 energy further decreases 0.01
-        decDefPowerUpDefinitionPvp.Boost.RelatedValues.Add(decDefPvmPerEnergyPvp);
+        var decDefPerEnergyPvp = this.Context.CreateNew<AttributeRelationship>();
+        decDefPerEnergyPvp.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
+        decDefPerEnergyPvp.InputOperator = InputOperator.Multiply;
+        decDefPerEnergyPvp.InputOperand = 1f / 11000f; // 110 energy further decreases 0.01
+        decDefPowerUpDefinitionPvp.Boost.RelatedValues.Add(decDefPerEnergyPvp);
     }
 }
