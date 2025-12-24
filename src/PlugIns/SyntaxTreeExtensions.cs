@@ -26,7 +26,7 @@ public static class SyntaxTreeExtensions
                 return _assemblyReferences;
             }
 
-            var nitoAssemblies = Directory.EnumerateFiles(new FileInfo(Assembly.GetEntryAssembly()!.Location).DirectoryName!, "Nito.*.dll")
+            var nitoAssemblies = Directory.EnumerateFiles(new FileInfo(typeof(SyntaxTreeExtensions).Assembly.Location).DirectoryName!, "Nito.*.dll")
                 .Select(path => Assembly.LoadFrom(path))
                 .ToList();
             
