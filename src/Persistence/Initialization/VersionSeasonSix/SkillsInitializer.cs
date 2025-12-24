@@ -70,6 +70,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         { SkillNumber.Sleep, MagicEffectNumber.Sleep },
         { SkillNumber.Weakness, MagicEffectNumber.WeaknessSummoner },
         { SkillNumber.Innovation, MagicEffectNumber.Innovation },
+        { SkillNumber.DamageReflection, MagicEffectNumber.Reflection },
     };
 
     private readonly IDictionary<byte, MasterSkillRoot> _masterSkillRoots;
@@ -670,6 +671,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         new SleepEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         new WeaknessSummonerEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         new InnovationEffectInitializer(this.Context, this.GameConfiguration).Initialize();
+        new ReflectionEffectInitializer(this.Context, this.GameConfiguration).Initialize();
     }
 
     private void MapSkillsToEffects()
