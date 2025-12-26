@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Network.PlugIns;
 
 using System.Globalization;
 using System.IO.Pipelines;
+using System.Runtime.InteropServices;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.SimpleModulus;
 using MUnique.OpenMU.Network.Xor;
