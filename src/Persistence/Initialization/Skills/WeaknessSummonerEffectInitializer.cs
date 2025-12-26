@@ -38,7 +38,7 @@ public class WeaknessSummonerEffectInitializer : InitializerBase
         magicEffect.MonsterTargetLevelDivisor = 20;
         magicEffect.PlayerTargetLevelDivisor = 150;
 
-        // Chance to apply the effect
+        // Chance % = 32 + (Energy / 50) + (Book Rise / 6)
         magicEffect.Chance = this.Context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.Chance.ConstantValue.Value = 0.32f; // 32%
 
@@ -54,6 +54,7 @@ public class WeaknessSummonerEffectInitializer : InitializerBase
         chancePerBookRise.InputOperand = 1f / 600f; // 6 book rise adds 1% chance
         magicEffect.Chance.RelatedValues.Add(chancePerBookRise);
 
+        // Chance % = 17 + (Energy / 50) + (Book Rise / 6)
         magicEffect.ChancePvp = this.Context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.ChancePvp.ConstantValue.Value = 0.17f; // 17%
 
@@ -69,7 +70,7 @@ public class WeaknessSummonerEffectInitializer : InitializerBase
         chancePerBookRisePvp.InputOperand = 1f / 600f; // 6 book rise adds 1% chance
         magicEffect.ChancePvp.RelatedValues.Add(chancePerBookRisePvp);
 
-        // Duration of the effect
+        // Duration = 4 + (Energy / 100)
         magicEffect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.Duration.ConstantValue.Value = 4; // 4 Seconds
         magicEffect.Duration.MaximumValue = 100; // 100 Seconds
@@ -80,6 +81,7 @@ public class WeaknessSummonerEffectInitializer : InitializerBase
         durationPerEnergy.InputOperand = 1f / 100f; // 100 energy adds 1s
         magicEffect.Duration.RelatedValues.Add(durationPerEnergy);
 
+        // Duration = 5 + (Energy / 300) + ((Level - Target's Level) / 150)
         magicEffect.DurationPvp = this.Context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.DurationPvp.ConstantValue.Value = 5; // 5 Seconds
         magicEffect.DurationPvp.MaximumValue = 20; // 20 Seconds
@@ -96,7 +98,7 @@ public class WeaknessSummonerEffectInitializer : InitializerBase
         durationPerLevelPvp.InputOperand = 1f / 150f; // 150 levels adds 1s
         magicEffect.DurationPvp.RelatedValues.Add(durationPerLevelPvp);
 
-        // Power-down: target's physical damage decreases X%
+        // Phys damage decrease % = 4 + (Energy / 58)
         var decDmgPowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
         magicEffect.PowerUpDefinitions.Add(decDmgPowerUpDefinition);
         decDmgPowerUpDefinition.TargetAttribute = Stats.WeaknessPhysDmgDecrement.GetPersistent(this.GameConfiguration);
@@ -110,6 +112,7 @@ public class WeaknessSummonerEffectInitializer : InitializerBase
         decDmgPerEnergy.InputOperand = 1f / 5800f; // 58 energy further decreases 0.01
         decDmgPowerUpDefinition.Boost.RelatedValues.Add(decDmgPerEnergy);
 
+        // Phys damage decrease PvP % = 3 + (Energy / 93)
         var decDmgPowerUpDefinitionPvp = this.Context.CreateNew<PowerUpDefinition>();
         magicEffect.PowerUpDefinitionsPvp.Add(decDmgPowerUpDefinitionPvp);
         decDmgPowerUpDefinitionPvp.TargetAttribute = Stats.WeaknessPhysDmgDecrement.GetPersistent(this.GameConfiguration);

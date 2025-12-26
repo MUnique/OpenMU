@@ -111,10 +111,11 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
         }
 
         var hitInfo = await attacker.CalculateDamageAsync(this, skill, isCombo, damageFactor).ConfigureAwait(false);
+        attacker.ApplyAmmunitionConsumption(hitInfo);
         await this.HitAsync(hitInfo, attacker, skill?.Skill).ConfigureAwait(false);
+
         if (hitInfo.HealthDamage > 0)
         {
-            attacker.ApplyAmmunitionConsumption(hitInfo);
             if (attacker is Player player)
             {
                 await player.AfterHitTargetAsync().ConfigureAwait(false);

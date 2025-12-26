@@ -627,6 +627,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
 
         var hitInfo = await attacker.CalculateDamageAsync(this, skill, isCombo, damageFactor).ConfigureAwait(false);
+        attacker.ApplyAmmunitionConsumption(hitInfo);
 
         if (hitInfo is { HealthDamage: 0, ShieldDamage: 0 })
         {
@@ -638,8 +639,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
             return hitInfo;
         }
-
-        attacker.ApplyAmmunitionConsumption(hitInfo);
 
         if (Rand.NextRandomBool(this.Attributes[Stats.FullyRecoverHealthAfterHitChance]))
         {
@@ -1467,8 +1466,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         var durationElementPvp = skill.MagicEffectDef.DurationPvp is { } durationPvp ? this.Attributes!.CreateDurationElement(durationPvp) : durationElement;
         var chanceElement = skill.MagicEffectDef.Chance is { } chance ? this.Attributes!.CreateChanceElement(chance) : new ConstantElement(1.0f);
         var chanceElementPvp = skill.MagicEffectDef.ChancePvp is { } chancePvp ? this.Attributes!.CreateChanceElement(chancePvp) : chanceElement;
-        AddSkillPowersToResult(skill, skill.MagicEffectDef.PowerUpDefinitions, ref result);
-        AddSkillPowersToResult(skill, skill.MagicEffectDef.PowerUpDefinitionsPvp, ref resultPvp);
+        AddSkillPowersToResult(skill.MagicEffectDef.PowerUpDefinitions, ref result);
+        AddSkillPowersToResult(skill.MagicEffectDef.PowerUpDefinitionsPvp, ref resultPvp);
         skillEntry.PowerUpDuration = (durationElement, skill.MagicEffectDef.Duration.MaximumValue);
         skillEntry.PowerUpDurationPvp = (durationElementPvp, skill.MagicEffectDef.DurationPvp?.MaximumValue);
         skillEntry.PowerUpChance = chanceElement;
@@ -1476,7 +1475,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         skillEntry.PowerUps = result;
         skillEntry.PowerUpsPvp = resultPvp.Count() > 0 ? resultPvp : result;
 
-        void AddSkillPowersToResult(Skill skill, ICollection<PowerUpDefinition> powerUps, ref (AttributeDefinition Target, IElement BuffPowerUp)[] result)
+        void AddSkillPowersToResult(ICollection<PowerUpDefinition> powerUps, ref (AttributeDefinition Target, IElement BuffPowerUp)[] result)
         {
             if (powerUps.Count() == 0)
             {

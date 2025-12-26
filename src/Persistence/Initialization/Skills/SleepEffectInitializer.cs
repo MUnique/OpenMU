@@ -30,7 +30,7 @@ public class SleepEffectInitializer : InitializerBase
         var magicEffect = this.Context.CreateNew<MagicEffectDefinition>();
         this.GameConfiguration.MagicEffects.Add(magicEffect);
         magicEffect.Number = (short)MagicEffectNumber.Sleep;
-        magicEffect.Name = "Sleep Skill Effect";
+        magicEffect.Name = "Sleep Effect";
         magicEffect.InformObservers = true;
         magicEffect.SendDuration = false;
         magicEffect.StopByDeath = true;
@@ -38,6 +38,7 @@ public class SleepEffectInitializer : InitializerBase
         magicEffect.MonsterTargetLevelDivisor = 20;
         magicEffect.PlayerTargetLevelDivisor = 100;
 
+        // Chance % = 20 + (Energy / 30) + (Book Rise / 6)
         magicEffect.Chance = this.Context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.Chance.ConstantValue.Value = 0.2f; // 20%
 
@@ -53,6 +54,7 @@ public class SleepEffectInitializer : InitializerBase
         chancePerBookRise.InputOperand = 1f / 600f; // 6 book rise adds 1% chance
         magicEffect.Chance.RelatedValues.Add(chancePerBookRise);
 
+        // Chance PvP % = 15 + (Energy / 37) + (Book Rise / 6)
         magicEffect.ChancePvp = this.Context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.ChancePvp.ConstantValue.Value = 0.15f; // 15%
 
@@ -68,6 +70,7 @@ public class SleepEffectInitializer : InitializerBase
         chancePerBookRisePvp.InputOperand = 1f / 600f; // 6 book rise adds 1% chance
         magicEffect.ChancePvp.RelatedValues.Add(chancePerBookRisePvp);
 
+        // Duration = 5 + (Energy / 100)
         magicEffect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.Duration.ConstantValue.Value = 5; // 5 Seconds
         magicEffect.Duration.MaximumValue = 20; // 20 Seconds
@@ -78,6 +81,7 @@ public class SleepEffectInitializer : InitializerBase
         durationPerEnergy.InputOperand = 1f / 100f; // 100 energy adds 1s
         magicEffect.Duration.RelatedValues.Add(durationPerEnergy);
 
+        // Duration = 4 + (Energy / 250) + ((Level - Target's Level) / 100)
         magicEffect.DurationPvp = this.Context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.DurationPvp.ConstantValue.Value = 4; // 4 Seconds
         magicEffect.DurationPvp.MaximumValue = 10; // 10 Seconds

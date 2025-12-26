@@ -30,7 +30,7 @@ public class InnovationEffectInitializer : InitializerBase
         var magicEffect = this.Context.CreateNew<MagicEffectDefinition>();
         this.GameConfiguration.MagicEffects.Add(magicEffect);
         magicEffect.Number = (short)MagicEffectNumber.Innovation;
-        magicEffect.Name = "Innovation Effect (Summoner)";
+        magicEffect.Name = "Innovation Effect";
         magicEffect.InformObservers = true;
         magicEffect.SendDuration = false;
         magicEffect.StopByDeath = true;
@@ -38,7 +38,7 @@ public class InnovationEffectInitializer : InitializerBase
         magicEffect.MonsterTargetLevelDivisor = 20;
         magicEffect.PlayerTargetLevelDivisor = 150;
 
-        // Chance to apply the effect
+        // Chance % = 32 + (Energy / 50) + (Book Rise / 6)
         magicEffect.Chance = this.Context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.Chance.ConstantValue.Value = 0.32f; // 32%
 
@@ -54,6 +54,7 @@ public class InnovationEffectInitializer : InitializerBase
         chancePerBookRise.InputOperand = 1f / 600f; // 6 book rise adds 1% chance
         magicEffect.Chance.RelatedValues.Add(chancePerBookRise);
 
+        // Chance PvP % = 17 + (Energy / 50) + (Book Rise / 6)
         magicEffect.ChancePvp = this.Context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.ChancePvp.ConstantValue.Value = 0.17f; // 17%
 
@@ -69,7 +70,7 @@ public class InnovationEffectInitializer : InitializerBase
         chancePerBookRisePvp.InputOperand = 1f / 600f; // 6 book rise adds 1% chance
         magicEffect.ChancePvp.RelatedValues.Add(chancePerBookRisePvp);
 
-        // Duration of the effect
+        // Duration = 4 + (Energy / 100)
         magicEffect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.Duration.ConstantValue.Value = 4; // 4 Seconds
         magicEffect.Duration.MaximumValue = 100; // 100 Seconds
@@ -80,6 +81,7 @@ public class InnovationEffectInitializer : InitializerBase
         durationPerEnergy.InputOperand = 1f / 100f; // 100 energy adds 1s
         magicEffect.Duration.RelatedValues.Add(durationPerEnergy);
 
+        // Duration PvP = 5 + (Energy / 300) + ((Level - Target's Level) / 150)
         magicEffect.DurationPvp = this.Context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.DurationPvp.ConstantValue.Value = 5; // 5 Seconds
         magicEffect.DurationPvp.MaximumValue = 20; // 20 Seconds
@@ -96,7 +98,7 @@ public class InnovationEffectInitializer : InitializerBase
         durationPerLevelPvp.InputOperand = 1f / 150f; // 150 levels adds 1s
         magicEffect.DurationPvp.RelatedValues.Add(durationPerLevelPvp);
 
-        // Power-down: target's defense decreases X% (applies last)
+        // Defense decrease % (applies last) = 20 + (Energy / 90)
         var decDefPowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
         magicEffect.PowerUpDefinitions.Add(decDefPowerUpDefinition);
         decDefPowerUpDefinition.TargetAttribute = Stats.InnovationDefDecrement.GetPersistent(this.GameConfiguration);
@@ -109,6 +111,7 @@ public class InnovationEffectInitializer : InitializerBase
         decDefPerEnergy.InputOperand = 1f / 9000f; // 90 energy further decreases 0.01
         decDefPowerUpDefinition.Boost.RelatedValues.Add(decDefPerEnergy);
 
+        // Defense decrease PvP % (applies last) = 12 + (Energy / 110)
         var decDefPowerUpDefinitionPvp = this.Context.CreateNew<PowerUpDefinition>();
         magicEffect.PowerUpDefinitionsPvp.Add(decDefPowerUpDefinitionPvp);
         decDefPowerUpDefinitionPvp.TargetAttribute = Stats.InnovationDefDecrement.GetPersistent(this.GameConfiguration);
