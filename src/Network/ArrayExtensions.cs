@@ -27,6 +27,42 @@ public static class ArrayExtensions
     }
 
     /// <summary>
+    /// Determines whether the packet header is masked (alternate prefixes 0x41-0x44).
+    /// </summary>
+    /// <param name="packetPrefix">The packet header byte.</param>
+    /// <returns>True when the header uses a masked prefix; otherwise false.</returns>
+    public static bool IsMaskedPacketHeader(byte packetPrefix)
+    {
+        return packetPrefix is >= 0x41 and <= 0x44;
+    }
+
+    /// <summary>
+    /// Normalizes packet type bytes which may be masked by some clients.
+    /// </summary>
+    /// <param name="packetPrefix">The packet header byte.</param>
+    /// <param name="packetType">The packet type byte.</param>
+    /// <returns>The normalized packet type byte.</returns>
+    public static byte NormalizePacketType(byte packetPrefix, byte packetType)
+    {
+        if (!IsMaskedPacketHeader(packetPrefix))
+        {
+            return packetType;
+        }
+
+        if (packetType is >= 0x10 and <= 0x1F)
+        {
+            return (byte)(packetType | 0xE0);
+        }
+
+        if (packetType is >= 0x40 and <= 0x7F)
+        {
+            return (byte)(packetType | 0x80);
+        }
+
+        return packetType;
+    }
+
+    /// <summary>
     /// Extracts a string of an byte array with the specified encoding.
     /// </summary>
     /// <param name="array">The byte array.</param>

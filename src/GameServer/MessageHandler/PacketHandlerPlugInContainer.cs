@@ -68,9 +68,19 @@ public class PacketHandlerPlugInContainer<THandler> : StrategyPlugInProvider<byt
     /// <param name="packet">The packet.</param>
     public async ValueTask HandlePacketAsync(RemotePlayer player, Memory<byte> packet)
     {
-        var typeIndex = packet.Span[0] % 2 == 1 ? 2 : 3;
+        var headerType = packet.Span[0];
+        var typeIndex = headerType % 2 == 1 ? 2 : 3;
         var packetType = packet.Span[typeIndex];
         var handler = this[packetType];
+        if (handler is null)
+        {
+            var normalizedType = ArrayExtensions.NormalizePacketType(headerType, packetType);
+            if (normalizedType != packetType)
+            {
+                handler = this[normalizedType];
+            }
+        }
+
         await this.HandlePacketAsync(player, packet, handler).ConfigureAwait(false);
     }
 

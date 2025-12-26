@@ -8,6 +8,7 @@ using System.Net.Sockets;
 
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Network;
 using IConnectServer = MUnique.OpenMU.ConnectServer.IConnectServer;
 
 /// <summary>
@@ -48,7 +49,17 @@ internal class ClientPacketHandler : IPacketHandler<Client>
             }
 
             var packetType = packet.Span[2];
-            if (this._packetHandlers.TryGetValue(packetType, out var packetHandler))
+            this._packetHandlers.TryGetValue(packetType, out var packetHandler);
+            if (packetHandler is null)
+            {
+                var normalizedType = ArrayExtensions.NormalizePacketType(packet.Span[0], packetType);
+                if (normalizedType != packetType)
+                {
+                    this._packetHandlers.TryGetValue(normalizedType, out packetHandler);
+                }
+            }
+
+            if (packetHandler is not null)
             {
                 await packetHandler.HandlePacketAsync(client, packet).ConfigureAwait(false);
             }
