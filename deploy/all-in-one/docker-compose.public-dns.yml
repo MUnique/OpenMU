@@ -3,5 +3,5 @@ services:
     environment:
       # Anuncia el nombre DNS (resuelto por el cliente) en lugar de una IP fija.
       # Asegúrate de que el registro A de este host esté en Cloudflare como DNS only (nube gris).
-      RESOLVE_IP: "mu.server-pups.space"
+      RESOLVE_IP: "200.123.115.104"
 
