@@ -27,12 +27,14 @@ public class Version097NetworkEncryptionFactoryPlugIn : INetworkEncryptionFactor
     /// <inheritdoc />
     public IPipelinedEncryptor CreateEncryptor(PipeWriter target, DataDirection direction)
     {
-        var keys = direction == DataDirection.ServerToClient
-            ? PipelinedSimpleModulusEncryptor.DefaultServerKey
-            : PipelinedSimpleModulusEncryptor.DefaultClientKey;
+        if (direction == DataDirection.ServerToClient)
+        {
+            // The 0.97 client decrypts server packets with simple modulus only.
+            return new PipelinedSimpleModulusEncryptor(target, PipelinedSimpleModulusEncryptor.DefaultServerKey);
+        }
 
         return new PipelinedXor32Encryptor(
-            new PipelinedSimpleModulusEncryptor(target, keys).Writer,
+            new PipelinedSimpleModulusEncryptor(target, PipelinedSimpleModulusEncryptor.DefaultClientKey).Writer,
             Xor32Key);
     }
 
