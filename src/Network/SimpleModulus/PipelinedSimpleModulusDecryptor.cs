@@ -101,6 +101,14 @@ public class PipelinedSimpleModulusDecryptor : PipelinedSimpleModulusBase, IPipe
             var contentSize = this.GetContentSize(this.HeaderBuffer, false);
             if ((contentSize % this.EncryptedBlockSize) != 0)
             {
+                if (headerType != this.HeaderBuffer[0])
+                {
+                    // Some clients mask the header byte and don't use simple modulus encryption.
+                    // In that case we just forward the packet to the next stage.
+                    this.CopyDataIntoWriter(this.Pipe.Writer, packet);
+                    return await this.TryFlushWriterAsync(this.Pipe.Writer).ConfigureAwait(false);
+                }
+
                 throw new ArgumentException(
                     $"The packet has an unexpected content size. It must be a multiple of {this.EncryptedBlockSize}",
                     nameof(packet));
