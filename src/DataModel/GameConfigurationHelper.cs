@@ -46,6 +46,7 @@ public static class GameConfigurationHelper
                 .Concat(c.ItemOptions.SelectMany(o => o.PossibleOptions.Select(p => p.PowerUpDefinition).WhereNotNull()))
                 .Concat(c.ItemOptions.SelectMany(o => o.PossibleOptions.SelectMany(p => p.LevelDependentOptions.Select(l => l.PowerUpDefinition).WhereNotNull())))
                 .Concat(c.MagicEffects.SelectMany(m => m.PowerUpDefinitions))
+                .Concat(c.MagicEffects.SelectMany(m => m.PowerUpDefinitionsPvp))
         },
         { typeof(ItemBasePowerUpDefinition), c => c.Items.SelectMany(i => i.BasePowerUpAttributes) },
         { typeof(ItemDropItemGroup), c => c.Items.SelectMany(i => i.DropItems) },
@@ -65,7 +66,10 @@ public static class GameConfigurationHelper
         { typeof(JewelMix), c => c.JewelMixes },
         { typeof(MagicEffectDefinition), c => c.MagicEffects },
         {
-            typeof(PowerUpDefinitionValue), c => c.MagicEffects.Select(e => e.Duration).WhereNotNull()
+            typeof(PowerUpDefinitionValue), c => c.MagicEffects.Select(e => e.Duration)
+                .Concat(c.MagicEffects.Select(e => e.DurationPvp))
+                .Concat(c.MagicEffects.Select(e => e.Chance))
+                .Concat(c.MagicEffects.Select(e => e.ChancePvp)).WhereNotNull()
                 .Concat(Enumerables![typeof(PowerUpDefinition)](c).OfType<PowerUpDefinition>().Select(p => p.Boost).WhereNotNull())
         },
         { typeof(SimpleElement), c => Enumerables![typeof(PowerUpDefinitionValue)](c).OfType<PowerUpDefinitionValue>().Select(v => v.ConstantValue).WhereNotNull() },

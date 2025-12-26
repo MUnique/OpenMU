@@ -47,6 +47,63 @@ public partial class MagicEffectDefinition : MUnique.OpenMU.DataModel.Configurat
     }
 
     /// <summary>
+    /// Gets the raw collection of <see cref="PowerUpDefinitionsPvp" />.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonPropertyName("powerUpDefinitionsPvp")]
+    public ICollection<PowerUpDefinition> RawPowerUpDefinitionsPvp { get; } = new List<PowerUpDefinition>();
+    
+    /// <inheritdoc/>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override ICollection<MUnique.OpenMU.DataModel.Attributes.PowerUpDefinition> PowerUpDefinitionsPvp
+    {
+        get => base.PowerUpDefinitionsPvp ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Attributes.PowerUpDefinition, PowerUpDefinition>(this.RawPowerUpDefinitionsPvp);
+        protected set
+        {
+            this.PowerUpDefinitionsPvp.Clear();
+            foreach (var item in value)
+            {
+                this.PowerUpDefinitionsPvp.Add(item);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="Chance" />.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonPropertyName("chance")]
+    public PowerUpDefinitionValue RawChance
+    {
+        get => base.Chance as PowerUpDefinitionValue;
+        set => base.Chance = value;
+    }
+
+    /// <inheritdoc/>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Attributes.PowerUpDefinitionValue Chance
+    {
+        get => base.Chance;
+        set => base.Chance = value;
+    }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="ChancePvp" />.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonPropertyName("chancePvp")]
+    public PowerUpDefinitionValue RawChancePvp
+    {
+        get => base.ChancePvp as PowerUpDefinitionValue;
+        set => base.ChancePvp = value;
+    }
+
+    /// <inheritdoc/>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Attributes.PowerUpDefinitionValue ChancePvp
+    {
+        get => base.ChancePvp;
+        set => base.ChancePvp = value;
+    }
+
+    /// <summary>
     /// Gets the raw object of <see cref="Duration" />.
     /// </summary>
     [System.Text.Json.Serialization.JsonPropertyName("duration")]
@@ -62,6 +119,24 @@ public partial class MagicEffectDefinition : MUnique.OpenMU.DataModel.Configurat
     {
         get => base.Duration;
         set => base.Duration = value;
+    }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="DurationPvp" />.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonPropertyName("durationPvp")]
+    public PowerUpDefinitionValue RawDurationPvp
+    {
+        get => base.DurationPvp as PowerUpDefinitionValue;
+        set => base.DurationPvp = value;
+    }
+
+    /// <inheritdoc/>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Attributes.PowerUpDefinitionValue DurationPvp
+    {
+        get => base.DurationPvp;
+        set => base.DurationPvp = value;
     }
 
     /// <inheritdoc />

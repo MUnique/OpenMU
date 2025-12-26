@@ -7,14 +7,13 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.PlugIns;
-using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// Handles the drain life skill of the summoner class. Additionally to the attacked target, it regains life for damage dealt.
 /// </summary>
-[PlugIn(nameof(ChainLightningSkillPlugIn), "Handles the drain life skill of the summoner class. Additionally to the attacked target, it regains life for damage dealt.")]
+[PlugIn(nameof(DrainLifeSkillPlugIn), "Handles the drain life skill of the summoner class. Additionally to the attacked target, it regains life for damage dealt.")]
 [Guid("9A5A5671-3A8C-4C01-984F-1A8F8E0E7BDA")]
 public class DrainLifeSkillPlugIn : IAreaSkillPlugIn
 {
