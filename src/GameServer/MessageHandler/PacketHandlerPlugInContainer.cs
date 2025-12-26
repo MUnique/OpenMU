@@ -74,7 +74,7 @@ public class PacketHandlerPlugInContainer<THandler> : StrategyPlugInProvider<byt
         var handler = this[packetType];
         if (handler is null)
         {
-            var normalizedType = ArrayExtensions.NormalizePacketType(headerType, packetType);
+            var normalizedType = MUnique.OpenMU.Network.ArrayExtensions.NormalizePacketType(headerType, packetType);
             if (normalizedType != packetType)
             {
                 handler = this[normalizedType];
