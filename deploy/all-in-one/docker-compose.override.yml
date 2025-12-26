@@ -12,6 +12,11 @@ services:
       # Cambiar a "public" si van a conectarse desde Internet.
       RESOLVE_IP: local
       MU_XOR32_097: "E7 6D 3A 89 BC B2 9F 73 23 A8 FE B6 49 5D 39 5D 8A CB 63 8D EA 7D 2B 5F C3 B1 E9 83 29 51 E8 56"
+      Logging__LogLevel__Default: Debug
+      Logging__LogLevel__MUnique: Debug
+      Logging__LogLevel__MUnique.OpenMU.ConnectServer: Debug
+      Logging__LogLevel__MUnique.OpenMU.GameServer: Debug
+      Logging__LogLevel__MUnique.OpenMU.Network: Debug
 
   database:
     ports:
