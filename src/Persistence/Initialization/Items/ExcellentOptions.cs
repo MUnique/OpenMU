@@ -123,7 +123,7 @@ public class ExcellentOptions : InitializerBase
 
         definition.PossibleOptions.Add(this.CreateExcellentOption(1, Stats.MoneyAmountRate, 1.4f, AggregateType.Multiplicate, ItemOptionDefinitionNumbers.ExcellentDefense));
         definition.PossibleOptions.Add(this.CreateExcellentOption(2, Stats.DefenseRatePvm, 1.1f, AggregateType.Multiplicate, ItemOptionDefinitionNumbers.ExcellentDefense));
-        definition.PossibleOptions.Add(this.CreateExcellentOption(3, Stats.DamageReflection, 0.04f, AggregateType.AddRaw, ItemOptionDefinitionNumbers.ExcellentDefense));
+        definition.PossibleOptions.Add(this.CreateExcellentOption(3, Stats.DamageReflection, 0.05f, AggregateType.AddRaw, ItemOptionDefinitionNumbers.ExcellentDefense));
         definition.PossibleOptions.Add(this.CreateExcellentOption(4, Stats.ArmorDamageDecrease, 0.04f, AggregateType.AddRaw, ItemOptionDefinitionNumbers.ExcellentDefense));
         definition.PossibleOptions.Add(this.CreateExcellentOption(5, Stats.MaximumMana, 1.04f, AggregateType.Multiplicate, ItemOptionDefinitionNumbers.ExcellentDefense));
         definition.PossibleOptions.Add(this.CreateExcellentOption(6, Stats.MaximumHealth, 1.04f, AggregateType.Multiplicate, ItemOptionDefinitionNumbers.ExcellentDefense));

@@ -192,7 +192,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.CreateSkill(SkillNumber.ShieldBurn, "Shield-Burn", CharacterClasses.All, distance: 3, manaConsumption: 30, elementalModifier: ElementalType.Ice, cooldownMinutes: 5);
         this.CreateSkill(SkillNumber.DrainLife, "Drain Life", CharacterClasses.AllSummoners, DamageType.Wizardry, 35, 6, manaConsumption: 50, energyRequirement: 150, skillType: SkillType.AreaSkillExplicitTarget);
         this.CreateSkill(SkillNumber.ChainLightning, "Chain Lightning", CharacterClasses.AllSummoners, DamageType.Wizardry, 70, 6, manaConsumption: 85, energyRequirement: 245, skillType: SkillType.AreaSkillExplicitTarget, skillTarget: SkillTarget.Explicit);
-        this.CreateSkill(SkillNumber.DamageReflection, "Damage Reflection", CharacterClasses.AllSummoners, distance: 5, abilityConsumption: 10, manaConsumption: 40, energyRequirement: 375);
+        this.CreateSkill(SkillNumber.DamageReflection, "Damage Reflection", CharacterClasses.AllSummoners, distance: 5, abilityConsumption: 10, manaConsumption: 40, energyRequirement: 375, skillType: SkillType.Buff);
         this.CreateSkill(SkillNumber.Berserker, "Berserker", CharacterClasses.AllSummoners, distance: 5, abilityConsumption: 50, manaConsumption: 100, energyRequirement: 620, skillType: SkillType.Buff, targetRestriction: SkillTargetRestriction.Self);
         this.CreateSkill(SkillNumber.Sleep, "Sleep", CharacterClasses.AllSummoners, distance: 6, abilityConsumption: 3, manaConsumption: 20, energyRequirement: 180, skillType: SkillType.Buff);
         this.CreateSkill(SkillNumber.Weakness, "Weakness", CharacterClasses.AllSummoners, distance: 6, abilityConsumption: 15, manaConsumption: 50, energyRequirement: 663, skillType: SkillType.Buff);

@@ -1237,6 +1237,11 @@ public class Stats
     public static AttributeDefinition FullyRecoverHealthAfterHitChance { get; } = new(new Guid("3CA72C07-9C2C-4FC5-8BCB-9BD737F83664"), "Chance to fully recover health when getting hit", "3rd Wing Option");
 
     /// <summary>
+    /// Gets the fully reflect damage after hit chance definition.
+    /// </summary>
+    public static AttributeDefinition FullyReflectDamageAfterHitChance { get; } = new(new Guid("1F7C1E04-4FBD-4FCB-A6C2-EB51A91D8C3E"), "Chance to fully reflect damage when getting hit", "3rd Wing Option");
+
+    /// <summary>
     /// Gets the health loss after hit definition.
     /// </summary>
     public static AttributeDefinition HealthLossAfterHit { get; } = new(new Guid("D84A719B-D18E-433E-BF55-9F08A214AB00"), "Health loss after hitting a target", "Caused by wearing wings");

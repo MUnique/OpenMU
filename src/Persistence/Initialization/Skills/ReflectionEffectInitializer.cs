@@ -10,7 +10,7 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
 
 /// <summary>
-/// Initializer for the reflection effect which results from Damage Reflection (Summoner) skill.
+/// Initializer for the reflection buff effect.
 /// </summary>
 public class ReflectionEffectInitializer : InitializerBase
 {
@@ -35,10 +35,10 @@ public class ReflectionEffectInitializer : InitializerBase
         magicEffect.SendDuration = false;
         magicEffect.StopByDeath = true;
 
-        // Duration of the effect
+        // Duration = 30 + (Energy / 24)
         magicEffect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.Duration.ConstantValue.Value = 30; // 30 Seconds
-        magicEffect.Duration.MaximumValue = 180; // 180 Seconds
+        magicEffect.Duration.MaximumValue = 180;
 
         var durationPerEnergy = this.Context.CreateNew<AttributeRelationship>();
         durationPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
@@ -46,7 +46,7 @@ public class ReflectionEffectInitializer : InitializerBase
         durationPerEnergy.InputOperand = 1f / 24; // 24 energy adds 1s
         magicEffect.Duration.RelatedValues.Add(durationPerEnergy);
 
-        // Target's damage reflection increases X%
+        // Reflection % = 30 + (Energy / 42)
         var incReflectPowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
         magicEffect.PowerUpDefinitions.Add(incReflectPowerUpDefinition);
         incReflectPowerUpDefinition.TargetAttribute = Stats.DamageReflection.GetPersistent(this.GameConfiguration);

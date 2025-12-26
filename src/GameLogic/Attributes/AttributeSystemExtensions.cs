@@ -86,7 +86,7 @@ public static class AttributeSystemExtensions
                 elements = elements.Concat(value.ConstantValue.GetAsEnumerable());
             }
 
-            var composableResult = new ComposableAttribute(targetDefinition, result.AggregateType);
+            var composableResult = new ComposableAttribute(targetDefinition, result.AggregateType, value.MaximumValue);
 
             elements.ForEach(element => composableResult.AddElement(element));
             return composableResult;

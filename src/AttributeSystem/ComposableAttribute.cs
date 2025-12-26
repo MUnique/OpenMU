@@ -11,6 +11,8 @@ public class ComposableAttribute : BaseAttribute, IComposableAttribute
 {
     private readonly IList<IElement> _elementList;
 
+    private float? _maximumValue;
+
     private float? _cachedValue;
 
     /// <summary>
@@ -18,10 +20,12 @@ public class ComposableAttribute : BaseAttribute, IComposableAttribute
     /// </summary>
     /// <param name="definition">The definition.</param>
     /// <param name="aggregateType">Type of the aggregate.</param>
-    public ComposableAttribute(AttributeDefinition definition, AggregateType aggregateType = AggregateType.AddRaw)
+    /// <param name="maximumValue">The inner maximum value.</param>
+    public ComposableAttribute(AttributeDefinition definition, AggregateType aggregateType = AggregateType.AddRaw, float? maximumValue = null)
         : base(definition, aggregateType)
     {
         this._elementList = new List<IElement>();
+        this._maximumValue = maximumValue;
     }
 
     /// <inheritdoc/>
@@ -78,6 +82,11 @@ public class ComposableAttribute : BaseAttribute, IComposableAttribute
         }
 
         var newValue = (rawValues * multiValues) + finalValues;
+        if (this._maximumValue.HasValue)
+        {
+            newValue = Math.Min(this._maximumValue.Value, newValue);
+        }
+
         if (this.Definition.MaximumValue.HasValue)
         {
             newValue = Math.Min(this.Definition.MaximumValue.Value, newValue);
