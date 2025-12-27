@@ -6,6 +6,8 @@ namespace MUnique.OpenMU.ConnectServer.PacketHandler;
 
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Network;
+using MUnique.OpenMU.Network.Xor;
 using IConnectServer = MUnique.OpenMU.ConnectServer.IConnectServer;
 
 /// <summary>
@@ -36,10 +38,33 @@ internal class ServerListHandler : IPacketHandler<Client>
     /// <inheritdoc/>
     public async ValueTask HandlePacketAsync(Client client, Memory<byte> packet)
     {
-        var packetSubType = packet.Span[3];
+        var headerSize = ArrayExtensions.GetPacketHeaderSize(packet.Span);
+        if (headerSize == 0 || packet.Length <= headerSize + 1)
+        {
+            if (this._connectServerSettings.DisconnectOnUnknownPacket)
+            {
+                this._logger.LogInformation("Client {0}:{1} will be disconnected because it sent an unknown packet: {2}", client.Address, client.Port, packet.ToArray().ToHexString());
+                await client.Connection.DisconnectAsync().ConfigureAwait(false);
+            }
+
+            return;
+        }
+
+        var subTypeIndex = headerSize + 1;
+        var packetSubType = packet.Span[subTypeIndex];
         if (this._packetHandlers.TryGetValue(packetSubType, out var packetHandler))
         {
             await packetHandler.HandlePacketAsync(client, packet).ConfigureAwait(false);
+            return;
+        }
+
+        if (TryGetXorDecryptedPacket(packet.Span, out var decryptedPacket, out var decryptedSubType))
+        {
+            if (this._packetHandlers.TryGetValue(decryptedSubType, out var decryptedHandler))
+            {
+                await decryptedHandler.HandlePacketAsync(client, decryptedPacket).ConfigureAwait(false);
+                return;
+            }
         }
         else if (this._connectServerSettings.DisconnectOnUnknownPacket)
         {
@@ -50,5 +75,33 @@ internal class ServerListHandler : IPacketHandler<Client>
         {
             // do nothing
         }
+    }
+
+    private static bool TryGetXorDecryptedPacket(ReadOnlySpan<byte> packet, out Memory<byte> decryptedPacket, out byte subType)
+    {
+        decryptedPacket = default;
+        subType = 0;
+
+        var headerSize = ArrayExtensions.GetPacketHeaderSize(packet);
+        if (headerSize == 0 || packet.Length <= headerSize + 1)
+        {
+            return false;
+        }
+
+        var buffer = packet.ToArray();
+        for (var i = buffer.Length - 1; i > headerSize; i--)
+        {
+            buffer[i] = (byte)(buffer[i] ^ buffer[i - 1] ^ DefaultKeys.Xor32Key[i % 32]);
+        }
+
+        var subTypeIndex = headerSize + 1;
+        if (subTypeIndex >= buffer.Length)
+        {
+            return false;
+        }
+
+        subType = buffer[subTypeIndex];
+        decryptedPacket = buffer;
+        return true;
     }
 }

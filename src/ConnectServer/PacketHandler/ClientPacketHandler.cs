@@ -48,7 +48,14 @@ internal class ClientPacketHandler : IPacketHandler<Client>
                 return;
             }
 
-            var packetType = packet.Span[2];
+            var typeIndex = ArrayExtensions.GetPacketHeaderSize(packet.Span);
+            if (typeIndex == 0 || packet.Length <= typeIndex)
+            {
+                await this.DisconnectClientUnknownPacketAsync(client, packet).ConfigureAwait(false);
+                return;
+            }
+
+            var packetType = packet.Span[typeIndex];
             this._packetHandlers.TryGetValue(packetType, out var packetHandler);
             if (packetHandler is null)
             {
