@@ -6,14 +6,14 @@
 @using MUnique.OpenMU.Interfaces
 @using MUnique.OpenMU.GameLogic
 
-<PageTitle>OpenMU: Live Map</PageTitle>
-<Breadcrumb Caption="Live Map"/>
+<PageTitle>OpenMU: Mapa en Vivo</PageTitle>
+<Breadcrumb Caption="Mapa en Vivo"/>
 
 @if (this._gameServer is not null)
 {
     <div>
         <NavLink href="" Match="NavLinkMatch.All">
-            <span>All</span>
+            <span>Todos</span>
         </NavLink>
         <span> / @this._map?.MapName</span>
     </div>

@@ -22,6 +22,7 @@
     <ProjectReference Include="..\DataModel\MUnique.OpenMU.DataModel.csproj" />
     <ProjectReference Include="..\GameLogic\MUnique.OpenMU.GameLogic.csproj" />
     <ProjectReference Include="..\Interfaces\MUnique.OpenMU.Interfaces.csproj" />
+    <ProjectReference Include="..\Localization\MUnique.OpenMU.Localization.csproj" />
     <ProjectReference Include="..\Network\MUnique.OpenMU.Network.csproj" />
     <ProjectReference Include="..\Network\Packets\MUnique.OpenMU.Network.Packets.csproj" />
     <ProjectReference Include="..\Pathfinding\MUnique.OpenMU.Pathfinding.csproj" />

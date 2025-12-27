@@ -33,7 +33,8 @@
     <ProjectReference Include="..\DataModel\MUnique.OpenMU.DataModel.csproj" />
     <ProjectReference Include="..\FriendServer\MUnique.OpenMU.FriendServer.csproj" />
     <ProjectReference Include="..\GameLogic\MUnique.OpenMU.GameLogic.csproj" />
-    <ProjectReference Include="..\GameServer\MUnique.OpenMU.GameServer.csproj" /> 
+    <ProjectReference Include="..\GameServer\MUnique.OpenMU.GameServer.csproj" />
+    <ProjectReference Include="..\Localization\MUnique.OpenMU.Localization.csproj" />
     <ProjectReference Include="..\GuildServer\MUnique.OpenMU.GuildServer.csproj" />
     <ProjectReference Include="..\Interfaces\MUnique.OpenMU.Interfaces.csproj" />    
     <ProjectReference Include="..\LoginServer\MUnique.OpenMU.LoginServer.csproj" />

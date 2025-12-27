@@ -53,7 +53,9 @@ public class UpdateLevelExtendedPlugIn : IUpdateLevelPlugIn
             (ushort)selectedCharacter.UsedNegFruitPoints,
             selectedCharacter.GetMaximumFruitPoints()).ConfigureAwait(false);
 
-        await this._player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync($"Congratulations, you are Level {charStats[Stats.Level]} now.", MessageType.BlueNormal)).ConfigureAwait(false);
+        var level = (int)charStats[Stats.Level];
+        var message = this._player.GameServerContext.Localization.GetString("Server_Message_LevelUp", level);
+        await this._player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal)).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -77,6 +79,8 @@ public class UpdateLevelExtendedPlugIn : IUpdateLevelPlugIn
             (uint)charStats[Stats.MaximumShield],
             (uint)charStats[Stats.MaximumAbility]).ConfigureAwait(false);
 
-        await this._player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync($"Congratulations, you are Master Level {charStats[Stats.MasterLevel]} now.", MessageType.BlueNormal)).ConfigureAwait(false);
+        var masterLevel = (int)charStats[Stats.MasterLevel];
+        var masterMessage = this._player.GameServerContext.Localization.GetString("Server_Message_MasterLevelUp", masterLevel);
+        await this._player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(masterMessage, MessageType.BlueNormal)).ConfigureAwait(false);
     }
 }

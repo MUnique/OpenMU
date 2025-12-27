@@ -65,7 +65,8 @@ public class QuestStartAction
             }
             else
             {
-                await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Not enough money to proceed", MessageType.BlueNormal)).ConfigureAwait(false);
+                var message = player.GetLocalizedMessage("Quest_Message_NotEnoughMoney", "Not enough money to proceed.");
+                await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal)).ConfigureAwait(false);
                 return;
             }
         }

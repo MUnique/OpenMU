@@ -40,7 +40,10 @@ internal class WarpHandlerPlugIn : IPacketHandlerPlugIn
         }
         else
         {
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync($"Unknown warp index {warpInfoIndex}", MessageType.BlueNormal)).ConfigureAwait(false);
+            var localization = (player.GameContext as IGameServerContext)?.Localization;
+            var message = localization?.GetString("Server_Message_WarpUnknownIndex", warpInfoIndex)
+                           ?? $"Unknown warp index {warpInfoIndex}";
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal)).ConfigureAwait(false);
         }
     }
 }

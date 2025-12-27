@@ -122,13 +122,14 @@ public sealed class SkillList : ISkillList, IDisposable
 
     private async ValueTask AddItemSkillAsync(Skill skill)
     {
-        // If character is not selected (e.g., during disconnect cleanup), skill list doesn't need to be updated
-        if (this._player.SelectedCharacter is null)
+        // During disconnect/shutdown, SelectedCharacter or its CharacterClass may be transiently null.
+        var characterClass = this._player.SelectedCharacter?.CharacterClass;
+        if (characterClass is null)
         {
             return;
         }
 
-        if (!skill.QualifiedCharacters.Contains(this._player.SelectedCharacter.CharacterClass!))
+        if (!skill.QualifiedCharacters.Contains(characterClass))
         {
             return;
         }

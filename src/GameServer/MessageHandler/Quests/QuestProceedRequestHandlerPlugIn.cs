@@ -37,6 +37,30 @@ public class QuestProceedRequestHandlerPlugIn : ISubPacketHandlerPlugIn
 
         if (request.ProceedAction == QuestProceedRequest.QuestProceedAction.AcceptQuest)
         {
+            // Enforce additional preconditions for Zyro quests: configurable resets requirement.
+            var zyroFeature = player.GameContext.FeaturePlugIns.GetPlugIn<MUnique.OpenMU.GameLogic.Features.ZyroExpansionFeaturePlugIn>();
+            if (zyroFeature?.Configuration is { } zyroCfg && questGroup == zyroCfg.QuestGroup)
+            {
+                var resets = (int)player.Attributes![MUnique.OpenMU.GameLogic.Attributes.Stats.Resets];
+                var requiredResets = questNumber switch
+                {
+                    10 => zyroCfg.ResetsRequiredForVault,
+                    20 => zyroCfg.ResetsRequiredForInventory1,
+                    30 => zyroCfg.ResetsRequiredForInventory2,
+                    _ => 0,
+                };
+
+                if (resets < requiredResets)
+                {
+                    var message = player.GetLocalizedMessage(
+                        "Quest_Message_NotEnoughResets",
+                        "You need at least {0} resets to start this quest.",
+                        requiredResets);
+                    await player.InvokeViewPlugInAsync<MUnique.OpenMU.GameLogic.Views.IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MUnique.OpenMU.Interfaces.MessageType.BlueNormal)).ConfigureAwait(false);
+                    return;
+                }
+            }
+
             if (questState?.ActiveQuest != null)
             {
                 // keep it running and confirm that it started

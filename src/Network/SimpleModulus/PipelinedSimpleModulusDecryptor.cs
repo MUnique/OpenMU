@@ -8,6 +8,7 @@ using System.Buffers;
 using System.Diagnostics;
 using System.IO.Pipelines;
 using System.Runtime.InteropServices;
+using MUnique.OpenMU.Network;
 using static System.Buffers.Binary.BinaryPrimitives;
 
 /// <summary>
@@ -88,7 +89,8 @@ public class PipelinedSimpleModulusDecryptor : PipelinedSimpleModulusBase, IPipe
         // usage. If the previous span was used up, a new piece of memory is getting provided for us.
         packet.Slice(0, 3).CopyTo(this.HeaderBuffer);
 
-        if (this.HeaderBuffer[0] < 0xC3)
+        var headerType = ArrayExtensions.NormalizePacketHeader(this.HeaderBuffer[0]);
+        if (headerType < 0xC3)
         {
             // we just have to write-through
             this.CopyDataIntoWriter(this.Pipe.Writer, packet);
@@ -99,6 +101,14 @@ public class PipelinedSimpleModulusDecryptor : PipelinedSimpleModulusBase, IPipe
             var contentSize = this.GetContentSize(this.HeaderBuffer, false);
             if ((contentSize % this.EncryptedBlockSize) != 0)
             {
+                if (headerType != this.HeaderBuffer[0])
+                {
+                    // Some clients mask the header byte and don't use simple modulus encryption.
+                    // In that case we just forward the packet to the next stage.
+                    this.CopyDataIntoWriter(this.Pipe.Writer, packet);
+                    return await this.TryFlushWriterAsync(this.Pipe.Writer).ConfigureAwait(false);
+                }
+
                 throw new ArgumentException(
                     $"The packet has an unexpected content size. It must be a multiple of {this.EncryptedBlockSize}",
                     nameof(packet));

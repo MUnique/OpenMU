@@ -10,6 +10,59 @@ namespace MUnique.OpenMU.Network;
 public static class ArrayExtensions
 {
     /// <summary>
+    /// Normalizes alternative packet header prefixes to the standard MU headers.
+    /// </summary>
+    /// <param name="packetPrefix">The packet header byte.</param>
+    /// <returns>The normalized packet header byte.</returns>
+    public static byte NormalizePacketHeader(byte packetPrefix)
+    {
+        return packetPrefix switch
+        {
+            0x41 => 0xC1,
+            0x42 => 0xC2,
+            0x43 => 0xC3,
+            0x44 => 0xC4,
+            _ => packetPrefix,
+        };
+    }
+
+    /// <summary>
+    /// Determines whether the packet header is masked (alternate prefixes 0x41-0x44).
+    /// </summary>
+    /// <param name="packetPrefix">The packet header byte.</param>
+    /// <returns>True when the header uses a masked prefix; otherwise false.</returns>
+    public static bool IsMaskedPacketHeader(byte packetPrefix)
+    {
+        return packetPrefix is >= 0x41 and <= 0x44;
+    }
+
+    /// <summary>
+    /// Normalizes packet type bytes which may be masked by some clients.
+    /// </summary>
+    /// <param name="packetPrefix">The packet header byte.</param>
+    /// <param name="packetType">The packet type byte.</param>
+    /// <returns>The normalized packet type byte.</returns>
+    public static byte NormalizePacketType(byte packetPrefix, byte packetType)
+    {
+        if (!IsMaskedPacketHeader(packetPrefix))
+        {
+            return packetType;
+        }
+
+        if (packetType is >= 0x10 and <= 0x1F)
+        {
+            return (byte)(packetType | 0xE0);
+        }
+
+        if (packetType is >= 0x40 and <= 0x7F)
+        {
+            return (byte)(packetType | 0x80);
+        }
+
+        return packetType;
+    }
+
+    /// <summary>
     /// Extracts a string of an byte array with the specified encoding.
     /// </summary>
     /// <param name="array">The byte array.</param>
@@ -127,7 +180,7 @@ public static class ArrayExtensions
     /// <returns>The size of the header.</returns>
     public static int GetPacketHeaderSize(byte packetPrefix)
     {
-        switch (packetPrefix)
+        switch (NormalizePacketHeader(packetPrefix))
         {
             case 0xC1:
             case 0xC3:
@@ -175,7 +228,7 @@ public static class ArrayExtensions
     /// <returns>The size of a packet.</returns>
     public static int GetPacketSize(this Span<byte> packet)
     {
-        switch (packet[0])
+        switch (NormalizePacketHeader(packet[0]))
         {
             case 0xC1:
             case 0xC3:
@@ -207,7 +260,7 @@ public static class ArrayExtensions
     public static void SetPacketSize(this Span<byte> packet)
     {
         var size = packet.Length;
-        switch (packet[0])
+        switch (NormalizePacketHeader(packet[0]))
         {
             case 0xC1:
             case 0xC3:

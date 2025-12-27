@@ -9,6 +9,7 @@ using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.IO;
 using System.Text.Json.Serialization;
+using System.Linq;
 using System.Threading;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
@@ -28,6 +29,7 @@ using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.EntityFramework;
 using MUnique.OpenMU.Persistence.Initialization;
 using MUnique.OpenMU.Persistence.Initialization.Version075;
+using Version097dInitialization = MUnique.OpenMU.Persistence.Initialization.Version097d.DataInitialization;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
 using MUnique.OpenMU.Web.AdminPanel;
@@ -37,6 +39,8 @@ using MUnique.OpenMU.Web.Map.Map;
 using Nito.AsyncEx.Synchronous;
 using Serilog;
 using Serilog.Debugging;
+using MUnique.OpenMU.Startup.Logging;
+using MUnique.OpenMU.Localization;
 
 /// <summary>
 /// The startup class for an all-in-one game server.
@@ -65,8 +69,13 @@ internal sealed class Program : IDisposable
             .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", true, true)
             .Build();
 
+        var buffer = new InMemoryLogBuffer();
+        // Store buffer in a static service container by registering into DI later
+        ConsoleLog.Buffer = buffer;
+
         this._logger = new LoggerConfiguration()
             .ReadFrom.Configuration(configuration)
+            .WriteTo.Sink(new InMemorySerilogSink(buffer))
             .CreateLogger();
     }
 
@@ -229,6 +238,7 @@ internal sealed class Program : IDisposable
         // Ensure GameLogic and GameServer Assemblies are loaded
         _ = GameLogic.Rand.NextInt(1, 2);
         _ = DataInitialization.Id;
+        _ = Version097dInitialization.Id;
         _ = OpenMU.GameServer.ClientVersionResolver.DefaultVersion;
 
         var addAdminPanel = this.IsAdminPanelEnabled(args);
@@ -242,7 +252,31 @@ internal sealed class Program : IDisposable
             builder.AddAdminPanel(includeMapApp: true);
         }
 
-        builder.Services.AddSingleton(this._servers)
+        var localizationLanguages = (builder.Configuration.GetSection("Localization:Languages").Get<string[]>() ?? new[] { "en", "es" })
+            .Select(l => l.ToLowerInvariant())
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+
+        builder.Services
+            .AddSingleton(sp =>
+            {
+                var options = new LocalizationOptions
+                {
+                    ResourceDirectory = Path.Combine(builder.Environment.ContentRootPath, "Localization"),
+                    DefaultLanguage = builder.Configuration["Localization:DefaultLanguage"] ?? "en",
+                    AvailableLanguages = localizationLanguages,
+                };
+                var localizationService = new LocalizationService(options);
+                var configuredLanguage = builder.Configuration["Localization:CurrentLanguage"];
+                if (!string.IsNullOrWhiteSpace(configuredLanguage))
+                {
+                    localizationService.SetLanguage(configuredLanguage);
+                }
+
+                return localizationService;
+            })
+            .AddSingleton(ConsoleLog.Buffer)
+            .AddSingleton(this._servers)
             .AddSingleton<IConfigurationChangePublisher, ConfigurationChangeHandler>()
             .AddSingleton<IConfigurationChangeListener, ConfigurationChangeListener>()
             .AddSingleton<ConfigurationChangeMediator>()
@@ -297,6 +331,9 @@ internal sealed class Program : IDisposable
 
         var host = builder.Build();
 
+        // Expose log tail endpoint (minimal api)
+        host.MapGet("/api/logs/tail", (InMemoryLogBuffer buf, int? take) => buf.Tail(take ?? 200));
+
         // NpgsqlLoggingConfiguration.InitializeLogging(host.Services.GetRequiredService<ILoggerFactory>())
         this._logger.Information("Host created");
 
@@ -344,6 +381,28 @@ internal sealed class Program : IDisposable
         var typesWithCustomConfig = pluginManager.KnownPlugInTypes.Where(t => t.GetInterfaces().Contains(typeof(ISupportDefaultCustomConfiguration))).ToDictionary(t => t.GUID, t => t);
 
         using var notificationSuspension = context.SuspendChangeNotifications();
+
+        // 1) Remove configurations with unknown plugin type ids (e.g., leftovers from previous builds)
+        var knownTypeIds = new HashSet<Guid>(pluginManager.KnownPlugInTypes.Select(t => t.GUID));
+        var unknownConfigs = configs.Where(c => !knownTypeIds.Contains(c.TypeId)).ToList();
+        if (unknownConfigs.Count > 0)
+        {
+            foreach (var uc in unknownConfigs)
+            {
+                try
+                {
+                    _ = context.DeleteAsync(uc).AsTask().WaitAndUnwrapException();
+                }
+                catch (Exception ex)
+                {
+                    this._logger.Warning(ex, "Failed to delete unknown plug-in configuration with TypeId {typeId}", uc.TypeId);
+                }
+            }
+
+            // Update local list to reflect deletions
+            configs = configs.Except(unknownConfigs).ToList();
+            _ = context.SaveChangesAsync().AsTask().WaitAndUnwrapException();
+        }
         var typesWithMissingCustomConfigs = configs.Where(c => string.IsNullOrWhiteSpace(c.CustomConfiguration) && typesWithCustomConfig.ContainsKey(c.TypeId)).ToList();
         if (typesWithMissingCustomConfigs.Any())
         {

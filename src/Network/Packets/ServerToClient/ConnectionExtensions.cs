@@ -4581,12 +4581,14 @@ public static class ConnectionExtensions
     /// </summary>
     /// <param name="connection">The connection.</param>
     /// <param name="result">The result.</param>
+    /// <param name="successRate">The success rate.</param>
+    /// <param name="bonusRate">The bonus rate.</param>
     /// <param name="itemData">The item data.</param>
     /// <remarks>
     /// Is sent by the server when: After the player requested to execute an item crafting, e.g. at the chaos machine.
     /// Causes reaction on client side: The game client updates the UI to show the resulting item.
     /// </remarks>
-    public static async ValueTask SendItemCraftingResultAsync(this IConnection? connection, ItemCraftingResult.CraftingResult @result, Memory<byte> @itemData)
+    public static async ValueTask SendItemCraftingResultAsync(this IConnection? connection, ItemCraftingResult.CraftingResult @result, byte @successRate, byte @bonusRate, Memory<byte> @itemData)
     {
         if (connection is null)
         {
@@ -4598,6 +4600,8 @@ public static class ConnectionExtensions
             var length = ItemCraftingResultRef.GetRequiredSize(itemData.Length);
             var packet = new ItemCraftingResultRef(connection.Output.GetSpan(length)[..length]);
             packet.Result = @result;
+            packet.SuccessRate = @successRate;
+            packet.BonusRate = @bonusRate;
             @itemData.Span.CopyTo(packet.ItemData);
 
             return packet.Header.Length;

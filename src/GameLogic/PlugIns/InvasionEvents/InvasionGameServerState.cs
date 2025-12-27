@@ -35,6 +35,11 @@ public class InvasionGameServerState : PeriodicTaskGameServerState
     /// </summary>
     public string MapName => this.Map.Name;
 
+    /// <summary>
+    /// Gets or sets the remaining boss count for the invasion. When it reaches zero, the invasion can finish early.
+    /// </summary>
+    public int ActiveBossCount { get; set; }
+
     /// <inheritdoc />
     public override string ToString()
     {

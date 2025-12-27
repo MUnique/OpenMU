@@ -18,7 +18,7 @@ public class HappyHourConfiguration : PeriodicTaskConfiguration
     {
         TaskDuration = TimeSpan.FromHours(1),
         PreStartMessageDelay = TimeSpan.FromSeconds(0),
-        Message = "Happy Hour event has been started!",
+        Message = "¡El evento Happy Hour ha comenzado!",
         Timetable = GenerateTimeSequence(TimeSpan.FromHours(6), new TimeOnly(0, 5)).ToList(), // Every 6 hours,
         ExperienceMultiplier = 1.5f,
     };

@@ -59,7 +59,8 @@ public class DeleteCharacterAction
 
         if (player.GameContext is IGameServerContext gameServerContext && await gameServerContext.GuildServer.GetGuildPositionAsync(character.Id).ConfigureAwait(false) != GuildPosition.Undefined)
         {
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Can't delete a guild member. Remove the character from guild first.", MessageType.BlueNormal)).ConfigureAwait(false);
+            var message = player.GetLocalizedMessage("CharacterDelete_Message_GuildMember", "You cannot delete a guild member. Remove the character from the guild first.");
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal)).ConfigureAwait(false);
             return CharacterDeleteResult.Unsuccessful;
         }
 

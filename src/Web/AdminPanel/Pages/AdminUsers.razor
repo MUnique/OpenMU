@@ -4,15 +4,15 @@
 
 @inject IUserService UserService;
 
-<PageTitle>OpenMU: Admin Users</PageTitle>
-<Breadcrumb IsFirstFromRoot="true" Caption="Admin Users"/>
-<h1>Admin Users</h1>
+<PageTitle>OpenMU: Usuarios Admin</PageTitle>
+<Breadcrumb IsFirstFromRoot="true" Caption="Usuarios Admin"/>
+<h1>Usuarios Admin</h1>
 
 <div>
     <table>
         <thead>
-        <th class="col-10">Login Name</th>
-        <th class="col-1">Actions</th>
+        <th class="col-10">Usuario</th>
+        <th class="col-1">Acciones</th>
         <th class="col-1"></th>
         </thead>
         <tbody>
@@ -22,12 +22,12 @@
             <tr>
                 <td>@user</td>
                 <td>
-                    <button type="button" class="btn btn-sm btn-primary" @onclick="async () => await this.UserService.ChangePasswordInModalDialogAsync(user)">Change password</button>
+                    <button type="button" class="btn btn-sm btn-primary" @onclick="async () => await this.UserService.ChangePasswordInModalDialogAsync(user)">Cambiar contraseña</button>
                 </td>
                 <td>
                     @if (users.Count > 1)
                     {
-                        <button type="button" class="btn btn-sm btn-danger" @onclick="async () => await this.UserService.DeleteUserAsync(user)">Delete</button>
+                        <button type="button" class="btn btn-sm btn-danger" @onclick="async () => await this.UserService.DeleteUserAsync(user)">Eliminar</button>
                     }
                 </td>
             </tr>
@@ -35,7 +35,7 @@
         </tbody>
         
         <tfoot>
-            <td><button type="button" class="btn btn-sm btn-success" @onclick="@this.UserService.CreateNewInModalDialogAsync">Create User</button></td>
+            <td><button type="button" class="btn btn-sm btn-success" @onclick="@this.UserService.CreateNewInModalDialogAsync">Crear Usuario</button></td>
             <td></td>
             <td></td>
         </tfoot>

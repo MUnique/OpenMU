@@ -34,13 +34,18 @@ internal class PlayerShopRequestItemListPacketHandlerPlugIn : ISubPacketHandlerP
         PlayerShopItemListRequest message = packet;
         if (player.CurrentMap?.GetObject(message.PlayerId) is not Player requestedPlayer)
         {
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Open Store: Player not found.", MessageType.BlueNormal)).ConfigureAwait(false);
+            var localization = (player.GameContext as IGameServerContext)?.Localization;
+            var notFound = localization?["Server_Message_PlayerShopNotFound"] ?? "Open store: Player not found.";
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(notFound, MessageType.BlueNormal)).ConfigureAwait(false);
             return;
         }
 
         if (message.PlayerName != requestedPlayer.SelectedCharacter?.Name)
         {
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Player Names don't match." + message.PlayerName + "<>" + requestedPlayer.SelectedCharacter?.Name, MessageType.BlueNormal)).ConfigureAwait(false);
+            var localization = (player.GameContext as IGameServerContext)?.Localization;
+            var mismatch = localization?.GetString("Server_Message_PlayerShopNameMismatch", message.PlayerName, requestedPlayer.SelectedCharacter?.Name ?? string.Empty)
+                           ?? $"Player names don't match ({message.PlayerName} vs {requestedPlayer.SelectedCharacter?.Name}).";
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(mismatch, MessageType.BlueNormal)).ConfigureAwait(false);
             return;
         }
 
