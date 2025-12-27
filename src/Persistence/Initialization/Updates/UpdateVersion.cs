@@ -358,5 +358,15 @@ public enum UpdateVersion
     /// <summary>
     /// The version of the <see cref="FixJeweleryPetsDamageCalcsPlugInSeason6"/>.
     /// </summary>
+<<<<<<< HEAD
     FixJeweleryPetsDamageCalcsSeason6 = 69,
 }
+=======
+    FixJeweleryPetsDamageCalcsSeason6 = 64,
+
+    /// <summary>
+    /// The version of the <see cref="FixSkillMultipliersPlugIn"/>.
+    /// </summary>
+    FixSkillMultipliers = 65,
+}
+>>>>>>> upstream/master
