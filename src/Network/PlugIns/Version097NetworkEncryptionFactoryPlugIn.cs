@@ -8,6 +8,7 @@ using System.Globalization;
 using System.IO.Pipelines;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.Network;
+using MUnique.OpenMU.Network.HackCheck;
 using MUnique.OpenMU.Network.SimpleModulus;
 using MUnique.OpenMU.Network.Xor;
 using MUnique.OpenMU.PlugIns;
@@ -20,6 +21,7 @@ using MUnique.OpenMU.PlugIns;
 public class Version097NetworkEncryptionFactoryPlugIn : INetworkEncryptionFactoryPlugIn
 {
     private static readonly byte[] Xor32Key = LoadXor32Key();
+    private static readonly HackCheckKeys? HackCheckKeySet = LoadHackCheckKeys();
 
     /// <inheritdoc />
     public ClientVersion Key { get; } = new (0, 97, ClientLanguage.English);
@@ -30,7 +32,19 @@ public class Version097NetworkEncryptionFactoryPlugIn : INetworkEncryptionFactor
         if (direction == DataDirection.ServerToClient)
         {
             // The 0.97 client decrypts server packets with simple modulus only.
+            if (HackCheckKeySet is { } keys)
+            {
+                var hackCheck = new PipelinedHackCheckEncryptor(target, keys);
+                return new PipelinedSimpleModulusEncryptor(hackCheck.Writer, PipelinedSimpleModulusEncryptor.DefaultServerKey);
+            }
+
             return new PipelinedSimpleModulusEncryptor(target, PipelinedSimpleModulusEncryptor.DefaultServerKey);
+        }
+
+        if (HackCheckKeySet is { } clientKeys)
+        {
+            var hackCheck = new PipelinedHackCheckEncryptor(target, clientKeys);
+            target = hackCheck.Writer;
         }
 
         return new PipelinedXor32Encryptor(
@@ -43,7 +57,17 @@ public class Version097NetworkEncryptionFactoryPlugIn : INetworkEncryptionFactor
     {
         if (direction == DataDirection.ClientToServer)
         {
+            if (HackCheckKeySet is { } keys)
+            {
+                source = new PipelinedHackCheckDecryptor(source, keys).Reader;
+            }
+
             return new PipelinedDecryptor(source, PipelinedSimpleModulusDecryptor.DefaultServerKey, Xor32Key);
+        }
+
+        if (HackCheckKeySet is { } serverKeys)
+        {
+            source = new PipelinedHackCheckDecryptor(source, serverKeys).Reader;
         }
 
         return new PipelinedSimpleModulusDecryptor(source, PipelinedSimpleModulusDecryptor.DefaultClientKey);
@@ -75,5 +99,17 @@ public class Version097NetworkEncryptionFactoryPlugIn : INetworkEncryptionFactor
         }
 
         return key;
+    }
+
+    private static HackCheckKeys? LoadHackCheckKeys()
+    {
+        var customerName = Environment.GetEnvironmentVariable("MU_HACKCHECK_NAME_097");
+        var clientSerial = Environment.GetEnvironmentVariable("MU_HACKCHECK_SERIAL_097");
+        if (string.IsNullOrWhiteSpace(customerName) || string.IsNullOrWhiteSpace(clientSerial))
+        {
+            return null;
+        }
+
+        return HackCheckKeys.Create(customerName.Trim(), clientSerial.Trim());
     }
 }
