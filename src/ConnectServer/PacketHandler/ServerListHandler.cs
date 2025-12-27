@@ -82,7 +82,12 @@ internal class ServerListHandler : IPacketHandler<Client>
         decryptedPacket = default;
         subType = 0;
 
-        var headerSize = ArrayExtensions.GetPacketHeaderSize(packet);
+        if (packet.IsEmpty)
+        {
+            return false;
+        }
+
+        var headerSize = ArrayExtensions.GetPacketHeaderSize(packet[0]);
         if (headerSize == 0 || packet.Length <= headerSize + 1)
         {
             return false;
