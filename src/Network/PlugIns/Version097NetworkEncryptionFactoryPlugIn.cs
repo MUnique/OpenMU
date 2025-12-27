@@ -20,8 +20,24 @@ using MUnique.OpenMU.PlugIns;
 [Guid("6B6F07F2-709F-4A39-8897-0B6A2E7DE8C0")]
 public class Version097NetworkEncryptionFactoryPlugIn : INetworkEncryptionFactoryPlugIn
 {
+    private static readonly uint[] DefaultServerToClientKey =
+    {
+        72619, 72691, 73136, 78576,
+        14067, 5411, 31865, 16225,
+        560, 8315, 21196, 27946,
+    };
+
+    private static readonly uint[] DefaultClientToServerKey =
+    {
+        72619, 72691, 73136, 78576,
+        22606, 40463, 33209, 33169,
+        560, 8315, 21196, 27946,
+    };
+
     private static readonly byte[] Xor32Key = LoadXor32Key();
     private static readonly HackCheckKeys? HackCheckKeySet = LoadHackCheckKeys();
+    private static readonly SimpleModulusKeys ServerToClientKey = LoadSimpleModulusKeys("MU_SM_ENC_097", DefaultServerToClientKey, true);
+    private static readonly SimpleModulusKeys ClientToServerKey = LoadSimpleModulusKeys("MU_SM_DEC_097", DefaultClientToServerKey, false);
 
     /// <inheritdoc />
     public ClientVersion Key { get; } = new (0, 97, ClientLanguage.English);
@@ -35,10 +51,10 @@ public class Version097NetworkEncryptionFactoryPlugIn : INetworkEncryptionFactor
             if (HackCheckKeySet is { } keys)
             {
                 var hackCheck = new PipelinedHackCheckEncryptor(target, keys);
-                return new PipelinedSimpleModulusEncryptor(hackCheck.Writer, PipelinedSimpleModulusEncryptor.DefaultServerKey);
+                return new PipelinedSimpleModulusEncryptor(hackCheck.Writer, ServerToClientKey);
             }
 
-            return new PipelinedSimpleModulusEncryptor(target, PipelinedSimpleModulusEncryptor.DefaultServerKey);
+            return new PipelinedSimpleModulusEncryptor(target, ServerToClientKey);
         }
 
         if (HackCheckKeySet is { } clientKeys)
@@ -48,7 +64,7 @@ public class Version097NetworkEncryptionFactoryPlugIn : INetworkEncryptionFactor
         }
 
         return new PipelinedXor32Encryptor(
-            new PipelinedSimpleModulusEncryptor(target, PipelinedSimpleModulusEncryptor.DefaultClientKey).Writer,
+            new PipelinedSimpleModulusEncryptor(target, ClientToServerKey).Writer,
             Xor32Key);
     }
 
@@ -62,7 +78,7 @@ public class Version097NetworkEncryptionFactoryPlugIn : INetworkEncryptionFactor
                 source = new PipelinedHackCheckDecryptor(source, keys).Reader;
             }
 
-            return new PipelinedDecryptor(source, PipelinedSimpleModulusDecryptor.DefaultServerKey, Xor32Key);
+            return new PipelinedDecryptor(source, ClientToServerKey, Xor32Key);
         }
 
         if (HackCheckKeySet is { } serverKeys)
@@ -70,7 +86,7 @@ public class Version097NetworkEncryptionFactoryPlugIn : INetworkEncryptionFactor
             source = new PipelinedHackCheckDecryptor(source, serverKeys).Reader;
         }
 
-        return new PipelinedSimpleModulusDecryptor(source, PipelinedSimpleModulusDecryptor.DefaultClientKey);
+        return new PipelinedSimpleModulusDecryptor(source, ServerToClientKey);
     }
 
     private static byte[] LoadXor32Key()
@@ -111,5 +127,41 @@ public class Version097NetworkEncryptionFactoryPlugIn : INetworkEncryptionFactor
         }
 
         return HackCheckKeys.Create(customerName.Trim(), clientSerial.Trim());
+    }
+
+    private static SimpleModulusKeys LoadSimpleModulusKeys(string envVar, uint[] fallback, bool isEncryption)
+    {
+        var path = Environment.GetEnvironmentVariable(envVar);
+        if (!string.IsNullOrWhiteSpace(path))
+        {
+            try
+            {
+                var serializer = new SimpleModulusKeySerializer();
+                if (serializer.TryDeserialize(path.Trim(), out var mod, out var key, out var xor))
+                {
+                    var combined = CombineKeys(mod, key, xor);
+                    return isEncryption
+                        ? SimpleModulusKeys.CreateEncryptionKeys(combined)
+                        : SimpleModulusKeys.CreateDecryptionKeys(combined);
+                }
+            }
+            catch
+            {
+                // Fall back to built-in keys when the file can't be loaded.
+            }
+        }
+
+        return isEncryption
+            ? SimpleModulusKeys.CreateEncryptionKeys(fallback)
+            : SimpleModulusKeys.CreateDecryptionKeys(fallback);
+    }
+
+    private static uint[] CombineKeys(uint[] modulus, uint[] key, uint[] xor)
+    {
+        var combined = new uint[modulus.Length + key.Length + xor.Length];
+        modulus.CopyTo(combined, 0);
+        key.CopyTo(combined, modulus.Length);
+        xor.CopyTo(combined, modulus.Length + key.Length);
+        return combined;
     }
 }
