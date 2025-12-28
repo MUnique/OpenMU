@@ -178,7 +178,7 @@
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="Exists('Version097d\Items\ItemList097.txt')">
     <Content Include="Version097d\Items\ItemList097.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
