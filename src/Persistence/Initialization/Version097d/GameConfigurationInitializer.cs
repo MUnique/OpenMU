@@ -63,6 +63,7 @@ public class GameConfigurationInitializer : GameConfigurationInitializerBase
         new BoxOfLuck(this.Context, this.GameConfiguration).Initialize();
         new NpcInitialization(this.Context, this.GameConfiguration).Initialize();
         new InvasionMobsInitialization(this.Context, this.GameConfiguration).Initialize();
+        new Version097d.Items.ItemList097Filter(this.GameConfiguration).Apply();
 
         new GameMapsInitializer(this.Context, this.GameConfiguration).Initialize();
         this.AssignCharacterClassHomeMaps();

@@ -179,6 +179,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Version097d\Items\ItemList097.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\AttributeSystem\MUnique.OpenMU.AttributeSystem.csproj" />
     <ProjectReference Include="..\..\DataModel\MUnique.OpenMU.DataModel.csproj" />
     <ProjectReference Include="..\..\GameLogic\MUnique.OpenMU.GameLogic.csproj" />
