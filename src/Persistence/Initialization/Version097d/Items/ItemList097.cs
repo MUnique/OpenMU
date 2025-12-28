@@ -16,7 +16,7 @@ internal static class ItemList097
 {
     private const string ItemListRelativePath = "Version097d/Items/ItemList097.txt";
 
-    public static HashSet<(byte Group, byte Number)> LoadAllowedItems()
+    public static HashSet<(byte Group, short Number)> LoadAllowedItems()
     {
         var itemListPath = Path.Combine(
             AppContext.BaseDirectory,
@@ -27,7 +27,7 @@ internal static class ItemList097
             return [];
         }
 
-        var allowedItems = new HashSet<(byte Group, byte Number)>();
+        var allowedItems = new HashSet<(byte Group, short Number)>();
         byte? currentGroup = null;
 
         foreach (var rawLine in File.ReadLines(itemListPath))
@@ -55,7 +55,7 @@ internal static class ItemList097
             }
 
             var firstToken = GetFirstToken(line);
-            if (byte.TryParse(firstToken, NumberStyles.Integer, CultureInfo.InvariantCulture, out var number))
+            if (short.TryParse(firstToken, NumberStyles.Integer, CultureInfo.InvariantCulture, out var number))
             {
                 allowedItems.Add((currentGroup.Value, number));
             }
@@ -86,7 +86,7 @@ internal static class ItemList097
 internal sealed class ItemList097Filter
 {
     private readonly GameConfiguration _gameConfiguration;
-    private readonly HashSet<(byte Group, byte Number)> _allowedItems;
+    private readonly HashSet<(byte Group, short Number)> _allowedItems;
 
     public ItemList097Filter(GameConfiguration gameConfiguration)
     {
