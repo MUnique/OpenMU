@@ -70,8 +70,7 @@ public class AddExperiencePlugIn097 : IAddExperiencePlugIn
                 span[1] = (byte)packetLength;
                 span[2] = 0x9C;
                 BinaryPrimitives.WriteUInt16BigEndian(span.Slice(3, 2), id);
-                BinaryPrimitives.WriteUInt16LittleEndian(span.Slice(5, 2), 0);
-                BinaryPrimitives.WriteUInt16LittleEndian(span.Slice(7, 2), sendExp);
+                BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(5, 4), sendExp);
                 BinaryPrimitives.WriteUInt16BigEndian(span.Slice(9, 2), damage);
                 BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(11, 4), viewDamage);
                 BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(15, 4), viewExperience);
