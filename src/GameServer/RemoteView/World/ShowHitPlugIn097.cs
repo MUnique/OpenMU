@@ -52,8 +52,8 @@ public class ShowHitPlugIn097 : IShowHitPlugIn
             span[0] = 0xC1;
             span[1] = (byte)packetLength;
             span[2] = 0x15;
-            BinaryPrimitives.WriteUInt16LittleEndian(span.Slice(3, 2), targetId);
-            BinaryPrimitives.WriteUInt16LittleEndian(span.Slice(5, 2), damage);
+            BinaryPrimitives.WriteUInt16BigEndian(span.Slice(3, 2), targetId);
+            BinaryPrimitives.WriteUInt16BigEndian(span.Slice(5, 2), damage);
             BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(7, 4), viewCurHp);
             BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(11, 4), viewDamageHp);
             return packetLength;
