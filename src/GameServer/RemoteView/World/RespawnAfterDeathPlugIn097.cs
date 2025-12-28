@@ -8,6 +8,7 @@ using System.Buffers.Binary;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views.World;
+using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.PlugIns;
 
@@ -31,7 +32,9 @@ public class RespawnAfterDeathPlugIn097 : IRespawnAfterDeathPlugIn
     /// <inheritdoc/>
     public async ValueTask RespawnAsync()
     {
-        if (this._player.SelectedCharacter?.CurrentMap is null || this._player.Attributes is null)
+        var selectedCharacter = this._player.SelectedCharacter;
+        var attributes = this._player.Attributes;
+        if (selectedCharacter?.CurrentMap is null || attributes is null)
         {
             return;
         }
@@ -43,12 +46,12 @@ public class RespawnAfterDeathPlugIn097 : IRespawnAfterDeathPlugIn
         }
 
         const int packetLength = 34;
-        var mapNumber = (byte)this._player.SelectedCharacter.CurrentMap.Number;
+        var mapNumber = (byte)selectedCharacter.CurrentMap.Number;
         var position = this._player.IsWalking ? this._player.WalkTarget : this._player.Position;
 
-        var currentHealth = GetUShort(this._player.Attributes[Stats.CurrentHealth]);
-        var currentMana = GetUShort(this._player.Attributes[Stats.CurrentMana]);
-        var currentAbility = GetUShort(this._player.Attributes[Stats.CurrentAbility]);
+        var currentHealth = GetUShort(attributes[Stats.CurrentHealth]);
+        var currentMana = GetUShort(attributes[Stats.CurrentMana]);
+        var currentAbility = GetUShort(attributes[Stats.CurrentAbility]);
 
         int WritePacket()
         {
@@ -64,11 +67,11 @@ public class RespawnAfterDeathPlugIn097 : IRespawnAfterDeathPlugIn
             BinaryPrimitives.WriteUInt16LittleEndian(span.Slice(8, 2), currentHealth);
             BinaryPrimitives.WriteUInt16LittleEndian(span.Slice(10, 2), currentMana);
             BinaryPrimitives.WriteUInt16LittleEndian(span.Slice(12, 2), currentAbility);
-            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(14, 4), (uint)this._player.SelectedCharacter.Experience);
+            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(14, 4), (uint)selectedCharacter.Experience);
             BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(18, 4), (uint)this._player.Money);
-            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(22, 4), ClampToUInt32(this._player.Attributes[Stats.CurrentHealth]));
-            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(26, 4), ClampToUInt32(this._player.Attributes[Stats.CurrentMana]));
-            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(30, 4), ClampToUInt32(this._player.Attributes[Stats.CurrentAbility]));
+            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(22, 4), ClampToUInt32(attributes[Stats.CurrentHealth]));
+            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(26, 4), ClampToUInt32(attributes[Stats.CurrentMana]));
+            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(30, 4), ClampToUInt32(attributes[Stats.CurrentAbility]));
             return packetLength;
         }
 

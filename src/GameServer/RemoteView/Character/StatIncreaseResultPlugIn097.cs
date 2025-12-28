@@ -10,6 +10,7 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views.Character;
+using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets;
 using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.PlugIns;
@@ -35,15 +36,17 @@ public class StatIncreaseResultPlugIn097 : IStatIncreaseResultPlugIn
     public async ValueTask StatIncreaseResultAsync(AttributeDefinition attribute, ushort addedPoints)
     {
         var connection = this._player.Connection;
-        if (connection is null || this._player.Attributes is null)
+        var selectedCharacter = this._player.SelectedCharacter;
+        var attributes = this._player.Attributes;
+        if (connection is null || attributes is null || selectedCharacter is null)
         {
             return;
         }
 
         const int packetLength = 41;
-        var maxHealth = (uint)Math.Max(this._player.Attributes[Stats.MaximumHealth], 0f);
-        var maxMana = (uint)Math.Max(this._player.Attributes[Stats.MaximumMana], 0f);
-        var maxBp = (uint)Math.Max(this._player.Attributes[Stats.MaximumAbility], 0f);
+        var maxHealth = (uint)Math.Max(attributes[Stats.MaximumHealth], 0f);
+        var maxMana = (uint)Math.Max(attributes[Stats.MaximumMana], 0f);
+        var maxBp = (uint)Math.Max(attributes[Stats.MaximumAbility], 0f);
         var result = addedPoints > 0
             ? (byte)(0x10 + (byte)attribute.GetStatType())
             : (byte)0;
@@ -62,7 +65,7 @@ public class StatIncreaseResultPlugIn097 : IStatIncreaseResultPlugIn
             BinaryPrimitives.WriteUInt16LittleEndian(span.Slice(7, 2), (ushort)Math.Min(maxBp, ushort.MaxValue));
 
             var offset = 9;
-            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), (uint)Math.Max(this._player.SelectedCharacter!.LevelUpPoints, 0));
+            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), (uint)Math.Max(selectedCharacter.LevelUpPoints, 0));
             offset += 4;
             BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), maxHealth);
             offset += 4;
@@ -70,13 +73,13 @@ public class StatIncreaseResultPlugIn097 : IStatIncreaseResultPlugIn
             offset += 4;
             BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), maxBp);
             offset += 4;
-            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), ClampToUInt32(this._player.Attributes[Stats.BaseStrength]));
+            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), ClampToUInt32(attributes[Stats.BaseStrength]));
             offset += 4;
-            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), ClampToUInt32(this._player.Attributes[Stats.BaseAgility]));
+            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), ClampToUInt32(attributes[Stats.BaseAgility]));
             offset += 4;
-            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), ClampToUInt32(this._player.Attributes[Stats.BaseVitality]));
+            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), ClampToUInt32(attributes[Stats.BaseVitality]));
             offset += 4;
-            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), ClampToUInt32(this._player.Attributes[Stats.BaseEnergy]));
+            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), ClampToUInt32(attributes[Stats.BaseEnergy]));
 
             return packetLength;
         }

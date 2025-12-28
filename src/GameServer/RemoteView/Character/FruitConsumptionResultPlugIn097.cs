@@ -10,6 +10,7 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views.Character;
+using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.PlugIns;
 
@@ -34,7 +35,9 @@ public class FruitConsumptionResultPlugIn097 : IFruitConsumptionResponsePlugIn
     public async ValueTask ShowResponseAsync(FruitConsumptionResult result, byte statPoints, AttributeDefinition statAttribute)
     {
         var connection = this._player.Connection;
-        if (connection is null || this._player.Attributes is null)
+        var selectedCharacter = this._player.SelectedCharacter;
+        var attributes = this._player.Attributes;
+        if (connection is null || attributes is null || selectedCharacter is null)
         {
             return;
         }
@@ -53,15 +56,15 @@ public class FruitConsumptionResultPlugIn097 : IFruitConsumptionResponsePlugIn
             var offset = 4;
             BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), statPoints);
             offset += 4;
-            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), ClampToUInt32(this._player.SelectedCharacter!.LevelUpPoints));
+            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), ClampToUInt32(selectedCharacter.LevelUpPoints));
             offset += 4;
-            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), ClampToUInt32(this._player.Attributes[Stats.BaseStrength]));
+            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), ClampToUInt32(attributes[Stats.BaseStrength]));
             offset += 4;
-            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), ClampToUInt32(this._player.Attributes[Stats.BaseAgility]));
+            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), ClampToUInt32(attributes[Stats.BaseAgility]));
             offset += 4;
-            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), ClampToUInt32(this._player.Attributes[Stats.BaseVitality]));
+            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), ClampToUInt32(attributes[Stats.BaseVitality]));
             offset += 4;
-            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), ClampToUInt32(this._player.Attributes[Stats.BaseEnergy]));
+            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), ClampToUInt32(attributes[Stats.BaseEnergy]));
 
             return packetLength;
         }
