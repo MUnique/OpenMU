@@ -105,11 +105,6 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
             return null;
         }
 
-        if (this.Attributes[Stats.IsAsleep] > 0)
-        {
-            await this.MagicEffectList.ClearAllEffectsProducingSpecificStatAsync(Stats.IsAsleep).ConfigureAwait(false);
-        }
-
         var hitInfo = await attacker.CalculateDamageAsync(this, skill, isCombo, damageFactor).ConfigureAwait(false);
 
         if (skill?.Skill is not { } attackSkill || attackSkill.DamageType != DamageType.Fenrir)
@@ -121,6 +116,11 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
 
         if (hitInfo.HealthDamage > 0)
         {
+            if (this.Attributes[Stats.IsAsleep] > 0)
+            {
+                await this.MagicEffectList.ClearAllEffectsProducingSpecificStatAsync(Stats.IsAsleep).ConfigureAwait(false);
+            }
+
             if (attacker is Player player)
             {
                 await player.AfterHitTargetAsync().ConfigureAwait(false);
