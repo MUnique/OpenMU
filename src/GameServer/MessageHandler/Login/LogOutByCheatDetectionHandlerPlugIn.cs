@@ -21,6 +21,7 @@ using MUnique.OpenMU.PlugIns;
 public class LogOutByCheatDetectionHandlerPlugIn : ISubPacketHandlerPlugIn
 {
     private readonly LogoutAction _logoutAction = new();
+    private static readonly bool IgnoreCheatLogout097 = GetIgnoreCheatLogout097();
 
     /// <inheritdoc/>
     public bool IsEncryptionExpected => true;
@@ -31,7 +32,28 @@ public class LogOutByCheatDetectionHandlerPlugIn : ISubPacketHandlerPlugIn
     /// <inheritdoc/>
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
-        player.Logger.LogError("Logged out by detected cheat on client side. Player: {player}", player);
+        LogOutByCheatDetection cheatPacket = packet;
+        player.Logger.LogError(
+            "Logged out by detected cheat on client side. Player: {player}. Type: {type}, Param: {param}, ClientVersion: {clientVersion}",
+            player,
+            cheatPacket.Type,
+            cheatPacket.Param,
+            player.ClientVersion);
+
+        if (IgnoreCheatLogout097 && player.ClientVersion.Season == 0 && player.ClientVersion.Episode == 97)
+        {
+            player.Logger.LogWarning("Ignoring cheat logout for 0.97 due to MU_IGNORE_CHEAT_LOGOUT_097.");
+            return;
+        }
+
         await this._logoutAction.LogoutAsync(player, LogoutType.CloseGame).ConfigureAwait(false);
+    }
+
+    private static bool GetIgnoreCheatLogout097()
+    {
+        var value = Environment.GetEnvironmentVariable("MU_IGNORE_CHEAT_LOGOUT_097");
+        return string.Equals(value, "1", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(value, "true", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(value, "yes", StringComparison.OrdinalIgnoreCase);
     }
 }
