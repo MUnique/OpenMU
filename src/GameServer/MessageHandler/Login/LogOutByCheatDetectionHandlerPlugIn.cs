@@ -33,14 +33,15 @@ public class LogOutByCheatDetectionHandlerPlugIn : ISubPacketHandlerPlugIn
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         LogOutByCheatDetection cheatPacket = packet;
+        var clientVersion = (player as IClientVersionProvider)?.ClientVersion;
         player.Logger.LogError(
             "Logged out by detected cheat on client side. Player: {player}. Type: {type}, Param: {param}, ClientVersion: {clientVersion}",
             player,
             cheatPacket.Type,
             cheatPacket.Param,
-            player.ClientVersion);
+            clientVersion);
 
-        if (IgnoreCheatLogout097 && player.ClientVersion.Season == 0 && player.ClientVersion.Episode == 97)
+        if (IgnoreCheatLogout097 && clientVersion is { Season: 0, Episode: 97 })
         {
             player.Logger.LogWarning("Ignoring cheat logout for 0.97 due to MU_IGNORE_CHEAT_LOGOUT_097.");
             return;
