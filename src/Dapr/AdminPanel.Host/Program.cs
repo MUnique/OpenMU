@@ -8,6 +8,7 @@ using MUnique.OpenMU.AdminPanel.Host;
 using MUnique.OpenMU.Dapr.Common;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.PlugIns;
+using MUnique.OpenMU.ServerClients;
 using MUnique.OpenMU.Web.AdminPanel;
 
 var builder = DaprService.CreateBuilder("AdminPanel", args);
@@ -19,6 +20,7 @@ var services = builder.Services;
 services.AddPeristenceProvider(true)
     .AddPlugInManager(plugInConfigurations)
     .AddManageableServerRegistry()
+    .AddSingleton<ILoginServer, LoginServer>()
     .AddSingleton<IGameServerInstanceManager, DockerGameServerInstanceManager>()
     .AddSingleton<IConnectServerInstanceManager, DockerConnectServerInstanceManager>();
 
