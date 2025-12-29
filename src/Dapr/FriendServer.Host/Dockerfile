@@ -4,6 +4,8 @@ EXPOSE 8080
 
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:10.0-alpine AS build
 WORKDIR /src
+COPY ["Directory.Packages.props", "."]
+COPY ["Directory.Build.props", "."]
 COPY ["Dapr/FriendServer.Host/MUnique.OpenMU.FriendServer.Host.csproj", "Dapr/FriendServer.Host/"]
 RUN dotnet restore "Dapr/FriendServer.Host/MUnique.OpenMU.FriendServer.Host.csproj"
 COPY . .
