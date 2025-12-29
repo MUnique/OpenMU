@@ -627,7 +627,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
 
         var hitInfo = await attacker.CalculateDamageAsync(this, skill, isCombo, damageFactor).ConfigureAwait(false);
-        attacker.ApplyAmmunitionConsumption(hitInfo);
+
+        if (skill?.Skill is not { } attackSkill || attackSkill.DamageType != DamageType.Fenrir)
+        {
+            attacker.ApplyAmmunitionConsumption(hitInfo);
+        }
 
         if (hitInfo is { HealthDamage: 0, ShieldDamage: 0 })
         {

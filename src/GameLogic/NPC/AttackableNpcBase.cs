@@ -111,7 +111,12 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
         }
 
         var hitInfo = await attacker.CalculateDamageAsync(this, skill, isCombo, damageFactor).ConfigureAwait(false);
-        attacker.ApplyAmmunitionConsumption(hitInfo);
+
+        if (skill?.Skill is not { } attackSkill || attackSkill.DamageType != DamageType.Fenrir)
+        {
+            attacker.ApplyAmmunitionConsumption(hitInfo);
+        }
+
         await this.HitAsync(hitInfo, attacker, skill?.Skill).ConfigureAwait(false);
 
         if (hitInfo.HealthDamage > 0)
