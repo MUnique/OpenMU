@@ -1,7 +1,7 @@
 # Deployment
 
 The recommended way to deploy OpenMU is through Docker. Depending on the scale
-you need, we provide multiple ways to do that.
+you need, we have multiple ways to do that.
 
 ## All-in-one
 
@@ -57,9 +57,17 @@ requests and he will redirect to the correct website.
 
 ## Distributed
 
+*!!! CURRENTLY BROKEN AND UNSUPPORTED, DOCS ARE OUT OF DATE !!!*
+
 It's also possible to host OpenMU in a [distributed](/distributed/) way.
-However, this introduces a lot more complexity.
+However, this introduces a lot more complexity and you should know what you're doing.
 The communication between the subsystems is handled with Dapr.
+
+Warnings:
+* It's currently unsupported due to several issues we have to resolve first.
+  Feel free to contribute for the following issues: https://github.com/MUnique/OpenMU/issues?q=is%3Aissue%20state%3Aopen%20label%3Adistributed-deployment
+* This way of hosting OpenMU is more complex and requires a good understanding of distributed systems.
+* This deployment requires more resources (CPU, RAM, Disk, Network).
 
 ### Pros
 
