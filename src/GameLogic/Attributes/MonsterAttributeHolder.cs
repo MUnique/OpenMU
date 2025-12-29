@@ -17,8 +17,14 @@ public class MonsterAttributeHolder : IAttributeSystem
         new Dictionary<AttributeDefinition, Func<AttackableNpcBase, float>>
         {
             { Stats.CurrentHealth, m => m.Health },
-            { Stats.DefensePvm, m => m.Attributes.GetValueOfAttribute(Stats.DefenseBase) + ((m as Monster)?.SummonedBy?.Attributes?[Stats.SummonedMonsterDefenseIncrease] ?? 0) },
-            { Stats.DefensePvp, m => m.Attributes.GetValueOfAttribute(Stats.DefenseBase) + ((m as Monster)?.SummonedBy?.Attributes?[Stats.SummonedMonsterDefenseIncrease] ?? 0) },
+            { Stats.DefensePvm, m =>
+                m.Attributes.GetValueOfAttribute(Stats.DefenseBase)
+                + m.Attributes.GetValueOfAttribute(Stats.DefenseFinal)
+                + ((m as Monster)?.SummonedBy?.Attributes?[Stats.SummonedMonsterDefenseIncrease] ?? 0) },
+            { Stats.DefensePvp, m =>
+                m.Attributes.GetValueOfAttribute(Stats.DefenseBase)
+                + m.Attributes.GetValueOfAttribute(Stats.DefenseFinal)
+                + ((m as Monster)?.SummonedBy?.Attributes?[Stats.SummonedMonsterDefenseIncrease] ?? 0) },
             { Stats.DamageReceiveDecrement, m => 1.0f },
             { Stats.AttackDamageIncrease, m => 1.0f },
             { Stats.ShieldBypassChance, m => 1.0f },
@@ -30,7 +36,8 @@ public class MonsterAttributeHolder : IAttributeSystem
             { Stats.CurrentHealth, (m, v) => m.Health = (int)v },
         };
 
-    private static readonly ConcurrentDictionary<MonsterDefinition, IDictionary<AttributeDefinition, float>> MonsterStatAttributesCache = new();
+    // Avoid caching by MonsterDefinition equality (which is based on Id) because cloned definitions
+    // for summons may share the same Id but have different attribute values. We resolve per-instance.
 
     private readonly AttackableNpcBase _monster;
 
@@ -159,9 +166,11 @@ public class MonsterAttributeHolder : IAttributeSystem
 
     private static IDictionary<AttributeDefinition, float> GetStatAttributeOfMonster(MonsterDefinition monsterDefinition)
     {
-        return MonsterStatAttributesCache.GetOrAdd(monsterDefinition, monsterDef => monsterDef.Attributes.ToDictionary(
-                m => m.AttributeDefinition ?? throw Error.NotInitializedProperty(m, nameof(m.AttributeDefinition)),
-                m => m.Value));
+        // Build a fresh map for this concrete instance to respect any runtime-adjusted values
+        // (e.g. cloned summon definitions with modified stats).
+        return monsterDefinition.Attributes.ToDictionary(
+            m => m.AttributeDefinition ?? throw Error.NotInitializedProperty(m, nameof(m.AttributeDefinition)),
+            m => m.Value);
     }
 
     private IDictionary<AttributeDefinition, IComposableAttribute> GetAttributeDictionary()

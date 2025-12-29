@@ -16,7 +16,9 @@ The game client updates the UI to show the resulting item.
 | 1 | 1 |    Byte   |      | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0x86  | Packet header - packet type identifier |
 | 3 | 1 | CraftingResult |  | Result |
-| 4 |  | Binary |  | ItemData |
+| 4 | 1 | Byte |  | SuccessRate |
+| 5 | 1 | Byte |  | BonusRate |
+| 6 |  | Binary |  | ItemData |
 
 ### CraftingResult Enum
 

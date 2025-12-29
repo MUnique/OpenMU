@@ -87,3 +87,80 @@ should be created.
 
 If you click on 'Install', wait a bit until the database is set up and filled with the
 data and voila, OpenMU is ready to use.
+
+## Presets for LAN vs Public
+
+To simplify IP resolution for clients, additional compose overlays are provided:
+
+- LAN testing (announce local IP):
+
+  `docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose.lan.yml up -d --build`
+
+- Public internet (announce public IP):
+
+  `docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.public.yml up -d`
+
+You can switch between them by recreating the `openmu-startup` service with the respective overlays.
+
+### When port 80 is in use (existing reverse proxy)
+
+If your host already uses port 80/443 (e.g., Nginx Proxy Manager), you have two options:
+
+1) Disable the bundled nginx and proxy via your reverse proxy:
+
+   - Start without our nginx service: `docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose.lan.yml up -d --build --scale nginx-80=0`
+   - In your reverse proxy, forward to `openmu-startup:8080` (container name and port) with WebSockets enabled.
+
+2) Map the admin panel to an alternate host port (e.g., 8082):
+
+   - `docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose.lan.yml -f docker-compose.admin-port.yml up -d --build --scale nginx-80=0`
+   - Access the admin panel at `http://<host>:8082/`.
+
+### Run without bundled nginx (use your existing reverse proxy)
+
+If you prefer to use your own nginx / reverse proxy, use the `docker-compose.no-nginx.yml` file which excludes the bundled nginx service and exposes the admin panel on host port 8082.
+
+- LAN:
+
+  `docker compose -f docker-compose.no-nginx.yml -f docker-compose.override.yml -f docker-compose.lan.yml up -d --build`
+
+- Public:
+
+  `docker compose -f docker-compose.no-nginx.yml -f docker-compose.public.yml up -d`
+
+Then, configure your reverse proxy to forward to `http://<host>:8082/` with WebSockets enabled.
+
+### Attach to your existing Nginx Proxy (Docker network)
+
+If your Nginx Proxy Manager (or nginx) runs on an external Docker network (e.g. `proxy_net`), attach `openmu-startup` to that network so the proxy can reach it by container name:
+
+1) Ensure the network exists:
+
+   `docker network ls | grep proxy_net || docker network create proxy_net`
+
+2) Start OpenMU attached to `proxy_net`:
+
+   `docker compose -f docker-compose.no-nginx.yml -f docker-compose.override.yml -f docker-compose.lan.yml -f docker-compose.npm-net.yml up -d --build`
+
+3) In your proxy (NPM):
+
+   - Forward Hostname/IP: `openmu-startup`
+   - Forward Port: `8080`
+   - Scheme: `http`
+   - WebSockets: enabled
+
+### Use a fixed public IP without committing it
+
+If you prefer a fixed public IP instead of DNS but don't want to commit it to the repo:
+
+1) Copy the example overlay:
+
+   `cp docker-compose.public-ip.example.yml docker-compose.public-ip.yml`
+
+2) Edit `docker-compose.public-ip.yml` and set your public IP in `RESOLVE_IP`.
+
+3) Start with:
+
+   `docker compose -f docker-compose.no-nginx.yml -f docker-compose.public-ip.yml -f docker-compose.npm-net.yml up -d --build --no-deps openmu-startup`
+
+Note: `docker-compose.public-ip.yml` is git-ignored by default.

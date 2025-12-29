@@ -105,7 +105,8 @@ public class PickupItemAction
                 ? $"{droppedItem.Item.Definition?.Name} +{droppedItem.Item.Level}"
                 : droppedItem.Item.Definition?.Name;
 
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync($"Limit reached for '{itemName}'.", MessageType.BlueNormal)).ConfigureAwait(false);
+            var message = player.GetLocalizedMessage("Inventory_Message_ItemLimitReached", "Limit reached for '{0}'.", itemName ?? string.Empty);
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal)).ConfigureAwait(false);
             return (false, null);
         }
 

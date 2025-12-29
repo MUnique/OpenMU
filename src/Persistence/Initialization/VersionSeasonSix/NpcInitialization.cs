@@ -958,7 +958,7 @@ internal partial class NpcInitialization : Version095d.NpcInitialization
             var def = this.Context.CreateNew<MonsterDefinition>();
             def.Number = 547;
             def.Designation = "Market Union Member Julia";
-            def.NpcWindow = NpcWindow.Merchant;
+            def.NpcWindow = NpcWindow.JuliaWarpMarketServer;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
             def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
@@ -968,7 +968,9 @@ internal partial class NpcInitialization : Version095d.NpcInitialization
             var def = this.Context.CreateNew<MonsterDefinition>();
             def.Number = 568;
             def.Designation = "Wandering Merchant Zyro";
-            def.NpcWindow = NpcWindow.NpcDialog;
+            // Zyro gives Legacy/Event quests (e.g. inventory/vault expansion)
+            // so it must open the LegacyQuest window to trigger the client quest UI
+            def.NpcWindow = NpcWindow.LegacyQuest;
             def.ObjectKind = NpcObjectKind.PassiveNpc;
             def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);

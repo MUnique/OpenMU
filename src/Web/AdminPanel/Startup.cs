@@ -5,9 +5,11 @@
 namespace MUnique.OpenMU.Web.AdminPanel;
 
 using System.IO;
+using System.Globalization;
 using Blazored.Modal;
 using Blazored.Toast;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,6 +18,7 @@ using Microsoft.Extensions.Hosting;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Web.AdminPanel.Models;
 using MUnique.OpenMU.Web.AdminPanel.Services;
+using MUnique.OpenMU.Web.AdminPanel.Localization;
 
 /// <summary>
 /// The startup class for the blazor app.
@@ -51,6 +54,45 @@ public class Startup
     {
         services.AddRazorPages();
         services.AddServerSideBlazor();
+
+        services.AddLocalization();
+        // Prefer the Startup registration; only add if missing.
+        Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAddSingleton(
+            services,
+            provider =>
+            {
+                var env = provider.GetRequiredService<IWebHostEnvironment>();
+                var options = new MUnique.OpenMU.Localization.LocalizationOptions
+                {
+                    ResourceDirectory = Path.Combine(env.ContentRootPath, "Localization"),
+                };
+                return new MUnique.OpenMU.Localization.LocalizationService(options);
+            });
+        services.Configure<RequestLocalizationOptions>(options =>
+        {
+            var cultureNames = new[] { "en-US", "es-ES" };
+            var supportedCultures = new List<CultureInfo>();
+            foreach (var name in cultureNames)
+            {
+                try
+                {
+                    supportedCultures.Add(new CultureInfo(name));
+                }
+                catch (CultureNotFoundException)
+                {
+                    // Globalization-invariant mode or culture not available; skip.
+                }
+            }
+
+            if (supportedCultures.Count == 0)
+            {
+                supportedCultures.Add(CultureInfo.InvariantCulture);
+            }
+
+            options.DefaultRequestCulture = new RequestCulture("en-US");
+            options.SupportedCultures = supportedCultures;
+            options.SupportedUICultures = supportedCultures;
+        });
 
         services.AddSignalR().AddJsonProtocol(o => o.PayloadSerializerOptions.Converters.Add(new TimeSpanConverter()));
 
@@ -89,6 +131,12 @@ public class Startup
             // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
             app.UseHsts();
         }
+
+        // Localization (fallbacks to InvariantCulture if globalization-invariant)
+        var locOptions = app.ApplicationServices.GetRequiredService<Microsoft.Extensions.Options.IOptions<RequestLocalizationOptions>>().Value;
+        CultureInfo.DefaultThreadCurrentCulture = locOptions.DefaultRequestCulture.Culture;
+        CultureInfo.DefaultThreadCurrentUICulture = locOptions.DefaultRequestCulture.UICulture;
+        app.UseRequestLocalization(locOptions);
 
         app.UseHttpsRedirection();
         app.UseStaticFiles();

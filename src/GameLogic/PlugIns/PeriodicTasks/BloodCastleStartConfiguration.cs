@@ -16,8 +16,8 @@ public class BloodCastleStartConfiguration : MiniGameStartConfiguration
         new()
         {
             PreStartMessageDelay = TimeSpan.Zero,
-            EntranceOpenedMessage = "Blood Castle entrance is open and closes in {0} minute(s).",
-            EntranceClosedMessage = "Blood Castle entrance closed.",
+            EntranceOpenedMessage = "La entrada de Blood Castle está abierta y cierra en {0} minuto(s).",
+            EntranceClosedMessage = "La entrada de Blood Castle se cerró.",
             TaskDuration = TimeSpan.FromMinutes(20),
             Timetable = GenerateTimeSequence(TimeSpan.FromMinutes(120)).ToList(),
         };

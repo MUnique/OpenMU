@@ -27,13 +27,15 @@ public class DuelActions
 
         if (player.DuelRoom is not null)
         {
-            await player.ShowMessageAsync("You are already in a duel.").ConfigureAwait(false);
+            var message = player.GetLocalizedMessage("Duel_Message_AlreadyInDuel", "You are already in a duel.");
+            await player.ShowMessageAsync(message).ConfigureAwait(false);
             return;
         }
 
         if (target.DuelRoom is not null)
         {
-            await player.ShowMessageAsync("The other player is already in a duel.").ConfigureAwait(false);
+            var message = player.GetLocalizedMessage("Duel_Message_TargetInDuel", "The other player is already in a duel.");
+            await player.ShowMessageAsync(message).ConfigureAwait(false);
             return;
         }
 
@@ -168,7 +170,8 @@ public class DuelActions
         if (duelRoom.Spectators.Count >= config.MaximumSpectatorsPerDuelRoom)
         {
             player.Logger.LogWarning($"Player {player.Name} tried to join duel channel with index {requestedDuelIndex}, but it is full.");
-            await player.ShowMessageAsync("The duel channel is full.").ConfigureAwait(false);
+            var message = player.GetLocalizedMessage("Duel_Message_ChannelFull", "The duel channel is full.");
+            await player.ShowMessageAsync(message).ConfigureAwait(false);
             return;
         }
 
@@ -182,7 +185,8 @@ public class DuelActions
 
         if (!await duelRoom.TryAddSpectatorAsync(player).ConfigureAwait(false))
         {
-            await player.ShowMessageAsync("The duel channel is full.").ConfigureAwait(false);
+            var message = player.GetLocalizedMessage("Duel_Message_ChannelFull", "The duel channel is full.");
+            await player.ShowMessageAsync(message).ConfigureAwait(false);
         }
     }
 
@@ -255,53 +259,61 @@ public class DuelActions
 
         if (player.CurrentMap != target.CurrentMap)
         {
-            await player.ShowMessageAsync("You can only duel players which are in the same map.").ConfigureAwait(false);
+            var message = player.GetLocalizedMessage("Duel_Message_SameMapRequired", "You can only challenge players on the same map.");
+            await player.ShowMessageAsync(message).ConfigureAwait(false);
             return false;
         }
 
         if (player.CurrentMiniGame is not null)
         {
-            await player.ShowMessageAsync("You cannot start a duel during a mini game.").ConfigureAwait(false);
+            var message = player.GetLocalizedMessage("Duel_Message_MinigameActive", "You cannot start a duel during a mini-game.");
+            await player.ShowMessageAsync(message).ConfigureAwait(false);
             return false;
         }
 
         if (selectedCharacter.State >= HeroState.PlayerKiller2ndStage)
         {
-            await player.ShowMessageAsync("You cannot start a duel while you are a player killer.").ConfigureAwait(false);
+            var message = player.GetLocalizedMessage("Duel_Message_PlayerIsPk", "You cannot start a duel while you are a murderer (PK).");
+            await player.ShowMessageAsync(message).ConfigureAwait(false);
             return false;
         }
 
         if (targetCharacter.State >= HeroState.PlayerKiller2ndStage)
         {
-            await player.ShowMessageAsync("You cannot start a duel with a player killer.").ConfigureAwait(false);
+            var message = player.GetLocalizedMessage("Duel_Message_TargetIsPk", "You cannot start a duel against a murderer (PK).");
+            await player.ShowMessageAsync(message).ConfigureAwait(false);
             return false;
         }
 
         if (player.GuildWarContext?.State is GuildWarState.Requested or GuildWarState.Started
             || target.GuildWarContext?.State is GuildWarState.Requested or GuildWarState.Started)
         {
-            await player.ShowMessageAsync("You cannot start a duel during guild war.").ConfigureAwait(false);
+            var message = player.GetLocalizedMessage("Duel_Message_GuildWarActive", "You cannot start a duel during a guild war.");
+            await player.ShowMessageAsync(message).ConfigureAwait(false);
             return false;
         }
 
         if (player.IsAnySelfDefenseActive()
             || target.IsAnySelfDefenseActive())
         {
-            await player.ShowMessageAsync("You cannot start a duel with active self-defense.").ConfigureAwait(false);
+            var message = player.GetLocalizedMessage("Duel_Message_SelfDefenseActive", "You cannot start a duel while self-defense is active.");
+            await player.ShowMessageAsync(message).ConfigureAwait(false);
             return false;
         }
 
         if (player.OpenedNpc is not null
             || target.OpenedNpc is not null)
         {
-            await player.ShowMessageAsync("You cannot start a duel when a NPC dialog is opened.").ConfigureAwait(false);
+            var message = player.GetLocalizedMessage("Duel_Message_NpcDialogOpen", "You cannot start a duel while an NPC dialog is open.");
+            await player.ShowMessageAsync(message).ConfigureAwait(false);
             return false;
         }
 
         if (player.PlayerState.CurrentState != PlayerState.EnteredWorld
             || target.PlayerState.CurrentState != PlayerState.EnteredWorld)
         {
-            await player.ShowMessageAsync("You cannot start a duel when one of the players has the wrong state.").ConfigureAwait(false);
+            var message = player.GetLocalizedMessage("Duel_Message_InvalidState", "You cannot start a duel if any player is not in the correct state.");
+            await player.ShowMessageAsync(message).ConfigureAwait(false);
             return false;
         }
 

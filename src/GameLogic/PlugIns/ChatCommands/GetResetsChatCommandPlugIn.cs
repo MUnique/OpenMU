@@ -15,15 +15,15 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which sets a character's resets.
 /// </summary>
 [Guid("26ACF6A9-346A-49DF-8583-EA610F6E3AEA")]
-[PlugIn("Get resets command", "Gets resets of a player. Usage: /getresets (optional:character)")]
-[ChatCommandHelp(Command, "Gets resets of a player. Usage: /getresets (optional:character)", null)]
+[PlugIn("Get resets command", "Obtiene los resets de un jugador. Uso: /getresets (opcional:personaje)")]
+[ChatCommandHelp(Command, "Obtiene los resets de un jugador. Uso: /getresets (opcional:personaje)", null)]
 public class GetResetsChatCommandPlugIn : ChatCommandPlugInBase<GetResetsChatCommandPlugIn.Arguments>, IDisabledByDefault
 {
     private const string Command = "/getresets";
     private const CharacterStatus MinimumStatus = CharacterStatus.GameMaster;
-    private const string ResetPluginDisabledMessage = "The reset system is not enabled on this server.";
-    private const string CharacterNotFoundMessage = "Character '{0}' not found.";
-    private const string ResetsGetMessage = "Resets of '{0}': {1}.";
+    private const string ResetPluginDisabledMessage = "El sistema de resets no está habilitado en este servidor.";
+    private const string CharacterNotFoundMessage = "Personaje '{0}' no encontrado.";
+    private const string ResetsGetMessage = "Resets de '{0}': {1}.";
 
     /// <inheritdoc />
     public override string Key => Command;

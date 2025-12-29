@@ -34,7 +34,8 @@ internal class TradeRequestHandlerPlugIn : IPacketHandlerPlugIn
         var partner = await player.GetObservingPlayerWithIdAsync(message.PlayerId).ConfigureAwait(false);
         if (partner is null)
         {
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Trade partner not found.", MessageType.BlueNormal)).ConfigureAwait(false);
+            var messageText = player.GetLocalizedMessage("Server_Message_TradePartnerNotFound", "Trade partner not found.");
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(messageText, MessageType.BlueNormal)).ConfigureAwait(false);
             return;
         }
 

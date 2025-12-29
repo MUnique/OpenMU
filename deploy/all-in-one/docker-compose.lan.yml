@@ -1,0 +1,6 @@
+services:
+  openmu-startup:
+    environment:
+      # Anuncia la IP local a los clientes (uso en red local).
+      RESOLVE_IP: local
+

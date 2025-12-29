@@ -4,8 +4,11 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.PlugIns.CharacterCreated;
 
+using System.Linq;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel;
+using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -21,5 +24,16 @@ public class AddRingOfWarriorLevel80ForNewCharacters : AddInitialItemPlugInBase
     public AddRingOfWarriorLevel80ForNewCharacters()
         : base(null, 13, 20, (byte)(InventoryConstants.LastEquippableItemSlotIndex + 2), 2)
     {
+    }
+
+    /// <inheritdoc/>
+    protected override Item? CreateItem(Player player, Character createdCharacter)
+    {
+        if (!player.GameContext.Configuration.Items.Any(def => def.Group == 13 && def.Number == 20))
+        {
+            return null;
+        }
+
+        return base.CreateItem(player, createdCharacter);
     }
 }

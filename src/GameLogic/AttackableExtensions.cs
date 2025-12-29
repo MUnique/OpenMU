@@ -19,6 +19,8 @@ using MUnique.OpenMU.Pathfinding;
 /// </summary>
 public static class AttackableExtensions
 {
+    private const double MaximumElementalResistance = 255.0;
+
     private static readonly IDictionary<AttributeDefinition, AttributeDefinition> ReductionModifiers =
         new Dictionary<AttributeDefinition, AttributeDefinition>
         {
@@ -436,6 +438,11 @@ public static class AttackableExtensions
         return applied;
     }
 
+    private static double NormalizeElementalResistance(double resistance)
+    {
+        return Math.Min(1.0, Math.Max(0.0, resistance / MaximumElementalResistance));
+    }
+
     /// <summary>
     /// Applies the ammunition consumption.
     /// </summary>
@@ -540,6 +547,11 @@ public static class AttackableExtensions
     /// <returns>The calculated base experience.</returns>
     public static double CalculateBaseExperience(this IAttackable killedObject, float killerLevel)
     {
+        // Summoned monsters should not yield experience.
+        if (killedObject is Monster { SummonedBy: { } })
+        {
+            return 0;
+        }
         var targetLevel = killedObject.Attributes[Stats.Level];
         var tempExperience = (targetLevel + 25) * targetLevel / 3.0;
 

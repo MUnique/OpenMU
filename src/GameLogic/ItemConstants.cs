@@ -138,4 +138,16 @@ public class ItemConstants
     /// Gets all scrolls.
     /// </summary>
     public static ItemIdentifier AllScrolls => new(null, 15);
+
+    /// <summary>
+    /// Gets the identifier for the Inventory Expansion item (defaults to group 14, number 92).
+    /// Adjust to match your client if needed.
+    /// </summary>
+    public static ItemIdentifier InventoryExpansion => new(92, 14);
+
+    /// <summary>
+    /// Gets the identifier for the Vault Extension item (defaults to group 14, number 91).
+    /// Adjust to match your client if needed.
+    /// </summary>
+    public static ItemIdentifier VaultExtension => new(91, 14);
 }

@@ -119,6 +119,34 @@ public class InventoryStorage : Storage, IInventoryStorage
     }
 
     /// <inheritdoc />
+    public override async ValueTask<bool> AddItemAsync(Item item)
+    {
+        Item? convertedItem = null;
+        if (item is TemporaryItem temporaryItem)
+        {
+            convertedItem = temporaryItem.MakePersistent(this._player.PersistenceContext);
+        }
+
+        var success = await base.AddItemAsync(convertedItem ?? item).ConfigureAwait(false);
+        if (!success && convertedItem != null)
+        {
+            this._player.PersistenceContext.Detach(convertedItem);
+        }
+
+        if (success)
+        {
+            var finalItem = convertedItem ?? item;
+            var isEquippedItem = this.IsWearingSlot(finalItem.ItemSlot);
+            if (isEquippedItem && this.EquippedItemsChanged is { } eventHandler)
+            {
+                await eventHandler(new ItemEventArgs(finalItem, true)).ConfigureAwait(false);
+            }
+        }
+
+        return success;
+    }
+
+    /// <inheritdoc />
     public override async ValueTask RemoveItemAsync(Item item)
     {
         var isEquippedItem = this.IsWearingSlot(item.ItemSlot);

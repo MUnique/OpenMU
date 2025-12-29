@@ -14,14 +14,14 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin to get a character's level-up points.
 /// </summary>
 [Guid("E4D65354-CCD2-4960-BDCA-D4582A57BBCB")]
-[PlugIn("Get level up points command", "Gets level up points of a player. Usage: /getleveluppoints (optional:character)")]
-[ChatCommandHelp(Command, "Gets level up points of a player. Usage: /getleveluppoints (optional:character)", null)]
+[PlugIn("Get level up points command", "Obtiene los puntos de nivel de un jugador. Uso: /getleveluppoints (opcional:personaje)")]
+[ChatCommandHelp(Command, "Obtiene los puntos de nivel de un jugador. Uso: /getleveluppoints (opcional:personaje)", null)]
 public class GetLevelUpPointsChatCommandPlugIn : ChatCommandPlugInBase<GetLevelUpPointsChatCommandPlugIn.Arguments>, IDisabledByDefault
 {
     private const string Command = "/getleveluppoints";
     private const CharacterStatus MinimumStatus = CharacterStatus.GameMaster;
-    private const string CharacterNotFoundMessage = "Character '{0}' not found.";
-    private const string LevelUpPointsGetMessage = "Level-up points of '{0}': {1}.";
+    private const string CharacterNotFoundMessage = "Personaje '{0}' no encontrado.";
+    private const string LevelUpPointsGetMessage = "Puntos de nivel de '{0}': {1}.";
 
     /// <inheritdoc />
     public override string Key => Command;

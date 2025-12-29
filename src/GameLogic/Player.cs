@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic;
 
 using System;
+using System.Globalization;
 using System.Threading;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Attributes;
@@ -66,6 +67,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     private IPetCommandManager? _petCommandManager;
 
     private Lazy<ComboStateMachine>? _comboStateLazy;
+
+    // Stores the definition of a summon which should be recreated after a map change/warp.
+    private MonsterDefinition? _pendingSummonDefinition;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Player" /> class.
@@ -1013,6 +1017,15 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.EnteredWorld).ConfigureAwait(false);
             this.IsAlive = true;
             await this.CurrentMap!.AddAsync(this).ConfigureAwait(false);
+            if (!this.CurrentMap.Terrain.SafezoneMap[this.SelectedCharacter.PositionX, this.SelectedCharacter.PositionY]
+                && this.Summon?.Item1 is { IsAlive: true } summon)
+            {
+                var definition = summon.Definition;
+                await summon.DisposeAsync().ConfigureAwait(false);
+                this.Summon = null;
+                await this.CreateSummonedMonsterAsync(definition).ConfigureAwait(false);
+            }
+
         }
         else
         {
@@ -1056,10 +1069,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             await this.WarpToSafezoneAsync().ConfigureAwait(false);
         }
 
-        if (this.Summon?.Item1 is { IsAlive: true } summon)
+        // Recreate summon on the new map if we had one before warping (even in safezone).
+        if (this._pendingSummonDefinition is { } pending)
         {
-            await this.CurrentMap.AddAsync(summon).ConfigureAwait(false);
-            summon.OnSpawn();
+            var toSpawn = pending;
+            this._pendingSummonDefinition = null;
+            await this.CreateSummonedMonsterAsync(toSpawn).ConfigureAwait(false);
         }
     }
 
@@ -1581,17 +1596,53 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             throw new InvalidOperationException("Can't add a summon for a player which isn't spawned yet.");
         }
 
+        // Find a valid spawn point close to the player (walkable). Prefer outside safezone, but allow safezone when the owner is there.
+        Point spawnPoint = this.Position;
+        var terrain = gameMap.Terrain;
+        bool found = false;
+        for (var radius = 1; radius <= 5 && !found; radius++)
+        {
+            for (var attempts = 0; attempts < 12 && !found; attempts++)
+            {
+                var p = terrain.GetRandomCoordinate(this.Position, (byte)radius);
+                if (terrain.WalkMap[p.X, p.Y] && (!terrain.SafezoneMap[p.X, p.Y] || terrain.SafezoneMap[this.Position.X, this.Position.Y]))
+                {
+                    spawnPoint = p;
+                    found = true;
+                }
+            }
+        }
+
+        // If still not found, try owner's current position if walkable.
+        if (!found && terrain.WalkMap[this.Position.X, this.Position.Y])
+        {
+            spawnPoint = this.Position;
+            found = true;
+        }
+
         var area = new MonsterSpawnArea
         {
             GameMap = gameMap.Definition,
             MonsterDefinition = definition,
             SpawnTrigger = SpawnTrigger.OnceAtEventStart,
             Quantity = 1,
-            X1 = (byte)Math.Max(this.Position.X - 3, byte.MinValue),
-            X2 = (byte)Math.Min(this.Position.X + 3, byte.MaxValue),
-            Y1 = (byte)Math.Max(this.Position.Y - 3, byte.MinValue),
-            Y2 = (byte)Math.Min(this.Position.Y + 3, byte.MaxValue),
         };
+
+        if (found)
+        {
+            area.X1 = area.X2 = spawnPoint.X;
+            area.Y1 = area.Y2 = spawnPoint.Y;
+            this.Logger.LogInformation($"[SUMMON] Spawning at {spawnPoint.X},{spawnPoint.Y} on map {gameMap.Definition.Number}");
+        }
+        else
+        {
+            // Fallback: small area around player; may fail in safezone but it's the best effort.
+            area.X1 = (byte)Math.Max(this.Position.X - 3, byte.MinValue);
+            area.X2 = (byte)Math.Min(this.Position.X + 3, byte.MaxValue);
+            area.Y1 = (byte)Math.Max(this.Position.Y - 3, byte.MinValue);
+            area.Y2 = (byte)Math.Min(this.Position.Y + 3, byte.MaxValue);
+            this.Logger.LogInformation($"[SUMMON] Using fallback area around player: X[{area.X1}-{area.X2}] Y[{area.Y1}-{area.Y2}] on map {gameMap.Definition.Number}");
+        }
         var intelligence = new SummonedMonsterIntelligence(this);
         var monster = new Monster(area, definition, gameMap, NullDropGenerator.Instance, intelligence, this.GameContext.PlugInManager, this.GameContext.PathFinderPool);
         area.MaximumHealthOverride = (int)monster.Attributes[Stats.MaximumHealth];
@@ -1810,6 +1861,13 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return true;
         }
 
+        // If we have a summon, remove it cleanly and remember its definition to recreate later after the map change.
+        if (this.Summon?.Item1 is { IsAlive: true } summonBeforeWarp)
+        {
+            this._pendingSummonDefinition = summonBeforeWarp.Definition;
+            await this.RemoveSummonAsync().ConfigureAwait(false);
+        }
+
         if (willRespawnOnSameMap)
         {
             await currentMap.InitRespawnAsync(this).ConfigureAwait(false);
@@ -1823,10 +1881,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.IsTeleporting = false;
         await this._walker.StopAsync().ConfigureAwait(false);
         await this._observerToWorldViewAdapter.ClearObservingObjectsListAsync().ConfigureAwait(false);
-        if (this.Summon?.Item1 is { IsAlive: true } summon)
-        {
-            await currentMap.RemoveAsync(summon).ConfigureAwait(false);
-        }
+        // Summon (if any) was removed earlier and stored for re-creation.
 
         return true;
     }
@@ -2592,6 +2647,34 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         {
             await AddExpToPetAsync(attackPet, petExperience).ConfigureAwait(false);
         }
+    }
+
+    /// <summary>
+    /// Gets a localized message using the players current game context.
+    /// </summary>
+    /// <param name="key">The localization key.</param>
+    /// <param name="fallback">The fallback text if no localization is available.</param>
+    /// <param name="arguments">Optional formatting arguments.</param>
+    /// <returns>The localized message.</returns>
+    public string GetLocalizedMessage(string key, string fallback, params object?[] arguments)
+    {
+        if (this.GameContext is IGameServerContext gameServerContext)
+        {
+            var localized = gameServerContext.Localization.GetString(key, arguments);
+            if (!string.Equals(localized, key, StringComparison.Ordinal))
+            {
+                return localized;
+            }
+
+            return Format(fallback, gameServerContext.Localization.CurrentCulture, arguments);
+        }
+
+        return Format(fallback, CultureInfo.InvariantCulture, arguments);
+    }
+
+    private static string Format(string text, CultureInfo culture, params object?[] arguments)
+    {
+        return arguments.Length > 0 ? string.Format(culture, text, arguments) : text;
     }
 
     private async ValueTask CloseTradeIfNeededAsync()

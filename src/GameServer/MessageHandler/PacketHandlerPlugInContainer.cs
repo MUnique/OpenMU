@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameServer.RemoteView;
+using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets;
 using MUnique.OpenMU.PlugIns;
 
@@ -67,9 +68,19 @@ public class PacketHandlerPlugInContainer<THandler> : StrategyPlugInProvider<byt
     /// <param name="packet">The packet.</param>
     public async ValueTask HandlePacketAsync(RemotePlayer player, Memory<byte> packet)
     {
-        var typeIndex = packet.Span[0] % 2 == 1 ? 2 : 3;
+        var headerType = packet.Span[0];
+        var typeIndex = headerType % 2 == 1 ? 2 : 3;
         var packetType = packet.Span[typeIndex];
         var handler = this[packetType];
+        if (handler is null)
+        {
+            var normalizedType = MUnique.OpenMU.Network.ArrayExtensions.NormalizePacketType(headerType, packetType);
+            if (normalizedType != packetType)
+            {
+                handler = this[normalizedType];
+            }
+        }
+
         await this.HandlePacketAsync(player, packet, handler).ConfigureAwait(false);
     }
 
@@ -113,7 +124,8 @@ public class PacketHandlerPlugInContainer<THandler> : StrategyPlugInProvider<byt
         }
 
         using var loggingScope = this.Logger.BeginScope(("EventId", handler.GetType().Name));
-        if (handler.IsEncryptionExpected && (packet.Span[0] < 0xC3))
+        var headerType = MUnique.OpenMU.Network.ArrayExtensions.NormalizePacketHeader(packet.Span[0]);
+        if (handler.IsEncryptionExpected && (headerType < 0xC3))
         {
             this.Logger.LogWarning($"Packet was not encrypted and will not be handled: {packet.Span.AsString()}");
             return;

@@ -47,7 +47,8 @@ public class PartyResponseAction
 
         if (player.CurrentMiniGame?.Definition.AllowParty is false)
         {
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("A party is not possible during this event.", MessageType.BlueNormal)).ConfigureAwait(false);
+            var message = player.GetLocalizedMessage("Party_Message_DisabledInEvent", "A party is not possible during this event.");
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal)).ConfigureAwait(false);
             player.LastPartyRequester = null;
             return;
         }

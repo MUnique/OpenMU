@@ -29,9 +29,9 @@ public class GuardianOptionCrafting : SimpleItemCraftingHandler
     public static byte ItemReference { get; } = 0x88;
 
     /// <inheritdoc />
-    public override CraftingResult? TryGetRequiredItems(Player player, out IList<CraftingRequiredItemLink> items, out byte successRate)
+    public override CraftingResult? TryGetRequiredItems(Player player, out IList<CraftingRequiredItemLink> items, out byte successRate, out byte bonusRate)
     {
-        if (base.TryGetRequiredItems(player, out items, out successRate) is { } error)
+        if (base.TryGetRequiredItems(player, out items, out successRate, out bonusRate) is { } error)
         {
             return error;
         }
