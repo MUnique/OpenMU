@@ -167,7 +167,7 @@ public class AddSummonerBuffSkillsPlugIn : UpdatePlugInBase
         // Duration = 4 + (Energy / 100)
         magicEffect.Duration = context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.Duration.ConstantValue.Value = 4; // 4 Seconds
-        magicEffect.Duration.MaximumValue = 100; // 100 Seconds
+        magicEffect.Duration.MaximumValue = 44; // 44 Seconds (based on 4k total energy cap)
 
         var durationPerEnergy = context.CreateNew<AttributeRelationship>();
         durationPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(gameConfiguration);
@@ -177,7 +177,7 @@ public class AddSummonerBuffSkillsPlugIn : UpdatePlugInBase
 
         magicEffect.DurationPvp = context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.DurationPvp.ConstantValue.Value = 5; // 5 Seconds
-        magicEffect.DurationPvp.MaximumValue = 20; // 20 Seconds
+        magicEffect.DurationPvp.MaximumValue = 18; // 18 Seconds (based on 4k total energy cap)
 
         // Duration PvP = 5 + (Energy / 300) + ((Level - Target's Level) / 150)
         var durationPerEnergyPvp = context.CreateNew<AttributeRelationship>();
@@ -198,6 +198,7 @@ public class AddSummonerBuffSkillsPlugIn : UpdatePlugInBase
         decDefPowerUpDefinition.TargetAttribute = Stats.InnovationDefDecrement.GetPersistent(gameConfiguration);
         decDefPowerUpDefinition.Boost = context.CreateNew<PowerUpDefinitionValue>();
         decDefPowerUpDefinition.Boost.ConstantValue.Value = 0.20f; // 20% decrease
+        decDefPowerUpDefinition.Boost.MaximumValue = 0.64f; // 64% decrease (based on 4k total energy cap)
 
         var decDefPerEnergy = context.CreateNew<AttributeRelationship>();
         decDefPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(gameConfiguration);
@@ -211,6 +212,7 @@ public class AddSummonerBuffSkillsPlugIn : UpdatePlugInBase
         decDefPowerUpDefinitionPvp.TargetAttribute = Stats.InnovationDefDecrement.GetPersistent(gameConfiguration);
         decDefPowerUpDefinitionPvp.Boost = context.CreateNew<PowerUpDefinitionValue>();
         decDefPowerUpDefinitionPvp.Boost.ConstantValue.Value = 0.12f; // 12% decrease
+        decDefPowerUpDefinitionPvp.Boost.MaximumValue = 0.48f; // 48% decrease (based on 4k total energy cap)
 
         var decDefPerEnergyPvp = context.CreateNew<AttributeRelationship>();
         decDefPerEnergyPvp.InputAttribute = Stats.TotalEnergy.GetPersistent(gameConfiguration);
@@ -389,7 +391,7 @@ public class AddSummonerBuffSkillsPlugIn : UpdatePlugInBase
         // Duration = 4 + (Energy / 100)
         magicEffect.Duration = context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.Duration.ConstantValue.Value = 4; // 4 Seconds
-        magicEffect.Duration.MaximumValue = 100; // 100 Seconds
+        magicEffect.Duration.MaximumValue = 44; // 44 Seconds (based on 4k total energy cap)
 
         var durationPerEnergy = context.CreateNew<AttributeRelationship>();
         durationPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(gameConfiguration);
@@ -400,7 +402,7 @@ public class AddSummonerBuffSkillsPlugIn : UpdatePlugInBase
         // Duration = 5 + (Energy / 300) + ((Level - Target's Level) / 150)
         magicEffect.DurationPvp = context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.DurationPvp.ConstantValue.Value = 5; // 5 Seconds
-        magicEffect.DurationPvp.MaximumValue = 20; // 20 Seconds
+        magicEffect.DurationPvp.MaximumValue = 18; // 18 Seconds (based on 4k total energy cap)
 
         var durationPerEnergyPvp = context.CreateNew<AttributeRelationship>();
         durationPerEnergyPvp.InputAttribute = Stats.TotalEnergy.GetPersistent(gameConfiguration);
@@ -420,7 +422,7 @@ public class AddSummonerBuffSkillsPlugIn : UpdatePlugInBase
         decDmgPowerUpDefinition.TargetAttribute = Stats.WeaknessPhysDmgDecrement.GetPersistent(gameConfiguration);
         decDmgPowerUpDefinition.Boost = context.CreateNew<PowerUpDefinitionValue>();
         decDmgPowerUpDefinition.Boost.ConstantValue.Value = 0.04f; // 4% decrease
-        decDmgPowerUpDefinition.Boost.MaximumValue = 0.73f; // based on 4k total energy cap -- to-do: check zTeam
+        decDmgPowerUpDefinition.Boost.MaximumValue = 0.73f; // 73% decrease (based on 4k total energy cap)
 
         var decDmgPerEnergy = context.CreateNew<AttributeRelationship>();
         decDmgPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(gameConfiguration);
@@ -434,7 +436,7 @@ public class AddSummonerBuffSkillsPlugIn : UpdatePlugInBase
         decDmgPowerUpDefinitionPvp.TargetAttribute = Stats.WeaknessPhysDmgDecrement.GetPersistent(gameConfiguration);
         decDmgPowerUpDefinitionPvp.Boost = context.CreateNew<PowerUpDefinitionValue>();
         decDmgPowerUpDefinitionPvp.Boost.ConstantValue.Value = 0.03f; // 3% decrease
-        decDmgPowerUpDefinitionPvp.Boost.MaximumValue = 1f; // -- to-do: check zTeam
+        decDmgPowerUpDefinitionPvp.Boost.MaximumValue = 0.46f; // 46% decrease (based on 4k total energy cap)
 
         var decDmgPerEnergyPvp = context.CreateNew<AttributeRelationship>();
         decDmgPerEnergyPvp.InputAttribute = Stats.TotalEnergy.GetPersistent(gameConfiguration);

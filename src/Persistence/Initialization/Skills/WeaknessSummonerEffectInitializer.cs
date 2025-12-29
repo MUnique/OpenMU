@@ -73,7 +73,7 @@ public class WeaknessSummonerEffectInitializer : InitializerBase
         // Duration = 4 + (Energy / 100)
         magicEffect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.Duration.ConstantValue.Value = 4; // 4 Seconds
-        magicEffect.Duration.MaximumValue = 100; // 100 Seconds
+        magicEffect.Duration.MaximumValue = 44; // 44 Seconds (based on 4k total energy cap)
 
         var durationPerEnergy = this.Context.CreateNew<AttributeRelationship>();
         durationPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
@@ -84,7 +84,7 @@ public class WeaknessSummonerEffectInitializer : InitializerBase
         // Duration = 5 + (Energy / 300) + ((Level - Target's Level) / 150)
         magicEffect.DurationPvp = this.Context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.DurationPvp.ConstantValue.Value = 5; // 5 Seconds
-        magicEffect.DurationPvp.MaximumValue = 20; // 20 Seconds
+        magicEffect.DurationPvp.MaximumValue = 18; // 18 Seconds (based on 4k total energy cap)
 
         var durationPerEnergyPvp = this.Context.CreateNew<AttributeRelationship>();
         durationPerEnergyPvp.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
@@ -104,7 +104,7 @@ public class WeaknessSummonerEffectInitializer : InitializerBase
         decDmgPowerUpDefinition.TargetAttribute = Stats.WeaknessPhysDmgDecrement.GetPersistent(this.GameConfiguration);
         decDmgPowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
         decDmgPowerUpDefinition.Boost.ConstantValue.Value = 0.04f; // 4% decrease
-        decDmgPowerUpDefinition.Boost.MaximumValue = 0.73f; // based on 4k total energy cap -- to-do: check zTeam
+        decDmgPowerUpDefinition.Boost.MaximumValue = 0.73f; // 73% decrease (based on 4k total energy cap)
 
         var decDmgPerEnergy = this.Context.CreateNew<AttributeRelationship>();
         decDmgPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
@@ -118,7 +118,7 @@ public class WeaknessSummonerEffectInitializer : InitializerBase
         decDmgPowerUpDefinitionPvp.TargetAttribute = Stats.WeaknessPhysDmgDecrement.GetPersistent(this.GameConfiguration);
         decDmgPowerUpDefinitionPvp.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
         decDmgPowerUpDefinitionPvp.Boost.ConstantValue.Value = 0.03f; // 3% decrease
-        decDmgPowerUpDefinitionPvp.Boost.MaximumValue = 1f; // -- to-do: check zTeam
+        decDmgPowerUpDefinitionPvp.Boost.MaximumValue = 0.46f; // 46% decrease (based on 4k total energy cap)
 
         var decDmgPerEnergyPvp = this.Context.CreateNew<AttributeRelationship>();
         decDmgPerEnergyPvp.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);

@@ -73,7 +73,7 @@ public class InnovationEffectInitializer : InitializerBase
         // Duration = 4 + (Energy / 100)
         magicEffect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.Duration.ConstantValue.Value = 4; // 4 Seconds
-        magicEffect.Duration.MaximumValue = 100; // 100 Seconds
+        magicEffect.Duration.MaximumValue = 44; // 44 Seconds (based on 4k total energy cap)
 
         var durationPerEnergy = this.Context.CreateNew<AttributeRelationship>();
         durationPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
@@ -84,7 +84,7 @@ public class InnovationEffectInitializer : InitializerBase
         // Duration PvP = 5 + (Energy / 300) + ((Level - Target's Level) / 150)
         magicEffect.DurationPvp = this.Context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.DurationPvp.ConstantValue.Value = 5; // 5 Seconds
-        magicEffect.DurationPvp.MaximumValue = 20; // 20 Seconds
+        magicEffect.DurationPvp.MaximumValue = 18; // 18 Seconds (based on 4k total energy cap)
 
         var durationPerEnergyPvp = this.Context.CreateNew<AttributeRelationship>();
         durationPerEnergyPvp.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
@@ -104,6 +104,7 @@ public class InnovationEffectInitializer : InitializerBase
         decDefPowerUpDefinition.TargetAttribute = Stats.InnovationDefDecrement.GetPersistent(this.GameConfiguration);
         decDefPowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
         decDefPowerUpDefinition.Boost.ConstantValue.Value = 0.20f; // 20% decrease
+        decDefPowerUpDefinition.Boost.MaximumValue = 0.64f; // 64% decrease (based on 4k total energy cap)
 
         var decDefPerEnergy = this.Context.CreateNew<AttributeRelationship>();
         decDefPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
@@ -117,6 +118,7 @@ public class InnovationEffectInitializer : InitializerBase
         decDefPowerUpDefinitionPvp.TargetAttribute = Stats.InnovationDefDecrement.GetPersistent(this.GameConfiguration);
         decDefPowerUpDefinitionPvp.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
         decDefPowerUpDefinitionPvp.Boost.ConstantValue.Value = 0.12f; // 12% decrease
+        decDefPowerUpDefinitionPvp.Boost.MaximumValue = 0.48f; // 48% decrease (based on 4k total energy cap)
 
         var decDefPerEnergyPvp = this.Context.CreateNew<AttributeRelationship>();
         decDefPerEnergyPvp.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
