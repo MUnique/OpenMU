@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Dapr.Common;
 
 using System.Threading;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
