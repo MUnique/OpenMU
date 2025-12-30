@@ -4,9 +4,11 @@
 
 namespace MUnique.OpenMU.GameServer.RemoteView.Character;
 
+using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameServer.Compatibility;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Views;
+using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.PlugIns;
 

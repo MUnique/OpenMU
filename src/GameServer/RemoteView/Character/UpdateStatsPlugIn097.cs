@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameServer.RemoteView.Character;
 
 using System.Collections.Frozen;
+using System.Runtime.InteropServices;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameServer.Compatibility;
 using MUnique.OpenMU.GameLogic.Attributes;
