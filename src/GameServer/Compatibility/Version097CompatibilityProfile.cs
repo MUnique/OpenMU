@@ -13,6 +13,7 @@ using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.GameServer;
+using MUnique.OpenMU.GameServer.RemoteView.Character;
 using MUnique.OpenMU.GameServer.RemoteView;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Network;
