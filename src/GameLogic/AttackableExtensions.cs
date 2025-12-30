@@ -443,8 +443,7 @@ public static class AttackableExtensions
             && !target.MagicEffectList.ActiveEffects.ContainsKey(effectDefinition.Number)
             && powerUp is not null
             && duration is not null
-            && targetAttribute is not null
-            && target.IsAlive)
+            && targetAttribute is not null)
         {
             // power-up is the wrong term here... it's more like a power-down ;-)
             await target.ApplyMagicEffectAsync(attacker, effectDefinition, duration, (targetAttribute, powerUp)).ConfigureAwait(false);
