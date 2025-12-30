@@ -10,7 +10,7 @@
         "database": "StartWithoutDebugging",
         "gameServer1": "StartDebugging",
         "gameServer1-dapr": "StartWithoutDebugging",
-        "pubsub": "StartWithoutDebugging",
+        "rabbit": "StartWithoutDebugging",
         "friendServer": "StartDebugging",
         "friendServer-dapr": "StartWithoutDebugging",
         "loginServer": "StartDebugging",
