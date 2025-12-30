@@ -2070,14 +2070,18 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 ReflectDamage(reflectedDamage, attackableAttacker);
             }
 
-            var fullReflectPercentage = this.Attributes[Stats.FullyReflectDamageAfterHitChance];
-            if (fullReflectPercentage > 0 && Rand.NextRandomBool(fullReflectPercentage))
+            if (attacker is not AttackerSurrogate)
             {
-                var reflectedDamage = attackableAttacker is Player
-                    ? (hitInfo.HealthDamage + hitInfo.ShieldDamage)
-                    : attackableAttacker.Attributes[Stats.MaximumPhysBaseDmg];
-                ReflectDamage(reflectedDamage, attackableAttacker);
+                var fullReflectPercentage = this.Attributes[Stats.FullyReflectDamageAfterHitChance];
+                if (fullReflectPercentage > 0 && Rand.NextRandomBool(fullReflectPercentage))
+                {
+                    var reflectedDamage = attackableAttacker is Player
+                        ? (hitInfo.HealthDamage + hitInfo.ShieldDamage)
+                        : attackableAttacker.Attributes[Stats.MaximumPhysBaseDmg];
+                    ReflectDamage(reflectedDamage, attackableAttacker);
+                }
             }
+
         }
 
         void ReflectDamage(float reflectedDamage, IAttackable attackable)
