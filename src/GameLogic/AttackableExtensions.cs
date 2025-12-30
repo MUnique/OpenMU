@@ -320,7 +320,7 @@ public static class AttackableExtensions
             return;
         }
 
-        var duration = ((IElement, float?))(target is Player ? skillEntry.PowerUpDurationPvp! : skillEntry.PowerUpDuration!);
+        var duration = target is Player ? skillEntry.PowerUpDurationPvp! : skillEntry.PowerUpDuration!;
         var powerUps = target is Player ? skillEntry.PowerUpsPvp! : skillEntry.PowerUps!;
         await target.ApplyMagicEffectAsync(attacker, skillEntry.Skill!.MagicEffectDef!, duration, powerUps).ConfigureAwait(false);
     }
@@ -436,7 +436,7 @@ public static class AttackableExtensions
             && targetAttribute is not null)
         {
             // power-up is the wrong term here... it's more like a power-down ;-)
-            await target.ApplyMagicEffectAsync(attacker, effectDefinition, (duration, null), (targetAttribute, powerUp)).ConfigureAwait(false);
+            await target.ApplyMagicEffectAsync(attacker, effectDefinition, duration, (targetAttribute, powerUp)).ConfigureAwait(false);
             applied = true;
         }
 
@@ -784,9 +784,9 @@ public static class AttackableExtensions
     /// <param name="magicEffectDefinition">The magic effect definition.</param>
     /// <param name="duration">The duration.</param>
     /// <param name="powerUps">The power ups of the effect.</param>
-    private static async ValueTask ApplyMagicEffectAsync(this IAttackable target, IAttacker attacker, MagicEffectDefinition magicEffectDefinition, (IElement DurElement, float? MaxDur) duration, params (AttributeDefinition Target, IElement Boost)[] powerUps)
+    private static async ValueTask ApplyMagicEffectAsync(this IAttackable target, IAttacker attacker, MagicEffectDefinition magicEffectDefinition, IElement duration, params (AttributeDefinition Target, IElement Boost)[] powerUps)
     {
-        float finalDuration = duration.DurElement.Value;
+        float finalDuration = duration.Value;
 
         if (magicEffectDefinition.DurationDependsOnTargetLevel)
         {
@@ -797,7 +797,6 @@ public static class AttackableExtensions
             }
         }
 
-        finalDuration = Math.Min(finalDuration, duration.MaxDur ?? float.MaxValue);
         TimeSpan durationSpan = TimeSpan.FromSeconds(finalDuration);
         if (durationSpan < TimeSpan.FromSeconds(1))
         {

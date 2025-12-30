@@ -1477,8 +1477,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         var chanceElementPvp = skill.MagicEffectDef.ChancePvp is { } chancePvp ? this.Attributes!.CreateChanceElement(chancePvp) : chanceElement;
         AddSkillPowersToResult(skill.MagicEffectDef.PowerUpDefinitions, ref result);
         AddSkillPowersToResult(skill.MagicEffectDef.PowerUpDefinitionsPvp, ref resultPvp);
-        skillEntry.PowerUpDuration = (durationElement, skill.MagicEffectDef.Duration.MaximumValue);
-        skillEntry.PowerUpDurationPvp = (durationElementPvp, skill.MagicEffectDef.DurationPvp?.MaximumValue);
+        skillEntry.PowerUpDuration = durationElement;
+        skillEntry.PowerUpDurationPvp = durationElementPvp;
         skillEntry.PowerUpChance = chanceElement;
         skillEntry.PowerUpChancePvp = chanceElementPvp;
         skillEntry.PowerUps = result;
@@ -2072,9 +2072,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         if (reflectPercentage > 0 && attacker is IAttackable attackableAttacker)
         {
-            var reflectedDamage = attackableAttacker is Player
-                ? (hitInfo.HealthDamage + hitInfo.ShieldDamage) * reflectPercentage
-                : attackableAttacker.Attributes[Stats.MaximumPhysBaseDmg];
+            var reflectedDamage = attackableAttacker is not Player && reflectPercentage == 1.0f
+                ? attackableAttacker.Attributes[Stats.MaximumPhysBaseDmg]
+                : (hitInfo.HealthDamage + hitInfo.ShieldDamage) * reflectPercentage;
             if (reflectedDamage <= 0)
             {
                 return;

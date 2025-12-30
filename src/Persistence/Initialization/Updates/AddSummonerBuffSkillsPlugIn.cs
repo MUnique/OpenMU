@@ -58,7 +58,7 @@ public class AddSummonerBuffSkillsPlugIn : UpdatePlugInBase
         var fullyReflectDamageAfterHitChance = context.CreateNew<AttributeDefinition>(Stats.FullyReflectDamageAfterHitChance.Id, Stats.FullyReflectDamageAfterHitChance.Designation, Stats.FullyReflectDamageAfterHitChance.Description);
         gameConfiguration.Attributes.Add(fullyReflectDamageAfterHitChance);
 
-        // Fix reflect excellent defensive option
+        // Fix reflect excellent option
         var excDefenseOptionsId = new Guid("00000083-0012-0000-0000-000000000000");
         if (gameConfiguration.ItemOptions.FirstOrDefault(io => io.GetId() == excDefenseOptionsId) is { } excDefenseOptions)
         {
