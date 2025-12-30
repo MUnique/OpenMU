@@ -41,7 +41,7 @@ public class WeaknessEffectInitializer : InitializerBase
         magicEffect.Chance = this.Context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.Chance.ConstantValue.Value = 0.1f; // 10%
 
-        // Target's physical damage decreases by 5%
+        // Physical damage decreases by 5%
         var decDmgPowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
         magicEffect.PowerUpDefinitions.Add(decDmgPowerUpDefinition);
         decDmgPowerUpDefinition.TargetAttribute = Stats.WeaknessPhysDmgDecrement.GetPersistent(this.GameConfiguration);
