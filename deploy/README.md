@@ -64,9 +64,11 @@ However, this introduces a lot more complexity and you should know what you're d
 The communication between the subsystems is handled with Dapr.
 
 Warnings:
+
 * It's currently unsupported due to several issues we have to resolve first.
-  Feel free to contribute for the following issues: https://github.com/MUnique/OpenMU/issues?q=is%3Aissue%20state%3Aopen%20label%3Adistributed-deployment
-* This way of hosting OpenMU is more complex and requires a good understanding of distributed systems.
+  Feel free to contribute for the following issues: <https://github.com/MUnique/OpenMU/issues?q=is%3Aissue%20state%3Aopen%20label%3Adistributed-deployment>
+* This way of hosting OpenMU is more complex and requires a good understanding
+  of distributed systems.
 * This deployment requires more resources (CPU, RAM, Disk, Network).
 
 ### Pros
