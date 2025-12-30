@@ -6,7 +6,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World;
 
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic.Views.World;
-using MUnique.OpenMU.Network.Packets.ServerToClient;
+using MUnique.OpenMU.GameServer.Compatibility;
 using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.PlugIns;
@@ -31,6 +31,6 @@ public class ShowMoneyDrop097 : IShowMoneyDropPlugIn
     /// <inheritdoc/>
     public ValueTask ShowMoneyAsync(ushort itemId, bool isFreshDrop, uint amount, Point point)
     {
-        return this._player.Connection.SendMoneyDropped075Async(itemId, isFreshDrop, point.X, point.Y, amount);
+        return Version097CompatibilityProfile.SendMoneyDropAsync(this._player, itemId, isFreshDrop, amount, point);
     }
 }

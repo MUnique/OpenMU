@@ -5,10 +5,8 @@
 namespace MUnique.OpenMU.GameServer.RemoteView;
 
 using System.Runtime.InteropServices;
-using System.Text;
-using MUnique.OpenMU.GameServer;
+using MUnique.OpenMU.GameServer.Compatibility;
 using MUnique.OpenMU.GameLogic.Views;
-using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.PlugIns;
 
@@ -21,8 +19,6 @@ using MUnique.OpenMU.PlugIns;
 [MaximumClient(0, 97, ClientLanguage.Invariant)]
 public class ChatViewPlugIn097 : IChatViewPlugIn
 {
-    private static readonly Encoding MessageEncoding = Encoding.Latin1;
-    private const int MaxMessageLength = 241;
     private readonly RemotePlayer _player;
 
     /// <summary>
@@ -34,37 +30,6 @@ public class ChatViewPlugIn097 : IChatViewPlugIn
     /// <inheritdoc/>
     public async ValueTask ChatMessageAsync(string message, string sender, ChatMessageType type)
     {
-        var connection = this._player.Connection;
-        if (connection is null)
-        {
-            return;
-        }
-
-        var messageLength = MessageEncoding.GetByteCount(message);
-        if (messageLength > MaxMessageLength)
-        {
-            var trimmedLength = MessageEncoding.GetCharacterCountOfMaxByteCount(message, MaxMessageLength);
-            message = message.Substring(0, trimmedLength);
-            messageLength = MessageEncoding.GetByteCount(message);
-        }
-
-        var senderBytes = MessageEncoding.GetBytes(sender);
-        var senderLength = Math.Min(senderBytes.Length, 10);
-
-        int WritePacket()
-        {
-            var packetLength = messageLength + 1 + 13;
-            var span = connection.Output.GetSpan(packetLength)[..packetLength];
-            span[0] = 0xC1;
-            span[1] = (byte)packetLength;
-            span[2] = (byte)(type == ChatMessageType.Whisper ? 0x02 : 0x00);
-            span.Slice(3, 10).Clear();
-            senderBytes.AsSpan(0, senderLength).CopyTo(span.Slice(3, senderLength));
-            span.Slice(13).Clear();
-            MessageEncoding.GetBytes(message, span.Slice(13, messageLength));
-            return packetLength;
-        }
-
-        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+        await Version097CompatibilityProfile.SendChatMessageAsync(this._player, message, sender, type).ConfigureAwait(false);
     }
 }
