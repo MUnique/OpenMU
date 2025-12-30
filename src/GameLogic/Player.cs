@@ -2067,7 +2067,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             if (reflectPercentage > 0)
             {
                 var reflectedDamage = (hitInfo.HealthDamage + hitInfo.ShieldDamage) * reflectPercentage;
-                ReflectDamage(reflectedDamage, attackableAttacker);
+                ReflectDamage((int)reflectedDamage, attackableAttacker);
             }
 
             if (attacker is not AttackerSurrogate)
@@ -2076,15 +2076,14 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 if (fullReflectPercentage > 0 && Rand.NextRandomBool(fullReflectPercentage))
                 {
                     var reflectedDamage = attackableAttacker is Player
-                        ? (hitInfo.HealthDamage + hitInfo.ShieldDamage)
+                        ? hitInfo.HealthDamage + hitInfo.ShieldDamage
                         : attackableAttacker.Attributes[Stats.MaximumPhysBaseDmg];
-                    ReflectDamage(reflectedDamage, attackableAttacker);
+                    ReflectDamage((int)reflectedDamage, attackableAttacker);
                 }
             }
-
         }
 
-        void ReflectDamage(float reflectedDamage, IAttackable attackable)
+        void ReflectDamage(int reflectedDamage, IAttackable attackable)
         {
             if (reflectedDamage <= 0)
             {
