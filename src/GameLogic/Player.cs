@@ -2059,22 +2059,29 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return;
         }
 
-        var reflectPercentage = 0f;
-        var fullReflectPercentage = this.Attributes[Stats.FullyReflectDamageAfterHitChance];
-        if (fullReflectPercentage > 0 && Rand.NextRandomBool(fullReflectPercentage))
+        if (attacker is IAttackable or AttackerSurrogate)
         {
-            reflectPercentage = 1.0f;
-        }
-        else
-        {
-            reflectPercentage = this.Attributes[Stats.DamageReflection];
+            var attackableAttacker = (attacker as AttackerSurrogate)?.Owner ?? (IAttackable)attacker;
+
+            var reflectPercentage = this.Attributes[Stats.DamageReflection];
+            if (reflectPercentage > 0)
+            {
+                var reflectedDamage = (hitInfo.HealthDamage + hitInfo.ShieldDamage) * reflectPercentage;
+                ReflectDamage(reflectedDamage, attackableAttacker);
+            }
+
+            var fullReflectPercentage = this.Attributes[Stats.FullyReflectDamageAfterHitChance];
+            if (fullReflectPercentage > 0 && Rand.NextRandomBool(fullReflectPercentage))
+            {
+                var reflectedDamage = attackableAttacker is Player
+                    ? (hitInfo.HealthDamage + hitInfo.ShieldDamage)
+                    : attackableAttacker.Attributes[Stats.MaximumPhysBaseDmg];
+                ReflectDamage(reflectedDamage, attackableAttacker);
+            }
         }
 
-        if (reflectPercentage > 0 && attacker is IAttackable attackableAttacker)
+        void ReflectDamage(float reflectedDamage, IAttackable attackable)
         {
-            var reflectedDamage = attackableAttacker is not Player && reflectPercentage == 1.0f
-                ? attackableAttacker.Attributes[Stats.MaximumPhysBaseDmg]
-                : (hitInfo.HealthDamage + hitInfo.ShieldDamage) * reflectPercentage;
             if (reflectedDamage <= 0)
             {
                 return;
@@ -2083,9 +2090,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             _ = Task.Run(async () =>
             {
                 await Task.Delay(500).ConfigureAwait(false);
-                if (attackableAttacker.IsAlive)
+                if (attackable.IsAlive)
                 {
-                    await attackableAttacker.ReflectDamageAsync(this, (uint)reflectedDamage).ConfigureAwait(false);
+                    await attackable.ReflectDamageAsync(this, (uint)reflectedDamage).ConfigureAwait(false);
                 }
             });
         }
