@@ -369,6 +369,11 @@ public static class AttackableExtensions
     /// <returns>The success of the appliance.</returns>
     public static async ValueTask<bool> TryApplyElementalEffectsAsync(this IAttackable target, IAttacker attacker, SkillEntry skillEntry)
     {
+        if (!target.IsAlive)
+        {
+            return false;
+        }
+
         skillEntry.ThrowNotInitializedProperty(skillEntry.Skill is null, nameof(skillEntry.Skill));
         var modifier = skillEntry.Skill.ElementalModifierTarget;
         if (modifier is null)
@@ -415,6 +420,11 @@ public static class AttackableExtensions
     /// </returns>
     public static async ValueTask<bool> TryApplyElementalEffectsAsync(this IAttackable target, IAttacker attacker, Skill skill, IElement? powerUp, IElement? duration, AttributeDefinition? targetAttribute)
     {
+        if (!target.IsAlive)
+        {
+            return false;
+        }
+
         var modifier = skill.ElementalModifierTarget;
         if (modifier is null)
         {
@@ -433,7 +443,8 @@ public static class AttackableExtensions
             && !target.MagicEffectList.ActiveEffects.ContainsKey(effectDefinition.Number)
             && powerUp is not null
             && duration is not null
-            && targetAttribute is not null)
+            && targetAttribute is not null
+            && target.IsAlive)
         {
             // power-up is the wrong term here... it's more like a power-down ;-)
             await target.ApplyMagicEffectAsync(attacker, effectDefinition, duration, (targetAttribute, powerUp)).ConfigureAwait(false);
