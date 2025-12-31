@@ -22,7 +22,7 @@ else
     @if (!string.IsNullOrWhiteSpace(this.InstallError))
     {
         <div class="alert alert-danger" role="alert">
-            Error al instalar: @this.InstallError
+            <pre class="mb-0" style="white-space: pre-wrap;">Error al instalar: @this.InstallError</pre>
         </div>
     }
 

@@ -86,7 +86,7 @@ public sealed partial class Install
         }
         catch (Exception ex)
         {
-            this.InstallError = ex.GetBaseException().Message;
+            this.InstallError = ex.ToString();
         }
         finally
         {
