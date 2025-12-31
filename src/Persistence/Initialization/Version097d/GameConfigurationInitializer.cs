@@ -13,7 +13,6 @@ using CharacterClassInitialization = MUnique.OpenMU.Persistence.Initialization.V
 using ChaosMixes = MUnique.OpenMU.Persistence.Initialization.Version095d.ChaosMixes;
 using Gates = MUnique.OpenMU.Persistence.Initialization.Version095d.Gates;
 using InvasionMobsInitialization = MUnique.OpenMU.Persistence.Initialization.Version095d.InvasionMobsInitialization;
-using SkillsInitializer = MUnique.OpenMU.Persistence.Initialization.Version097d.SkillsInitializer;
 
 /// <summary>
 /// Initializes the <see cref="GameConfiguration" />.
