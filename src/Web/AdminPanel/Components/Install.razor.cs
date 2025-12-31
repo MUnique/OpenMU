@@ -39,6 +39,11 @@ public sealed partial class Install
     /// </summary>
     public bool IsInstalled { get; private set; }
 
+    /// <summary>
+    /// Gets the installation error message, if any.
+    /// </summary>
+    public string? InstallError { get; private set; }
+
     private int CurrentConnections => this.ServerProvider.Servers.Where(s => s.ServerState != ServerState.Timeout).Sum(s => s.CurrentConnections);
 
     /// <summary>
@@ -72,15 +77,21 @@ public sealed partial class Install
     private async Task StartInstallationAsync()
     {
         this.IsInstalling = true;
+        this.InstallError = null;
         await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
         try
         {
             await this.SetupService.CreateDatabaseAsync(() => this.SelectedVersion!.CreateInitialDataAsync((byte)this.GameServerCount, this.CreateTestAccounts)).ConfigureAwait(false);
+            this.IsInstalled = true;
+        }
+        catch (Exception ex)
+        {
+            this.InstallError = ex.GetBaseException().Message;
         }
         finally
         {
-            this.IsInstalled = true;
             this.IsInstalling = false;
+            await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
         }
     }
 

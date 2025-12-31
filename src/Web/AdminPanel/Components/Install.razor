@@ -19,6 +19,13 @@ else if (this.IsInstalled)
 }
 else
 {
+    @if (!string.IsNullOrWhiteSpace(this.InstallError))
+    {
+        <div class="alert alert-danger" role="alert">
+            Error al instalar: @this.InstallError
+        </div>
+    }
+
     if (this.CurrentConnections > 0)
     {
         <div class="alert alert-danger" role="alert">
