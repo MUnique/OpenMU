@@ -30,10 +30,11 @@ internal class SkillsInitializer : MUnique.OpenMU.Persistence.Initialization.Ver
 
         if (!this.GameConfiguration.Skills.Any(s => s.Number == (short)SkillNumber.CrescentMoonSlash))
         {
+            var knightClasses = CharacterClasses.DarkKnight | CharacterClasses.MagicGladiator;
             this.CreateSkill(
                 SkillNumber.CrescentMoonSlash,
                 "Crescent Moon Slash",
-                CharacterClasses.AllKnights,
+                knightClasses,
                 DamageType.Physical,
                 90,
                 4,
