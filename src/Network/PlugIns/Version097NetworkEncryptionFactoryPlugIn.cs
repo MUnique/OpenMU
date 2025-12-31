@@ -47,18 +47,14 @@ public class Version097NetworkEncryptionFactoryPlugIn : INetworkEncryptionFactor
     {
         if (direction == DataDirection.ServerToClient)
         {
-            // The 0.97 client decrypts server packets with xor32 after simple modulus.
+            // The 0.97 client decrypts server packets with simple modulus only.
             if (HackCheckKeySet is { } keys)
             {
                 var hackCheck = new PipelinedHackCheckEncryptor(target, keys);
-                return new PipelinedXor32Encryptor(
-                    new PipelinedSimpleModulusEncryptor(hackCheck.Writer, ServerToClientKey).Writer,
-                    Xor32Key);
+                return new PipelinedSimpleModulusEncryptor(hackCheck.Writer, ServerToClientKey);
             }
 
-            return new PipelinedXor32Encryptor(
-                new PipelinedSimpleModulusEncryptor(target, ServerToClientKey).Writer,
-                Xor32Key);
+            return new PipelinedSimpleModulusEncryptor(target, ServerToClientKey);
         }
 
         if (HackCheckKeySet is { } clientKeys)
@@ -90,9 +86,7 @@ public class Version097NetworkEncryptionFactoryPlugIn : INetworkEncryptionFactor
             source = new PipelinedHackCheckDecryptor(source, serverKeys).Reader;
         }
 
-        return new PipelinedXor32Decryptor(
-            new PipelinedSimpleModulusDecryptor(source, ServerToClientKey).Reader,
-            Xor32Key);
+        return new PipelinedSimpleModulusDecryptor(source, ServerToClientKey);
     }
 
     private static byte[] LoadXor32Key()
