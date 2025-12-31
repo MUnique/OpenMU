@@ -14,7 +14,7 @@ using MUnique.OpenMU.DataModel.Entities;
 
 internal static class ItemList097
 {
-    private const string ItemListRelativePath = "Version097d/Items/ItemList097.txt";
+    private const string ItemListRelativePath = "Version097d/Items/ItemList097.dat";
 
     public static HashSet<(byte Group, short Number)> LoadAllowedItems()
     {
