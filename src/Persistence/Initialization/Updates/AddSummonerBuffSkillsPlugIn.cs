@@ -13,7 +13,7 @@ using MUnique.OpenMU.Persistence.Initialization.Skills;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// This update adds the Sleep, Innovation, Damage Reflection and Weakness Summoner buff skills.
+/// This update adds the Sleep, Innovation, Damage Reflection and Weakness Summoner buff skills. It also fixes the 3rd wing full reflect option.
 /// </summary>
 [PlugIn(PlugInName, PlugInDescription)]
 [Guid("B1E2D6C3-1F4A-4D7C-8C2E-3F6D9A7B8E2F")]
@@ -27,7 +27,7 @@ public class AddSummonerBuffSkillsPlugIn : UpdatePlugInBase
     /// <summary>
     /// The plug in description.
     /// </summary>
-    internal const string PlugInDescription = "This update adds the Sleep, Innovation, Damage Reflection and Weakness Summoner buff skills.";
+    internal const string PlugInDescription = "This update adds the Sleep, Innovation, Damage Reflection and Weakness Summoner buff skills. It also fixes the 3rd wing full reflect option.";
 
     /// <inheritdoc />
     public override string Name => PlugInName;

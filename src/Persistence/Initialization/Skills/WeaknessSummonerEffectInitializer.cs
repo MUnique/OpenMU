@@ -109,7 +109,7 @@ public class WeaknessSummonerEffectInitializer : InitializerBase
         var decDmgPerEnergy = this.Context.CreateNew<AttributeRelationship>();
         decDmgPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
         decDmgPerEnergy.InputOperator = InputOperator.Multiply;
-        decDmgPerEnergy.InputOperand = 1f / 5800f; // 58 energy further decreases 0.01
+        decDmgPerEnergy.InputOperand = 1f / 5800f; // 58 energy further decreases 1%
         decDmgPowerUpDefinition.Boost.RelatedValues.Add(decDmgPerEnergy);
 
         // Phys damage decrease PvP % = 3 + (Energy / 93)
@@ -123,7 +123,7 @@ public class WeaknessSummonerEffectInitializer : InitializerBase
         var decDmgPerEnergyPvp = this.Context.CreateNew<AttributeRelationship>();
         decDmgPerEnergyPvp.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
         decDmgPerEnergyPvp.InputOperator = InputOperator.Multiply;
-        decDmgPerEnergyPvp.InputOperand = 1f / 9300f; // 93 energy further decreases 0.01
+        decDmgPerEnergyPvp.InputOperand = 1f / 9300f; // 93 energy further decreases 1%
         decDmgPowerUpDefinitionPvp.Boost.RelatedValues.Add(decDmgPerEnergyPvp);
     }
 }

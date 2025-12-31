@@ -109,7 +109,7 @@ public class InnovationEffectInitializer : InitializerBase
         var decDefPerEnergy = this.Context.CreateNew<AttributeRelationship>();
         decDefPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
         decDefPerEnergy.InputOperator = InputOperator.Multiply;
-        decDefPerEnergy.InputOperand = 1f / 9000f; // 90 energy further decreases 0.01
+        decDefPerEnergy.InputOperand = 1f / 9000f; // 90 energy further decreases 1%
         decDefPowerUpDefinition.Boost.RelatedValues.Add(decDefPerEnergy);
 
         // Defense decrease PvP % (applies last) = 12 + (Energy / 110)
@@ -123,7 +123,7 @@ public class InnovationEffectInitializer : InitializerBase
         var decDefPerEnergyPvp = this.Context.CreateNew<AttributeRelationship>();
         decDefPerEnergyPvp.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
         decDefPerEnergyPvp.InputOperator = InputOperator.Multiply;
-        decDefPerEnergyPvp.InputOperand = 1f / 11000f; // 110 energy further decreases 0.01
+        decDefPerEnergyPvp.InputOperand = 1f / 11000f; // 110 energy further decreases 1%
         decDefPowerUpDefinitionPvp.Boost.RelatedValues.Add(decDefPerEnergyPvp);
     }
 }

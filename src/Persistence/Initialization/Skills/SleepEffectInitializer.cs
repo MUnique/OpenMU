@@ -73,7 +73,7 @@ public class SleepEffectInitializer : InitializerBase
         // Duration = 5 + (Energy / 100)
         magicEffect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.Duration.ConstantValue.Value = 5; // 5 Seconds
-        magicEffect.Duration.MaximumValue = 20; // 20 Seconds
+        magicEffect.Duration.MaximumValue = 20;
 
         var durationPerEnergy = this.Context.CreateNew<AttributeRelationship>();
         durationPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
@@ -84,7 +84,7 @@ public class SleepEffectInitializer : InitializerBase
         // Duration = 4 + (Energy / 250) + ((Level - Target's Level) / 100)
         magicEffect.DurationPvp = this.Context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.DurationPvp.ConstantValue.Value = 4; // 4 Seconds
-        magicEffect.DurationPvp.MaximumValue = 10; // 10 Seconds
+        magicEffect.DurationPvp.MaximumValue = 10;
 
         var durationPerEnergyPvp = this.Context.CreateNew<AttributeRelationship>();
         durationPerEnergyPvp.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);

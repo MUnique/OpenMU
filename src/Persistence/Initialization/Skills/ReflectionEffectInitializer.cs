@@ -52,12 +52,12 @@ public class ReflectionEffectInitializer : InitializerBase
         incReflectPowerUpDefinition.TargetAttribute = Stats.DamageReflection.GetPersistent(this.GameConfiguration);
         incReflectPowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
         incReflectPowerUpDefinition.Boost.ConstantValue.Value = 0.3f; // 30% increase
-        incReflectPowerUpDefinition.Boost.MaximumValue = 0.6f;
+        incReflectPowerUpDefinition.Boost.MaximumValue = 0.6f;  // 60% increase
 
         var incReflectPerEnergy = this.Context.CreateNew<AttributeRelationship>();
         incReflectPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
         incReflectPerEnergy.InputOperator = InputOperator.Multiply;
-        incReflectPerEnergy.InputOperand = 1f / 4200f; // 42 energy further increases 0.01
+        incReflectPerEnergy.InputOperand = 1f / 4200f; // 42 energy further increases 1%
         incReflectPowerUpDefinition.Boost.RelatedValues.Add(incReflectPerEnergy);
     }
 }
