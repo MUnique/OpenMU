@@ -31,6 +31,6 @@ public class ShowMoneyDrop097 : IShowMoneyDropPlugIn
     /// <inheritdoc/>
     public ValueTask ShowMoneyAsync(ushort itemId, bool isFreshDrop, uint amount, Point point)
     {
-        return this._player.Connection.SendMoneyDroppedAsync(itemId, isFreshDrop, point.X, point.Y, amount);
+        return this._player.Connection.SendMoneyDropped075Async(itemId, isFreshDrop, point.X, point.Y, amount);
     }
 }
