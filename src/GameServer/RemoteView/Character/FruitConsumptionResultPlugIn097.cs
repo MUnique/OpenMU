@@ -4,14 +4,13 @@
 
 namespace MUnique.OpenMU.GameServer.RemoteView.Character;
 
-using System.Buffers.Binary;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views.Character;
-using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.PlugIns;
+using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -34,66 +33,54 @@ public class FruitConsumptionResultPlugIn097 : IFruitConsumptionResponsePlugIn
     /// <inheritdoc/>
     public async ValueTask ShowResponseAsync(FruitConsumptionResult result, byte statPoints, AttributeDefinition statAttribute)
     {
-        var connection = this._player.Connection;
-        var selectedCharacter = this._player.SelectedCharacter;
-        var attributes = this._player.Attributes;
-        if (connection is null || attributes is null || selectedCharacter is null)
-        {
-            return;
-        }
-
-        const int packetLength = 28;
-        var resultByte = GetResultByte(result);
-
-        int WritePacket()
-        {
-            var span = connection.Output.GetSpan(packetLength)[..packetLength];
-            span[0] = 0xC1;
-            span[1] = (byte)packetLength;
-            span[2] = 0x2C;
-            span[3] = resultByte;
-
-            var offset = 4;
-            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), statPoints);
-            offset += 4;
-            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), ClampToUInt32(selectedCharacter.LevelUpPoints));
-            offset += 4;
-            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), ClampToUInt32(attributes[Stats.BaseStrength]));
-            offset += 4;
-            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), ClampToUInt32(attributes[Stats.BaseAgility]));
-            offset += 4;
-            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), ClampToUInt32(attributes[Stats.BaseVitality]));
-            offset += 4;
-            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), ClampToUInt32(attributes[Stats.BaseEnergy]));
-
-            return packetLength;
-        }
-
-        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+        await this._player.Connection.SendFruitConsumptionResponseAsync(Convert(result), statPoints, Convert(statAttribute)).ConfigureAwait(false);
     }
 
-    private static byte GetResultByte(FruitConsumptionResult result)
+    private static FruitConsumptionResponse.FruitConsumptionResult Convert(FruitConsumptionResult result)
     {
         return result switch
         {
-            FruitConsumptionResult.PlusSuccess => 0x00,
-            FruitConsumptionResult.MinusSuccess => 0x00,
-            _ => 0xC0,
+            FruitConsumptionResult.PlusSuccess => FruitConsumptionResponse.FruitConsumptionResult.PlusSuccess,
+            FruitConsumptionResult.PlusFailed => FruitConsumptionResponse.FruitConsumptionResult.PlusFailed,
+            FruitConsumptionResult.PlusPrevented => FruitConsumptionResponse.FruitConsumptionResult.PlusPrevented,
+            FruitConsumptionResult.MinusSuccess => FruitConsumptionResponse.FruitConsumptionResult.MinusSuccess,
+            FruitConsumptionResult.MinusFailed => FruitConsumptionResponse.FruitConsumptionResult.MinusFailed,
+            FruitConsumptionResult.MinusPrevented => FruitConsumptionResponse.FruitConsumptionResult.MinusPrevented,
+            FruitConsumptionResult.MinusSuccessCashShopFruit => FruitConsumptionResponse.FruitConsumptionResult.MinusSuccessCashShopFruit,
+            FruitConsumptionResult.PlusPreventedByMaximum => FruitConsumptionResponse.FruitConsumptionResult.PlusPreventedByMaximum,
+            FruitConsumptionResult.MinusPreventedByMaximum => FruitConsumptionResponse.FruitConsumptionResult.MinusPreventedByMaximum,
+            FruitConsumptionResult.MinusPreventedByDefault => FruitConsumptionResponse.FruitConsumptionResult.MinusPreventedByDefault,
+            _ => throw new ArgumentException($"Unknown result {result}", nameof(result)),
         };
     }
 
-    private static uint ClampToUInt32(float value)
+    private static FruitConsumptionResponse.FruitStatType Convert(AttributeDefinition statAttribute)
     {
-        if (value <= 0f)
+        if (statAttribute == Stats.BaseEnergy)
         {
-            return 0;
+            return FruitConsumptionResponse.FruitStatType.Energy;
         }
 
-        if (value >= uint.MaxValue)
+        if (statAttribute == Stats.BaseAgility)
         {
-            return uint.MaxValue;
+            return FruitConsumptionResponse.FruitStatType.Agility;
         }
 
-        return (uint)value;
+        if (statAttribute == Stats.BaseStrength)
+        {
+            return FruitConsumptionResponse.FruitStatType.Strength;
+        }
+
+        if (statAttribute == Stats.BaseVitality)
+        {
+            return FruitConsumptionResponse.FruitStatType.Vitality;
+        }
+
+        if (statAttribute == Stats.BaseLeadership)
+        {
+            return FruitConsumptionResponse.FruitStatType.Leadership;
+        }
+
+        throw new ArgumentException($"Unknown stat {statAttribute}", nameof(statAttribute));
     }
 }

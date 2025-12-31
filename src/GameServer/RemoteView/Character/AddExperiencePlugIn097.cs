@@ -4,13 +4,11 @@
 
 namespace MUnique.OpenMU.GameServer.RemoteView.Character;
 
-using System.Buffers.Binary;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic;
-using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Character;
-using MUnique.OpenMU.Network;
+using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.PlugIns;
 
@@ -34,14 +32,6 @@ public class AddExperiencePlugIn097 : IAddExperiencePlugIn
     /// <inheritdoc/>
     public async ValueTask AddExperienceAsync(int exp, IAttackable? obj, ExperienceType experienceType)
     {
-        var connection = this._player.Connection;
-        var attributes = this._player.Attributes;
-        var selectedCharacter = this._player.SelectedCharacter;
-        if (connection is null || attributes is null || selectedCharacter is null)
-        {
-            return;
-        }
-
         var remainingExperience = exp;
         ushort damage = 0;
         if (obj is not null && obj.Id != obj.LastDeath?.KillerId)
@@ -54,49 +44,12 @@ public class AddExperiencePlugIn097 : IAddExperiencePlugIn
         {
             id |= 0x8000;
         }
-
         while (remainingExperience > 0)
         {
             ushort sendExp = remainingExperience > ushort.MaxValue ? ushort.MaxValue : (ushort)remainingExperience;
-            var viewExperience = ClampToUInt32(selectedCharacter.Experience);
-            var viewNextExperience = ClampToUInt32(this._player.GameServerContext.ExperienceTable[(int)attributes[Stats.Level] + 1]);
-            var viewDamage = (uint)damage;
-
-            int WritePacket()
-            {
-                const int packetLength = 23;
-                var span = connection.Output.GetSpan(packetLength)[..packetLength];
-                span[0] = 0xC3;
-                span[1] = (byte)packetLength;
-                span[2] = 0x9C;
-                BinaryPrimitives.WriteUInt16BigEndian(span.Slice(3, 2), id);
-                BinaryPrimitives.WriteUInt16LittleEndian(span.Slice(5, 2), 0);
-                BinaryPrimitives.WriteUInt16LittleEndian(span.Slice(7, 2), sendExp);
-                BinaryPrimitives.WriteUInt16BigEndian(span.Slice(9, 2), damage);
-                BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(11, 4), viewDamage);
-                BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(15, 4), viewExperience);
-                BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(19, 4), viewNextExperience);
-                return packetLength;
-            }
-
-            await connection.SendAsync(WritePacket).ConfigureAwait(false);
+            await this._player.Connection.SendExperienceGainedAsync(id, sendExp, damage).ConfigureAwait(false);
             damage = 0;
             remainingExperience -= sendExp;
         }
-    }
-
-    private static uint ClampToUInt32(long value)
-    {
-        if (value <= 0)
-        {
-            return 0;
-        }
-
-        if (value >= uint.MaxValue)
-        {
-            return uint.MaxValue;
-        }
-
-        return (uint)value;
     }
 }
