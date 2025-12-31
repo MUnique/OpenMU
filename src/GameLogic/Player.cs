@@ -2072,6 +2072,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
             if (attacker is not AttackerSurrogate)
             {
+                // Raven does not cause full reflect.
                 var fullReflectPercentage = this.Attributes[Stats.FullyReflectDamageAfterHitChance];
                 if (fullReflectPercentage > 0 && Rand.NextRandomBool(fullReflectPercentage))
                 {
