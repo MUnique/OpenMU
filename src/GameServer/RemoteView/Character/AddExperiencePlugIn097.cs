@@ -66,7 +66,7 @@ public class AddExperiencePlugIn097 : IAddExperiencePlugIn
             {
                 const int packetLength = 23;
                 var span = connection.Output.GetSpan(packetLength)[..packetLength];
-                span[0] = 0xC1;
+                span[0] = 0xC3;
                 span[1] = (byte)packetLength;
                 span[2] = 0x9C;
                 BinaryPrimitives.WriteUInt16BigEndian(span.Slice(3, 2), id);
