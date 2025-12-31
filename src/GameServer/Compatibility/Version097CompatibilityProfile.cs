@@ -124,7 +124,7 @@ internal static class Version097CompatibilityProfile
             {
                 const int packetLength = 23;
                 var span = connection.Output.GetSpan(packetLength)[..packetLength];
-                span[0] = 0xC1;
+                span[0] = 0xC3;
                 span[1] = (byte)packetLength;
                 span[2] = 0x9C;
                 BinaryPrimitives.WriteUInt16BigEndian(span.Slice(3, 2), id);
@@ -261,8 +261,8 @@ internal static class Version097CompatibilityProfile
             BinaryPrimitives.WriteUInt16LittleEndian(span.Slice(8, 2), currentHealth);
             BinaryPrimitives.WriteUInt16LittleEndian(span.Slice(10, 2), currentMana);
             BinaryPrimitives.WriteUInt16LittleEndian(span.Slice(12, 2), currentAbility);
-            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(14, 4), ClampToUInt32(selectedCharacter.Experience));
-            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(18, 4), ClampToUInt32(player.Money));
+            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(14, 4), (uint)selectedCharacter.Experience);
+            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(18, 4), (uint)player.Money);
             BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(22, 4), ClampToUInt32(attributes[Stats.CurrentHealth]));
             BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(26, 4), ClampToUInt32(attributes[Stats.CurrentMana]));
             BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(30, 4), ClampToUInt32(attributes[Stats.CurrentAbility]));
@@ -284,7 +284,7 @@ internal static class Version097CompatibilityProfile
 
         const int packetLength = 46;
         var level = GetUShort(charStats[Stats.Level]);
-        var nextExperience = ClampToUInt32(player.GameServerContext.ExperienceTable[(int)charStats[Stats.Level] + 1]);
+        var nextExperience = (uint)player.GameServerContext.ExperienceTable[(int)charStats[Stats.Level] + 1];
 
         int WritePacket()
         {
@@ -321,7 +321,7 @@ internal static class Version097CompatibilityProfile
             offset += 4;
             BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), ClampToUInt32(charStats[Stats.MaximumAbility]));
             offset += 4;
-            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), ClampToUInt32(selectedCharacter.Experience));
+            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), (uint)selectedCharacter.Experience);
             offset += 4;
             BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), nextExperience);
 
@@ -441,25 +441,25 @@ internal static class Version097CompatibilityProfile
             player.Position.Y,
             (byte)player.SelectedCharacter!.CurrentMap!.Number,
             player.Rotation.ToPacketByte(),
-            ClampToUInt32(player.SelectedCharacter.Experience),
-            ClampToUInt32(player.GameServerContext.ExperienceTable[(int)player.Attributes![Stats.Level] + 1]),
+            (uint)player.SelectedCharacter.Experience,
+            (uint)player.GameServerContext.ExperienceTable[(int)player.Attributes![Stats.Level] + 1],
             (ushort)Math.Max(player.SelectedCharacter.LevelUpPoints, 0),
-            GetUShort(player.Attributes[Stats.BaseStrength]),
-            GetUShort(player.Attributes[Stats.BaseAgility]),
-            GetUShort(player.Attributes[Stats.BaseVitality]),
-            GetUShort(player.Attributes[Stats.BaseEnergy]),
-            GetUShort(player.Attributes[Stats.CurrentHealth]),
-            GetUShort(player.Attributes[Stats.MaximumHealth]),
-            GetUShort(player.Attributes[Stats.CurrentMana]),
-            GetUShort(player.Attributes[Stats.MaximumMana]),
-            GetUShort(player.Attributes[Stats.CurrentAbility]),
-            GetUShort(player.Attributes[Stats.MaximumAbility]),
-            ClampToUInt32(player.Money),
+            (ushort)player.Attributes[Stats.BaseStrength],
+            (ushort)player.Attributes[Stats.BaseAgility],
+            (ushort)player.Attributes[Stats.BaseVitality],
+            (ushort)player.Attributes[Stats.BaseEnergy],
+            (ushort)player.Attributes[Stats.CurrentHealth],
+            (ushort)player.Attributes[Stats.MaximumHealth],
+            (ushort)player.Attributes[Stats.CurrentMana],
+            (ushort)player.Attributes[Stats.MaximumMana],
+            (ushort)player.Attributes[Stats.CurrentAbility],
+            (ushort)player.Attributes[Stats.MaximumAbility],
+            (uint)player.Money,
             player.SelectedCharacter.State.Convert(),
             player.SelectedCharacter.CharacterStatus.Convert(),
             (ushort)player.SelectedCharacter.UsedFruitPoints,
             player.SelectedCharacter.GetMaximumFruitPoints(),
-            GetUShort(player.Attributes[Stats.BaseLeadership]))
+            (ushort)player.Attributes[Stats.BaseLeadership])
             .ConfigureAwait(false);
 
         await SendNewCharacterInfoAsync(player, connection).ConfigureAwait(false);
@@ -564,7 +564,7 @@ internal static class Version097CompatibilityProfile
     {
         const int packetLength = 76;
         var level = ClampToUInt32(player.Attributes![Stats.Level]);
-        var nextExperience = ClampToUInt32(player.GameServerContext.ExperienceTable[(int)player.Attributes[Stats.Level] + 1]);
+        var nextExperience = (uint)player.GameServerContext.ExperienceTable[(int)player.Attributes[Stats.Level] + 1];
 
         int WritePacket()
         {
@@ -579,7 +579,7 @@ internal static class Version097CompatibilityProfile
             offset += 4;
             BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), (uint)Math.Max(0, player.SelectedCharacter!.LevelUpPoints));
             offset += 4;
-            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), ClampToUInt32(player.SelectedCharacter.Experience));
+            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), (uint)player.SelectedCharacter.Experience);
             offset += 4;
             BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), nextExperience);
             offset += 4;
