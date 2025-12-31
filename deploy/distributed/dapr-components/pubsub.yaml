@@ -7,7 +7,7 @@ spec:
   version: v1
   metadata:
   - name: host
-    value: "amqp://pubsub:5672"
+    value: "amqp://rabbit:5672"
   - name: durable
     value: "true"
   - name: deletedWhenUnused
