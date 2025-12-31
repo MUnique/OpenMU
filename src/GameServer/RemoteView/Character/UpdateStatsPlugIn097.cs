@@ -4,12 +4,13 @@
 
 namespace MUnique.OpenMU.GameServer.RemoteView.Character;
 
+using System.Buffers.Binary;
 using System.Collections.Frozen;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.AttributeSystem;
-using MUnique.OpenMU.GameServer.Compatibility;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views.Character;
+using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.PlugIns;
 
@@ -45,25 +46,17 @@ public class UpdateStatsPlugIn097 : UpdateStatsBasePlugIn
 
     private static ValueTask OnMaximumHealthChangedAsync(RemotePlayer player)
     {
-        return Version097CompatibilityProfile.SendLifePacketAsync(
-            player,
-            0xFE,
-            GetUShort(player.Attributes![Stats.MaximumHealth]),
-            ClampToUInt32(player.Attributes[Stats.MaximumHealth]));
+        return SendLifePacketAsync(player, 0xFE, GetUShort(player.Attributes![Stats.MaximumHealth]), ClampToUInt32(player.Attributes[Stats.MaximumHealth]));
     }
 
     private static ValueTask OnCurrentHealthChangedAsync(RemotePlayer player)
     {
-        return Version097CompatibilityProfile.SendLifePacketAsync(
-            player,
-            0xFF,
-            GetUShort(player.Attributes![Stats.CurrentHealth]),
-            ClampToUInt32(player.Attributes[Stats.CurrentHealth]));
+        return SendLifePacketAsync(player, 0xFF, GetUShort(player.Attributes![Stats.CurrentHealth]), ClampToUInt32(player.Attributes[Stats.CurrentHealth]));
     }
 
     private static ValueTask OnMaximumManaOrAbilityChangedAsync(RemotePlayer player)
     {
-        return Version097CompatibilityProfile.SendManaPacketAsync(
+        return SendManaPacketAsync(
             player,
             0xFE,
             GetUShort(player.Attributes![Stats.MaximumMana]),
@@ -74,13 +67,64 @@ public class UpdateStatsPlugIn097 : UpdateStatsBasePlugIn
 
     private static ValueTask OnCurrentManaOrAbilityChangedAsync(RemotePlayer player)
     {
-        return Version097CompatibilityProfile.SendManaPacketAsync(
+        return SendManaPacketAsync(
             player,
             0xFF,
             GetUShort(player.Attributes![Stats.CurrentMana]),
             GetUShort(player.Attributes[Stats.CurrentAbility]),
             ClampToUInt32(player.Attributes[Stats.CurrentMana]),
             ClampToUInt32(player.Attributes[Stats.CurrentAbility]));
+    }
+
+    private static ValueTask SendLifePacketAsync(RemotePlayer player, byte type, ushort life, uint viewHp)
+    {
+        var connection = player.Connection;
+        if (connection is null)
+        {
+            return ValueTask.CompletedTask;
+        }
+
+        const int packetLength = 11;
+        int WritePacket()
+        {
+            var span = connection.Output.GetSpan(packetLength)[..packetLength];
+            span[0] = 0xC1;
+            span[1] = (byte)packetLength;
+            span[2] = 0x26;
+            span[3] = type;
+            BinaryPrimitives.WriteUInt16BigEndian(span.Slice(4, 2), life);
+            span[6] = 0;
+            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(7, 4), viewHp);
+            return packetLength;
+        }
+
+        return connection.SendAsync(WritePacket);
+    }
+
+    private static ValueTask SendManaPacketAsync(RemotePlayer player, byte type, ushort mana, ushort bp, uint viewMp, uint viewBp)
+    {
+        var connection = player.Connection;
+        if (connection is null)
+        {
+            return ValueTask.CompletedTask;
+        }
+
+        const int packetLength = 16;
+        int WritePacket()
+        {
+            var span = connection.Output.GetSpan(packetLength)[..packetLength];
+            span[0] = 0xC1;
+            span[1] = (byte)packetLength;
+            span[2] = 0x27;
+            span[3] = type;
+            BinaryPrimitives.WriteUInt16BigEndian(span.Slice(4, 2), mana);
+            BinaryPrimitives.WriteUInt16BigEndian(span.Slice(6, 2), bp);
+            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(8, 4), viewMp);
+            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(12, 4), viewBp);
+            return packetLength;
+        }
+
+        return connection.SendAsync(WritePacket);
     }
 
     private static ushort GetUShort(float value)

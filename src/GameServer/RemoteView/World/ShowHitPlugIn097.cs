@@ -4,11 +4,13 @@
 
 namespace MUnique.OpenMU.GameServer.RemoteView.World;
 
+using System.Buffers.Binary;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic;
-using MUnique.OpenMU.GameServer.Compatibility;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.World;
+using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.PlugIns;
 
@@ -32,6 +34,46 @@ public class ShowHitPlugIn097 : IShowHitPlugIn
     /// <inheritdoc/>
     public async ValueTask ShowHitAsync(IAttackable target, HitInfo hitInfo)
     {
-        await Version097CompatibilityProfile.SendHitAsync(this._player, target, hitInfo).ConfigureAwait(false);
+        var connection = this._player.Connection;
+        if (connection is null)
+        {
+            return;
+        }
+
+        const int packetLength = 15;
+        var targetId = target.GetId(this._player);
+        var damage = (ushort)Math.Min(ushort.MaxValue, hitInfo.HealthDamage);
+        var viewCurHp = ClampToUInt32(target.Attributes[Stats.CurrentHealth]);
+        var viewDamageHp = ClampToUInt32(hitInfo.HealthDamage);
+
+        int WritePacket()
+        {
+            var span = connection.Output.GetSpan(packetLength)[..packetLength];
+            span[0] = 0xC1;
+            span[1] = (byte)packetLength;
+            span[2] = 0x15;
+            BinaryPrimitives.WriteUInt16BigEndian(span.Slice(3, 2), targetId);
+            BinaryPrimitives.WriteUInt16BigEndian(span.Slice(5, 2), damage);
+            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(7, 4), viewCurHp);
+            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(11, 4), viewDamageHp);
+            return packetLength;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    private static uint ClampToUInt32(float value)
+    {
+        if (value <= 0f)
+        {
+            return 0;
+        }
+
+        if (value >= uint.MaxValue)
+        {
+            return uint.MaxValue;
+        }
+
+        return (uint)value;
     }
 }
