@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World;
 
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic.Views.World;
+using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.Pathfinding;
@@ -31,6 +32,51 @@ public class ShowMoneyDrop097 : IShowMoneyDropPlugIn
     /// <inheritdoc/>
     public ValueTask ShowMoneyAsync(ushort itemId, bool isFreshDrop, uint amount, Point point)
     {
-        return this._player.Connection.SendMoneyDropped075Async(itemId, isFreshDrop, point.X, point.Y, amount);
+        var connection = this._player.Connection;
+        if (connection is null)
+        {
+            return ValueTask.CompletedTask;
+        }
+
+        int Write()
+        {
+            const int itemDataLength = 5;
+            var droppedItemLength = ItemsDroppedRef.DroppedItemRef.GetRequiredSize(itemDataLength);
+            var size = ItemsDroppedRef.GetRequiredSize(1, droppedItemLength);
+            var span = connection.Output.GetSpan(size)[..size];
+            var packet = new ItemsDroppedRef(span)
+            {
+                ItemCount = 1,
+            };
+
+            int headerSize = ItemsDroppedRef.GetRequiredSize(0, 0);
+            var itemBlock = new ItemsDroppedRef.DroppedItemRef(span[headerSize..]);
+            itemBlock.Id = itemId;
+            itemBlock.IsFreshDrop = isFreshDrop;
+            itemBlock.PositionX = point.X;
+            itemBlock.PositionY = point.Y;
+
+            var itemData = itemBlock.ItemData[..itemDataLength];
+            itemData.Clear();
+            EncodeMoneyItemData(itemData, amount);
+
+            span.Slice(0, size).SetPacketSize();
+            return size;
+        }
+
+        return connection.SendAsync(Write);
+    }
+
+    private static void EncodeMoneyItemData(Span<byte> itemData, uint amount)
+    {
+        const byte moneyGroup = 14;
+        const byte moneyNumber = 15;
+        var itemIndex = (ushort)((moneyNumber & 0x1F) | (moneyGroup << 5));
+
+        itemData[0] = (byte)(itemIndex & 0xFF);
+        itemData[1] = (byte)((amount >> 16) & 0xFF);
+        itemData[2] = (byte)((amount >> 8) & 0xFF);
+        itemData[3] = (byte)((itemIndex & 0x100) >> 1);
+        itemData[4] = (byte)(amount & 0xFF);
     }
 }
