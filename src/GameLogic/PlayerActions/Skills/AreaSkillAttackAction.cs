@@ -206,7 +206,7 @@ public class AreaSkillAttackAction
         if (skill.SkillType == SkillType.AreaSkillExplicitTarget)
         {
             if (extraTarget?.CheckSkillTargetRestrictions(player, skill) is true
-                && player.IsInRange(extraTarget.Position, skill.Range)
+                && player.IsInRange(extraTarget.Position, skill.Range + 2)
                 && !extraTarget.IsAtSafezone())
             {
                 yield return extraTarget;
