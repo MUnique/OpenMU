@@ -1,4 +1,4 @@
-﻿// <copyright file="SkillCancelTokenSource.cs" company="MUnique">
+﻿// <copyright file="SkillCancellationTokenSource.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -9,7 +9,7 @@ using System.Threading;
 /// <summary>
 /// A <see cref="CancellationTokenSource"/> which allows to specify an explicit target when cancelling the nova skill.
 /// </summary>
-/// <seealso cref="System.Threading.CancellationTokenSource" />
+/// <seealso cref="CancellationTokenSource" />
 public class SkillCancellationTokenSource : CancellationTokenSource
 {
     /// <summary>

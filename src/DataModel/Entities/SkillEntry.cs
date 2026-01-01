@@ -50,6 +50,12 @@ public class SkillEntry : INotifyPropertyChanged
     public (AttributeDefinition Target, IElement BuffPowerUp)[]? PowerUps { get; set; }
 
     /// <summary>
+    /// Gets or sets the PvP power up element of this skill of this player. It is a "cached" element which will be created on demand and can be applied multiple times.
+    /// </summary>
+    [Transient]
+    public (AttributeDefinition Target, IElement BuffPowerUp)[]? PowerUpsPvp { get; set; }
+
+    /// <summary>
     /// Gets or sets the duration of the <see cref="PowerUps"/>.
     /// </summary>
     /// <remarks>
@@ -57,6 +63,33 @@ public class SkillEntry : INotifyPropertyChanged
     /// </remarks>
     [Transient]
     public IElement? PowerUpDuration { get; set; }
+
+    /// <summary>
+    /// Gets or sets the duration of the <see cref="PowerUps"/> for PvP.
+    /// </summary>
+    /// <remarks>
+    /// It is an IElement, because the duration can be dependent from the player attributes.
+    /// </remarks>
+    [Transient]
+    public IElement? PowerUpDurationPvp { get; set; }
+
+    /// <summary>
+    /// Gets or sets the chance of applying the <see cref="PowerUps"/>.
+    /// </summary>
+    /// <remarks>
+    /// It is an IElement, because the duration can be dependent from the player attributes.
+    /// </remarks>
+    [Transient]
+    public IElement? PowerUpChance { get; set; }
+
+    /// <summary>
+    /// Gets or sets the chance of applying the <see cref="PowerUps"/> for PvP.
+    /// </summary>
+    /// <remarks>
+    /// It is an IElement, because the duration can be dependent from the player attributes.
+    /// </remarks>
+    [Transient]
+    public IElement? PowerUpChancePvp { get; set; }
 
     /// <summary>
     /// Gets or sets the attributes, if this skill has attribute relationships.

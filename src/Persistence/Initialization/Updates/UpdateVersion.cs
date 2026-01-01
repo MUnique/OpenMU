@@ -334,4 +334,9 @@ public enum UpdateVersion
     /// The version of the <see cref="FixSkillMultipliersPlugIn"/>.
     /// </summary>
     FixSkillMultipliers = 65,
+
+    /// <summary>
+    /// The version of the <see cref="AddSummonerBuffSkillsPlugIn"/>.
+    /// </summary>
+    AddSummonerBuffSkills = 66,
 }

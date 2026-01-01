@@ -638,7 +638,7 @@ public class Stats
     /// <summary>
     /// Gets the explosion skill MST bonus damage, which rises with fire tome strengthener and is added late stage.
     /// </summary>
-    public static AttributeDefinition ExplosionBonusDmg { get; } = new(new Guid("543E01C2-5C61-4473-ACF9-8A63A987A230"), "Explosion Bonus Damage (MST)", "The explosion skill (book of samut) bonus damage, which rises with fire stome strengthener and is added at a late stage.");
+    public static AttributeDefinition ExplosionBonusDmg { get; } = new(new Guid("543E01C2-5C61-4473-ACF9-8A63A987A230"), "Explosion Bonus Damage (MST)", "The explosion skill (book of samut) bonus damage, which rises with fire tome strengthener and is added at a late stage.");
 
     /// <summary>
     /// Gets the requiem skill MST bonus damage, which rises with wind tome strengthener and is added late stage.
@@ -921,6 +921,11 @@ public class Stats
     public static AttributeDefinition WeaknessPhysDmgDecrement { get; } = new(new Guid("37497650-139B-4DA1-9FB6-27AEB8F04CF6"), "Weakness Physical Damage Decrement", "The inflicted physical damage decrement due to the magic effects of weakness or killing blow skills, which is multiplied with the final damage and subtracted from it.");
 
     /// <summary>
+    /// Gets the innovation defense decrement due to Summoner's innovation skill attribute definition.
+    /// </summary>
+    public static AttributeDefinition InnovationDefDecrement { get; } = new(new Guid("D8B3B1C9-B409-4A07-8F4D-8F315DCB173A"), "Innovation Defense Decrement", "The defense decrement due to the magic effect of innovation skill, which is multiplied with the final defense and subtracted from it.");
+
+    /// <summary>
     /// Gets the 'is shield equipped' attribute definition.
     /// </summary>
     public static AttributeDefinition IsShieldEquipped { get; } = new(new Guid("394DFAA0-B18D-44DA-A99D-094BC5E7C9C5"), "Is Shield Equipped", string.Empty);
@@ -943,7 +948,12 @@ public class Stats
     /// <summary>
     /// Gets the attribute definition, which defines if a player has stun effect applied.
     /// </summary>
-    public static AttributeDefinition IsStunned { get; } = new(new Guid("22C86BAF-7F27-478D-8075-E4465C2859DD"), "Is stunned", "The player is poisoned and loses health");
+    public static AttributeDefinition IsStunned { get; } = new(new Guid("22C86BAF-7F27-478D-8075-E4465C2859DD"), "Is stunned", "The player is stunned and can't move.");
+
+    /// <summary>
+    /// Gets the attribute definition, which defines if a player has asleep effect applied.
+    /// </summary>
+    public static AttributeDefinition IsAsleep { get; } = new(new Guid("0518F532-7A8F-4491-8A23-98B620608CB3"), "Is asleep", "The player is asleep and can't move until hit.");
 
     /// <summary>
     /// Gets the ice resistance attribute definition. Value range from 0 to 1.
@@ -1225,6 +1235,11 @@ public class Stats
     /// Gets the fully recover health after hit chance definition.
     /// </summary>
     public static AttributeDefinition FullyRecoverHealthAfterHitChance { get; } = new(new Guid("3CA72C07-9C2C-4FC5-8BCB-9BD737F83664"), "Chance to fully recover health when getting hit", "3rd Wing Option");
+
+    /// <summary>
+    /// Gets the fully reflect damage after hit chance definition.
+    /// </summary>
+    public static AttributeDefinition FullyReflectDamageAfterHitChance { get; } = new(new Guid("1F7C1E04-4FBD-4FCB-A6C2-EB51A91D8C3E"), "Chance to fully reflect damage when getting hit", "3rd Wing Option");
 
     /// <summary>
     /// Gets the health loss after hit definition.
