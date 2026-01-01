@@ -94,7 +94,6 @@ public static class WebApplicationExtensions
             app.UseExceptionHandler("/Error", createScopeForErrors: true);
         }
 
-        app.MapStaticAssets();
         app.UseStaticFiles();
         app.UseStaticFiles(new StaticFileOptions
         {
@@ -104,6 +103,7 @@ public static class WebApplicationExtensions
 
         app.UseAntiforgery();
 
+        app.MapStaticAssets();
         app.MapRazorComponents<App>()
             .AddInteractiveServerRenderMode();
 
