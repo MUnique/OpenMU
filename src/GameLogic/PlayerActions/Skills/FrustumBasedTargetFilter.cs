@@ -13,6 +13,8 @@ using MUnique.OpenMU.Pathfinding;
 /// </summary>
 public record FrustumBasedTargetFilter
 {
+    private const double DistanceEpsilon = 0.001;
+    private const double ProjectileOverlap = 0.15; // Overlap between projectile zones to handle edge cases
     private readonly Vector2[][] _rotationVectors;
 
     /// <summary>
@@ -93,10 +95,6 @@ public record FrustumBasedTargetFilter
 
         var result = new List<int>();
         
-        // Divide the frustum width into sections for each projectile
-        // Calculate which section(s) the target falls into
-        var frustum = this.GetFrustum(attacker.Position, rotation);
-        
         // Calculate the relative position of the target within the frustum
         // Using a simple approach: determine the horizontal offset from the center line
         var relativePosition = CalculateRelativePositionInFrustum(attacker.Position, target.Position, rotation);
@@ -110,10 +108,9 @@ public record FrustumBasedTargetFilter
             var sectionStart = -1.0 + (i * sectionWidth);
             var sectionEnd = sectionStart + sectionWidth;
             
-            // Add some overlap so targets near boundaries can be hit by adjacent projectiles
-            const double overlap = 0.15;
-            sectionStart -= overlap;
-            sectionEnd += overlap;
+            // Add overlap so targets near boundaries can be hit by adjacent projectiles
+            sectionStart -= ProjectileOverlap;
+            sectionEnd += ProjectileOverlap;
             
             if (relativePosition >= sectionStart && relativePosition <= sectionEnd)
             {
@@ -154,7 +151,7 @@ public record FrustumBasedTargetFilter
         
         // Normalize the X position by the frustum width at that distance
         // Result will be in range [-1, 1] where -1 is left edge, 0 is center, 1 is right edge
-        if (Math.Abs(frustumWidthAtDistance) < 0.001)
+        if (Math.Abs(frustumWidthAtDistance) < DistanceEpsilon)
         {
             return 0;
         }
