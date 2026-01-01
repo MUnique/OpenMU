@@ -85,19 +85,37 @@ public record FrustumBasedTargetFilter
             return this.IsTargetWithinBounds(attacker, target, rotation) ? [0] : [];
         }
 
+        // First check if target is within the overall frustum
+        if (!this.IsTargetWithinBounds(attacker, target, rotation))
+        {
+            return [];
+        }
+
         var result = new List<int>();
         
-        // Calculate the angle span of the frustum
-        var frustumAngleSpan = CalculateFrustumAngleSpan(this.StartWidth, this.EndWidth, this.Distance);
+        // Divide the frustum width into sections for each projectile
+        // Calculate which section(s) the target falls into
+        var frustum = this.GetFrustum(attacker.Position, rotation);
         
-        // Distribute projectiles evenly within the frustum
+        // Calculate the relative position of the target within the frustum
+        // Using a simple approach: determine the horizontal offset from the center line
+        var relativePosition = CalculateRelativePositionInFrustum(attacker.Position, target.Position, rotation);
+        
+        // Divide the frustum into sections (-1 to 1 range)
+        // For 3 projectiles: left (-1 to -0.33), center (-0.33 to 0.33), right (0.33 to 1)
+        var sectionWidth = 2.0 / this.ProjectileCount;
+        
         for (int i = 0; i < this.ProjectileCount; i++)
         {
-            // Calculate the angle offset for this projectile
-            // Projectiles are evenly distributed, e.g., for 3 projectiles: -1/2, 0, +1/2 of the span
-            var angleOffset = (i - (this.ProjectileCount - 1) / 2.0) * frustumAngleSpan / (this.ProjectileCount - 1);
+            var sectionStart = -1.0 + (i * sectionWidth);
+            var sectionEnd = sectionStart + sectionWidth;
             
-            if (this.IsTargetWithinProjectilePath(attacker, target, rotation, angleOffset))
+            // Add some overlap so targets near boundaries can be hit by adjacent projectiles
+            const double overlap = 0.15;
+            sectionStart -= overlap;
+            sectionEnd += overlap;
+            
+            if (relativePosition >= sectionStart && relativePosition <= sectionEnd)
             {
                 result.Add(i);
             }
@@ -106,67 +124,43 @@ public record FrustumBasedTargetFilter
         return result;
     }
 
-    private static double CalculateFrustumAngleSpan(float startWidth, float endWidth, float distance)
+    private double CalculateRelativePositionInFrustum(Point attackerPos, Point targetPos, byte rotation)
     {
-        // Calculate the angle span based on the frustum dimensions
-        // Use the larger width to get the full span
-        var maxWidth = Math.Max(startWidth, endWidth);
-        return Math.Atan2(maxWidth, distance) * 2.0;
-    }
-
-    private bool IsTargetWithinProjectilePath(ILocateable attacker, ILocateable target, byte rotation, double angleOffset)
-    {
-        // Create a narrower frustum for this specific projectile
-        // The projectile has a narrow cone around its path
-        var projectileWidth = Math.Max(this.StartWidth / this.ProjectileCount, 0.5f);
-        var projectileEndWidth = Math.Max(this.EndWidth / this.ProjectileCount, 0.5f);
+        // Calculate the vector from attacker to target
+        var dx = targetPos.X - attackerPos.X;
+        var dy = targetPos.Y - attackerPos.Y;
         
-        // Calculate the center direction of this projectile
-        var frustum = this.GetProjectileFrustum(attacker.Position, rotation, angleOffset, projectileWidth, projectileEndWidth);
-        return IsWithinFrustum(frustum, target.Position);
-    }
-
-    private (Vector4 X, Vector4 Y) GetProjectileFrustum(Point attackerPosition, byte rotation, double angleOffset, float width, float endWidth)
-    {
-        const int degreeOffset = 180;
-        const float distanceOffset = 0.99f;
-
-        // Calculate the rotation with the projectile offset
-        var baseRotation = (rotation * 360.0) / byte.MaxValue;
-        baseRotation = (baseRotation + degreeOffset) % 360;
-        var offsetDegrees = angleOffset * (180.0 / Math.PI); // Convert radians to degrees
-        var totalDegrees = baseRotation + offsetDegrees;
+        // Calculate the rotation angle (same logic as in CalculateRotationVectors)
+        var rotationAngle = (rotation * 360.0 / 256.0) + 180; // Add 180 offset as in the frustum calculation
+        var rotationRad = rotationAngle * Math.PI / 180.0;
         
-        var angleMatrix = CreateAngleMatrix(totalDegrees);
+        // Rotate the vector to align with the frustum's coordinate system
+        // The frustum has Y pointing forward and X pointing right
+        var cos = Math.Cos(-rotationRad);
+        var sin = Math.Sin(-rotationRad);
+        var rotatedX = dx * cos - dy * sin;
+        var rotatedY = dx * sin + dy * cos;
         
-        // Define the frustum corners for this projectile
-        var temp = new Vector3[4];
-        temp[0] = new Vector3(-endWidth, this.Distance, 0);
-        temp[1] = new Vector3(endWidth, this.Distance, 0);
-        temp[2] = new Vector3(width, distanceOffset, 0);
-        temp[3] = new Vector3(-width, distanceOffset, 0);
-        
-        var rotationVectors = new Vector2[4];
-        for (int i = 0; i < temp.Length; i++)
+        // If target is behind us or too close, return 0
+        if (rotatedY <= 0)
         {
-            rotationVectors[i] = VectorRotate(temp[i], angleMatrix);
+            return 0;
         }
-
-        Vector4 resultX = default;
-        Vector4 resultY = default;
-        resultX.X = (int)rotationVectors[0].X + attackerPosition.X;
-        resultY.X = (int)rotationVectors[0].Y + attackerPosition.Y;
-
-        resultX.Y = (int)rotationVectors[1].X + attackerPosition.X;
-        resultY.Y = (int)rotationVectors[1].Y + attackerPosition.Y;
-
-        resultX.Z = (int)rotationVectors[2].X + attackerPosition.X;
-        resultY.Z = (int)rotationVectors[2].Y + attackerPosition.Y;
-
-        resultX.W = (int)rotationVectors[3].X + attackerPosition.X;
-        resultY.W = (int)rotationVectors[3].Y + attackerPosition.Y;
-
-        return (resultX, resultY);
+        
+        // Calculate the frustum width at the target's distance
+        // Linear interpolation between start and end width
+        var distanceRatio = Math.Min(rotatedY / this.Distance, 1.0);
+        var frustumWidthAtDistance = this.StartWidth + (this.EndWidth - this.StartWidth) * distanceRatio;
+        
+        // Normalize the X position by the frustum width at that distance
+        // Result will be in range [-1, 1] where -1 is left edge, 0 is center, 1 is right edge
+        if (Math.Abs(frustumWidthAtDistance) < 0.001)
+        {
+            return 0;
+        }
+        
+        var normalizedX = rotatedX / frustumWidthAtDistance;
+        return Math.Clamp(normalizedX, -1.0, 1.0);
     }
 
     private static bool IsWithinFrustum((Vector4 X, Vector4 Y) frustum, Point target)
