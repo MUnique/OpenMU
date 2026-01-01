@@ -103,7 +103,7 @@ public static class WebApplicationExtensions
         });
 
         app.UseAntiforgery();
-        
+
         app.MapRazorComponents<App>()
             .AddInteractiveServerRenderMode();
 
