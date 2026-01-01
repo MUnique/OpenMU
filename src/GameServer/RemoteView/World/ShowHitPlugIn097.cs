@@ -4,12 +4,13 @@
 
 namespace MUnique.OpenMU.GameServer.RemoteView.World;
 
+using System.Buffers.Binary;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.World;
-using MUnique.OpenMU.Network.Packets.ServerToClient;
+using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.PlugIns;
 
@@ -45,50 +46,41 @@ public class ShowHitPlugIn097 : IShowHitPlugIn
         do
         {
             var healthDamage = (ushort)Math.Min(ushort.MaxValue, remainingHealthDamage);
-            var shieldDamage = (ushort)Math.Min(ushort.MaxValue, remainingShieldDamage);
+            var viewCurHp = ClampToUInt32(target.Attributes[Stats.CurrentHealth]);
+            var viewDamageHp = ClampToUInt32(healthDamage);
 
-            await connection.SendObjectHitAsync(
-                0x15,
-                targetId,
-                healthDamage,
-                this.GetDamageKind(hitInfo.Attributes),
-                hitInfo.Attributes.HasFlag(DamageAttributes.Double),
-                hitInfo.Attributes.HasFlag(DamageAttributes.Triple),
-                shieldDamage).ConfigureAwait(false);
+            await connection.SendAsync(() =>
+            {
+                const int packetLength = 15;
+                var span = connection.Output.GetSpan(packetLength)[..packetLength];
+                span[0] = 0xC1;
+                span[1] = (byte)packetLength;
+                span[2] = 0x15;
+                BinaryPrimitives.WriteUInt16BigEndian(span.Slice(3, 2), targetId);
+                BinaryPrimitives.WriteUInt16BigEndian(span.Slice(5, 2), healthDamage);
+                BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(7, 4), viewCurHp);
+                BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(11, 4), viewDamageHp);
+                return packetLength;
+            }).ConfigureAwait(false);
 
-            remainingShieldDamage -= shieldDamage;
+            remainingShieldDamage -= (ushort)Math.Min(ushort.MaxValue, remainingShieldDamage);
             remainingHealthDamage -= healthDamage;
         }
         while (remainingHealthDamage > 0 || remainingShieldDamage > 0);
     }
 
-    private DamageKind GetDamageKind(DamageAttributes attributes)
+    private static uint ClampToUInt32(float value)
     {
-        if (attributes.HasFlag(DamageAttributes.IgnoreDefense))
+        if (value <= 0f)
         {
-            return DamageKind.IgnoreDefenseCyan;
+            return 0;
         }
 
-        if (attributes.HasFlag(DamageAttributes.Excellent))
+        if (value >= uint.MaxValue)
         {
-            return DamageKind.ExcellentLightGreen;
+            return uint.MaxValue;
         }
 
-        if (attributes.HasFlag(DamageAttributes.Critical))
-        {
-            return DamageKind.CriticalBlue;
-        }
-
-        if (attributes.HasFlag(DamageAttributes.Reflected))
-        {
-            return DamageKind.ReflectedDarkPink;
-        }
-
-        if (attributes.HasFlag(DamageAttributes.Poison))
-        {
-            return DamageKind.PoisonDarkGreen;
-        }
-
-        return DamageKind.NormalRed;
+        return (uint)value;
     }
 }
