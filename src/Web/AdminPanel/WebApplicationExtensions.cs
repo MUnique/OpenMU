@@ -42,14 +42,12 @@ public static class WebApplicationExtensions
         // Ensure that DataInitialization plugins will get collected - for the setup functionality.
         _ = DataInitialization.Id;
 
-        var razorComponentsBuilder = builder.Services.AddRazorComponents()
+        builder.Services.AddRazorComponents()
             .AddInteractiveServerComponents();
         
         if (includeMapApp)
         {
             AdminPanelEnvironment.IsHostingEmbedded = true;
-            razorComponentsBuilder.AddInteractiveServerComponents(options =>
-                options.JSInterop.MaximumDataSizeInBytes = null);
         }
 
         var services = builder.Services;
