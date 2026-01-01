@@ -4,12 +4,13 @@
 
 namespace MUnique.OpenMU.GameServer.RemoteView.Character;
 
+using System.Buffers.Binary;
 using System.Collections.Frozen;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Network;
 using MUnique.OpenMU.GameLogic.Views.Character;
-using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.PlugIns;
 
@@ -45,30 +46,93 @@ public class UpdateStatsPlugIn097 : UpdateStatsBasePlugIn
 
     private static ValueTask OnMaximumHealthChangedAsync(RemotePlayer player)
     {
-        return player.Connection.SendMaximumHealthAndShieldAsync(
+        return SendLifeAsync(
+            player,
+            0xFE,
             GetUShort(player.Attributes![Stats.MaximumHealth]),
-            0);
+            ClampToUInt32(player.Attributes[Stats.MaximumHealth]));
     }
 
     private static ValueTask OnCurrentHealthChangedAsync(RemotePlayer player)
     {
-        return player.Connection.SendCurrentHealthAndShieldAsync(
+        return SendLifeAsync(
+            player,
+            0xFF,
             GetUShort(player.Attributes![Stats.CurrentHealth]),
-            0);
+            ClampToUInt32(player.Attributes[Stats.CurrentHealth]));
     }
 
     private static ValueTask OnMaximumManaOrAbilityChangedAsync(RemotePlayer player)
     {
-        return player.Connection.SendMaximumManaAndAbilityAsync(
+        return SendManaAsync(
+            player,
+            0xFE,
             GetUShort(player.Attributes![Stats.MaximumMana]),
-            GetUShort(player.Attributes[Stats.MaximumAbility]));
+            GetUShort(player.Attributes[Stats.MaximumAbility]),
+            ClampToUInt32(player.Attributes[Stats.MaximumMana]),
+            ClampToUInt32(player.Attributes[Stats.MaximumAbility]));
     }
 
     private static ValueTask OnCurrentManaOrAbilityChangedAsync(RemotePlayer player)
     {
-        return player.Connection.SendCurrentManaAndAbilityAsync(
+        return SendManaAsync(
+            player,
+            0xFF,
             GetUShort(player.Attributes![Stats.CurrentMana]),
-            GetUShort(player.Attributes[Stats.CurrentAbility]));
+            GetUShort(player.Attributes[Stats.CurrentAbility]),
+            ClampToUInt32(player.Attributes[Stats.CurrentMana]),
+            ClampToUInt32(player.Attributes[Stats.CurrentAbility]));
+    }
+
+    private static ValueTask SendLifeAsync(RemotePlayer player, byte type, ushort life, uint viewHp)
+    {
+        var connection = player.Connection;
+        if (connection is null)
+        {
+            return ValueTask.CompletedTask;
+        }
+
+        const int packetLength = 11;
+        int WritePacket()
+        {
+            var span = connection.Output.GetSpan(packetLength)[..packetLength];
+            span[0] = 0xC1;
+            span[1] = (byte)packetLength;
+            span[2] = 0x26;
+            span[3] = type;
+            BinaryPrimitives.WriteUInt16BigEndian(span.Slice(4, 2), life);
+            span[6] = 0;
+            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(7, 4), viewHp);
+            return packetLength;
+        }
+
+        return connection.SendAsync(WritePacket);
+    }
+
+    private static ValueTask SendManaAsync(RemotePlayer player, byte type, ushort mana, ushort bp, uint viewMp, uint viewBp)
+    {
+        var connection = player.Connection;
+        if (connection is null)
+        {
+            return ValueTask.CompletedTask;
+        }
+
+        const int packetLength = 16;
+        int WritePacket()
+        {
+            var span = connection.Output.GetSpan(packetLength)[..packetLength];
+            span[0] = 0xC1;
+            span[1] = (byte)packetLength;
+            span[2] = 0x27;
+            span[3] = type;
+            BinaryPrimitives.WriteUInt16BigEndian(span.Slice(4, 2), mana);
+            BinaryPrimitives.WriteUInt16BigEndian(span.Slice(6, 2), bp);
+            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(8, 4), viewMp);
+            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(12, 4), viewBp);
+            return packetLength;
+        }
+
+        return connection.SendAsync(WritePacket);
     }
 
     private static ushort GetUShort(float value)
@@ -84,6 +148,21 @@ public class UpdateStatsPlugIn097 : UpdateStatsBasePlugIn
         }
 
         return (ushort)value;
+    }
+
+    private static uint ClampToUInt32(float value)
+    {
+        if (value <= 0f)
+        {
+            return 0;
+        }
+
+        if (value >= uint.MaxValue)
+        {
+            return uint.MaxValue;
+        }
+
+        return (uint)value;
     }
 
 }

@@ -4,14 +4,15 @@
 
 namespace MUnique.OpenMU.GameServer.RemoteView.Character;
 
+using System.Buffers.Binary;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.PlugIns;
-using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -42,17 +43,48 @@ public class UpdateLevelPlugIn097 : IUpdateLevelPlugIn
             return;
         }
 
-        await connection.SendCharacterLevelUpdateAsync(
-            GetUShort(charStats[Stats.Level]),
-            GetUShort(Math.Max(selectedCharacter.LevelUpPoints, 0)),
-            GetUShort(charStats[Stats.MaximumHealth]),
-            GetUShort(charStats[Stats.MaximumMana]),
-            0,
-            GetUShort(charStats[Stats.MaximumAbility]),
-            (ushort)selectedCharacter.UsedFruitPoints,
-            selectedCharacter.GetMaximumFruitPoints(),
-            (ushort)selectedCharacter.UsedNegFruitPoints,
-            selectedCharacter.GetMaximumFruitPoints()).ConfigureAwait(false);
+        await connection.SendAsync(() =>
+        {
+            const int packetLength = 46;
+            var span = connection.Output.GetSpan(packetLength)[..packetLength];
+            span[0] = 0xC1;
+            span[1] = (byte)packetLength;
+            span[2] = 0xF3;
+            span[3] = 0x05;
+
+            var offset = 4;
+            BinaryPrimitives.WriteUInt16LittleEndian(span.Slice(offset, 2), GetUShort(charStats[Stats.Level]));
+            offset += 2;
+            BinaryPrimitives.WriteUInt16LittleEndian(span.Slice(offset, 2), GetUShort(selectedCharacter.LevelUpPoints));
+            offset += 2;
+            BinaryPrimitives.WriteUInt16LittleEndian(span.Slice(offset, 2), GetUShort(charStats[Stats.MaximumHealth]));
+            offset += 2;
+            BinaryPrimitives.WriteUInt16LittleEndian(span.Slice(offset, 2), GetUShort(charStats[Stats.MaximumMana]));
+            offset += 2;
+            BinaryPrimitives.WriteUInt16LittleEndian(span.Slice(offset, 2), GetUShort(charStats[Stats.MaximumAbility]));
+            offset += 2;
+            BinaryPrimitives.WriteUInt16LittleEndian(span.Slice(offset, 2), (ushort)selectedCharacter.UsedFruitPoints);
+            offset += 2;
+            BinaryPrimitives.WriteUInt16LittleEndian(span.Slice(offset, 2), selectedCharacter.GetMaximumFruitPoints());
+            offset += 2;
+            BinaryPrimitives.WriteUInt16LittleEndian(span.Slice(offset, 2), (ushort)selectedCharacter.UsedNegFruitPoints);
+            offset += 2;
+            BinaryPrimitives.WriteUInt16LittleEndian(span.Slice(offset, 2), selectedCharacter.GetMaximumFruitPoints());
+            offset += 2;
+            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), ClampToUInt32(selectedCharacter.LevelUpPoints));
+            offset += 4;
+            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), ClampToUInt32(charStats[Stats.MaximumHealth]));
+            offset += 4;
+            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), ClampToUInt32(charStats[Stats.MaximumMana]));
+            offset += 4;
+            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), ClampToUInt32(charStats[Stats.MaximumAbility]));
+            offset += 4;
+            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), ClampToUInt32(selectedCharacter.Experience));
+            offset += 4;
+            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), ClampToUInt32(this._player.GameServerContext.ExperienceTable[(int)charStats[Stats.Level] + 1]));
+
+            return packetLength;
+        }).ConfigureAwait(false);
 
         var message = this._player.GameServerContext.Localization.GetString("Server_Message_LevelUp", (int)charStats[Stats.Level]);
         await this._player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal)).ConfigureAwait(false);
@@ -77,6 +109,51 @@ public class UpdateLevelPlugIn097 : IUpdateLevelPlugIn
         }
 
         return (ushort)value;
+    }
+
+    private static ushort GetUShort(int value)
+    {
+        if (value <= 0)
+        {
+            return 0;
+        }
+
+        if (value >= ushort.MaxValue)
+        {
+            return ushort.MaxValue;
+        }
+
+        return (ushort)value;
+    }
+
+    private static uint ClampToUInt32(float value)
+    {
+        if (value <= 0f)
+        {
+            return 0;
+        }
+
+        if (value >= uint.MaxValue)
+        {
+            return uint.MaxValue;
+        }
+
+        return (uint)value;
+    }
+
+    private static uint ClampToUInt32(long value)
+    {
+        if (value <= 0)
+        {
+            return 0;
+        }
+
+        if (value >= uint.MaxValue)
+        {
+            return uint.MaxValue;
+        }
+
+        return (uint)value;
     }
 
 }
