@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.Version097d.Items;
 
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -11,6 +12,8 @@ using System.Linq;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.Persistence.Initialization.Items;
+using Version095dItems = MUnique.OpenMU.Persistence.Initialization.Version095d.Items;
 
 internal static class ItemList097
 {
@@ -64,6 +67,53 @@ internal static class ItemList097
         return allowedItems;
     }
 
+    public static IReadOnlyList<ItemListEntry> LoadItems()
+    {
+        var itemListPath = Path.Combine(
+            AppContext.BaseDirectory,
+            ItemListRelativePath.Replace('/', Path.DirectorySeparatorChar));
+
+        if (!File.Exists(itemListPath))
+        {
+            return Array.Empty<ItemListEntry>();
+        }
+
+        var items = new List<ItemListEntry>();
+        byte? currentGroup = null;
+
+        foreach (var rawLine in File.ReadLines(itemListPath))
+        {
+            var line = rawLine.Trim();
+            if (string.IsNullOrEmpty(line) || line.StartsWith("//", StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            if (line.Equals("end", StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            if (IsGroupHeader(line, out var group))
+            {
+                currentGroup = group;
+                continue;
+            }
+
+            if (currentGroup is null)
+            {
+                continue;
+            }
+
+            if (TryParseItemLine(line, currentGroup.Value, out var entry))
+            {
+                items.Add(entry);
+            }
+        }
+
+        return items;
+    }
+
     private static bool IsGroupHeader(string line, out byte group)
     {
         group = 0;
@@ -80,6 +130,74 @@ internal static class ItemList097
     {
         var index = line.IndexOfAny(new[] { ' ', '\t' });
         return index < 0 ? line : line[..index];
+    }
+
+    private static bool TryParseItemLine(string line, byte group, out ItemListEntry entry)
+    {
+        entry = default;
+        var columns = line.Split('\t');
+        if (columns.Length < 9)
+        {
+            return false;
+        }
+
+        if (!short.TryParse(columns[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out var number))
+        {
+            return false;
+        }
+
+        var slot = GetByte(columns, 1);
+        var width = GetByte(columns, 3);
+        var height = GetByte(columns, 4);
+        var dropsFromMonsters = GetByte(columns, 7) != 0;
+        var name = columns[8].Trim().Trim('"');
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            return false;
+        }
+
+        var dropLevel = GetByte(columns, 13);
+        var durability = GetInt(columns, 17);
+        var isAmmunition = durability < 0
+            || name.Contains("arrow", StringComparison.OrdinalIgnoreCase)
+            || name.Contains("bolt", StringComparison.OrdinalIgnoreCase);
+
+        entry = new ItemListEntry(
+            group,
+            number,
+            slot,
+            width,
+            height,
+            dropsFromMonsters,
+            name,
+            dropLevel,
+            durability,
+            isAmmunition);
+
+        return true;
+    }
+
+    private static byte GetByte(string[] columns, int index)
+    {
+        var value = GetInt(columns, index);
+        if (value <= 0)
+        {
+            return 0;
+        }
+
+        return value >= byte.MaxValue ? byte.MaxValue : (byte)value;
+    }
+
+    private static int GetInt(string[] columns, int index)
+    {
+        if (index < 0 || index >= columns.Length)
+        {
+            return 0;
+        }
+
+        return int.TryParse(columns[index], NumberStyles.Integer, CultureInfo.InvariantCulture, out var value)
+            ? value
+            : 0;
     }
 }
 
@@ -161,5 +279,78 @@ internal sealed class ItemList097Filter
     {
         return itemDefinition is not null
             && this._allowedItems.Contains((itemDefinition.Group, itemDefinition.Number));
+    }
+}
+
+internal readonly record struct ItemListEntry(
+    byte Group,
+    short Number,
+    byte Slot,
+    byte Width,
+    byte Height,
+    bool DropsFromMonsters,
+    string Name,
+    byte DropLevel,
+    int Durability,
+    bool IsAmmunition);
+
+internal sealed class ItemList097Importer : InitializerBase
+{
+    public ItemList097Importer(IContext context, GameConfiguration gameConfiguration)
+        : base(context, gameConfiguration)
+    {
+    }
+
+    public override void Initialize()
+    {
+        var entries = ItemList097.LoadItems();
+        if (entries.Count == 0)
+        {
+            return;
+        }
+
+        var existingItems = new HashSet<(byte Group, short Number)>(
+            this.GameConfiguration.Items.Select(item => (item.Group, item.Number)));
+
+        foreach (var entry in entries)
+        {
+            if (existingItems.Contains((entry.Group, entry.Number)))
+            {
+                continue;
+            }
+
+            var item = this.Context.CreateNew<ItemDefinition>();
+            item.Name = entry.Name;
+            item.Group = entry.Group;
+            item.Number = entry.Number;
+            item.Width = entry.Width;
+            item.Height = entry.Height;
+            item.DropsFromMonsters = entry.DropsFromMonsters;
+            item.DropLevel = entry.DropLevel;
+            item.Durability = entry.Durability < 0 ? (byte)255 : (byte)Math.Min(byte.MaxValue, entry.Durability);
+            item.IsAmmunition = entry.IsAmmunition;
+            item.MaximumItemLevel = entry.IsAmmunition ? (byte)0 : Version095dItems.Constants.MaximumItemLevel;
+            item.ItemSlot = this.GetSlotType(entry);
+            item.SetGuid(item.Group, item.Number);
+
+            this.GameConfiguration.Items.Add(item);
+            existingItems.Add((entry.Group, entry.Number));
+        }
+    }
+
+    private ItemSlotType? GetSlotType(ItemListEntry entry)
+    {
+        if (entry.Slot <= 1 && entry.Group <= (byte)ItemGroups.Staff)
+        {
+            var dualSlot = this.GameConfiguration.ItemSlotTypes
+                .FirstOrDefault(type => type.ItemSlots.Contains(0) && type.ItemSlots.Contains(1));
+            if (dualSlot is not null)
+            {
+                return dualSlot;
+            }
+        }
+
+        return this.GameConfiguration.ItemSlotTypes
+            .FirstOrDefault(type => type.ItemSlots.Contains(entry.Slot));
     }
 }
