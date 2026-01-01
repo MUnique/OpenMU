@@ -21,11 +21,13 @@ public record FrustumBasedTargetFilter
     /// <param name="startWidth">The width of the frustum at the start.</param>
     /// <param name="endWidth">The width of the frustum at the end.</param>
     /// <param name="distance">The distance.</param>
-    public FrustumBasedTargetFilter(float startWidth, float endWidth, float distance)
+    /// <param name="projectileCount">The number of projectiles. Default is 1.</param>
+    public FrustumBasedTargetFilter(float startWidth, float endWidth, float distance, int projectileCount = 1)
     {
         this.EndWidth = endWidth;
         this.Distance = distance;
         this.StartWidth = startWidth;
+        this.ProjectileCount = projectileCount;
         this._rotationVectors = this.CalculateRotationVectors();
     }
 
@@ -45,6 +47,11 @@ public record FrustumBasedTargetFilter
     public float StartWidth { get; }
 
     /// <summary>
+    /// Gets the number of projectiles/arrows.
+    /// </summary>
+    public int ProjectileCount { get; }
+
+    /// <summary>
     /// Determines whether the target is within the hit bounds.
     /// </summary>
     /// <param name="attacker">The attacker.</param>
@@ -60,6 +67,106 @@ public record FrustumBasedTargetFilter
 
         var frustum = this.GetFrustum(attacker.Position, rotation);
         return IsWithinFrustum(frustum, target.Position);
+    }
+
+    /// <summary>
+    /// Gets the indices of projectiles that can hit the target.
+    /// When multiple projectiles are used, they are evenly distributed within the frustum.
+    /// </summary>
+    /// <param name="attacker">The attacker.</param>
+    /// <param name="target">The target.</param>
+    /// <param name="rotation">The rotation.</param>
+    /// <returns>A list of projectile indices (0-based) that can hit the target.</returns>
+    public IReadOnlyList<int> GetProjectilesThatCanHitTarget(ILocateable attacker, ILocateable target, byte rotation)
+    {
+        if (this.ProjectileCount <= 1)
+        {
+            // For single projectile, use the simple frustum check
+            return this.IsTargetWithinBounds(attacker, target, rotation) ? [0] : [];
+        }
+
+        var result = new List<int>();
+        
+        // Calculate the angle span of the frustum
+        var frustumAngleSpan = CalculateFrustumAngleSpan(this.StartWidth, this.EndWidth, this.Distance);
+        
+        // Distribute projectiles evenly within the frustum
+        for (int i = 0; i < this.ProjectileCount; i++)
+        {
+            // Calculate the angle offset for this projectile
+            // Projectiles are evenly distributed, e.g., for 3 projectiles: -1/2, 0, +1/2 of the span
+            var angleOffset = (i - (this.ProjectileCount - 1) / 2.0) * frustumAngleSpan / (this.ProjectileCount - 1);
+            
+            if (this.IsTargetWithinProjectilePath(attacker, target, rotation, angleOffset))
+            {
+                result.Add(i);
+            }
+        }
+
+        return result;
+    }
+
+    private static double CalculateFrustumAngleSpan(float startWidth, float endWidth, float distance)
+    {
+        // Calculate the angle span based on the frustum dimensions
+        // Use the larger width to get the full span
+        var maxWidth = Math.Max(startWidth, endWidth);
+        return Math.Atan2(maxWidth, distance) * 2.0;
+    }
+
+    private bool IsTargetWithinProjectilePath(ILocateable attacker, ILocateable target, byte rotation, double angleOffset)
+    {
+        // Create a narrower frustum for this specific projectile
+        // The projectile has a narrow cone around its path
+        var projectileWidth = Math.Max(this.StartWidth / this.ProjectileCount, 0.5f);
+        var projectileEndWidth = Math.Max(this.EndWidth / this.ProjectileCount, 0.5f);
+        
+        // Calculate the center direction of this projectile
+        var frustum = this.GetProjectileFrustum(attacker.Position, rotation, angleOffset, projectileWidth, projectileEndWidth);
+        return IsWithinFrustum(frustum, target.Position);
+    }
+
+    private (Vector4 X, Vector4 Y) GetProjectileFrustum(Point attackerPosition, byte rotation, double angleOffset, float width, float endWidth)
+    {
+        const int degreeOffset = 180;
+        const float distanceOffset = 0.99f;
+
+        // Calculate the rotation with the projectile offset
+        var baseRotation = (rotation * 360.0) / byte.MaxValue;
+        baseRotation = (baseRotation + degreeOffset) % 360;
+        var offsetDegrees = angleOffset * (180.0 / Math.PI); // Convert radians to degrees
+        var totalDegrees = baseRotation + offsetDegrees;
+        
+        var angleMatrix = CreateAngleMatrix(totalDegrees);
+        
+        // Define the frustum corners for this projectile
+        var temp = new Vector3[4];
+        temp[0] = new Vector3(-endWidth, this.Distance, 0);
+        temp[1] = new Vector3(endWidth, this.Distance, 0);
+        temp[2] = new Vector3(width, distanceOffset, 0);
+        temp[3] = new Vector3(-width, distanceOffset, 0);
+        
+        var rotationVectors = new Vector2[4];
+        for (int i = 0; i < temp.Length; i++)
+        {
+            rotationVectors[i] = VectorRotate(temp[i], angleMatrix);
+        }
+
+        Vector4 resultX = default;
+        Vector4 resultY = default;
+        resultX.X = (int)rotationVectors[0].X + attackerPosition.X;
+        resultY.X = (int)rotationVectors[0].Y + attackerPosition.Y;
+
+        resultX.Y = (int)rotationVectors[1].X + attackerPosition.X;
+        resultY.Y = (int)rotationVectors[1].Y + attackerPosition.Y;
+
+        resultX.Z = (int)rotationVectors[2].X + attackerPosition.X;
+        resultY.Z = (int)rotationVectors[2].Y + attackerPosition.Y;
+
+        resultX.W = (int)rotationVectors[3].X + attackerPosition.X;
+        resultY.W = (int)rotationVectors[3].Y + attackerPosition.Y;
+
+        return (resultX, resultY);
     }
 
     private static bool IsWithinFrustum((Vector4 X, Vector4 Y) frustum, Point target)

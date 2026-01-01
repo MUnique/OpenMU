@@ -111,7 +111,7 @@ public class AreaSkillAttackAction
         }
         else
         {
-            extraTarget = await this.AttackTargetsAsync(player, extraTargetId, targetAreaCenter, skillEntry, areaSkillSettings, targets, isCombo).ConfigureAwait(false);
+            extraTarget = await this.AttackTargetsAsync(player, extraTargetId, targetAreaCenter, skillEntry, skill, areaSkillSettings, targets, rotation, isCombo).ConfigureAwait(false);
         }
 
         if (isCombo)
@@ -120,12 +120,32 @@ public class AreaSkillAttackAction
         }
     }
 
-    private async Task<IAttackable?> AttackTargetsAsync(Player player, ushort extraTargetId, Point targetAreaCenter, SkillEntry skillEntry, AreaSkillSettings areaSkillSettings, IEnumerable<IAttackable> targets, bool isCombo)
+    private async Task<IAttackable?> AttackTargetsAsync(Player player, ushort extraTargetId, Point targetAreaCenter, SkillEntry skillEntry, Skill skill, AreaSkillSettings areaSkillSettings, IEnumerable<IAttackable> targets, byte rotation, bool isCombo)
     {
         IAttackable? extraTarget = null;
         var attackCount = 0;
         var maxAttacks = areaSkillSettings.MaximumNumberOfHitsPerAttack == 0 ? int.MaxValue : areaSkillSettings.MaximumNumberOfHitsPerAttack;
         var currentDelay = TimeSpan.Zero;
+
+        // For skills with multiple projectiles, track which projectiles hit which targets
+        Dictionary<IAttackable, List<int>>? targetToProjectileMap = null;
+        FrustumBasedTargetFilter? filter = null;
+        
+        if (areaSkillSettings is { UseFrustumFilter: true, ProjectileCount: > 1 })
+        {
+            filter = FrustumFilters.GetOrAdd(areaSkillSettings, static s => new FrustumBasedTargetFilter(s.FrustumStartWidth, s.FrustumEndWidth, s.FrustumDistance, s.ProjectileCount));
+            targetToProjectileMap = new Dictionary<IAttackable, List<int>>();
+            
+            // Determine which projectiles can hit each target
+            foreach (var target in targets)
+            {
+                var projectiles = filter.GetProjectilesThatCanHitTarget(player, target, rotation);
+                if (projectiles.Count > 0)
+                {
+                    targetToProjectileMap[target] = new List<int>(projectiles);
+                }
+            }
+        }
 
         for (int attackRound = 0; attackRound < areaSkillSettings.MaximumNumberOfHitsPerTarget; attackRound++)
         {
@@ -144,6 +164,18 @@ public class AreaSkillAttackAction
                 if (target.Id == extraTargetId)
                 {
                     extraTarget = target;
+                }
+
+                // For multiple projectiles, check if there are any projectiles left that can hit this target
+                if (targetToProjectileMap != null)
+                {
+                    if (!targetToProjectileMap.TryGetValue(target, out var availableProjectiles) || availableProjectiles.Count == 0)
+                    {
+                        continue; // No projectiles can hit this target
+                    }
+
+                    // Remove one projectile from the available list (it's been used for this hit)
+                    availableProjectiles.RemoveAt(0);
                 }
 
                 var hitChance = attackRound < areaSkillSettings.MinimumNumberOfHitsPerTarget
@@ -231,7 +263,7 @@ public class AreaSkillAttackAction
 
         if (skill.AreaSkillSettings is { UseFrustumFilter: true } areaSkillSettings)
         {
-            var filter = FrustumFilters.GetOrAdd(areaSkillSettings, static s => new FrustumBasedTargetFilter(s.FrustumStartWidth, s.FrustumEndWidth, s.FrustumDistance));
+            var filter = FrustumFilters.GetOrAdd(areaSkillSettings, static s => new FrustumBasedTargetFilter(s.FrustumStartWidth, s.FrustumEndWidth, s.FrustumDistance, s.ProjectileCount > 0 ? s.ProjectileCount : 1));
             targetsInRange = targetsInRange.Where(a => filter.IsTargetWithinBounds(player, a, rotation));
         }
 
