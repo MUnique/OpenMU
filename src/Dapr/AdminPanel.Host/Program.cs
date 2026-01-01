@@ -30,8 +30,11 @@ var metricsRegistry = new MetricsRegistry();
 // todo: add some meaningful metrics
 builder.AddOpenTelemetryMetrics(metricsRegistry);
 
-var app = builder.BuildAndConfigure(true);
+var app = builder.BuildAndConfigure(false);
 app.UseStaticFiles();
+app.UseAntiforgery();
+app.MapRazorComponents<MUnique.OpenMU.AdminPanel.Host.App>()
+    .AddInteractiveServerRenderMode();
 
 await app.WaitForDatabaseConnectionInitializationAsync().ConfigureAwait(false);
 

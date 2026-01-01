@@ -42,14 +42,15 @@ public static class WebApplicationExtensions
         // Ensure that DataInitialization plugins will get collected - for the setup functionality.
         _ = DataInitialization.Id;
 
-        var mvcBuilder = builder.Services.AddRazorPages();
+        var razorComponentsBuilder = builder.Services.AddRazorComponents()
+            .AddInteractiveServerComponents();
+        
         if (includeMapApp)
         {
             AdminPanelEnvironment.IsHostingEmbedded = true;
-            mvcBuilder.AddApplicationPart(typeof(Map.Exports).Assembly);
+            razorComponentsBuilder.AddInteractiveServerComponents(options =>
+                options.JSInterop.MaximumDataSizeInBytes = null);
         }
-
-        builder.Services.AddServerSideBlazor();
 
         var services = builder.Services;
         services.AddControllers()
@@ -92,7 +93,7 @@ public static class WebApplicationExtensions
         }
         else
         {
-            app.UseExceptionHandler("/Error");
+            app.UseExceptionHandler("/Error", createScopeForErrors: true);
         }
 
         app.MapStaticAssets();
@@ -103,9 +104,10 @@ public static class WebApplicationExtensions
             RequestPath = "/logs",
         });
 
-        app.UseRouting();
-        app.MapBlazorHub();
-        app.MapFallbackToPage("/_Host");
+        app.UseAntiforgery();
+        
+        app.MapRazorComponents<App>()
+            .AddInteractiveServerRenderMode();
 
         app.MapControllers();
 

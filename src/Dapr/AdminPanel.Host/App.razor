@@ -1,20 +1,76 @@
 @using System.Reflection
+@using MUnique.OpenMU.Web.AdminPanel
 @using MUnique.OpenMU.Web.AdminPanel.Shared
 
-<!--
-<Router AppAssembly="@typeof(MUnique.OpenMU.Web.AdminPanel.AdminPanelEnvironment).Assembly" AdditionalAssemblies="@_additionalAssemblies">
-    <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
-        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
-    </Found>
-    <NotFound>
-        <PageTitle>Not found</PageTitle>
-        <LayoutView Layout="@typeof(MainLayout)">
-            <p role="alert">Sorry, there's nothing at this address.</p>
-        </LayoutView>
-    </NotFound>
-</Router>
--->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OpenMU AdminPanel</title>
+    <base href="/" />
+    <link href="MUnique.OpenMU.AdminPanel.Host.styles.css" rel="stylesheet" />
+    @foreach (var stylesheetSrc in Web.AdminPanel.Exports.Stylesheets)
+    {
+        <link href="@stylesheetSrc" rel="stylesheet" />
+    }
+    <HeadOutlet @rendermode="InteractiveServer" />
+</head>
+<body>
+    <Router AppAssembly="@typeof(MUnique.OpenMU.Web.AdminPanel.AdminPanelEnvironment).Assembly" AdditionalAssemblies="@_additionalAssemblies">
+        <Found Context="routeData">
+            <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+            <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+        </Found>
+        <NotFound>
+            <PageTitle>Not found</PageTitle>
+            <LayoutView Layout="@typeof(MainLayout)">
+                <p role="alert">Sorry, there's nothing at this address.</p>
+            </LayoutView>
+        </NotFound>
+    </Router>
+
+    <div id="blazor-error-ui">
+        An error has occurred. This application may no longer respond until reloaded.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+
+    <script src="_framework/blazor.web.js"></script>
+    @foreach (var scriptSrc in Web.AdminPanel.Exports.Scripts)
+    {
+        <script src="@scriptSrc"></script>
+    }
+
+    @if (Web.AdminPanel.Exports.ScriptMappings.Any())
+    {
+        var sb = new System.Text.StringBuilder();
+        sb.AppendLine("System.config({").AppendLine("    map: {");
+        bool isFirst = true;
+        foreach (var scriptMapping in Web.AdminPanel.Exports.ScriptMappings)
+        {
+            if (!isFirst)
+            {
+                sb.AppendLine(",");
+            }
+
+            isFirst = false;
+            sb.Append($"'{scriptMapping.Key}': '")
+                .Append(scriptMapping.Path)
+                .Append("'");
+        }
+        sb.AppendLine("    }")
+            .AppendLine("});");
+
+        <script>
+            // To be able to resolve three etc. in our TS files and the resulting javascript, SystemJS needs to be configured.
+            // These modules are loaded by SystemJS when they get requested the first time. No need to manually load them.
+            @((MarkupString)sb.ToString())
+        </script>
+    }
+</body>
+</html>
+
 @code
 {
     /// <summary>
