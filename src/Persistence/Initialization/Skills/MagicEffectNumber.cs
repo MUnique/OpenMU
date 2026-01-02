@@ -13,6 +13,14 @@ internal enum MagicEffectNumber : short
     #region Artificial effects which don't end up as an actual magic effect, but regenerate something
 
     /// <summary>
+    /// The Weakness (Summoner) skill effect number.
+    /// </summary>
+    /// <remarks>
+    /// Internal. Proxy of <see cref="Weakness"/>.
+    /// </remarks>
+    WeaknessSummoner = -4,
+
+    /// <summary>
     /// The shield recover skill effect number.
     /// </summary>
     /// <remarks>
@@ -236,9 +244,14 @@ internal enum MagicEffectNumber : short
     Blind = 0x49,
 
     /// <summary>
-    /// The weakness effect, which decreases the attacker's physical damage.
+    /// The weakness effect, which decreases the physical damage.
     /// </summary>
     Weakness = 0x4C,
+
+    /// <summary>
+    /// The innovation effect, which decreases the defense.
+    /// </summary>
+    Innovation = 0x4D,
 
     /// <summary>
     /// The cherry blossom wine effect (+ 700 Mana).

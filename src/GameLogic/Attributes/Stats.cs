@@ -329,16 +329,21 @@ public class Stats
     /// <summary>
     /// Gets the final damage (any type) bonus attribute definition.
     /// </summary>
-    /// <remarks>So far includes the ancient set option.</remarks>
+    /// <remarks>Includes the ancient set option and the panda ring bonus.</remarks>
     public static AttributeDefinition FinalDamageBonus { get; } = new(new Guid("88316AEC-1D82-4103-BF09-CA6A3C0B177A"), "Late Damage Bonus (any type)", "A bonus value which gets added to the final damage value during the damage calculation.");
 
     /// <summary>
-    /// Gets the skill multiplier attribute definition.
+    /// Gets the player's skill multiplier attribute definition.
     /// </summary>
     public static AttributeDefinition SkillMultiplier { get; } = new(new Guid("D9FB3323-6DF5-48F7-8253-FDBB5EF82114"), "Skill Damage Multiplier", string.Empty);
 
     /// <summary>
-    /// Gets the skill damage bonus attribute definition.
+    /// Gets the vitality skill multiplier (RF) attribute definition.
+    /// </summary>
+    public static AttributeDefinition VitalitySkillMultiplier { get; } = new(new Guid("5E987FB1-CECB-4703-B7C7-096AAB915672"), "Vitality Skill Damage Multiplier", string.Empty);
+
+    /// <summary>
+    /// Gets the player's skill damage bonus attribute definition.
     /// </summary>
     /// <remarks>Includes ancient set, harmony, and socket (ice and bonus) options. Does not apply to Fenrir's skill.</remarks>
     public static AttributeDefinition SkillDamageBonus { get; } = new(new Guid("B8B214B1-396B-4CA8-9A77-240AA70A989B"), "Skill Damage Bonus", "A bonus value which gets added to the damage calculation when the damage is calculated with a skill.");
@@ -402,7 +407,10 @@ public class Stats
     /// <summary>
     /// Gets the magic speed attribute definition which is used for some skills.
     /// </summary>
-    public static AttributeDefinition MagicSpeed { get; } = new(new Guid("AE32AA45-9C18-43B3-9F7B-648FD7F4B0AD"), "Magic Speed", string.Empty);
+    public static AttributeDefinition MagicSpeed { get; } = new(new Guid("AE32AA45-9C18-43B3-9F7B-648FD7F4B0AD"), "Magic Speed", string.Empty)
+    {
+        MaximumValue = 200,
+    };
 
     /// <summary>
     /// Gets the wizardry base (min and max) damage increase attribute definition>.
@@ -626,6 +634,21 @@ public class Stats
     /// Gets the stick mastery MST bonus damage (PvP).
     /// </summary>
     public static AttributeDefinition StickMasteryBonusDamage { get; } = new(new Guid("E79B2B06-9A32-451F-9B2D-2B91FD79B614"), "Stick Mastery PvP Bonus Damage (MST)", string.Empty);
+
+    /// <summary>
+    /// Gets the explosion skill MST bonus damage, which rises with fire tome strengthener and is added late stage.
+    /// </summary>
+    public static AttributeDefinition ExplosionBonusDmg { get; } = new(new Guid("543E01C2-5C61-4473-ACF9-8A63A987A230"), "Explosion Bonus Damage (MST)", "The explosion skill (book of samut) bonus damage, which rises with fire tome strengthener and is added at a late stage.");
+
+    /// <summary>
+    /// Gets the requiem skill MST bonus damage, which rises with wind tome strengthener and is added late stage.
+    /// </summary>
+    public static AttributeDefinition RequiemBonusDmg { get; } = new(new Guid("9354C6C8-5F85-440B-8649-3E18B7539D92"), "Requiem Bonus Damage (MST)", "The requiem skill (book of neil) bonus damage, which rises with wind tome strengthener and is added at a late stage.");
+
+    /// <summary>
+    /// Gets the pollution skill MST bonus damage, which rises with lightning tome strengthener and is added late stage.
+    /// </summary>
+    public static AttributeDefinition PollutionBonusDmg { get; } = new(new Guid("9B7AF584-DB59-4770-BCE9-1B5131BBDE38"), "Pollution Bonus Damage (MST)", "The pollution skill (book of lagle) bonus damage, which rises with lightning tome strengthener and is added at a late stage.");
 
     /// <summary>
     /// Gets the is a scepter equipped.
@@ -898,6 +921,11 @@ public class Stats
     public static AttributeDefinition WeaknessPhysDmgDecrement { get; } = new(new Guid("37497650-139B-4DA1-9FB6-27AEB8F04CF6"), "Weakness Physical Damage Decrement", "The inflicted physical damage decrement due to the magic effects of weakness or killing blow skills, which is multiplied with the final damage and subtracted from it.");
 
     /// <summary>
+    /// Gets the innovation defense decrement due to Summoner's innovation skill attribute definition.
+    /// </summary>
+    public static AttributeDefinition InnovationDefDecrement { get; } = new(new Guid("D8B3B1C9-B409-4A07-8F4D-8F315DCB173A"), "Innovation Defense Decrement", "The defense decrement due to the magic effect of innovation skill, which is multiplied with the final defense and subtracted from it.");
+
+    /// <summary>
     /// Gets the 'is shield equipped' attribute definition.
     /// </summary>
     public static AttributeDefinition IsShieldEquipped { get; } = new(new Guid("394DFAA0-B18D-44DA-A99D-094BC5E7C9C5"), "Is Shield Equipped", string.Empty);
@@ -920,7 +948,12 @@ public class Stats
     /// <summary>
     /// Gets the attribute definition, which defines if a player has stun effect applied.
     /// </summary>
-    public static AttributeDefinition IsStunned { get; } = new(new Guid("22C86BAF-7F27-478D-8075-E4465C2859DD"), "Is stunned", "The player is poisoned and loses health");
+    public static AttributeDefinition IsStunned { get; } = new(new Guid("22C86BAF-7F27-478D-8075-E4465C2859DD"), "Is stunned", "The player is stunned and can't move.");
+
+    /// <summary>
+    /// Gets the attribute definition, which defines if a player has asleep effect applied.
+    /// </summary>
+    public static AttributeDefinition IsAsleep { get; } = new(new Guid("0518F532-7A8F-4491-8A23-98B620608CB3"), "Is asleep", "The player is asleep and can't move until hit.");
 
     /// <summary>
     /// Gets the ice resistance attribute definition. Value range from 0 to 1.
@@ -1204,6 +1237,11 @@ public class Stats
     public static AttributeDefinition FullyRecoverHealthAfterHitChance { get; } = new(new Guid("3CA72C07-9C2C-4FC5-8BCB-9BD737F83664"), "Chance to fully recover health when getting hit", "3rd Wing Option");
 
     /// <summary>
+    /// Gets the fully reflect damage after hit chance definition.
+    /// </summary>
+    public static AttributeDefinition FullyReflectDamageAfterHitChance { get; } = new(new Guid("1F7C1E04-4FBD-4FCB-A6C2-EB51A91D8C3E"), "Chance to fully reflect damage when getting hit", "3rd Wing Option");
+
+    /// <summary>
     /// Gets the health loss after hit definition.
     /// </summary>
     public static AttributeDefinition HealthLossAfterHit { get; } = new(new Guid("D84A719B-D18E-433E-BF55-9F08A214AB00"), "Health loss after hitting a target", "Caused by wearing wings");
@@ -1334,6 +1372,26 @@ public class Stats
     /// Gets the attribute for the number of points this class will receive for reset, overwrites the default <see cref="Resets.ResetConfiguration.PointsPerReset"/> value.
     /// </summary>
     public static AttributeDefinition PointsPerReset { get; } = new(new Guid("a34f4f57-b364-4cdb-9989-64cedd2cd831"), "Points Per Reset", "The number of points the player will receive for reset, overwrites the default 'PointsPerReset' value of the reset configuration.");
+
+    /// <summary>
+    /// Gets the skill's base multiplier attribute definition.
+    /// </summary>
+    public static AttributeDefinition SkillBaseMultiplier { get; } = new(new Guid("FED72F38-5807-454E-8126-F178E93C80D4"), "Skill Base Damage Multiplier (skill attribute)", string.Empty);
+
+    /// <summary>
+    /// Gets the skill's base damage bonus attribute definition.
+    /// </summary>
+    public static AttributeDefinition SkillBaseDamageBonus { get; } = new(new Guid("89E27E6F-2F84-4B69-9DAA-4EE2A6E3BCCC"), "Skill Base Damage Bonus (skill attribute)", string.Empty);
+
+    /// <summary>
+    /// Gets the skill's final multiplier attribute definition.
+    /// </summary>
+    public static AttributeDefinition SkillFinalMultiplier { get; } = new(new Guid("AC72CAE4-973C-46BB-BE3B-F6260E8DDFA8"), "Skill Final Damage Multiplier (skill attribute)", string.Empty);
+
+    /// <summary>
+    /// Gets the skill's final damage bonus attribute definition.
+    /// </summary>
+    public static AttributeDefinition SkillFinalDamageBonus { get; } = new(new Guid("155D8045-5CD1-4238-BEFC-FCF8C46F94E3"), "Skill Final Damage Bonus (skill attribute)", string.Empty);
 
     /// <summary>
     /// Gets the dictionary which relates the jewelry element resistance attribute to the correspondent DMG bonus attribute.

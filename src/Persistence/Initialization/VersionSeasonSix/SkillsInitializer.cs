@@ -66,6 +66,11 @@ internal class SkillsInitializer : SkillsInitializerBase
         { SkillNumber.IncreaseBlock, MagicEffectNumber.IncreaseBlock },
         { SkillNumber.ExpansionofWizardry, MagicEffectNumber.WizEnhance },
         { SkillNumber.Berserker, MagicEffectNumber.Berserker },
+        { SkillNumber.KillingBlow, MagicEffectNumber.Weakness },
+        { SkillNumber.Sleep, MagicEffectNumber.Sleep },
+        { SkillNumber.Weakness, MagicEffectNumber.WeaknessSummoner },
+        { SkillNumber.Innovation, MagicEffectNumber.Innovation },
+        { SkillNumber.DamageReflection, MagicEffectNumber.Reflection },
     };
 
     private readonly IDictionary<byte, MasterSkillRoot> _masterSkillRoots;
@@ -187,11 +192,13 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.CreateSkill(SkillNumber.ShieldBurn, "Shield-Burn", CharacterClasses.All, distance: 3, manaConsumption: 30, elementalModifier: ElementalType.Ice, cooldownMinutes: 5);
         this.CreateSkill(SkillNumber.DrainLife, "Drain Life", CharacterClasses.AllSummoners, DamageType.Wizardry, 35, 6, manaConsumption: 50, energyRequirement: 150, skillType: SkillType.AreaSkillExplicitTarget);
         this.CreateSkill(SkillNumber.ChainLightning, "Chain Lightning", CharacterClasses.AllSummoners, DamageType.Wizardry, 70, 6, manaConsumption: 85, energyRequirement: 245, skillType: SkillType.AreaSkillExplicitTarget, skillTarget: SkillTarget.Explicit);
-        this.CreateSkill(SkillNumber.DamageReflection, "Damage Reflection", CharacterClasses.AllSummoners, distance: 5, abilityConsumption: 10, manaConsumption: 40, energyRequirement: 375);
+        this.CreateSkill(SkillNumber.DamageReflection, "Damage Reflection", CharacterClasses.AllSummoners, distance: 5, abilityConsumption: 10, manaConsumption: 40, energyRequirement: 375, skillType: SkillType.Buff);
         this.CreateSkill(SkillNumber.Berserker, "Berserker", CharacterClasses.AllSummoners, distance: 5, abilityConsumption: 50, manaConsumption: 100, energyRequirement: 620, skillType: SkillType.Buff, targetRestriction: SkillTargetRestriction.Self);
-        this.CreateSkill(SkillNumber.Sleep, "Sleep", CharacterClasses.AllSummoners, distance: 6, abilityConsumption: 3, manaConsumption: 20, energyRequirement: 180);
-        this.CreateSkill(SkillNumber.Weakness, "Weakness", CharacterClasses.AllSummoners, distance: 6, abilityConsumption: 15, manaConsumption: 50, energyRequirement: 663);
-        this.CreateSkill(SkillNumber.Innovation, "Innovation", CharacterClasses.AllSummoners, distance: 6, abilityConsumption: 15, manaConsumption: 70, energyRequirement: 912);
+        this.CreateSkill(SkillNumber.Sleep, "Sleep", CharacterClasses.AllSummoners, distance: 6, abilityConsumption: 3, manaConsumption: 20, energyRequirement: 180, skillType: SkillType.Buff);
+        this.CreateSkill(SkillNumber.Weakness, "Weakness", CharacterClasses.AllSummoners, distance: 6, abilityConsumption: 15, manaConsumption: 50, energyRequirement: 663, skillType: SkillType.Buff);
+        this.AddAreaSkillSettings(SkillNumber.Weakness, false, 0, 0, 0, maximumHitsPerAttack: 5, useTargetAreaFilter: true, targetAreaDiameter: 10);
+        this.CreateSkill(SkillNumber.Innovation, "Innovation", CharacterClasses.AllSummoners, distance: 6, abilityConsumption: 15, manaConsumption: 70, energyRequirement: 912, skillType: SkillType.Buff);
+        this.AddAreaSkillSettings(SkillNumber.Innovation, false, 0, 0, 0, maximumHitsPerAttack: 5, useTargetAreaFilter: true, targetAreaDiameter: 10);
         this.CreateSkill(SkillNumber.Explosion223, "Explosion", CharacterClasses.AllSummoners, DamageType.Curse, 40, 6, 5, 90, energyRequirement: 100, elementalModifier: ElementalType.Fire); // Book of Samut's skill
         this.CreateSkill(SkillNumber.Requiem, "Requiem", CharacterClasses.AllSummoners, DamageType.Curse, 65, 6, 10, 110, energyRequirement: 99, elementalModifier: ElementalType.Wind); // Book of Neil's skill
         this.CreateSkill(SkillNumber.Pollution, "Pollution", CharacterClasses.AllSummoners, DamageType.Curse, 80, 6, 15, 120, energyRequirement: 115, elementalModifier: ElementalType.Lightning); // Book of Lagle's skill
@@ -243,7 +250,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.CreateSkill(SkillNumber.MonsterAttackSdInc, "Monster Attack SD Inc", CharacterClasses.AllMastersExceptFistMaster, damage: 11, skillType: SkillType.PassiveBoost);
         this.CreateSkill(SkillNumber.MonsterAttackLifeInc, "Monster Attack Life Inc", CharacterClasses.AllMastersExceptFistMaster, damage: 6, skillType: SkillType.PassiveBoost);
         this.CreateSkill(SkillNumber.SwellLifeProficiency, "Swell Life Proficiency", CharacterClasses.BladeMaster, damage: 7, abilityConsumption: 28, manaConsumption: 26, levelRequirement: 120);
-        this.CreateSkill(SkillNumber.MinimumAttackPowerInc, "Minimum Attack Power Inc", CharacterClasses.BladeMaster | CharacterClasses.DuelMaster |CharacterClasses.LordEmperor, DamageType.Physical, 22, skillType: SkillType.PassiveBoost);
+        this.CreateSkill(SkillNumber.MinimumAttackPowerInc, "Minimum Attack Power Inc", CharacterClasses.BladeMaster | CharacterClasses.DuelMaster | CharacterClasses.LordEmperor, DamageType.Physical, 22, skillType: SkillType.PassiveBoost);
         this.CreateSkill(SkillNumber.MonsterAttackManaInc, "Monster Attack Mana Inc", CharacterClasses.AllMastersExceptFistMaster, damage: 6, skillType: SkillType.PassiveBoost);
         this.CreateSkill(SkillNumber.PvPAttackRate, "PvP Attack Rate", CharacterClasses.AllMastersExceptFistMaster, damage: 14, skillType: SkillType.PassiveBoost);
 
@@ -575,33 +582,67 @@ internal class SkillsInitializer : SkillsInitializerBase
 
     private void InitializeSkillAttributes()
     {
-        this.AddAttributeRelationship(SkillNumber.Nova, Stats.SkillDamageBonus, 1.0f / 2, Stats.TotalStrength);
-        this.AddAttributeRelationship(SkillNumber.Nova, Stats.SkillDamageBonus, 1, Stats.NovaStageDamage);
+        // Base damage
+        this.AddAttributeRelationship(SkillNumber.Nova, Stats.SkillBaseDamageBonus, 1.0f / 2, Stats.TotalStrength);
+        this.AddAttributeRelationship(SkillNumber.Nova, Stats.SkillBaseDamageBonus, 1, Stats.NovaStageDamage);
 
-        this.AddAttributeRelationship(SkillNumber.Earthshake, Stats.SkillDamageBonus, 1.0f / 10, Stats.TotalStrength);
-        this.AddAttributeRelationship(SkillNumber.Earthshake, Stats.SkillDamageBonus, 1.0f / 5, Stats.TotalLeadership);
-        this.AddAttributeRelationship(SkillNumber.Earthshake, Stats.SkillDamageBonus, 10, Stats.HorseLevel);
+        this.AddAttributeRelationship(SkillNumber.Earthshake, Stats.SkillBaseDamageBonus, 1.0f / 10, Stats.TotalStrength);
+        this.AddAttributeRelationship(SkillNumber.Earthshake, Stats.SkillBaseDamageBonus, 1.0f / 5, Stats.TotalLeadership);
+        this.AddAttributeRelationship(SkillNumber.Earthshake, Stats.SkillBaseDamageBonus, 10, Stats.HorseLevel);
 
-        this.AddAttributeRelationship(SkillNumber.ElectricSpike, Stats.SkillDamageBonus, 50, Stats.NearbyPartyMemberCount);
-        this.AddAttributeRelationship(SkillNumber.ElectricSpike, Stats.SkillDamageBonus, 1.0f / 10, Stats.TotalLeadership);
+        this.AddAttributeRelationship(SkillNumber.ElectricSpike, Stats.SkillBaseDamageBonus, 50, Stats.NearbyPartyMemberCount);
+        this.AddAttributeRelationship(SkillNumber.ElectricSpike, Stats.SkillBaseDamageBonus, 1.0f / 10, Stats.TotalLeadership);
 
-        this.AddAttributeRelationship(SkillNumber.ChaoticDiseier, Stats.SkillDamageBonus, 1.0f / 30, Stats.TotalStrength);
-        this.AddAttributeRelationship(SkillNumber.ChaoticDiseier, Stats.SkillDamageBonus, 1.0f / 55, Stats.TotalEnergy);
+        this.AddAttributeRelationship(SkillNumber.ChaoticDiseier, Stats.SkillBaseDamageBonus, 1.0f / 30, Stats.TotalStrength);
+        this.AddAttributeRelationship(SkillNumber.ChaoticDiseier, Stats.SkillBaseDamageBonus, 1.0f / 55, Stats.TotalEnergy);
 
         SkillNumber[] lordSkills = [SkillNumber.Force, SkillNumber.FireBlast, SkillNumber.FireBurst, SkillNumber.ForceWave, SkillNumber.FireScream];
         foreach (var lordSkillNumber in lordSkills)
         {
-            this.AddAttributeRelationship(lordSkillNumber, Stats.SkillDamageBonus, 1.0f / 25, Stats.TotalStrength);
-            this.AddAttributeRelationship(lordSkillNumber, Stats.SkillDamageBonus, 1.0f / 50, Stats.TotalEnergy);
+            this.AddAttributeRelationship(lordSkillNumber, Stats.SkillBaseDamageBonus, 1.0f / 25, Stats.TotalStrength);
+            this.AddAttributeRelationship(lordSkillNumber, Stats.SkillBaseDamageBonus, 1.0f / 50, Stats.TotalEnergy);
         }
 
-        this.AddAttributeRelationship(SkillNumber.MultiShot, Stats.SkillMultiplier, 0.8f, Stats.SkillMultiplier, AggregateType.Multiplicate);
+        this.AddAttributeRelationship(SkillNumber.MultiShot, Stats.SkillBaseMultiplier, 0.8f, Stats.SkillMultiplier);
+
+        // Final damage
+        // Originally, starting weapon skills for DL (FallingSlash, Lunge, Uppercut, Cyclone) and RF (FallingSlash) have a constant multiplier of 2.
+        // In OpenMU they might be able to do more damage with such skills, if their Stats.SkillMultiplier increases above 2.
+        // Since this only applies to early game weapons, this is acceptable.
+        this.AddAttributeRelationship(SkillNumber.FallingSlash, Stats.SkillFinalMultiplier, 2.0f, Stats.SkillMultiplier, InputOperator.Maximum); // For RF
+
+        this.AddAttributeRelationship(SkillNumber.IceArrow, Stats.SkillFinalMultiplier, 2.0f, Stats.SkillMultiplier);
+        this.AddAttributeRelationship(SkillNumber.Penetration, Stats.SkillFinalMultiplier, 2.0f, Stats.SkillMultiplier);
+        this.AddAttributeRelationship(SkillNumber.Starfall, Stats.SkillFinalMultiplier, 2.0f, Stats.SkillMultiplier);
+
+        this.AddAttributeRelationship(SkillNumber.Explosion223, Stats.SkillFinalDamageBonus, 1.0f, Stats.ExplosionBonusDmg);
+        this.AddAttributeRelationship(SkillNumber.Requiem, Stats.SkillFinalDamageBonus, 1.0f, Stats.RequiemBonusDmg);
+        this.AddAttributeRelationship(SkillNumber.Pollution, Stats.SkillFinalDamageBonus, 1.0f, Stats.PollutionBonusDmg);
+
+        this.AddAttributeRelationship(SkillNumber.PlasmaStorm, Stats.SkillFinalMultiplier, 0.002f, Stats.TotalLevel);
+        this.AddAttributeRelationship(SkillNumber.PlasmaStorm, Stats.SkillFinalMultiplier, -0.6f, Stats.MaximumHealth, InputOperator.Minimum); // 0.002 * 300(min lvl)
+        this.AddAttributeRelationship(SkillNumber.PlasmaStorm, Stats.SkillFinalMultiplier, 2.0f, Stats.MaximumHealth, InputOperator.Minimum);
+
+        this.AddAttributeRelationship(SkillNumber.ChaoticDiseier, Stats.SkillFinalMultiplier, 0.8f, Stats.SkillMultiplier);
+
+        this.AddAttributeRelationship(SkillNumber.KillingBlow, Stats.SkillFinalMultiplier, 1.0f, Stats.VitalitySkillMultiplier);
+        this.AddAttributeRelationship(SkillNumber.BeastUppercut, Stats.SkillFinalMultiplier, 1.0f, Stats.VitalitySkillMultiplier);
+        this.AddAttributeRelationship(SkillNumber.ChainDrive, Stats.SkillFinalMultiplier, 1.0f, Stats.VitalitySkillMultiplier);
+        this.AddAttributeRelationship(SkillNumber.Charge, Stats.SkillFinalMultiplier, 1.0f, Stats.VitalitySkillMultiplier);
+        this.AddAttributeRelationship(SkillNumber.PhoenixShot, Stats.SkillFinalMultiplier, 1.0f, Stats.VitalitySkillMultiplier);
+
+        this.AddAttributeRelationship(SkillNumber.DarkSide, Stats.SkillFinalMultiplier, 0.5f, Stats.SkillMultiplier, InputOperator.Add);
+        this.AddAttributeRelationship(SkillNumber.DarkSide, Stats.SkillFinalMultiplier, 1.0f / 800, Stats.TotalAgility);
+
+        this.AddAttributeRelationship(SkillNumber.DragonRoar, Stats.SkillFinalMultiplier, 1.0f, Stats.SkillMultiplier);
+        this.AddAttributeRelationship(SkillNumber.DragonSlasher, Stats.SkillFinalMultiplier, 1.0f, Stats.SkillMultiplier);
     }
 
-    private void AddAttributeRelationship(SkillNumber skillNumber, AttributeDefinition targetAttribute, float multiplier, AttributeDefinition sourceAttribute, AggregateType aggregateType = AggregateType.AddRaw)
+    private void AddAttributeRelationship(SkillNumber skillNumber, AttributeDefinition targetAttribute, float multiplier, AttributeDefinition sourceAttribute, InputOperator inputOperator = InputOperator.Multiply, AggregateType aggregateType = AggregateType.AddRaw)
     {
         var skill = this.GameConfiguration.Skills.First(s => s.Number == (int)skillNumber);
-        var relationship = CharacterClassHelper.CreateAttributeRelationship(this.Context, this.GameConfiguration, targetAttribute, multiplier, sourceAttribute, aggregateType: aggregateType);
+        var relationship = CharacterClassHelper.CreateAttributeRelationship(this.Context, this.GameConfiguration, targetAttribute, multiplier, sourceAttribute, inputOperator, aggregateType);
+
         skill.AttributeRelationships.Add(relationship);
     }
 
@@ -626,6 +667,11 @@ internal class SkillsInitializer : SkillsInitializerBase
         new SoulPotionEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         new BlessPotionEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         new BerserkerEffectInitializer(this.Context, this.GameConfiguration).Initialize();
+        new WeaknessEffectInitializer(this.Context, this.GameConfiguration).Initialize();
+        new SleepEffectInitializer(this.Context, this.GameConfiguration).Initialize();
+        new WeaknessSummonerEffectInitializer(this.Context, this.GameConfiguration).Initialize();
+        new InnovationEffectInitializer(this.Context, this.GameConfiguration).Initialize();
+        new ReflectionEffectInitializer(this.Context, this.GameConfiguration).Initialize();
     }
 
     private void MapSkillsToEffects()
@@ -635,6 +681,17 @@ internal class SkillsInitializer : SkillsInitializerBase
             var skill = this.GameConfiguration.Skills.First(s => s.Number == (short)effectOfSkill.Key);
             var effect = this.GameConfiguration.MagicEffects.First(e => e.Number == (short)effectOfSkill.Value);
             skill.MagicEffectDef = effect;
+
+            // After the mapping, we override the internal effect number to the client's
+            switch (effect.Number)
+            {
+                case (short)MagicEffectNumber.WeaknessSummoner:
+                    effect.Number = (short)MagicEffectNumber.Weakness;
+                    break;
+                default:
+                    // no change needed
+                    break;
+            }
         }
     }
 
@@ -703,7 +760,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.AddMasterSkillDefinition(SkillNumber.SpearMastery, SkillNumber.SpearStrengthener, SkillNumber.Undefined, 3, 3, SkillNumber.Undefined, 20, Formula120);
 
         this.AddMasterSkillDefinition(SkillNumber.SwellLifeStrengt, SkillNumber.SwellLife, SkillNumber.Undefined, 3, 4, SkillNumber.SwellLife, 20, Formula181);
-        this.AddPassiveMasterSkillDefinition(SkillNumber.ManaReduction, Stats.ManaUsageReduction, AggregateType.AddRaw, Formula722Value, Formula722,  4, 3);
+        this.AddPassiveMasterSkillDefinition(SkillNumber.ManaReduction, Stats.ManaUsageReduction, AggregateType.AddRaw, Formula722Value, Formula722, 4, 3);
         this.AddPassiveMasterSkillDefinition(SkillNumber.MonsterAttackSdInc, Stats.ShieldAfterMonsterKillMultiplier, AggregateType.AddFinal, Formula914, 4, 3);
         this.AddPassiveMasterSkillDefinition(SkillNumber.MonsterAttackLifeInc, Stats.HealthAfterMonsterKillMultiplier, AggregateType.AddFinal, Formula4319, 4, 3);
         this.AddMasterSkillDefinition(SkillNumber.SwellLifeProficiency, SkillNumber.SwellLifeStrengt, SkillNumber.Undefined, 3, 5, SkillNumber.SwellLife, 20, Formula181);
@@ -756,9 +813,9 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.AddPassiveMasterSkillDefinition(SkillNumber.MinimumAttPowerInc, Stats.MinimumPhysBaseDmg, AggregateType.AddRaw, Formula502, 5, 3);
 
         // SUM
-        this.AddMasterSkillDefinition(SkillNumber.FireTomeStrengthener, SkillNumber.Undefined, SkillNumber.Undefined, 2, 2, SkillNumber.Undefined, 20, Formula632);
-        this.AddMasterSkillDefinition(SkillNumber.WindTomeStrengthener, SkillNumber.Undefined, SkillNumber.Undefined, 2, 2, SkillNumber.Undefined, 20, Formula632);
-        this.AddMasterSkillDefinition(SkillNumber.LightningTomeStren, SkillNumber.Undefined, SkillNumber.Undefined, 2, 2, SkillNumber.Undefined, 20, Formula632);
+        this.AddPassiveMasterSkillDefinition(SkillNumber.FireTomeStrengthener, Stats.ExplosionBonusDmg, AggregateType.AddRaw, Formula632, 2, 2);
+        this.AddPassiveMasterSkillDefinition(SkillNumber.WindTomeStrengthener, Stats.RequiemBonusDmg, AggregateType.AddRaw, Formula632, 2, 2);
+        this.AddPassiveMasterSkillDefinition(SkillNumber.LightningTomeStren, Stats.PollutionBonusDmg, AggregateType.AddRaw, Formula632, 2, 2);
         this.AddMasterSkillDefinition(SkillNumber.FireTomeMastery, SkillNumber.FireTomeStrengthener, SkillNumber.Undefined, 2, 3, SkillNumber.Undefined, 20, Formula181);
         this.AddMasterSkillDefinition(SkillNumber.WindTomeMastery, SkillNumber.WindTomeStrengthener, SkillNumber.Undefined, 2, 3, SkillNumber.Undefined, 20, Formula120);
         this.AddMasterSkillDefinition(SkillNumber.LightningTomeMastery, SkillNumber.LightningTomeStren, SkillNumber.Undefined, 2, 3, SkillNumber.Undefined, 20, Formula181);

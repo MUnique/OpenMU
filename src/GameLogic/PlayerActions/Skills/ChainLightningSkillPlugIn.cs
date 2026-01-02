@@ -29,6 +29,11 @@ public class ChainLightningSkillPlugIn : IAreaSkillPlugIn
     {
         bool FilterTarget(IAttackable attackable)
         {
+            if (!attackable.IsAlive)
+            {
+                return false;
+            }
+
             if (attackable is Monster { SummonedBy: null } or Destructible)
             {
                 return true;

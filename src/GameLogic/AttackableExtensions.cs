@@ -64,6 +64,11 @@ public static class AttackableExtensions
         {
             var defenseAttribute = defender.GetDefenseAttribute(attacker);
             defense = (int)defender.Attributes[defenseAttribute];
+            defense -= (int)(defense * defender.Attributes[Stats.InnovationDefDecrement]);
+            if (defense < 0)
+            {
+                defense = 0;
+            }
         }
 
         attacker.GetBaseDmg(skill, out int baseMinDamage, out int baseMaxDamage, out DamageType damageType);
@@ -193,7 +198,25 @@ public static class AttackableExtensions
 
         if (skill != null)
         {
-            dmg = (int)(dmg * attacker.Attributes[Stats.SkillMultiplier]);
+            var multiplier = attacker.Attributes[Stats.SkillMultiplier];
+
+            if (skill.EnsureSkillAttributes(attacker.Attributes) is { } skillAttributes)
+            {
+                dmg += (int)skillAttributes[Stats.SkillFinalDamageBonus];
+
+                var skillMultiplier = skillAttributes[Stats.SkillFinalMultiplier];
+                if (skillMultiplier > 0)
+                {
+                    multiplier = skillMultiplier;
+
+                    if (skill.Skill!.Number == 265 && !isPvp) // DragonSlasher
+                    {
+                        multiplier *= 3;
+                    }
+                }
+            }
+
+            dmg = (int)(dmg * multiplier * damageFactor);
         }
         else if (attacker.Attributes[Stats.IsDinorantEquipped] > 0)
         {
@@ -291,7 +314,15 @@ public static class AttackableExtensions
             player.CreateMagicEffectPowerUp(skillEntry);
         }
 
-        await target.ApplyMagicEffectAsync(attacker, skillEntry.Skill!.MagicEffectDef!, skillEntry.PowerUpDuration!, skillEntry.PowerUps!).ConfigureAwait(false);
+        float chance = target is Player ? skillEntry.PowerUpChancePvp!.Value : skillEntry.PowerUpChance!.Value;
+        if (!Rand.NextRandomBool(Convert.ToDouble(chance)))
+        {
+            return;
+        }
+
+        var duration = target is Player ? skillEntry.PowerUpDurationPvp! : skillEntry.PowerUpDuration!;
+        var powerUps = target is Player ? skillEntry.PowerUpsPvp! : skillEntry.PowerUps!;
+        await target.ApplyMagicEffectAsync(attacker, skillEntry.Skill!.MagicEffectDef!, duration, powerUps).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -338,6 +369,11 @@ public static class AttackableExtensions
     /// <returns>The success of the appliance.</returns>
     public static async ValueTask<bool> TryApplyElementalEffectsAsync(this IAttackable target, IAttacker attacker, SkillEntry skillEntry)
     {
+        if (!target.IsAlive)
+        {
+            return false;
+        }
+
         skillEntry.ThrowNotInitializedProperty(skillEntry.Skill is null, nameof(skillEntry.Skill));
         var modifier = skillEntry.Skill.ElementalModifierTarget;
         if (modifier is null)
@@ -371,7 +407,7 @@ public static class AttackableExtensions
     }
 
     /// <summary>
-    /// Applies the elemental effects of a players skill to the target.
+    /// Applies the elemental effects of a monster's skill to the target.
     /// </summary>
     /// <param name="target">The target.</param>
     /// <param name="attacker">The attacker.</param>
@@ -384,6 +420,11 @@ public static class AttackableExtensions
     /// </returns>
     public static async ValueTask<bool> TryApplyElementalEffectsAsync(this IAttackable target, IAttacker attacker, Skill skill, IElement? powerUp, IElement? duration, AttributeDefinition? targetAttribute)
     {
+        if (!target.IsAlive)
+        {
+            return false;
+        }
+
         var modifier = skill.ElementalModifierTarget;
         if (modifier is null)
         {
@@ -427,7 +468,7 @@ public static class AttackableExtensions
     {
         if (!hitInfo.Attributes.HasFlag(DamageAttributes.Reflected) && attacker.Attributes[Stats.AmmunitionConsumptionRate] > 0.0)
         {
-            // Every hit needs ammo. Failed hits don't need ammo.
+            // Every hit needs ammo, missed or not
             if (attacker.Attributes[Stats.AmmunitionAmount] < attacker.Attributes[Stats.AmmunitionConsumptionRate])
             {
                 return;
@@ -663,10 +704,10 @@ public static class AttackableExtensions
 
         if (skillEntry.EnsureSkillAttributes(attackerStats) is { } skillAttributes)
         {
-            skillMinimumDamage += (int)skillAttributes[Stats.SkillDamageBonus];
-            skillMaximumDamage += (int)skillAttributes[Stats.SkillDamageBonus];
+            skillMinimumDamage += (int)skillAttributes[Stats.SkillBaseDamageBonus];
+            skillMaximumDamage += (int)skillAttributes[Stats.SkillBaseDamageBonus];
 
-            var multiplier = skillAttributes[Stats.SkillMultiplier];
+            var multiplier = skillAttributes[Stats.SkillBaseMultiplier];
             if (multiplier > 0)
             {
                 skillMinimumDamage = (int)(skillMinimumDamage * multiplier);
@@ -755,15 +796,32 @@ public static class AttackableExtensions
     /// <param name="powerUps">The power ups of the effect.</param>
     private static async ValueTask ApplyMagicEffectAsync(this IAttackable target, IAttacker attacker, MagicEffectDefinition magicEffectDefinition, IElement duration, params (AttributeDefinition Target, IElement Boost)[] powerUps)
     {
+        float finalDuration = duration.Value;
+
+        if (magicEffectDefinition.DurationDependsOnTargetLevel)
+        {
+            var divisor = target is Player ? magicEffectDefinition.PlayerTargetLevelDivisor : magicEffectDefinition.MonsterTargetLevelDivisor;
+            if (divisor != 0)
+            {
+                finalDuration -= target.Attributes[Stats.Level] / divisor;
+            }
+        }
+
+        TimeSpan durationSpan = TimeSpan.FromSeconds(finalDuration);
+        if (durationSpan < TimeSpan.FromSeconds(1))
+        {
+            return;
+        }
+
         var isPoisonEffect = magicEffectDefinition.PowerUpDefinitions.Any(e => e.TargetAttribute == Stats.IsPoisoned);
         var magicEffect = isPoisonEffect
-            ? new PoisonMagicEffect(powerUps[0].Boost, magicEffectDefinition, TimeSpan.FromSeconds(duration.Value), attacker, target)
-            : new MagicEffect(TimeSpan.FromSeconds(duration.Value), magicEffectDefinition, powerUps.Select(p => new MagicEffect.ElementWithTarget(p.Boost, p.Target)).ToArray());
+            ? new PoisonMagicEffect(powerUps[0].Boost, magicEffectDefinition, durationSpan, attacker, target)
+            : new MagicEffect(durationSpan, magicEffectDefinition, powerUps.Select(p => new MagicEffect.ElementWithTarget(p.Boost, p.Target)).ToArray());
 
         await target.MagicEffectList.AddEffectAsync(magicEffect).ConfigureAwait(false);
         if (target is ISupportWalk walkSupporter
             && walkSupporter.IsWalking
-            && magicEffectDefinition.PowerUpDefinitions.Any(e => e.TargetAttribute == Stats.IsFrozen || e.TargetAttribute == Stats.IsStunned))
+            && magicEffectDefinition.PowerUpDefinitions.Any(e => e.TargetAttribute == Stats.IsFrozen || e.TargetAttribute == Stats.IsStunned || e.TargetAttribute == Stats.IsAsleep))
         {
             await walkSupporter.StopWalkingAsync().ConfigureAwait(false);
 

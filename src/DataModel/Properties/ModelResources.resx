@@ -1441,6 +1441,12 @@
   <data name="GameConfiguration_ExperienceRate_Description" xml:space="preserve">
     <value></value>
   </data>
+  <data name="GameConfiguration_PreventExperienceOverflow_Caption" xml:space="preserve">
+    <value>Prevent Experience Overflow</value>
+  </data>
+  <data name="GameConfiguration_PreventExperienceOverflow_Description" xml:space="preserve">
+    <value></value>
+  </data>
   <data name="GameConfiguration_MinimumMonsterLevelForMasterExperience_Caption" xml:space="preserve">
     <value>Minimum Monster Level For Master Experience</value>
   </data>
@@ -1469,6 +1475,12 @@
     <value>Maximum Vault Money</value>
   </data>
   <data name="GameConfiguration_MaximumVaultMoney_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GameConfiguration_ClampMoneyOnPickup_Caption" xml:space="preserve">
+    <value>Clamp Money On Pickup</value>
+  </data>
+  <data name="GameConfiguration_ClampMoneyOnPickup_Description" xml:space="preserve">
     <value></value>
   </data>
   <data name="GameConfiguration_ExperienceFormula_Caption" xml:space="preserve">
@@ -3226,16 +3238,58 @@
   <data name="MagicEffectDefinition_SendDuration_Description" xml:space="preserve">
     <value></value>
   </data>
+  <data name="MagicEffectDefinition_DurationDependsOnTargetLevel_Caption" xml:space="preserve">
+    <value>Duration Depends On Target Level</value>
+  </data>
+  <data name="MagicEffectDefinition_DurationDependsOnTargetLevel_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="MagicEffectDefinition_MonsterTargetLevelDivisor_Caption" xml:space="preserve">
+    <value>Monster Target Level Divisor</value>
+  </data>
+  <data name="MagicEffectDefinition_MonsterTargetLevelDivisor_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="MagicEffectDefinition_PlayerTargetLevelDivisor_Caption" xml:space="preserve">
+    <value>Player Target Level Divisor</value>
+  </data>
+  <data name="MagicEffectDefinition_PlayerTargetLevelDivisor_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="MagicEffectDefinition_Chance_Caption" xml:space="preserve">
+    <value>Chance</value>
+  </data>
+  <data name="MagicEffectDefinition_Chance_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="MagicEffectDefinition_ChancePvp_Caption" xml:space="preserve">
+    <value>Chance Pvp</value>
+  </data>
+  <data name="MagicEffectDefinition_ChancePvp_Description" xml:space="preserve">
+    <value></value>
+  </data>
   <data name="MagicEffectDefinition_Duration_Caption" xml:space="preserve">
     <value>Duration</value>
   </data>
   <data name="MagicEffectDefinition_Duration_Description" xml:space="preserve">
     <value></value>
   </data>
+  <data name="MagicEffectDefinition_DurationPvp_Caption" xml:space="preserve">
+    <value>Duration Pvp</value>
+  </data>
+  <data name="MagicEffectDefinition_DurationPvp_Description" xml:space="preserve">
+    <value></value>
+  </data>
   <data name="MagicEffectDefinition_PowerUpDefinitions_Caption" xml:space="preserve">
     <value>Power Ups</value>
   </data>
   <data name="MagicEffectDefinition_PowerUpDefinitions_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="MagicEffectDefinition_PowerUpDefinitionsPvp_Caption" xml:space="preserve">
+    <value>Power Ups Pvp</value>
+  </data>
+  <data name="MagicEffectDefinition_PowerUpDefinitionsPvp_Description" xml:space="preserve">
     <value></value>
   </data>
   <data name="MasterSkillDefinition_TypeCaption" xml:space="preserve">
@@ -4459,6 +4513,12 @@
   <data name="PowerUpDefinitionValue_RelatedValues_Description" xml:space="preserve">
     <value></value>
   </data>
+  <data name="PowerUpDefinitionValue_MaximumValue_Caption" xml:space="preserve">
+    <value>Maximum Value</value>
+  </data>
+  <data name="PowerUpDefinitionValue_MaximumValue_Description" xml:space="preserve">
+    <value></value>
+  </data>
   <data name="QuestDefinition_TypeCaption" xml:space="preserve">
     <value>Quests</value>
   </data>
@@ -5218,10 +5278,34 @@
   <data name="SkillEntry_PowerUps_Description" xml:space="preserve">
     <value></value>
   </data>
+  <data name="SkillEntry_PowerUpsPvp_Caption" xml:space="preserve">
+    <value>Power Ups Pvp</value>
+  </data>
+  <data name="SkillEntry_PowerUpsPvp_Description" xml:space="preserve">
+    <value></value>
+  </data>
   <data name="SkillEntry_PowerUpDuration_Caption" xml:space="preserve">
     <value>Power Up Duration</value>
   </data>
   <data name="SkillEntry_PowerUpDuration_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="SkillEntry_PowerUpDurationPvp_Caption" xml:space="preserve">
+    <value>Power Up Duration Pvp</value>
+  </data>
+  <data name="SkillEntry_PowerUpDurationPvp_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="SkillEntry_PowerUpChance_Caption" xml:space="preserve">
+    <value>Power Up Chance</value>
+  </data>
+  <data name="SkillEntry_PowerUpChance_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="SkillEntry_PowerUpChancePvp_Caption" xml:space="preserve">
+    <value>Power Up Chance Pvp</value>
+  </data>
+  <data name="SkillEntry_PowerUpChancePvp_Description" xml:space="preserve">
     <value></value>
   </data>
   <data name="SkillEntry_Attributes_Caption" xml:space="preserve">

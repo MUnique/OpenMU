@@ -16,9 +16,9 @@ using Microsoft.JSInterop;
 using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Persistence;
-using MUnique.OpenMU.Web.AdminPanel;
 using MUnique.OpenMU.Web.AdminPanel.Properties;
-using MUnique.OpenMU.Web.AdminPanel.Services;
+using MUnique.OpenMU.Web.Shared;
+using MUnique.OpenMU.Web.Shared.Services;
 
 /// <summary>
 /// Abstract common base class for an edit page.

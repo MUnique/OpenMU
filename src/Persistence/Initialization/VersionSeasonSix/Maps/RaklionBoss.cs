@@ -109,9 +109,11 @@ internal class RaklionBoss : BaseMapInitializer
                 { Stats.IceResistance, 254f / 255 },
                 { Stats.WaterResistance, 150f / 255 },
                 { Stats.FireResistance, 150f / 255 },
+                { Stats.SkillMultiplier, 2 },
             };
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             monster.SetGuid(monster.Number);
+            /*TODO: Selupan appears to have 4 different types of skill attacks, which have different damage multipliers and magic effects.*/
         }
 
         {

@@ -20,26 +20,9 @@ public static class Exports
     /// </summary>
     private static string Prefix { get; } = $"_content/{typeof(Exports).Namespace}";
 
-    private static IEnumerable<string> AdminPanelScripts
-    {
-        get
-        {
-            yield return "_content/Blazored.Typeahead/blazored-typeahead.js";
-            yield return "_content/Blazored.Modal/blazored.modal.js";
-            yield return "_content/BlazorInputFile/inputfile.js";
-            yield return $"{Prefix}/js/map.js";
-        }
-    }
+    private static IEnumerable<string> AdminPanelScripts => [];
 
-    private static IEnumerable<string> AdminPanelStylesheets
-    {
-        get
-        {
-            yield return "_content/Blazored.Typeahead/blazored-typeahead.css";
-            yield return "_content/Blazored.Modal/blazored-modal.css";
-            yield return $"{Prefix}/css/site.css";
-        }
-    }
+    private static IEnumerable<string> AdminPanelStylesheets => [];
 
     /// <summary>
     /// Gets the scripts.

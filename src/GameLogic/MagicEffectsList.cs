@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic;
 
 using System.Collections;
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.Views.World;
 using Nito.AsyncEx;
 
@@ -90,6 +91,23 @@ public class MagicEffectsList : AsyncDisposable
         while (this.ActiveEffects.Any())
         {
             await this.ActiveEffects.Values.First().DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Clear the effects that produce a specific stat.
+    /// </summary>
+    /// <param name="stat">The stat produced by effect</param>
+    public async ValueTask ClearAllEffectsProducingSpecificStatAsync(AttributeDefinition stat)
+    {
+        var effects = this.ActiveEffects.Values.ToArray();
+
+        foreach (var effect in effects)
+        {
+            if (effect.PowerUpElements.Any(p => p.Target == stat))
+            {
+                await effect.DisposeAsync().ConfigureAwait(false);
+            }
         }
     }
 

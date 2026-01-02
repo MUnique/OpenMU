@@ -17,8 +17,10 @@ using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix;
-using MUnique.OpenMU.Web.AdminPanel.Models;
+using MUnique.OpenMU.Web.AdminPanel.Components;
 using MUnique.OpenMU.Web.AdminPanel.Services;
+using MUnique.OpenMU.Web.Shared.Models;
+using MUnique.OpenMU.Web.Shared.Services;
 
 /// <summary>
 /// Extensions for the <see cref="WebApplicationBuilder"/>.
@@ -39,14 +41,13 @@ public static class WebApplicationExtensions
         // Ensure that DataInitialization plugins will get collected - for the setup functionality.
         _ = DataInitialization.Id;
 
-        var mvcBuilder = builder.Services.AddRazorPages();
+        builder.Services.AddRazorComponents()
+            .AddInteractiveServerComponents();
+        
         if (includeMapApp)
         {
             AdminPanelEnvironment.IsHostingEmbedded = true;
-            mvcBuilder.AddApplicationPart(typeof(Map.Exports).Assembly);
         }
-
-        builder.Services.AddServerSideBlazor();
 
         var services = builder.Services;
         services.AddControllers()
@@ -89,7 +90,7 @@ public static class WebApplicationExtensions
         }
         else
         {
-            app.UseExceptionHandler("/Error");
+            app.UseExceptionHandler("/Error", createScopeForErrors: true);
         }
 
         app.UseStaticFiles();
@@ -99,9 +100,11 @@ public static class WebApplicationExtensions
             RequestPath = "/logs",
         });
 
-        app.UseRouting();
-        app.MapBlazorHub();
-        app.MapFallbackToPage("/_Host");
+        app.UseAntiforgery();
+
+        app.MapStaticAssets();
+        app.MapRazorComponents<App>()
+            .AddInteractiveServerRenderMode();
 
         app.MapControllers();
 
