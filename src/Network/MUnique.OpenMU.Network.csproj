@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <WarningsAsErrors>nullable;CS4014;VSTHRD110;VSTHRD100</WarningsAsErrors>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
@@ -42,12 +42,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" />
-    <PackageReference Include="Nito.AsyncEx.Tasks" Version="5.1.2" />
-    <PackageReference Include="Pipelines.Sockets.Unofficial" Version="2.2.8" />
-    <PackageReference Include="System.IO.Pipelines" Version="9.0.0" />
-    <PackageReference Include="System.Net.Sockets" Version="4.3.0" />
-    <PackageReference Include="System.Text.Encoding" Version="4.3.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="Nito.AsyncEx.Tasks" />
+    <PackageReference Include="Pipelines.Sockets.Unofficial" />
+    <PackageReference Include="System.IO.Pipelines" />
+    <PackageReference Include="System.Net.Sockets" />
+    <PackageReference Include="System.Text.Encoding" />
   </ItemGroup>
 
   <ItemGroup>

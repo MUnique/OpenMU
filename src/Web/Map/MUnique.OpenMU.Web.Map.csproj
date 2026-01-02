@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <WarningsAsErrors>nullable;CS4014;VSTHRD110;VSTHRD100</WarningsAsErrors>
@@ -9,23 +9,25 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <DocumentationFile></DocumentationFile>
-
-    <!--UseRazorSourceGenerator>false</UseRazorSourceGenerator-->
+    <!-- Set base path for static web assets to avoid conflicts when referenced by other web apps.
+         Required for .NET 10+ where WebApp-to-WebApp references are unsupported.
+         Also resolves asset path conflicts in .NET 9 when AdminPanel and Map both have wwwroot/css/site.css.
+         Note: Standalone Program.cs in this project won't serve assets correctly.
+         Use GameServer.Host project to run the map viewer. -->
+    <StaticWebAssetBasePath>_content/$(MSBuildProjectName)</StaticWebAssetBasePath>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Mapster" Version="7.4.0" />
-    <PackageReference Include="Nito.AsyncEx" Version="5.1.2" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="2.1.11" />
-    <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0" />
+    <PackageReference Include="Nito.AsyncEx" />
+    <PackageReference Include="SixLabors.ImageSharp" />
+    <PackageReference Include="SixLabors.ImageSharp.Drawing" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(ci)'!='true'">
     <!-- We only run the transformation locally on our dev environment with visual studio.
         The CI environment is identified by the parameter 'ci'. It's set in the azure pipelines and Dockerfile.
         If you run into errors here under Linux/Mac OS, it might help to add this parameter, too. -->
-    <PackageReference Include="BuildWebCompiler2022" Version="1.14.10" />
-    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="5.7.1">
+    <PackageReference Include="Microsoft.TypeScript.MSBuild">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -33,36 +35,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\GameLogic\MUnique.OpenMU.GameLogic.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Update="wwwroot\css\site.css">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\css\site.min.css">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\img\attackable_alphamap.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\js\app.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\js\map.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\js\Stats.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\js\system-production.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\js\three.min.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\js\tween.min.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <ProjectReference Include="..\Shared\MUnique.OpenMU.Web.Shared.csproj" />
   </ItemGroup>
 
 </Project>

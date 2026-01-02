@@ -15,7 +15,7 @@ using MUnique.OpenMU.Persistence.Initialization.Skills;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// This update fixes RF skill multipliers and adds specific skill multipliers.
+/// This update fixes RF skill multipliers and adds several skill-specific multipliers.
 /// </summary>
 [PlugIn(PlugInName, PlugInDescription)]
 [Guid("753F01BA-5FCA-42FA-9587-7055631C27B7")]
@@ -29,7 +29,7 @@ public class FixSkillMultipliersPlugIn : UpdatePlugInBase
     /// <summary>
     /// The plug in description.
     /// </summary>
-    internal const string PlugInDescription = "This update fixes RF skill multipliers and adds skill-specific multipliers.";
+    internal const string PlugInDescription = "This update fixes RF skill multipliers and adds several skill-specific multipliers.";
 
     /// <inheritdoc />
     public override string Name => PlugInName;

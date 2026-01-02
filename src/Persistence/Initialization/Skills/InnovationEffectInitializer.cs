@@ -30,7 +30,7 @@ public class InnovationEffectInitializer : InitializerBase
         var magicEffect = this.Context.CreateNew<MagicEffectDefinition>();
         this.GameConfiguration.MagicEffects.Add(magicEffect);
         magicEffect.Number = (short)MagicEffectNumber.Innovation;
-        magicEffect.Name = "Innovation Effect (Summoner)";
+        magicEffect.Name = "Innovation Effect";
         magicEffect.InformObservers = true;
         magicEffect.SendDuration = false;
         magicEffect.StopByDeath = true;
@@ -38,7 +38,7 @@ public class InnovationEffectInitializer : InitializerBase
         magicEffect.MonsterTargetLevelDivisor = 20;
         magicEffect.PlayerTargetLevelDivisor = 150;
 
-        // Chance to apply the effect
+        // Chance % = 32 + (Energy / 50) + (Book Rise / 6)
         magicEffect.Chance = this.Context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.Chance.ConstantValue.Value = 0.32f; // 32%
 
@@ -54,6 +54,7 @@ public class InnovationEffectInitializer : InitializerBase
         chancePerBookRise.InputOperand = 1f / 600f; // 6 book rise adds 1% chance
         magicEffect.Chance.RelatedValues.Add(chancePerBookRise);
 
+        // Chance PvP % = 17 + (Energy / 50) + (Book Rise / 6)
         magicEffect.ChancePvp = this.Context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.ChancePvp.ConstantValue.Value = 0.17f; // 17%
 
@@ -69,10 +70,10 @@ public class InnovationEffectInitializer : InitializerBase
         chancePerBookRisePvp.InputOperand = 1f / 600f; // 6 book rise adds 1% chance
         magicEffect.ChancePvp.RelatedValues.Add(chancePerBookRisePvp);
 
-        // Duration of the effect
+        // Duration = 4 + (Energy / 100)
         magicEffect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.Duration.ConstantValue.Value = 4; // 4 Seconds
-        magicEffect.Duration.MaximumValue = 100; // 100 Seconds
+        magicEffect.Duration.MaximumValue = 44; // 44 Seconds (based on 4k total energy cap)
 
         var durationPerEnergy = this.Context.CreateNew<AttributeRelationship>();
         durationPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
@@ -80,9 +81,10 @@ public class InnovationEffectInitializer : InitializerBase
         durationPerEnergy.InputOperand = 1f / 100f; // 100 energy adds 1s
         magicEffect.Duration.RelatedValues.Add(durationPerEnergy);
 
+        // Duration PvP = 5 + (Energy / 300) + ((Level - Target's Level) / 150)
         magicEffect.DurationPvp = this.Context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.DurationPvp.ConstantValue.Value = 5; // 5 Seconds
-        magicEffect.DurationPvp.MaximumValue = 20; // 20 Seconds
+        magicEffect.DurationPvp.MaximumValue = 18; // 18 Seconds (based on 4k total energy cap)
 
         var durationPerEnergyPvp = this.Context.CreateNew<AttributeRelationship>();
         durationPerEnergyPvp.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
@@ -96,29 +98,32 @@ public class InnovationEffectInitializer : InitializerBase
         durationPerLevelPvp.InputOperand = 1f / 150f; // 150 levels adds 1s
         magicEffect.DurationPvp.RelatedValues.Add(durationPerLevelPvp);
 
-        // Power-down: target's defense decreases X% (applies last)
+        // Defense decrease % (applies last) = 20 + (Energy / 90)
         var decDefPowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
         magicEffect.PowerUpDefinitions.Add(decDefPowerUpDefinition);
         decDefPowerUpDefinition.TargetAttribute = Stats.InnovationDefDecrement.GetPersistent(this.GameConfiguration);
         decDefPowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
         decDefPowerUpDefinition.Boost.ConstantValue.Value = 0.20f; // 20% decrease
+        decDefPowerUpDefinition.Boost.MaximumValue = 0.64f; // 64% decrease (based on 4k total energy cap)
 
-        var decDefPvmPerEnergy = this.Context.CreateNew<AttributeRelationship>();
-        decDefPvmPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
-        decDefPvmPerEnergy.InputOperator = InputOperator.Multiply;
-        decDefPvmPerEnergy.InputOperand = 1f / 9000f; // 90 energy further decreases 0.01
-        decDefPowerUpDefinition.Boost.RelatedValues.Add(decDefPvmPerEnergy);
+        var decDefPerEnergy = this.Context.CreateNew<AttributeRelationship>();
+        decDefPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
+        decDefPerEnergy.InputOperator = InputOperator.Multiply;
+        decDefPerEnergy.InputOperand = 1f / 9000f; // 90 energy further decreases 1%
+        decDefPowerUpDefinition.Boost.RelatedValues.Add(decDefPerEnergy);
 
+        // Defense decrease PvP % (applies last) = 12 + (Energy / 110)
         var decDefPowerUpDefinitionPvp = this.Context.CreateNew<PowerUpDefinition>();
         magicEffect.PowerUpDefinitionsPvp.Add(decDefPowerUpDefinitionPvp);
         decDefPowerUpDefinitionPvp.TargetAttribute = Stats.InnovationDefDecrement.GetPersistent(this.GameConfiguration);
         decDefPowerUpDefinitionPvp.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
         decDefPowerUpDefinitionPvp.Boost.ConstantValue.Value = 0.12f; // 12% decrease
+        decDefPowerUpDefinitionPvp.Boost.MaximumValue = 0.48f; // 48% decrease (based on 4k total energy cap)
 
-        var decDefPvmPerEnergyPvp = this.Context.CreateNew<AttributeRelationship>();
-        decDefPvmPerEnergyPvp.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
-        decDefPvmPerEnergyPvp.InputOperator = InputOperator.Multiply;
-        decDefPvmPerEnergyPvp.InputOperand = 1f / 11000f; // 110 energy further decreases 0.01
-        decDefPowerUpDefinitionPvp.Boost.RelatedValues.Add(decDefPvmPerEnergyPvp);
+        var decDefPerEnergyPvp = this.Context.CreateNew<AttributeRelationship>();
+        decDefPerEnergyPvp.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
+        decDefPerEnergyPvp.InputOperator = InputOperator.Multiply;
+        decDefPerEnergyPvp.InputOperand = 1f / 11000f; // 110 energy further decreases 1%
+        decDefPowerUpDefinitionPvp.Boost.RelatedValues.Add(decDefPerEnergyPvp);
     }
 }

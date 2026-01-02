@@ -628,6 +628,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         var hitInfo = await attacker.CalculateDamageAsync(this, skill, isCombo, damageFactor).ConfigureAwait(false);
 
+        if (skill?.Skill is not { } attackSkill || attackSkill.DamageType != DamageType.Fenrir)
+        {
+            attacker.ApplyAmmunitionConsumption(hitInfo);
+        }
+
         if (hitInfo is { HealthDamage: 0, ShieldDamage: 0 })
         {
             await this.InvokeViewPlugInAsync<IShowHitPlugIn>(p => p.ShowHitAsync(this, hitInfo)).ConfigureAwait(false);
@@ -639,7 +644,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return hitInfo;
         }
 
-        attacker.ApplyAmmunitionConsumption(hitInfo);
+        if (this.Attributes[Stats.IsAsleep] > 0)
+        {
+            await this.MagicEffectList.ClearAllEffectsProducingSpecificStatAsync(Stats.IsAsleep).ConfigureAwait(false);
+        }
 
         if (Rand.NextRandomBool(this.Attributes[Stats.FullyRecoverHealthAfterHitChance]))
         {
@@ -1467,16 +1475,16 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         var durationElementPvp = skill.MagicEffectDef.DurationPvp is { } durationPvp ? this.Attributes!.CreateDurationElement(durationPvp) : durationElement;
         var chanceElement = skill.MagicEffectDef.Chance is { } chance ? this.Attributes!.CreateChanceElement(chance) : new ConstantElement(1.0f);
         var chanceElementPvp = skill.MagicEffectDef.ChancePvp is { } chancePvp ? this.Attributes!.CreateChanceElement(chancePvp) : chanceElement;
-        AddSkillPowersToResult(skill, skill.MagicEffectDef.PowerUpDefinitions, ref result);
-        AddSkillPowersToResult(skill, skill.MagicEffectDef.PowerUpDefinitionsPvp, ref resultPvp);
-        skillEntry.PowerUpDuration = (durationElement, skill.MagicEffectDef.Duration.MaximumValue);
-        skillEntry.PowerUpDurationPvp = (durationElementPvp, skill.MagicEffectDef.DurationPvp?.MaximumValue);
+        AddSkillPowersToResult(skill.MagicEffectDef.PowerUpDefinitions, ref result);
+        AddSkillPowersToResult(skill.MagicEffectDef.PowerUpDefinitionsPvp, ref resultPvp);
+        skillEntry.PowerUpDuration = durationElement;
+        skillEntry.PowerUpDurationPvp = durationElementPvp;
         skillEntry.PowerUpChance = chanceElement;
         skillEntry.PowerUpChancePvp = chanceElementPvp;
         skillEntry.PowerUps = result;
         skillEntry.PowerUpsPvp = resultPvp.Count() > 0 ? resultPvp : result;
 
-        void AddSkillPowersToResult(Skill skill, ICollection<PowerUpDefinition> powerUps, ref (AttributeDefinition Target, IElement BuffPowerUp)[] result)
+        void AddSkillPowersToResult(ICollection<PowerUpDefinition> powerUps, ref (AttributeDefinition Target, IElement BuffPowerUp)[] result)
         {
             if (powerUps.Count() == 0)
             {
@@ -1736,6 +1744,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             await party.KickMySelfAsync(this).ConfigureAwait(false);
         }
 
+        await this.RestoreTemporaryStorageItemsAsync().ConfigureAwait(false);
+
+        this.OpenedNpc = null;
+
         await this.SetSelectedCharacterAsync(null).ConfigureAwait(false);
         await this.MagicEffectList.ClearAllEffectsAsync().ConfigureAwait(false);
 
@@ -1864,6 +1876,75 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
     }
 
+    /// <summary>
+    /// Restores the temporary storage items placed in an NPC or trade dialog when player is disconnected.
+    /// </summary>
+    private async ValueTask RestoreTemporaryStorageItemsAsync()
+    {
+        try
+        {
+            if (this.Inventory is not { } inventory)
+            {
+                return;
+            }
+
+            if (this.BackupInventory is { } backupInventory)
+            {
+                inventory.Clear();
+                backupInventory.RestoreItemStates();
+                foreach (var item in backupInventory.Items)
+                {
+                    await inventory.AddItemAsync(item.ItemSlot, item).ConfigureAwait(false);
+                }
+
+                inventory.ItemStorage.Money = backupInventory.Money;
+                this.BackupInventory = null;
+                this.TemporaryStorage = null;
+                return;
+            }
+
+            if (this.TemporaryStorage is not { ItemStorage.Items.Count: > 0 } temporaryStorage)
+            {
+                // nothing to restore.
+                return;
+            }
+
+            var count = temporaryStorage.ItemStorage.Items.Count;
+            this.Logger.LogInformation("Returning {count} items from temporary storage to inventory for player {player}", count, this.Name);
+
+            if (await inventory.TryTakeAllAsync(temporaryStorage).ConfigureAwait(false))
+            {
+                this.Logger.LogInformation("Returned {count} items from temporary storage to inventory for player {player}", count, this.Name);
+                this.TemporaryStorage = null;
+                return;
+            }
+
+            // We should never get so far, since the space is checked before doing anything with the temporary storage.
+            // Log this critical situation - items may be lost if fallback also fails
+            var items = temporaryStorage.Items.ToList();
+            this.Logger.LogError(
+                "CRITICAL: Could not return {count} items from temporary storage to inventory due to full inventory. Attempting fallback. Items: {items}",
+                items.Count,
+                string.Join(", ", items.Select(i => $"{i.Definition?.Name ?? "Unknown"}(Slot:{i.ItemSlot})")));
+
+            // Try one more time to force-add items individually using the captured list
+            foreach (var item in items)
+            {
+                await this.TemporaryStorage.RemoveItemAsync(item).ConfigureAwait(false);
+                if (!await this.Inventory.AddItemAsync(item).ConfigureAwait(false))
+                {
+                    this.Logger.LogError("Failed to return item {item} to inventory. Item is lost. id: {itemid}", item, item.GetId());
+                }
+            }
+
+            this.TemporaryStorage = null;
+        }
+        catch (Exception ex)
+        {
+            this.Logger.LogError(ex, "Error returning items from temporary storage to inventory");
+        }
+    }
+
     private async ValueTask RegenerateHeroStateAsync()
     {
         var currentCharacter = this._selectedCharacter;
@@ -1989,10 +2070,33 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return;
         }
 
-        var reflectPercentage = this.Attributes[Stats.DamageReflection];
-        if (reflectPercentage > 0 && attacker is IAttackable attackableAttacker)
+        if (attacker is IAttackable or AttackerSurrogate)
         {
-            var reflectedDamage = (int)((hitInfo.HealthDamage + hitInfo.ShieldDamage) * reflectPercentage);
+            var attackableAttacker = (attacker as AttackerSurrogate)?.Owner ?? (IAttackable)attacker;
+
+            var reflectPercentage = this.Attributes[Stats.DamageReflection];
+            if (reflectPercentage > 0)
+            {
+                var reflectedDamage = (hitInfo.HealthDamage + hitInfo.ShieldDamage) * reflectPercentage;
+                ReflectDamage((int)reflectedDamage, attackableAttacker);
+            }
+
+            if (attacker is not AttackerSurrogate)
+            {
+                // Raven does not cause full reflect.
+                var fullReflectPercentage = this.Attributes[Stats.FullyReflectDamageAfterHitChance];
+                if (fullReflectPercentage > 0 && Rand.NextRandomBool(fullReflectPercentage))
+                {
+                    var reflectedDamage = attackableAttacker is Player
+                        ? hitInfo.HealthDamage + hitInfo.ShieldDamage
+                        : attackableAttacker.Attributes[Stats.MaximumPhysBaseDmg];
+                    ReflectDamage((int)reflectedDamage, attackableAttacker);
+                }
+            }
+        }
+
+        void ReflectDamage(int reflectedDamage, IAttackable attackable)
+        {
             if (reflectedDamage <= 0)
             {
                 return;
@@ -2001,9 +2105,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             _ = Task.Run(async () =>
             {
                 await Task.Delay(500).ConfigureAwait(false);
-                if (attackableAttacker.IsAlive)
+                if (attackable.IsAlive)
                 {
-                    await attackableAttacker.ReflectDamageAsync(this, (uint)reflectedDamage).ConfigureAwait(false);
+                    await attackable.ReflectDamageAsync(this, (uint)reflectedDamage).ConfigureAwait(false);
                 }
             });
         }

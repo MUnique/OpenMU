@@ -1,16 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <WarningsAsErrors>nullable;CS4014;VSTHRD110;VSTHRD100</WarningsAsErrors>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <!-- Set base path for static web assets to avoid conflicts when referenced by other web apps.
+         Required for .NET 10+ where WebApp-to-WebApp references are unsupported.
+         Also resolves asset path conflicts in .NET 9 when AdminPanel and Map both have wwwroot/css/site.css.
+         Note: Standalone Program.cs in this project won't serve assets correctly.
+         Use Startup or AdminPanel.Host projects to run the admin panel. -->
+    <StaticWebAssetBasePath>_content/$(MSBuildProjectName)</StaticWebAssetBasePath>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Content Remove="compilerconfig.json" />
-  </ItemGroup>
   
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>..\..\..\bin\Debug\</OutputPath>
@@ -20,31 +22,17 @@
     <OutputPath>..\..\..\bin\Release\</OutputPath>
     <DocumentationFile>..\..\..\bin\Release\MUnique.OpenMU.Web.AdminPanel.xml</DocumentationFile>
   </PropertyGroup>
-  
-  <ItemGroup>
-    <None Include="compilerconfig.json" />
-    <None Include="wwwroot\css\open-iconic\FONT-LICENSE" />
-    <None Include="wwwroot\css\open-iconic\font\css\open-iconic-bootstrap.min.css" />
-    <None Include="wwwroot\css\open-iconic\font\fonts\open-iconic.eot" />
-    <None Include="wwwroot\css\open-iconic\font\fonts\open-iconic.otf" />
-    <None Include="wwwroot\css\open-iconic\font\fonts\open-iconic.svg" />
-    <None Include="wwwroot\css\open-iconic\font\fonts\open-iconic.ttf" />
-    <None Include="wwwroot\css\open-iconic\font\fonts\open-iconic.woff" />
-    <None Include="wwwroot\css\open-iconic\ICON-LICENSE" />
-    <None Include="wwwroot\css\open-iconic\README.md" />
-  </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
-    <PackageReference Include="Blazored.Modal" Version="7.3.1" />
-    <PackageReference Include="Blazored.Toast" Version="4.2.1" />
-    <PackageReference Include="Blazored.Typeahead" Version="4.7.0" />
-    <PackageReference Include="BlazorInputFile" Version="0.2.0" />
-    <PackageReference Include="Mapster" Version="7.4.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid" Version="9.0.0" />
-    <PackageReference Include="Nito.AsyncEx" Version="5.1.2" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="2.1.11" />
-    <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0" />
+    <PackageReference Include="BCrypt.Net-Next" />
+    <PackageReference Include="Blazored.Modal" />
+    <PackageReference Include="Blazored.Toast" />
+    <PackageReference Include="Blazored.Typeahead" />
+    <PackageReference Include="BlazorInputFile" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid" />
+    <PackageReference Include="Nito.AsyncEx" />
+    <PackageReference Include="SixLabors.ImageSharp" />
+    <PackageReference Include="SixLabors.ImageSharp.Drawing" />
   </ItemGroup>
 
   <ItemGroup>
@@ -52,43 +40,25 @@
     <ProjectReference Include="..\..\GameLogic\MUnique.OpenMU.GameLogic.csproj" />
     <ProjectReference Include="..\..\Persistence\Initialization\MUnique.OpenMU.Persistence.Initialization.csproj" />
     <ProjectReference Include="..\..\Persistence\MUnique.OpenMU.Persistence.csproj" />
-    <ProjectReference Include="..\ItemEditor\MUnique.OpenMU.Web.ItemEditor.csproj" />
     <ProjectReference Include="..\Map\MUnique.OpenMU.Web.Map.csproj" />
+    <ProjectReference Include="..\Shared\MUnique.OpenMU.Web.Shared.csproj" />
   </ItemGroup>
 
-
-  <ItemGroup Condition="'$(ci)'!='true'">
-    <PackageReference Include="BuildWebCompiler2022" Version="1.14.10" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Update="wwwroot\css\open-iconic\font\css\open-iconic-bootstrap.min.css">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\css\open-iconic\font\fonts\open-iconic.eot">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\css\open-iconic\font\fonts\open-iconic.otf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\css\open-iconic\font\fonts\open-iconic.svg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\css\open-iconic\font\fonts\open-iconic.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\css\open-iconic\font\fonts\open-iconic.woff">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\css\site.css">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\css\site.min.css">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\js\map.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
+  <Target Name="FixNetSdkDiscoverAssetsBug" BeforeTargets="ResolveBuildCompressedStaticWebAssetsConfiguration">
+    <!-- Workaround for:
+   The "DiscoverPrecompressedAssets" task failed unexpectedly.
+   System.ArgumentException: An item with the same key has already been added. Key: C:\Users\[user]\.nuget\packages\microsoft.aspnetcore.app.internal.assets\10.0.0\_framework\blazor.web.js
+    
+   https://github.com/dotnet/sdk/issues/52089
+    
+   This is caused by a Microsoft.NET.Sdk.Web project (like this) referencing another project that also uses Microsoft.NET.Sdk.Web.
+   It appears to be a .NET SDK bug, and we're not the only one hitting it.
+   -->
+    <ItemGroup>
+      <!-- Remove any duplicate StaticWebAsset and StaticWebAssetEndpoint items -->
+      <_StaticWebAsset Include="@(StaticWebAsset)" />
+      <StaticWebAsset Remove="@(StaticWebAsset)" />
+      <StaticWebAsset Include="@(_StaticWebAsset->Distinct())" />
+    </ItemGroup>
+  </Target>
 </Project>

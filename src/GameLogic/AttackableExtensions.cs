@@ -8,7 +8,6 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
-using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Pet;
@@ -321,7 +320,7 @@ public static class AttackableExtensions
             return;
         }
 
-        var duration = ((IElement, float?))(target is Player ? skillEntry.PowerUpDurationPvp! : skillEntry.PowerUpDuration!);
+        var duration = target is Player ? skillEntry.PowerUpDurationPvp! : skillEntry.PowerUpDuration!;
         var powerUps = target is Player ? skillEntry.PowerUpsPvp! : skillEntry.PowerUps!;
         await target.ApplyMagicEffectAsync(attacker, skillEntry.Skill!.MagicEffectDef!, duration, powerUps).ConfigureAwait(false);
     }
@@ -370,6 +369,11 @@ public static class AttackableExtensions
     /// <returns>The success of the appliance.</returns>
     public static async ValueTask<bool> TryApplyElementalEffectsAsync(this IAttackable target, IAttacker attacker, SkillEntry skillEntry)
     {
+        if (!target.IsAlive)
+        {
+            return false;
+        }
+
         skillEntry.ThrowNotInitializedProperty(skillEntry.Skill is null, nameof(skillEntry.Skill));
         var modifier = skillEntry.Skill.ElementalModifierTarget;
         if (modifier is null)
@@ -416,6 +420,11 @@ public static class AttackableExtensions
     /// </returns>
     public static async ValueTask<bool> TryApplyElementalEffectsAsync(this IAttackable target, IAttacker attacker, Skill skill, IElement? powerUp, IElement? duration, AttributeDefinition? targetAttribute)
     {
+        if (!target.IsAlive)
+        {
+            return false;
+        }
+
         var modifier = skill.ElementalModifierTarget;
         if (modifier is null)
         {
@@ -437,7 +446,7 @@ public static class AttackableExtensions
             && targetAttribute is not null)
         {
             // power-up is the wrong term here... it's more like a power-down ;-)
-            await target.ApplyMagicEffectAsync(attacker, effectDefinition, (duration, null), (targetAttribute, powerUp)).ConfigureAwait(false);
+            await target.ApplyMagicEffectAsync(attacker, effectDefinition, duration, (targetAttribute, powerUp)).ConfigureAwait(false);
             applied = true;
         }
 
@@ -459,7 +468,7 @@ public static class AttackableExtensions
     {
         if (!hitInfo.Attributes.HasFlag(DamageAttributes.Reflected) && attacker.Attributes[Stats.AmmunitionConsumptionRate] > 0.0)
         {
-            // Every hit needs ammo. Failed hits don't need ammo.
+            // Every hit needs ammo, missed or not
             if (attacker.Attributes[Stats.AmmunitionAmount] < attacker.Attributes[Stats.AmmunitionConsumptionRate])
             {
                 return;
@@ -785,18 +794,19 @@ public static class AttackableExtensions
     /// <param name="magicEffectDefinition">The magic effect definition.</param>
     /// <param name="duration">The duration.</param>
     /// <param name="powerUps">The power ups of the effect.</param>
-    private static async ValueTask ApplyMagicEffectAsync(this IAttackable target, IAttacker attacker, MagicEffectDefinition magicEffectDefinition, (IElement DurElement, float? MaxDur) duration, params (AttributeDefinition Target, IElement Boost)[] powerUps)
+    private static async ValueTask ApplyMagicEffectAsync(this IAttackable target, IAttacker attacker, MagicEffectDefinition magicEffectDefinition, IElement duration, params (AttributeDefinition Target, IElement Boost)[] powerUps)
     {
-        float finalDuration = duration.DurElement.Value;
+        float finalDuration = duration.Value;
 
         if (magicEffectDefinition.DurationDependsOnTargetLevel)
         {
-            finalDuration -= target is Player
-                ? target.Attributes[Stats.Level] / magicEffectDefinition.PlayerTargetLevelDivisor
-                : target.Attributes[Stats.Level] / magicEffectDefinition.MonsterTargetLevelDivisor;
+            var divisor = target is Player ? magicEffectDefinition.PlayerTargetLevelDivisor : magicEffectDefinition.MonsterTargetLevelDivisor;
+            if (divisor != 0)
+            {
+                finalDuration -= target.Attributes[Stats.Level] / divisor;
+            }
         }
 
-        finalDuration = Math.Min(finalDuration, duration.MaxDur ?? float.MaxValue);
         TimeSpan durationSpan = TimeSpan.FromSeconds(finalDuration);
         if (durationSpan < TimeSpan.FromSeconds(1))
         {

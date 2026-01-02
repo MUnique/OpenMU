@@ -46,6 +46,10 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
             if (await this.DoTheMixAsync(items, player, socketSlot, successRate).ConfigureAwait(false) is { } item)
             {
                 player.Logger.LogInformation("Crafted item: {item}", item);
+
+                // Reset backup inventory to avoid old items are restored after success and sudden disconnect of the client.
+                // Newly created items are not in the backup inventory, so they won't be restored in case of a disconnect.
+                // So the best solution is to just clear it and rely on the restore mechanism for the temporary storage.
                 player.BackupInventory = null;
 
                 return (CraftingResult.Success, item);
@@ -56,6 +60,9 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
         }
 
         player.Logger.LogInformation("Crafting failed with success chance: {successRate} %", successRate);
+
+        // Reset backup inventory to avoid items are restored after failure and sudden disconnect of the client.
+        player.BackupInventory = null;
         foreach (var i in items)
         {
             await this.RequiredItemChangeAsync(player, i, false).ConfigureAwait(false);

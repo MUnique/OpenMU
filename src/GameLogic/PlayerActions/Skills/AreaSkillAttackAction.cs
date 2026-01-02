@@ -206,7 +206,7 @@ public class AreaSkillAttackAction
         if (skill.SkillType == SkillType.AreaSkillExplicitTarget)
         {
             if (extraTarget?.CheckSkillTargetRestrictions(player, skill) is true
-                && player.IsInRange(extraTarget.Position, skill.Range)
+                && player.IsInRange(extraTarget.Position, skill.Range + 2)
                 && !extraTarget.IsAtSafezone())
             {
                 yield return extraTarget;
@@ -253,7 +253,6 @@ public class AreaSkillAttackAction
     private async ValueTask ApplySkillAsync(Player player, SkillEntry skillEntry, IAttackable target, Point targetAreaCenter, bool isCombo)
     {
         skillEntry.ThrowNotInitializedProperty(skillEntry.Skill is null, nameof(skillEntry.Skill));
-        var skill = skillEntry.Skill;
 
         if (skillEntry.Skill.SkillType == SkillType.Buff)
         {

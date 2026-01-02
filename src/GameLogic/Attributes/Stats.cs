@@ -638,7 +638,7 @@ public class Stats
     /// <summary>
     /// Gets the explosion skill MST bonus damage, which rises with fire tome strengthener and is added late stage.
     /// </summary>
-    public static AttributeDefinition ExplosionBonusDmg { get; } = new(new Guid("543E01C2-5C61-4473-ACF9-8A63A987A230"), "Explosion Bonus Damage (MST)", "The explosion skill (book of samut) bonus damage, which rises with fire stome strengthener and is added at a late stage.");
+    public static AttributeDefinition ExplosionBonusDmg { get; } = new(new Guid("543E01C2-5C61-4473-ACF9-8A63A987A230"), "Explosion Bonus Damage (MST)", "The explosion skill (book of samut) bonus damage, which rises with fire tome strengthener and is added at a late stage.");
 
     /// <summary>
     /// Gets the requiem skill MST bonus damage, which rises with wind tome strengthener and is added late stage.
@@ -1235,6 +1235,11 @@ public class Stats
     /// Gets the fully recover health after hit chance definition.
     /// </summary>
     public static AttributeDefinition FullyRecoverHealthAfterHitChance { get; } = new(new Guid("3CA72C07-9C2C-4FC5-8BCB-9BD737F83664"), "Chance to fully recover health when getting hit", "3rd Wing Option");
+
+    /// <summary>
+    /// Gets the fully reflect damage after hit chance definition.
+    /// </summary>
+    public static AttributeDefinition FullyReflectDamageAfterHitChance { get; } = new(new Guid("1F7C1E04-4FBD-4FCB-A6C2-EB51A91D8C3E"), "Chance to fully reflect damage when getting hit", "3rd Wing Option");
 
     /// <summary>
     /// Gets the health loss after hit definition.

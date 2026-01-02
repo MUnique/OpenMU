@@ -39,7 +39,7 @@
     <script src="_content/Blazored.Modal/blazored.modal.js"></script>
     <script src="_content/BlazorInputFile/inputfile.js"></script>
 
-@foreach (var scriptSrc in Web.Map.Exports.Scripts)
+@foreach (var scriptSrc in Web.Map.Exports.Scripts.Distinct())
 {
     <script src="@scriptSrc"></script>
 }
