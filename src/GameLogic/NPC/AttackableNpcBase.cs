@@ -98,7 +98,7 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
                                   || (this.SpawnArea.SpawnTrigger == SpawnTrigger.AutomaticDuringWave && (this._eventStateProvider?.IsSpawnWaveActive(this.SpawnArea.WaveNumber) ?? false));
 
     /// <inheritdoc />
-    public async ValueTask<HitInfo?> AttackByAsync(IAttacker attacker, SkillEntry? skill, bool isCombo, double damageFactor = 1.0, bool? isStreakFinalHit = null)
+    public async ValueTask<HitInfo?> AttackByAsync(IAttacker attacker, SkillEntry? skill, bool isCombo, double damageFactor = 1.0, bool? isFinalStreakHit = null)
     {
         if (this.Definition.ObjectKind == NpcObjectKind.Guard)
         {
@@ -112,7 +112,7 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
             attacker.ApplyAmmunitionConsumption(hitInfo);
         }
 
-        await this.HitAsync(hitInfo, attacker, skill?.Skill, isStreakFinalHit).ConfigureAwait(false);
+        await this.HitAsync(hitInfo, attacker, skill?.Skill, isFinalStreakHit).ConfigureAwait(false);
 
         if (hitInfo.HealthDamage > 0)
         {
