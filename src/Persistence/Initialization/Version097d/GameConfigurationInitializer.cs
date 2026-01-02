@@ -11,7 +11,7 @@ using MUnique.OpenMU.Persistence.Initialization.Version095d.Events;
 using MUnique.OpenMU.Persistence.Initialization.Version095d.Items;
 using CharacterClassInitialization = MUnique.OpenMU.Persistence.Initialization.Version095d.CharacterClassInitialization;
 using ChaosMixes = MUnique.OpenMU.Persistence.Initialization.Version095d.ChaosMixes;
-using Gates = MUnique.OpenMU.Persistence.Initialization.Version095d.Gates;
+using Gates = MUnique.OpenMU.Persistence.Initialization.Version097d.Gates;
 using InvasionMobsInitialization = MUnique.OpenMU.Persistence.Initialization.Version095d.InvasionMobsInitialization;
 
 /// <summary>
@@ -62,6 +62,7 @@ public class GameConfigurationInitializer : GameConfigurationInitializerBase
         new BoxOfLuck(this.Context, this.GameConfiguration).Initialize();
         new Version097d.Items.ItemList097Importer(this.Context, this.GameConfiguration).Initialize();
         new NpcInitialization(this.Context, this.GameConfiguration).Initialize();
+        new Quests(this.Context, this.GameConfiguration).Initialize();
         new InvasionMobsInitialization(this.Context, this.GameConfiguration).Initialize();
         new Version097d.Items.ItemList097Filter(this.GameConfiguration).Apply();
 
