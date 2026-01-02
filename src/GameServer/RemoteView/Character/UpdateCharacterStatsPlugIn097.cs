@@ -41,13 +41,14 @@ public class UpdateCharacterStatsPlugIn097 : IUpdateCharacterStatsPlugIn
             return;
         }
 
+        var (viewExperience, viewNextExperience) = Version097ExperienceViewHelper.GetViewExperience(this._player);
         await connection.SendCharacterInformation097Async(
             this._player.Position.X,
             this._player.Position.Y,
             (byte)selectedCharacter.CurrentMap.Number,
             this._player.Rotation.ToPacketByte(),
-            (uint)selectedCharacter.Experience,
-            (uint)this._player.GameServerContext.ExperienceTable[(int)attributes[Stats.Level] + 1],
+            viewExperience,
+            viewNextExperience,
             (ushort)Math.Max(selectedCharacter.LevelUpPoints, 0),
             (ushort)attributes[Stats.BaseStrength],
             (ushort)attributes[Stats.BaseAgility],
@@ -86,9 +87,9 @@ public class UpdateCharacterStatsPlugIn097 : IUpdateCharacterStatsPlugIn
             offset += 4;
             BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), ClampToUInt32(selectedCharacter.LevelUpPoints));
             offset += 4;
-            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), ClampToUInt32(selectedCharacter.Experience));
+            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), viewExperience);
             offset += 4;
-            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), ClampToUInt32(this._player.GameServerContext.ExperienceTable[(int)attributes[Stats.Level] + 1]));
+            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), viewNextExperience);
             offset += 4;
             BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), ClampToUInt32(attributes[Stats.BaseStrength]));
             offset += 4;

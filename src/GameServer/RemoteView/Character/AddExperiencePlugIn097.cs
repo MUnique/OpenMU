@@ -57,8 +57,7 @@ public class AddExperiencePlugIn097 : IAddExperiencePlugIn
         while (remainingExperience > 0)
         {
             ushort sendExp = remainingExperience > ushort.MaxValue ? ushort.MaxValue : (ushort)remainingExperience;
-            var viewExperience = ClampToUInt32(selectedCharacter.Experience);
-            var viewNextExperience = ClampToUInt32(this._player.GameServerContext.ExperienceTable[(int)attributes[Stats.Level] + 1]);
+            var (viewExperience, viewNextExperience) = Version097ExperienceViewHelper.GetViewExperience(this._player);
             var viewDamage = (uint)damage;
 
             await connection.SendAsync(() =>
@@ -80,20 +79,5 @@ public class AddExperiencePlugIn097 : IAddExperiencePlugIn
             damage = 0;
             remainingExperience -= sendExp;
         }
-    }
-
-    private static uint ClampToUInt32(long value)
-    {
-        if (value <= 0)
-        {
-            return 0;
-        }
-
-        if (value >= uint.MaxValue)
-        {
-            return uint.MaxValue;
-        }
-
-        return (uint)value;
     }
 }

@@ -52,6 +52,7 @@ public class UpdateLevelPlugIn097 : IUpdateLevelPlugIn
             span[2] = 0xF3;
             span[3] = 0x05;
 
+            var (viewExperience, viewNextExperience) = Version097ExperienceViewHelper.GetViewExperience(this._player);
             var offset = 4;
             BinaryPrimitives.WriteUInt16LittleEndian(span.Slice(offset, 2), GetUShort(charStats[Stats.Level]));
             offset += 2;
@@ -79,9 +80,9 @@ public class UpdateLevelPlugIn097 : IUpdateLevelPlugIn
             offset += 4;
             BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), ClampToUInt32(charStats[Stats.MaximumAbility]));
             offset += 4;
-            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), ClampToUInt32(selectedCharacter.Experience));
+            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), viewExperience);
             offset += 4;
-            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), ClampToUInt32(this._player.GameServerContext.ExperienceTable[(int)charStats[Stats.Level] + 1]));
+            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), viewNextExperience);
 
             return packetLength;
         }).ConfigureAwait(false);
