@@ -62,6 +62,8 @@ public class ShowHitPlugIn : IShowHitPlugIn
                 targetId,
                 healthDamage,
                 this.GetDamageKind(hitInfo.Attributes),
+                hitInfo.Attributes.HasFlag(DamageAttributes.RageFighterStreakHit),
+                hitInfo.Attributes.HasFlag(DamageAttributes.RageFighterStreakFinalHit),
                 hitInfo.Attributes.HasFlag(DamageAttributes.Double),
                 hitInfo.Attributes.HasFlag(DamageAttributes.Triple),
                 shieldDamage).ConfigureAwait(false);
@@ -118,7 +120,7 @@ public class ShowHitPlugIn : IShowHitPlugIn
 
         if (attributes.HasFlag(DamageAttributes.Reflected))
         {
-            return DamageKind.ReflectedDarkPink;
+            return DamageKind.ReflectedLightPink;
         }
 
         if (attributes.HasFlag(DamageAttributes.Poison))

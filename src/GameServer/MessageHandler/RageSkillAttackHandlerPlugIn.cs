@@ -13,9 +13,9 @@ using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// Handler for rage fighter area skill attack packets (beast uppercut, chain drive, dark side).
+/// Handler for rage fighter area skill attack packets (beast uppercut, chain drive, dragon slasher, dark side).
 /// </summary>
-[PlugIn(nameof(RageSkillAttackHandlerPlugIn), "Handler for rage fighter area skill attack packets (dark side).")]
+[PlugIn(nameof(RageSkillAttackHandlerPlugIn), "Handler for rage fighter area skill attack packets (beast uppercut, chain drive, dragon slasher, dark side).")]
 [Guid("D09ED5FB-DB6F-4707-A740-144CF2BA5D92")]
 [MinimumClient(6, 0, ClientLanguage.Invariant)]
 internal class RageSkillAttackHandlerPlugIn : IPacketHandlerPlugIn
@@ -35,7 +35,7 @@ internal class RageSkillAttackHandlerPlugIn : IPacketHandlerPlugIn
 
         var target = player.GetObject(targetId) as IAttackable;
         if (player.SkillList is null || player.SkillList.GetSkill(message.SkillId) is not { } skill
-                                     || (target is null || !target.IsInRange(player.Position, skill.Skill!.Range)))
+                                     || target is null || !target.IsInRange(player.Position, skill.Skill!.Range))
         {
             return;
         }
