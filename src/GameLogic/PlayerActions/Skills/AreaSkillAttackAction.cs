@@ -146,6 +146,12 @@ public class AreaSkillAttackAction
                     extraTarget = target;
                 }
 
+                // Skip targets that have died in previous rounds
+                if (!target.IsAlive)
+                {
+                    continue;
+                }
+
                 var hitChance = attackRound < areaSkillSettings.MinimumNumberOfHitsPerTarget
                     ? 1.0
                     : Math.Min(areaSkillSettings.HitChancePerDistanceMultiplier, Math.Pow(areaSkillSettings.HitChancePerDistanceMultiplier, player.GetDistanceTo(target)));
@@ -160,7 +166,11 @@ public class AreaSkillAttackAction
 
                 if (attackDelay == TimeSpan.Zero)
                 {
-                    await this.ApplySkillAsync(player, skillEntry, target, targetAreaCenter, isCombo).ConfigureAwait(false);
+                    // Check if target is still alive and in valid state before attacking
+                    if (!target.IsAtSafezone() && target.IsActive())
+                    {
+                        await this.ApplySkillAsync(player, skillEntry, target, targetAreaCenter, isCombo).ConfigureAwait(false);
+                    }
                 }
                 else
                 {
