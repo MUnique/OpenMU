@@ -1,16 +1,16 @@
 ﻿$widthThreshold: 768px;
 
-app {
+.page {
     position: relative;
     display: flex;
     flex-direction: column;
 }
 
 @media (min-width: $widthThreshold) {
-    app {
-      flex-direction: row;
-      min-height: 100vh;
-    }
+  .page {
+    flex-direction: row;
+    min-height: 100vh;
+  }
 }
 
 html, body {

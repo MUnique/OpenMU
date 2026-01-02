@@ -20,9 +20,9 @@ public static class Exports
     /// </summary>
     private static string Prefix { get; } = $"_content/{typeof(Exports).Namespace}";
 
-    private static IEnumerable<string> AdminPanelScripts => Web.Shared.Exports.Scripts;
+    private static IEnumerable<string> AdminPanelScripts => [];
 
-    private static IEnumerable<string> AdminPanelStylesheets => Web.Shared.Exports.Stylesheets;
+    private static IEnumerable<string> AdminPanelStylesheets => [];
 
     /// <summary>
     /// Gets the scripts.

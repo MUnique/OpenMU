@@ -265,23 +265,6 @@ public static class Extensions
             app.UseSwaggerUI();
         }
 
-        if (addBlazor)
-        {
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Error");
-            }
-
-            app.UseStaticFiles();
-            app.UseRouting();
-            app.MapBlazorHub();
-            app.MapFallbackToPage("/_Host");
-        }
-
         app.UseCloudEvents();
         app.MapControllers();
         app.MapSubscribeHandler();
