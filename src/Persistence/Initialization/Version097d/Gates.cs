@@ -168,8 +168,8 @@ public class Gates : InitializerBase
         targetGates.Add(49, this.CreateExitGate(maps[7], 15, 11, 27, 23, 0, true));
         targetGates.Add(46, this.CreateExitGate(maps[7], 14, 12, 15, 13, 3));
         targetGates.Add(56, this.CreateExitGate(maps[7], 16, 225, 17, 230, 3));
-        targetGates.Add(75, this.CreateExitGate(maps[7], 225, 53, 228, 50, 0, true));
-        targetGates.Add(76, this.CreateExitGate(maps[7], 62, 163, 68, 157, 0, true));
+        targetGates.Add(75, this.CreateExitGate(maps[7], 225, 50, 228, 53, 0, true));
+        targetGates.Add(76, this.CreateExitGate(maps[7], 62, 157, 68, 163, 0, true));
 
         // Tarkan
         targetGates.Add(54, this.CreateExitGate(maps[8], 248, 40, 251, 44, 7));
@@ -177,9 +177,9 @@ public class Gates : InitializerBase
         targetGates.Add(77, this.CreateExitGate(maps[8], 96, 143, 100, 146, 0, true));
 
         // Devias sub gates
-        targetGates.Add(72, this.CreateExitGate(maps[2], 23, 27, 27, 24, 0, true));
-        targetGates.Add(73, this.CreateExitGate(maps[2], 224, 231, 227, 227, 0, true));
-        targetGates.Add(74, this.CreateExitGate(maps[2], 69, 181, 72, 178, 0, true));
+        targetGates.Add(72, this.CreateExitGate(maps[2], 23, 24, 27, 27, 0, true));
+        targetGates.Add(73, this.CreateExitGate(maps[2], 224, 227, 227, 231, 0, true));
+        targetGates.Add(74, this.CreateExitGate(maps[2], 69, 178, 72, 181, 0, true));
 
         // Blood Castle spawn gates
         targetGates.Add(66, this.CreateExitGate(maps[11], 12, 5, 14, 10, 0, true));
