@@ -14,7 +14,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IChangeTerrainAttributesViewPlugin"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn(nameof(ChangeTerrainAttributesViewPlugIn), "The default implementation of the IChangeTerrainAttributesViewPlugin which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = nameof(ChangeTerrainAttributesViewPlugIn), Description = "The default implementation of the IChangeTerrainAttributesViewPlugin which is forwarding everything to the game client with specific data packets.")]
 [Guid("D408B6C5-E4DE-496F-B911-F2DA893E9A96")]
 public class ChangeTerrainAttributesViewPlugIn : IChangeTerrainAttributesViewPlugin
 {

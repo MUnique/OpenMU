@@ -16,7 +16,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IUpdateLevelPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn("UpdateLevelPlugIn", "The default implementation of the IUpdateLevelPlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = "UpdateLevelPlugIn", Description = "The default implementation of the IUpdateLevelPlugIn which is forwarding everything to the game client with specific data packets.")]
 [Guid("1ff3709e-d99b-4c00-b926-efce281b3997")]
 public class UpdateLevelPlugIn : IUpdateLevelPlugIn
 {

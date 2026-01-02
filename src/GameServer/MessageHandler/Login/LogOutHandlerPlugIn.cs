@@ -14,7 +14,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Handler for logout packets.
 /// </summary>
-[PlugIn("Logout handler", "Handler for logout packets.")]
+[PlugIn]
+[Display(Name = "Logout handler", Description = "Handler for logout packets.")]
 [Guid("84108668-70A0-42F6-AA80-B43757F12836")]
 [BelongsToGroup(LogInOutGroup.GroupKey)]
 public class LogOutHandlerPlugIn : ISubPacketHandlerPlugIn

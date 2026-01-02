@@ -12,7 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IShowLoginResultPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn("ShowLoginResultPlugIn", "The default implementation of the IShowLoginResultPlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = "ShowLoginResultPlugIn", Description = "The default implementation of the IShowLoginResultPlugIn which is forwarding everything to the game client with specific data packets.")]
 [Guid("9ba2646b-72c2-4876-a316-c9aadb386037")]
 public class ShowLoginResultPlugIn : IShowLoginResultPlugIn
 {

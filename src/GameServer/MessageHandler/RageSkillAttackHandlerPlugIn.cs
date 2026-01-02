@@ -15,7 +15,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Handler for rage fighter area skill attack packets (beast uppercut, chain drive, dark side).
 /// </summary>
-[PlugIn(nameof(RageSkillAttackHandlerPlugIn), "Handler for rage fighter area skill attack packets (dark side).")]
+[PlugIn]
+[Display(Name = nameof(RageSkillAttackHandlerPlugIn), Description = "Handler for rage fighter area skill attack packets (dark side).")]
 [Guid("D09ED5FB-DB6F-4707-A740-144CF2BA5D92")]
 [MinimumClient(6, 0, ClientLanguage.Invariant)]
 internal class RageSkillAttackHandlerPlugIn : IPacketHandlerPlugIn

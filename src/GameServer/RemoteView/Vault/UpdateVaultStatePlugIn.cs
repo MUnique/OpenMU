@@ -12,7 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IUpdateVaultStatePlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn(nameof(UpdateVaultStatePlugIn), "The default implementation of the IUpdateVaultStatePlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = nameof(UpdateVaultStatePlugIn), Description = "The default implementation of the IUpdateVaultStatePlugIn which is forwarding everything to the game client with specific data packets.")]
 [Guid("1B0A5F5B-85A0-4228-9392-584E89FB8D88")]
 public class UpdateVaultStatePlugIn : IUpdateVaultStatePlugIn
 {

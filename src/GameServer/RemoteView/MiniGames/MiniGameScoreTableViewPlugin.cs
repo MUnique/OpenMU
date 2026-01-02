@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IMiniGameScoreTableViewPlugin"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn(nameof(MiniGameScoreTableViewPlugin), "The default implementation of the IMiniGameScoreTableViewPlugin which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = nameof(MiniGameScoreTableViewPlugin), Description = "The default implementation of the IMiniGameScoreTableViewPlugin which is forwarding everything to the game client with specific data packets.")]
 [Guid("A4AC1264-7410-4578-A318-E57F3B450DC5")]
 public class MiniGameScoreTableViewPlugin : IMiniGameScoreTableViewPlugin
 {

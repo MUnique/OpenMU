@@ -14,7 +14,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Handler for MU Helper use requests.
 /// </summary>
-[PlugIn(nameof(MuHelperStatusChangeRequestHandlerPlugIn), "Handler for MU Helper status change requests.")]
+[PlugIn]
+[Display(Name = nameof(MuHelperStatusChangeRequestHandlerPlugIn), Description = "Handler for MU Helper status change requests.")]
 [Guid("91B5040E-44B6-41FC-A0AB-A881770B2A16")]
 [BelongsToGroup(MuHelperGroupHandler.GroupKey)]
 public class MuHelperStatusChangeRequestHandlerPlugIn : ISubPacketHandlerPlugIn

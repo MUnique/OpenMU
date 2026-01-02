@@ -1,6 +1,6 @@
-﻿@using System.ComponentModel.DataAnnotations
-@using System.Linq.Expressions
-@using System.Reflection
+﻿@using System.Linq.Expressions
+@using MUnique.OpenMU.DataModel
+@using MUnique.OpenMU.DataModel.Properties
 @typeparam TValue
 
 @if (!string.IsNullOrWhiteSpace(this._actualLabel))
@@ -39,11 +39,12 @@
     {
         base.OnParametersSet();
         this._fieldIdentifier = FieldIdentifier.Create(this.ValueExpression);
-        var property = this._fieldIdentifier.Model.GetType().GetProperty(this._fieldIdentifier.FieldName);
-        var displayAttribute = property?.GetCustomAttribute<DisplayAttribute>();
-        this._actualLabel = (string.IsNullOrWhiteSpace(this.Text) ? null : this.Text)
-                            ?? displayAttribute?.GetName()
-                            ?? CaptionHelper.SeparateWords(this._fieldIdentifier.FieldName);
-        this._description = displayAttribute?.GetDescription();
+        var type = this._fieldIdentifier.Model.GetType();
+        var property = type.GetProperty(this._fieldIdentifier.FieldName);
+        if (property is not null)
+        {
+            this._actualLabel = type.GetPropertyCaption(property.Name);
+            this._description = type.GetPropertyDescription(property.Name);
+        }
     }
 }

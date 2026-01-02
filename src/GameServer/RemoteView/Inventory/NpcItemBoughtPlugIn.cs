@@ -14,7 +14,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="INpcItemBoughtPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn("NpcItemBoughtPlugIn", "The default implementation of the INpcItemBoughtPlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = "NpcItemBoughtPlugIn", Description = "The default implementation of the INpcItemBoughtPlugIn which is forwarding everything to the game client with specific data packets.")]
 [Guid("cf45b5e2-158a-4998-bc73-fed4d4d31c0c")]
 public class NpcItemBoughtPlugIn : INpcItemBoughtPlugIn
 {

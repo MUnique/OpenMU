@@ -12,7 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IApplyKeyConfigurationPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn("ApplyKeyConfigurationPlugIn", "The default implementation of the IUpdateVaultMoneyPlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = "ApplyKeyConfigurationPlugIn", Description = "The default implementation of the IUpdateVaultMoneyPlugIn which is forwarding everything to the game client with specific data packets.")]
 [Guid("6DFF0BF8-2E35-4C1D-9778-3406FCFB4716")]
 public class ApplyKeyConfigurationPlugIn : IApplyKeyConfigurationPlugIn
 {

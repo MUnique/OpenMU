@@ -12,7 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// This update fixes some item options (damage, defense rate) and weapons attack speed.
 /// It also refactors attack speed attributes for simplification.
 /// </summary>
-[PlugIn(PlugInName, PlugInDescription)]
+[PlugIn]
+[Display(Name = PlugInName, Description = PlugInDescription)]
 [Guid("C7F90EDB-EC00-467D-826F-9DEFFEA1206A")]
 public class FixItemOptionsAndAttackSpeedPlugIn095D : FixItemOptionsAndAttackSpeedPlugInBase
 {

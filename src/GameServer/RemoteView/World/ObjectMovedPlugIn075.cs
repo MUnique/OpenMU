@@ -15,7 +15,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The implementation of the <see cref="IObjectMovedPlugIn"/> for version 0.75 which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn("ObjectMovedPlugIn 0.75", "The default implementation of the IObjectMovedPlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = "ObjectMovedPlugIn 0.75", Description = "The default implementation of the IObjectMovedPlugIn which is forwarding everything to the game client with specific data packets.")]
 [Guid("3B387A61-F9E2-4866-BBD6-F236582E350A")]
 public class ObjectMovedPlugIn075 : ObjectMovedPlugIn
 {

@@ -12,7 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// This update fixes the discriminators of some ancient items.
 /// </summary>
-[PlugIn(PlugInName, PlugInDescription)]
+[PlugIn]
+[Display(Name = PlugInName, Description = PlugInDescription)]
 [Guid("AB664421-1CA6-4FCE-A150-0007971017E1")]
 public class FixAncientDiscriminatorsUpdatePlugIn : UpdatePlugInBase
 {

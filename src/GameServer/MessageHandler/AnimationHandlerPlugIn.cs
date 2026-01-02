@@ -14,7 +14,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Handler for animation packets.
 /// </summary>
-[PlugIn("AnimationHandlerPlugIn", "Handler for animation packets.")]
+[PlugIn]
+[Display(Name = "AnimationHandlerPlugIn", Description = "Handler for animation packets.")]
 [Guid("5cf7fa95-5ca2-4e14-bb08-4b64250a8ee8")]
 internal class AnimationHandlerPlugIn : IPacketHandlerPlugIn
 {

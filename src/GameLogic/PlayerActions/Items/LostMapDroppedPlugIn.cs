@@ -16,7 +16,8 @@ using MonsterSpawnArea = MUnique.OpenMU.Persistence.BasicModel.MonsterSpawnArea;
 /// This plugin transforms a stack of symbol of kundun into a lost map.
 /// todo: implement plugin configuration to resolve magic numbers.
 /// </summary>
-[PlugIn(nameof(LostMapDroppedPlugIn), "This plugin handles the drop of the lost map item. It creates the gate to the kalima map.")]
+[PlugIn]
+[Display(Name = nameof(LostMapDroppedPlugIn), Description = "This plugin handles the drop of the lost map item. It creates the gate to the kalima map.")]
 [Guid("F6DB10E0-AE7F-4BC6-914F-B858763C5CF7")]
 public sealed class LostMapDroppedPlugIn : IItemDropPlugIn
 {
@@ -41,20 +42,20 @@ public sealed class LostMapDroppedPlugIn : IItemDropPlugIn
 
         if (item.Level is < 1 or > 7)
         {
-            await player.ShowMessageAsync("The lost map is not valid.").ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.InvalidLostMap)).ConfigureAwait(false);
             return;
         }
 
         if (player.CurrentMiniGame is not null)
         {
-            await player.ShowMessageAsync("Cannot create kalima gate on event map.").ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.NoKalimaGateOnEventMap)).ConfigureAwait(false);
             return;
         }
 
         var gatePosition = target;
         if (player.IsAtSafezone() || player.CurrentMap?.Terrain.SafezoneMap[gatePosition.X, gatePosition.Y] is true)
         {
-            await player.ShowMessageAsync("Cannot create kalima gate in safe zone.").ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.NoKalimaGateInSafezone)).ConfigureAwait(false);
             return;
         }
 
@@ -62,7 +63,7 @@ public sealed class LostMapDroppedPlugIn : IItemDropPlugIn
         var gateNpcDef = player.GameContext.Configuration.Monsters.FirstOrDefault(def => def.Number == gateNpcNumber);
         if (gateNpcDef is null)
         {
-            await player.ShowMessageAsync("The gate npc is not defined.").ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.UndefinedGateNpc)).ConfigureAwait(false);
             return;
         }
 
@@ -81,7 +82,7 @@ public sealed class LostMapDroppedPlugIn : IItemDropPlugIn
         var targetGate = player.GameContext.Configuration.Maps.FirstOrDefault(g => g.Number == KalimaMapNumbers[item.Level - 1])?.ExitGates.FirstOrDefault();
         if (targetGate is null)
         {
-            await player.ShowMessageAsync("The kalima entrance wasn't found.").ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.KalimaEntranceNotFound)).ConfigureAwait(false);
             return;
         }
 

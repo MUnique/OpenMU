@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which handles the command to add vitality stat points.
 /// </summary>
 [Guid("370CE86C-E382-4E0F-93F4-AD75FA079129")]
-[PlugIn("Add vitality chat command", "Adds the specified amount of vitality points to the character.")]
+[PlugIn]
+[Display(Name = "Add vitality chat command", Description = "Adds the specified amount of vitality points to the character.")]
 [ChatCommandHelp(Command, "Adds the specified amount of vitality points to the character.", null, MinimumStatus)]
 public class AddVitalityStatChatCommandPlugIn : AddStatChatCommandPlugIn, IDisabledByDefault
 {

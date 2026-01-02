@@ -12,7 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IChangeTradeButtonStatePlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn("ChangeTradeButtonStatePlugIn", "The default implementation of the IChangeTradeButtonStatePlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = "ChangeTradeButtonStatePlugIn", Description = "The default implementation of the IChangeTradeButtonStatePlugIn which is forwarding everything to the game client with specific data packets.")]
 [Guid("d33144a1-634a-4c7a-9add-2086c3b9b0ea")]
 public class ChangeTradeButtonStatePlugIn : IChangeTradeButtonStatePlugIn
 {

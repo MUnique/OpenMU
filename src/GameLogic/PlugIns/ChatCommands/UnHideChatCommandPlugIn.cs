@@ -11,7 +11,8 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which handles unhide commands.
 /// </summary>
 [Guid("0F0ADAC6-88C7-4EC0-94A2-A289173DEDA7")]
-[PlugIn("Hide command", "Handles the chat command '/unhide'. Unhides the own player from others.")]
+[PlugIn]
+[Display(Name = "Hide command", Description = "Handles the chat command '/unhide'. Unhides the own player from others.")]
 [ChatCommandHelp(Command, "Unhides the own player from others.", CharacterStatus.GameMaster)]
 public class UnHideChatCommandPlugIn : IChatCommandPlugIn
 {

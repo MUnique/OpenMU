@@ -12,7 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="ILetterSendResultPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn("LetterSendResultPlugIn", "The default implementation of the ILetterSendResultPlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = "LetterSendResultPlugIn", Description = "The default implementation of the ILetterSendResultPlugIn which is forwarding everything to the game client with specific data packets.")]
 [Guid("c67cad23-20ba-4cd7-ba4e-b672beed427c")]
 public class LetterSendResultPlugIn : ILetterSendResultPlugIn
 {

@@ -17,7 +17,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// This update fixes RF skill multipliers and adds several skill-specific multipliers.
 /// </summary>
-[PlugIn(PlugInName, PlugInDescription)]
+[Display(Name = PlugInName, Description = PlugInDescription)]
+[PlugIn]
 [Guid("753F01BA-5FCA-42FA-9587-7055631C27B7")]
 public class FixSkillMultipliersPlugIn : UpdatePlugInBase
 {

@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// Consume handler for the antidote potion. It removes the poison effect from the player.
 /// </summary>
 [Guid("F838B348-DAA5-475B-BCED-41A076D08948")]
-[PlugIn(nameof(AntidoteConsumeHandlerPlugIn), "Plugin which handles the antidote consumption.")]
+[PlugIn]
+[Display(Name = nameof(AntidoteConsumeHandlerPlugIn), Description = "Plugin which handles the antidote consumption.")]
 public class AntidoteConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn
 {
     private const short PoisonEffectNumber = 0x37;

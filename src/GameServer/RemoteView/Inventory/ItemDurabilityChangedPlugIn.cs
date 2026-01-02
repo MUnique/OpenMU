@@ -14,7 +14,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IItemDurabilityChangedPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn(nameof(ItemDurabilityChangedPlugIn), "The default implementation of the IItemDurabilityChangedPlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = nameof(ItemDurabilityChangedPlugIn), Description = "The default implementation of the IItemDurabilityChangedPlugIn which is forwarding everything to the game client with specific data packets.")]
 [Guid("f121286f-2e43-4a66-8f34-5dbe69304e1e")]
 public class ItemDurabilityChangedPlugIn : IItemDurabilityChangedPlugIn
 {

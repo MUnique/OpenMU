@@ -29,7 +29,7 @@ public partial class MapEditor : IDisposable
 
     private readonly float _scale = 3;
 
-    private Image<Rgba32> _terrainImage = null!;
+    private Image<Rgba32>? _terrainImage;
 
     private object? _focusedObject;
     private Resizers.ResizerPosition? _resizerPosition;

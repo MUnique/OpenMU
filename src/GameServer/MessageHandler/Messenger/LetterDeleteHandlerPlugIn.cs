@@ -15,7 +15,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Handler for letter delete packets.
 /// </summary>
-[PlugIn("LetterDeleteHandlerPlugIn", "Handler for letter delete packets.")]
+[PlugIn]
+[Display(Name = "LetterDeleteHandlerPlugIn", Description = "Handler for letter delete packets.")]
 [Guid("3334483b-2de2-47ff-8d74-7407d3ddf15f")]
 internal class LetterDeleteHandlerPlugIn : IPacketHandlerPlugIn
 {

@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Packet handler for character creation packets (0xF3, 0x01 identifier).
 /// </summary>
-[PlugIn("Character - Create", "Packet handler for character creation packets (0xF3, 0x01 identifier).")]
+[PlugIn]
+[Display(Name = "Character - Create", Description = "Packet handler for character creation packets (0xF3, 0x01 identifier).")]
 [Guid("A26831DE-4D67-44CD-9434-12BDC4B07F47")]
 [BelongsToGroup(CharacterGroupHandlerPlugIn.GroupKey)]
 internal class CharacterCreatePacketHandlerPlugIn : ISubPacketHandlerPlugIn

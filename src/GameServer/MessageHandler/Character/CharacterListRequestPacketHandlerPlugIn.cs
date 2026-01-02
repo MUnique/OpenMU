@@ -12,7 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Packet handler for character list request packets (0xF3, 0x00 identifier).
 /// </summary>
-[PlugIn("Character - Request List", "Packet handler for character list request packets (0xF3, 0x00 identifier).")]
+[PlugIn]
+[Display(Name = "Character - Request List", Description = "Packet handler for character list request packets (0xF3, 0x00 identifier).")]
 [Guid("EBB70865-EF6B-4178-A84A-F94015900812")]
 [BelongsToGroup(CharacterGroupHandlerPlugIn.GroupKey)]
 internal class CharacterListRequestPacketHandlerPlugIn : ISubPacketHandlerPlugIn

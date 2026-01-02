@@ -15,7 +15,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Handler for duel start request packets (new duel system).
 /// </summary>
-[PlugIn(nameof(DuelStartRequestHandlerPlugIn), "Handler for duel start request packets (new duel system).")]
+[PlugIn]
+[Display(Name = nameof(DuelStartRequestHandlerPlugIn), Description = "Handler for duel start request packets (new duel system).")]
 [Guid("300D44EF-3AFD-43C3-9817-AE9B023C25CC")]
 [MinimumClient(4, 0, ClientLanguage.Invariant)]
 [BelongsToGroup(DuelGroupHandlerPlugIn.GroupKey)]

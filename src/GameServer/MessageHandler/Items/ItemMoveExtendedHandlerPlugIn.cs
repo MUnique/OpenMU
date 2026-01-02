@@ -15,7 +15,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Packet handler for extended item move packets.
 /// </summary>
-[PlugIn(nameof(ItemMoveExtendedHandlerPlugIn), "Packet handler for extended item move packets.")]
+[PlugIn]
+[Display(Name = nameof(ItemMoveExtendedHandlerPlugIn), Description = "Packet handler for extended item move packets.")]
 [Guid("F68AFB2B-CEE0-420E-89F2-30694045ED46")]
 [MinimumClient(106, 3, ClientLanguage.Invariant)]
 internal class ItemMoveExtendedHandlerPlugIn : IPacketHandlerPlugIn

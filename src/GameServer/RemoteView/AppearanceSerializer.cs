@@ -16,7 +16,8 @@ using MUnique.OpenMU.PlugIns;
 /// Default serializer for the appearance of a player.
 /// </summary>
 [Guid("54847CAF-7827-48FB-BF53-AF458A694FAF")]
-[PlugIn("Default appearance serializer", "Default serializer for the appearance of a player. It will most likely only work correctly in season 6.")]
+[PlugIn]
+[Display(Name = "Default appearance serializer", Description = "Default serializer for the appearance of a player. It will most likely only work correctly in season 6.")]
 [MinimumClient(5, 0, ClientLanguage.Invariant)]
 public class AppearanceSerializer : IAppearanceSerializer
 {

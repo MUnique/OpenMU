@@ -14,7 +14,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Handler for drop item packets.
 /// </summary>
-[PlugIn("DropItemHandlerPlugIn", "Handler for drop item packets.")]
+[PlugIn]
+[Display(Name = "DropItemHandlerPlugIn", Description = "Handler for drop item packets.")]
 [Guid("b79bc453-74a0-4eea-8bc3-014d737aaa88")]
 internal class DropItemHandlerPlugIn : IPacketHandlerPlugIn
 {

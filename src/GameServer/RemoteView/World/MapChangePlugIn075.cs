@@ -12,7 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IMapChangePlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn(nameof(MapChangePlugIn075), "The default implementation of the IMapChangePlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = nameof(MapChangePlugIn075), Description = "The default implementation of the IMapChangePlugIn which is forwarding everything to the game client with specific data packets.")]
 [Guid("88195844-06C7-4EDA-8501-8B75A8B4B3F4")]
 public class MapChangePlugIn075 : IMapChangePlugIn
 {

@@ -6,11 +6,11 @@
 
 @if (this.Maps == null)
 {
-    <span>Initializing...</span>
+    <span>@(MUnique.OpenMU.Web.Map.Properties.Resources.Initializing)</span>
 }
 else if (Maps.Count == 0)
 {
-    <span>No game maps hosted. They are created as soon as a player enters a map.</span>
+    <span>@(MUnique.OpenMU.Web.Map.Properties.Resources.NoGameMapsHosted)</span>
 }
 else
 {

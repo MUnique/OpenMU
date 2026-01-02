@@ -16,7 +16,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IShowCreatedCharacterPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn("ShowCreatedCharacterPlugIn", "The default implementation of the IShowCreatedCharacterPlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = "ShowCreatedCharacterPlugIn", Description = "The default implementation of the IShowCreatedCharacterPlugIn which is forwarding everything to the game client with specific data packets.")]
 [Guid("f5494592-ff7b-4f7f-b0c1-bd242a69fb8f")]
 public class ShowCreatedCharacterPlugIn : IShowCreatedCharacterPlugIn
 {

@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Handler for letter read request packets.
 /// </summary>
-[PlugIn("LetterReadRequestHandlerPlugIn", "Handler for letter read request packets.")]
+[PlugIn]
+[Display(Name = "LetterReadRequestHandlerPlugIn", Description = "Handler for letter read request packets.")]
 [Guid("056ffd3b-567b-4787-9d07-2c9d8a5a7175")]
 internal class LetterReadRequestHandlerPlugIn : IPacketHandlerPlugIn
 {

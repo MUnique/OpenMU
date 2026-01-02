@@ -16,7 +16,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IShowRageAttackRangePlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn(nameof(ShowRageAttackRangePlugIn), "The default implementation of the IShowRageAttackRangePlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = nameof(ShowRageAttackRangePlugIn), Description = "The default implementation of the IShowRageAttackRangePlugIn which is forwarding everything to the game client with specific data packets.")]
 [Guid("C480C639-A3EA-4A5C-BB82-422FCD24C920")]
 [MinimumClient(6, 0, ClientLanguage.Invariant)]
 public class ShowRageAttackRangePlugIn : IShowRageAttackRangePlugIn

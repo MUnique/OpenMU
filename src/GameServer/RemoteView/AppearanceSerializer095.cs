@@ -16,7 +16,8 @@ using MUnique.OpenMU.PlugIns;
 /// Serializer for the appearance of a player, compatible with the client of version 0.95.
 /// </summary>
 [Guid("99616318-38BC-4C0A-A818-29D821B78DE2")]
-[PlugIn(nameof(AppearanceSerializer095), "Serializer for the appearance of a player, compatible with the client of version 0.95")]
+[PlugIn]
+[Display(Name = nameof(AppearanceSerializer095), Description = "Serializer for the appearance of a player, compatible with the client of version 0.95")]
 [MinimumClient(0, 95, ClientLanguage.Invariant)]
 public class AppearanceSerializer095 : IAppearanceSerializer
 {

@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Packet handler for quest select request packets (0xF6, 0x0A identifier).
 /// </summary>
-[PlugIn("Quest - Select Request", "Packet handler for quest select request packets (0xF6, 0x0A identifier)")]
+[PlugIn]
+[Display(Name = "Quest - Select Request", Description = "Packet handler for quest select request packets (0xF6, 0x0A identifier)")]
 [Guid("EF771EB5-9BC6-4DF3-BB0E-EADAB4295292")]
 [BelongsToGroup(QuestGroupHandlerPlugIn.GroupKey)]
 public class QuestSelectRequestHandlerPlugIn : ISubPacketHandlerPlugIn

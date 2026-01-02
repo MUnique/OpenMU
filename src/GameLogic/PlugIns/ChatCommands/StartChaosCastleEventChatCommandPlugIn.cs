@@ -12,7 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which handles the startcc command.
 /// </summary>
 [Guid("A990270E-B9C6-4445-BBA9-56367A90D31D")]
-[PlugIn(nameof(StartChaosCastleEventChatCommandPlugIn), "Handles the chat command '/startcc'. Starts the chaos castle event at the next possible time.")]
+[PlugIn]
+[Display(Name = nameof(StartChaosCastleEventChatCommandPlugIn), Description = "Handles the chat command '/startcc'. Starts the chaos castle event at the next possible time.")]
 [ChatCommandHelp(Command, "Starts the chaos castle event at the next possible time.", CharacterStatus.GameMaster)]
 public class StartChaosCastleEventChatCommandPlugIn : IChatCommandPlugIn
 {

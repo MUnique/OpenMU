@@ -15,7 +15,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Handler for duel start response packets (new duel system).
 /// </summary>
-[PlugIn(nameof(DuelStartResponseHandlerPlugIn), "Handler for duel start response packets (new duel system).")]
+[PlugIn]
+[Display(Name = nameof(DuelStartResponseHandlerPlugIn), Description = "Handler for duel start response packets (new duel system).")]
 [Guid("C2A7FD08-3F93-467E-AE8B-13F97B7F7888")]
 [MinimumClient(4, 0, ClientLanguage.Invariant)]
 [BelongsToGroup(DuelGroupHandlerPlugIn.GroupKey)]

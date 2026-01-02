@@ -14,7 +14,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Handler for jewel mix packets.
 /// </summary>
-[PlugIn("JewelMixHandlerPlugIn", "Handler for jewel mix packets.")]
+[PlugIn]
+[Display(Name = "JewelMixHandlerPlugIn", Description = "Handler for jewel mix packets.")]
 [Guid("d6067475-a910-488d-8450-9310ae394c47")]
 internal class JewelMixHandlerPlugIn : IPacketHandlerPlugIn
 {

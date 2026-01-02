@@ -8,13 +8,16 @@ using System.IO;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.Arguments;
+using MUnique.OpenMU.GameLogic.Views;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// A chat command plugin which handles charinfo commands.
 /// </summary>
 [Guid("0C7162BC-C74E-4A65-82E3-12811E4BE170")]
-[PlugIn("Char Info command", "Handles the chat command '/charinfo <char>'. Returns information about the character back to the requester.")]
+[PlugIn]
+[Display(Name = "Char Info command", Description = "Handles the chat command '/charinfo <char>'. Returns information about the character back to the requester.")]
 [ChatCommandHelp(Command, "Returns information about the character back to the requester.", typeof(CharInfoChatCommandArgs), CharacterStatus.GameMaster)]
 public class CharInfoChatCommandPlugIn : ChatCommandPlugInBase<CharInfoChatCommandArgs>
 {
@@ -87,5 +90,17 @@ public class CharInfoChatCommandPlugIn : ChatCommandPlugInBase<CharInfoChatComma
 
             await this.ShowMessageToAsync(gameMaster, line).ConfigureAwait(false);
         }
+    }
+
+    /// <summary>
+    /// Shows a message to a player.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="message">The message.</param>
+    /// <param name="messageType">The message type.</param>
+    [Obsolete("Use localized messages")]
+    private ValueTask ShowMessageToAsync(Player player, string message, MessageType messageType = MessageType.BlueNormal)
+    {
+        return player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, messageType));
     }
 }
