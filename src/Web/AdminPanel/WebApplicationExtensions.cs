@@ -2,9 +2,6 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.Web.Shared.Models;
-using MUnique.OpenMU.Web.Shared.Services;
-
 namespace MUnique.OpenMU.Web.AdminPanel;
 
 using System.IO;
@@ -20,8 +17,10 @@ using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix;
-using MUnique.OpenMU.Web.AdminPanel.Models;
+using MUnique.OpenMU.Web.AdminPanel.Components;
 using MUnique.OpenMU.Web.AdminPanel.Services;
+using MUnique.OpenMU.Web.Shared.Models;
+using MUnique.OpenMU.Web.Shared.Services;
 
 /// <summary>
 /// Extensions for the <see cref="WebApplicationBuilder"/>.

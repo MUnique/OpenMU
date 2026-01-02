@@ -33,7 +33,7 @@ builder.AddOpenTelemetryMetrics(metricsRegistry);
 var app = builder.BuildAndConfigure(false);
 app.UseStaticFiles();
 app.UseAntiforgery();
-app.MapRazorComponents<MUnique.OpenMU.AdminPanel.Host.App>()
+app.MapRazorComponents<MUnique.OpenMU.Web.AdminPanel.Components.App>()
     .AddInteractiveServerRenderMode();
 
 await app.WaitForDatabaseConnectionInitializationAsync().ConfigureAwait(false);

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OpenMU AdminPanel</title>
+    <base href="/" />
+    <ResourcePreloader />
+    <link href="@Assets["MUnique.OpenMU.Startup.styles.css"]" rel="stylesheet" />
+    @foreach (var stylesheetSrc in Web.AdminPanel.Exports.Stylesheets)
+    {
+      <link href="@Assets[stylesheetSrc]" rel="stylesheet" />
+    }
+    <ImportMap />
+    <HeadOutlet @rendermode="InteractiveServer" />
+</head>
+<body>
+    
+      <Routes @rendermode="InteractiveServer" />
+      <ReconnectModal />
+      <script src="@Assets["_framework/blazor.web.js"]"></script>
+      @foreach (var scriptSrc in Web.AdminPanel.Exports.Scripts)
+      {
+        <script src="@Assets[scriptSrc]"></script>
+      }
+      @if (Web.AdminPanel.Exports.ScriptMappings.Any())
+      {
+        var sb = new StringBuilder();
+        sb.AppendLine("System.config({").AppendLine("    map: {");
+        bool isFirst = true;
+        foreach (var scriptMapping in Web.AdminPanel.Exports.ScriptMappings)
+        {
+          if (!isFirst)
+          {
+            sb.AppendLine(",");
+          }
+
+          isFirst = false;
+          sb.Append($"'{scriptMapping.Key}': '")
+            .Append(scriptMapping.Path)
+            .Append("'");
+        }
+        sb.AppendLine("    }")
+          .AppendLine("});");
+
+      
+        <script>
+          // To be able to resolve three etc. in our TS files and the resulting javascript, SystemJS needs to be configured.
+          // These modules are loaded by SystemJS when they get requested the first time. No need to manually load them.
+          
+          @((MarkupString)sb.ToString())
+      </script>
+      }
+</body>
+</html>

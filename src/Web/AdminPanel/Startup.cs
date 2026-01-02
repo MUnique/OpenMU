@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.Web.AdminPanel.Components;
 using MUnique.OpenMU.Web.Shared;
 using MUnique.OpenMU.Web.Shared.Models;
 using MUnique.OpenMU.Web.Shared.Services;

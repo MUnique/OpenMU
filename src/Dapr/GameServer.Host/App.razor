@@ -1,82 +1,57 @@
-@using System.Reflection
+@using MUnique.OpenMU.GameServer.Host.Layout
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>OpenMU Map</title>
-    <base href="/" />
-    <link href="_content/MUnique.OpenMU.GameServer.Host/MUnique.OpenMU.GameServer.Host.styles.css" rel="stylesheet" />
-    @foreach (var stylesheetSrc in MUnique.OpenMU.Web.Map.Exports.Stylesheets)
-    {
-        <link href="@stylesheetSrc" rel="stylesheet" />
-    }
-    <HeadOutlet @rendermode="@RenderMode.InteractiveServer" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OpenMU Map</title>
+  <base href="/" />
+  <ResourcePreloader />
+    <link href="@Assets["MUnique.OpenMU.GameServer.Host.styles.css"]" rel="stylesheet" />
+    @foreach (var stylesheetSrc in Web.Map.Exports.Stylesheets)
+  {
+    <link href="@Assets[stylesheetSrc]" rel="stylesheet" />
+  }
+  <ImportMap />
+  <HeadOutlet @rendermode="InteractiveServer" />
 </head>
 <body>
-    <Router AppAssembly="@typeof(App).Assembly" AdditionalAssemblies="@_additionalAssemblies">
-        <Found Context="routeData">
-            <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
-            <FocusOnNavigate RouteData="@routeData" Selector="h1" />
-        </Found>
-        <NotFound>
-            <PageTitle>Not found</PageTitle>
-            <LayoutView Layout="@typeof(MainLayout)">
-                <p role="alert">Sorry, there's nothing at this address.</p>
-            </LayoutView>
-        </NotFound>
-    </Router>
-
-    <div id="blazor-error-ui">
-        An error has occurred. This application may no longer respond until reloaded.
-        <a href="" class="reload">Reload</a>
-        <a class="dismiss">🗙</a>
-    </div>
-
-    <script src="_framework/blazor.web.js"></script>
-    @foreach (var scriptSrc in MUnique.OpenMU.Web.Map.Exports.Scripts.Distinct())
+    
+<Routes @rendermode="InteractiveServer" />
+<ReconnectModal />
+<script src="@Assets["_framework/blazor.web.js"]"></script>
+@foreach (var scriptSrc in Web.Map.Exports.Scripts)
+{
+  <script src="@Assets[scriptSrc]"></script>
+}
+    @if (Web.Map.Exports.ScriptMappings.Any())
+{
+  var sb = new StringBuilder();
+  sb.AppendLine("System.config({").AppendLine("    map: {");
+  bool isFirst = true;
+        foreach (var scriptMapping in Web.Map.Exports.ScriptMappings)
+  {
+    if (!isFirst)
     {
-        <script src="@scriptSrc"></script>
+      sb.AppendLine(",");
     }
 
-    @if (MUnique.OpenMU.Web.Map.Exports.ScriptMappings.Any())
-    {
-        var sb = new System.Text.StringBuilder();
-        sb.AppendLine("System.config({").AppendLine("    map: {");
-        bool isFirst = true;
-        foreach (var scriptMapping in MUnique.OpenMU.Web.Map.Exports.ScriptMappings)
-        {
-            if (!isFirst)
-            {
-                sb.AppendLine(",");
-            }
+    isFirst = false;
+    sb.Append($"'{scriptMapping.Key}': '")
+      .Append(scriptMapping.Path)
+      .Append("'");
+  }
+  sb.AppendLine("    }")
+    .AppendLine("});");
 
-            isFirst = false;
-            sb.Append($"'{scriptMapping.Key}': '")
-                .Append(scriptMapping.Path)
-                .Append("'");
-        }
-        sb.AppendLine("    }")
-            .AppendLine("});");
-
-        <script>
-            // To be able to resolve three etc. in our TS files and the resulting javascript, SystemJS needs to be configured.
-            // These modules are loaded by SystemJS when they get requested the first time. No need to manually load them.
-            @((MarkupString)sb.ToString())
-        </script>
-    }
+      
+  <script>
+          // To be able to resolve three etc. in our TS files and the resulting javascript, SystemJS needs to be configured.
+          // These modules are loaded by SystemJS when they get requested the first time. No need to manually load them.
+          
+          @((MarkupString)sb.ToString())
+      </script>
+}
 </body>
 </html>
-
-@code
-{
-    /// <summary>
-    /// Holds all additional assemblies.
-    /// Currently, we use only the map app assembly.
-    /// </summary>
-    private readonly Assembly[] _additionalAssemblies =
-    {
-        // typeof(MapPage).Assembly,
-    };
-}
