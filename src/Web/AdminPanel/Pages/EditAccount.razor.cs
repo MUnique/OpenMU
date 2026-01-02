@@ -36,6 +36,7 @@ public partial class EditAccount : EditBase
     /// <inheritdoc />
     protected override async ValueTask LoadOwnerAsync(CancellationToken cancellationToken)
     {
+        this.AccountData.Dispose();
         await this.AccountData.GetOwnerAsync(this.AccountId, cancellationToken).ConfigureAwait(true);
     }
 
