@@ -36,8 +36,6 @@ public class DefenseReductionBeastUppercutEffectInitializer : InitializerBase
         magicEffect.StopByDeath = true;
         magicEffect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.Duration.ConstantValue.Value = (float)TimeSpan.FromSeconds(10).TotalSeconds;
-
-        // Chance to apply the effect
         magicEffect.Chance = this.Context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.Chance.ConstantValue.Value = 0.1f; // 10%
 

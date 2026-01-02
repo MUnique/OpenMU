@@ -253,8 +253,9 @@ public class AreaSkillAttackAction
     private async ValueTask ApplySkillAsync(Player player, SkillEntry skillEntry, IAttackable target, Point targetAreaCenter, bool isCombo)
     {
         skillEntry.ThrowNotInitializedProperty(skillEntry.Skill is null, nameof(skillEntry.Skill));
+        var skill = skillEntry.Skill;
 
-        if (skillEntry.Skill.SkillType == SkillType.Buff)
+        if (skill.SkillType == SkillType.Buff)
         {
             await target.ApplyMagicEffectAsync(player, skillEntry).ConfigureAwait(false);
             return;

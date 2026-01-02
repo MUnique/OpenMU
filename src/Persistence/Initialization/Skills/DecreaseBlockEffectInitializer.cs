@@ -34,16 +34,11 @@ public class DecreaseBlockEffectInitializer : InitializerBase
         magicEffect.InformObservers = true;
         magicEffect.SendDuration = false;
         magicEffect.StopByDeath = true;
-
-        // Chance to apply the effect
+        magicEffect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
+        magicEffect.Duration.ConstantValue.Value = 10; // 10 Seconds
         magicEffect.Chance = this.Context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.Chance.ConstantValue.Value = 0.1f; // 10%
 
-        // Duration of the effect
-        magicEffect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
-        magicEffect.Duration.ConstantValue.Value = 10; // 10 Seconds
-
-        // Power-down: target's defense rate decreases X%
         var decDefRatePowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
         magicEffect.PowerUpDefinitions.Add(decDefRatePowerUpDefinition);
         decDefRatePowerUpDefinition.TargetAttribute = Stats.DefenseRatePvm.GetPersistent(this.GameConfiguration);
