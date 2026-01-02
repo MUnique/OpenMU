@@ -10,6 +10,7 @@ using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.PlayerActions.Items;
+using MUnique.OpenMU.GameServer.RemoteView;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.PlugIns;
 
@@ -29,7 +30,12 @@ internal class ChaosMixRateRequestHandlerPlugIn : IPacketHandlerPlugIn
     /// <inheritdoc />
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
-        var connection = player.Connection;
+        if (player is not RemotePlayer remotePlayer)
+        {
+            return;
+        }
+
+        var connection = remotePlayer.Connection;
         var npc = player.OpenedNpc?.Definition;
         if (connection is null || npc is null)
         {
