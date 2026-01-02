@@ -28,6 +28,9 @@ public partial class NavMenu : IDisposable
     private IMigratableDatabaseContextProvider PersistenceContextProvider { get; set; } = null!;
 
     [Inject]
+    private IDataSource<MUnique.OpenMU.DataModel.Configuration.GameConfiguration> GameConfigurationSource { get; set; } = null!;
+
+    [Inject]
     private SetupService SetupService { get; set; } = null!;
 
     [Inject]
@@ -76,6 +79,7 @@ public partial class NavMenu : IDisposable
 
     private async ValueTask OnDatabaseInitializedAsync()
     {
+        this.GameConfigurationSource.Dispose();
         // We have to reload, because the old links are not correct anymore.
         this.GameConfigurationId = null;
         await this.LoadGameConfigurationAsync().ConfigureAwait(false);
