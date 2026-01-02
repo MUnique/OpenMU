@@ -11,7 +11,6 @@ using MUnique.OpenMU.Persistence.Initialization.Version095d.Events;
 using MUnique.OpenMU.Persistence.Initialization.Version095d.Items;
 using CharacterClassInitialization = MUnique.OpenMU.Persistence.Initialization.Version095d.CharacterClassInitialization;
 using ChaosMixes = MUnique.OpenMU.Persistence.Initialization.Version095d.ChaosMixes;
-using Gates = MUnique.OpenMU.Persistence.Initialization.Version097d.Gates;
 using InvasionMobsInitialization = MUnique.OpenMU.Persistence.Initialization.Version095d.InvasionMobsInitialization;
 
 /// <summary>
