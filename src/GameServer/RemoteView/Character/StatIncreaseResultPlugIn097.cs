@@ -48,7 +48,7 @@ public class StatIncreaseResultPlugIn097 : IStatIncreaseResultPlugIn
         {
             await connection.SendAsync(() =>
             {
-                const int packetLength = 41;
+                const int packetLength = 44;
                 var span = connection.Output.GetSpan(packetLength)[..packetLength];
                 span[0] = 0xC1;
                 span[1] = (byte)packetLength;
@@ -59,16 +59,19 @@ public class StatIncreaseResultPlugIn097 : IStatIncreaseResultPlugIn
                     ? (byte)(0x10 + (byte)attribute.GetStatType())
                     : (byte)0;
                 span[4] = result;
+                span[5] = 0; // padding for client struct alignment
 
                 var maxLifeAndMana = attribute == Stats.BaseEnergy
                     ? GetUShort(attributes[Stats.MaximumMana])
                     : attribute == Stats.BaseVitality
                         ? GetUShort(attributes[Stats.MaximumHealth])
                         : default;
-                BinaryPrimitives.WriteUInt16LittleEndian(span.Slice(5, 2), maxLifeAndMana);
-                BinaryPrimitives.WriteUInt16LittleEndian(span.Slice(7, 2), GetUShort(attributes[Stats.MaximumAbility]));
+                BinaryPrimitives.WriteUInt16LittleEndian(span.Slice(6, 2), maxLifeAndMana);
+                BinaryPrimitives.WriteUInt16LittleEndian(span.Slice(8, 2), GetUShort(attributes[Stats.MaximumAbility]));
 
-                var offset = 9;
+                span[10] = 0; // padding for client struct alignment
+                span[11] = 0;
+                var offset = 12;
                 BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), ClampToUInt32(selectedCharacter.LevelUpPoints));
                 offset += 4;
                 BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), ClampToUInt32(attributes[Stats.MaximumHealth]));

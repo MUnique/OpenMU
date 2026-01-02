@@ -45,7 +45,7 @@ public class UpdateLevelPlugIn097 : IUpdateLevelPlugIn
 
         await connection.SendAsync(() =>
         {
-            const int packetLength = 46;
+            const int packetLength = 48;
             var span = connection.Output.GetSpan(packetLength)[..packetLength];
             span[0] = 0xC1;
             span[1] = (byte)packetLength;
@@ -71,6 +71,9 @@ public class UpdateLevelPlugIn097 : IUpdateLevelPlugIn
             BinaryPrimitives.WriteUInt16LittleEndian(span.Slice(offset, 2), (ushort)selectedCharacter.UsedNegFruitPoints);
             offset += 2;
             BinaryPrimitives.WriteUInt16LittleEndian(span.Slice(offset, 2), selectedCharacter.GetMaximumFruitPoints());
+            offset += 2;
+            span[offset] = 0; // padding for client struct alignment
+            span[offset + 1] = 0;
             offset += 2;
             BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(offset, 4), ClampToUInt32(selectedCharacter.LevelUpPoints));
             offset += 4;

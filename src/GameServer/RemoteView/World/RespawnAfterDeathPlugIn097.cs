@@ -57,7 +57,7 @@ public class RespawnAfterDeathPlugIn097 : IRespawnAfterDeathPlugIn
 
         await connection.SendAsync(() =>
         {
-            const int packetLength = 34;
+            const int packetLength = 36;
             var span = connection.Output.GetSpan(packetLength)[..packetLength];
             span[0] = 0xC3;
             span[1] = (byte)packetLength;
@@ -70,11 +70,13 @@ public class RespawnAfterDeathPlugIn097 : IRespawnAfterDeathPlugIn
             BinaryPrimitives.WriteUInt16LittleEndian(span.Slice(8, 2), currentHealth);
             BinaryPrimitives.WriteUInt16LittleEndian(span.Slice(10, 2), currentMana);
             BinaryPrimitives.WriteUInt16LittleEndian(span.Slice(12, 2), currentAbility);
-            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(14, 4), ClampToUInt32(selectedCharacter.Experience));
-            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(18, 4), ClampToUInt32(this._player.Money));
-            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(22, 4), viewHp);
-            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(26, 4), viewMp);
-            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(30, 4), viewBp);
+            span[14] = 0; // padding for client struct alignment
+            span[15] = 0;
+            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(16, 4), ClampToUInt32(selectedCharacter.Experience));
+            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(20, 4), ClampToUInt32(this._player.Money));
+            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(24, 4), viewHp);
+            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(28, 4), viewMp);
+            BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(32, 4), viewBp);
             return packetLength;
         }).ConfigureAwait(false);
     }

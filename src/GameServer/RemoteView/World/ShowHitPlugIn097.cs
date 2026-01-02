@@ -51,15 +51,16 @@ public class ShowHitPlugIn097 : IShowHitPlugIn
 
             await connection.SendAsync(() =>
             {
-                const int packetLength = 15;
+                const int packetLength = 16;
                 var span = connection.Output.GetSpan(packetLength)[..packetLength];
                 span[0] = 0xC1;
                 span[1] = (byte)packetLength;
                 span[2] = 0x15;
                 BinaryPrimitives.WriteUInt16BigEndian(span.Slice(3, 2), targetId);
                 BinaryPrimitives.WriteUInt16BigEndian(span.Slice(5, 2), healthDamage);
-                BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(7, 4), viewCurHp);
-                BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(11, 4), viewDamageHp);
+                span[7] = 0; // padding for client struct alignment
+                BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(8, 4), viewCurHp);
+                BinaryPrimitives.WriteUInt32LittleEndian(span.Slice(12, 4), viewDamageHp);
                 return packetLength;
             }).ConfigureAwait(false);
 
