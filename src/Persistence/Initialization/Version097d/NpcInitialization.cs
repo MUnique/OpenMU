@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version097d;
 
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.Attributes;
 
 /// <summary>
@@ -39,6 +40,16 @@ internal class NpcInitialization : Version095d.NpcInitialization
 
         {
             var def = this.Context.CreateNew<MonsterDefinition>();
+            def.Number = 233;
+            def.Designation = "Messenger of Arch.";
+            def.NpcWindow = NpcWindow.BloodCastle;
+            def.ObjectKind = NpcObjectKind.PassiveNpc;
+            def.SetGuid(def.Number);
+            this.GameConfiguration.Monsters.Add(def);
+        }
+
+        {
+            var def = this.Context.CreateNew<MonsterDefinition>();
             def.Number = 131;
             def.Designation = "Castle Gate";
             def.ObjectKind = NpcObjectKind.Destructible;
@@ -64,6 +75,15 @@ internal class NpcInitialization : Version095d.NpcInitialization
             def.AddAttributes(attributes, this.Context, this.GameConfiguration);
             def.SetGuid(def.Number);
             this.GameConfiguration.Monsters.Add(def);
+
+            var questItemDrop = this.Context.CreateNew<DropItemGroup>();
+            questItemDrop.SetGuid(132);
+            questItemDrop.Chance = 1;
+            questItemDrop.Description = "Archangel Weapon (Blood Castle)";
+            questItemDrop.Monster = def;
+            questItemDrop.PossibleItems.Add(this.GameConfiguration.Items.First(item => item.IsArchangelQuestItem()));
+            def.DropItemGroups.Add(questItemDrop);
+            this.GameConfiguration.DropItemGroups.Add(questItemDrop);
         }
     }
 }

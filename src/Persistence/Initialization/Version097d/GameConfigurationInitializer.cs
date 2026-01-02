@@ -10,7 +10,6 @@ using MUnique.OpenMU.Persistence.Initialization.Items;
 using MUnique.OpenMU.Persistence.Initialization.Version095d.Events;
 using MUnique.OpenMU.Persistence.Initialization.Version095d.Items;
 using CharacterClassInitialization = MUnique.OpenMU.Persistence.Initialization.Version095d.CharacterClassInitialization;
-using ChaosMixes = MUnique.OpenMU.Persistence.Initialization.Version095d.ChaosMixes;
 using InvasionMobsInitialization = MUnique.OpenMU.Persistence.Initialization.Version095d.InvasionMobsInitialization;
 
 /// <summary>
@@ -49,7 +48,7 @@ public class GameConfigurationInitializer : GameConfigurationInitializerBase
         new SkillsInitializer(this.Context, this.GameConfiguration).Initialize();
         new Orbs(this.Context, this.GameConfiguration).Initialize();
         new Scrolls(this.Context, this.GameConfiguration).Initialize();
-        new EventTicketItems(this.Context, this.GameConfiguration).Initialize();
+        new Version097d.Items.EventTicketItems(this.Context, this.GameConfiguration).Initialize();
         new Version097d.Items.Jewels(this.Context, this.GameConfiguration).Initialize();
         new ExcellentOptions(this.Context, this.GameConfiguration).Initialize();
         new Armors(this.Context, this.GameConfiguration).Initialize();
@@ -59,6 +58,7 @@ public class GameConfigurationInitializer : GameConfigurationInitializerBase
         new Version075.Items.Potions(this.Context, this.GameConfiguration).Initialize();
         new Jewelery(this.Context, this.GameConfiguration).Initialize();
         new BoxOfLuck(this.Context, this.GameConfiguration).Initialize();
+        this.AdjustBoxOfLuckMaximumLevel();
         new Version097d.Items.ItemList097Importer(this.Context, this.GameConfiguration).Initialize();
         new NpcInitialization(this.Context, this.GameConfiguration).Initialize();
         new Quests(this.Context, this.GameConfiguration).Initialize();
@@ -70,5 +70,17 @@ public class GameConfigurationInitializer : GameConfigurationInitializerBase
         new ChaosMixes(this.Context, this.GameConfiguration).Initialize();
         new Gates(this.Context, this.GameConfiguration).Initialize();
         new DevilSquareInitializer(this.Context, this.GameConfiguration).Initialize();
+        new Version097d.Events.BloodCastleInitializer(this.Context, this.GameConfiguration).Initialize();
+    }
+
+    private void AdjustBoxOfLuckMaximumLevel()
+    {
+        var boxOfLuck = this.GameConfiguration.Items.FirstOrDefault(item => item.Group == 14 && item.Number == 11);
+        if (boxOfLuck is null)
+        {
+            return;
+        }
+
+        boxOfLuck.MaximumItemLevel = 11;
     }
 }

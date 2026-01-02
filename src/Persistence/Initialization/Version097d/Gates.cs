@@ -38,21 +38,29 @@ public class Gates : InitializerBase
     /// <param name="gates">The gates.</param>
     private void CreateWarpEntries(IDictionary<short, ExitGate> gates)
     {
-        // todo: update for 0.97d
-        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(1, "Arena", 2000, 50, gates[50]));
-        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(2, "Lorencia", 2000, 10, gates[17]));
-        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(3, "Noria", 2000, 10, gates[27]));
-        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(4, "Devias", 2000, 20, gates[22]));
-        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(5, "Dungeon", 3000, 30, gates[2]));
-        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(6, "Dungeon2", 3500, 40, gates[6]));
-        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(7, "Dungeon3", 4000, 50, gates[10]));
-        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(8, "LostTower", 5000, 50, gates[42]));
-        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(9, "LostTower2", 5500, 50, gates[31]));
-        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(10, "LostTower3", 6000, 50, gates[33]));
-        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(11, "LostTower4", 6500, 60, gates[35]));
-        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(12, "LostTower5", 7000, 60, gates[37]));
-        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(13, "LostTower6", 7500, 70, gates[39]));
-        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(14, "LostTower7", 8000, 70, gates[41]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(1, "Stadium", 3000, 50, gates[50]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(2, "Lorencia", 1000, 10, gates[17]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(3, "Noria", 1000, 10, gates[27]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(4, "Devias", 1500, 20, gates[22]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(5, "Devias2", 2000, 20, gates[72]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(6, "Devias3", 2500, 20, gates[73]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(7, "Devias4", 2500, 20, gates[74]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(8, "Dungeon", 3000, 30, gates[2]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(9, "Dungeon2", 3000, 40, gates[6]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(10, "Dungeon3", 3500, 50, gates[10]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(11, "Atlans", 4000, 70, gates[49]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(12, "Atlans2", 4500, 80, gates[75]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(13, "Atlans3", 5000, 90, gates[76]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(14, "LostTower", 5000, 50, gates[42]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(15, "LostTower2", 5000, 50, gates[31]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(16, "LostTower3", 5500, 50, gates[33]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(17, "LostTower4", 5500, 60, gates[35]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(18, "LostTower5", 5500, 60, gates[37]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(19, "LostTower6", 6000, 70, gates[39]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(20, "LostTower7", 6500, 70, gates[41]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(21, "Tarkan", 8000, 140, gates[57]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(22, "Tarkan2", 8500, 140, gates[77]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(23, "Icarus", 9000, 170, gates[63]));
     }
 
     private WarpInfo CreateWarpInfo(ushort index, string name, int costs, int levelRequirement, ExitGate gate)
@@ -159,6 +167,27 @@ public class Gates : InitializerBase
         // Atlans
         targetGates.Add(49, this.CreateExitGate(maps[7], 15, 11, 27, 23, 0, true));
         targetGates.Add(46, this.CreateExitGate(maps[7], 14, 12, 15, 13, 3));
+        targetGates.Add(56, this.CreateExitGate(maps[7], 16, 225, 17, 230, 3));
+        targetGates.Add(75, this.CreateExitGate(maps[7], 225, 53, 228, 50, 0, true));
+        targetGates.Add(76, this.CreateExitGate(maps[7], 62, 163, 68, 157, 0, true));
+
+        // Tarkan
+        targetGates.Add(54, this.CreateExitGate(maps[8], 248, 40, 251, 44, 7));
+        targetGates.Add(57, this.CreateExitGate(maps[8], 187, 54, 203, 69, 0, true));
+        targetGates.Add(77, this.CreateExitGate(maps[8], 96, 143, 100, 146, 0, true));
+
+        // Devias sub gates
+        targetGates.Add(72, this.CreateExitGate(maps[2], 23, 27, 27, 24, 0, true));
+        targetGates.Add(73, this.CreateExitGate(maps[2], 224, 231, 227, 227, 0, true));
+        targetGates.Add(74, this.CreateExitGate(maps[2], 69, 181, 72, 178, 0, true));
+
+        // Blood Castle spawn gates
+        targetGates.Add(66, this.CreateExitGate(maps[11], 12, 5, 14, 10, 0, true));
+        targetGates.Add(67, this.CreateExitGate(maps[12], 12, 5, 14, 10, 0, true));
+        targetGates.Add(68, this.CreateExitGate(maps[13], 12, 5, 14, 10, 0, true));
+        targetGates.Add(69, this.CreateExitGate(maps[14], 12, 5, 14, 10, 0, true));
+        targetGates.Add(70, this.CreateExitGate(maps[15], 12, 5, 14, 10, 0, true));
+        targetGates.Add(71, this.CreateExitGate(maps[16], 12, 5, 14, 10, 0, true));
 
         return targetGates;
     }
@@ -206,6 +235,10 @@ public class Gates : InitializerBase
         maps[4].EnterGates.Add(this.CreateEnterGate(43, targetGates[44], 162, 0, 166, 1, 15));
         maps[3].EnterGates.Add(this.CreateEnterGate(45, targetGates[46], 242, 240, 245, 243, 60));
         maps[7].EnterGates.Add(this.CreateEnterGate(47, targetGates[48], 9, 9, 11, 12, 60));
+
+        // Atlans <-> Tarkan
+        maps[7].EnterGates.Add(this.CreateEnterGate(53, targetGates[54], 14, 225, 15, 230, 130));
+        maps[8].EnterGates.Add(this.CreateEnterGate(55, targetGates[56], 246, 40, 247, 44, 130));
 
         // Lost Tower -> Icarus (gate 62 -> 63)
         maps[4].EnterGates.Add(this.CreateEnterGate(62, targetGates[63], 17, 250, 19, 250, 160));
