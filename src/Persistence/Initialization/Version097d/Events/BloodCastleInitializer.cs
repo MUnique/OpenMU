@@ -247,9 +247,10 @@ internal class BloodCastleInitializer : InitializerBase
         bloodCastle.ChangeEvents.Add(killCountBeforeBridgeEvent);
         killCountBeforeBridgeEvent.Index = 1;
         killCountBeforeBridgeEvent.Description = "Kill Count Before Bridge";
-        killCountBeforeBridgeEvent.KillCount = RequiredKillsBeforeBridgePerPlayer;
-        killCountBeforeBridgeEvent.MultiplyKillsByPlayers = true;
         killCountBeforeBridgeEvent.Message = "The bridge will be opened when all monsters are defeated!";
+        killCountBeforeBridgeEvent.Target = KillTarget.AnyMonster;
+        killCountBeforeBridgeEvent.NumberOfKills = RequiredKillsBeforeBridgePerPlayer;
+        killCountBeforeBridgeEvent.MultiplyKillsByPlayers = true;
         var bridgeToggleArea = this.Context.CreateNew<MiniGameTerrainChange>();
         killCountBeforeBridgeEvent.TerrainChanges.Add(bridgeToggleArea);
         bridgeToggleArea.StartX = 13;

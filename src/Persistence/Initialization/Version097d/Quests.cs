@@ -61,7 +61,7 @@ internal class Quests : InitializerBase
         treasuresOfMu.QualifiedCharacter = this.GetCharacterClass(characterClass);
         treasuresOfMu.Name = $"Treasures of MU ({treasuresOfMu.QualifiedCharacter?.Name})";
 
-        this.AddItemRequirement(treasuresOfMu, 14, itemNumber, 0, 62, 76);
+        this.AddItemRequirement(treasuresOfMu, 14, itemNumber, 0, 62, 76, 10000);
 
         var pointReward = this.Context.CreateNew<QuestReward>();
         pointReward.Value = 10;
@@ -87,7 +87,7 @@ internal class Quests : InitializerBase
         findScrollOfEmperor.QualifiedCharacter = this.GetCharacterClass(characterClass);
         findScrollOfEmperor.Name = $"Find the 'Scroll of Emperor' ({findScrollOfEmperor.QualifiedCharacter?.Name})";
 
-        this.AddItemRequirement(findScrollOfEmperor, 14, ScrollOfEmperorNumber, 0, 45, 60);
+        this.AddItemRequirement(findScrollOfEmperor, 14, ScrollOfEmperorNumber, 0, 45, 60, 10000);
 
         var pointReward = this.Context.CreateNew<QuestReward>();
         pointReward.Value = 10;
@@ -95,12 +95,13 @@ internal class Quests : InitializerBase
         findScrollOfEmperor.Rewards.Add(pointReward);
     }
 
-    private void AddItemRequirement(QuestDefinition quest, byte itemGroup, short itemNumber, byte itemLevel, byte minimumMonsterLevel, byte maximumMonsterLevel)
+    private void AddItemRequirement(QuestDefinition quest, byte itemGroup, short itemNumber, byte itemLevel, byte minimumMonsterLevel, byte maximumMonsterLevel, double dropRate)
     {
         var itemRequirement = this.AddItemRequirement(quest, itemGroup, itemNumber, itemLevel);
         var dropItemGroup = itemRequirement.DropItemGroup!;
         dropItemGroup.MinimumMonsterLevel = minimumMonsterLevel;
         dropItemGroup.MaximumMonsterLevel = maximumMonsterLevel;
+        dropItemGroup.Chance = dropRate / 10000.0;
     }
 
     private QuestItemRequirement AddItemRequirement(QuestDefinition quest, byte itemGroup, short itemNumber, byte itemLevel)
