@@ -145,19 +145,27 @@ internal class ChaosMixRateRequestHandlerPlugIn : IPacketHandlerPlugIn
             var rate = (byte)rateValue;
             if (settings.MaximumSuccessPercent > 0)
             {
-                rate = (byte)Math.Min((int)settings.MaximumSuccessPercent, rate);
+                var maximum = (int)settings.MaximumSuccessPercent;
+                if (rate > maximum)
+                {
+                    rate = (byte)maximum;
+                }
             }
 
-            return (byte)Math.Min(100, rate);
+            return rate > 100 ? (byte)100 : rate;
         }
 
         var baseRate = settings.SuccessPercent;
         if (settings.MaximumSuccessPercent > 0)
         {
-            baseRate = (byte)Math.Min((int)settings.MaximumSuccessPercent, baseRate);
+            var maximum = (int)settings.MaximumSuccessPercent;
+            if (baseRate > maximum)
+            {
+                baseRate = (byte)maximum;
+            }
         }
 
-        return (byte)Math.Min(100, baseRate);
+        return baseRate > 100 ? (byte)100 : baseRate;
     }
 
     private static uint GetRequiredMoney(ItemCrafting crafting, byte successRate)
