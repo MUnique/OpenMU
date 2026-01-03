@@ -132,11 +132,25 @@ public static class CharacterExtensions
     /// <returns>The quest drop item groups of a character.</returns>
     public static IEnumerable<DropItemGroup> GetQuestDropItemGroups(this Character character)
     {
-        return character.QuestStates?
+        var requirements = character.QuestStates?
             .SelectMany(q => q.ActiveQuest?.RequiredItems ?? Enumerable.Empty<QuestItemRequirement>())
-            .Select(i => i.DropItemGroup)
-            .WhereNotNull()
-            ?? Enumerable.Empty<DropItemGroup>();
+            ?? Enumerable.Empty<QuestItemRequirement>();
+
+        return requirements
+            .Where(requirement => !HasRequiredItem(character, requirement))
+            .Select(requirement => requirement.DropItemGroup)
+            .WhereNotNull();
+    }
+
+    private static bool HasRequiredItem(Character character, QuestItemRequirement requirement)
+    {
+        if (requirement.Item is null || character.Inventory?.Items is null)
+        {
+            return false;
+        }
+
+        var count = character.Inventory.Items.Count(item => item.Definition == requirement.Item);
+        return count >= requirement.MinimumNumber;
     }
 
     private static IEnumerable<ushort> GetFruitPoints(int divisor)

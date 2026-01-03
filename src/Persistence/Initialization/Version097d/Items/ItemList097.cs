@@ -332,6 +332,7 @@ internal sealed class ItemList097Importer : InitializerBase
             item.MaximumItemLevel = entry.IsAmmunition ? (byte)0 : Version095dItems.Constants.MaximumItemLevel;
             item.ItemSlot = this.GetSlotType(entry);
             item.SetGuid(item.Group, item.Number);
+            this.ApplyTemplateOptions(item);
 
             this.GameConfiguration.Items.Add(item);
             existingItems.Add((entry.Group, entry.Number));
@@ -352,5 +353,25 @@ internal sealed class ItemList097Importer : InitializerBase
 
         return this.GameConfiguration.ItemSlotTypes
             .FirstOrDefault(type => type.ItemSlots.Contains(entry.Slot));
+    }
+
+    private void ApplyTemplateOptions(ItemDefinition item)
+    {
+        if (item.PossibleItemOptions.Count > 0)
+        {
+            return;
+        }
+
+        var template = this.GameConfiguration.Items
+            .FirstOrDefault(existing => existing.Group == item.Group && existing.PossibleItemOptions.Count > 0);
+        if (template is null)
+        {
+            return;
+        }
+
+        foreach (var option in template.PossibleItemOptions)
+        {
+            item.PossibleItemOptions.Add(option);
+        }
     }
 }

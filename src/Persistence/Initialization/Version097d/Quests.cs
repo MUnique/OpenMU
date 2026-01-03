@@ -61,7 +61,7 @@ internal class Quests : InitializerBase
         treasuresOfMu.QualifiedCharacter = this.GetCharacterClass(characterClass);
         treasuresOfMu.Name = $"Treasures of MU ({treasuresOfMu.QualifiedCharacter?.Name})";
 
-        this.AddItemRequirement(treasuresOfMu, 14, itemNumber, 0, 62, 76, 10000);
+        this.AddItemRequirement(treasuresOfMu, 14, itemNumber, 0, 62, 76, 1000);
 
         var pointReward = this.Context.CreateNew<QuestReward>();
         pointReward.Value = 10;
@@ -87,7 +87,7 @@ internal class Quests : InitializerBase
         findScrollOfEmperor.QualifiedCharacter = this.GetCharacterClass(characterClass);
         findScrollOfEmperor.Name = $"Find the 'Scroll of Emperor' ({findScrollOfEmperor.QualifiedCharacter?.Name})";
 
-        this.AddItemRequirement(findScrollOfEmperor, 14, ScrollOfEmperorNumber, 0, 45, 60, 10000);
+        this.AddItemRequirement(findScrollOfEmperor, 14, ScrollOfEmperorNumber, 0, 45, 60, 1000);
 
         var pointReward = this.Context.CreateNew<QuestReward>();
         pointReward.Value = 10;
