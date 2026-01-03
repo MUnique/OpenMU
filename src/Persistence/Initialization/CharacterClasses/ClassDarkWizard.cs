@@ -120,12 +120,12 @@ internal partial class CharacterClassInitialization
         return result;
     }
 
-    private CharacterClass CreateSoulMaster(CharacterClass grandMaster)
+    protected CharacterClass CreateSoulMaster(CharacterClass grandMaster)
     {
         return this.CreateDarkWizard(CharacterClassNumber.SoulMaster, "Soul Master", false, grandMaster, false);
     }
 
-    private CharacterClass CreateGrandMaster()
+    protected CharacterClass CreateGrandMaster()
     {
         var result = this.CreateDarkWizard(CharacterClassNumber.GrandMaster, "Grand Master", true, null, false);
         result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.MasterLevel, 0, false));

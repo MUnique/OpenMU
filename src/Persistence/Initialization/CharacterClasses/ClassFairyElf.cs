@@ -125,12 +125,12 @@ internal partial class CharacterClassInitialization
         return result;
     }
 
-    private CharacterClass CreateMuseElf(CharacterClass highElf)
+    protected CharacterClass CreateMuseElf(CharacterClass highElf)
     {
         return this.CreateFairyElf(CharacterClassNumber.MuseElf, "Muse Elf", false, highElf, false);
     }
 
-    private CharacterClass CreateHighElf()
+    protected CharacterClass CreateHighElf()
     {
         var result = this.CreateFairyElf(CharacterClassNumber.HighElf, "High Elf", true, null, false);
         result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.MasterLevel, 0, false));

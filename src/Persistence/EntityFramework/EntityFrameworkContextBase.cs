@@ -87,14 +87,34 @@ internal class EntityFrameworkContextBase : IContext
         try
         {
             await this.Context.SaveChangesAsync(acceptChanges, cancellationToken).ConfigureAwait(false);
+        }
+        catch (DbUpdateConcurrencyException ex)
+        {
+            this._logger.LogWarning(ex, "Concurrency conflict when saving changes. Attempting to refresh {Count} entries.", ex.Entries.Count);
+            foreach (var entry in ex.Entries)
+            {
+                var databaseValues = await entry.GetDatabaseValuesAsync(cancellationToken).ConfigureAwait(false);
+                if (databaseValues is null)
+                {
+                    this._logger.LogWarning("Concurrency conflict could not be resolved because the entity {EntityType} with id {EntityId} no longer exists.",
+                        entry.Metadata.ClrType.Name,
+                        entry.Entity.GetId());
+                    entry.State = EntityState.Detached;
+                    continue;
+                }
 
+                entry.OriginalValues.SetValues(databaseValues);
+            }
+
+            await this.Context.SaveChangesAsync(acceptChanges, cancellationToken).ConfigureAwait(false);
+        }
+        finally
+        {
             if (args is not null)
             {
                 await this.OnSavedChangesAsync(sender, args).ConfigureAwait(false);
             }
-        }
-        finally
-        {
+
             this.Context.SavedChanges -= OnSavedChanges;
         }
 

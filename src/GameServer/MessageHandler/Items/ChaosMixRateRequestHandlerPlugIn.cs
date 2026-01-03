@@ -62,13 +62,13 @@ internal class ChaosMixRateRequestHandlerPlugIn : IPacketHandlerPlugIn
             return;
         }
 
-        handler.TryGetRequiredItems(player, out _, out var successRate, out _);
-
-        var money = 0u;
-        if (crafting.SimpleCraftingSettings is { } settings)
+        var craftingResult = handler.TryGetRequiredItems(player, out _, out var successRate, out _);
+        if (craftingResult is not null)
         {
-            money = (uint)Math.Max(0, settings.Money + (settings.MoneyPerFinalSuccessPercentage * successRate));
+            successRate = GetFallbackSuccessRate(player, crafting);
         }
+
+        var money = GetRequiredMoney(crafting, successRate);
 
         await SendMixRateAsync(connection, successRate, money).ConfigureAwait(false);
     }
@@ -112,5 +112,55 @@ internal class ChaosMixRateRequestHandlerPlugIn : IPacketHandlerPlugIn
         }
 
         return connection.SendAsync(WritePacket);
+    }
+
+    private static byte GetFallbackSuccessRate(Player player, ItemCrafting crafting)
+    {
+        if (crafting.SimpleCraftingSettings is not { } settings)
+        {
+            return 0;
+        }
+
+        if (settings.NpcPriceDivisor > 0)
+        {
+            var items = player.TemporaryStorage?.Items;
+            if (items is null)
+            {
+                return 0;
+            }
+
+            var priceCalculator = new ItemPriceCalculator();
+            long totalCraftingPrice = 0;
+            foreach (var item in items)
+            {
+                totalCraftingPrice += priceCalculator.CalculateFinalOldBuyingPrice(item);
+            }
+
+            var rate = (byte)Math.Min(byte.MaxValue, Math.Max(0, totalCraftingPrice / settings.NpcPriceDivisor));
+            if (settings.MaximumSuccessPercent > 0)
+            {
+                rate = Math.Min(settings.MaximumSuccessPercent, rate);
+            }
+
+            return (byte)Math.Min(100, rate);
+        }
+
+        var baseRate = settings.SuccessPercent;
+        if (settings.MaximumSuccessPercent > 0)
+        {
+            baseRate = Math.Min(settings.MaximumSuccessPercent, baseRate);
+        }
+
+        return (byte)Math.Min(100, baseRate);
+    }
+
+    private static uint GetRequiredMoney(ItemCrafting crafting, byte successRate)
+    {
+        if (crafting.SimpleCraftingSettings is { } settings)
+        {
+            return (uint)Math.Max(0, settings.Money + (settings.MoneyPerFinalSuccessPercentage * successRate));
+        }
+
+        return 0;
     }
 }

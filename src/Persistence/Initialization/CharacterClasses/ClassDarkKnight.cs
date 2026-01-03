@@ -111,14 +111,14 @@ internal partial class CharacterClassInitialization
         return result;
     }
 
-    private CharacterClass CreateBladeMaster()
+    protected CharacterClass CreateBladeMaster()
     {
         var result = this.CreateDarkKnight(CharacterClassNumber.BladeMaster, "Blade Master", true, null, false);
         result.StatAttributes.Add(this.CreateStatAttributeDefinition(Stats.MasterLevel, 0, false));
         return result;
     }
 
-    private CharacterClass CreateBladeKnight(CharacterClass bladeMaster)
+    protected CharacterClass CreateBladeKnight(CharacterClass bladeMaster)
     {
         return this.CreateDarkKnight(CharacterClassNumber.BladeKnight, "Blade Knight", false, bladeMaster, false);
     }
