@@ -136,10 +136,16 @@ internal class ChaosMixRateRequestHandlerPlugIn : IPacketHandlerPlugIn
                 totalCraftingPrice += priceCalculator.CalculateFinalOldBuyingPrice(item);
             }
 
-            var rate = (byte)Math.Min(byte.MaxValue, Math.Max(0, totalCraftingPrice / settings.NpcPriceDivisor));
+            var rateValue = Math.Max(0L, totalCraftingPrice / settings.NpcPriceDivisor);
+            if (rateValue > byte.MaxValue)
+            {
+                rateValue = byte.MaxValue;
+            }
+
+            var rate = (byte)rateValue;
             if (settings.MaximumSuccessPercent > 0)
             {
-                rate = Math.Min(settings.MaximumSuccessPercent, rate);
+                rate = (byte)Math.Min((int)settings.MaximumSuccessPercent, rate);
             }
 
             return (byte)Math.Min(100, rate);
@@ -148,7 +154,7 @@ internal class ChaosMixRateRequestHandlerPlugIn : IPacketHandlerPlugIn
         var baseRate = settings.SuccessPercent;
         if (settings.MaximumSuccessPercent > 0)
         {
-            baseRate = Math.Min(settings.MaximumSuccessPercent, baseRate);
+            baseRate = (byte)Math.Min((int)settings.MaximumSuccessPercent, baseRate);
         }
 
         return (byte)Math.Min(100, baseRate);
