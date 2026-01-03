@@ -9,7 +9,6 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.Persistence.Initialization.Items;
 using MUnique.OpenMU.Persistence.Initialization.Version095d.Events;
 using MUnique.OpenMU.Persistence.Initialization.Version095d.Items;
-using CharacterClassInitialization = MUnique.OpenMU.Persistence.Initialization.Version097d.CharacterClassInitialization;
 using InvasionMobsInitialization = MUnique.OpenMU.Persistence.Initialization.Version095d.InvasionMobsInitialization;
 
 /// <summary>
