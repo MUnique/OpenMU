@@ -80,6 +80,14 @@ public partial class AreaSkillSettings
     /// </summary>
     public float HitChancePerDistanceMultiplier { get; set; }
 
+    /// <summary>
+    /// Gets or sets the number of projectiles/arrows that are fired.
+    /// When greater than 1, the projectiles are evenly distributed within the frustum.
+    /// Each target can only be hit by projectiles whose paths cross the target's position.
+    /// Default is 1 (single projectile).
+    /// </summary>
+    public int ProjectileCount { get; set; }
+
     /// <inheritdoc />
     public override string ToString()
     {

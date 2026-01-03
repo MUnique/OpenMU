@@ -111,7 +111,7 @@ public class AreaSkillAttackAction
         }
         else
         {
-            extraTarget = await this.AttackTargetsAsync(player, extraTargetId, targetAreaCenter, skillEntry, areaSkillSettings, targets, isCombo).ConfigureAwait(false);
+            extraTarget = await this.AttackTargetsAsync(player, extraTargetId, targetAreaCenter, skillEntry, skill, areaSkillSettings, targets, rotation, isCombo).ConfigureAwait(false);
         }
 
         if (isCombo)
@@ -120,12 +120,33 @@ public class AreaSkillAttackAction
         }
     }
 
-    private async Task<IAttackable?> AttackTargetsAsync(Player player, ushort extraTargetId, Point targetAreaCenter, SkillEntry skillEntry, AreaSkillSettings areaSkillSettings, IEnumerable<IAttackable> targets, bool isCombo)
+    private async Task<IAttackable?> AttackTargetsAsync(Player player, ushort extraTargetId, Point targetAreaCenter, SkillEntry skillEntry, Skill skill, AreaSkillSettings areaSkillSettings, IEnumerable<IAttackable> targets, byte rotation, bool isCombo)
     {
         IAttackable? extraTarget = null;
         var attackCount = 0;
         var maxAttacks = areaSkillSettings.MaximumNumberOfHitsPerAttack == 0 ? int.MaxValue : areaSkillSettings.MaximumNumberOfHitsPerAttack;
         var currentDelay = TimeSpan.Zero;
+
+        // For skills with multiple projectiles, we need to track how many projectiles each target has remaining
+        // Using a dictionary with int counters instead of Lists to be more memory efficient
+        Dictionary<IAttackable, int>? targetProjectileCount = null;
+        FrustumBasedTargetFilter? filter = null;
+        
+        if (areaSkillSettings is { UseFrustumFilter: true, ProjectileCount: > 1 })
+        {
+            filter = FrustumFilters.GetOrAdd(areaSkillSettings, static s => new FrustumBasedTargetFilter(s.FrustumStartWidth, s.FrustumEndWidth, s.FrustumDistance, s.ProjectileCount));
+            targetProjectileCount = new Dictionary<IAttackable, int>();
+            
+            // Determine which projectiles can hit each target and store the count
+            foreach (var target in targets)
+            {
+                var projectiles = filter.GetProjectilesThatCanHitTarget(player, target, rotation);
+                if (projectiles.Count > 0)
+                {
+                    targetProjectileCount[target] = projectiles.Count;
+                }
+            }
+        }
 
         for (int attackRound = 0; attackRound < areaSkillSettings.MaximumNumberOfHitsPerTarget; attackRound++)
         {
@@ -144,6 +165,18 @@ public class AreaSkillAttackAction
                 if (target.Id == extraTargetId)
                 {
                     extraTarget = target;
+                }
+
+                // For multiple projectiles, check if there are any projectiles left that can hit this target
+                if (targetProjectileCount != null)
+                {
+                    if (!targetProjectileCount.TryGetValue(target, out var remainingProjectiles) || remainingProjectiles == 0)
+                    {
+                        continue; // No projectiles can hit this target
+                    }
+
+                    // Decrement the projectile count for this target
+                    targetProjectileCount[target] = remainingProjectiles - 1;
                 }
 
                 var hitChance = attackRound < areaSkillSettings.MinimumNumberOfHitsPerTarget
@@ -231,7 +264,7 @@ public class AreaSkillAttackAction
 
         if (skill.AreaSkillSettings is { UseFrustumFilter: true } areaSkillSettings)
         {
-            var filter = FrustumFilters.GetOrAdd(areaSkillSettings, static s => new FrustumBasedTargetFilter(s.FrustumStartWidth, s.FrustumEndWidth, s.FrustumDistance));
+            var filter = FrustumFilters.GetOrAdd(areaSkillSettings, static s => new FrustumBasedTargetFilter(s.FrustumStartWidth, s.FrustumEndWidth, s.FrustumDistance, s.ProjectileCount > 0 ? s.ProjectileCount : 1));
             targetsInRange = targetsInRange.Where(a => filter.IsTargetWithinBounds(player, a, rotation));
         }
 

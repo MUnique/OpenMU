@@ -120,6 +120,7 @@ internal abstract class SkillsInitializerBase : InitializerBase
     /// <param name="hitChancePerDistanceMultiplier">The hit chance per distance multiplier.</param>
     /// <param name="useTargetAreaFilter">If set to <c>true</c>, the skill should use a target area filter.</param>
     /// <param name="targetAreaDiameter">The target area diameter.</param>
+    /// <param name="projectileCount">The number of projectiles/arrows. When greater than 1, they are evenly distributed within the frustum.</param>
     protected void AddAreaSkillSettings(
         SkillNumber skillNumber,
         bool useFrustumFilter,
@@ -134,7 +135,8 @@ internal abstract class SkillsInitializerBase : InitializerBase
         int maximumHitsPerAttack = default,
         float hitChancePerDistanceMultiplier = 1.0f,
         bool useTargetAreaFilter = false,
-        float targetAreaDiameter = default)
+        float targetAreaDiameter = default,
+        int projectileCount = 1)
     {
         var skill = this.GameConfiguration.Skills.First(s => s.Number == (short)skillNumber);
         var areaSkillSettings = this.Context.CreateNew<AreaSkillSettings>();
@@ -153,6 +155,7 @@ internal abstract class SkillsInitializerBase : InitializerBase
         areaSkillSettings.MaximumNumberOfHitsPerTarget = maximumHitsPerTarget;
         areaSkillSettings.MaximumNumberOfHitsPerAttack = maximumHitsPerAttack;
         areaSkillSettings.HitChancePerDistanceMultiplier = hitChancePerDistanceMultiplier;
+        areaSkillSettings.ProjectileCount = projectileCount;
     }
 
     private void ApplyElementalModifier(ElementalType elementalModifier, Skill skill)
