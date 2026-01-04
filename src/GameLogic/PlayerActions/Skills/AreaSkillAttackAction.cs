@@ -9,6 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.World;
@@ -135,7 +136,7 @@ public class AreaSkillAttackAction
         }
 
         // Exclude summoned monsters from implicit area attacks
-        targetsInRange = targetsInRange.Where(target => target is not NPC.Monster { SummonedBy: not null });
+        targetsInRange = targetsInRange.Where(target => target is not Monster { SummonedBy: not null });
 
         targetsInRange = targetsInRange.Where(target => target.CheckSkillTargetRestrictions(player, skill));
 
