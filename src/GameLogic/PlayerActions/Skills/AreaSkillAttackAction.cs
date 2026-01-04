@@ -111,7 +111,7 @@ public class AreaSkillAttackAction
         }
         else
         {
-            extraTarget = await this.AttackTargetsAsync(player, extraTargetId, targetAreaCenter, skillEntry, skill, areaSkillSettings, targets, rotation, isCombo).ConfigureAwait(false);
+            extraTarget = await this.AttackTargetsAsync(player, extraTargetId, targetAreaCenter, skillEntry, areaSkillSettings, targets, rotation, isCombo).ConfigureAwait(false);
         }
 
         if (isCombo)
@@ -120,97 +120,91 @@ public class AreaSkillAttackAction
         }
     }
 
-    private async Task<IAttackable?> AttackTargetsAsync(Player player, ushort extraTargetId, Point targetAreaCenter, SkillEntry skillEntry, Skill skill, AreaSkillSettings areaSkillSettings, IEnumerable<IAttackable> targets, byte rotation, bool isCombo)
+    private async Task<IAttackable?> AttackTargetsAsync(Player player, ushort extraTargetId, Point targetAreaCenter, SkillEntry skillEntry, AreaSkillSettings areaSkillSettings, IEnumerable<IAttackable> targets, byte rotation, bool isCombo)
     {
         IAttackable? extraTarget = null;
         var attackCount = 0;
         var maxAttacks = areaSkillSettings.MaximumNumberOfHitsPerAttack == 0 ? int.MaxValue : areaSkillSettings.MaximumNumberOfHitsPerAttack;
         var currentDelay = TimeSpan.Zero;
 
-        // For skills with multiple projectiles, we need to track how many projectiles each target has remaining
-        // Using a dictionary with int counters instead of Lists to be more memory efficient
-        Dictionary<IAttackable, int>? targetProjectileCount = null;
+        // Order targets by distance to process nearest targets first
+        var orderedTargets = targets.OrderBy(t => player.GetDistanceTo(t)).ToList();
+        
         FrustumBasedTargetFilter? filter = null;
+        var projectileCount = 1;
         
         if (areaSkillSettings is { UseFrustumFilter: true, ProjectileCount: > 1 })
         {
             filter = FrustumFilters.GetOrAdd(areaSkillSettings, static s => new FrustumBasedTargetFilter(s.FrustumStartWidth, s.FrustumEndWidth, s.FrustumDistance, s.ProjectileCount));
-            targetProjectileCount = new Dictionary<IAttackable, int>();
-            
-            // Determine which projectiles can hit each target and store the count
-            foreach (var target in targets)
-            {
-                var projectiles = filter.GetProjectilesThatCanHitTarget(player, target, rotation);
-                if (projectiles.Count > 0)
-                {
-                    targetProjectileCount[target] = projectiles.Count;
-                }
-            }
+            projectileCount = areaSkillSettings.ProjectileCount;
         }
 
-        for (int attackRound = 0; attackRound < areaSkillSettings.MaximumNumberOfHitsPerTarget; attackRound++)
+        // Process each projectile separately
+        for (int projectileIndex = 0; projectileIndex < projectileCount; projectileIndex++)
         {
             if (attackCount >= maxAttacks)
             {
                 break;
             }
 
-            foreach (var target in targets)
+            for (int attackRound = 0; attackRound < areaSkillSettings.MaximumNumberOfHitsPerTarget; attackRound++)
             {
                 if (attackCount >= maxAttacks)
                 {
                     break;
                 }
 
-                if (target.Id == extraTargetId)
+                foreach (var target in orderedTargets)
                 {
-                    extraTarget = target;
-                }
-
-                // For multiple projectiles, check if there are any projectiles left that can hit this target
-                if (targetProjectileCount != null)
-                {
-                    if (!targetProjectileCount.TryGetValue(target, out var remainingProjectiles) || remainingProjectiles == 0)
+                    if (attackCount >= maxAttacks)
                     {
-                        continue; // No projectiles can hit this target
+                        break;
                     }
 
-                    // Decrement the projectile count for this target
-                    targetProjectileCount[target] = remainingProjectiles - 1;
-                }
-
-                var hitChance = attackRound < areaSkillSettings.MinimumNumberOfHitsPerTarget
-                    ? 1.0
-                    : Math.Min(areaSkillSettings.HitChancePerDistanceMultiplier, Math.Pow(areaSkillSettings.HitChancePerDistanceMultiplier, player.GetDistanceTo(target)));
-                if (hitChance < 1.0 && !Rand.NextRandomBool(hitChance))
-                {
-                    continue;
-                }
-
-                var distanceDelay = areaSkillSettings.DelayPerOneDistance * player.GetDistanceTo(target);
-                var attackDelay = currentDelay + distanceDelay;
-                attackCount++;
-
-                if (attackDelay == TimeSpan.Zero)
-                {
-                    await this.ApplySkillAsync(player, skillEntry, target, targetAreaCenter, isCombo).ConfigureAwait(false);
-                }
-                else
-                {
-                    // The most pragmatic approach is just spawning a Task for each hit.
-                    // We have to see, how this works out in terms of performance.
-                    _ = Task.Run(async () =>
+                    if (target.Id == extraTargetId)
                     {
-                        await Task.Delay(attackDelay).ConfigureAwait(false);
-                        if (!target.IsAtSafezone() && target.IsActive())
-                        {
-                            await this.ApplySkillAsync(player, skillEntry, target, targetAreaCenter, isCombo).ConfigureAwait(false);
-                        }
-                    });
-                }
-            }
+                        extraTarget = target;
+                    }
 
-            currentDelay += areaSkillSettings.DelayBetweenHits;
+                    // For multiple projectiles, check if this specific projectile can hit the target
+                    if (filter != null && !filter.IsTargetWithinBounds(player, target, rotation, projectileIndex))
+                    {
+                        continue; // This projectile cannot hit this target
+                    }
+
+                    var hitChance = attackRound < areaSkillSettings.MinimumNumberOfHitsPerTarget
+                        ? 1.0
+                        : Math.Min(areaSkillSettings.HitChancePerDistanceMultiplier, Math.Pow(areaSkillSettings.HitChancePerDistanceMultiplier, player.GetDistanceTo(target)));
+                    if (hitChance < 1.0 && !Rand.NextRandomBool(hitChance))
+                    {
+                        continue;
+                    }
+
+                    var distanceDelay = areaSkillSettings.DelayPerOneDistance * player.GetDistanceTo(target);
+                    var attackDelay = currentDelay + distanceDelay;
+                    attackCount++;
+
+                    if (attackDelay == TimeSpan.Zero)
+                    {
+                        await this.ApplySkillAsync(player, skillEntry, target, targetAreaCenter, isCombo).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        // The most pragmatic approach is just spawning a Task for each hit.
+                        // We have to see, how this works out in terms of performance.
+                        _ = Task.Run(async () =>
+                        {
+                            await Task.Delay(attackDelay).ConfigureAwait(false);
+                            if (!target.IsAtSafezone() && target.IsActive())
+                            {
+                                await this.ApplySkillAsync(player, skillEntry, target, targetAreaCenter, isCombo).ConfigureAwait(false);
+                            }
+                        });
+                    }
+                }
+
+                currentDelay += areaSkillSettings.DelayBetweenHits;
+            }
         }
 
         return extraTarget;

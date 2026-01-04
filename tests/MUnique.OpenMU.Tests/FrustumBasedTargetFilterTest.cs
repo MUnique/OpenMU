@@ -26,31 +26,30 @@ internal class FrustumBasedTargetFilterTest
         var target = CreateLocateable(100, 105); // Directly in front (positive Y)
 
         // Rotation 128 points in +Y direction (180 degrees in 0-255 system)
-        var result = filter.GetProjectilesThatCanHitTarget(attacker, target, 128);
+        var result = filter.IsTargetWithinBounds(attacker, target, 128, 0);
 
-        Assert.That(result, Has.Count.EqualTo(1));
-        Assert.That(result[0], Is.EqualTo(0));
+        Assert.That(result, Is.True);
     }
 
     /// <summary>
-    /// Tests that with triple shot, a target in the center can be hit by all three projectiles.
+    /// Tests that with triple shot, a target in the center can be hit by the center projectile.
     /// </summary>
     [Test]
-    public void TripleShot_TargetInCenter_CanBeHitByAllThree()
+    public void TripleShot_TargetInCenter_CanBeHitByCenterProjectile()
     {
         var filter = new FrustumBasedTargetFilter(1f, 4.5f, 7f, 3);
         var attacker = CreateLocateable(100, 100);
         var target = CreateLocateable(100, 105); // Directly in front (positive Y)
 
         // Rotation 128 points in +Y direction
-        var result = filter.GetProjectilesThatCanHitTarget(attacker, target, 128);
+        // Check if the center projectile (index 1) can hit
+        var result = filter.IsTargetWithinBounds(attacker, target, 128, 1);
 
-        // Target in the center should be hittable by all 3 projectiles
-        Assert.That(result, Has.Count.GreaterThanOrEqualTo(1));
+        Assert.That(result, Is.True);
     }
 
     /// <summary>
-    /// Tests that with triple shot, a target on the left side can only be hit by the left projectile.
+    /// Tests that with triple shot, a target on the left side can be hit by the left projectile.
     /// </summary>
     [Test]
     public void TripleShot_TargetOnLeft_CanBeHitByLeftProjectile()
@@ -60,16 +59,17 @@ internal class FrustumBasedTargetFilterTest
         var target = CreateLocateable(98, 105); // To the left and in front (2 units left, within frustum)
 
         // Rotation 128 points in +Y direction
-        var result = filter.GetProjectilesThatCanHitTarget(attacker, target, 128);
-
-        // Target on the left should be hittable by at least one projectile (the left one)
-        Assert.That(result, Has.Count.GreaterThanOrEqualTo(1));
-        // But not by all three
-        Assert.That(result, Has.Count.LessThanOrEqualTo(2));
+        // Left projectile should be able to hit (index 0)
+        var leftResult = filter.IsTargetWithinBounds(attacker, target, 128, 0);
+        Assert.That(leftResult, Is.True);
+        
+        // Right projectile should NOT be able to hit (index 2)
+        var rightResult = filter.IsTargetWithinBounds(attacker, target, 128, 2);
+        Assert.That(rightResult, Is.False);
     }
 
     /// <summary>
-    /// Tests that with triple shot, a target on the right side can only be hit by the right projectile.
+    /// Tests that with triple shot, a target on the right side can be hit by the right projectile.
     /// </summary>
     [Test]
     public void TripleShot_TargetOnRight_CanBeHitByRightProjectile()
@@ -79,12 +79,13 @@ internal class FrustumBasedTargetFilterTest
         var target = CreateLocateable(102, 105); // To the right and in front (2 units right, within frustum)
 
         // Rotation 128 points in +Y direction
-        var result = filter.GetProjectilesThatCanHitTarget(attacker, target, 128);
-
-        // Target on the right should be hittable by at least one projectile (the right one)
-        Assert.That(result, Has.Count.GreaterThanOrEqualTo(1));
-        // But not by all three
-        Assert.That(result, Has.Count.LessThanOrEqualTo(2));
+        // Right projectile should be able to hit (index 2)
+        var rightResult = filter.IsTargetWithinBounds(attacker, target, 128, 2);
+        Assert.That(rightResult, Is.True);
+        
+        // Left projectile should NOT be able to hit (index 0)
+        var leftResult = filter.IsTargetWithinBounds(attacker, target, 128, 0);
+        Assert.That(leftResult, Is.False);
     }
 
     /// <summary>
@@ -98,9 +99,12 @@ internal class FrustumBasedTargetFilterTest
         var target = CreateLocateable(110, 105); // Far to the right, outside frustum
 
         // Rotation 128 points in +Y direction
-        var result = filter.GetProjectilesThatCanHitTarget(attacker, target, 128);
-
-        Assert.That(result, Is.Empty);
+        // No projectile should be able to hit
+        for (int i = 0; i < 3; i++)
+        {
+            var result = filter.IsTargetWithinBounds(attacker, target, 128, i);
+            Assert.That(result, Is.False, $"Projectile {i} should not hit target outside frustum");
+        }
     }
 
     /// <summary>

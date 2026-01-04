@@ -72,53 +72,47 @@ public record FrustumBasedTargetFilter
     }
 
     /// <summary>
-    /// Gets the indices of projectiles that can hit the target.
+    /// Determines whether the target is within the hit bounds for a specific projectile.
     /// When multiple projectiles are used, they are evenly distributed within the frustum.
     /// </summary>
     /// <param name="attacker">The attacker.</param>
     /// <param name="target">The target.</param>
     /// <param name="rotation">The rotation.</param>
-    /// <returns>A list of projectile indices (0-based) that can hit the target.</returns>
-    public IReadOnlyList<int> GetProjectilesThatCanHitTarget(ILocateable attacker, ILocateable target, byte rotation)
+    /// <param name="projectileIndex">The zero-based index of the projectile (0 to ProjectileCount-1).</param>
+    /// <returns><c>true</c> if the target is within hit bounds for the specified projectile; otherwise, <c>false</c>.</returns>
+    public bool IsTargetWithinBounds(ILocateable attacker, ILocateable target, byte rotation, int projectileIndex)
     {
         if (this.ProjectileCount <= 1)
         {
             // For single projectile, use the simple frustum check
-            return this.IsTargetWithinBounds(attacker, target, rotation) ? [0] : [];
+            return this.IsTargetWithinBounds(attacker, target, rotation);
+        }
+
+        if (projectileIndex < 0 || projectileIndex >= this.ProjectileCount)
+        {
+            return false;
         }
 
         // First check if target is within the overall frustum
         if (!this.IsTargetWithinBounds(attacker, target, rotation))
         {
-            return [];
+            return false;
         }
 
-        var result = new List<int>();
-        
         // Calculate the relative position of the target within the frustum
-        // Using a simple approach: determine the horizontal offset from the center line
         var relativePosition = CalculateRelativePositionInFrustum(attacker.Position, target.Position, rotation);
         
         // Divide the frustum into sections (-1 to 1 range)
         // For 3 projectiles: left (-1 to -0.33), center (-0.33 to 0.33), right (0.33 to 1)
         var sectionWidth = 2.0 / this.ProjectileCount;
+        var sectionStart = -1.0 + (projectileIndex * sectionWidth);
+        var sectionEnd = sectionStart + sectionWidth;
         
-        for (int i = 0; i < this.ProjectileCount; i++)
-        {
-            var sectionStart = -1.0 + (i * sectionWidth);
-            var sectionEnd = sectionStart + sectionWidth;
-            
-            // Add overlap so targets near boundaries can be hit by adjacent projectiles
-            sectionStart -= ProjectileOverlap;
-            sectionEnd += ProjectileOverlap;
-            
-            if (relativePosition >= sectionStart && relativePosition <= sectionEnd)
-            {
-                result.Add(i);
-            }
-        }
-
-        return result;
+        // Add overlap so targets near boundaries can be hit by adjacent projectiles
+        sectionStart -= ProjectileOverlap;
+        sectionEnd += ProjectileOverlap;
+        
+        return relativePosition >= sectionStart && relativePosition <= sectionEnd;
     }
 
     private double CalculateRelativePositionInFrustum(Point attackerPos, Point targetPos, byte rotation)
