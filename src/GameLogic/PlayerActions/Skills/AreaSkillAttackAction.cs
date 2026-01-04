@@ -195,15 +195,26 @@ public class AreaSkillAttackAction
         var currentDelay = TimeSpan.Zero;
 
         // Order targets by distance to process nearest targets first
-        var orderedTargets = targets.OrderBy(t => player.GetDistanceTo(t)).ToList();
-        
+        var orderedTargets = targets.ToList();
         FrustumBasedTargetFilter? filter = null;
         var projectileCount = 1;
-        
+        var attackRounds = areaSkillSettings.MaximumNumberOfHitsPerTarget;
+
         if (areaSkillSettings is { UseFrustumFilter: true, ProjectileCount: > 1 })
         {
+            orderedTargets.Sort((a, b) => player.GetDistanceTo(a).CompareTo(player.GetDistanceTo(b)));
             filter = FrustumFilters.GetOrAdd(areaSkillSettings, static s => new FrustumBasedTargetFilter(s.FrustumStartWidth, s.FrustumEndWidth, s.FrustumDistance, s.ProjectileCount));
             projectileCount = areaSkillSettings.ProjectileCount;
+            attackRounds = 1; // One attack round per projectile
+
+            extraTarget = orderedTargets.FirstOrDefault(t => t.Id == extraTargetId);
+            if (extraTarget is not null)
+            {
+                // In this case we just calculate the angle on server side, so that lags
+                // or desynced positions may not have such a big impact
+                var angle = (float)player.Position.GetAngleDegreeTo(extraTarget.Position);
+                rotation = (byte)((angle / 360.0f) * 256.0f);
+            }
         }
 
         // Process each projectile separately
@@ -214,7 +225,7 @@ public class AreaSkillAttackAction
                 break;
             }
 
-            for (int attackRound = 0; attackRound < areaSkillSettings.MaximumNumberOfHitsPerTarget; attackRound++)
+            for (int attackRound = 0; attackRound < attackRounds; attackRound++)
             {
                 if (attackCount >= maxAttacks)
                 {
