@@ -5,7 +5,10 @@
 namespace MUnique.OpenMU.Web.AdminPanel.Pages;
 
 using System.ComponentModel;
+using System.Text;
+using System.Text.Json;
 using System.Threading;
+using BlazorInputFile;
 using Blazored.Toast.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.QuickGrid;
@@ -14,6 +17,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.GameServer.RemoteView;
 using MUnique.OpenMU.Persistence;
 
 /// <summary>
@@ -21,6 +25,14 @@ using MUnique.OpenMU.Persistence;
 /// </summary>
 public partial class Merchants : ComponentBase, IAsyncDisposable
 {
+    private const string MerchantStoreExportVersion = "openmu-merchant-store-v1";
+    private static readonly JsonSerializerOptions MerchantStoreJsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true,
+        WriteIndented = true,
+    };
+
+    private static readonly IItemSerializer StoreItemSerializer = new ItemSerializer();
     private readonly PaginationState _merchantPagination = new() { ItemsPerPage = 20 };
     private readonly PaginationState _itemPagination = new() { ItemsPerPage = 20 };
 
@@ -29,6 +41,7 @@ public partial class Merchants : ComponentBase, IAsyncDisposable
     private List<MerchantStorageViewModel>? _viewModels;
     private MerchantStorageViewModel? _selectedMerchant;
     private IContext? _persistenceContext;
+    private GameConfiguration? _gameConfiguration;
     private IDisposable? _navigationLockDisposable;
 
     /// <summary>
@@ -136,7 +149,7 @@ public partial class Merchants : ComponentBase, IAsyncDisposable
         cancellationToken.ThrowIfCancellationRequested();
 
         this._persistenceContext = await this.DataSource.GetContextAsync(cancellationToken).ConfigureAwait(true);
-        await this.DataSource.GetOwnerAsync(default, cancellationToken).ConfigureAwait(true);
+        this._gameConfiguration = await this.DataSource.GetOwnerAsync(default, cancellationToken).ConfigureAwait(true);
         cancellationToken.ThrowIfCancellationRequested();
         var data = this.DataSource.GetAll<MonsterDefinition>()
             .Where(m => m is { ObjectKind: NpcObjectKind.PassiveNpc, MerchantStore: { } });
@@ -205,6 +218,142 @@ public partial class Merchants : ComponentBase, IAsyncDisposable
         this._selectedMerchant = null;
     }
 
+    private string GetExportDownloadUri()
+    {
+        var export = this.BuildExport();
+        var json = JsonSerializer.Serialize(export, MerchantStoreJsonOptions);
+        var payload = Convert.ToBase64String(Encoding.UTF8.GetBytes(json));
+        return $"data:application/json;base64,{payload}";
+    }
+
+    private string GetExportFileName()
+    {
+        var merchantName = this._selectedMerchant?.Merchant.Designation ?? "merchant";
+        var safeName = string.Concat(merchantName.Select(ch => ch is >= 'a' and <= 'z' or >= 'A' and <= 'Z' or >= '0' and <= '9' ? ch : '_'));
+        return $"merchant_store_{safeName}.json";
+    }
+
+    private MerchantStoreExport BuildExport()
+    {
+        var store = this._selectedMerchant?.Merchant.MerchantStore;
+        var result = new MerchantStoreExport
+        {
+            FormatVersion = MerchantStoreExportVersion,
+            Serializer = nameof(ItemSerializer),
+            MerchantName = this._selectedMerchant?.Merchant.Designation ?? string.Empty,
+            Money = store?.Money ?? 0,
+        };
+
+        if (store is null)
+        {
+            return result;
+        }
+
+        foreach (var item in store.Items.OrderBy(entry => entry.ItemSlot))
+        {
+            var buffer = new byte[StoreItemSerializer.NeededSpace];
+            var size = StoreItemSerializer.SerializeItem(buffer, item);
+            result.Items.Add(new MerchantStoreItemExport
+            {
+                ItemSlot = item.ItemSlot,
+                ItemData = Convert.ToHexString(buffer.AsSpan(0, size)),
+            });
+        }
+
+        return result;
+    }
+
+    private async Task OnImportFileAsync(IFileListEntry[] files)
+    {
+        var file = files.FirstOrDefault();
+        if (file is null)
+        {
+            return;
+        }
+
+        if (this._persistenceContext is null || this._gameConfiguration is null)
+        {
+            this.ToastService.ShowError("Failed to import: context not initialized.");
+            return;
+        }
+
+        try
+        {
+            await using var stream = file.Data;
+            var import = await JsonSerializer.DeserializeAsync<MerchantStoreExport>(stream, MerchantStoreJsonOptions).ConfigureAwait(true);
+            if (import is null)
+            {
+                this.ToastService.ShowError("Failed to import: file is empty or invalid.");
+                return;
+            }
+
+            await this.ApplyImportAsync(import).ConfigureAwait(true);
+            this.ToastService.ShowSuccess($"Imported {import.Items.Count} items.");
+        }
+        catch (Exception ex)
+        {
+            this.Logger.LogError(ex, "An unexpected error occurred while importing merchant store.");
+            this.ToastService.ShowError($"Failed to import: {ex.Message}");
+        }
+    }
+
+    private async Task ApplyImportAsync(MerchantStoreExport import)
+    {
+        var store = this._selectedMerchant?.Merchant.MerchantStore;
+        if (store is null)
+        {
+            this.ToastService.ShowError("Failed to import: merchant store not loaded.");
+            return;
+        }
+
+        if (!string.Equals(import.FormatVersion, MerchantStoreExportVersion, StringComparison.OrdinalIgnoreCase))
+        {
+            this.ToastService.ShowWarning("Import format does not match the expected version.");
+        }
+
+        if (!string.IsNullOrWhiteSpace(import.Serializer) && !string.Equals(import.Serializer, nameof(ItemSerializer), StringComparison.OrdinalIgnoreCase))
+        {
+            this.ToastService.ShowWarning($"Import uses serializer '{import.Serializer}', but this server expects '{nameof(ItemSerializer)}'.");
+        }
+
+        var itemsToRemove = store.Items.ToList();
+        foreach (var item in itemsToRemove)
+        {
+            store.Items.Remove(item);
+            await this._persistenceContext!.DeleteAsync(item).ConfigureAwait(true);
+        }
+
+        store.Money = import.Money;
+
+        foreach (var importedItem in import.Items)
+        {
+            if (string.IsNullOrWhiteSpace(importedItem.ItemData))
+            {
+                continue;
+            }
+
+            try
+            {
+                var bytes = Convert.FromHexString(importedItem.ItemData);
+                if (bytes.Length < StoreItemSerializer.NeededSpace)
+                {
+                    this.Logger.LogWarning("Skipped item import because data is too short (slot {Slot}).", importedItem.ItemSlot);
+                    continue;
+                }
+
+                var item = StoreItemSerializer.DeserializeItem(bytes.AsSpan(0, StoreItemSerializer.NeededSpace), this._gameConfiguration!, this._persistenceContext!);
+                item.ItemSlot = importedItem.ItemSlot;
+                store.Items.Add(item);
+            }
+            catch (Exception ex)
+            {
+                this.Logger.LogWarning(ex, "Skipped item import at slot {Slot}.", importedItem.ItemSlot);
+            }
+        }
+
+        await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(true);
+    }
+
     /// <summary>
     /// The view model for a merchant store.
     /// </summary>
@@ -242,5 +391,25 @@ public partial class Merchants : ComponentBase, IAsyncDisposable
         /// Gets the items of the merchant.
         /// </summary>
         public ICollection<Item> Items => this.Merchant.MerchantStore!.Items;
+    }
+
+    public sealed class MerchantStoreExport
+    {
+        public string FormatVersion { get; set; } = MerchantStoreExportVersion;
+
+        public string Serializer { get; set; } = nameof(ItemSerializer);
+
+        public string MerchantName { get; set; } = string.Empty;
+
+        public int Money { get; set; }
+
+        public List<MerchantStoreItemExport> Items { get; set; } = new();
+    }
+
+    public sealed class MerchantStoreItemExport
+    {
+        public byte ItemSlot { get; set; }
+
+        public string ItemData { get; set; } = string.Empty;
     }
 }

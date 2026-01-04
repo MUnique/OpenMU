@@ -39,6 +39,13 @@ else
     <hr/>
     <CascadingValue TValue="IContext" Value="this._persistenceContext">
         <EditForm Model="this._selectedMerchant.Merchant" OnValidSubmit="this.OnSaveButtonClickAsync">
+            <div class="d-flex flex-row align-items-center mb-3">
+                <a class="btn btn-outline-secondary mr-2" href="@this.GetExportDownloadUri()" download="@this.GetExportFileName()">Exportar tienda</a>
+                <label class="btn btn-outline-secondary mb-0">
+                    Importar tienda
+                    <BlazorInputFile.InputFile OnChange="this.OnImportFileAsync" style="display:none" />
+                </label>
+            </div>
             <ItemStorageField @bind-Value="this._selectedMerchant.Merchant.MerchantStore" HideLabel="true"/>
             <hr />
             <button type="submit" class="primary-button">Guardar cambios</button>
