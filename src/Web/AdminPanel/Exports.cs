@@ -5,6 +5,8 @@
 namespace MUnique.OpenMU.Web.AdminPanel;
 
 using System.Collections.Immutable;
+using System.Linq;
+using MUnique.OpenMU.Web.Shared;
 
 /// <summary>
 /// Class which holds the script exports of this project.
@@ -22,7 +24,10 @@ public static class Exports
 
     private static IEnumerable<string> AdminPanelScripts => [];
 
-    private static IEnumerable<string> AdminPanelStylesheets => [];
+    private static IEnumerable<string> AdminPanelStylesheets =>
+        Web.Shared.Exports.Stylesheets.Concat([
+            $"{Prefix}/MUnique.OpenMU.Web.AdminPanel.styles.css",
+        ]);
 
     /// <summary>
     /// Gets the scripts.
@@ -42,6 +47,6 @@ public static class Exports
     /// Gets the stylesheets.
     /// </summary>
     public static ImmutableList<string> Stylesheets { get; } = AdminPanelEnvironment.IsHostingEmbedded
-        ? Web.Map.Exports.Stylesheets.Concat(AdminPanelStylesheets).ToImmutableList()
-        : AdminPanelStylesheets.ToImmutableList();
+        ? Web.Map.Exports.Stylesheets.Concat(AdminPanelStylesheets).Distinct().ToImmutableList()
+        : AdminPanelStylesheets.Distinct().ToImmutableList();
 }
