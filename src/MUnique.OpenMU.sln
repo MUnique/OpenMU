@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.0.31903.59
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11222.15
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.GameServer", "GameServer\MUnique.OpenMU.GameServer.csproj", "{8EC9EBEE-56DD-4139-AA02-D154CA8536E6}"
 EndProject
@@ -48,6 +48,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		..\.gitignore = ..\.gitignore
 		..\azure-pipelines.yml = ..\azure-pipelines.yml
 		Directory.Build.props = Directory.Build.props
+		Directory.Packages.props = Directory.Packages.props
 		..\.github\workflows\dotnetcore.yml = ..\.github\workflows\dotnetcore.yml
 		..\LICENSE = ..\LICENSE
 		..\.github\workflows\publish.yml = ..\.github\workflows\publish.yml
@@ -166,6 +167,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.Annotations", "Annotations\MUnique.OpenMU.Annotations.csproj", "{49C1BAD6-13DC-4FB2-AD46-3D824C2CA74E}"
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose-all-in-one-traefik", "..\deploy\all-in-one-traefik\docker-compose-all-in-one-traefik.dcproj", "{4430D6A8-54B5-412B-9DBA-07B3E3580AF7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MUnique.OpenMU.Web.Shared", "Web\Shared\MUnique.OpenMU.Web.Shared.csproj", "{1E5B9402-7F94-1B10-15B7-901A5DB39D2C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -375,6 +378,10 @@ Global
 		{49C1BAD6-13DC-4FB2-AD46-3D824C2CA74E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4430D6A8-54B5-412B-9DBA-07B3E3580AF7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4430D6A8-54B5-412B-9DBA-07B3E3580AF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E5B9402-7F94-1B10-15B7-901A5DB39D2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E5B9402-7F94-1B10-15B7-901A5DB39D2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E5B9402-7F94-1B10-15B7-901A5DB39D2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E5B9402-7F94-1B10-15B7-901A5DB39D2C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -434,6 +441,7 @@ Global
 		{338E0C94-5FA1-4F20-86EC-FCBA34CFB1E2} = {09EAF85E-358B-4065-8C81-B0B1FF6C0A09}
 		{49C1BAD6-13DC-4FB2-AD46-3D824C2CA74E} = {09EAF85E-358B-4065-8C81-B0B1FF6C0A09}
 		{4430D6A8-54B5-412B-9DBA-07B3E3580AF7} = {565BED68-B303-4A3D-A8C0-0088D2A50C46}
+		{1E5B9402-7F94-1B10-15B7-901A5DB39D2C} = {820453DE-DA7A-454C-A077-BED8F0FA9764}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {28C13837-B616-4790-84D6-4BDCB4A8166D}

@@ -27,6 +27,11 @@ public partial class PowerUpDefinitionValue
     [MemberOfAggregate]
     public virtual ICollection<AttributeRelationship> RelatedValues { get; protected set; } = null!;
 
+    /// <summary>
+    /// Gets or sets the maximum allowable value.
+    /// </summary>
+    public float? MaximumValue { get; set; }
+
     /// <inheritdoc />
     public override string ToString()
     {

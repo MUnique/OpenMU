@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Dapr.Common;
 
 using System.Threading;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -65,7 +66,18 @@ public static class Extensions
     {
         return services
             .AddSingleton(plugInConfigurations)
-            .AddSingleton<PlugInManager>();
+            .AddSingleton<PlugInManager>()
+            .AddTransient<ReferenceHandler, ByDataSourceReferenceHandler>(provider =>
+            {
+                var persistenceContextProvider = provider.GetService<IPersistenceContextProvider>();
+                var dataSource = new GameConfigurationDataSource(
+                    provider.GetService<ILogger<GameConfigurationDataSource>>()!,
+                    persistenceContextProvider!);
+                var configId = persistenceContextProvider!.CreateNewConfigurationContext().GetDefaultGameConfigurationIdAsync(default).AsTask().WaitAndUnwrapException();
+                dataSource.GetOwnerAsync(configId!.Value).AsTask().WaitAndUnwrapException();
+                var referenceHandler = new ByDataSourceReferenceHandler(dataSource);
+                return referenceHandler;
+            });
     }
 
     /// <summary>
@@ -251,23 +263,6 @@ public static class Extensions
         {
             app.UseSwagger();
             app.UseSwaggerUI();
-        }
-
-        if (addBlazor)
-        {
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Error");
-            }
-
-            app.UseStaticFiles();
-            app.UseRouting();
-            app.MapBlazorHub();
-            app.MapFallbackToPage("/_Host");
         }
 
         app.UseCloudEvents();

@@ -1,0 +1,125 @@
+@using MUnique.OpenMU.DataModel.Configuration
+@using MUnique.OpenMU.Persistence;
+@using MUnique.OpenMU.Web.AdminPanel.Localization
+
+@inherits LocalizedComponentBase
+
+<nav>
+    <div>
+        <a href="">OpenMU</a>foo
+        <button @onclick="ToggleNavMenu">
+            <span></span>
+        </button>
+    </div>
+
+    <!-- Hiding it programmatically is not a good idea here, because we want to hide it based on the width of the device/window. -->
+    <div class="@NavMenuCssClass">
+        <ul>
+            @if (this._isLoadingConfig)
+            {
+                <li>
+                    <NavLink href="" Match="NavLinkMatch.All">
+                        <span class="oi oi-clock" aria-hidden="true"></span> @this.Localization["NavMenu_Loading"]
+                    </NavLink>
+                </li>
+            }
+            else if (this._onlyShowSetup)
+            {
+                <li>
+                    <NavLink href="setup">
+                        <span class="oi oi-cog" aria-hidden="true"></span> @this.Localization["NavMenu_Setup"]
+                    </NavLink>
+                </li>
+            }
+            else
+            {
+                <li>
+                    <NavLink href="" Match="NavLinkMatch.All">
+                        <span class="oi oi-home" aria-hidden="true"></span> @this.Localization["NavMenu_Home"]
+                    </NavLink>
+                </li>
+                <li>
+                    <NavLink href="servers">
+                        <span class="oi oi-project" aria-hidden="true"></span> @this.Localization["NavMenu_Servers"]
+                    </NavLink>
+                </li>
+                <li>
+                  <NavLink href="accounts">
+                    <span class="oi oi-list" aria-hidden="true"></span> @this.Localization["NavMenu_Accounts"]
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink href="logged-in">
+                    <span class="oi oi-people" aria-hidden="true" /> @this.Localization["NavMenu_OnlineAccounts"]
+                  </NavLink>
+                </li>
+                @if (this.GameConfigurationId is { } gameConfigurationId )
+                {
+                    <ConfigNavMenu GameConfigurationId="@gameConfigurationId" />
+                }
+                <li>
+                    <NavLink href="setup">
+                        <span class="oi oi-cog" aria-hidden="true"></span> @this.Localization["NavMenu_Setup"]
+                    </NavLink>
+                </li>
+                <li>
+                    <NavLink href="config-updates">
+                        <span class="oi oi-medical-cross" aria-hidden="true"></span> @this.Localization["NavMenu_Updates"]
+                        @if (this._availableConfigUpdates > 0)
+                        {
+                            <span class="badge badge-light ml-2">@this._availableConfigUpdates</span>
+                            <span class="sr-only">@this.Localization["NavMenu_UpdatesAvailable"]</span>
+                        }
+                    </NavLink>
+                </li>
+            }
+            @if (UserService.IsAvailable)
+            {
+                <li>
+                    <NavLink href="users">
+                        <span class="oi oi-key" aria-hidden="true"></span> @this.Localization["NavMenu_Users"]
+                    </NavLink>
+                </li>
+            }
+            @if (AdminPanelEnvironment.IsHostingEmbedded)
+            {
+                <li>
+                    <NavLink href="logfiles">
+                        <span class="oi oi-list" aria-hidden="true"></span> @this.Localization["NavMenu_LogFiles"]
+                    </NavLink>
+                </li>
+                <li>
+                    <NavLink href="logs/tail">
+                        <span class="oi oi-terminal" aria-hidden="true"></span> @this.Localization["NavMenu_LiveLogs"]
+                    </NavLink>
+                </li>
+            }
+            else
+            {
+                <li>
+                    <a href="/grafana/explore?orgId=1&left=%7B%22datasource%22:%22Loki%22,%22queries%22:%5B%7B%22refId%22:%22A%22%7D%5D,%22range%22:%7B%22from%22:%22now-1h%22,%22to%22:%22now%22%7D%7D"
+                       target="_blank">
+                        <span class="oi oi-list" aria-hidden="true"></span> @this.Localization["NavMenu_Logs"]
+                    </a>
+                </li>
+                <li>
+                    <NavLink href="logs/tail">
+                        <span class="oi oi-terminal" aria-hidden="true"></span> @this.Localization["NavMenu_LiveLogs"]
+                    </NavLink>
+                </li>
+                <li>
+                    <a href="/grafana/dashboards"
+                       target="_blank">
+                        <span class="oi oi-bar-chart" aria-hidden="true"></span> @this.Localization["NavMenu_Metrics"]
+                    </a>
+                </li>
+                <li>
+                    <a href="/zipkin/"
+                       target="_blank">
+                        <span class="oi oi-fork" aria-hidden="true"></span> @this.Localization["NavMenu_Traces"]
+                    </a>
+                </li>
+            }
+        </ul>
+    </div>
+</nav>

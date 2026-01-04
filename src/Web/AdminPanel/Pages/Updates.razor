@@ -1,11 +1,13 @@
 @page "/config-updates"
 @using MUnique.OpenMU.Web.AdminPanel.Localization
 
-@inherits LocalizedComponentBase
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Web
+@using MUnique.OpenMU.Web.Shared.Components
 
-<PageTitle>@this.Localization["Updates_Title"]</PageTitle>
-<Breadcrumb IsFirstFromRoot="true" Caption="@this.Localization["Updates_Breadcrumb"]"/>
-<h3>@this.Localization["Updates_Heading"]</h3>
+<PageTitle>OpenMU: Configuration Updates</PageTitle>
+<Breadcrumb IsFirstFromRoot="true" Caption="Configuration Updates"/>
+<h3>Configuration Updates</h3>
 
 @if (!this.SetupService.IsInstalled || this.SetupService.IsUpdateRequired)
 {

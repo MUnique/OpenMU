@@ -86,7 +86,7 @@ services:
     ports:
       - "50006"
 
-  pubsub:
+  rabbit:
     image: rabbitmq:3-management-alpine
     container_name: pubsub_rabbitmq
     restart: always
@@ -124,7 +124,7 @@ services:
       APPID: connectServer
       ASPNETCORE_URLS: http://+:8080
     depends_on:
-      - pubsub
+      - rabbit
       - zipkin
       - database
 
@@ -294,7 +294,7 @@ services:
       - connectServer-dapr
       - loginServer-dapr
       - friendServer-dapr
-      - pubsub
+      - rabbit
       - zipkin
       - database
       - loki
@@ -333,7 +333,7 @@ services:
       - connectServer-dapr
       - loginServer-dapr
       - friendServer-dapr
-      - pubsub
+      - rabbit
       - zipkin
       - database
       - loki

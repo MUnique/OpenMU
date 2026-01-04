@@ -106,10 +106,21 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
         }
 
         var hitInfo = await attacker.CalculateDamageAsync(this, skill, isCombo, damageFactor).ConfigureAwait(false);
-        await this.HitAsync(hitInfo, attacker, skill?.Skill).ConfigureAwait(false);
-        if (hitInfo.HealthDamage > 0)
+
+        if (skill?.Skill is not { } attackSkill || attackSkill.DamageType != DamageType.Fenrir)
         {
             attacker.ApplyAmmunitionConsumption(hitInfo);
+        }
+
+        await this.HitAsync(hitInfo, attacker, skill?.Skill).ConfigureAwait(false);
+
+        if (hitInfo.HealthDamage > 0)
+        {
+            if (this.Attributes[Stats.IsAsleep] > 0)
+            {
+                await this.MagicEffectList.ClearAllEffectsProducingSpecificStatAsync(Stats.IsAsleep).ConfigureAwait(false);
+            }
+
             if (attacker is Player player)
             {
                 await player.AfterHitTargetAsync().ConfigureAwait(false);

@@ -632,6 +632,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         var hitInfo = await attacker.CalculateDamageAsync(this, skill, isCombo, damageFactor).ConfigureAwait(false);
 
+        if (skill?.Skill is not { } attackSkill || attackSkill.DamageType != DamageType.Fenrir)
+        {
+            attacker.ApplyAmmunitionConsumption(hitInfo);
+        }
+
         if (hitInfo is { HealthDamage: 0, ShieldDamage: 0 })
         {
             await this.InvokeViewPlugInAsync<IShowHitPlugIn>(p => p.ShowHitAsync(this, hitInfo)).ConfigureAwait(false);
@@ -643,7 +648,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return hitInfo;
         }
 
-        attacker.ApplyAmmunitionConsumption(hitInfo);
+        if (this.Attributes[Stats.IsAsleep] > 0)
+        {
+            await this.MagicEffectList.ClearAllEffectsProducingSpecificStatAsync(Stats.IsAsleep).ConfigureAwait(false);
+        }
 
         if (Rand.NextRandomBool(this.Attributes[Stats.FullyRecoverHealthAfterHitChance]))
         {
@@ -1256,7 +1264,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return;
         }
 
-        if (attributes[Stats.IsFrozen] > 0 || attributes[Stats.IsStunned] > 0)
+        if (attributes[Stats.IsFrozen] > 0 || attributes[Stats.IsStunned] > 0 || attributes[Stats.IsAsleep] > 0)
         {
             return;
         }
@@ -1488,17 +1496,31 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             throw new InvalidOperationException($"Skill {skill.Name} ({skill.Number}) has no duration in MagicEffectDef.");
         }
 
-        int i = 0;
         var result = new (AttributeDefinition Target, IElement BuffPowerUp)[skill.MagicEffectDef.PowerUpDefinitions.Count];
+        var resultPvp = new (AttributeDefinition Target, IElement BuffPowerUp)[skill.MagicEffectDef.PowerUpDefinitionsPvp.Count];
         var durationElement = this.Attributes!.CreateDurationElement(skill.MagicEffectDef.Duration);
-        AddSkillPowersToResult(skill);
+        var durationElementPvp = skill.MagicEffectDef.DurationPvp is { } durationPvp ? this.Attributes!.CreateDurationElement(durationPvp) : durationElement;
+        var chanceElement = skill.MagicEffectDef.Chance is { } chance ? this.Attributes!.CreateChanceElement(chance) : new ConstantElement(1.0f);
+        var chanceElementPvp = skill.MagicEffectDef.ChancePvp is { } chancePvp ? this.Attributes!.CreateChanceElement(chancePvp) : chanceElement;
+        AddSkillPowersToResult(skill.MagicEffectDef.PowerUpDefinitions, ref result);
+        AddSkillPowersToResult(skill.MagicEffectDef.PowerUpDefinitionsPvp, ref resultPvp);
         skillEntry.PowerUpDuration = durationElement;
+        skillEntry.PowerUpDurationPvp = durationElementPvp;
+        skillEntry.PowerUpChance = chanceElement;
+        skillEntry.PowerUpChancePvp = chanceElementPvp;
         skillEntry.PowerUps = result;
+        skillEntry.PowerUpsPvp = resultPvp.Count() > 0 ? resultPvp : result;
 
-        void AddSkillPowersToResult(Skill skill)
+        void AddSkillPowersToResult(ICollection<PowerUpDefinition> powerUps, ref (AttributeDefinition Target, IElement BuffPowerUp)[] result)
         {
+            if (powerUps.Count() == 0)
+            {
+                return;
+            }
+
+            int i = 0;
             var durationExtended = false;
-            foreach (var powerUpDef in skill.MagicEffectDef!.PowerUpDefinitions)
+            foreach (var powerUpDef in powerUps)
             {
                 IElement powerUp;
                 if (skillEntry.Level > 0)
@@ -2104,10 +2126,33 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return;
         }
 
-        var reflectPercentage = this.Attributes[Stats.DamageReflection];
-        if (reflectPercentage > 0 && attacker is IAttackable attackableAttacker)
+        if (attacker is IAttackable or AttackerSurrogate)
         {
-            var reflectedDamage = (int)((hitInfo.HealthDamage + hitInfo.ShieldDamage) * reflectPercentage);
+            var attackableAttacker = (attacker as AttackerSurrogate)?.Owner ?? (IAttackable)attacker;
+
+            var reflectPercentage = this.Attributes[Stats.DamageReflection];
+            if (reflectPercentage > 0)
+            {
+                var reflectedDamage = (hitInfo.HealthDamage + hitInfo.ShieldDamage) * reflectPercentage;
+                ReflectDamage((int)reflectedDamage, attackableAttacker);
+            }
+
+            if (attacker is not AttackerSurrogate)
+            {
+                // Raven does not cause full reflect.
+                var fullReflectPercentage = this.Attributes[Stats.FullyReflectDamageAfterHitChance];
+                if (fullReflectPercentage > 0 && Rand.NextRandomBool(fullReflectPercentage))
+                {
+                    var reflectedDamage = attackableAttacker is Player
+                        ? hitInfo.HealthDamage + hitInfo.ShieldDamage
+                        : attackableAttacker.Attributes[Stats.MaximumPhysBaseDmg];
+                    ReflectDamage((int)reflectedDamage, attackableAttacker);
+                }
+            }
+        }
+
+        void ReflectDamage(int reflectedDamage, IAttackable attackable)
+        {
             if (reflectedDamage <= 0)
             {
                 return;
@@ -2116,9 +2161,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             _ = Task.Run(async () =>
             {
                 await Task.Delay(500).ConfigureAwait(false);
-                if (attackableAttacker.IsAlive)
+                if (attackable.IsAlive)
                 {
-                    await attackableAttacker.ReflectDamageAsync(this, (uint)reflectedDamage).ConfigureAwait(false);
+                    await attackable.ReflectDamageAsync(this, (uint)reflectedDamage).ConfigureAwait(false);
                 }
             });
         }

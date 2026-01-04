@@ -65,6 +65,12 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
             return;
         }
 
+        if (attributes[Stats.IsAsleep] > 0)
+        {
+            player.Logger.LogWarning($"Probably Hacker - player {player} is attacking in asleep state");
+            return;
+        }
+
         var skillEntry = player.SkillList?.GetSkill(skillId);
         var skill = skillEntry?.Skill;
         if (skill is null || skill.SkillType == SkillType.PassiveBoost)

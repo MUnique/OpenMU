@@ -47,7 +47,7 @@ public class AreaSkillAttackAction
             return;
         }
 
-        if (skill.SkillType is SkillType.AreaSkillAutomaticHits or SkillType.AreaSkillExplicitTarget
+        if (skill.SkillType is SkillType.AreaSkillAutomaticHits or SkillType.AreaSkillExplicitTarget or SkillType.Buff
             || (skill.SkillType is SkillType.AreaSkillExplicitHits && hitImplicitlyForExplicitSkill))
         {
             // todo: delayed automatic hits, like evil spirit, flame, triple shot... when hitImplicitlyForExplicitSkill = true.
@@ -68,6 +68,12 @@ public class AreaSkillAttackAction
         if (attributes[Stats.IsStunned] > 0)
         {
             player.Logger.LogWarning("Probably Hacker - player {player} is attacking in stunned state", player);
+            return;
+        }
+
+        if (attributes[Stats.IsAsleep] > 0)
+        {
+            player.Logger.LogWarning("Probably Hacker - player {player} is attacking in sleep state", player);
             return;
         }
 
@@ -124,13 +130,18 @@ public class AreaSkillAttackAction
 
         for (int attackRound = 0; attackRound < areaSkillSettings.MaximumNumberOfHitsPerTarget; attackRound++)
         {
-            if (attackCount > maxAttacks)
+            if (attackCount >= maxAttacks)
             {
                 break;
             }
 
             foreach (var target in targets)
             {
+                if (attackCount >= maxAttacks)
+                {
+                    break;
+                }
+
                 if (target.Id == extraTargetId)
                 {
                     extraTarget = target;
@@ -246,6 +257,12 @@ public class AreaSkillAttackAction
     private async ValueTask ApplySkillAsync(Player player, SkillEntry skillEntry, IAttackable target, Point targetAreaCenter, bool isCombo)
     {
         skillEntry.ThrowNotInitializedProperty(skillEntry.Skill is null, nameof(skillEntry.Skill));
+
+        if (skillEntry.Skill.SkillType == SkillType.Buff)
+        {
+            await target.ApplyMagicEffectAsync(player, skillEntry).ConfigureAwait(false);
+            return;
+        }
 
         var hitInfo = await target.AttackByAsync(player, skillEntry, isCombo).ConfigureAwait(false);
         await target.TryApplyElementalEffectsAsync(player, skillEntry).ConfigureAwait(false);

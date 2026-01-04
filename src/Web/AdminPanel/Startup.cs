@@ -19,6 +19,10 @@ using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Web.AdminPanel.Models;
 using MUnique.OpenMU.Web.AdminPanel.Services;
 using MUnique.OpenMU.Web.AdminPanel.Localization;
+using MUnique.OpenMU.Web.AdminPanel.Components;
+using MUnique.OpenMU.Web.Shared;
+using MUnique.OpenMU.Web.Shared.Models;
+using MUnique.OpenMU.Web.Shared.Services;
 
 /// <summary>
 /// The startup class for the blazor app.
@@ -52,8 +56,8 @@ public class Startup
     /// <param name="services">The service collection.</param>
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddRazorPages();
-        services.AddServerSideBlazor();
+        services.AddRazorComponents()
+            .AddInteractiveServerComponents();
 
         services.AddLocalization();
         // Prefer the Startup registration; only add if missing.
@@ -126,7 +130,7 @@ public class Startup
         }
         else
         {
-            app.UseExceptionHandler("/Error");
+            app.UseExceptionHandler("/Error", createScopeForErrors: true);
 
             // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
             app.UseHsts();
@@ -146,13 +150,13 @@ public class Startup
             RequestPath = "/logs",
         });
 
-        app.UseRouting();
+        app.UseAntiforgery();
 
         app.UseEndpoints(endpoints =>
         {
-            endpoints.MapBlazorHub();
+            endpoints.MapRazorComponents<App>()
+                .AddInteractiveServerRenderMode();
             endpoints.MapControllers();
-            endpoints.MapFallbackToPage("/_Host");
         });
     }
 }
