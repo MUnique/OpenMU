@@ -14,7 +14,6 @@ using MUnique.OpenMU.Pathfinding;
 public record FrustumBasedTargetFilter
 {
     private const double DistanceEpsilon = 0.001;
-    private const double ProjectileOverlap = 0.15; // Overlap between projectile zones to handle edge cases
     private readonly Vector2[][] _rotationVectors;
 
     /// <summary>
@@ -100,19 +99,32 @@ public record FrustumBasedTargetFilter
         }
 
         // Calculate the relative position of the target within the frustum
-        var relativePosition = CalculateRelativePositionInFrustum(attacker.Position, target.Position, rotation);
-        
+        var relativePosition = this.CalculateRelativePositionInFrustum(attacker.Position, target.Position, rotation);
+
         // Divide the frustum into sections (-1 to 1 range)
         // For 3 projectiles: left (-1 to -0.33), center (-0.33 to 0.33), right (0.33 to 1)
         var sectionWidth = 2.0 / this.ProjectileCount;
         var sectionStart = -1.0 + (projectileIndex * sectionWidth);
         var sectionEnd = sectionStart + sectionWidth;
-        
+
         // Add overlap so targets near boundaries can be hit by adjacent projectiles
-        sectionStart -= ProjectileOverlap;
-        sectionEnd += ProjectileOverlap;
-        
+        var overlap = this.GetOverlap(attacker.Position, target.Position);
+        sectionStart -= overlap;
+        sectionEnd += overlap;
+
         return relativePosition >= sectionStart && relativePosition <= sectionEnd;
+    }
+
+    private double GetOverlap(Point attackerPos, Point targetPos)
+    {
+        var distance = attackerPos.EuclideanDistanceTo(targetPos);
+        if (distance == 0)
+        {
+            return 1;
+        }
+
+        // The overlap decreases over higher distance
+        return (1.0 / Math.Floor(distance)) / this.ProjectileCount;
     }
 
     private double CalculateRelativePositionInFrustum(Point attackerPos, Point targetPos, byte rotation)
@@ -120,36 +132,36 @@ public record FrustumBasedTargetFilter
         // Calculate the vector from attacker to target
         var dx = targetPos.X - attackerPos.X;
         var dy = targetPos.Y - attackerPos.Y;
-        
+
         // Calculate the rotation angle (same logic as in CalculateRotationVectors)
         var rotationAngle = (rotation * 360.0 / 256.0) + 180; // Add 180 offset as in the frustum calculation
         var rotationRad = rotationAngle * Math.PI / 180.0;
-        
+
         // Rotate the vector to align with the frustum's coordinate system
         // The frustum has Y pointing forward and X pointing right
         var cos = Math.Cos(-rotationRad);
         var sin = Math.Sin(-rotationRad);
         var rotatedX = dx * cos - dy * sin;
         var rotatedY = dx * sin + dy * cos;
-        
+
         // If target is behind us or too close, return 0
         if (rotatedY <= 0)
         {
             return 0;
         }
-        
+
         // Calculate the frustum width at the target's distance
         // Linear interpolation between start and end width
         var distanceRatio = Math.Min(rotatedY / this.Distance, 1.0);
         var frustumWidthAtDistance = this.StartWidth + (this.EndWidth - this.StartWidth) * distanceRatio;
-        
+
         // Normalize the X position by the frustum width at that distance
         // Result will be in range [-1, 1] where -1 is left edge, 0 is center, 1 is right edge
         if (Math.Abs(frustumWidthAtDistance) < DistanceEpsilon)
         {
             return 0;
         }
-        
+
         var normalizedX = rotatedX / frustumWidthAtDistance;
         return Math.Clamp(normalizedX, -1.0, 1.0);
     }
