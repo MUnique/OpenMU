@@ -53,8 +53,11 @@ metricsRegistry.AddNetworkMeters();
 metricsRegistry.AddMeters(MUnique.OpenMU.GameLogic.Metrics.Meters);
 builder.AddOpenTelemetryMetrics(metricsRegistry);
 
-var app = builder.BuildAndConfigure(true);
+var app = builder.BuildAndConfigure(false);
 app.UseStaticFiles();
+app.UseAntiforgery();
+app.MapRazorComponents<MUnique.OpenMU.GameServer.Host.App>()
+    .AddInteractiveServerRenderMode();
 await app.WaitForUpdatedDatabaseAsync().ConfigureAwait(false);
 
 await app.Services.TryLoadPlugInConfigurationsAsync(plugInConfigurations).ConfigureAwait(false);
