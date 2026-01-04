@@ -4,6 +4,8 @@
 
 @inject LoggedInAccountService AccountService;
 
+@inherits MUnique.OpenMU.Web.AdminPanel.Localization.LocalizedComponentBase
+
 <PageTitle>@this.Localization["LoggedIn_Title"]</PageTitle>
 <Breadcrumb IsFirstFromRoot="true" Caption="@this.Localization["LoggedIn_Breadcrumb"]"/>
 <h1>@this.Localization["LoggedIn_Heading"]</h1>
