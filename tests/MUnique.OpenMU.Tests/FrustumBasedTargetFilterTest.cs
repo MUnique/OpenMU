@@ -32,6 +32,23 @@ internal class FrustumBasedTargetFilterTest
     }
 
     /// <summary>
+    /// Tests that with triple shot, a target directly in front can be hit by the all projectiles.
+    /// </summary>
+    [Test]
+    public void TripleShot_TargetNear_CanBeHitByAllProjectiles()
+    {
+        var filter = new FrustumBasedTargetFilter(1f, 4.5f, 7f, 3);
+        var attacker = CreateLocateable(100, 100);
+        var target = CreateLocateable(100, 101);
+
+        // Rotation 128 points in +Y direction
+        // Check if all projectiles can hit
+        Assert.That(filter.IsTargetWithinBounds(attacker, target, 128, 0), Is.True);
+        Assert.That(filter.IsTargetWithinBounds(attacker, target, 128, 1), Is.True);
+        Assert.That(filter.IsTargetWithinBounds(attacker, target, 128, 2), Is.True);
+    }
+
+    /// <summary>
     /// Tests that with triple shot, a target in the center can be hit by the center projectile.
     /// </summary>
     [Test]

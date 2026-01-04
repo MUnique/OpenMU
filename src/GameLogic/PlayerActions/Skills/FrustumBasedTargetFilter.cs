@@ -124,7 +124,9 @@ public record FrustumBasedTargetFilter
         }
 
         // The overlap decreases over higher distance
-        return (1.0 / Math.Floor(distance)) / this.ProjectileCount;
+        var overlap = (1.0 / Math.Floor(distance)) / this.ProjectileCount;
+        overlap += 0.001; // Adding a small epsilon to make it slightly more tolerant in the comparisons
+        return overlap;
     }
 
     private double CalculateRelativePositionInFrustum(Point attackerPos, Point targetPos, byte rotation)
