@@ -4,9 +4,13 @@
 
 namespace MUnique.OpenMU.Network.PlugIns;
 
+using System.Collections;
 using System.Globalization;
 using System.IO.Pipelines;
 using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.HackCheck;
 using MUnique.OpenMU.Network.SimpleModulus;
@@ -20,6 +24,9 @@ using MUnique.OpenMU.PlugIns;
 [Guid("6B6F07F2-709F-4A39-8897-0B6A2E7DE8C0")]
 public class Version097NetworkEncryptionFactoryPlugIn : INetworkEncryptionFactoryPlugIn
 {
+    private const string DefaultHackCheckCustomerName = "OpenMU97";
+    private const string DefaultHackCheckSerial = "TbYehR2hFUPBKgZj";
+
     private static readonly uint[] DefaultServerToClientKey =
     {
         72619, 72691, 73136, 78576,
@@ -34,10 +41,22 @@ public class Version097NetworkEncryptionFactoryPlugIn : INetworkEncryptionFactor
         560, 8315, 21196, 27946,
     };
 
-    private static readonly byte[] Xor32Key = LoadXor32Key();
-    private static readonly HackCheckKeys? HackCheckKeySet = LoadHackCheckKeys();
-    private static readonly SimpleModulusKeys ServerToClientKey = LoadSimpleModulusKeys("MU_SM_ENC_097", DefaultServerToClientKey, true);
-    private static readonly SimpleModulusKeys ClientToServerKey = LoadSimpleModulusKeys("MU_SM_DEC_097", DefaultClientToServerKey, false);
+    private readonly byte[] _xor32Key;
+    private readonly HackCheckKeys _hackCheckKeys;
+    private readonly SimpleModulusKeys _serverToClientKey;
+    private readonly SimpleModulusKeys _clientToServerKey;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Version097NetworkEncryptionFactoryPlugIn"/> class.
+    /// </summary>
+    /// <param name="serviceProvider">The service provider.</param>
+    public Version097NetworkEncryptionFactoryPlugIn(IServiceProvider? serviceProvider = null)
+    {
+        this._xor32Key = LoadXor32Key();
+        this._hackCheckKeys = LoadHackCheckKeys(serviceProvider);
+        this._serverToClientKey = LoadSimpleModulusKeys("MU_SM_ENC_097", DefaultServerToClientKey, true);
+        this._clientToServerKey = LoadSimpleModulusKeys("MU_SM_DEC_097", DefaultClientToServerKey, false);
+    }
 
     /// <inheritdoc />
     public ClientVersion Key { get; } = new (0, 97, ClientLanguage.English);
@@ -48,24 +67,16 @@ public class Version097NetworkEncryptionFactoryPlugIn : INetworkEncryptionFactor
         if (direction == DataDirection.ServerToClient)
         {
             // The 0.97 client decrypts server packets with simple modulus only.
-            if (HackCheckKeySet is { } keys)
-            {
-                var hackCheck = new PipelinedHackCheckEncryptor(target, keys);
-                return new PipelinedSimpleModulusEncryptor(hackCheck.Writer, ServerToClientKey);
-            }
-
-            return new PipelinedSimpleModulusEncryptor(target, ServerToClientKey);
+            var hackCheck = new PipelinedHackCheckEncryptor(target, this._hackCheckKeys);
+            return new PipelinedSimpleModulusEncryptor(hackCheck.Writer, this._serverToClientKey);
         }
 
-        if (HackCheckKeySet is { } clientKeys)
-        {
-            var hackCheck = new PipelinedHackCheckEncryptor(target, clientKeys);
-            target = hackCheck.Writer;
-        }
+        var clientHackCheck = new PipelinedHackCheckEncryptor(target, this._hackCheckKeys);
+        target = clientHackCheck.Writer;
 
         return new PipelinedXor32Encryptor(
-            new PipelinedSimpleModulusEncryptor(target, ClientToServerKey).Writer,
-            Xor32Key);
+            new PipelinedSimpleModulusEncryptor(target, this._clientToServerKey).Writer,
+            this._xor32Key);
     }
 
     /// <inheritdoc />
@@ -73,20 +84,14 @@ public class Version097NetworkEncryptionFactoryPlugIn : INetworkEncryptionFactor
     {
         if (direction == DataDirection.ClientToServer)
         {
-            if (HackCheckKeySet is { } keys)
-            {
-                source = new PipelinedHackCheckDecryptor(source, keys).Reader;
-            }
+            source = new PipelinedHackCheckDecryptor(source, this._hackCheckKeys).Reader;
 
-            return new PipelinedDecryptor(source, ClientToServerKey, Xor32Key);
+            return new PipelinedDecryptor(source, this._clientToServerKey, this._xor32Key);
         }
 
-        if (HackCheckKeySet is { } serverKeys)
-        {
-            source = new PipelinedHackCheckDecryptor(source, serverKeys).Reader;
-        }
+        source = new PipelinedHackCheckDecryptor(source, this._hackCheckKeys).Reader;
 
-        return new PipelinedSimpleModulusDecryptor(source, ServerToClientKey);
+        return new PipelinedSimpleModulusDecryptor(source, this._serverToClientKey);
     }
 
     private static byte[] LoadXor32Key()
@@ -117,16 +122,123 @@ public class Version097NetworkEncryptionFactoryPlugIn : INetworkEncryptionFactor
         return key;
     }
 
-    private static HackCheckKeys? LoadHackCheckKeys()
+    private static HackCheckKeys LoadHackCheckKeys(IServiceProvider? serviceProvider)
     {
         var customerName = Environment.GetEnvironmentVariable("MU_HACKCHECK_NAME_097");
         var clientSerial = Environment.GetEnvironmentVariable("MU_HACKCHECK_SERIAL_097");
         if (string.IsNullOrWhiteSpace(customerName) || string.IsNullOrWhiteSpace(clientSerial))
         {
-            return null;
+            var configuredSerial = TryGetClientSerialFromConfiguration(serviceProvider);
+            return HackCheckKeys.Create(DefaultHackCheckCustomerName, configuredSerial ?? DefaultHackCheckSerial);
         }
 
         return HackCheckKeys.Create(customerName.Trim(), clientSerial.Trim());
+    }
+
+    private static string? TryGetClientSerialFromConfiguration(IServiceProvider? serviceProvider)
+    {
+        if (serviceProvider is null)
+        {
+            return null;
+        }
+
+        var providerType = Type.GetType("MUnique.OpenMU.Persistence.IPersistenceContextProvider, MUnique.OpenMU.Persistence");
+        if (providerType is null)
+        {
+            return null;
+        }
+
+        var provider = serviceProvider.GetService(providerType);
+        if (provider is null)
+        {
+            return null;
+        }
+
+        var createContext = providerType.GetMethod("CreateNewConfigurationContext", Type.EmptyTypes);
+        if (createContext is null)
+        {
+            return null;
+        }
+
+        var context = createContext.Invoke(provider, null);
+        if (context is null)
+        {
+            return null;
+        }
+
+        var disposable = context as IDisposable;
+        try
+        {
+            var clientDefinitionType = Type.GetType("MUnique.OpenMU.DataModel.Configuration.GameClientDefinition, MUnique.OpenMU.DataModel");
+            if (clientDefinitionType is null)
+            {
+                return null;
+            }
+
+            var getAsync = context.GetType().GetMethod("GetAsync", new[] { typeof(Type), typeof(CancellationToken) });
+            if (getAsync is null)
+            {
+                return null;
+            }
+
+            var valueTask = getAsync.Invoke(context, new object[] { clientDefinitionType, CancellationToken.None });
+            if (valueTask is null)
+            {
+                return null;
+            }
+
+            var asTask = valueTask.GetType().GetMethod("AsTask");
+            if (asTask is null)
+            {
+                return null;
+            }
+
+            var task = asTask.Invoke(valueTask, null) as Task;
+            if (task is null)
+            {
+                return null;
+            }
+
+            task.GetAwaiter().GetResult();
+            var resultProperty = task.GetType().GetProperty("Result");
+            var result = resultProperty?.GetValue(task) as IEnumerable;
+            if (result is null)
+            {
+                return null;
+            }
+
+            var seasonProperty = clientDefinitionType.GetProperty("Season");
+            var episodeProperty = clientDefinitionType.GetProperty("Episode");
+            var serialProperty = clientDefinitionType.GetProperty("Serial");
+            if (seasonProperty is null || episodeProperty is null || serialProperty is null)
+            {
+                return null;
+            }
+
+            foreach (var client in result)
+            {
+                if (seasonProperty.GetValue(client) is not byte season || episodeProperty.GetValue(client) is not byte episode)
+                {
+                    continue;
+                }
+
+                if (season != 0 || episode != 97)
+                {
+                    continue;
+                }
+
+                if (serialProperty.GetValue(client) is byte[] serialBytes && serialBytes.Length > 0)
+                {
+                    return Encoding.ASCII.GetString(serialBytes);
+                }
+            }
+        }
+        finally
+        {
+            disposable?.Dispose();
+        }
+
+        return null;
     }
 
     private static SimpleModulusKeys LoadSimpleModulusKeys(string envVar, uint[] fallback, bool isEncryption)
