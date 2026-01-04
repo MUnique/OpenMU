@@ -27,6 +27,13 @@ public class Version097NetworkEncryptionFactoryPlugIn : INetworkEncryptionFactor
 {
     private const string DefaultHackCheckCustomerName = "OpenMU97";
     private const string DefaultHackCheckSerial = "TbYehR2hFUPBKgZj";
+    private static readonly byte[] DefaultXor32Key097 =
+    {
+        0xE7, 0x6D, 0x3A, 0x89, 0xBC, 0xB2, 0x9F, 0x73,
+        0x23, 0xA8, 0xFE, 0xB6, 0x49, 0x5D, 0x39, 0x5D,
+        0x8A, 0xCB, 0x63, 0x8D, 0xEA, 0x7D, 0x2B, 0x5F,
+        0xC3, 0xB1, 0xE9, 0x83, 0x29, 0x51, 0xE8, 0x56,
+    };
 
     private static readonly uint[] DefaultServerToClientKey =
     {
@@ -100,13 +107,13 @@ public class Version097NetworkEncryptionFactoryPlugIn : INetworkEncryptionFactor
         var env = Environment.GetEnvironmentVariable("MU_XOR32_097");
         if (string.IsNullOrWhiteSpace(env))
         {
-            return DefaultKeys.Xor32Key;
+            return DefaultXor32Key097;
         }
 
         var parts = env.Split(new[] { ' ', ',', ';', ':' }, StringSplitOptions.RemoveEmptyEntries);
         if (parts.Length != 32)
         {
-            return DefaultKeys.Xor32Key;
+            return DefaultXor32Key097;
         }
 
         var key = new byte[32];
@@ -114,7 +121,7 @@ public class Version097NetworkEncryptionFactoryPlugIn : INetworkEncryptionFactor
         {
             if (!byte.TryParse(parts[i], NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var value))
             {
-                return DefaultKeys.Xor32Key;
+                return DefaultXor32Key097;
             }
 
             key[i] = value;
