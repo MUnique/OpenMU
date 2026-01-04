@@ -8,7 +8,7 @@
     <ResourcePreloader />
     @foreach (var stylesheetSrc in Web.AdminPanel.Exports.Stylesheets)
     {
-      <link href="@Assets[stylesheetSrc]" rel="stylesheet" />
+      <link href="@stylesheetSrc" rel="stylesheet" />
     }
     <ImportMap />
     <HeadOutlet @rendermode="InteractiveServer" />
@@ -17,10 +17,10 @@
     
       <Routes @rendermode="InteractiveServer" />
       <ReconnectModal />
-      <script src="@Assets["_framework/blazor.web.js"]"></script>
+      <script src="_framework/blazor.web.js"></script>
       @foreach (var scriptSrc in Web.AdminPanel.Exports.Scripts)
       {
-        <script src="@Assets[scriptSrc]"></script>
+        <script src="@scriptSrc"></script>
       }
       @if (Web.AdminPanel.Exports.ScriptMappings.Any())
       {
