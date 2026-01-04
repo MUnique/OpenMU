@@ -90,6 +90,7 @@ public class QuestCompletionAction
         }
 
         await questState.ClearAsync(player.PersistenceContext).ConfigureAwait(false);
+        await player.InvokeViewPlugInAsync<IUpdateCharacterStatsPlugIn>(p => p.UpdateCharacterStatsAsync()).ConfigureAwait(false);
         await player.InvokeViewPlugInAsync<IQuestCompletionResponsePlugIn>(p => p.QuestCompletedAsync(activeQuest)).ConfigureAwait(false);
     }
 

@@ -75,9 +75,9 @@ public class ShowCharacterListPlugIn097 : IShowCharacterListPlugIn
         }
 
         await connection.SendAsync(WriteCharacterList).ConfigureAwait(false);
-        if (unlockFlags > CharacterCreationUnlockFlags.None)
+        if ((unlockFlags & CharacterCreationUnlockFlags.MagicGladiator) != 0)
         {
-            await connection.SendCharacterClassCreationUnlockAsync(unlockFlags).ConfigureAwait(false);
+            await connection.SendAsync(WriteCharacterCreationEnable).ConfigureAwait(false);
         }
         await connection.SendAsync(WriteMoveList).ConfigureAwait(false);
 
@@ -132,6 +132,17 @@ public class ShowCharacterListPlugIn097 : IShowCharacterListPlugIn
             }
 
             return length;
+        }
+
+        int WriteCharacterCreationEnable()
+        {
+            const int packetLength = 4;
+            var span = connection.Output.GetSpan(packetLength)[..packetLength];
+            span[0] = 0xC1;
+            span[1] = packetLength;
+            span[2] = 0xDE;
+            span[3] = 1; // allow Magic Gladiator creation for 0.97 clients
+            return packetLength;
         }
     }
 

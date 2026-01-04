@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic;
 
 using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.PlugIns;
 using static MUnique.OpenMU.DataModel.InventoryConstants;
@@ -200,6 +201,10 @@ public class InventoryStorage : Storage, IInventoryStorage
                 this._player.Attributes[Stats.AmmunitionAmount] = (float)ammoItem.Durability;
             }
         }
+
+        await this._player.InvokeViewPlugInAsync<IUpdateCharacterStatsPlugIn>(
+                p => p.UpdateCharacterStatsAsync())
+            .ConfigureAwait(false);
     }
 
     private void InitializePowerUps()
