@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Network.PlugIns;
 
 using System.Collections;
 using System.Globalization;
+using System.IO;
 using System.IO.Pipelines;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -54,8 +55,8 @@ public class Version097NetworkEncryptionFactoryPlugIn : INetworkEncryptionFactor
     {
         this._xor32Key = LoadXor32Key();
         this._hackCheckKeys = LoadHackCheckKeys(serviceProvider);
-        this._serverToClientKey = LoadSimpleModulusKeys("MU_SM_ENC_097", DefaultServerToClientKey, true);
-        this._clientToServerKey = LoadSimpleModulusKeys("MU_SM_DEC_097", DefaultClientToServerKey, false);
+        this._serverToClientKey = LoadSimpleModulusKeys("MU_SM_ENC_097", DefaultServerToClientKey, true, "Enc2.dat");
+        this._clientToServerKey = LoadSimpleModulusKeys("MU_SM_DEC_097", DefaultClientToServerKey, false, "Dec1.dat");
     }
 
     /// <inheritdoc />
@@ -241,9 +242,27 @@ public class Version097NetworkEncryptionFactoryPlugIn : INetworkEncryptionFactor
         return null;
     }
 
-    private static SimpleModulusKeys LoadSimpleModulusKeys(string envVar, uint[] fallback, bool isEncryption)
+    private static SimpleModulusKeys LoadSimpleModulusKeys(string envVar, uint[] fallback, bool isEncryption, string defaultFileName)
     {
         var path = Environment.GetEnvironmentVariable(envVar);
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            var baseDir = AppContext.BaseDirectory;
+            var dataPath = Path.Combine(baseDir, "Data", "Keys097", defaultFileName);
+            if (File.Exists(dataPath))
+            {
+                path = dataPath;
+            }
+            else
+            {
+                var localPath = Path.Combine(baseDir, "Keys097", defaultFileName);
+                if (File.Exists(localPath))
+                {
+                    path = localPath;
+                }
+            }
+        }
+
         if (!string.IsNullOrWhiteSpace(path))
         {
             try
