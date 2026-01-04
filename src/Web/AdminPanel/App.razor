@@ -1,16 +1,51 @@
-@using MUnique.OpenMU.Web.AdminPanel.Localization
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OpenMU AdminPanel</title>
+    <base href="/" />
+    <ResourcePreloader />
+    @foreach (var stylesheetSrc in Web.AdminPanel.Exports.Stylesheets)
+    {
+        <link href="@stylesheetSrc" rel="stylesheet" />
+    }
+    <ImportMap />
+    <HeadOutlet @rendermode="InteractiveServer" />
+</head>
+<body>
+    <Routes @rendermode="InteractiveServer" />
+    <ReconnectModal />
+    <script src="_framework/blazor.web.js"></script>
+    @foreach (var scriptSrc in Web.AdminPanel.Exports.Scripts)
+    {
+        <script src="@scriptSrc"></script>
+    }
+    @if (Web.AdminPanel.Exports.ScriptMappings.Any())
+    {
+        var sb = new System.Text.StringBuilder();
+        sb.AppendLine("System.config({").AppendLine("    map: {");
+        bool isFirst = true;
+        foreach (var scriptMapping in Web.AdminPanel.Exports.ScriptMappings)
+        {
+            if (!isFirst)
+            {
+                sb.AppendLine(",");
+            }
 
-@inherits LocalizedComponentBase
+            isFirst = false;
+            sb.Append($"'{scriptMapping.Key}': '")
+                .Append(scriptMapping.Path)
+                .Append("'");
+        }
+        sb.AppendLine("    }")
+            .AppendLine("});");
 
-<CascadingBlazoredModal>
-    <Router AppAssembly="@typeof(Program).Assembly">
-        <Found Context="routeData">
-            <RouteView RouteData="@routeData" DefaultLayout="@typeof(MUnique.OpenMU.Web.AdminPanel.Shared.MainLayout)" />
-        </Found>
-        <NotFound>
-            <LayoutView Layout="@typeof(MUnique.OpenMU.Web.AdminPanel.Shared.MainLayout)">
-                <p>@this.Localization["App_NotFound"]</p>
-            </LayoutView>
-        </NotFound>
-    </Router>
-</CascadingBlazoredModal>
+        <script>
+            // To be able to resolve three etc. in our TS files and the resulting javascript, SystemJS needs to be configured.
+            // These modules are loaded by SystemJS when they get requested the first time. No need to manually load them.
+            @((MarkupString)sb.ToString())
+        </script>
+    }
+</body>
+</html>
