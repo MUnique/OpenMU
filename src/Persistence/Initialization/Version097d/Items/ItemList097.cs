@@ -329,7 +329,7 @@ internal sealed class ItemList097Importer : InitializerBase
             item.DropLevel = entry.DropLevel;
             item.Durability = entry.Durability < 0 ? (byte)255 : (byte)Math.Min(byte.MaxValue, entry.Durability);
             item.IsAmmunition = entry.IsAmmunition;
-            item.MaximumItemLevel = entry.IsAmmunition ? (byte)0 : Version095dItems.Constants.MaximumItemLevel;
+            item.MaximumItemLevel = GetMaximumItemLevel(entry);
             item.ItemSlot = this.GetSlotType(entry);
             item.SetGuid(item.Group, item.Number);
             this.ApplyTemplateOptions(item);
@@ -373,5 +373,32 @@ internal sealed class ItemList097Importer : InitializerBase
         {
             item.PossibleItemOptions.Add(option);
         }
+    }
+
+    private static byte GetMaximumItemLevel(ItemListEntry entry)
+    {
+        if (entry.IsAmmunition)
+        {
+            return 0;
+        }
+
+        if (IsNonUpgradeableConsumable(entry.Name))
+        {
+            return 0;
+        }
+
+        return Version095dItems.Constants.MaximumItemLevel;
+    }
+
+    private static bool IsNonUpgradeableConsumable(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            return false;
+        }
+
+        return name.Contains("Orb of", StringComparison.OrdinalIgnoreCase)
+            || name.Contains("Jewel of", StringComparison.OrdinalIgnoreCase)
+            || name.Contains("Scroll of", StringComparison.OrdinalIgnoreCase);
     }
 }

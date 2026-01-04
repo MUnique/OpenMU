@@ -42,6 +42,7 @@ public class ShowCharacterListPlugIn097 : IShowCharacterListPlugIn
         }
 
         var appearanceSerializer = this._player.AppearanceSerializer;
+        var unlockFlags = CreateUnlockFlags(this._player.Account);
 
         // 0.97 doesn't support dark lord (number 16) and newer classes yet
         var supportedCharacters = this._player.Account.Characters
@@ -74,6 +75,10 @@ public class ShowCharacterListPlugIn097 : IShowCharacterListPlugIn
         }
 
         await connection.SendAsync(WriteCharacterList).ConfigureAwait(false);
+        if (unlockFlags > CharacterCreationUnlockFlags.None)
+        {
+            await connection.SendCharacterClassCreationUnlockAsync(unlockFlags).ConfigureAwait(false);
+        }
         await connection.SendAsync(WriteMoveList).ConfigureAwait(false);
 
         int WriteMoveList()
@@ -128,5 +133,14 @@ public class ShowCharacterListPlugIn097 : IShowCharacterListPlugIn
 
             return length;
         }
+    }
+
+    private static CharacterCreationUnlockFlags CreateUnlockFlags(MUnique.OpenMU.DataModel.Entities.Account account)
+    {
+        byte aggregatedFlags = 0;
+        var result = account.UnlockedCharacterClasses?
+            .Select(c => c.CreationAllowedFlag)
+            .Aggregate(aggregatedFlags, (current, flag) => (byte)(current | flag)) ?? 0;
+        return (CharacterCreationUnlockFlags)result;
     }
 }
