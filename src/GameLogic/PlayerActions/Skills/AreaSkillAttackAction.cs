@@ -9,6 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.World;
@@ -89,8 +90,23 @@ public class AreaSkillAttackAction
             yield break;
         }
 
+        // Include the explicit extra target if it's valid and in range
+        if (extraTarget is not null
+            && extraTarget.CheckSkillTargetRestrictions(player, skill)
+            && player.IsInRange(extraTarget.Position, skill.Range + 2)
+            && !extraTarget.IsAtSafezone())
+        {
+            yield return extraTarget;
+        }
+
         foreach (var target in GetTargetsInRange(player, targetAreaCenter, skill, rotation))
         {
+            // Skip the extra target if we already yielded it
+            if (target.Id == extraTargetId)
+            {
+                continue;
+            }
+
             yield return target;
         }
     }
@@ -118,6 +134,9 @@ public class AreaSkillAttackAction
         {
             targetsInRange = targetsInRange.Where(a => a is not Player);
         }
+
+        // Exclude summoned monsters from implicit area attacks
+        targetsInRange = targetsInRange.Where(target => target is not Monster { SummonedBy: not null });
 
         targetsInRange = targetsInRange.Where(target => target.CheckSkillTargetRestrictions(player, skill));
 
