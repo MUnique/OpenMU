@@ -11,6 +11,7 @@ using Blazored.Toast;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
@@ -136,6 +137,9 @@ public class Startup
             app.UseHsts();
         }
 
+        // Ensure static web assets from referenced projects are available (e.g., shared.css, component styles).
+        StaticWebAssetsLoader.UseStaticWebAssets(env, this.Configuration);
+
         // Localization (fallbacks to InvariantCulture if globalization-invariant)
         var locOptions = app.ApplicationServices.GetRequiredService<Microsoft.Extensions.Options.IOptions<RequestLocalizationOptions>>().Value;
         CultureInfo.DefaultThreadCurrentCulture = locOptions.DefaultRequestCulture.Culture;
@@ -154,6 +158,7 @@ public class Startup
 
         app.UseEndpoints(endpoints =>
         {
+            endpoints.MapStaticAssets();
             endpoints.MapRazorComponents<App>()
                 .AddInteractiveServerRenderMode();
             endpoints.MapControllers();

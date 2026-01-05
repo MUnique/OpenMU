@@ -20,7 +20,7 @@
             <button class="btn btn-primary mr-2" @onclick="RefreshAsync">Actualizar</button>
 
             <div class="form-check ml-3">
-                <input class="form-check-input" type="checkbox" id="autoRefresh" @bind="_autoRefresh" />
+                <input class="form-check-input" type="checkbox" id="autoRefresh" checked="@_autoRefresh" @onchange="OnAutoRefreshChanged" />
                 <label class="form-check-label" for="autoRefresh">Auto-actualizar</label>
             </div>
 
@@ -51,7 +51,8 @@
     private int _take = 200;
     private string? _filter;
     private string _content = string.Empty;
-    private bool _autoRefresh = true;
+    private bool _autoRefresh = false;
+    private readonly SemaphoreSlim _refreshLock = new(1, 1);
     private System.Threading.Timer? _timer;
     private string _resolvedEndpoint = string.Empty;
     private DateTime _lastUpdatedUtc;
@@ -78,27 +79,23 @@
 
         ApplyTheme();
 
-        if (_sseEndpoint is not null)
+        if (_autoRefresh)
         {
-            // Usar SSE si está configurado; mantiene conexión con mínimo tráfico.
-            await StartSseAsync();
-        }
-        else
-        {
-            await RefreshAsync();
-            _timer = new System.Threading.Timer(async _ =>
+            if (_sseEndpoint is not null)
             {
-                if (_autoRefresh)
-                {
-                    await InvokeAsync(RefreshAsync);
-                }
-            }, null, TimeSpan.FromSeconds(3), TimeSpan.FromSeconds(3));
+                await StartSseAsync();
+            }
+            else
+            {
+                await RefreshAsync();
+                EnsureTimer();
+            }
         }
     }
 
     public void Dispose()
     {
-        _timer?.Dispose();
+        StopTimer();
         if (_sseId is not null)
         {
             _ = JS.InvokeVoidAsync("logtail.stop", _sseId);
@@ -107,8 +104,73 @@
         }
     }
 
+    private void EnsureTimer()
+    {
+        if (_timer is not null)
+        {
+            return;
+        }
+
+        _timer = new System.Threading.Timer(async _ =>
+        {
+            if (_autoRefresh)
+            {
+                await InvokeAsync(RefreshAsync);
+            }
+        }, null, TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
+    }
+
+    private void StopTimer()
+    {
+        _timer?.Dispose();
+        _timer = null;
+    }
+
+    private async Task StopSseAsync()
+    {
+        if (_sseId is null)
+        {
+            return;
+        }
+
+        await JS.InvokeVoidAsync("logtail.stop", _sseId);
+        _selfRef?.Dispose();
+        _selfRef = null;
+        _sseId = null;
+    }
+
+    private async Task OnAutoRefreshChanged(ChangeEventArgs e)
+    {
+        _autoRefresh = e?.Value is bool flag
+            ? flag
+            : string.Equals(e?.Value?.ToString(), "true", StringComparison.OrdinalIgnoreCase);
+
+        if (_autoRefresh)
+        {
+            if (_sseEndpoint is not null)
+            {
+                await StartSseAsync();
+            }
+            else
+            {
+                await RefreshAsync();
+                EnsureTimer();
+            }
+        }
+        else
+        {
+            StopTimer();
+            await StopSseAsync();
+        }
+    }
+
     private async Task RefreshAsync()
     {
+        if (!await _refreshLock.WaitAsync(0).ConfigureAwait(false))
+        {
+            return;
+        }
+
         try
         {
             using var http = new HttpClient();
@@ -121,6 +183,10 @@
         catch (Exception ex)
         {
             _content = $"[ERROR] No se pudo obtener logs: {ex.Message}";
+        }
+        finally
+        {
+            _refreshLock.Release();
         }
     }
 
@@ -208,22 +274,17 @@
     public async Task OnSseError()
     {
         // Si falla al inicio y no hay contenido, hacer fallback a polling.
-        if (string.IsNullOrEmpty(_content))
+        if (!_autoRefresh || !string.IsNullOrEmpty(_content))
         {
-            await InvokeAsync(async () =>
-            {
-                if (_timer is null)
-                {
-                    _timer = new System.Threading.Timer(async _ =>
-                    {
-                        if (_autoRefresh)
-                        {
-                            await InvokeAsync(RefreshAsync);
-                        }
-                    }, null, TimeSpan.FromSeconds(3), TimeSpan.FromSeconds(3));
-                }
-            });
+            return;
         }
+
+        await InvokeAsync(async () =>
+        {
+            await StopSseAsync();
+            await RefreshAsync();
+            EnsureTimer();
+        });
     }
 }
 

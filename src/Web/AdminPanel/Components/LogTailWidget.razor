@@ -26,6 +26,7 @@
 @code {
   private readonly int _take = 100; // compacto
   private string _content = string.Empty;
+  private readonly SemaphoreSlim _refreshLock = new(1, 1);
   private System.Threading.Timer? _timer;
   private bool _auto; // por defecto apagado para ahorrar recursos
   private string _endpoint = string.Empty;
@@ -67,6 +68,11 @@
 
   private async Task RefreshAsync()
   {
+    if (!await _refreshLock.WaitAsync(0).ConfigureAwait(false))
+    {
+        return;
+    }
+
     try
     {
         using var http = new HttpClient();
@@ -81,6 +87,10 @@
     catch (Exception ex)
     {
         _content = $"[ERROR] {_endpoint}: {ex.Message}";
+    }
+    finally
+    {
+        _refreshLock.Release();
     }
   }
 

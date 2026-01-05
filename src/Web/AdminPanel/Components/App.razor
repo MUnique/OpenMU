@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>OpenMU AdminPanel</title>
     <base href="/" />
-    <ResourcePreloader />
+    @if (EnableResourcePreloader)
+    {
+      <ResourcePreloader />
+    }
     @foreach (var stylesheetSrc in Web.AdminPanel.Exports.Stylesheets)
     {
       <link href="@stylesheetSrc" rel="stylesheet" />
@@ -52,3 +55,9 @@
       }
 </body>
 </html>
+
+@code {
+    private static bool EnableResourcePreloader =>
+        !AdminPanelEnvironment.IsHostingEmbedded &&
+        !string.Equals(Environment.GetEnvironmentVariable("DISABLE_RESOURCE_PRELOAD"), "1", StringComparison.OrdinalIgnoreCase);
+}
