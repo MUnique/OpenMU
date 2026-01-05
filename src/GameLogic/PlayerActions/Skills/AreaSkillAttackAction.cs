@@ -9,6 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.World;
@@ -55,6 +56,91 @@ public class AreaSkillAttackAction
         }
 
         await player.ForEachWorldObserverAsync<IShowAreaSkillAnimationPlugIn>(p => p.ShowAreaSkillAnimationAsync(player, skill, targetAreaCenter, rotation), true).ConfigureAwait(false);
+    }
+
+    private static bool AreaSkillSettingsAreDefault([NotNullWhen(true)] AreaSkillSettings? settings)
+    {
+        if (settings is null)
+        {
+            return true;
+        }
+
+        return !settings.UseDeferredHits
+               && settings.DelayPerOneDistance <= TimeSpan.Zero
+               && settings.MinimumNumberOfHitsPerTarget == 1
+               && settings.MaximumNumberOfHitsPerTarget == 1
+               && settings.MaximumNumberOfHitsPerAttack == 0
+               && Math.Abs(settings.HitChancePerDistanceMultiplier - 1.0) <= 0.00001f;
+    }
+
+    private static IEnumerable<IAttackable> GetTargets(Player player, Point targetAreaCenter, Skill skill, byte rotation, ushort extraTargetId)
+    {
+        var isExtraTargetDefined = extraTargetId != UndefinedTarget;
+        var extraTarget = isExtraTargetDefined ? player.GetObject(extraTargetId) as IAttackable : null;
+
+        if (skill.SkillType == SkillType.AreaSkillExplicitTarget)
+        {
+            if (extraTarget?.CheckSkillTargetRestrictions(player, skill) is true
+                && player.IsInRange(extraTarget.Position, skill.Range + 2)
+                && !extraTarget.IsAtSafezone())
+            {
+                yield return extraTarget;
+            }
+
+            yield break;
+        }
+
+        // Include the explicit extra target if it's valid and in range
+        if (extraTarget is not null
+            && extraTarget.CheckSkillTargetRestrictions(player, skill)
+            && player.IsInRange(extraTarget.Position, skill.Range + 2)
+            && !extraTarget.IsAtSafezone())
+        {
+            yield return extraTarget;
+        }
+
+        foreach (var target in GetTargetsInRange(player, targetAreaCenter, skill, rotation))
+        {
+            // Skip the extra target if we already yielded it
+            if (target.Id == extraTargetId)
+            {
+                continue;
+            }
+
+            yield return target;
+        }
+    }
+
+    private static IEnumerable<IAttackable> GetTargetsInRange(Player player, Point targetAreaCenter, Skill skill, byte rotation)
+    {
+        var targetsInRange = player.CurrentMap?
+                    .GetAttackablesInRange(targetAreaCenter, skill.Range)
+                    .Where(a => a != player)
+                    .Where(a => !a.IsAtSafezone())
+            ?? [];
+
+        if (skill.AreaSkillSettings is { UseFrustumFilter: true } areaSkillSettings)
+        {
+            var filter = FrustumFilters.GetOrAdd(areaSkillSettings, static s => new FrustumBasedTargetFilter(s.FrustumStartWidth, s.FrustumEndWidth, s.FrustumDistance, s.ProjectileCount > 0 ? s.ProjectileCount : 1));
+            targetsInRange = targetsInRange.Where(a => filter.IsTargetWithinBounds(player, a, rotation));
+        }
+
+        if (skill.AreaSkillSettings is { UseTargetAreaFilter: true })
+        {
+            targetsInRange = targetsInRange.Where(a => a.GetDistanceTo(targetAreaCenter) < skill.AreaSkillSettings.TargetAreaDiameter * 0.5f);
+        }
+
+        if (!player.GameContext.Configuration.AreaSkillHitsPlayer)
+        {
+            targetsInRange = targetsInRange.Where(a => a is not Player);
+        }
+
+        // Exclude summoned monsters from implicit area attacks
+        targetsInRange = targetsInRange.Where(target => target is not Monster { SummonedBy: not null });
+
+        targetsInRange = targetsInRange.Where(target => target.CheckSkillTargetRestrictions(player, skill));
+
+        return targetsInRange;
     }
 
     private async ValueTask PerformAutomaticHitsAsync(Player player, ushort extraTargetId, Point targetAreaCenter, SkillEntry skillEntry, Skill skill, byte rotation)
@@ -111,7 +197,7 @@ public class AreaSkillAttackAction
         }
         else
         {
-            extraTarget = await this.AttackTargetsAsync(player, extraTargetId, targetAreaCenter, skillEntry, areaSkillSettings, targets, isCombo).ConfigureAwait(false);
+            extraTarget = await this.AttackTargetsAsync(player, extraTargetId, targetAreaCenter, skillEntry, areaSkillSettings, targets, rotation, isCombo).ConfigureAwait(false);
         }
 
         if (isCombo)
@@ -120,134 +206,105 @@ public class AreaSkillAttackAction
         }
     }
 
-    private async Task<IAttackable?> AttackTargetsAsync(Player player, ushort extraTargetId, Point targetAreaCenter, SkillEntry skillEntry, AreaSkillSettings areaSkillSettings, IEnumerable<IAttackable> targets, bool isCombo)
+    private async Task<IAttackable?> AttackTargetsAsync(Player player, ushort extraTargetId, Point targetAreaCenter, SkillEntry skillEntry, AreaSkillSettings areaSkillSettings, IEnumerable<IAttackable> targets, byte rotation, bool isCombo)
     {
         IAttackable? extraTarget = null;
         var attackCount = 0;
         var maxAttacks = areaSkillSettings.MaximumNumberOfHitsPerAttack == 0 ? int.MaxValue : areaSkillSettings.MaximumNumberOfHitsPerAttack;
         var currentDelay = TimeSpan.Zero;
 
-        for (int attackRound = 0; attackRound < areaSkillSettings.MaximumNumberOfHitsPerTarget; attackRound++)
+        // Order targets by distance to process nearest targets first
+        var orderedTargets = targets.ToList();
+        FrustumBasedTargetFilter? filter = null;
+        var projectileCount = 1;
+        var attackRounds = areaSkillSettings.MaximumNumberOfHitsPerTarget;
+
+        if (areaSkillSettings is { UseFrustumFilter: true, ProjectileCount: > 1 })
+        {
+            orderedTargets.Sort((a, b) => player.GetDistanceTo(a).CompareTo(player.GetDistanceTo(b)));
+            filter = FrustumFilters.GetOrAdd(areaSkillSettings, static s => new FrustumBasedTargetFilter(s.FrustumStartWidth, s.FrustumEndWidth, s.FrustumDistance, s.ProjectileCount));
+            projectileCount = areaSkillSettings.ProjectileCount;
+            attackRounds = 1; // One attack round per projectile
+
+            extraTarget = orderedTargets.FirstOrDefault(t => t.Id == extraTargetId);
+            if (extraTarget is not null)
+            {
+                // In this case we just calculate the angle on server side, so that lags
+                // or desynced positions may not have such a big impact
+                var angle = (float)player.Position.GetAngleDegreeTo(extraTarget.Position);
+                rotation = (byte)((angle / 360.0f) * 256.0f);
+            }
+        }
+
+        // Process each projectile separately
+        for (int projectileIndex = 0; projectileIndex < projectileCount; projectileIndex++)
         {
             if (attackCount >= maxAttacks)
             {
                 break;
             }
 
-            foreach (var target in targets)
+            for (int attackRound = 0; attackRound < attackRounds; attackRound++)
             {
                 if (attackCount >= maxAttacks)
                 {
                     break;
                 }
 
-                if (target.Id == extraTargetId)
+                foreach (var target in orderedTargets)
                 {
-                    extraTarget = target;
-                }
-
-                var hitChance = attackRound < areaSkillSettings.MinimumNumberOfHitsPerTarget
-                    ? 1.0
-                    : Math.Min(areaSkillSettings.HitChancePerDistanceMultiplier, Math.Pow(areaSkillSettings.HitChancePerDistanceMultiplier, player.GetDistanceTo(target)));
-                if (hitChance < 1.0 && !Rand.NextRandomBool(hitChance))
-                {
-                    continue;
-                }
-
-                var distanceDelay = areaSkillSettings.DelayPerOneDistance * player.GetDistanceTo(target);
-                var attackDelay = currentDelay + distanceDelay;
-                attackCount++;
-
-                if (attackDelay == TimeSpan.Zero)
-                {
-                    await this.ApplySkillAsync(player, skillEntry, target, targetAreaCenter, isCombo).ConfigureAwait(false);
-                }
-                else
-                {
-                    // The most pragmatic approach is just spawning a Task for each hit.
-                    // We have to see, how this works out in terms of performance.
-                    _ = Task.Run(async () =>
+                    if (attackCount >= maxAttacks)
                     {
-                        await Task.Delay(attackDelay).ConfigureAwait(false);
-                        if (!target.IsAtSafezone() && target.IsActive())
-                        {
-                            await this.ApplySkillAsync(player, skillEntry, target, targetAreaCenter, isCombo).ConfigureAwait(false);
-                        }
-                    });
-                }
-            }
+                        break;
+                    }
 
-            currentDelay += areaSkillSettings.DelayBetweenHits;
+                    if (target.Id == extraTargetId)
+                    {
+                        extraTarget = target;
+                    }
+
+                    // For multiple projectiles, check if this specific projectile can hit the target
+                    if (filter != null && !filter.IsTargetWithinBounds(player, target, rotation, projectileIndex))
+                    {
+                        continue; // This projectile cannot hit this target
+                    }
+
+                    var hitChance = attackRound < areaSkillSettings.MinimumNumberOfHitsPerTarget
+                        ? 1.0
+                        : Math.Min(areaSkillSettings.HitChancePerDistanceMultiplier, Math.Pow(areaSkillSettings.HitChancePerDistanceMultiplier, player.GetDistanceTo(target)));
+                    if (hitChance < 1.0 && !Rand.NextRandomBool(hitChance))
+                    {
+                        continue;
+                    }
+
+                    var distanceDelay = areaSkillSettings.DelayPerOneDistance * player.GetDistanceTo(target);
+                    var attackDelay = currentDelay + distanceDelay;
+                    attackCount++;
+
+                    if (attackDelay == TimeSpan.Zero)
+                    {
+                        await this.ApplySkillAsync(player, skillEntry, target, targetAreaCenter, isCombo).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        // The most pragmatic approach is just spawning a Task for each hit.
+                        // We have to see, how this works out in terms of performance.
+                        _ = Task.Run(async () =>
+                        {
+                            await Task.Delay(attackDelay).ConfigureAwait(false);
+                            if (!target.IsAtSafezone() && target.IsActive())
+                            {
+                                await this.ApplySkillAsync(player, skillEntry, target, targetAreaCenter, isCombo).ConfigureAwait(false);
+                            }
+                        });
+                    }
+                }
+
+                currentDelay += areaSkillSettings.DelayBetweenHits;
+            }
         }
 
         return extraTarget;
-    }
-
-    private static bool AreaSkillSettingsAreDefault([NotNullWhen(true)] AreaSkillSettings? settings)
-    {
-        if (settings is null)
-        {
-            return true;
-        }
-
-        return !settings.UseDeferredHits
-               && settings.DelayPerOneDistance <= TimeSpan.Zero
-               && settings.MinimumNumberOfHitsPerTarget == 1
-               && settings.MaximumNumberOfHitsPerTarget == 1
-               && settings.MaximumNumberOfHitsPerAttack == 0
-               && Math.Abs(settings.HitChancePerDistanceMultiplier - 1.0) <= 0.00001f;
-    }
-
-    private static IEnumerable<IAttackable> GetTargets(Player player, Point targetAreaCenter, Skill skill, byte rotation, ushort extraTargetId)
-    {
-        var isExtraTargetDefined = extraTargetId != UndefinedTarget;
-        var extraTarget = isExtraTargetDefined ? player.GetObject(extraTargetId) as IAttackable : null;
-
-        if (skill.SkillType == SkillType.AreaSkillExplicitTarget)
-        {
-            if (extraTarget?.CheckSkillTargetRestrictions(player, skill) is true
-                && player.IsInRange(extraTarget.Position, skill.Range + 2)
-                && !extraTarget.IsAtSafezone())
-            {
-                yield return extraTarget;
-            }
-
-            yield break;
-        }
-
-        foreach (var target in GetTargetsInRange(player, targetAreaCenter, skill, rotation))
-        {
-            yield return target;
-        }
-    }
-
-    private static IEnumerable<IAttackable> GetTargetsInRange(Player player, Point targetAreaCenter, Skill skill, byte rotation)
-    {
-        var targetsInRange = player.CurrentMap?
-                    .GetAttackablesInRange(targetAreaCenter, skill.Range)
-                    .Where(a => a != player)
-                    .Where(a => !a.IsAtSafezone())
-            ?? [];
-
-        if (skill.AreaSkillSettings is { UseFrustumFilter: true } areaSkillSettings)
-        {
-            var filter = FrustumFilters.GetOrAdd(areaSkillSettings, static s => new FrustumBasedTargetFilter(s.FrustumStartWidth, s.FrustumEndWidth, s.FrustumDistance));
-            targetsInRange = targetsInRange.Where(a => filter.IsTargetWithinBounds(player, a, rotation));
-        }
-
-        if (skill.AreaSkillSettings is { UseTargetAreaFilter: true })
-        {
-            targetsInRange = targetsInRange.Where(a => a.GetDistanceTo(targetAreaCenter) < skill.AreaSkillSettings.TargetAreaDiameter * 0.5f);
-        }
-
-        if (!player.GameContext.Configuration.AreaSkillHitsPlayer)
-        {
-            targetsInRange = targetsInRange.Where(a => a is not Player);
-        }
-
-        targetsInRange = targetsInRange.Where(target => target.CheckSkillTargetRestrictions(player, skill));
-
-        return targetsInRange;
     }
 
     private async ValueTask ApplySkillAsync(Player player, SkillEntry skillEntry, IAttackable target, Point targetAreaCenter, bool isCombo)

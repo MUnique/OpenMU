@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.Web.AdminPanel.Components;
 using MUnique.OpenMU.Web.Shared;
 using MUnique.OpenMU.Web.Shared.Models;
 using MUnique.OpenMU.Web.Shared.Services;
@@ -50,8 +51,8 @@ public class Startup
     /// <param name="services">The service collection.</param>
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddRazorPages();
-        services.AddServerSideBlazor();
+        services.AddRazorComponents()
+            .AddInteractiveServerComponents();
 
         services.AddSignalR().AddJsonProtocol(o => o.PayloadSerializerOptions.Converters.Add(new TimeSpanConverter()));
 
@@ -85,7 +86,7 @@ public class Startup
         }
         else
         {
-            app.UseExceptionHandler("/Error");
+            app.UseExceptionHandler("/Error", createScopeForErrors: true);
 
             // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
             app.UseHsts();
@@ -99,13 +100,13 @@ public class Startup
             RequestPath = "/logs",
         });
 
-        app.UseRouting();
+        app.UseAntiforgery();
 
         app.UseEndpoints(endpoints =>
         {
-            endpoints.MapBlazorHub();
+            endpoints.MapRazorComponents<App>()
+                .AddInteractiveServerRenderMode();
             endpoints.MapControllers();
-            endpoints.MapFallbackToPage("/_Host");
         });
     }
 }

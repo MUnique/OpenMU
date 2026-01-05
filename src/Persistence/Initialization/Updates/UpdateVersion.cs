@@ -341,7 +341,12 @@ public enum UpdateVersion
     AddSummonerBuffSkills = 66,
 
     /// <summary>
+    /// The version of the <see cref="AddProjectileCountToTripleShotUpdatePlugIn"/>.
+    /// </summary>
+    AddProjectileCountToTripleShot = 67,
+
+    /// <summary>
     /// The version of the <see cref="FixRageFighterMultipleHitSkillsPlugIn"/>.
     /// </summary>
-    FixRageFighterMultipleHitSkills = 67,
+    FixRageFighterMultipleHitSkills = 68,
 }

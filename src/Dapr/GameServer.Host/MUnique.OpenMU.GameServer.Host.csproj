@@ -38,7 +38,7 @@
       <!-- Remove any duplicate StaticWebAsset and StaticWebAssetEndpoint items -->
       <_StaticWebAsset Include="@(StaticWebAsset)" />
       <StaticWebAsset Remove="@(StaticWebAsset)" />
-      <StaticWebAsset Include="@(_StaticWebAsset->Distinct())" />
+      <StaticWebAsset Include="@(_StaticWebAsset-&gt;Distinct())" />
     </ItemGroup>
   </Target>
 </Project>
