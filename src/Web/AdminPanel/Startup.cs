@@ -57,6 +57,9 @@ public class Startup
     /// <param name="services">The service collection.</param>
     public void ConfigureServices(IServiceCollection services)
     {
+        // Running in all-in-one deployment; treat as embedded to avoid standalone behaviors.
+        AdminPanelEnvironment.IsHostingEmbedded = true;
+
         services.AddRazorComponents()
             .AddInteractiveServerComponents();
 
@@ -125,6 +128,8 @@ public class Startup
     /// <param name="env">The web host environment.</param>
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
+        AdminPanelEnvironment.IsHostingEmbedded = true;
+
         if (env.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
