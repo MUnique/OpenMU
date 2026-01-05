@@ -13,6 +13,7 @@ using MUnique.OpenMU.Pathfinding;
 /// </summary>
 public record FrustumBasedTargetFilter
 {
+    private const double DistanceEpsilon = 0.001;
     private readonly Vector2[][] _rotationVectors;
 
     /// <summary>
@@ -21,11 +22,13 @@ public record FrustumBasedTargetFilter
     /// <param name="startWidth">The width of the frustum at the start.</param>
     /// <param name="endWidth">The width of the frustum at the end.</param>
     /// <param name="distance">The distance.</param>
-    public FrustumBasedTargetFilter(float startWidth, float endWidth, float distance)
+    /// <param name="projectileCount">The number of projectiles. Default is 1.</param>
+    public FrustumBasedTargetFilter(float startWidth, float endWidth, float distance, int projectileCount = 1)
     {
         this.EndWidth = endWidth;
         this.Distance = distance;
         this.StartWidth = startWidth;
+        this.ProjectileCount = projectileCount;
         this._rotationVectors = this.CalculateRotationVectors();
     }
 
@@ -45,6 +48,11 @@ public record FrustumBasedTargetFilter
     public float StartWidth { get; }
 
     /// <summary>
+    /// Gets the number of projectiles/arrows.
+    /// </summary>
+    public int ProjectileCount { get; }
+
+    /// <summary>
     /// Determines whether the target is within the hit bounds.
     /// </summary>
     /// <param name="attacker">The attacker.</param>
@@ -60,6 +68,104 @@ public record FrustumBasedTargetFilter
 
         var frustum = this.GetFrustum(attacker.Position, rotation);
         return IsWithinFrustum(frustum, target.Position);
+    }
+
+    /// <summary>
+    /// Determines whether the target is within the hit bounds for a specific projectile.
+    /// When multiple projectiles are used, they are evenly distributed within the frustum.
+    /// </summary>
+    /// <param name="attacker">The attacker.</param>
+    /// <param name="target">The target.</param>
+    /// <param name="rotation">The rotation.</param>
+    /// <param name="projectileIndex">The zero-based index of the projectile (0 to ProjectileCount-1).</param>
+    /// <returns><c>true</c> if the target is within hit bounds for the specified projectile; otherwise, <c>false</c>.</returns>
+    public bool IsTargetWithinBounds(ILocateable attacker, ILocateable target, byte rotation, int projectileIndex)
+    {
+        if (this.ProjectileCount <= 1)
+        {
+            // For single projectile, use the simple frustum check
+            return this.IsTargetWithinBounds(attacker, target, rotation);
+        }
+
+        if (projectileIndex < 0 || projectileIndex >= this.ProjectileCount)
+        {
+            return false;
+        }
+
+        // First check if target is within the overall frustum
+        if (!this.IsTargetWithinBounds(attacker, target, rotation))
+        {
+            return false;
+        }
+
+        // Calculate the relative position of the target within the frustum
+        var relativePosition = this.CalculateRelativePositionInFrustum(attacker.Position, target.Position, rotation);
+
+        // Divide the frustum into sections (-1 to 1 range)
+        // For 3 projectiles: left (-1 to -0.33), center (-0.33 to 0.33), right (0.33 to 1)
+        var sectionWidth = 2.0 / this.ProjectileCount;
+        var sectionStart = -1.0 + (projectileIndex * sectionWidth);
+        var sectionEnd = sectionStart + sectionWidth;
+
+        // Add overlap so targets near boundaries can be hit by adjacent projectiles
+        var overlap = this.GetOverlap(attacker.Position, target.Position);
+        sectionStart -= overlap;
+        sectionEnd += overlap;
+
+        return relativePosition >= sectionStart && relativePosition <= sectionEnd;
+    }
+
+    private double GetOverlap(Point attackerPos, Point targetPos)
+    {
+        var distance = attackerPos.EuclideanDistanceTo(targetPos);
+        if (distance == 0)
+        {
+            return 1;
+        }
+
+        // The overlap decreases over higher distance
+        var overlap = (1.0 / Math.Floor(distance)) / this.ProjectileCount;
+        overlap += 0.001; // Adding a small epsilon to make it slightly more tolerant in the comparisons
+        return overlap;
+    }
+
+    private double CalculateRelativePositionInFrustum(Point attackerPos, Point targetPos, byte rotation)
+    {
+        // Calculate the vector from attacker to target
+        var dx = targetPos.X - attackerPos.X;
+        var dy = targetPos.Y - attackerPos.Y;
+
+        // Calculate the rotation angle (same logic as in CalculateRotationVectors)
+        var rotationAngle = (rotation * 360.0 / 256.0) + 180; // Add 180 offset as in the frustum calculation
+        var rotationRad = rotationAngle * Math.PI / 180.0;
+
+        // Rotate the vector to align with the frustum's coordinate system
+        // The frustum has Y pointing forward and X pointing right
+        var cos = Math.Cos(-rotationRad);
+        var sin = Math.Sin(-rotationRad);
+        var rotatedX = dx * cos - dy * sin;
+        var rotatedY = dx * sin + dy * cos;
+
+        // If target is behind us or too close, return 0
+        if (rotatedY <= 0)
+        {
+            return 0;
+        }
+
+        // Calculate the frustum width at the target's distance
+        // Linear interpolation between start and end width
+        var distanceRatio = Math.Min(rotatedY / this.Distance, 1.0);
+        var frustumWidthAtDistance = this.StartWidth + (this.EndWidth - this.StartWidth) * distanceRatio;
+
+        // Normalize the X position by the frustum width at that distance
+        // Result will be in range [-1, 1] where -1 is left edge, 0 is center, 1 is right edge
+        if (Math.Abs(frustumWidthAtDistance) < DistanceEpsilon)
+        {
+            return 0;
+        }
+
+        var normalizedX = rotatedX / frustumWidthAtDistance;
+        return Math.Clamp(normalizedX, -1.0, 1.0);
     }
 
     private static bool IsWithinFrustum((Vector4 X, Vector4 Y) frustum, Point target)

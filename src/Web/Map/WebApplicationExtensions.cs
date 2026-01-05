@@ -20,8 +20,8 @@ public static class WebApplicationExtensions
     /// <returns>The web application builder.</returns>
     public static WebApplicationBuilder AddMapApp(this WebApplicationBuilder builder)
     {
-        builder.Services.AddRazorPages();
-        builder.Services.AddServerSideBlazor();
+        builder.Services.AddRazorComponents()
+            .AddInteractiveServerComponents();
         builder.Services.AddScoped<IMapFactory, JavascriptMapFactory>();
 
         StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configuration);
