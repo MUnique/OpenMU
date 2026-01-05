@@ -11,11 +11,6 @@ services:
       # Para pruebas en red local, anunciar IP local a los clientes.
       # Cambiar a "public" si van a conectarse desde Internet.
       RESOLVE_IP: local
-      MU_XOR32_097: "E7 6D 3A 89 BC B2 9F 73 23 A8 FE B6 49 5D 39 5D 8A CB 63 8D EA 7D 2B 5F C3 B1 E9 83 29 51 E8 56"
-      MU_SM_ENC_097: "/app/Data/Keys097/Enc2.dat"
-      MU_SM_DEC_097: "/app/Data/Keys097/Dec1.dat"
-      MU_HACKCHECK_NAME_097: "OpenMU97"
-      MU_HACKCHECK_SERIAL_097: "TbYehR2hFUPBKgZj"
       Logging__LogLevel__Default: Debug
       Logging__LogLevel__MUnique: Debug
       Logging__LogLevel__MUnique.OpenMU.ConnectServer: Debug

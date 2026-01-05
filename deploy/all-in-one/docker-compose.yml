@@ -27,9 +27,6 @@ services:
     environment:
       DB_HOST: database
       ASPNETCORE_URLS: http://+:8080
-      MU_XOR32_097: "E7 6D 3A 89 BC B2 9F 73 23 A8 FE B6 49 5D 39 5D 8A CB 63 8D EA 7D 2B 5F C3 B1 E9 83 29 51 E8 56"
-      MU_HACKCHECK_NAME_097: "OpenMU97"
-      MU_HACKCHECK_SERIAL_097: "TbYehR2hFUPBKgZj"
     working_dir: /app/
     volumes:
       - ./.htpasswd:/etc/nginx/.htpasswd
