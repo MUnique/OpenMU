@@ -62,8 +62,8 @@ public class Version097NetworkEncryptionFactoryPlugIn : INetworkEncryptionFactor
     {
         this._xor32Key = LoadXor32Key();
         this._hackCheckKeys = LoadHackCheckKeys(serviceProvider);
-        this._serverToClientKey = LoadSimpleModulusKeys("MU_SM_ENC_097", DefaultServerToClientKey, true, "Enc2.dat");
-        this._clientToServerKey = LoadSimpleModulusKeys("MU_SM_DEC_097", DefaultClientToServerKey, false, "Dec1.dat");
+        this._serverToClientKey = LoadSimpleModulusKeys("MU_SM_ENC_097", DefaultServerToClientKey, true, "Enc1.dat");
+        this._clientToServerKey = LoadSimpleModulusKeys("MU_SM_DEC_097", DefaultClientToServerKey, false, "Dec2.dat");
     }
 
     /// <inheritdoc />
