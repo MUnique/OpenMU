@@ -17,6 +17,9 @@ public sealed class SummonedMonsterIntelligence : BasicMonsterIntelligence
     public SummonedMonsterIntelligence(Player owner)
     {
         this.Owner = owner;
+
+        // Summons should be allowed to walk within safezones to follow their owner.
+        this.CanWalkOnSafezone = true;
     }
 
     /// <summary>
