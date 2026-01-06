@@ -17,6 +17,9 @@ public sealed class SummonedMonsterIntelligence : BasicMonsterIntelligence
     public SummonedMonsterIntelligence(Player owner)
     {
         this.Owner = owner;
+
+        // Summons should be allowed to walk within safezones to follow their owner.
+        this.CanWalkOnSafezone = true;
     }
 
     /// <summary>
@@ -27,6 +30,12 @@ public sealed class SummonedMonsterIntelligence : BasicMonsterIntelligence
     /// <inheritdoc />
     public override void RegisterHit(IAttacker attacker)
     {
+        if (attacker == this.Owner)
+        {
+            // Never attack the owner.
+            return;
+        }
+
         if (this.CurrentTarget is null
             || attacker.IsInRange(this.Npc.Position, this.Npc.Definition.AttackRange))
         {

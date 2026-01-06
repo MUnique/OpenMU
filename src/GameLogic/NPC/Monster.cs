@@ -93,6 +93,9 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
     /// <remarks>Monsters don't do combos.</remarks>
     public ComboStateMachine? ComboState => null;
 
+    /// <inheritdoc/>
+    protected override bool CanSpawnInSafezone => base.CanSpawnInSafezone || this.SummonedBy is not null;
+
     /// <summary>
     /// Attacks the specified target.
     /// </summary>

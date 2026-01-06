@@ -185,6 +185,11 @@ public class NonPlayerCharacter : AsyncDisposable, IObservable, IRotatable, ILoc
     }
 
     /// <summary>
+    /// Gets a value indicating whether this instance can spawn in a safe zone.
+    /// </summary>
+    protected virtual bool CanSpawnInSafezone => this.Definition.ObjectKind != NpcObjectKind.Monster && this.Definition.ObjectKind != NpcObjectKind.Trap;
+
+    /// <summary>
     /// Gets the spawn direction.
     /// </summary>
     /// <param name="configuredDirection">The configured direction.</param>
@@ -214,7 +219,7 @@ public class NonPlayerCharacter : AsyncDisposable, IObservable, IRotatable, ILoc
 
     private bool IsValidSpawnPoint(Point spawnPoint)
     {
-        var isSafezoneAllowed = this.Definition.ObjectKind != NpcObjectKind.Monster && this.Definition.ObjectKind != NpcObjectKind.Trap;
+        var isSafezoneAllowed = this.CanSpawnInSafezone;
         var isInSafezone = this.CurrentMap.Terrain.SafezoneMap[spawnPoint.X, spawnPoint.Y];
         var npcCanWalk = this.Definition.ObjectKind == NpcObjectKind.Monster || this.Definition.ObjectKind == NpcObjectKind.Guard;
         var isWalkable = this.CurrentMap.Terrain.WalkMap[spawnPoint.X, spawnPoint.Y];
