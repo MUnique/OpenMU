@@ -178,14 +178,13 @@ internal class TypedContext : EntityDataContext, ITypedContext
 
     private ContextInfo GetOrInitializeContextInfo()
     {
-        if (ContextInfoPerEditType.TryGetValue(this.EditType, out var info))
-        {
-            return info;
-        }
-
         // Trigger model building to run OnModelCreating which fills ContextInfoPerEditType.
-        _ = this.Model; // accessing the model ensures it's initialized
-        return ContextInfoPerEditType[this.EditType];
+        // Accessing the model ensures it's initialized.
+        _ = this.Model;
+
+        return ContextInfoPerEditType.TryGetValue(this.EditType, out var info)
+            ? info
+            : throw new InvalidOperationException($"Context info for edit type '{this.EditType}' not found after model initialization.");
     }
 
     private IEnumerable<(Type EntityType, bool IsReadOnly, bool IsBackReference)> DetermineEditTypes(IList<IMutableEntityType> modelTypes)
