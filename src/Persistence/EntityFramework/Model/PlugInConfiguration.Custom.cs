@@ -31,7 +31,6 @@ internal partial class PlugInConfiguration : IAssignable, IAssignable<MUnique.Op
     /// <inheritdoc />
     public virtual void AssignValuesOf(MUnique.OpenMU.PlugIns.PlugInConfiguration other, MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
     {
-        this.Id = other.GetId();
         this.TypeId = other.TypeId;
         this.IsActive = other.IsActive;
         this.CustomPlugInSource = other.CustomPlugInSource;
