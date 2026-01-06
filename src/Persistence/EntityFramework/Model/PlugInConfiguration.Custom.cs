@@ -22,7 +22,7 @@ internal partial class PlugInConfiguration : IAssignable, IAssignable<MUnique.Op
     /// <inheritdoc />
     public virtual void AssignValuesOf(object other, MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
     {
-        if (other is MUnique.OpenMU.Persistence.EntityFramework.Model.PlugInConfiguration typedOther)
+        if (other is MUnique.OpenMU.PlugIns.PlugInConfiguration typedOther)
         {
             this.AssignValuesOf(typedOther, gameConfiguration);
         }
