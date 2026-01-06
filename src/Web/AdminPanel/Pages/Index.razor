@@ -1,67 +1,7 @@
 @page "/"
-@using MUnique.OpenMU.Web.AdminPanel.Localization
 
-@inherits LocalizedComponentBase
+<h1>OpenMU AdminPanel</h1>
+<PageTitle>OpenMU AdminPanel</PageTitle>
+<Breadcrumb IsFirstFromRoot="true" Caption="Home"/>
 
-<h1>@this.Localization["Home_Title"]</h1>
-<PageTitle>@this.Localization["Home_Title"]</PageTitle>
-<Breadcrumb IsFirstFromRoot="true" Caption="@this.Localization["Home_Breadcrumb"]"/>
-
-@this.Localization["Home_Welcome"]
-
-<hr />
-<div class="alert alert-light">
-    <h5>@this.Localization["Home_UpdatesHeading"]</h5>
-    <p>
-        @this.Localization["Home_UpdatesDescription"]
-    </p>
-    <NavLink class="btn btn-primary" href="config-updates">
-        <span class="oi oi-loop-circular" aria-hidden="true"></span>
-        &nbsp;@this.Localization["Home_UpdatesButton"]
-    </NavLink>
-    @if (_availableUpdateCount > 0)
-    {
-        <span class="badge badge-info ml-2">@_availableUpdateCount @this.Localization["Home_UpdatesAvailableSuffix"]</span>
-    }
-    else if (_checked)
-    {
-        <span class="text-muted ml-2">@this.Localization["Home_NoUpdates"]</span>
-    }
-    else
-    {
-        <span class="text-muted ml-2">@this.Localization["Home_Checking"]</span>
-    }
-    
-</div>
-
-@code {
-    private int _availableUpdateCount;
-    private bool _checked;
-    
-    [Inject]
-    public MUnique.OpenMU.Web.AdminPanel.Services.SetupService SetupService { get; set; } = null!;
-    
-    [Inject]
-    public MUnique.OpenMU.Persistence.Initialization.Updates.DataUpdateService UpdateService { get; set; } = null!;
-
-    protected override async Task OnInitializedAsync()
-    {
-        try
-        {
-            var isInitialized = await this.SetupService.IsDataInitializedAsync().ConfigureAwait(false);
-            if (isInitialized)
-            {
-                var updates = await this.UpdateService.DetermineAvailableUpdatesAsync().ConfigureAwait(false);
-                _availableUpdateCount = updates.Count;
-            }
-        }
-        catch
-        {
-            // ignore on home page
-        }
-        finally
-        {
-            _checked = true;
-        }
-    }
-}
+Welcome to the admin panel of OpenMU.

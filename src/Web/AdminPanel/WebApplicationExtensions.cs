@@ -1,20 +1,17 @@
-﻿// <copyright file="WebApplicationExtensions.cs" company="MUnique">
+// <copyright file="WebApplicationExtensions.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
 namespace MUnique.OpenMU.Web.AdminPanel;
 
 using System.IO;
-using System.Globalization;
 using Blazored.Modal;
 using Blazored.Toast;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Persistence;
@@ -22,8 +19,6 @@ using MUnique.OpenMU.Persistence.Initialization.Updates;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix;
 using MUnique.OpenMU.Web.AdminPanel.Components;
 using MUnique.OpenMU.Web.AdminPanel.Services;
-using MUnique.OpenMU.Web.AdminPanel.Localization;
-using Version097dInitialization = MUnique.OpenMU.Persistence.Initialization.Version097d.DataInitialization;
 using MUnique.OpenMU.Web.Shared.Models;
 using MUnique.OpenMU.Web.Shared.Services;
 
@@ -45,54 +40,16 @@ public static class WebApplicationExtensions
     {
         // Ensure that DataInitialization plugins will get collected - for the setup functionality.
         _ = DataInitialization.Id;
-        _ = Version097dInitialization.Id;
 
         builder.Services.AddRazorComponents()
             .AddInteractiveServerComponents();
-        
+
         if (includeMapApp)
         {
             AdminPanelEnvironment.IsHostingEmbedded = true;
         }
 
         var services = builder.Services;
-        services.AddLocalization();
-        // Prefer the Startup registration; only add if missing.
-        Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAddSingleton(
-            services,
-            provider =>
-            {
-                var options = new MUnique.OpenMU.Localization.LocalizationOptions
-                {
-                    ResourceDirectory = Path.Combine(builder.Environment.ContentRootPath, "Localization"),
-                };
-                return new MUnique.OpenMU.Localization.LocalizationService(options);
-            });
-        services.Configure<RequestLocalizationOptions>(options =>
-        {
-            var preferredCultures = new[] { "es-AR", "es-ES" };
-            var supportedCultures = new List<CultureInfo>();
-            foreach (var name in preferredCultures)
-            {
-                try
-                {
-                    supportedCultures.Add(new CultureInfo(name));
-                }
-                catch (CultureNotFoundException)
-                {
-                    // Globalization-invariant mode or culture not available; skip.
-                }
-            }
-
-            if (supportedCultures.Count == 0)
-            {
-                supportedCultures.Add(CultureInfo.InvariantCulture);
-            }
-
-            options.DefaultRequestCulture = new RequestCulture(supportedCultures[0]);
-            options.SupportedCultures = supportedCultures;
-            options.SupportedUICultures = supportedCultures;
-        });
         services.AddControllers()
             .ConfigureApplicationPartManager(setup =>
                 setup.FeatureProviders.Add(new GenericControllerFeatureProvider()));
@@ -135,12 +92,6 @@ public static class WebApplicationExtensions
         {
             app.UseExceptionHandler("/Error", createScopeForErrors: true);
         }
-
-        // Localization (fallbacks to InvariantCulture if globalization-invariant)
-        var locOptions = app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value;
-        CultureInfo.DefaultThreadCurrentCulture = locOptions.DefaultRequestCulture.Culture;
-        CultureInfo.DefaultThreadCurrentUICulture = locOptions.DefaultRequestCulture.UICulture;
-        app.UseRequestLocalization(locOptions);
 
         app.UseStaticFiles();
         app.UseStaticFiles(new StaticFileOptions

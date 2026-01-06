@@ -1,10 +1,7 @@
-@page "/setup"
-@using MUnique.OpenMU.Web.AdminPanel.Localization
+﻿@page "/setup"
 
-@inherits LocalizedComponentBase
-
-<PageTitle>@this.Localization["Setup_Title"]</PageTitle>
-<Breadcrumb IsFirstFromRoot="true" Caption="@this.Localization["Setup_Breadcrumb"]"/>
+<PageTitle>OpenMU: Setup</PageTitle>
+<Breadcrumb IsFirstFromRoot="true" Caption="Setup"/>
 
 @if (this.ShowInstall)
 {
@@ -12,32 +9,32 @@
 }
 else if (!this.SetupService.CanConnectToDatabase)
 {
-    <p>@((MarkupString)this.Localization["Setup_DatabaseStatus"])</p>
+    <p>Database status: <span class="badge bg-danger">Can't connect to the database. Probably not created yet.</span></p>
 
-    <button class="btn btn-primary" @onclick="this.OnInstallClick">@this.Localization["Setup_Create"]</button>
+    <button class="btn btn-primary" @onclick="this.OnInstallClick">Create</button>
 }
 else if (!this.SetupService.IsInstalled)
 {
-    <p>@((MarkupString)this.Localization["Setup_DatabaseNotCreated"])</p>
+    <p>Database status: <span class="badge bg-warning text-dark">Not created</span></p>
 
-    <button class="btn btn-primary" @onclick="this.OnInstallClick">@this.Localization["Setup_Create"]</button>
+    <button class="btn btn-primary" @onclick="this.OnInstallClick">Create</button>
 }
 else if (this.SetupService.IsUpdateRequired)
 {
-    <p>@((MarkupString)this.Localization["Setup_DatabaseNeedsUpdate"])</p>
-    <button class="btn btn-primary" @onclick="this.OnUpdateClickAsync">@this.Localization["Setup_Update"]</button>
+    <p>Database status: <span class="badge bg-warning text-dark">Update required</span></p>
+    <button class="btn btn-primary" @onclick="this.OnUpdateClickAsync">Update</button>
 }
 else
 {
-    <p>@((MarkupString)this.Localization["Setup_DatabaseUpToDate"])</p>
+    <p>Database status: <span class="badge bg-success">Up-to-date</span></p>
     @if (!this._isDataInitialized)
     {
-        <p>@((MarkupString)this.Localization["Setup_GameVersionMissing"])</p>
+        <p>Initialized game version: <span class="badge bg-warning text-dark">No initialized data found!</span></p>
     }
     else
     {
-        <p>@((MarkupString)this.Localization.GetString("Setup_GameVersionInitialized", this._gameClientVersion))</p>
+        <p>Initialized game version: <span class="badge bg-success">@this._gameClientVersion</span></p>
     }
 
-    <button class="btn bg-warning text-dark" @onclick="this.OnReInstallClickAsync">@this.Localization["Setup_Reinstall"]</button>
+    <button class="btn bg-warning text-dark" @onclick="this.OnReInstallClickAsync">Re-install</button>
 }
