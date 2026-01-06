@@ -263,6 +263,12 @@ public class AreaSkillAttackAction
                         extraTarget = target;
                     }
 
+                    // Skip targets that have died in previous rounds
+                    if (!target.IsAlive)
+                    {
+                        continue;
+                    }
+
                     // For multiple projectiles, check if this specific projectile can hit the target
                     if (filter != null && !filter.IsTargetWithinBounds(player, target, rotation, projectileIndex))
                     {
@@ -283,7 +289,11 @@ public class AreaSkillAttackAction
 
                     if (attackDelay == TimeSpan.Zero)
                     {
-                        await this.ApplySkillAsync(player, skillEntry, target, targetAreaCenter, isCombo).ConfigureAwait(false);
+                        // Check if target is still alive and in valid state before attacking
+                        if (!target.IsAtSafezone() && target.IsActive())
+                        {
+                            await this.ApplySkillAsync(player, skillEntry, target, targetAreaCenter, isCombo).ConfigureAwait(false);
+                        }
                     }
                     else
                     {
