@@ -266,7 +266,7 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
                 await plugInPoint.AttackableGotKilledAsync(this, attacker).ConfigureAwait(false);
             }
 
-            if (this is not Monster { SummonedBy: not null } && player.SelectedCharacter is { } selectedCharacter)
+            if (!this.IsSummonedMonster && player.SelectedCharacter is { } selectedCharacter)
             {
                 if (selectedCharacter.State > HeroState.Normal)
                 {
