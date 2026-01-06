@@ -251,7 +251,7 @@ public sealed class Party : Disposable
 
     private async ValueTask<int> InternalDistributeExperienceAfterKillAsync(IAttackable killedObject, IObservable killer)
     {
-        if (killedObject is Monster { SummonedBy: not null })
+        if (killedObject.IsSummonedMonster)
         {
             // Do not award experience or drop items for summoned monsters.
             return 0;

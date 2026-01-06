@@ -26,6 +26,14 @@ public static class AttackableExtensions
             { Stats.CurrentAbility, Stats.AbilityUsageReduction },
         };
 
+    extension(IAttackable attackable)
+    {
+        /// <summary>
+        /// Gets a value indicating whether this instance is a summoned monster.
+        /// </summary>
+        public bool IsSummonedMonster => attackable is Monster { SummonedBy: not null };
+    }
+
     /// <summary>
     /// Calculates the damage, using a skill.
     /// </summary>
@@ -563,7 +571,7 @@ public static class AttackableExtensions
     /// <returns>The calculated base experience.</returns>
     public static double CalculateBaseExperience(this IAttackable killedObject, float killerLevel)
     {
-        if (killedObject is Monster { SummonedBy: not null })
+        if (killedObject.IsSummonedMonster)
         {
             // Summoned monsters should not yield experience.
             return 0;
