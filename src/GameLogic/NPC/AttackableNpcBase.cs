@@ -266,12 +266,15 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
                 await plugInPoint.AttackableGotKilledAsync(this, attacker).ConfigureAwait(false);
             }
 
-            if (player.SelectedCharacter!.State > HeroState.Normal)
+            if (this is not Monster { SummonedBy: not null } && player.SelectedCharacter is { } selectedCharacter)
             {
-                player.SelectedCharacter.StateRemainingSeconds -= (int)this.Attributes[Stats.Level];
-            }
+                if (selectedCharacter.State > HeroState.Normal)
+                {
+                    selectedCharacter.StateRemainingSeconds -= (int)this.Attributes[Stats.Level];
+                }
 
-            _ = this.DropItemDelayedAsync(player, exp); // don't wait for completion.
+                _ = this.DropItemDelayedAsync(player, exp); // don't wait for completion.
+            }
         }
     }
 

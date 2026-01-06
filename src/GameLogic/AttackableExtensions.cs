@@ -563,6 +563,12 @@ public static class AttackableExtensions
     /// <returns>The calculated base experience.</returns>
     public static double CalculateBaseExperience(this IAttackable killedObject, float killerLevel)
     {
+        if (killedObject is Monster { SummonedBy: not null })
+        {
+            // Summoned monsters should not yield experience.
+            return 0;
+        }
+
         var targetLevel = killedObject.Attributes[Stats.Level];
         var tempExperience = (targetLevel + 25) * targetLevel / 3.0;
 
