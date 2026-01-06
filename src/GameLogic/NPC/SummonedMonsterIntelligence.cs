@@ -27,6 +27,12 @@ public sealed class SummonedMonsterIntelligence : BasicMonsterIntelligence
     /// <inheritdoc />
     public override void RegisterHit(IAttacker attacker)
     {
+        if (attacker == this.Owner)
+        {
+            // Never attack the owner.
+            return;
+        }
+
         if (this.CurrentTarget is null
             || attacker.IsInRange(this.Npc.Position, this.Npc.Definition.AttackRange))
         {
