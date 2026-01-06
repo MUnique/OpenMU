@@ -5,8 +5,6 @@
 namespace MUnique.OpenMU.Web.AdminPanel;
 
 using System.Collections.Immutable;
-using System.Linq;
-using MUnique.OpenMU.Web.Shared;
 
 /// <summary>
 /// Class which holds the script exports of this project.
@@ -22,19 +20,9 @@ public static class Exports
     /// </summary>
     private static string Prefix { get; } = $"_content/{typeof(Exports).Namespace}";
 
-    private static IEnumerable<string> AdminPanelScripts
-    {
-        get
-        {
-            yield return "_content/Blazored.Modal/blazored.modal.js";
-        }
-    }
+    private static IEnumerable<string> AdminPanelScripts => [];
 
-    private static IEnumerable<string> AdminPanelStylesheets =>
-        Web.Shared.Exports.Stylesheets.Concat([
-            "_content/Blazored.Modal/blazored-modal.css",
-            $"{Prefix}/MUnique.OpenMU.Web.AdminPanel.styles.css",
-        ]);
+    private static IEnumerable<string> AdminPanelStylesheets => [];
 
     /// <summary>
     /// Gets the scripts.
@@ -54,6 +42,6 @@ public static class Exports
     /// Gets the stylesheets.
     /// </summary>
     public static ImmutableList<string> Stylesheets { get; } = AdminPanelEnvironment.IsHostingEmbedded
-        ? Web.Map.Exports.Stylesheets.Concat(AdminPanelStylesheets).Distinct().ToImmutableList()
-        : AdminPanelStylesheets.Distinct().ToImmutableList();
+        ? Web.Map.Exports.Stylesheets.Concat(AdminPanelStylesheets).ToImmutableList()
+        : AdminPanelStylesheets.ToImmutableList();
 }

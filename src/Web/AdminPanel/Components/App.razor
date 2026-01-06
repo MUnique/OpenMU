@@ -5,13 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>OpenMU AdminPanel</title>
     <base href="/" />
-    @if (EnableResourcePreloader)
-    {
-      <ResourcePreloader />
-    }
+    <ResourcePreloader />
+    <link href="@Assets["MUnique.OpenMU.Startup.styles.css"]" rel="stylesheet" />
     @foreach (var stylesheetSrc in Web.AdminPanel.Exports.Stylesheets)
     {
-      <link href="@stylesheetSrc" rel="stylesheet" />
+      <link href="@Assets[stylesheetSrc]" rel="stylesheet" />
     }
     <ImportMap />
     <HeadOutlet @rendermode="InteractiveServer" />
@@ -20,10 +18,10 @@
     
       <Routes @rendermode="InteractiveServer" />
       <ReconnectModal />
-      <script src="_framework/blazor.web.js"></script>
+      <script src="@Assets["_framework/blazor.web.js"]"></script>
       @foreach (var scriptSrc in Web.AdminPanel.Exports.Scripts)
       {
-        <script src="@scriptSrc"></script>
+        <script src="@Assets[scriptSrc]"></script>
       }
       @if (Web.AdminPanel.Exports.ScriptMappings.Any())
       {
@@ -55,9 +53,3 @@
       }
 </body>
 </html>
-
-@code {
-    private static bool EnableResourcePreloader =>
-        !AdminPanelEnvironment.IsHostingEmbedded &&
-        !string.Equals(Environment.GetEnvironmentVariable("DISABLE_RESOURCE_PRELOAD"), "1", StringComparison.OrdinalIgnoreCase);
-}
