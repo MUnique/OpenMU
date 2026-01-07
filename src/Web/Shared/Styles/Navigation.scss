@@ -89,10 +89,10 @@
     line-height: 3rem;
   }
 
-  .sidebar > nav > div > ul > li > a.active {
-    background-color: rgba(255,255,255,0.25);
-    color: white;
-  }
+.sidebar > nav > div > ul > li > a.active {
+  background-color: rgba(255,255,255,0.25);
+  color: white;
+}
 
   .sidebar > nav > div > ul > li > a.hover {
     background-color: rgba(255,255,255,0.1);
@@ -113,3 +113,27 @@
   .sidebar > nav > div > ul > li.dropdown > div > a {
     @extend .dropdown-item;
   }
+
+.culture-selector {
+  display: flex;
+  line-height: 3rem;
+  align-items: center;
+  padding-left: 1rem;
+  padding-top: 1rem;
+  position: relative;
+}
+
+  .culture-selector::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 1px;
+    background: linear-gradient( 90deg, rgba(215, 215, 215, 0.1) 0%, rgba(215, 215, 215, 1) 50%, rgba(215, 215, 215, 0.1) 100% );
+    pointer-events: none;
+  }
+
+.culture-selector-icon {
+  color: #d7d7d7;
+}

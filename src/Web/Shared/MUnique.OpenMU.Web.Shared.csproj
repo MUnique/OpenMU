@@ -33,6 +33,12 @@
     <OutputPath>..\..\..\bin\Release\</OutputPath>
     <DocumentationFile>..\..\..\bin\Release\MUnique.OpenMU.Web.Shared.xml</DocumentationFile>
   </PropertyGroup>
+  <ItemGroup>
+    <None Remove="Components\CultureSelector.razor.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Components\CultureSelector.razor.js" />
+  </ItemGroup>
   
   <ItemGroup>
     <None Include="compilerconfig.json" />
