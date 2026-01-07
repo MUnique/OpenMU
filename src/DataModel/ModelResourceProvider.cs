@@ -27,11 +27,11 @@ public static class ModelResourceProvider
     /// Falls back to a generated spaced caption based on the type name when no resource entry is found.
     /// </summary>
     /// <param name="modelType">The model type whose caption should be resolved.</param>
-    /// <param name="cultureInfo">Optional culture to use. If null, <see cref="CultureInfo.CurrentCulture"/> is used.</param>
+    /// <param name="cultureInfo">Optional culture to use. If null, <see cref="CultureInfo.CurrentUICulture"/> is used.</param>
     /// <returns>The localized caption or a spaced fallback type name.</returns>
     public static string GetTypeCaption(this Type modelType, CultureInfo? cultureInfo = null)
     {
-        cultureInfo ??= CultureInfo.CurrentCulture;
+        cultureInfo ??= CultureInfo.CurrentUICulture;
         var resourceKey = modelType.Name + "_TypeCaption";
         return GetResourceManager(modelType)?.GetString(resourceKey, cultureInfo) ?? SeparateWords(modelType.Name);
     }
@@ -41,7 +41,7 @@ public static class ModelResourceProvider
     /// Falls back to a generated spaced caption based on the type name when no resource entry is found.
     /// </summary>
     /// <typeparam name="TModel">The model type for which to get the pluralized caption.</typeparam>
-    /// <param name="cultureInfo">Optional culture to use. If null, <see cref="CultureInfo.CurrentCulture"/> is used.</param>
+    /// <param name="cultureInfo">Optional culture to use. If null, <see cref="CultureInfo.CurrentUICulture"/> is used.</param>
     /// <returns>The localized pluralized caption or a spaced fallback representation of the type name.</returns>
     public static string GetPluralizedTypeCaption<TModel>(CultureInfo? cultureInfo = null)
     {
@@ -53,11 +53,11 @@ public static class ModelResourceProvider
     /// Falls back to a generated spaced caption based on the type name when no resource entry is found.
     /// </summary>
     /// <param name="modelType">The model type whose pluralized caption should be resolved.</param>
-    /// <param name="cultureInfo">Optional culture to use. If null, <see cref="CultureInfo.CurrentCulture"/> is used.</param>
+    /// <param name="cultureInfo">Optional culture to use. If null, <see cref="CultureInfo.CurrentUICulture"/> is used.</param>
     /// <returns>The localized pluralized caption or a spaced fallback type name.</returns>
     public static string GetPluralizedTypeCaption(this Type modelType, CultureInfo? cultureInfo = null)
     {
-        cultureInfo ??= CultureInfo.CurrentCulture;
+        cultureInfo ??= CultureInfo.CurrentUICulture;
         var resourceKey = modelType.Name + "_TypeCaptionPlural";
         return GetResourceManager(modelType)?.GetString(resourceKey, cultureInfo) ?? SeparateWords(modelType.Name);
     }
@@ -67,7 +67,7 @@ public static class ModelResourceProvider
     /// Returns an empty string when no resource entry is found.
     /// </summary>
     /// <typeparam name="TModel">The model type for which to get the description.</typeparam>
-    /// <param name="cultureInfo">Optional culture to use. If null, <see cref="CultureInfo.CurrentCulture"/> is used.</param>
+    /// <param name="cultureInfo">Optional culture to use. If null, <see cref="CultureInfo.CurrentUICulture"/> is used.</param>
     /// <returns>The localized description or an empty string.</returns>
     public static string GetTypeDescription<TModel>(CultureInfo? cultureInfo = null)
     {
@@ -79,11 +79,11 @@ public static class ModelResourceProvider
     /// Returns an empty string when no resource entry is found.
     /// </summary>
     /// <param name="modelType">The model type whose description should be resolved.</param>
-    /// <param name="cultureInfo">Optional culture to use. If null, <see cref="CultureInfo.CurrentCulture"/> is used.</param>
+    /// <param name="cultureInfo">Optional culture to use. If null, <see cref="CultureInfo.CurrentUICulture"/> is used.</param>
     /// <returns>The localized description or an empty string.</returns>
     public static string GetTypeDescription(this Type modelType, CultureInfo? cultureInfo = null)
     {
-        cultureInfo ??= CultureInfo.CurrentCulture;
+        cultureInfo ??= CultureInfo.CurrentUICulture;
         var resourceKey = modelType.Name + "_TypeDescription";
         return GetResourceManager(modelType)?.GetString(resourceKey, cultureInfo) ?? string.Empty;
     }
@@ -94,7 +94,7 @@ public static class ModelResourceProvider
     /// </summary>
     /// <typeparam name="TModel">The model type containing the property.</typeparam>
     /// <param name="propertyName">Name of the property.</param>
-    /// <param name="cultureInfo">Optional culture to use. If null, <see cref="CultureInfo.CurrentCulture"/> is used.</param>
+    /// <param name="cultureInfo">Optional culture to use. If null, <see cref="CultureInfo.CurrentUICulture"/> is used.</param>
     /// <returns>The localized property caption or a spaced fallback property name.</returns>
     public static string GetPropertyCaption<TModel>(string propertyName, CultureInfo? cultureInfo = null)
     {
@@ -107,11 +107,11 @@ public static class ModelResourceProvider
     /// </summary>
     /// <param name="modelType">The model type containing the property.</param>
     /// <param name="propertyName">Name of the property.</param>
-    /// <param name="cultureInfo">Optional culture to use. If null, <see cref="CultureInfo.CurrentCulture"/> is used.</param>
+    /// <param name="cultureInfo">Optional culture to use. If null, <see cref="CultureInfo.CurrentUICulture"/> is used.</param>
     /// <returns>The localized property caption or a spaced fallback property name.</returns>
     public static string GetPropertyCaption(this Type modelType, string propertyName, CultureInfo? cultureInfo = null)
     {
-        cultureInfo ??= CultureInfo.CurrentCulture;
+        cultureInfo ??= CultureInfo.CurrentUICulture;
         var resourceKey = $"{modelType.Name}_{propertyName}_Caption";
         return GetResourceManager(modelType)?.GetString(resourceKey, cultureInfo) ?? SeparateWords(propertyName);
     }
@@ -122,7 +122,7 @@ public static class ModelResourceProvider
     /// </summary>
     /// <typeparam name="TModel">The model type containing the property.</typeparam>
     /// <param name="propertyName">Name of the property.</param>
-    /// <param name="cultureInfo">Optional culture to use. If null, <see cref="CultureInfo.CurrentCulture"/> is used.</param>
+    /// <param name="cultureInfo">Optional culture to use. If null, <see cref="CultureInfo.CurrentUICulture"/> is used.</param>
     /// <returns>The localized property description or an empty string.</returns>
     public static string GetPropertyDescription<TModel>(string propertyName, CultureInfo? cultureInfo = null)
     {
@@ -135,11 +135,11 @@ public static class ModelResourceProvider
     /// </summary>
     /// <param name="modelType">The model type containing the property.</param>
     /// <param name="propertyName">Name of the property.</param>
-    /// <param name="cultureInfo">Optional culture to use. If null, <see cref="CultureInfo.CurrentCulture"/> is used.</param>
+    /// <param name="cultureInfo">Optional culture to use. If null, <see cref="CultureInfo.CurrentUICulture"/> is used.</param>
     /// <returns>The localized property description or an empty string.</returns>
     public static string GetPropertyDescription(this Type modelType, string propertyName, CultureInfo? cultureInfo = null)
     {
-        cultureInfo ??= CultureInfo.CurrentCulture;
+        cultureInfo ??= CultureInfo.CurrentUICulture;
         var resourceKey = $"{modelType.Name}_{propertyName}_Description";
         return GetResourceManager(modelType)?.GetString(resourceKey, cultureInfo) ?? string.Empty;
     }
@@ -150,11 +150,11 @@ public static class ModelResourceProvider
     /// </summary>
     /// <typeparam name="TEnum">The enum type.</typeparam>
     /// <param name="enumValue">The enum value instance.</param>
-    /// <param name="cultureInfo">Optional culture to use. If null, <see cref="CultureInfo.CurrentCulture"/> is used.</param>
+    /// <param name="cultureInfo">Optional culture to use. If null, <see cref="CultureInfo.CurrentUICulture"/> is used.</param>
     /// <returns>The localized enum value caption or a spaced fallback value name.</returns>
     public static string GetEnumCaption<TEnum>(this TEnum enumValue, CultureInfo? cultureInfo = null)
     {
-        cultureInfo ??= CultureInfo.CurrentCulture;
+        cultureInfo ??= CultureInfo.CurrentUICulture;
         var resourceKey = $"{typeof(TEnum).Name}_{enumValue}_Caption";
         return GetResourceManager(typeof(TEnum))?.GetString(resourceKey, cultureInfo) ?? SeparateWords(enumValue?.ToString() ?? string.Empty);
     }
@@ -165,11 +165,11 @@ public static class ModelResourceProvider
     /// </summary>
     /// <param name="enumType">The enum type.</param>
     /// <param name="enumValue">The enum value.</param>
-    /// <param name="cultureInfo">Optional culture to use. If null, <see cref="CultureInfo.CurrentCulture"/> is used.</param>
+    /// <param name="cultureInfo">Optional culture to use. If null, <see cref="CultureInfo.CurrentUICulture"/> is used.</param>
     /// <returns>The localized enum value caption or a spaced fallback value name.</returns>
     public static string GetEnumCaption(Type enumType, Enum enumValue, CultureInfo? cultureInfo = null)
     {
-        cultureInfo ??= CultureInfo.CurrentCulture;
+        cultureInfo ??= CultureInfo.CurrentUICulture;
         var resourceKey = $"{enumType.Name}_{enumValue}_Caption";
         return GetResourceManager(enumType)?.GetString(resourceKey, cultureInfo) ?? SeparateWords(enumValue.ToString());
     }
