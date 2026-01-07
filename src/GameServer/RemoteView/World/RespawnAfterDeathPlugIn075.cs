@@ -14,7 +14,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IRespawnAfterDeathPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn(nameof(RespawnAfterDeathPlugIn075), "The default implementation of the IRespawnAfterDeathPlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = nameof(RespawnAfterDeathPlugIn075), Description = "The default implementation of the IRespawnAfterDeathPlugIn which is forwarding everything to the game client with specific data packets.")]
 [Guid("FE2D99D4-CA19-4E94-BDF1-B51B463AD28A")]
 [MaximumClient(0, 89, ClientLanguage.Invariant)]
 public class RespawnAfterDeathPlugIn075 : IRespawnAfterDeathPlugIn

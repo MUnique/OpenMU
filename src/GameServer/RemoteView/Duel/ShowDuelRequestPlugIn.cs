@@ -15,7 +15,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IShowDuelRequestPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn(nameof(ShowDuelRequestPlugIn), "The default implementation of the IShowDuelRequestPlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = nameof(ShowDuelRequestPlugIn), Description = "The default implementation of the IShowDuelRequestPlugIn which is forwarding everything to the game client with specific data packets.")]
 [Guid("708847EE-B64F-42A3-BDAC-C4FD2417B6A5")]
 [MinimumClient(4, 0, ClientLanguage.Invariant)]
 public class ShowDuelRequestPlugIn : IShowDuelRequestPlugIn

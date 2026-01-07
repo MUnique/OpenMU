@@ -12,7 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which handles chatunban command.
 /// </summary>
 [Guid("82E74664-7700-433B-9428-90C17CC71350")]
-[PlugIn("Chat Ban Character command", "Handles the chat command '/chatunban <characterName>'. Unbans the account of a character from chatting.")]
+[PlugIn]
+[Display(Name = "Chat Ban Character command", Description = "Handles the chat command '/chatunban <characterName>'. Unbans the account of a character from chatting.")]
 [ChatCommandHelp(Command, "Unbans the account of a character from chatting", typeof(ChatUnbanCharChatCommandArgs), CharacterStatus.GameMaster)]
 public class ChatUnbanCharChatCommandPlugIn : ChatCommandPlugInBase<ChatUnbanCharChatCommandArgs>
 {
@@ -41,9 +42,9 @@ public class ChatUnbanCharChatCommandPlugIn : ChatCommandPlugInBase<ChatUnbanCha
         await this.ChangeAccountChatBanUntilAsync(player, null).ConfigureAwait(false);
 
         // Send unban notice to Game Master
-        await this.ShowMessageToAsync(gameMaster, $"[{this.Key}] The chat ban for the account from {arguments.CharacterName} has been removed.").ConfigureAwait(false);
+        await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.ChatBanRemoved), this.Key, arguments.CharacterName).ConfigureAwait(false);
 
         // Send unban notice to character
-        await this.ShowMessageToAsync(player, $"Your chat ban has been removed by a gamemaster.").ConfigureAwait(false);
+        await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.YourChatBanRemovedByGameMaster)).ConfigureAwait(false);
     }
 }

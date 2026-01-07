@@ -1,6 +1,7 @@
 ﻿@page "/logged-in"
-
-@using MUnique.OpenMU.Web.Shared.Services
+@using MUnique.OpenMU.DataModel
+@using MUnique.OpenMU.DataModel.Entities
+@using MUnique.OpenMU.Web.AdminPanel.Properties
 
 @inject LoggedInAccountService AccountService;
 
@@ -11,16 +12,16 @@
 <div>
   <DataTable TItem=@LoggedInAccount>
     <TableHeader>
-      <th class="col-1">Login Name</th>
-      <th class="col-1">Server-ID</th>
-      <th class="col-1">Actions</th>
+      <th class="col-1">@typeof(Account).GetPropertyCaption(nameof(Account.LoginName))</th>
+      <th class="col-1">@Resources.ServerID</th>
+      <th class="col-1">@Resources.Action</th>
     </TableHeader>
     <ItemTemplate Context="item">
       <td>@item.LoginName</td>
       <td>@item.Server</td>
       <td>
         <button class="btn btn-warning" type="button" @onclick="() => this.AccountService.SetAccountOfflineAsync(item)">
-          <span class="oi oi-bolt" aria-hidden="true" /> Disconnect
+          <span class="oi oi-bolt" aria-hidden="true" /> @Resources.Disconnect
         </button>
       </td>
     </ItemTemplate>

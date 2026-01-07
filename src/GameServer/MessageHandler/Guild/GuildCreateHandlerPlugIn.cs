@@ -14,7 +14,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Handler for guild create packets.
 /// </summary>
-[PlugIn(nameof(GuildCreateHandlerPlugIn), "Handler for guild create packets.")]
+[PlugIn]
+[Display(Name = nameof(GuildCreateHandlerPlugIn), Description = "Handler for guild create packets.")]
 [Guid("0aae71c1-72df-47d6-af88-cddc5d5c7311")]
 [MinimumClient(1, 0, ClientLanguage.Invariant)]
 internal class GuildCreateHandlerPlugIn : IPacketHandlerPlugIn

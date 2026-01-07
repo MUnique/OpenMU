@@ -10,7 +10,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The Force skill action.
 /// </summary>
-[PlugIn(nameof(ForceSkillAction), "Handles the force skill of the dark lord.")]
+[PlugIn]
+[Display(Name = nameof(ForceSkillAction), Description = "Handles the force skill of the dark lord.")]
 [Guid("552e4e3d-8215-44f4-bee3-b006da049eb2")]
 public class ForceSkillAction : TargetedSkillDefaultPlugin
 {

@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// Updates the pet command manager on the player object after a pet has been equipped or unequipped.
 /// </summary>
 [Guid("E25CBAE0-CFD2-4BAF-9178-4FBD90F26E4B")]
-[PlugIn(nameof(UpdatePetCommandManagerOnItemMovePlugIn), "Updates the pet command manager on the player object after a pet has been equipped or unequipped.")]
+[PlugIn]
+[Display(Name = nameof(UpdatePetCommandManagerOnItemMovePlugIn), Description = "Updates the pet command manager on the player object after a pet has been equipped or unequipped.")]
 public class UpdatePetCommandManagerOnItemMovePlugIn : IItemMovedPlugIn
 {
     /// <inheritdoc />

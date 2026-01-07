@@ -12,7 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IShowShowGuildWarRequestResultPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn(nameof(ShowShowGuildWarRequestResultPlugIn), "The default implementation of the IShowShowGuildWarRequestResultPlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = nameof(ShowShowGuildWarRequestResultPlugIn), Description = "The default implementation of the IShowShowGuildWarRequestResultPlugIn which is forwarding everything to the game client with specific data packets.")]
 [Guid("7DDF834C-218B-4F35-B66C-54579BE485D5")]
 public class ShowShowGuildWarRequestResultPlugIn : IShowShowGuildWarRequestResultPlugIn
 {

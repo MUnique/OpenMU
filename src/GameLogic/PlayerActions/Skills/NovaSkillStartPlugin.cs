@@ -15,7 +15,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The start nova skill action.
 /// </summary>
-[PlugIn(nameof(NovaSkillStartPlugin), "Handles the start of nova skill of the wizard class.")]
+[PlugIn]
+[Display(Name = nameof(NovaSkillStartPlugin), Description = "Handles the start of nova skill of the wizard class.")]
 [Guid("e966e7eb-58b8-4356-8725-5da9f43c1fa4")]
 public class NovaSkillStartPlugin : TargetedSkillPluginBase
 {

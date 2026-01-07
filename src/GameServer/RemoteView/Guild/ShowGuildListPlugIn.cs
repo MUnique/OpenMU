@@ -14,7 +14,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IShowGuildListPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn(nameof(ShowGuildListPlugIn), "The default implementation of the IShowGuildListPlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = nameof(ShowGuildListPlugIn), Description = "The default implementation of the IShowGuildListPlugIn which is forwarding everything to the game client with specific data packets.")]
 [Guid("f72a9968-100b-481f-aba1-1dd597fdad47")]
 [MinimumClient(0, 90, ClientLanguage.Invariant)]
 public class ShowGuildListPlugIn : IShowGuildListPlugIn

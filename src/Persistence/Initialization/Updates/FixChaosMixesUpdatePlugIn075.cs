@@ -10,7 +10,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// This update fixes the Chaos Weapon crafting settings.
 /// </summary>
-[PlugIn(PlugInName, PlugInDescription)]
+[PlugIn]
+[Display(Name = PlugInName, Description = PlugInDescription)]
 [Guid("04A5F236-117F-422A-8C38-28D09DE911D7")]
 public class FixChaosMixesUpdatePlugIn075 : FixChaosMixesPlugInBase
 {

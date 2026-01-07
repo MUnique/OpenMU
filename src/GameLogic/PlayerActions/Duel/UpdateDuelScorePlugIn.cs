@@ -11,7 +11,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// This plugin increases the score of the duel result, when a kill occurred.
 /// </summary>
-[PlugIn(nameof(UpdateDuelScorePlugIn), "This plugin increases the score of the duel, when a kill occurred.")]
+[PlugIn]
+[Display(Name = nameof(UpdateDuelScorePlugIn), Description = "This plugin increases the score of the duel, when a kill occurred.")]
 [Guid("C5CAC184-F8A9-41A0-A34E-04A07DB81F5E")]
 public class UpdateDuelScorePlugIn : IAttackableGotKilledPlugIn
 {

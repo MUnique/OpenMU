@@ -12,7 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IBloodCastleScoreTableViewPlugin"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn(nameof(BloodCastleScoreTableViewPlugin), "The default implementation of the IBloodCastleScoreTableViewPlugin which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = nameof(BloodCastleScoreTableViewPlugin), Description = "The default implementation of the IBloodCastleScoreTableViewPlugin which is forwarding everything to the game client with specific data packets.")]
 [Guid("C7F02F66-987A-42EC-A994-E5F1E8606900")]
 public class BloodCastleScoreTableViewPlugin : IBloodCastleScoreTableViewPlugin
 {

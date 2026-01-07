@@ -12,7 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IFriendStateUpdatePlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn("FriendStateUpdatePlugIn", "The default implementation of the IFriendStateUpdatePlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = "FriendStateUpdatePlugIn", Description = "The default implementation of the IFriendStateUpdatePlugIn which is forwarding everything to the game client with specific data packets.")]
 [Guid("1ed98d6a-7917-4209-bd03-e8a966b99688")]
 public class FriendStateUpdatePlugIn : IFriendStateUpdatePlugIn
 {

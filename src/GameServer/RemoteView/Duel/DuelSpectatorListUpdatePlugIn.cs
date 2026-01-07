@@ -15,7 +15,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IDuelSpectatorListUpdatePlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn(nameof(DuelSpectatorListUpdatePlugIn), "The default implementation of the IDuelSpectatorListUpdatePlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = nameof(DuelSpectatorListUpdatePlugIn), Description = "The default implementation of the IDuelSpectatorListUpdatePlugIn which is forwarding everything to the game client with specific data packets.")]
 [Guid("1A8EC472-6924-4150-9B4C-4352AFF03AC0")]
 [MinimumClient(4, 0, ClientLanguage.Invariant)]
 public class DuelSpectatorListUpdatePlugIn : IDuelSpectatorListUpdatePlugIn

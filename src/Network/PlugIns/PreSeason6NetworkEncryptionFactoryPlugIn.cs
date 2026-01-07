@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Network.PlugIns;
 
+using System.ComponentModel.DataAnnotations;
 using System.IO.Pipelines;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.Network;
@@ -19,7 +20,8 @@ using MUnique.OpenMU.PlugIns;
 /// For the Xor32 key it's different. During season 6 on GMO, Webzen desperately changed them in a regular manner - sometimes
 /// every weekly maintenance. Needless to say, calculating the new key was a matter of seconds and provided no protection from skilled hackers at all.
 /// </remarks>
-[PlugIn("Network Encryption - Before Season 6", "A plugin which provides network encryptors and decryptors for game clients before season 6.")]
+[PlugIn]
+[Display(Name = "Network Encryption - Before Season 6", Description = "A plugin which provides network encryptors and decryptors for game clients before season 6.")]
 [Guid("E72839BF-5ADE-419D-91C5-278EC2A7CEBF")]
 public class PreSeason6NetworkEncryptionFactoryPlugIn : INetworkEncryptionFactoryPlugIn
 {

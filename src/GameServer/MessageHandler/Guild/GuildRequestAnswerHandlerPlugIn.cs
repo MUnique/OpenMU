@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Handler for guild request answer packets.
 /// </summary>
-[PlugIn("GuildRequestAnswerHandlerPlugIn", "Handler for guild request answer packets.")]
+[PlugIn]
+[Display(Name = "GuildRequestAnswerHandlerPlugIn", Description = "Handler for guild request answer packets.")]
 [Guid("30828257-ec3a-4b99-981d-ec105fc5e82e")]
 internal class GuildRequestAnswerHandlerPlugIn : IPacketHandlerPlugIn
 {

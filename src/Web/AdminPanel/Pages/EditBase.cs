@@ -13,8 +13,10 @@ using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
+using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Web.AdminPanel.Properties;
 using MUnique.OpenMU.Web.Shared;
 using MUnique.OpenMU.Web.Shared.Services;
 
@@ -179,7 +181,7 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
         var downloadMarkup = this.GetDownloadMarkup();
         var editorsMarkup = this.GetEditorsMarkup();
 
-        builder.AddMarkupContent(10, $"<h1>Edit {CaptionHelper.GetTypeCaption(this.Type!)}</h1>{downloadMarkup}{editorsMarkup}\r\n");
+        builder.AddMarkupContent(10, $"<h1>{Resources.Edit} {this.Type!.GetTypeCaption()}</h1>{downloadMarkup}{editorsMarkup}\r\n");
         builder.OpenComponent<CascadingValue<IContext>>(11);
         builder.AddAttribute(12, nameof(CascadingValue<IContext>.Value), this._persistenceContext);
         builder.AddAttribute(13, nameof(CascadingValue<IContext>.IsFixed), this._isOwningContext);
@@ -247,18 +249,18 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
             if (this._persistenceContext is { } context)
             {
                 var success = await context.SaveChangesAsync().ConfigureAwait(true);
-                var text = success ? "The changes have been saved." : "There were no changes to save.";
+                var text = success ? Resources.SavedChanges : Resources.NoChangesToSave;
                 this.ToastService.ShowSuccess(text);
             }
             else
             {
-                this.ToastService.ShowError("Failed, context not initialized");
+                this.ToastService.ShowError(Resources.FailedByUninitializedContext);
             }
         }
         catch (Exception ex)
         {
             this.Logger?.LogError(ex, $"Error during saving {this.Id}");
-            var text = $"An unexpected error occured: {ex.Message}.";
+            var text = string.Format(Resources.UnexpectedErrorOccurred, ex.Message);
             this.ToastService.ShowError(text);
         }
     }
@@ -286,7 +288,7 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
         if (this._persistenceContext?.HasChanges is true)
         {
             var isConfirmed = await this.JavaScript.InvokeAsync<bool>("window.confirm",
-                    "There are unsaved changes. Are you sure you want to discard them?")
+                    Resources.UnsavedChangesQuestion)
                 .ConfigureAwait(true);
 
             if (!isConfirmed)
@@ -310,7 +312,7 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
         if (this.Type is not null && GenericControllerFeatureProvider.SupportedTypes.Any(t => t.Item1 == this.Type))
         {
             var uri = $"/download/{this.Type.Name}/{this.Type.Name}_{this.Id}.json";
-            return $"<p>Download as json: <a href=\"{uri}\" download><span class=\"oi oi-data-transfer-download\"></span></a></p>";
+            return $"<p>{Resources.DownloadAsJson}: <a href=\"{uri}\" download><span class=\"oi oi-data-transfer-download\"></span></a></p>";
         }
 
         return null;
@@ -376,7 +378,7 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
             {
                 this._loadingState = DataLoadingState.Error;
                 this.Logger?.LogError(ex, $"Could not load {this.Type.FullName} with {this.Id}: {ex.Message}{Environment.NewLine}{ex.StackTrace}");
-                await this.InvokeAsync(() => this.ModalService.ShowMessageAsync("Error", "Could not load the data. Check the logs for details.")).ConfigureAwait(false);
+                await this.InvokeAsync(() => this.ModalService.ShowMessageAsync(Resources.Error, Resources.LoadingErrorCheckLog)).ConfigureAwait(false);
             }
 
             cancellationToken.ThrowIfCancellationRequested();

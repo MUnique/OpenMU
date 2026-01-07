@@ -12,7 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// This update fixes the Chaos Weapon, First Wings, Dinorant, and Item Level Upgrade craftings' settings.
 /// </summary>
-[PlugIn(PlugInName, PlugInDescription)]
+[PlugIn]
+[Display(Name = PlugInName, Description = PlugInDescription)]
 [Guid("68BC1F35-FC9A-468F-89FB-0940485AC107")]
 public class FixChaosMixesPlugIn095D : FixChaosMixesPlugInBase
 {

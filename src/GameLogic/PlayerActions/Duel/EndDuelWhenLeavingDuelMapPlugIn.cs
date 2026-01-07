@@ -11,7 +11,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Ends the duel when a player leaves the duel map.
 /// </summary>
-[PlugIn(nameof(EndDuelWhenLeavingDuelMapPlugIn), "Updates the state of the weather of each hosted map in a random way.")]
+[PlugIn]
+[Display(Name = nameof(EndDuelWhenLeavingDuelMapPlugIn), Description = "Updates the state of the weather of each hosted map in a random way.")]
 [Guid("3DF85180-4C51-437A-8072-8F42EEFED983")]
 public class EndDuelWhenLeavingDuelMapPlugIn : IObjectRemovedFromMapPlugIn
 {

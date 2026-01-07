@@ -15,7 +15,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// This update adds Jewel of Harmony option weights used for option assignment, fixes some options, and fixes item restore mix.
 /// </summary>
-[PlugIn(PlugInName, PlugInDescription)]
+[PlugIn]
+[Display(Name = PlugInName, Description = PlugInDescription)]
 [Guid("E94DE59E-5B3A-4498-A4AF-E7F4F173B754")]
 public class AddHarmonyOptionWeightsUpdateSeason6 : UpdatePlugInBase
 {

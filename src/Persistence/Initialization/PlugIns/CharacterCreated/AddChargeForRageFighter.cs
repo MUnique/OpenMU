@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// Adds the Charge skill to a created rage fighter character.
 /// </summary>
 [Guid("53F23DDD-3676-4D24-8DFF-2EF657255832")]
-[PlugIn(nameof(AddChargeForRageFighter), "Adds the Charge skill to a created rage fighter character.")]
+[PlugIn]
+[Display(Name = nameof(AddChargeForRageFighter), Description = "Adds the Charge skill to a created rage fighter character.")]
 public class AddChargeForRageFighter : AddInitialSkillPlugInBase
 {
     /// <summary>

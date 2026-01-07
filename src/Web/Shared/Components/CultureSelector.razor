@@ -1,0 +1,19 @@
+﻿@if (this.SupportedUICultures.Any())
+{
+  <div class="culture-selector">
+    <span class="oi oi-globe culture-selector-icon"></span>
+    <InputSelect class="custom-select-sm " @bind-Value="this.SelectedCultureCode">
+      @foreach (var culture in this.SupportedUICultures)
+      {
+        if (object.Equals(culture.TwoLetterISOLanguageName, this.SelectedCultureCode))
+        {
+          <option value="@culture.TwoLetterISOLanguageName" selected="selected">@culture.NativeName</option>
+        }
+        else
+        {
+          <option value="@culture.TwoLetterISOLanguageName">@culture.NativeName</option>
+        }
+      }
+    </InputSelect>
+  </div>
+}

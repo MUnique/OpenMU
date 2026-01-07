@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// Adds a short sword to a created dark lord character.
 /// </summary>
 [Guid("BAC120D0-D981-4EBB-8F5A-0EC19434AF16")]
-[PlugIn(nameof(AddShortSwordForDarkLord), "Adds a short sword to a created dark lord character.")]
+[PlugIn]
+[Display(Name = nameof(AddShortSwordForDarkLord), Description = "Adds a short sword to a created dark lord character.")]
 public class AddShortSwordForDarkLord : AddInitialItemPlugInBase
 {
     /// <summary>

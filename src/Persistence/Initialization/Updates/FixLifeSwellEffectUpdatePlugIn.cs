@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// This update sets the right settings for the life swell effect.
 /// </summary>
-[PlugIn(PlugInName, PlugInDescription)]
+[PlugIn]
+[Display(Name = PlugInName, Description = PlugInDescription)]
 [Guid("FD521A61-D5B4-4CF2-B203-6FFF12C80E51")]
 public class FixLifeSwellEffectUpdatePlugIn : UpdatePlugInBase
 {

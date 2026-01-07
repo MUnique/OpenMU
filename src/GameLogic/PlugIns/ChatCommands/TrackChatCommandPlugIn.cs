@@ -12,7 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which handles track commands.
 /// </summary>
 [Guid("7F12326A-9B84-4A56-A013-8C485D7B2EF6")]
-[PlugIn("Track chat command", "Handles the chat command '/track <char>'. Moves the player to the game masters location.")]
+[PlugIn]
+[Display(Name = "Track chat command", Description = "Handles the chat command '/track <char>'. Moves the player to the game masters location.")]
 [ChatCommandHelp(Command, "Moves the player to the game masters location.", typeof(TraceChatCommandArgs), CharacterStatus.GameMaster)]
 public class TrackChatCommandPlugIn : ChatCommandPlugInBase<TraceChatCommandArgs>
 {

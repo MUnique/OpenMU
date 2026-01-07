@@ -12,7 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which handles gm disconnect commands.
 /// </summary>
 [Guid("F23262E6-0D7C-4B9C-8CD5-7E44AF4EE469")]
-[PlugIn("Guild disconnect chat command", "Handles the chat command '/guilddisconnect <guild>'. Disconnect the guild members.")]
+[PlugIn]
+[Display(Name = "Guild disconnect chat command", Description = "Handles the chat command '/guilddisconnect <guild>'. Disconnect the guild members.")]
 [ChatCommandHelp(Command, "Disconnects the members of a guild.", typeof(GuildDisconnectChatCommandArgs), CharacterStatus.GameMaster)]
 public class GuildDisconnectChatCommandPlugIn : ChatCommandPlugInBase<GuildDisconnectChatCommandArgs>
 {
@@ -39,7 +40,7 @@ public class GuildDisconnectChatCommandPlugIn : ChatCommandPlugInBase<GuildDisco
 
             if (!guildPlayer.Name.Equals(gameMaster.Name))
             {
-                await this.ShowMessageToAsync(gameMaster, $"[{this.Key}] {guildPlayer.Name} has been disconnected.").ConfigureAwait(false);
+                await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.GuildDisconnectResult), this.Key, guildPlayer.Name).ConfigureAwait(false);
             }
         }).ConfigureAwait(false);
     }
