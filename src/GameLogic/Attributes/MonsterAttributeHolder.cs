@@ -104,9 +104,11 @@ public class MonsterAttributeHolder : IAttributeSystem
         {
             attribute = new ComposableAttribute(targetAttribute);
             var attrValue = this.GetValueOfAttribute(targetAttribute);
-            var nullValue = element.AggregateType == AggregateType.Multiplicate ? 1 : 0;
-            attrValue = Math.Abs(attrValue) < 0.01f ? nullValue : attrValue;
-            attribute.AddElement(new SimpleElement { Value = attrValue });
+            if (Math.Abs(attrValue) > 0.01f)
+            {
+                attribute.AddElement(new SimpleElement { Value = attrValue });
+            }
+
             attributeDictionary.Add(targetAttribute, attribute);
         }
 

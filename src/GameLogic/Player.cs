@@ -1548,8 +1548,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 return powerUp;
             }
 
-            if (masterSkillDefinition.TargetAttribute is not { } masterSkillTargetAttribute
-                || masterSkillTargetAttribute == powerUpDef.TargetAttribute)
+            if (masterSkillDefinition.TargetAttribute is { } masterSkillTargetAttribute
+                && masterSkillTargetAttribute == powerUpDef.TargetAttribute)
             {
                 var additionalValue = new SimpleElement(masterSkillEntry.CalculateValue(), masterSkillEntry.Skill.MasterDefinition?.Aggregation ?? powerUp.AggregateType);
                 powerUp = new CombinedElement(powerUp, additionalValue);

@@ -64,7 +64,7 @@ public static class AttackableExtensions
         {
             var defenseAttribute = defender.GetDefenseAttribute(attacker);
             defense = (int)defender.Attributes[defenseAttribute];
-            defense -= (int)(defense * defender.Attributes[Stats.InnovationDefDecrement]);
+            defense -= (int)(defense * defender.Attributes[Stats.DefenseDecrement]);
             if (defense < 0)
             {
                 defense = 0;
@@ -624,14 +624,27 @@ public static class AttackableExtensions
         return defender.Attributes[Stats.DefenseRatePvm] > attacker.Attributes[Stats.AttackRatePvm];
     }
 
-    private static int GetDamage(this SkillEntry skill)
+    private static int GetDamage(this SkillEntry skillEntry, IAttacker attacker)
     {
-        skill.ThrowNotInitializedProperty(skill.Skill is null, nameof(skill.Skill));
+        skillEntry.ThrowNotInitializedProperty(skillEntry.Skill is null, nameof(skillEntry.Skill));
+        var skill = skillEntry.Skill;
 
-        var result = skill.Skill.AttackDamage;
-        if (skill.Skill.MasterDefinition != null)
+        var result = skill.AttackDamage;
+        if (attacker is Player { } player && skill.MasterDefinition is { } masterDefinition)
         {
-            result += (int)skill.CalculateValue();
+            if (masterDefinition.TargetAttribute is null)
+            {
+                result += (int)skillEntry.CalculateValue();
+            }
+
+            foreach (var masterSkill in skill.GetBaseSkills(true))
+            {
+                if (masterSkill.MasterDefinition!.TargetAttribute is null
+                    && player.SkillList!.GetSkill((ushort)masterSkill.Number) is { } masterSkillEntry)
+                {
+                    result += (int)masterSkillEntry.CalculateValue();
+                }
+            }
         }
 
         return result;
@@ -684,7 +697,7 @@ public static class AttackableExtensions
         }
 
         damageType = skill.DamageType;
-        var skillDamage = skillEntry.GetDamage();
+        var skillDamage = skillEntry.GetDamage(attacker);
         skillMinimumDamage += skillDamage;
         skillMaximumDamage += skillDamage + (skillDamage / 2);
 

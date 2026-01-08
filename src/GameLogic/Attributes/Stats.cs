@@ -737,7 +737,7 @@ public class Stats
     /// <see cref="AggregateType.Multiplicate"/> values include:
     ///     <see cref="DefenseIncreaseWithEquippedShield"/>.
     /// <see cref="AggregateType.AddFinal"/> values include:
-    ///     Greater defense buff; MST bonus defense with shield (shield strengthener); MST dark horse strengthener; Jack O'Lantern Cry bonus (halved).
+    ///     Greater defense buff; MST bonus defense with shield (shield strengthener); MST dark horse strengthener; Jack O'Lantern Cry bonus (halved); Berserker defense reduction.
     /// </remarks>
     public static AttributeDefinition DefenseFinal { get; } = new(new Guid("0888AD48-0CC8-47CA-B6A3-99F3771AA5FC"), "Final Defense", string.Empty);
 
@@ -747,10 +747,6 @@ public class Stats
     /// <remarks>
     /// <see cref="AggregateType.AddRaw"/> values include:
     ///     <see cref="DefenseFinal"/>.
-    /// <see cref="AggregateType.Multiplicate"/> values include:
-    ///     Fire slash defense reduction.
-    /// <see cref="AggregateType.AddFinal"/> values include:
-    ///     Berserker defense reduction.
     /// </remarks>
     public static AttributeDefinition DefensePvm { get; } = new(new Guid("B4201610-2824-4EC1-A145-76B15DB9DEC6"), "Defense (PvM)", string.Empty);
 
@@ -760,10 +756,6 @@ public class Stats
     /// <remarks>
     /// <see cref="AggregateType.AddRaw"/> values include:
     ///     <see cref="DefenseFinal"/>; pants guardian option (halved).
-    /// <see cref="AggregateType.Multiplicate"/> values include:
-    ///     Fire slash defense reduction.
-    /// <see cref="AggregateType.AddFinal"/> values include:
-    ///     Berserker defense reduction.
     /// </remarks>
     public static AttributeDefinition DefensePvp { get; } = new(new Guid("28D14EB7-1049-45BE-A7B7-D5E28E63943B"), "Defense (PvP)", string.Empty);
 
@@ -781,7 +773,7 @@ public class Stats
     /// <see cref="AggregateType.Multiplicate"/> values include:
     ///     Complete set bonus multiplier (+10%); excellent DR option; socket DR option; MST PvM defense rate increase.
     /// <see cref="AggregateType.AddFinal"/> values include:
-    ///     MST bonus defense rate with shield (shield mastery).
+    ///     MST bonus defense rate with shield (shield mastery); Phoenix Shot decrease block effect.
     /// </remarks>
     public static AttributeDefinition DefenseRatePvm { get; } = new(new Guid("C520DD2D-1B06-4392-95EE-3C41F33E68DA"), "Defense Rate (PvM)", string.Empty);
 
@@ -921,9 +913,14 @@ public class Stats
     public static AttributeDefinition WeaknessPhysDmgDecrement { get; } = new(new Guid("37497650-139B-4DA1-9FB6-27AEB8F04CF6"), "Weakness Physical Damage Decrement", "The inflicted physical damage decrement due to the magic effects of weakness or killing blow skills, which is multiplied with the final damage and subtracted from it.");
 
     /// <summary>
-    /// Gets the innovation defense decrement due to Summoner's innovation skill attribute definition.
+    /// Gets the defense decrement attribute definition.
     /// </summary>
-    public static AttributeDefinition InnovationDefDecrement { get; } = new(new Guid("D8B3B1C9-B409-4A07-8F4D-8F315DCB173A"), "Innovation Defense Decrement", "The defense decrement due to the magic effect of innovation skill, which is multiplied with the final defense and subtracted from it.");
+    /// <remarks>
+    ///     Bucket attribute that collects the multipliers of the magic effects of innovation (Sum), beast uppercut (RF) and fire slash (MG).
+    ///     Beast uppercut and fire slash share the same magic effect number, while innovation's is different.
+    ///     This means that the first two effects can only exist 1 at a time, while innovation can coexist with either of them.
+    /// </remarks>
+    public static AttributeDefinition DefenseDecrement { get; } = new(new Guid("D8B3B1C9-B409-4A07-8F4D-8F315DCB173A"), "Defense Decrement", "The defense decrement due to magic effects of various skills, which is multiplied with the final defense and subtracted from it.");
 
     /// <summary>
     /// Gets the 'is shield equipped' attribute definition.

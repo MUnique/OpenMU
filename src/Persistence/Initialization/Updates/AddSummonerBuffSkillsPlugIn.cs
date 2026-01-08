@@ -51,7 +51,7 @@ public class AddSummonerBuffSkillsPlugIn : UpdatePlugInBase
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
         // Add new attributes
-        var innovationDefDecrement = context.CreateNew<AttributeDefinition>(Stats.InnovationDefDecrement.Id, Stats.InnovationDefDecrement.Designation, Stats.InnovationDefDecrement.Description);
+        var innovationDefDecrement = context.CreateNew<AttributeDefinition>(Stats.DefenseDecrement.Id, Stats.DefenseDecrement.Designation, Stats.DefenseDecrement.Description);
         gameConfiguration.Attributes.Add(innovationDefDecrement);
         var isAsleep = context.CreateNew<AttributeDefinition>(Stats.IsAsleep.Id, Stats.IsAsleep.Designation, Stats.IsAsleep.Description);
         gameConfiguration.Attributes.Add(isAsleep);
@@ -195,7 +195,7 @@ public class AddSummonerBuffSkillsPlugIn : UpdatePlugInBase
         // Defense decrease % (applies last) = 20 + (Energy / 90)
         var decDefPowerUpDefinition = context.CreateNew<PowerUpDefinition>();
         magicEffect.PowerUpDefinitions.Add(decDefPowerUpDefinition);
-        decDefPowerUpDefinition.TargetAttribute = Stats.InnovationDefDecrement.GetPersistent(gameConfiguration);
+        decDefPowerUpDefinition.TargetAttribute = Stats.DefenseDecrement.GetPersistent(gameConfiguration);
         decDefPowerUpDefinition.Boost = context.CreateNew<PowerUpDefinitionValue>();
         decDefPowerUpDefinition.Boost.ConstantValue.Value = 0.20f; // 20% decrease
         decDefPowerUpDefinition.Boost.MaximumValue = 0.64f; // 64% decrease (based on 4k total energy cap)
@@ -209,7 +209,7 @@ public class AddSummonerBuffSkillsPlugIn : UpdatePlugInBase
         // Defense decrease PvP % (applies last) = 12 + (Energy / 110)
         var decDefPowerUpDefinitionPvp = context.CreateNew<PowerUpDefinition>();
         magicEffect.PowerUpDefinitionsPvp.Add(decDefPowerUpDefinitionPvp);
-        decDefPowerUpDefinitionPvp.TargetAttribute = Stats.InnovationDefDecrement.GetPersistent(gameConfiguration);
+        decDefPowerUpDefinitionPvp.TargetAttribute = Stats.DefenseDecrement.GetPersistent(gameConfiguration);
         decDefPowerUpDefinitionPvp.Boost = context.CreateNew<PowerUpDefinitionValue>();
         decDefPowerUpDefinitionPvp.Boost.ConstantValue.Value = 0.12f; // 12% decrease
         decDefPowerUpDefinitionPvp.Boost.MaximumValue = 0.48f; // 48% decrease (based on 4k total energy cap)

@@ -57,6 +57,31 @@ public class FixRageFighterMultipleHitSkillsPlugIn : UpdatePlugInBase
             increaseHealthPowerUp.Boost!.MaximumValue = 200f;
         }
 
+        // Update Innvoation magic effect
+        if (gameConfiguration.MagicEffects.FirstOrDefault(m => m.Number == (short)MagicEffectNumber.Innovation) is { } innovationEffect)
+        {
+            if (innovationEffect.PowerUpDefinitions.FirstOrDefault(p => p.TargetAttribute == Stats.DefenseDecrement) is { } innovationDefDecrement)
+            {
+                innovationDefDecrement.Boost!.ConstantValue.AggregateType = AggregateType.Multiplicate;
+            }
+
+            if (innovationEffect.PowerUpDefinitionsPvp.FirstOrDefault(p => p.TargetAttribute == Stats.DefenseDecrement) is { } innovationDefDecrementPvp)
+            {
+                innovationDefDecrementPvp.Boost!.ConstantValue.AggregateType = AggregateType.Multiplicate;
+            }
+        }
+
+        // Update Defense Reduction (Fire Slash) magic effect
+        if (gameConfiguration.MagicEffects.FirstOrDefault(m => m.Number == (short)MagicEffectNumber.DefenseReduction) is { } defenseReductionEffect
+            && defenseReductionEffect.PowerUpDefinitions.FirstOrDefault() is { } powerUp)
+        {
+            powerUp.TargetAttribute = Stats.DefenseDecrement.GetPersistent(gameConfiguration);
+            powerUp.Boost!.ConstantValue.Value = 0.1f; // 10% decrease
+            defenseReductionEffect.PowerUpDefinitions.Clear();
+            defenseReductionEffect.PowerUpDefinitions.Add(powerUp);
+        }
+
+        // Add new magic effects
         var defensereductionBeastUppercut = this.CreateDefenseReductionBeastUppercutMagicEffect(context, gameConfiguration);
         var decreaseBlockEffect = this.CreateDecreaseBlockMagicEffect(context, gameConfiguration);
 
@@ -72,7 +97,8 @@ public class FixRageFighterMultipleHitSkillsPlugIn : UpdatePlugInBase
             killingBlow.NumberOfHitsPerAttack = 4;
         }
 
-        if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.KillingBlowStrengthener) is { } killingBlowStrengthener)
+        var killingBlowStrengthener = gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.KillingBlowStrengthener);
+        if (killingBlowStrengthener is not null)
         {
             killingBlowStrengthener.NumberOfHitsPerAttack = 4;
         }
@@ -80,6 +106,10 @@ public class FixRageFighterMultipleHitSkillsPlugIn : UpdatePlugInBase
         if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.KillingBlowMastery) is { } killingBlowMastery)
         {
             killingBlowMastery.NumberOfHitsPerAttack = 4;
+            killingBlowMastery.MasterDefinition!.ReplacedSkill = killingBlowStrengthener;
+            killingBlowMastery.MasterDefinition.ValueFormula = $"{killingBlowMastery.MasterDefinition.ValueFormula} / 100";
+            killingBlowMastery.MasterDefinition.TargetAttribute = Stats.WeaknessPhysDmgDecrement.GetPersistent(gameConfiguration);
+            killingBlowMastery.MasterDefinition.Aggregation = AggregateType.AddRaw;
         }
 
         if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.BeastUppercut) is { } beastUppercut)
@@ -88,7 +118,8 @@ public class FixRageFighterMultipleHitSkillsPlugIn : UpdatePlugInBase
             beastUppercut.NumberOfHitsPerAttack = 2;
         }
 
-        if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.BeastUppercutStrengthener) is { } beastUppercutStrengthener)
+        var beastUppercutStrengthener = gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.BeastUppercutStrengthener);
+        if (beastUppercutStrengthener is not null)
         {
             beastUppercutStrengthener.MagicEffectDef = defensereductionBeastUppercut;
             beastUppercutStrengthener.NumberOfHitsPerAttack = 2;
@@ -98,6 +129,10 @@ public class FixRageFighterMultipleHitSkillsPlugIn : UpdatePlugInBase
         {
             beastUppercutMastery.MagicEffectDef = defensereductionBeastUppercut;
             beastUppercutMastery.NumberOfHitsPerAttack = 2;
+            beastUppercutMastery.MasterDefinition!.ReplacedSkill = beastUppercutStrengthener;
+            beastUppercutMastery.MasterDefinition.ValueFormula = $"{beastUppercutMastery.MasterDefinition.ValueFormula} / 100";
+            beastUppercutMastery.MasterDefinition.TargetAttribute = Stats.DefenseDecrement.GetPersistent(gameConfiguration);
+            beastUppercutMastery.MasterDefinition.Aggregation = AggregateType.Multiplicate;
         }
 
         if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.ChainDrive) is { } chainDrive)
@@ -151,15 +186,15 @@ public class FixRageFighterMultipleHitSkillsPlugIn : UpdatePlugInBase
         magicEffect.PowerUpDefinitions.Add(decDefRatePowerUpDefinition);
         decDefRatePowerUpDefinition.TargetAttribute = Stats.DefenseRatePvm.GetPersistent(gameConfiguration);
         decDefRatePowerUpDefinition.Boost = context.CreateNew<PowerUpDefinitionValue>();
-        decDefRatePowerUpDefinition.Boost.ConstantValue.Value = 0.5f; // 50% decrease
-        decDefRatePowerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
+        decDefRatePowerUpDefinition.Boost.ConstantValue.Value = -50f;
+        decDefRatePowerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.AddFinal;
 
         var decDefRatePowerUpDefinitionPvp = context.CreateNew<PowerUpDefinition>();
         magicEffect.PowerUpDefinitionsPvp.Add(decDefRatePowerUpDefinitionPvp);
-        decDefRatePowerUpDefinitionPvp.TargetAttribute = Stats.DefenseRatePvp.GetPersistent(gameConfiguration);
+        decDefRatePowerUpDefinitionPvp.TargetAttribute = Stats.DefenseRatePvm.GetPersistent(gameConfiguration);
         decDefRatePowerUpDefinitionPvp.Boost = context.CreateNew<PowerUpDefinitionValue>();
-        decDefRatePowerUpDefinitionPvp.Boost.ConstantValue.Value = 0.8f; // 20% decrease
-        decDefRatePowerUpDefinitionPvp.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
+        decDefRatePowerUpDefinitionPvp.Boost.ConstantValue.Value = -20f;
+        decDefRatePowerUpDefinitionPvp.Boost.ConstantValue.AggregateType = AggregateType.AddFinal;
 
         return magicEffect;
     }
@@ -178,19 +213,12 @@ public class FixRageFighterMultipleHitSkillsPlugIn : UpdatePlugInBase
         magicEffect.Chance = context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.Chance.ConstantValue.Value = 0.1f; // 10%
 
-        var reducePvmDefenseEffect = context.CreateNew<PowerUpDefinition>();
-        magicEffect.PowerUpDefinitions.Add(reducePvmDefenseEffect);
-        reducePvmDefenseEffect.TargetAttribute = Stats.DefensePvm.GetPersistent(gameConfiguration);
-        reducePvmDefenseEffect.Boost = context.CreateNew<PowerUpDefinitionValue>();
-        reducePvmDefenseEffect.Boost.ConstantValue.Value = 0.9f;
-        reducePvmDefenseEffect.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
-
-        var reducePvpDefenseEffect = context.CreateNew<PowerUpDefinition>();
-        magicEffect.PowerUpDefinitionsPvp.Add(reducePvpDefenseEffect);
-        reducePvpDefenseEffect.TargetAttribute = Stats.DefensePvp.GetPersistent(gameConfiguration);
-        reducePvpDefenseEffect.Boost = context.CreateNew<PowerUpDefinitionValue>();
-        reducePvpDefenseEffect.Boost.ConstantValue.Value = 0.9f;
-        reducePvpDefenseEffect.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
+        var reduceDefenseEffect = context.CreateNew<PowerUpDefinition>();
+        magicEffect.PowerUpDefinitions.Add(reduceDefenseEffect);
+        reduceDefenseEffect.TargetAttribute = Stats.DefenseDecrement.GetPersistent(gameConfiguration);
+        reduceDefenseEffect.Boost = context.CreateNew<PowerUpDefinitionValue>();
+        reduceDefenseEffect.Boost.ConstantValue.Value = 0.1f; // 10% decrease
+        reduceDefenseEffect.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
 
         return magicEffect;
     }

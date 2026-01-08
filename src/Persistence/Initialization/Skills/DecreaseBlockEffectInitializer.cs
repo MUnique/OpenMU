@@ -43,14 +43,14 @@ public class DecreaseBlockEffectInitializer : InitializerBase
         magicEffect.PowerUpDefinitions.Add(decDefRatePowerUpDefinition);
         decDefRatePowerUpDefinition.TargetAttribute = Stats.DefenseRatePvm.GetPersistent(this.GameConfiguration);
         decDefRatePowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-        decDefRatePowerUpDefinition.Boost.ConstantValue.Value = 0.5f; // 50% decrease
-        decDefRatePowerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
+        decDefRatePowerUpDefinition.Boost.ConstantValue.Value = -50f;
+        decDefRatePowerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.AddFinal;
 
         var decDefRatePowerUpDefinitionPvp = this.Context.CreateNew<PowerUpDefinition>();
         magicEffect.PowerUpDefinitionsPvp.Add(decDefRatePowerUpDefinitionPvp);
-        decDefRatePowerUpDefinitionPvp.TargetAttribute = Stats.DefenseRatePvp.GetPersistent(this.GameConfiguration);
+        decDefRatePowerUpDefinitionPvp.TargetAttribute = Stats.DefenseRatePvm.GetPersistent(this.GameConfiguration);
         decDefRatePowerUpDefinitionPvp.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-        decDefRatePowerUpDefinitionPvp.Boost.ConstantValue.Value = 0.8f; // 20% decrease
-        decDefRatePowerUpDefinitionPvp.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
+        decDefRatePowerUpDefinitionPvp.Boost.ConstantValue.Value = -20f;
+        decDefRatePowerUpDefinitionPvp.Boost.ConstantValue.AggregateType = AggregateType.AddFinal;
     }
 }
