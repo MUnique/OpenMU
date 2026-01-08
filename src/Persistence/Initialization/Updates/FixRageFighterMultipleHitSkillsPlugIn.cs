@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
 using MUnique.OpenMU.PlugIns;
@@ -50,6 +51,23 @@ public class FixRageFighterMultipleHitSkillsPlugIn : UpdatePlugInBase
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
+        // Update summoner berserker defense reduction attributes
+        gameConfiguration.CharacterClasses.ForEach(charClass =>
+        {
+            if (charClass.Number == 20 || charClass.Number == 22 || charClass.Number == 23) // Summoner classes
+            {
+                if (charClass.AttributeCombinations.FirstOrDefault(attr => attr.TargetAttribute == Stats.DefensePvm) is { } finalBerserkerHealthDecrementToDefensePvm)
+                {
+                    finalBerserkerHealthDecrementToDefensePvm.TargetAttribute = Stats.DefenseFinal.GetPersistent(gameConfiguration);
+                }
+
+                if (charClass.AttributeCombinations.FirstOrDefault(attr => attr.TargetAttribute == Stats.DefensePvp) is { } finalBerserkerHealthDecrementToDefensePvp)
+                {
+                    charClass.AttributeCombinations.Remove(finalBerserkerHealthDecrementToDefensePvp);
+                }
+            }
+        });
+
         // Update Increase Health (Vitality) magic effect
         if (gameConfiguration.MagicEffects.FirstOrDefault(m => m.Number == (short)MagicEffectNumber.IncreaseHealth) is { } increaseHealthEffect
             && increaseHealthEffect.PowerUpDefinitions.FirstOrDefault() is { } increaseHealthPowerUp)
@@ -57,7 +75,7 @@ public class FixRageFighterMultipleHitSkillsPlugIn : UpdatePlugInBase
             increaseHealthPowerUp.Boost!.MaximumValue = 200f;
         }
 
-        // Update Innvoation magic effect
+        // Update Innovation magic effect
         if (gameConfiguration.MagicEffects.FirstOrDefault(m => m.Number == (short)MagicEffectNumber.Innovation) is { } innovationEffect)
         {
             if (innovationEffect.PowerUpDefinitions.FirstOrDefault(p => p.TargetAttribute == Stats.DefenseDecrement) is { } innovationDefDecrement)
