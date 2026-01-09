@@ -127,8 +127,7 @@ internal partial class CharacterClassInitialization
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(finalBerserkerHealthDecrement, -0.1f, Stats.BerserkerHealthDecrement, InputOperator.Minimum));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(finalBerserkerHealthDecrement, 1, Stats.BerserkerMinPhysDmgBonus, InputOperator.Minimum, AggregateType.Multiplicate));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.MaximumHealth, 1, finalBerserkerHealthDecrement, InputOperator.Add, AggregateType.Multiplicate));
-        result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.DefensePvm, statsDefense, finalBerserkerHealthDecrement, AggregateType.AddFinal));
-        result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.DefensePvp, statsDefense, finalBerserkerHealthDecrement, AggregateType.AddFinal));
+        result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.DefenseFinal, statsDefense, finalBerserkerHealthDecrement, AggregateType.AddFinal));
 
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.BerserkerMinPhysDmgBonus, 1, Stats.BerserkerManaMultiplier, aggregateType: AggregateType.Multiplicate));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.BerserkerMaxPhysDmgBonus, 1, Stats.BerserkerManaMultiplier, aggregateType: AggregateType.Multiplicate));

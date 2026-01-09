@@ -55,8 +55,13 @@ public interface IAttackable : IIdentifiable, ILocateable
     /// <param name="skill">The skill.</param>
     /// <param name="isCombo">If set to <c>true</c>, the attacker did a combination of skills.</param>
     /// <param name="damageFactor">The damage factor.</param>
+    /// <param name="isFinalStreakHit">
+    ///     Not <c>null</c> when it's a rage fighter multiple hit skill:
+    ///     <c>true</c>, if it's the final hit;
+    ///     <c>false</c>, for other hits.
+    /// </param>
     /// <returns>Returns information about the damage inflicted.</returns>
-    ValueTask<HitInfo?> AttackByAsync(IAttacker attacker, SkillEntry? skill, bool isCombo, double damageFactor = 1.0);
+    ValueTask<HitInfo?> AttackByAsync(IAttacker attacker, SkillEntry? skill, bool isCombo, double damageFactor = 1.0, bool? isFinalStreakHit = null);
 
     /// <summary>
     /// Reflects the damage which was done previously with <see cref="AttackByAsync" /> or even <see cref="ReflectDamageAsync" /> to the <paramref name="reflector" />.

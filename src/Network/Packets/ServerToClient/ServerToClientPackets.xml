@@ -2370,6 +2370,18 @@
         </Field>
         <Field>
           <Index>7</Index>
+          <LeftShifted>4</LeftShifted>
+          <Type>Boolean</Type>
+          <Name>IsRageFighterStreakHit</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <LeftShifted>5</LeftShifted>
+          <Type>Boolean</Type>
+          <Name>IsRageFighterStreakFinalHit</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
           <LeftShifted>6</LeftShifted>
           <Type>Boolean</Type>
           <Name>IsDoubleDamage</Name>
@@ -2403,6 +2415,18 @@
           <TypeName>DamageKind</TypeName>
           <Name>Kind</Name>
           <Length>4</Length>
+        </Field>
+        <Field>
+          <Index>3</Index>
+          <LeftShifted>4</LeftShifted>
+          <Type>Boolean</Type>
+          <Name>IsRageFighterStreakHit</Name>
+        </Field>
+        <Field>
+          <Index>3</Index>
+          <LeftShifted>5</LeftShifted>
+          <Type>Boolean</Type>
+          <Name>IsRageFighterStreakFinalHit</Name>
         </Field>
         <Field>
           <Index>3</Index>
@@ -11270,8 +11294,8 @@
           <Value>3</Value>
         </EnumValue>
         <EnumValue>
-          <Name>LightPink</Name>
-          <Description>Light pink color.</Description>
+          <Name>ReflectedLightPink</Name>
+          <Description>Light pink color, usually used by reflected damage.</Description>
           <Value>4</Value>
         </EnumValue>
         <EnumValue>
@@ -11280,8 +11304,8 @@
           <Value>5</Value>
         </EnumValue>
         <EnumValue>
-          <Name>ReflectedDarkPink</Name>
-          <Description>Dark pink color, usually used by reflected damage.</Description>
+          <Name>DarkPink</Name>
+          <Description>Dark pink color.</Description>
           <Value>6</Value>
         </EnumValue>
         <EnumValue>
