@@ -101,10 +101,9 @@ public class InnovationEffectInitializer : InitializerBase
         // Defense decrease % (applies last) = 20 + (Energy / 90)
         var decDefPowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
         magicEffect.PowerUpDefinitions.Add(decDefPowerUpDefinition);
-        decDefPowerUpDefinition.TargetAttribute = Stats.DefenseDecrement.GetPersistent(this.GameConfiguration);
+        decDefPowerUpDefinition.TargetAttribute = Stats.InnovationDefDecrement.GetPersistent(this.GameConfiguration);
         decDefPowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
         decDefPowerUpDefinition.Boost.ConstantValue.Value = 0.20f; // 20% decrease
-        decDefPowerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
         decDefPowerUpDefinition.Boost.MaximumValue = 0.64f; // 64% decrease (based on 4k total energy cap)
 
         var decDefPerEnergy = this.Context.CreateNew<AttributeRelationship>();
@@ -116,10 +115,9 @@ public class InnovationEffectInitializer : InitializerBase
         // Defense decrease PvP % (applies last) = 12 + (Energy / 110)
         var decDefPowerUpDefinitionPvp = this.Context.CreateNew<PowerUpDefinition>();
         magicEffect.PowerUpDefinitionsPvp.Add(decDefPowerUpDefinitionPvp);
-        decDefPowerUpDefinitionPvp.TargetAttribute = Stats.DefenseDecrement.GetPersistent(this.GameConfiguration);
+        decDefPowerUpDefinitionPvp.TargetAttribute = Stats.InnovationDefDecrement.GetPersistent(this.GameConfiguration);
         decDefPowerUpDefinitionPvp.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
         decDefPowerUpDefinitionPvp.Boost.ConstantValue.Value = 0.12f; // 12% decrease
-        decDefPowerUpDefinitionPvp.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
         decDefPowerUpDefinitionPvp.Boost.MaximumValue = 0.48f; // 48% decrease (based on 4k total energy cap)
 
         var decDefPerEnergyPvp = this.Context.CreateNew<AttributeRelationship>();

@@ -43,7 +43,7 @@ public class DefenseReductionBeastUppercutEffectInitializer : InitializerBase
         magicEffect.PowerUpDefinitions.Add(reduceDefenseEffect);
         reduceDefenseEffect.TargetAttribute = Stats.DefenseDecrement.GetPersistent(this.GameConfiguration);
         reduceDefenseEffect.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-        reduceDefenseEffect.Boost.ConstantValue.Value = 0.1f; // 10% decrease
+        reduceDefenseEffect.Boost.ConstantValue.Value = 0.9f; // 10% decrease
         reduceDefenseEffect.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
     }
 }

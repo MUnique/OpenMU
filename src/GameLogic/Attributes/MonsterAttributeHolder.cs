@@ -22,6 +22,7 @@ public class MonsterAttributeHolder : IAttributeSystem
             { Stats.DamageReceiveDecrement, m => 1.0f },
             { Stats.AttackDamageIncrease, m => 1.0f },
             { Stats.ShieldBypassChance, m => 1.0f },
+            { Stats.DefenseDecrement, m => 1.0f - m.Attributes.GetValueOfAttribute(Stats.InnovationDefDecrement) },
         };
 
     private static readonly IDictionary<AttributeDefinition, Action<AttackableNpcBase, float>> SetterMapping =
@@ -104,11 +105,9 @@ public class MonsterAttributeHolder : IAttributeSystem
         {
             attribute = new ComposableAttribute(targetAttribute);
             var attrValue = this.GetValueOfAttribute(targetAttribute);
-            if (Math.Abs(attrValue) > 0.01f)
-            {
-                attribute.AddElement(new SimpleElement { Value = attrValue });
-            }
-
+            var nullValue = element.AggregateType == AggregateType.Multiplicate ? 1 : 0;
+            attrValue = Math.Abs(attrValue) < 0.01f ? nullValue : attrValue;
+            attribute.AddElement(new SimpleElement { Value = attrValue });
             attributeDictionary.Add(targetAttribute, attribute);
         }
 

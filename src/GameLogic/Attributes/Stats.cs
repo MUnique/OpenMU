@@ -913,14 +913,19 @@ public class Stats
     public static AttributeDefinition WeaknessPhysDmgDecrement { get; } = new(new Guid("37497650-139B-4DA1-9FB6-27AEB8F04CF6"), "Weakness Physical Damage Decrement", "The inflicted physical damage decrement due to the magic effects of weakness or killing blow skills, which is multiplied with the final damage and subtracted from it.");
 
     /// <summary>
+    /// Gets the innovation defense decrement due to Summoner's innovation skill attribute definition.
+    /// </summary>
+    public static AttributeDefinition InnovationDefDecrement { get; } = new(new Guid("D8B3B1C9-B409-4A07-8F4D-8F315DCB173A"), "Innovation Defense Decrement", "The defense decrement due to the magic effect of innovation skill, which is multiplied with the final defense and subtracted from it.");
+
+    /// <summary>
     /// Gets the defense decrement attribute definition.
     /// </summary>
     /// <remarks>
-    ///     Bucket attribute that collects the multipliers of the magic effects of innovation (Sum), beast uppercut (RF) and fire slash (MG).
+    ///     Includes the multiplier <see cref="Stats.InnovationDefDecrement"/>, and the ones from the magic effects of beast uppercut (RF) and fire slash (MG).
     ///     Beast uppercut and fire slash share the same magic effect number, while innovation's is different.
     ///     This means that the first two effects can only exist 1 at a time, while innovation can coexist with either of them.
     /// </remarks>
-    public static AttributeDefinition DefenseDecrement { get; } = new(new Guid("D8B3B1C9-B409-4A07-8F4D-8F315DCB173A"), "Defense Decrement", "The defense decrement due to magic effects of various skills, which is multiplied with the final defense and subtracted from it.");
+    public static AttributeDefinition DefenseDecrement { get; } = new(new Guid("D19A0E33-5C9A-4B8E-AF12-3C4D5E6F7890"), "Defense Decrement", "The defense decrement due to magic effects of various skills, which is multiplied with the final defense and subtracted from it.");
 
     /// <summary>
     /// Gets the 'is shield equipped' attribute definition.
