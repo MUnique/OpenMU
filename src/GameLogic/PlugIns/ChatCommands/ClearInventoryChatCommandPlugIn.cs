@@ -118,38 +118,38 @@ public class ClearInventoryChatCommandPlugIn : ChatCommandPlugInBase<ClearInvent
 
     /// <summary>
     /// The configuration of a <see cref="ClearInventoryChatCommandPlugIn"/>.
-    /// TODO: Make localizable.
+    /// TODO: Make values localizable.
     /// </summary>
     public class ClearInventoryConfiguration
     {
         /// <summary>
         /// Gets or sets the character name to clear inventory for (GM only).
         /// </summary>
-        [Display(Name = "Money Cost", Description = @"The money cost to clear inventory (except GMs). Default: 0.")]
+        [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.ClearInventoryConfiguration_MoneyCost_Name), Description = nameof(PlugInResources.ClearInventoryConfiguration_MoneyCost_Description))]
         public int MoneyCost { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the player needs to run the command again within 10 seconds to confirm the inventory clearing (excluding GM).
         /// </summary>
-        [Display(Name = "Require Confirmation", Description = @"If true, the player will need to run the command again within 10 seconds to confirm the inventory clearing (excluding GM).")]
+        [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.ClearInventoryConfiguration_RequireConfirmation_Name), Description = nameof(PlugInResources.ClearInventoryConfiguration_RequireConfirmation_Description))]
         public bool RequireConfirmation { get; set; } = true;
 
         /// <summary>
         /// Gets or sets the message to show the confirmation message.
         /// </summary>
-        [Display(Name = "Confirmation Message", Description = @"The message to show when the player needs to run the command again within 10 seconds to confirm the inventory clearing.")]
+        [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.ClearInventoryConfiguration_ConfirmationMessage_Name), Description = nameof(PlugInResources.ClearInventoryConfiguration_ConfirmationMessage_Description))]
         public string ConfirmationMessage { get; set; } = "Confirmation: run again within 10 seconds to confirm inventory clearing";
 
         /// <summary>
         /// Gets or sets the message to show when the player does not have enough money to run the command.
         /// </summary>
-        [Display(Name = "Not Enough Money Message", Description = @"The message to show when the player does not have enough money to run the command.")]
+        [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.ClearInventoryConfiguration_NotEnoughMoneyMessage_Name), Description = nameof(PlugInResources.ClearInventoryConfiguration_NotEnoughMoneyMessage_Description))]
         public string NotEnoughMoneyMessage { get; set; } = "Not enough money to run command";
 
         /// <summary>
         /// Gets or sets the message to show when the inventory is cleared.
         /// </summary>
-        [Display(Name = "Inventory Cleared Message", Description = @"The message to show when the inventory is cleared.")]
+        [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.ClearInventoryConfiguration_InventoryClearedMessage_Name), Description = nameof(PlugInResources.ClearInventoryConfiguration_InventoryClearedMessage_Description))]
         public string InventoryClearedMessage { get; set; } = "Inventory cleared";
     }
 }

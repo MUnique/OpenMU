@@ -101,10 +101,10 @@
     <value></value>
   </data>
   <data name="Account_IsTemplate_Caption" xml:space="preserve">
-    <value>Is Template</value>
+    <value>Is template account</value>
   </data>
   <data name="Account_IsTemplate_Description" xml:space="preserve">
-    <value></value>
+    <value>A template account can log in multiple times for test purposes and is read-only.</value>
   </data>
   <data name="Account_Characters_Caption" xml:space="preserve">
     <value>Characters</value>

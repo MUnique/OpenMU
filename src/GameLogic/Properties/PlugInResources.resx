@@ -855,4 +855,274 @@
   <data name="SetStatChatCommandPlugIn_Description" xml:space="preserve">
     <value>Set stat points. Usage: /set (ene|agi|vit|str|cmd) (amount) (optional:character)</value>
   </data>
+  <data name="UpgradeItemLevelConfiguration_SuccessRatePercentage_Name" xml:space="preserve">
+      <value>Success Rate %</value>
+    </data>
+  <data name="UpgradeItemLevelConfiguration_SuccessRatePercentage_Description" xml:space="preserve">
+      <value>The success rate percentage for the item level upgrade.</value>
+    </data>
+  <data name="UpgradeItemLevelConfiguration_SuccessRateBonusWithLuckPercentage_Name" xml:space="preserve">
+      <value>Success Rate Luck Bonus %</value>
+    </data>
+  <data name="UpgradeItemLevelConfiguration_SuccessRateBonusWithLuckPercentage_Description" xml:space="preserve">
+      <value>The additional success rate, when the item has luck option.</value>
+    </data>
+  <data name="UpgradeItemLevelConfiguration_MinimumLevel_Name" xml:space="preserve">
+      <value>Item Minimum Level</value>
+    </data>
+  <data name="UpgradeItemLevelConfiguration_MinimumLevel_Description" xml:space="preserve">
+      <value>The minimum item level which the item has to have before applying the jewel.</value>
+    </data>
+  <data name="UpgradeItemLevelConfiguration_MaximumLevel_Name" xml:space="preserve">
+      <value>Item Maximum Level</value>
+    </data>
+  <data name="UpgradeItemLevelConfiguration_MaximumLevel_Description" xml:space="preserve">
+      <value>The maximum item level which the item has to have before applying the jewel.</value>
+    </data>
+  <data name="UpgradeItemLevelConfiguration_LevelAmount_Name" xml:space="preserve">
+      <value>Add Levels Amount</value>
+    </data>
+  <data name="UpgradeItemLevelConfiguration_LevelAmount_Description" xml:space="preserve">
+      <value>How many times to add a level to the item (will become maximum allowed level).</value>
+    </data>
+  <data name="UpgradeItemLevelConfiguration_ResetToLevel0WhenFailMinLevel_Name" xml:space="preserve">
+      <value>Fail To 0 min. Level</value>
+    </data>
+  <data name="UpgradeItemLevelConfiguration_ResetToLevel0WhenFailMinLevel_Description" xml:space="preserve">
+      <value>The item level after which the item will drop to level 0 when it fails.</value>
+    </data>
+  <data name="UpgradeItemLevelConfiguration_AllowedItems_Name" xml:space="preserve">
+      <value>Allowed items</value>
+    </data>
+  <data name="UpgradeItemLevelConfiguration_AllowedItems_Description" xml:space="preserve">
+      <value>Defines the items which are allowed to be upgraded. If empty, all items are allowed except those in 'disallowed items'.</value>
+    </data>
+  <data name="UpgradeItemLevelConfiguration_DisallowedItems_Name" xml:space="preserve">
+      <value>Disallowed items</value>
+    </data>
+  <data name="UpgradeItemLevelConfiguration_DisallowedItems_Description" xml:space="preserve">
+      <value>Defines the items which are not allowed to be upgraded.</value>
+    </data>
+  <data name="ClearInventoryConfiguration_MoneyCost_Name" xml:space="preserve">
+    <value>Money Cost</value>
+  </data>
+  <data name="ClearInventoryConfiguration_MoneyCost_Description" xml:space="preserve">
+    <value>The money cost to clear inventory (except GMs). Default: 0.</value>
+  </data>
+  <data name="ClearInventoryConfiguration_RequireConfirmation_Name" xml:space="preserve">
+    <value>Require Confirmation</value>
+  </data>
+  <data name="ClearInventoryConfiguration_RequireConfirmation_Description" xml:space="preserve">
+    <value>If true, the player will need to run the command again within 10 seconds to confirm the inventory clearing (excluding GM).</value>
+  </data>
+  <data name="ClearInventoryConfiguration_ConfirmationMessage_Name" xml:space="preserve">
+    <value>Confirmation Message</value>
+  </data>
+  <data name="ClearInventoryConfiguration_ConfirmationMessage_Description" xml:space="preserve">
+    <value>The message to show when the player needs to run the command again within 10 seconds to confirm the inventory clearing.</value>
+  </data>
+  <data name="ClearInventoryConfiguration_NotEnoughMoneyMessage_Name" xml:space="preserve">
+    <value>Not Enough Money Message</value>
+  </data>
+  <data name="ClearInventoryConfiguration_NotEnoughMoneyMessage_Description" xml:space="preserve">
+    <value>The message to show when the player does not have enough money to run the command.</value>
+  </data>
+  <data name="ClearInventoryConfiguration_InventoryClearedMessage_Name" xml:space="preserve">
+    <value>Inventory Cleared Message</value>
+  </data>
+  <data name="ClearInventoryConfiguration_InventoryClearedMessage_Description" xml:space="preserve">
+    <value>The message to show when the inventory is cleared.</value>
+  </data>
+  <data name="NpcChatCommandConfiguration_OpenMerchantNpc_Name" xml:space="preserve">
+    <value>NPC ID</value>
+  </data>
+  <data name="NpcChatCommandConfiguration_OpenMerchantNpc_Description" xml:space="preserve">
+    <value>The ID of the NPC to open the merchant store. Default: Potion Girl Amy - 253.</value>
+  </data>
+  <data name="NpcChatCommandConfiguration_MinimumVipLevel_Name" xml:space="preserve">
+    <value>Minimum VIP Level</value>
+  </data>
+  <data name="NpcChatCommandConfiguration_MinimumVipLevel_Description" xml:space="preserve">
+    <value>The minimum VIP level to use the command. Default: 0.</value>
+  </data>
+  <data name="NpcChatCommandConfiguration_InsufficientVipLevelMessage_Name" xml:space="preserve">
+    <value>Insufficient VIP Level Message</value>
+  </data>
+  <data name="NpcChatCommandConfiguration_InsufficientVipLevelMessage_Description" xml:space="preserve">
+    <value>The message to show when the player does not have the required VIP level for this command (excluding GM).</value>
+  </data>
+  <data name="OpenWarehouseChatCommandConfiguration_MinimumVipLevel_Name" xml:space="preserve">
+    <value>Minimum VIP Level</value>
+  </data>
+  <data name="OpenWarehouseChatCommandConfiguration_MinimumVipLevel_Description" xml:space="preserve">
+    <value>The minimum VIP level to use the command (excluding GM). Default: 0.</value>
+  </data>
+  <data name="OpenWarehouseChatCommandConfiguration_InsufficientVipLevelMessage_Name" xml:space="preserve">
+    <value>Insufficient VIP Level Message</value>
+  </data>
+  <data name="OpenWarehouseChatCommandConfiguration_InsufficientVipLevelMessage_Description" xml:space="preserve">
+    <value>The message to show when the player does not have the required VIP level for this command (excluding GM).</value>
+  </data>
+  <data name="ShowNpcIdsChatCommand_ShowNpcIdsChatCommand_Name" xml:space="preserve">
+    <value>Show NPC ids chat command</value>
+  </data>
+  <data name="ShowNpcIdsChatCommand_ShowNpcIdsChatCommand_Description" xml:space="preserve">
+    <value>Handles the chat command '/showids'.</value>
+  </data>
+  <data name="MuHelperConfiguration_CostPerStage_Name" xml:space="preserve">
+    <value>Cost per stage</value>
+  </data>
+  <data name="MuHelperConfiguration_CostPerStage_Description" xml:space="preserve">
+    <value>This value is applied per pay interval and multiplied with the total character level.</value>
+  </data>
+  <data name="MuHelperConfiguration_PayInterval_Name" xml:space="preserve">
+    <value>Pay interval</value>
+  </data>
+  <data name="MuHelperConfiguration_StageInterval_Name" xml:space="preserve">
+    <value>Stage interval</value>
+  </data>
+  <data name="MuHelperConfiguration_StageInterval_Description" xml:space="preserve">
+    <value>After each interval, the stage gets increased to the next level with usually increasing costs.</value>
+  </data>
+  <data name="MuHelperConfiguration_MinLevel_Name" xml:space="preserve">
+    <value>Minimum character level</value>
+  </data>
+  <data name="MuHelperConfiguration_MaxLevel_Name" xml:space="preserve">
+    <value>Maximum character level</value>
+  </data>
+  <data name="RecoverConsumeHandlerConfiguration_TotalRecoverPercentage_Name" xml:space="preserve">
+    <value>Total recover percentage</value>
+  </data>
+  <data name="RecoverConsumeHandlerConfiguration_RecoverPercentageIncreaseByPotionLevel_Name" xml:space="preserve">
+    <value>Recover percentage increase by potion level</value>
+  </data>
+  <data name="RecoverConsumeHandlerConfiguration_RecoverDelayReductionByPotionLevel_Name" xml:space="preserve">
+    <value>Recover delay reduction by potion level</value>
+  </data>
+  <data name="RecoverConsumeHandlerConfiguration_RecoverDelayReductionByPotionLevel_Description" xml:space="preserve">
+    <value>A value between 0 and 1 (exclusive). 1 would mean that the recover works instantly since level 1.</value>
+  </data>
+  <data name="RecoverConsumeHandlerConfiguration_AdditionalRecoverMinusCharacterLevel_Name" xml:space="preserve">
+    <value>Additional recover minus character level</value>
+  </data>
+  <data name="RecoverConsumeHandlerConfiguration_AdditionalRecoverMinusCharacterLevel_Description" xml:space="preserve">
+    <value>Defines the value which is additionally recovered. From this value, the character level is subtracted.</value>
+  </data>
+  <data name="RecoverConsumeHandlerConfiguration_CooldownTime_Name" xml:space="preserve">
+    <value>Cooldown time</value>
+  </data>
+  <data name="RecoverConsumeHandlerConfiguration_CooldownTime_Description" xml:space="preserve">
+    <value>The cooldown time for the next consumption.</value>
+  </data>
+  <data name="RecoverConsumeHandlerConfiguration_RecoverSteps_Name" xml:space="preserve">
+    <value>Maximum character level</value>
+  </data>
+  <data name="RecoverConsumeHandlerConfiguration_RecoverSteps_Description" xml:space="preserve">
+    <value>If none are defined, the recover happens instantly.</value>
+  </data>
+  <data name="SelfDefensePlugInConfiguration_SelfDefenseTimeOut_Name" xml:space="preserve">
+    <value>Self-defense time-out.</value>
+  </data>
+  <data name="QuestMonsterKillCountPlugInConfiguration_Message_Name" xml:space="preserve">
+    <value>Message</value>
+  </data>
+  <data name="PlayerLosesMoneyAfterDeathPlugInConfiguration_LossesPerLevel_Name" xml:space="preserve">
+    <value>Losses per level</value>
+  </data>
+  <data name="PlayerLosesMoneyAfterDeathPlugInConfiguration_MinimumLevel_Name" xml:space="preserve">
+    <value>Minimum level</value>
+  </data>
+  <data name="PlayerLosesMoneyAfterDeathPlugInConfiguration_IsMaster_Name" xml:space="preserve">
+    <value>Is master</value>
+  </data>
+  <data name="PlayerLosesMoneyAfterDeathPlugInConfiguration_InventoryMoneyLossPercentage_Name" xml:space="preserve">
+    <value>Inventory money loss %</value>
+  </data>
+  <data name="PlayerLosesMoneyAfterDeathPlugInConfiguration_VaultMoneyLossPercentage_Name" xml:space="preserve">
+    <value>Vault money loss %</value>
+  </data>
+  <data name="PlayerLosesExperienceAfterDeathPlugInConfiguration_LossesPerLevel_Name" xml:space="preserve">
+    <value>Losses per level</value>
+  </data>
+  <data name="PlayerLosesExperienceAfterDeathPlugInConfiguration_MinimumLevel_Name" xml:space="preserve">
+    <value>Minimum level</value>
+  </data>
+  <data name="PlayerLosesExperienceAfterDeathPlugInConfiguration_IsMaster_Name" xml:space="preserve">
+    <value>Is master</value>
+  </data>
+  <data name="PlayerLosesExperienceAfterDeathPlugInConfiguration_Losses_Name" xml:space="preserve">
+    <value>Losses per stage</value>
+  </data>
+  <data name="PlayerLosesExperienceAfterDeathPlugInConfiguration_State_Name" xml:space="preserve">
+    <value>State</value>
+  </data>
+  <data name="PlayerLosesExperienceAfterDeathPlugInConfiguration_ExperienceLossPercentage_Name" xml:space="preserve">
+    <value>Experience loss %</value>
+  </data>
+  <data name="PeriodicSaveProgressPlugInConfiguration_Interval_Name" xml:space="preserve">
+    <value>Save interval</value>
+  </data>
+  <data name="PeriodicTaskConfiguration_Timetable_Name" xml:space="preserve">
+    <value>Timetable</value>
+  </data>
+  <data name="PeriodicTaskConfiguration_PreStartMessageDelay_Name" xml:space="preserve">
+    <value>Pre-start message delay</value>
+  </data>
+  <data name="PeriodicTaskConfiguration_TaskDuration_Name" xml:space="preserve">
+    <value>Task duration (minimum)</value>
+  </data>
+  <data name="PeriodicTaskConfiguration_Message_Name" xml:space="preserve">
+    <value>Message</value>
+  </data>
+  <data name="PeriodicTaskConfiguration_Message_Description" xml:space="preserve">
+    <value>The text which prints as a golden message in the game.</value>
+  </data>
+  <data name="ResetConfiguration_ResetLimit_Name" xml:space="preserve">
+    <value>Reset limit</value>
+  </data>
+  <data name="ResetConfiguration_RequiredLevel_Name" xml:space="preserve">
+    <value>Required level</value>
+  </data>
+  <data name="ResetConfiguration_LevelAfterReset_Name" xml:space="preserve">
+    <value>Level after reset</value>
+  </data>
+  <data name="ResetConfiguration_RequiredMoney_Name" xml:space="preserve">
+    <value>Required money</value>
+  </data>
+  <data name="ResetConfiguration_MultiplyRequiredMoneyByResetCount_Name" xml:space="preserve">
+    <value>Multiply required money by reset count</value>
+  </data>
+  <data name="ResetConfiguration_ResetStats_Name" xml:space="preserve">
+    <value>Reset stats</value>
+  </data>
+  <data name="ResetConfiguration_PointsPerReset_Name" xml:space="preserve">
+    <value>Points per reset</value>
+  </data>
+  <data name="ResetConfiguration_MultiplyPointsByResetCount_Name" xml:space="preserve">
+    <value>Multiply points by reset count</value>
+  </data>
+  <data name="ResetConfiguration_ReplacePointsPerReset_Name" xml:space="preserve">
+    <value>Reset points per reset</value>
+  </data>
+  <data name="ResetConfiguration_MoveHome_Name" xml:space="preserve">
+    <value>Move home</value>
+  </data>
+  <data name="ResetConfiguration_LogOut_Name" xml:space="preserve">
+    <value>Log out</value>
+  </data>
+  <data name="MiniGameStartConfiguration_EntranceOpenedMessage_Name" xml:space="preserve">
+    <value>Entrance opened message</value>
+  </data>
+  <data name="MiniGameStartConfiguration_EntranceClosedMessage_Name" xml:space="preserve">
+    <value>Entrance closed message</value>
+  </data>
+  <data name="HappyHourConfiguration_ExperienceMultiplier_Name" xml:space="preserve">
+    <value>Experience multiplier</value>
+  </data>
+  <data name="WanderingMerchantsConfiguration_MinimumSpawnDuration_Name" xml:space="preserve">
+    <value>Minimum spawn duration</value>
+  </data>
+  <data name="WanderingMerchantsConfiguration_MaximumSpawnDuration_Name" xml:space="preserve">
+    <value>Maximum spawn duration</value>
+  </data>
 </root>

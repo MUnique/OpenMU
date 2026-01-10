@@ -85,13 +85,13 @@ public class OpenWarehouseChatCommandPlugIn : ChatCommandPlugInBase<OpenWarehous
         /// <summary>
         /// Gets or sets the minimum VIP level to use the command (excluding GM).
         /// </summary>
-        [Display(Name = "Minimum VIP Level", Description = @"The minimum VIP level to use the command (excluding GM). Default: 0.")]
+        [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.OpenWarehouseChatCommandConfiguration_MinimumVipLevel_Name), Description = nameof(PlugInResources.OpenWarehouseChatCommandConfiguration_MinimumVipLevel_Description))]
         public int MinimumVipLevel { get; set; }
 
         /// <summary>
         /// Gets or sets the message to show when the player does not have the required VIP level for this command (excluding GM).
         /// </summary>
-        [Display(Name = "Insufficient VIP Level Message", Description = @"The message to show when the player does not have the required VIP level for this command (excluding GM).")]
+        [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.OpenWarehouseChatCommandConfiguration_InsufficientVipLevelMessage_Name), Description = nameof(PlugInResources.OpenWarehouseChatCommandConfiguration_InsufficientVipLevelMessage_Description))]
         public string InsufficientVipLevelMessage { get; set; } = "Insufficient VIP level to use this command";
     }
 }

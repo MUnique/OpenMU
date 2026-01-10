@@ -11,7 +11,6 @@ using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 /// </summary>
 public class PeriodicInvasionConfiguration : PeriodicTaskConfiguration
 {
-
     /// <summary>
     /// Initializes a new instance of the <see cref="PeriodicInvasionConfiguration"/> class.
     /// </summary>

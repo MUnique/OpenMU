@@ -109,19 +109,19 @@ public class NpcChatCommandPlugIn : ChatCommandPlugInBase<NpcChatCommandPlugIn.A
         /// Gets or sets the NPC ID of the NPC to open the merchant store.
         /// </summary>
         // TODO: Change to a list of possible NPCs merchants
-        [Display(Name = "NPC ID", Description = @"The ID of the NPC to open the merchant store. Default: Potion Girl Amy - 253.")]
+        [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.NpcChatCommandConfiguration_OpenMerchantNpc_Name), Description = nameof(PlugInResources.NpcChatCommandConfiguration_OpenMerchantNpc_Description))]
         public MonsterDefinition? OpenMerchantNpc { get; set; }
 
         /// <summary>
         /// Gets or sets the minimum VIP level to use the command.
         /// </summary>
-        [Display(Name = "Minimum VIP Level", Description = @"The minimum VIP level to use the command. Default: 0.")]
+        [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.NpcChatCommandConfiguration_MinimumVipLevel_Name), Description = nameof(PlugInResources.NpcChatCommandConfiguration_MinimumVipLevel_Description))]
         public int MinimumVipLevel { get; set; }
 
         /// <summary>
         /// Gets or sets the message to show when the player does not have the required VIP level for this command (excluding GM).
         /// </summary>
-        [Display(Name = "Insufficient VIP Level Message", Description = @"The message to show when the player does not have the required VIP level for this command (excluding GM).")]
+        [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.NpcChatCommandConfiguration_InsufficientVipLevelMessage_Name), Description = nameof(PlugInResources.NpcChatCommandConfiguration_InsufficientVipLevelMessage_Description))]
         public string InsufficientVipLevelMessage { get; set; } = "Insufficient VIP level to use this command";
     }
 }

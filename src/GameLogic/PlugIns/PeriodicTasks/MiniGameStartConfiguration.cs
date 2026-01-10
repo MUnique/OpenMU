@@ -12,10 +12,12 @@ public abstract class MiniGameStartConfiguration : PeriodicTaskConfiguration
     /// <summary>
     /// Gets or sets the entrance opened message.
     /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.MiniGameStartConfiguration_EntranceOpenedMessage_Name))]
     public string? EntranceOpenedMessage { get; set; }
 
     /// <summary>
     /// Gets or sets the entrance closed message.
     /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.MiniGameStartConfiguration_EntranceClosedMessage_Name))]
     public string? EntranceClosedMessage { get; set; }
 }

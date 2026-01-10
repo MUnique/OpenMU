@@ -168,4 +168,25 @@
   <data name="SocketNumber" xml:space="preserve">
     <value>Socket {0}</value>
   </data>
+  <data name="AccountCreationParameters_LoginName_Name" xml:space="preserve">
+    <value>Login Name</value>
+  </data>
+  <data name="AccountCreationParameters_Password_Name" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="AccountCreationParameters_SecurityCode_Name" xml:space="preserve">
+    <value>Security Code</value>
+  </data>
+  <data name="AccountCreationParameters_EMail_Name" xml:space="preserve">
+    <value>E-Mail</value>
+  </data>
+  <data name="AccountCreationParameters_State_Name" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="UserCreationParameters_LoginName_Name" xml:space="preserve">
+    <value>Username</value>
+  </data>
+  <data name="UserCreationParameters_Password_Name" xml:space="preserve">
+    <value>Password</value>
+  </data>
 </root>

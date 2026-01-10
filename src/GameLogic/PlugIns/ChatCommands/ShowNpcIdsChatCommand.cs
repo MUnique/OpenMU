@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("498D0205-388F-410A-A7C7-49069A64D3A9")]
 [PlugIn]
-[Display(Name = "Show NPC ids chat command", Description = "Handles the chat command '/showids'.")]
+[Display(ResourceType = typeof(PlugInResources), Name = "ShowNpcIdsChatCommand_ShowNpcIdsChatCommand_Name", Description = "ShowNpcIdsChatCommand_ShowNpcIdsChatCommand_Description")]
 [ChatCommandHelp(Command, "Shows the IDs of all NPCs in the view range of the game master.", CharacterStatus.GameMaster)]
 internal sealed class ShowNpcIdsChatCommand : IChatCommandPlugIn
 {

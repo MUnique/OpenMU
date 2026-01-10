@@ -18,6 +18,7 @@ public class PlayerLosesExperienceAfterDeathPlugInConfiguration
     /// <value>
     /// The losses per level.
     /// </value>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.PlayerLosesExperienceAfterDeathPlugInConfiguration_LossesPerLevel_Name))]
     [MemberOfAggregate]
     [ScaffoldColumn(true)]
     public ICollection<LossOfLevel> LossesPerLevel { get; set; } = new List<LossOfLevel>();
@@ -53,16 +54,19 @@ public class PlayerLosesExperienceAfterDeathPlugInConfiguration
         /// <value>
         /// The minimum level.
         /// </value>
+        [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.PlayerLosesExperienceAfterDeathPlugInConfiguration_MinimumLevel_Name))]
         public int MinimumLevel { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance applies only to master characters.
         /// </summary>
+        [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.PlayerLosesExperienceAfterDeathPlugInConfiguration_IsMaster_Name))]
         public bool IsMaster { get; set; }
 
         /// <summary>
         /// Gets or sets the loss per <see cref="HeroState"/>.
         /// </summary>
+        [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.PlayerLosesExperienceAfterDeathPlugInConfiguration_Losses_Name))]
         [MemberOfAggregate]
         [ScaffoldColumn(true)]
         public ICollection<LossPerStage> Losses { get; set; } = [];
@@ -94,11 +98,13 @@ public class PlayerLosesExperienceAfterDeathPlugInConfiguration
         /// <summary>
         /// Gets or sets the state.
         /// </summary>
+        [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.PlayerLosesExperienceAfterDeathPlugInConfiguration_State_Name))]
         public HeroState State { get; set; }
 
         /// <summary>
         /// Gets or sets the experience loss percentage.
         /// </summary>
+        [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.PlayerLosesExperienceAfterDeathPlugInConfiguration_ExperienceLossPercentage_Name))]
         public double ExperienceLossPercentage { get; set; }
     }
 }

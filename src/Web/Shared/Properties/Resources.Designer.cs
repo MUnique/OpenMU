@@ -61,6 +61,51 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to E-Mail.
+        /// </summary>
+        internal static string AccountCreationParameters_EMail_Name {
+            get {
+                return ResourceManager.GetString("AccountCreationParameters_EMail_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Login Name.
+        /// </summary>
+        internal static string AccountCreationParameters_LoginName_Name {
+            get {
+                return ResourceManager.GetString("AccountCreationParameters_LoginName_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Password.
+        /// </summary>
+        internal static string AccountCreationParameters_Password_Name {
+            get {
+                return ResourceManager.GetString("AccountCreationParameters_Password_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Security Code.
+        /// </summary>
+        internal static string AccountCreationParameters_SecurityCode_Name {
+            get {
+                return ResourceManager.GetString("AccountCreationParameters_SecurityCode_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Status.
+        /// </summary>
+        internal static string AccountCreationParameters_State_Name {
+            get {
+                return ResourceManager.GetString("AccountCreationParameters_State_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to All.
         /// </summary>
         internal static string All {
@@ -210,6 +255,24 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
         internal static string Toolbar {
             get {
                 return ResourceManager.GetString("Toolbar", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Username.
+        /// </summary>
+        internal static string UserCreationParameters_LoginName_Name {
+            get {
+                return ResourceManager.GetString("UserCreationParameters_LoginName_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Password.
+        /// </summary>
+        internal static string UserCreationParameters_Password_Name {
+            get {
+                return ResourceManager.GetString("UserCreationParameters_Password_Name", resourceCulture);
             }
         }
     }

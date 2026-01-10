@@ -129,7 +129,6 @@ public class Account
     /// Gets or sets a value indicating whether this instance is a template account
     /// and therefore read-only within the game server.
     /// </summary>
-    [Display(Name = "Is template account", Description = "A template account can login multiple times for test purposes and is read-only.")]
     public bool IsTemplate { get; set; }
 
     /// <summary>

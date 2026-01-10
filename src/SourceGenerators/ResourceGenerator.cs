@@ -15,7 +15,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 /// A <see cref="ISourceGenerator"/> which creates resource strings for all classes and properties of
 /// the data model. It looks for the <c>CloneableAttribute</c> to identify which classes should get the generated code.
 /// </summary>
-[Generator]
+// [Generator]
 public class ResourceGenerator : ISourceGenerator
 {
     //private const string CloneableAttributeFullName = "MUnique.OpenMU.Annotations.CloneableAttribute";

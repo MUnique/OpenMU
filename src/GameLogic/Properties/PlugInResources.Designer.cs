@@ -385,6 +385,96 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The message to show when the player needs to run the command again within 10 seconds to confirm the inventory clearing..
+        /// </summary>
+        public static string ClearInventoryConfiguration_ConfirmationMessage_Description {
+            get {
+                return ResourceManager.GetString("ClearInventoryConfiguration_ConfirmationMessage_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Confirmation Message.
+        /// </summary>
+        public static string ClearInventoryConfiguration_ConfirmationMessage_Name {
+            get {
+                return ResourceManager.GetString("ClearInventoryConfiguration_ConfirmationMessage_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The message to show when the inventory is cleared..
+        /// </summary>
+        public static string ClearInventoryConfiguration_InventoryClearedMessage_Description {
+            get {
+                return ResourceManager.GetString("ClearInventoryConfiguration_InventoryClearedMessage_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Inventory Cleared Message.
+        /// </summary>
+        public static string ClearInventoryConfiguration_InventoryClearedMessage_Name {
+            get {
+                return ResourceManager.GetString("ClearInventoryConfiguration_InventoryClearedMessage_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The money cost to clear inventory (except GMs). Default: 0..
+        /// </summary>
+        public static string ClearInventoryConfiguration_MoneyCost_Description {
+            get {
+                return ResourceManager.GetString("ClearInventoryConfiguration_MoneyCost_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Money Cost.
+        /// </summary>
+        public static string ClearInventoryConfiguration_MoneyCost_Name {
+            get {
+                return ResourceManager.GetString("ClearInventoryConfiguration_MoneyCost_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The message to show when the player does not have enough money to run the command..
+        /// </summary>
+        public static string ClearInventoryConfiguration_NotEnoughMoneyMessage_Description {
+            get {
+                return ResourceManager.GetString("ClearInventoryConfiguration_NotEnoughMoneyMessage_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not Enough Money Message.
+        /// </summary>
+        public static string ClearInventoryConfiguration_NotEnoughMoneyMessage_Name {
+            get {
+                return ResourceManager.GetString("ClearInventoryConfiguration_NotEnoughMoneyMessage_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If true, the player will need to run the command again within 10 seconds to confirm the inventory clearing (excluding GM)..
+        /// </summary>
+        public static string ClearInventoryConfiguration_RequireConfirmation_Description {
+            get {
+                return ResourceManager.GetString("ClearInventoryConfiguration_RequireConfirmation_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Require Confirmation.
+        /// </summary>
+        public static string ClearInventoryConfiguration_RequireConfirmation_Name {
+            get {
+                return ResourceManager.GetString("ClearInventoryConfiguration_RequireConfirmation_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the chat command &apos;/createmonster &lt;number&gt; &lt;intelligent&gt;&apos;. Creates a monster which can be remote controlled by the GM..
         /// </summary>
         public static string CreateMonsterChatCommand_Description {
@@ -781,6 +871,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Experience multiplier.
+        /// </summary>
+        public static string HappyHourConfiguration_ExperienceMultiplier_Name {
+            get {
+                return ResourceManager.GetString("HappyHourConfiguration_ExperienceMultiplier_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handle Happy Hour event.
         /// </summary>
         public static string HappyHourPlugIn_Description {
@@ -1105,6 +1204,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Entrance closed message.
+        /// </summary>
+        public static string MiniGameStartConfiguration_EntranceClosedMessage_Name {
+            get {
+                return ResourceManager.GetString("MiniGameStartConfiguration_EntranceClosedMessage_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Entrance opened message.
+        /// </summary>
+        public static string MiniGameStartConfiguration_EntranceOpenedMessage_Name {
+            get {
+                return ResourceManager.GetString("MiniGameStartConfiguration_EntranceOpenedMessage_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the chat command &apos;/move &lt;target&gt; &lt;mapIdOrName?&gt; &lt;x?&gt; &lt;y?&gt;&apos;. Moves the character to the specified destination..
         /// </summary>
         public static string MoveChatCommandPlugIn_Description {
@@ -1137,6 +1254,69 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string MoveMonsterChatCommand_Name {
             get {
                 return ResourceManager.GetString("MoveMonsterChatCommand_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This value is applied per pay interval and multiplied with the total character level..
+        /// </summary>
+        public static string MuHelperConfiguration_CostPerStage_Description {
+            get {
+                return ResourceManager.GetString("MuHelperConfiguration_CostPerStage_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cost per stage.
+        /// </summary>
+        public static string MuHelperConfiguration_CostPerStage_Name {
+            get {
+                return ResourceManager.GetString("MuHelperConfiguration_CostPerStage_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maximum character level.
+        /// </summary>
+        public static string MuHelperConfiguration_MaxLevel_Name {
+            get {
+                return ResourceManager.GetString("MuHelperConfiguration_MaxLevel_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minimum character level.
+        /// </summary>
+        public static string MuHelperConfiguration_MinLevel_Name {
+            get {
+                return ResourceManager.GetString("MuHelperConfiguration_MinLevel_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pay interval.
+        /// </summary>
+        public static string MuHelperConfiguration_PayInterval_Name {
+            get {
+                return ResourceManager.GetString("MuHelperConfiguration_PayInterval_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to After each interval, the stage gets increased to the next level with usually increasing costs..
+        /// </summary>
+        public static string MuHelperConfiguration_StageInterval_Description {
+            get {
+                return ResourceManager.GetString("MuHelperConfiguration_StageInterval_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stage interval.
+        /// </summary>
+        public static string MuHelperConfiguration_StageInterval_Name {
+            get {
+                return ResourceManager.GetString("MuHelperConfiguration_StageInterval_Name", resourceCulture);
             }
         }
         
@@ -1213,6 +1393,60 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The message to show when the player does not have the required VIP level for this command (excluding GM)..
+        /// </summary>
+        public static string NpcChatCommandConfiguration_InsufficientVipLevelMessage_Description {
+            get {
+                return ResourceManager.GetString("NpcChatCommandConfiguration_InsufficientVipLevelMessage_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Insufficient VIP Level Message.
+        /// </summary>
+        public static string NpcChatCommandConfiguration_InsufficientVipLevelMessage_Name {
+            get {
+                return ResourceManager.GetString("NpcChatCommandConfiguration_InsufficientVipLevelMessage_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The minimum VIP level to use the command. Default: 0..
+        /// </summary>
+        public static string NpcChatCommandConfiguration_MinimumVipLevel_Description {
+            get {
+                return ResourceManager.GetString("NpcChatCommandConfiguration_MinimumVipLevel_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minimum VIP Level.
+        /// </summary>
+        public static string NpcChatCommandConfiguration_MinimumVipLevel_Name {
+            get {
+                return ResourceManager.GetString("NpcChatCommandConfiguration_MinimumVipLevel_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The ID of the NPC to open the merchant store. Default: Potion Girl Amy - 253..
+        /// </summary>
+        public static string NpcChatCommandConfiguration_OpenMerchantNpc_Description {
+            get {
+                return ResourceManager.GetString("NpcChatCommandConfiguration_OpenMerchantNpc_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to NPC ID.
+        /// </summary>
+        public static string NpcChatCommandConfiguration_OpenMerchantNpc_Name {
+            get {
+                return ResourceManager.GetString("NpcChatCommandConfiguration_OpenMerchantNpc_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Opens the merchant NPC store..
         /// </summary>
         public static string NpcChatCommandPlugIn_Description {
@@ -1249,6 +1483,42 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The message to show when the player does not have the required VIP level for this command (excluding GM)..
+        /// </summary>
+        public static string OpenWarehouseChatCommandConfiguration_InsufficientVipLevelMessage_Description {
+            get {
+                return ResourceManager.GetString("OpenWarehouseChatCommandConfiguration_InsufficientVipLevelMessage_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Insufficient VIP Level Message.
+        /// </summary>
+        public static string OpenWarehouseChatCommandConfiguration_InsufficientVipLevelMessage_Name {
+            get {
+                return ResourceManager.GetString("OpenWarehouseChatCommandConfiguration_InsufficientVipLevelMessage_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The minimum VIP level to use the command (excluding GM). Default: 0..
+        /// </summary>
+        public static string OpenWarehouseChatCommandConfiguration_MinimumVipLevel_Description {
+            get {
+                return ResourceManager.GetString("OpenWarehouseChatCommandConfiguration_MinimumVipLevel_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minimum VIP Level.
+        /// </summary>
+        public static string OpenWarehouseChatCommandConfiguration_MinimumVipLevel_Name {
+            get {
+                return ResourceManager.GetString("OpenWarehouseChatCommandConfiguration_MinimumVipLevel_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Opens the warehouse..
         /// </summary>
         public static string OpenWarehouseChatCommandPlugIn_Description {
@@ -1281,6 +1551,60 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string PeriodicSaveProgressPlugIn_Name {
             get {
                 return ResourceManager.GetString("PeriodicSaveProgressPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save interval.
+        /// </summary>
+        public static string PeriodicSaveProgressPlugInConfiguration_Interval_Name {
+            get {
+                return ResourceManager.GetString("PeriodicSaveProgressPlugInConfiguration_Interval_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The text which prints as a golden message in the game..
+        /// </summary>
+        public static string PeriodicTaskConfiguration_Message_Description {
+            get {
+                return ResourceManager.GetString("PeriodicTaskConfiguration_Message_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Message.
+        /// </summary>
+        public static string PeriodicTaskConfiguration_Message_Name {
+            get {
+                return ResourceManager.GetString("PeriodicTaskConfiguration_Message_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pre-start message delay.
+        /// </summary>
+        public static string PeriodicTaskConfiguration_PreStartMessageDelay_Name {
+            get {
+                return ResourceManager.GetString("PeriodicTaskConfiguration_PreStartMessageDelay_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Task duration (minimum).
+        /// </summary>
+        public static string PeriodicTaskConfiguration_TaskDuration_Name {
+            get {
+                return ResourceManager.GetString("PeriodicTaskConfiguration_TaskDuration_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Timetable.
+        /// </summary>
+        public static string PeriodicTaskConfiguration_Timetable_Name {
+            get {
+                return ResourceManager.GetString("PeriodicTaskConfiguration_Timetable_Name", resourceCulture);
             }
         }
         
@@ -1357,6 +1681,60 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Experience loss %.
+        /// </summary>
+        public static string PlayerLosesExperienceAfterDeathPlugInConfiguration_ExperienceLossPercentage_Name {
+            get {
+                return ResourceManager.GetString("PlayerLosesExperienceAfterDeathPlugInConfiguration_ExperienceLossPercentage_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Is master.
+        /// </summary>
+        public static string PlayerLosesExperienceAfterDeathPlugInConfiguration_IsMaster_Name {
+            get {
+                return ResourceManager.GetString("PlayerLosesExperienceAfterDeathPlugInConfiguration_IsMaster_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Losses per stage.
+        /// </summary>
+        public static string PlayerLosesExperienceAfterDeathPlugInConfiguration_Losses_Name {
+            get {
+                return ResourceManager.GetString("PlayerLosesExperienceAfterDeathPlugInConfiguration_Losses_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Losses per level.
+        /// </summary>
+        public static string PlayerLosesExperienceAfterDeathPlugInConfiguration_LossesPerLevel_Name {
+            get {
+                return ResourceManager.GetString("PlayerLosesExperienceAfterDeathPlugInConfiguration_LossesPerLevel_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minimum level.
+        /// </summary>
+        public static string PlayerLosesExperienceAfterDeathPlugInConfiguration_MinimumLevel_Name {
+            get {
+                return ResourceManager.GetString("PlayerLosesExperienceAfterDeathPlugInConfiguration_MinimumLevel_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to State.
+        /// </summary>
+        public static string PlayerLosesExperienceAfterDeathPlugInConfiguration_State_Name {
+            get {
+                return ResourceManager.GetString("PlayerLosesExperienceAfterDeathPlugInConfiguration_State_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This plugin decreases the money (zen) after the player has been killed by a monster..
         /// </summary>
         public static string PlayerLosesMoneyAfterDeathPlugIn_Description {
@@ -1371,6 +1749,51 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string PlayerLosesMoneyAfterDeathPlugIn_Name {
             get {
                 return ResourceManager.GetString("PlayerLosesMoneyAfterDeathPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Inventory money loss %.
+        /// </summary>
+        public static string PlayerLosesMoneyAfterDeathPlugInConfiguration_InventoryMoneyLossPercentage_Name {
+            get {
+                return ResourceManager.GetString("PlayerLosesMoneyAfterDeathPlugInConfiguration_InventoryMoneyLossPercentage_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Is master.
+        /// </summary>
+        public static string PlayerLosesMoneyAfterDeathPlugInConfiguration_IsMaster_Name {
+            get {
+                return ResourceManager.GetString("PlayerLosesMoneyAfterDeathPlugInConfiguration_IsMaster_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Losses per level.
+        /// </summary>
+        public static string PlayerLosesMoneyAfterDeathPlugInConfiguration_LossesPerLevel_Name {
+            get {
+                return ResourceManager.GetString("PlayerLosesMoneyAfterDeathPlugInConfiguration_LossesPerLevel_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minimum level.
+        /// </summary>
+        public static string PlayerLosesMoneyAfterDeathPlugInConfiguration_MinimumLevel_Name {
+            get {
+                return ResourceManager.GetString("PlayerLosesMoneyAfterDeathPlugInConfiguration_MinimumLevel_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Vault money loss %.
+        /// </summary>
+        public static string PlayerLosesMoneyAfterDeathPlugInConfiguration_VaultMoneyLossPercentage_Name {
+            get {
+                return ResourceManager.GetString("PlayerLosesMoneyAfterDeathPlugInConfiguration_VaultMoneyLossPercentage_Name", resourceCulture);
             }
         }
         
@@ -1407,6 +1830,107 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string QuestMonsterKillCountPlugIn_Name {
             get {
                 return ResourceManager.GetString("QuestMonsterKillCountPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Message.
+        /// </summary>
+        public static string QuestMonsterKillCountPlugInConfiguration_Message_Name {
+            get {
+                return ResourceManager.GetString("QuestMonsterKillCountPlugInConfiguration_Message_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Defines the value which is additionally recovered. From this value, the character level is subtracted..
+        /// </summary>
+        public static string RecoverConsumeHandlerConfiguration_AdditionalRecoverMinusCharacterLevel_Description {
+            get {
+                return ResourceManager.GetString("RecoverConsumeHandlerConfiguration_AdditionalRecoverMinusCharacterLevel_Descripti" +
+                        "on", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Additional recover minus character level.
+        /// </summary>
+        public static string RecoverConsumeHandlerConfiguration_AdditionalRecoverMinusCharacterLevel_Name {
+            get {
+                return ResourceManager.GetString("RecoverConsumeHandlerConfiguration_AdditionalRecoverMinusCharacterLevel_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The cooldown time for the next consumption..
+        /// </summary>
+        public static string RecoverConsumeHandlerConfiguration_CooldownTime_Description {
+            get {
+                return ResourceManager.GetString("RecoverConsumeHandlerConfiguration_CooldownTime_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cooldown time.
+        /// </summary>
+        public static string RecoverConsumeHandlerConfiguration_CooldownTime_Name {
+            get {
+                return ResourceManager.GetString("RecoverConsumeHandlerConfiguration_CooldownTime_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A value between 0 and 1 (exclusive). 1 would mean that the recover works instantly since level 1..
+        /// </summary>
+        public static string RecoverConsumeHandlerConfiguration_RecoverDelayReductionByPotionLevel_Description {
+            get {
+                return ResourceManager.GetString("RecoverConsumeHandlerConfiguration_RecoverDelayReductionByPotionLevel_Description" +
+                        "", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Recover delay reduction by potion level.
+        /// </summary>
+        public static string RecoverConsumeHandlerConfiguration_RecoverDelayReductionByPotionLevel_Name {
+            get {
+                return ResourceManager.GetString("RecoverConsumeHandlerConfiguration_RecoverDelayReductionByPotionLevel_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Recover percentage increase by potion level.
+        /// </summary>
+        public static string RecoverConsumeHandlerConfiguration_RecoverPercentageIncreaseByPotionLevel_Name {
+            get {
+                return ResourceManager.GetString("RecoverConsumeHandlerConfiguration_RecoverPercentageIncreaseByPotionLevel_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If none are defined, the recover happens instantly..
+        /// </summary>
+        public static string RecoverConsumeHandlerConfiguration_RecoverSteps_Description {
+            get {
+                return ResourceManager.GetString("RecoverConsumeHandlerConfiguration_RecoverSteps_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maximum character level.
+        /// </summary>
+        public static string RecoverConsumeHandlerConfiguration_RecoverSteps_Name {
+            get {
+                return ResourceManager.GetString("RecoverConsumeHandlerConfiguration_RecoverSteps_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total recover percentage.
+        /// </summary>
+        public static string RecoverConsumeHandlerConfiguration_TotalRecoverPercentage_Name {
+            get {
+                return ResourceManager.GetString("RecoverConsumeHandlerConfiguration_TotalRecoverPercentage_Name", resourceCulture);
             }
         }
         
@@ -1483,6 +2007,105 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Level after reset.
+        /// </summary>
+        public static string ResetConfiguration_LevelAfterReset_Name {
+            get {
+                return ResourceManager.GetString("ResetConfiguration_LevelAfterReset_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Log out.
+        /// </summary>
+        public static string ResetConfiguration_LogOut_Name {
+            get {
+                return ResourceManager.GetString("ResetConfiguration_LogOut_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Move home.
+        /// </summary>
+        public static string ResetConfiguration_MoveHome_Name {
+            get {
+                return ResourceManager.GetString("ResetConfiguration_MoveHome_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Multiply points by reset count.
+        /// </summary>
+        public static string ResetConfiguration_MultiplyPointsByResetCount_Name {
+            get {
+                return ResourceManager.GetString("ResetConfiguration_MultiplyPointsByResetCount_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Multiply required money by reset count.
+        /// </summary>
+        public static string ResetConfiguration_MultiplyRequiredMoneyByResetCount_Name {
+            get {
+                return ResourceManager.GetString("ResetConfiguration_MultiplyRequiredMoneyByResetCount_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Points per reset.
+        /// </summary>
+        public static string ResetConfiguration_PointsPerReset_Name {
+            get {
+                return ResourceManager.GetString("ResetConfiguration_PointsPerReset_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset points per reset.
+        /// </summary>
+        public static string ResetConfiguration_ReplacePointsPerReset_Name {
+            get {
+                return ResourceManager.GetString("ResetConfiguration_ReplacePointsPerReset_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Required level.
+        /// </summary>
+        public static string ResetConfiguration_RequiredLevel_Name {
+            get {
+                return ResourceManager.GetString("ResetConfiguration_RequiredLevel_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Required money.
+        /// </summary>
+        public static string ResetConfiguration_RequiredMoney_Name {
+            get {
+                return ResourceManager.GetString("ResetConfiguration_RequiredMoney_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset limit.
+        /// </summary>
+        public static string ResetConfiguration_ResetLimit_Name {
+            get {
+                return ResourceManager.GetString("ResetConfiguration_ResetLimit_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset stats.
+        /// </summary>
+        public static string ResetConfiguration_ResetStats_Name {
+            get {
+                return ResourceManager.GetString("ResetConfiguration_ResetStats_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Provides configuration for the reset feature..
         /// </summary>
         public static string ResetFeaturePlugIn_Description {
@@ -1515,6 +2138,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string SelfDefensePlugIn_Name {
             get {
                 return ResourceManager.GetString("SelfDefensePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Self-defense time-out..
+        /// </summary>
+        public static string SelfDefensePlugInConfiguration_SelfDefenseTimeOut_Name {
+            get {
+                return ResourceManager.GetString("SelfDefensePlugInConfiguration_SelfDefenseTimeOut_Name", resourceCulture);
             }
         }
         
@@ -1677,6 +2309,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string ShowMessageToAllWhenPlayerEnteredWorldPlugIn_Name {
             get {
                 return ResourceManager.GetString("ShowMessageToAllWhenPlayerEnteredWorldPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the chat command &apos;/showids&apos;..
+        /// </summary>
+        public static string ShowNpcIdsChatCommand_ShowNpcIdsChatCommand_Description {
+            get {
+                return ResourceManager.GetString("ShowNpcIdsChatCommand_ShowNpcIdsChatCommand_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show NPC ids chat command.
+        /// </summary>
+        public static string ShowNpcIdsChatCommand_ShowNpcIdsChatCommand_Name {
+            get {
+                return ResourceManager.GetString("ShowNpcIdsChatCommand_ShowNpcIdsChatCommand_Name", resourceCulture);
             }
         }
         
@@ -2221,6 +2871,150 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Defines the items which are allowed to be upgraded. If empty, all items are allowed except those in &apos;disallowed items&apos;..
+        /// </summary>
+        public static string UpgradeItemLevelConfiguration_AllowedItems_Description {
+            get {
+                return ResourceManager.GetString("UpgradeItemLevelConfiguration_AllowedItems_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Allowed items.
+        /// </summary>
+        public static string UpgradeItemLevelConfiguration_AllowedItems_Name {
+            get {
+                return ResourceManager.GetString("UpgradeItemLevelConfiguration_AllowedItems_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Defines the items which are not allowed to be upgraded..
+        /// </summary>
+        public static string UpgradeItemLevelConfiguration_DisallowedItems_Description {
+            get {
+                return ResourceManager.GetString("UpgradeItemLevelConfiguration_DisallowedItems_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Disallowed items.
+        /// </summary>
+        public static string UpgradeItemLevelConfiguration_DisallowedItems_Name {
+            get {
+                return ResourceManager.GetString("UpgradeItemLevelConfiguration_DisallowedItems_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to How many times to add a level to the item (will become maximum allowed level)..
+        /// </summary>
+        public static string UpgradeItemLevelConfiguration_LevelAmount_Description {
+            get {
+                return ResourceManager.GetString("UpgradeItemLevelConfiguration_LevelAmount_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add Levels Amount.
+        /// </summary>
+        public static string UpgradeItemLevelConfiguration_LevelAmount_Name {
+            get {
+                return ResourceManager.GetString("UpgradeItemLevelConfiguration_LevelAmount_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The maximum item level which the item has to have before applying the jewel..
+        /// </summary>
+        public static string UpgradeItemLevelConfiguration_MaximumLevel_Description {
+            get {
+                return ResourceManager.GetString("UpgradeItemLevelConfiguration_MaximumLevel_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item Maximum Level.
+        /// </summary>
+        public static string UpgradeItemLevelConfiguration_MaximumLevel_Name {
+            get {
+                return ResourceManager.GetString("UpgradeItemLevelConfiguration_MaximumLevel_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The minimum item level which the item has to have before applying the jewel..
+        /// </summary>
+        public static string UpgradeItemLevelConfiguration_MinimumLevel_Description {
+            get {
+                return ResourceManager.GetString("UpgradeItemLevelConfiguration_MinimumLevel_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item Minimum Level.
+        /// </summary>
+        public static string UpgradeItemLevelConfiguration_MinimumLevel_Name {
+            get {
+                return ResourceManager.GetString("UpgradeItemLevelConfiguration_MinimumLevel_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The item level after which the item will drop to level 0 when it fails..
+        /// </summary>
+        public static string UpgradeItemLevelConfiguration_ResetToLevel0WhenFailMinLevel_Description {
+            get {
+                return ResourceManager.GetString("UpgradeItemLevelConfiguration_ResetToLevel0WhenFailMinLevel_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fail To 0 min. Level.
+        /// </summary>
+        public static string UpgradeItemLevelConfiguration_ResetToLevel0WhenFailMinLevel_Name {
+            get {
+                return ResourceManager.GetString("UpgradeItemLevelConfiguration_ResetToLevel0WhenFailMinLevel_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The additional success rate, when the item has luck option..
+        /// </summary>
+        public static string UpgradeItemLevelConfiguration_SuccessRateBonusWithLuckPercentage_Description {
+            get {
+                return ResourceManager.GetString("UpgradeItemLevelConfiguration_SuccessRateBonusWithLuckPercentage_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Success Rate Luck Bonus %.
+        /// </summary>
+        public static string UpgradeItemLevelConfiguration_SuccessRateBonusWithLuckPercentage_Name {
+            get {
+                return ResourceManager.GetString("UpgradeItemLevelConfiguration_SuccessRateBonusWithLuckPercentage_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The success rate percentage for the item level upgrade..
+        /// </summary>
+        public static string UpgradeItemLevelConfiguration_SuccessRatePercentage_Description {
+            get {
+                return ResourceManager.GetString("UpgradeItemLevelConfiguration_SuccessRatePercentage_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Success Rate %.
+        /// </summary>
+        public static string UpgradeItemLevelConfiguration_SuccessRatePercentage_Name {
+            get {
+                return ResourceManager.GetString("UpgradeItemLevelConfiguration_SuccessRatePercentage_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the chat command &apos;/walkmonster &lt;id&gt; &lt;x&gt; &lt;y&gt;&apos;. Walks a previously created monster which can be remote controlled by the GM..
         /// </summary>
         public static string WalkMonsterChatCommand_Description {
@@ -2235,6 +3029,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string WalkMonsterChatCommand_Name {
             get {
                 return ResourceManager.GetString("WalkMonsterChatCommand_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maximum spawn duration.
+        /// </summary>
+        public static string WanderingMerchantsConfiguration_MaximumSpawnDuration_Name {
+            get {
+                return ResourceManager.GetString("WanderingMerchantsConfiguration_MaximumSpawnDuration_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minimum spawn duration.
+        /// </summary>
+        public static string WanderingMerchantsConfiguration_MinimumSpawnDuration_Name {
+            get {
+                return ResourceManager.GetString("WanderingMerchantsConfiguration_MinimumSpawnDuration_Name", resourceCulture);
             }
         }
         
