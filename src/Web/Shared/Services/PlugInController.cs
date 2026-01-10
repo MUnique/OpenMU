@@ -245,8 +245,8 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
             ConfigurationType = plugInType.GetCustomConfigurationType(),
             TypeId = plugInConfiguration.TypeId,
             TypeName = plugInType.FullName,
-            PlugInName = plugInAttribute?.Name,
-            PlugInDescription = plugInAttribute?.Description,
+            PlugInName = plugInAttribute?.GetName(),
+            PlugInDescription = plugInAttribute?.GetDescription(),
         };
 
         if (plugInPoint != null)
