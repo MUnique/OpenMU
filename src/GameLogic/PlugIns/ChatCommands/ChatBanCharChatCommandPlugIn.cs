@@ -1,4 +1,4 @@
-// <copyright file="ChatBanCharChatCommandPlugIn.cs" company="MUnique">
+﻿// <copyright file="ChatBanCharChatCommandPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("287AE9A6-E434-4E52-A791-8AAD267A8E05")]
 [PlugIn]
-[Display(Name = "Chat Ban Character command", Description = "Handles the chat command '/chatban <characterName> <durationMinutes>'. Bans the account of a character from chatting for the specified minutes.")]
+[Display(Name = nameof(PlugInResources.ChatBanCharChatCommandPlugIn_Name), Description = nameof(PlugInResources.ChatBanCharChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, "Bans the account of a character from chatting for the specified minutes.", typeof(ChatBanCharChatCommandArgs), CharacterStatus.GameMaster)]
 public class ChatBanCharChatCommandPlugIn : ChatCommandPlugInBase<ChatBanCharChatCommandArgs>
 {

@@ -11,7 +11,7 @@ using MUnique.OpenMU.PlugIns;
 /// Saves the progress of players periodically when their status is 'EnteredWorld'.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(PeriodicSaveProgressPlugIn), Description = "Saves the progress of players periodically when their status is 'EnteredWorld'.")]
+[Display(Name = nameof(PlugInResources.PeriodicSaveProgressPlugIn_Name), Description = nameof(PlugInResources.PeriodicSaveProgressPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("CEBBD5BD-B0DF-4768-816D-AF8DF78888B2")]
 public class PeriodicSaveProgressPlugIn : IPeriodicTaskPlugIn, ISupportCustomConfiguration<PeriodicSaveProgressPlugInConfiguration>, ISupportDefaultCustomConfiguration
 {

@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// This plugin increases the monster kill count of the quest state of active quests.
 /// </summary>
 [PlugIn]
-[Display(Name = "Count killed quest monsters", Description = "This plugin increases the monster kill count of the quest state of active quests.")]
+[Display(Name = nameof(PlugInResources.QuestMonsterKillCountPlugIn_Name), Description = nameof(PlugInResources.QuestMonsterKillCountPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("416C2231-D7FE-414A-9321-26622E262EF5")]
 public class QuestMonsterKillCountPlugIn : IAttackableGotKilledPlugIn, ISupportCustomConfiguration<QuestMonsterKillCountPlugInConfiguration>, ISupportDefaultCustomConfiguration
 {

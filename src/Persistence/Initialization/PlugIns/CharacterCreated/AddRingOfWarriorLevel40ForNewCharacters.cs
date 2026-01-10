@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("19B0BB9D-32C9-4DBC-BD95-41801D078962")]
 [PlugIn]
-[Display(Name = nameof(AddRingOfWarriorLevel40ForNewCharacters), Description = "Adds the ring, which can be dropped at level 40.")]
+[Display(Name = nameof(PlugInResources.AddRingOfWarriorLevel40ForNewCharacters_Name), Description = nameof(PlugInResources.AddRingOfWarriorLevel40ForNewCharacters_Description), ResourceType = typeof(PlugInResources))]
 public class AddRingOfWarriorLevel40ForNewCharacters : AddInitialItemPlugInBase
 {
     /// <summary>

@@ -16,7 +16,7 @@ using MUnique.OpenMU.PlugIns;
 /// Handler for blood castle enter request packets.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(BloodCastleEnterHandlerPlugIn), Description = "Handler for blood castle enter request packets.")]
+[Display(Name = nameof(PlugInResources.BloodCastleEnterHandlerPlugIn_Name), Description = nameof(PlugInResources.BloodCastleEnterHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("999D6CC6-7B5C-4D0A-89E5-DFC1A1E482FA")]
 internal class BloodCastleEnterHandlerPlugIn : IPacketHandlerPlugIn
 {

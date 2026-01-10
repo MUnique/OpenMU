@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// The default implementation of the <see cref="IShowGuildCreateResultPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = "ShowGuildCreateResultPlugIn", Description = "The default implementation of the IShowGuildCreateResultPlugIn which is forwarding everything to the game client with specific data packets.")]
+[Display(Name = nameof(PlugInResources.ShowGuildCreateResultPlugIn_Name), Description = nameof(PlugInResources.ShowGuildCreateResultPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("ff6c5a06-4699-461b-9004-756269393c40")]
 public class ShowGuildCreateResultPlugIn : IShowGuildCreateResultPlugIn
 {

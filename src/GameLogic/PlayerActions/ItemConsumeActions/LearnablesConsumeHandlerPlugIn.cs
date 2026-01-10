@@ -12,7 +12,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("FD86947E-0B94-4490-8158-63B11A61565F")]
 [PlugIn]
-[Display(Name = nameof(LearnablesConsumeHandlerPlugIn), Description = "Plugin which handles the consumption of items which add skills (e.g. scrolls, orbs).")]
+[Display(Name = nameof(PlugInResources.LearnablesConsumeHandlerPlugIn_Name), Description = nameof(PlugInResources.LearnablesConsumeHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 public class LearnablesConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn
 {
     /// <inheritdoc />

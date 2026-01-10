@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// The default implementation of the <see cref="IItemRemovedPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(ItemRemovedPlugIn), Description = "The default implementation of the IItemRemovedPlugIn which is forwarding everything to the game client with specific data packets.")]
+[Display(Name = nameof(PlugInResources.ItemRemovedPlugIn_Name), Description = nameof(PlugInResources.ItemRemovedPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("06f1b02c-32b5-4d88-8d09-719246c8ebfe")]
 public class ItemRemovedPlugIn : IItemRemovedPlugIn
 {

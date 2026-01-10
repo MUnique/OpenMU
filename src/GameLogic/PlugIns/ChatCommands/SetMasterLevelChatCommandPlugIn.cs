@@ -1,4 +1,4 @@
-// <copyright file="SetMasterLevelChatCommandPlugIn.cs" company="MUnique">
+﻿// <copyright file="SetMasterLevelChatCommandPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("E401CA16-7827-495B-9DD0-EABDFF39901E")]
 [PlugIn]
-[Display(Name = "Set master level command", Description = "Sets master level of a player. Usage: /setmasterlevel (level) (optional:character)")]
+[Display(Name = nameof(PlugInResources.SetMasterLevelChatCommandPlugIn_Name), Description = nameof(PlugInResources.SetMasterLevelChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, "Sets master level of a player. Usage: /setmasterlevel (level) (optional:character)", null)]
 public class SetMasterLevelChatCommandPlugIn : ChatCommandPlugInBase<SetMasterLevelChatCommandPlugIn.Arguments>, IDisabledByDefault
 {

@@ -16,7 +16,7 @@ using MUnique.OpenMU.PlugIns;
 /// The default implementation of the <see cref="IPlayerLeftGuildPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = "PlayerLeftGuildPlugIn", Description = "The default implementation of the IPlayerLeftGuildPlugIn which is forwarding everything to the game client with specific data packets.")]
+[Display(Name = nameof(PlugInResources.PlayerLeftGuildPlugIn_Name), Description = nameof(PlugInResources.PlayerLeftGuildPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("e37868e8-6fdf-41fb-aa7f-01e6f569f5c0")]
 public class PlayerLeftGuildPlugIn : IPlayerLeftGuildPlugIn
 {

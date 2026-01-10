@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// Packet handler for available quest request packets (0xF6, 0x30 identifier).
 /// </summary>
 [PlugIn]
-[Display(Name = "Quest - Request available quests", Description = "Packet handler for available quest request packets (0xF6, 0x30 identifier)")]
+[Display(Name = nameof(PlugInResources.AvailableQuestsRequestHandlerPlugIn_Name), Description = nameof(PlugInResources.AvailableQuestsRequestHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("12722085-06FE-4D03-848E-89180C017CDB")]
 [BelongsToGroup(QuestGroupHandlerPlugIn.GroupKey)]
 public class AvailableQuestsRequestHandlerPlugIn : ISubPacketHandlerPlugIn

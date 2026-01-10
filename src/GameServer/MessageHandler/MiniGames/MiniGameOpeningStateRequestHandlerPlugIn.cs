@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// Handler for mini game opening state request packets.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(MiniGameOpeningStateRequestHandlerPlugIn), Description = "Handler for mini game opening state request packets.")]
+[Display(Name = nameof(PlugInResources.MiniGameOpeningStateRequestHandlerPlugIn_Name), Description = nameof(PlugInResources.MiniGameOpeningStateRequestHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("15BAE3E6-4654-425A-8809-FA53A4C54D09")]
 internal class MiniGameOpeningStateRequestHandlerPlugIn : IPacketHandlerPlugIn
 {

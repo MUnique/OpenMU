@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("AC326833-D60E-4705-A7DF-740FA37ACBA8")]
 [PlugIn]
-[Display(Name = nameof(AddLanceForSummoner), Description = "Adds the Lance skill to a created summoner character.")]
+[Display(Name = nameof(PlugInResources.AddLanceForSummoner_Name), Description = nameof(PlugInResources.AddLanceForSummoner_Description), ResourceType = typeof(PlugInResources))]
 public class AddLanceForSummoner : AddInitialSkillPlugInBase
 {
     /// <summary>

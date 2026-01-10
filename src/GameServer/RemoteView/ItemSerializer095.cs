@@ -36,7 +36,7 @@ using MUnique.OpenMU.PlugIns;
 /// </remarks>
 [Guid("4BD85C02-C43E-494D-B6B8-767ED94E09F0")]
 [PlugIn]
-[Display(Name = nameof(ItemSerializer095), Description = "The item serializer for game client version 0.95")]
+[Display(Name = nameof(PlugInResources.ItemSerializer095_Name), Description = nameof(PlugInResources.ItemSerializer095_Description), ResourceType = typeof(PlugInResources))]
 [MinimumClient(0, 95, ClientLanguage.Invariant)]
 public class ItemSerializer095 : IItemSerializer
 {

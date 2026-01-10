@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// Handler for guild info request packets.
 /// </summary>
 [PlugIn]
-[Display(Name = "GuildInfoRequestHandlerPlugIn", Description = "Handler for guild info request packets.")]
+[Display(Name = nameof(PlugInResources.GuildInfoRequestHandlerPlugIn_Name), Description = nameof(PlugInResources.GuildInfoRequestHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("cfea6fcb-0cf4-4c11-8730-3d25ec08b6b0")]
 internal class GuildInfoRequestHandlerPlugIn : IPacketHandlerPlugIn
 {

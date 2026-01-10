@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("74FC7D85-7AA0-4437-88BA-CE008FD31745")]
 [PlugIn]
-[Display(Name = nameof(AddSmallShieldForMagicGladiator), Description = "Adds a small shield to a created magic gladiator character.")]
+[Display(Name = nameof(PlugInResources.AddSmallShieldForMagicGladiator_Name), Description = nameof(PlugInResources.AddSmallShieldForMagicGladiator_Description), ResourceType = typeof(PlugInResources))]
 public class AddSmallShieldForMagicGladiator : AddInitialItemPlugInBase
 {
     /// <summary>

@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// The default implementation of the <see cref="IPlayerShopClosedPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = "PlayerShopClosedPlugIn", Description = "The default implementation of the IPlayerShopClosedPlugIn which is forwarding everything to the game client with specific data packets.")]
+[Display(Name = nameof(PlugInResources.PlayerShopClosedPlugIn_Name), Description = nameof(PlugInResources.PlayerShopClosedPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("351cf726-5091-4995-9228-81c089d1da16")]
 public class PlayerShopClosedPlugIn : IPlayerShopClosedPlugIn
 {

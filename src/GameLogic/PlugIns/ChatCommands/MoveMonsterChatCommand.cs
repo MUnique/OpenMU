@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("B3DE58F3-B604-4F59-9122-E686AD90BE7B")]
 [PlugIn]
-[Display(Name = "Move remote monster chat command", Description = "Handles the chat command '/movemonster <id> <x> <y>'. Moves a previously created monster which can be remote controlled by the GM.")]
+[Display(Name = nameof(PlugInResources.MoveMonsterChatCommand_Name), Description = nameof(PlugInResources.MoveMonsterChatCommand_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, "Moves a previously created monster which can be remote controlled by the game master.", typeof(MoveMonsterCommandArgs), CharacterStatus.GameMaster)]
 internal class MoveMonsterChatCommand : ChatCommandPlugInBase<MoveMonsterCommandArgs>
 {

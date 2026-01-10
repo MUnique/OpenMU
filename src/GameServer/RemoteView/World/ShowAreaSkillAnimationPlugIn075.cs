@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 /// The default implementation of the <see cref="IShowAreaSkillAnimationPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(ShowAreaSkillAnimationPlugIn075), Description = "The default implementation of the IShowAreaSkillAnimationPlugIn which is forwarding everything to the game client with specific data packets.")]
+[Display(Name = nameof(PlugInResources.ShowAreaSkillAnimationPlugIn075_Name), Description = nameof(PlugInResources.ShowAreaSkillAnimationPlugIn075_Description), ResourceType = typeof(PlugInResources))]
 [Guid("DB239A54-A5BD-4796-A96C-50D247D288F3")]
 public class ShowAreaSkillAnimationPlugIn075 : IShowAreaSkillAnimationPlugIn
 {

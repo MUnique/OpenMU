@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("0E23E4CE-6E7B-4F29-92D8-04A1335EC722")]
 [PlugIn]
-[Display(Name = "Show xmas fireworks effect chat command", Description = "Handles the chat command '/xmasfireworks <x> <y>'. Shows an christmas fireworks effect at the specified coordinates.")]
+[Display(Name = nameof(PlugInResources.ShowXmasFireworksEffectChatCommandPlugIn_Name), Description = nameof(PlugInResources.ShowXmasFireworksEffectChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, "Shows an christmas fireworks effect at the specified coordinates.", typeof(CoordinatesCommandArgs), CharacterStatus.GameMaster)]
 public class ShowXmasFireworksEffectChatCommandPlugIn : ChatCommandPlugInBase<CoordinatesCommandArgs>
 {

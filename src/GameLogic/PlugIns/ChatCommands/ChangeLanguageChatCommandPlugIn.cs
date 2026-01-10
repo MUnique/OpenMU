@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("06870B25-3240-49CF-ADD4-F3060EA1FA7D")]
 [PlugIn]
-[Display(Name = "Change language command", Description = "Handles the chat command '/language <isoCode>'. Changes the language of the account.")]
+[Display(Name = nameof(PlugInResources.ChangeLanguageChatCommandPlugIn_Name), Description = nameof(PlugInResources.ChangeLanguageChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, "Changes the language of the account.", typeof(ChangeLanguageChatCommandArgs), CharacterStatus.Normal)]
 public class ChangeLanguageChatCommandPlugIn : ChatCommandPlugInBase<ChangeLanguageChatCommandArgs>
 {

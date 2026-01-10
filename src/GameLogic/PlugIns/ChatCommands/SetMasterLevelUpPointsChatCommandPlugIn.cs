@@ -1,4 +1,4 @@
-// <copyright file="SetMasterLevelUpPointsChatCommandPlugIn.cs" company="MUnique">
+﻿// <copyright file="SetMasterLevelUpPointsChatCommandPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("69AC0B9E-1063-448E-ABD6-C5837A1E8A4B")]
 [PlugIn]
-[Display(Name = "Set master level up points command", Description = "Sets master level up points of a player. Usage: /setmasterleveluppoints (points) (optional:character)")]
+[Display(Name = nameof(PlugInResources.SetMasterLevelUpPointsChatCommandPlugIn_Name), Description = nameof(PlugInResources.SetMasterLevelUpPointsChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, "Sets master level up points of a player. Usage: /setmasterleveluppoints (points) (optional:character)", null)]
 public class SetMasterLevelUpPointsChatCommandPlugIn : ChatCommandPlugInBase<SetMasterLevelUpPointsChatCommandPlugIn.Arguments>, IDisabledByDefault
 {

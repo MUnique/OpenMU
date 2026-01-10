@@ -18,7 +18,7 @@ using MUnique.OpenMU.PlugIns;
 /// The extended implementation of the <see cref="IShowHitPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(ShowHitExtendedPlugIn), Description = "The extended implementation of the IShowHitPlugIn which is forwarding everything to the game client with specific data packets.")]
+[Display(Name = nameof(PlugInResources.ShowHitExtendedPlugIn_Name), Description = nameof(PlugInResources.ShowHitExtendedPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("E79C8065-21A8-4774-B84F-5B8658F6A820")]
 [MinimumClient(106, 3, ClientLanguage.English)]
 public class ShowHitExtendedPlugIn : IShowHitPlugIn

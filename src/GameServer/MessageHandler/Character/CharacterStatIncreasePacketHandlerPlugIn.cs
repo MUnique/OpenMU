@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// Packet handler for character stat increase packets (0xF3, 0x06 identifier).
 /// </summary>
 [PlugIn]
-[Display(Name = "Character - Stat increase ", Description = "Packet handler for character stat increase packets (0xF3, 0x06 identifier).")]
+[Display(Name = nameof(PlugInResources.CharacterStatIncreasePacketHandlerPlugIn_Name), Description = nameof(PlugInResources.CharacterStatIncreasePacketHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("5DC06689-B2DD-4CA2-8F93-97FB1198BA70")]
 [BelongsToGroup(CharacterGroupHandlerPlugIn.GroupKey)]
 internal class CharacterStatIncreasePacketHandlerPlugIn : ISubPacketHandlerPlugIn

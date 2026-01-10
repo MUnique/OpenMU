@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("F8CACA47-D486-45AE-814F-C6218AD87652")]
 [PlugIn]
-[Display(Name = "Get Stat chat command", Description = "Get stat points. Usage: /get (ene|agi|vit|str|cmd) (optional:character)")]
+[Display(Name = nameof(PlugInResources.GetStatChatCommandPlugIn_Name), Description = nameof(PlugInResources.GetStatChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, "Get stat points. Usage: /get (ene|agi|vit|str|cmd) (optional:character)", typeof(Arguments), MinimumStatus)]
 public class GetStatChatCommandPlugIn : ChatCommandPlugInBase<GetStatChatCommandPlugIn.Arguments>, IDisabledByDefault
 {

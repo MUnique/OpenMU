@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// Sub packet handler for master skill point add requests.
 /// </summary>
 [PlugIn]
-[Display(Name = "Character - Add Master Skill Points", Description = "Packet handler for character master skill point adding (0xF3, 0x52 identifier).")]
+[Display(Name = nameof(PlugInResources.CharacterAddMasterPointPacketHandlerPlugIn_Name), Description = nameof(PlugInResources.CharacterAddMasterPointPacketHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("9F39C1FB-26F7-460F-A21B-C4DFEA234E66")]
 [BelongsToGroup(CharacterGroupHandlerPlugIn.GroupKey)]
 internal class CharacterAddMasterPointPacketHandlerPlugIn : ISubPacketHandlerPlugIn

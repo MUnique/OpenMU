@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("21CB28A4-BE9A-421C-9C7C-6F2E0FC9D614")]
 [PlugIn]
-[Display(Name = nameof(LargeManaPotionConsumeHandler), Description = "Plugin which handles the large mana potion consumption.")]
+[Display(Name = nameof(PlugInResources.LargeManaPotionConsumeHandler_Name), Description = nameof(PlugInResources.LargeManaPotionConsumeHandler_Description), ResourceType = typeof(PlugInResources))]
 public class LargeManaPotionConsumeHandler : ManaPotionConsumeHandler
 {
     /// <inheritdoc />

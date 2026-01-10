@@ -21,7 +21,7 @@ using MUnique.OpenMU.PlugIns;
 /// every weekly maintenance. Needless to say, calculating the new key was a matter of seconds and provided no protection from skilled hackers at all.
 /// </remarks>
 [PlugIn]
-[Display(Name = "Network Encryption - Before Season 6", Description = "A plugin which provides network encryptors and decryptors for game clients before season 6.")]
+[Display(Name = nameof(PlugInResources.PreSeason6NetworkEncryptionFactoryPlugIn_Name), Description = nameof(PlugInResources.PreSeason6NetworkEncryptionFactoryPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("E72839BF-5ADE-419D-91C5-278EC2A7CEBF")]
 public class PreSeason6NetworkEncryptionFactoryPlugIn : INetworkEncryptionFactoryPlugIn
 {

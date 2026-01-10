@@ -1,4 +1,4 @@
-// <copyright file="GetLevelChatCommandPlugIn.cs" company="MUnique">
+﻿// <copyright file="GetLevelChatCommandPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("9D5C8FFE-EC32-48AC-8B6F-BB361AD184E5")]
 [PlugIn]
-[Display(Name = "Get level command", Description = "Gets level of a player. Usage: /getlevel (optional:character)")]
+[Display(Name = nameof(PlugInResources.GetLevelChatCommandPlugIn_Name), Description = nameof(PlugInResources.GetLevelChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, "Gets level of a player. Usage: /getlevel (optional:character)", null)]
 public class GetLevelChatCommandPlugIn : ChatCommandPlugInBase<GetLevelChatCommandPlugIn.Arguments>, IDisabledByDefault
 {

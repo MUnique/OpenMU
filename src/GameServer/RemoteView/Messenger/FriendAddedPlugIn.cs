@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// The default implementation of the <see cref="IFriendAddedPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = "FriendAddedPlugIn", Description = "The default implementation of the IFriendAddedPlugIn which is forwarding everything to the game client with specific data packets.")]
+[Display(Name = nameof(PlugInResources.FriendAddedPlugIn_Name), Description = nameof(PlugInResources.FriendAddedPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("7edba5ed-eec5-4aa7-b302-418444868841")]
 public class FriendAddedPlugIn : IFriendAddedPlugIn
 {

@@ -1,4 +1,4 @@
-// <copyright file="NpcChatCommandPlugIn.cs" company="MUnique">
+﻿// <copyright file="NpcChatCommandPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("D8AC2F15-AB30-4432-A042-A41ACA1B274D")]
 [PlugIn]
-[Display(Name = "NPC open merchant chat command", Description = "Opens the merchant NPC store.")]
+[Display(Name = nameof(PlugInResources.NpcChatCommandPlugIn_Name), Description = nameof(PlugInResources.NpcChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, "Opens the NPC store.", null)]
 public class NpcChatCommandPlugIn : ChatCommandPlugInBase<NpcChatCommandPlugIn.Arguments>, ISupportCustomConfiguration<NpcChatCommandPlugIn.NpcChatCommandConfiguration>, ISupportDefaultCustomConfiguration, IDisabledByDefault
 {

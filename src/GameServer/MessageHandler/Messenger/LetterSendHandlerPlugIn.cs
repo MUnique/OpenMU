@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 /// Handler for letter send packets.
 /// </summary>
 [PlugIn]
-[Display(Name = "LetterSendHandlerPlugIn", Description = "Handler for letter send packets.")]
+[Display(Name = nameof(PlugInResources.LetterSendHandlerPlugIn_Name), Description = nameof(PlugInResources.LetterSendHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("6d10d34d-bd20-4dcf-99eb-569d38ef1c1b")]
 internal class LetterSendHandlerPlugIn : IPacketHandlerPlugIn
 {

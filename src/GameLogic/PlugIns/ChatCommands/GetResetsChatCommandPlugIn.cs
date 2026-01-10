@@ -1,4 +1,4 @@
-// <copyright file="GetResetsChatCommandPlugIn.cs" company="MUnique">
+﻿// <copyright file="GetResetsChatCommandPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("26ACF6A9-346A-49DF-8583-EA610F6E3AEA")]
 [PlugIn]
-[Display(Name = "Get resets command", Description = "Gets resets of a player. Usage: /getresets (optional:character)")]
+[Display(Name = nameof(PlugInResources.GetResetsChatCommandPlugIn_Name), Description = nameof(PlugInResources.GetResetsChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, "Gets resets of a player. Usage: /getresets (optional:character)", null)]
 public class GetResetsChatCommandPlugIn : ChatCommandPlugInBase<GetResetsChatCommandPlugIn.Arguments>, IDisabledByDefault
 {

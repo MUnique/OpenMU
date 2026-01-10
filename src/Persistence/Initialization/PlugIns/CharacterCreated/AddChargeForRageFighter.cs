@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("53F23DDD-3676-4D24-8DFF-2EF657255832")]
 [PlugIn]
-[Display(Name = nameof(AddChargeForRageFighter), Description = "Adds the Charge skill to a created rage fighter character.")]
+[Display(Name = nameof(PlugInResources.AddChargeForRageFighter_Name), Description = nameof(PlugInResources.AddChargeForRageFighter_Description), ResourceType = typeof(PlugInResources))]
 public class AddChargeForRageFighter : AddInitialSkillPlugInBase
 {
     /// <summary>

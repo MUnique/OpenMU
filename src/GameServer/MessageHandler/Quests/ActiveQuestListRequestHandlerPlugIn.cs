@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// Packet handler for the list of active quests request packets (0xF6, 0x1A identifier).
 /// </summary>
 [PlugIn]
-[Display(Name = "Quest - Request active quests list", Description = "Packet handler for character focus packets (0xF3, 0x15 identifier).")]
+[Display(Name = nameof(PlugInResources.ActiveQuestListRequestHandlerPlugIn_Name), Description = nameof(PlugInResources.ActiveQuestListRequestHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("521ED931-BDB0-422E-8E8A-3CCB1BEB639C")]
 [BelongsToGroup(QuestGroupHandlerPlugIn.GroupKey)]
 internal class ActiveQuestListRequestHandlerPlugIn : ISubPacketHandlerPlugIn

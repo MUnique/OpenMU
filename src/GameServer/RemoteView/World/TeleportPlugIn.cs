@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// The default implementation of the <see cref="ITeleportPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(TeleportPlugIn), Description = "The default implementation of the ITeleportPlugIn which is forwarding everything to the game client with specific data packets.")]
+[Display(Name = nameof(PlugInResources.TeleportPlugIn_Name), Description = nameof(PlugInResources.TeleportPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("9506F77B-CA72-4150-87E3-57C889C91F02")]
 [MinimumClient(1, 0, ClientLanguage.Invariant)]
 public class TeleportPlugIn : ITeleportPlugIn

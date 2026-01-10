@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 /// The default implementation of the <see cref="IQuestStateResponsePlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = "Quest - State response", Description = "The default implementation of the IQuestStateResponsePlugIn which is forwarding everything to the game client with specific data packets.")]
+[Display(Name = nameof(PlugInResources.QuestStateResponsePlugIn_Name), Description = nameof(PlugInResources.QuestStateResponsePlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("BBE63528-67DC-4D5F-8C9D-D09AB488CC55")]
 [MinimumClient(0, 90, ClientLanguage.Invariant)]
 public class QuestStateResponsePlugIn : IQuestStateResponsePlugIn

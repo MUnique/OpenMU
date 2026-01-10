@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// The default implementation of the <see cref="IItemPriceSetResponsePlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = "ItemPriceSetResponsePlugIn", Description = "The default implementation of the IItemPriceSetResponsePlugIn which is forwarding everything to the game client with specific data packets.")]
+[Display(Name = nameof(PlugInResources.ItemPriceSetResponsePlugIn_Name), Description = nameof(PlugInResources.ItemPriceSetResponsePlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("f83daf12-28cb-47bc-bb23-7f8eba21c97c")]
 public class ItemPriceSetResponsePlugIn : IItemPriceSetResponsePlugIn
 {

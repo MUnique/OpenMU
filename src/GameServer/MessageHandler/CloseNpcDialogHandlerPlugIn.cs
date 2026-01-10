@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// Packet handler for close npc packets.
 /// </summary>
 [PlugIn]
-[Display(Name = "CloseNpcDialogHandlerPlugIn", Description = "Packet handler for close npc packets.")]
+[Display(Name = nameof(PlugInResources.CloseNpcDialogHandlerPlugIn_Name), Description = nameof(PlugInResources.CloseNpcDialogHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("ecb920e3-eca7-4f40-a453-bdee67e1dabf")]
 internal class CloseNpcDialogHandlerPlugIn : IPacketHandlerPlugIn
 {

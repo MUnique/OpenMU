@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("E95A0292-B3B4-4E8C-AC5A-7F3DB4F01A37")]
 [PlugIn]
-[Display(Name = nameof(BlessJewelConsumeHandlerPlugIn), Description = "Plugin which handles the jewel of bless consumption.")]
+[Display(Name = nameof(PlugInResources.BlessJewelConsumeHandlerPlugIn_Name), Description = nameof(PlugInResources.BlessJewelConsumeHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 public class BlessJewelConsumeHandlerPlugIn : UpgradeItemLevelJewelConsumeHandlerPlugIn<BlessJewelConsumeHandlerPlugInConfiguration>
 {
     /// <inheritdoc />

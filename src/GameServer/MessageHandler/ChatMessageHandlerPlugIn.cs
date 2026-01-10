@@ -12,7 +12,7 @@ using MUnique.OpenMU.PlugIns;
 /// Packet handler for chat messages.
 /// </summary>
 [PlugIn]
-[Display(Name = "Chat Message Handler", Description = "Packet handler for chat messages.")]
+[Display(Name = nameof(PlugInResources.ChatMessageHandlerPlugIn_Name), Description = nameof(PlugInResources.ChatMessageHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("EDECCEC6-9DC7-499F-8658-EAF94498BDEE")]
 internal class ChatMessageHandlerPlugIn : ChatMessageBaseHandlerPlugIn
 {

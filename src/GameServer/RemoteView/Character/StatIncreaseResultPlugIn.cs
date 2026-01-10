@@ -18,7 +18,7 @@ using MUnique.OpenMU.PlugIns;
 /// The default implementation of the <see cref="IStatIncreaseResultPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = "StatIncreaseResultPlugIn", Description = "The default implementation of the IStatIncreaseResultPlugIn which is forwarding everything to the game client with specific data packets.")]
+[Display(Name = nameof(PlugInResources.StatIncreaseResultPlugIn_Name), Description = nameof(PlugInResources.StatIncreaseResultPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("ce603b3c-cf25-426f-9cb9-5cc367843de8")]
 public class StatIncreaseResultPlugIn : IStatIncreaseResultPlugIn
 {

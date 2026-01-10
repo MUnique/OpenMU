@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// The default implementation of the <see cref="IMapChangePlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(MapChangePlugIn075), Description = "The default implementation of the IMapChangePlugIn which is forwarding everything to the game client with specific data packets.")]
+[Display(Name = nameof(PlugInResources.MapChangePlugIn075_Name), Description = nameof(PlugInResources.MapChangePlugIn075_Description), ResourceType = typeof(PlugInResources))]
 [Guid("88195844-06C7-4EDA-8501-8B75A8B4B3F4")]
 public class MapChangePlugIn075 : IMapChangePlugIn
 {

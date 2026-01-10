@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("9163C3EA-6722-4E55-A109-20C163C05266")]
 [PlugIn]
-[Display(Name = "Guild move chat command", Description = "Handles the chat command '/guildmove <guild> <map> <x?> <y?>'. Move the character from a guild to a specified map and coordinates.")]
+[Display(Name = nameof(PlugInResources.GuildMoveChatCommandPlugIn_Name), Description = nameof(PlugInResources.GuildMoveChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, "Move the character from a guild to a specified map and coordinates.", typeof(GuildMoveChatCommandArgs), CharacterStatus.GameMaster)]
 public class GuildMoveChatCommandPlugIn : ChatCommandPlugInBase<GuildMoveChatCommandArgs>
 {

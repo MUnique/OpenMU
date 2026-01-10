@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// The default implementation of the <see cref="IShowMiniGameOpeningStatePlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(ShowMiniGameOpeningStateViewPlugIn), Description = "The default implementation of the IShowMiniGameOpeningStatePlugIn which is forwarding everything to the game client with specific data packets.")]
+[Display(Name = nameof(PlugInResources.ShowMiniGameOpeningStateViewPlugIn_Name), Description = nameof(PlugInResources.ShowMiniGameOpeningStateViewPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("B4D89EFA-0593-4CC7-B720-CD1FC2C0513A")]
 public class ShowMiniGameOpeningStateViewPlugIn : IShowMiniGameOpeningStatePlugIn
 {

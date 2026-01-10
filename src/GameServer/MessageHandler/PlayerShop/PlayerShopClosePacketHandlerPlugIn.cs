@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// Packet handler which opens the player shop (3F 03).
 /// </summary>
 [PlugIn]
-[Display(Name = "Player Shop - Close", Description = "Packet handler which opens the player shop (3F 03).")]
+[Display(Name = nameof(PlugInResources.PlayerShopClosePacketHandlerPlugIn_Name), Description = nameof(PlugInResources.PlayerShopClosePacketHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("3DD40F3A-37FA-4694-80FB-BF71B454D98E")]
 [BelongsToGroup(StoreHandlerGroupPlugIn.GroupKey)]
 internal class PlayerShopClosePacketHandlerPlugIn : ISubPacketHandlerPlugIn

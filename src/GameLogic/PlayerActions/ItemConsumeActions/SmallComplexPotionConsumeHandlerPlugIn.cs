@@ -12,7 +12,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("9424D511-0AF7-4FC2-BD11-24799368D651")]
 [PlugIn]
-[Display(Name = nameof(SmallComplexPotionConsumeHandlerPlugIn), Description = "Plugin which handles the small complex potion consumption.")]
+[Display(Name = nameof(PlugInResources.SmallComplexPotionConsumeHandlerPlugIn_Name), Description = nameof(PlugInResources.SmallComplexPotionConsumeHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 public class SmallComplexPotionConsumeHandlerPlugIn : ComplexPotionConsumeHandlerPlugIn
 {
     /// <summary>

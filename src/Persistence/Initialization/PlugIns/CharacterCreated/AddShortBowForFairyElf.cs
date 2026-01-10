@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("9EF17296-0436-4059-BC4E-0A71967F36EC")]
 [PlugIn]
-[Display(Name = nameof(AddShortBowForFairyElf), Description = "Adds a short bow to a created fairy elf character.")]
+[Display(Name = nameof(PlugInResources.AddShortBowForFairyElf_Name), Description = nameof(PlugInResources.AddShortBowForFairyElf_Description), ResourceType = typeof(PlugInResources))]
 public class AddShortBowForFairyElf : AddInitialItemPlugInBase
 {
     /// <summary>

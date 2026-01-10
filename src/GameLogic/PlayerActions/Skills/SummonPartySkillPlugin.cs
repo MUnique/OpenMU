@@ -16,7 +16,7 @@ using MUnique.OpenMU.PlugIns;
 /// The summon skill action for Dark Lord.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(SummonPartySkillPlugin), Description = "Handles the summon party skill of the dark lord class.")]
+[Display(Name = nameof(PlugInResources.SummonPartySkillPlugin_Name), Description = nameof(PlugInResources.SummonPartySkillPlugin_Description), ResourceType = typeof(PlugInResources))]
 [Guid("44e34497-c9e1-4c15-9388-589dfa3fa820")]
 public class SummonPartySkillPlugin : TargetedSkillPluginBase
 {

@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("ABFE2440-E765-4F17-A588-BD9AE3799886")]
 [PlugIn]
-[Display(Name = "Teleport chat command", Description = "Handles the chat command '/teleport <x> <y>'. Teleports the game master to the specified coordinates.")]
+[Display(Name = nameof(PlugInResources.TeleportChatCommandPlugIn_Name), Description = nameof(PlugInResources.TeleportChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, "Teleports the game master to the specified coordinates.", typeof(CoordinatesCommandArgs), CharacterStatus.GameMaster)]
 public class TeleportChatCommandPlugIn : ChatCommandPlugInBase<CoordinatesCommandArgs>
 {

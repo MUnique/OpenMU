@@ -12,3 +12,5 @@ global using MUnique.OpenMU.DataModel;
 global using MUnique.OpenMU.DataModel.Configuration;
 global using MUnique.OpenMU.DataModel.Entities;
 global using MUnique.OpenMU.GameLogic.Properties;
+global using MUnique.OpenMU.Persistence.Initialization.Properties;
+global using PlugInResources = MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources;

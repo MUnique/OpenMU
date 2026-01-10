@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// The default implementation of the <see cref="ICloseVaultPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = "CloseVaultPlugIn", Description = "The default implementation of the ICloseVaultPlugIn which is forwarding everything to the game client with specific data packets.")]
+[Display(Name = nameof(PlugInResources.CloseVaultPlugIn_Name), Description = nameof(PlugInResources.CloseVaultPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("3030e5aa-01a2-4523-b42e-2eef16f4b58f")]
 public class CloseVaultPlugIn : ICloseVaultPlugIn
 {

@@ -1,4 +1,4 @@
-// <copyright file="ChatUnbanCharChatCommandPlugIn.cs" company="MUnique">
+﻿// <copyright file="ChatUnbanCharChatCommandPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("82E74664-7700-433B-9428-90C17CC71350")]
 [PlugIn]
-[Display(Name = "Chat Ban Character command", Description = "Handles the chat command '/chatunban <characterName>'. Unbans the account of a character from chatting.")]
+[Display(Name = nameof(PlugInResources.ChatUnbanCharChatCommandPlugIn_Name), Description = nameof(PlugInResources.ChatUnbanCharChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, "Unbans the account of a character from chatting", typeof(ChatUnbanCharChatCommandArgs), CharacterStatus.GameMaster)]
 public class ChatUnbanCharChatCommandPlugIn : ChatCommandPlugInBase<ChatUnbanCharChatCommandArgs>
 {

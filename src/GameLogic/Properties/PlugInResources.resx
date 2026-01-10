@@ -1,0 +1,858 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="MuHelperFeaturePlugIn_Name" xml:space="preserve">
+    <value>MU Helper Feature</value>
+  </data>
+  <data name="MuHelperFeaturePlugIn_Description" xml:space="preserve">
+    <value>Provides configuration for the MU Helper feature.</value>
+  </data>
+  <data name="UpdatePetCommandManagerOnItemMovePlugIn_Name" xml:space="preserve">
+    <value>Update Pet Command Manager On Item Move</value>
+  </data>
+  <data name="UpdatePetCommandManagerOnItemMovePlugIn_Description" xml:space="preserve">
+    <value>Updates the pet command manager on the player object after a pet has been equipped or unequipped.</value>
+  </data>
+  <data name="GuildWarKillScorePlugIn_Name" xml:space="preserve">
+    <value>Guild soccer kill score</value>
+  </data>
+  <data name="GuildWarKillScorePlugIn_Description" xml:space="preserve">
+    <value>This plugin increases the score of the soccer result, if a kill occurred.</value>
+  </data>
+  <data name="PeriodicSaveProgressPlugIn_Name" xml:space="preserve">
+    <value>Periodic Save Progress</value>
+  </data>
+  <data name="PeriodicSaveProgressPlugIn_Description" xml:space="preserve">
+    <value>Saves the progress of players periodically when their status is 'EnteredWorld'.</value>
+  </data>
+  <data name="PlayerLosesExperienceAfterDeathPlugIn_Name" xml:space="preserve">
+    <value>Player exp loss after death</value>
+  </data>
+  <data name="PlayerLosesExperienceAfterDeathPlugIn_Description" xml:space="preserve">
+    <value>This plugin decreases the experience after the player has been killed by a monster.</value>
+  </data>
+  <data name="QuestMonsterKillCountPlugIn_Name" xml:space="preserve">
+    <value>Count killed quest monsters</value>
+  </data>
+  <data name="QuestMonsterKillCountPlugIn_Description" xml:space="preserve">
+    <value>This plugin increases the monster kill count of the quest state of active quests.</value>
+  </data>
+  <data name="SelfDefensePlugIn_Name" xml:space="preserve">
+    <value>Self Defense</value>
+  </data>
+  <data name="SelfDefensePlugIn_Description" xml:space="preserve">
+    <value>Updates the state of the self defense system.</value>
+  </data>
+  <data name="ShowMessageToAllWhenPlayerEnteredWorldPlugIn_Name" xml:space="preserve">
+    <value>Show Message To All When Player Entered World</value>
+  </data>
+  <data name="ShowMessageToAllWhenPlayerEnteredWorldPlugIn_Description" xml:space="preserve">
+    <value>Shows a message to all players when a player enters the game.</value>
+  </data>
+  <data name="UpdateIsInSafezoneAfterPlayerMoved_Name" xml:space="preserve">
+    <value>UpdateIsInSafezoneAfterPlayerMoved</value>
+  </data>
+  <data name="UpdateIsInSafezoneAfterPlayerMoved_Description" xml:space="preserve">
+    <value>Updates the attribute if a player is located in the safezone. For example, this activates the automatic health and shield recover.</value>
+  </data>
+  <data name="WeatherUpdatePlugIn_Name" xml:space="preserve">
+    <value>Weather Update</value>
+  </data>
+  <data name="WeatherUpdatePlugIn_Description" xml:space="preserve">
+    <value>Updates the state of the weather of each hosted map in a random way.</value>
+  </data>
+  <data name="GatekeeperNpcPlugin_Name" xml:space="preserve">
+    <value>GatekeeperNpcPlugin</value>
+  </data>
+  <data name="GatekeeperNpcPlugin_Description" xml:space="preserve">
+    <value>Handle Gatekeeper NPC Request</value>
+  </data>
+  <data name="ResetCharacterNpcPlugin_Name" xml:space="preserve">
+    <value>ResetCharacterNpcPlugin</value>
+  </data>
+  <data name="ResetCharacterNpcPlugin_Description" xml:space="preserve">
+    <value>Handle Reset Character NPC Request</value>
+  </data>
+  <data name="ResetChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Reset chat command</value>
+  </data>
+  <data name="ResetChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/reset'.</value>
+  </data>
+  <data name="ResetFeaturePlugIn_Name" xml:space="preserve">
+    <value>Reset Feature</value>
+  </data>
+  <data name="ResetFeaturePlugIn_Description" xml:space="preserve">
+    <value>Provides configuration for the reset feature.</value>
+  </data>
+  <data name="EndDuelWhenLeavingDuelMapPlugIn_Name" xml:space="preserve">
+    <value>End Duel When Leaving Duel Map</value>
+  </data>
+  <data name="EndDuelWhenLeavingDuelMapPlugIn_Description" xml:space="preserve">
+    <value>Updates the state of the weather of each hosted map in a random way.</value>
+  </data>
+  <data name="UpdateDuelScorePlugIn_Name" xml:space="preserve">
+    <value>Update Duel Score</value>
+  </data>
+  <data name="UpdateDuelScorePlugIn_Description" xml:space="preserve">
+    <value>This plugin increases the score of the duel, when a kill occurred.</value>
+  </data>
+  <data name="AlcoholConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Alcohol Consume Handler</value>
+  </data>
+  <data name="AlcoholConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the alcohol consumption.</value>
+  </data>
+  <data name="AntidoteConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Antidote Consume Handler</value>
+  </data>
+  <data name="AntidoteConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the antidote consumption.</value>
+  </data>
+  <data name="AppleConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Apple Consume Handler</value>
+  </data>
+  <data name="AppleConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the apple consumption.</value>
+  </data>
+  <data name="BlessJewelConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Bless Jewel Consume Handler</value>
+  </data>
+  <data name="BlessJewelConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the jewel of bless consumption.</value>
+  </data>
+  <data name="FruitConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Fruit Consume Handler</value>
+  </data>
+  <data name="FruitConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the fruit consumption.</value>
+  </data>
+  <data name="HarmonyJewelConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Harmony Jewel Consume Handler</value>
+  </data>
+  <data name="HarmonyJewelConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the jewel of harmony consumption.</value>
+  </data>
+  <data name="HigherRefineStoneConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Higher Refine Stone Consume Handler</value>
+  </data>
+  <data name="HigherRefineStoneConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the higher refine stone consumption.</value>
+  </data>
+  <data name="LargeComplexPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Large Complex Potion Consume Handler</value>
+  </data>
+  <data name="LargeComplexPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the large complex potion consumption.</value>
+  </data>
+  <data name="LargeHealthPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Large Health Potion Consume Handler</value>
+  </data>
+  <data name="LargeHealthPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the large health potion consumption.</value>
+  </data>
+  <data name="LargeManaPotionConsumeHandler_Name" xml:space="preserve">
+    <value>LargeManaPotionConsumeHandler</value>
+  </data>
+  <data name="LargeManaPotionConsumeHandler_Description" xml:space="preserve">
+    <value>Plugin which handles the large mana potion consumption.</value>
+  </data>
+  <data name="LargeShieldPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Large Shield Potion Consume Handler</value>
+  </data>
+  <data name="LargeShieldPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the large shield potion consumption.</value>
+  </data>
+  <data name="LifeJewelConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Life Jewel Consume Handler</value>
+  </data>
+  <data name="LifeJewelConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the jewel of life consumption.</value>
+  </data>
+  <data name="LowerRefineStoneConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Lower Refine Stone Consume Handler</value>
+  </data>
+  <data name="LowerRefineStoneConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the lower refine stone consumption.</value>
+  </data>
+  <data name="MediumComplexPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Medium Complex Potion Consume Handler</value>
+  </data>
+  <data name="MediumComplexPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the medium complex potion consumption.</value>
+  </data>
+  <data name="MediumHealthPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Medium Health Potion Consume Handler</value>
+  </data>
+  <data name="MediumHealthPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the medium health potion consumption.</value>
+  </data>
+  <data name="MediumManaPotionConsumeHandler_Name" xml:space="preserve">
+    <value>MediumManaPotionConsumeHandler</value>
+  </data>
+  <data name="MediumManaPotionConsumeHandler_Description" xml:space="preserve">
+    <value>Plugin which handles the medium mana potion consumption.</value>
+  </data>
+  <data name="MediumShieldPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Medium Shield Potion Consume Handler</value>
+  </data>
+  <data name="MediumShieldPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the medium shield potion consumption.</value>
+  </data>
+  <data name="SiegePotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Siege Potion Consume Handler</value>
+  </data>
+  <data name="SiegePotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the siege potion consumption.</value>
+  </data>
+  <data name="SmallComplexPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Small Complex Potion Consume Handler</value>
+  </data>
+  <data name="SmallComplexPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the small complex potion consumption.</value>
+  </data>
+  <data name="SmallHealthPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Small Health Potion Consume Handler</value>
+  </data>
+  <data name="SmallHealthPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the small health potion consumption.</value>
+  </data>
+  <data name="SmallManaPotionConsumeHandler_Name" xml:space="preserve">
+    <value>SmallManaPotionConsumeHandler</value>
+  </data>
+  <data name="SmallManaPotionConsumeHandler_Description" xml:space="preserve">
+    <value>Plugin which handles the small mana potion consumption.</value>
+  </data>
+  <data name="SmallShieldPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Small Shield Potion Consume Handler</value>
+  </data>
+  <data name="SmallShieldPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the small shield potion consumption.</value>
+  </data>
+  <data name="SoulJewelConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Soul Jewel Consume Handler</value>
+  </data>
+  <data name="SoulJewelConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the jewel of soul consumption.</value>
+  </data>
+  <data name="SummoningOrbConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Summoning Orb Consume Handler</value>
+  </data>
+  <data name="SummoningOrbConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the summoning orb consumption.</value>
+  </data>
+  <data name="TownPortalScrollConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Town Portal Scroll Consume Handler</value>
+  </data>
+  <data name="TownPortalScrollConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the town portal scroll consumption.</value>
+  </data>
+  <data name="ChainLightningSkillPlugIn_Name" xml:space="preserve">
+    <value>Chain Lightning Skill</value>
+  </data>
+  <data name="ChainLightningSkillPlugIn_Description" xml:space="preserve">
+    <value>Handles the chain lightning skill of the summoner class. Additionally to the attacked target, it will hit up to two additional targets.</value>
+  </data>
+  <data name="DrainLifeSkillPlugIn_Name" xml:space="preserve">
+    <value>Drain Life Skill</value>
+  </data>
+  <data name="DrainLifeSkillPlugIn_Description" xml:space="preserve">
+    <value>Handles the drain life skill of the summoner class. Additionally to the attacked target, it regains life for damage dealt.</value>
+  </data>
+  <data name="EarthShakeSkillPlugIn_Name" xml:space="preserve">
+    <value>Earth shake skill</value>
+  </data>
+  <data name="EarthShakeSkillPlugIn_Description" xml:space="preserve">
+    <value>Handles the earth shake skill of the dark horse. Pushes the targets away from the attacker.</value>
+  </data>
+  <data name="ForceSkillAction_Name" xml:space="preserve">
+    <value>ForceSkillAction</value>
+  </data>
+  <data name="ForceSkillAction_Description" xml:space="preserve">
+    <value>Handles the force skill of the dark lord.</value>
+  </data>
+  <data name="ForceWaveStrengSkillAction_Name" xml:space="preserve">
+    <value>ForceWaveStrengSkillAction</value>
+  </data>
+  <data name="ForceWaveStrengSkillAction_Description" xml:space="preserve">
+    <value>Handles the force wave strengthener skill of the dark lord.</value>
+  </data>
+  <data name="NovaSkillStartPlugin_Name" xml:space="preserve">
+    <value>NovaSkillStartPlugin</value>
+  </data>
+  <data name="NovaSkillStartPlugin_Description" xml:space="preserve">
+    <value>Handles the start of nova skill of the wizard class.</value>
+  </data>
+  <data name="NovaSkillStopPlugin_Name" xml:space="preserve">
+    <value>NovaSkillStopPlugin</value>
+  </data>
+  <data name="NovaSkillStopPlugin_Description" xml:space="preserve">
+    <value>Handles the stopping of nova skill of the wizard class.</value>
+  </data>
+  <data name="PlasmaStormSkillPlugIn_Name" xml:space="preserve">
+    <value>Plasma Storm Skill</value>
+  </data>
+  <data name="PlasmaStormSkillPlugIn_Description" xml:space="preserve">
+    <value>Handles the plasma storm skill of the fenrir pet. It randomly halves the durability of a target's equipped item.</value>
+  </data>
+  <data name="SoulBarrierProficieSkillAction_Name" xml:space="preserve">
+    <value>SoulBarrierProficieSkillAction</value>
+  </data>
+  <data name="SoulBarrierProficieSkillAction_Description" xml:space="preserve">
+    <value>Handles the soul barrier proficiency skill of the grand master.</value>
+  </data>
+  <data name="SoulBarrierStrengSkillAction_Name" xml:space="preserve">
+    <value>SoulBarrierStrengSkillAction</value>
+  </data>
+  <data name="SoulBarrierStrengSkillAction_Description" xml:space="preserve">
+    <value>Handles the soul barrier strengthener skill of the grand master.</value>
+  </data>
+  <data name="SummonPartySkillPlugin_Name" xml:space="preserve">
+    <value>SummonPartySkillPlugin</value>
+  </data>
+  <data name="SummonPartySkillPlugin_Description" xml:space="preserve">
+    <value>Handles the summon party skill of the dark lord class.</value>
+  </data>
+  <data name="AddAgilityStatChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Add agility chat command</value>
+  </data>
+  <data name="AddAgilityStatChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Adds the specified amount of agility points to the character.</value>
+  </data>
+  <data name="AddCommandStatChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Add command chat command</value>
+  </data>
+  <data name="AddCommandStatChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Adds the specified amount of command points to the character.</value>
+  </data>
+  <data name="AddEnergyStatChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Add energy chat command</value>
+  </data>
+  <data name="AddEnergyStatChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Adds the specified amount of energy points to the character.</value>
+  </data>
+  <data name="AddStrengthStatChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Add strength chat command</value>
+  </data>
+  <data name="AddStrengthStatChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Adds the specified amount of strength points to the character.</value>
+  </data>
+  <data name="AddVitalityStatChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Add vitality chat command</value>
+  </data>
+  <data name="AddVitalityStatChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Adds the specified amount of vitality points to the character.</value>
+  </data>
+  <data name="BanAccChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Ban Account command</value>
+  </data>
+  <data name="BanAccChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/banacc &lt;acc&gt;'. Bans an account from the game.</value>
+  </data>
+  <data name="BanCharChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Ban Character command</value>
+  </data>
+  <data name="BanCharChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/banchar &lt;char&gt;'. Bans the account of a character from the game.</value>
+  </data>
+  <data name="ChangeLanguageChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Change language command</value>
+  </data>
+  <data name="ChangeLanguageChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/language &lt;isoCode&gt;'. Changes the language of the account.</value>
+  </data>
+  <data name="CharInfoChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Char Info command</value>
+  </data>
+  <data name="CharInfoChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/charinfo &lt;char&gt;'. Returns information about the character back to the requester.</value>
+  </data>
+  <data name="ChatBanCharChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chat Ban Character command</value>
+  </data>
+  <data name="ChatBanCharChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/chatban &lt;characterName&gt; &lt;durationMinutes&gt;'. Bans the account of a character from chatting for the specified minutes.</value>
+  </data>
+  <data name="ChatUnbanCharChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chat Ban Character command</value>
+  </data>
+  <data name="ChatUnbanCharChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/chatunban &lt;characterName&gt;'. Unbans the account of a character from chatting.</value>
+  </data>
+  <data name="CreateMonsterChatCommand_Name" xml:space="preserve">
+    <value>Create monster chat command</value>
+  </data>
+  <data name="CreateMonsterChatCommand_Description" xml:space="preserve">
+    <value>Handles the chat command '/createmonster &lt;number&gt; &lt;intelligent&gt;'. Creates a monster which can be remote controlled by the GM.</value>
+  </data>
+  <data name="DisconnectChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Disconnect chat command</value>
+  </data>
+  <data name="DisconnectChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/disconnect &lt;char&gt;'. Disconnects a player from the game server.</value>
+  </data>
+  <data name="GuildBattleSoccerChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Guild battle soccer chat command</value>
+  </data>
+  <data name="GuildBattleSoccerChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/battlesoccer &lt;guildname&gt;'. Sends a request to the guild master of the requested guild.</value>
+  </data>
+  <data name="GuildDisconnectChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Guild disconnect chat command</value>
+  </data>
+  <data name="GuildDisconnectChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/guilddisconnect &lt;guild&gt;'. Disconnect the guild members.</value>
+  </data>
+  <data name="GuildMoveChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Guild move chat command</value>
+  </data>
+  <data name="GuildMoveChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/guildmove &lt;guild&gt; &lt;map&gt; &lt;x?&gt; &lt;y?&gt;'. Move the character from a guild to a specified map and coordinates.</value>
+  </data>
+  <data name="GuildWarChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Guild war chat command</value>
+  </data>
+  <data name="GuildWarChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/war &lt;guild&gt;'. Sends a request to the guild master of the requested guild.</value>
+  </data>
+  <data name="HelpCommand_Name" xml:space="preserve">
+    <value>Help command</value>
+  </data>
+  <data name="HelpCommand_Description" xml:space="preserve">
+    <value>Handles the /help &lt;command&gt; chat command. Shows information about the requested command.</value>
+  </data>
+  <data name="HideChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Hide command</value>
+  </data>
+  <data name="HideChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/hide'. Hides the own player from others.</value>
+  </data>
+  <data name="ItemChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Item chat command</value>
+  </data>
+  <data name="ItemChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/item &lt;group&gt; &lt;number&gt; &lt;lvl?&gt; &lt;exc?&gt; &lt;sk?&gt; &lt;lu?&gt; &lt;opt?&gt; &lt;anc?&gt; &lt;ancBonuslvl?&gt;'. Drops a specific item next to the character.</value>
+  </data>
+  <data name="ListCommand_Name" xml:space="preserve">
+    <value>List command</value>
+  </data>
+  <data name="ListCommand_Description" xml:space="preserve">
+    <value>Lists all the commands.</value>
+  </data>
+  <data name="MoveChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Move chat command</value>
+  </data>
+  <data name="MoveChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/move &lt;target&gt; &lt;mapIdOrName?&gt; &lt;x?&gt; &lt;y?&gt;'. Moves the character to the specified destination.</value>
+  </data>
+  <data name="MoveMonsterChatCommand_Name" xml:space="preserve">
+    <value>Move remote monster chat command</value>
+  </data>
+  <data name="MoveMonsterChatCommand_Description" xml:space="preserve">
+    <value>Handles the chat command '/movemonster &lt;id&gt; &lt;x&gt; &lt;y&gt;'. Moves a previously created monster which can be remote controlled by the GM.</value>
+  </data>
+  <data name="NoticeChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Notice chat command</value>
+  </data>
+  <data name="NoticeChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/goldnotice message'. Sends a global golden notice message to all players of the game.</value>
+  </data>
+  <data name="NpcChatCommandPlugIn_Name" xml:space="preserve">
+    <value>NPC open merchant chat command</value>
+  </data>
+  <data name="NpcChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Opens the merchant NPC store.</value>
+  </data>
+  <data name="OnlineChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Online chat command</value>
+  </data>
+  <data name="OnlineChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/online'. Gets the count of game masters and players online.</value>
+  </data>
+  <data name="OpenWarehouseChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Open Warehouse chat command</value>
+  </data>
+  <data name="OpenWarehouseChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Opens the warehouse.</value>
+  </data>
+  <data name="PkChatCommandPlugIn_Name" xml:space="preserve">
+    <value>PK chat command</value>
+  </data>
+  <data name="PkChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/pk &lt;char&gt; &lt;pk_lvl&gt; &lt;pk_count&gt;'. Sets player kill level and count of a character.</value>
+  </data>
+  <data name="PkClearChatCommandPlugIn_Name" xml:space="preserve">
+    <value>PK clear chat command</value>
+  </data>
+  <data name="PkClearChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/pkclear &lt;char&gt;'. Clears the player kill count.</value>
+  </data>
+  <data name="PostChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Post chat command</value>
+  </data>
+  <data name="PostChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/post message'. Sends a global blue system message to all players of the game.</value>
+  </data>
+  <data name="RemoveNpcChatCommand_Name" xml:space="preserve">
+    <value>Remove npc chat command</value>
+  </data>
+  <data name="RemoveNpcChatCommand_Description" xml:space="preserve">
+    <value>Handles the chat command '/removenpc &lt;id&gt;'.</value>
+  </data>
+  <data name="ShowFireworksEffectChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Show fireworks effect chat command</value>
+  </data>
+  <data name="ShowFireworksEffectChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/fireworks &lt;x&gt; &lt;y&gt;'. Shows an fireworks effect at the specified coordinates.</value>
+  </data>
+  <data name="ShowXmasFireworksEffectChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Show xmas fireworks effect chat command</value>
+  </data>
+  <data name="ShowXmasFireworksEffectChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/xmasfireworks &lt;x&gt; &lt;y&gt;'. Shows an christmas fireworks effect at the specified coordinates.</value>
+  </data>
+  <data name="SkinChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Skin chat command</value>
+  </data>
+  <data name="SkinChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/skin &lt;number&gt;'. Applies a monster skin to the game masters character.</value>
+  </data>
+  <data name="StartBloodCastleEventChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Start Blood Castle Event Chat Command</value>
+  </data>
+  <data name="StartBloodCastleEventChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/startbc'. Starts the blood castle event at the next possible time.</value>
+  </data>
+  <data name="StartChaosCastleEventChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Start Chaos Castle Event Chat Command</value>
+  </data>
+  <data name="StartChaosCastleEventChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/startcc'. Starts the chaos castle event at the next possible time.</value>
+  </data>
+  <data name="StartDevilSquareEventChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Start Devil Square Event Chat Command</value>
+  </data>
+  <data name="StartDevilSquareEventChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/startds'. Starts the devil square event at the next possible time.</value>
+  </data>
+  <data name="TeleportChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Teleport chat command</value>
+  </data>
+  <data name="TeleportChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/teleport &lt;x&gt; &lt;y&gt;'. Teleports the game master to the specified coordinates.</value>
+  </data>
+  <data name="TraceChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Trace chat command</value>
+  </data>
+  <data name="TraceChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/trace &lt;char&gt;'. Moves the game master to the character's location.</value>
+  </data>
+  <data name="TrackChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Track chat command</value>
+  </data>
+  <data name="TrackChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/track &lt;char&gt;'. Moves the player to the game masters location.</value>
+  </data>
+  <data name="UnBanAccChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Unban Account command</value>
+  </data>
+  <data name="UnBanAccChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/unbanacc &lt;acc&gt;'. Unbans an account from the game.</value>
+  </data>
+  <data name="UnBanCharChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Unban Character command</value>
+  </data>
+  <data name="UnBanCharChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/unbanchar &lt;char&gt;'. Unbans the account of a character from the game.</value>
+  </data>
+  <data name="UnHideChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Hide command</value>
+  </data>
+  <data name="UnHideChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/unhide'. Unhides the own player from others.</value>
+  </data>
+  <data name="WalkMonsterChatCommand_Name" xml:space="preserve">
+    <value>Walk remote monster chat command</value>
+  </data>
+  <data name="WalkMonsterChatCommand_Description" xml:space="preserve">
+    <value>Handles the chat command '/walkmonster &lt;id&gt; &lt;x&gt; &lt;y&gt;'. Walks a previously created monster which can be remote controlled by the GM.</value>
+  </data>
+  <data name="GoldenInvasionPlugIn_Name" xml:space="preserve">
+    <value>Golden Invasion</value>
+  </data>
+  <data name="GoldenInvasionPlugIn_Description" xml:space="preserve">
+    <value>Handle Golden Invasion event</value>
+  </data>
+  <data name="RedDragonInvasionPlugIn_Name" xml:space="preserve">
+    <value>Red Dragon Invasion</value>
+  </data>
+  <data name="RedDragonInvasionPlugIn_Description" xml:space="preserve">
+    <value>Handle red dragon invasion event</value>
+  </data>
+  <data name="HappyHourPlugIn_Name" xml:space="preserve">
+    <value>Happy Hour</value>
+  </data>
+  <data name="HappyHourPlugIn_Description" xml:space="preserve">
+    <value>Handle Happy Hour event</value>
+  </data>
+  <data name="UnlockDarkLordAtLevel250_Name" xml:space="preserve">
+    <value>UnlockDarkLordAtLevel250</value>
+  </data>
+  <data name="UnlockDarkLordAtLevel250_Description" xml:space="preserve">
+    <value>Unlocks the Dark Lord character class as soon as the first character of an account reaches level 250.</value>
+  </data>
+  <data name="UnlockMagicGladiatorAtLevel220_Name" xml:space="preserve">
+    <value>UnlockMagicGladiatorAtLevel220</value>
+  </data>
+  <data name="UnlockMagicGladiatorAtLevel220_Description" xml:space="preserve">
+    <value>Unlocks the Magic Gladiator character class as soon as the first character of an account reaches level 220.</value>
+  </data>
+  <data name="UnlockRageFighterAtLevel150_Name" xml:space="preserve">
+    <value>UnlockRageFighterAtLevel150</value>
+  </data>
+  <data name="UnlockRageFighterAtLevel150_Description" xml:space="preserve">
+    <value>Unlocks the Rage Fighter character class as soon as the first character of an account reaches level 150.</value>
+  </data>
+  <data name="UnlockSummonerAtLevel1_Name" xml:space="preserve">
+    <value>UnlockSummonerAtLevel1</value>
+  </data>
+  <data name="UnlockSummonerAtLevel1_Description" xml:space="preserve">
+    <value>Unlocks the Summoner character class as soon as the first character of an account reaches level 1.</value>
+  </data>
+  <data name="WanderingMerchantsPlugIn_Name" xml:space="preserve">
+    <value>Wandering Merchants</value>
+  </data>
+  <data name="WanderingMerchantsPlugIn_Description" xml:space="preserve">
+    <value>This plugins spawns and moves the wandering merchants.</value>
+  </data>
+  <data name="PlayerLosesMoneyAfterDeathPlugIn_Name" xml:space="preserve">
+    <value>Player money loss after death</value>
+  </data>
+  <data name="PlayerLosesMoneyAfterDeathPlugIn_Description" xml:space="preserve">
+    <value>This plugin decreases the money (zen) after the player has been killed by a monster.</value>
+  </data>
+  <data name="LearnablesConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Learnables Consume Handler</value>
+  </data>
+  <data name="LearnablesConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the consumption of items which add skills (e.g. scrolls, orbs).</value>
+  </data>
+  <data name="TargetedSkillDefaultPlugin_Name" xml:space="preserve">
+    <value>TargetedSkillDefaultPlugin</value>
+  </data>
+  <data name="TargetedSkillDefaultPlugin_Description" xml:space="preserve">
+    <value>Default (catch-all) handler for targeted skills</value>
+  </data>
+  <data name="AddStatChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Add Stat chat command</value>
+  </data>
+  <data name="AddStatChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command &apos;/add (ene|agi|vit|str|cmd) (amount)&apos;. Adds the specified amount of stat points to the specified attribute of the character.</value>
+  </data>
+  <data name="ClearInventoryChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Clear Inventory chat command</value>
+  </data>
+  <data name="ClearInventoryChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Clears inventory. Usage: /clearinv (optional:character)</value>
+  </data>
+  <data name="GetLevelChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Get level command</value>
+  </data>
+  <data name="GetLevelChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Gets level of a player. Usage: /getlevel (optional:character)</value>
+  </data>
+  <data name="GetLevelUpPointsChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Get level up points command</value>
+  </data>
+  <data name="GetLevelUpPointsChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Gets level up points of a player. Usage: /getleveluppoints (optional:character)</value>
+  </data>
+  <data name="GetMasterLevelChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Get master level command</value>
+  </data>
+  <data name="GetMasterLevelChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Gets master level of a player. Usage: /getmasterlevel (optional:character)</value>
+  </data>
+  <data name="GetMasterLevelUpPointsChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Get master level up points command</value>
+  </data>
+  <data name="GetMasterLevelUpPointsChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Gets master level up points of a player. Usage: /getmasterleveluppoints (optional:character)</value>
+  </data>
+  <data name="GetMoneyChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Get money command</value>
+  </data>
+  <data name="GetMoneyChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Gets money of a player. Usage: /getmoney (optional:character)</value>
+  </data>
+  <data name="GetResetsChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Get resets command</value>
+  </data>
+  <data name="GetResetsChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Gets resets of a player. Usage: /getresets (optional:character)</value>
+  </data>
+  <data name="GetStatChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Get Stat chat command</value>
+  </data>
+  <data name="GetStatChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Get stat points. Usage: /get (ene|agi|vit|str|cmd) (optional:character)</value>
+  </data>
+  <data name="SetLevelChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Set level command</value>
+  </data>
+  <data name="SetLevelChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Sets level of a player. Usage: /setlevel (level) (optional:character)</value>
+  </data>
+  <data name="SetLevelUpPointsChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Set level up points command</value>
+  </data>
+  <data name="SetLevelUpPointsChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Sets level up points of a player. Usage: /setleveluppoints (points) (optional:character)</value>
+  </data>
+  <data name="SetMasterLevelChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Set master level command</value>
+  </data>
+  <data name="SetMasterLevelChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Sets master level of a player. Usage: /setmasterlevel (level) (optional:character)</value>
+  </data>
+  <data name="SetMasterLevelUpPointsChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Set master level up points command</value>
+  </data>
+  <data name="SetMasterLevelUpPointsChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Sets master level up points of a player. Usage: /setmasterleveluppoints (points) (optional:character)</value>
+  </data>
+  <data name="SetMoneyChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Set money command</value>
+  </data>
+  <data name="SetMoneyChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Sets money of a player. Usage: /setmoney (amount) (optional:character)</value>
+  </data>
+  <data name="SetResetsChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Set resets command</value>
+  </data>
+  <data name="SetResetsChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Sets resets of a player. Usage: /setresets (resets) (optional:character)</value>
+  </data>
+  <data name="SetStatChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Set Stat chat command</value>
+  </data>
+  <data name="SetStatChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Set stat points. Usage: /set (ene|agi|vit|str|cmd) (amount) (optional:character)</value>
+  </data>
+</root>

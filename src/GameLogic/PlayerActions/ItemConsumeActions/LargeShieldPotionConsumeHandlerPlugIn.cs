@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("683C4BF1-8794-41B0-9742-B17B73A12BFE")]
 [PlugIn]
-[Display(Name = nameof(LargeShieldPotionConsumeHandlerPlugIn), Description = "Plugin which handles the large shield potion consumption.")]
+[Display(Name = nameof(PlugInResources.LargeShieldPotionConsumeHandlerPlugIn_Name), Description = nameof(PlugInResources.LargeShieldPotionConsumeHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 public class LargeShieldPotionConsumeHandlerPlugIn : ShieldPotionConsumeHandlerPlugIn
 {
     /// <inheritdoc />

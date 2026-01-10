@@ -1,4 +1,4 @@
-// <copyright file="ListCommand.cs" company="MUnique">
+﻿// <copyright file="ListCommand.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -12,7 +12,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("a5b0a3e5-bb2a-4287-821a-cd97714fe209")]
 [PlugIn]
-[Display(Name = "List command", Description = "Lists all the commands.")]
+[Display(Name = nameof(PlugInResources.ListCommand_Name), Description = nameof(PlugInResources.ListCommand_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, "Lists all the commands.", null)]
 public class ListCommand : IChatCommandPlugIn
 {

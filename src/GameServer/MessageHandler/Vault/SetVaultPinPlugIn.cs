@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// Packet handler for vault pin set packets (0x83, 0x01 identifier).
 /// </summary>
 [PlugIn]
-[Display(Name = "Vault Lock - Set Pin", Description = "Packet handler for vault pin set packets (0x83, 0x01 identifier).")]
+[Display(Name = nameof(PlugInResources.SetVaultPinPlugIn_Name), Description = nameof(PlugInResources.SetVaultPinPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("A4C4CD69-6E28-4088-B533-CD63589D3CCA")]
 [BelongsToGroup(VaultLockGroupPlugIn.GroupKey)]
 internal class SetVaultPinPlugIn : ISubPacketHandlerPlugIn

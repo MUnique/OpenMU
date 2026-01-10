@@ -12,7 +12,7 @@ using MUnique.OpenMU.PlugIns;
 /// Packet handler for whispered chat messages.
 /// </summary>
 [PlugIn]
-[Display(Name = "Whisper Message Handler", Description = "Packet handler for whispered chat messages.")]
+[Display(Name = nameof(PlugInResources.WhisperedChatMessageHandlerPlugIn_Name), Description = nameof(PlugInResources.WhisperedChatMessageHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("A81C652C-4DAE-477F-A7D0-328924B8A3FC")]
 internal class WhisperedChatMessageHandlerPlugIn : ChatMessageBaseHandlerPlugIn
 {

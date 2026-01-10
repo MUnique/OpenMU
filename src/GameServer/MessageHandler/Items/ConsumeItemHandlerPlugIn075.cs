@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// Handler for item consume packets.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(ConsumeItemHandlerPlugIn075), Description = "Handler for item consume packets of version 0.75")]
+[Display(Name = nameof(PlugInResources.ConsumeItemHandlerPlugIn075_Name), Description = nameof(PlugInResources.ConsumeItemHandlerPlugIn075_Description), ResourceType = typeof(PlugInResources))]
 [Guid("04F05526-C88A-4E3A-A872-B9103524AD38")]
 internal class ConsumeItemHandlerPlugIn075 : IPacketHandlerPlugIn
 {

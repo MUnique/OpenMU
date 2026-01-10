@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// The default implementation of the <see cref="IItemMoveFailedPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = "ItemMoveFailedPlugIn", Description = "The default implementation of the IItemMoveFailedPlugIn which is forwarding everything to the game client with specific data packets.")]
+[Display(Name = nameof(PlugInResources.ItemMoveFailedPlugIn_Name), Description = nameof(PlugInResources.ItemMoveFailedPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("7fc3b870-a6a2-4751-bfa7-156ed97a1c87")]
 public class ItemMoveFailedPlugIn : IItemMoveFailedPlugIn
 {

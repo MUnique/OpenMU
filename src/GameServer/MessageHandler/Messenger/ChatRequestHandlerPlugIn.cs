@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// Handler for chat request packets.
 /// </summary>
 [PlugIn]
-[Display(Name = "ChatRequestHandlerPlugIn", Description = "Handler for chat request packets.")]
+[Display(Name = nameof(PlugInResources.ChatRequestHandlerPlugIn_Name), Description = nameof(PlugInResources.ChatRequestHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("acf9263f-ba71-4d84-b8f8-84e494eb4462")]
 internal class ChatRequestHandlerPlugIn : IPacketHandlerPlugIn
 {

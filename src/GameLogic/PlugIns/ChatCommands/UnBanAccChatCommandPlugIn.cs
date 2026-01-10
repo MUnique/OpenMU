@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("FCBC9CC0-3C8F-45E2-96DF-9C55BE30C5D9")]
 [PlugIn]
-[Display(Name = "Unban Account command", Description = "Handles the chat command '/unbanacc <acc>'. Unbans an account from the game.")]
+[Display(Name = nameof(PlugInResources.UnBanAccChatCommandPlugIn_Name), Description = nameof(PlugInResources.UnBanAccChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, "Unbans an account from the game.", typeof(UnBanAccChatCommandArgs), CharacterStatus.GameMaster)]
 public class UnBanAccChatCommandPlugIn : ChatCommandPlugInBase<UnBanAccChatCommandArgs>
 {

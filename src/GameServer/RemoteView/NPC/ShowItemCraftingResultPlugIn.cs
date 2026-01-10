@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// The default implementation of the <see cref="IShowItemCraftingResultPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(ShowItemCraftingResultPlugIn), Description = "The default implementation of the IShowItemCraftingResultPlugIn which is forwarding everything to the game client with specific data packets.")]
+[Display(Name = nameof(PlugInResources.ShowItemCraftingResultPlugIn_Name), Description = nameof(PlugInResources.ShowItemCraftingResultPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("D4339CC0-3E44-4F51-9186-9C3CB02F99F6")]
 public class ShowItemCraftingResultPlugIn : IShowItemCraftingResultPlugIn
 {

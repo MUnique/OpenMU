@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// Packet handler for vault unlock packets (0x83, 0x00 identifier).
 /// </summary>
 [PlugIn]
-[Display(Name = "Vault Lock - Unlock", Description = "Packet handler for vault unlock packets (0x83, 0x00 identifier).")]
+[Display(Name = nameof(PlugInResources.UnlockVaultPlugIn_Name), Description = nameof(PlugInResources.UnlockVaultPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("B035454B-8858-4F30-94CC-EFAAF868FEFE")]
 [BelongsToGroup(VaultLockGroupPlugIn.GroupKey)]
 internal class UnlockVaultPlugIn : ISubPacketHandlerPlugIn

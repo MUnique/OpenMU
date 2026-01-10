@@ -16,7 +16,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("9C21C359-F192-4AF5-8C05-1AC4AFD10897")]
 [PlugIn]
-[Display(Name = "Season 6 Episode 3 Initialization", Description = "Provides initial data for Season 6 Episode 3.")]
+[Display(Name = nameof(PlugInResources.DataInitialization_Name), Description = nameof(PlugInResources.DataInitialization_Description), ResourceType = typeof(PlugInResources))]
 public class DataInitialization : DataInitializationBase
 {
     /// <summary>

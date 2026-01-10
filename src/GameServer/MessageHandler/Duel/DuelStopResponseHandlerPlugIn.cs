@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// Handler for duel stop request packets (new duel system).
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(DuelStopResponseHandlerPlugIn), Description = "Handler for duel stop request packets (new duel system).")]
+[Display(Name = nameof(PlugInResources.DuelStopResponseHandlerPlugIn_Name), Description = nameof(PlugInResources.DuelStopResponseHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("98787A41-4729-4DC8-A00F-B06CC7207598")]
 [MinimumClient(4, 0, ClientLanguage.Invariant)]
 [BelongsToGroup(DuelGroupHandlerPlugIn.GroupKey)]

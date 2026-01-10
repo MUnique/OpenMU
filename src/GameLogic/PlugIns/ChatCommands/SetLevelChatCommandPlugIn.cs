@@ -1,4 +1,4 @@
-// <copyright file="SetLevelChatCommandPlugIn.cs" company="MUnique">
+﻿// <copyright file="SetLevelChatCommandPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("4BE779C9-E6B6-47F2-BC23-2E71D82A6C1D")]
 [PlugIn]
-[Display(Name = "Set level command", Description = "Sets level of a player. Usage: /setlevel (level) (optional:character)")]
+[Display(Name = nameof(PlugInResources.SetLevelChatCommandPlugIn_Name), Description = nameof(PlugInResources.SetLevelChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, "Sets level of a player. Usage: /setlevel (level) (optional:character)", null)]
 public class SetLevelChatCommandPlugIn : ChatCommandPlugInBase<SetLevelChatCommandPlugIn.Arguments>, IDisabledByDefault
 {

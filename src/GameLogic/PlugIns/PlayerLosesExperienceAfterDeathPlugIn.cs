@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// This plugin decreases the experience after the player has been killed by a monster.
 /// </summary>
 [PlugIn]
-[Display(Name = "Player exp loss after death", Description = "This plugin decreases the experience after the player has been killed by a monster.")]
+[Display(Name = nameof(PlugInResources.PlayerLosesExperienceAfterDeathPlugIn_Name), Description = nameof(PlugInResources.PlayerLosesExperienceAfterDeathPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("CA9EACAC-1BD4-44BA-9187-C9F2CEF4E254")]
 public class PlayerLosesExperienceAfterDeathPlugIn : IAttackableGotKilledPlugIn, ISupportCustomConfiguration<PlayerLosesExperienceAfterDeathPlugInConfiguration>, ISupportDefaultCustomConfiguration
 {

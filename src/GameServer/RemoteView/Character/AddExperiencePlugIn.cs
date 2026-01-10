@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// The default implementation of the <see cref="IAddExperiencePlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = "AddExperiencePlugIn", Description = "The default implementation of the IAddExperiencePlugIn which is forwarding everything to the game client with specific data packets.")]
+[Display(Name = nameof(PlugInResources.AddExperiencePlugIn_Name), Description = nameof(PlugInResources.AddExperiencePlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("cc400edd-3540-4727-9b23-8c0ded4f0b00")]
 public class AddExperiencePlugIn : IAddExperiencePlugIn
 {

@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// Handler for friend add response packets.
 /// </summary>
 [PlugIn]
-[Display(Name = "FriendAddResponseHandlerPlugIn", Description = "Handler for friend add response packets.")]
+[Display(Name = nameof(PlugInResources.FriendAddResponseHandlerPlugIn_Name), Description = nameof(PlugInResources.FriendAddResponseHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("171b8f75-3927-4325-b694-54130365e4a2")]
 internal class FriendAddResponseHandlerPlugIn : IPacketHandlerPlugIn
 {

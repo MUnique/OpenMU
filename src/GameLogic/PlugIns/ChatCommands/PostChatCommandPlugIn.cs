@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("ED2523C1-F66D-4B53-814E-D2FC0C1F46C0")]
 [PlugIn]
-[Display(Name = "Post chat command", Description = "Handles the chat command '/post message'. Sends a global blue system message to all players of the game.")]
+[Display(Name = nameof(PlugInResources.PostChatCommandPlugIn_Name), Description = nameof(PlugInResources.PostChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
 public class PostChatCommandPlugIn : IChatCommandPlugIn
 {
     private const string CommandKey = "/post";

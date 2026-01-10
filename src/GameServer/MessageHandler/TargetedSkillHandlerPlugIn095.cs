@@ -16,7 +16,7 @@ using MUnique.OpenMU.PlugIns;
 /// In these versions, the skill identifiers were only 1 byte big. After that, the master skill tree required more skills to be added than fit into it.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(TargetedSkillHandlerPlugIn095), Description = "Handler for targeted skill packets for version 0.95.")]
+[Display(Name = nameof(PlugInResources.TargetedSkillHandlerPlugIn095_Name), Description = nameof(PlugInResources.TargetedSkillHandlerPlugIn095_Description), ResourceType = typeof(PlugInResources))]
 [Guid("B879F514-D8CF-4ADB-BC43-405B806A856A")]
 [MinimumClient(0, 95, ClientLanguage.Invariant)]
 internal class TargetedSkillHandlerPlugIn095 : TargetedSkillHandlerPlugIn

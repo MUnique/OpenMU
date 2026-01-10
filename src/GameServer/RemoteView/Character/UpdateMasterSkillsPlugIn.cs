@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// The default implementation of the <see cref="IUpdateMasterSkillsPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = "UpdateMasterSkillsPlugIn", Description = "The default implementation of the IUpdateMasterSkillsPlugIn which is forwarding everything to the game client with specific data packets.")]
+[Display(Name = nameof(PlugInResources.UpdateMasterSkillsPlugIn_Name), Description = nameof(PlugInResources.UpdateMasterSkillsPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("72942fe8-925d-43b0-a908-b814b2baa1f3")]
 public class UpdateMasterSkillsPlugIn : IUpdateMasterSkillsPlugIn
 {

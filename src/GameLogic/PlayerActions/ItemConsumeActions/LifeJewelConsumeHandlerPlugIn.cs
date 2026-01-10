@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("8AC6592D-D51C-47C9-B491-4778C615691D")]
 [PlugIn]
-[Display(Name = nameof(LifeJewelConsumeHandlerPlugIn), Description = "Plugin which handles the jewel of life consumption.")]
+[Display(Name = nameof(PlugInResources.LifeJewelConsumeHandlerPlugIn_Name), Description = nameof(PlugInResources.LifeJewelConsumeHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 public class LifeJewelConsumeHandlerPlugIn : ItemUpgradeConsumeHandlerPlugIn
 {
     /// <summary>

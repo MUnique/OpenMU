@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// Handles the trade money packets.
 /// </summary>
 [PlugIn]
-[Display(Name = "TradeMoneyHandlerPlugIn", Description = "Handles the trade money packets.")]
+[Display(Name = nameof(PlugInResources.TradeMoneyHandlerPlugIn_Name), Description = nameof(PlugInResources.TradeMoneyHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("3c18f0ca-4ad8-4e07-a111-0acbe81256ca")]
 internal class TradeMoneyHandlerPlugIn : IPacketHandlerPlugIn
 {

@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 /// This one is called when a player uses the warp list.
 /// </summary>
 [PlugIn]
-[Display(Name = "WarpHandlerPlugIn", Description = "Handler for warp request packets.")]
+[Display(Name = nameof(PlugInResources.WarpHandlerPlugIn_Name), Description = nameof(PlugInResources.WarpHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("3d261a26-4357-4367-b999-703ea936f4e9")]
 internal class WarpHandlerPlugIn : IPacketHandlerPlugIn
 {

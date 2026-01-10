@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// The default implementation of the <see cref="IShowGuildWarDeclaredPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(ShowGuildWarDeclaredPlugIn), Description = "The default implementation of the IShowGuildWarDeclaredPlugIn which is forwarding everything to the game client with specific data packets.")]
+[Display(Name = nameof(PlugInResources.ShowGuildWarDeclaredPlugIn_Name), Description = nameof(PlugInResources.ShowGuildWarDeclaredPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("50393D5D-01F2-43F8-B5D7-243D91B905BC")]
 public class ShowGuildWarDeclaredPlugIn : IShowGuildWarDeclaredPlugIn
 {

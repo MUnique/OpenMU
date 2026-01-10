@@ -12,7 +12,7 @@ using MUnique.OpenMU.PlugIns;
 /// Packet handler for quest packets (0xF6 identifier).
 /// </summary>
 [PlugIn]
-[Display(Name = "Quest Packet Handler", Description = "Packet handler for quest packets (0xF6 identifier).")]
+[Display(Name = nameof(PlugInResources.QuestGroupHandlerPlugIn_Name), Description = nameof(PlugInResources.QuestGroupHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("2641F83A-42D3-42B0-BD2F-63AD0E3A380F")]
 internal class QuestGroupHandlerPlugIn : GroupPacketHandlerPlugIn
 {

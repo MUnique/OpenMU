@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// Packet handler for quest start proceed packets (0xF6, 0x0B identifier).
 /// </summary>
 [PlugIn]
-[Display(Name = "Quest - Proceed Request", Description = "Packet handler for quest proceed request packets (0xF6, 0x0B identifier)")]
+[Display(Name = nameof(PlugInResources.QuestProceedRequestHandlerPlugIn_Name), Description = nameof(PlugInResources.QuestProceedRequestHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("D3773016-F156-4481-B080-A8C087444B78")]
 [BelongsToGroup(QuestGroupHandlerPlugIn.GroupKey)]
 public class QuestProceedRequestHandlerPlugIn : ISubPacketHandlerPlugIn

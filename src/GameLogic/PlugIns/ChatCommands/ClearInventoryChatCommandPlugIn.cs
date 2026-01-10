@@ -1,4 +1,4 @@
-// <copyright file="ClearInventoryChatCommandPlugIn.cs" company="MUnique">
+﻿// <copyright file="ClearInventoryChatCommandPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("1E895A6F-3056-4A78-BA64-96E24363B8BC")]
 [PlugIn]
-[Display(Name = "Clear Inventory chat command", Description = "Clears inventory. Usage: /clearinv (optional:character)")]
+[Display(Name = nameof(PlugInResources.ClearInventoryChatCommandPlugIn_Name), Description = nameof(PlugInResources.ClearInventoryChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, "Clears inventory.", null, MinimumStatus)]
 public class ClearInventoryChatCommandPlugIn : ChatCommandPlugInBase<ClearInventoryChatCommandPlugIn.Arguments>, ISupportCustomConfiguration<ClearInventoryChatCommandPlugIn.ClearInventoryConfiguration>, ISupportDefaultCustomConfiguration, IDisabledByDefault
 {

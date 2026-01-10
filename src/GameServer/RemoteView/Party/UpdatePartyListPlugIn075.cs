@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// The default implementation of the <see cref="IUpdatePartyListPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(UpdatePartyListPlugIn075), Description = "The default implementation of the IUpdatePartyListPlugIn which is forwarding everything to the game client with specific data packets.")]
+[Display(Name = nameof(PlugInResources.UpdatePartyListPlugIn075_Name), Description = nameof(PlugInResources.UpdatePartyListPlugIn075_Description), ResourceType = typeof(PlugInResources))]
 [Guid("125303BA-9614-45CE-A0C5-A82F1535367A")]
 [MaximumClient(0, 89, ClientLanguage.Invariant)]
 public class UpdatePartyListPlugIn075 : IUpdatePartyListPlugIn

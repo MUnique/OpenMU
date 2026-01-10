@@ -12,7 +12,7 @@ using MUnique.OpenMU.PlugIns;
 /// Packet handler for vault lock packets (0x83 identifier).
 /// </summary>
 [PlugIn]
-[Display(Name = "Vault Lock Packet Handler", Description = "Packet handler for vault lock packets (0x83 identifier).")]
+[Display(Name = nameof(PlugInResources.VaultLockGroupPlugIn_Name), Description = nameof(PlugInResources.VaultLockGroupPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("751B3608-D9D9-45F1-BEF1-7B42AE851ABB")]
 internal class VaultLockGroupPlugIn : GroupPacketHandlerPlugIn
 {

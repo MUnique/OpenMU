@@ -1,4 +1,4 @@
-// <copyright file="HelpCommand.cs" company="MUnique">
+﻿// <copyright file="HelpCommand.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -12,7 +12,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("EFE9399A-9A14-4B94-BBC1-20718584C4C2")]
 [PlugIn]
-[Display(Name = "Help command", Description = "Handles the /help <command> chat command. Shows information about the requested command.")]
+[Display(Name = nameof(PlugInResources.HelpCommand_Name), Description = nameof(PlugInResources.HelpCommand_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, "Shows information about the requested command.", typeof(Arguments))]
 public class HelpCommand : IChatCommandPlugIn
 {

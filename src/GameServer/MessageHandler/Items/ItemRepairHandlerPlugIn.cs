@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// Handler for item repair packets.
 /// </summary>
 [PlugIn]
-[Display(Name = "ItemRepairHandlerPlugIn", Description = "Handler for item repair packets.")]
+[Display(Name = nameof(PlugInResources.ItemRepairHandlerPlugIn_Name), Description = nameof(PlugInResources.ItemRepairHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("85b4a195-c90c-47f8-bae2-833b5d2ef398")]
 internal class ItemRepairHandlerPlugIn : IPacketHandlerPlugIn
 {

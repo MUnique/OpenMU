@@ -11,7 +11,7 @@ using MUnique.OpenMU.PlugIns;
 /// The Soul Barrier Proficiency skill action.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(SoulBarrierProficieSkillAction), Description = "Handles the soul barrier proficiency skill of the grand master.")]
+[Display(Name = nameof(PlugInResources.SoulBarrierProficieSkillAction_Name), Description = nameof(PlugInResources.SoulBarrierProficieSkillAction_Description), ResourceType = typeof(PlugInResources))]
 [Guid("9c56073f-1719-423c-8397-30d94793f929")]
 public class SoulBarrierProficieSkillAction : SoulBarrierStrengSkillAction
 {

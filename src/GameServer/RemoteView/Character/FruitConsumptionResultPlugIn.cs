@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// The default implementation of the <see cref="IFruitConsumptionResponsePlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = "CharacterFocusedPlugIn", Description = "The default implementation of the IFruitConsumptionResponsePlugIn which is forwarding everything to the game client with specific data packets.")]
+[Display(Name = nameof(PlugInResources.FruitConsumptionResultPlugIn_Name), Description = nameof(PlugInResources.FruitConsumptionResultPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("0B4D7CA8-181B-4AB5-9522-C826F6311CD8")]
 public class FruitConsumptionResultPlugIn : IFruitConsumptionResponsePlugIn
 {

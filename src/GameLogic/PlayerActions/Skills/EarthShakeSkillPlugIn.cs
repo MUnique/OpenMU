@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("5D00F012-B0A3-41D6-B2FD-66D37A81615C")]
 [PlugIn]
-[Display(Name = "Earth shake skill", Description = "Handles the earth shake skill of the dark horse. Pushes the targets away from the attacker.")]
+[Display(Name = nameof(PlugInResources.EarthShakeSkillPlugIn_Name), Description = nameof(PlugInResources.EarthShakeSkillPlugIn_Description), ResourceType = typeof(PlugInResources))]
 public class EarthShakeSkillPlugIn : IAreaSkillPlugIn
 {
     /// <inheritdoc />

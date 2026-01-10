@@ -1,4 +1,4 @@
-// <copyright file="OpenWarehouseChatCommandPlugIn.cs" company="MUnique">
+﻿// <copyright file="OpenWarehouseChatCommandPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("62027B6B-D8E7-4DDB-A16B-7070D1BC4A56")]
 [PlugIn]
-[Display(Name = "Open Warehouse chat command", Description = "Opens the warehouse.")]
+[Display(Name = nameof(PlugInResources.OpenWarehouseChatCommandPlugIn_Name), Description = nameof(PlugInResources.OpenWarehouseChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, "Opens the warehouse.", null)]
 public class OpenWarehouseChatCommandPlugIn : ChatCommandPlugInBase<OpenWarehouseChatCommandPlugIn.Arguments>, ISupportCustomConfiguration<OpenWarehouseChatCommandPlugIn.OpenWarehouseChatCommandConfiguration>, ISupportDefaultCustomConfiguration, IDisabledByDefault
 {

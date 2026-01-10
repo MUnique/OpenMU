@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("34FAAD0A-FCA4-42E2-8F37-CEF48783BD78")]
 [PlugIn]
-[Display(Name = "Remove npc chat command", Description = "Handles the chat command '/removenpc <id>'.")]
+[Display(Name = nameof(PlugInResources.RemoveNpcChatCommand_Name), Description = nameof(PlugInResources.RemoveNpcChatCommand_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, "Removes a NPC with the specified id.", typeof(IdCommandArgs), CharacterStatus.GameMaster)]
 internal class RemoveNpcChatCommand : ChatCommandPlugInBase<IdCommandArgs>
 {

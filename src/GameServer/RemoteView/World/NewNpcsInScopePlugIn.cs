@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 /// The default implementation of the <see cref="INewNpcsInScopePlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = "NPCs in scope PlugIn", Description = "The default implementation of the INewNpcsInScopePlugIn which is forwarding everything to the game client with specific data packets.")]
+[Display(Name = nameof(PlugInResources.NewNpcsInScopePlugIn_Name), Description = nameof(PlugInResources.NewNpcsInScopePlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("35449477-0fba-48cb-9371-f337433b0f9d")]
 [MinimumClient(5, 0, ClientLanguage.Invariant)]
 public class NewNpcsInScopePlugIn : INewNpcsInScopePlugIn

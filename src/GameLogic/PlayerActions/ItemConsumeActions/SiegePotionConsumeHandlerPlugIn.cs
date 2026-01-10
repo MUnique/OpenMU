@@ -16,7 +16,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("9D50CE95-5354-43A7-8DD5-9D6953700DFA")]
 [PlugIn]
-[Display(Name = nameof(SiegePotionConsumeHandlerPlugIn), Description = "Plugin which handles the siege potion consumption.")]
+[Display(Name = nameof(PlugInResources.SiegePotionConsumeHandlerPlugIn_Name), Description = nameof(PlugInResources.SiegePotionConsumeHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 public class SiegePotionConsumeHandlerPlugIn : ApplyMagicEffectConsumeHandlerPlugIn
 {
     /// <inheritdoc />

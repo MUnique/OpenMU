@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("7AD1E5F4-4B07-4165-B9A4-188614F00F7C")]
 [PlugIn]
-[Display(Name = "Ban Character command", Description = "Handles the chat command '/banchar <char>'. Bans the account of a character from the game.")]
+[Display(Name = nameof(PlugInResources.BanCharChatCommandPlugIn_Name), Description = nameof(PlugInResources.BanCharChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, "Bans the account of a character from the game.", typeof(BanCharChatCommandArgs), CharacterStatus.GameMaster)]
 public class BanCharChatCommandPlugIn : ChatCommandPlugInBase<BanCharChatCommandArgs>
 {

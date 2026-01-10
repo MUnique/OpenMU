@@ -12,7 +12,7 @@ using MUnique.OpenMU.PlugIns;
 /// Packet handler for character packets (0xF3 identifier).
 /// </summary>
 [PlugIn]
-[Display(Name = "Character Packet Handler", Description = "Packet handler for character packets (0xF3 identifier).")]
+[Display(Name = nameof(PlugInResources.CharacterGroupHandlerPlugIn_Name), Description = nameof(PlugInResources.CharacterGroupHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("dce31462-c8a6-4d9a-a8b8-54a50cf16aff")]
 internal class CharacterGroupHandlerPlugIn : GroupPacketHandlerPlugIn
 {

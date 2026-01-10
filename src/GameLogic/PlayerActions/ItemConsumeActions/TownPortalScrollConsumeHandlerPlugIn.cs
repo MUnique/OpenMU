@@ -19,7 +19,7 @@ using MUnique.OpenMU.PlugIns;
 /// </remarks>
 [Guid("825C3110-75F1-4157-A189-15B365B4791E")]
 [PlugIn]
-[Display(Name = nameof(TownPortalScrollConsumeHandlerPlugIn), Description = "Plugin which handles the town portal scroll consumption.")]
+[Display(Name = nameof(PlugInResources.TownPortalScrollConsumeHandlerPlugIn_Name), Description = nameof(PlugInResources.TownPortalScrollConsumeHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 public class TownPortalScrollConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn
 {
     /// <inheritdoc />

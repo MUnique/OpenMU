@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// The default implementation of the <see cref="IOpenNpcWindowPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = "OpenNpcWindowPlugIn", Description = "The default implementation of the IOpenNpcWindowPlugIn which is forwarding everything to the game client with specific data packets.")]
+[Display(Name = nameof(PlugInResources.OpenNpcWindowPlugIn_Name), Description = nameof(PlugInResources.OpenNpcWindowPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("3d77d6ef-479c-45f6-8ec9-a7bb046d306a")]
 public class OpenNpcWindowPlugIn : IOpenNpcWindowPlugIn
 {

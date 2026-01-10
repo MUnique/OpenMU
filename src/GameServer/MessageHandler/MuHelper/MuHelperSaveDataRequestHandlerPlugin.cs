@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// Packet handler for mu helper data save packets (0xAE identifier).
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(MuHelperSaveDataRequestHandlerPlugin), Description = "Handler for mu bot data save request.")]
+[Display(Name = nameof(PlugInResources.MuHelperSaveDataRequestHandlerPlugin_Name), Description = nameof(PlugInResources.MuHelperSaveDataRequestHandlerPlugin_Description), ResourceType = typeof(PlugInResources))]
 [Guid("493B12F2-5115-4587-B0CF-B1E4F9B77249")]
 public class MuHelperSaveDataRequestHandlerPlugin : IPacketHandlerPlugIn
 {

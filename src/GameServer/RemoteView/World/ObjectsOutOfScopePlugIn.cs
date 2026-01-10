@@ -16,7 +16,7 @@ using MUnique.OpenMU.PlugIns;
 /// The default implementation of the <see cref="IObjectsOutOfScopePlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = "ObjectsOutOfScopePlugIn", Description = "The default implementation of the IObjectsOutOfScopePlugIn which is forwarding everything to the game client with specific data packets.")]
+[Display(Name = nameof(PlugInResources.ObjectsOutOfScopePlugIn_Name), Description = nameof(PlugInResources.ObjectsOutOfScopePlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("88cea9ce-c186-4fd0-b6cc-6466d8a7531c")]
 public class ObjectsOutOfScopePlugIn : IObjectsOutOfScopePlugIn
 {

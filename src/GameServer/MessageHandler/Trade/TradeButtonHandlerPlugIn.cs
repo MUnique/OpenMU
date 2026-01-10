@@ -15,7 +15,7 @@ using TradeButtonState = MUnique.OpenMU.GameLogic.Views.Trade.TradeButtonState;
 /// Handles the trade button packets.
 /// </summary>
 [PlugIn]
-[Display(Name = "TradeButtonHandlerPlugIn", Description = "Handles the trade button packets.")]
+[Display(Name = nameof(PlugInResources.TradeButtonHandlerPlugIn_Name), Description = nameof(PlugInResources.TradeButtonHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("4e70bdec-c890-4e7d-93a9-1801f821f322")]
 internal class TradeButtonHandlerPlugIn : IPacketHandlerPlugIn
 {

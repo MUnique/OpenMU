@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// The extended implementation of the <see cref="IRequestedItemConsumptionFailedPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(RequestedItemConsumptionFailedExtendedPlugIn), Description = "The extended implementation of the IRequestedItemConsumptionFailedPlugIn which is forwarding everything to the game client with specific data packets.")]
+[Display(Name = nameof(PlugInResources.RequestedItemConsumptionFailedExtendedPlugIn_Name), Description = nameof(PlugInResources.RequestedItemConsumptionFailedExtendedPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("8F98AAF4-E329-4DE2-B8D5-9169B64E20B2")]
 [MinimumClient(106, 3, ClientLanguage.English)]
 public class RequestedItemConsumptionFailedExtendedPlugIn : IRequestedItemConsumptionFailedPlugIn

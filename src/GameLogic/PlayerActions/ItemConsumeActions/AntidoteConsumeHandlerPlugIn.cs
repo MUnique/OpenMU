@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("F838B348-DAA5-475B-BCED-41A076D08948")]
 [PlugIn]
-[Display(Name = nameof(AntidoteConsumeHandlerPlugIn), Description = "Plugin which handles the antidote consumption.")]
+[Display(Name = nameof(PlugInResources.AntidoteConsumeHandlerPlugIn_Name), Description = nameof(PlugInResources.AntidoteConsumeHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 public class AntidoteConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn
 {
     private const short PoisonEffectNumber = 0x37;

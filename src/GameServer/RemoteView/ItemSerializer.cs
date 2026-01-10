@@ -23,7 +23,7 @@ using static ItemSerializerHelper;
 /// </summary>
 [Guid("3607902F-C7A8-40D0-823A-186F3BF630C7")]
 [PlugIn]
-[Display(Name = "Item Serializer", Description = "The default item serializer. It's most likely only correct for season 6.")]
+[Display(Name = nameof(PlugInResources.ItemSerializer_Name), Description = nameof(PlugInResources.ItemSerializer_Description), ResourceType = typeof(PlugInResources))]
 [MinimumClient(5, 0, ClientLanguage.Invariant)]
 public class ItemSerializer : IItemSerializer
 {

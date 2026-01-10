@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// This plugin enables Happy Hour feature.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(HappyHourPlugIn), Description = "Handle Happy Hour event")]
+[Display(Name = nameof(PlugInResources.HappyHourPlugIn_Name), Description = nameof(PlugInResources.HappyHourPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("6542E452-9780-45B8-85AE-4036422E9A6E")]
 public class HappyHourPlugIn : PeriodicTaskBasePlugIn<HappyHourConfiguration, PeriodicTaskGameServerState>, ISupportDefaultCustomConfiguration, IPlayerStateChangedPlugIn
 {

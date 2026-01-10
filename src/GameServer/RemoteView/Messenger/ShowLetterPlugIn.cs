@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// The default implementation of the <see cref="IShowLetterPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = "ShowLetterPlugIn", Description = "The default implementation of the IShowLetterPlugIn which is forwarding everything to the game client with specific data packets.")]
+[Display(Name = nameof(PlugInResources.ShowLetterPlugIn_Name), Description = nameof(PlugInResources.ShowLetterPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("6ce73080-6916-465f-b6d1-34641687ded3")]
 public class ShowLetterPlugIn : IShowLetterPlugIn
 {

@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("2BFC9464-4B76-4D76-8CE1-69B712B65E6C")]
 [PlugIn]
-[Display(Name = "Notice chat command", Description = "Handles the chat command '/goldnotice message'. Sends a global golden notice message to all players of the game.")]
+[Display(Name = nameof(PlugInResources.NoticeChatCommandPlugIn_Name), Description = nameof(PlugInResources.NoticeChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
 public class NoticeChatCommandPlugIn : IChatCommandPlugIn
 {
     private const string CommandKey = "/goldnotice";

@@ -16,7 +16,7 @@ using MUnique.OpenMU.PlugIns;
 /// The default implementation of the <see cref="IActivateMagicEffectPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(DeActivateMagicEffectPlugIn075), Description = "The default implementation of the IActivateMagicEffectPlugIn and IDeactivateMagicEffectPlugIn which is forwarding everything to the game client with specific data packets.")]
+[Display(Name = nameof(PlugInResources.DeActivateMagicEffectPlugIn075_Name), Description = nameof(PlugInResources.DeActivateMagicEffectPlugIn075_Description), ResourceType = typeof(PlugInResources))]
 [Guid("3CF8BFBA-FBDA-431D-9806-86B3DEC3AD54")]
 [MaximumClient(0, 89, ClientLanguage.Invariant)]
 public class DeActivateMagicEffectPlugIn075 : IDeactivateMagicEffectPlugIn

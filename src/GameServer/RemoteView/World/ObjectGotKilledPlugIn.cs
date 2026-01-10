@@ -16,7 +16,7 @@ using MUnique.OpenMU.PlugIns;
 /// The default implementation of the <see cref="IObjectGotKilledPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(ObjectGotKilledPlugIn), Description = "The default implementation of the IObjectGotKilledPlugIn which is forwarding everything to the game client with specific data packets.")]
+[Display(Name = nameof(PlugInResources.ObjectGotKilledPlugIn_Name), Description = nameof(PlugInResources.ObjectGotKilledPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("fbe6666e-4425-4f33-b7c7-fc9b5fa36430")]
 public class ObjectGotKilledPlugIn : IObjectGotKilledPlugIn
 {

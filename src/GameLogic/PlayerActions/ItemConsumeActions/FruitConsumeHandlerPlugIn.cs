@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("151E4292-96FE-4FF5-A51B-060B510D3DF8")]
 [PlugIn]
-[Display(Name = nameof(FruitConsumeHandlerPlugIn), Description = "Plugin which handles the fruit consumption.")]
+[Display(Name = nameof(PlugInResources.FruitConsumeHandlerPlugIn_Name), Description = nameof(PlugInResources.FruitConsumeHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 public class FruitConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn
 {
     /// <inheritdoc />

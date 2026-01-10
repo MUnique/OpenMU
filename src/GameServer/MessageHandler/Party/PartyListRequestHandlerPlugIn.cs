@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// Handler for party list request packets.
 /// </summary>
 [PlugIn]
-[Display(Name = "PartyListRequestHandlerPlugIn", Description = "Handler for party list request packets.")]
+[Display(Name = nameof(PlugInResources.PartyListRequestHandlerPlugIn_Name), Description = nameof(PlugInResources.PartyListRequestHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("2650e346-69ef-4a9e-82ba-5f0b9591a548")]
 internal class PartyListRequestHandlerPlugIn : IPacketHandlerPlugIn
 {

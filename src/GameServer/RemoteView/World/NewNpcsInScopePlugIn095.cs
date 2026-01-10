@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 /// The default implementation of the <see cref="T:MUnique.OpenMU.GameLogic.Views.World.INewNpcsInScopePlugIn" /> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(NewNpcsInScopePlugIn095), Description = "The default implementation of the INewNpcsInScopePlugIn which is forwarding everything to the game client with specific data packets for version 0.75.")]
+[Display(Name = nameof(PlugInResources.NewNpcsInScopePlugIn095_Name), Description = nameof(PlugInResources.NewNpcsInScopePlugIn095_Description), ResourceType = typeof(PlugInResources))]
 [Guid("ECCD99EB-425D-4C9B-8F04-2711BA7A4C1E")]
 [MinimumClient(0, 95, ClientLanguage.Invariant)]
 public class NewNpcsInScopePlugIn095 : INewNpcsInScopePlugIn

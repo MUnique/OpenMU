@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// Packet handler for event quest state request packets (0xF6, 0x21 identifier).
 /// </summary>
 [PlugIn]
-[Display(Name = "Quest - Event quest state request", Description = "Packet handler for event quest state request packets (0xF6, 0x21 identifier)")]
+[Display(Name = nameof(PlugInResources.EventQuestStateRequestHandlerPlugIn_Name), Description = nameof(PlugInResources.EventQuestStateRequestHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("907FFFF8-0CF2-4DCD-931F-8AA17FE2EF3D")]
 [BelongsToGroup(QuestGroupHandlerPlugIn.GroupKey)]
 public class EventQuestStateRequestHandlerPlugIn : ISubPacketHandlerPlugIn

@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("A9F58DF6-06DB-4187-B386-9F00382333EE")]
 [PlugIn]
-[Display(Name = nameof(HigherRefineStoneConsumeHandlerPlugIn), Description = "Plugin which handles the higher refine stone consumption.")]
+[Display(Name = nameof(PlugInResources.HigherRefineStoneConsumeHandlerPlugIn_Name), Description = nameof(PlugInResources.HigherRefineStoneConsumeHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 public class HigherRefineStoneConsumeHandlerPlugIn : RefineStoneUpgradeConsumeHandlerPlugIn
 {
     /// <summary>

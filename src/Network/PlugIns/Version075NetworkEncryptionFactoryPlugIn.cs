@@ -19,7 +19,7 @@ using MUnique.OpenMU.PlugIns;
 /// However, it uses simple modulus with some other keys.
 /// </remarks>
 [PlugIn]
-[Display(Name = "Network Encryption - 0.75", Description = "A plugin which provides network encryptors and decryptors for game clients of version 0.75 (server version 0.65)")]
+[Display(Name = nameof(PlugInResources.Version075NetworkEncryptionFactoryPlugIn_Name), Description = nameof(PlugInResources.Version075NetworkEncryptionFactoryPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("E83F05AC-18D4-4714-AEFB-2F4F3B37951C")]
 public class Version075NetworkEncryptionFactoryPlugIn : INetworkEncryptionFactoryPlugIn
 {

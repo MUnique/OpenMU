@@ -12,7 +12,7 @@ using MUnique.OpenMU.PlugIns;
 /// Updates the <see cref="Stats.IsInSafezone"/>. For example, this activates the automatic health and shield recover.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(UpdateIsInSafezoneAfterPlayerMoved), Description = "Updates the attribute if a player is located in the safezone. For example, this activates the automatic health and shield recover.")]
+[Display(Name = nameof(PlugInResources.UpdateIsInSafezoneAfterPlayerMoved_Name), Description = nameof(PlugInResources.UpdateIsInSafezoneAfterPlayerMoved_Description), ResourceType = typeof(PlugInResources))]
 [Guid("396617CA-954A-45A1-A6DB-1AA65309A03D")]
 public class UpdateIsInSafezoneAfterPlayerMoved : IAttackableMovedPlugIn
 {

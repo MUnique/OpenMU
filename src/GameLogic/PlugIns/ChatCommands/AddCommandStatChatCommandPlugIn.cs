@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("EFE421FB-BE79-4656-AF39-D22A105D1455")]
 [PlugIn]
-[Display(Name = "Add command chat command", Description = "Adds the specified amount of command points to the character.")]
+[Display(Name = nameof(PlugInResources.AddCommandStatChatCommandPlugIn_Name), Description = nameof(PlugInResources.AddCommandStatChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, "Adds the specified amount of command points to the character.", null, MinimumStatus)]
 public class AddCommandStatChatCommandPlugIn : AddStatChatCommandPlugIn, IDisabledByDefault
 {

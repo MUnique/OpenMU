@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("B5E0F108-9E55-48F6-A7A8-220BFAEF2F3E")]
 [PlugIn]
-[Display(Name = "Disconnect chat command", Description = "Handles the chat command '/disconnect <char>'. Disconnects a player from the game server.")]
+[Display(Name = nameof(PlugInResources.DisconnectChatCommandPlugIn_Name), Description = nameof(PlugInResources.DisconnectChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, "Disconnects a player from the game server.", typeof(DisconnectChatCommandArgs), CharacterStatus.GameMaster)]
 public class DisconnectChatCommandPlugIn : ChatCommandPlugInBase<DisconnectChatCommandArgs>
 {

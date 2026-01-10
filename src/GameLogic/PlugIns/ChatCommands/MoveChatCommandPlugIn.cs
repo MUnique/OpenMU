@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("4564AE2B-4819-4155-B5B2-FE2ED0CF7A7F")]
 [PlugIn]
-[Display(Name = "Move chat command", Description = "Handles the chat command '/move <target> <mapIdOrName?> <x?> <y?>'. Moves the character to the specified destination.")]
+[Display(Name = nameof(PlugInResources.MoveChatCommandPlugIn_Name), Description = nameof(PlugInResources.MoveChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, "Moves the character to the specified destination.", typeof(MoveChatCommandArgs), CharacterStatus.Normal)]
 public class MoveChatCommandPlugIn : ChatCommandPlugInBase<MoveChatCommandArgs>
 {

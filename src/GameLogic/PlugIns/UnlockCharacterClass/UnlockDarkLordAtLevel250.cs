@@ -11,7 +11,7 @@ using MUnique.OpenMU.PlugIns;
 /// Unlocks the Dark Lord character class as soon as the first character of an account reaches level 250.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(UnlockDarkLordAtLevel250), Description = "Unlocks the Dark Lord character class as soon as the first character of an account reaches level 250.")]
+[Display(Name = nameof(PlugInResources.UnlockDarkLordAtLevel250_Name), Description = nameof(PlugInResources.UnlockDarkLordAtLevel250_Description), ResourceType = typeof(PlugInResources))]
 [Guid("2DFFD75A-765D-4FA7-93DD-9890CA0F04F0")]
 public class UnlockDarkLordAtLevel250 : UnlockCharacterAtLevelBase
 {

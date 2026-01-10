@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// The default implementation of the <see cref="IConsumeSpecialItemPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(ConsumeSpecialItemPlugIn), Description = "The default implementation of the IConsumeSpecialItemPlugIn which is forwarding everything to the game client with specific data packets.")]
+[Display(Name = nameof(PlugInResources.ConsumeSpecialItemPlugIn_Name), Description = nameof(PlugInResources.ConsumeSpecialItemPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("a31546d8-bf79-43dd-872c-52f24ea9bca9")]
 public class ConsumeSpecialItemPlugIn : IConsumeSpecialItemPlugIn
 {

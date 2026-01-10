@@ -1,4 +1,4 @@
-// <copyright file="SetMoneyChatCommandPlugIn.cs" company="MUnique">
+﻿// <copyright file="SetMoneyChatCommandPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -12,7 +12,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("00AA4F0E-911D-49FE-8D88-114C7496D383")]
 [PlugIn]
-[Display(Name = "Set money command", Description = "Sets money of a player. Usage: /setmoney (amount) (optional:character)")]
+[Display(Name = nameof(PlugInResources.SetMoneyChatCommandPlugIn_Name), Description = nameof(PlugInResources.SetMoneyChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, "Sets money of a player. Usage: /setmoney (amount) (optional:character)", null)]
 public class SetMoneyChatCommandPlugIn : ChatCommandPlugInBase<SetMoneyChatCommandPlugIn.Arguments>, IDisabledByDefault
 {

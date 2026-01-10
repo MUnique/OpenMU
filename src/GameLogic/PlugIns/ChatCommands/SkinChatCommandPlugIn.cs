@@ -16,7 +16,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("4735CC2C-9E5D-457A-92CB-9D765F74FDFB")]
 [PlugIn]
-[Display(Name = "Skin chat command", Description = "Handles the chat command '/skin <number>'. Applies a monster skin to the game masters character.")]
+[Display(Name = nameof(PlugInResources.SkinChatCommandPlugIn_Name), Description = nameof(PlugInResources.SkinChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, "Applies a monster skin to the game masters character.", typeof(SkinChatCommandArgs), CharacterStatus.GameMaster)]
 public class SkinChatCommandPlugIn : ChatCommandPlugInBase<SkinChatCommandArgs>
 {

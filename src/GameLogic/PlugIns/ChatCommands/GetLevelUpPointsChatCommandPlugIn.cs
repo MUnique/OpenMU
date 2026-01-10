@@ -1,4 +1,4 @@
-// <copyright file="GetLevelUpPointsChatCommandPlugIn.cs" company="MUnique">
+﻿// <copyright file="GetLevelUpPointsChatCommandPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -12,7 +12,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("E4D65354-CCD2-4960-BDCA-D4582A57BBCB")]
 [PlugIn]
-[Display(Name = "Get level up points command", Description = "Gets level up points of a player. Usage: /getleveluppoints (optional:character)")]
+[Display(Name = nameof(PlugInResources.GetLevelUpPointsChatCommandPlugIn_Name), Description = nameof(PlugInResources.GetLevelUpPointsChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, "Gets level up points of a player. Usage: /getleveluppoints (optional:character)", null)]
 public class GetLevelUpPointsChatCommandPlugIn : ChatCommandPlugInBase<GetLevelUpPointsChatCommandPlugIn.Arguments>, IDisabledByDefault
 {

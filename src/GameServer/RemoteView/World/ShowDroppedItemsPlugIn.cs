@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// The default implementation of the <see cref="IShowDroppedItemsPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = "ShowDroppedItemsPlugIn", Description = "The default implementation of the IShowDroppedItemsPlugIn which is forwarding everything to the game client with specific data packets.")]
+[Display(Name = nameof(PlugInResources.ShowDroppedItemsPlugIn_Name), Description = nameof(PlugInResources.ShowDroppedItemsPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("f89308c3-5fe7-46e2-adfc-85a56ba23233")]
 public class ShowDroppedItemsPlugIn : IShowDroppedItemsPlugIn
 {

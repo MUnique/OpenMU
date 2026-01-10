@@ -12,7 +12,7 @@ using MUnique.OpenMU.PlugIns;
 /// Packet handler for mu helper packets (0xBF identifier).
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(MuHelperGroupHandler), Description = "Group packet handler for mu helper packets (0xBF identifier).")]
+[Display(Name = nameof(PlugInResources.MuHelperGroupHandler_Name), Description = nameof(PlugInResources.MuHelperGroupHandler_Description), ResourceType = typeof(PlugInResources))]
 [Guid("F92D5B35-02C9-4C95-9A29-B4E4323B63A2")]
 internal class MuHelperGroupHandler : GroupPacketHandlerPlugIn
 {

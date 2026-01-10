@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// Handler for npc item buy requests.
 /// </summary>
 [PlugIn]
-[Display(Name = "BuyNpcItemHandlerPlugIn", Description = "Handler for npc item buy requests.")]
+[Display(Name = nameof(PlugInResources.BuyNpcItemHandlerPlugIn_Name), Description = nameof(PlugInResources.BuyNpcItemHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("7c7a0944-341b-4cdf-a9b2-010c0c95fa41")]
 internal class BuyNpcItemHandlerPlugIn : IPacketHandlerPlugIn
 {

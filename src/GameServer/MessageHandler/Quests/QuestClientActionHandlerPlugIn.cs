@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// Packet handler for quest client action packets (0xF6, 0x10 identifier).
 /// </summary>
 [PlugIn]
-[Display(Name = "Quest - Client Action", Description = "Packet handler for quest client action packets (0xF6, 0x10 identifier)")]
+[Display(Name = nameof(PlugInResources.QuestClientActionHandlerPlugIn_Name), Description = nameof(PlugInResources.QuestClientActionHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("02F632AB-17E4-4B73-90DA-92FD5310B3CF")]
 [BelongsToGroup(QuestGroupHandlerPlugIn.GroupKey)]
 public class QuestClientActionHandlerPlugIn : ISubPacketHandlerPlugIn

@@ -1,4 +1,4 @@
-// <copyright file="SetResetsChatCommandPlugIn.cs" company="MUnique">
+﻿// <copyright file="SetResetsChatCommandPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("47A8644C-B6C5-439E-BAB0-C1A7AE72691C")]
 [PlugIn]
-[Display(Name = "Set resets command", Description = "Sets resets of a player. Usage: /setresets (resets) (optional:character)")]
+[Display(Name = nameof(PlugInResources.SetResetsChatCommandPlugIn_Name), Description = nameof(PlugInResources.SetResetsChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, "Sets resets of a player. Usage: /setresets (resets) (optional:character)", null)]
 public class SetResetsChatCommandPlugIn : ChatCommandPlugInBase<SetResetsChatCommandPlugIn.Arguments>, IDisabledByDefault
 {

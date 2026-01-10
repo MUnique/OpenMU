@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 /// The default implementation of the <see cref="IInitializeDuelPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(InitializeDuelPlugIn), Description = "The default implementation of the IInitializeDuelPlugIn which is forwarding everything to the game client with specific data packets.")]
+[Display(Name = nameof(PlugInResources.InitializeDuelPlugIn_Name), Description = nameof(PlugInResources.InitializeDuelPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("41ECFA38-3EAE-4408-B7AC-82F26D8DCCD7")]
 [MinimumClient(4, 0, ClientLanguage.Invariant)]
 public class InitializeDuelPlugIn : IInitializeDuelPlugIn

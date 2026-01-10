@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// The default implementation of the <see cref="ISkillListViewPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(SkillListViewPlugIn075), Description = "The implementation of the ISkillListViewPlugIn for version 0.75 which is forwarding everything to the game client with specific data packets.")]
+[Display(Name = nameof(PlugInResources.SkillListViewPlugIn075_Name), Description = nameof(PlugInResources.SkillListViewPlugIn075_Description), ResourceType = typeof(PlugInResources))]
 [Guid("D83A0CD8-AFEB-4782-8523-AF6D093D14CB")]
 public class SkillListViewPlugIn075 : SkillListViewPlugIn
 {

@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// Handler for online state change packets.
 /// </summary>
 [PlugIn]
-[Display(Name = "ChangeOnlineStateHandlerPlugIn", Description = "Handler for online state change packets.")]
+[Display(Name = nameof(PlugInResources.ChangeOnlineStateHandlerPlugIn_Name), Description = nameof(PlugInResources.ChangeOnlineStateHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("ff1d0b4e-4748-4ee0-b68e-f42b700c0f63")]
 internal class ChangeOnlineStateHandlerPlugIn : IPacketHandlerPlugIn
 {

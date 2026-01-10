@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// Handler for talk npc request packets.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(TalkNpcHandlerPlugIn), Description = "Handler for talk npc request packets.")]
+[Display(Name = nameof(PlugInResources.TalkNpcHandlerPlugIn_Name), Description = nameof(PlugInResources.TalkNpcHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("b196fd5e-706d-41a2-ba07-72a3b184151d")]
 [MinimumClient(1, 0, ClientLanguage.Invariant)]
 internal class TalkNpcHandlerPlugIn : TalkNpcHandlerPlugInBase

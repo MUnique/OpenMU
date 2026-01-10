@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// The default implementation of the <see cref="IShowVaultPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = "ShowVaultPlugIn", Description = "The default implementation of the IShowVaultPlugIn which is forwarding everything to the game client with specific data packets.")]
+[Display(Name = nameof(PlugInResources.ShowVaultPlugIn_Name), Description = nameof(PlugInResources.ShowVaultPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("aa20c7aa-08ad-4fec-9138-88bcdc690afa")]
 public class ShowVaultPlugIn : IShowVaultPlugIn
 {

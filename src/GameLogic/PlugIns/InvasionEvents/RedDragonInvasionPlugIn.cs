@@ -11,7 +11,7 @@ using MUnique.OpenMU.PlugIns;
 /// This plugin enables Red Dragon Invasion feature.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(RedDragonInvasionPlugIn), Description = "Handle red dragon invasion event")]
+[Display(Name = nameof(PlugInResources.RedDragonInvasionPlugIn_Name), Description = nameof(PlugInResources.RedDragonInvasionPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("548A76CC-242C-441C-BC9D-6C22745A2D72")]
 public class RedDragonInvasionPlugIn : BaseInvasionPlugIn<PeriodicInvasionConfiguration>, ISupportDefaultCustomConfiguration
 {

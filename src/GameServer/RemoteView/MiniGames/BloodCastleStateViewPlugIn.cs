@@ -16,7 +16,7 @@ using MUnique.OpenMU.PlugIns;
 /// The default implementation of the <see cref="IBloodCastleStateViewPlugin"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(BloodCastleStateViewPlugIn), Description = "The default implementation of the IBloodCastleStateViewPlugin which is forwarding everything to the game client with specific data packets.")]
+[Display(Name = nameof(PlugInResources.BloodCastleStateViewPlugIn_Name), Description = nameof(PlugInResources.BloodCastleStateViewPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("75A44740-FEE8-447A-BBA4-081A2410E408")]
 public class BloodCastleStateViewPlugIn : IBloodCastleStateViewPlugin
 {

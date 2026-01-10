@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// The default implementation of the <see cref="IUpdateInventoryListPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = "UpdateInventoryListPlugIn", Description = "The default implementation of the IUpdateInventoryListPlugIn which is forwarding everything to the game client with specific data packets.")]
+[Display(Name = nameof(PlugInResources.UpdateInventoryListPlugIn_Name), Description = nameof(PlugInResources.UpdateInventoryListPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("ba8ca7c7-a497-497e-b2f7-9f9366ff6ac5")]
 public class UpdateInventoryListPlugIn : IUpdateInventoryListPlugIn
 {

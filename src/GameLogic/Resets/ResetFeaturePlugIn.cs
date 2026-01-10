@@ -11,7 +11,7 @@ using MUnique.OpenMU.PlugIns;
 /// Feature plugin which provides the configuration for the reset feature.
 /// </summary>
 [PlugIn]
-[Display(Name = "Reset Feature", Description = "Provides configuration for the reset feature.")]
+[Display(Name = nameof(PlugInResources.ResetFeaturePlugIn_Name), Description = nameof(PlugInResources.ResetFeaturePlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("6A9D585D-79D7-4674-B6EA-7E87392FA501")]
 public class ResetFeaturePlugIn : IFeaturePlugIn, ISupportCustomConfiguration<ResetConfiguration>, ISupportDefaultCustomConfiguration, IDisabledByDefault
 {

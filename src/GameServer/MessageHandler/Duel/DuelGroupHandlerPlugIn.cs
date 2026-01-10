@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// Packet handler for duel start packets (0xAA identifier).
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(DuelGroupHandlerPlugIn), Description = "Packet handler for duel packets (new system).")]
+[Display(Name = nameof(PlugInResources.DuelGroupHandlerPlugIn_Name), Description = nameof(PlugInResources.DuelGroupHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("88A8E1DB-C3EC-45A0-98F9-E9DA6F17373C")]
 [MinimumClient(4, 0, ClientLanguage.Invariant)]
 internal class DuelGroupHandlerPlugIn : GroupPacketHandlerPlugIn

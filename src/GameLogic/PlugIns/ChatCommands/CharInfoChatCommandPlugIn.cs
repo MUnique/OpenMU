@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("0C7162BC-C74E-4A65-82E3-12811E4BE170")]
 [PlugIn]
-[Display(Name = "Char Info command", Description = "Handles the chat command '/charinfo <char>'. Returns information about the character back to the requester.")]
+[Display(Name = nameof(PlugInResources.CharInfoChatCommandPlugIn_Name), Description = nameof(PlugInResources.CharInfoChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, "Returns information about the character back to the requester.", typeof(CharInfoChatCommandArgs), CharacterStatus.GameMaster)]
 public class CharInfoChatCommandPlugIn : ChatCommandPlugInBase<CharInfoChatCommandArgs>
 {

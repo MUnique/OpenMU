@@ -16,7 +16,7 @@ using MUnique.OpenMU.PlugIns;
 /// Called when: A player is running the quest "Into the 'Darkness' Zone" (nr. 6), talking to the gatekeeper npc in 'Barracks of Balgass'.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(EnterOnGatekeeperHandlerPlugIn), Description = "Handler for EnterOnGatekeeperRequest packets.")]
+[Display(Name = nameof(PlugInResources.EnterOnGatekeeperHandlerPlugIn_Name), Description = nameof(PlugInResources.EnterOnGatekeeperHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("9133CB87-6776-48B8-987B-93806531B60C")]
 [MinimumClient(3, 0, ClientLanguage.Invariant)]
 [BelongsToGroup(NpcActionGroupHandlerPlugIn.GroupKey)]

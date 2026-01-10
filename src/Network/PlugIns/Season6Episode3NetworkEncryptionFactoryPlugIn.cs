@@ -16,7 +16,7 @@ using MUnique.OpenMU.PlugIns;
 /// A plugin which provides network encryptors and decryptors for english game clients of season 6 episode 3, version 1.04d.
 /// </summary>
 [PlugIn]
-[Display(Name = "Network Encryption - Season 6 Episode 3, 1.04d, ENG", Description = "A plugin which provides network encryptors and decryptors for english game clients of season 6 episode 3, version 1.04d")]
+[Display(Name = nameof(PlugInResources.Season6Episode3NetworkEncryptionFactoryPlugIn_Name), Description = nameof(PlugInResources.Season6Episode3NetworkEncryptionFactoryPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("AC79C81C-36A1-49A0-85AD-E4DAC7D5C5CE")]
 public class Season6Episode3NetworkEncryptionFactoryPlugIn : INetworkEncryptionFactoryPlugIn
 {

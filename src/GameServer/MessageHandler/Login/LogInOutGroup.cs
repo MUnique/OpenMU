@@ -12,7 +12,7 @@ using MUnique.OpenMU.PlugIns;
 /// Packet group handler for log in and out packets (0xF1).
 /// </summary>
 [PlugIn]
-[Display(Name = "Log In & Out Group", Description = "Packet group handler for log in and out packets (0xF1).")]
+[Display(Name = nameof(PlugInResources.LogInOutGroup_Name), Description = nameof(PlugInResources.LogInOutGroup_Description), ResourceType = typeof(PlugInResources))]
 [Guid("8590fe8b-2f75-4189-8972-ed8f63b8bf22")]
 internal class LogInOutGroup : GroupPacketHandlerPlugIn
 {

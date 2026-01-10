@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 /// Implements the targeted skill packet handler.
 /// </summary>
 [PlugIn]
-[Display(Name = "TargetedSkillHandlerPlugIn", Description = "Handler for targeted skill packets.")]
+[Display(Name = nameof(PlugInResources.TargetedSkillHandlerPlugIn_Name), Description = nameof(PlugInResources.TargetedSkillHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("5b07d03c-509c-4aec-972c-a99db77561f2")]
 [MinimumClient(3, 0, ClientLanguage.Invariant)]
 internal class TargetedSkillHandlerPlugIn : IPacketHandlerPlugIn

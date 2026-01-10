@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("A76CDA49-1C56-401A-96D1-294D9A68A7B9")]
 [PlugIn]
-[Display(Name = nameof(SoulJewelConsumeHandlerPlugIn), Description = "Plugin which handles the jewel of soul consumption.")]
+[Display(Name = nameof(PlugInResources.SoulJewelConsumeHandlerPlugIn_Name), Description = nameof(PlugInResources.SoulJewelConsumeHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 public class SoulJewelConsumeHandlerPlugIn : UpgradeItemLevelJewelConsumeHandlerPlugIn<UpgradeItemLevelConfiguration>
 {
     /// <summary>

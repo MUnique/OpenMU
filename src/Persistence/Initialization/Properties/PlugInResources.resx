@@ -1,0 +1,197 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<!-- 
+		Microsoft ResX Schema
+
+		Version 1.3
+
+		The primary goals of this format is to allow a simple XML format 
+		that is mostly human readable. The generation and parsing of the 
+		various data types are done through the TypeConverter classes 
+		associated with the data types.
+
+		Example:
+
+		... ado.net/XML headers & schema ...
+		<resheader name="resmimetype">text/microsoft-resx</resheader>
+		<resheader name="version">1.3</resheader>
+		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+		<data name="Name1">this is my long string</data>
+		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+			[base64 mime encoded serialized .NET Framework object]
+		</data>
+		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+			[base64 mime encoded string representing a byte array form of the .NET Framework object]
+		</data>
+
+		There are any number of "resheader" rows that contain simple 
+		name/value pairs.
+
+		Each data row contains a name, and value. The row also contains a 
+		type or mimetype. Type corresponds to a .NET class that support 
+		text/value conversion through the TypeConverter architecture. 
+		Classes that don't support this are serialized and stored with the 
+		mimetype set.
+
+		The mimetype is used for serialized objects, and tells the 
+		ResXResourceReader how to depersist the object. This is currently not 
+		extensible. For a given mimetype the value must be set accordingly:
+
+		Note - application/x-microsoft.net.object.binary.base64 is the format 
+		that the ResXResourceWriter will generate, however the reader can 
+		read any of the formats listed below.
+
+		mimetype: application/x-microsoft.net.object.binary.base64
+		value   : The object must be serialized with 
+			: System.Serialization.Formatters.Binary.BinaryFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.soap.base64
+		value   : The object must be serialized with 
+			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.bytearray.base64
+		value   : The object must be serialized into a byte array 
+			: using a System.ComponentModel.TypeConverter
+			: and then encoded with base64 encoding.
+	-->
+	
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+  <data name="DataInitialization075_Name" xml:space="preserve">
+    <value>Version 0.75 Initialization</value>
+  </data>
+  <data name="DataInitialization075_Description" xml:space="preserve">
+    <value>Provides initial data for Version 0.75</value>
+  </data>
+  <data name="DataInitialization095d_Name" xml:space="preserve">
+    <value>Version 0.95d Initialization</value>
+  </data>
+  <data name="DataInitialization095d_Description" xml:space="preserve">
+    <value>Provides initial data for Version 0.95d</value>
+  </data>
+  <data name="DataInitialization_Name" xml:space="preserve">
+    <value>Season 6 Episode 3 Initialization</value>
+  </data>
+  <data name="DataInitialization_Description" xml:space="preserve">
+    <value>Provides initial data for Season 6 Episode 3.</value>
+  </data>
+  <data name="AddArrowsForFairyElf_Name" xml:space="preserve">
+    <value>AddArrowsForFairyElf</value>
+  </data>
+  <data name="AddArrowsForFairyElf_Description" xml:space="preserve">
+    <value>Adds arrows to a created fairy elf character.</value>
+  </data>
+  <data name="AddChargeForRageFighter_Name" xml:space="preserve">
+    <value>AddChargeForRageFighter</value>
+  </data>
+  <data name="AddChargeForRageFighter_Description" xml:space="preserve">
+    <value>Adds the Charge skill to a created rage fighter character.</value>
+  </data>
+  <data name="AddEnergyBallForDarkWizard_Name" xml:space="preserve">
+    <value>AddEnergyBallForDarkWizard</value>
+  </data>
+  <data name="AddEnergyBallForDarkWizard_Description" xml:space="preserve">
+    <value>Adds the energy ball skill to a created dark wizard character.</value>
+  </data>
+  <data name="AddForceForDarkLord_Name" xml:space="preserve">
+    <value>AddForceForDarkLord</value>
+  </data>
+  <data name="AddForceForDarkLord_Description" xml:space="preserve">
+    <value>Adds the Force skill to a created dark lord character.</value>
+  </data>
+  <data name="AddLanceForSummoner_Name" xml:space="preserve">
+    <value>AddLanceForSummoner</value>
+  </data>
+  <data name="AddLanceForSummoner_Description" xml:space="preserve">
+    <value>Adds the Lance skill to a created summoner character.</value>
+  </data>
+  <data name="AddRingOfWarriorLevel40ForNewCharacters_Name" xml:space="preserve">
+    <value>AddRingOfWarriorLevel40ForNewCharacters</value>
+  </data>
+  <data name="AddRingOfWarriorLevel40ForNewCharacters_Description" xml:space="preserve">
+    <value>Adds the ring, which can be dropped at level 40.</value>
+  </data>
+  <data name="AddRingOfWarriorLevel80ForNewCharacters_Name" xml:space="preserve">
+    <value>AddRingOfWarriorLevel80ForNewCharacters</value>
+  </data>
+  <data name="AddRingOfWarriorLevel80ForNewCharacters_Description" xml:space="preserve">
+    <value>Adds the ring, which can be dropped at level 80.</value>
+  </data>
+  <data name="AddShortBowForFairyElf_Name" xml:space="preserve">
+    <value>AddShortBowForFairyElf</value>
+  </data>
+  <data name="AddShortBowForFairyElf_Description" xml:space="preserve">
+    <value>Adds a short bow to a created fairy elf character.</value>
+  </data>
+  <data name="AddShortSwordForDarkLord_Name" xml:space="preserve">
+    <value>AddShortSwordForDarkLord</value>
+  </data>
+  <data name="AddShortSwordForDarkLord_Description" xml:space="preserve">
+    <value>Adds a short sword to a created dark lord character.</value>
+  </data>
+  <data name="AddShortSwordForMagicGladiator_Name" xml:space="preserve">
+    <value>AddShortSwordForMagicGladiator</value>
+  </data>
+  <data name="AddShortSwordForMagicGladiator_Description" xml:space="preserve">
+    <value>Adds a short sword to a created magic gladiator character.</value>
+  </data>
+  <data name="AddSmallAxeForDarkKnight_Name" xml:space="preserve">
+    <value>AddSmallAxeForDarkKnight</value>
+  </data>
+  <data name="AddSmallAxeForDarkKnight_Description" xml:space="preserve">
+    <value>Adds a small axe to a created dark knight character.</value>
+  </data>
+  <data name="AddSmallShieldForDarkLord_Name" xml:space="preserve">
+    <value>AddSmallShieldForDarkLord</value>
+  </data>
+  <data name="AddSmallShieldForDarkLord_Description" xml:space="preserve">
+    <value>Adds a small shield to a created dark lord character.</value>
+  </data>
+  <data name="AddSmallShieldForMagicGladiator_Name" xml:space="preserve">
+    <value>AddSmallShieldForMagicGladiator</value>
+  </data>
+  <data name="AddSmallShieldForMagicGladiator_Description" xml:space="preserve">
+    <value>Adds a small shield to a created magic gladiator character.</value>
+  </data>
+</root>

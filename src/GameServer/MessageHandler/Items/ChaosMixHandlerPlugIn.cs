@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// Handler for chaos mix packets.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(ChaosMixHandlerPlugIn), Description = "Handler for chaos mix packets.")]
+[Display(Name = nameof(PlugInResources.ChaosMixHandlerPlugIn_Name), Description = nameof(PlugInResources.ChaosMixHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("0693e102-0adc-41e4-b0d4-ce22687b6dbb")]
 internal class ChaosMixHandlerPlugIn : IPacketHandlerPlugIn
 {

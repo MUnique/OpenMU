@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// Handler for item pickup packets.
 /// </summary>
 [PlugIn]
-[Display(Name = "PickupItemHandlerPlugIn", Description = "Handler for item pickup packets.")]
+[Display(Name = nameof(PlugInResources.PickupItemHandlerPlugIn_Name), Description = nameof(PlugInResources.PickupItemHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("8bcb9d85-95ae-4611-ae64-e9cc801ec647")]
 [MinimumClient(0, 97, ClientLanguage.Invariant)]
 internal class PickupItemHandlerPlugIn : IPacketHandlerPlugIn

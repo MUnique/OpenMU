@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// The default implementation of the <see cref="ITradeFinishedPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = "TradeFinishedPlugIn", Description = "The default implementation of the ITradeFinishedPlugIn which is forwarding everything to the game client with specific data packets.")]
+[Display(Name = nameof(PlugInResources.TradeFinishedPlugIn_Name), Description = nameof(PlugInResources.TradeFinishedPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("ec11fe95-31c6-4a2e-942d-4d10a84830c1")]
 public class TradeFinishedPlugIn : ITradeFinishedPlugIn
 {

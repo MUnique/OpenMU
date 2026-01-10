@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// The default implementation of the <see cref="IShowSkillStageUpdatePlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(SkillStageUpdatePlugInPlugIn), Description = "The default implementation of the IShowSkillStageUpdate which is forwarding everything to the game client with specific data packets.")]
+[Display(Name = nameof(PlugInResources.SkillStageUpdatePlugInPlugIn_Name), Description = nameof(PlugInResources.SkillStageUpdatePlugInPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("9EE927BA-E82B-46DC-872B-F8B5F646A4A5")]
 public class SkillStageUpdatePlugInPlugIn : IShowSkillStageUpdatePlugIn
 {

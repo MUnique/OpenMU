@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// The default implementation of the <see cref="IItemUpgradedPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = "ItemUpgradedPlugIn", Description = "The default implementation of the IItemUpgradedPlugIn which is forwarding everything to the game client with specific data packets.")]
+[Display(Name = nameof(PlugInResources.ItemUpgradedPlugIn_Name), Description = nameof(PlugInResources.ItemUpgradedPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("ce4ed0a2-ec4e-4cbe-aabe-5573df86a659")]
 public class ItemUpgradedPlugIn : IItemUpgradedPlugIn
 {

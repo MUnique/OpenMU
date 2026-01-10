@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// The default implementation of the <see cref="IShowItemCraftingResultPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(NpcDialogClosedPlugIn075), Description = "The default implementation of the INpcDialogClosedPlugIn which is forwarding everything to the game client with specific data packets.")]
+[Display(Name = nameof(PlugInResources.NpcDialogClosedPlugIn075_Name), Description = nameof(PlugInResources.NpcDialogClosedPlugIn075_Description), ResourceType = typeof(PlugInResources))]
 [Guid("BAC39AFE-F277-48FD-BB21-A3F905EE0E73")]
 [MaximumClient(0, 255, ClientLanguage.Invariant)]
 public class NpcDialogClosedPlugIn075 : INpcDialogClosedPlugIn

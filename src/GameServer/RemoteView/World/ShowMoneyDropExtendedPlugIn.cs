@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// The extended implementation of the <see cref="IShowDroppedItemsPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(ShowMoneyDropExtendedPlugIn), Description = "The extended implementation of the IShowMoneyDropPlugIn which is forwarding everything to the game client with specific data packets.")]
+[Display(Name = nameof(PlugInResources.ShowMoneyDropExtendedPlugIn_Name), Description = nameof(PlugInResources.ShowMoneyDropExtendedPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("292D399E-3F48-4AF0-9480-F83267BB8619")]
 [MinimumClient(106, 3, ClientLanguage.Invariant)]
 public class ShowMoneyDropExtendedPlugIn : IShowMoneyDropPlugIn

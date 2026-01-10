@@ -16,7 +16,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("71B6EB8D-E676-4B22-9E7E-15C7C3969852")]
 [PlugIn]
-[Display(Name = nameof(AddArrowsForFairyElf), Description = "Adds arrows to a created fairy elf character.")]
+[Display(Name = nameof(PlugInResources.AddArrowsForFairyElf_Name), Description = nameof(PlugInResources.AddArrowsForFairyElf_Description), ResourceType = typeof(PlugInResources))]
 public class AddArrowsForFairyElf : AddInitialItemPlugInBase
 {
     /// <summary>

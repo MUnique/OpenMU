@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// Handler for guild player kick packets.
 /// </summary>
 [PlugIn]
-[Display(Name = "GuildKickPlayerHandlerPlugIn", Description = "Handler for guild player kick packets.")]
+[Display(Name = nameof(PlugInResources.GuildKickPlayerHandlerPlugIn_Name), Description = nameof(PlugInResources.GuildKickPlayerHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("ddc7e221-c3a9-47c3-881e-dc59beecc03e")]
 internal class GuildKickPlayerHandlerPlugIn : IPacketHandlerPlugIn
 {

@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("F22C989B-A2A1-4991-B6C2-658337CC19CE")]
 [PlugIn]
-[Display(Name = "Trace chat command", Description = "Handles the chat command '/trace <char>'. Moves the game master to the character's location.")]
+[Display(Name = nameof(PlugInResources.TraceChatCommandPlugIn_Name), Description = nameof(PlugInResources.TraceChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, "Moves the game master to the character's location.", typeof(TraceChatCommandArgs), CharacterStatus.GameMaster)]
 public class TraceChatCommandPlugIn : ChatCommandPlugInBase<TraceChatCommandArgs>
 {

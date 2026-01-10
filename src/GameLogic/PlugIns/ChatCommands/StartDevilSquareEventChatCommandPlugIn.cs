@@ -1,4 +1,4 @@
-// <copyright file="StartDevilSquareEventChatCommandPlugIn.cs" company="MUnique">
+﻿// <copyright file="StartDevilSquareEventChatCommandPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("3684DC79-D81E-4033-AB2C-537334CF0BB6")]
 [PlugIn]
-[Display(Name = nameof(StartDevilSquareEventChatCommandPlugIn), Description = "Handles the chat command '/startds'. Starts the devil square event at the next possible time.")]
+[Display(Name = nameof(PlugInResources.StartDevilSquareEventChatCommandPlugIn_Name), Description = nameof(PlugInResources.StartDevilSquareEventChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, "Starts the devil square event at the next possible time.", CharacterStatus.GameMaster)]
 public class StartDevilSquareEventChatCommandPlugIn : IChatCommandPlugIn
 {

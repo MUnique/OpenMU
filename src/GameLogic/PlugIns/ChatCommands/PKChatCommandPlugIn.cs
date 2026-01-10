@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("30B7EFF0-33EE-4136-BEB0-BE503B748DC6")]
 [PlugIn]
-[Display(Name = "PK chat command", Description = "Handles the chat command '/pk <char> <pk_lvl> <pk_count>'. Sets player kill level and count of a character.")]
+[Display(Name = nameof(PlugInResources.PkChatCommandPlugIn_Name), Description = nameof(PlugInResources.PkChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, "Sets player kill level and count of a character.", typeof(PkChatCommandArgs), CharacterStatus.GameMaster)]
 public class PkChatCommandPlugIn : ChatCommandPlugInBase<PkChatCommandArgs>
 {

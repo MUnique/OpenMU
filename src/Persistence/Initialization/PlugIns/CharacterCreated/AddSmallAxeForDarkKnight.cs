@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("2377C222-4418-4F17-8388-1F8825E6243C")]
 [PlugIn]
-[Display(Name = nameof(AddSmallAxeForDarkKnight), Description = "Adds a small axe to a created dark knight character.")]
+[Display(Name = nameof(PlugInResources.AddSmallAxeForDarkKnight_Name), Description = nameof(PlugInResources.AddSmallAxeForDarkKnight_Description), ResourceType = typeof(PlugInResources))]
 public class AddSmallAxeForDarkKnight : AddInitialItemPlugInBase
 {
     /// <summary>

@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// Handler for item sale to npc packets.
 /// </summary>
 [PlugIn]
-[Display(Name = "SellItemToNpcHandlerPlugIn", Description = "Handler for item sale to npc packets.")]
+[Display(Name = nameof(PlugInResources.SellItemToNpcHandlerPlugIn_Name), Description = nameof(PlugInResources.SellItemToNpcHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("8bbf8737-8731-4975-baa8-e14f77451b85")]
 internal class SellItemToNpcHandlerPlugIn : IPacketHandlerPlugIn
 {

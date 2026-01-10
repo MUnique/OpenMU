@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// Packet handler for quest select request packets (0xF6, 0x0A identifier).
 /// </summary>
 [PlugIn]
-[Display(Name = "Quest - Select Request", Description = "Packet handler for quest select request packets (0xF6, 0x0A identifier)")]
+[Display(Name = nameof(PlugInResources.QuestSelectRequestHandlerPlugIn_Name), Description = nameof(PlugInResources.QuestSelectRequestHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("EF771EB5-9BC6-4DF3-BB0E-EADAB4295292")]
 [BelongsToGroup(QuestGroupHandlerPlugIn.GroupKey)]
 public class QuestSelectRequestHandlerPlugIn : ISubPacketHandlerPlugIn

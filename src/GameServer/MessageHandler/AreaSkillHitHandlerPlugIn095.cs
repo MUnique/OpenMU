@@ -18,7 +18,7 @@ using MUnique.OpenMU.PlugIns;
 /// TODO: It's usually required to perform a <see cref="AreaSkillAttackAction"/> before, so this check has to be implemented.
 /// </remarks>
 [PlugIn]
-[Display(Name = nameof(AreaSkillHitHandlerPlugIn095), Description = "Handler for area skill hit packets.")]
+[Display(Name = nameof(PlugInResources.AreaSkillHitHandlerPlugIn095_Name), Description = nameof(PlugInResources.AreaSkillHitHandlerPlugIn095_Description), ResourceType = typeof(PlugInResources))]
 [Guid("71C2E116-D1B2-4F07-9A3B-41CEA1975108")]
 [MinimumClient(0, 95, ClientLanguage.Invariant)]
 internal class AreaSkillHitHandlerPlugIn095 : AreaSkillHitHandlerMultiTargetPlugInBase, IPacketHandlerPlugIn

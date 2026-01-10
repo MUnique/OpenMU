@@ -16,7 +16,7 @@ using MUnique.OpenMU.PlugIns;
 /// The default implementation of the <see cref="IDuelEndedPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(DuelEndedPlugIn), Description = "The default implementation of the IDuelEndedPlugIn which is forwarding everything to the game client with specific data packets.")]
+[Display(Name = nameof(PlugInResources.DuelEndedPlugIn_Name), Description = nameof(PlugInResources.DuelEndedPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("4FBC822B-F35B-4CB1-AFE6-180243171074")]
 [MinimumClient(4, 0, ClientLanguage.Invariant)]
 public class DuelEndedPlugIn : IDuelEndedPlugIn

@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 /// The default implementation of the <see cref="IShowFriendInvitationResultPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = "ShowFriendInvitationResultPlugIn", Description = "The default implementation of the IShowFriendInvitationResultPlugIn which is forwarding everything to the game client with specific data packets.")]
+[Display(Name = nameof(PlugInResources.ShowFriendInvitationResultPlugIn_Name), Description = nameof(PlugInResources.ShowFriendInvitationResultPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("8df329bd-88da-423c-8f85-173180ab8601")]
 public class ShowFriendInvitationResultPlugIn : IShowFriendInvitationResultPlugIn
 {

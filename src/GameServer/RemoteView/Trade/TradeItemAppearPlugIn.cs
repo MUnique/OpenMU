@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// The default implementation of the <see cref="ITradeItemAppearPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = "TradeItemAppearPlugIn", Description = "The default implementation of the ITradeItemAppearPlugIn which is forwarding everything to the game client with specific data packets.")]
+[Display(Name = nameof(PlugInResources.TradeItemAppearPlugIn_Name), Description = nameof(PlugInResources.TradeItemAppearPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("560d18e7-7d36-47bf-9298-8017454fa7bf")]
 public class TradeItemAppearPlugIn : ITradeItemAppearPlugIn
 {

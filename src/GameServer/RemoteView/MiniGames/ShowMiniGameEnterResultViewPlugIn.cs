@@ -15,7 +15,7 @@ using MiniGameType = MUnique.OpenMU.DataModel.Configuration.MiniGameType;
 /// The default implementation of the <see cref="IShowMiniGameEnterResultPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(ShowMiniGameEnterResultViewPlugIn), Description = "The default implementation of the IShowMiniGameEnterResultPlugIn which is forwarding everything to the game client with specific data packets.")]
+[Display(Name = nameof(PlugInResources.ShowMiniGameEnterResultViewPlugIn_Name), Description = nameof(PlugInResources.ShowMiniGameEnterResultViewPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("2BB953FC-7BF7-4B13-B602-E3CD56A5EED2")]
 public class ShowMiniGameEnterResultViewPlugIn : IShowMiniGameEnterResultPlugIn
 {

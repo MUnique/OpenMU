@@ -1,4 +1,4 @@
-// <copyright file="GetMoneyChatCommandPlugIn.cs" company="MUnique">
+﻿// <copyright file="GetMoneyChatCommandPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -12,7 +12,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("207F5872-33AB-4764-B67F-95AB7C6313E3")]
 [PlugIn]
-[Display(Name = "Get money command", Description = "Gets money of a player. Usage: /getmoney (optional:character)")]
+[Display(Name = nameof(PlugInResources.GetMoneyChatCommandPlugIn_Name), Description = nameof(PlugInResources.GetMoneyChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, "Gets money of a player. Usage: /getmoney (optional:character)", null)]
 public class GetMoneyChatCommandPlugIn : ChatCommandPlugInBase<GetMoneyChatCommandPlugIn.Arguments>, IDisabledByDefault
 {

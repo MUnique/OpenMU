@@ -16,7 +16,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("71C8E542-4868-487E-BC92-0B7CC7CAEC8B")]
 [PlugIn]
-[Display(Name = nameof(SummoningOrbConsumeHandlerPlugIn), Description = "Plugin which handles the summoning orb consumption.")]
+[Display(Name = nameof(PlugInResources.SummoningOrbConsumeHandlerPlugIn_Name), Description = nameof(PlugInResources.SummoningOrbConsumeHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 public class SummoningOrbConsumeHandlerPlugIn : LearnablesConsumeHandlerPlugIn
 {
     /// <inheritdoc />

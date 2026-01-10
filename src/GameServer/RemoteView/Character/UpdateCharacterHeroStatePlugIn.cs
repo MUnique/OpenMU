@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// The default implementation of the <see cref="IUpdateCharacterHeroStatePlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = "UpdateCharacterHeroStatePlugIn", Description = "The default implementation of the IUpdateCharacterHeroStatePlugIn which is forwarding everything to the game client with specific data packets.")]
+[Display(Name = nameof(PlugInResources.UpdateCharacterHeroStatePlugIn_Name), Description = nameof(PlugInResources.UpdateCharacterHeroStatePlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("d1ce36d6-cbdd-4bcb-99c7-c7495d8597d9")]
 public class UpdateCharacterHeroStatePlugIn : IUpdateCharacterHeroStatePlugIn
 {

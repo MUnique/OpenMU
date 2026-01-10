@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// The default implementation of the <see cref="IQuestCancelledPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = "Quest - Cancelled", Description = "The default implementation of the IQuestCancelledPlugIn which is forwarding everything to the game client with specific data packets.")]
+[Display(Name = nameof(PlugInResources.QuestCancelledPlugIn_Name), Description = nameof(PlugInResources.QuestCancelledPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("733C8E1A-A663-4804-96E3-1EA955438970")]
 public class QuestCancelledPlugIn : IQuestCancelledPlugIn
 {

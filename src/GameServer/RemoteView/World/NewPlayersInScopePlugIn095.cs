@@ -20,7 +20,7 @@ using MUnique.OpenMU.PlugIns;
 /// The implementation of the <see cref="INewPlayersInScopePlugIn"/> which is forwarding everything to the game client of version 0.75 with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(NewPlayersInScopePlugIn095), Description = "The default implementation of the INewPlayersInScopePlugIn which is forwarding everything to the game client with specific data packets for version 0.75.")]
+[Display(Name = nameof(PlugInResources.NewPlayersInScopePlugIn095_Name), Description = nameof(PlugInResources.NewPlayersInScopePlugIn095_Description), ResourceType = typeof(PlugInResources))]
 [Guid("400ACDFB-7A75-4339-802C-758178DF8305")]
 [MinimumClient(0, 95, ClientLanguage.Invariant)]
 public class NewPlayersInScopePlugIn095 : INewPlayersInScopePlugIn

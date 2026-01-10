@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 /// The default implementation of the <seealso cref="IQuestCompletionResponsePlugIn" /> which is forwarding everything to the game client with specific data packets.
 /// </summary>
 [PlugIn]
-[Display(Name = "Quest - Completion Response", Description = "The default implementation of the IQuestCompletionResponsePlugIn which is forwarding everything to the game client with specific data packets.")]
+[Display(Name = nameof(PlugInResources.QuestCompletionResponsePlugIn_Name), Description = nameof(PlugInResources.QuestCompletionResponsePlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("4BCA9C67-A695-4244-9F5A-3B7CAC049DB4")]
 public class QuestCompletionResponsePlugIn : IQuestCompletionResponsePlugIn
 {

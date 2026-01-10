@@ -11,7 +11,7 @@ using MUnique.OpenMU.PlugIns;
 /// The stop nova skill action.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(NovaSkillStopPlugin), Description = "Handles the stopping of nova skill of the wizard class.")]
+[Display(Name = nameof(PlugInResources.NovaSkillStopPlugin_Name), Description = nameof(PlugInResources.NovaSkillStopPlugin_Description), ResourceType = typeof(PlugInResources))]
 [Guid("3cb98892-b3ce-42de-8956-5ed5625c6285")]
 public class NovaSkillStopPlugin : TargetedSkillPluginBase
 {

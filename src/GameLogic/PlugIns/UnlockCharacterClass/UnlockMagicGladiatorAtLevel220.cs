@@ -11,7 +11,7 @@ using MUnique.OpenMU.PlugIns;
 /// Unlocks the Magic Gladiator character class as soon as the first character of an account reaches level 220.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(UnlockMagicGladiatorAtLevel220), Description = "Unlocks the Magic Gladiator character class as soon as the first character of an account reaches level 220.")]
+[Display(Name = nameof(PlugInResources.UnlockMagicGladiatorAtLevel220_Name), Description = nameof(PlugInResources.UnlockMagicGladiatorAtLevel220_Description), ResourceType = typeof(PlugInResources))]
 [Guid("8C765FF3-B574-41C6-9151-ABC10D3FD959")]
 public class UnlockMagicGladiatorAtLevel220 : UnlockCharacterAtLevelBase
 {

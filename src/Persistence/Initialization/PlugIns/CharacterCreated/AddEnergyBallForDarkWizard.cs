@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [Guid("6A721FED-51CD-41AD-BA7C-EC1642FFF00A")]
 [PlugIn]
-[Display(Name = nameof(AddEnergyBallForDarkWizard), Description = "Adds the energy ball skill to a created dark wizard character.")]
+[Display(Name = nameof(PlugInResources.AddEnergyBallForDarkWizard_Name), Description = nameof(PlugInResources.AddEnergyBallForDarkWizard_Description), ResourceType = typeof(PlugInResources))]
 public class AddEnergyBallForDarkWizard : AddInitialSkillPlugInBase
 {
     /// <summary>
