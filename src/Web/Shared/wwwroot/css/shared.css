@@ -9814,6 +9814,11 @@ mark {
   color: #d7d7d7;
 }
 
+.culture-selector > input {
+  background-color: transparent;
+  color: #d7d7d7;
+}
+
 .page {
   position: relative;
   display: flex;
