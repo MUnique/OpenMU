@@ -1,6 +1,8 @@
-﻿@using System.Linq.Expressions
+﻿@using System.ComponentModel.DataAnnotations
+@using System.Linq.Expressions
+@using System.Reflection
 @using MUnique.OpenMU.DataModel
-@using MUnique.OpenMU.DataModel.Properties
+
 @typeparam TValue
 
 @if (!string.IsNullOrWhiteSpace(this._actualLabel))
@@ -41,10 +43,12 @@
         this._fieldIdentifier = FieldIdentifier.Create(this.ValueExpression);
         var type = this._fieldIdentifier.Model.GetType();
         var property = type.GetProperty(this._fieldIdentifier.FieldName);
+        var displayAttribute = property?.GetCustomAttribute<DisplayAttribute>(true);
         if (property is not null)
         {
-            this._actualLabel = type.GetPropertyCaption(property.Name);
-            this._description = type.GetPropertyDescription(property.Name);
+            // DisplayAttribute has priority
+            this._actualLabel = displayAttribute?.GetName() ?? type.GetPropertyCaption(property.Name);
+            this._description = displayAttribute?.GetDescription() ?? type.GetPropertyDescription(property.Name);
         }
     }
 }
