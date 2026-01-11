@@ -61,6 +61,24 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to About.
+        /// </summary>
+        internal static string About {
+            get {
+                return ResourceManager.GetString("About", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Accounts.
+        /// </summary>
+        internal static string Accounts {
+            get {
+                return ResourceManager.GetString("Accounts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Action.
         /// </summary>
         internal static string Action {
@@ -142,6 +160,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to available updates.
+        /// </summary>
+        internal static string AvailableUpdates {
+            get {
+                return ResourceManager.GetString("AvailableUpdates", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Back.
         /// </summary>
         internal static string Back {
@@ -174,6 +201,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         internal static string ChangePassword {
             get {
                 return ResourceManager.GetString("ChangePassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Character classes.
+        /// </summary>
+        internal static string CharacterClasses {
+            get {
+                return ResourceManager.GetString("CharacterClasses", resourceCulture);
             }
         }
         
@@ -334,6 +370,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Drop item groups.
+        /// </summary>
+        internal static string DropItemGroups {
+            get {
+                return ResourceManager.GetString("DropItemGroups", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Edit.
         /// </summary>
         internal static string Edit {
@@ -397,6 +442,42 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Full configuration.
+        /// </summary>
+        internal static string FullConfiguration {
+            get {
+                return ResourceManager.GetString("FullConfiguration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Game clients.
+        /// </summary>
+        internal static string GameClients {
+            get {
+                return ResourceManager.GetString("GameClients", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Game configuration.
+        /// </summary>
+        internal static string GameConfiguration {
+            get {
+                return ResourceManager.GetString("GameConfiguration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Game maps.
+        /// </summary>
+        internal static string GameMaps {
+            get {
+                return ResourceManager.GetString("GameMaps", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Game Server.
         /// </summary>
         internal static string GameServer {
@@ -411,6 +492,33 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         internal static string GameServerConfigurationSavedInfo {
             get {
                 return ResourceManager.GetString("GameServerConfigurationSavedInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Game server count.
+        /// </summary>
+        internal static string GameServerCount {
+            get {
+                return ResourceManager.GetString("GameServerCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to General.
+        /// </summary>
+        internal static string General {
+            get {
+                return ResourceManager.GetString("General", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Home.
+        /// </summary>
+        internal static string Home {
+            get {
+                return ResourceManager.GetString("Home", resourceCulture);
             }
         }
         
@@ -460,6 +568,24 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Items.
+        /// </summary>
+        internal static string Items {
+            get {
+                return ResourceManager.GetString("Items", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Jewel mixes.
+        /// </summary>
+        internal static string JewelMixes {
+            get {
+                return ResourceManager.GetString("JewelMixes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Last update.
         /// </summary>
         internal static string LastUpdate {
@@ -505,6 +631,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Logs.
+        /// </summary>
+        internal static string Logs {
+            get {
+                return ResourceManager.GetString("Logs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Major.
         /// </summary>
         internal static string MajorVersion {
@@ -541,11 +676,47 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Merchant stores.
+        /// </summary>
+        internal static string MerchantStores {
+            get {
+                return ResourceManager.GetString("MerchantStores", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Metrics.
+        /// </summary>
+        internal static string Metrics {
+            get {
+                return ResourceManager.GetString("Metrics", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mini games.
+        /// </summary>
+        internal static string MiniGames {
+            get {
+                return ResourceManager.GetString("MiniGames", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Minor.
         /// </summary>
         internal static string MinorVersion {
             get {
                 return ResourceManager.GetString("MinorVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Monsters.
+        /// </summary>
+        internal static string Monsters {
+            get {
+                return ResourceManager.GetString("Monsters", resourceCulture);
             }
         }
         
@@ -618,6 +789,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         internal static string OK {
             get {
                 return ResourceManager.GetString("OK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Online Accounts.
+        /// </summary>
+        internal static string OnlineAccounts {
+            get {
+                return ResourceManager.GetString("OnlineAccounts", resourceCulture);
             }
         }
         
@@ -910,6 +1090,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Skills.
+        /// </summary>
+        internal static string Skills {
+            get {
+                return ResourceManager.GetString("Skills", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Socket {0}.
         /// </summary>
         internal static string SocketNumber {
@@ -955,6 +1144,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to System.
+        /// </summary>
+        internal static string System {
+            get {
+                return ResourceManager.GetString("System", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Do you want test accounts?.
         /// </summary>
         internal static string TestAccountsQuestion {
@@ -982,7 +1180,16 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An unexpected error occured: {0}. See logs for more details..
+        ///   Looks up a localized string similar to Tracing.
+        /// </summary>
+        internal static string Tracing {
+            get {
+                return ResourceManager.GetString("Tracing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An unexpected error occurred: {0}. See logs for more details..
         /// </summary>
         internal static string UnexpectedErrorCheckLogs {
             get {
@@ -996,6 +1203,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         internal static string UnexpectedErrorOccurred {
             get {
                 return ResourceManager.GetString("UnexpectedErrorOccurred", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An unhandled error has occurred..
+        /// </summary>
+        internal static string UnhandledErrorOccurred {
+            get {
+                return ResourceManager.GetString("UnhandledErrorOccurred", resourceCulture);
             }
         }
         
@@ -1036,6 +1252,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Updates.
+        /// </summary>
+        internal static string Updates {
+            get {
+                return ResourceManager.GetString("Updates", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Updating....
         /// </summary>
         internal static string Updating {
@@ -1050,6 +1275,24 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         internal static string UpToDate {
             get {
                 return ResourceManager.GetString("UpToDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Users.
+        /// </summary>
+        internal static string Users {
+            get {
+                return ResourceManager.GetString("Users", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Warp list.
+        /// </summary>
+        internal static string WarpList {
+            get {
+                return ResourceManager.GetString("WarpList", resourceCulture);
             }
         }
         

@@ -214,7 +214,10 @@
     <value>Could not load the map data. Check the logs for details.</value>
   </data>
   <data name="UnexpectedErrorCheckLogs" xml:space="preserve">
-    <value>An unexpected error occured: {0}. See logs for more details.</value>
+    <value>An unexpected error occurred: {0}. See logs for more details.</value>
+  </data>
+  <data name="UnhandledErrorOccurred" xml:space="preserve">
+    <value>An unhandled error has occurred.</value>
   </data>
   <data name="DevelopmentEnvironmentWarning" xml:space="preserve">
     <value>&lt;strong&gt;The Development environment shouldn't be enabled for deployed applications.&lt;/strong&gt;
@@ -240,8 +243,20 @@
   <data name="OpenMUAdminPanel" xml:space="preserve">
     <value>OpenMU AdminPanel</value>
   </data>
+  <data name="About" xml:space="preserve">
+    <value>About</value>
+  </data>
   <data name="LogFiles" xml:space="preserve">
     <value>Log Files</value>
+  </data>
+  <data name="Logs" xml:space="preserve">
+    <value>Logs</value>
+  </data>
+  <data name="Metrics" xml:space="preserve">
+    <value>Metrics</value>
+  </data>
+  <data name="Tracing" xml:space="preserve">
+    <value>Tracing</value>
   </data>
   <data name="FileName" xml:space="preserve">
     <value>File name</value>
@@ -341,6 +356,69 @@
   </data>
   <data name="Setup" xml:space="preserve">
     <value>Setup</value>
+  </data>
+  <data name="Home" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="Accounts" xml:space="preserve">
+    <value>Accounts</value>
+  </data>
+  <data name="OnlineAccounts" xml:space="preserve">
+    <value>Online Accounts</value>
+  </data>
+  <data name="Updates" xml:space="preserve">
+    <value>Updates</value>
+  </data>
+  <data name="AvailableUpdates" xml:space="preserve">
+    <value>available updates</value>
+  </data>
+  <data name="Users" xml:space="preserve">
+    <value>Users</value>
+  </data>
+  <data name="System" xml:space="preserve">
+    <value>System</value>
+  </data>
+  <data name="GameClients" xml:space="preserve">
+    <value>Game clients</value>
+  </data>
+  <data name="Monsters" xml:space="preserve">
+    <value>Monsters</value>
+  </data>
+  <data name="MerchantStores" xml:space="preserve">
+    <value>Merchant stores</value>
+  </data>
+  <data name="CharacterClasses" xml:space="preserve">
+    <value>Character classes</value>
+  </data>
+  <data name="Skills" xml:space="preserve">
+    <value>Skills</value>
+  </data>
+  <data name="Items" xml:space="preserve">
+    <value>Items</value>
+  </data>
+  <data name="DropItemGroups" xml:space="preserve">
+    <value>Drop item groups</value>
+  </data>
+  <data name="GameMaps" xml:space="preserve">
+    <value>Game maps</value>
+  </data>
+  <data name="MiniGames" xml:space="preserve">
+    <value>Mini games</value>
+  </data>
+  <data name="WarpList" xml:space="preserve">
+    <value>Warp list</value>
+  </data>
+  <data name="JewelMixes" xml:space="preserve">
+    <value>Jewel mixes</value>
+  </data>
+  <data name="General" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="FullConfiguration" xml:space="preserve">
+    <value>Full configuration</value>
+  </data>
+  <data name="GameConfiguration" xml:space="preserve">
+    <value>Game configuration</value>
   </data>
   <data name="ReinstallConfirmation" xml:space="preserve">
     <value>Are you sure? All the current data is getting deleted and freshly installed.</value>
@@ -458,5 +536,8 @@
   </data>
   <data name="Action" xml:space="preserve">
     <value>Action</value>
+  </data>
+  <data name="GameServerCount" xml:space="preserve">
+    <value>Game server count</value>
   </data>
 </root>

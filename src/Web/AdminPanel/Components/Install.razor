@@ -43,7 +43,7 @@ else
     <p>
         <h2>@Resources.HowManyGameServersQuestion</h2>
         <div>
-            <label for="gameServerCount" class="form-label">Game server count (@this.GameServerCount)</label>
+            <label for="gameServerCount" class="form-label">@Resources.GameServerCount (@this.GameServerCount)</label>
             <input type="range" class="form-range" min="1" max="10" value="@this.GameServerCount" id="gameServerCount" @oninput="this.OnGameServerCountChange">
         </div>
     </p>

@@ -198,7 +198,7 @@ public sealed class EditMap : ComponentBase, IDisposable
                 catch (Exception ex)
                 {
                     this.Logger.LogError(ex, $"Could not load game maps: {ex.Message}{Environment.NewLine}{ex.StackTrace}");
-                    await this.ModalService.ShowMessageAsync("Error", Resources.CouldNotLoadMapDataCheckTheLogs).ConfigureAwait(false);
+                    await this.ModalService.ShowMessageAsync(Resources.Error, Resources.CouldNotLoadMapDataCheckTheLogs).ConfigureAwait(false);
                 }
 
                 await showModalTask.ConfigureAwait(false);
