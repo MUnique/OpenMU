@@ -52,6 +52,8 @@ public class ShowHitExtendedPlugIn : IShowHitPlugIn
         var targetId = target.GetId(this._player);
         await connection.SendObjectHitExtendedAsync(
             this.GetDamageKind(hitInfo.Attributes),
+            hitInfo.Attributes.HasFlag(DamageAttributes.RageFighterStreakHit),
+            hitInfo.Attributes.HasFlag(DamageAttributes.RageFighterStreakFinalHit),
             hitInfo.Attributes.HasFlag(DamageAttributes.Double),
             hitInfo.Attributes.HasFlag(DamageAttributes.Triple),
             targetId,
@@ -98,7 +100,7 @@ public class ShowHitExtendedPlugIn : IShowHitPlugIn
 
         if (attributes.HasFlag(DamageAttributes.Reflected))
         {
-            return DamageKind.ReflectedDarkPink;
+            return DamageKind.ReflectedLightPink;
         }
 
         if (attributes.HasFlag(DamageAttributes.Poison))

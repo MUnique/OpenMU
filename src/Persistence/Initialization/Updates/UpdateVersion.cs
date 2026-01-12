@@ -344,4 +344,9 @@ public enum UpdateVersion
     /// The version of the <see cref="AddProjectileCountToTripleShotUpdatePlugIn"/>.
     /// </summary>
     AddProjectileCountToTripleShot = 67,
+
+    /// <summary>
+    /// The version of the <see cref="FixRageFighterMultipleHitSkillsPlugIn"/>.
+    /// </summary>
+    FixRageFighterMultipleHitSkills = 68,
 }
