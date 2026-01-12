@@ -3,6 +3,7 @@ using System;
 using MUnique.OpenMU.Persistence.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 {
     [DbContext(typeof(EntityDataContext))]
-    partial class EntityDataContextModelSnapshot : ModelSnapshot
+    [Migration("20251117213629_AddMoneyDropRate")]
+    partial class AddMoneyDropRate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -149,9 +152,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasColumnType("integer");
 
                     b.Property<int>("MinimumNumberOfHitsPerTarget")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ProjectileCount")
                         .HasColumnType("integer");
 
                     b.Property<float>("TargetAreaDiameter")
@@ -1001,9 +1001,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<string>("CharacterNameRegex")
                         .HasColumnType("text");
 
-                    b.Property<bool>("ClampMoneyOnPickup")
-                        .HasColumnType("boolean");
-
                     b.Property<double>("DamagePerOneItemDurability")
                         .HasColumnType("double precision");
 
@@ -1069,9 +1066,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<byte>("MinimumMonsterLevelForMasterExperience")
                         .HasColumnType("smallint");
-
-                    b.Property<bool>("PreventExperienceOverflow")
-                        .HasColumnType("boolean");
 
                     b.Property<float>("MoneyDropRate")
                         .HasColumnType("real");
@@ -2220,19 +2214,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("ChanceId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("ChancePvpId")
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("DurationDependsOnTargetLevel")
-                        .HasColumnType("boolean");
-
                     b.Property<Guid?>("DurationId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("DurationPvpId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid?>("GameConfigurationId")
@@ -2241,18 +2223,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<bool>("InformObservers")
                         .HasColumnType("boolean");
 
-                    b.Property<float>("MonsterTargetLevelDivisor")
-                        .HasColumnType("real");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<short>("Number")
                         .HasColumnType("smallint");
-
-                    b.Property<float>("PlayerTargetLevelDivisor")
-                        .HasColumnType("real");
 
                     b.Property<bool>("SendDuration")
                         .HasColumnType("boolean");
@@ -2265,16 +2241,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ChanceId")
-                        .IsUnique();
-
-                    b.HasIndex("ChancePvpId")
-                        .IsUnique();
-
                     b.HasIndex("DurationId")
-                        .IsUnique();
-
-                    b.HasIndex("DurationPvpId")
                         .IsUnique();
 
                     b.HasIndex("GameConfigurationId");
@@ -2838,9 +2805,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<Guid?>("MagicEffectDefinitionId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("MagicEffectDefinitionId1")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid?>("TargetAttributeId")
                         .HasColumnType("uuid");
 
@@ -2852,8 +2816,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasIndex("GameMapDefinitionId");
 
                     b.HasIndex("MagicEffectDefinitionId");
-
-                    b.HasIndex("MagicEffectDefinitionId1");
 
                     b.HasIndex("TargetAttributeId");
 
@@ -2868,9 +2830,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<int>("AggregateType")
                         .HasColumnType("integer");
-
-                    b.Property<float?>("MaximumValue")
-                        .HasColumnType("real");
 
                     b.Property<float>("Value")
                         .HasColumnType("real");
@@ -4397,24 +4356,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MagicEffectDefinition", b =>
                 {
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.PowerUpDefinitionValue", "RawChance")
-                        .WithOne()
-                        .HasForeignKey("MUnique.OpenMU.Persistence.EntityFramework.Model.MagicEffectDefinition", "ChanceId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.PowerUpDefinitionValue", "RawChancePvp")
-                        .WithOne()
-                        .HasForeignKey("MUnique.OpenMU.Persistence.EntityFramework.Model.MagicEffectDefinition", "ChancePvpId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.PowerUpDefinitionValue", "RawDuration")
                         .WithOne()
                         .HasForeignKey("MUnique.OpenMU.Persistence.EntityFramework.Model.MagicEffectDefinition", "DurationId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.PowerUpDefinitionValue", "RawDurationPvp")
-                        .WithOne()
-                        .HasForeignKey("MUnique.OpenMU.Persistence.EntityFramework.Model.MagicEffectDefinition", "DurationPvpId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration", null)
@@ -4422,13 +4366,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasForeignKey("GameConfigurationId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.Navigation("RawChance");
-
-                    b.Navigation("RawChancePvp");
-
                     b.Navigation("RawDuration");
-
-                    b.Navigation("RawDurationPvp");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MasterSkillDefinition", b =>
@@ -4665,12 +4603,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .WithMany("RawPowerUpDefinitions")
                         .HasForeignKey("MagicEffectDefinitionId")
                         .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.MagicEffectDefinition", null)
-                        .WithMany("RawPowerUpDefinitionsPvp")
-                        .HasForeignKey("MagicEffectDefinitionId1")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .HasConstraintName("FK_PowerUpDefinition_MagicEffectDefinition_MagicEffectDefinit~1");
 
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeDefinition", "RawTargetAttribute")
                         .WithMany()
@@ -5103,8 +5035,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MagicEffectDefinition", b =>
                 {
                     b.Navigation("RawPowerUpDefinitions");
-
-                    b.Navigation("RawPowerUpDefinitionsPvp");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MasterSkillDefinition", b =>
