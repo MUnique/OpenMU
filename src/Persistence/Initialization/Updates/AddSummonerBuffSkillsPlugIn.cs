@@ -51,7 +51,7 @@ public class AddSummonerBuffSkillsPlugIn : UpdatePlugInBase
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
         // Add new attributes
-        var innovationDefDecrement = context.CreateNew<AttributeDefinition>(Stats.DefenseDecrement.Id, Stats.DefenseDecrement.Designation, Stats.DefenseDecrement.Description);
+        var innovationDefDecrement = context.CreateNew<AttributeDefinition>(Stats.InnovationDefDecrement.Id, Stats.InnovationDefDecrement.Designation, Stats.InnovationDefDecrement.Description);
         gameConfiguration.Attributes.Add(innovationDefDecrement);
         var isAsleep = context.CreateNew<AttributeDefinition>(Stats.IsAsleep.Id, Stats.IsAsleep.Designation, Stats.IsAsleep.Description);
         gameConfiguration.Attributes.Add(isAsleep);
