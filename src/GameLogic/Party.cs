@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic;
 using System.Diagnostics.Metrics;
 using System.Threading;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Party;
 using Nito.AsyncEx;
@@ -250,6 +251,12 @@ public sealed class Party : Disposable
 
     private async ValueTask<int> InternalDistributeExperienceAfterKillAsync(IAttackable killedObject, IObservable killer)
     {
+        if (killedObject.IsSummonedMonster)
+        {
+            // Do not award experience or drop items for summoned monsters.
+            return 0;
+        }
+
         using (await killer.ObserverLock.ReaderLockAsync())
         {
             // All players in the range of the player are getting experience.

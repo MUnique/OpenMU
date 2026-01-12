@@ -48,13 +48,13 @@ internal class TypedContext : EntityDataContext, ITypedContext
     /// </summary>
     public Type EditType { get; }
 
-    private IReadOnlySet<Type> EditTypes => ContextInfoPerEditType[this.EditType].EditTypes;
+    private IReadOnlySet<Type> EditTypes => this.GetOrInitializeContextInfo().EditTypes;
 
-    private IReadOnlySet<Type> BackReferenceTypes => ContextInfoPerEditType[this.EditType].BackReferenceTypes;
+    private IReadOnlySet<Type> BackReferenceTypes => this.GetOrInitializeContextInfo().BackReferenceTypes;
 
-    private IReadOnlySet<Type> ReadOnlyTypes => ContextInfoPerEditType[this.EditType].ReadOnlyTypes;
+    private IReadOnlySet<Type> ReadOnlyTypes => this.GetOrInitializeContextInfo().ReadOnlyTypes;
 
-    private string? GameConfigNavigationName => ContextInfoPerEditType[this.EditType].GameConfigNavigationName;
+    private string? GameConfigNavigationName => this.GetOrInitializeContextInfo().GameConfigNavigationName;
 
     /// <inheritdoc />
     public bool IsIncluded(Type clrType)
@@ -174,6 +174,17 @@ internal class TypedContext : EntityDataContext, ITypedContext
                 yield return navEditType;
             }
         }
+    }
+
+    private ContextInfo GetOrInitializeContextInfo()
+    {
+        // Trigger model building to run OnModelCreating which fills ContextInfoPerEditType.
+        // Accessing the model ensures it's initialized.
+        _ = this.Model;
+
+        return ContextInfoPerEditType.TryGetValue(this.EditType, out var info)
+            ? info
+            : throw new InvalidOperationException($"Context info for edit type '{this.EditType}' not found after model initialization.");
     }
 
     private IEnumerable<(Type EntityType, bool IsReadOnly, bool IsBackReference)> DetermineEditTypes(IList<IMutableEntityType> modelTypes)
