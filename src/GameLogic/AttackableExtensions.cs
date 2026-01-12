@@ -63,8 +63,7 @@ public static class AttackableExtensions
         else
         {
             var defenseAttribute = defender.GetDefenseAttribute(attacker);
-            defense = (int)defender.Attributes[defenseAttribute];
-            defense = (int)(defense * defender.Attributes[Stats.DefenseDecrement]);
+            defense = (int)(defender.Attributes[defenseAttribute] * defender.Attributes[Stats.DefenseDecrement]);
             if (defense < 0)
             {
                 defense = 0;

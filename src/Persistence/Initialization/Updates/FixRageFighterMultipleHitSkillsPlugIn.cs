@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Updates;
 
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.AttributeSystem;
-using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
