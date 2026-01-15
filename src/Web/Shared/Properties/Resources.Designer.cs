@@ -250,6 +250,15 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0}: The value must not contain &quot;{1}&quot;..
+        /// </summary>
+        internal static string TheValueMustNotContain {
+            get {
+                return ResourceManager.GetString("TheValueMustNotContain", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Toolbar.
         /// </summary>
         internal static string Toolbar {

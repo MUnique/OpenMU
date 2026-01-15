@@ -26,6 +26,7 @@ using MUnique.OpenMU.LoginServer;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.EntityFramework;
+using MUnique.OpenMU.Persistence.EntityFramework.Json;
 using MUnique.OpenMU.Persistence.Initialization;
 using MUnique.OpenMU.Persistence.Initialization.Version075;
 using MUnique.OpenMU.Persistence.InMemory;
@@ -129,6 +130,9 @@ internal sealed class Program : IDisposable
     /// <param name="args">The command line args.</param>
     public async Task InitializeAsync(string[] args)
     {
+        JsonConverterRegistry.RegisterConverter(new LocalizedStringConverter());
+        JsonConverterRegistry.RegisterConverter(new BinaryAsHexJsonConverter());
+
         this._logger.Information("Creating host...");
         this._serverHost = await this.CreateHostAsync(args).ConfigureAwait(false);
 

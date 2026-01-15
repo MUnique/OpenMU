@@ -189,4 +189,7 @@
   <data name="UserCreationParameters_Password_Name" xml:space="preserve">
     <value>Password</value>
   </data>
+  <data name="TheValueMustNotContain" xml:space="preserve">
+    <value>{0}: The value must not contain "{1}".</value>
+  </data>
 </root>
