@@ -18,7 +18,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IShowCharacterListPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn(nameof(ShowCharacterListExtendedPlugIn), "The extended implementation of the IShowCharacterListPlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.ShowCharacterListExtendedPlugIn_Name), Description = nameof(PlugInResources.ShowCharacterListExtendedPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("DDDEED0A-9421-4A9B-9ED8-0691B7051666")]
 [MinimumClient(106, 3, ClientLanguage.Invariant)]
 public class ShowCharacterListExtendedPlugIn : IShowCharacterListPlugIn

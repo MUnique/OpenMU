@@ -17,7 +17,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IAppearanceChangedPlugIn"/> which is forwarding appearance changes of other players to the game client with specific data packets.
 /// </summary>
-[PlugIn("Appearance changed", "The default implementation of the IAppearanceChangedPlugIn which is forwarding appearance changes of other players to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.AppearanceChangedPlugIn_Name), Description = nameof(PlugInResources.AppearanceChangedPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("1d097399-d5af-40de-a97d-a812f13c2f20")]
 public class AppearanceChangedPlugIn : IAppearanceChangedPlugIn
 {
@@ -80,7 +81,8 @@ public class AppearanceChangedPlugIn : IAppearanceChangedPlugIn
 /// <summary>
 /// The extended implementation of the <see cref="IAppearanceChangedPlugIn"/> which is forwarding appearance changes of other players to the game client with specific data packets.
 /// </summary>
-[PlugIn(nameof(AppearanceChangedExtendedPlugIn), "The extended implementation of the IAppearanceChangedPlugIn which is forwarding appearance changes of other players to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.AppearanceChangedExtendedPlugIn_Name), Description = nameof(PlugInResources.AppearanceChangedExtendedPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("A2F298E4-9F48-402A-B30D-9BC2BA8DEB2E")]
 [MinimumClient(106, 3, ClientLanguage.Invariant)]
 public class AppearanceChangedExtendedPlugIn : IAppearanceChangedPlugIn

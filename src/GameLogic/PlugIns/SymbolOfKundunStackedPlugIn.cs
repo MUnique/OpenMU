@@ -10,7 +10,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// This plugin transforms a stack of symbol of kundun into a lost map.
 /// </summary>
-[PlugIn(nameof(SymbolOfKundunStackedPlugIn), "This plugin transforms a stack of symbol of kundun into a lost map.")]
+[PlugIn]
+[Display(Name = nameof(SymbolOfKundunStackedPlugIn), Description = "This plugin transforms a stack of symbol of kundun into a lost map.")]
 [Guid("F07A9CED-F43E-4824-9587-F5C3C3187A13")]
 public sealed class SymbolOfKundunStackedPlugIn : IItemStackedPlugIn
 {

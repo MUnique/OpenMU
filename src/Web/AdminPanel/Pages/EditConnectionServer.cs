@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Pages;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using MUnique.OpenMU.DataModel.Configuration;
-using MUnique.OpenMU.Web.AdminPanel.Components;
+using MUnique.OpenMU.Web.AdminPanel.Components.ConnectServer;
 
 /// <summary>
 /// Edit page for the <see cref="ConnectServerConfiguration"/>.

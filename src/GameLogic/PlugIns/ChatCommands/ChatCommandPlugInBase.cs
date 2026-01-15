@@ -29,9 +29,13 @@ public abstract class ChatCommandPlugInBase<T> : IChatCommandPlugIn
             var arguments = command.ParseArguments<T>();
             await this.DoHandleCommandAsync(player, arguments).ConfigureAwait(false);
         }
+        catch (LocalizableExceptionBase ex)
+        {
+            await player.ShowLocalizedBlueMessageAsync(ex.ResourceKey, ex.FormatArguments).ConfigureAwait(false);
+        }
         catch (ArgumentException argEx)
         {
-            await this.ShowMessageToAsync(player, $"[{this.Key}] {argEx.Message}").ConfigureAwait(false);
+            await player.ShowBlueMessageAsync($"[{this.Key}] {argEx.Message}").ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -45,17 +49,6 @@ public abstract class ChatCommandPlugInBase<T> : IChatCommandPlugIn
     /// <param name="player">The player.</param>
     /// <param name="arguments">The arguments.</param>
     protected abstract ValueTask DoHandleCommandAsync(Player player, T arguments);
-
-    /// <summary>
-    /// Shows a message to a player.
-    /// </summary>
-    /// <param name="player">The player.</param>
-    /// <param name="message">The message.</param>
-    /// <param name="messageType">The message type.</param>
-    protected ValueTask ShowMessageToAsync(Player player, string message, MessageType messageType = MessageType.BlueNormal)
-    {
-        return player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, messageType));
-    }
 
     /// <summary>
     /// Gets a player by his character name.

@@ -15,7 +15,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Handler for chaos castle enter request packets.
 /// </summary>
-[PlugIn(nameof(ChaosCastleEnterHandlerPlugIn), "Handler for chaos castle enter request packets.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.ChaosCastleEnterHandlerPlugIn_Name), Description = nameof(PlugInResources.ChaosCastleEnterHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("D4F0076F-86D2-4712-B9FD-6B1C58B71969")]
 internal class ChaosCastleEnterHandlerPlugIn : IPacketHandlerPlugIn
 {

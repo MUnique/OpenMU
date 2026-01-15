@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IAddToLetterListPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn("AddToLetterListPlugIn", "The default implementation of the IAddToLetterListPlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.AddToLetterListPlugIn_Name), Description = nameof(PlugInResources.AddToLetterListPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("d30bea99-9d77-4182-99be-e08095c1969f")]
 public class AddToLetterListPlugIn : IAddToLetterListPlugIn
 {

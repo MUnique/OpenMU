@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Handler for warehouse close packets.
 /// </summary>
-[PlugIn(nameof(VaultCloseHandlerPlugIn), "Handler for warehouse close packets.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.VaultCloseHandlerPlugIn_Name), Description = nameof(PlugInResources.VaultCloseHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("7859931f-3341-4bd7-91ad-1b0b03f11198")]
 internal class VaultCloseHandlerPlugIn : IPacketHandlerPlugIn
 {

@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.ChatServer.ExDbConnector;
 
+using System.ComponentModel.DataAnnotations;
 using System.IO.Pipelines;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.Network;
@@ -14,7 +15,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// A configurable network encryption factory plugin which reads the Xor32 key from the ChatServer.cfg file. Only used by the ExDbConnector project.
 /// </summary>
-[PlugIn("Configurable encryption plugin", "A configurable network encryption factory plugin which reads the Xor32 key from the ChatServer.cfg file. Only used by the ExDbConnector project.")]
+[PlugIn]
+[Display(Name = "Configurable encryption plugin", Description = "A configurable network encryption factory plugin which reads the Xor32 key from the ChatServer.cfg file. Only used by the ExDbConnector project.")]
 [Guid("890997B2-9334-4E9E-8C82-4492A831BCE3")]
 public class ConfigurableNetworkEncryptionPlugIn : INetworkEncryptionFactoryPlugIn
 {

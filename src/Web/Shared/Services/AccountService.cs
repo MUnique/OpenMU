@@ -11,6 +11,7 @@ using Blazored.Modal.Services;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Web.Shared.Components.Form;
+using MUnique.OpenMU.Web.Shared.Properties;
 
 /// <summary>
 /// Service for <see cref="Account"/>s.
@@ -114,28 +115,28 @@ public class AccountService : IDataService<Account>, ISupportDataChangedNotifica
     [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local", Justification = "Used by data binding.")]
     private class AccountCreationParameters
     {
-        [Display(Name = "Login Name")]
+        [Display(ResourceType = typeof(Resources), Name = nameof(Resources.AccountCreationParameters_LoginName_Name))]
         [MaxLength(10)]
         [MinLength(3)]
         [Required]
         public string LoginName { get; set; } = string.Empty;
 
-        [Display(Name = "Password")]
+        [Display(ResourceType = typeof(Resources), Name = nameof(Resources.AccountCreationParameters_Password_Name))]
         [MaxLength(20)]
         [MinLength(3)]
         [Required]
         public string Password { get; set; } = string.Empty;
 
-        [Display(Name = "Security Code")]
+        [Display(ResourceType = typeof(Resources), Name = nameof(Resources.AccountCreationParameters_SecurityCode_Name))]
         [MaxLength(10)]
         [MinLength(3)]
         [Required]
         public string SecurityCode { get; set; } = string.Empty;
 
-        [Display(Name = "E-Mail")]
+        [Display(ResourceType = typeof(Resources), Name = nameof(Resources.AccountCreationParameters_EMail_Name))]
         public string EMail { get; set; } = string.Empty;
 
-        [Display(Name = "Status")]
+        [Display(ResourceType = typeof(Resources), Name = nameof(Resources.AccountCreationParameters_State_Name))]
         public AccountState State { get; set; }
     }
 }

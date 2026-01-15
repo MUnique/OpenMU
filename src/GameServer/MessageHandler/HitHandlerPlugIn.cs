@@ -12,7 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Handler for hit packets.
 /// </summary>
-[PlugIn("HitHandlerPlugIn", "Handler for hit packets.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.HitHandlerPlugIn_Name), Description = nameof(PlugInResources.HitHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("698b8db9-472a-42dd-bdfe-f6b4ba45595e")]
 [MinimumClient(1, 0, ClientLanguage.English)]
 internal class HitHandlerPlugIn : HitHandlerPlugInBase

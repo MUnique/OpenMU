@@ -1,4 +1,4 @@
-// <copyright file="HelpCommand.cs" company="MUnique">
+﻿// <copyright file="HelpCommand.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -11,7 +11,8 @@ using MUnique.OpenMU.PlugIns;
 /// The help command which shows the usage of a command.
 /// </summary>
 [Guid("EFE9399A-9A14-4B94-BBC1-20718584C4C2")]
-[PlugIn("Help command", "Handles the /help <command> chat command. Shows information about the requested command.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.HelpCommand_Name), Description = nameof(PlugInResources.HelpCommand_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, "Shows information about the requested command.", typeof(Arguments))]
 public class HelpCommand : IChatCommandPlugIn
 {
@@ -34,15 +35,16 @@ public class HelpCommand : IChatCommandPlugIn
                 .FirstOrDefault(x => x.Command.Equals("/" + commandName, StringComparison.InvariantCultureIgnoreCase));
             if (commandPluginAttribute is null)
             {
-                await player.ShowMessageAsync($"The command '{commandName}' does not exists.").ConfigureAwait(false);
+                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CommandDoesNotExist), commandName ?? string.Empty).ConfigureAwait(false);
                 return;
             }
 
-            await player.ShowMessageAsync(commandPluginAttribute.Usage).ConfigureAwait(false);
+            // TODO: Localize
+            await player.ShowBlueMessageAsync(commandPluginAttribute.Usage).ConfigureAwait(false);
         }
         catch (ArgumentException e)
         {
-            await player.ShowMessageAsync(e.Message).ConfigureAwait(false);
+            await player.ShowBlueMessageAsync(e.Message).ConfigureAwait(false);
         }
     }
 

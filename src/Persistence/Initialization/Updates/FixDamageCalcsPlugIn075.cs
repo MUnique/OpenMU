@@ -11,7 +11,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// This update fixes character stats, magic effects, items, and options related to damage.
 /// </summary>
-[PlugIn(PlugInName, PlugInDescription)]
+[PlugIn]
+[Display(Name = PlugInName, Description = PlugInDescription)]
 [Guid("42B1582B-667F-4098-A339-DDA8560157E3")]
 public class FixDamageCalcsPlugIn075 : FixDamageCalcsPlugInBase
 {

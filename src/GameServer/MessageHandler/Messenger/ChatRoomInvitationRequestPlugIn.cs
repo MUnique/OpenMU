@@ -14,7 +14,8 @@ using MUnique.OpenMU.PlugIns;
 /// Packet handler which handles chat room invitation requests,
 /// where a player invites additional players to an existing chat room.
 /// </summary>
-[PlugIn("ChatRoomInvitationRequestPlugIn", "Packet handler which handles chat room invitation requests, where a player invites additional players to an existing chat room.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.ChatRoomInvitationRequestPlugIn_Name), Description = nameof(PlugInResources.ChatRoomInvitationRequestPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("fc779867-7d2d-4409-83b4-b6616bb9234e")]
 public class ChatRoomInvitationRequestPlugIn : IPacketHandlerPlugIn
 {

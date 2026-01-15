@@ -12,7 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IItemDropResultPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn("ItemDropResultPlugIn", "The default implementation of the IItemDropResultPlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.ItemDropResultPlugIn_Name), Description = nameof(PlugInResources.ItemDropResultPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("377cd4cb-7334-4c74-a165-058e6bb46baf")]
 public class ItemDropResultPlugIn : IItemDropResultPlugIn
 {

@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Network.PlugIns;
 
+using System.ComponentModel.DataAnnotations;
 using System.IO.Pipelines;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.Network;
@@ -17,7 +18,8 @@ using MUnique.OpenMU.PlugIns;
 /// This early and very old version doesn't seem to have xor 32 encryption yet.
 /// However, it uses simple modulus with some other keys.
 /// </remarks>
-[PlugIn("Network Encryption - 0.75", "A plugin which provides network encryptors and decryptors for game clients of version 0.75 (server version 0.65)")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.Version075NetworkEncryptionFactoryPlugIn_Name), Description = nameof(PlugInResources.Version075NetworkEncryptionFactoryPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("E83F05AC-18D4-4714-AEFB-2F4F3B37951C")]
 public class Version075NetworkEncryptionFactoryPlugIn : INetworkEncryptionFactoryPlugIn
 {

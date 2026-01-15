@@ -1,27 +1,23 @@
-// <copyright file="GetMasterLevelUpPointsChatCommandPlugIn.cs" company="MUnique">
+﻿// <copyright file="GetMasterLevelUpPointsChatCommandPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
-using System.Globalization;
 using System.Runtime.InteropServices;
-using MUnique.OpenMU.GameLogic.Views.Character;
-using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// A chat command plugin to get a character's master level-up points.
 /// </summary>
 [Guid("8ACCF267-F5F3-4003-B4C3-536ACCB5181D")]
-[PlugIn("Get master level up points command", "Gets master level up points of a player. Usage: /getmasterleveluppoints (optional:character)")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.GetMasterLevelUpPointsChatCommandPlugIn_Name), Description = nameof(PlugInResources.GetMasterLevelUpPointsChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, "Gets master level up points of a player. Usage: /getmasterleveluppoints (optional:character)", null)]
 public class GetMasterLevelUpPointsChatCommandPlugIn : ChatCommandPlugInBase<GetMasterLevelUpPointsChatCommandPlugIn.Arguments>, IDisabledByDefault
 {
     private const string Command = "/getmasterleveluppoints";
     private const CharacterStatus MinimumStatus = CharacterStatus.GameMaster;
-    private const string CharacterNotFoundMessage = "Character '{0}' not found.";
-    private const string MasterLevelUpPointsGetMessage = "Master level-up points of '{0}': {1}.";
 
     /// <inheritdoc />
     public override string Key => Command;
@@ -39,7 +35,7 @@ public class GetMasterLevelUpPointsChatCommandPlugIn : ChatCommandPlugInBase<Get
             if (targetPlayer?.SelectedCharacter is null ||
                 !targetPlayer.SelectedCharacter.Name.Equals(characterName, StringComparison.OrdinalIgnoreCase))
             {
-                await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, CharacterNotFoundMessage, characterName)).ConfigureAwait(false);
+                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CharacterNotFound), characterName).ConfigureAwait(false);
                 return;
             }
         }
@@ -49,7 +45,7 @@ public class GetMasterLevelUpPointsChatCommandPlugIn : ChatCommandPlugInBase<Get
             return;
         }
 
-        await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, MasterLevelUpPointsGetMessage, targetPlayer.SelectedCharacter.Name, targetPlayer.SelectedCharacter.MasterLevelUpPoints)).ConfigureAwait(false);
+        await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MasterLevelUpPointsInfo), targetPlayer.SelectedCharacter.Name, targetPlayer.SelectedCharacter.MasterLevelUpPoints).ConfigureAwait(false);
     }
 
     /// <summary>

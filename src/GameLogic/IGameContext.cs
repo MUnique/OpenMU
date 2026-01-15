@@ -164,6 +164,14 @@ public interface IGameContext
     ValueTask SendGlobalMessageAsync(string message, MessageType messageType);
 
     /// <summary>
+    /// Sends a global message to all players of the game with the specified message type.
+    /// </summary>
+    /// <param name="messageType">Type of the message.</param>
+    /// <param name="messageKey">The message resource key.</param>
+    /// <param name="arguments">The parameters for the message.</param>
+    ValueTask ShowGlobalLocalizedMessageAsync(MessageType messageType, string messageKey, params object?[] arguments);
+
+    /// <summary>
     /// Sends a global chat message to all players of the game with the specified message type.
     /// </summary>
     /// <param name="sender">The sender.</param>

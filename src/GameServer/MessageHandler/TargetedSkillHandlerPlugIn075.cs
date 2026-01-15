@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Handler for targeted skill packets of version 0.75.
 /// </summary>
-[PlugIn(nameof(TargetedSkillHandlerPlugIn075), "Handler for targeted skill packets for version 0.75")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.TargetedSkillHandlerPlugIn075_Name), Description = nameof(PlugInResources.TargetedSkillHandlerPlugIn075_Description), ResourceType = typeof(PlugInResources))]
 [Guid("83D2ABC0-6491-409A-8525-941794C54660")]
 internal class TargetedSkillHandlerPlugIn075 : TargetedSkillHandlerPlugIn
 {

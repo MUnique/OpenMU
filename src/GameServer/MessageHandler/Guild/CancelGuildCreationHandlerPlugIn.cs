@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Handler for guild master answer packets.
 /// </summary>
-[PlugIn(nameof(CancelGuildCreationHandlerPlugIn), "Handler for CancelGuildCreation packets.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.CancelGuildCreationHandlerPlugIn_Name), Description = nameof(PlugInResources.CancelGuildCreationHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("CDB87F7F-24FC-42E1-B375-9EAAEAAC0F8C")]
 internal class CancelGuildCreationHandlerPlugIn : IPacketHandlerPlugIn
 {

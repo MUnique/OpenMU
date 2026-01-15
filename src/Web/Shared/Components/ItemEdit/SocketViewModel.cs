@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Web.Shared.Components.ItemEdit;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Web.Shared.Properties;
 using Nito.AsyncEx.Synchronous;
 
 /// <summary>
@@ -66,7 +67,7 @@ public class SocketViewModel
     /// <summary>
     /// Gets the field caption for the socket.
     /// </summary>
-    public string Caption => $"Socket {this.SocketIndex + 1}:";
+    public string Caption => string.Format(Resources.SocketNumber, this.SocketIndex + 1) + ":";
 
     /// <summary>
     /// Gets or sets the option.

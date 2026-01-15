@@ -11,7 +11,8 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which handles hide commands.
 /// </summary>
 [Guid("7CE1CA66-C6B1-4840-9997-EF15C49FAB49")]
-[PlugIn("Hide command", "Handles the chat command '/hide'. Hides the own player from others.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.HideChatCommandPlugIn_Name), Description = nameof(PlugInResources.HideChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, "Hides the own player from others.", CharacterStatus.GameMaster)]
 public class HideChatCommandPlugIn : IChatCommandPlugIn
 {

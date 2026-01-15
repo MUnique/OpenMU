@@ -14,7 +14,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Handler for warehouse money packets.
 /// </summary>
-[PlugIn(nameof(VaultMoneyHandlerPlugIn), "Handler for warehouse money packets.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.VaultMoneyHandlerPlugIn_Name), Description = nameof(PlugInResources.VaultMoneyHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("e365f3f2-55c8-4890-9f6b-26fd39822b71")]
 internal class VaultMoneyHandlerPlugIn : IPacketHandlerPlugIn
 {

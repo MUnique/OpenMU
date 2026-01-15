@@ -12,7 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IShowDialogPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn("ShowDialogPlugIn", "The default implementation of the IShowDialogPlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.ShowDialogPlugIn_Name), Description = nameof(PlugInResources.ShowDialogPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("DCAB5737-2B44-408F-A14D-C0FD3B5F6516")]
 public class ShowDialogPlugIn : IShowDialogPlugIn
 {

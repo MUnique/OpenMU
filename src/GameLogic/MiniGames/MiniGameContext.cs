@@ -535,7 +535,7 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
             case MiniGameRewardType.Money:
                 if (!player.TryAddMoney(reward.RewardAmount))
                 {
-                    await player.ShowMessageAsync("Couldn't add reward money, inventory is full.").ConfigureAwait(false);
+                    await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.AwardMoneyFailByFullInventory)).ConfigureAwait(false);
                 }
 
                 return (0, reward.RewardAmount);
@@ -1020,7 +1020,7 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         {
             if (!this.IsItemAllowedToEquip(item))
             {
-                await player.ShowMessageAsync($"Can't enter event with equipped item '{item.Definition?.Name ?? item.ToString()}'.").ConfigureAwait(false);
+                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CantEnterEventWithItem), item.Definition?.Name ?? item.ToString()).ConfigureAwait(false);
                 result = false;
             }
         }

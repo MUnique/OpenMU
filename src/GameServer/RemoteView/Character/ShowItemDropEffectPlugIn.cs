@@ -14,7 +14,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="ShowItemDropEffectPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn(nameof(ShowItemDropEffectPlugIn), "The default implementation of the ShowItemDropEffectPlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.ShowItemDropEffectPlugIn_Name), Description = nameof(PlugInResources.ShowItemDropEffectPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("AA949D5E-0CC6-424E-8412-DE12EA294E33")]
 public class ShowItemDropEffectPlugIn : IShowItemDropEffectPlugIn
 {

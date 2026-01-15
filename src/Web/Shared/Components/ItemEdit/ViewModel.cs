@@ -17,16 +17,16 @@ using Nito.Disposables.Internals;
 /// <summary>
 /// The view model for an <see cref="Item"/>.
 /// </summary>
-public class ViewModel : INotifyPropertyChanged
+public class ItemViewModel : INotifyPropertyChanged
 {
     private readonly IContext _persistenceContext;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ViewModel"/> class.
+    /// Initializes a new instance of the <see cref="ItemViewModel"/> class.
     /// </summary>
     /// <param name="item">The item.</param>
     /// <param name="persistenceContext">The persistence context.</param>
-    public ViewModel(Item item, IContext persistenceContext)
+    public ItemViewModel(Item item, IContext persistenceContext)
     {
         this._persistenceContext = persistenceContext ?? throw new ArgumentNullException(nameof(persistenceContext));
         this.Item = item ?? throw new ArgumentNullException(nameof(item));

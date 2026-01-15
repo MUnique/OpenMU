@@ -41,15 +41,24 @@ public static class WebApplicationExtensions
         // Ensure that DataInitialization plugins will get collected - for the setup functionality.
         _ = DataInitialization.Id;
 
-        builder.Services.AddRazorComponents()
+        var services = builder.Services;
+
+        // TODO: Determine cultures by checking the resource manager
+        string[] supportedCultures = ["en", "de", "es"];
+        services.AddLocalization()
+            .Configure<RequestLocalizationOptions>(o =>
+            {
+                o.AddSupportedCultures(supportedCultures);
+                o.AddSupportedUICultures(supportedCultures);
+            });
+        services.AddRazorComponents()
             .AddInteractiveServerComponents();
-        
+
         if (includeMapApp)
         {
             AdminPanelEnvironment.IsHostingEmbedded = true;
         }
 
-        var services = builder.Services;
         services.AddControllers()
             .ConfigureApplicationPartManager(setup =>
                 setup.FeatureProviders.Add(new GenericControllerFeatureProvider()));
@@ -103,6 +112,9 @@ public static class WebApplicationExtensions
         app.UseAntiforgery();
 
         app.MapStaticAssets();
+
+        app.UseRequestLocalization();
+
         app.MapRazorComponents<App>()
             .AddInteractiveServerRenderMode();
 

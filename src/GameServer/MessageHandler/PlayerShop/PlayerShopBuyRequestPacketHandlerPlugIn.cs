@@ -17,7 +17,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Packet handler which handles buy requests to a player shop (3F 06).
 /// </summary>
-[PlugIn("Player Shop - Buy request", "Packet handler which handles buy requests to a player shop (3F 06).")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.PlayerShopBuyRequestPacketHandlerPlugIn_Name), Description = nameof(PlugInResources.PlayerShopBuyRequestPacketHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("F5B72F91-9651-433D-AC23-5898B950A09B")]
 [BelongsToGroup(StoreHandlerGroupPlugIn.GroupKey)]
 internal class PlayerShopBuyRequestPacketHandlerPlugIn : ISubPacketHandlerPlugIn

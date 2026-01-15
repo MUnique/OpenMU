@@ -1,4 +1,4 @@
-// <copyright file="OpenWarehouseChatCommandPlugIn.cs" company="MUnique">
+﻿// <copyright file="OpenWarehouseChatCommandPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -6,26 +6,23 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices;
-using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlayerActions;
-using MUnique.OpenMU.GameLogic.Views;
-using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// A chat command plugin which opens the warehouse NPC window.
 /// </summary>
 [Guid("62027B6B-D8E7-4DDB-A16B-7070D1BC4A56")]
-[PlugIn("Open Warehouse chat command", "Opens the warehouse.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.OpenWarehouseChatCommandPlugIn_Name), Description = nameof(PlugInResources.OpenWarehouseChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, "Opens the warehouse.", null)]
 public class OpenWarehouseChatCommandPlugIn : ChatCommandPlugInBase<OpenWarehouseChatCommandPlugIn.Arguments>, ISupportCustomConfiguration<OpenWarehouseChatCommandPlugIn.OpenWarehouseChatCommandConfiguration>, ISupportDefaultCustomConfiguration, IDisabledByDefault
 {
     private const string Command = "/openware";
     private const CharacterStatus MinimumStatus = CharacterStatus.Normal;
-    private const string NoWarehouseNpcMessage = "No warehouse NPC found";
 
     private readonly TalkNpcAction _talkNpcAction = new();
 
@@ -55,7 +52,7 @@ public class OpenWarehouseChatCommandPlugIn : ChatCommandPlugInBase<OpenWarehous
 
         if (configuration.MinimumVipLevel > 0 && (player.Attributes?[Stats.IsVip] ?? 0) < configuration.MinimumVipLevel)
         {
-            await this.ShowMessageToAsync(player, configuration.InsufficientVipLevelMessage).ConfigureAwait(false);
+            await player.ShowBlueMessageAsync(configuration.InsufficientVipLevelMessage).ConfigureAwait(false);
             return;
         }
 
@@ -63,7 +60,7 @@ public class OpenWarehouseChatCommandPlugIn : ChatCommandPlugInBase<OpenWarehous
         {
             if (player.SelectedCharacter?.CharacterStatus >= CharacterStatus.GameMaster)
             {
-                await this.ShowMessageToAsync(player, NoWarehouseNpcMessage).ConfigureAwait(false);
+                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.NoWarehouseNpcFound)).ConfigureAwait(false);
             }
 
             return;
@@ -88,13 +85,13 @@ public class OpenWarehouseChatCommandPlugIn : ChatCommandPlugInBase<OpenWarehous
         /// <summary>
         /// Gets or sets the minimum VIP level to use the command (excluding GM).
         /// </summary>
-        [Display(Name = "Minimum VIP Level", Description = @"The minimum VIP level to use the command (excluding GM). Default: 0.")]
+        [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.OpenWarehouseChatCommandConfiguration_MinimumVipLevel_Name), Description = nameof(PlugInResources.OpenWarehouseChatCommandConfiguration_MinimumVipLevel_Description))]
         public int MinimumVipLevel { get; set; }
 
         /// <summary>
         /// Gets or sets the message to show when the player does not have the required VIP level for this command (excluding GM).
         /// </summary>
-        [Display(Name = "Insufficient VIP Level Message", Description = @"The message to show when the player does not have the required VIP level for this command (excluding GM).")]
+        [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.OpenWarehouseChatCommandConfiguration_InsufficientVipLevelMessage_Name), Description = nameof(PlugInResources.OpenWarehouseChatCommandConfiguration_InsufficientVipLevelMessage_Description))]
         public string InsufficientVipLevelMessage { get; set; } = "Insufficient VIP level to use this command";
     }
 }

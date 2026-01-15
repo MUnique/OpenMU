@@ -10,6 +10,7 @@ using System.Diagnostics.CodeAnalysis;
 using Blazored.Modal;
 using Blazored.Modal.Services;
 using MUnique.OpenMU.Web.Shared.Components.Form;
+using MUnique.OpenMU.Web.Shared.Properties;
 
 /// <summary>
 /// A basic implementation of a <see cref="IUserService"/> which opens some modal dialogs to retrieve user input.
@@ -104,13 +105,13 @@ public abstract class UserServiceBase : IUserService
     [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local", Justification = "Used by data binding.")]
     private class UserCreationParameters
     {
-        [Display(Name = "Username")]
+        [Display(ResourceType = typeof(Resources), Name = nameof(Resources.UserCreationParameters_LoginName_Name))]
         [MaxLength(10)]
         [MinLength(3)]
         [Required]
         public string LoginName { get; set; } = string.Empty;
 
-        [Display(Name = "Password")]
+        [Display(ResourceType = typeof(Resources), Name = nameof(Resources.UserCreationParameters_Password_Name))]
         [MaxLength(100)]
         [MinLength(3)]
         [Required]
@@ -124,7 +125,7 @@ public abstract class UserServiceBase : IUserService
     [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local", Justification = "Used by data binding.")]
     private class UserPasswordChangeParameters
     {
-        [Display(Name = "Password")]
+        [Display(ResourceType = typeof(Resources), Name = nameof(Resources.UserCreationParameters_Password_Name))]
         [MaxLength(100)]
         [MinLength(3)]
         [Required]

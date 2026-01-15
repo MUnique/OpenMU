@@ -12,7 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// This plugin increases the score of the soccer result, if a kill occurred.
 /// </summary>
-[PlugIn("Guild soccer kill score", "This plugin increases the score of the soccer result, if a kill occurred.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.GuildWarKillScorePlugIn_Name), Description = nameof(PlugInResources.GuildWarKillScorePlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("2D4E16CD-B7FF-4ED3-B4B1-4AABD04BAD71")]
 public class GuildWarKillScorePlugIn : IAttackableGotKilledPlugIn
 {

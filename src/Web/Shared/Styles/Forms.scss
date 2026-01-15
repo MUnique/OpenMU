@@ -16,9 +16,9 @@
     @extend .form-control, :valid;
 }
 
-.validation-message {
+/*.validation-message {
     @extend .invalid-feedback;
-}
+}*/
 
 // own style:
 .primary-button {

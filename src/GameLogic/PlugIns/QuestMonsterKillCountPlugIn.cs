@@ -4,16 +4,16 @@
 
 namespace MUnique.OpenMU.GameLogic.PlugIns;
 
+using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic.NPC;
-using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
-using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// This plugin increases the monster kill count of the quest state of active quests.
 /// </summary>
-[PlugIn("Count killed quest monsters", "This plugin increases the monster kill count of the quest state of active quests.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.QuestMonsterKillCountPlugIn_Name), Description = nameof(PlugInResources.QuestMonsterKillCountPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("416C2231-D7FE-414A-9321-26622E262EF5")]
 public class QuestMonsterKillCountPlugIn : IAttackableGotKilledPlugIn, ISupportCustomConfiguration<QuestMonsterKillCountPlugInConfiguration>, ISupportDefaultCustomConfiguration
 {
@@ -63,7 +63,8 @@ public class QuestMonsterKillCountPlugIn : IAttackableGotKilledPlugIn, ISupportC
                         requirementState.KillCount,
                         killRequirement.MinimumNumber);
 
-                    await player.ShowMessageAsync(message).ConfigureAwait(false);
+                    // TODO: Localize
+                    await player.ShowBlueMessageAsync(message).ConfigureAwait(false);
                 }
             }
         }

@@ -15,7 +15,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IShowDuelScoreUpdatePlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn(nameof(ShowDuelScoreUpdatePlugIn), "The default implementation of the IShowDuelScoreUpdatePlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.ShowDuelScoreUpdatePlugIn_Name), Description = nameof(PlugInResources.ShowDuelScoreUpdatePlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("328E366D-B801-4780-B65D-B250C388E6B0")]
 [MinimumClient(4, 0, ClientLanguage.Invariant)]
 public class ShowDuelScoreUpdatePlugIn : IShowDuelScoreUpdatePlugIn

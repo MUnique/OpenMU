@@ -1,0 +1,2112 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AnimationHandlerPlugIn_Name" xml:space="preserve">
+    <value>Animation Handler</value>
+  </data>
+  <data name="AnimationHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for animation packets.</value>
+  </data>
+  <data name="AreaSkillAttackHandlerPlugIn_Name" xml:space="preserve">
+    <value>Area Skill Attack Handler</value>
+  </data>
+  <data name="AreaSkillAttackHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for area skill attack packets.</value>
+  </data>
+  <data name="AreaSkillAttackHandlerPlugIn075_Name" xml:space="preserve">
+    <value>Area Skill Attack Handler (075)</value>
+  </data>
+  <data name="AreaSkillAttackHandlerPlugIn075_Description" xml:space="preserve">
+    <value>Handler for area skill attack packets for version 0.75</value>
+  </data>
+  <data name="AreaSkillAttackHandlerPlugIn095_Name" xml:space="preserve">
+    <value>Area Skill Attack Handler (095)</value>
+  </data>
+  <data name="AreaSkillAttackHandlerPlugIn095_Description" xml:space="preserve">
+    <value>Handler for area skill attack packets for version 0.95</value>
+  </data>
+  <data name="AreaSkillHitHandlerPlugIn_Name" xml:space="preserve">
+    <value>Area Skill Hit Handler</value>
+  </data>
+  <data name="AreaSkillHitHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for area skill hit packets.</value>
+  </data>
+  <data name="AreaSkillHitHandlerPlugIn075_Name" xml:space="preserve">
+    <value>Area Skill Hit Handler (075)</value>
+  </data>
+  <data name="AreaSkillHitHandlerPlugIn075_Description" xml:space="preserve">
+    <value>Handler for area skill hit packets.</value>
+  </data>
+  <data name="AreaSkillHitHandlerPlugIn095_Name" xml:space="preserve">
+    <value>Area Skill Hit Handler (095)</value>
+  </data>
+  <data name="AreaSkillHitHandlerPlugIn095_Description" xml:space="preserve">
+    <value>Handler for area skill hit packets.</value>
+  </data>
+  <data name="CharacterMoveHandlerPlugIn_Name" xml:space="preserve">
+    <value>Character move handler (ENG)</value>
+  </data>
+  <data name="CharacterMoveHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler for walk packets.</value>
+  </data>
+  <data name="CharacterMoveHandlerPlugIn075_Name" xml:space="preserve">
+    <value>Character move handler (0.75)</value>
+  </data>
+  <data name="CharacterMoveHandlerPlugIn075_Description" xml:space="preserve">
+    <value>Packet handler for move packets, version 0.75.</value>
+  </data>
+  <data name="CharacterWalkHandlerPlugIn_Name" xml:space="preserve">
+    <value>Character walk handler</value>
+  </data>
+  <data name="CharacterWalkHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler for walk packets.</value>
+  </data>
+  <data name="CharacterWalkHandlerPlugIn075_Name" xml:space="preserve">
+    <value>Character walk handler</value>
+  </data>
+  <data name="CharacterWalkHandlerPlugIn075_Description" xml:space="preserve">
+    <value>Packet handler for walk packets.</value>
+  </data>
+  <data name="ChatMessageHandlerPlugIn_Name" xml:space="preserve">
+    <value>Chat Message Handler</value>
+  </data>
+  <data name="ChatMessageHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler for chat messages.</value>
+  </data>
+  <data name="CloseNpcDialogHandlerPlugIn_Name" xml:space="preserve">
+    <value>Close Npc Dialog Handler</value>
+  </data>
+  <data name="CloseNpcDialogHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler for close npc packets.</value>
+  </data>
+  <data name="EnterOnGatekeeperHandlerPlugIn_Name" xml:space="preserve">
+    <value>Enter On Gatekeeper Handler</value>
+  </data>
+  <data name="EnterOnGatekeeperHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for EnterOnGatekeeperRequest packets.</value>
+  </data>
+  <data name="EnterOnWerewolfHandlerPlugIn_Name" xml:space="preserve">
+    <value>Enter On Werewolf Handler</value>
+  </data>
+  <data name="EnterOnWerewolfHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for EnterOnWerewolfRequest packets.</value>
+  </data>
+  <data name="HitHandlerPlugIn_Name" xml:space="preserve">
+    <value>Hit Handler</value>
+  </data>
+  <data name="HitHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for hit packets.</value>
+  </data>
+  <data name="HitHandlerPlugIn075_Name" xml:space="preserve">
+    <value>HitHandlerPlugIn 0.75</value>
+  </data>
+  <data name="HitHandlerPlugIn075_Description" xml:space="preserve">
+    <value>Handler for hit packets.</value>
+  </data>
+  <data name="TalkNpcHandlerPlugIn_Name" xml:space="preserve">
+    <value>Talk Npc Handler</value>
+  </data>
+  <data name="TalkNpcHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for talk npc request packets.</value>
+  </data>
+  <data name="TalkNpcHandlerPlugIn075_Name" xml:space="preserve">
+    <value>Talk Npc Handler (075)</value>
+  </data>
+  <data name="TalkNpcHandlerPlugIn075_Description" xml:space="preserve">
+    <value>Handler for talk npc request packets.</value>
+  </data>
+  <data name="TargetedSkillHandlerPlugIn_Name" xml:space="preserve">
+    <value>Targeted Skill Handler</value>
+  </data>
+  <data name="TargetedSkillHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for targeted skill packets.</value>
+  </data>
+  <data name="TargetedSkillHandlerPlugIn075_Name" xml:space="preserve">
+    <value>Targeted Skill Handler (075)</value>
+  </data>
+  <data name="TargetedSkillHandlerPlugIn075_Description" xml:space="preserve">
+    <value>Handler for targeted skill packets for version 0.75</value>
+  </data>
+  <data name="TargetedSkillHandlerPlugIn095_Name" xml:space="preserve">
+    <value>Targeted Skill Handler (095)</value>
+  </data>
+  <data name="TargetedSkillHandlerPlugIn095_Description" xml:space="preserve">
+    <value>Handler for targeted skill packets for version 0.95.</value>
+  </data>
+  <data name="TeleportTargetHandlerPlugIn_Name" xml:space="preserve">
+    <value>Teleport Target Handler</value>
+  </data>
+  <data name="TeleportTargetHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for target teleport packets of the teleport ally skill.</value>
+  </data>
+  <data name="WarpGateHandler075PlugIn_Name" xml:space="preserve">
+    <value>Warp Gate Handler075</value>
+  </data>
+  <data name="WarpGateHandler075PlugIn_Description" xml:space="preserve">
+    <value>Handler for warp gate packets.</value>
+  </data>
+  <data name="WarpGateHandlerPlugIn_Name" xml:space="preserve">
+    <value>Warp Gate Handler</value>
+  </data>
+  <data name="WarpGateHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for warp gate packets.</value>
+  </data>
+  <data name="WarpHandlerPlugIn_Name" xml:space="preserve">
+    <value>Warp Handler</value>
+  </data>
+  <data name="WarpHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for warp request packets.</value>
+  </data>
+  <data name="WhisperedChatMessageHandlerPlugIn_Name" xml:space="preserve">
+    <value>Whisper Message Handler</value>
+  </data>
+  <data name="WhisperedChatMessageHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler for whispered chat messages.</value>
+  </data>
+  <data name="AppearanceSerializer_Name" xml:space="preserve">
+    <value>Default appearance serializer</value>
+  </data>
+  <data name="AppearanceSerializer_Description" xml:space="preserve">
+    <value>Default serializer for the appearance of a player. It will most likely only work correctly in season 6.</value>
+  </data>
+  <data name="AppearanceSerializer075_Name" xml:space="preserve">
+    <value>Appearance Serializer 0.75</value>
+  </data>
+  <data name="AppearanceSerializer075_Description" xml:space="preserve">
+    <value>Serializer for the appearance of a player, compatible with the client of version 0.75.</value>
+  </data>
+  <data name="AppearanceSerializer095_Name" xml:space="preserve">
+    <value>AppearanceSerializer095</value>
+  </data>
+  <data name="AppearanceSerializer095_Description" xml:space="preserve">
+    <value>Serializer for the appearance of a player, compatible with the client of version 0.95</value>
+  </data>
+  <data name="AppearanceSerializerExtended_Name" xml:space="preserve">
+    <value>Extended appearance serializer</value>
+  </data>
+  <data name="AppearanceSerializerExtended_Description" xml:space="preserve">
+    <value>Extended serializer for the appearance of a player.</value>
+  </data>
+  <data name="ChatViewPlugIn_Name" xml:space="preserve">
+    <value>Chat View PlugIn</value>
+  </data>
+  <data name="ChatViewPlugIn_Description" xml:space="preserve">
+    <value>View Plugin to send chat messages to the player</value>
+  </data>
+  <data name="ConsumeSpecialItemPlugIn_Name" xml:space="preserve">
+    <value>Consume Special Item</value>
+  </data>
+  <data name="ConsumeSpecialItemPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IConsumeSpecialItemPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ItemSerializer_Name" xml:space="preserve">
+    <value>Item Serializer</value>
+  </data>
+  <data name="ItemSerializer_Description" xml:space="preserve">
+    <value>The default item serializer. It's most likely only correct for season 6.</value>
+  </data>
+  <data name="ItemSerializer075_Name" xml:space="preserve">
+    <value>Item Serializer 0.75</value>
+  </data>
+  <data name="ItemSerializer075_Description" xml:space="preserve">
+    <value>The item serializer for game client version 0.75</value>
+  </data>
+  <data name="ItemSerializer095_Name" xml:space="preserve">
+    <value>ItemSerializer095</value>
+  </data>
+  <data name="ItemSerializer095_Description" xml:space="preserve">
+    <value>The item serializer for game client version 0.95</value>
+  </data>
+  <data name="ItemSerializerExtended_Name" xml:space="preserve">
+    <value>Item Serializer</value>
+  </data>
+  <data name="ItemSerializerExtended_Description" xml:space="preserve">
+    <value>The extended item serializer. It's most likely only correct for season 6.</value>
+  </data>
+  <data name="ShowMessagePlugIn_Name" xml:space="preserve">
+    <value>Show Message</value>
+  </data>
+  <data name="ShowMessagePlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowMessagePlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="CancelGuildCreationHandlerPlugIn_Name" xml:space="preserve">
+    <value>Cancel Guild Creation Handler</value>
+  </data>
+  <data name="CancelGuildCreationHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for CancelGuildCreation packets.</value>
+  </data>
+  <data name="GuildCreateHandlerPlugIn_Name" xml:space="preserve">
+    <value>Guild Create Handler</value>
+  </data>
+  <data name="GuildCreateHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for guild create packets.</value>
+  </data>
+  <data name="GuildCreateHandlerPlugIn075_Name" xml:space="preserve">
+    <value>Guild Create Handler (075)</value>
+  </data>
+  <data name="GuildCreateHandlerPlugIn075_Description" xml:space="preserve">
+    <value>Handler for guild create packets.</value>
+  </data>
+  <data name="GuildInfoRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Guild Info Request Handler</value>
+  </data>
+  <data name="GuildInfoRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for guild info request packets.</value>
+  </data>
+  <data name="GuildKickPlayerHandlerPlugIn_Name" xml:space="preserve">
+    <value>Guild Kick Player Handler</value>
+  </data>
+  <data name="GuildKickPlayerHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for guild player kick packets.</value>
+  </data>
+  <data name="GuildListRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Guild List Request Handler</value>
+  </data>
+  <data name="GuildListRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for guild list request packets.</value>
+  </data>
+  <data name="GuildMasterAnswerHandlerPlugIn_Name" xml:space="preserve">
+    <value>Guild Master Answer Handler</value>
+  </data>
+  <data name="GuildMasterAnswerHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for guild master answer packets.</value>
+  </data>
+  <data name="GuildRequestAnswerHandlerPlugIn_Name" xml:space="preserve">
+    <value>Guild Request Answer Handler</value>
+  </data>
+  <data name="GuildRequestAnswerHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for guild request answer packets.</value>
+  </data>
+  <data name="GuildRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Guild Request Handler</value>
+  </data>
+  <data name="GuildRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for guild requests.</value>
+  </data>
+  <data name="GuildWarResponseHandlerPlugIn_Name" xml:space="preserve">
+    <value>Guild War Response Handler</value>
+  </data>
+  <data name="GuildWarResponseHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for guild war response packets.</value>
+  </data>
+  <data name="BuyNpcItemHandlerPlugIn_Name" xml:space="preserve">
+    <value>Buy Npc Item Handler</value>
+  </data>
+  <data name="BuyNpcItemHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for npc item buy requests.</value>
+  </data>
+  <data name="ChaosMixHandlerPlugIn_Name" xml:space="preserve">
+    <value>Chaos Mix Handler</value>
+  </data>
+  <data name="ChaosMixHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for chaos mix packets.</value>
+  </data>
+  <data name="ConsumeItemHandlerPlugIn_Name" xml:space="preserve">
+    <value>Consume Item Handler</value>
+  </data>
+  <data name="ConsumeItemHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for item consume packets.</value>
+  </data>
+  <data name="ConsumeItemHandlerPlugIn075_Name" xml:space="preserve">
+    <value>Consume Item Handler (075)</value>
+  </data>
+  <data name="ConsumeItemHandlerPlugIn075_Description" xml:space="preserve">
+    <value>Handler for item consume packets of version 0.75</value>
+  </data>
+  <data name="DropItemHandlerPlugIn_Name" xml:space="preserve">
+    <value>Drop Item Handler</value>
+  </data>
+  <data name="DropItemHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for drop item packets.</value>
+  </data>
+  <data name="ItemMoveExtendedHandlerPlugIn_Name" xml:space="preserve">
+    <value>Item Move Extended Handler</value>
+  </data>
+  <data name="ItemMoveExtendedHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler for extended item move packets.</value>
+  </data>
+  <data name="ItemMoveHandlerPlugIn_Name" xml:space="preserve">
+    <value>Item Move Handler</value>
+  </data>
+  <data name="ItemMoveHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for item move packets.</value>
+  </data>
+  <data name="ItemRepairHandlerPlugIn_Name" xml:space="preserve">
+    <value>Item Repair Handler</value>
+  </data>
+  <data name="ItemRepairHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for item repair packets.</value>
+  </data>
+  <data name="JewelMixHandlerPlugIn_Name" xml:space="preserve">
+    <value>Jewel Mix Handler</value>
+  </data>
+  <data name="JewelMixHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for jewel mix packets.</value>
+  </data>
+  <data name="PickupItemHandlerPlugIn_Name" xml:space="preserve">
+    <value>Pickup Item Handler</value>
+  </data>
+  <data name="PickupItemHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for item pickup packets.</value>
+  </data>
+  <data name="PickupItemHandlerPlugIn075_Name" xml:space="preserve">
+    <value>PickupItemHandlerPlugIn 0.75</value>
+  </data>
+  <data name="PickupItemHandlerPlugIn075_Description" xml:space="preserve">
+    <value>Handler for item pickup packets for version 0.75.</value>
+  </data>
+  <data name="SellItemToNpcHandlerPlugIn_Name" xml:space="preserve">
+    <value>Sell Item To Npc Handler</value>
+  </data>
+  <data name="SellItemToNpcHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for item sale to npc packets.</value>
+  </data>
+  <data name="LogInHandlerPlugIn_Name" xml:space="preserve">
+    <value>Login</value>
+  </data>
+  <data name="LogInHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler for login packets.</value>
+  </data>
+  <data name="LogOutHandlerPlugIn_Name" xml:space="preserve">
+    <value>Logout handler</value>
+  </data>
+  <data name="LogOutHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for logout packets.</value>
+  </data>
+  <data name="AddFriendHandlerPlugIn_Name" xml:space="preserve">
+    <value>Add Friend Handler</value>
+  </data>
+  <data name="AddFriendHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for add friend packets.</value>
+  </data>
+  <data name="ChangeOnlineStateHandlerPlugIn_Name" xml:space="preserve">
+    <value>Change Online State Handler</value>
+  </data>
+  <data name="ChangeOnlineStateHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for online state change packets.</value>
+  </data>
+  <data name="ChatRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Chat Request Handler</value>
+  </data>
+  <data name="ChatRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for chat request packets.</value>
+  </data>
+  <data name="ChatRoomInvitationRequestPlugIn_Name" xml:space="preserve">
+    <value>Chat Room Invitation Request</value>
+  </data>
+  <data name="ChatRoomInvitationRequestPlugIn_Description" xml:space="preserve">
+    <value>Packet handler which handles chat room invitation requests, where a player invites additional players to an existing chat room.</value>
+  </data>
+  <data name="DeleteFriendHandlerPlugIn_Name" xml:space="preserve">
+    <value>Delete Friend Handler</value>
+  </data>
+  <data name="DeleteFriendHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for delete friend packets.</value>
+  </data>
+  <data name="FriendAddResponseHandlerPlugIn_Name" xml:space="preserve">
+    <value>Friend Add Response Handler</value>
+  </data>
+  <data name="FriendAddResponseHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for friend add response packets.</value>
+  </data>
+  <data name="LetterDeleteHandlerPlugIn_Name" xml:space="preserve">
+    <value>Letter Delete Handler</value>
+  </data>
+  <data name="LetterDeleteHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for letter delete packets.</value>
+  </data>
+  <data name="LetterReadRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Letter Read Request Handler</value>
+  </data>
+  <data name="LetterReadRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for letter read request packets.</value>
+  </data>
+  <data name="LetterSendHandlerPlugIn_Name" xml:space="preserve">
+    <value>Letter Send Handler</value>
+  </data>
+  <data name="LetterSendHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for letter send packets.</value>
+  </data>
+  <data name="BloodCastleEnterHandlerPlugIn_Name" xml:space="preserve">
+    <value>Blood Castle Enter Handler</value>
+  </data>
+  <data name="BloodCastleEnterHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for blood castle enter request packets.</value>
+  </data>
+  <data name="ChaosCastleEnterHandlerPlugIn_Name" xml:space="preserve">
+    <value>Chaos Castle Enter Handler</value>
+  </data>
+  <data name="ChaosCastleEnterHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for chaos castle enter request packets.</value>
+  </data>
+  <data name="DevilSquareEnterHandlerPlugIn_Name" xml:space="preserve">
+    <value>Devil Square Enter Handler</value>
+  </data>
+  <data name="DevilSquareEnterHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for devil square enter packets.</value>
+  </data>
+  <data name="MiniGameOpeningStateRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Mini Game Opening State Request Handler</value>
+  </data>
+  <data name="MiniGameOpeningStateRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for mini game opening state request packets.</value>
+  </data>
+  <data name="MuHelperSaveDataRequestHandlerPlugin_Name" xml:space="preserve">
+    <value>MuHelperSaveDataRequestHandlerPlugin</value>
+  </data>
+  <data name="MuHelperSaveDataRequestHandlerPlugin_Description" xml:space="preserve">
+    <value>Handler for mu bot data save request.</value>
+  </data>
+  <data name="MuHelperStatusChangeRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Mu Helper Status Change Request Handler</value>
+  </data>
+  <data name="MuHelperStatusChangeRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for MU Helper status change requests.</value>
+  </data>
+  <data name="PartyKickHandlerPlugIn_Name" xml:space="preserve">
+    <value>Party Kick Handler</value>
+  </data>
+  <data name="PartyKickHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for party kick packets.</value>
+  </data>
+  <data name="PartyListRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Party List Request Handler</value>
+  </data>
+  <data name="PartyListRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for party list request packets.</value>
+  </data>
+  <data name="PartyRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Party Request Handler</value>
+  </data>
+  <data name="PartyRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for party request packets.</value>
+  </data>
+  <data name="PartyResponseHandlerPlugIn_Name" xml:space="preserve">
+    <value>Party Response Handler</value>
+  </data>
+  <data name="PartyResponseHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for party response packets.</value>
+  </data>
+  <data name="PetCommandRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Pet Command Request Handler</value>
+  </data>
+  <data name="PetCommandRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for pet command request packets.</value>
+  </data>
+  <data name="PetInfoRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Pet Info Request Handler</value>
+  </data>
+  <data name="PetInfoRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for pet info request packets.</value>
+  </data>
+  <data name="StoreHandlerGroupPlugIn_Name" xml:space="preserve">
+    <value>Store Handler Group</value>
+  </data>
+  <data name="StoreHandlerGroupPlugIn_Description" xml:space="preserve">
+    <value>Handler for player store related packets.</value>
+  </data>
+  <data name="TradeAcceptHandlerPlugIn_Name" xml:space="preserve">
+    <value>Trade Accept Handler</value>
+  </data>
+  <data name="TradeAcceptHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet Handler which is called when a trade request gets answered by the player.</value>
+  </data>
+  <data name="TradeButtonHandlerPlugIn_Name" xml:space="preserve">
+    <value>Trade Button Handler</value>
+  </data>
+  <data name="TradeButtonHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the trade button packets.</value>
+  </data>
+  <data name="TradeCancelHandlerPlugIn_Name" xml:space="preserve">
+    <value>Trade Cancel Handler</value>
+  </data>
+  <data name="TradeCancelHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the trade cancel packets.</value>
+  </data>
+  <data name="TradeMoneyHandlerPlugIn_Name" xml:space="preserve">
+    <value>Trade Money Handler</value>
+  </data>
+  <data name="TradeMoneyHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the trade money packets.</value>
+  </data>
+  <data name="TradeRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Trade Request Handler</value>
+  </data>
+  <data name="TradeRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the trade request packets.</value>
+  </data>
+  <data name="VaultCloseHandlerPlugIn_Name" xml:space="preserve">
+    <value>Vault Close Handler</value>
+  </data>
+  <data name="VaultCloseHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for warehouse close packets.</value>
+  </data>
+  <data name="VaultMoneyHandlerPlugIn_Name" xml:space="preserve">
+    <value>Vault Money Handler</value>
+  </data>
+  <data name="VaultMoneyHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for warehouse money packets.</value>
+  </data>
+  <data name="AddExperienceExtendedPlugIn_Name" xml:space="preserve">
+    <value>Add Experience Extended</value>
+  </data>
+  <data name="AddExperienceExtendedPlugIn_Description" xml:space="preserve">
+    <value>The extended implementation of the IAddExperiencePlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="AddExperiencePlugIn_Name" xml:space="preserve">
+    <value>Add Experience</value>
+  </data>
+  <data name="AddExperiencePlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IAddExperiencePlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ApplyKeyConfigurationPlugIn_Name" xml:space="preserve">
+    <value>Apply Key Configuration</value>
+  </data>
+  <data name="ApplyKeyConfigurationPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IUpdateVaultMoneyPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="CharacterFocusedPlugIn_Name" xml:space="preserve">
+    <value>Character Focused</value>
+  </data>
+  <data name="CharacterFocusedPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the ICharacterFocusedPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="FruitConsumptionResultPlugIn_Name" xml:space="preserve">
+    <value>CharacterFocusedPlugIn</value>
+  </data>
+  <data name="FruitConsumptionResultPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IFruitConsumptionResponsePlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="MasterSkillLevelChangedPlugIn_Name" xml:space="preserve">
+    <value>Master Skill Level Changed</value>
+  </data>
+  <data name="MasterSkillLevelChangedPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IMasterSkillLevelChangedPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowCharacterCreationFailedPlugIn_Name" xml:space="preserve">
+    <value>Show Character Creation Failed</value>
+  </data>
+  <data name="ShowCharacterCreationFailedPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowCharacterCreationFailedPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowCharacterDeleteResponsePlugIn_Name" xml:space="preserve">
+    <value>Show Character Delete Response</value>
+  </data>
+  <data name="ShowCharacterDeleteResponsePlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowCharacterDeleteResponsePlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowCharacterListExtendedPlugIn_Name" xml:space="preserve">
+    <value>Show Character List Extended</value>
+  </data>
+  <data name="ShowCharacterListExtendedPlugIn_Description" xml:space="preserve">
+    <value>The extended implementation of the IShowCharacterListPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowCharacterListPlugIn_Name" xml:space="preserve">
+    <value>Show Character List</value>
+  </data>
+  <data name="ShowCharacterListPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowCharacterListPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowCharacterListPlugIn075_Name" xml:space="preserve">
+    <value>ShowCharacterListPlugIn v0.75</value>
+  </data>
+  <data name="ShowCharacterListPlugIn075_Description" xml:space="preserve">
+    <value>The implementation of the IShowCharacterListPlugIn which is forwarding everything to the game client with specific data packets for version 0.75.</value>
+  </data>
+  <data name="ShowCharacterListPlugIn095_Name" xml:space="preserve">
+    <value>Show Character List (095)</value>
+  </data>
+  <data name="ShowCharacterListPlugIn095_Description" xml:space="preserve">
+    <value>The implementation of the IShowCharacterListPlugIn which is forwarding everything to the game client with specific data packets for version 0.75.</value>
+  </data>
+  <data name="ShowCreatedCharacterPlugIn_Name" xml:space="preserve">
+    <value>Show Created Character</value>
+  </data>
+  <data name="ShowCreatedCharacterPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowCreatedCharacterPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowDialogPlugIn_Name" xml:space="preserve">
+    <value>Show Dialog</value>
+  </data>
+  <data name="ShowDialogPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowDialogPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowEffectPlugIn_Name" xml:space="preserve">
+    <value>Show Effect</value>
+  </data>
+  <data name="ShowEffectPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowEffectPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowItemDropEffectPlugIn_Name" xml:space="preserve">
+    <value>Show Item Drop Effect</value>
+  </data>
+  <data name="ShowItemDropEffectPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the ShowItemDropEffectPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="SkillListViewPlugIn_Name" xml:space="preserve">
+    <value>Skill List View</value>
+  </data>
+  <data name="SkillListViewPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the ISkillListViewPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="SkillListViewPlugIn075_Name" xml:space="preserve">
+    <value>Skill List View (075)</value>
+  </data>
+  <data name="SkillListViewPlugIn075_Description" xml:space="preserve">
+    <value>The implementation of the ISkillListViewPlugIn for version 0.75 which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="SkillListViewPlugIn095_Name" xml:space="preserve">
+    <value>Skill List View (095)</value>
+  </data>
+  <data name="SkillListViewPlugIn095_Description" xml:space="preserve">
+    <value>The implementation of the ISkillListViewPlugIn for version 0.95 which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="StatIncreaseResultExtendedPlugIn_Name" xml:space="preserve">
+    <value>StatIncreaseResultPlugIn</value>
+  </data>
+  <data name="StatIncreaseResultExtendedPlugIn_Description" xml:space="preserve">
+    <value>The extended implementation of the IStatIncreaseResultPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="StatIncreaseResultPlugIn_Name" xml:space="preserve">
+    <value>Stat Increase Result</value>
+  </data>
+  <data name="StatIncreaseResultPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IStatIncreaseResultPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="UpdateCharacterBaseStatsExtendedPlugIn_Name" xml:space="preserve">
+    <value>Update Character Base Stats Extended</value>
+  </data>
+  <data name="UpdateCharacterBaseStatsExtendedPlugIn_Description" xml:space="preserve">
+    <value>The extended implementation of the IUpdateCharacterBaseStatsPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="UpdateCharacterHeroStatePlugIn_Name" xml:space="preserve">
+    <value>Update Character Hero State</value>
+  </data>
+  <data name="UpdateCharacterHeroStatePlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IUpdateCharacterHeroStatePlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="UpdateCharacterStatsExtendedPlugIn_Name" xml:space="preserve">
+    <value>Update Character Stats Extended</value>
+  </data>
+  <data name="UpdateCharacterStatsExtendedPlugIn_Description" xml:space="preserve">
+    <value>The extended implementation of the IUpdateCharacterStatsPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="UpdateCharacterStatsPlugIn_Name" xml:space="preserve">
+    <value>Update Character Stats</value>
+  </data>
+  <data name="UpdateCharacterStatsPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IUpdateCharacterStatsPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="UpdateCharacterStatsPlugIn075_Name" xml:space="preserve">
+    <value>UpdateCharacterStatsPlugIn 0.75</value>
+  </data>
+  <data name="UpdateCharacterStatsPlugIn075_Description" xml:space="preserve">
+    <value>The default implementation of the IUpdateCharacterStatsPlugIn which is forwarding everything to the game client with specific data packets for version 0.75.</value>
+  </data>
+  <data name="UpdateCharacterStatsPlugIn097_Name" xml:space="preserve">
+    <value>Update Character Stats (097)</value>
+  </data>
+  <data name="UpdateCharacterStatsPlugIn097_Description" xml:space="preserve">
+    <value>The default implementation of the IUpdateCharacterStatsPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="UpdateLevelExtendedPlugIn_Name" xml:space="preserve">
+    <value>Update Level Extended</value>
+  </data>
+  <data name="UpdateLevelExtendedPlugIn_Description" xml:space="preserve">
+    <value>The extended implementation of the IUpdateLevelPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="UpdateLevelPlugIn_Name" xml:space="preserve">
+    <value>Update Level</value>
+  </data>
+  <data name="UpdateLevelPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IUpdateLevelPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="UpdateMasterSkillsPlugIn_Name" xml:space="preserve">
+    <value>Update Master Skills</value>
+  </data>
+  <data name="UpdateMasterSkillsPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IUpdateMasterSkillsPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="UpdateMasterStatsExtendedPlugIn_Name" xml:space="preserve">
+    <value>Update Master Stats Extended</value>
+  </data>
+  <data name="UpdateMasterStatsExtendedPlugIn_Description" xml:space="preserve">
+    <value>The extended implementation of the IUpdateMasterStatsPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="UpdateMasterStatsPlugIn_Name" xml:space="preserve">
+    <value>Update Master Stats</value>
+  </data>
+  <data name="UpdateMasterStatsPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IUpdateMasterStatsPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="UpdateStatsExtendedPlugIn_Name" xml:space="preserve">
+    <value>Update Stats Extended</value>
+  </data>
+  <data name="UpdateStatsExtendedPlugIn_Description" xml:space="preserve">
+    <value>The extended implementation of the IUpdateStatsPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="UpdateStatsPlugIn_Name" xml:space="preserve">
+    <value>Update Stats</value>
+  </data>
+  <data name="UpdateStatsPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IUpdateStatsPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="DuelEndedPlugIn_Name" xml:space="preserve">
+    <value>Duel Ended</value>
+  </data>
+  <data name="DuelEndedPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IDuelEndedPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="DuelFinishedPlugIn_Name" xml:space="preserve">
+    <value>Duel Finished</value>
+  </data>
+  <data name="DuelFinishedPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IDuelFinishedPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="DuelHealthUpdatePlugIn_Name" xml:space="preserve">
+    <value>Duel Health Update</value>
+  </data>
+  <data name="DuelHealthUpdatePlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IDuelHealthUpdatePlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="DuelSpectatorAddedPlugIn_Name" xml:space="preserve">
+    <value>Duel Spectator Added</value>
+  </data>
+  <data name="DuelSpectatorAddedPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IDuelSpectatorAddedPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="DuelSpectatorListUpdatePlugIn_Name" xml:space="preserve">
+    <value>Duel Spectator List Update</value>
+  </data>
+  <data name="DuelSpectatorListUpdatePlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IDuelSpectatorListUpdatePlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="DuelSpectatorRemovedPlugIn_Name" xml:space="preserve">
+    <value>Duel Spectator Removed</value>
+  </data>
+  <data name="DuelSpectatorRemovedPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IDuelSpectatorRemovedPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="DuelStatusUpdatePlugIn_Name" xml:space="preserve">
+    <value>Duel Status Update</value>
+  </data>
+  <data name="DuelStatusUpdatePlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IDuelStatusUpdatePlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="InitializeDuelPlugIn_Name" xml:space="preserve">
+    <value>Initialize Duel</value>
+  </data>
+  <data name="InitializeDuelPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IInitializeDuelPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowDuelRequestPlugIn_Name" xml:space="preserve">
+    <value>Show Duel Request</value>
+  </data>
+  <data name="ShowDuelRequestPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowDuelRequestPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowDuelRequestResultPlugIn_Name" xml:space="preserve">
+    <value>Show Duel Request Result</value>
+  </data>
+  <data name="ShowDuelRequestResultPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowDuelRequestResultPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowDuelScoreUpdatePlugIn_Name" xml:space="preserve">
+    <value>Show Duel Score Update</value>
+  </data>
+  <data name="ShowDuelScoreUpdatePlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowDuelScoreUpdatePlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="AssignPlayersToGuildPlugIn_Name" xml:space="preserve">
+    <value>Assign Players To Guild</value>
+  </data>
+  <data name="AssignPlayersToGuildPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IAssignPlayersToGuildPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="AssignPlayersToGuildPlugIn075_Name" xml:space="preserve">
+    <value>Assign Players To Guild (075)</value>
+  </data>
+  <data name="AssignPlayersToGuildPlugIn075_Description" xml:space="preserve">
+    <value>The default implementation of the IAssignPlayersToGuildPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="GuildJoinResponsePlugIn_Name" xml:space="preserve">
+    <value>Guild Join Response</value>
+  </data>
+  <data name="GuildJoinResponsePlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IGuildJoinResponsePlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="GuildKickResultPlugIn_Name" xml:space="preserve">
+    <value>Guild Kick Result</value>
+  </data>
+  <data name="GuildKickResultPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IGuildKickResultPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="GuildWarScoreUpdatePlugIn_Name" xml:space="preserve">
+    <value>Guild War Score Update</value>
+  </data>
+  <data name="GuildWarScoreUpdatePlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IGuildWarScoreUpdatePlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="PlayerLeftGuildPlugIn_Name" xml:space="preserve">
+    <value>Player Left Guild</value>
+  </data>
+  <data name="PlayerLeftGuildPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IPlayerLeftGuildPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowGuildCreateResultPlugIn_Name" xml:space="preserve">
+    <value>Show Guild Create Result</value>
+  </data>
+  <data name="ShowGuildCreateResultPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowGuildCreateResultPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowGuildCreationDialogPlugIn_Name" xml:space="preserve">
+    <value>Show Guild Creation Dialog</value>
+  </data>
+  <data name="ShowGuildCreationDialogPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowGuildCreationDialogPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowGuildInfoPlugIn_Name" xml:space="preserve">
+    <value>Show Guild Info</value>
+  </data>
+  <data name="ShowGuildInfoPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowGuildInfoPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowGuildJoinRequestPlugIn_Name" xml:space="preserve">
+    <value>Show Guild Join Request</value>
+  </data>
+  <data name="ShowGuildJoinRequestPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowGuildJoinRequestPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowGuildListPlugIn_Name" xml:space="preserve">
+    <value>Show Guild List</value>
+  </data>
+  <data name="ShowGuildListPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowGuildListPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowGuildListPlugIn075_Name" xml:space="preserve">
+    <value>Show Guild List (075)</value>
+  </data>
+  <data name="ShowGuildListPlugIn075_Description" xml:space="preserve">
+    <value>The default implementation of the IShowGuildListPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowGuildMasterDialogPlugIn_Name" xml:space="preserve">
+    <value>Show Guild Master Dialog</value>
+  </data>
+  <data name="ShowGuildMasterDialogPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowGuildMasterDialogPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowGuildWarDeclaredPlugIn_Name" xml:space="preserve">
+    <value>Show Guild War Declared</value>
+  </data>
+  <data name="ShowGuildWarDeclaredPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowGuildWarDeclaredPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowGuildWarRequestPlugIn_Name" xml:space="preserve">
+    <value>Show Guild War Request</value>
+  </data>
+  <data name="ShowGuildWarRequestPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowGuildWarRequestPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowGuildWarResultPlugIn_Name" xml:space="preserve">
+    <value>Show Guild War Result</value>
+  </data>
+  <data name="ShowGuildWarResultPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowGuildWarResultPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowShowGuildWarRequestResultPlugIn_Name" xml:space="preserve">
+    <value>Show Show Guild War Request Result</value>
+  </data>
+  <data name="ShowShowGuildWarRequestResultPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowShowGuildWarRequestResultPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="BuyNpcItemFailedPlugIn_Name" xml:space="preserve">
+    <value>Buy Npc Item Failed</value>
+  </data>
+  <data name="BuyNpcItemFailedPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IBuyNpcItemFailedPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ItemAppearPlugIn_Name" xml:space="preserve">
+    <value>Item Appear</value>
+  </data>
+  <data name="ItemAppearPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IItemAppearPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ItemDropResultPlugIn_Name" xml:space="preserve">
+    <value>Item Drop Result</value>
+  </data>
+  <data name="ItemDropResultPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IItemDropResultPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ItemDurabilityChangedPlugIn_Name" xml:space="preserve">
+    <value>Item Durability Changed</value>
+  </data>
+  <data name="ItemDurabilityChangedPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IItemDurabilityChangedPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ItemMovedPlugIn_Name" xml:space="preserve">
+    <value>Item Moved</value>
+  </data>
+  <data name="ItemMovedPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IItemMovedPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ItemMoveFailedPlugIn_Name" xml:space="preserve">
+    <value>Item Move Failed</value>
+  </data>
+  <data name="ItemMoveFailedPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IItemMoveFailedPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ItemPickUpFailedPlugIn_Name" xml:space="preserve">
+    <value>Item Pick Up Failed</value>
+  </data>
+  <data name="ItemPickUpFailedPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IItemPickUpFailedPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ItemPriceSetResponsePlugIn_Name" xml:space="preserve">
+    <value>Item Price Set Response</value>
+  </data>
+  <data name="ItemPriceSetResponsePlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IItemPriceSetResponsePlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ItemRemovedPlugIn_Name" xml:space="preserve">
+    <value>Item Removed</value>
+  </data>
+  <data name="ItemRemovedPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IItemRemovedPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ItemSoldByPlayerShopPlugIn_Name" xml:space="preserve">
+    <value>Item Sold By Player Shop</value>
+  </data>
+  <data name="ItemSoldByPlayerShopPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IItemSoldByPlayerShopPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ItemSoldToNpcPlugIn_Name" xml:space="preserve">
+    <value>Item Sold To Npc</value>
+  </data>
+  <data name="ItemSoldToNpcPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IItemSoldToNpcPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ItemUpgradedPlugIn_Name" xml:space="preserve">
+    <value>Item Upgraded</value>
+  </data>
+  <data name="ItemUpgradedPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IItemUpgradedPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="NpcItemBoughtPlugIn_Name" xml:space="preserve">
+    <value>Npc Item Bought</value>
+  </data>
+  <data name="NpcItemBoughtPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the INpcItemBoughtPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="PlayerShopBuyRequestResultExtendedPlugIn_Name" xml:space="preserve">
+    <value>Player Shop Buy Request Result Extended</value>
+  </data>
+  <data name="PlayerShopBuyRequestResultExtendedPlugIn_Description" xml:space="preserve">
+    <value>The extended implementation of the IPlayerShopBuyRequestResultPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="PlayerShopBuyRequestResultPlugIn_Name" xml:space="preserve">
+    <value>Player Shop Buy Request Result</value>
+  </data>
+  <data name="PlayerShopBuyRequestResultPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IPlayerShopBuyRequestResultPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="RequestedItemConsumptionFailedExtendedPlugIn_Name" xml:space="preserve">
+    <value>Requested Item Consumption Failed Extended</value>
+  </data>
+  <data name="RequestedItemConsumptionFailedExtendedPlugIn_Description" xml:space="preserve">
+    <value>The extended implementation of the IRequestedItemConsumptionFailedPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="RequestedItemConsumptionFailedPlugIn_Name" xml:space="preserve">
+    <value>Requested Item Consumption Failed</value>
+  </data>
+  <data name="RequestedItemConsumptionFailedPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IRequestedItemConsumptionFailedPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="UpdateInventoryListPlugIn_Name" xml:space="preserve">
+    <value>Update Inventory List</value>
+  </data>
+  <data name="UpdateInventoryListPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IUpdateInventoryListPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="UpdateMoneyPlugIn_Name" xml:space="preserve">
+    <value>Update Money</value>
+  </data>
+  <data name="UpdateMoneyPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IUpdateMoneyPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="LogoutPlugIn_Name" xml:space="preserve">
+    <value>Logout</value>
+  </data>
+  <data name="LogoutPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the ILogoutPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowLoginResultPlugIn_Name" xml:space="preserve">
+    <value>Show Login Result</value>
+  </data>
+  <data name="ShowLoginResultPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowLoginResultPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowLoginWindowPlugIn_Name" xml:space="preserve">
+    <value>Show Login Window</value>
+  </data>
+  <data name="ShowLoginWindowPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowLoginWindowPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="AddToLetterListPlugIn_Name" xml:space="preserve">
+    <value>Add To Letter List</value>
+  </data>
+  <data name="AddToLetterListPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IAddToLetterListPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ChatRoomCreatedPlugIn_Name" xml:space="preserve">
+    <value>Chat Room Created</value>
+  </data>
+  <data name="ChatRoomCreatedPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IChatRoomCreatedPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="FriendAddedPlugIn_Name" xml:space="preserve">
+    <value>Friend Added</value>
+  </data>
+  <data name="FriendAddedPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IFriendAddedPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="FriendDeletedPlugIn_Name" xml:space="preserve">
+    <value>Friend Deleted</value>
+  </data>
+  <data name="FriendDeletedPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IFriendDeletedPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="FriendStateUpdatePlugIn_Name" xml:space="preserve">
+    <value>Friend State Update</value>
+  </data>
+  <data name="FriendStateUpdatePlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IFriendStateUpdatePlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="InitializeMessengerPlugIn_Name" xml:space="preserve">
+    <value>Initialize Messenger</value>
+  </data>
+  <data name="InitializeMessengerPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IInitializeMessengerPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="LetterDeletedPlugIn_Name" xml:space="preserve">
+    <value>Letter Deleted</value>
+  </data>
+  <data name="LetterDeletedPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the ILetterDeletedPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="LetterSendResultPlugIn_Name" xml:space="preserve">
+    <value>Letter Send Result</value>
+  </data>
+  <data name="LetterSendResultPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the ILetterSendResultPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowFriendInvitationResultPlugIn_Name" xml:space="preserve">
+    <value>Show Friend Invitation Result</value>
+  </data>
+  <data name="ShowFriendInvitationResultPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowFriendInvitationResultPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowFriendRequestPlugIn_Name" xml:space="preserve">
+    <value>Show Friend Request</value>
+  </data>
+  <data name="ShowFriendRequestPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowFriendRequestPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowLetterExtendedPlugIn_Name" xml:space="preserve">
+    <value>Show Letter Extended</value>
+  </data>
+  <data name="ShowLetterExtendedPlugIn_Description" xml:space="preserve">
+    <value>The extended implementation of the IShowLetterPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowLetterPlugIn_Name" xml:space="preserve">
+    <value>Show Letter</value>
+  </data>
+  <data name="ShowLetterPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowLetterPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="BloodCastleScoreTableViewPlugin_Name" xml:space="preserve">
+    <value>BloodCastleScoreTableViewPlugin</value>
+  </data>
+  <data name="BloodCastleScoreTableViewPlugin_Description" xml:space="preserve">
+    <value>The default implementation of the IBloodCastleScoreTableViewPlugin which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="BloodCastleStateViewPlugIn_Name" xml:space="preserve">
+    <value>Blood Castle State View</value>
+  </data>
+  <data name="BloodCastleStateViewPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IBloodCastleStateViewPlugin which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ChangeTerrainAttributesViewPlugIn_Name" xml:space="preserve">
+    <value>Change Terrain Attributes View</value>
+  </data>
+  <data name="ChangeTerrainAttributesViewPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IChangeTerrainAttributesViewPlugin which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ChaosCastleStateViewPlugIn_Name" xml:space="preserve">
+    <value>Chaos Castle State View</value>
+  </data>
+  <data name="ChaosCastleStateViewPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IChaosCastleStateViewPlugin which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="MiniGameScoreTableViewPlugin_Name" xml:space="preserve">
+    <value>MiniGameScoreTableViewPlugin</value>
+  </data>
+  <data name="MiniGameScoreTableViewPlugin_Description" xml:space="preserve">
+    <value>The default implementation of the IMiniGameScoreTableViewPlugin which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowMiniGameEnterResultViewPlugIn_Name" xml:space="preserve">
+    <value>Show Mini Game Enter Result View</value>
+  </data>
+  <data name="ShowMiniGameEnterResultViewPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowMiniGameEnterResultPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowMiniGameOpeningStateViewPlugIn_Name" xml:space="preserve">
+    <value>Show Mini Game Opening State View</value>
+  </data>
+  <data name="ShowMiniGameOpeningStateViewPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowMiniGameOpeningStatePlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="UpdateMiniGameStateViewViewPlugIn_Name" xml:space="preserve">
+    <value>Update Mini Game State View View</value>
+  </data>
+  <data name="UpdateMiniGameStateViewViewPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IUpdateMiniGameStateViewPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="MuHelperConfigurationUpdatePlugIn_Name" xml:space="preserve">
+    <value>Mu Helper Configuration Update</value>
+  </data>
+  <data name="MuHelperConfigurationUpdatePlugIn_Description" xml:space="preserve">
+    <value>Sends the new MU Helper status to the client.</value>
+  </data>
+  <data name="MuHelperStatusUpdatePlugIn_Name" xml:space="preserve">
+    <value>Mu Helper Status Update</value>
+  </data>
+  <data name="MuHelperStatusUpdatePlugIn_Description" xml:space="preserve">
+    <value>Sends the MU Helper status update to the client.</value>
+  </data>
+  <data name="NpcDialogClosedPlugIn075_Name" xml:space="preserve">
+    <value>Npc Dialog Closed (075)</value>
+  </data>
+  <data name="NpcDialogClosedPlugIn075_Description" xml:space="preserve">
+    <value>The default implementation of the INpcDialogClosedPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="OpenNpcWindowPlugIn_Name" xml:space="preserve">
+    <value>Open Npc Window</value>
+  </data>
+  <data name="OpenNpcWindowPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IOpenNpcWindowPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowItemCraftingResultPlugIn_Name" xml:space="preserve">
+    <value>Show Item Crafting Result</value>
+  </data>
+  <data name="ShowItemCraftingResultPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowItemCraftingResultPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowMerchantStoreItemListPlugIn_Name" xml:space="preserve">
+    <value>Show Merchant Store Item List</value>
+  </data>
+  <data name="ShowMerchantStoreItemListPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowMerchantStoreItemListPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowMessageOfObjectPlugIn_Name" xml:space="preserve">
+    <value>Show Message Of Object</value>
+  </data>
+  <data name="ShowMessageOfObjectPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowMessageOfObjectPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="PartyHealthViewPlugIn_Name" xml:space="preserve">
+    <value>Party View</value>
+  </data>
+  <data name="PartyHealthViewPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the party view which is forwarding everything to the game client which specific data packets.</value>
+  </data>
+  <data name="PartyMemberRemovedPlugIn_Name" xml:space="preserve">
+    <value>Party Member Removed</value>
+  </data>
+  <data name="PartyMemberRemovedPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IPartyMemberRemovedPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowPartyRequestPlugIn_Name" xml:space="preserve">
+    <value>Show Party Request</value>
+  </data>
+  <data name="ShowPartyRequestPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowPartyRequestPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="UpdatePartyListPlugIn_Name" xml:space="preserve">
+    <value>Update Party List</value>
+  </data>
+  <data name="UpdatePartyListPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IUpdatePartyListPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="UpdatePartyListPlugIn075_Name" xml:space="preserve">
+    <value>Update Party List (075)</value>
+  </data>
+  <data name="UpdatePartyListPlugIn075_Description" xml:space="preserve">
+    <value>The default implementation of the IUpdatePartyListPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="PetAttackViewPlugIn_Name" xml:space="preserve">
+    <value>Pet Attack View</value>
+  </data>
+  <data name="PetAttackViewPlugIn_Description" xml:space="preserve">
+    <value>View plugin to show pet attacks.</value>
+  </data>
+  <data name="PetBehaviourChangedViewPlugIn_Name" xml:space="preserve">
+    <value>Pet Behaviour Changed View</value>
+  </data>
+  <data name="PetBehaviourChangedViewPlugIn_Description" xml:space="preserve">
+    <value>View plugin to signal a changed pet behaviour.</value>
+  </data>
+  <data name="PetInfoViewPlugIn_Name" xml:space="preserve">
+    <value>Pet Info View</value>
+  </data>
+  <data name="PetInfoViewPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IPetInfoViewPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="PlayerShopClosedPlugIn_Name" xml:space="preserve">
+    <value>Player Shop Closed</value>
+  </data>
+  <data name="PlayerShopClosedPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IPlayerShopClosedPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="PlayerShopOpenedPlugIn_Name" xml:space="preserve">
+    <value>Player Shop Opened</value>
+  </data>
+  <data name="PlayerShopOpenedPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IPlayerShopOpenedPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowShopItemListExtendedPlugIn_Name" xml:space="preserve">
+    <value>Show Shop Item List Extended</value>
+  </data>
+  <data name="ShowShopItemListExtendedPlugIn_Description" xml:space="preserve">
+    <value>The extended implementation of the IShowShopItemListPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowShopItemListPlugIn_Name" xml:space="preserve">
+    <value>Show Shop Item List</value>
+  </data>
+  <data name="ShowShopItemListPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowShopItemListPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowShopsOfPlayersPlugIn_Name" xml:space="preserve">
+    <value>Show Shops Of Players</value>
+  </data>
+  <data name="ShowShopsOfPlayersPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowShopsOfPlayersPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="CurrentlyActiveQuestsPlugIn_Name" xml:space="preserve">
+    <value>Quest - Currently Active Quests</value>
+  </data>
+  <data name="CurrentlyActiveQuestsPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the ICurrentlyActiveQuestsPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="LegacyQuestRewardPlugIn_Name" xml:space="preserve">
+    <value>Quest - Reward</value>
+  </data>
+  <data name="LegacyQuestRewardPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the ILegacyQuestRewardPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="LegacyQuestStateDialogPlugIn_Name" xml:space="preserve">
+    <value>Quest - Status Dialog</value>
+  </data>
+  <data name="LegacyQuestStateDialogPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the ILegacyQuestStateDialogPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="QuestCancelledPlugIn_Name" xml:space="preserve">
+    <value>Quest - Cancelled</value>
+  </data>
+  <data name="QuestCancelledPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IQuestCancelledPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="QuestCompletionResponsePlugIn_Name" xml:space="preserve">
+    <value>Quest - Completion Response</value>
+  </data>
+  <data name="QuestCompletionResponsePlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IQuestCompletionResponsePlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="QuestEventResponsePlugIn_Name" xml:space="preserve">
+    <value>Quest - Event Quests Response</value>
+  </data>
+  <data name="QuestEventResponsePlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IQuestEventResponsePlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="QuestProgressExtendedPlugIn_Name" xml:space="preserve">
+    <value>Quest Progress Extended</value>
+  </data>
+  <data name="QuestProgressExtendedPlugIn_Description" xml:space="preserve">
+    <value>The extended implementation of the IQuestProgressPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="QuestProgressPlugIn_Name" xml:space="preserve">
+    <value>Quest Progress</value>
+  </data>
+  <data name="QuestProgressPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IQuestProgressPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="QuestStartedPlugIn_Name" xml:space="preserve">
+    <value>Quest - Started</value>
+  </data>
+  <data name="QuestStartedPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IQuestStartedPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="QuestStateResponseExtendedPlugIn_Name" xml:space="preserve">
+    <value>Quest State Response Extended</value>
+  </data>
+  <data name="QuestStateResponseExtendedPlugIn_Description" xml:space="preserve">
+    <value>The extended implementation of the IQuestStateResponsePlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="QuestStateResponsePlugIn_Name" xml:space="preserve">
+    <value>Quest - State response</value>
+  </data>
+  <data name="QuestStateResponsePlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IQuestStateResponsePlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="QuestStepInfoPlugIn_Name" xml:space="preserve">
+    <value>Quest - Step Info</value>
+  </data>
+  <data name="QuestStepInfoPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IQuestStepInfoPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowAvailableQuestsPlugIn_Name" xml:space="preserve">
+    <value>Quest - Show available quests</value>
+  </data>
+  <data name="ShowAvailableQuestsPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowAvailableQuestsPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ChangeTradeButtonStatePlugIn_Name" xml:space="preserve">
+    <value>Change Trade Button State</value>
+  </data>
+  <data name="ChangeTradeButtonStatePlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IChangeTradeButtonStatePlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="RequestedTradeMoneyHasBeenSetPlugIn_Name" xml:space="preserve">
+    <value>Requested Trade Money Has Been Set</value>
+  </data>
+  <data name="RequestedTradeMoneyHasBeenSetPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IRequestedTradeMoneyHasBeenSetPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="SetTradeMoneyPlugIn_Name" xml:space="preserve">
+    <value>Set Trade Money</value>
+  </data>
+  <data name="SetTradeMoneyPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the ISetTradeMoneyPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowTradeRequestAnswerPlugIn_Name" xml:space="preserve">
+    <value>Show Trade Request Answer</value>
+  </data>
+  <data name="ShowTradeRequestAnswerPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowTradeRequestAnswerPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowTradeRequestPlugIn_Name" xml:space="preserve">
+    <value>Show Trade Request</value>
+  </data>
+  <data name="ShowTradeRequestPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowTradeRequestPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="TradeFinishedPlugIn_Name" xml:space="preserve">
+    <value>Trade Finished</value>
+  </data>
+  <data name="TradeFinishedPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the ITradeFinishedPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="TradeItemAppearPlugIn_Name" xml:space="preserve">
+    <value>Trade Item Appear</value>
+  </data>
+  <data name="TradeItemAppearPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the ITradeItemAppearPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="TradeItemDisappearPlugIn_Name" xml:space="preserve">
+    <value>Trade Item Disappear</value>
+  </data>
+  <data name="TradeItemDisappearPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the ITradeItemDisappearPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="CloseVaultPlugIn_Name" xml:space="preserve">
+    <value>Close Vault</value>
+  </data>
+  <data name="CloseVaultPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the ICloseVaultPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowVaultLockChangeResponsePlugIn_Name" xml:space="preserve">
+    <value>Show Vault Lock Change Response</value>
+  </data>
+  <data name="ShowVaultLockChangeResponsePlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowVaultLockChangeResponse which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowVaultPlugIn_Name" xml:space="preserve">
+    <value>Show Vault</value>
+  </data>
+  <data name="ShowVaultPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowVaultPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="UpdateVaultMoneyPlugIn_Name" xml:space="preserve">
+    <value>Update Vault Money</value>
+  </data>
+  <data name="UpdateVaultMoneyPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IUpdateVaultMoneyPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="UpdateVaultStatePlugIn_Name" xml:space="preserve">
+    <value>Update Vault State</value>
+  </data>
+  <data name="UpdateVaultStatePlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IUpdateVaultStatePlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="AppearanceChangedPlugIn_Name" xml:space="preserve">
+    <value>Appearance changed</value>
+  </data>
+  <data name="AppearanceChangedPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IAppearanceChangedPlugIn which is forwarding appearance changes of other players to the game client with specific data packets.</value>
+  </data>
+  <data name="DeActivateMagicEffectPlugIn_Name" xml:space="preserve">
+    <value>De &amp; ActivateMagicEffectPlugIn</value>
+  </data>
+  <data name="DeActivateMagicEffectPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IActivateMagicEffectPlugIn and IDeactivateMagicEffectPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="DeActivateMagicEffectPlugIn075_Name" xml:space="preserve">
+    <value>De Activate Magic Effect (075)</value>
+  </data>
+  <data name="DeActivateMagicEffectPlugIn075_Description" xml:space="preserve">
+    <value>The default implementation of the IActivateMagicEffectPlugIn and IDeactivateMagicEffectPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="DroppedItemsDisappearedPlugIn_Name" xml:space="preserve">
+    <value>Dropped Items Disappeared</value>
+  </data>
+  <data name="DroppedItemsDisappearedPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IDroppedItemsDisappearedPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="MapChangePlugIn_Name" xml:space="preserve">
+    <value>Map Change</value>
+  </data>
+  <data name="MapChangePlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IMapChangePlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="MapChangePlugIn075_Name" xml:space="preserve">
+    <value>Map Change (075)</value>
+  </data>
+  <data name="MapChangePlugIn075_Description" xml:space="preserve">
+    <value>The default implementation of the IMapChangePlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="MapEventStateUpdatePlugIn_Name" xml:space="preserve">
+    <value>Map Event State Update</value>
+  </data>
+  <data name="MapEventStateUpdatePlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IMapEventStateUpdatePlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="NewNpcsInScopePlugIn_Name" xml:space="preserve">
+    <value>NPCs in scope PlugIn</value>
+  </data>
+  <data name="NewNpcsInScopePlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the INewNpcsInScopePlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="NewNpcsInScopePlugIn075_Name" xml:space="preserve">
+    <value>NPCs in scope PlugIn 0.75</value>
+  </data>
+  <data name="NewNpcsInScopePlugIn075_Description" xml:space="preserve">
+    <value>The default implementation of the INewNpcsInScopePlugIn which is forwarding everything to the game client with specific data packets for version 0.75.</value>
+  </data>
+  <data name="NewNpcsInScopePlugIn095_Name" xml:space="preserve">
+    <value>New Npcs In Scope (095)</value>
+  </data>
+  <data name="NewNpcsInScopePlugIn095_Description" xml:space="preserve">
+    <value>The default implementation of the INewNpcsInScopePlugIn which is forwarding everything to the game client with specific data packets for version 0.75.</value>
+  </data>
+  <data name="NewPlayersInScopeExtendedPlugIn_Name" xml:space="preserve">
+    <value>New Players In Scope Extended</value>
+  </data>
+  <data name="NewPlayersInScopeExtendedPlugIn_Description" xml:space="preserve">
+    <value>The extended implementation of the INewPlayersInScopePlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="NewPlayersInScopePlugIn_Name" xml:space="preserve">
+    <value>New Players In Scope</value>
+  </data>
+  <data name="NewPlayersInScopePlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the INewPlayersInScopePlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="NewPlayersInScopePlugIn075_Name" xml:space="preserve">
+    <value>New Players In Scope (075)</value>
+  </data>
+  <data name="NewPlayersInScopePlugIn075_Description" xml:space="preserve">
+    <value>The default implementation of the INewPlayersInScopePlugIn which is forwarding everything to the game client with specific data packets for version 0.75.</value>
+  </data>
+  <data name="NewPlayersInScopePlugIn095_Name" xml:space="preserve">
+    <value>New Players In Scope (095)</value>
+  </data>
+  <data name="NewPlayersInScopePlugIn095_Description" xml:space="preserve">
+    <value>The default implementation of the INewPlayersInScopePlugIn which is forwarding everything to the game client with specific data packets for version 0.75.</value>
+  </data>
+  <data name="ObjectGotKilledPlugIn_Name" xml:space="preserve">
+    <value>Object Got Killed</value>
+  </data>
+  <data name="ObjectGotKilledPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IObjectGotKilledPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ObjectMovedPlugIn_Name" xml:space="preserve">
+    <value>Object Moved</value>
+  </data>
+  <data name="ObjectMovedPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IObjectMovedPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ObjectMovedPlugIn075_Name" xml:space="preserve">
+    <value>ObjectMovedPlugIn 0.75</value>
+  </data>
+  <data name="ObjectMovedPlugIn075_Description" xml:space="preserve">
+    <value>The default implementation of the IObjectMovedPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ObjectMovedPlugInExtended_Name" xml:space="preserve">
+    <value>ObjectMovedPlugInExtended</value>
+  </data>
+  <data name="ObjectMovedPlugInExtended_Description" xml:space="preserve">
+    <value>The default implementation of the IObjectMovedPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ObjectsOutOfScopePlugIn_Name" xml:space="preserve">
+    <value>Objects Out Of Scope</value>
+  </data>
+  <data name="ObjectsOutOfScopePlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IObjectsOutOfScopePlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="RespawnAfterDeathExtendedPlugIn_Name" xml:space="preserve">
+    <value>Respawn After Death Extended</value>
+  </data>
+  <data name="RespawnAfterDeathExtendedPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IRespawnAfterDeathPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="RespawnAfterDeathPlugIn_Name" xml:space="preserve">
+    <value>Respawn After Death</value>
+  </data>
+  <data name="RespawnAfterDeathPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IRespawnAfterDeathPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="RespawnAfterDeathPlugIn075_Name" xml:space="preserve">
+    <value>Respawn After Death (075)</value>
+  </data>
+  <data name="RespawnAfterDeathPlugIn075_Description" xml:space="preserve">
+    <value>The default implementation of the IRespawnAfterDeathPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="RespawnAfterDeathPlugIn095_Name" xml:space="preserve">
+    <value>Respawn After Death (095)</value>
+  </data>
+  <data name="RespawnAfterDeathPlugIn095_Description" xml:space="preserve">
+    <value>The default implementation of the IRespawnAfterDeathPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowAnimationPlugIn_Name" xml:space="preserve">
+    <value>Show Animation</value>
+  </data>
+  <data name="ShowAnimationPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowAnimationPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowAnimationPlugIn075_Name" xml:space="preserve">
+    <value>Show Animation (075)</value>
+  </data>
+  <data name="ShowAnimationPlugIn075_Description" xml:space="preserve">
+    <value>The default implementation of the IShowAnimationPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowAreaSkillAnimationPlugIn_Name" xml:space="preserve">
+    <value>Show Area Skill Animation</value>
+  </data>
+  <data name="ShowAreaSkillAnimationPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowAreaSkillAnimationPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowAreaSkillAnimationPlugIn075_Name" xml:space="preserve">
+    <value>Show Area Skill Animation (075)</value>
+  </data>
+  <data name="ShowAreaSkillAnimationPlugIn075_Description" xml:space="preserve">
+    <value>The default implementation of the IShowAreaSkillAnimationPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowAreaSkillAnimationPlugIn095_Name" xml:space="preserve">
+    <value>Show Area Skill Animation (095)</value>
+  </data>
+  <data name="ShowAreaSkillAnimationPlugIn095_Description" xml:space="preserve">
+    <value>The default implementation of the IShowAreaSkillAnimationPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowChainLightningPlugIn_Name" xml:space="preserve">
+    <value>Show Chain Lightning</value>
+  </data>
+  <data name="ShowChainLightningPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowChainLightningPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowDroppedItemsPlugIn_Name" xml:space="preserve">
+    <value>Show Dropped Items</value>
+  </data>
+  <data name="ShowDroppedItemsPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowDroppedItemsPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowHitExtendedPlugIn_Name" xml:space="preserve">
+    <value>Show Hit Extended</value>
+  </data>
+  <data name="ShowHitExtendedPlugIn_Description" xml:space="preserve">
+    <value>The extended implementation of the IShowHitPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowHitPlugIn_Name" xml:space="preserve">
+    <value>Show Hit</value>
+  </data>
+  <data name="ShowHitPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowHitPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowMoneyDrop075_Name" xml:space="preserve">
+    <value>ShowMoneyDrop 0.75</value>
+  </data>
+  <data name="ShowMoneyDrop075_Description" xml:space="preserve">
+    <value>The default implementation of the IShowMoneyDropPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowMoneyDropExtendedPlugIn_Name" xml:space="preserve">
+    <value>Show Money Drop Extended</value>
+  </data>
+  <data name="ShowMoneyDropExtendedPlugIn_Description" xml:space="preserve">
+    <value>The extended implementation of the IShowMoneyDropPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowMoneyDropPlugIn_Name" xml:space="preserve">
+    <value>Show Money Drop</value>
+  </data>
+  <data name="ShowMoneyDropPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowMoneyDropPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowRageAttackPlugIn_Name" xml:space="preserve">
+    <value>Show Rage Attack</value>
+  </data>
+  <data name="ShowRageAttackPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowRageAttackPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowRageAttackRangePlugIn_Name" xml:space="preserve">
+    <value>Show Rage Attack Range</value>
+  </data>
+  <data name="ShowRageAttackRangePlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowRageAttackRangePlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowSkillAnimationPlugIn_Name" xml:space="preserve">
+    <value>Show Skill Animation</value>
+  </data>
+  <data name="ShowSkillAnimationPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowSkillAnimationPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowSkillAnimationPlugIn075_Name" xml:space="preserve">
+    <value>Show Skill Animation (075)</value>
+  </data>
+  <data name="ShowSkillAnimationPlugIn075_Description" xml:space="preserve">
+    <value>The default implementation of the IShowSkillAnimationPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowSkillAnimationPlugIn095_Name" xml:space="preserve">
+    <value>Show Skill Animation (095)</value>
+  </data>
+  <data name="ShowSkillAnimationPlugIn095_Description" xml:space="preserve">
+    <value>The default implementation of the IShowSkillAnimationPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="SkillStageUpdatePlugInPlugIn_Name" xml:space="preserve">
+    <value>Skill Stage Update Plug In</value>
+  </data>
+  <data name="SkillStageUpdatePlugInPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowSkillStageUpdate which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="TeleportPlugIn_Name" xml:space="preserve">
+    <value>Teleport</value>
+  </data>
+  <data name="TeleportPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the ITeleportPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="TeleportPlugIn075_Name" xml:space="preserve">
+    <value>Teleport (075)</value>
+  </data>
+  <data name="TeleportPlugIn075_Description" xml:space="preserve">
+    <value>The default implementation of the ITeleportPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="UpdateRotationPlugIn_Name" xml:space="preserve">
+    <value>Update Rotation</value>
+  </data>
+  <data name="UpdateRotationPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IUpdateRotationPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="WeatherStatusUpdatePlugIn_Name" xml:space="preserve">
+    <value>Weather status update</value>
+  </data>
+  <data name="WeatherStatusUpdatePlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IWeatherStatusUpdatePlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="CraftingDialogCloseRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Crafting Dialog Close Request Handler</value>
+  </data>
+  <data name="CraftingDialogCloseRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for packets which should close the crafting dialog (Chaos Machine).</value>
+  </data>
+  <data name="NpcActionGroupHandlerPlugIn_Name" xml:space="preserve">
+    <value>NPC Action Packet Handler</value>
+  </data>
+  <data name="NpcActionGroupHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler for npc action packets (0xD0 identifier).</value>
+  </data>
+  <data name="RageSkillAttackHandlerPlugIn_Name" xml:space="preserve">
+    <value>Rage Skill Attack Handler</value>
+  </data>
+  <data name="RageSkillAttackHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for rage fighter area skill attack packets (dark side).</value>
+  </data>
+  <data name="RageSkillAttackRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Rage Skill Attack Request Handler</value>
+  </data>
+  <data name="RageSkillAttackRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for rage fighter area skill attack packets (dark side).</value>
+  </data>
+  <data name="CharacterAddMasterPointPacketHandlerPlugIn_Name" xml:space="preserve">
+    <value>Character - Add Master Skill Points</value>
+  </data>
+  <data name="CharacterAddMasterPointPacketHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler for character master skill point adding (0xF3, 0x52 identifier).</value>
+  </data>
+  <data name="CharacterClientReadyPacketHandlerPlugIn_Name" xml:space="preserve">
+    <value>Character - Client ready</value>
+  </data>
+  <data name="CharacterClientReadyPacketHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler for &apos;client ready&apos; packets (0xF3, 0x12 identifier) which are sent after map changes.</value>
+  </data>
+  <data name="CharacterCreatePacketHandlerPlugIn_Name" xml:space="preserve">
+    <value>Character - Create</value>
+  </data>
+  <data name="CharacterCreatePacketHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler for character creation packets (0xF3, 0x01 identifier).</value>
+  </data>
+  <data name="CharacterDeletePacketHandlerPlugIn_Name" xml:space="preserve">
+    <value>Character - Delete</value>
+  </data>
+  <data name="CharacterDeletePacketHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler for character delete packets (0xF3, 0x02 identifier).</value>
+  </data>
+  <data name="CharacterFocusPacketHandlerPlugIn_Name" xml:space="preserve">
+    <value>Character - Focus</value>
+  </data>
+  <data name="CharacterFocusPacketHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler for character focus packets (0xF3, 0x15 identifier).</value>
+  </data>
+  <data name="CharacterGroupHandlerPlugIn_Name" xml:space="preserve">
+    <value>Character Packet Handler</value>
+  </data>
+  <data name="CharacterGroupHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler for character packets (0xF3 identifier).</value>
+  </data>
+  <data name="CharacterKeyConfigurationPacketHandlerPlugIn_Name" xml:space="preserve">
+    <value>Character - Key Configuration</value>
+  </data>
+  <data name="CharacterKeyConfigurationPacketHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler for character key configuration packets (0xF3, 0x30 identifier).</value>
+  </data>
+  <data name="CharacterListRequestPacketHandlerPlugIn_Name" xml:space="preserve">
+    <value>Character - Request List</value>
+  </data>
+  <data name="CharacterListRequestPacketHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler for character list request packets (0xF3, 0x00 identifier).</value>
+  </data>
+  <data name="CharacterSelectPacketHandlerPlugIn_Name" xml:space="preserve">
+    <value>Character - Select</value>
+  </data>
+  <data name="CharacterSelectPacketHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler for character select packets (0xF3, 0x03 identifier).</value>
+  </data>
+  <data name="CharacterStatIncreasePacketHandlerPlugIn_Name" xml:space="preserve">
+    <value>Character - Stat increase </value>
+  </data>
+  <data name="CharacterStatIncreasePacketHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler for character stat increase packets (0xF3, 0x06 identifier).</value>
+  </data>
+  <data name="DuelChannelJoinRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Duel Channel Join Request Handler</value>
+  </data>
+  <data name="DuelChannelJoinRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for duel channel join request packets (new duel system), which is sent by a spectator.</value>
+  </data>
+  <data name="DuelChannelQuitRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Duel Channel Quit Request Handler</value>
+  </data>
+  <data name="DuelChannelQuitRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for duel channel quit request packets (new duel system), which is sent by a spectator.</value>
+  </data>
+  <data name="DuelGroupHandlerPlugIn_Name" xml:space="preserve">
+    <value>Duel Group Handler</value>
+  </data>
+  <data name="DuelGroupHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler for duel packets (new system).</value>
+  </data>
+  <data name="DuelStartRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Duel Start Request Handler</value>
+  </data>
+  <data name="DuelStartRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for duel start request packets (new duel system).</value>
+  </data>
+  <data name="DuelStartResponseHandlerPlugIn_Name" xml:space="preserve">
+    <value>Duel Start Response Handler</value>
+  </data>
+  <data name="DuelStartResponseHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for duel start response packets (new duel system).</value>
+  </data>
+  <data name="DuelStopResponseHandlerPlugIn_Name" xml:space="preserve">
+    <value>Duel Stop Response Handler</value>
+  </data>
+  <data name="DuelStopResponseHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for duel stop request packets (new duel system).</value>
+  </data>
+  <data name="LogInOutGroup_Name" xml:space="preserve">
+    <value>Log In &amp; Out Group</value>
+  </data>
+  <data name="LogInOutGroup_Description" xml:space="preserve">
+    <value>Packet group handler for log in and out packets (0xF1).</value>
+  </data>
+  <data name="LogOutByCheatDetectionHandlerPlugIn_Name" xml:space="preserve">
+    <value>Logout by cheat handler</value>
+  </data>
+  <data name="LogOutByCheatDetectionHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for logout (by cheat) packets.</value>
+  </data>
+  <data name="MuHelperGroupHandler_Name" xml:space="preserve">
+    <value>MuHelperGroupHandler</value>
+  </data>
+  <data name="MuHelperGroupHandler_Description" xml:space="preserve">
+    <value>Group packet handler for mu helper packets (0xBF identifier).</value>
+  </data>
+  <data name="PlayerShopBuyRequestPacketHandlerPlugIn_Name" xml:space="preserve">
+    <value>Player Shop - Buy request</value>
+  </data>
+  <data name="PlayerShopBuyRequestPacketHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler which handles buy requests to a player shop (3F 06).</value>
+  </data>
+  <data name="PlayerShopClosePacketHandlerPlugIn_Name" xml:space="preserve">
+    <value>Player Shop - Close</value>
+  </data>
+  <data name="PlayerShopClosePacketHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler which opens the player shop (3F 03).</value>
+  </data>
+  <data name="PlayerShopOpenPacketHandlerPlugIn_Name" xml:space="preserve">
+    <value>Player Shop - Open</value>
+  </data>
+  <data name="PlayerShopOpenPacketHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler which opens the player shop (3F 02).</value>
+  </data>
+  <data name="PlayerShopRequestItemListPacketHandlerPlugIn_Name" xml:space="preserve">
+    <value>Player Shop - Request Item List</value>
+  </data>
+  <data name="PlayerShopRequestItemListPacketHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler which handles requests for the item list of another player (3F 05).</value>
+  </data>
+  <data name="PlayerShopSetItemPricePacketHandlerPlugIn_Name" xml:space="preserve">
+    <value>Player Shop - Set Price</value>
+  </data>
+  <data name="PlayerShopSetItemPricePacketHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler which sets prices for an item in the player shop (3F 01).</value>
+  </data>
+  <data name="ActiveQuestListRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Quest - Request active quests list</value>
+  </data>
+  <data name="ActiveQuestListRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler for character focus packets (0xF3, 0x15 identifier).</value>
+  </data>
+  <data name="AvailableQuestsRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Quest - Request available quests</value>
+  </data>
+  <data name="AvailableQuestsRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler for available quest request packets (0xF6, 0x30 identifier)</value>
+  </data>
+  <data name="BuffRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Quest - Request available quests</value>
+  </data>
+  <data name="BuffRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler for (elf soldier) buff request packets (0xF6, 0x31 identifier)</value>
+  </data>
+  <data name="EventQuestStateRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Quest - Event quest state request</value>
+  </data>
+  <data name="EventQuestStateRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler for event quest state request packets (0xF6, 0x21 identifier)</value>
+  </data>
+  <data name="QuestCancelRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Quest - Cancel Request</value>
+  </data>
+  <data name="QuestCancelRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler for quest cancel request packets (0xF6, 0x0F identifier)</value>
+  </data>
+  <data name="QuestClientActionHandlerPlugIn_Name" xml:space="preserve">
+    <value>Quest - Client Action</value>
+  </data>
+  <data name="QuestClientActionHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler for quest client action packets (0xF6, 0x10 identifier)</value>
+  </data>
+  <data name="QuestCompletionRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Quest - Completion Request</value>
+  </data>
+  <data name="QuestCompletionRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler for quest completion request packets (0xF6, 0x0D identifier)</value>
+  </data>
+  <data name="QuestGroupHandlerPlugIn_Name" xml:space="preserve">
+    <value>Quest Packet Handler</value>
+  </data>
+  <data name="QuestGroupHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler for quest packets (0xF6 identifier).</value>
+  </data>
+  <data name="QuestProceedRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Quest - Proceed Request</value>
+  </data>
+  <data name="QuestProceedRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler for quest proceed request packets (0xF6, 0x0B identifier)</value>
+  </data>
+  <data name="QuestSelectRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Quest - Select Request</value>
+  </data>
+  <data name="QuestSelectRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler for quest select request packets (0xF6, 0x0A identifier)</value>
+  </data>
+  <data name="QuestStateListLegacyRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Quest state list request (legacy)</value>
+  </data>
+  <data name="QuestStateListLegacyRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler for the quest state list request for the legacy quest system (0xA0 identifier)</value>
+  </data>
+  <data name="QuestStateRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Quest - Request quest state</value>
+  </data>
+  <data name="QuestStateRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler for quest state request packets (0xF6, 0x1B identifier)</value>
+  </data>
+  <data name="QuestStateSetLegacyRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Quest state set request (legacy)</value>
+  </data>
+  <data name="QuestStateSetLegacyRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler for the quest state set request for the legacy quest system (0xA2 identifier).</value>
+  </data>
+  <data name="RemoveVaultPinPlugIn_Name" xml:space="preserve">
+    <value>Vault Lock - Remove Pin</value>
+  </data>
+  <data name="RemoveVaultPinPlugIn_Description" xml:space="preserve">
+    <value>Packet handler for vault pin remove packets (0x83, 0x02 identifier).</value>
+  </data>
+  <data name="SetVaultPinPlugIn_Name" xml:space="preserve">
+    <value>Vault Lock - Set Pin</value>
+  </data>
+  <data name="SetVaultPinPlugIn_Description" xml:space="preserve">
+    <value>Packet handler for vault pin set packets (0x83, 0x01 identifier).</value>
+  </data>
+  <data name="UnlockVaultPlugIn_Name" xml:space="preserve">
+    <value>Vault Lock - Unlock</value>
+  </data>
+  <data name="UnlockVaultPlugIn_Description" xml:space="preserve">
+    <value>Packet handler for vault unlock packets (0x83, 0x00 identifier).</value>
+  </data>
+  <data name="VaultLockGroupPlugIn_Name" xml:space="preserve">
+    <value>Vault Lock Packet Handler</value>
+  </data>
+  <data name="VaultLockGroupPlugIn_Description" xml:space="preserve">
+    <value>Packet handler for vault lock packets (0x83 identifier).</value>
+  </data>
+  <data name="AppearanceChangedExtendedPlugIn_Name" xml:space="preserve">
+    <value>Appearance Changed Extended</value>
+  </data>
+  <data name="AppearanceChangedExtendedPlugIn_Description" xml:space="preserve">
+    <value>The extended implementation of the IAppearanceChangedPlugIn which is forwarding appearance changes of other players to the game client with specific data packets.</value>
+  </data>
+</root>

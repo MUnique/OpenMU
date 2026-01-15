@@ -10,10 +10,12 @@ using MUnique.OpenMU.GameLogic.PlayerActions.Vault;
 using MUnique.OpenMU.Network.Packets.ClientToServer;
 using MUnique.OpenMU.PlugIns;
 
+
 /// <summary>
 /// Packet handler for vault pin remove packets (0x83, 0x02 identifier).
 /// </summary>
-[PlugIn("Vault Lock - Remove Pin", "Packet handler for vault pin remove packets (0x83, 0x02 identifier).")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.RemoveVaultPinPlugIn_Name), Description = nameof(PlugInResources.RemoveVaultPinPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("55ED4BC4-516F-490E-A065-B0150F2BD939")]
 [BelongsToGroup(VaultLockGroupPlugIn.GroupKey)]
 internal class RemoveVaultPinPlugIn : ISubPacketHandlerPlugIn

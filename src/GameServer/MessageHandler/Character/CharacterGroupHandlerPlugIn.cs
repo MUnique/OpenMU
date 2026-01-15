@@ -11,7 +11,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Packet handler for character packets (0xF3 identifier).
 /// </summary>
-[PlugIn("Character Packet Handler", "Packet handler for character packets (0xF3 identifier).")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.CharacterGroupHandlerPlugIn_Name), Description = nameof(PlugInResources.CharacterGroupHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("dce31462-c8a6-4d9a-a8b8-54a50cf16aff")]
 internal class CharacterGroupHandlerPlugIn : GroupPacketHandlerPlugIn
 {

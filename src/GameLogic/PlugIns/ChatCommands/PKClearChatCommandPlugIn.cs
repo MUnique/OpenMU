@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which handles pk clear commands.
 /// </summary>
 [Guid("EB97A8F6-F6BD-460A-BCBE-253BF679361A")]
-[PlugIn("PK clear chat command", "Handles the chat command '/pkclear <char>'. Clears the player kill count.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.PkClearChatCommandPlugIn_Name), Description = nameof(PlugInResources.PkClearChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, "Clears the player kill count.", typeof(PkClearChatCommandArgs), CharacterStatus.GameMaster)]
 public class PkClearChatCommandPlugIn : ChatCommandPlugInBase<PkClearChatCommandArgs>
 {
@@ -37,9 +38,9 @@ public class PkClearChatCommandPlugIn : ChatCommandPlugInBase<PkClearChatCommand
 
         if (!targetPlayer.Name.Equals(gameMaster.Name))
         {
-            await this.ShowMessageToAsync(targetPlayer, $"Your player kills have been cleaned by the game master.").ConfigureAwait(false);
+            await targetPlayer.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.PkStatusClearedByGameMaster)).ConfigureAwait(false);
         }
 
-        await this.ShowMessageToAsync(gameMaster, $"[{this.Key}] {targetPlayer.Name} kills have been cleaned.").ConfigureAwait(false);
+        await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.PkClearedResult), this.Key, targetPlayer.Name).ConfigureAwait(false);
     }
 }

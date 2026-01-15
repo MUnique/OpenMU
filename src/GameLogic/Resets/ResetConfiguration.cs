@@ -12,56 +12,67 @@ public class ResetConfiguration
     /// <summary>
     /// Gets or sets the reset limit, which is the maximum amount of possible resets.
     /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.ResetConfiguration_ResetLimit_Name))]
     public int? ResetLimit { get; set; }
 
     /// <summary>
     /// Gets or sets the required level for a reset.
     /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.ResetConfiguration_RequiredLevel_Name))]
     public int RequiredLevel { get; set; } = 400;
 
     /// <summary>
     /// Gets or sets the character level after a reset.
     /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.ResetConfiguration_LevelAfterReset_Name))]
     public int LevelAfterReset { get; set; } = 10;
 
     /// <summary>
     /// Gets or sets the required money for a reset.
     /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.ResetConfiguration_RequiredMoney_Name))]
     public int RequiredMoney { get; set; } = 1;
 
     /// <summary>
     /// Gets or sets a value indicating whether the required money should
     /// be multiplied with the current reset count.
     /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.ResetConfiguration_MultiplyRequiredMoneyByResetCount_Name))]
     public bool MultiplyRequiredMoneyByResetCount { get; set; } = true;
 
     /// <summary>
     /// Gets or sets a value indicating whether a reset sets the stat points back to the initial values.
     /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.ResetConfiguration_ResetStats_Name))]
     public bool ResetStats { get; set; } = true;
 
     /// <summary>
     /// Gets or sets the amount of points which will be set at the <see cref="Character.LevelUpPoints"/> when doing a reset.
     /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.ResetConfiguration_PointsPerReset_Name))]
     public int PointsPerReset { get; set; } = 1500;
 
     /// <summary>
     /// Gets or sets a value indicating whether the <see cref="PointsPerReset"/> should be multiplied with the current reset count.
     /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.ResetConfiguration_MultiplyPointsByResetCount_Name))]
     public bool MultiplyPointsByResetCount { get; set; } = true;
 
     /// <summary>
     /// Gets or sets a value indicating whether a reset will replace (true) or add (false) the <see cref="Character.LevelUpPoints"/>.
     /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.ResetConfiguration_ReplacePointsPerReset_Name))]
     public bool ReplacePointsPerReset { get; set; } = true;
 
     /// <summary>
     /// Gets or sets a value indicating whether a reset moves the player home.
     /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.ResetConfiguration_MoveHome_Name))]
     public bool MoveHome { get; set; } = true;
 
     /// <summary>
     /// Gets or sets a value indicating whether a reset logs the player out back to character selection.
     /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.ResetConfiguration_LogOut_Name))]
     public bool LogOut { get; set; } = true;
 }

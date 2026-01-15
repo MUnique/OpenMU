@@ -1,0 +1,543 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Create" xml:space="preserve">
+    <value>Create</value>
+  </data>
+  <data name="Reload" xml:space="preserve">
+    <value>Reload</value>
+  </data>
+  <data name="AdminUsers" xml:space="preserve">
+    <value>Admin Users</value>
+  </data>
+  <data name="Actions" xml:space="preserve">
+    <value>Actions</value>
+  </data>
+  <data name="ChangePassword" xml:space="preserve">
+    <value>Change password</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="CreateUser" xml:space="preserve">
+    <value>Create User</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Loading ...</value>
+  </data>
+  <data name="CreateConnectServer" xml:space="preserve">
+    <value>Create Connect Server</value>
+  </data>
+  <data name="CreateGameServer" xml:space="preserve">
+    <value>Create Game Server</value>
+  </data>
+  <data name="ServerWithIdAlreadyExists" xml:space="preserve">
+    <value>Server with Id {0} already exists. Please use another value.</value>
+  </data>
+  <data name="ServerWithPortAlreadyExists" xml:space="preserve">
+    <value>A server with tcp port {0} already exists. Please use another tcp port.</value>
+  </data>
+  <data name="CreatingConfigurationInfo" xml:space="preserve">
+    <value>Creating Configuration ...</value>
+  </data>
+  <data name="SavingConfigurationInfo" xml:space="preserve">
+    <value>Saving Configuration ...</value>
+  </data>
+  <data name="ConnectionServerConfigurationSaved" xml:space="preserve">
+    <value>The connection server configuration has been saved. Initializing connect server ...</value>
+  </data>
+  <data name="InitializingConnectServerInfo" xml:space="preserve">
+    <value>Initializing Connect Server ...</value>
+  </data>
+  <data name="NoChangesSaved" xml:space="preserve">
+    <value>No changes have been saved.</value>
+  </data>
+  <data name="UnexpectedErrorOccurred" xml:space="preserve">
+    <value>An unexpected error occurred: {0}.</value>
+  </data>
+  <data name="GameServerConfigurationSavedInfo" xml:space="preserve">
+    <value>The game server configuration has been saved. Initializing game server ...</value>
+  </data>
+  <data name="InitializingGameServerInfo" xml:space="preserve">
+    <value>Initializing Game Server ...</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="SavedChanges" xml:space="preserve">
+    <value>The changes have been saved.</value>
+  </data>
+  <data name="NoChangesToSave" xml:space="preserve">
+    <value>There were no changes to save.</value>
+  </data>
+  <data name="FailedByUninitializedContext" xml:space="preserve">
+    <value>Failed, context not initialized</value>
+  </data>
+  <data name="UnsavedChangesQuestion" xml:space="preserve">
+    <value>There are unsaved changes. Are you sure you want to discard them?</value>
+  </data>
+  <data name="DownloadAsJson" xml:space="preserve">
+    <value>Download as JSON</value>
+  </data>
+  <data name="LoadingErrorCheckLog" xml:space="preserve">
+    <value>Could not load the data. Check the logs for details.</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="MapEditor" xml:space="preserve">
+    <value>Map Editor</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="AddNew" xml:space="preserve">
+    <value>Add New</value>
+  </data>
+  <data name="CouldNotLoadMapDataCheckTheLogs" xml:space="preserve">
+    <value>Could not load the map data. Check the logs for details.</value>
+  </data>
+  <data name="UnexpectedErrorCheckLogs" xml:space="preserve">
+    <value>An unexpected error occurred: {0}. See logs for more details.</value>
+  </data>
+  <data name="UnhandledErrorOccurred" xml:space="preserve">
+    <value>An unhandled error has occurred.</value>
+  </data>
+  <data name="DevelopmentEnvironmentWarning" xml:space="preserve">
+    <value>&lt;strong&gt;The Development environment shouldn't be enabled for deployed applications.&lt;/strong&gt;
+    It can result in displaying sensitive information from exceptions to end users.
+    For local debugging, enable the &lt;strong&gt;Development&lt;/strong&gt; environment by setting the &lt;strong&gt;ASPNETCORE_ENVIRONMENT&lt;/strong&gt; environment variable to &lt;strong&gt;Development&lt;/strong&gt;
+    and restarting the app.</value>
+  </data>
+  <data name="SwappingToDevForMoreInformation" xml:space="preserve">
+    <value>Swapping to &lt;strong&gt;Development&lt;/strong&gt; environment will display more detailed information about the error that occurred.</value>
+  </data>
+  <data name="AnErrorOccurredWhileProcessingYourRequest" xml:space="preserve">
+    <value>An error occurred while processing your request</value>
+  </data>
+  <data name="DevelopmentMode" xml:space="preserve">
+    <value>Development Mode</value>
+  </data>
+  <data name="GameServer" xml:space="preserve">
+    <value>Game Server</value>
+  </data>
+  <data name="WelcomeMessage" xml:space="preserve">
+    <value>Welcome to the admin panel of OpenMU.</value>
+  </data>
+  <data name="OpenMUAdminPanel" xml:space="preserve">
+    <value>OpenMU AdminPanel</value>
+  </data>
+  <data name="About" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="LogFiles" xml:space="preserve">
+    <value>Log Files</value>
+  </data>
+  <data name="Logs" xml:space="preserve">
+    <value>Logs</value>
+  </data>
+  <data name="Metrics" xml:space="preserve">
+    <value>Metrics</value>
+  </data>
+  <data name="Tracing" xml:space="preserve">
+    <value>Tracing</value>
+  </data>
+  <data name="FileName" xml:space="preserve">
+    <value>File name</value>
+  </data>
+  <data name="LastUpdate" xml:space="preserve">
+    <value>Last update</value>
+  </data>
+  <data name="Size" xml:space="preserve">
+    <value>Size</value>
+  </data>
+  <data name="ServerID" xml:space="preserve">
+    <value>Server-ID</value>
+  </data>
+  <data name="Disconnect" xml:space="preserve">
+    <value>Disconnect</value>
+  </data>
+  <data name="LiveMap" xml:space="preserve">
+    <value>Live Map</value>
+  </data>
+  <data name="All" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="Merchants" xml:space="preserve">
+    <value>Merchants</value>
+  </data>
+  <data name="Back" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="DiscardChanges" xml:space="preserve">
+    <value>Discard changes</value>
+  </data>
+  <data name="SaveChanges" xml:space="preserve">
+    <value>Save changes</value>
+  </data>
+  <data name="ExtensionPoint" xml:space="preserve">
+    <value>Extension Point</value>
+  </data>
+  <data name="PluginName" xml:space="preserve">
+    <value>Plugin Name</value>
+  </data>
+  <data name="PluginType" xml:space="preserve">
+    <value>Plugin Type</value>
+  </data>
+  <data name="Plugins" xml:space="preserve">
+    <value>Plugins</value>
+  </data>
+  <data name="Deactivate" xml:space="preserve">
+    <value>Deactivate</value>
+  </data>
+  <data name="Activate" xml:space="preserve">
+    <value>Activate</value>
+  </data>
+  <data name="Servers" xml:space="preserve">
+    <value>Servers</value>
+  </data>
+  <data name="ServerName" xml:space="preserve">
+    <value>Server Name</value>
+  </data>
+  <data name="PlayerCount" xml:space="preserve">
+    <value>Players</value>
+  </data>
+  <data name="CurrentState" xml:space="preserve">
+    <value>Current State</value>
+  </data>
+  <data name="ConnectServer" xml:space="preserve">
+    <value>Connect Server</value>
+  </data>
+  <data name="ReloadConfigurationAndRestartAllGameServers" xml:space="preserve">
+    <value>Reload configuration and restart all Game Servers</value>
+  </data>
+  <data name="DatabaseStatus" xml:space="preserve">
+    <value>Database status</value>
+  </data>
+  <data name="CantConnectToTheDatabaseProbablyNotCreatedYet" xml:space="preserve">
+    <value>Can't connect to the database. Probably not created yet.</value>
+  </data>
+  <data name="InitializedGameVersion" xml:space="preserve">
+    <value>Initialized game version</value>
+  </data>
+  <data name="NoInitializedDataFound" xml:space="preserve">
+    <value>No initialized data found!</value>
+  </data>
+  <data name="ReInstall" xml:space="preserve">
+    <value>Re-install</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Update</value>
+  </data>
+  <data name="UpToDate" xml:space="preserve">
+    <value>Up-to-date</value>
+  </data>
+  <data name="NotCreated" xml:space="preserve">
+    <value>Not created</value>
+  </data>
+  <data name="UpdateRequired" xml:space="preserve">
+    <value>Update required</value>
+  </data>
+  <data name="Setup" xml:space="preserve">
+    <value>Setup</value>
+  </data>
+  <data name="Home" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="Accounts" xml:space="preserve">
+    <value>Accounts</value>
+  </data>
+  <data name="OnlineAccounts" xml:space="preserve">
+    <value>Online Accounts</value>
+  </data>
+  <data name="Updates" xml:space="preserve">
+    <value>Updates</value>
+  </data>
+  <data name="AvailableUpdates" xml:space="preserve">
+    <value>available updates</value>
+  </data>
+  <data name="Users" xml:space="preserve">
+    <value>Users</value>
+  </data>
+  <data name="System" xml:space="preserve">
+    <value>System</value>
+  </data>
+  <data name="GameClients" xml:space="preserve">
+    <value>Game clients</value>
+  </data>
+  <data name="Monsters" xml:space="preserve">
+    <value>Monsters</value>
+  </data>
+  <data name="MerchantStores" xml:space="preserve">
+    <value>Merchant stores</value>
+  </data>
+  <data name="CharacterClasses" xml:space="preserve">
+    <value>Character classes</value>
+  </data>
+  <data name="Skills" xml:space="preserve">
+    <value>Skills</value>
+  </data>
+  <data name="Items" xml:space="preserve">
+    <value>Items</value>
+  </data>
+  <data name="DropItemGroups" xml:space="preserve">
+    <value>Drop item groups</value>
+  </data>
+  <data name="GameMaps" xml:space="preserve">
+    <value>Game maps</value>
+  </data>
+  <data name="MiniGames" xml:space="preserve">
+    <value>Mini games</value>
+  </data>
+  <data name="WarpList" xml:space="preserve">
+    <value>Warp list</value>
+  </data>
+  <data name="JewelMixes" xml:space="preserve">
+    <value>Jewel mixes</value>
+  </data>
+  <data name="General" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="FullConfiguration" xml:space="preserve">
+    <value>Full configuration</value>
+  </data>
+  <data name="GameConfiguration" xml:space="preserve">
+    <value>Game configuration</value>
+  </data>
+  <data name="ReinstallConfirmation" xml:space="preserve">
+    <value>Are you sure? All the current data is getting deleted and freshly installed.</value>
+  </data>
+  <data name="PleaseFirstInstallTheDatabaseUpdatesOnTheSetupPage" xml:space="preserve">
+    <value>Please, first install the database updates on the setup page.</value>
+  </data>
+  <data name="NoConfigurationDataUpdateAvailable" xml:space="preserve">
+    <value>No configuration data update available.</value>
+  </data>
+  <data name="NewConfigurationUpdatesAvailable" xml:space="preserve">
+    <value>New updates for the configuration data are available. You can select the ones which should be applied to your configuration.</value>
+  </data>
+  <data name="MandatoryUpdatesAreAlwaysAppliedAndCannotBeDeselected" xml:space="preserve">
+    <value>Mandatory updates are always applied and cannot be deselected.</value>
+  </data>
+  <data name="TheUpdatesRequireARestartOfTheServerProcessToTakeEffect" xml:space="preserve">
+    <value>The updates require a restart of the server process to take effect.</value>
+  </data>
+  <data name="Updating" xml:space="preserve">
+    <value>Updating...</value>
+  </data>
+  <data name="ApplyingUpdates" xml:space="preserve">
+    <value>Applying updates ...</value>
+  </data>
+  <data name="UpdateFailed" xml:space="preserve">
+    <value>Update Failed!</value>
+  </data>
+  <data name="ApplySelectedUpdates" xml:space="preserve">
+    <value>Apply selected updates</value>
+  </data>
+  <data name="PatchVersion" xml:space="preserve">
+    <value>Patch-Version</value>
+  </data>
+  <data name="MajorVersion" xml:space="preserve">
+    <value>Major</value>
+  </data>
+  <data name="PatchAddress" xml:space="preserve">
+    <value>Patch-Address</value>
+  </data>
+  <data name="Seconds" xml:space="preserve">
+    <value>seconds</value>
+  </data>
+  <data name="MinorVersion" xml:space="preserve">
+    <value>Minor</value>
+  </data>
+  <data name="Patch" xml:space="preserve">
+    <value>Patch</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="InstallingPleaseWait" xml:space="preserve">
+    <value>Installing, please wait ...</value>
+  </data>
+  <data name="PleaseRestartTheConnectAndGameServerContainers" xml:space="preserve">
+    <value>Please restart the connect and game server containers.</value>
+  </data>
+  <data name="FinishedHaveFun" xml:space="preserve">
+    <value>Finished! Have fun :)</value>
+  </data>
+  <data name="FirstCloseAllConnectionsToTheServer" xml:space="preserve">
+    <value>First, close all connections to the server.</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="SelectTheGameVersion" xml:space="preserve">
+    <value>Select the game version</value>
+  </data>
+  <data name="HowManyGameServersQuestion" xml:space="preserve">
+    <value>How many game servers do you want?</value>
+  </data>
+  <data name="TestAccountsQuestion" xml:space="preserve">
+    <value>Do you want test accounts?</value>
+  </data>
+  <data name="YesCreateTestAccounts" xml:space="preserve">
+    <value>Yes, create test accounts</value>
+  </data>
+  <data name="StartInstall" xml:space="preserve">
+    <value>Start install</value>
+  </data>
+  <data name="Remove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="Start" xml:space="preserve">
+    <value>Start</value>
+  </data>
+  <data name="Stop" xml:space="preserve">
+    <value>Stop</value>
+  </data>
+  <data name="RemoveServer" xml:space="preserve">
+    <value>Remove Server</value>
+  </data>
+  <data name="ServerDeleteProceedQuestion" xml:space="preserve">
+    <value>The server will be deleted from the database. Are you sure to proceed?</value>
+  </data>
+  <data name="ServerControl" xml:space="preserve">
+    <value>Server control</value>
+  </data>
+  <data name="TotalPlayers" xml:space="preserve">
+    <value>Total Players</value>
+  </data>
+  <data name="SocketNumber" xml:space="preserve">
+    <value>Socket {0}</value>
+  </data>
+  <data name="Action" xml:space="preserve">
+    <value>Action</value>
+  </data>
+  <data name="GameServerCount" xml:space="preserve">
+    <value>Game server count</value>
+  </data>
+</root>

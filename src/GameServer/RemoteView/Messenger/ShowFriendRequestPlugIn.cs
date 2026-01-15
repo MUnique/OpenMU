@@ -12,7 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IShowFriendRequestPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn("ShowFriendRequestPlugIn", "The default implementation of the IShowFriendRequestPlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.ShowFriendRequestPlugIn_Name), Description = nameof(PlugInResources.ShowFriendRequestPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("efb8b51b-181a-4a7d-b5a4-34c0dbd41748")]
 public class ShowFriendRequestPlugIn : IShowFriendRequestPlugIn
 {
