@@ -216,7 +216,7 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
             return;
         }
 
-        var message = (configuration.Message ?? "[{mapName}] Invasion!").Replace("{mapName}", mapName, StringComparison.InvariantCulture);
+        var message = (configuration.Message?.ToString() ?? PlugInResources.BaseInvasionPlugIn_DefaultStartMessage).Replace("{mapName}", mapName, StringComparison.InvariantCulture);
 
         if (this.IsPlayerOnMap(player))
         {

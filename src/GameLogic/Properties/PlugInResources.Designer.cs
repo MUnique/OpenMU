@@ -259,6 +259,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to [{mapName}] Invasion!.
+        /// </summary>
+        public static string BaseInvasionPlugIn_DefaultStartMessage {
+            get {
+                return ResourceManager.GetString("BaseInvasionPlugIn_DefaultStartMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Plugin which handles the jewel of bless consumption..
         /// </summary>
         public static string BlessJewelConsumeHandlerPlugIn_Description {

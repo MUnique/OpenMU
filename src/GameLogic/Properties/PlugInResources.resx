@@ -1125,4 +1125,7 @@
   <data name="WanderingMerchantsConfiguration_MaximumSpawnDuration_Name" xml:space="preserve">
     <value>Maximum spawn duration</value>
   </data>
+  <data name="BaseInvasionPlugIn_DefaultStartMessage" xml:space="preserve">
+    <value>[{mapName}] Invasion!</value>
+  </data>
 </root>
