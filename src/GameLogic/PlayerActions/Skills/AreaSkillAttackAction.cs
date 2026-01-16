@@ -168,6 +168,12 @@ public class AreaSkillAttackAction
             return;
         }
 
+        // Twisting Slash requires a weapon
+        if (skill.Number == 41 && player.Inventory?.GetItem(InventoryConstants.RightHandSlot) is null)
+        {
+            return;
+        }
+
         if (player.Attributes[Stats.AmmunitionConsumptionRate] > player.Attributes[Stats.AmmunitionAmount])
         {
             return;
