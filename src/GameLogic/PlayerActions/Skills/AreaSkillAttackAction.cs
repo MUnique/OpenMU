@@ -168,6 +168,12 @@ public class AreaSkillAttackAction
             return;
         }
 
+        // Skills that move attacker to target (e.g., Twisting Slash, Death Stab) require a weapon
+        if (skill.MovesToTarget && player.Inventory?.GetItem(InventoryConstants.RightHandSlot) is null)
+        {
+            return;
+        }
+
         if (player.Attributes[Stats.AmmunitionConsumptionRate] > player.Attributes[Stats.AmmunitionAmount])
         {
             return;
