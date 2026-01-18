@@ -130,7 +130,7 @@ internal sealed class Program : IDisposable
     /// <param name="args">The command line args.</param>
     public async Task InitializeAsync(string[] args)
     {
-        JsonConverterRegistry.RegisterConverter(new LocalizedStringConverter());
+        JsonConverterRegistry.RegisterConverter(new LocalizedStringJsonConverter());
         JsonConverterRegistry.RegisterConverter(new BinaryAsHexJsonConverter());
 
         this._logger.Information("Creating host...");

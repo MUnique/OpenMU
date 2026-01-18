@@ -33,7 +33,7 @@ public static class DaprService
     /// </returns>
     public static WebApplicationBuilder CreateBuilder(string serviceName, string[] args)
     {
-        JsonConverterRegistry.RegisterConverter(new LocalizedStringConverter());
+        JsonConverterRegistry.RegisterConverter(new LocalizedStringJsonConverter());
         JsonConverterRegistry.RegisterConverter(new BinaryAsHexJsonConverter());
 
         var builder = WebApplication.CreateBuilder(args);

@@ -1,4 +1,4 @@
-// <copyright file="LocalizedStringConverter.cs" company="MUnique">
+// <copyright file="LocalizedStringJsonConverter.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -10,7 +10,7 @@ using System.Text.Json.Serialization;
 /// <summary>
 /// A JSON converter for the <see cref="LocalizedString"/> type which serializes it as a simple JSON string.
 /// </summary>
-public class LocalizedStringConverter : JsonConverter<LocalizedString>
+public class LocalizedStringJsonConverter : JsonConverter<LocalizedString>
 {
     /// <inheritdoc />
     public override LocalizedString Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
