@@ -4,8 +4,10 @@
 
 namespace MUnique.OpenMU.DataModel.Entities;
 
+using System.Globalization;
 using MUnique.OpenMU.Annotations;
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.DataModel.Properties;
 
 /// <summary>
 /// The item.
@@ -147,6 +149,62 @@ public partial class Item
         if (this.SocketCount > 0)
         {
             stringBuilder.Append("+").Append(this.SocketCount).Append("S");
+        }
+
+        return stringBuilder.ToString();
+    }
+
+    /// <inheritdoc/>
+    public string ToString(CultureInfo culture)
+    {
+        using var cultureHelper = CultureHelper.SetTemporaryCulture(culture);
+        var stringBuilder = new StringBuilder();
+        stringBuilder.Append(Resources.Slot).Append(" ").Append(this.ItemSlot).Append(": ");
+
+        if (this.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.Excellent))
+        {
+            stringBuilder.Append(Resources.Excellent).Append(" ");
+        }
+
+        var ancientSet = this.ItemSetGroups.FirstOrDefault(s => s.AncientSetDiscriminator != 0)?.ItemSetGroup;
+        if (ancientSet != null)
+        {
+            stringBuilder.Append(ancientSet.Name.ToString()).Append(" ");
+        }
+
+        var itemName = this.Definition?.GetNameForLevel(this.Level);
+
+        stringBuilder.Append(itemName);
+        if (this.Level > 0)
+        {
+            stringBuilder.Append("+").Append(this.Level);
+        }
+
+        foreach (var option in this.ItemOptions
+                     .Where(o => o.ItemOption?.OptionType != ItemOptionTypes.Luck)
+                     .OrderBy(o => o.ItemOption?.OptionType == ItemOptionTypes.Option))
+        {
+            var levelOption = option.ItemOption?.LevelDependentOptions.FirstOrDefault(o => o.Level == (option.ItemOption.LevelType == LevelType.ItemLevel ? this.Level : option.Level));
+            var powerUpDefinition = levelOption?.PowerUpDefinition ?? option.ItemOption?.PowerUpDefinition;
+            if (powerUpDefinition is not null)
+            {
+                stringBuilder.Append("+").Append(powerUpDefinition);
+            }
+        }
+
+        if (this.HasSkill)
+        {
+            stringBuilder.Append("+").Append(Resources.Skill);
+        }
+
+        if (this.ItemOptions.Any(opt => opt.ItemOption?.OptionType == ItemOptionTypes.Luck))
+        {
+            stringBuilder.Append("+").Append(Resources.Luck);
+        }
+
+        if (this.SocketCount > 0)
+        {
+            stringBuilder.Append("+").Append(this.SocketCount).Append(Resources.SocketAbbreviation);
         }
 
         return stringBuilder.ToString();

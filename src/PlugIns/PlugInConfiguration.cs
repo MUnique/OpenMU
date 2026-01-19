@@ -85,7 +85,7 @@ public class PlugInConfiguration : INotifyPropertyChanged
                 .FirstOrDefault(t => t.GUID == this.TypeId);
             var plugInAttribute = plugInType?.GetCustomAttribute<DisplayAttribute>(inherit: false);
 
-            return plugInAttribute?.Name ?? this.TypeId.ToString();
+            return plugInAttribute?.GetName() ?? this.TypeId.ToString();
         }
     }
 

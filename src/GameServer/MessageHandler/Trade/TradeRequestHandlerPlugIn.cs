@@ -7,10 +7,10 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Trade;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.PlayerActions.Trade;
-using MUnique.OpenMU.GameLogic.Views;
-using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.GameLogic.Properties;
 using MUnique.OpenMU.Network.Packets.ClientToServer;
 using MUnique.OpenMU.PlugIns;
+using PlugInResources = MUnique.OpenMU.GameServer.Properties.PlugInResources;
 
 /// <summary>
 /// Handles the trade request packets.
@@ -35,7 +35,7 @@ internal class TradeRequestHandlerPlugIn : IPacketHandlerPlugIn
         var partner = await player.GetObservingPlayerWithIdAsync(message.PlayerId).ConfigureAwait(false);
         if (partner is null)
         {
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Trade partner not found.", MessageType.BlueNormal)).ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.TradePartnerNotFound)).ConfigureAwait(false);
             return;
         }
 

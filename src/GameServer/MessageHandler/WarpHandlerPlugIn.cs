@@ -7,10 +7,10 @@ namespace MUnique.OpenMU.GameServer.MessageHandler;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.PlayerActions;
-using MUnique.OpenMU.GameLogic.Views;
-using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.GameLogic.Properties;
 using MUnique.OpenMU.Network.Packets.ClientToServer;
 using MUnique.OpenMU.PlugIns;
+using PlugInResources = MUnique.OpenMU.GameServer.Properties.PlugInResources;
 
 /// <summary>
 /// Handler for warp request packets.
@@ -41,7 +41,7 @@ internal class WarpHandlerPlugIn : IPacketHandlerPlugIn
         }
         else
         {
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync($"Unknown warp index {warpInfoIndex}", MessageType.BlueNormal)).ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.UnknownWarpIndex)).ConfigureAwait(false);
         }
     }
 }

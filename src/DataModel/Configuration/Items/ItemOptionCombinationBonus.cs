@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items;
 
 using MUnique.OpenMU.Annotations;
 using MUnique.OpenMU.DataModel.Attributes;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Defines a bonus which gets granted when the equipped items
@@ -20,7 +21,7 @@ public partial class ItemOptionCombinationBonus
     /// <summary>
     /// Gets or sets the description.
     /// </summary>
-    public string Description { get; set; } = string.Empty;
+    public LocalizedString Description { get; set; }
 
     /// <summary>
     /// Gets or sets the number.

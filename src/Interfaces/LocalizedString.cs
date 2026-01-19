@@ -166,6 +166,11 @@ public readonly struct LocalizedString
     /// </returns>
     public string GetValueInNeutralLanguage()
     {
+        if (this.Value?.IndexOf(Separator, StringComparison.OrdinalIgnoreCase) is not >= 0)
+        {
+            return this.Value ?? string.Empty;
+        }
+
         var span = this.GetValueInNeutralLanguageAsSpan();
         return new(span);
     }

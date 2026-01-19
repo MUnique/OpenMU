@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -74,7 +75,7 @@ public class ClearInventoryChatCommandPlugIn : ChatCommandPlugInBase<ClearInvent
             if (!this.pendingConfirmations.TryGetValue(playerId, out var confirmationTime) || (DateTime.UtcNow - confirmationTime).TotalSeconds > ConfirmationTimeoutSeconds)
             {
                 this.pendingConfirmations[playerId] = DateTime.UtcNow;
-                await player.ShowBlueMessageAsync(configuration.ConfirmationMessage).ConfigureAwait(false);
+                await player.ShowBlueMessageAsync(configuration.ConfirmationMessage.GetTranslation(player.Culture)).ConfigureAwait(false);
                 return;
             }
 
@@ -93,7 +94,7 @@ public class ClearInventoryChatCommandPlugIn : ChatCommandPlugInBase<ClearInvent
 
         if (removeMoney && !player.TryRemoveMoney(configuration.MoneyCost))
         {
-            await player.ShowBlueMessageAsync(configuration.NotEnoughMoneyMessage).ConfigureAwait(false);
+            await player.ShowBlueMessageAsync(configuration.NotEnoughMoneyMessage.GetTranslation(player.Culture)).ConfigureAwait(false);
             return;
         }
 
@@ -102,7 +103,7 @@ public class ClearInventoryChatCommandPlugIn : ChatCommandPlugInBase<ClearInvent
             await targetPlayer.DestroyInventoryItemAsync(item).ConfigureAwait(false);
         }
 
-        await player.ShowBlueMessageAsync(configuration.InventoryClearedMessage).ConfigureAwait(false);
+        await player.ShowBlueMessageAsync(configuration.InventoryClearedMessage.GetTranslation(player.Culture)).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -118,7 +119,6 @@ public class ClearInventoryChatCommandPlugIn : ChatCommandPlugInBase<ClearInvent
 
     /// <summary>
     /// The configuration of a <see cref="ClearInventoryChatCommandPlugIn"/>.
-    /// TODO: Make values localizable.
     /// </summary>
     public class ClearInventoryConfiguration
     {
@@ -138,18 +138,18 @@ public class ClearInventoryChatCommandPlugIn : ChatCommandPlugInBase<ClearInvent
         /// Gets or sets the message to show the confirmation message.
         /// </summary>
         [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.ClearInventoryConfiguration_ConfirmationMessage_Name), Description = nameof(PlugInResources.ClearInventoryConfiguration_ConfirmationMessage_Description))]
-        public string ConfirmationMessage { get; set; } = "Confirmation: run again within 10 seconds to confirm inventory clearing";
+        public LocalizedString ConfirmationMessage { get; set; } = "Confirmation: run again within 10 seconds to confirm inventory clearing";
 
         /// <summary>
         /// Gets or sets the message to show when the player does not have enough money to run the command.
         /// </summary>
         [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.ClearInventoryConfiguration_NotEnoughMoneyMessage_Name), Description = nameof(PlugInResources.ClearInventoryConfiguration_NotEnoughMoneyMessage_Description))]
-        public string NotEnoughMoneyMessage { get; set; } = "Not enough money to run command";
+        public LocalizedString NotEnoughMoneyMessage { get; set; } = "Not enough money to run command";
 
         /// <summary>
         /// Gets or sets the message to show when the inventory is cleared.
         /// </summary>
         [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.ClearInventoryConfiguration_InventoryClearedMessage_Name), Description = nameof(PlugInResources.ClearInventoryConfiguration_InventoryClearedMessage_Description))]
-        public string InventoryClearedMessage { get; set; } = "Inventory cleared";
+        public LocalizedString InventoryClearedMessage { get; set; } = "Inventory cleared";
     }
 }

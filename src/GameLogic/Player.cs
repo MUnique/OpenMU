@@ -655,6 +655,17 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <summary>
+    /// Easier way to show a localized golden message to the player.
+    /// </summary>
+    /// <param name="messageKey">The message resource key.</param>
+    /// <param name="arguments">The parameters for the message.</param>
+    public ValueTask ShowLocalizedGoldenMessageAsync(string messageKey, params ReadOnlySpan<object?> arguments)
+    {
+        var message = this.GetLocalizedMessage(messageKey, arguments);
+        return this.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.GoldenCenter));
+    }
+
+    /// <summary>
     /// Easier way to show a blue message to the player.
     /// </summary>
     /// <param name="message">The message resource key.</param>
@@ -1976,7 +1987,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             this.Logger.LogError(
                 "CRITICAL: Could not return {count} items from temporary storage to inventory due to full inventory. Attempting fallback. Items: {items}",
                 items.Count,
-                string.Join(", ", items.Select(i => $"{i.Definition?.Name ?? "Unknown"}(Slot:{i.ItemSlot})")));
+                string.Join(", ", items.Select(i => $"{i.Definition?.Name.GetValueInNeutralLanguage() ?? "Unknown"}(Slot:{i.ItemSlot})")));
 
             // Try one more time to force-add items individually using the captured list
             foreach (var item in items)

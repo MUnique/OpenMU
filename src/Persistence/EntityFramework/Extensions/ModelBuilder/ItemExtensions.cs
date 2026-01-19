@@ -13,6 +13,15 @@ using MUnique.OpenMU.Persistence.EntityFramework.Model;
 internal static class ItemExtensions
 {
     /// <summary>
+    /// Applies the settings for the <see cref="ItemDefinition"/> entity.
+    /// </summary>
+    /// <param name="builder">The builder.</param>
+    public static void Apply(this EntityTypeBuilder<ItemDefinition> builder)
+    {
+        builder.Property(p => p.Name).HasConversion(LocalizedStringConverter.Instance);
+    }
+
+    /// <summary>
     /// Applies the settings for the <see cref="ItemStorage"/> entity.
     /// </summary>
     /// <param name="builder">The builder.</param>
@@ -27,6 +36,7 @@ internal static class ItemExtensions
     /// <param name="builder">The builder.</param>
     public static void Apply(this EntityTypeBuilder<ItemSetGroup> builder)
     {
+        builder.Property(p => p.Name).HasConversion(LocalizedStringConverter.Instance);
         builder.HasMany(isg => isg.RawItems).WithOne(item => item.RawItemSetGroup!);
     }
 
@@ -40,10 +50,84 @@ internal static class ItemExtensions
     }
 
     /// <summary>
+    /// Applies the settings for the <see cref="ItemLevelBonusTable"/> entity.
+    /// </summary>
+    /// <param name="builder">The builder.</param>
+    public static void Apply(this EntityTypeBuilder<ItemLevelBonusTable> builder)
+    {
+        builder.Property(p => p.Name).HasConversion(LocalizedStringConverter.Instance);
+        builder.Property(p => p.Description).HasConversion(LocalizedStringConverter.Instance);
+    }
+
+    /// <summary>
+    /// Applies the settings for the <see cref="ItemDropItemGroup"/> entity.
+    /// </summary>
+    /// <param name="builder">The builder.</param>
+    public static void Apply(this EntityTypeBuilder<ItemDropItemGroup> builder)
+    {
+        builder.Property(p => p.Description).HasConversion(LocalizedStringConverter.Instance);
+    }
+
+    /// <summary>
     /// Applies the settings for the <see cref="LevelBonus"/> entity.
     /// </summary>
     /// <param name="builder">The builder.</param>
     public static void Apply(this EntityTypeBuilder<LevelBonus> builder)
     {
+    }
+
+    /// <summary>
+    /// Applies the settings for the <see cref="ItemSlotType"/> entity.
+    /// </summary>
+    /// <param name="builder">The builder.</param>
+    public static void Apply(this EntityTypeBuilder<ItemSlotType> builder)
+    {
+        builder.Property(p => p.Description).HasConversion(LocalizedStringConverter.Instance);
+    }
+
+    /// <summary>
+    /// Applies the settings for the <see cref="ItemOptionCombinationBonus"/> entity.
+    /// </summary>
+    /// <param name="builder">The builder.</param>
+    public static void Apply(this EntityTypeBuilder<ItemOptionCombinationBonus> builder)
+    {
+        builder.Property(p => p.Description).HasConversion(LocalizedStringConverter.Instance);
+    }
+
+    /// <summary>
+    /// Applies the settings for the <see cref="ItemOptionDefinition"/> entity.
+    /// </summary>
+    /// <param name="builder">The builder.</param>
+    public static void Apply(this EntityTypeBuilder<ItemOptionDefinition> builder)
+    {
+        builder.Property(p => p.Name).HasConversion(LocalizedStringConverter.Instance);
+    }
+
+    /// <summary>
+    /// Applies the settings for the <see cref="ItemOptionType"/> entity.
+    /// </summary>
+    /// <param name="builder">The builder.</param>
+    public static void Apply(this EntityTypeBuilder<ItemOptionType> builder)
+    {
+        builder.Property(p => p.Name).HasConversion(LocalizedStringConverter.Instance);
+        builder.Property(p => p.Description).HasConversion(LocalizedStringConverter.Instance);
+    }
+
+    /// <summary>
+    /// Applies the settings for the <see cref="ItemCrafting"/> entity.
+    /// </summary>
+    /// <param name="builder">The builder.</param>
+    public static void Apply(this EntityTypeBuilder<ItemCrafting> builder)
+    {
+        builder.Property(p => p.Name).HasConversion(LocalizedStringConverter.Instance);
+    }
+
+    /// <summary>
+    /// Applies the settings for the <see cref="DropItemGroup"/> entity.
+    /// </summary>
+    /// <param name="builder">The builder.</param>
+    public static void Apply(this EntityTypeBuilder<DropItemGroup> builder)
+    {
+        builder.Property(p => p.Description).HasConversion(LocalizedStringConverter.Instance);
     }
 }

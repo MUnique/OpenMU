@@ -270,7 +270,7 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
         var player = this._gameContext.GetPlayerByCharacterName(playerName);
         if (player != null)
         {
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("You got disconnected by a game master.", MessageType.BlueNormal)).ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.DisconnectedByGameMaster)).ConfigureAwait(false);
             await player.DisconnectAsync().ConfigureAwait(false);
             return true;
         }
@@ -285,7 +285,7 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
         var player = players.FirstOrDefault(p => p.Account?.LoginName == accountName);
         if (player != null)
         {
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("You got disconnected by an administrator.", MessageType.BlueNormal)).ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.DisconnectedByAdmin)).ConfigureAwait(false);
             await player.DisconnectAsync().ConfigureAwait(false);
             return true;
         }
@@ -300,7 +300,7 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
         if (player?.Account is not null)
         {
             player.Account.State = AccountState.TemporarilyBanned;
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Your account has been temporarily banned by a game master.", MessageType.BlueNormal)).ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.TemporaryBanByGameMaster)).ConfigureAwait(false);
             await player.DisconnectAsync().ConfigureAwait(false);
             return true;
         }
@@ -330,7 +330,7 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
 
         if (affectedPlayer is not null)
         {
-            await affectedPlayer.ShowBlueMessageAsync(PlayerMessage.LoginAttemptWarning).ConfigureAwait(false);
+            await affectedPlayer.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.LoginAttemptWarning)).ConfigureAwait(false);
         }
     }
 

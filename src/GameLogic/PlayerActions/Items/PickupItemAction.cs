@@ -101,11 +101,14 @@ public class PickupItemAction
 
         if (IsLimitReached(player, droppedItem.Item.Definition))
         {
-            var itemName = droppedItem.Item.Level > 0
-                ? $"{droppedItem.Item.Definition?.Name} +{droppedItem.Item.Level}"
-                : droppedItem.Item.Definition?.Name;
-
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync($"Limit reached for '{itemName}'.", MessageType.BlueNormal)).ConfigureAwait(false);
+            var itemName = string.Empty;
+            using (CultureHelper.SetTemporaryCulture(player.Culture))
+            {
+                itemName = droppedItem.Item.Level > 0
+                    ? $"{droppedItem.Item.Definition?.Name.ToString()} +{droppedItem.Item.Level.ToString()}"
+                    : droppedItem.Item.Definition?.Name.ToString();
+            }
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.PickupLimitReached), itemName).ConfigureAwait(false);
             return (false, null);
         }
 

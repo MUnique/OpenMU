@@ -2,6 +2,9 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using MUnique.OpenMU.GameLogic.Properties;
+using PlugInResources = MUnique.OpenMU.GameServer.Properties.PlugInResources;
+
 namespace MUnique.OpenMU.GameServer.RemoteView.Character;
 
 using System.Runtime.InteropServices;
@@ -54,7 +57,7 @@ public class UpdateLevelExtendedPlugIn : IUpdateLevelPlugIn
             (ushort)selectedCharacter.UsedNegFruitPoints,
             selectedCharacter.GetMaximumFruitPoints()).ConfigureAwait(false);
 
-        await this._player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync($"Congratulations, you are Level {charStats[Stats.Level]} now.", MessageType.BlueNormal)).ConfigureAwait(false);
+        await this._player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.LevelUpCongrats), charStats[Stats.Level]).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -78,6 +81,6 @@ public class UpdateLevelExtendedPlugIn : IUpdateLevelPlugIn
             (uint)charStats[Stats.MaximumShield],
             (uint)charStats[Stats.MaximumAbility]).ConfigureAwait(false);
 
-        await this._player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync($"Congratulations, you are Master Level {charStats[Stats.MasterLevel]} now.", MessageType.BlueNormal)).ConfigureAwait(false);
+        await this._player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MasterLevelUpCongrats), charStats[Stats.MasterLevel]).ConfigureAwait(false);
     }
 }

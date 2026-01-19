@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.GameLogic.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class PlayerMessage {
@@ -133,6 +133,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Attribute not available..
+        /// </summary>
+        public static string AttributeNotAvailable {
+            get {
+                return ResourceManager.GetString("AttributeNotAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Available languages:.
         /// </summary>
         public static string AvailableLanguagesCaption {
@@ -151,11 +160,56 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} has acquired the {1}.
+        /// </summary>
+        public static string BloodCastleArchangelAquiredMessageFormat {
+            get {
+                return ResourceManager.GetString("BloodCastleArchangelAquiredMessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} has destroyed the Crystal Statue!.
+        /// </summary>
+        public static string BloodCastleCrystalStatusDestroyed {
+            get {
+                return ResourceManager.GetString("BloodCastleCrystalStatusDestroyed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Can&apos;t delete a guild member. Remove the character from guild first..
+        /// </summary>
+        public static string CantDeleteGuildMember {
+            get {
+                return ResourceManager.GetString("CantDeleteGuildMember", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Can&apos;t enter event with equipped item &apos;{0}&apos;..
         /// </summary>
         public static string CantEnterEventWithItem {
             get {
                 return ResourceManager.GetString("CantEnterEventWithItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You can&apos;t equip this item during the event..
+        /// </summary>
+        public static string CantEquipItemDuringEvent {
+            get {
+                return ResourceManager.GetString("CantEquipItemDuringEvent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot do reset with any windows opened..
+        /// </summary>
+        public static string CantResetWithOpenedWindows {
+            get {
+                return ResourceManager.GetString("CantResetWithOpenedWindows", resourceCulture);
             }
         }
         
@@ -187,11 +241,38 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A character with the same name already exists..
+        /// </summary>
+        public static string CharacterWithNameAlreadyExists {
+            get {
+                return ResourceManager.GetString("CharacterWithNameAlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chat Ban: {0} minute(s) remaining..
+        /// </summary>
+        public static string ChatBanMinutesRemaining {
+            get {
+                return ResourceManager.GetString("ChatBanMinutesRemaining", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to [{0}] The chat ban for the account from {1} has been removed..
         /// </summary>
         public static string ChatBanRemoved {
             get {
                 return ResourceManager.GetString("ChatBanRemoved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chat Ban: {0} second(s) remaining..
+        /// </summary>
+        public static string ChatBanSecondsRemaining {
+            get {
+                return ResourceManager.GetString("ChatBanSecondsRemaining", resourceCulture);
             }
         }
         
@@ -223,6 +304,33 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You got disconnected by an administrator..
+        /// </summary>
+        public static string DisconnectedByAdmin {
+            get {
+                return ResourceManager.GetString("DisconnectedByAdmin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You got disconnected by a game master..
+        /// </summary>
+        public static string DisconnectedByGameMaster {
+            get {
+                return ResourceManager.GetString("DisconnectedByGameMaster", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The battle begins in {0} seconds.
+        /// </summary>
+        public static string DuelBattleBeginsInSecondsFormat {
+            get {
+                return ResourceManager.GetString("DuelBattleBeginsInSecondsFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The duel channel is full..
         /// </summary>
         public static string DuelChannelIsFull {
@@ -237,6 +345,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string DuelRequestMustBeOnSameMap {
             get {
                 return ResourceManager.GetString("DuelRequestMustBeOnSameMap", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You&apos;re strong enough on your own..
+        /// </summary>
+        public static string ElfSoldierStrongEnoughMessage {
+            get {
+                return ResourceManager.GetString("ElfSoldierStrongEnoughMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Oops, some error happened during sending the Letter..
+        /// </summary>
+        public static string ErrorDuringSendingLetter {
+            get {
+                return ResourceManager.GetString("ErrorDuringSendingLetter", resourceCulture);
             }
         }
         
@@ -273,6 +399,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string GuildNotFound {
             get {
                 return ResourceManager.GetString("GuildNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Happy Hour event has been started!.
+        /// </summary>
+        public static string HappyHourEventHasBeenStarted {
+            get {
+                return ResourceManager.GetString("HappyHourEventHasBeenStarted", resourceCulture);
             }
         }
         
@@ -367,6 +502,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Inventory is full.
+        /// </summary>
+        public static string InventoryFull {
+            get {
+                return ResourceManager.GetString("InventoryFull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Inventory got not enough space..
+        /// </summary>
+        public static string InventoryNotEnoughSpace {
+            get {
+                return ResourceManager.GetString("InventoryNotEnoughSpace", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to [{0}] {1} created.
         /// </summary>
         public static string ItemCreatedResult {
@@ -394,11 +547,29 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This item is bound to the inventory of this character..
+        /// </summary>
+        public static string ItemIsBoundToInventoryOfCharacter {
+            get {
+                return ResourceManager.GetString("ItemIsBoundToInventoryOfCharacter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Level cannot be greater than {0}..
         /// </summary>
         public static string ItemLevelExceeded {
             get {
                 return ResourceManager.GetString("ItemLevelExceeded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item Unknown.
+        /// </summary>
+        public static string ItemUnknown {
+            get {
+                return ResourceManager.GetString("ItemUnknown", resourceCulture);
             }
         }
         
@@ -421,11 +592,38 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Letter invalid..
+        /// </summary>
+        public static string LetterInvalid {
+            get {
+                return ResourceManager.GetString("LetterInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Level of &apos;{0}&apos;: {1}..
         /// </summary>
         public static string LevelInformation {
             get {
                 return ResourceManager.GetString("LevelInformation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your level is too low to enter this map..
+        /// </summary>
+        public static string LevelTooLowToEnterMap {
+            get {
+                return ResourceManager.GetString("LevelTooLowToEnterMap", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Congratulations, you are Level {0} now..
+        /// </summary>
+        public static string LevelUpCongrats {
+            get {
+                return ResourceManager.GetString("LevelUpCongrats", resourceCulture);
             }
         }
         
@@ -475,11 +673,65 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Congratulations, you are Master Level {0} now..
+        /// </summary>
+        public static string MasterLevelUpCongrats {
+            get {
+                return ResourceManager.GetString("MasterLevelUpCongrats", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Master level-up points of &apos;{0}&apos;: {1}..
         /// </summary>
         public static string MasterLevelUpPointsInfo {
             get {
                 return ResourceManager.GetString("MasterLevelUpPointsInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maximum of {0} {1} has been reached..
+        /// </summary>
+        public static string MaximumAttributeValueReachedFormat {
+            get {
+                return ResourceManager.GetString("MaximumAttributeValueReachedFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maximum resets of {0} reached..
+        /// </summary>
+        public static string MaximumResetsReached {
+            get {
+                return ResourceManager.GetString("MaximumResetsReached", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Can&apos;t start with less than {0} players..
+        /// </summary>
+        public static string MiniGameCantStartWithLessThanPlayers {
+            get {
+                return ResourceManager.GetString("MiniGameCantStartWithLessThanPlayers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} starts in {1} minutes..
+        /// </summary>
+        public static string MiniGameStartsInMinutesFormat {
+            get {
+                return ResourceManager.GetString("MiniGameStartsInMinutesFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Missing requirement to enter the map: {0}.
+        /// </summary>
+        public static string MissingMapRequirement {
+            get {
+                return ResourceManager.GetString("MissingMapRequirement", resourceCulture);
             }
         }
         
@@ -543,6 +795,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string MuHelperAlreadyRunning {
             get {
                 return ResourceManager.GetString("MuHelperAlreadyRunning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MU Helper can&apos;t handle status: {0}.
+        /// </summary>
+        public static string MuHelperCantHandleStatus {
+            get {
+                return ResourceManager.GetString("MuHelperCantHandleStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MU Helper is disabled.
+        /// </summary>
+        public static string MuHelperIsDisabled {
+            get {
+                return ResourceManager.GetString("MuHelperIsDisabled", resourceCulture);
             }
         }
         
@@ -646,6 +916,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No item there to repair..
+        /// </summary>
+        public static string NoItemToRepair {
+            get {
+                return ResourceManager.GetString("NoItemToRepair", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot create kalima gate in safe zone..
         /// </summary>
         public static string NoKalimaGateInSafezone {
@@ -660,6 +939,69 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string NoKalimaGateOnEventMap {
             get {
                 return ResourceManager.GetString("NoKalimaGateOnEventMap", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not enough level up points available..
+        /// </summary>
+        public static string NotEnoughLevelUpPointsAvailable {
+            get {
+                return ResourceManager.GetString("NotEnoughLevelUpPointsAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You don&apos;t have enough Money.
+        /// </summary>
+        public static string NotEnoughMoney {
+            get {
+                return ResourceManager.GetString("NotEnoughMoney", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not enough zen to enter {0}..
+        /// </summary>
+        public static string NotEnoughMoneyToEnter {
+            get {
+                return ResourceManager.GetString("NotEnoughMoneyToEnter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not enough money to proceed.
+        /// </summary>
+        public static string NotEnoughMoneyToProceed {
+            get {
+                return ResourceManager.GetString("NotEnoughMoneyToProceed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You don&apos;t have enough money to repair..
+        /// </summary>
+        public static string NotEnoughMoneyToRepair {
+            get {
+                return ResourceManager.GetString("NotEnoughMoneyToRepair", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not enough Zen to send a letter..
+        /// </summary>
+        public static string NotEnoughMoneyToSendLetter {
+            get {
+                return ResourceManager.GetString("NotEnoughMoneyToSendLetter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not entered the game..
+        /// </summary>
+        public static string NotEnteredTheGame {
+            get {
+                return ResourceManager.GetString("NotEnteredTheGame", resourceCulture);
             }
         }
         
@@ -709,11 +1051,38 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Open Store: Player not found..
+        /// </summary>
+        public static string OpenStorePlayerNotFound {
+            get {
+                return ResourceManager.GetString("OpenStorePlayerNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The other player is already in a duel..
         /// </summary>
         public static string OtherPlayerAlreadyInDuel {
             get {
                 return ResourceManager.GetString("OtherPlayerAlreadyInDuel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A party is not possible during this event..
+        /// </summary>
+        public static string PartyNotPossibleDuringEvent {
+            get {
+                return ResourceManager.GetString("PartyNotPossibleDuringEvent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Limit reached for &apos;{0}&apos;..
+        /// </summary>
+        public static string PickupLimitReached {
+            get {
+                return ResourceManager.GetString("PickupLimitReached", resourceCulture);
             }
         }
         
@@ -745,6 +1114,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} is already in a party..
+        /// </summary>
+        public static string PlayerIsAlreadyInParty {
+            get {
+                return ResourceManager.GetString("PlayerIsAlreadyInParty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to PK count must be greater than zero..
         /// </summary>
         public static string PlayerKillCountMustBePositive {
@@ -772,6 +1150,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Player names don&apos;t match. {0} &lt;&gt; {1}.
+        /// </summary>
+        public static string PlayerNamesDontMatch {
+            get {
+                return ResourceManager.GetString("PlayerNamesDontMatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player&apos;s Store not open..
+        /// </summary>
+        public static string PlayerStoreNotOpen {
+            get {
+                return ResourceManager.GetString("PlayerStoreNotOpen", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Requested language &apos;{0}&apos; not found..
         /// </summary>
         public static string RequestedLanguageNotFound {
@@ -781,11 +1177,47 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Requested {0} for Party..
+        /// </summary>
+        public static string RequestedPlayerForParty {
+            get {
+                return ResourceManager.GetString("RequestedPlayerForParty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The required argument named {0} was not used..
         /// </summary>
         public static string RequiredArgumentNotUsed {
             get {
                 return ResourceManager.GetString("RequiredArgumentNotUsed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Required level for reset is {0}..
+        /// </summary>
+        public static string RequiredLevelForReset {
+            get {
+                return ResourceManager.GetString("RequiredLevelForReset", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset is not configured..
+        /// </summary>
+        public static string ResetNotConfigured {
+            get {
+                return ResourceManager.GetString("ResetNotConfigured", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset is not enabled..
+        /// </summary>
+        public static string ResetNotEnabled {
+            get {
+                return ResourceManager.GetString("ResetNotEnabled", resourceCulture);
             }
         }
         
@@ -804,6 +1236,42 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string ResetSystemInactive {
             get {
                 return ResourceManager.GetString("ResetSystemInactive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selected Item is not a stacked Jewel..
+        /// </summary>
+        public static string SelectedItemIsNotStackedJewel {
+            get {
+                return ResourceManager.GetString("SelectedItemIsNotStackedJewel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Self defense of {0} against {1} diminishes..
+        /// </summary>
+        public static string SelfDefenseDiminishesFormat {
+            get {
+                return ResourceManager.GetString("SelfDefenseDiminishesFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Self defense is initiated by {0}&apos;s attack to {1}!.
+        /// </summary>
+        public static string SelfDefenseInitiatedFormat {
+            get {
+                return ResourceManager.GetString("SelfDefenseInitiatedFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The inventory of the seller is full..
+        /// </summary>
+        public static string SellerInventoryFull {
+            get {
+                return ResourceManager.GetString("SellerInventoryFull", resourceCulture);
             }
         }
         
@@ -871,11 +1339,56 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Stacked Jewel not found..
+        /// </summary>
+        public static string StackedJewelNotFound {
+            get {
+                return ResourceManager.GetString("StackedJewelNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Stat of &apos;{0}&apos;: {1}..
         /// </summary>
         public static string StatPointInfo {
             get {
                 return ResourceManager.GetString("StatPointInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Talking to this NPC ({0}, {1}) is not implemented yet..
+        /// </summary>
+        public static string TalkingNotImplementedFormat {
+            get {
+                return ResourceManager.GetString("TalkingNotImplementedFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your account has been temporarily banned by a game master..
+        /// </summary>
+        public static string TemporaryBanByGameMaster {
+            get {
+                return ResourceManager.GetString("TemporaryBanByGameMaster", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The vault is locked..
+        /// </summary>
+        public static string TheVaultIsLocked {
+            get {
+                return ResourceManager.GetString("TheVaultIsLocked", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Trade partner not found..
+        /// </summary>
+        public static string TradePartnerNotFound {
+            get {
+                return ResourceManager.GetString("TradePartnerNotFound", resourceCulture);
             }
         }
         
@@ -898,6 +1411,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Uncheck trade accept button first.
+        /// </summary>
+        public static string UncheckTradeAcceptButtonFirst {
+            get {
+                return ResourceManager.GetString("UncheckTradeAcceptButtonFirst", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The gate npc is not defined..
         /// </summary>
         public static string UndefinedGateNpc {
@@ -907,11 +1429,83 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to An unexpected error occured during closing the trade..
+        /// </summary>
+        public static string UnexpectedErrorDuringClosingTrade {
+            get {
+                return ResourceManager.GetString("UnexpectedErrorDuringClosingTrade", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unknown warp index {0}.
+        /// </summary>
+        public static string UnknownWarpIndex {
+            get {
+                return ResourceManager.GetString("UnknownWarpIndex", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Using this item is not implemented..
+        /// </summary>
+        public static string UsingThisItemNotImplemented {
+            get {
+                return ResourceManager.GetString("UsingThisItemNotImplemented", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Wrong Security Code..
+        /// </summary>
+        public static string WrongSecurityCode {
+            get {
+                return ResourceManager.GetString("WrongSecurityCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You are chat banned for {0} minutes.
         /// </summary>
         public static string YouAreChatBanned {
             get {
                 return ResourceManager.GetString("YouAreChatBanned", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You are not the Party Master..
+        /// </summary>
+        public static string YouAreNotPartyMaster {
+            get {
+                return ResourceManager.GetString("YouAreNotPartyMaster", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You can&apos;t wear this item..
+        /// </summary>
+        public static string YouCantWearThisItem {
+            get {
+                return ResourceManager.GetString("YouCantWearThisItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You got killed by {0}.
+        /// </summary>
+        public static string YouGotKilledBy {
+            get {
+                return ResourceManager.GetString("YouGotKilledBy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You are lacking of Jewels..
+        /// </summary>
+        public static string YouLackOfJewels {
+            get {
+                return ResourceManager.GetString("YouLackOfJewels", resourceCulture);
             }
         }
         

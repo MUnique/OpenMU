@@ -123,7 +123,7 @@ public class SummonPartySkillPlugin : TargetedSkillPluginBase
 
             if (player.CurrentMap!.Definition.TryGetRequirementError(targetPlayer, out var errorMessage))
             {
-                await targetPlayer.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(errorMessage, Interfaces.MessageType.BlueNormal)).ConfigureAwait(false);
+                await targetPlayer.ShowBlueMessageAsync(errorMessage).ConfigureAwait(false);
                 continue;
             }
 

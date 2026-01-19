@@ -187,6 +187,15 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &lt;Please select a definition&gt;.
+        /// </summary>
+        internal static string PleaseSelectItemDefinition {
+            get {
+                return ResourceManager.GetString("PleaseSelectItemDefinition", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Remove.
         /// </summary>
         internal static string Remove {

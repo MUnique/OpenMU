@@ -7,11 +7,11 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Messenger;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.PlayerActions.Messenger;
-using MUnique.OpenMU.GameLogic.Views;
+using MUnique.OpenMU.GameLogic.Properties;
 using MUnique.OpenMU.GameLogic.Views.Messenger;
-using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Network.Packets.ClientToServer;
 using MUnique.OpenMU.PlugIns;
+using PlugInResources = MUnique.OpenMU.GameServer.Properties.PlugInResources;
 
 /// <summary>
 /// Handler for letter send packets.
@@ -35,7 +35,7 @@ internal class LetterSendHandlerPlugIn : IPacketHandlerPlugIn
         LetterSendRequest message = packet;
         if (packet.Length < 83)
         {
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Letter invalid.", MessageType.BlueNormal)).ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.LetterInvalid)).ConfigureAwait(false);
             await player.InvokeViewPlugInAsync<ILetterSendResultPlugIn>(p => p.LetterSendResultAsync(LetterSendSuccess.TryAgain, message.LetterId)).ConfigureAwait(false);
             return;
         }

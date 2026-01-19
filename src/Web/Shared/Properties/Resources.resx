@@ -192,4 +192,7 @@
   <data name="TheValueMustNotContain" xml:space="preserve">
     <value>{0}: The value must not contain "{1}".</value>
   </data>
+  <data name="PleaseSelectItemDefinition" xml:space="preserve">
+    <value>&lt;Please select a definition&gt;</value>
+  </data>
 </root>

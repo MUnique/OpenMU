@@ -5,8 +5,6 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions;
 
 using MUnique.OpenMU.GameLogic.PlayerActions.Quests;
-using MUnique.OpenMU.GameLogic.Views;
-using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Abstract base class for actions to enter maps which are only available when
@@ -74,14 +72,14 @@ public abstract class EnterQuestMapAction
         var targetGate = targetMap.ExitGates.FirstOrDefault();
         if (targetGate is null)
         {
-            player.Logger.LogError("Map {targetMap} has no exit gate", targetMap.Name);
+            player.Logger.LogError("Map {targetMap} has no exit gate", targetMap.Name.GetValueInNeutralLanguage());
             return;
         }
 
         if (this._price > 0 && !player.TryRemoveMoney(this._price))
         {
             player.Logger.LogError($"Not enough money to enter the map.");
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync($"Not enough zen to enter {targetMap.Name}.", MessageType.BlueNormal)).ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.NotEnoughMoneyToEnter), targetMap.Name.GetTranslation(player.Culture)).ConfigureAwait(false);
             return;
         }
 

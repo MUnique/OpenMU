@@ -43,7 +43,7 @@ public class GuildMoveChatCommandPlugIn : ChatCommandPlugInBase<GuildMoveChatCom
             if (!guildPlayer.Name.Equals(gameMaster.Name))
             {
                 await guildPlayer.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MovedByGameMaster)).ConfigureAwait(false);
-                await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MovedPlayerResult), this.Key, guildPlayer.Name, exitGate!.Map!.Name, guildPlayer.Position.X, guildPlayer.Position.Y).ConfigureAwait(false);
+                await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MovedPlayerResult), this.Key, guildPlayer.Name, exitGate!.Map!.Name.GetTranslation(gameMaster.Culture), guildPlayer.Position.X, guildPlayer.Position.Y).ConfigureAwait(false);
             }
         }).ConfigureAwait(false);
     }

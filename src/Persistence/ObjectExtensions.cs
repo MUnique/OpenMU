@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+using MUnique.OpenMU.Interfaces;
+
 namespace MUnique.OpenMU.Persistence;
 
 using System.Collections.Concurrent;
@@ -50,7 +52,9 @@ public static class ObjectExtensions
     {
         if (!NameProperties.TryGetValue(item.GetType(), out var nameProperty))
         {
-            var properties = item.GetType().GetProperties().Where(p => p.PropertyType == typeof(string)).ToList();
+            var properties = item.GetType().GetProperties()
+                .Where(p => p.PropertyType == typeof(string) || p.PropertyType == typeof(LocalizedString))
+                .ToList();
             nameProperty = properties.FirstOrDefault(p => p.Name.Equals("Name"))
                            ?? properties.FirstOrDefault(p => p.Name.Equals("Caption"))
                            ?? properties.FirstOrDefault(p => p.Name.Equals("Designation"))
@@ -63,6 +67,14 @@ public static class ObjectExtensions
             return item.ToString() ?? string.Empty;
         }
 
-        return (string?)nameProperty.GetValue(item) ?? string.Empty;
+        var result = nameProperty.GetValue(item) switch
+        {
+            LocalizedString localizedString => localizedString.ToString(),
+            string str => str!,
+            null => string.Empty,
+            _ => item.ToString(),
+        };
+
+        return result ?? string.Empty;
     }
 }

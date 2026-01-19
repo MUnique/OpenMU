@@ -57,13 +57,12 @@ public class QuestMonsterKillCountPlugIn : IAttackableGotKilledPlugIn, ISupportC
                 if (killRequirement.MinimumNumber >= requirementState!.KillCount)
                 {
                     var message = string.Format(
-                        configuration.Message,
-                        questState.ActiveQuest.Name,
-                        monster.Definition.Designation,
+                        configuration.Message.GetTranslation(player.Culture),
+                        questState.ActiveQuest.Name.GetTranslation(player.Culture),
+                        monster.Definition.Designation.GetTranslation(player.Culture),
                         requirementState.KillCount,
                         killRequirement.MinimumNumber);
 
-                    // TODO: Localize
                     await player.ShowBlueMessageAsync(message).ConfigureAwait(false);
                 }
             }

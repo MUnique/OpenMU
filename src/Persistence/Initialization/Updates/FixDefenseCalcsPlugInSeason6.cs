@@ -94,7 +94,7 @@ public class FixDefenseCalcsPlugInSeason6 : FixDefenseCalcsPlugInBase
         }
 
         // Update options
-        var ancientSetsOpts = gameConfiguration.ItemOptions.Where(io => io.Name.EndsWith("(Ancient Set)"));
+        var ancientSetsOpts = gameConfiguration.ItemOptions.Where(io => io.Name.GetValueInNeutralLanguageAsSpan().EndsWith("(Ancient Set)"));
         foreach (var ancientSetOpts in ancientSetsOpts)
         {
             if (ancientSetOpts.PossibleOptions.FirstOrDefault(o => o.PowerUpDefinition?.TargetAttribute == defenseBase) is { } defenseBaseAncOpt)

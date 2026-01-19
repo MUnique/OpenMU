@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
-using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Pathfinding;
 
@@ -98,16 +97,18 @@ public abstract class ChatCommandPlugInBase<T> : IChatCommandPlugIn
         if (coordinates.X == default && coordinates.Y == default)
         {
             return this.GetWarpInfo(gameMaster, map)?.Gate
-                   ?? throw new ArgumentException($"Map {map} not found.");
+                   ?? throw new ArgumentException($"Map '{map}' not found.");
         }
 
         var mapDefinition = ushort.TryParse(map, out var mapId)
             ? (await gameMaster.GameContext.GetMapAsync(mapId).ConfigureAwait(false))?.Definition
-            : gameMaster.GameContext.Configuration.Maps.FirstOrDefault(x => x.Name.Equals(map, StringComparison.OrdinalIgnoreCase));
+            : gameMaster.GameContext.Configuration.Maps.FirstOrDefault(x =>
+                x.Name.GetTranslationAsSpan(gameMaster.Culture).Equals(map, StringComparison.OrdinalIgnoreCase)
+                || x.Name.GetValueInNeutralLanguageAsSpan().Equals(map, StringComparison.OrdinalIgnoreCase));
 
         if (mapDefinition == null)
         {
-            throw new ArgumentException($"Map {map} not found.");
+            throw new ArgumentException($"Map '{map}' not found.");
         }
 
         return new ExitGate
@@ -131,7 +132,7 @@ public abstract class ChatCommandPlugInBase<T> : IChatCommandPlugIn
         var warpList = player.GameContext.Configuration.WarpList;
         return ushort.TryParse(map, out var mapId)
             ? warpList.FirstOrDefault(info => info.Gate?.Map?.Number == mapId)
-            : warpList.FirstOrDefault(info => info.Name.Equals(map, StringComparison.OrdinalIgnoreCase));
+            : warpList.FirstOrDefault(info => info.Name.ToString()?.Equals(map, StringComparison.OrdinalIgnoreCase) ?? false);
     }
 
     /// <summary>

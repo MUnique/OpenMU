@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.DataModel.Configuration;
 
 using MUnique.OpenMU.Annotations;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Defines a spawn wave of a <see cref="MiniGameDefinition"/>.
@@ -20,12 +21,12 @@ public partial class MiniGameSpawnWave
     /// <summary>
     /// Gets or sets the description about this wave.
     /// </summary>
-    public string? Description { get; set; }
+    public LocalizedString? Description { get; set; }
 
     /// <summary>
     /// Gets or sets a message which is shown to the player when the wave starts.
     /// </summary>
-    public string? Message { get; set; }
+    public LocalizedString? Message { get; set; }
 
     /// <summary>
     /// Gets or sets the starting time of the wave.

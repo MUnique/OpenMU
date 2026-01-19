@@ -40,7 +40,7 @@ public class CharInfoChatCommandPlugIn : ChatCommandPlugInBase<CharInfoChatComma
             return;
         }
 
-        await this.ShowMessageToAsync(gameMaster, $"Account Name: {account.LoginName}").ConfigureAwait(false);
+        await gameMaster.ShowBlueMessageAsync($"Account Name: {account.LoginName}").ConfigureAwait(false);
 
         await this.ShowAllLinesMessageToAsync(gameMaster, GetCharacterInfo(character)).ConfigureAwait(false);
 
@@ -52,7 +52,7 @@ public class CharInfoChatCommandPlugIn : ChatCommandPlugInBase<CharInfoChatComma
         var stringBuilder = new StringBuilder()
             .AppendLine($"Id: {character.Id}")
             .AppendLine($"Name: {character.Name}")
-            .AppendLine($"Class: {character.CharacterClass?.Name}")
+            .AppendLine($"Class: {character.CharacterClass?.Name.ToString()}")
             .AppendLine($"Slot: {character.CharacterSlot}")
             .AppendLine($"Create Date: {character.CreateDate}")
             .AppendLine($"Exp: {character.Experience}")
@@ -88,19 +88,7 @@ public class CharInfoChatCommandPlugIn : ChatCommandPlugInBase<CharInfoChatComma
                 break;
             }
 
-            await this.ShowMessageToAsync(gameMaster, line).ConfigureAwait(false);
+            await gameMaster.ShowBlueMessageAsync(line).ConfigureAwait(false);
         }
-    }
-
-    /// <summary>
-    /// Shows a message to a player.
-    /// </summary>
-    /// <param name="player">The player.</param>
-    /// <param name="message">The message.</param>
-    /// <param name="messageType">The message type.</param>
-    [Obsolete("Use localized messages")]
-    private ValueTask ShowMessageToAsync(Player player, string message, MessageType messageType = MessageType.BlueNormal)
-    {
-        return player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, messageType));
     }
 }

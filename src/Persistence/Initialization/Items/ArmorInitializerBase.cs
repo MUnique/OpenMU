@@ -84,7 +84,7 @@ public abstract class ArmorInitializerBase : InitializerBase
         {
             var setForDefenseRate = this.Context.CreateNew<ItemSetGroup>();
             this.GameConfiguration.ItemSetGroups.Add(setForDefenseRate);
-            setForDefenseRate.Name = group.First().Name.Split(' ')[0] + " Defense Rate Bonus";
+            setForDefenseRate.Name = group.First().Name.Value!.Split(' ')[0] + " Defense Rate Bonus";
             setForDefenseRate.MinimumItemCount = group.Count();
             setForDefenseRate.Options = defenseRateBonusDef;
             setForDefenseRate.AlwaysApplies = true;
@@ -267,7 +267,7 @@ public abstract class ArmorInitializerBase : InitializerBase
     {
         var setForDefense = this.Context.CreateNew<ItemSetGroup>();
         this.GameConfiguration.ItemSetGroups.Add(setForDefense);
-        setForDefense.Name = $"{group.First().Name.Split(' ')[0]} Defense Bonus (Level {setLevel})";
+        setForDefense.Name = $"{group.First().Name.Value!.Split(' ')[0]} Defense Bonus (Level {setLevel})";
         setForDefense.MinimumItemCount = group.Count;
         setForDefense.Options = options;
         setForDefense.AlwaysApplies = true;

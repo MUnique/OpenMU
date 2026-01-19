@@ -10,6 +10,7 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlayerActions;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -52,7 +53,7 @@ public class OpenWarehouseChatCommandPlugIn : ChatCommandPlugInBase<OpenWarehous
 
         if (configuration.MinimumVipLevel > 0 && (player.Attributes?[Stats.IsVip] ?? 0) < configuration.MinimumVipLevel)
         {
-            await player.ShowBlueMessageAsync(configuration.InsufficientVipLevelMessage).ConfigureAwait(false);
+            await player.ShowBlueMessageAsync(configuration.InsufficientVipLevelMessage.GetTranslation(player.Culture)).ConfigureAwait(false);
             return;
         }
 
@@ -92,6 +93,6 @@ public class OpenWarehouseChatCommandPlugIn : ChatCommandPlugInBase<OpenWarehous
         /// Gets or sets the message to show when the player does not have the required VIP level for this command (excluding GM).
         /// </summary>
         [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.OpenWarehouseChatCommandConfiguration_InsufficientVipLevelMessage_Name), Description = nameof(PlugInResources.OpenWarehouseChatCommandConfiguration_InsufficientVipLevelMessage_Description))]
-        public string InsufficientVipLevelMessage { get; set; } = "Insufficient VIP level to use this command";
+        public LocalizedString InsufficientVipLevelMessage { get; set; } = "Insufficient VIP level to use this command";
     }
 }

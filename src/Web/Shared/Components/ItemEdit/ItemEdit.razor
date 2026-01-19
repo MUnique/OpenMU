@@ -1,7 +1,6 @@
 ﻿@using MUnique.OpenMU.DataModel
 @using MUnique.OpenMU.DataModel.Configuration.Items
 @using MUnique.OpenMU.GameLogic
-@using MUnique.OpenMU.Web.Shared.Properties
 @using MUnique.OpenMU.Web.Shared.Services
 
 @if (this._viewModel is null)
@@ -9,7 +8,7 @@
     return;
 }
 
-<PageTitle>@this._viewModel.Definition?.Name</PageTitle>
+<PageTitle>@this._viewModel.Definition?.Name.ToString()</PageTitle>
 <EditForm Model="_viewModel" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator />
     <ByteField @bind-Value="@_viewModel.ItemSlot" />

@@ -41,7 +41,7 @@ public class MoveChatCommandPlugIn : ChatCommandPlugInBase<MoveChatCommandArgs>
             if (!targetPlayer.Name.Equals(sender.Name))
             {
                 await targetPlayer.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MovedByGameMaster)).ConfigureAwait(false);
-                await sender.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MovedPlayerResult), this.Key, targetPlayer.Name, exitGate!.Map!.Name, targetPlayer.Position.X, targetPlayer.Position.Y).ConfigureAwait(false);
+                await sender.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MovedPlayerResult), this.Key, targetPlayer.Name, exitGate!.Map!.Name.GetTranslation(sender.Culture), targetPlayer.Position.X, targetPlayer.Position.Y).ConfigureAwait(false);
             }
         }
         else

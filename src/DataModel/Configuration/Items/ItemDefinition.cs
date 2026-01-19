@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items;
 
 using MUnique.OpenMU.Annotations;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Defines an item.
@@ -60,7 +61,7 @@ public partial class ItemDefinition
     /// <summary>
     /// Gets or sets the name of the item.
     /// </summary>
-    public string Name { get; set; } = string.Empty;
+    public LocalizedString Name { get; set; }
 
     /// <summary>
     /// Gets or sets the item drop level, which indicates the minimum monster lvl of which this item can be dropped.
@@ -165,7 +166,7 @@ public partial class ItemDefinition
     /// <returns>The name of the item of a certain level.</returns>
     public string GetNameForLevel(byte itemLevel)
     {
-        var itemName = this.Name;
+        var itemName = this.Name.ToString();
         if (itemName?.Contains(';') ?? false)
         {
             var tokens = itemName.Split(';');

@@ -117,8 +117,6 @@ public class HappyHourPlugIn : PeriodicTaskBasePlugIn<HappyHourConfiguration, Pe
             return;
         }
 
-        var message = configuration.Message ?? "Happy Hour event has been started!";
-
         if (!this.IsPlayerOnMap(player))
         {
             return;
@@ -126,6 +124,7 @@ public class HappyHourPlugIn : PeriodicTaskBasePlugIn<HappyHourConfiguration, Pe
 
         try
         {
+            var message = configuration.Message?.GetTranslation(player.Culture) ?? player.GetLocalizedMessage(nameof(PlayerMessage.HappyHourEventHasBeenStarted));
             await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, Interfaces.MessageType.GoldenCenter)).ConfigureAwait(false);
         }
         catch (Exception ex)
