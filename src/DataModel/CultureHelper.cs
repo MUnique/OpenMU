@@ -5,7 +5,9 @@
 namespace MUnique.OpenMU.DataModel;
 
 using System.Globalization;
+using System.Resources;
 using Nito.Disposables;
+using Nito.Disposables.Internals;
 
 /// <summary>
 /// Helper class for culture related operations.
@@ -31,5 +33,25 @@ public static class CultureHelper
             CultureInfo.CurrentUICulture = oldUiCulture;
             CultureInfo.CurrentCulture = oldCulture;
         });
+    }
+
+    /// <summary>
+    /// Gets the available cultures for a specific resource.
+    /// </summary>
+    /// <typeparam name="TResources">The type of the resources.</typeparam>
+    /// <returns>An enumeration of <see cref="CultureInfo.TwoLetterISOLanguageName"/> of available cultures of the given resource type.</returns>
+    public static IEnumerable<CultureInfo> GetAvailableCultures<TResources>()
+    {
+        var resourceManager = new ResourceManager(typeof(TResources));
+
+        var cultures = CultureInfo.GetCultures(CultureTypes.AllCultures);
+        var result = cultures
+            .Except([CultureInfo.InvariantCulture])
+            .Where(culture => culture is { IsNeutralCulture: true, TwoLetterISOLanguageName: "en" }
+                              || !object.Equals(resourceManager.GetResourceSet(culture, true, false), null))
+            .WhereNotNull()
+            .ToList();
+
+        return result;
     }
 }

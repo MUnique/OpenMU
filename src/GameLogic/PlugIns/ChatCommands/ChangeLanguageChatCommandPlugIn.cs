@@ -29,12 +29,7 @@ public class ChangeLanguageChatCommandPlugIn : ChatCommandPlugInBase<ChangeLangu
     /// <inheritdoc />
     protected override async ValueTask DoHandleCommandAsync(Player player, ChangeLanguageChatCommandArgs arguments)
     {
-        var languages = CultureInfo
-            .GetCultures(CultureTypes.AllCultures)
-            .Where(c => !object.Equals(c, CultureInfo.InvariantCulture))
-            .Where(c => c is { IsNeutralCulture: true, TwoLetterISOLanguageName: "en" }
-                || PlayerMessage.ResourceManager.GetResourceSet(c, true, false) is not null)
-            .ToList();
+        var languages = CultureHelper.GetAvailableCultures<PlayerMessage>();
 
         if (string.IsNullOrWhiteSpace(arguments.IsoLanguageCode))
         {
@@ -56,7 +51,7 @@ public class ChangeLanguageChatCommandPlugIn : ChatCommandPlugInBase<ChangeLangu
         }
     }
 
-    private static async ValueTask ShowAvailableLanguagesAsync(Player player, List<CultureInfo> languages)
+    private static async ValueTask ShowAvailableLanguagesAsync(Player player, IEnumerable<CultureInfo> languages)
     {
         await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.AvailableLanguagesCaption)).ConfigureAwait(false);
         foreach (var lang in languages.OrderBy(l => l.TwoLetterISOLanguageName))

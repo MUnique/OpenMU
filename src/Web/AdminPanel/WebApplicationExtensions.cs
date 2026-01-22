@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Persistence;
@@ -43,8 +44,10 @@ public static class WebApplicationExtensions
 
         var services = builder.Services;
 
-        // TODO: Determine cultures by checking the resource manager
-        string[] supportedCultures = ["en", "de", "es"];
+        var supportedCultures = CultureHelper
+            .GetAvailableCultures<Properties.Resources>()
+            .Select(culture => culture.TwoLetterISOLanguageName)
+            .ToArray();
         services.AddLocalization()
             .Configure<RequestLocalizationOptions>(o =>
             {
