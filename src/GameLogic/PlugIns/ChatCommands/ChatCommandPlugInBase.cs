@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
-using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Pathfinding;
 
 /// <summary>
@@ -28,12 +27,10 @@ public abstract class ChatCommandPlugInBase<T> : IChatCommandPlugIn
             var arguments = command.ParseArguments<T>();
             await this.DoHandleCommandAsync(player, arguments).ConfigureAwait(false);
         }
-        catch (LocalizableExceptionBase ex)
-        {
-            await player.ShowLocalizedBlueMessageAsync(ex.ResourceKey, ex.FormatArguments).ConfigureAwait(false);
-        }
         catch (ArgumentException argEx)
         {
+            // TODO: Our code should not throw these, don't use them for control flow.
+            //       Instead, we should validate parameters and send explicit messages to the player.
             await player.ShowBlueMessageAsync($"[{this.Key}] {argEx.Message}").ConfigureAwait(false);
         }
         catch (Exception ex)
