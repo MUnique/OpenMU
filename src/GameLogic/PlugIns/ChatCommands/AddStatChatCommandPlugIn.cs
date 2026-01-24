@@ -5,8 +5,6 @@
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
 using System.Runtime.InteropServices;
-using MUnique.OpenMU.AttributeSystem;
-using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.PlayerActions.Character;
 using MUnique.OpenMU.PlugIns;
 
@@ -17,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 [PlugIn]
 [Display(Name = nameof(PlugInResources.AddStatChatCommandPlugIn_Name), Description = nameof(PlugInResources.AddStatChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, "Adds the specified amount of stat points to the specified attribute of the character.", typeof(Arguments), MinimumStatus)]
-public class AddStatChatCommandPlugIn : IChatCommandPlugIn
+public class AddStatChatCommandPlugIn : ChatCommandPlugInBase<AddStatChatCommandPlugIn.Arguments>
 {
     private const string Command = "/add";
 
@@ -26,21 +24,25 @@ public class AddStatChatCommandPlugIn : IChatCommandPlugIn
     private readonly IncreaseStatsAction _action = new();
 
     /// <inheritdoc />
-    public virtual string Key => Command;
+    public override string Key => Command;
 
     /// <inheritdoc />
-    public virtual CharacterStatus MinCharacterStatusRequirement => MinimumStatus;
+    public override CharacterStatus MinCharacterStatusRequirement => MinimumStatus;
 
     /// <inheritdoc />
-    public virtual async ValueTask HandleCommandAsync(Player player, string command)
+    protected override async ValueTask DoHandleCommandAsync(Player player, Arguments arguments)
     {
         if (player.SelectedCharacter is null)
         {
             return;
         }
 
-        var arguments = command.ParseArguments<Arguments>();
-        var attribute = this.GetAttribute(player, arguments.StatType);
+        var attribute = await this.TryGetAttributeAsync(player, arguments.StatType).ConfigureAwait(false);
+        if (attribute is null)
+        {
+            return;
+        }
+
         var selectedCharacter = player.SelectedCharacter;
 
         if (!selectedCharacter.CanIncreaseStats(arguments.Amount))
@@ -57,31 +59,20 @@ public class AddStatChatCommandPlugIn : IChatCommandPlugIn
         await this._action.IncreaseStatsAsync(player, attribute, arguments.Amount).ConfigureAwait(false);
     }
 
-    private AttributeDefinition GetAttribute(Player player, string? statType)
+    /// <summary>
+    /// Arguments for this command.
+    /// </summary>
+    public class Arguments : ArgumentsBase
     {
-        var attribute = statType switch
-        {
-            "str" => Stats.BaseStrength,
-            "agi" => Stats.BaseAgility,
-            "vit" => Stats.BaseVitality,
-            "ene" => Stats.BaseEnergy,
-            "cmd" => Stats.BaseLeadership,
-            _ => throw new ArgumentException($"Unknown stat: '{statType}'."),
-        };
-
-        if (player.SelectedCharacter!.Attributes.All(sa => sa.Definition != attribute))
-        {
-            throw new ArgumentException($"The character has no stat attribute '{statType}'.");
-        }
-
-        return attribute;
-    }
-
-    private class Arguments : ArgumentsBase
-    {
+        /// <summary>
+        /// Gets or sets the type of the stat.
+        /// </summary>
         [ValidValues("str", "agi", "vit", "ene", "cmd")]
         public string? StatType { get; set; }
 
+        /// <summary>
+        /// Gets or sets the amount.
+        /// </summary>
         public ushort Amount { get; set; }
     }
 }

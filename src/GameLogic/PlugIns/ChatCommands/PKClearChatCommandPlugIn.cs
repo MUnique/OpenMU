@@ -29,7 +29,11 @@ public class PkClearChatCommandPlugIn : ChatCommandPlugInBase<PkClearChatCommand
     /// <inheritdoc />
     protected override async ValueTask DoHandleCommandAsync(Player gameMaster, PkClearChatCommandArgs arguments)
     {
-        var targetPlayer = this.GetPlayerByCharacterName(gameMaster, arguments.CharacterName ?? string.Empty);
+        var targetPlayer = await this.GetPlayerByCharacterNameAsync(gameMaster, arguments.CharacterName ?? string.Empty).ConfigureAwait(false);
+        if (targetPlayer is null)
+        {
+            return;
+        }
 
         targetPlayer.SelectedCharacter!.State = HeroState.Normal;
         targetPlayer.SelectedCharacter!.StateRemainingSeconds = 0;

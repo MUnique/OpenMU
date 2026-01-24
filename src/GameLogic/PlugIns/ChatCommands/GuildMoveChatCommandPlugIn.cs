@@ -30,13 +30,18 @@ public class GuildMoveChatCommandPlugIn : ChatCommandPlugInBase<GuildMoveChatCom
     {
         var guildId = await this.GetGuildIdByNameAsync(gameMaster, arguments.GuildName!).ConfigureAwait(false);
 
-        if (gameMaster.GameContext is not IGameServerContext gameServerContext)
+        if (guildId is null || gameMaster.GameContext is not IGameServerContext gameServerContext)
         {
             return;
         }
 
         var exitGate = await this.GetExitGateAsync(gameMaster, arguments.MapIdOrName!, arguments.Coordinates).ConfigureAwait(false);
-        await gameServerContext.ForEachGuildPlayerAsync(guildId, async guildPlayer =>
+        if (exitGate is null)
+        {
+            return;
+        }
+
+        await gameServerContext.ForEachGuildPlayerAsync(guildId.Value, async guildPlayer =>
         {
             await guildPlayer.WarpToAsync(exitGate).ConfigureAwait(false);
 

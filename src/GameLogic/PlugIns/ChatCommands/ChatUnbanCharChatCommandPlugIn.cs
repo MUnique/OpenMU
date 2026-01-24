@@ -30,16 +30,21 @@ public class ChatUnbanCharChatCommandPlugIn : ChatCommandPlugInBase<ChatUnbanCha
     {
         if (string.IsNullOrEmpty(arguments.CharacterName))
         {
-            throw new ArgumentException("Character name is required.");
+            await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CharacterNameIsRequired)).ConfigureAwait(false);
+            return;
         }
 
         var player = gameMaster.GameContext.GetPlayerByCharacterName(arguments.CharacterName);
         if (player == null)
         {
-            throw new ArgumentException($"character not found.");
+            await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CharacterNotFound), arguments.CharacterName).ConfigureAwait(false);
+            return;
         }
 
-        await this.ChangeAccountChatBanUntilAsync(player, null).ConfigureAwait(false);
+        if (!await this.ChangeAccountChatBanUntilAsync(player, null).ConfigureAwait(false))
+        {
+            return;
+        }
 
         // Send unban notice to Game Master
         await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.ChatBanRemoved), this.Key, arguments.CharacterName).ConfigureAwait(false);

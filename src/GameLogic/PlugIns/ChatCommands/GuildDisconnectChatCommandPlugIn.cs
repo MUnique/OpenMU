@@ -29,12 +29,12 @@ public class GuildDisconnectChatCommandPlugIn : ChatCommandPlugInBase<GuildDisco
     protected override async ValueTask DoHandleCommandAsync(Player gameMaster, GuildDisconnectChatCommandArgs arguments)
     {
         var guildId = await this.GetGuildIdByNameAsync(gameMaster, arguments.GuildName!).ConfigureAwait(false);
-        if (gameMaster.GameContext is not IGameServerContext gameServerContext)
+        if (guildId is null || gameMaster.GameContext is not IGameServerContext gameServerContext)
         {
             return;
         }
 
-        await gameServerContext.ForEachGuildPlayerAsync(guildId, async guildPlayer =>
+        await gameServerContext.ForEachGuildPlayerAsync(guildId.Value, async guildPlayer =>
         {
             await guildPlayer.DisconnectAsync().ConfigureAwait(false);
 

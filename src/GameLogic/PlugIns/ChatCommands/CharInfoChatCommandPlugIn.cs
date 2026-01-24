@@ -8,8 +8,6 @@ using System.IO;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.Arguments;
-using MUnique.OpenMU.GameLogic.Views;
-using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -32,9 +30,9 @@ public class CharInfoChatCommandPlugIn : ChatCommandPlugInBase<CharInfoChatComma
     /// <inheritdoc />
     protected override async ValueTask DoHandleCommandAsync(Player gameMaster, CharInfoChatCommandArgs arguments)
     {
-        var player = this.GetPlayerByCharacterName(gameMaster, arguments.CharacterName ?? string.Empty);
+        var player = await this.GetPlayerByCharacterNameAsync(gameMaster, arguments.CharacterName ?? string.Empty).ConfigureAwait(false);
 
-        if (player.Account is not { } account
+        if (player?.Account is not { } account
             || player.SelectedCharacter is not { } character)
         {
             return;

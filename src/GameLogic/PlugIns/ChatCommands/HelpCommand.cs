@@ -29,7 +29,11 @@ public class HelpCommand : IChatCommandPlugIn
     {
         try
         {
-            var arguments = command.ParseArguments<Arguments>();
+            if (await command.TryParseArgumentsAsync<Arguments>(player).ConfigureAwait(false) is not { } arguments)
+            {
+                return;
+            }
+
             var commandName = arguments.CommandName;
             var commandPluginAttribute = player.GetAvailableChatCommands()
                 .FirstOrDefault(x => x.Command.Equals("/" + commandName, StringComparison.InvariantCultureIgnoreCase));
@@ -39,11 +43,11 @@ public class HelpCommand : IChatCommandPlugIn
                 return;
             }
 
-            // TODO: Localize
             await player.ShowBlueMessageAsync(commandPluginAttribute.Usage).ConfigureAwait(false);
         }
         catch (ArgumentException e)
         {
+            // Should not happen, as we don't throw them anymore. But just in case...
             await player.ShowBlueMessageAsync(e.Message).ConfigureAwait(false);
         }
     }

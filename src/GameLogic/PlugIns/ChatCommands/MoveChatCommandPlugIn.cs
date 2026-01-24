@@ -34,8 +34,13 @@ public class MoveChatCommandPlugIn : ChatCommandPlugInBase<MoveChatCommandArgs>
 
         if (isGameMasterWarpingCharacter)
         {
-            var targetPlayer = this.GetPlayerByCharacterName(sender, arguments.Target!);
+            var targetPlayer = await this.GetPlayerByCharacterNameAsync(sender, arguments.Target!).ConfigureAwait(false);
             var exitGate = await this.GetExitGateAsync(sender, arguments.MapIdOrName!, arguments.Coordinates).ConfigureAwait(false);
+            if (targetPlayer is null || exitGate is null)
+            {
+                return;
+            }
+
             await targetPlayer.WarpToAsync(exitGate).ConfigureAwait(false);
 
             if (!targetPlayer.Name.Equals(sender.Name))

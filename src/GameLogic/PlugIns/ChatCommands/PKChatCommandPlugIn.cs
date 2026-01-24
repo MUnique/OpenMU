@@ -43,7 +43,7 @@ public class PkChatCommandPlugIn : ChatCommandPlugInBase<PkChatCommandArgs>
             return;
         }
 
-        var targetPlayer = this.GetPlayerByCharacterName(gameMaster, arguments.CharacterName ?? string.Empty);
+        var targetPlayer = await this.GetPlayerByCharacterNameAsync(gameMaster, arguments.CharacterName ?? string.Empty).ConfigureAwait(false);
         var character = targetPlayer?.SelectedCharacter;
         if (character is null)
         {

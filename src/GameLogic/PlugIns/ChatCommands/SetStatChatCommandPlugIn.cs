@@ -32,11 +32,6 @@ public class SetStatChatCommandPlugIn : ChatCommandPlugInBase<SetStatChatCommand
     /// <inheritdoc />
     protected override async ValueTask DoHandleCommandAsync(Player player, Arguments arguments)
     {
-        if (arguments is null)
-        {
-            return;
-        }
-
         var targetPlayer = player;
         if (arguments.CharacterName is { } characterName)
         {
@@ -49,13 +44,13 @@ public class SetStatChatCommandPlugIn : ChatCommandPlugInBase<SetStatChatCommand
             }
         }
 
-        if (targetPlayer.SelectedCharacter is not { } selectedCharacter)
+        var attribute = await this.TryGetAttributeAsync(targetPlayer, arguments.StatType).ConfigureAwait(false);
+        if (attribute is null)
         {
             return;
         }
 
-        var attribute = this.GetAttribute(selectedCharacter, arguments.StatType);
-        if (attribute.MaximumValue is null && arguments.Amount < 0)
+        if (attribute.MaximumValue is null && arguments.Amount < 1)
         {
             await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.InvalidStatValue), arguments.StatType).ConfigureAwait(false);
             return;
@@ -69,27 +64,7 @@ public class SetStatChatCommandPlugIn : ChatCommandPlugInBase<SetStatChatCommand
 
         targetPlayer.Attributes![attribute] = arguments.Amount;
         await targetPlayer.InvokeViewPlugInAsync<IUpdateCharacterBaseStatsPlugIn>(p => p.UpdateCharacterBaseStatsAsync()).ConfigureAwait(false);
-        await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.SetStatResult), arguments.StatType, arguments.Amount, targetPlayer.SelectedCharacter.Name).ConfigureAwait(false);
-    }
-
-    private AttributeDefinition GetAttribute(Character selectedCharacter, string? statType)
-    {
-        var attribute = statType switch
-        {
-            "str" => Stats.BaseStrength,
-            "agi" => Stats.BaseAgility,
-            "vit" => Stats.BaseVitality,
-            "ene" => Stats.BaseEnergy,
-            "cmd" => Stats.BaseLeadership,
-            _ => throw new ArgumentException($"Unknown stat: '{statType}'."),
-        };
-
-        if (selectedCharacter.Attributes.All(sa => sa.Definition != attribute))
-        {
-            throw new ArgumentException($"The character has no stat attribute '{statType}'.");
-        }
-
-        return attribute;
+        await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.SetStatResult), arguments.StatType, arguments.Amount, targetPlayer.SelectedCharacter?.Name).ConfigureAwait(false);
     }
 
     /// <summary>

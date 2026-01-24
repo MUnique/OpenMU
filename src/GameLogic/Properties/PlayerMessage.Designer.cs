@@ -214,11 +214,29 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The character has no stat attribute &apos;{0}&apos;..
+        /// </summary>
+        public static string CharacterHasNoStatAttribute {
+            get {
+                return ResourceManager.GetString("CharacterHasNoStatAttribute", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A character with the same name already exists..
         /// </summary>
         public static string CharacterNameAlreadyExists {
             get {
                 return ResourceManager.GetString("CharacterNameAlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Character name is required..
+        /// </summary>
+        public static string CharacterNameIsRequired {
+            get {
+                return ResourceManager.GetString("CharacterNameIsRequired", resourceCulture);
             }
         }
         
@@ -286,6 +304,33 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The required argument named {0} was not used..
+        /// </summary>
+        public static string CommandExtensions_RequiredArgumentMissing {
+            get {
+                return ResourceManager.GetString("CommandExtensions_RequiredArgumentMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The argument {0} was given a invalid type, it expects the value to be of the type {1}..
+        /// </summary>
+        public static string CommandExtensionsArgumentInvalidType {
+            get {
+                return ResourceManager.GetString("CommandExtensionsArgumentInvalidType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The command needs {0} arguments and was given {1}..
+        /// </summary>
+        public static string CommandExtensionsInvalidArgumentCount {
+            get {
+                return ResourceManager.GetString("CommandExtensionsInvalidArgumentCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The command needs {0} arguments and was given {1}..
         /// </summary>
         public static string CommandNeedsArguments {
@@ -345,6 +390,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string DuelRequestMustBeOnSameMap {
             get {
                 return ResourceManager.GetString("DuelRequestMustBeOnSameMap", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Duration must be longer than 0 minutes..
+        /// </summary>
+        public static string DurationMustBeLongerThan0 {
+            get {
+                return ResourceManager.GetString("DurationMustBeLongerThan0", resourceCulture);
             }
         }
         
@@ -1434,6 +1488,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string UnexpectedErrorDuringClosingTrade {
             get {
                 return ResourceManager.GetString("UnexpectedErrorDuringClosingTrade", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unknown attribute: &apos;{0}&apos;..
+        /// </summary>
+        public static string UnknownAttribute {
+            get {
+                return ResourceManager.GetString("UnknownAttribute", resourceCulture);
             }
         }
         

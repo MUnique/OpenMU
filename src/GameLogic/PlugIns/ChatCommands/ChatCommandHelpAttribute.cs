@@ -53,7 +53,6 @@ public class ChatCommandHelpAttribute : Attribute
     public ChatCommandHelpAttribute(string command, string description, Type? argumentsType, CharacterStatus minimumCharacterStatus)
     {
         this.Command = command;
-        this.Description = description;
         this.ArgumentsType = argumentsType;
         this.MinimumCharacterStatus = minimumCharacterStatus;
     }
@@ -62,11 +61,6 @@ public class ChatCommandHelpAttribute : Attribute
     /// Gets the command.
     /// </summary>
     public string Command { get; }
-
-    /// <summary>
-    /// Gets the description of the command.
-    /// </summary>
-    public string Description { get; }
 
     /// <summary>
     /// Gets the minimum character status.

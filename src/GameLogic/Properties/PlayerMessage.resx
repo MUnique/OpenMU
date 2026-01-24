@@ -603,4 +603,25 @@
   <data name="TemporaryBanByGameMaster" xml:space="preserve">
     <value>Your account has been temporarily banned by a game master.</value>
   </data>
+  <data name="CommandExtensions_RequiredArgumentMissing" xml:space="preserve">
+    <value>The required argument named {0} was not used.</value>
+  </data>
+  <data name="CommandExtensionsArgumentInvalidType" xml:space="preserve">
+    <value>The argument {0} was given a invalid type, it expects the value to be of the type {1}.</value>
+  </data>
+  <data name="CommandExtensionsInvalidArgumentCount" xml:space="preserve">
+    <value>The command needs {0} arguments and was given {1}.</value>
+  </data>
+  <data name="CharacterNameIsRequired" xml:space="preserve">
+    <value>Character name is required.</value>
+  </data>
+  <data name="DurationMustBeLongerThan0" xml:space="preserve">
+    <value>Duration must be longer than 0 minutes.</value>
+  </data>
+  <data name="UnknownAttribute" xml:space="preserve">
+    <value>Unknown attribute: '{0}'.</value>
+  </data>
+  <data name="CharacterHasNoStatAttribute" xml:space="preserve">
+    <value>The character has no stat attribute '{0}'.</value>
+  </data>
 </root>

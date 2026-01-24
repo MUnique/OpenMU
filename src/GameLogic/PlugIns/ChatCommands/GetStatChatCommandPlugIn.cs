@@ -4,10 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
-using System.Runtime.InteropServices;
-using MUnique.OpenMU.AttributeSystem;
-using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.PlugIns;
+using System.Runtime.InteropServices;
 
 /// <summary>
 /// A chat command plugin which handles the command to get stat points.
@@ -30,11 +28,6 @@ public class GetStatChatCommandPlugIn : ChatCommandPlugInBase<GetStatChatCommand
     /// <inheritdoc />
     protected override async ValueTask DoHandleCommandAsync(Player player, Arguments arguments)
     {
-        if (arguments is null)
-        {
-            return;
-        }
-
         var targetPlayer = player;
         if (arguments.CharacterName is { } characterName)
         {
@@ -47,33 +40,12 @@ public class GetStatChatCommandPlugIn : ChatCommandPlugInBase<GetStatChatCommand
             }
         }
 
-        if (targetPlayer.SelectedCharacter is not { } selectedCharacter)
+        if (await this.TryGetAttributeAsync(targetPlayer, arguments.StatType).ConfigureAwait(false) is not { } attribute)
         {
             return;
         }
 
-        var attribute = this.GetAttribute(selectedCharacter, arguments.StatType);
-        await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.StatPointInfo), selectedCharacter.Name, targetPlayer.Attributes![attribute]).ConfigureAwait(false);
-    }
-
-    private AttributeDefinition GetAttribute(Character selectedCharacter, string? statType)
-    {
-        var attribute = statType switch
-        {
-            "str" => Stats.BaseStrength,
-            "agi" => Stats.BaseAgility,
-            "vit" => Stats.BaseVitality,
-            "ene" => Stats.BaseEnergy,
-            "cmd" => Stats.BaseLeadership,
-            _ => throw new ArgumentException($"Unknown stat: '{statType}'."),
-        };
-
-        if (selectedCharacter.Attributes.All(sa => sa.Definition != attribute))
-        {
-            throw new ArgumentException($"The character has no stat attribute '{statType}'.");
-        }
-
-        return attribute;
+        await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.StatPointInfo), targetPlayer.SelectedCharacter?.Name, targetPlayer.Attributes![attribute]).ConfigureAwait(false);
     }
 
     /// <summary>
