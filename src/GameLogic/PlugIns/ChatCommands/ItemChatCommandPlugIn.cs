@@ -39,7 +39,7 @@ public class ItemChatCommandPlugIn : ChatCommandPlugInBase<ItemChatCommandArgs>
                 return;
             }
 
-            var item = CreateItem(gameMaster, itemDefinition!, arguments);
+            var item = CreateItem(itemDefinition!, arguments);
             var dropCoordinates = gameMaster.CurrentMap.Terrain.GetRandomCoordinate(gameMaster.Position, 1);
             var droppedItem = new DroppedItem(item, dropCoordinates, gameMaster.CurrentMap, gameMaster);
             await gameMaster.CurrentMap.AddAsync(droppedItem).ConfigureAwait(false);
@@ -66,7 +66,7 @@ public class ItemChatCommandPlugIn : ChatCommandPlugInBase<ItemChatCommandArgs>
         return (true, itemDefinition);
     }
 
-    private static Item CreateItem(Player gameMaster, DataModel.Configuration.Items.ItemDefinition itemDefinition, ItemChatCommandArgs arguments)
+    private static Item CreateItem(DataModel.Configuration.Items.ItemDefinition itemDefinition, ItemChatCommandArgs arguments)
     {
         var item = new TemporaryItem();
         item.Definition = itemDefinition;
