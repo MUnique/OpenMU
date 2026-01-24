@@ -4,8 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
-using MUnique.OpenMU.PlugIns;
 using System.Runtime.InteropServices;
+using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// A chat command plugin which handles the command to get stat points.
@@ -13,7 +13,7 @@ using System.Runtime.InteropServices;
 [Guid("F8CACA47-D486-45AE-814F-C6218AD87652")]
 [PlugIn]
 [Display(Name = nameof(PlugInResources.GetStatChatCommandPlugIn_Name), Description = nameof(PlugInResources.GetStatChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
-[ChatCommandHelp(Command, "Get stat points. Usage: /get (ene|agi|vit|str|cmd) (optional:character)", typeof(Arguments), MinimumStatus)]
+[ChatCommandHelp(Command, typeof(Arguments), MinimumStatus)]
 public class GetStatChatCommandPlugIn : ChatCommandPlugInBase<GetStatChatCommandPlugIn.Arguments>, IDisabledByDefault
 {
     private const string Command = "/get";

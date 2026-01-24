@@ -16,7 +16,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("D074E8AB-9D6E-49A4-956F-1F4818188AF1")]
 [PlugIn]
 [Display(Name = nameof(PlugInResources.SetStatChatCommandPlugIn_Name), Description = nameof(PlugInResources.SetStatChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
-[ChatCommandHelp(Command, "Set stat points. Usage: /set (ene|agi|vit|str|cmd) (amount) (optional:character)", typeof(Arguments), MinimumStatus)]
+[ChatCommandHelp(Command, typeof(Arguments), MinimumStatus)]
 public class SetStatChatCommandPlugIn : ChatCommandPlugInBase<SetStatChatCommandPlugIn.Arguments>, IDisabledByDefault
 {
     private const string Command = "/set";

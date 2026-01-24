@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("82E74664-7700-433B-9428-90C17CC71350")]
 [PlugIn]
 [Display(Name = nameof(PlugInResources.ChatUnbanCharChatCommandPlugIn_Name), Description = nameof(PlugInResources.ChatUnbanCharChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
-[ChatCommandHelp(Command, "Unbans the account of a character from chatting", typeof(ChatUnbanCharChatCommandArgs), CharacterStatus.GameMaster)]
+[ChatCommandHelp(Command, typeof(ChatUnbanCharChatCommandArgs), CharacterStatus.GameMaster)]
 public class ChatUnbanCharChatCommandPlugIn : ChatCommandPlugInBase<ChatUnbanCharChatCommandArgs>
 {
     private const string Command = "/chatunban";

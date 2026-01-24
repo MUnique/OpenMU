@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("042EC5C6-27C8-4E00-A48B-C5458EDEA0BC")]
 [PlugIn]
 [Display(Name = nameof(PlugInResources.AddStatChatCommandPlugIn_Name), Description = nameof(PlugInResources.AddStatChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
-[ChatCommandHelp(Command, "Adds the specified amount of stat points to the specified attribute of the character.", typeof(Arguments), MinimumStatus)]
+[ChatCommandHelp(Command, typeof(Arguments), MinimumStatus)]
 public class AddStatChatCommandPlugIn : ChatCommandPlugInBase<AddStatChatCommandPlugIn.Arguments>
 {
     private const string Command = "/add";

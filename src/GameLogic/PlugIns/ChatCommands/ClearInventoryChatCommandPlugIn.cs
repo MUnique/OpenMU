@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("1E895A6F-3056-4A78-BA64-96E24363B8BC")]
 [PlugIn]
 [Display(Name = nameof(PlugInResources.ClearInventoryChatCommandPlugIn_Name), Description = nameof(PlugInResources.ClearInventoryChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
-[ChatCommandHelp(Command, "Clears inventory.", null, MinimumStatus)]
+[ChatCommandHelp(Command, null, MinimumStatus)]
 public class ClearInventoryChatCommandPlugIn : ChatCommandPlugInBase<ClearInventoryChatCommandPlugIn.Arguments>, ISupportCustomConfiguration<ClearInventoryChatCommandPlugIn.ClearInventoryConfiguration>, ISupportDefaultCustomConfiguration, IDisabledByDefault
 {
     private const string Command = "/clearinv";

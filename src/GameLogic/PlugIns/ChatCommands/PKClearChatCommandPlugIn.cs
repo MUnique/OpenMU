@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("EB97A8F6-F6BD-460A-BCBE-253BF679361A")]
 [PlugIn]
 [Display(Name = nameof(PlugInResources.PkClearChatCommandPlugIn_Name), Description = nameof(PlugInResources.PkClearChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
-[ChatCommandHelp(Command, "Clears the player kill count.", typeof(PkClearChatCommandArgs), CharacterStatus.GameMaster)]
+[ChatCommandHelp(Command, typeof(PkClearChatCommandArgs), CharacterStatus.GameMaster)]
 public class PkClearChatCommandPlugIn : ChatCommandPlugInBase<PkClearChatCommandArgs>
 {
     private const string Command = "/pkclear";

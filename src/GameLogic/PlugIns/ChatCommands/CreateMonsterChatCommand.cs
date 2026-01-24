@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("BF4DA282-8CFE-4110-B1C5-A01D3F224FAB")]
 [PlugIn]
 [Display(Name = nameof(PlugInResources.CreateMonsterChatCommand_Name), Description = nameof(PlugInResources.CreateMonsterChatCommand_Description), ResourceType = typeof(PlugInResources))]
-[ChatCommandHelp(Command, "Creates a monster which can be remote controlled by the game master.", typeof(CreateMonsterChatCommandArgs), CharacterStatus.GameMaster)]
+[ChatCommandHelp(Command, typeof(CreateMonsterChatCommandArgs), CharacterStatus.GameMaster)]
 internal class CreateMonsterChatCommand : ChatCommandPlugInBase<CreateMonsterChatCommandArgs>
 {
     private const string Command = "/createmonster";

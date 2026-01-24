@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("7F12326A-9B84-4A56-A013-8C485D7B2EF6")]
 [PlugIn]
 [Display(Name = nameof(PlugInResources.TrackChatCommandPlugIn_Name), Description = nameof(PlugInResources.TrackChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
-[ChatCommandHelp(Command, "Moves the player to the game masters location.", typeof(TraceChatCommandArgs), CharacterStatus.GameMaster)]
+[ChatCommandHelp(Command, typeof(TraceChatCommandArgs), CharacterStatus.GameMaster)]
 public class TrackChatCommandPlugIn : ChatCommandPlugInBase<TraceChatCommandArgs>
 {
     private const string Command = "/track";

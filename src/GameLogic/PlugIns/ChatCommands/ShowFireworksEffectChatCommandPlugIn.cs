@@ -16,7 +16,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("658F7F9D-B8FF-4D52-A835-5B3D658B6B9F")]
 [PlugIn]
 [Display(Name = nameof(PlugInResources.ShowFireworksEffectChatCommandPlugIn_Name), Description = nameof(PlugInResources.ShowFireworksEffectChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
-[ChatCommandHelp(Command, "Shows an fireworks effect at the specified coordinates.", typeof(CoordinatesCommandArgs), CharacterStatus.GameMaster)]
+[ChatCommandHelp(Command, typeof(CoordinatesCommandArgs), CharacterStatus.GameMaster)]
 public class ShowFireworksEffectChatCommandPlugIn : ChatCommandPlugInBase<CoordinatesCommandArgs>
 {
     private const string Command = "/fireworks";

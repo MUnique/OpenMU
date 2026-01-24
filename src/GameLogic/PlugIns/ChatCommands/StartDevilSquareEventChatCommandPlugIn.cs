@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("3684DC79-D81E-4033-AB2C-537334CF0BB6")]
 [PlugIn]
 [Display(Name = nameof(PlugInResources.StartDevilSquareEventChatCommandPlugIn_Name), Description = nameof(PlugInResources.StartDevilSquareEventChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
-[ChatCommandHelp(Command, "Starts the devil square event at the next possible time.", CharacterStatus.GameMaster)]
+[ChatCommandHelp(Command, CharacterStatus.GameMaster)]
 public class StartDevilSquareEventChatCommandPlugIn : IChatCommandPlugIn
 {
     private const string Command = "/startds";

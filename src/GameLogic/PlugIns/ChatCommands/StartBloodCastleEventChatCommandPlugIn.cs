@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("7177533A-F147-407E-97B0-C4D8E1AC1AF4")]
 [PlugIn]
 [Display(Name = nameof(PlugInResources.StartBloodCastleEventChatCommandPlugIn_Name), Description = nameof(PlugInResources.StartBloodCastleEventChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
-[ChatCommandHelp(Command, "Starts the blood castle event at the next possible time.", CharacterStatus.GameMaster)]
+[ChatCommandHelp(Command, CharacterStatus.GameMaster)]
 public class StartBloodCastleEventChatCommandPlugIn : IChatCommandPlugIn
 {
     private const string Command = "/startbc";

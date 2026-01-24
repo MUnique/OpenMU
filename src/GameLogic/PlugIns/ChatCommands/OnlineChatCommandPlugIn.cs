@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("6693ABA3-7B35-4800-815B-096F3420E998")]
 [PlugIn]
 [Display(Name = nameof(PlugInResources.OnlineChatCommandPlugIn_Name), Description = nameof(PlugInResources.OnlineChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
-[ChatCommandHelp(Command, "Gets the online count of game masters and players.", typeof(EmptyChatCommandArgs), CharacterStatus.GameMaster)]
+[ChatCommandHelp(Command, typeof(EmptyChatCommandArgs), CharacterStatus.GameMaster)]
 public class OnlineChatCommandPlugIn : ChatCommandPlugInBase<EmptyChatCommandArgs>, IChatCommandPlugIn
 {
     private const string Command = "/online";

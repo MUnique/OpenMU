@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("7AD1E5F4-4B07-4165-B9A4-188614F00F7C")]
 [PlugIn]
 [Display(Name = nameof(PlugInResources.BanCharChatCommandPlugIn_Name), Description = nameof(PlugInResources.BanCharChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
-[ChatCommandHelp(Command, "Bans the account of a character from the game.", typeof(BanCharChatCommandArgs), CharacterStatus.GameMaster)]
+[ChatCommandHelp(Command, typeof(BanCharChatCommandArgs), CharacterStatus.GameMaster)]
 public class BanCharChatCommandPlugIn : ChatCommandPlugInBase<BanCharChatCommandArgs>
 {
     private const string Command = "/banchar";

@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("287AE9A6-E434-4E52-A791-8AAD267A8E05")]
 [PlugIn]
 [Display(Name = nameof(PlugInResources.ChatBanCharChatCommandPlugIn_Name), Description = nameof(PlugInResources.ChatBanCharChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
-[ChatCommandHelp(Command, "Bans the account of a character from chatting for the specified minutes.", typeof(ChatBanCharChatCommandArgs), CharacterStatus.GameMaster)]
+[ChatCommandHelp(Command, typeof(ChatBanCharChatCommandArgs), CharacterStatus.GameMaster)]
 public class ChatBanCharChatCommandPlugIn : ChatCommandPlugInBase<ChatBanCharChatCommandArgs>
 {
     private const string Command = "/chatban";

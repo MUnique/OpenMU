@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("4564AE2B-4819-4155-B5B2-FE2ED0CF7A7F")]
 [PlugIn]
 [Display(Name = nameof(PlugInResources.MoveChatCommandPlugIn_Name), Description = nameof(PlugInResources.MoveChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
-[ChatCommandHelp(Command, "Moves the character to the specified destination.", typeof(MoveChatCommandArgs), CharacterStatus.Normal)]
+[ChatCommandHelp(Command, typeof(MoveChatCommandArgs), CharacterStatus.Normal)]
 public class MoveChatCommandPlugIn : ChatCommandPlugInBase<MoveChatCommandArgs>
 {
     private const string Command = "/move";

@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("ABFE2440-E765-4F17-A588-BD9AE3799887")]
 [PlugIn]
 [Display(Name = nameof(PlugInResources.ItemChatCommandPlugIn_Name), Description = nameof(PlugInResources.ItemChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
-[ChatCommandHelp(Command, "Drops a specific item next to the character.", typeof(ItemChatCommandArgs), CharacterStatus.GameMaster)]
+[ChatCommandHelp(Command, typeof(ItemChatCommandArgs), CharacterStatus.GameMaster)]
 public class ItemChatCommandPlugIn : ChatCommandPlugInBase<ItemChatCommandArgs>
 {
     private const string Command = "/item";

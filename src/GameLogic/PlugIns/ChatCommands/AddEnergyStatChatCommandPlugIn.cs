@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("A597B6E7-9395-4CF4-8439-A1D60134B63E")]
 [PlugIn]
 [Display(Name = nameof(PlugInResources.AddEnergyStatChatCommandPlugIn_Name), Description = nameof(PlugInResources.AddEnergyStatChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
-[ChatCommandHelp(Command, "Adds the specified amount of energy points to the character.", null, MinimumStatus)]
+[ChatCommandHelp(Command, null, MinimumStatus)]
 public class AddEnergyStatChatCommandPlugIn : AddStatChatCommandPlugIn, IDisabledByDefault
 {
     private const string Command = "/addene";

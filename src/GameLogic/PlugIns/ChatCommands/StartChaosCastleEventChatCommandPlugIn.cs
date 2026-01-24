@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("A990270E-B9C6-4445-BBA9-56367A90D31D")]
 [PlugIn]
 [Display(Name = nameof(PlugInResources.StartChaosCastleEventChatCommandPlugIn_Name), Description = nameof(PlugInResources.StartChaosCastleEventChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
-[ChatCommandHelp(Command, "Starts the chaos castle event at the next possible time.", CharacterStatus.GameMaster)]
+[ChatCommandHelp(Command, CharacterStatus.GameMaster)]
 public class StartChaosCastleEventChatCommandPlugIn : IChatCommandPlugIn
 {
     private const string Command = "/startcc";

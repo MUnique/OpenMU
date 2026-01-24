@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("EF869270-847E-48D5-9012-F5D111D9C8EB")]
 [PlugIn]
 [Display(Name = nameof(PlugInResources.BanAccChatCommandPlugIn_Name), Description = nameof(PlugInResources.BanAccChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
-[ChatCommandHelp(Command, "Bans an account from the game.", typeof(BanAccChatCommandArgs), CharacterStatus.GameMaster)]
+[ChatCommandHelp(Command, typeof(BanAccChatCommandArgs), CharacterStatus.GameMaster)]
 public class BanAccChatCommandPlugIn : ChatCommandPlugInBase<BanAccChatCommandArgs>
 {
     private const string Command = "/banacc";
