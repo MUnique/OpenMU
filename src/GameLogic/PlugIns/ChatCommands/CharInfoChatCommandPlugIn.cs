@@ -40,17 +40,17 @@ public class CharInfoChatCommandPlugIn : ChatCommandPlugInBase<CharInfoChatComma
 
         await gameMaster.ShowBlueMessageAsync($"Account Name: {account.LoginName}").ConfigureAwait(false);
 
-        await this.ShowAllLinesMessageToAsync(gameMaster, GetCharacterInfo(character)).ConfigureAwait(false);
+        await this.ShowAllLinesMessageToAsync(gameMaster, GetCharacterInfo(gameMaster, character)).ConfigureAwait(false);
 
         await this.ShowAllLinesMessageToAsync(gameMaster, player.Attributes?.ToString()).ConfigureAwait(false);
     }
 
-    private static string GetCharacterInfo(Character character)
+    private static string GetCharacterInfo(Player gameMaster, Character character)
     {
         var stringBuilder = new StringBuilder()
             .AppendLine($"Id: {character.Id}")
             .AppendLine($"Name: {character.Name}")
-            .AppendLine($"Class: {character.CharacterClass?.Name.ToString()}")
+            .AppendLine($"Class: {character.CharacterClass?.Name.GetTranslation(gameMaster.Culture)}")
             .AppendLine($"Slot: {character.CharacterSlot}")
             .AppendLine($"Create Date: {character.CreateDate}")
             .AppendLine($"Exp: {character.Experience}")

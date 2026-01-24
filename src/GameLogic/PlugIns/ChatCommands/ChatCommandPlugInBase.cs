@@ -2,10 +2,9 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.AttributeSystem;
-
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Pathfinding;
 
@@ -142,7 +141,7 @@ public abstract class ChatCommandPlugInBase<T> : IChatCommandPlugIn
         var warpList = player.GameContext.Configuration.WarpList;
         return ushort.TryParse(map, out var mapId)
             ? warpList.FirstOrDefault(info => info.Gate?.Map?.Number == mapId)
-            : warpList.FirstOrDefault(info => info.Name.ToString()?.Equals(map, StringComparison.OrdinalIgnoreCase) ?? false);
+            : warpList.FirstOrDefault(info => map.Equals(info.Name.GetTranslationAsSpan(player.Culture), StringComparison.CurrentCultureIgnoreCase));
     }
 
     /// <summary>
