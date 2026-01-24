@@ -153,7 +153,7 @@ public class FixDamageCalcsPlugInSeason6 : FixDamageCalcsPlugInBase
         }
 
         // Update options
-        var ancientSetsOpts = gameConfiguration.ItemOptions.Where(io => io.Name.GetValueInNeutralLanguageAsSpan().EndsWith("(Ancient Set)"));
+        var ancientSetsOpts = gameConfiguration.ItemOptions.Where(io => io.Name.ValueInNeutralLanguageAsSpan.EndsWith("(Ancient Set)"));
         var finalDamageBonus = Stats.FinalDamageBonus.GetPersistent(gameConfiguration);
         var wizardryBaseDmgIncrease = Stats.WizardryBaseDmgIncrease.GetPersistent(gameConfiguration);
         foreach (var ancientSetOpts in ancientSetsOpts)

@@ -94,6 +94,7 @@ public class EntityDataContext : ExtendedTypeContext
         this.AddJoinDefinitions(modelBuilder);
 
         modelBuilder.UseGuidV7Ids();
+        // modelBuilder.UseLocalizedStringConverter();
 
         GuildContext.ConfigureModel(modelBuilder);
         FriendContext.ConfigureModel(modelBuilder);

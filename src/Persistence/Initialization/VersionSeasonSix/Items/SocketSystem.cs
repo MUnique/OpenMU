@@ -247,8 +247,8 @@ public class SocketSystem : InitializerBase
         item.PossibleItemOptions.Add(this._lightningOptions!);
         item.PossibleItemOptions.Add(this._iceOptions!);
 
-        if (item.Name.GetValueInNeutralLanguageAsSpan().Contains("Staff", StringComparison.OrdinalIgnoreCase)
-            || item.Name.GetValueInNeutralLanguageAsSpan().Contains("Stick", StringComparison.OrdinalIgnoreCase))
+        if (item.Name.ValueInNeutralLanguageAsSpan.Contains("Staff", StringComparison.OrdinalIgnoreCase)
+            || item.Name.ValueInNeutralLanguageAsSpan.Contains("Stick", StringComparison.OrdinalIgnoreCase))
         {
             item.PossibleItemOptions.Add(this._bonusWizOptions!);
         }

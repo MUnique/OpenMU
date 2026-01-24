@@ -378,53 +378,53 @@ public class LocalizedStringTests
     }
 
     /// <summary>
-    /// Tests that <see cref="LocalizedString.GetValueInNeutralLanguage"/> returns the whole string when no separator is present.
+    /// Tests that <see cref="LocalizedString.ValueInNeutralLanguage"/> returns the whole string when no separator is present.
     /// </summary>
     [Test]
     public void GetValueInNeutralLanguage_ReturnsWholeString_WhenNoSeparator()
     {
         var localized = new LocalizedString("Base");
 
-        var result = localized.GetValueInNeutralLanguage();
+        var result = localized.ValueInNeutralLanguage;
 
         Assert.That(result, Is.EqualTo("Base"));
     }
 
     /// <summary>
-    /// Tests that <see cref="LocalizedString.GetValueInNeutralLanguage"/> returns the text up to the first separator.
+    /// Tests that <see cref="LocalizedString.ValueInNeutralLanguage"/> returns the text up to the first separator.
     /// </summary>
     [Test]
     public void GetValueInNeutralLanguage_ReturnsUpToFirstSeparator()
     {
         var localized = new LocalizedString("Base||de=Etwas Text");
 
-        var result = localized.GetValueInNeutralLanguage();
+        var result = localized.ValueInNeutralLanguage;
 
         Assert.That(result, Is.EqualTo("Base"));
     }
 
     /// <summary>
-    /// Tests that <see cref="LocalizedString.GetValueInNeutralLanguage"/> is tolerant to triple separators and still returns the base text.
+    /// Tests that <see cref="LocalizedString.ValueInNeutralLanguage"/> is tolerant to triple separators and still returns the base text.
     /// </summary>
     [Test]
     public void GetValueInNeutralLanguage_TolerantToTripleSeparator()
     {
         var localized = new LocalizedString("Base|||de=Etwas Text");
 
-        var result = localized.GetValueInNeutralLanguage();
+        var result = localized.ValueInNeutralLanguage;
 
         Assert.That(result, Is.EqualTo("Base"));
     }
 
     /// <summary>
-    /// Tests that <see cref="LocalizedString.GetValueInNeutralLanguage"/> returns an empty span when the value is <see langword="null"/>.
+    /// Tests that <see cref="LocalizedString.ValueInNeutralLanguage"/> returns an empty span when the value is <see langword="null"/>.
     /// </summary>
     [Test]
     public void GetValueInNeutralLanguage_ReturnsEmpty_WhenValueIsNull()
     {
         var localized = new LocalizedString(null!);
 
-        var result = localized.GetValueInNeutralLanguage();
+        var result = localized.ValueInNeutralLanguage;
 
         Assert.IsEmpty(result);
     }

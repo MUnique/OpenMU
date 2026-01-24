@@ -8,7 +8,6 @@ using System.Globalization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Options;
-using Microsoft.JSInterop;
 using MUnique.OpenMU.Web.Shared.Services;
 
 /// <summary>
@@ -17,18 +16,15 @@ using MUnique.OpenMU.Web.Shared.Services;
 /// <seealso cref="Microsoft.AspNetCore.Components.ComponentBase" />
 public partial class CultureSelector
 {
-    private readonly IJSRuntime _jsRuntime;
     private readonly NavigationManager _navigationManager;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CultureSelector"/> class.
     /// </summary>
     /// <param name="localizationOptions">The localization options.</param>
-    /// <param name="jsRuntime">The js runtime.</param>
     /// <param name="navigationManager">The navigation manager.</param>
-    public CultureSelector(IOptions<RequestLocalizationOptions> localizationOptions, IJSRuntime jsRuntime, NavigationManager navigationManager)
+    public CultureSelector(IOptions<RequestLocalizationOptions> localizationOptions, NavigationManager navigationManager)
     {
-        this._jsRuntime = jsRuntime;
         this._navigationManager = navigationManager;
         this.SupportedUICultures = localizationOptions.Value.SupportedUICultures?.OrderBy(c => c.NativeName).ToList() ?? [];
     }

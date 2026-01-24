@@ -1987,7 +1987,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             this.Logger.LogError(
                 "CRITICAL: Could not return {count} items from temporary storage to inventory due to full inventory. Attempting fallback. Items: {items}",
                 items.Count,
-                string.Join(", ", items.Select(i => $"{i.Definition?.Name.GetValueInNeutralLanguage() ?? "Unknown"}(Slot:{i.ItemSlot})")));
+                string.Join(", ", items.Select(i => $"{i.Definition?.Name.ValueInNeutralLanguage ?? "Unknown"}(Slot:{i.ItemSlot})")));
 
             // Try one more time to force-add items individually using the captured list
             foreach (var item in items)

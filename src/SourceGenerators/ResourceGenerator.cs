@@ -6,26 +6,21 @@ namespace MUnique.OpenMU.SourceGenerators;
 
 using System.Diagnostics;
 using System.IO;
-using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 /// <summary>
 /// A <see cref="ISourceGenerator"/> which creates resource strings for all classes and properties of
-/// the data model. It looks for the <c>CloneableAttribute</c> to identify which classes should get the generated code.
+/// the data model.
 /// </summary>
 // [Generator]
 public class ResourceGenerator : ISourceGenerator
 {
-    //private const string CloneableAttributeFullName = "MUnique.OpenMU.Annotations.CloneableAttribute";
-
-    //private const string CloneableAttributeName = "CloneableAttribute";
-
-
     /// <inheritdoc />
     public void Initialize(GeneratorInitializationContext context)
     {
+        // No initialization required
     }
 
     /// <inheritdoc />
@@ -122,7 +117,10 @@ public class ResourceGenerator : ISourceGenerator
                 this.AppendResourceStrings(sb, classDecl, declaredClassSymbol);
                 break;
             case EnumDeclarationSyntax enumDecl:
-                this.AppendResourceStrings(sb, enumDecl, declaredClassSymbol);
+                this.AppendResourceStrings(sb, enumDecl);
+                break;
+            default:
+                // do nothing
                 break;
         }
     }
@@ -146,7 +144,7 @@ public class ResourceGenerator : ISourceGenerator
         this.GenerateProperties(sb, declaredClassSymbol, className);
     }
 
-    private void AppendResourceStrings(StringBuilder sb, EnumDeclarationSyntax annotatedEnum, INamedTypeSymbol declaredClassSymbol)
+    private void AppendResourceStrings(StringBuilder sb, EnumDeclarationSyntax annotatedEnum)
     {
         var enumName = annotatedEnum.Identifier.Text;
         sb.AppendLine($"""
@@ -188,51 +186,5 @@ public class ResourceGenerator : ISourceGenerator
                              </data>
                            """);
         }
-    }
-}
-
-public static class CaptionHelper
-{
-    private static readonly Regex WordSeparatorRegex = new("([a-z])([A-Z])", RegexOptions.Compiled);
-
-    /// <summary>
-    /// Separates the words by a space. Words are detected by upper case letters.
-    /// </summary>
-    /// <param name="input">The input.</param>
-    /// <returns>The separated words.</returns>
-    public static string SeparateWords(string input)
-    {
-        return WordSeparatorRegex.Replace(input, "$1 $2")
-            .Replace(" Definitions", "s")
-            .Replace(" Definition", "s");
-    }
-
-    /// <summary>
-    /// Gets a nice caption for types.
-    /// </summary>
-    /// <param name="type">The type.</param>
-    /// <returns>A nice caption for types.</returns>
-    public static string GetTypeCaption(ClassDeclarationSyntax type)
-    {
-        return SeparateWords(type.Identifier.Text);
-    }
-
-    /// <summary>
-    /// Gets a pluralized caption for a type.
-    /// </summary>
-    /// <param name="type">The type.</param>
-    /// <returns>A nice caption for types.</returns>
-    public static string GetPluralizedTypeCaption(ClassDeclarationSyntax type)
-    {
-        var result = GetTypeCaption(type);
-        result = result
-            .Replace(" Definitions", "s")
-            .Replace(" Definition", "s");
-        if (!result.EndsWith("s"))
-        {
-            result += "s";
-        }
-
-        return result;
     }
 }

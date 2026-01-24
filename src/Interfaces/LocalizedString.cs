@@ -12,7 +12,7 @@ using System.Globalization;
 /// To keep compatibility with normal strings, we simply assume the first string to be in neutral (usually english) language.
 /// Example: "Some text||de=Etwas Text||fr=Un peu de texte" where the first part is english, second german and third french.
 /// </summary>
-public readonly struct LocalizedString
+public readonly struct LocalizedString : IEquatable<LocalizedString>
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="LocalizedString"/> struct.
@@ -37,6 +37,53 @@ public readonly struct LocalizedString
     /// Gets the underlying serialized value of this localized string.
     /// </summary>
     public string? Value { get; }
+
+    /// <summary>
+    /// Gets the value in the neutral language as a <see cref="string"/>.
+    /// </summary>
+    /// <value>
+    ///   A <see cref="string"/> that contains the neutral language text, or an empty string
+    ///   if the underlying value is <see langword="null"/>.
+    /// </value>
+    public string ValueInNeutralLanguage
+    {
+        get
+        {
+            if (this.Value?.IndexOf(Separator, StringComparison.OrdinalIgnoreCase) is not >= 0)
+            {
+                return this.Value ?? string.Empty;
+            }
+
+            var span = this.ValueInNeutralLanguageAsSpan;
+            return new(span);
+        }
+    }
+
+    /// <summary>
+    /// Gets the value in the neutral language as a <see cref="ReadOnlySpan{T}"/> of characters.
+    /// </summary>
+    /// <value>
+    ///   A <see cref="ReadOnlySpan{T}"/> that contains the neutral language text, or an empty span
+    ///   if the underlying value is <see langword="null"/>.
+    /// </value>
+    public ReadOnlySpan<char> ValueInNeutralLanguageAsSpan
+    {
+        get
+        {
+            if (this.Value is null)
+            {
+                return [];
+            }
+
+            var separatorIndex = this.Value.IndexOf(Separator, StringComparison.OrdinalIgnoreCase);
+            if (separatorIndex == -1)
+            {
+                return this.Value.AsSpan();
+            }
+
+            return this.Value.AsSpan(0, separatorIndex);
+        }
+    }
 
     /// <summary>
     /// Performs an implicit conversion from <see cref="LocalizedString"/> to <see cref="string"/>.
@@ -137,14 +184,14 @@ public readonly struct LocalizedString
 
         if (cultureInfo.TwoLetterISOLanguageName == NeutralLanguageCode)
         {
-            return this.GetValueInNeutralLanguageAsSpan();
+            return this.ValueInNeutralLanguageAsSpan;
         }
 
         var searchPattern = Separator + cultureInfo.TwoLetterISOLanguageName + "=";
         var startIndex = this.Value.IndexOf(searchPattern, StringComparison.OrdinalIgnoreCase);
         if (startIndex == -1)
         {
-            return fallbackToNeutral ? this.GetValueInNeutralLanguageAsSpan() : [];
+            return fallbackToNeutral ? this.ValueInNeutralLanguageAsSpan : [];
         }
 
         var part = this.Value.AsSpan(startIndex + searchPattern.Length);
@@ -155,47 +202,6 @@ public readonly struct LocalizedString
         }
 
         return part.Slice(0, endIndex);
-    }
-
-    /// <summary>
-    /// Gets the value in the neutral language as a <see cref="string"/>.
-    /// </summary>
-    /// <returns>
-    /// A <see cref="string"/> that contains the neutral language text, or an empty string
-    /// if the underlying value is <see langword="null"/>.
-    /// </returns>
-    public string GetValueInNeutralLanguage()
-    {
-        if (this.Value?.IndexOf(Separator, StringComparison.OrdinalIgnoreCase) is not >= 0)
-        {
-            return this.Value ?? string.Empty;
-        }
-
-        var span = this.GetValueInNeutralLanguageAsSpan();
-        return new(span);
-    }
-
-    /// <summary>
-    /// Gets the value in the neutral language as a <see cref="ReadOnlySpan{T}"/> of characters.
-    /// </summary>
-    /// <returns>
-    /// A <see cref="ReadOnlySpan{T}"/> that contains the neutral language text, or an empty span
-    /// if the underlying value is <see langword="null"/>.
-    /// </returns>
-    public ReadOnlySpan<char> GetValueInNeutralLanguageAsSpan()
-    {
-        if (this.Value is null)
-        {
-            return [];
-        }
-
-        var separatorIndex = this.Value.IndexOf(Separator, StringComparison.OrdinalIgnoreCase);
-        if (separatorIndex == -1)
-        {
-            return this.Value.AsSpan();
-        }
-
-        return this.Value.AsSpan(0, separatorIndex);
     }
 
     /// <summary>
@@ -294,7 +300,7 @@ public readonly struct LocalizedString
         {
             // Remove this translation entry completely, including "||xx=" prefix
             var prefix = current.AsSpan(0, startIndex);
-            ReadOnlySpan<char> suffixSpan = default;
+            ReadOnlySpan<char> suffixSpan;
             if (endIndex == -1)
             {
                 suffixSpan = ReadOnlySpan<char>.Empty;
@@ -311,7 +317,7 @@ public readonly struct LocalizedString
         {
             // Replace the content of this translation
             var prefix = current.AsSpan(0, partStart);
-            ReadOnlySpan<char> suffixSpan = default;
+            ReadOnlySpan<char> suffixSpan;
             if (endIndex == -1)
             {
                 suffixSpan = ReadOnlySpan<char>.Empty;
@@ -324,5 +330,23 @@ public readonly struct LocalizedString
             var result = string.Concat(prefix, text, suffixSpan);
             return new LocalizedString(result);
         }
+    }
+
+    /// <inheritdoc />
+    public bool Equals(LocalizedString other)
+    {
+        return this.Value == other.Value;
+    }
+
+    /// <inheritdoc />
+    public override bool Equals(object? obj)
+    {
+        return obj is LocalizedString other && this.Equals(other);
+    }
+
+    /// <inheritdoc />
+    public override int GetHashCode()
+    {
+        return this.Value != null ? this.Value.GetHashCode() : 0;
     }
 }

@@ -72,7 +72,7 @@ public abstract class EnterQuestMapAction
         var targetGate = targetMap.ExitGates.FirstOrDefault();
         if (targetGate is null)
         {
-            player.Logger.LogError("Map {targetMap} has no exit gate", targetMap.Name.GetValueInNeutralLanguage());
+            player.Logger.LogError("Map {targetMap} has no exit gate", targetMap.Name.ValueInNeutralLanguage);
             return;
         }
 

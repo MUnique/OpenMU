@@ -112,7 +112,7 @@ public abstract class ChatCommandPlugInBase<T> : IChatCommandPlugIn
             ? (await gameMaster.GameContext.GetMapAsync(mapId).ConfigureAwait(false))?.Definition
             : gameMaster.GameContext.Configuration.Maps.FirstOrDefault(x =>
                 x.Name.GetTranslationAsSpan(gameMaster.Culture).Equals(map, StringComparison.OrdinalIgnoreCase)
-                || x.Name.GetValueInNeutralLanguageAsSpan().Equals(map, StringComparison.OrdinalIgnoreCase));
+                || x.Name.ValueInNeutralLanguageAsSpan.Equals(map, StringComparison.OrdinalIgnoreCase));
 
         if (mapDefinition is null)
         {
