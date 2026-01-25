@@ -556,7 +556,7 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Updates the state of the weather of each hosted map in a random way..
+        ///   Looks up a localized string similar to Ends the duel when one of the duelists leaves the duel map. If a spectator leaves the duel map, it&apos;s removed from the spectator list, too..
         /// </summary>
         public static string EndDuelWhenLeavingDuelMapPlugIn_Description {
             get {

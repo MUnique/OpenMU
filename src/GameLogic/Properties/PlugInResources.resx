@@ -205,7 +205,7 @@
     <value>End Duel When Leaving Duel Map</value>
   </data>
   <data name="EndDuelWhenLeavingDuelMapPlugIn_Description" xml:space="preserve">
-    <value>Updates the state of the weather of each hosted map in a random way.</value>
+    <value>Ends the duel when one of the duelists leaves the duel map. If a spectator leaves the duel map, it's removed from the spectator list, too.</value>
   </data>
   <data name="UpdateDuelScorePlugIn_Name" xml:space="preserve">
     <value>Update Duel Score</value>
