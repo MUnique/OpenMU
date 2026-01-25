@@ -339,4 +339,9 @@ public enum UpdateVersion
     /// The version of the <see cref="AddSummonerBuffSkillsPlugIn"/>.
     /// </summary>
     AddSummonerBuffSkills = 66,
+
+    /// <summary>
+    /// The version of the <see cref="AddProjectileCountToTripleShotUpdatePlugIn"/>.
+    /// </summary>
+    AddProjectileCountToTripleShot = 67,
 }
