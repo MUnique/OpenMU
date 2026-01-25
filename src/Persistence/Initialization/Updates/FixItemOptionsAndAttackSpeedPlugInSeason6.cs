@@ -18,7 +18,8 @@ using MUnique.OpenMU.PlugIns;
 /// This update fixes some item options (damage, defense rate), weapons attack speed, third wings defense, and some AA weapon values.
 /// It also refactors attack speed attributes for simplification.
 /// </summary>
-[PlugIn(PlugInName, PlugInDescription)]
+[PlugIn]
+[Display(Name = PlugInName, Description = PlugInDescription)]
 [Guid("EEEAA884-4704-48DE-825A-8E588A47E2CC")]
 public class FixItemOptionsAndAttackSpeedPlugInSeason6 : FixItemOptionsAndAttackSpeedPlugInBase
 {

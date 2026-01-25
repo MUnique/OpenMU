@@ -8,6 +8,7 @@ using MUnique.OpenMU.Annotations;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration.Quests;
 using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Type of the window which will be openend when talking to the npc.
@@ -227,7 +228,7 @@ public partial class MonsterDefinition
     /// Gets or sets the designation of this monster.
     /// Not relevant for the server, however helpful for debugging/logging.
     /// </summary>
-    public string Designation { get; set; } = string.Empty;
+    public LocalizedString Designation { get; set; }
 
     /// <summary>
     /// Gets or sets the range in which a monster will move randomly?

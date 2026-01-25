@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Packet handler for character key configuration packets (0xF3, 0x30 identifier).
 /// </summary>
-[PlugIn("Character - Key Configuration", "Packet handler for character key configuration packets (0xF3, 0x30 identifier).")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.CharacterKeyConfigurationPacketHandlerPlugIn_Name), Description = nameof(PlugInResources.CharacterKeyConfigurationPacketHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("91A6A9A8-5885-498E-A6BE-625F55A811A4")]
 [BelongsToGroup(CharacterGroupHandlerPlugIn.GroupKey)]
 internal class CharacterKeyConfigurationPacketHandlerPlugIn : ISubPacketHandlerPlugIn

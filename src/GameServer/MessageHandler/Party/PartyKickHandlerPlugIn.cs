@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Handler for party kick packets.
 /// </summary>
-[PlugIn("PartyKickHandlerPlugIn", "Handler for party kick packets.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.PartyKickHandlerPlugIn_Name), Description = nameof(PlugInResources.PartyKickHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("26d0fef9-8171-4098-87ae-030054163509")]
 internal class PartyKickHandlerPlugIn : IPacketHandlerPlugIn
 {

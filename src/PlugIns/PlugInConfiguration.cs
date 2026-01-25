@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.PlugIns;
 
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
@@ -82,9 +83,9 @@ public class PlugInConfiguration : INotifyPropertyChanged
             var plugInType = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(assembly => assembly.DefinedTypes)
                 .FirstOrDefault(t => t.GUID == this.TypeId);
-            var plugInAttribute = plugInType?.GetCustomAttribute<PlugInAttribute>(inherit: false);
+            var plugInAttribute = plugInType?.GetCustomAttribute<DisplayAttribute>(inherit: false);
 
-            return plugInAttribute?.Name ?? this.TypeId.ToString();
+            return plugInAttribute?.GetName() ?? this.TypeId.ToString();
         }
     }
 

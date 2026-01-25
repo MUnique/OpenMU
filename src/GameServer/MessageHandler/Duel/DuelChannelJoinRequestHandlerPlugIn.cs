@@ -14,7 +14,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Handler for duel channel join request packets (new duel system), which is sent by a spectator.
 /// </summary>
-[PlugIn(nameof(DuelChannelJoinRequestHandlerPlugIn), "Handler for duel channel join request packets (new duel system), which is sent by a spectator.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.DuelChannelJoinRequestHandlerPlugIn_Name), Description = nameof(PlugInResources.DuelChannelJoinRequestHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("6A4DB859-A06E-4AA9-9E85-AAC712265492")]
 [MinimumClient(4, 0, ClientLanguage.Invariant)]
 [BelongsToGroup(DuelGroupHandlerPlugIn.GroupKey)]

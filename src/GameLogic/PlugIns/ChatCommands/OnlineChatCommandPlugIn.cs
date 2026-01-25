@@ -13,8 +13,9 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which handles online commands.
 /// </summary>
 [Guid("6693ABA3-7B35-4800-815B-096F3420E998")]
-[PlugIn("Online chat command", "Handles the chat command '/online'. Gets the count of game masters and players online.")]
-[ChatCommandHelp(Command, "Gets the online count of game masters and players.", typeof(EmptyChatCommandArgs), CharacterStatus.GameMaster)]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.OnlineChatCommandPlugIn_Name), Description = nameof(PlugInResources.OnlineChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
+[ChatCommandHelp(Command, typeof(EmptyChatCommandArgs), CharacterStatus.GameMaster)]
 public class OnlineChatCommandPlugIn : ChatCommandPlugInBase<EmptyChatCommandArgs>, IChatCommandPlugIn
 {
     private const string Command = "/online";
@@ -45,6 +46,6 @@ public class OnlineChatCommandPlugIn : ChatCommandPlugInBase<EmptyChatCommandArg
             return Task.CompletedTask;
         }).ConfigureAwait(false);
 
-        await this.ShowMessageToAsync(gameMasterPlayer, $"[{this.Key}] {totalGameMastersCount} GM(s) and {totalCharactersCount} player(s) online").ConfigureAwait(false);
+        await gameMasterPlayer.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.OnlineCountInfo), this.Key, totalGameMastersCount, totalCharactersCount).ConfigureAwait(false);
     }
 }

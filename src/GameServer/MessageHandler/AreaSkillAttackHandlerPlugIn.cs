@@ -16,7 +16,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Handler for area skill attack packets.
 /// </summary>
-[PlugIn(nameof(AreaSkillAttackHandlerPlugIn), "Handler for area skill attack packets.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.AreaSkillAttackHandlerPlugIn_Name), Description = nameof(PlugInResources.AreaSkillAttackHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("9681bed4-70e8-4017-b27c-5eee164dd7b0")]
 [MinimumClient(1, 0, ClientLanguage.Invariant)]
 internal class AreaSkillAttackHandlerPlugIn : IPacketHandlerPlugIn

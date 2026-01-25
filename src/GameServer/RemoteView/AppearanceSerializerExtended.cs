@@ -16,7 +16,8 @@ using MUnique.OpenMU.PlugIns;
 /// Extended serializer for the appearance of a player.
 /// </summary>
 [Guid("A17EDFF7-236B-4EC9-899A-A6FC8BBA840C")]
-[PlugIn("Extended appearance serializer", "Extended serializer for the appearance of a player.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.AppearanceSerializerExtended_Name), Description = nameof(PlugInResources.AppearanceSerializerExtended_Description), ResourceType = typeof(PlugInResources))]
 [MinimumClient(106, 3, ClientLanguage.Invariant)]
 public class AppearanceSerializerExtended : IAppearanceSerializer
 {

@@ -14,7 +14,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// This updates adds the data for the duel system.
 /// </summary>
-[PlugIn(PlugInName, PlugInDescription)]
+[PlugIn]
+[Display(Name = PlugInName, Description = PlugInDescription)]
 [Guid("5DC5638E-581E-4ACC-81E4-D565C625649B")]
 public class AddDuelConfigurationPlugIn : UpdatePlugInBase
 {

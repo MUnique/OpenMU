@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Network.PlugIns;
 
+using System.ComponentModel.DataAnnotations;
 using System.IO.Pipelines;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.Network;
@@ -14,7 +15,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// A plugin which provides network encryptors and decryptors for english game clients of season 6 episode 3, version 1.04d.
 /// </summary>
-[PlugIn("Network Encryption - Season 6 Episode 3, 1.04d, ENG", "A plugin which provides network encryptors and decryptors for english game clients of season 6 episode 3, version 1.04d")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.Season6Episode3NetworkEncryptionFactoryPlugIn_Name), Description = nameof(PlugInResources.Season6Episode3NetworkEncryptionFactoryPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("AC79C81C-36A1-49A0-85AD-E4DAC7D5C5CE")]
 public class Season6Episode3NetworkEncryptionFactoryPlugIn : INetworkEncryptionFactoryPlugIn
 {

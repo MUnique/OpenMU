@@ -15,8 +15,9 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 /// <seealso cref="MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.IChatCommandPlugIn" />
 [Guid("ABFE2440-E765-4F17-A588-BD9AE3799887")]
-[PlugIn("Item chat command", "Handles the chat command '/item <group> <number> <lvl?> <exc?> <sk?> <lu?> <opt?> <anc?> <ancBonuslvl?>'. Drops a specific item next to the character.")]
-[ChatCommandHelp(Command, "Drops a specific item next to the character.", typeof(ItemChatCommandArgs), CharacterStatus.GameMaster)]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.ItemChatCommandPlugIn_Name), Description = nameof(PlugInResources.ItemChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
+[ChatCommandHelp(Command, typeof(ItemChatCommandArgs), CharacterStatus.GameMaster)]
 public class ItemChatCommandPlugIn : ChatCommandPlugInBase<ItemChatCommandArgs>
 {
     private const string Command = "/item";
@@ -32,21 +33,46 @@ public class ItemChatCommandPlugIn : ChatCommandPlugInBase<ItemChatCommandArgs>
     {
         if (gameMaster.CurrentMap != null)
         {
-            var item = CreateItem(gameMaster, arguments);
+            var (isValid, itemDefinition) = await TryParseArgumentsAsync(gameMaster, arguments).ConfigureAwait(false);
+            if (!isValid)
+            {
+                return;
+            }
+
+            var item = CreateItem(itemDefinition!, arguments);
             var dropCoordinates = gameMaster.CurrentMap.Terrain.GetRandomCoordinate(gameMaster.Position, 1);
             var droppedItem = new DroppedItem(item, dropCoordinates, gameMaster.CurrentMap, gameMaster);
             await gameMaster.CurrentMap.AddAsync(droppedItem).ConfigureAwait(false);
-            await this.ShowMessageToAsync(gameMaster, $"[{this.Key}] {item} created").ConfigureAwait(false);
+            await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.ItemCreatedResult), this.Key, item).ConfigureAwait(false);
         }
     }
 
-    private static Item CreateItem(Player gameMaster, ItemChatCommandArgs arguments)
+    private static async ValueTask<(bool Success, ItemDefinition? Definition)> TryParseArgumentsAsync(Player gameMaster, ItemChatCommandArgs arguments)
+    {
+        var itemDefinition = gameMaster.GameContext.Configuration.Items
+            .FirstOrDefault(def => def.Group == arguments.Group && def.Number == arguments.Number);
+        if (itemDefinition is null)
+        {
+            await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.ItemGroupNumberNotExists), arguments.Group, arguments.Number).ConfigureAwait(false);
+            return (false, null);
+        }
+
+        if (arguments.Level > itemDefinition.MaximumItemLevel)
+        {
+            await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.ItemLevelExceeded), itemDefinition.MaximumItemLevel).ConfigureAwait(false);
+            return (false, null);
+        }
+
+        return (true, itemDefinition);
+    }
+
+    private static Item CreateItem(DataModel.Configuration.Items.ItemDefinition itemDefinition, ItemChatCommandArgs arguments)
     {
         var item = new TemporaryItem();
-        item.Definition = GetItemDefinition(gameMaster, arguments);
+        item.Definition = itemDefinition;
         item.Durability = item.IsStackable() ? 1 : item.Definition.Durability;
         item.HasSkill = item.Definition.Skill != null && arguments.Skill;
-        item.Level = GetItemLevel(item.Definition, arguments);
+        item.Level = arguments.Level;
         item.SocketCount = item.Definition.MaximumSockets;
 
         AddOption(item, arguments);
@@ -57,26 +83,9 @@ public class ItemChatCommandPlugIn : ChatCommandPlugInBase<ItemChatCommandArgs>
         return item;
     }
 
-    private static ItemDefinition GetItemDefinition(Player gameMaster, ItemChatCommandArgs arguments)
-    {
-        return gameMaster.GameContext.Configuration.Items
-                   .FirstOrDefault(def => def.Group == arguments.Group && def.Number == arguments.Number)
-               ?? throw new ArgumentException($"{arguments.Group} {arguments.Number} does not exist.");
-    }
-
-    private static byte GetItemLevel(ItemDefinition itemDefinition, ItemChatCommandArgs arguments)
-    {
-        if (arguments.Level > itemDefinition.MaximumItemLevel)
-        {
-            throw new ArgumentException($"Level cannot be greater than {itemDefinition.MaximumItemLevel}.");
-        }
-
-        return arguments.Level;
-    }
-
     private static void AddOption(TemporaryItem item, ItemChatCommandArgs arguments)
     {
-        if (item.Definition != null && arguments.Opt > default(byte))
+        if (item.Definition != null && arguments.Opt > 0)
         {
             var allOptions = item.Definition.PossibleItemOptions
                 .SelectMany(o => o.PossibleOptions)
@@ -133,15 +142,15 @@ public class ItemChatCommandPlugIn : ChatCommandPlugInBase<ItemChatCommandArgs>
 
     private static void AddExcellentOptions(TemporaryItem item, ItemChatCommandArgs arguments)
     {
-        if (item.Definition != null && arguments.ExcellentNumber > default(byte))
+        if (item.Definition != null && arguments.ExcellentNumber > 0)
         {
             var excellentOptions = item.Definition.PossibleItemOptions
                 .SelectMany(o => o.PossibleOptions)
                 .Where(o => o.OptionType == ItemOptionTypes.Excellent)
-                .Where(o => ((1 << (o.Number - 1)) & arguments.ExcellentNumber) > default(byte))
+                .Where(o => ((1 << (o.Number - 1)) & arguments.ExcellentNumber) > 0)
                 .ToList();
 
-            ushort appliedOptions = default;
+            ushort appliedOptions = 0;
             foreach (var excellentOption in excellentOptions)
             {
                 var optionLink = new ItemOptionLink { ItemOption = excellentOption };
@@ -150,13 +159,13 @@ public class ItemChatCommandPlugIn : ChatCommandPlugInBase<ItemChatCommandArgs>
             }
 
             // every excellent item has skill (if is in item definition)
-            item.HasSkill = appliedOptions > default(ushort) && item.Definition.Skill != null;
+            item.HasSkill = appliedOptions > 0 && item.Definition.Skill != null;
         }
     }
 
     private static void AddAncientBonusOption(TemporaryItem item, ItemChatCommandArgs arguments)
     {
-        if (item.Definition != null && arguments.Ancient > default(byte)
+        if (item.Definition != null && arguments.Ancient > 0
                                     && item.Definition.PossibleItemSetGroups.FirstOrDefault(g => g.Items.Any(i => i.ItemDefinition == item.Definition && i.AncientSetDiscriminator == arguments.Ancient)) is { } ancientSet
                                     && ancientSet.Items.FirstOrDefault(i => i.ItemDefinition == item.Definition) is { } itemOfItemSet)
         {

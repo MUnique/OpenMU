@@ -19,6 +19,7 @@ internal static class MonsterExtensions
     public static void Apply(this EntityTypeBuilder<MonsterDefinition> builder)
     {
         builder.HasMany<QuestDefinition>().WithOne(q => q.RawQuestGiver);
+        builder.Property(m => m.Designation).HasConversion(LocalizedStringConverter.Instance);
     }
 
     /// <summary>

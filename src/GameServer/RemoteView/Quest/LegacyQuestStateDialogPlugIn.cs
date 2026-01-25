@@ -14,7 +14,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="ILegacyQuestStateDialogPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn("Quest - Status Dialog", "The default implementation of the ILegacyQuestStateDialogPlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.LegacyQuestStateDialogPlugIn_Name), Description = nameof(PlugInResources.LegacyQuestStateDialogPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("F43DA7A9-1ACC-4FBB-9E15-8BE977F4CAF9")]
 public class LegacyQuestStateDialogPlugIn : ILegacyQuestStateDialogPlugIn
 {

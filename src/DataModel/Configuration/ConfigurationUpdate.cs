@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.DataModel.Configuration;
 
+using MUnique.OpenMU.Interfaces;
+
 /// <summary>
 /// Describes an applied configuration update.
 /// Based on this information, the program can decide which updates are need to
@@ -21,12 +23,12 @@ public class ConfigurationUpdate
     /// <summary>
     /// Gets or sets the name of the update.
     /// </summary>
-    public string? Name { get; set; }
+    public LocalizedString? Name { get; set; }
 
     /// <summary>
     /// Gets or sets the description of the update with further information.
     /// </summary>
-    public string? Description { get; set; }
+    public LocalizedString? Description { get; set; }
 
     /// <summary>
     /// Gets or sets the release date.

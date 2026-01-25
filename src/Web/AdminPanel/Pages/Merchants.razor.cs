@@ -15,6 +15,7 @@ using Microsoft.JSInterop;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Web.AdminPanel.Properties;
 
 /// <summary>
 /// Razor page which shows objects of the specified type in a grid.
@@ -118,7 +119,7 @@ public partial class Merchants : ComponentBase, IAsyncDisposable
 
         var isConfirmed = await this.JavaScript.InvokeAsync<bool>(
                 "window.confirm",
-                "There are unsaved changes. Are you sure you want to discard them?")
+                Resources.UnsavedChangesQuestion)
             .ConfigureAwait(true);
 
         if (!isConfirmed)
@@ -161,18 +162,18 @@ public partial class Merchants : ComponentBase, IAsyncDisposable
             if (this._persistenceContext is { } context)
             {
                 var success = await context.SaveChangesAsync().ConfigureAwait(true);
-                var text = success ? "The changes have been saved." : "There were no changes to save.";
+                var text = success ? Resources.SavedChanges : Resources.NoChangesToSave;
                 this.ToastService.ShowSuccess(text);
             }
             else
             {
-                this.ToastService.ShowError("Failed, context not initialized.");
+                this.ToastService.ShowError(Resources.FailedByUninitializedContext);
             }
         }
         catch (Exception ex)
         {
             this.Logger.LogError(ex, $"An unexpected error occurred on save: {ex.Message}");
-            this.ToastService.ShowError($"An unexpected error occurred: {ex.Message}");
+            this.ToastService.ShowError(string.Format(Resources.UnexpectedErrorOccurred, ex.Message));
         }
     }
 
@@ -191,7 +192,7 @@ public partial class Merchants : ComponentBase, IAsyncDisposable
         {
             var isConfirmed = await this.JavaScript.InvokeAsync<bool>(
                     "window.confirm",
-                    "There are unsaved changes. Are you sure you want to discard them?")
+                    Resources.UnsavedChangesQuestion)
                 .ConfigureAwait(true);
 
             if (!isConfirmed)

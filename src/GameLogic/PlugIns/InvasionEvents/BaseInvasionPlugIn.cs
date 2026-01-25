@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.InvasionEvents;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 using MUnique.OpenMU.GameLogic.Views;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -207,7 +208,7 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
     /// </summary>
     /// <param name="player">The player.</param>
     /// <param name="mapName">The map name.</param>
-    protected async Task TrySendStartMessageAsync(Player player, string mapName)
+    protected async Task TrySendStartMessageAsync(Player player, LocalizedString mapName)
     {
         var configuration = this.Configuration;
 
@@ -216,7 +217,7 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
             return;
         }
 
-        var message = (configuration.Message ?? "[{mapName}] Invasion!").Replace("{mapName}", mapName, StringComparison.InvariantCulture);
+        var message = (configuration.Message?.ToString() ?? PlugInResources.BaseInvasionPlugIn_DefaultStartMessage).Replace("{mapName}", mapName.GetTranslation(player.Culture), StringComparison.InvariantCulture);
 
         if (this.IsPlayerOnMap(player))
         {

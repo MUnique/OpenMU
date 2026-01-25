@@ -12,8 +12,9 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which handles banacc commands.
 /// </summary>
 [Guid("EF869270-847E-48D5-9012-F5D111D9C8EB")]
-[PlugIn("Ban Account command", "Handles the chat command '/banacc <acc>'. Bans an account from the game.")]
-[ChatCommandHelp(Command, "Bans an account from the game.", typeof(BanAccChatCommandArgs), CharacterStatus.GameMaster)]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.BanAccChatCommandPlugIn_Name), Description = nameof(PlugInResources.BanAccChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
+[ChatCommandHelp(Command, typeof(BanAccChatCommandArgs), CharacterStatus.GameMaster)]
 public class BanAccChatCommandPlugIn : ChatCommandPlugInBase<BanAccChatCommandArgs>
 {
     private const string Command = "/banacc";
@@ -29,6 +30,6 @@ public class BanAccChatCommandPlugIn : ChatCommandPlugInBase<BanAccChatCommandAr
     {
         await this.ChangeAccountStateByLoginNameAsync(gameMaster, arguments.AccountName ?? string.Empty, AccountState.Banned).ConfigureAwait(false);
 
-        await this.ShowMessageToAsync(gameMaster, $"[{this.Key}] Account {arguments.AccountName} has been banned.").ConfigureAwait(false);
+        await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.AccountHasBeenBanned), this.Key, arguments.AccountName).ConfigureAwait(false);
     }
 }

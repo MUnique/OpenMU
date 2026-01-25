@@ -14,7 +14,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Action to perform a skill which is explicitly aimed to a target.
 /// </summary>
-[PlugIn(nameof(TargetedSkillDefaultPlugin), "Default (catch-all) handler for targeted skills")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.TargetedSkillDefaultPlugin_Name), Description = nameof(PlugInResources.TargetedSkillDefaultPlugin_Description), ResourceType = typeof(PlugInResources))]
 [Guid("eb2949fb-5ed2-407e-a4e8-e3015ed5692b")]
 public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
 {

@@ -14,7 +14,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Handler for teleport target packets (teleport ally skill).
 /// </summary>
-[PlugIn(nameof(TeleportTargetHandlerPlugIn), "Handler for target teleport packets of the teleport ally skill.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.TeleportTargetHandlerPlugIn_Name), Description = nameof(PlugInResources.TeleportTargetHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("279881F9-0AE9-4EDA-8EB1-34D99D3243CC")]
 internal class TeleportTargetHandlerPlugIn : IPacketHandlerPlugIn
 {

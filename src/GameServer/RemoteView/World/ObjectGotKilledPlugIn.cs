@@ -6,16 +6,18 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World;
 
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Properties;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.World;
-using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.PlugIns;
+using PlugInResources = MUnique.OpenMU.GameServer.Properties.PlugInResources;
 
 /// <summary>
 /// The default implementation of the <see cref="IObjectGotKilledPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn(nameof(ObjectGotKilledPlugIn), "The default implementation of the IObjectGotKilledPlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.ObjectGotKilledPlugIn_Name), Description = nameof(PlugInResources.ObjectGotKilledPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("fbe6666e-4425-4f33-b7c7-fc9b5fa36430")]
 public class ObjectGotKilledPlugIn : IObjectGotKilledPlugIn
 {
@@ -43,7 +45,7 @@ public class ObjectGotKilledPlugIn : IObjectGotKilledPlugIn
         await connection.SendObjectGotKilledAsync(killedId, skillId, killerId).ConfigureAwait(false);
         if (this._player == killed && killer is Player killerPlayer && this._player.DuelRoom is null)
         {
-            await this._player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync($"You got killed by {killerPlayer.Name}", MessageType.BlueNormal)).ConfigureAwait(false);
+            await this._player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.YouGotKilledBy), killerPlayer.Name).ConfigureAwait(false);
         }
     }
 }

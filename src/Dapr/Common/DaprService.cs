@@ -9,10 +9,13 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.EntityFramework;
+using MUnique.OpenMU.Persistence.EntityFramework.Json;
+using MUnique.OpenMU.PlugIns;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-using MUnique.OpenMU.Persistence.EntityFramework;
 
 /// <summary>
 /// Helper class to create an <see cref="WebApplicationBuilder"/> which predefined common
@@ -30,6 +33,9 @@ public static class DaprService
     /// </returns>
     public static WebApplicationBuilder CreateBuilder(string serviceName, string[] args)
     {
+        JsonConverterRegistry.RegisterConverter(new LocalizedStringJsonConverter());
+        JsonConverterRegistry.RegisterConverter(new BinaryAsHexJsonConverter());
+
         var builder = WebApplication.CreateBuilder(args);
 
         builder.WebHost.UseUrls($"http://*:8080");

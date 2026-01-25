@@ -16,7 +16,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IDuelHealthUpdatePlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn(nameof(DuelHealthUpdatePlugIn), "The default implementation of the IDuelHealthUpdatePlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.DuelHealthUpdatePlugIn_Name), Description = nameof(PlugInResources.DuelHealthUpdatePlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("40CE7F73-F9DF-4F4E-BBCE-04938604A72C")]
 [MinimumClient(4, 0, ClientLanguage.Invariant)]
 public class DuelHealthUpdatePlugIn : IDuelHealthUpdatePlugIn

@@ -18,7 +18,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// This update fixes character stats, skills, magic effects, items, and options related to damage. It also adds the Berserker magic effect.
 /// </summary>
-[PlugIn(PlugInName, PlugInDescription)]
+[PlugIn]
+[Display(Name = PlugInName, Description = PlugInDescription)]
 [Guid("077BA63D-F201-41BE-8A65-CFB859482A1B")]
 public class FixDamageCalcsPlugInSeason6 : FixDamageCalcsPlugInBase
 {
@@ -152,7 +153,7 @@ public class FixDamageCalcsPlugInSeason6 : FixDamageCalcsPlugInBase
         }
 
         // Update options
-        var ancientSetsOpts = gameConfiguration.ItemOptions.Where(io => io.Name.EndsWith("(Ancient Set)"));
+        var ancientSetsOpts = gameConfiguration.ItemOptions.Where(io => io.Name.ValueInNeutralLanguageAsSpan.EndsWith("(Ancient Set)"));
         var finalDamageBonus = Stats.FinalDamageBonus.GetPersistent(gameConfiguration);
         var wizardryBaseDmgIncrease = Stats.WizardryBaseDmgIncrease.GetPersistent(gameConfiguration);
         foreach (var ancientSetOpts in ancientSetsOpts)

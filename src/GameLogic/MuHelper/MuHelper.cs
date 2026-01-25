@@ -53,19 +53,19 @@ public class MuHelper : AsyncDisposable
     {
         if (this._runTask is not null)
         {
-            await this._player.ShowMessageAsync("MU Helper is already running.").ConfigureAwait(false);
+            await this._player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MuHelperAlreadyRunning)).ConfigureAwait(false);
             return false;
         }
 
         if (this._player.Level < this._configuration.MinLevel)
         {
-            await this._player.ShowMessageAsync($"MU Helper can be used after level {this._configuration.MinLevel}.").ConfigureAwait(false);
+            await this._player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MuHelperMinimumLevel), this._configuration.MinLevel).ConfigureAwait(false);
             return false;
         }
 
         if (this._player.Level > this._configuration.MaxLevel)
         {
-            await this._player.ShowMessageAsync($"MU Helper cannot be used after level {this._configuration.MaxLevel}.").ConfigureAwait(false);
+            await this._player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MuHelperMaximumLevel), this._configuration.MaxLevel).ConfigureAwait(false);
             return false;
         }
 
@@ -74,7 +74,7 @@ public class MuHelper : AsyncDisposable
 
         if (!this._player.TryRemoveMoney(requiredMoney))
         {
-            await this._player.ShowMessageAsync($"MU Helper requires {this._player.MuHelper.CalculateRequiredMoney()} zen.").ConfigureAwait(false);
+            await this._player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MuHelperRequiresMoney), requiredMoney).ConfigureAwait(false);
             return false;
         }
 

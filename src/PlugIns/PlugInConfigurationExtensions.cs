@@ -58,6 +58,11 @@ public static class PlugInConfigurationExtensions
             ReferenceHandler = referenceHandler,
         };
 
+        foreach (var converter in JsonConverterRegistry.Converters)
+        {
+            options.Converters.Add(converter);
+        }
+
         return JsonSerializer.Deserialize(configuration.CustomConfiguration, configurationType, options);
     }
 

@@ -1,28 +1,23 @@
-// <copyright file="SetMoneyChatCommandPlugIn.cs" company="MUnique">
+﻿// <copyright file="SetMoneyChatCommandPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
-using System.Globalization;
 using System.Runtime.InteropServices;
-using MUnique.OpenMU.GameLogic.Views;
-using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// A chat command plugin which sets a character's money.
 /// </summary>
 [Guid("00AA4F0E-911D-49FE-8D88-114C7496D383")]
-[PlugIn("Set money command", "Sets money of a player. Usage: /setmoney (amount) (optional:character)")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.SetMoneyChatCommandPlugIn_Name), Description = nameof(PlugInResources.SetMoneyChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, "Sets money of a player. Usage: /setmoney (amount) (optional:character)", null)]
 public class SetMoneyChatCommandPlugIn : ChatCommandPlugInBase<SetMoneyChatCommandPlugIn.Arguments>, IDisabledByDefault
 {
     private const string Command = "/setmoney";
     private const CharacterStatus MinimumStatus = CharacterStatus.GameMaster;
-    private const string CharacterNotFoundMessage = "Character '{0}' not found.";
-    private const string InvalidAmountMessage = "Invalid amount - must be between 0 and {0}.";
-    private const string MoneySetMessage = "Money set to {0}.";
 
     /// <inheritdoc />
     public override string Key => Command;
@@ -40,7 +35,7 @@ public class SetMoneyChatCommandPlugIn : ChatCommandPlugInBase<SetMoneyChatComma
             if (targetPlayer?.SelectedCharacter is null ||
                 !targetPlayer.SelectedCharacter.Name.Equals(characterName, StringComparison.OrdinalIgnoreCase))
             {
-                await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, CharacterNotFoundMessage, characterName)).ConfigureAwait(false);
+                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CharacterNotFound), characterName).ConfigureAwait(false);
                 return;
             }
         }
@@ -57,12 +52,12 @@ public class SetMoneyChatCommandPlugIn : ChatCommandPlugInBase<SetMoneyChatComma
 
         if (arguments is null || arguments.Amount < 0 || arguments.Amount > maxMoney)
         {
-            await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, InvalidAmountMessage, maxMoney)).ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.InvalidMoneyAmount), maxMoney).ConfigureAwait(false);
             return;
         }
 
         targetPlayer.Money = checked(arguments.Amount);
-        await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, MoneySetMessage, arguments.Amount)).ConfigureAwait(false);
+        await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.SetMoneyResult), arguments.Amount).ConfigureAwait(false);
     }
 
     /// <summary>

@@ -13,8 +13,9 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which handles pk commands.
 /// </summary>
 [Guid("30B7EFF0-33EE-4136-BEB0-BE503B748DC6")]
-[PlugIn("PK chat command", "Handles the chat command '/pk <char> <pk_lvl> <pk_count>'. Sets player kill level and count of a character.")]
-[ChatCommandHelp(Command, "Sets player kill level and count of a character.", typeof(PkChatCommandArgs), CharacterStatus.GameMaster)]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.PkChatCommandPlugIn_Name), Description = nameof(PlugInResources.PkChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
+[ChatCommandHelp(Command, typeof(PkChatCommandArgs), CharacterStatus.GameMaster)]
 public class PkChatCommandPlugIn : ChatCommandPlugInBase<PkChatCommandArgs>
 {
     private const string Command = "/pk";
@@ -32,27 +33,35 @@ public class PkChatCommandPlugIn : ChatCommandPlugInBase<PkChatCommandArgs>
     {
         if (arguments.Level < MinPkLevel || arguments.Level > MaxPkLevel)
         {
-            throw new ArgumentException($"PK level must be between {MinPkLevel} and {MaxPkLevel}.");
+            await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.PlayerKillLevelRangeError), MinPkLevel, MaxPkLevel).ConfigureAwait(false);
+            return;
         }
 
-        if (arguments.Count <= default(int))
+        if (arguments.Count <= 0)
         {
-            throw new ArgumentException($"PK count must be greater than zero.");
+            await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.PlayerKillCountMustBePositive)).ConfigureAwait(false);
+            return;
         }
 
-        var targetPlayer = this.GetPlayerByCharacterName(gameMaster, arguments.CharacterName ?? string.Empty);
-        targetPlayer.SelectedCharacter!.State = HeroState.Normal + arguments.Level;
-        targetPlayer.SelectedCharacter!.StateRemainingSeconds = (int)TimeSpan.FromHours(arguments.Count).TotalSeconds;
-        targetPlayer.SelectedCharacter!.PlayerKillCount = arguments.Count;
-        await targetPlayer.ForEachWorldObserverAsync<IUpdateCharacterHeroStatePlugIn>(p => p.UpdateCharacterHeroStateAsync(targetPlayer), true).ConfigureAwait(false);
+        var targetPlayer = await this.GetPlayerByCharacterNameAsync(gameMaster, arguments.CharacterName ?? string.Empty).ConfigureAwait(false);
+        var character = targetPlayer?.SelectedCharacter;
+        if (character is null)
+        {
+            // logged out in the mean time ...
+            return;
+        }
 
-        var message = string.Format(
-            "The state of {0} has been changed to {1} with {2} murders for {3} minutes",
-            targetPlayer.Name,
-            targetPlayer.SelectedCharacter!.State,
-            targetPlayer.SelectedCharacter!.PlayerKillCount,
-            Math.Round(TimeSpan.FromSeconds(targetPlayer.SelectedCharacter!.StateRemainingSeconds).TotalMinutes));
+        character.State = HeroState.Normal + arguments.Level;
+        character.StateRemainingSeconds = (int)TimeSpan.FromHours(arguments.Count).TotalSeconds;
+        character.PlayerKillCount = arguments.Count;
+        await targetPlayer!.ForEachWorldObserverAsync<IUpdateCharacterHeroStatePlugIn>(p => p.UpdateCharacterHeroStateAsync(targetPlayer!), true).ConfigureAwait(false);
 
-        await this.ShowMessageToAsync(gameMaster, $"[{this.Key}] {message}").ConfigureAwait(false);
+        await gameMaster.ShowLocalizedBlueMessageAsync(
+            nameof(PlayerMessage.PlayerKillStateChangeResult),
+            this.Key,
+            character.Name,
+            character.State,
+            character.PlayerKillCount,
+            Math.Round(TimeSpan.FromSeconds(character!.StateRemainingSeconds).TotalMinutes)).ConfigureAwait(false);
     }
 }

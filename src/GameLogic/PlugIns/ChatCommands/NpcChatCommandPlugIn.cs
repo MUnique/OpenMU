@@ -1,18 +1,15 @@
-// <copyright file="NpcChatCommandPlugIn.cs" company="MUnique">
+﻿// <copyright file="NpcChatCommandPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
 using System.ComponentModel.DataAnnotations;
-using System.Globalization;
 using System.Runtime.InteropServices;
-using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlayerActions;
-using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.PlugIns;
 
@@ -20,14 +17,13 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which opens NPC windows.
 /// </summary>
 [Guid("D8AC2F15-AB30-4432-A042-A41ACA1B274D")]
-[PlugIn("NPC open merchant chat command", "Opens the merchant NPC store.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.NpcChatCommandPlugIn_Name), Description = nameof(PlugInResources.NpcChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, "Opens the NPC store.", null)]
 public class NpcChatCommandPlugIn : ChatCommandPlugInBase<NpcChatCommandPlugIn.Arguments>, ISupportCustomConfiguration<NpcChatCommandPlugIn.NpcChatCommandConfiguration>, ISupportDefaultCustomConfiguration, IDisabledByDefault
 {
     private const string Command = "/npc";
     private const CharacterStatus MinimumStatus = CharacterStatus.Normal;
-    private const string InvalidNpcIdMessage = "Invalid NPC ID \"{0}\". Please provide a valid merchant NPC ID.";
-    private const string InvalidMerchantMessage = "Not a valid merchant NPC.";
 
     private readonly TalkNpcAction _talkNpcAction = new();
 
@@ -64,7 +60,7 @@ public class NpcChatCommandPlugIn : ChatCommandPlugInBase<NpcChatCommandPlugIn.A
             }
             else
             {
-                await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, InvalidNpcIdMessage, npcIdStr)).ConfigureAwait(false);
+                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.InvalidMerchantId), npcIdStr).ConfigureAwait(false);
                 return;
             }
         }
@@ -74,11 +70,11 @@ public class NpcChatCommandPlugIn : ChatCommandPlugInBase<NpcChatCommandPlugIn.A
             return;
         }
 
-        if (npcDefinition!.MerchantStore is null)
+        if (npcDefinition.MerchantStore is null)
         {
             if (player.SelectedCharacter?.CharacterStatus >= CharacterStatus.GameMaster)
             {
-                await this.ShowMessageToAsync(player, InvalidMerchantMessage).ConfigureAwait(false);
+                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.NpcIsNotMerchant)).ConfigureAwait(false);
             }
 
             return;
@@ -86,7 +82,7 @@ public class NpcChatCommandPlugIn : ChatCommandPlugInBase<NpcChatCommandPlugIn.A
 
         if (configuration.MinimumVipLevel > 0 && (player.Attributes?[Stats.IsVip] ?? 0) < configuration.MinimumVipLevel)
         {
-            await this.ShowMessageToAsync(player, configuration.InsufficientVipLevelMessage).ConfigureAwait(false);
+            await player.ShowBlueMessageAsync(configuration.InsufficientVipLevelMessage.GetTranslation(player.Culture)).ConfigureAwait(false);
             return;
         }
 
@@ -114,19 +110,19 @@ public class NpcChatCommandPlugIn : ChatCommandPlugInBase<NpcChatCommandPlugIn.A
         /// Gets or sets the NPC ID of the NPC to open the merchant store.
         /// </summary>
         // TODO: Change to a list of possible NPCs merchants
-        [Display(Name = "NPC ID", Description = @"The ID of the NPC to open the merchant store. Default: Potion Girl Amy - 253.")]
+        [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.NpcChatCommandConfiguration_OpenMerchantNpc_Name), Description = nameof(PlugInResources.NpcChatCommandConfiguration_OpenMerchantNpc_Description))]
         public MonsterDefinition? OpenMerchantNpc { get; set; }
 
         /// <summary>
         /// Gets or sets the minimum VIP level to use the command.
         /// </summary>
-        [Display(Name = "Minimum VIP Level", Description = @"The minimum VIP level to use the command. Default: 0.")]
+        [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.NpcChatCommandConfiguration_MinimumVipLevel_Name), Description = nameof(PlugInResources.NpcChatCommandConfiguration_MinimumVipLevel_Description))]
         public int MinimumVipLevel { get; set; }
 
         /// <summary>
         /// Gets or sets the message to show when the player does not have the required VIP level for this command (excluding GM).
         /// </summary>
-        [Display(Name = "Insufficient VIP Level Message", Description = @"The message to show when the player does not have the required VIP level for this command (excluding GM).")]
-        public string InsufficientVipLevelMessage { get; set; } = "Insufficient VIP level to use this command";
+        [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.NpcChatCommandConfiguration_InsufficientVipLevelMessage_Name), Description = nameof(PlugInResources.NpcChatCommandConfiguration_InsufficientVipLevelMessage_Description))]
+        public LocalizedString InsufficientVipLevelMessage { get; set; } = "Insufficient VIP level to use this command";
     }
 }

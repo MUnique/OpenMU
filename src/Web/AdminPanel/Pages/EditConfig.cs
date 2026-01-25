@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.Web.AdminPanel.Properties;
 using MUnique.OpenMU.Web.Shared.Components.Form;
 using MUnique.OpenMU.Web.Shared.Components.ItemEdit;
 
@@ -23,7 +24,7 @@ public sealed class EditConfig : EditBase
     private static readonly IDictionary<Type, IList<(string Caption, string Path)>> EditorPages =
         new Dictionary<Type, IList<(string, string)>>
         {
-            { typeof(GameMapDefinition), new List<(string, string)> { ("Map Editor", "/map-editor/{0}") } },
+            { typeof(GameMapDefinition), new List<(string, string)> { (Resources.MapEditor, "/map-editor/{0}") } },
         };
 
     /// <inheritdoc />

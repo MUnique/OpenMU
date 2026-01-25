@@ -14,7 +14,8 @@ using MUnique.OpenMU.PlugIns;
 /// The alcohol consume handler.
 /// </summary>
 [Guid("7FC2FE02-9215-4AD3-958F-D2279CD84266")]
-[PlugIn(nameof(AlcoholConsumeHandlerPlugIn), "Plugin which handles the alcohol consumption.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.AlcoholConsumeHandlerPlugIn_Name), Description = nameof(PlugInResources.AlcoholConsumeHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 public class AlcoholConsumeHandlerPlugIn : ApplyMagicEffectConsumeHandlerPlugIn
 {
     /// <inheritdoc />

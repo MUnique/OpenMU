@@ -15,6 +15,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Web.AdminPanel.Properties;
 using MUnique.OpenMU.Web.Shared;
 using MUnique.OpenMU.Web.Shared.Components;
 
@@ -86,7 +87,7 @@ public sealed class EditMap : ComponentBase, IDisposable
         if (this._maps is { })
         {
             builder.OpenComponent<Breadcrumb>(0);
-            builder.AddAttribute(1, nameof(Breadcrumb.Caption), "Map Editor");
+            builder.AddAttribute(1, nameof(Breadcrumb.Caption), Resources.MapEditor);
             builder.CloseComponent();
             builder.OpenComponent<CascadingValue<IContext>>(10);
             builder.AddAttribute(12, nameof(CascadingValue<IContext>.Value), this._context);
@@ -165,7 +166,7 @@ public sealed class EditMap : ComponentBase, IDisposable
         var isConfirmed = await this.JavaScript.InvokeAsync<bool>(
                 "window.confirm",
                 cancellationToken,
-                "There are unsaved changes. Are you sure you want to discard them?")
+                Resources.UnsavedChangesQuestion)
             .ConfigureAwait(true);
 
         if (!isConfirmed)
@@ -197,7 +198,7 @@ public sealed class EditMap : ComponentBase, IDisposable
                 catch (Exception ex)
                 {
                     this.Logger.LogError(ex, $"Could not load game maps: {ex.Message}{Environment.NewLine}{ex.StackTrace}");
-                    await this.ModalService.ShowMessageAsync("Error", "Could not load the map data. Check the logs for details.").ConfigureAwait(false);
+                    await this.ModalService.ShowMessageAsync(Resources.Error, Resources.CouldNotLoadMapDataCheckTheLogs).ConfigureAwait(false);
                 }
 
                 await showModalTask.ConfigureAwait(false);
@@ -223,13 +224,13 @@ public sealed class EditMap : ComponentBase, IDisposable
         {
             var context = await this.GameConfigurationSource.GetContextAsync().ConfigureAwait(true);
             var success = await context.SaveChangesAsync().ConfigureAwait(true);
-            var text = success ? "The changes have been saved." : "There were no changes to save.";
+            var text = success ? Resources.SavedChanges : Resources.NoChangesToSave;
             this.ToastService.ShowSuccess(text);
         }
         catch (Exception ex)
         {
             this.Logger.LogError(ex, $"Error during saving");
-            this.ToastService.ShowError($"An unexpected error occured: {ex.Message}. See logs for more details.");
+            this.ToastService.ShowError(string.Format(Resources.UnexpectedErrorCheckLogs, ex.Message));
         }
     }
 }

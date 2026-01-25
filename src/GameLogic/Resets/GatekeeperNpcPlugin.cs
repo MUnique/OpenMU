@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// Handles the gatekeeper npc in the Barracks of Balgass.
 /// </summary>
 [Guid("1B7BCA14-3124-4550-94B4-3FFCEE1FD55A")]
-[PlugIn(nameof(GatekeeperNpcPlugin), "Handle Gatekeeper NPC Request")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.GatekeeperNpcPlugin_Name), Description = nameof(PlugInResources.GatekeeperNpcPlugin_Description), ResourceType = typeof(PlugInResources))]
 public class GatekeeperNpcPlugin : IPlayerTalkToNpcPlugIn
 {
     /// <summary>

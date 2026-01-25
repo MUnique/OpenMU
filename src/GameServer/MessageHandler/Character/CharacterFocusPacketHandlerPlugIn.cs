@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Packet handler for character focus packets (0xF3, 0x15 identifier).
 /// </summary>
-[PlugIn("Character - Focus", "Packet handler for character focus packets (0xF3, 0x15 identifier).")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.CharacterFocusPacketHandlerPlugIn_Name), Description = nameof(PlugInResources.CharacterFocusPacketHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("8687C77F-E26C-4510-AD85-E5F51305DE2A")]
 [BelongsToGroup(CharacterGroupHandlerPlugIn.GroupKey)]
 internal class CharacterFocusPacketHandlerPlugIn : ISubPacketHandlerPlugIn

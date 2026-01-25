@@ -38,11 +38,11 @@ public partial class PowerUpDefinition
             var relation = this.Boost.RelatedValues.First();
             if (relation.InputOperator == InputOperator.ExponentiateByAttribute)
             {
-                value = relation.InputOperand + relation.InputOperator.AsString() + relation.InputAttribute?.Designation;
+                value = relation.InputOperand + relation.InputOperator.AsString() + new LocalizedString(relation.InputAttribute?.Designation).ToString();
             }
             else
             {
-                value = relation.InputAttribute?.Designation + relation.InputOperator.AsString() + relation.InputOperand;
+                value = new LocalizedString(relation.InputAttribute?.Designation).ToString() + relation.InputOperator.AsString() + relation.InputOperand;
             }
         }
         else
@@ -51,6 +51,6 @@ public partial class PowerUpDefinition
             value = "0";
         }
 
-        return value + " " + this.TargetAttribute?.Designation;
+        return value + " " + new LocalizedString(this.TargetAttribute?.Designation).ToString();
     }
 }

@@ -161,12 +161,7 @@ public sealed class BloodCastleContext : MiniGameContext
 
             if (destructible.Definition.Number == StatueOfSaintNumber)
             {
-                var message = e.KillerName + " has destroyed the Crystal Statue!";
-                await this.ForEachPlayerAsync(async player =>
-                {
-                    await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, Interfaces.MessageType.GoldenCenter)).
-                        ConfigureAwait(false);
-                }).ConfigureAwait(false);
+                await this.ShowGoldenMessageAsync(nameof(PlayerMessage.BloodCastleCrystalStatusDestroyed), e.KillerName).ConfigureAwait(false);
             }
             else if (destructible.Definition.Number == CastleGateNumber)
             {
@@ -190,10 +185,12 @@ public sealed class BloodCastleContext : MiniGameContext
         if (args.DroppedItem is DroppedItem { Item.Definition: { } definition } && definition.IsArchangelQuestItem())
         {
             this._questItemOwner = args.Picker;
-            var message = args.Picker.Name + " has acquired the " + definition.Name;
-            await this.ForEachPlayerAsync(
-                player => player.InvokeViewPlugInAsync<IShowMessagePlugIn>(
-                    p => p.ShowMessageAsync(message, Interfaces.MessageType.GoldenCenter)).AsTask()).ConfigureAwait(false);
+            await this.ForEachPlayerAsync(player => player.ShowLocalizedGoldenMessageAsync(
+                        nameof(PlayerMessage.BloodCastleArchangelAquiredMessageFormat),
+                        args.Picker.Name,
+                        definition.Name.GetTranslation(player.Culture))
+                    .AsTask())
+                .ConfigureAwait(false);
         }
     }
 

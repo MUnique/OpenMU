@@ -1,0 +1,137 @@
+﻿@using System.ComponentModel.DataAnnotations
+@using System.Diagnostics.CodeAnalysis
+@using System.Globalization
+@using Microsoft.AspNetCore.Builder
+@using Microsoft.Extensions.Options
+
+@inherits NotifyableInputBase<MUnique.OpenMU.Interfaces.LocalizedString>
+
+@inject IOptions<RequestLocalizationOptions> LocalizationOptions
+
+<div class="input-group">
+  <div class="input-group-prepend">
+    <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
+  </div>
+
+  @foreach (var culture in this.LocalizationOptions.Value.SupportedUICultures)
+  {
+    <div class="mb-1">
+      <input id="@(MUnique.OpenMU.Interfaces.LocalizedString.NeutralLanguageCode == culture.TwoLetterISOLanguageName ? this.FieldIdentifier.FieldName : this.FieldIdentifier.FieldName + "_" + culture.TwoLetterISOLanguageName)"
+             class="@(this.GetInputClass(culture))"
+             value="@GetValueForCulture(culture)"
+             @onchange="(e => SetValueForCulture(culture, e.Value?.ToString()))"
+      />
+      <span class="badge @(this.GetBadge(culture))">@culture.TwoLetterISOLanguageName</span>
+    </div>
+  }
+    
+</div>
+<ValidationMessage For="@this.ValueExpression" />
+
+@code {
+
+    private ValidationMessageStore? _validationMessageStore;
+
+    /// <summary>
+    /// Gets or sets the label which should be displayed. If it's not explicitly provided, the component shows the
+    /// Name defined in the <see cref="DisplayAttribute"/>. If there is no Name in a <see cref="DisplayAttribute"/>, it shows the property name instead.
+    /// </summary>
+    [Parameter]
+    public string? Label { get; set; }
+
+    /// <inheritdoc />
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (this.EditContext is not null && this._validationMessageStore is null)
+        {
+            this._validationMessageStore = new ValidationMessageStore(this.EditContext);
+        }
+    }
+
+    /// <inheritdoc />
+    protected override bool TryParseValueFromString(string? value, [MaybeNullWhen(false)] out MUnique.OpenMU.Interfaces.LocalizedString result, [NotNullWhen(false)] out string? validationErrorMessage)
+    {
+        if (value is not null && value.Contains(MUnique.OpenMU.Interfaces.LocalizedString.Separator, StringComparison.Ordinal))
+        {
+            result = new(string.Empty);
+            validationErrorMessage = string.Empty;
+            // validationErrorMessage = string.Format(MUnique.OpenMU.Web.Shared.Properties.Resources.TheValueMustNotContain, culMUnique.OpenMU.Interfaces.LocalizedString.Separator);
+            return false;
+        }
+
+        result = new(value ?? string.Empty);
+        validationErrorMessage = null;
+        return true;
+    }
+
+    private string GetValueForCulture(CultureInfo culture)
+    {
+      if (this.Value.Value is null)
+      {
+        return string.Empty;
+      }
+
+      return new string(this.Value.GetTranslation(culture, false));
+    }
+
+
+    private void SetValueForCulture(CultureInfo culture, string? newValue)
+    {
+        var existingError = this._validationMessageStore?[this.FieldIdentifier].FirstOrDefault(message => message.StartsWith(culture.TwoLetterISOLanguageName + ":"));
+
+      if (this.EditContext is not null
+          && this._validationMessageStore is not null
+          && newValue is not null
+          && existingError is null
+          && newValue.Contains(OpenMU.Interfaces.LocalizedString.Separator, StringComparison.Ordinal))
+      {
+            this._validationMessageStore.Add(
+              this.FieldIdentifier,
+              string.Format(MUnique.OpenMU.Web.Shared.Properties.Resources.TheValueMustNotContain, culture.TwoLetterISOLanguageName, MUnique.OpenMU.Interfaces.LocalizedString.Separator));
+
+        // Notify the EditContext that validation state changed
+        this.EditContext.NotifyValidationStateChanged();
+      }
+
+      if (this.EditContext is not null && this._validationMessageStore is not null)
+      {
+        var otherErrors = this._validationMessageStore[this.FieldIdentifier].Where(message => message != existingError).ToList();
+
+        // Clear any previous error when the value becomes valid
+        this._validationMessageStore.Clear(this.FieldIdentifier);
+        this._validationMessageStore.Add(this.FieldIdentifier, otherErrors);
+        this.EditContext.NotifyValidationStateChanged();
+      }
+
+      this.CurrentValue = this.CurrentValue.WithTranslation(culture, newValue);
+    }
+    
+    private bool HasErrors(CultureInfo culture)
+    {
+      return this._validationMessageStore?[this.FieldIdentifier].Any(message => message.StartsWith(culture.TwoLetterISOLanguageName + ":")) is true;
+    }
+
+    private string GetInputClass(CultureInfo culture)
+    {
+      var isValidationError = this.HasErrors(culture);
+      if (isValidationError)
+      {
+        return "invalid";
+      }
+
+      return string.Empty;
+    }
+
+    private string GetBadge(CultureInfo culture)
+    {
+      var isValidationError = this.HasErrors(culture);
+      if (isValidationError)
+      {
+        return "badge-danger";
+      }
+
+      return this.CurrentValue.GetTranslation(culture, false).Length > 0 ? "badge-success" : "badge-warning";
+    }
+}

@@ -9,6 +9,10 @@ namespace MUnique.OpenMU.PlugIns;
 /// May be helpful for debugging and the user interface.
 /// A proxy class is automatically generated which executes all plugins which implement the marked interface.
 /// </summary>
+/// <remarks>
+/// It's not possible to apply DisplayAttribute to interfaces.
+/// Therefore, this attribute still has <see cref="Name"/> and <see cref="Description"/> properties.
+/// </remarks>
 [AttributeUsage(AttributeTargets.Interface)]
 public class PlugInPointAttribute : Attribute
 {

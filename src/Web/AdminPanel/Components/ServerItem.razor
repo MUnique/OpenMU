@@ -1,7 +1,9 @@
 ﻿@using System.ComponentModel
+@using MUnique.OpenMU.DataModel
 @using MUnique.OpenMU.DataModel.Configuration
 @using MUnique.OpenMU.Interfaces
 @using MUnique.OpenMU.Persistence
+@using MUnique.OpenMU.Web.AdminPanel.Properties
 @implements IDisposable
 
 @if (this._isDeleted)
@@ -39,50 +41,50 @@
     <td>
         <div>@this.Server.CurrentConnections / @(this.Server.MaximumConnections < int.MaxValue ? this.Server.MaximumConnections.ToString() : "∞")</div>
     </td>
-    <td>@this.GetStateCaption()</td>
+    <td>@this.Server.ServerState.GetEnumCaption()</td>
     <td>
-      <div class="btn-group" role="group" aria-label="Server control">
+      <div class="btn-group" role="group" aria-label="@Resources.ServerControl">
       @if (this.Server.ServerState == ServerState.Started)
       {
-        <button type="button" class="btn-secondary" title="Start" disabled>
+        <button type="button" class="btn-secondary" title="@Resources.Start" disabled>
           <span class="oi oi-media-play"></span>
         </button>
-        <button type="button" class="btn-warning" title="Stop" @onclick="this.OnPauseClickAsync">
+        <button type="button" class="btn-warning" title="@Resources.Stop" @onclick="this.OnPauseClickAsync">
           <span class="oi oi-media-pause"></span>
         </button>
         @if (this.Server.Type is ServerType.GameServer or ServerType.ConnectServer)
         {
-          <button type="button" class="btn-secondary" title="Remove" disabled>
+          <button type="button" class="btn-secondary" title="@Resources.Remove" disabled>
             <span class="oi oi-trash"></span>
           </button>
         }
       }
       else if ((this.Server.ServerState == ServerState.Stopped))
       {
-        <button type="button" class="btn-success" title="Start" @onclick="this.OnStartClickAsync">
+        <button type="button" class="btn-success" title="@Resources.Start" @onclick="this.OnStartClickAsync">
           <span class="oi oi-media-play"></span>
         </button>
-        <button type="button" class="btn-secondary" title="Stop" disabled>
+        <button type="button" class="btn-secondary" title="@Resources.Stop" disabled>
           <span class="oi oi-media-pause"></span>
         </button>
         @if (this.Server.Type is ServerType.GameServer or ServerType.ConnectServer)
         {
-          <button type="button" class="btn-danger" title="Remove" @onclick="this.OnDeleteServerClickAsync">
+          <button type="button" class="btn-danger" title="@Resources.Remove" @onclick="this.OnDeleteServerClickAsync">
             <span class="oi oi-trash"></span>
           </button>
         }
       }
       else
       {
-        <button type="button" class="btn-secondary" title="Start" disabled>
+        <button type="button" class="btn-secondary" title="@Resources.Start" disabled>
           <span class="oi oi-media-play"></span>
         </button>
-        <button type="button" class="btn-secondary" title="Stop" disabled>
+        <button type="button" class="btn-secondary" title="@Resources.Stop" disabled>
           <span class="oi oi-media-pause"></span>
         </button>
         @if (this.Server.Type is ServerType.GameServer or ServerType.ConnectServer)
         {
-                  <button type="button" class="btn-secondary" title="Remove" disabled>
+          <button type="button" class="btn-secondary" title="@Resources.Remove" disabled>
             <span class="oi oi-trash"></span>
           </button>
         }
@@ -192,8 +194,8 @@
       }
 
       var dialogResult = await this.ModalService.ShowQuestionAsync(
-        "Remove Server",
-        "The server will be deleted from the database. Are you sure to proceed?");
+        @Resources.RemoveServer,
+        @Resources.ServerDeleteProceedQuestion);
       if (!dialogResult)
       {
         return;
@@ -226,24 +228,5 @@
         await context.SaveChangesAsync().ConfigureAwait(false);
         this._isDeleted = true;
       }
-    }
-
-    private string GetStateCaption()
-    {
-        switch (this.Server.ServerState)
-        {
-            case ServerState.Stopped:
-                return "Stopped";
-            case ServerState.Starting:
-                return "Starting ...";
-            case ServerState.Started:
-                return "Started";
-            case ServerState.Stopping:
-                return "Stopping ...";
-            case ServerState.Timeout:
-                return "Timeout";
-        }
-
-        return string.Empty;
     }
 }

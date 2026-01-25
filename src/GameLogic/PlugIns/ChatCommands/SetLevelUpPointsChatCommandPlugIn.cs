@@ -1,4 +1,4 @@
-// <copyright file="SetLevelUpPointsChatCommandPlugIn.cs" company="MUnique">
+﻿// <copyright file="SetLevelUpPointsChatCommandPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -14,15 +14,13 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which sets a character's level-up points.
 /// </summary>
 [Guid("50EF670A-DF7A-4FEE-8E42-7C7A18A68941")]
-[PlugIn("Set level up points command", "Sets level up points of a player. Usage: /setleveluppoints (points) (optional:character)")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.SetLevelUpPointsChatCommandPlugIn_Name), Description = nameof(PlugInResources.SetLevelUpPointsChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, "Sets level up points of a player. Usage: /setleveluppoints (points) (optional:character)", null)]
 public class SetLevelUpPointsChatCommandPlugIn : ChatCommandPlugInBase<SetLevelUpPointsChatCommandPlugIn.Arguments>, IDisabledByDefault
 {
     private const string Command = "/setleveluppoints";
     private const CharacterStatus MinimumStatus = CharacterStatus.GameMaster;
-    private const string CharacterNotFoundMessage = "Character '{0}' not found.";
-    private const string InvalidLevelUpPointsMessage = "Invalid level-up points - must be bigger or equal to 0.";
-    private const string LevelUpPointsSetMessage = "Level-up points set to {0}.";
 
     /// <inheritdoc />
     public override string Key => Command;
@@ -40,7 +38,7 @@ public class SetLevelUpPointsChatCommandPlugIn : ChatCommandPlugInBase<SetLevelU
             if (targetPlayer?.SelectedCharacter is null ||
                 !targetPlayer.SelectedCharacter.Name.Equals(characterName, StringComparison.OrdinalIgnoreCase))
             {
-                await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, CharacterNotFoundMessage, characterName)).ConfigureAwait(false);
+                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CharacterNotFound), characterName).ConfigureAwait(false);
                 return;
             }
         }
@@ -52,13 +50,13 @@ public class SetLevelUpPointsChatCommandPlugIn : ChatCommandPlugInBase<SetLevelU
 
         if (arguments is null || arguments.LevelUpPoints < 0)
         {
-            await this.ShowMessageToAsync(player, InvalidLevelUpPointsMessage).ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.InvalidLevelUpPoints)).ConfigureAwait(false);
             return;
         }
 
         targetPlayer.SelectedCharacter.LevelUpPoints = checked(arguments.LevelUpPoints);
         await targetPlayer.InvokeViewPlugInAsync<IUpdateLevelPlugIn>(p => p.UpdateLevelAsync()).ConfigureAwait(false);
-        await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, LevelUpPointsSetMessage, arguments.LevelUpPoints)).ConfigureAwait(false);
+        await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.SetLevelUpPointsResult), arguments.LevelUpPoints).ConfigureAwait(false);
     }
 
     /// <summary>

@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IQuestEventResponsePlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn("Quest - Event Quests Response", "The default implementation of the IQuestEventResponsePlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.QuestEventResponsePlugIn_Name), Description = nameof(PlugInResources.QuestEventResponsePlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("5EAE1634-9589-4DEB-AEBA-93D0AC8AC5DF")]
 public class QuestEventResponsePlugIn : IQuestEventResponsePlugIn
 {

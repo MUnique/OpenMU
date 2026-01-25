@@ -13,8 +13,9 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which handles the command to add strength stat points.
 /// </summary>
 [Guid("21B15D95-BA2F-40A3-AB7D-8BD886FAEAE5")]
-[PlugIn("Add strength chat command", "Adds the specified amount of strength points to the character.")]
-[ChatCommandHelp(Command, "Adds the specified amount of strength points to the character.", null, MinimumStatus)]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.AddStrengthStatChatCommandPlugIn_Name), Description = nameof(PlugInResources.AddStrengthStatChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
+[ChatCommandHelp(Command, null, MinimumStatus)]
 public class AddStrengthStatChatCommandPlugIn : AddStatChatCommandPlugIn, IDisabledByDefault
 {
     private const string Command = "/addstr";

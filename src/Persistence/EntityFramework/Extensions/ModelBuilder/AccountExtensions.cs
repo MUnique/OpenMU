@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence.EntityFramework.Extensions.ModelBuilder;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using MUnique.OpenMU.Persistence.EntityFramework.Model;
 
@@ -20,5 +21,7 @@ internal static class AccountExtensions
     {
         builder.Property(account => account.LoginName).HasMaxLength(10).IsRequired();
         builder.HasIndex(account => account.LoginName).IsUnique();
+
+        builder.Property(account => account.LanguageIsoCode).HasMaxLength(3).IsRequired().HasDefaultValue("en");
     }
 }

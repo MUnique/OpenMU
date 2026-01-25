@@ -12,7 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// This Sets the safezone of duel arena to lorencia.
 /// </summary>
-[PlugIn(PlugInName, PlugInDescription)]
+[PlugIn]
+[Display(Name = PlugInName, Description = PlugInDescription)]
 [Guid("27714BB3-43F9-4D90-920F-98EF0EC20232")]
 public class FixDuelArenaSafezoneMapUpdate : UpdatePlugInBase
 {

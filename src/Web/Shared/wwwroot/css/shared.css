@@ -2078,7 +2078,7 @@ textarea.form-control, textarea.valid.modified, .invalid textarea.valid {
   box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
 }
 
-.invalid-feedback, .validation-message {
+.invalid-feedback {
   display: none;
   width: 100%;
   margin-top: 0.25rem;
@@ -2105,13 +2105,11 @@ textarea.form-control, textarea.valid.modified, .invalid textarea.valid {
   left: 5px;
 }
 
-.was-validated :invalid ~ .invalid-feedback, .was-validated :invalid ~ .validation-message, .valid.modified :invalid ~ .invalid-feedback, .valid.modified :invalid ~ .validation-message,
+.was-validated :invalid ~ .invalid-feedback, .valid.modified :invalid ~ .invalid-feedback,
 .was-validated :invalid ~ .invalid-tooltip,
 .valid.modified :invalid ~ .invalid-tooltip,
 .is-invalid ~ .invalid-feedback,
-.is-invalid ~ .validation-message,
 .invalid.modified ~ .invalid-feedback,
-.invalid.modified ~ .validation-message,
 .is-invalid ~ .invalid-tooltip,
 .invalid.modified ~ .invalid-tooltip {
   display: block;
@@ -2153,9 +2151,9 @@ textarea.form-control, textarea.valid.modified, .invalid textarea.valid {
 .was-validated .form-check-input:invalid ~ .form-check-label, .valid.modified .form-check-input:invalid ~ .form-check-label, .form-check-input.is-invalid ~ .form-check-label, .form-check-input.invalid.modified ~ .form-check-label {
   color: #dc3545;
 }
-.was-validated .form-check-input:invalid ~ .invalid-feedback, .was-validated .form-check-input:invalid ~ .validation-message, .valid.modified .form-check-input:invalid ~ .invalid-feedback, .valid.modified .form-check-input:invalid ~ .validation-message,
+.was-validated .form-check-input:invalid ~ .invalid-feedback, .valid.modified .form-check-input:invalid ~ .invalid-feedback,
 .was-validated .form-check-input:invalid ~ .invalid-tooltip,
-.valid.modified .form-check-input:invalid ~ .invalid-tooltip, .form-check-input.is-invalid ~ .invalid-feedback, .form-check-input.is-invalid ~ .validation-message, .form-check-input.invalid.modified ~ .invalid-feedback, .form-check-input.invalid.modified ~ .validation-message,
+.valid.modified .form-check-input:invalid ~ .invalid-tooltip, .form-check-input.is-invalid ~ .invalid-feedback, .form-check-input.invalid.modified ~ .invalid-feedback,
 .form-check-input.is-invalid ~ .invalid-tooltip,
 .form-check-input.invalid.modified ~ .invalid-tooltip {
   display: block;
@@ -9790,6 +9788,39 @@ mark {
   width: 100%;
 }
 
+.culture-selector {
+  display: flex;
+  line-height: 3rem;
+  align-items: center;
+  padding-left: 1rem;
+  padding-top: 1rem;
+  position: relative;
+}
+
+.culture-selector::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(215, 215, 215, 0.1) 0%, rgb(215, 215, 215) 50%, rgba(215, 215, 215, 0.1) 100%);
+  pointer-events: none;
+}
+
+.culture-selector-icon {
+  color: #d7d7d7;
+}
+
+.culture-selector > select {
+  background-color: transparent;
+  color: #d7d7d7;
+}
+
+.culture-selector > select option {
+  color: #212529;
+}
+
 .page {
   position: relative;
   display: flex;
@@ -10018,6 +10049,9 @@ mark {
     padding-right: 1.5rem !important;
   }
 }
+/*.validation-message {
+    @extend .invalid-feedback;
+}*/
 form > div > div > div:first-of-type > span {
   height: 38px;
 }
