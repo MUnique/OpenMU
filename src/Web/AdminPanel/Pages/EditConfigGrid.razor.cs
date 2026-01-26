@@ -202,6 +202,7 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
         var modalType = typeof(ModalCreateNew<>).MakeGenericType(this.Type!);
 
         parameters.Add(nameof(ModalCreateNew<object>.Item), newObject);
+        parameters.Add(nameof(ModalCreateNew<object>.PersistenceContext), creationContext);
         var options = new ModalOptions
         {
             DisableBackgroundCancel = true,
