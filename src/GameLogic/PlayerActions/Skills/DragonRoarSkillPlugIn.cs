@@ -14,8 +14,9 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Handles the dragon roar skill of the rage fighter class. Additionally to the attacked target, it will hit up to seven additional targets.
 /// </summary>
-[PlugIn(nameof(DragonRoarSkillPlugIn), "Handles the dragon roar skill of the rage fighter class. Additionally to the attacked target, it will hit up to seven additional targets.")]
-[Guid("a797a6ad-ac92-4731-a0fb-d46d4c1dd0df")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.DragonRoarSkillPlugIn_Name), Description = nameof(PlugInResources.DragonRoarSkillPlugIn_Description), ResourceType = typeof(PlugInResources))]
+[Guid("A797A6AD-AC92-4731-A0FB-D46D4C1DD0DF")]
 public class DragonRoarSkillPlugIn : IAreaSkillPlugIn
 {
     /// <inheritdoc />

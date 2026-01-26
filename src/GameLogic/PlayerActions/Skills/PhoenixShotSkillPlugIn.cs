@@ -10,8 +10,9 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Handles the phoenix shot weapon skill of the rage fighter class. Additionally to the attacked target, it will hit up to seven additional targets.
 /// </summary>
-[PlugIn(nameof(PhoenixShotSkillPlugIn), "Handles the phoenix shot weapon skill of the rage fighter class. Additionally to the attacked target, it will hit up to seven additional targets.")]
-[Guid("2c78e3db-ddc7-4bc6-8539-707f81638abf")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.PhoenixShotSkillPlugIn_Name), Description = nameof(PlugInResources.PhoenixShotSkillPlugIn_Description), ResourceType = typeof(PlugInResources))]
+[Guid("2C78E3DB-DDC7-4BC6-8539-707F81638ABF")]
 public class PhoenixShotSkillPlugIn : DragonRoarSkillPlugIn
 {
     /// <inheritdoc />
