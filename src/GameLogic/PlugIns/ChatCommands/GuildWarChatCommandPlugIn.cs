@@ -13,8 +13,9 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which handles guild war requests.
 /// </summary>
 [Guid("12A6E159-0D5E-44DE-8CF8-012A7278D42C")]
-[PlugIn("Guild war chat command", "Handles the chat command '/war <guild>'. Sends a request to the guild master of the requested guild.")]
-[ChatCommandHelp(Command, "Sends a guild war request to the master of the requested guild.", typeof(GuildWarChatCommandArgs), CharacterStatus.Normal)]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.GuildWarChatCommandPlugIn_Name), Description = nameof(PlugInResources.GuildWarChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
+[ChatCommandHelp(Command, typeof(GuildWarChatCommandArgs), CharacterStatus.Normal)]
 public class GuildWarChatCommandPlugIn : ChatCommandPlugInBase<GuildWarChatCommandArgs>
 {
     private const string Command = "/war";

@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Annotations;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Defines a character class.
@@ -24,7 +25,7 @@ public partial class CharacterClass
     /// <summary>
     /// Gets or sets the name of the character class.
     /// </summary>
-    public string Name { get; set; } = string.Empty;
+    public LocalizedString Name { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether this character class can get created by the user.

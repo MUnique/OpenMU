@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IShowPartyRequestPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn("ShowPartyRequestPlugIn", "The default implementation of the IShowPartyRequestPlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.ShowPartyRequestPlugIn_Name), Description = nameof(PlugInResources.ShowPartyRequestPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("d25e8b80-3128-4102-8916-98f3d68aa065")]
 public class ShowPartyRequestPlugIn : IShowPartyRequestPlugIn
 {

@@ -1,4 +1,4 @@
-// <copyright file="StartDevilSquareEventChatCommandPlugIn.cs" company="MUnique">
+﻿// <copyright file="StartDevilSquareEventChatCommandPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -12,8 +12,9 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which handles the startds command.
 /// </summary>
 [Guid("3684DC79-D81E-4033-AB2C-537334CF0BB6")]
-[PlugIn(nameof(StartDevilSquareEventChatCommandPlugIn), "Handles the chat command '/startds'. Starts the devil square event at the next possible time.")]
-[ChatCommandHelp(Command, "Starts the devil square event at the next possible time.", CharacterStatus.GameMaster)]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.StartDevilSquareEventChatCommandPlugIn_Name), Description = nameof(PlugInResources.StartDevilSquareEventChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
+[ChatCommandHelp(Command, CharacterStatus.GameMaster)]
 public class StartDevilSquareEventChatCommandPlugIn : IChatCommandPlugIn
 {
     private const string Command = "/startds";

@@ -50,7 +50,8 @@ public abstract class FixSetBonusesPlugIn : UpdatePlugInBase
     /// <summary>
     /// The <see cref="FixSetBonusesPlugIn"/> for season 6.
     /// </summary>
-    [PlugIn(PlugInName, PlugInDescription)]
+    [PlugIn]
+[Display(Name = PlugInName, Description = PlugInDescription)]
     [Guid("F858E471-B76D-4AAF-8886-8DEB45BC1AB8")]
     public class Season6 : FixSetBonusesPlugIn
     {
@@ -64,7 +65,8 @@ public abstract class FixSetBonusesPlugIn : UpdatePlugInBase
     /// <summary>
     /// The <see cref="FixSetBonusesPlugIn"/> for version 0.95d.
     /// </summary>
-    [PlugIn(PlugInName, PlugInDescription)]
+    [PlugIn]
+[Display(Name = PlugInName, Description = PlugInDescription)]
     [Guid("3D0201C3-D956-4BDD-9D57-3F6FD921EDF7")]
     public class V095d : FixSetBonusesPlugIn
     {
@@ -78,7 +80,8 @@ public abstract class FixSetBonusesPlugIn : UpdatePlugInBase
     /// <summary>
     /// The <see cref="FixSetBonusesPlugIn"/> for version 0.75.
     /// </summary>
-    [PlugIn(PlugInName, PlugInDescription)]
+    [PlugIn]
+[Display(Name = PlugInName, Description = PlugInDescription)]
     [Guid("2E009ADF-1580-4E03-BA59-C9C51DC109BA")]
     public class V075 : FixSetBonusesPlugIn
     {

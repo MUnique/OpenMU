@@ -2,8 +2,6 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.Web.Shared;
-
 namespace MUnique.OpenMU.Web.AdminPanel.Pages;
 
 using System.Collections;
@@ -17,6 +15,7 @@ using Microsoft.AspNetCore.Components.QuickGrid;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Web.Shared;
 using MUnique.OpenMU.Web.Shared.Components.Form;
 
 /// <summary>

@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
 
 using MUnique.OpenMU.Annotations;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Description of IItemCrafting.
@@ -23,7 +24,7 @@ public partial class ItemCrafting
     /// <summary>
     /// Gets or sets the name.
     /// </summary>
-    public string Name { get; set; } = string.Empty;
+    public LocalizedString Name { get; set; }
 
     /// <summary>
     /// Gets or sets the name of the item crafting handler class.

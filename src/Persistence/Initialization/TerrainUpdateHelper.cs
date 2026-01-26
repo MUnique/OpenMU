@@ -62,7 +62,7 @@ internal static class TerrainUpdateHelper
                 }
             }
 
-            if (!char.IsDigit(gameMapDefinition.Name[^1]))
+            if (!char.IsDigit(gameMapDefinition.Name.ValueInNeutralLanguageAsSpan[^1]))
             {
                 break;
             }

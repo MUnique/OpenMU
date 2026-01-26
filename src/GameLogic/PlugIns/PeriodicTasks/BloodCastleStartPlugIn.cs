@@ -11,7 +11,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// This plugin enables the start of the blood castle.
 /// </summary>
-[PlugIn(nameof(BloodCastleStartPlugIn), "Blood Castle event")]
+[PlugIn]
+[Display(Name = nameof(BloodCastleStartPlugIn), Description = "Blood Castle event")]
 [Guid("95E68C14-AD87-4B3C-AF46-45B8F1C3BC2A")]
 public sealed class BloodCastleStartPlugIn : MiniGameStartBasePlugIn<BloodCastleStartConfiguration, BloodCastleGameServerState>
 {

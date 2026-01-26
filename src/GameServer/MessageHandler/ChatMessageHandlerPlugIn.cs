@@ -11,7 +11,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Packet handler for chat messages.
 /// </summary>
-[PlugIn("Chat Message Handler", "Packet handler for chat messages.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.ChatMessageHandlerPlugIn_Name), Description = nameof(PlugInResources.ChatMessageHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("EDECCEC6-9DC7-499F-8658-EAF94498BDEE")]
 internal class ChatMessageHandlerPlugIn : ChatMessageBaseHandlerPlugIn
 {

@@ -36,12 +36,12 @@ public class SocketOptionViewModel
     /// <inheritdoc />
     public override string ToString()
     {
-        var elementPrefix = this.Definition.Name;
+        var elementPrefix = this.Definition.Name.ToString();
         if (Regex.Match(this.Definition.Name, @".\((\w+)\)") is { Success: true } match)
         {
             elementPrefix = match.Groups[1].Value;
         }
 
-        return $"{elementPrefix}: {this.Option.LevelDependentOptions.FirstOrDefault()?.PowerUpDefinition?.TargetAttribute?.Designation}";
+        return $"{elementPrefix}: {this.Option.LevelDependentOptions.FirstOrDefault()?.PowerUpDefinition?.TargetAttribute?.Designation?.ToString()}";
     }
 }

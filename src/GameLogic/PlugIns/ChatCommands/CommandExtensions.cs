@@ -6,9 +6,6 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
 using System.Globalization;
 using System.Reflection;
-using MUnique.OpenMU.GameLogic.Views;
-using MUnique.OpenMU.Interfaces;
-using MUnique.OpenMU.Persistence;
 
 /// <summary>
 /// Extensions to make the process of creating more commands easier.
@@ -19,10 +16,11 @@ public static class CommandExtensions
     /// Parse the arguments of a command string.
     /// </summary>
     /// <param name="command">The command.</param>
+    /// <param name="player">The player which issued the command.</param>
     /// <typeparam name="T">The type.</typeparam>
-    /// <returns>Returns the initialized type.</returns>
-    public static T ParseArguments<T>(this string command)
-        where T : new()
+    /// <returns>Returns the parsed object, if successful; Otherwise <see langword="null"/>.</returns>
+    public static async ValueTask<T?> TryParseArgumentsAsync<T>(this string command, Player? player)
+        where T : class, new()
     {
         var instance = new T();
         var properties = typeof(T).GetProperties()
@@ -34,8 +32,12 @@ public static class CommandExtensions
         {
             // [Short argument parsing]
             // If the command string contains = it means it is using the short version
-            ReadNamedArguments(instance, properties, arguments);
-            return instance;
+            if (await ReadNamedArgumentsAsync(instance, properties, arguments, player).ConfigureAwait(false))
+            {
+                return instance;
+            }
+
+            return null;
         }
 
         var attributedArguments = properties
@@ -49,15 +51,21 @@ public static class CommandExtensions
 
         if (arguments.Count < requiredArgumentCount)
         {
-            throw new ArgumentException($"The command needs {requiredArgumentCount} arguments and was given {arguments.Count}.", nameof(command));
+            if (player is not null)
+            {
+                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CommandExtensionsInvalidArgumentCount), requiredArgumentCount, arguments.Count).ConfigureAwait(false);
+            }
+
+            return null;
         }
 
+        var success = true;
         for (var i = 0; i < Math.Min(arguments.Count, properties.Count); i++)
         {
             var property = properties[i];
             var argument = arguments[i];
 
-            SetPropertyValue(instance, property, argument);
+            success = await TrySetPropertyValueAsync(instance, property, argument, player).ConfigureAwait(false) && success;
         }
 
         return instance;
@@ -129,17 +137,7 @@ public static class CommandExtensions
         }
     }
 
-    /// <summary>
-    /// Easier way to show a message to a player.
-    /// </summary>
-    /// <param name="player">The player.</param>
-    /// <param name="message">The message.</param>
-    public static ValueTask ShowMessageAsync(this Player player, string message)
-    {
-        return player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal));
-    }
-
-    private static void ReadNamedArguments(object instance, IList<PropertyInfo> properties, IList<string> arguments)
+    private static async ValueTask<bool> ReadNamedArgumentsAsync(object instance, IList<PropertyInfo> properties, IList<string> arguments, Player? player)
     {
         var argumentProperties = properties.Where(property => property.GetCustomAttribute<ArgumentAttribute>() is { }).ToList();
         var requiredProperties = argumentProperties.Where(prop => prop.GetCustomAttribute<ArgumentAttribute>() is { IsRequired: true }).ToList();
@@ -157,26 +155,34 @@ public static class CommandExtensions
             // Cleans the argument from the short name
             var argumentValue = argument.Replace($"{attribute.ShortName}=", string.Empty);
 
-            SetPropertyValue(instance, property, argumentValue);
+            if (!await TrySetPropertyValueAsync(instance, property, argumentValue, player).ConfigureAwait(false))
+            {
+                return false;
+            }
+
             requiredProperties.Remove(property);
         }
 
         if (!requiredProperties.Any())
         {
-            return;
+            return true;
+        }
+
+        if (player is null)
+        {
+            return false;
         }
 
         // One or many required properties were not used
-        var stringBuilder = new StringBuilder();
         foreach (var requiredProperty in requiredProperties)
         {
-            stringBuilder.AppendLine($"The required argument named {requiredProperty.Name} was not used.");
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CommandExtensions_RequiredArgumentMissing), requiredProperty.Name).ConfigureAwait(false);
         }
 
-        throw new ArgumentException(stringBuilder.ToString());
+        return false;
     }
 
-    private static void SetPropertyValue(object instance, PropertyInfo propertyInfo, string stringValue)
+    private static async ValueTask<bool> TrySetPropertyValueAsync(object instance, PropertyInfo propertyInfo, string stringValue, Player? player)
     {
         try
         {
@@ -187,10 +193,16 @@ public static class CommandExtensions
             }
 
             propertyInfo.SetValue(instance, Convert.ChangeType(stringValue, propertyInfo.PropertyType, CultureInfo.InvariantCulture));
+            return true;
         }
         catch
         {
-            throw new ArgumentException($"The argument {propertyInfo.Name} was given a invalid type, it expects the value to be of the type {propertyInfo.PropertyType.Name}.");
+            if (player is not null)
+            {
+                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CommandExtensionsArgumentInvalidType), propertyInfo.Name, propertyInfo.PropertyType.Name).ConfigureAwait(false);
+            }
+
+            return false;
         }
     }
 }

@@ -11,7 +11,8 @@ using MUnique.OpenMU.PlugIns;
 /// This update fixes event items that have DropsFromMonsters set to true,
 /// but should use dedicated DropItemGroups instead.
 /// </summary>
-[PlugIn(PlugInName, PlugInDescription)]
+[PlugIn]
+[Display(Name = PlugInName, Description = PlugInDescription)]
 [Guid("B9C6D3E2-4F5A-6B7C-8D9E-0F1A2B3C4D5E")]
 public class FixEventItemsDropFromMonstersUpdatePlugIn095d : FixEventItemsDropFromMonstersUpdatePlugInBase
 {

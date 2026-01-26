@@ -1,4 +1,4 @@
-// <copyright file="ChatUnbanCharChatCommandPlugIn.cs" company="MUnique">
+﻿// <copyright file="ChatUnbanCharChatCommandPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -12,8 +12,9 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which handles chatunban command.
 /// </summary>
 [Guid("82E74664-7700-433B-9428-90C17CC71350")]
-[PlugIn("Chat Ban Character command", "Handles the chat command '/chatunban <characterName>'. Unbans the account of a character from chatting.")]
-[ChatCommandHelp(Command, "Unbans the account of a character from chatting", typeof(ChatUnbanCharChatCommandArgs), CharacterStatus.GameMaster)]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.ChatUnbanCharChatCommandPlugIn_Name), Description = nameof(PlugInResources.ChatUnbanCharChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
+[ChatCommandHelp(Command, typeof(ChatUnbanCharChatCommandArgs), CharacterStatus.GameMaster)]
 public class ChatUnbanCharChatCommandPlugIn : ChatCommandPlugInBase<ChatUnbanCharChatCommandArgs>
 {
     private const string Command = "/chatunban";
@@ -29,21 +30,26 @@ public class ChatUnbanCharChatCommandPlugIn : ChatCommandPlugInBase<ChatUnbanCha
     {
         if (string.IsNullOrEmpty(arguments.CharacterName))
         {
-            throw new ArgumentException("Character name is required.");
+            await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CharacterNameIsRequired)).ConfigureAwait(false);
+            return;
         }
 
         var player = gameMaster.GameContext.GetPlayerByCharacterName(arguments.CharacterName);
         if (player == null)
         {
-            throw new ArgumentException($"character not found.");
+            await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CharacterNotFound), arguments.CharacterName).ConfigureAwait(false);
+            return;
         }
 
-        await this.ChangeAccountChatBanUntilAsync(player, null).ConfigureAwait(false);
+        if (!await this.ChangeAccountChatBanUntilAsync(player, null).ConfigureAwait(false))
+        {
+            return;
+        }
 
         // Send unban notice to Game Master
-        await this.ShowMessageToAsync(gameMaster, $"[{this.Key}] The chat ban for the account from {arguments.CharacterName} has been removed.").ConfigureAwait(false);
+        await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.ChatBanRemoved), this.Key, arguments.CharacterName).ConfigureAwait(false);
 
         // Send unban notice to character
-        await this.ShowMessageToAsync(player, $"Your chat ban has been removed by a gamemaster.").ConfigureAwait(false);
+        await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.YourChatBanRemovedByGameMaster)).ConfigureAwait(false);
     }
 }

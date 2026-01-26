@@ -4,10 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade;
 
-using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.GameLogic.Views.Trade;
-using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Action to set the traded money.
@@ -24,7 +22,7 @@ public class TradeMoneyAction
         // Check if Trade is open
         if (player.PlayerState.CurrentState != PlayerState.TradeOpened)
         {
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Uncheck trade accept button first", MessageType.BlueNormal)).ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.UncheckTradeAcceptButtonFirst)).ConfigureAwait(false);
             return;
         }
 

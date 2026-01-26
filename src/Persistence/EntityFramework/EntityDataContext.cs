@@ -49,7 +49,7 @@ public class EntityDataContext : ExtendedTypeContext
         {
             entity.Property(e => e.PvpEnabled).HasDefaultValue(true);
         });
-        modelBuilder.Entity<ConfigurationUpdate>();
+        modelBuilder.Entity<ConfigurationUpdate>().Apply();
         modelBuilder.Entity<ConfigurationUpdateState>();
         modelBuilder.Entity<SystemConfiguration>();
 
@@ -57,20 +57,38 @@ public class EntityDataContext : ExtendedTypeContext
         modelBuilder.Entity<Model.ConstValueAttribute>().Apply();
         modelBuilder.Entity<Account>().Apply();
         modelBuilder.Entity<Character>().Apply();
-        modelBuilder.Entity<ItemStorage>().Apply();
+        modelBuilder.Entity<CharacterClass>().Apply();
+        modelBuilder.Entity<DropItemGroup>().Apply();
+        modelBuilder.Entity<ExitGate>().Apply();
+        modelBuilder.Entity<GameConfiguration>().Apply();
+        modelBuilder.Entity<GameMapDefinition>().Apply();
+        modelBuilder.Entity<ItemCrafting>().Apply();
+        modelBuilder.Entity<ItemDefinition>().Apply();
+        modelBuilder.Entity<ItemLevelBonusTable>().Apply();
+        modelBuilder.Entity<ItemDropItemGroup>().Apply();
+        modelBuilder.Entity<ItemOptionCombinationBonus>().Apply();
+        modelBuilder.Entity<ItemOptionDefinition>().Apply();
+        modelBuilder.Entity<ItemOptionType>().Apply();
         modelBuilder.Entity<ItemSetGroup>().Apply();
+        modelBuilder.Entity<ItemSlotType>().Apply();
+        modelBuilder.Entity<ItemStorage>().Apply();
         modelBuilder.Entity<ItemBasePowerUpDefinition>().Apply();
         modelBuilder.Entity<LevelBonus>().Apply();
-        modelBuilder.Entity<ExitGate>().Apply();
-        modelBuilder.Entity<GameMapDefinition>().Apply();
+        modelBuilder.Entity<MagicEffectDefinition>().Apply();
+        modelBuilder.Entity<MasterSkillRoot>().Apply();
+        modelBuilder.Entity<MiniGameChangeEvent>().Apply();
+        modelBuilder.Entity<MiniGameDefinition>().Apply();
+        modelBuilder.Entity<MiniGameSpawnWave>().Apply();
+        modelBuilder.Entity<MonsterDefinition>().Apply();
         modelBuilder.Entity<MonsterSpawnArea>().Apply();
+        modelBuilder.Entity<Skill>().Apply();
+        modelBuilder.Entity<SkillComboDefinition>().Apply();
         modelBuilder.Entity<SkillEntry>().Apply();
-        modelBuilder.Entity<CharacterClass>().Apply();
         modelBuilder.Entity<MasterSkillDefinition>().Apply();
         modelBuilder.Entity<LetterBody>().Apply();
         modelBuilder.Entity<LetterHeader>().Apply();
-        modelBuilder.Entity<MonsterDefinition>().Apply();
-        modelBuilder.Entity<GameConfiguration>().Apply();
+        modelBuilder.Entity<QuestDefinition>().Apply();
+        modelBuilder.Entity<WarpInfo>().Apply();
 
         // join entity keys:
         this.AddJoinDefinitions(modelBuilder);

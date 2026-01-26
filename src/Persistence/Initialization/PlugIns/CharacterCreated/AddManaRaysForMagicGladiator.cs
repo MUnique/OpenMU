@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// Adds the Mana Rays skill (active in castle siege) to a created magic gladiator character.
 /// </summary>
 [Guid("D83347DB-4D33-47E9-B898-5EDB2777B8A1")]
-[PlugIn(nameof(AddManaRaysForMagicGladiator), "Adds the Mana Rays skill (active in castle siege) to a created magic gladiator character.")]
+[PlugIn]
+[Display(Name = nameof(AddManaRaysForMagicGladiator), Description = "Adds the Mana Rays skill (active in castle siege) to a created magic gladiator character.")]
 public class AddManaRaysForMagicGladiator : AddInitialSkillPlugInBase
 {
     /// <summary>

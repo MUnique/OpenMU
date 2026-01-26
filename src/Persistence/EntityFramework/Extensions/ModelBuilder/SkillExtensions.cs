@@ -13,6 +13,24 @@ using MUnique.OpenMU.Persistence.EntityFramework.Model;
 internal static class SkillExtensions
 {
     /// <summary>
+    /// Applies the settings for the <see cref="Skill"/> entity.
+    /// </summary>
+    /// <param name="builder">The builder.</param>
+    public static void Apply(this EntityTypeBuilder<Skill> builder)
+    {
+        builder.Property(p => p.Name).HasConversion(LocalizedStringConverter.Instance);
+    }
+
+    /// <summary>
+    /// Applies the settings for the <see cref="Skill"/> entity.
+    /// </summary>
+    /// <param name="builder">The builder.</param>
+    public static void Apply(this EntityTypeBuilder<SkillComboDefinition> builder)
+    {
+        builder.Property(p => p.Name).HasConversion(LocalizedStringConverter.Instance);
+    }
+
+    /// <summary>
     /// Applies the settings for the <see cref="SkillEntry"/> entity.
     /// </summary>
     /// <param name="builder">The builder.</param>
@@ -28,11 +46,29 @@ internal static class SkillExtensions
     }
 
     /// <summary>
+    /// Applies the settings for the <see cref="MasterSkillRoot"/> entity.
+    /// </summary>
+    /// <param name="builder">The builder.</param>
+    public static void Apply(this EntityTypeBuilder<MasterSkillRoot> builder)
+    {
+        builder.Property(p => p.Name).HasConversion(LocalizedStringConverter.Instance);
+    }
+
+    /// <summary>
     /// Applies the settings for the <see cref="MasterSkillDefinition"/> entity.
     /// </summary>
     /// <param name="builder">The builder.</param>
     public static void Apply(this EntityTypeBuilder<MasterSkillDefinition> builder)
     {
         builder.HasOne(s => s.RawRoot);
+    }
+
+    /// <summary>
+    /// Applies the settings for the <see cref="MagicEffectDefinition"/> entity.
+    /// </summary>
+    /// <param name="builder">The builder.</param>
+    public static void Apply(this EntityTypeBuilder<MagicEffectDefinition> builder)
+    {
+        builder.Property(p => p.Name).HasConversion(LocalizedStringConverter.Instance);
     }
 }

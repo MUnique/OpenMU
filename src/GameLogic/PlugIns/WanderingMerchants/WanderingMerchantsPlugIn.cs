@@ -12,7 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// This plugins spawns and moves the wandering merchants.
 /// </summary>
-[PlugIn(nameof(WanderingMerchantsPlugIn), "This plugins spawns and moves the wandering merchants.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.WanderingMerchantsPlugIn_Name), Description = nameof(PlugInResources.WanderingMerchantsPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("8B2CD316-C4B0-452F-8C7D-CE696356D437")]
 public class WanderingMerchantsPlugIn : PeriodicTaskBasePlugIn<WanderingMerchantsConfiguration, WanderingMerchantsState>, ISupportDefaultCustomConfiguration
 {

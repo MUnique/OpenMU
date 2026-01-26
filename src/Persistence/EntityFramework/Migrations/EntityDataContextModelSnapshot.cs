@@ -41,6 +41,13 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<bool>("IsVaultExtended")
                         .HasColumnType("boolean");
 
+                    b.Property<string>("LanguageIsoCode")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)")
+                        .HasDefaultValue("en");
+
                     b.Property<string>("LoginName")
                         .IsRequired()
                         .HasMaxLength(10)

@@ -15,7 +15,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Handler for devil square enter request packets.
 /// </summary>
-[PlugIn(nameof(DevilSquareEnterHandlerPlugIn), "Handler for devil square enter packets.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.DevilSquareEnterHandlerPlugIn_Name), Description = nameof(PlugInResources.DevilSquareEnterHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("550FFF1B-E31C-44BA-8CC9-100D5649CC87")]
 internal class DevilSquareEnterHandlerPlugIn : IPacketHandlerPlugIn
 {

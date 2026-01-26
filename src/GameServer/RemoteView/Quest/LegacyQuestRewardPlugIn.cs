@@ -20,7 +20,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="ILegacyQuestRewardPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn("Quest - Reward", "The default implementation of the ILegacyQuestRewardPlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.LegacyQuestRewardPlugIn_Name), Description = nameof(PlugInResources.LegacyQuestRewardPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("53BEDA2A-9FE6-406D-AE6D-8E4DDDA3D73D")]
 public class LegacyQuestRewardPlugIn : ILegacyQuestRewardPlugIn
 {

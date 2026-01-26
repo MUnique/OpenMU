@@ -1,4 +1,4 @@
-// <copyright file="GetMasterLevelChatCommandPlugIn.cs" company="MUnique">
+﻿// <copyright file="GetMasterLevelChatCommandPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -15,14 +15,13 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin to get a character's master level.
 /// </summary>
 [Guid("4CED4BF8-9D91-47F9-82DE-51E2646F77C8")]
-[PlugIn("Get master level command", "Gets master level of a player. Usage: /getmasterlevel (optional:character)")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.GetMasterLevelChatCommandPlugIn_Name), Description = nameof(PlugInResources.GetMasterLevelChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, "Gets master level of a player. Usage: /getmasterlevel (optional:character)", null)]
 public class GetMasterLevelChatCommandPlugIn : ChatCommandPlugInBase<GetMasterLevelChatCommandPlugIn.Arguments>, IDisabledByDefault
 {
     private const string Command = "/getmasterlevel";
     private const CharacterStatus MinimumStatus = CharacterStatus.GameMaster;
-    private const string CharacterNotFoundMessage = "Character '{0}' not found.";
-    private const string MasterLevelGetMessage = "Master level of '{0}': {1}.";
 
     /// <inheritdoc />
     public override string Key => Command;
@@ -40,7 +39,7 @@ public class GetMasterLevelChatCommandPlugIn : ChatCommandPlugInBase<GetMasterLe
             if (targetPlayer?.SelectedCharacter is null ||
                 !targetPlayer.SelectedCharacter.Name.Equals(characterName, StringComparison.OrdinalIgnoreCase))
             {
-                await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, CharacterNotFoundMessage, characterName)).ConfigureAwait(false);
+                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CharacterNotFound), characterName).ConfigureAwait(false);
                 return;
             }
         }
@@ -50,7 +49,7 @@ public class GetMasterLevelChatCommandPlugIn : ChatCommandPlugInBase<GetMasterLe
             return;
         }
 
-        await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, MasterLevelGetMessage, targetPlayer.SelectedCharacter.Name, targetPlayer.Attributes![Stats.MasterLevel])).ConfigureAwait(false);
+        await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MasterLevelInfo), targetPlayer.SelectedCharacter.Name, targetPlayer.Attributes![Stats.MasterLevel]).ConfigureAwait(false);
     }
 
     /// <summary>

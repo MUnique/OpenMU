@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.DataModel.Configuration.Items;
 
 using MUnique.OpenMU.Annotations;
 using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Defines an item set group. With (partial) completion of the set, additional options are getting applied.
@@ -26,7 +27,7 @@ public partial class ItemSetGroup
     /// <value>
     /// The name.
     /// </value>
-    public string Name { get; set; } = string.Empty;
+    public LocalizedString Name { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether the options of this item set always apply to an item,
@@ -36,7 +37,7 @@ public partial class ItemSetGroup
     public bool AlwaysApplies { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether the items are counted distincly.
+    /// Gets or sets a value indicating whether the items are counted distinctly.
     /// </summary>
     /// <remarks>
     /// For example, for the double wear bonus this has to be non-distinct, else we wouldn't get the bonus for wearing two of the same kind of swords.

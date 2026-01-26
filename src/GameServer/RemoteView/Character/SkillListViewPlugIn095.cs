@@ -17,7 +17,8 @@ using MUnique.OpenMU.PlugIns;
 /// <remarks>
 /// Version 0.97d seems to be compatible to this implementation. This may be true until the end of season 2, but we're not sure.
 /// </remarks>
-[PlugIn(nameof(SkillListViewPlugIn095), "The implementation of the ISkillListViewPlugIn for version 0.95 which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.SkillListViewPlugIn095_Name), Description = nameof(PlugInResources.SkillListViewPlugIn095_Description), ResourceType = typeof(PlugInResources))]
 [Guid("60126898-8668-4774-B879-0F211CDD3617")]
 [MinimumClient(0, 95, ClientLanguage.Invariant)]
 public class SkillListViewPlugIn095 : SkillListViewPlugIn075

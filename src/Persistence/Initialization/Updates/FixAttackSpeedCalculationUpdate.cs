@@ -20,7 +20,8 @@ using static CharacterClasses.CharacterClassHelper;
 /// <summary>
 /// This adds attributes and relations for attack speed. Adds effects for Ale and Potion of Soul
 /// </summary>
-[PlugIn(PlugInName, PlugInDescription)]
+[PlugIn]
+[Display(Name = PlugInName, Description = PlugInDescription)]
 [Guid("F9977AA7-F52A-4F42-BD6C-98DE700B5980")]
 public class FixAttackSpeedCalculationUpdate : UpdatePlugInBase
 {

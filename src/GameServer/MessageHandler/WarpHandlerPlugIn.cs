@@ -7,16 +7,17 @@ namespace MUnique.OpenMU.GameServer.MessageHandler;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.PlayerActions;
-using MUnique.OpenMU.GameLogic.Views;
-using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.GameLogic.Properties;
 using MUnique.OpenMU.Network.Packets.ClientToServer;
 using MUnique.OpenMU.PlugIns;
+using PlugInResources = MUnique.OpenMU.GameServer.Properties.PlugInResources;
 
 /// <summary>
 /// Handler for warp request packets.
 /// This one is called when a player uses the warp list.
 /// </summary>
-[PlugIn("WarpHandlerPlugIn", "Handler for warp request packets.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.WarpHandlerPlugIn_Name), Description = nameof(PlugInResources.WarpHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("3d261a26-4357-4367-b999-703ea936f4e9")]
 internal class WarpHandlerPlugIn : IPacketHandlerPlugIn
 {
@@ -40,7 +41,7 @@ internal class WarpHandlerPlugIn : IPacketHandlerPlugIn
         }
         else
         {
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync($"Unknown warp index {warpInfoIndex}", MessageType.BlueNormal)).ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.UnknownWarpIndex)).ConfigureAwait(false);
         }
     }
 }

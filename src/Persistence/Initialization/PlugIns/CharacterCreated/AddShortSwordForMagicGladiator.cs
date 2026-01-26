@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// Adds a short sword to a created magic gladiator character.
 /// </summary>
 [Guid("3D2790E3-B757-46FD-8618-2441B7E9E2B3")]
-[PlugIn(nameof(AddShortSwordForMagicGladiator), "Adds a short sword to a created magic gladiator character.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.AddShortSwordForMagicGladiator_Name), Description = nameof(PlugInResources.AddShortSwordForMagicGladiator_Description), ResourceType = typeof(PlugInResources))]
 public class AddShortSwordForMagicGladiator : AddInitialItemPlugInBase
 {
     /// <summary>

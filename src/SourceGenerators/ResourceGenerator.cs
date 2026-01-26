@@ -1,0 +1,190 @@
+﻿// <copyright file="ResourceGenerator.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.SourceGenerators;
+
+using System.Diagnostics;
+using System.IO;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+
+/// <summary>
+/// A <see cref="ISourceGenerator"/> which creates resource strings for all classes and properties of
+/// the data model.
+/// </summary>
+// [Generator]
+public class ResourceGenerator : ISourceGenerator
+{
+    /// <inheritdoc />
+    public void Initialize(GeneratorInitializationContext context)
+    {
+        // No initialization required
+    }
+
+    /// <inheritdoc />
+    public void Execute(GeneratorExecutionContext context)
+    {
+        if (!Debugger.IsAttached)
+        {
+            // Uncomment the following line to be able to debug it during the build:
+            //// Debugger.Launch();
+        }
+
+        var declaredTypes = new List<(BaseTypeDeclarationSyntax, INamedTypeSymbol)>();
+
+        var sb = this.StartResourceFile();
+        foreach (SyntaxTree tree in context.Compilation.SyntaxTrees)
+        {
+            var semanticModel = context.Compilation.GetSemanticModel(tree);
+            foreach (var declaredClass in tree
+                         .GetRoot()
+                         .DescendantNodes()
+                         .OfType<ClassDeclarationSyntax>()
+                         .OrderBy(c => c.Identifier.Text))
+            {
+                var declaredClassSymbol = semanticModel.GetDeclaredSymbol(declaredClass);
+                if (declaredClassSymbol is null)
+                {
+                    continue;
+                }
+
+                declaredTypes.Add((declaredClass, declaredClassSymbol));
+            }
+
+            foreach (var declaredClass in tree
+                         .GetRoot()
+                         .DescendantNodes()
+                         .OfType<EnumDeclarationSyntax>()
+                         .OrderBy(c => c.Identifier.Text))
+            {
+                var declaredClassSymbol = semanticModel.GetDeclaredSymbol(declaredClass);
+                if (declaredClassSymbol is null)
+                {
+                    continue;
+                }
+
+                declaredTypes.Add((declaredClass, declaredClassSymbol));
+            }
+        }
+
+        foreach (var (declarationSyntax, namedTypeSymbol) in declaredTypes
+                     .OrderBy(tuple => tuple.Item1.Identifier.Text))
+        {
+            this.AppendResourceStrings(sb, declarationSyntax, namedTypeSymbol);
+        }
+
+        sb.AppendLine("</root>");
+
+        if (context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.projectdir", out var projectDir))
+        {
+            var targetPath = Path.Combine(projectDir, "Properties", "ModelResources.resx");
+#pragma warning disable RS1035
+            File.WriteAllText(targetPath, sb.ToString(), Encoding.UTF8);
+#pragma warning restore RS1035
+        }
+    }
+
+    private StringBuilder StartResourceFile()
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine($"""
+                       <?xml version="1.0" encoding="utf-8"?>
+                       <root>
+                         <resheader name="resmimetype">
+                           <value>text/microsoft-resx</value>
+                         </resheader>
+                         <resheader name="version">
+                           <value>2.0</value>
+                         </resheader>
+                         <resheader name="reader">
+                           <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+                         </resheader>
+                         <resheader name="writer">
+                           <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+                         </resheader>
+
+                       """);
+        return sb;
+    }
+
+    private void AppendResourceStrings(StringBuilder sb, BaseTypeDeclarationSyntax annotatedClass, INamedTypeSymbol declaredClassSymbol)
+    {
+        switch (annotatedClass)
+        {
+            case ClassDeclarationSyntax classDecl:
+                this.AppendResourceStrings(sb, classDecl, declaredClassSymbol);
+                break;
+            case EnumDeclarationSyntax enumDecl:
+                this.AppendResourceStrings(sb, enumDecl);
+                break;
+            default:
+                // do nothing
+                break;
+        }
+    }
+
+    private void AppendResourceStrings(StringBuilder sb, ClassDeclarationSyntax annotatedClass, INamedTypeSymbol declaredClassSymbol)
+    {
+        var className = annotatedClass.Identifier.Text;
+
+        sb.AppendLine($"""
+                        <data name="{className}_TypeCaption" xml:space="preserve">
+                          <value>{CaptionHelper.GetTypeCaption(annotatedClass)}</value>
+                        </data>
+                        <data name="{className}_TypeCaptionPlural" xml:space="preserve">
+                          <value>{CaptionHelper.GetPluralizedTypeCaption(annotatedClass)}</value>
+                        </data>
+                        <data name="{className}_TypeDescription" xml:space="preserve">
+                          <value></value>
+                        </data>
+                      """);
+
+        this.GenerateProperties(sb, declaredClassSymbol, className);
+    }
+
+    private void AppendResourceStrings(StringBuilder sb, EnumDeclarationSyntax annotatedEnum)
+    {
+        var enumName = annotatedEnum.Identifier.Text;
+        sb.AppendLine($"""
+                         <data name="{enumName}_TypeCaption" xml:space="preserve">
+                           <value>{CaptionHelper.SeparateWords(enumName)}</value>
+                         </data>
+                         <data name="{enumName}_TypeDescription" xml:space="preserve">
+                           <value></value>
+                         </data>
+                       """);
+
+        foreach (var member in annotatedEnum.Members)
+        {
+            sb.AppendLine($"""
+                             <data name="{enumName}_{member.Identifier.Text}_Caption" xml:space="preserve">
+                               <value>{CaptionHelper.SeparateWords(member.Identifier.Text)}</value>
+                             </data>
+                             <data name="{enumName}_{member.Identifier.Text}_Description" xml:space="preserve">
+                               <value></value>
+                             </data>
+                           """);
+        }
+    }
+
+    private void GenerateProperties(StringBuilder sb, INamedTypeSymbol declaredClassSymbol, string className)
+    {
+        var properties = declaredClassSymbol
+            .GetMembers()
+            .OfType<IPropertySymbol>()
+            .Where(ps => ps.DeclaredAccessibility == Accessibility.Public);
+        foreach (var property in properties)
+        {
+            sb.AppendLine($"""
+                             <data name="{className}_{property.Name}_Caption" xml:space="preserve">
+                               <value>{CaptionHelper.SeparateWords(property.Name)}</value>
+                             </data>
+                             <data name="{className}_{property.Name}_Description" xml:space="preserve">
+                               <value></value>
+                             </data>
+                           """);
+        }
+    }
+}

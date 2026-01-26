@@ -11,7 +11,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// This update fixes agility to defense multiplier (DW) and base energy (MG) stats.
 /// </summary>
-[PlugIn(PlugInName, PlugInDescription)]
+[PlugIn]
+[Display(Name = PlugInName, Description = PlugInDescription)]
 [Guid("14DFF317-B4E6-424A-A8D1-6D1D5195E970")]
 public class FixCharStatsForceWavePlugIn095D : FixCharStatsForceWavePlugInBase
 {

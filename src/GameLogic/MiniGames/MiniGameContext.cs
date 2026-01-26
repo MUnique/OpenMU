@@ -517,6 +517,38 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         }
     }
 
+    /// <summary>
+    /// Shows a golden center-screen message to all players in the mini game.
+    /// </summary>
+    /// <param name="message">
+    /// The localized message template to be shown. The template will be translated
+    /// using each player's culture before formatting.
+    /// </param>
+    /// <param name="args">
+    /// Optional format arguments which will be applied to the translated message
+    /// using <see cref="string.Format(string,object[])"/>.
+    /// </param>
+    protected async ValueTask ShowGoldenMessageAsync(LocalizedString message, params object?[] args)
+    {
+        await this.ForEachPlayerAsync(player => player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(string.Format(message.GetTranslation(player.Culture), args), MessageType.GoldenCenter)).AsTask()).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Shows a golden center-screen message to all players in the mini game.
+    /// </summary>
+    /// <param name="messageKey">
+    /// The key to a localized message template to be shown.
+    /// The template will be translated using each player's culture before formatting.
+    /// </param>
+    /// <param name="args">
+    /// Optional format arguments which will be applied to the translated message
+    /// using <see cref="string.Format(string,object[])"/>.
+    /// </param>
+    protected async ValueTask ShowGoldenMessageAsync(string messageKey, params object?[] args)
+    {
+        await this.ForEachPlayerAsync(player => player.ShowLocalizedGoldenMessageAsync(messageKey, args).AsTask()).ConfigureAwait(false);
+    }
+
     private async ValueTask<(int BonusScore, int GivenMoney)> GiveRewardAsync(Player player, MiniGameReward reward)
     {
         switch (reward.RewardType)
@@ -535,7 +567,7 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
             case MiniGameRewardType.Money:
                 if (!player.TryAddMoney(reward.RewardAmount))
                 {
-                    await player.ShowMessageAsync("Couldn't add reward money, inventory is full.").ConfigureAwait(false);
+                    await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.AwardMoneyFailByFullInventory)).ConfigureAwait(false);
                 }
 
                 return (0, reward.RewardAmount);
@@ -635,7 +667,7 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
             this.Logger.LogDebug("{context}: Starting next wave: {wave}", this, spawnWave.Description);
             if (spawnWave.Message is { } message)
             {
-                await this.ShowMessageAsync(message).ConfigureAwait(false);
+                await this.ShowGoldenMessageAsync(message).ConfigureAwait(false);
             }
 
             if (!this._currentSpawnWaves.TryAdd(spawnWave.WaveNumber, spawnWave))
@@ -679,7 +711,7 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
             {
                 if (this.Definition.MapCreationPolicy != MiniGameMapCreationPolicy.Shared)
                 {
-                    await this.ShowMessageAsync($"{this.Definition.Name} starts in {(int)enterDuration.TotalMinutes} minutes.").ConfigureAwait(false);
+                    await this.ShowGoldenMessageAsync(nameof(PlayerMessage.MiniGameStartsInMinutesFormat), this.Definition.Name, (int)enterDuration.TotalMinutes).ConfigureAwait(false);
                 }
 
                 await Task.Delay(messagePeriod, cancellationToken).ConfigureAwait(false);
@@ -693,7 +725,7 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
             await this.CloseEntranceAsync().ConfigureAwait(false);
             if (this.PlayerCount < this.MinimumPlayerCount)
             {
-                await this.ShowMessageAsync($"Can't start with less than {this.MinimumPlayerCount} players.").ConfigureAwait(false);
+                await this.ShowGoldenMessageAsync(nameof(PlayerMessage.MiniGameCantStartWithLessThanPlayers), this.MinimumPlayerCount).ConfigureAwait(false);
                 if (this.Definition.EntranceFee > 0)
                 {
                     await this.ForEachPlayerAsync(async player => player.TryAddMoney(this.Definition.EntranceFee)).ConfigureAwait(false);
@@ -771,11 +803,6 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     private async ValueTask ShowCountdownMessageAsync()
     {
         await this.ForEachPlayerAsync(player => player.InvokeViewPlugInAsync<IUpdateMiniGameStateViewPlugIn>(p => p.UpdateStateAsync(this.Definition.Type, this.State)).AsTask()).ConfigureAwait(false);
-    }
-
-    private async ValueTask ShowMessageAsync(string message, MessageType messageType = MessageType.GoldenCenter)
-    {
-        await this.ForEachPlayerAsync(player => player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, messageType)).AsTask()).ConfigureAwait(false);
     }
 
     private async ValueTask StopAsync()
@@ -919,7 +946,7 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
 
             if (changeEvent.Message is { } message)
             {
-                await this.ShowMessageAsync(string.Format(message, triggeredBy)).ConfigureAwait(false);
+                await this.ShowGoldenMessageAsync(message, triggeredBy).ConfigureAwait(false);
             }
         }
         catch (Exception ex)
@@ -1020,7 +1047,7 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         {
             if (!this.IsItemAllowedToEquip(item))
             {
-                await player.ShowMessageAsync($"Can't enter event with equipped item '{item.Definition?.Name ?? item.ToString()}'.").ConfigureAwait(false);
+                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CantEnterEventWithItem), item.Definition?.Name.GetTranslation(player.Culture) ?? item.ToString()).ConfigureAwait(false);
                 result = false;
             }
         }

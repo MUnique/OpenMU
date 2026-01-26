@@ -30,7 +30,7 @@ public class DinorantCrafting : SimpleItemCraftingHandler
         var craftingResult = base.TryGetRequiredItems(player, out items, out successRate);
         if (craftingResult is null)
         {
-            var uniriaLink = items.Where(i => i.ItemRequirement.PossibleItems.Any(i => i.Name == "Horn of Uniria"));
+            var uniriaLink = items.Where(i => i.ItemRequirement.PossibleItems.Any(i => i.Name.ValueInNeutralLanguage == "Horn of Uniria"));
             foreach (var item in uniriaLink.First().Items)
             {
                 if (item.Durability < 255)

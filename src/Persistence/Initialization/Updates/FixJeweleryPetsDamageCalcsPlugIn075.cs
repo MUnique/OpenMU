@@ -10,7 +10,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// This update fixes jewelery items and pet options related to damage.
 /// </summary>
-[PlugIn(PlugInName, PlugInDescription)]
+[PlugIn]
+[Display(Name = PlugInName, Description = PlugInDescription)]
 [Guid("46F50226-B0A2-4FE7-B708-AEB3F306A7C0")]
 public class FixJeweleryPetsDamageCalcsPlugIn075 : FixJeweleryPetsDamageCalcsPlugInBase
 {

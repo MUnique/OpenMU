@@ -12,7 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IGuildJoinResponsePlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn("GuildJoinResponsePlugIn", "The default implementation of the IGuildJoinResponsePlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.GuildJoinResponsePlugIn_Name), Description = nameof(PlugInResources.GuildJoinResponsePlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("4a8bd97c-a544-4cac-b8cd-2e73945bcfdc")]
 public class GuildJoinResponsePlugIn : IGuildJoinResponsePlugIn
 {

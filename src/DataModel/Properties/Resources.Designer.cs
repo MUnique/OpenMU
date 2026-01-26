@@ -19,7 +19,7 @@ namespace MUnique.OpenMU.DataModel.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class Resources {
@@ -57,6 +57,51 @@ namespace MUnique.OpenMU.DataModel.Properties {
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Excellent.
+        /// </summary>
+        public static string Excellent {
+            get {
+                return ResourceManager.GetString("Excellent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Luck.
+        /// </summary>
+        public static string Luck {
+            get {
+                return ResourceManager.GetString("Luck", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Skill.
+        /// </summary>
+        public static string Skill {
+            get {
+                return ResourceManager.GetString("Skill", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Slot.
+        /// </summary>
+        public static string Slot {
+            get {
+                return ResourceManager.GetString("Slot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to S.
+        /// </summary>
+        public static string SocketAbbreviation {
+            get {
+                return ResourceManager.GetString("SocketAbbreviation", resourceCulture);
             }
         }
         

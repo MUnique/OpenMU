@@ -34,7 +34,7 @@ public class IncreaseStatsAction
 
         if (!selectedCharacter.CanIncreaseStats(amount))
         {
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Not enough level up points available.", MessageType.BlueNormal)).ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(PlayerMessage.NotEnoughLevelUpPointsAvailable).ConfigureAwait(false);
             return;
         }
 
@@ -48,7 +48,7 @@ public class IncreaseStatsAction
                 amount = (ushort)(maximumValue - current);
                 if (amount == 0)
                 {
-                    await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync($"Maximum of {attributeDef.Attribute?.MaximumValue} {attributeDef.Attribute?.Designation} has been reached.", MessageType.BlueNormal)).ConfigureAwait(false);
+                    await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MaximumAttributeValueReachedFormat), attributeDef.Attribute?.MaximumValue, new LocalizedString(attributeDef.Attribute?.Designation).GetTranslation(player.Culture)).ConfigureAwait(false);
                     return;
                 }
             }
@@ -60,7 +60,7 @@ public class IncreaseStatsAction
         }
         else
         {
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("Attribute not available.", MessageType.BlueNormal)).ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.AttributeNotAvailable)).ConfigureAwait(false);
         }
     }
 }

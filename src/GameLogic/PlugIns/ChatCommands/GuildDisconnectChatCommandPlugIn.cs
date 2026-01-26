@@ -12,8 +12,9 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which handles gm disconnect commands.
 /// </summary>
 [Guid("F23262E6-0D7C-4B9C-8CD5-7E44AF4EE469")]
-[PlugIn("Guild disconnect chat command", "Handles the chat command '/guilddisconnect <guild>'. Disconnect the guild members.")]
-[ChatCommandHelp(Command, "Disconnects the members of a guild.", typeof(GuildDisconnectChatCommandArgs), CharacterStatus.GameMaster)]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.GuildDisconnectChatCommandPlugIn_Name), Description = nameof(PlugInResources.GuildDisconnectChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
+[ChatCommandHelp(Command, typeof(GuildDisconnectChatCommandArgs), CharacterStatus.GameMaster)]
 public class GuildDisconnectChatCommandPlugIn : ChatCommandPlugInBase<GuildDisconnectChatCommandArgs>
 {
     private const string Command = "/guilddisconnect";
@@ -28,18 +29,18 @@ public class GuildDisconnectChatCommandPlugIn : ChatCommandPlugInBase<GuildDisco
     protected override async ValueTask DoHandleCommandAsync(Player gameMaster, GuildDisconnectChatCommandArgs arguments)
     {
         var guildId = await this.GetGuildIdByNameAsync(gameMaster, arguments.GuildName!).ConfigureAwait(false);
-        if (gameMaster.GameContext is not IGameServerContext gameServerContext)
+        if (guildId is null || gameMaster.GameContext is not IGameServerContext gameServerContext)
         {
             return;
         }
 
-        await gameServerContext.ForEachGuildPlayerAsync(guildId, async guildPlayer =>
+        await gameServerContext.ForEachGuildPlayerAsync(guildId.Value, async guildPlayer =>
         {
             await guildPlayer.DisconnectAsync().ConfigureAwait(false);
 
             if (!guildPlayer.Name.Equals(gameMaster.Name))
             {
-                await this.ShowMessageToAsync(gameMaster, $"[{this.Key}] {guildPlayer.Name} has been disconnected.").ConfigureAwait(false);
+                await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.GuildDisconnectResult), this.Key, guildPlayer.Name).ConfigureAwait(false);
             }
         }).ConfigureAwait(false);
     }

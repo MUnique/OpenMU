@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Web.Shared.Services;
 
+using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using Blazored.Modal;
 using Blazored.Modal.Services;
@@ -218,7 +219,7 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
 
     private static string GetPlugInName(Type plugInType)
     {
-        return plugInType.GetCustomAttribute<PlugInAttribute>()!.Name;
+        return plugInType.GetCustomAttribute<DisplayAttribute>()?.Name ?? plugInType.Name;
     }
 
     private static Type? GetPlugInExtensionPointType(Type plugInType)
@@ -230,7 +231,7 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
 
     private static PlugInConfigurationViewItem BuildConfigurationDto(Type plugInType, GameConfiguration gameConfiguration, PlugInConfiguration plugInConfiguration)
     {
-        var plugInAttribute = plugInType.GetCustomAttribute<PlugInAttribute>();
+        var plugInAttribute = plugInType.GetCustomAttribute<DisplayAttribute>();
         var plugInPoint = plugInType.GetInterfaces().FirstOrDefault(i => i.GetCustomAttribute<PlugInPointAttribute>() != null)?.GetCustomAttribute<PlugInPointAttribute>();
         var customPlugInContainer = plugInType.GetInterfaces().FirstOrDefault(i => i.GetCustomAttribute<CustomPlugInContainerAttribute>() != null)?.GetCustomAttribute<CustomPlugInContainerAttribute>();
 
@@ -244,8 +245,8 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
             ConfigurationType = plugInType.GetCustomConfigurationType(),
             TypeId = plugInConfiguration.TypeId,
             TypeName = plugInType.FullName,
-            PlugInName = plugInAttribute?.Name,
-            PlugInDescription = plugInAttribute?.Description,
+            PlugInName = plugInAttribute?.GetName(),
+            PlugInDescription = plugInAttribute?.GetDescription(),
         };
 
         if (plugInPoint != null)

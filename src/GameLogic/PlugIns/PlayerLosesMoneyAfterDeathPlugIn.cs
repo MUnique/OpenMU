@@ -12,7 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// This plugin decreases the money after the player has been killed by a monster.
 /// </summary>
-[PlugIn("Player money loss after death", "This plugin decreases the money (zen) after the player has been killed by a monster.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.PlayerLosesMoneyAfterDeathPlugIn_Name), Description = nameof(PlugInResources.PlayerLosesMoneyAfterDeathPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("E3A4D8DD-C017-4A44-853B-569B1F12C350")]
 public class PlayerLosesMoneyAfterDeathPlugIn : IAttackableGotKilledPlugIn, ISupportCustomConfiguration<PlayerLosesMoneyAfterDeathPlugInConfiguration>, ISupportDefaultCustomConfiguration
 {

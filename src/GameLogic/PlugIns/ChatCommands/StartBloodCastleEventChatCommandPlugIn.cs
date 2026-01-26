@@ -1,4 +1,4 @@
-// <copyright file="StartBloodCastleEventChatCommandPlugIn.cs" company="MUnique">
+﻿// <copyright file="StartBloodCastleEventChatCommandPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -12,8 +12,9 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which handles the startds command.
 /// </summary>
 [Guid("7177533A-F147-407E-97B0-C4D8E1AC1AF4")]
-[PlugIn(nameof(StartBloodCastleEventChatCommandPlugIn), "Handles the chat command '/startbc'. Starts the blood castle event at the next possible time.")]
-[ChatCommandHelp(Command, "Starts the blood castle event at the next possible time.", CharacterStatus.GameMaster)]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.StartBloodCastleEventChatCommandPlugIn_Name), Description = nameof(PlugInResources.StartBloodCastleEventChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
+[ChatCommandHelp(Command, CharacterStatus.GameMaster)]
 public class StartBloodCastleEventChatCommandPlugIn : IChatCommandPlugIn
 {
     private const string Command = "/startbc";
