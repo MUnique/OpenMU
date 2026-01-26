@@ -1203,6 +1203,14 @@ public class PacketStructureTests
         Assert.That(7 + 1, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'Kind' exceeds packet boundary");
         
+        // Validate field 'IsRageFighterStreakHit' boundary
+        Assert.That(7 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'IsRageFighterStreakHit' exceeds packet boundary");
+        
+        // Validate field 'IsRageFighterStreakFinalHit' boundary
+        Assert.That(7 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'IsRageFighterStreakFinalHit' exceeds packet boundary");
+        
         // Validate field 'IsDoubleDamage' boundary
         Assert.That(7 + 1, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'IsDoubleDamage' exceeds packet boundary");
@@ -1232,6 +1240,14 @@ public class PacketStructureTests
         // Validate field 'Kind' boundary
         Assert.That(3 + 1, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'Kind' exceeds packet boundary");
+        
+        // Validate field 'IsRageFighterStreakHit' boundary
+        Assert.That(3 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'IsRageFighterStreakHit' exceeds packet boundary");
+        
+        // Validate field 'IsRageFighterStreakFinalHit' boundary
+        Assert.That(3 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'IsRageFighterStreakFinalHit' exceeds packet boundary");
         
         // Validate field 'IsDoubleDamage' boundary
         Assert.That(3 + 1, Is.LessThanOrEqualTo(expectedLength), 
