@@ -54,4 +54,14 @@ public enum DamageAttributes
     /// The damage includes the combo bonus.
     /// </summary>
     Combo = 128,
+
+    /// <summary>
+    /// The damage is a non-final hit of a quick sequence from a rage fighter skill.
+    /// </summary>
+    RageFighterStreakHit = 256,
+
+    /// <summary>
+    /// The damage is the final hit of a quick sequence from a rage fighter skill.
+    /// </summary>
+    RageFighterStreakFinalHit = 512,
 }

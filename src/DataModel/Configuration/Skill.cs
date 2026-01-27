@@ -308,6 +308,11 @@ public partial class Skill
     [MemberOfAggregate]
     public virtual AreaSkillSettings? AreaSkillSettings { get; set; }
 
+    /// <summary>
+    /// Gets or sets the number of hits per attack.
+    /// </summary>
+    public short NumberOfHitsPerAttack { get; set; }
+
     /// <inheritdoc />
     public override string? ToString()
     {

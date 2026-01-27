@@ -1049,6 +1049,8 @@ public static class ConnectionExtensions
     /// <param name="objectId">The object id.</param>
     /// <param name="healthDamage">The health damage.</param>
     /// <param name="kind">The kind.</param>
+    /// <param name="isRageFighterStreakHit">The is rage fighter streak hit.</param>
+    /// <param name="isRageFighterStreakFinalHit">The is rage fighter streak final hit.</param>
     /// <param name="isDoubleDamage">The is double damage.</param>
     /// <param name="isTripleDamage">The is triple damage.</param>
     /// <param name="shieldDamage">The shield damage.</param>
@@ -1056,7 +1058,7 @@ public static class ConnectionExtensions
     /// Is sent by the server when: An object got hit in two cases: 1. When the own player is hit; 2. When the own player attacked some other object which got hit.
     /// Causes reaction on client side: The damage is shown at the object which received the hit.
     /// </remarks>
-    public static async ValueTask SendObjectHitAsync(this IConnection? connection, byte @headerCode, ushort @objectId, ushort @healthDamage, DamageKind @kind, bool @isDoubleDamage, bool @isTripleDamage, ushort @shieldDamage)
+    public static async ValueTask SendObjectHitAsync(this IConnection? connection, byte @headerCode, ushort @objectId, ushort @healthDamage, DamageKind @kind, bool @isRageFighterStreakHit, bool @isRageFighterStreakFinalHit, bool @isDoubleDamage, bool @isTripleDamage, ushort @shieldDamage)
     {
         if (connection is null)
         {
@@ -1071,6 +1073,8 @@ public static class ConnectionExtensions
             packet.ObjectId = @objectId;
             packet.HealthDamage = @healthDamage;
             packet.Kind = @kind;
+            packet.IsRageFighterStreakHit = @isRageFighterStreakHit;
+            packet.IsRageFighterStreakFinalHit = @isRageFighterStreakFinalHit;
             packet.IsDoubleDamage = @isDoubleDamage;
             packet.IsTripleDamage = @isTripleDamage;
             packet.ShieldDamage = @shieldDamage;
@@ -1086,6 +1090,8 @@ public static class ConnectionExtensions
     /// </summary>
     /// <param name="connection">The connection.</param>
     /// <param name="kind">The kind.</param>
+    /// <param name="isRageFighterStreakHit">The is rage fighter streak hit.</param>
+    /// <param name="isRageFighterStreakFinalHit">The is rage fighter streak final hit.</param>
     /// <param name="isDoubleDamage">The is double damage.</param>
     /// <param name="isTripleDamage">The is triple damage.</param>
     /// <param name="objectId">The object id.</param>
@@ -1097,7 +1103,7 @@ public static class ConnectionExtensions
     /// Is sent by the server when: An object got hit in two cases: 1. When the own player is hit; 2. When the own player attacked some other object which got hit.
     /// Causes reaction on client side: The damage is shown at the object which received the hit.
     /// </remarks>
-    public static async ValueTask SendObjectHitExtendedAsync(this IConnection? connection, DamageKind @kind, bool @isDoubleDamage, bool @isTripleDamage, ushort @objectId, byte @healthStatus, byte @shieldStatus, uint @healthDamage, uint @shieldDamage)
+    public static async ValueTask SendObjectHitExtendedAsync(this IConnection? connection, DamageKind @kind, bool @isRageFighterStreakHit, bool @isRageFighterStreakFinalHit, bool @isDoubleDamage, bool @isTripleDamage, ushort @objectId, byte @healthStatus, byte @shieldStatus, uint @healthDamage, uint @shieldDamage)
     {
         if (connection is null)
         {
@@ -1109,6 +1115,8 @@ public static class ConnectionExtensions
             var length = ObjectHitExtendedRef.Length;
             var packet = new ObjectHitExtendedRef(connection.Output.GetSpan(length)[..length]);
             packet.Kind = @kind;
+            packet.IsRageFighterStreakHit = @isRageFighterStreakHit;
+            packet.IsRageFighterStreakFinalHit = @isRageFighterStreakFinalHit;
             packet.IsDoubleDamage = @isDoubleDamage;
             packet.IsTripleDamage = @isTripleDamage;
             packet.ObjectId = @objectId;

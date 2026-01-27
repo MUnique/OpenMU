@@ -71,6 +71,8 @@ internal class SkillsInitializer : SkillsInitializerBase
         { SkillNumber.Weakness, MagicEffectNumber.WeaknessSummoner },
         { SkillNumber.Innovation, MagicEffectNumber.Innovation },
         { SkillNumber.DamageReflection, MagicEffectNumber.Reflection },
+        { SkillNumber.BeastUppercut, MagicEffectNumber.DefenseReductionBeastUppercut },
+        { SkillNumber.PhoenixShot, MagicEffectNumber.DecreaseBlock },
     };
 
     private readonly IDictionary<byte, MasterSkillRoot> _masterSkillRoots;
@@ -214,17 +216,17 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.CreateSkill(SkillNumber.ChaoticDiseier, "Chaotic Diseier", CharacterClasses.AllLords, DamageType.Physical, 190, 6, 15, 50, 100, 16, skillType: SkillType.AreaSkillAutomaticHits);
         this.AddAreaSkillSettings(SkillNumber.ChaoticDiseier, true, 1.5f, 1.5f, 6f);
         this.CreateSkill(SkillNumber.DoppelgangerSelfExplosion, "Doppelganger Self Explosion", CharacterClasses.AllMGs, DamageType.Wizardry, 140, 3, 25, 20, 100, elementalModifier: ElementalType.Fire);
-        this.CreateSkill(SkillNumber.KillingBlow, "Killing Blow", CharacterClasses.AllFighters, DamageType.Physical, distance: 2, manaConsumption: 9, elementalModifier: ElementalType.Earth);
-        this.CreateSkill(SkillNumber.BeastUppercut, "Beast Uppercut", CharacterClasses.AllFighters, DamageType.Physical, distance: 2, manaConsumption: 9, elementalModifier: ElementalType.Fire);
-        this.CreateSkill(SkillNumber.ChainDrive, "Chain Drive", CharacterClasses.AllFighters, DamageType.Physical, distance: 4, abilityConsumption: 20, manaConsumption: 15, levelRequirement: 150, elementalModifier: ElementalType.Ice);
+        this.CreateSkill(SkillNumber.KillingBlow, "Killing Blow", CharacterClasses.AllFighters, DamageType.Physical, distance: 2, manaConsumption: 9, elementalModifier: ElementalType.Earth, hitsPerAttack: 4); // 1 packet => 1*4 hits
+        this.CreateSkill(SkillNumber.BeastUppercut, "Beast Uppercut", CharacterClasses.AllFighters, DamageType.Physical, distance: 2, manaConsumption: 9, elementalModifier: ElementalType.Fire, hitsPerAttack: 2);  // 2 packets => 2*2 hits
+        this.CreateSkill(SkillNumber.ChainDrive, "Chain Drive", CharacterClasses.AllFighters, DamageType.Physical, distance: 4, abilityConsumption: 20, manaConsumption: 15, levelRequirement: 150, elementalModifier: ElementalType.Ice, hitsPerAttack: 4); // 2 packets => 2*4 hits
         this.CreateSkill(SkillNumber.DarkSide, "Dark Side", CharacterClasses.AllFighters, DamageType.Physical, distance: 4, manaConsumption: 70, levelRequirement: 180, elementalModifier: ElementalType.Wind);
-        this.CreateSkill(SkillNumber.DragonRoar, "Dragon Roar", CharacterClasses.AllFighters, DamageType.Physical, distance: 3, abilityConsumption: 30, manaConsumption: 50, levelRequirement: 150, elementalModifier: ElementalType.Earth, skillType: SkillType.AreaSkillAutomaticHits);
+        this.CreateSkill(SkillNumber.DragonRoar, "Dragon Roar", CharacterClasses.AllFighters, DamageType.Physical, distance: 3, abilityConsumption: 30, manaConsumption: 50, levelRequirement: 150, elementalModifier: ElementalType.Earth, skillType: SkillType.AreaSkillExplicitTarget, hitsPerAttack: 4); // 1 packet => 1*4 hits
         this.CreateSkill(SkillNumber.DragonSlasher, "Dragon Slasher", CharacterClasses.AllFighters, DamageType.Physical, distance: 4, abilityConsumption: 100, manaConsumption: 100, levelRequirement: 200, elementalModifier: ElementalType.Wind);
         this.CreateSkill(SkillNumber.IgnoreDefense, "Ignore Defense", CharacterClasses.AllFighters, DamageType.Physical, distance: 3, abilityConsumption: 10, manaConsumption: 50, levelRequirement: 120, energyRequirement: 404, skillType: SkillType.Buff, skillTarget: SkillTarget.ImplicitPlayer);
         this.CreateSkill(SkillNumber.IncreaseHealth, "Increase Health", CharacterClasses.AllFighters, DamageType.Physical, distance: 7, abilityConsumption: 10, manaConsumption: 50, levelRequirement: 80, energyRequirement: 132, skillType: SkillType.Buff, skillTarget: SkillTarget.ImplicitParty);
         this.CreateSkill(SkillNumber.IncreaseBlock, "Increase Block", CharacterClasses.AllFighters, DamageType.Physical, distance: 7, abilityConsumption: 10, manaConsumption: 50, levelRequirement: 50, energyRequirement: 80, skillType: SkillType.Buff, skillTarget: SkillTarget.ImplicitParty);
         this.CreateSkill(SkillNumber.Charge, "Charge", CharacterClasses.AllFighters, DamageType.Physical, 90, 4, 15, 20);
-        this.CreateSkill(SkillNumber.PhoenixShot, "Phoenix Shot", CharacterClasses.AllFighters, DamageType.Physical, distance: 4, manaConsumption: 30, elementalModifier: ElementalType.Earth, skillType: SkillType.AreaSkillExplicitTarget);
+        this.CreateSkill(SkillNumber.PhoenixShot, "Phoenix Shot", CharacterClasses.AllFighters, DamageType.Physical, distance: 4, manaConsumption: 30, elementalModifier: ElementalType.Earth, skillType: SkillType.AreaSkillExplicitTarget, hitsPerAttack: 4); // 1 packet => 1*4 hits
 
         // Generic monster skills:
         this.CreateSkill(SkillNumber.MonsterSkill, "Generic Monster Skill", distance: 5, skillType: SkillType.Other);
@@ -381,14 +383,14 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.CreateSkill(SkillNumber.PetDurabilityStr, "Pet Durability Str", CharacterClasses.LordEmperor, damage: 17, skillType: SkillType.PassiveBoost);
 
         // Fist Master (Rage Fighter):
-        this.CreateSkill(SkillNumber.KillingBlowStrengthener, "Killing Blow Strengthener", CharacterClasses.FistMaster, DamageType.Physical, 22, 2, manaConsumption: 10, elementalModifier: ElementalType.Earth);
-        this.CreateSkill(SkillNumber.BeastUppercutStrengthener, "Beast Uppercut Strengthener", CharacterClasses.FistMaster, DamageType.Physical, 22, 2, manaConsumption: 10, elementalModifier: ElementalType.Fire);
-        this.CreateSkill(SkillNumber.KillingBlowMastery, "Killing Blow Mastery", CharacterClasses.FistMaster, DamageType.Physical, 1, 2, manaConsumption: 10, elementalModifier: ElementalType.Earth);
-        this.CreateSkill(SkillNumber.BeastUppercutMastery, "Beast Uppercut Mastery", CharacterClasses.FistMaster, DamageType.Physical, 1, 2, manaConsumption: 10, elementalModifier: ElementalType.Fire);
+        this.CreateSkill(SkillNumber.KillingBlowStrengthener, "Killing Blow Strengthener", CharacterClasses.FistMaster, DamageType.Physical, 22, 2, manaConsumption: 10, elementalModifier: ElementalType.Earth, hitsPerAttack: 4);
+        this.CreateSkill(SkillNumber.BeastUppercutStrengthener, "Beast Uppercut Strengthener", CharacterClasses.FistMaster, DamageType.Physical, 22, 2, manaConsumption: 10, elementalModifier: ElementalType.Fire, hitsPerAttack: 2);
+        this.CreateSkill(SkillNumber.KillingBlowMastery, "Killing Blow Mastery", CharacterClasses.FistMaster, DamageType.Physical, 1, 2, manaConsumption: 10, elementalModifier: ElementalType.Earth, hitsPerAttack: 4);
+        this.CreateSkill(SkillNumber.BeastUppercutMastery, "Beast Uppercut Mastery", CharacterClasses.FistMaster, DamageType.Physical, 1, 2, manaConsumption: 10, elementalModifier: ElementalType.Fire, hitsPerAttack: 2);
         this.CreateSkill(SkillNumber.WeaponMasteryFistMaster, "Weapon Mastery", CharacterClasses.FistMaster, damage: 22, skillType: SkillType.PassiveBoost);
-        this.CreateSkill(SkillNumber.ChainDriveStrengthener, "Chain Drive Strengthener", CharacterClasses.FistMaster, DamageType.Physical, 22, 4, 22, 22, 150, elementalModifier: ElementalType.Ice);
+        this.CreateSkill(SkillNumber.ChainDriveStrengthener, "Chain Drive Strengthener", CharacterClasses.FistMaster, DamageType.Physical, 22, 4, 22, 22, 150, elementalModifier: ElementalType.Ice, hitsPerAttack: 4);
         this.CreateSkill(SkillNumber.DarkSideStrengthener, "Dark Side Strengthener", CharacterClasses.FistMaster, DamageType.Physical, 22, 4, manaConsumption: 84, levelRequirement: 180, elementalModifier: ElementalType.Wind);
-        this.CreateSkill(SkillNumber.DragonRoarStrengthener, "Dragon Roar Strengthener", CharacterClasses.FistMaster, DamageType.Physical, 22, 3, 33, 60, 150, elementalModifier: ElementalType.Earth);
+        this.CreateSkill(SkillNumber.DragonRoarStrengthener, "Dragon Roar Strengthener", CharacterClasses.FistMaster, DamageType.Physical, 22, 3, 33, 60, 150, elementalModifier: ElementalType.Earth, skillType: SkillType.AreaSkillExplicitTarget, hitsPerAttack: 4);
         this.CreateSkill(SkillNumber.EquippedWeaponStrengthener, "Equipped Weapon Strengthener", CharacterClasses.FistMaster, damage: 22, skillType: SkillType.PassiveBoost);
         this.CreateSkill(SkillNumber.DefSuccessRateIncPowUp, "Def SuccessRate IncPowUp", CharacterClasses.FistMaster, DamageType.Physical, 22, 7, 11, 55, 50, 30);
         this.CreateSkill(SkillNumber.EquippedWeaponMastery, "Equipped Weapon Mastery", CharacterClasses.FistMaster, damage: 1, skillType: SkillType.PassiveBoost);
@@ -672,6 +674,8 @@ internal class SkillsInitializer : SkillsInitializerBase
         new WeaknessSummonerEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         new InnovationEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         new ReflectionEffectInitializer(this.Context, this.GameConfiguration).Initialize();
+        new DefenseReductionBeastUppercutEffectInitializer(this.Context, this.GameConfiguration).Initialize();
+        new DecreaseBlockEffectInitializer(this.Context, this.GameConfiguration).Initialize();
     }
 
     private void MapSkillsToEffects()
@@ -687,6 +691,9 @@ internal class SkillsInitializer : SkillsInitializerBase
             {
                 case (short)MagicEffectNumber.WeaknessSummoner:
                     effect.Number = (short)MagicEffectNumber.Weakness;
+                    break;
+                case (short)MagicEffectNumber.DefenseReductionBeastUppercut:
+                    effect.Number = (short)MagicEffectNumber.DefenseReduction;
                     break;
                 default:
                     // no change needed
@@ -887,8 +894,8 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.AddPassiveMasterSkillDefinition(SkillNumber.IncreaseAttackSuccessRate, Stats.AttackRatePvm, AggregateType.AddRaw, Formula20469, 1, 2);
         this.AddMasterSkillDefinition(SkillNumber.KillingBlowStrengthener, SkillNumber.Undefined, SkillNumber.Undefined, 2, 2, SkillNumber.KillingBlow, 20, Formula502);
         this.AddMasterSkillDefinition(SkillNumber.BeastUppercutStrengthener, SkillNumber.Undefined, SkillNumber.Undefined, 2, 2, SkillNumber.BeastUppercut, 20, Formula502);
-        this.AddMasterSkillDefinition(SkillNumber.KillingBlowMastery, SkillNumber.KillingBlowStrengthener, SkillNumber.Undefined, 2, 3, SkillNumber.KillingBlow, 20, Formula120);
-        this.AddMasterSkillDefinition(SkillNumber.BeastUppercutMastery, SkillNumber.BeastUppercutStrengthener, SkillNumber.Undefined, 2, 3, SkillNumber.BeastUppercut, 20, Formula120);
+        this.AddMasterSkillDefinition(SkillNumber.KillingBlowMastery, SkillNumber.KillingBlowStrengthener, SkillNumber.Undefined, 2, 3, SkillNumber.KillingBlowStrengthener, 20, $"{Formula120} / 100", Formula120, Stats.WeaknessPhysDmgDecrement, AggregateType.AddRaw);
+        this.AddMasterSkillDefinition(SkillNumber.BeastUppercutMastery, SkillNumber.BeastUppercutStrengthener, SkillNumber.Undefined, 2, 3, SkillNumber.BeastUppercutStrengthener, 20, $"{Formula120} / -100", Formula120, Stats.DefenseDecrement, AggregateType.Multiplicate);
         this.AddPassiveMasterSkillDefinition(SkillNumber.IncreaseMaximumHp, Stats.MaximumHealth, AggregateType.AddRaw, Formula5418, 4, 2);
         this.AddPassiveMasterSkillDefinition(SkillNumber.WeaponMasteryFistMaster, Stats.MasterSkillPhysBonusDmg, AggregateType.AddRaw, Formula502, 4, 2);
         this.AddMasterSkillDefinition(SkillNumber.ChainDriveStrengthener, SkillNumber.ChainDrive, SkillNumber.Undefined, 2, 5, SkillNumber.ChainDrive, 20, Formula502);
