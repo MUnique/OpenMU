@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Interfaces;
 
 using System.Globalization;
+using System.Text.Json.Serialization;
 
 /// <summary>
 /// Represents a string which can be translated to different languages and serializes into a single string.
@@ -45,6 +46,7 @@ public readonly struct LocalizedString : IEquatable<LocalizedString>
     ///   A <see cref="string"/> that contains the neutral language text, or an empty string
     ///   if the underlying value is <see langword="null"/>.
     /// </value>
+    [JsonIgnore]
     public string ValueInNeutralLanguage
     {
         get
@@ -66,6 +68,7 @@ public readonly struct LocalizedString : IEquatable<LocalizedString>
     ///   A <see cref="ReadOnlySpan{T}"/> that contains the neutral language text, or an empty span
     ///   if the underlying value is <see langword="null"/>.
     /// </value>
+    [JsonIgnore]
     public ReadOnlySpan<char> ValueInNeutralLanguageAsSpan
     {
         get
