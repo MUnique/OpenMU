@@ -16,8 +16,8 @@ using MUnique.OpenMU.Web.Shared.Services;
 public class LocalizedStringFieldBuilder : BaseComponentBuilder, IComponentBuilder
 {
     /// <inheritdoc/>
-    public int BuildComponent(object model, PropertyInfo propertyInfo, RenderTreeBuilder builder, int currentIndex, IChangeNotificationService notificationService) => this.BuildField<LocalizedString, LocalizedStringField>(model, propertyInfo, builder, currentIndex, notificationService);
+    public int BuildComponent(object model, PropertyInfo propertyInfo, RenderTreeBuilder builder, int currentIndex, IChangeNotificationService notificationService) => this.BuildField<LocalizedString?, LocalizedStringField>(model, propertyInfo, builder, currentIndex, notificationService);
 
     /// <inheritdoc/>
-    public bool CanBuildComponent(PropertyInfo propertyInfo) => propertyInfo.PropertyType == typeof(LocalizedString);
+    public bool CanBuildComponent(PropertyInfo propertyInfo) => propertyInfo.PropertyType == typeof(LocalizedString?);
 }

@@ -4,7 +4,7 @@
 @using Microsoft.AspNetCore.Builder
 @using Microsoft.Extensions.Options
 
-@inherits NotifyableInputBase<MUnique.OpenMU.Interfaces.LocalizedString>
+@inherits NotifyableInputBase<MUnique.OpenMU.Interfaces.LocalizedString?>
 
 @inject IOptions<RequestLocalizationOptions> LocalizationOptions
 
@@ -51,7 +51,7 @@
     }
 
     /// <inheritdoc />
-    protected override bool TryParseValueFromString(string? value, [MaybeNullWhen(false)] out MUnique.OpenMU.Interfaces.LocalizedString result, [NotNullWhen(false)] out string? validationErrorMessage)
+    protected override bool TryParseValueFromString(string? value, [MaybeNullWhen(false)] out MUnique.OpenMU.Interfaces.LocalizedString? result, [NotNullWhen(false)] out string? validationErrorMessage)
     {
         if (value is not null && value.Contains(MUnique.OpenMU.Interfaces.LocalizedString.Separator, StringComparison.Ordinal))
         {
@@ -68,12 +68,12 @@
 
     private string GetValueForCulture(CultureInfo culture)
     {
-      if (this.Value.Value is null)
+      if (this.Value?.Value is null)
       {
         return string.Empty;
       }
 
-      return new string(this.Value.GetTranslation(culture, false));
+      return new string(this.Value?.GetTranslation(culture, false));
     }
 
 
@@ -105,7 +105,7 @@
         this.EditContext.NotifyValidationStateChanged();
       }
 
-      this.CurrentValue = this.CurrentValue.WithTranslation(culture, newValue);
+      this.CurrentValue = this.CurrentValue?.WithTranslation(culture, newValue);
     }
     
     private bool HasErrors(CultureInfo culture)
@@ -132,6 +132,6 @@
         return "badge-danger";
       }
 
-      return this.CurrentValue.GetTranslation(culture, false).Length > 0 ? "badge-success" : "badge-warning";
+      return this.CurrentValue?.GetTranslation(culture, false).Length > 0 ? "badge-success" : "badge-warning";
     }
 }
