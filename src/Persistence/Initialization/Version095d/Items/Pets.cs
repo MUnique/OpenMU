@@ -15,7 +15,7 @@ using MUnique.OpenMU.Persistence.Initialization.Skills;
 /// <summary>
 /// Initializer for pets.
 /// </summary>
-public class Pets : InitializerBase
+public class Pets : Jewels
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="Pets"/> class.
@@ -30,9 +30,12 @@ public class Pets : InitializerBase
     /// <inheritdoc />
     public override void Initialize()
     {
-        this.CreatePet(0, 0, "Guardian Angel", 23, true, (Stats.DamageReceiveDecrement, 0.8f, AggregateType.Multiplicate), (Stats.MaximumHealth, 50f, AggregateType.AddRaw));
-        this.CreatePet(1, 0, "Imp", 28, true, (Stats.AttackDamageIncrease, 1.3f, AggregateType.Multiplicate));
-        this.CreatePet(2, 0, "Horn of Uniria", 25, true);
+        var angel = this.CreatePet(0, 0, "Guardian Angel", 23, true, (Stats.DamageReceiveDecrement, 0.8f, AggregateType.Multiplicate), (Stats.MaximumHealth, 50f, AggregateType.AddRaw));
+        this.AddItemToJewelItemDrop(angel);
+        var imp = this.CreatePet(1, 0, "Imp", 28, true, (Stats.AttackDamageIncrease, 1.3f, AggregateType.Multiplicate));
+        this.AddItemToJewelItemDrop(imp);
+        var uniria = this.CreatePet(2, 0, "Horn of Uniria", 25, true);
+        this.AddItemToJewelItemDrop(uniria);
 
         var dinorant = this.CreatePet(3, SkillNumber.FireBreath, "Horn of Dinorant", 110, false, (Stats.IsDinorantEquipped, 1, AggregateType.AddRaw), (Stats.DamageReceiveDecrement, 0.9f, AggregateType.Multiplicate), (Stats.AttackDamageIncrease, 1.15f, AggregateType.Multiplicate));
         this.AddDinorantOptions(dinorant);

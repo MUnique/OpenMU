@@ -457,7 +457,7 @@ internal class LandOfTrials : BaseMapInitializer
         var jewelsDropItemGroup = this.Context.CreateNew<DropItemGroup>();
         jewelsDropItemGroup.SetGuid(this.MapNumber, 1);
         jewelsDropItemGroup.Chance = 0.001;
-        jewelsDropItemGroup.ItemType = SpecialItemType.RandomItem;
+        jewelsDropItemGroup.ItemType = SpecialItemType.Jewel;
         jewelsDropItemGroup.Description = "Jewel of Guardian";
 
         var jewelOfGuardian = this.GameConfiguration.Items.First(y => y.Group == 14 && y.Number == 31);

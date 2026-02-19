@@ -14,7 +14,7 @@ using MUnique.OpenMU.Persistence.Initialization.Skills;
 /// <summary>
 /// Class which contains item definitions for jewels.
 /// </summary>
-public class Potions : InitializerBase
+public class Potions : Jewels
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="Potions"/> class.
@@ -75,6 +75,7 @@ public class Potions : InitializerBase
         alcohol.Height = 2;
         alcohol.SetGuid(alcohol.Group, alcohol.Number);
         alcohol.ConsumeEffect = this.GameConfiguration.MagicEffects.First(effect => effect.Number == (short)MagicEffectNumber.Alcohol);
+        this.AddItemToJewelItemDrop(alcohol);
         return alcohol;
     }
 
@@ -375,6 +376,7 @@ public class Potions : InitializerBase
         definition.Width = 1;
         definition.Height = 2;
         definition.SetGuid(definition.Group, definition.Number);
+        this.AddItemToJewelItemDrop(definition);
         return definition;
     }
 

@@ -19,7 +19,7 @@ using MUnique.OpenMU.Persistence.Initialization.Skills;
 /// Initializer for pets.
 /// </summary>
 /// <remarks>Pet system changed in Season 9. Reference: https://muonline.webzen.com/en/gameinfo/guide/detail/76 .</remarks>
-public class Pets : InitializerBase
+public class Pets : Jewels
 {
     private const string PetExperienceFormula = "level * level * level * 100 * (level + 10)";
 
@@ -37,12 +37,15 @@ public class Pets : InitializerBase
     public override void Initialize()
     {
 #pragma warning disable SA1117 // Parameters should be on same line or separete lines
-        this.CreatePet(0, 0, 1, 1, "Guardian Angel", 23, true, true,
+        var angel = this.CreatePet(0, 0, 1, 1, "Guardian Angel", 23, true, true,
             (Stats.DamageReceiveDecrement, 0.8f, AggregateType.Multiplicate),
             (Stats.MaximumHealth, 50f, AggregateType.AddRaw));
-        this.CreatePet(1, 0, 1, 1, "Imp", 28, true, true,
+        this.AddItemToJewelItemDrop(angel);
+        var imp = this.CreatePet(1, 0, 1, 1, "Imp", 28, true, true,
             (Stats.AttackDamageIncrease, 1.3f, AggregateType.Multiplicate));
-        this.CreatePet(2, 0, 1, 1, "Horn of Uniria", 25, true, true);
+        this.AddItemToJewelItemDrop(imp);
+        var uniria = this.CreatePet(2, 0, 1, 1, "Horn of Uniria", 25, true, true);
+        this.AddItemToJewelItemDrop(uniria);
 
         var dinorant = this.CreatePet(3, SkillNumber.FireBreath, 1, 1, "Horn of Dinorant", 110, false, true,
             (Stats.IsDinorantEquipped, 1, AggregateType.AddRaw),

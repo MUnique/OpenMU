@@ -41,6 +41,11 @@ public enum SpecialItemType
     /// The money special item type.
     /// </summary>
     Money,
+
+    /// <summary>
+    /// The jewel special item type.
+    /// </summary>
+    Jewel,
 }
 
 /// <summary>
