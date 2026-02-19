@@ -433,7 +433,7 @@ public class DefaultDropGenerator : IDropGenerator
             else
             {
                 var monsterLevel = (int)monster[Stats.Level];
-                List<ItemDefinition> filteredPossibleItems = [];
+                List<ItemDefinition> filteredPossibleItems;
 
                 if (selectedGroup.ItemType == SpecialItemType.Jewel)
                 {
