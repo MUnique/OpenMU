@@ -433,7 +433,23 @@ public class DefaultDropGenerator : IDropGenerator
             else
             {
                 var monsterLevel = (int)monster[Stats.Level];
-                var filteredPossibleItems = selectedGroup.PossibleItems.Where(it => it.DropLevel == 0 || ((it.DropLevel <= monsterLevel) && (it.DropLevel > monsterLevel - 12))).ToArray();
+                List<ItemDefinition> filteredPossibleItems = [];
+
+                if (selectedGroup.ItemType == SpecialItemType.Jewel)
+                {
+                    filteredPossibleItems = [.. selectedGroup.PossibleItems.Where(it => it.DropLevel <= monsterLevel)];
+
+                    if (monsterLevel > 66)
+                    {
+                        // Jewel of Chaos doesn't drop after a certain monster level
+                        filteredPossibleItems.RemoveAll(it => it.Group == 12 && it.Number == 15);
+                    }
+                }
+                else
+                {
+                    filteredPossibleItems = [.. selectedGroup.PossibleItems.Where(it => it.DropLevel == 0 || (it.DropLevel <= monsterLevel && it.DropLevel > monsterLevel - 12))];
+                }
+
                 return this.GenerateItemDrop(selectedGroup, filteredPossibleItems);
             }
         }
