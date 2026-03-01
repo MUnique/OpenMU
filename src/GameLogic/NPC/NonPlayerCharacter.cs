@@ -206,8 +206,13 @@ public class NonPlayerCharacter : AsyncDisposable, IObservable, IRotatable, ILoc
 
     private Point? GetNewSpawnPoint(MonsterSpawnArea spawnArea)
     {
-        var x = Rand.NextInt(spawnArea.X1, spawnArea.X2 + 1);
-        var y = Rand.NextInt(spawnArea.Y1, spawnArea.Y2 + 1);
+        var minX = Math.Min(spawnArea.X1, spawnArea.X2);
+        var maxX = Math.Max(spawnArea.X1, spawnArea.X2);
+        var minY = Math.Min(spawnArea.Y1, spawnArea.Y2);
+        var maxY = Math.Max(spawnArea.Y1, spawnArea.Y2);
+
+        var x = Rand.NextInt(minX, maxX + 1);
+        var y = Rand.NextInt(minY, maxY + 1);
         var point = new Point((byte)x, (byte)y);
         if (this.IsValidSpawnPoint(point))
         {

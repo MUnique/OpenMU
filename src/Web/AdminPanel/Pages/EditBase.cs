@@ -19,6 +19,7 @@ using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Web.AdminPanel.Properties;
 using MUnique.OpenMU.Web.Shared;
 using MUnique.OpenMU.Web.Shared.Services;
+using MUnique.OpenMU.Web.Shared.Components;
 
 /// <summary>
 /// Abstract common base class for an edit page.
@@ -178,6 +179,10 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
             return;
         }
 
+        builder.OpenComponent<Breadcrumb>(0);
+        builder.AddAttribute(1, nameof(Breadcrumb.Caption), this.Model.GetName());
+        builder.CloseComponent();
+
         var downloadMarkup = this.GetDownloadMarkup();
         var editorsMarkup = this.GetEditorsMarkup();
 
@@ -200,6 +205,7 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
         this._navigationLockDisposable = this.NavigationManager.RegisterLocationChangingHandler(this.OnBeforeInternalNavigationAsync);
         return base.OnInitializedAsync();
     }
+
 
     /// <summary>
     /// Adds the form to the render tree.
@@ -231,10 +237,6 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
             }).ConfigureAwait(false);
         }
 
-        if (this._loadingState == DataLoadingState.Loaded && this.Model is { } model)
-        {
-            this.NavigationHistory.AddCurrentPageToHistory(model.GetName());
-        }
 
         await base.OnAfterRenderAsync(firstRender).ConfigureAwait(true);
     }

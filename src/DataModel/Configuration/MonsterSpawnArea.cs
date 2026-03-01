@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.DataModel.Configuration;
 
 using MUnique.OpenMU.Annotations;
+using MUnique.OpenMU.DataModel.Validation;
 
 /// <summary>
 /// Defines the trigger when a monster spawns.
@@ -82,11 +83,13 @@ public partial class MonsterSpawnArea
     /// <summary>
     /// Gets or sets the upper left corner x coordinate.
     /// </summary>
+    [LessThanOrEqualTo(nameof(X2))]
     public byte X1 { get; set; }
 
     /// <summary>
     /// Gets or sets the upper left corner y coordinate.
     /// </summary>
+    [LessThanOrEqualTo(nameof(Y2))]
     public byte Y1 { get; set; }
 
     /// <summary>

@@ -33,6 +33,12 @@ public partial class MuItem
     public EventCallback OnItemMoved { get; set; }
 
     /// <summary>
+    /// Gets or sets the callback which is called when the item should be deleted.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnDelete { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating whether this instance is selected.
     /// </summary>
     [Parameter]
@@ -58,22 +64,31 @@ public partial class MuItem
         switch (obj.Key)
         {
             case "w" when this.CanMoveUp:
+            case "ArrowUp" when this.CanMoveUp:
                 await this.MoveUpAsync().ConfigureAwait(true);
                 break;
             case "s" when this.CanMoveDown:
+            case "ArrowDown" when this.CanMoveDown:
                 await this.MoveDownAsync().ConfigureAwait(true);
                 break;
             case "w" when this.CanJumpUp:
+            case "ArrowUp" when this.CanJumpUp:
                 await this.JumpUpAsync().ConfigureAwait(true);
                 break;
             case "s" when this.CanJumpDown:
+            case "ArrowDown" when this.CanJumpDown:
                 await this.JumpDownAsync().ConfigureAwait(true);
                 break;
             case "d" when this.CanMoveRight:
+            case "ArrowRight" when this.CanMoveRight:
                 await this.MoveRightAsync().ConfigureAwait(true);
                 break;
             case "a" when this.CanMoveLeft:
+            case "ArrowLeft" when this.CanMoveLeft:
                 await this.MoveLeftAsync().ConfigureAwait(true);
+                break;
+            case "Delete":
+                await this.OnDelete.InvokeAsync().ConfigureAwait(true);
                 break;
             default:
                 // do nothing

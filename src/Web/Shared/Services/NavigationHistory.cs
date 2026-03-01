@@ -14,7 +14,6 @@ public sealed class NavigationHistory
 {
     private readonly Stack<HistoryEntry> _nextPages = new();
     private readonly Stack<HistoryEntry> _previousPages = new();
-    private readonly NavigationManager _navigationManager;
     private bool _isNavigating;
     private HistoryEntry? _current;
 
@@ -24,8 +23,13 @@ public sealed class NavigationHistory
     /// <param name="navigationManager">The navigation history.</param>
     public NavigationHistory(NavigationManager navigationManager)
     {
-        this._navigationManager = navigationManager;
+        this.NavigationManager = navigationManager;
     }
+
+    /// <summary>
+    /// Gets the navigation manager.
+    /// </summary>
+    public NavigationManager NavigationManager { get; }
 
     /// <summary>
     /// Event which is fired whenever the history changed.
@@ -65,7 +69,7 @@ public sealed class NavigationHistory
         this._nextPages.Clear();
         this._previousPages.Clear();
         this._current = null;
-        this._current = new HistoryEntry(this._navigationManager.BaseUri, "Home");
+        this._current = new HistoryEntry(this.NavigationManager.BaseUri, "Home");
         this.HistoryChanged?.Invoke(this, EventArgs.Empty);
     }
 
@@ -75,7 +79,7 @@ public sealed class NavigationHistory
     /// <param name="caption">The caption of the current page.</param>
     public void AddCurrentPageToHistory(string caption)
     {
-        var currentUri = this._navigationManager.Uri;
+        var currentUri = this.NavigationManager.Uri;
         if (this._isNavigating)
         {
             return;
@@ -97,12 +101,18 @@ public sealed class NavigationHistory
 
         if (this._current is not null)
         {
-            // Do we navigate back?
-            if (this._previousPages.TryPeek(out var previous) && previous.Uri == currentUri)
+            if (this._previousPages.Any(p => p.Uri == currentUri))
             {
-                // then move the thing to the next pages
-                this._previousPages.Pop();
                 this._nextPages.Push(this._current);
+                while (this._previousPages.TryPop(out var p))
+                {
+                    if (p.Uri == currentUri)
+                    {
+                        break;
+                    }
+
+                    this._nextPages.Push(p);
+                }
             }
             else
             {
@@ -130,7 +140,7 @@ public sealed class NavigationHistory
         this._isNavigating = true;
         try
         {
-            this._navigationManager.NavigateTo(previous.Uri);
+            this.NavigationManager.NavigateTo(previous.Uri);
         }
         finally
         {
@@ -154,7 +164,7 @@ public sealed class NavigationHistory
         this._isNavigating = true;
         try
         {
-            this._navigationManager.NavigateTo(next.Uri);
+            this.NavigationManager.NavigateTo(next.Uri);
         }
         finally
         {
@@ -214,7 +224,7 @@ public sealed class NavigationHistory
         this.HistoryChanged?.Invoke(this, EventArgs.Empty);
         if (this._current is not null)
         {
-            this._navigationManager.NavigateTo(this._current.Uri);
+            this.NavigationManager.NavigateTo(this._current.Uri);
         }
     }
 

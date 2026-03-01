@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Components.Layout;
 
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Components;
+using MUnique.OpenMU.Web.Shared.Services;
 
 /// <summary>
 /// Navigation menu of the admin panel.
@@ -13,6 +14,9 @@ using Microsoft.AspNetCore.Components;
 public partial class ConfigNavMenu
 {
     private bool _expandGameConfig;
+    
+    [Inject]
+    private NavigationHistory NavigationHistory { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the game configuration identifier.

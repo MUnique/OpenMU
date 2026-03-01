@@ -22,21 +22,21 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
+    public class Resources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Resources() {
+        public Resources() {
         }
         
         /// <summary>
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("MUnique.OpenMU.Web.Shared.Properties.Resources", typeof(Resources).Assembly);
@@ -51,7 +51,7 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
         /// <summary>
         ///   Looks up a localized string similar to E-Mail.
         /// </summary>
-        internal static string AccountCreationParameters_EMail_Name {
+        public static string AccountCreationParameters_EMail_Name {
             get {
                 return ResourceManager.GetString("AccountCreationParameters_EMail_Name", resourceCulture);
             }
@@ -72,7 +72,7 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Login Name.
         /// </summary>
-        internal static string AccountCreationParameters_LoginName_Name {
+        public static string AccountCreationParameters_LoginName_Name {
             get {
                 return ResourceManager.GetString("AccountCreationParameters_LoginName_Name", resourceCulture);
             }
@@ -81,7 +81,7 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Password.
         /// </summary>
-        internal static string AccountCreationParameters_Password_Name {
+        public static string AccountCreationParameters_Password_Name {
             get {
                 return ResourceManager.GetString("AccountCreationParameters_Password_Name", resourceCulture);
             }
@@ -90,7 +90,7 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Security Code.
         /// </summary>
-        internal static string AccountCreationParameters_SecurityCode_Name {
+        public static string AccountCreationParameters_SecurityCode_Name {
             get {
                 return ResourceManager.GetString("AccountCreationParameters_SecurityCode_Name", resourceCulture);
             }
@@ -99,7 +99,7 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Status.
         /// </summary>
-        internal static string AccountCreationParameters_State_Name {
+        public static string AccountCreationParameters_State_Name {
             get {
                 return ResourceManager.GetString("AccountCreationParameters_State_Name", resourceCulture);
             }
@@ -108,7 +108,7 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
         /// <summary>
         ///   Looks up a localized string similar to All.
         /// </summary>
-        internal static string All {
+        public static string All {
             get {
                 return ResourceManager.GetString("All", resourceCulture);
             }
@@ -117,7 +117,7 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Ancient Option Level.
         /// </summary>
-        internal static string AncientOptionLevel {
+        public static string AncientOptionLevel {
             get {
                 return ResourceManager.GetString("AncientOptionLevel", resourceCulture);
             }
@@ -126,7 +126,7 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Bonus.
         /// </summary>
-        internal static string Bonus {
+        public static string Bonus {
             get {
                 return ResourceManager.GetString("Bonus", resourceCulture);
             }
@@ -135,7 +135,7 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Control Group.
         /// </summary>
-        internal static string ControlGroup {
+        public static string ControlGroup {
             get {
                 return ResourceManager.GetString("ControlGroup", resourceCulture);
             }
@@ -144,7 +144,7 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Creation Group.
         /// </summary>
-        internal static string CreationGroup {
+        public static string CreationGroup {
             get {
                 return ResourceManager.GetString("CreationGroup", resourceCulture);
             }
@@ -153,7 +153,7 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Has Guardian Option (Level 380 PvP).
         /// </summary>
-        internal static string HasGuardianOption {
+        public static string HasGuardianOption {
             get {
                 return ResourceManager.GetString("HasGuardianOption", resourceCulture);
             }
@@ -162,7 +162,7 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Loading ....
         /// </summary>
-        internal static string Loading {
+        public static string Loading {
             get {
                 return ResourceManager.GetString("Loading", resourceCulture);
             }
@@ -171,7 +171,7 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Map.
         /// </summary>
-        internal static string Map {
+        public static string Map {
             get {
                 return ResourceManager.GetString("Map", resourceCulture);
             }
@@ -180,7 +180,7 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Option Level.
         /// </summary>
-        internal static string OptionLevel {
+        public static string OptionLevel {
             get {
                 return ResourceManager.GetString("OptionLevel", resourceCulture);
             }
@@ -189,7 +189,7 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
         /// <summary>
         ///   Looks up a localized string similar to &lt;Please select a definition&gt;.
         /// </summary>
-        internal static string PleaseSelectItemDefinition {
+        public static string PleaseSelectItemDefinition {
             get {
                 return ResourceManager.GetString("PleaseSelectItemDefinition", resourceCulture);
             }
@@ -198,7 +198,7 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Remove.
         /// </summary>
-        internal static string Remove {
+        public static string Remove {
             get {
                 return ResourceManager.GetString("Remove", resourceCulture);
             }
@@ -207,7 +207,7 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Selected Map.
         /// </summary>
-        internal static string SelectedMap {
+        public static string SelectedMap {
             get {
                 return ResourceManager.GetString("SelectedMap", resourceCulture);
             }
@@ -216,7 +216,7 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Selected Object.
         /// </summary>
-        internal static string SelectedObject {
+        public static string SelectedObject {
             get {
                 return ResourceManager.GetString("SelectedObject", resourceCulture);
             }
@@ -225,7 +225,7 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Socket {0}.
         /// </summary>
-        internal static string SocketNumber {
+        public static string SocketNumber {
             get {
                 return ResourceManager.GetString("SocketNumber", resourceCulture);
             }
@@ -234,7 +234,7 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Target.
         /// </summary>
-        internal static string Target {
+        public static string Target {
             get {
                 return ResourceManager.GetString("Target", resourceCulture);
             }
@@ -243,7 +243,7 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Target map.
         /// </summary>
-        internal static string TargetMap {
+        public static string TargetMap {
             get {
                 return ResourceManager.GetString("TargetMap", resourceCulture);
             }
@@ -252,7 +252,7 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Terrain of {0}.
         /// </summary>
-        internal static string TerrainOf {
+        public static string TerrainOf {
             get {
                 return ResourceManager.GetString("TerrainOf", resourceCulture);
             }
@@ -261,7 +261,7 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
         /// <summary>
         ///   Looks up a localized string similar to {0}: The value must not contain &quot;{1}&quot;..
         /// </summary>
-        internal static string TheValueMustNotContain {
+        public static string TheValueMustNotContain {
             get {
                 return ResourceManager.GetString("TheValueMustNotContain", resourceCulture);
             }
@@ -270,7 +270,7 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Toolbar.
         /// </summary>
-        internal static string Toolbar {
+        public static string Toolbar {
             get {
                 return ResourceManager.GetString("Toolbar", resourceCulture);
             }
@@ -279,7 +279,7 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Username.
         /// </summary>
-        internal static string UserCreationParameters_LoginName_Name {
+        public static string UserCreationParameters_LoginName_Name {
             get {
                 return ResourceManager.GetString("UserCreationParameters_LoginName_Name", resourceCulture);
             }
@@ -288,7 +288,7 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Password.
         /// </summary>
-        internal static string UserCreationParameters_Password_Name {
+        public static string UserCreationParameters_Password_Name {
             get {
                 return ResourceManager.GetString("UserCreationParameters_Password_Name", resourceCulture);
             }

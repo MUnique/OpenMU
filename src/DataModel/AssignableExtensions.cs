@@ -22,11 +22,11 @@ public static class AssignableExtensions
     public static void AssignCollection<T>(this ICollection<T> collection, ICollection<T> other, GameConfiguration gameConfiguration)
         where T : class
     {
-        var newItems = collection.Except(other).ToList();
-        var oldItems = other.Except(collection).ToList();
+        var itemsToRemove = collection.Except(other).ToList();
+        var itemsToAdd = other.Except(collection).ToList();
 
-        oldItems.ForEach(i => collection.Remove(i));
-        newItems.ForEach(i => collection.Add(
+        itemsToRemove.ForEach(i => collection.Remove(i));
+        itemsToAdd.ForEach(i => collection.Add(
             gameConfiguration.GetObjectOfConfig(i)
             ?? (i as ICloneable<T>)?.Clone(gameConfiguration)
             ?? (i as ICloneable)?.Clone() as T
@@ -42,10 +42,10 @@ public static class AssignableExtensions
     public static void AssignCollection<T>(this ICollection<T> collection, ICollection<T> other)
         where T : struct
     {
-        var newItems = collection.Except(other).ToList();
-        var oldItems = other.Except(collection).ToList();
+        var itemsToRemove = collection.Except(other).ToList();
+        var itemsToAdd = other.Except(collection).ToList();
 
-        oldItems.ForEach(i => collection.Remove(i));
-        newItems.ForEach(collection.Add);
+        itemsToRemove.ForEach(i => collection.Remove(i));
+        itemsToAdd.ForEach(collection.Add);
     }
 }
