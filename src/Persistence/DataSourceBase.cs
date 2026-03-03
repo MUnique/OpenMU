@@ -119,6 +119,13 @@ public abstract class DataSourceBase<TOwner> : IDataSource<TOwner>
     }
 
     /// <inheritdoc />
+    public async ValueTask ForceDiscardChangesAsync()
+    {
+        using var l = await _loadLock.LockAsync().ConfigureAwait(false);
+        this.Reset();
+    }
+
+    /// <inheritdoc />
     public IEnumerable<T> GetAll<T>()
     {
         return this.GetAll(typeof(T)).OfType<T>();
