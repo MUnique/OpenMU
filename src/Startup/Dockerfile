@@ -29,6 +29,8 @@ COPY --from=publish /app/publish .
 
 RUN mkdir /app/logs
 RUN chmod 777 /app/logs
+RUN apk add --no-cache icu-libs
 
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 USER $APP_UID
 ENTRYPOINT ["dotnet", "MUnique.OpenMU.Startup.dll", "-autostart"]
