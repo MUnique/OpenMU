@@ -1,11 +1,11 @@
 ﻿@typeparam T
 
-<EditForm Model="@Model" OnValidSubmit="OnValidSubmit">
+<EditForm Model="@Model" OnValidSubmit="OnValidSubmit" class="auto-form">
     <DataAnnotationsValidator />
     <AutoFields HideCollections="@this.HideCollections"/>
 
     <ValidationSummary />
-    <div>
+    <div class="form-actions">
         <button type="submit" class="primary-button">Save</button>
         @if (this.OnCancel != null)
         {

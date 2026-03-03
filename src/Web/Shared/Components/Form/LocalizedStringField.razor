@@ -13,18 +13,29 @@
     <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
   </div>
 
-  @foreach (var culture in this.LocalizationOptions.Value.SupportedUICultures)
+  @if (this.LocalizationOptions.Value.SupportedUICultures is { Count: > 0 } cultures)
   {
-    <div class="mb-1">
-      <input id="@(MUnique.OpenMU.Interfaces.LocalizedString.NeutralLanguageCode == culture.TwoLetterISOLanguageName ? this.FieldIdentifier.FieldName : this.FieldIdentifier.FieldName + "_" + culture.TwoLetterISOLanguageName)"
-             class="@(this.GetInputClass(culture))"
-             value="@GetValueForCulture(culture)"
-             @onchange="(e => SetValueForCulture(culture, e.Value?.ToString()))"
-      />
-      <span class="badge @(this.GetBadge(culture))">@culture.TwoLetterISOLanguageName</span>
-    </div>
+    @foreach (var culture in cultures)
+    {
+      <div class="mb-1">
+        <input id="@(MUnique.OpenMU.Interfaces.LocalizedString.NeutralLanguageCode == culture.TwoLetterISOLanguageName ? this.FieldIdentifier.FieldName : this.FieldIdentifier.FieldName + "_" + culture.TwoLetterISOLanguageName)"
+               class="@(this.GetInputClass(culture))"
+               value="@GetValueForCulture(culture)"
+               @onchange="(e => SetValueForCulture(culture, e.Value?.ToString()))"
+        />
+        <span class="badge @(this.GetBadge(culture))">@culture.TwoLetterISOLanguageName</span>
+      </div>
+    }
   }
-    
+  else
+  {
+    @* No cultures configured - render a plain input bound to the neutral/default value *@
+    <input id="@this.FieldIdentifier.FieldName"
+           value="@(this.Value.Value ?? string.Empty)"
+           @onchange="(e => this.CurrentValue = new MUnique.OpenMU.Interfaces.LocalizedString(e.Value?.ToString() ?? string.Empty))"
+    />
+  }
+
 </div>
 <ValidationMessage For="@this.ValueExpression" />
 
