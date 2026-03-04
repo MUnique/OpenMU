@@ -35,6 +35,8 @@ public class DefaultDropGenerator : IDropGenerator
 
     private readonly IList<ItemDefinition>?[] _droppableItemsPerMonsterLevel = new IList<ItemDefinition>?[byte.MaxValue + 1];
 
+    private readonly GameConfiguration _config;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="DefaultDropGenerator" /> class.
     /// </summary>
@@ -42,6 +44,7 @@ public class DefaultDropGenerator : IDropGenerator
     /// <param name="randomizer">The randomizer.</param>
     public DefaultDropGenerator(GameConfiguration config, IRandomizer randomizer)
     {
+        this._config = config;
         this._randomizer = randomizer;
         this._maxItemOptionLevelDrop = config.MaximumItemOptionLevelDrop < 1 || config.MaximumItemOptionLevelDrop > 4 ? (byte)3 : config.MaximumItemOptionLevelDrop;
         this._droppableItems = config.Items.Where(i => i.DropsFromMonsters).ToList();
@@ -449,7 +452,7 @@ public class DefaultDropGenerator : IDropGenerator
             case SpecialItemType.SocketItem:
                 return this.GenerateRandomItem((int)monster[Stats.Level], true);
             case SpecialItemType.Money:
-                droppedMoney = (uint)(gainedExperience + BaseMoneyDrop);
+                droppedMoney = (uint)((gainedExperience + BaseMoneyDrop) * this._config.MoneyDropRate);
                 return null;
             default:
                 // none
