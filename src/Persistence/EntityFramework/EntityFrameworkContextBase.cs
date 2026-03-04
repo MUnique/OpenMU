@@ -162,9 +162,11 @@ internal class EntityFrameworkContextBase : IContext
         using var l = await this._lock.LockAsync();
 
         var result = false;
-        if (this.Context.Entry(obj) is not { } entry)
+        var entry = this.Context.Entry(obj);
+        if (entry is null)
         {
-            return result;
+            this.Context.Attach(obj);
+            entry = this.Context.Entry(obj);
         }
 
         switch (entry.State)

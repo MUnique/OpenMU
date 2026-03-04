@@ -44,7 +44,7 @@ public sealed class LessThanOrEqualToAttribute : ValidationAttribute
             {
                 var memberNames = new[] { validationContext.MemberName ?? string.Empty, this.OtherProperty };
                 return new ValidationResult(
-                    this.FormatErrorMessage($"{validationContext.DisplayName} ({value}) to {this.OtherProperty} ({otherValue})"),
+                    string.Format("'{0}' ({1}) must be less than or equal to '{2}' ({3}).", validationContext.DisplayName, value, this.OtherProperty, otherValue),
                     memberNames);
             }
         }

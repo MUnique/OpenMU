@@ -10941,17 +10941,49 @@ mark {
   left: 0px;
 }
 
+.map-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.map-host {
+  position: relative;
+  user-select: none;
+  z-index: 0;
+  flex-shrink: 0;
+}
+
+.map-host > img {
+  image-rendering: pixelated;
+  z-index: -1;
+  top: 0px;
+  left: 0px;
+}
+
+.map-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: auto;
+  min-width: 100px;
+  max-width: 300px;
+  flex: 1;
+}
+
 .map-object-select {
   position: relative;
-  left: 800px;
-  top: -25px;
-  width: 40%;
+  width: auto;
+  min-width: 100px;
+  max-width: 300px;
 }
 
 .map-object-form {
   position: relative;
-  left: 800px;
-  width: 40%;
+  width: auto;
+  min-width: 100px;
+  max-width: 300px;
 }
 
 .map-object, .spawn, .spawn-single, .spawn-area, .gate-exit, .gate-enter {
