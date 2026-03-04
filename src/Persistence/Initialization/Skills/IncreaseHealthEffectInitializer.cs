@@ -57,6 +57,7 @@ public class IncreaseHealthEffectInitializer : InitializerBase
         powerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
         powerUpDefinition.Boost.ConstantValue.Value = 16f;
         powerUpDefinition.Boost.ConstantValue.AggregateType = AggregateType.AddFinal;
+        powerUpDefinition.Boost.MaximumValue = 200f;
         powerUpDefinition.Boost.RelatedValues.Add(boostPerEnergy);
     }
 }

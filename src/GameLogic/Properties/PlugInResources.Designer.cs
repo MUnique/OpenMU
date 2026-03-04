@@ -520,6 +520,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Handles the dragon roar skill of the rage fighter class. Additionally to the attacked target, it will hit up to seven additional targets..
+        /// </summary>
+        public static string DragonRoarSkillPlugIn_Description {
+            get {
+                return ResourceManager.GetString("DragonRoarSkillPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Dragon Roar Skill.
+        /// </summary>
+        public static string DragonRoarSkillPlugIn_Name {
+            get {
+                return ResourceManager.GetString("DragonRoarSkillPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the drain life skill of the summoner class. Additionally to the attacked target, it regains life for damage dealt..
         /// </summary>
         public static string DrainLifeSkillPlugIn_Description {
@@ -1614,6 +1632,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string PeriodicTaskConfiguration_Timetable_Name {
             get {
                 return ResourceManager.GetString("PeriodicTaskConfiguration_Timetable_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the phoenix shot weapon skill of the rage fighter class. Additionally to the attacked target, it will hit up to seven additional targets..
+        /// </summary>
+        public static string PhoenixShotSkillPlugIn_Description {
+            get {
+                return ResourceManager.GetString("PhoenixShotSkillPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Phoenix Shot Skill.
+        /// </summary>
+        public static string PhoenixShotSkillPlugIn_Name {
+            get {
+                return ResourceManager.GetString("PhoenixShotSkillPlugIn_Name", resourceCulture);
             }
         }
         

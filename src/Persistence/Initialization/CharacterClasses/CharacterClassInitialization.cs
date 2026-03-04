@@ -134,6 +134,11 @@ internal partial class CharacterClassInitialization : InitializerBase
         attributeRelationships.Add(this.CreateConditionalRelationship(Stats.DefenseFinal, Stats.IsShieldEquipped, Stats.BonusDefenseWithShield, AggregateType.AddFinal));
         attributeRelationships.Add(this.CreateConditionalRelationship(Stats.DefenseRatePvm, Stats.IsShieldEquipped, Stats.BonusDefenseRateWithShield, AggregateType.AddFinal));
 
+        var tempInnovDefDec = this.Context.CreateNew<AttributeDefinition>(Guid.NewGuid(), "Temp Innovation defense decrement", string.Empty);
+        this.GameConfiguration.Attributes.Add(tempInnovDefDec);
+        attributeRelationships.Add(this.CreateAttributeRelationship(tempInnovDefDec, -1, Stats.InnovationDefDecrement));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.DefenseDecrement, 1, tempInnovDefDec, InputOperator.Add, AggregateType.Multiplicate));
+
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.HealthRecoveryMultiplier, 0.01f, Stats.IsInSafezone));
         if (this.UseClassicPvp)
         {
@@ -162,6 +167,7 @@ internal partial class CharacterClassInitialization : InitializerBase
         baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.PhysicalBaseDmgIncrease));
         baseAttributeValues.Add(this.CreateConstValueAttribute(-1, Stats.AreTwoWeaponsEquipped));
         baseAttributeValues.Add(this.CreateConstValueAttribute(-1, Stats.HasDoubleWield));
+        baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.DefenseDecrement));
 
         if (isMaster)
         {
