@@ -163,7 +163,7 @@ internal class EntityFrameworkContextBase : IContext
 
         var result = false;
         var entry = this.Context.Entry(obj);
-        if (entry is null)
+        if (entry.State == EntityState.Detached)
         {
             this.Context.Attach(obj);
             entry = this.Context.Entry(obj);
