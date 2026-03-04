@@ -19,7 +19,7 @@ using MUnique.OpenMU.Persistence.Initialization.Skills;
 /// Initializer for pets.
 /// </summary>
 /// <remarks>Pet system changed in Season 9. Reference: https://muonline.webzen.com/en/gameinfo/guide/detail/76 .</remarks>
-public class Pets : Jewels
+public class Pets : InitializerBase
 {
     private const string PetExperienceFormula = "level * level * level * 100 * (level + 10)";
 

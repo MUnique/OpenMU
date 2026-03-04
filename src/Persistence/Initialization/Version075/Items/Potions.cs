@@ -11,7 +11,7 @@ using MUnique.OpenMU.Persistence.Initialization.Skills;
 /// <summary>
 /// Class which contains item definitions for jewels.
 /// </summary>
-public class Potions : Jewels
+public class Potions : InitializerBase
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="Potions"/> class.
