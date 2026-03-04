@@ -441,6 +441,11 @@ public partial class MapEditor : IDisposable
 
         await this.PersistenceContext.DeleteAsync(this._focusedObject).ConfigureAwait(false);
         this._focusedObject = null;
+
+        if (this.OnValidSubmit.HasDelegate)
+        {
+            await this.OnValidSubmit.InvokeAsync().ConfigureAwait(false);
+        }
     }
 
     private async Task OnMapSelectedAsync(ChangeEventArgs args)
