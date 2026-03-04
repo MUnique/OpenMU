@@ -18,6 +18,8 @@ public class DefaultDropGenerator : IDropGenerator
     /// </summary>
     public static readonly int BaseMoneyDrop = 7;
 
+    private static readonly int DropLevelMaxGap = 12;
+
     private readonly IRandomizer _randomizer;
 
     /// <summary>
@@ -447,7 +449,7 @@ public class DefaultDropGenerator : IDropGenerator
                 }
                 else
                 {
-                    filteredPossibleItems = [.. selectedGroup.PossibleItems.Where(it => it.DropLevel == 0 || (it.DropLevel <= monsterLevel && it.DropLevel > monsterLevel - 12))];
+                    filteredPossibleItems = [.. selectedGroup.PossibleItems.Where(it => it.DropLevel == 0 || (it.DropLevel <= monsterLevel && it.DropLevel > monsterLevel - DropLevelMaxGap))];
                 }
 
                 return this.GenerateItemDrop(selectedGroup, filteredPossibleItems);
@@ -506,7 +508,7 @@ public class DefaultDropGenerator : IDropGenerator
         return this._droppableItemsPerMonsterLevel[monsterLevel]
             ??= (from it in this._droppableItems
                  where (it.DropLevel <= monsterLevel)
-                       && (it.DropLevel > monsterLevel - 12)
+                       && (it.DropLevel > monsterLevel - DropLevelMaxGap)
                        && (!socketItems || it.MaximumSockets > 0)
                  select it).ToList();
     }
