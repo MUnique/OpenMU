@@ -195,4 +195,15 @@ public abstract class InitializerBase : IInitializer
 
         return itemOption;
     }
+
+    /// <summary>
+    /// Register the jewel (or jewel-like item) in the drop item group for jewels.
+    /// </summary>
+    /// <param name="item">The jewel you want to register.</param>
+    protected void AddItemToJewelItemDrop(ItemDefinition item)
+    {
+        var id = GuidHelper.CreateGuid<DropItemGroup>(4);
+        var jewelsItemDrop = this.GameConfiguration.DropItemGroups.First(x => x.GetId() == id);
+        jewelsItemDrop.PossibleItems.Add(item);
+    }
 }

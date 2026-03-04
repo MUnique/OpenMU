@@ -14,7 +14,7 @@ using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 /// <summary>
 /// Initializer for pets.
 /// </summary>
-public class Pets : Jewels
+public class Pets : InitializerBase
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="Pets"/> class.
