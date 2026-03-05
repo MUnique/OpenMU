@@ -344,4 +344,19 @@ public enum UpdateVersion
     /// The version of the <see cref="AddProjectileCountToTripleShotUpdatePlugIn"/>.
     /// </summary>
     AddProjectileCountToTripleShot = 67,
+
+    /// <summary>
+    /// The version of the <see cref="RemoveJewelDropLevelGapPlugIn075"/>.
+    /// </summary>
+    RemoveJewelDropLevelGap075 = 68,
+
+    /// <summary>
+    /// The version of the <see cref="RemoveJewelDropLevelGapPlugIn095D"/>.
+    /// </summary>
+    RemoveJewelDropLevelGap095d = 69,
+
+    /// <summary>
+    /// The version of the <see cref="RemoveJewelDropLevelGapPlugInSeason6"/>.
+    /// </summary>
+    RemoveJewelDropLevelGapSeason6 = 70,
 }
