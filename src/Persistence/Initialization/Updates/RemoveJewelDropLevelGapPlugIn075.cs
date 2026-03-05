@@ -17,7 +17,7 @@ using MUnique.OpenMU.PlugIns;
 public class RemoveJewelDropLevelGapPlugIn075 : RemoveJewelDropLevelGapPlugInBase
 {
     /// <inheritdoc />
-    public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
+    public override string DataInitializationKey => Version075.DataInitialization.Id;
 
     /// <inheritdoc />
     public override UpdateVersion Version => UpdateVersion.RemoveJewelDropLevelGap075;
