@@ -22,7 +22,6 @@ public class WanderingMerchantsPlugIn : PeriodicTaskBasePlugIn<WanderingMerchant
     {
         return new WanderingMerchantsConfiguration
         {
-            Message = null,
             PreStartMessageDelay = TimeSpan.Zero,
 
             // we check every minute if we have to move a merchant.

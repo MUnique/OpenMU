@@ -106,7 +106,7 @@ public partial class Merchants : ComponentBase, IAsyncDisposable
     {
         var cts = new CancellationTokenSource();
         this._disposeCts = cts;
-        this._loadTask = Task.Run(() => this.LoadDataAsync(cts.Token), cts.Token);
+        this._loadTask = Task.Run(() => this.LoadDataAsync(cts.Token));
         await base.OnParametersSetAsync().ConfigureAwait(true);
     }
 
@@ -134,19 +134,33 @@ public partial class Merchants : ComponentBase, IAsyncDisposable
 
     private async Task LoadDataAsync(CancellationToken cancellationToken)
     {
-        cancellationToken.ThrowIfCancellationRequested();
+        try
+        {
+            cancellationToken.ThrowIfCancellationRequested();
 
-        this._persistenceContext = await this.DataSource.GetContextAsync(cancellationToken).ConfigureAwait(true);
-        await this.DataSource.GetOwnerAsync(default, cancellationToken).ConfigureAwait(true);
-        cancellationToken.ThrowIfCancellationRequested();
-        var data = this.DataSource.GetAll<MonsterDefinition>()
-            .Where(m => m is { ObjectKind: NpcObjectKind.PassiveNpc, MerchantStore: { } });
-        this._viewModels = data
-            .Select(o => new MerchantStorageViewModel(o))
-            .OrderBy(o => o.Merchant.Designation)
-            .ToList();
+            this._persistenceContext = await this.DataSource.GetContextAsync(cancellationToken).ConfigureAwait(true);
+            await this.DataSource.GetOwnerAsync(cancellationToken: cancellationToken).ConfigureAwait(true);
+            
+            var data = this.DataSource.GetAll<MonsterDefinition>()
+                .Where(m => m is { ObjectKind: NpcObjectKind.PassiveNpc, MerchantStore: { } });
+            this._viewModels = data
+                .Select(o => new MerchantStorageViewModel(o))
+                .OrderBy(o => o.Name)
+                .ToList();
 
-        await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
+            await this.InvokeAsync(() =>
+            {
+                this.StateHasChanged();
+            }).ConfigureAwait(true);
+        }
+        catch (OperationCanceledException)
+        {
+            // Expected when navigating away - ignore
+        }
+        catch (Exception ex)
+        {
+            this.Logger.LogError(ex, "Error loading merchant data");
+        }
     }
 
     private async Task OnMerchantEditClickAsync(MerchantStorageViewModel context)

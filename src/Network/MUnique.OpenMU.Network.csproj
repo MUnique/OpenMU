@@ -45,9 +45,6 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <PackageReference Include="Nito.AsyncEx.Tasks" />
     <PackageReference Include="Pipelines.Sockets.Unofficial" />
-    <PackageReference Include="System.IO.Pipelines" />
-    <PackageReference Include="System.Net.Sockets" />
-    <PackageReference Include="System.Text.Encoding" />
   </ItemGroup>
 
   <ItemGroup>

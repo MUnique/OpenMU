@@ -4,89 +4,81 @@
 
 namespace MUnique.OpenMU.SourceGenerators;
 
-using System.Diagnostics;
+using System.Collections.Immutable;
 using System.IO;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 /// <summary>
-/// A <see cref="ISourceGenerator"/> which creates resource strings for all classes and properties of
+/// A <see cref="IIncrementalGenerator"/> which creates resource strings for all classes and properties of
 /// the data model.
 /// </summary>
 // [Generator]
-public class ResourceGenerator : ISourceGenerator
+public class ResourceGenerator : IIncrementalGenerator
 {
     /// <inheritdoc />
-    public void Initialize(GeneratorInitializationContext context)
+    public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        // No initialization required
+        var typeDeclarations = context.SyntaxProvider
+            .CreateSyntaxProvider(
+                predicate: static (node, _) => node is ClassDeclarationSyntax or EnumDeclarationSyntax,
+                transform: static (ctx, _) => (BaseTypeDeclarationSyntax)ctx.Node)
+            .Collect();
+
+        var projectDirProvider = context.AnalyzerConfigOptionsProvider
+            .Select((options, _) =>
+            {
+                options.GlobalOptions.TryGetValue("build_property.projectdir", out var projectDir);
+                return projectDir;
+            });
+
+        var compilationAndTypes = context.CompilationProvider
+            .Combine(typeDeclarations)
+            .Combine(projectDirProvider);
+
+        context.RegisterSourceOutput(compilationAndTypes, (_, source) =>
+        {
+            var ((compilation, types), projectDir) = source;
+            Execute(compilation, types, projectDir);
+        });
     }
 
-    /// <inheritdoc />
-    public void Execute(GeneratorExecutionContext context)
+    private static void Execute(Compilation compilation, ImmutableArray<BaseTypeDeclarationSyntax> types, string? projectDir)
     {
-        if (!Debugger.IsAttached)
+        if (types.IsDefaultOrEmpty || string.IsNullOrEmpty(projectDir))
         {
-            // Uncomment the following line to be able to debug it during the build:
-            //// Debugger.Launch();
+            return;
         }
 
         var declaredTypes = new List<(BaseTypeDeclarationSyntax, INamedTypeSymbol)>();
 
-        var sb = this.StartResourceFile();
-        foreach (SyntaxTree tree in context.Compilation.SyntaxTrees)
+        foreach (var typeDeclaration in types)
         {
-            var semanticModel = context.Compilation.GetSemanticModel(tree);
-            foreach (var declaredClass in tree
-                         .GetRoot()
-                         .DescendantNodes()
-                         .OfType<ClassDeclarationSyntax>()
-                         .OrderBy(c => c.Identifier.Text))
+            var semanticModel = compilation.GetSemanticModel(typeDeclaration.SyntaxTree);
+            var declaredSymbol = semanticModel.GetDeclaredSymbol(typeDeclaration);
+            if (declaredSymbol is INamedTypeSymbol namedTypeSymbol)
             {
-                var declaredClassSymbol = semanticModel.GetDeclaredSymbol(declaredClass);
-                if (declaredClassSymbol is null)
-                {
-                    continue;
-                }
-
-                declaredTypes.Add((declaredClass, declaredClassSymbol));
-            }
-
-            foreach (var declaredClass in tree
-                         .GetRoot()
-                         .DescendantNodes()
-                         .OfType<EnumDeclarationSyntax>()
-                         .OrderBy(c => c.Identifier.Text))
-            {
-                var declaredClassSymbol = semanticModel.GetDeclaredSymbol(declaredClass);
-                if (declaredClassSymbol is null)
-                {
-                    continue;
-                }
-
-                declaredTypes.Add((declaredClass, declaredClassSymbol));
+                declaredTypes.Add((typeDeclaration, namedTypeSymbol));
             }
         }
 
-        foreach (var (declarationSyntax, namedTypeSymbol) in declaredTypes
-                     .OrderBy(tuple => tuple.Item1.Identifier.Text))
+        var sb = StartResourceFile();
+
+        foreach (var (declarationSyntax, namedTypeSymbol) in declaredTypes.OrderBy(tuple => tuple.Item1.Identifier.Text))
         {
-            this.AppendResourceStrings(sb, declarationSyntax, namedTypeSymbol);
+            AppendResourceStrings(sb, declarationSyntax, namedTypeSymbol);
         }
 
         sb.AppendLine("</root>");
 
-        if (context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.projectdir", out var projectDir))
-        {
-            var targetPath = Path.Combine(projectDir, "Properties", "ModelResources.resx");
+        var targetPath = Path.Combine(projectDir!, "Properties", "ModelResources.resx");
 #pragma warning disable RS1035
-            File.WriteAllText(targetPath, sb.ToString(), Encoding.UTF8);
+        File.WriteAllText(targetPath, sb.ToString(), Encoding.UTF8);
 #pragma warning restore RS1035
-        }
     }
 
-    private StringBuilder StartResourceFile()
+    private static StringBuilder StartResourceFile()
     {
         var sb = new StringBuilder();
         sb.AppendLine($"""
@@ -109,15 +101,15 @@ public class ResourceGenerator : ISourceGenerator
         return sb;
     }
 
-    private void AppendResourceStrings(StringBuilder sb, BaseTypeDeclarationSyntax annotatedClass, INamedTypeSymbol declaredClassSymbol)
+    private static void AppendResourceStrings(StringBuilder sb, BaseTypeDeclarationSyntax annotatedClass, INamedTypeSymbol declaredClassSymbol)
     {
         switch (annotatedClass)
         {
             case ClassDeclarationSyntax classDecl:
-                this.AppendResourceStrings(sb, classDecl, declaredClassSymbol);
+                AppendResourceStrings(sb, classDecl, declaredClassSymbol);
                 break;
             case EnumDeclarationSyntax enumDecl:
-                this.AppendResourceStrings(sb, enumDecl);
+                AppendResourceStrings(sb, enumDecl);
                 break;
             default:
                 // do nothing
@@ -125,7 +117,7 @@ public class ResourceGenerator : ISourceGenerator
         }
     }
 
-    private void AppendResourceStrings(StringBuilder sb, ClassDeclarationSyntax annotatedClass, INamedTypeSymbol declaredClassSymbol)
+    private static void AppendResourceStrings(StringBuilder sb, ClassDeclarationSyntax annotatedClass, INamedTypeSymbol declaredClassSymbol)
     {
         var className = annotatedClass.Identifier.Text;
 
@@ -141,10 +133,10 @@ public class ResourceGenerator : ISourceGenerator
                         </data>
                       """);
 
-        this.GenerateProperties(sb, declaredClassSymbol, className);
+        GenerateProperties(sb, declaredClassSymbol, className);
     }
 
-    private void AppendResourceStrings(StringBuilder sb, EnumDeclarationSyntax annotatedEnum)
+    private static void AppendResourceStrings(StringBuilder sb, EnumDeclarationSyntax annotatedEnum)
     {
         var enumName = annotatedEnum.Identifier.Text;
         sb.AppendLine($"""
@@ -169,7 +161,7 @@ public class ResourceGenerator : ISourceGenerator
         }
     }
 
-    private void GenerateProperties(StringBuilder sb, INamedTypeSymbol declaredClassSymbol, string className)
+    private static void GenerateProperties(StringBuilder sb, INamedTypeSymbol declaredClassSymbol, string className)
     {
         var properties = declaredClassSymbol
             .GetMembers()

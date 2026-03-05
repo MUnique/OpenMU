@@ -140,7 +140,7 @@ public class DefaultTcpGameServerListener : IGameServerListener
         }
         catch (Exception ex)
         {
-            this._logger.LogError(ex, "Failed to re-register at game server state observer after the ip resolver has been changed. Error: {ex}", ex);
+            this._logger.LogError(ex, "Failed to re-register at game server state observer after the ip resolver has been changed.");
         }
     }
 

@@ -23,12 +23,12 @@ public class ConfigurationUpdate
     /// <summary>
     /// Gets or sets the name of the update.
     /// </summary>
-    public LocalizedString? Name { get; set; }
+    public LocalizedString Name { get; set; }
 
     /// <summary>
     /// Gets or sets the description of the update with further information.
     /// </summary>
-    public LocalizedString? Description { get; set; }
+    public LocalizedString Description { get; set; }
 
     /// <summary>
     /// Gets or sets the release date.

@@ -68,7 +68,7 @@ public class SecretStoreDatabaseConnectionSettingsProvider : IDatabaseConnection
                             this._connectionSettings.Add(contextTypeName, setting);
                         }
 
-                        Console.WriteLine("secrects retrieved :)");
+                        Console.WriteLine("secrets retrieved :)");
 
                         this._isInitialized = true;
                     }

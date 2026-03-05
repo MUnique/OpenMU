@@ -19,20 +19,24 @@
     [Inject]
     private NavigationHistory NavigationHistory { get; set;  } = null!;
 
+    private string? _lastUri;
+
     /// <inheritdoc />
-    protected override void OnAfterRender(bool firstRender)
+    protected override void OnParametersSet()
     {
-      if (firstRender)
-      {
+        base.OnParametersSet();
+        var currentUri = this.NavigationHistory.NavigationManager.Uri;
+        if (this._lastUri == currentUri)
+        {
+            return;
+        }
+
+        this._lastUri = currentUri;
         if (this.IsFirstFromRoot)
         {
-          // Can be improved later, if needed. For example, we could jump back to a previous entry.
-          this.NavigationHistory.Clear();
+            this.NavigationHistory.Clear();
         }
 
         this.NavigationHistory.AddCurrentPageToHistory(this.Caption);
-      }
-
-      base.OnAfterRender(firstRender);
     }
 }

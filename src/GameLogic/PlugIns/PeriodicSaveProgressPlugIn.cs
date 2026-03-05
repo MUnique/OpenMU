@@ -63,7 +63,7 @@ public class PeriodicSaveProgressPlugIn : IPeriodicTaskPlugIn, ISupportCustomCon
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Unexpected error when saving player data periodically: {ex}", ex);
+            logger.LogError(ex, "Unexpected error when saving player data periodically.");
         }
     }
 

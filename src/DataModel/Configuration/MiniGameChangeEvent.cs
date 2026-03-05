@@ -45,13 +45,13 @@ public partial class MiniGameChangeEvent
     /// <summary>
     /// Gets or sets the description about the event.
     /// </summary>
-    public LocalizedString? Description { get; set; }
+    public LocalizedString Description { get; set; }
 
     /// <summary>
     /// Gets or sets the (golden) message which should be shown to the player.
     /// One placeholder can be used to show the triggering player name.
     /// </summary>
-    public LocalizedString? Message { get; set; }
+    public LocalizedString Message { get; set; }
 
     /// <summary>
     /// Gets or sets the targets which need to be killed to reach the required <see cref="NumberOfKills"/>.

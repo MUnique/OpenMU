@@ -82,7 +82,11 @@ public class NpcChatCommandPlugIn : ChatCommandPlugInBase<NpcChatCommandPlugIn.A
 
         if (configuration.MinimumVipLevel > 0 && (player.Attributes?[Stats.IsVip] ?? 0) < configuration.MinimumVipLevel)
         {
-            await player.ShowBlueMessageAsync(configuration.InsufficientVipLevelMessage.GetTranslation(player.Culture)).ConfigureAwait(false);
+            if (configuration.InsufficientVipLevelMessage.GetTranslation(player.Culture) is { Length: > 0 } message)
+            {
+                await player.ShowBlueMessageAsync(message).ConfigureAwait(false);
+            }
+
             return;
         }
 

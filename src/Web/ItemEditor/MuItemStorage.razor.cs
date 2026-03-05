@@ -53,6 +53,12 @@ public partial class MuItemStorage
     public EventCallback<Item?> SelectedItemChanged { get; set; }
 
     /// <summary>
+    /// Gets or sets the callback when an item should be deleted.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnDelete { get; set; }
+
+    /// <summary>
     /// Sets the selected item.
     /// </summary>
     /// <param name="viewModel">The view model.</param>

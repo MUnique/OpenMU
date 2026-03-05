@@ -83,21 +83,24 @@ internal class TypedContext : EntityDataContext, ITypedContext
         var gameConfigNav = gameConfigType?.GetNavigations().FirstOrDefault(nav => nav.IsCollection && nav.TargetEntityType.ClrType == mainType);
 
         var additionalTypes = editTypes
-            .SelectMany(et => DetermineAdditionalTypes(
-                modelTypes.Select(t => t.ClrType),
-                modelTypes.First(mt => mt.ClrType == et.EntityType)))
+            .Select(et => (et, entityType: modelTypes.FirstOrDefault(mt => mt.ClrType == et.EntityType)))
+            .Where(t => t.entityType is not null)
+            .SelectMany(t => DetermineAdditionalTypes(modelTypes.Select(m => m.ClrType), t.entityType!))
             .ToList();
         editTypes.AddRange(additionalTypes);
+
         var finalEditTypes = new HashSet<Type>();
         foreach (var type in editTypes)
         {
-            finalEditTypes.Add(type.EntityType);
-            if (type.EntityType.BaseType is { } baseType && baseType != typeof(object))
+            var existingType = modelBuilder.Model.FindEntityType(type.EntityType);
+            if (existingType is not null)
             {
-                finalEditTypes.Add(baseType);
+                finalEditTypes.Add(existingType.ClrType);
+                if (existingType.ClrType.BaseType is { } baseType && baseType != typeof(object))
+                {
+                    finalEditTypes.Add(baseType);
+                }
             }
-
-            modelBuilder.Entity(type.EntityType);
         }
 
         if (gameConfigNav is not null)
@@ -212,11 +215,17 @@ internal class TypedContext : EntityDataContext, ITypedContext
     /// <param name="e">The <see cref="SavingChangesEventArgs"/> instance containing the event data.</param>
     private void OnSavingChanges(object? sender, SavingChangesEventArgs e)
     {
+        var gameConfigNavigation = this.Model.FindEntityType(typeof(EntityFramework.Model.GameConfiguration))
+            ?.GetNavigations()
+            .FirstOrDefault(nav => nav.Name == this.GameConfigNavigationName);
+
         var readOnlyTypes = this.ReadOnlyTypes;
-        var gameConfigNavigation = this.Model.FindEntityType(typeof(EntityFramework.Model.GameConfiguration))?.GetNavigations().FirstOrDefault(nav => nav.Name == this.GameConfigNavigationName);
-        this.ChangeTracker.DetectChanges();
+
+        var fkProperty = gameConfigNavigation?.ForeignKey?.Properties.FirstOrDefault();
+
         foreach (var entry in this.ChangeTracker.Entries().ToList())
         {
+            // Prevent accidental saves of read-only reference types.
             if ((entry.State == EntityState.Added || entry.State == EntityState.Modified)
                 && readOnlyTypes.Contains(entry.Entity.GetType()))
             {
@@ -224,12 +233,18 @@ internal class TypedContext : EntityDataContext, ITypedContext
             }
 
             if (entry.State == EntityState.Added
+                && fkProperty is not null
                 && this.CurrentGameConfiguration is { } currentGameConfiguration
-                && gameConfigNavigation is { }
                 && entry.Entity.GetType().IsAssignableTo(this.EditType))
             {
-                this.Attach(currentGameConfiguration);
-                gameConfigNavigation.GetCollectionAccessor()?.Add(currentGameConfiguration, entry.Entity, false);
+                // Set the FK value directly so EF writes the correct GameConfigurationId
+                // without needing to Attach currentGameConfiguration (which would traverse
+                // its entire graph and conflict with already-tracked read-only instances).
+                var fkPropertyEntry = entry.Properties.FirstOrDefault(p => p.Metadata == fkProperty);
+                if (fkPropertyEntry is not null)
+                {
+                    fkPropertyEntry.CurrentValue = currentGameConfiguration.GetId();
+                }
             }
         }
     }

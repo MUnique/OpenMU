@@ -40,7 +40,7 @@ postgres database connection strings.
 |------|---------------------|
 | DB_HOST | The hostname of the database. If the local configuration file is still configured to use 'localhost', the value of this variable replaces it |
 | DB_ADMIN_USER | The user name of the postgres admin account. If the local configuration file is still configured to use 'postgres' for the user name of the admin (first entry in the ConnectionSettings.xml), the value of this variable replaces it. |
-| DB_ADMIN_PW | The user name of the postgres admin account. If the local configuration file is still configured to use 'admin' for the user password of the admin (first entry in the ConnectionSettings.xml), the value of this variable replaces it. |
+| DB_ADMIN_PW | The password of the postgres admin account. If the local configuration file is still configured to use 'admin' for the user password of the admin (first entry in the ConnectionSettings.xml), the value of this variable replaces it. |
 
 ## Manually
 
@@ -58,7 +58,7 @@ Requirements:
   * Visual Studio 2026 installed, with workloads for ASP.NET Web development
     and .NET Desktop development. Please keep it up-to-date to prevent any issues.
   
-  * Visual Stuido Extension "Web Compiler 2022+", if you plan to edit SCSS files
+  * Visual Studio Extension "Web Compiler 2022+", if you plan to edit SCSS files
     for the admin panel.
     * https://marketplace.visualstudio.com/items?itemName=Failwyn.WebCompiler64
 
@@ -77,7 +77,7 @@ If you have that, you'll need to do:
 
 * Right click the solution and 'Restore NuGet Packages'
 
-* Edit OpenMU\Persistence\EntityFramework\ConnectionSettings.xml, so that the
+* Edit src\Persistence\EntityFramework\ConnectionSettings.xml, so that the
   connection strings are correct - however only the user/password of the first
   and second connection string need to be correct. The server will try to create
   the other roles specified by the settings.

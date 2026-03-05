@@ -28,6 +28,11 @@ public class ShowMessagePlugIn : IShowMessagePlugIn
     /// <inheritdoc/>
     public async ValueTask ShowMessageAsync(string message, OpenMU.Interfaces.MessageType messageType)
     {
+        if (string.IsNullOrEmpty(message))
+        {
+            return;
+        }
+
         const int maxMessageLength = 241;
 
         if (Encoding.UTF8.GetByteCount(message) > maxMessageLength)

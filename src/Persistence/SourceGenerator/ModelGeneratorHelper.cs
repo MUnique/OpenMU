@@ -1,22 +1,21 @@
-﻿// <copyright file="ModelGeneratorBase.cs" company="MUnique">
+// <copyright file="ModelGeneratorHelper.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
 namespace MUnique.OpenMU.Persistence.SourceGenerator;
 
 using System.Reflection;
-using Microsoft.CodeAnalysis;
 using MUnique.OpenMU.DataModel;
 
 /// <summary>
-/// Base class for the model class generator.
+/// Helper class containing shared functionality for model generators.
 /// </summary>
-public abstract class ModelGeneratorBase : ISourceGenerator
+internal static class ModelGeneratorHelper
 {
     /// <summary>
-    /// A header template for a generated file.
+    /// Gets a header template for a generated file.
     /// </summary>
-    protected const string FileHeaderTemplate = @"// <copyright file=""{0}.Generated.cs"" company=""MUnique"">
+    public static string FileHeaderTemplate => @"// <copyright file=""{0}.Generated.cs"" company=""MUnique"">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -29,54 +28,23 @@ public abstract class ModelGeneratorBase : ISourceGenerator
 // ReSharper disable All";
 
     /// <summary>
-    /// The namespace of the configuration classes.
+    /// Gets the namespace of the configuration classes.
     /// </summary>
-    private const string ConfigurationNamespace = "MUnique.OpenMU.DataModel.Configuration";
+    public static string ConfigurationNamespace => "MUnique.OpenMU.DataModel.Configuration";
 
-    private IList<Type> customTypes;
+    private static IList<Type> _customTypes;
 
     /// <summary>
     /// Gets the types which need to be customized for persistence.
     /// </summary>
-    protected IEnumerable<Type> CustomTypes => this.customTypes ??= this.GetCustomTypes();
-
-    /// <inheritdoc />
-    public void Initialize(GeneratorInitializationContext context)
-    {
-        // Override in deriving classes, if required.
-    }
-
-    /// <inheritdoc />
-    public void Execute(GeneratorExecutionContext context)
-    {
-        try
-        {
-            this.InnerExecute(context);
-        }
-        catch (Exception e)
-        {
-            context.ReportDiagnostic(
-                Diagnostic.Create(
-                    new DiagnosticDescriptor(
-                        "foo",
-                        $"{e.GetType()}: {e}",
-                        "error",
-                        "error",
-                        DiagnosticSeverity.Error,
-                        true),
-                    Location.None,
-                    DiagnosticSeverity.Error));
-            Console.WriteLine($"{e.GetType()}: {e}");
-            throw;
-        }
-    }
+    public static IEnumerable<Type> CustomTypes => _customTypes ??= GetCustomTypes();
 
     /// <summary>
     /// Determines whether the given type is a is configuration type.
     /// </summary>
     /// <param name="type">The type.</param>
     /// <returns><c>true</c> if the given type is a configuration type; otherwise, <c>false</c>.</returns>
-    protected static bool IsConfigurationType(Type type)
+    public static bool IsConfigurationType(Type type)
     {
         if (type.Namespace != null
             && type.Namespace.StartsWith(ConfigurationNamespace, StringComparison.InvariantCulture))
@@ -108,7 +76,7 @@ public abstract class ModelGeneratorBase : ISourceGenerator
     /// </summary>
     /// <param name="parameters">The parameters.</param>
     /// <returns>The string of the parameter definitions.</returns>
-    protected static string GetParameterDefinitions(ICollection<ParameterInfo> parameters)
+    public static string GetParameterDefinitions(ICollection<ParameterInfo> parameters)
     {
         var result = new StringBuilder();
         foreach (var p in parameters)
@@ -130,7 +98,7 @@ public abstract class ModelGeneratorBase : ISourceGenerator
     /// </summary>
     /// <param name="parameters">The parameter infos.</param>
     /// <returns>The parameters used to call a method.</returns>
-    protected static string GetParameters(ICollection<ParameterInfo> parameters)
+    public static string GetParameters(ICollection<ParameterInfo> parameters)
     {
         var result = new StringBuilder();
         foreach (var p in parameters)
@@ -152,7 +120,7 @@ public abstract class ModelGeneratorBase : ISourceGenerator
     /// <param name="type">The type.</param>
     /// <param name="className">Name of the class.</param>
     /// <returns>The implementation for <see cref="ICloneable{T}"/>.</returns>
-    protected string OverrideClonable(Type type, string className)
+    public static string OverrideClonable(Type type, string className)
     {
         return $$"""
                      /// <inheritdoc />
@@ -174,16 +142,10 @@ public abstract class ModelGeneratorBase : ISourceGenerator
     }
 
     /// <summary>
-    /// Implementation for the generator logic.
-    /// </summary>
-    /// <param name="context">The generator execution context.</param>
-    protected abstract void InnerExecute(in GeneratorExecutionContext context);
-
-    /// <summary>
     /// Determines the types which require customization.
     /// </summary>
     /// <returns>The types which require customization.</returns>
-    private List<Type> GetCustomTypes()
+    private static List<Type> GetCustomTypes()
     {
         var result = new List<Type>();
 

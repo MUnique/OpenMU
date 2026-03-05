@@ -217,7 +217,7 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
             return;
         }
 
-        var message = (configuration.Message?.ToString() ?? PlugInResources.BaseInvasionPlugIn_DefaultStartMessage).Replace("{mapName}", mapName.GetTranslation(player.Culture), StringComparison.InvariantCulture);
+        var message = (configuration.Message.GetTranslation(player.Culture) ?? PlugInResources.BaseInvasionPlugIn_DefaultStartMessage).Replace("{mapName}", mapName.GetTranslation(player.Culture), StringComparison.InvariantCulture);
 
         if (this.IsPlayerOnMap(player))
         {
