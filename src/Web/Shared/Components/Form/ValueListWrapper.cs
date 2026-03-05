@@ -77,10 +77,10 @@ public class ValueListWrapper<TValue> : List<ValueWrapper<TValue>>, IList<TValue
     /// <inheritdoc cref="IList{T}.RemoveAt" />
     public new void RemoveAt(int index)
     {
-        this._innerList.RemoveAt(index);
         this[index].PropertyChanged -= this.OnValueChanged;
         base.RemoveAt(index);
-        for (int i = index; i < this._innerList.Count; i++)
+        this._innerList.RemoveAt(index);
+        for (int i = index; i < this.Count; i++)
         {
             this[i].Index = i;
         }
