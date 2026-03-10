@@ -70,10 +70,12 @@
                 <button type="button" class="btn-info mb-1" @onclick="@this.OnCreateItemClickAsync" title="Create"><span class="oi oi-plus"></span></button>
                 @if (this._selectedItem is null)
                 {
+                    <button type="button" class="btn-secondary mb-1 disabled" title="Duplicate"><span class="oi oi-layers"></span></button>
                     <button type="button" class="btn-warning mb-1 disabled" title="Delete"><span class="oi oi-trash"></span></button>
                 }
                 else
                 {
+                    <button type="button" class="btn-secondary mb-1" @onclick="@this.OnDuplicateItemClickAsync" title="Duplicate"><span class="oi oi-layers"></span></button>
                     <button type="button" class="btn-warning mb-1" @onclick="this.OnItemDeleteClickAsync" title="Delete"><span class="oi oi-trash"></span></button>
                 }
             </div>
@@ -191,5 +193,26 @@
             itemStorage.Items.Add(item);
             this._selectedItem = item;
         }
+    }
+
+    private void OnDuplicateItemClickAsync()
+    {
+        if (this._selectedItem is null || this.Value is not { } itemStorage)
+        {
+            return;
+        }
+
+        var duplicate = this.PersistenceContext.CreateNew<Item>();
+        duplicate.AssignValues(this._selectedItem);
+
+        // Place the duplicate in the next available slot after the source item
+        var occupiedSlots = itemStorage.Items.Select(i => i.ItemSlot).ToHashSet();
+        var nextSlot = Enumerable.Range(this._selectedItem.ItemSlot + 1, byte.MaxValue - this._selectedItem.ItemSlot)
+            .Select(i => (byte)i)
+            .FirstOrDefault(s => !occupiedSlots.Contains(s));
+        duplicate.ItemSlot = nextSlot;
+
+        itemStorage.Items.Add(duplicate);
+        this._selectedItem = duplicate;
     }
 }
