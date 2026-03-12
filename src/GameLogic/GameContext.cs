@@ -136,6 +136,9 @@ public class GameContext : AsyncDisposable, IGameContext
     /// <inheritdoc />
     public FeaturePlugInContainer FeaturePlugIns { get; }
 
+    /// <inheritdoc />
+    public OfflineLeveling.OfflineLevelingManager OfflineLevelingManager { get; } = new();
+
     /// <inheritdoc/>
     public IItemPowerUpFactory ItemPowerUpFactory { get; }
 
