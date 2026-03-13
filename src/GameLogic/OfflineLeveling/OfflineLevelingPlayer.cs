@@ -9,9 +9,7 @@ using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// A ghost player that stays in the world after the real client disconnects,
-/// continuing to level up using the character's saved MU Helper configuration.
-/// All view plugin calls are silently discarded — no network traffic is produced.
+/// A ghost player that continues leveling after the real client disconnects.
 /// </summary>
 public sealed class OfflineLevelingPlayer : Player
 {
@@ -27,51 +25,41 @@ public sealed class OfflineLevelingPlayer : Player
     }
 
     /// <summary>
-    /// Gets the login name of the account this offline player belongs to,
-    /// used to match it when the real player logs back in.
+    /// Gets the login name of the account.
     /// </summary>
     public string? AccountLoginName => this.Account?.LoginName;
 
     /// <summary>
-    /// Gets the character name used to match on re-login.
+    /// Gets the character name.
     /// </summary>
     public string? CharacterName => this.SelectedCharacter?.Name;
 
     /// <summary>
-    /// Initializes the offline leveling ghost from pre-captured account and character
-    /// references. Must be called AFTER the real player has fully disconnected so that
-    /// the name slot in <see cref="GameContext.PlayersByCharacterName"/> is free.
+    /// Initializes the ghost player from captured references.
     /// </summary>
-    /// <param name="account">The account the character belongs to.</param>
-    /// <param name="character">The character to continue leveling.</param>
-    /// <returns><c>true</c> when the ghost was successfully started.</returns>
+    /// <param name="account">The account.</param>
+    /// <param name="character">The character.</param>
+    /// <returns><c>true</c> if successfully started.</returns>
     public async ValueTask<bool> InitializeAsync(Account account, Character character)
     {
         try
         {
             this.Account = account;
-
-            // Attach the account (and all reachable entities including the character)
-            // to the ghost's own persistence context so that SaveChangesAsync persists
-            // XP, level-ups, and any other in-memory changes accumulated during offline leveling.
             this.PersistenceContext.Attach(account);
 
-            // Must follow the full valid transition path: Initial → LoginScreen → Authenticated → CharacterSelection.
-            // Skipping LoginScreen leaves the state at Initial, so TickAsync's EnteredWorld guard
-            // blocks every tick and the ghost never attacks.
+            // Advance state to allow the intelligence to perform actions.
             await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.LoginScreen).ConfigureAwait(false);
             await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.Authenticated).ConfigureAwait(false);
             await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.CharacterSelection).ConfigureAwait(false);
 
-            // AddPlayerAsync must come BEFORE SetSelectedCharacterAsync because it subscribes
-            // the PlayerEnteredWorld event, which SetSelectedCharacterAsync fires.
-            // Without this order, the ghost never gets added to PlayersByCharacterName.
+            // Add to context and set character.
             await this.GameContext.AddPlayerAsync(this).ConfigureAwait(false);
-
-            // SetSelectedCharacterAsync → OnPlayerEnteredWorldAsync → ClientReadyAfterMapChangeAsync
-            // which handles: setting CurrentMap, advancing state to EnteredWorld, and map.AddAsync.
-            // We must NOT call those steps ourselves — doing so would add the ghost to the map twice.
             await this.SetSelectedCharacterAsync(character).ConfigureAwait(false);
+
+            if (this.SelectedCharacter is { } selectedCharacter)
+            {
+                this.PersistenceContext.Attach(selectedCharacter);
+            }
 
             this._intelligence = new OfflineLevelingIntelligence(this);
             this._intelligence.Start();
@@ -92,8 +80,7 @@ public sealed class OfflineLevelingPlayer : Player
     }
 
     /// <summary>
-    /// Stops the AI loop and removes the ghost from the world.
-    /// Called when the real player logs back in.
+    /// Stops the ghost player and removes it from the world.
     /// </summary>
     public async ValueTask StopAsync()
     {
