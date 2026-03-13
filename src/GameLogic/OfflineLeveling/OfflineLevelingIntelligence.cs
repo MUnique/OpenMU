@@ -8,6 +8,8 @@ using System.Threading;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.Pathfinding;
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.MuHelper;
 using MUnique.OpenMU.GameLogic.NPC;
@@ -33,7 +35,7 @@ using MUnique.OpenMU.Interfaces;
 /// </summary>
 public sealed class OfflineLevelingIntelligence : IDisposable
 {
-    private const byte FallbackViewRange = 10;
+    private const byte FallbackViewRange = 5;
     private const byte FallbackAttackRange = 2;
     private const byte JewelItemGroup = 14;
 
@@ -48,15 +50,23 @@ public sealed class OfflineLevelingIntelligence : IDisposable
     private Timer? _aiTimer;
     private bool _disposed;
 
+    // Tick State
     private int _tickCounter;
     private int _secondsElapsed;
 
+    // Combat State
     private IAttackable? _currentTarget;
     private int _nearbyMonsterCount;
-    private int _comboStep;
+    private int _currentComboStep;
+    private int _skillCooldownTicks;
 
+    // Buff State
     private int _buffSkillIndex;
     private bool _buffTimerTriggered;
+
+    // Movement State
+    private Point _originalPosition;
+    private int _secondsAwayFromOrigin;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="OfflineLevelingIntelligence"/> class.
@@ -66,6 +76,7 @@ public sealed class OfflineLevelingIntelligence : IDisposable
     {
         this._player = player;
         this._config = MuHelperPlayerConfiguration.TryDeserialize(player.SelectedCharacter?.MuHelperConfiguration);
+        this._originalPosition = player.Position;
     }
 
     /// <summary>Starts the 500 ms AI timer.</summary>
@@ -125,8 +136,14 @@ public sealed class OfflineLevelingIntelligence : IDisposable
             this._secondsElapsed++;
         }
 
+        if (this._skillCooldownTicks > 0)
+        {
+            this._skillCooldownTicks--;
+            return;
+        }
+
         // CMuHelper::Work() order: Buff → RecoverHealth → ObtainItem → Regroup → Attack
-        if (!await this.BuffSelfAsync().ConfigureAwait(false))
+        if (!await this.PerformBuffsAsync().ConfigureAwait(false))
         {
             return;
         }
@@ -138,11 +155,24 @@ public sealed class OfflineLevelingIntelligence : IDisposable
 
         await this.PickupItemsAsync().ConfigureAwait(false);
 
-        await this.AttackAsync().ConfigureAwait(false);
+        if (this._player.IsWalking)
+        {
+            return;
+        }
+
+        if (!await this.RegroupAsync().ConfigureAwait(false))
+        {
+            return;
+        }
+
+        await this.AttackTargetsAsync().ConfigureAwait(false);
     }
 
-    // ── Step 1 – Buff ──────────────────────────────────────────────────────────
-    private async ValueTask<bool> BuffSelfAsync()
+    /// <summary>
+    /// Checks and applies self-buffs if configured and needed.
+    /// </summary>
+    /// <returns>True, if the loop can continue to the next step; False, if a buff was cast and the tick should end.</returns>
+    private async ValueTask<bool> PerformBuffsAsync()
     {
         if (this._config is null)
         {
@@ -197,7 +227,10 @@ public sealed class OfflineLevelingIntelligence : IDisposable
         return true;
     }
 
-    // ── Step 2 – Recover health ────────────────────────────────────────────────
+    /// <summary>
+    /// Manages HP recovery via Regeneration or Drain Life skills.
+    /// </summary>
+    /// <returns>True, if the loop can continue; False, if a recovery skill was used.</returns>
     private async ValueTask<bool> RecoverHealthAsync()
     {
         if (this._config is null || this._player.Attributes is null)
@@ -232,7 +265,7 @@ public sealed class OfflineLevelingIntelligence : IDisposable
                 this.RefreshTarget();
                 if (this._currentTarget is not null)
                 {
-                    await this.AttackTargetAsync(this._currentTarget, drainSkill).ConfigureAwait(false);
+                    await this.PerformAttackAsync(this._currentTarget, drainSkill, false).ConfigureAwait(false);
                     return false;
                 }
             }
@@ -241,7 +274,9 @@ public sealed class OfflineLevelingIntelligence : IDisposable
         return true;
     }
 
-    // ── Step 3 – Item pickup ───────────────────────────────────────────────────
+    /// <summary>
+    /// Scans for and picks up items within configurable range.
+    /// </summary>
     private async ValueTask PickupItemsAsync()
     {
         if (this._config is null || this._player.CurrentMap is not { } map)
@@ -260,7 +295,7 @@ public sealed class OfflineLevelingIntelligence : IDisposable
             return;
         }
 
-        byte range = (byte)Math.Max(this._config.ObtainRange * 2, 3);
+        byte range = (byte)Math.Max(this._config.ObtainRange, 3);
         var drops = map.GetDropsInRange(this._player.Position, range);
 
         foreach (var drop in drops)
@@ -320,21 +355,59 @@ public sealed class OfflineLevelingIntelligence : IDisposable
         return false;
     }
 
-    // ── Step 4 – Attack ────────────────────────────────────────────────────────
-    private async ValueTask AttackAsync()
+    /// <summary>
+    /// Returns the character to the original position if configured and distance/time thresholds are met.
+    /// </summary>
+    /// <returns>True, if the loop can continue; False, if a regrouping walk was initiated.</returns>
+    private async ValueTask<bool> RegroupAsync()
+    {
+        if (this._config is null || !this._config.ReturnToOriginalPosition)
+        {
+            return true;
+        }
+
+        var distance = this._player.GetDistanceTo(this._originalPosition);
+        if (distance > 1)
+        {
+            if (this._tickCounter == 0)
+            {
+                this._secondsAwayFromOrigin++;
+            }
+        }
+        else
+        {
+            this._secondsAwayFromOrigin = 0;
+            return true;
+        }
+
+        if (this._secondsAwayFromOrigin >= this._config.MaxSecondsAway || distance > this.GetHuntingRange())
+        {
+            await this.WalkToAsync(this._originalPosition).ConfigureAwait(false);
+            this._secondsAwayFromOrigin = 0;
+            return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Main combat logic: selects a target and performs single or combo attacks.
+    /// </summary>
+    private async ValueTask AttackTargetsAsync()
     {
         this.RefreshTarget();
 
         if (this._currentTarget is null)
         {
-            this._comboStep = 0;
+            this._currentComboStep = 0;
             return;
         }
 
         byte range = this.GetEffectiveAttackRange();
 
-        if (!this._currentTarget.IsInRange(this._player.Position, range))
+        if (!this.IsTargetInAttackRange(this._currentTarget, range))
         {
+            await this.MoveCloserToTargetAsync(this._currentTarget, range).ConfigureAwait(false);
             return;
         }
 
@@ -345,65 +418,102 @@ public sealed class OfflineLevelingIntelligence : IDisposable
         else
         {
             var skill = this.SelectAttackSkill();
-            await this.AttackTargetAsync(this._currentTarget, skill).ConfigureAwait(false);
+            await this.PerformAttackAsync(this._currentTarget, skill, false).ConfigureAwait(false);
+        }
+    }
+
+    private bool IsTargetInAttackRange(IAttackable target, byte range)
+    {
+        return target.IsInRange(this._player.Position, range);
+    }
+
+    private async ValueTask MoveCloserToTargetAsync(IAttackable target, byte range)
+    {
+        // Move closer to the target if it's within hunting range relative to origin.
+        if (target.IsInRange(this._originalPosition, this.GetHuntingRange()))
+        {
+            var walkTarget = this._player.CurrentMap!.Terrain.GetRandomCoordinate(target.Position, range);
+            await this.WalkToAsync(walkTarget).ConfigureAwait(false);
         }
     }
 
     /// <summary>
-    /// Attacks the target and broadcasts the skill/attack animation to nearby observers.
-    /// Without this broadcast, other players cannot see the ghost's animations.
+    /// Executes an attack against a target, handling skill types and observer animations.
     /// </summary>
-    private async ValueTask AttackTargetAsync(IAttackable target, SkillEntry? skillEntry)
+    private async ValueTask PerformAttackAsync(IAttackable target, SkillEntry? skillEntry, bool isCombo)
     {
         this._player.Rotation = this._player.GetDirectionTo(target);
 
-        if (skillEntry?.Skill is { } skill)
+        if (skillEntry?.Skill is not { } skill)
         {
-            if (skill.SkillType is SkillType.AreaSkillAutomaticHits or SkillType.AreaSkillExplicitTarget
-                or SkillType.AreaSkillExplicitHits)
-            {
-                // Broadcast the area skill animation to all nearby observers.
-                var rotationByte = (byte)(this._player.Position.GetAngleDegreeTo(target.Position) / 360.0 * 255.0);
-                await this._player.ForEachWorldObserverAsync<IShowAreaSkillAnimationPlugIn>(
-                    p => p.ShowAreaSkillAnimationAsync(this._player, skill, target.Position, rotationByte),
-                    includeThis: true).ConfigureAwait(false);
+            await this.PerformPhysicalAttackAsync(target).ConfigureAwait(false);
+            return;
+        }
 
-                // Hit only killable Monster targets in range — never players, guards, or NPCs.
-                var monstersInRange = this._player.CurrentMap?
-                                          .GetAttackablesInRange(target.Position, skill.Range)
-                                          .OfType<Monster>()
-                                          .Where(m => m.IsAlive && !m.IsAtSafezone()
-                                                                && m.Definition.ObjectKind == NpcObjectKind.Monster)
-                                      ?? [];
-                foreach (var monster in monstersInRange)
-                {
-                    await monster.AttackByAsync(this._player, skillEntry, false).ConfigureAwait(false);
-                }
-            }
-            else
-            {
-                var strategy =
-                    this._player.GameContext.PlugInManager.GetStrategy<short, ITargetedSkillPlugin>((short)skill.Number)
-                    ?? new TargetedSkillDefaultPlugin();
-                await strategy.PerformSkillAsync(this._player, target, (ushort)skill.Number).ConfigureAwait(false);
-            }
+        if (skill.SkillType is SkillType.AreaSkillAutomaticHits or SkillType.AreaSkillExplicitTarget or SkillType.AreaSkillExplicitHits)
+        {
+            await this.PerformAreaSkillAttackAsync(target, skillEntry, isCombo).ConfigureAwait(false);
         }
         else
         {
-            // Generic fallback attack if no skill is assigned or evaluated.
-            await target.AttackByAsync(this._player, null, false).ConfigureAwait(false);
+            await this.PerformTargetedSkillAttackAsync(target, skill).ConfigureAwait(false);
+        }
+    }
 
-            await this._player.ForEachWorldObserverAsync<IShowAnimationPlugIn>(
-                p => p.ShowAnimationAsync(this._player, 120, target, this._player.Rotation),
+    private async ValueTask PerformPhysicalAttackAsync(IAttackable target)
+    {
+        // Generic fallback attack if no skill is assigned or evaluated.
+        await target.AttackByAsync(this._player, null, false).ConfigureAwait(false);
+
+        await this._player.ForEachWorldObserverAsync<IShowAnimationPlugIn>(
+            p => p.ShowAnimationAsync(this._player, 120, target, this._player.Rotation),
+            includeThis: true).ConfigureAwait(false);
+    }
+
+    private async ValueTask PerformAreaSkillAttackAsync(IAttackable target, SkillEntry skillEntry, bool isCombo)
+    {
+        var skill = skillEntry.Skill!;
+
+        if (isCombo)
+        {
+            // Broadcast the combo finisher animation (the "boom") to all observers.
+            await this._player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(
+                p => p.ShowComboAnimationAsync(this._player, target),
                 includeThis: true).ConfigureAwait(false);
         }
+
+        // Broadcast the area skill animation to all nearby observers.
+        var rotationByte = (byte)(this._player.Position.GetAngleDegreeTo(target.Position) / 360.0 * 255.0);
+        await this._player.ForEachWorldObserverAsync<IShowAreaSkillAnimationPlugIn>(
+            p => p.ShowAreaSkillAnimationAsync(this._player, skill, target.Position, rotationByte),
+            includeThis: true).ConfigureAwait(false);
+
+        // Hit only killable Monster targets in range, never players, guards, or NPCs.
+        var monstersInRange = this._player.CurrentMap?
+                                  .GetAttackablesInRange(target.Position, skill.Range)
+                                  .OfType<Monster>()
+                                  .Where(m => m.IsAlive && !m.IsAtSafezone()
+                                                        && m.Definition.ObjectKind == NpcObjectKind.Monster)
+                              ?? [];
+        foreach (var monster in monstersInRange)
+        {
+            await monster.AttackByAsync(this._player, skillEntry, isCombo).ConfigureAwait(false);
+        }
+    }
+
+    private async ValueTask PerformTargetedSkillAttackAsync(IAttackable target, Skill skill)
+    {
+        var strategy =
+            this._player.GameContext.PlugInManager.GetStrategy<short, ITargetedSkillPlugin>((short)skill.Number)
+            ?? new TargetedSkillDefaultPlugin();
+        await strategy.PerformSkillAsync(this._player, target, (ushort)skill.Number).ConfigureAwait(false);
     }
 
     private void RefreshTarget()
     {
         if (this._currentTarget is { } t
             && (!t.IsAlive || t.IsAtSafezone() || t.IsTeleporting
-                || !t.IsInRange(this._player.Position, (byte)(this.GetHuntingRange() + 4))))
+                || !t.IsInRange(this._originalPosition, this.GetHuntingRange())))
         {
             this._currentTarget = null;
         }
@@ -424,7 +534,7 @@ public sealed class OfflineLevelingIntelligence : IDisposable
         }
 
         byte range = this.GetHuntingRange();
-        return map.GetAttackablesInRange(this._player.Position, range)
+        return map.GetAttackablesInRange(this._originalPosition, range)
             .OfType<Monster>()
             .Where(m => m.IsAlive && !m.IsAtSafezone()
                                   && m.Definition.ObjectKind == NpcObjectKind.Monster)
@@ -438,7 +548,7 @@ public sealed class OfflineLevelingIntelligence : IDisposable
             return 0;
         }
 
-        return map.GetAttackablesInRange(this._player.Position, this.GetHuntingRange())
+        return map.GetAttackablesInRange(this._originalPosition, this.GetHuntingRange())
             .OfType<Monster>()
             .Count(m => m.IsAlive && !m.IsAtSafezone()
                                   && m.Definition.ObjectKind == NpcObjectKind.Monster);
@@ -479,6 +589,9 @@ public sealed class OfflineLevelingIntelligence : IDisposable
         return this.GetAnyOffensiveSkill();
     }
 
+    /// <summary>
+    /// Evaluates if a skill should be used based on its configured conditions (Monsters count).
+    /// </summary>
     private SkillEntry? EvaluateConditionalSkill(
         int skillId,
         bool useTimer, int timerInterval,
@@ -519,18 +632,101 @@ public sealed class OfflineLevelingIntelligence : IDisposable
 
     private async ValueTask ExecuteComboAttackAsync()
     {
-        if (this._config is null || this._currentTarget is null)
+        if (this._currentTarget is null)
         {
+            this._currentComboStep = 0;
             return;
         }
 
-        int[] ids = [this._config.BasicSkillId, this._config.ActivationSkill1Id, this._config.ActivationSkill2Id];
-        SkillEntry? skill = ids.Any(id => id == 0)
-            ? null
-            : this._player.SkillList?.GetSkill((ushort)ids[this._comboStep]);
+        var ids = this.GetConfiguredComboSkillIds();
+        if (ids.Count == 0)
+        {
+            await this.PerformAttackAsync(this._currentTarget, this.GetAnyOffensiveSkill(), false).ConfigureAwait(false);
+            return;
+        }
 
-        await this.AttackTargetAsync(this._currentTarget, skill).ConfigureAwait(false);
-        this._comboStep = (this._comboStep + 1) % 3;
+        var skillId = (ushort)ids[this._currentComboStep % ids.Count];
+        var skillEntry = this._player.SkillList?.GetSkill(skillId);
+
+        // If the current combo skill is out of range, we reset the rotation to Basic skill.
+        if (skillEntry?.Skill is { } currentSkill && !this._currentTarget.IsInRange(this._player.Position, (byte)currentSkill.Range + 1))
+        {
+            this._currentComboStep = 0;
+            return;
+        }
+
+        bool isAreaSkill = skillEntry?.Skill?.SkillType is SkillType.AreaSkillAutomaticHits or SkillType.AreaSkillExplicitTarget or SkillType.AreaSkillExplicitHits;
+        var comboState = this._player.ComboState;
+        var stateBefore = comboState?.CurrentState;
+
+        if (isAreaSkill)
+        {
+            bool isActuallyCombo = false;
+            if (skillEntry?.Skill is { } skill && comboState is not null)
+            {
+                isActuallyCombo = await comboState.RegisterSkillAsync(skill).ConfigureAwait(false);
+            }
+
+            await this.PerformAttackAsync(this._currentTarget, skillEntry, isActuallyCombo).ConfigureAwait(false);
+
+            if (isActuallyCombo)
+            {
+                // Combo finisher cooldown (3 ticks = 1.5s) to allow animation to finish.
+                this._skillCooldownTicks = 3;
+                this._currentComboStep = 0;
+            }
+            else
+            {
+                // Mini-delay (1 tick = 500ms) between skills to help client processing.
+                this._skillCooldownTicks = 1;
+                this._currentComboStep++;
+            }
+        }
+        else
+        {
+            // Targeted skill handles its own registration in the plugin.
+            await this.PerformAttackAsync(this._currentTarget, skillEntry, false).ConfigureAwait(false);
+
+            var stateAfter = comboState?.CurrentState;
+
+            // Detection: If it wasn't initial before and is initial now, it either finished or reset.
+            if (stateBefore != comboState?.InitialState && stateAfter == comboState?.InitialState)
+            {
+                // Combo finished or reset.
+                this._skillCooldownTicks = 3;
+                this._currentComboStep = 0;
+            }
+            else
+            {
+                // Mini-delay (1 tick = 500ms) between skills to help client processing.
+                this._skillCooldownTicks = 1;
+                this._currentComboStep++;
+            }
+        }
+    }
+
+    private List<int> GetConfiguredComboSkillIds()
+    {
+        var ids = new List<int>();
+        if (this._config is not null)
+        {
+            if (this._config.BasicSkillId > 0)
+            {
+                ids.Add(this._config.BasicSkillId);
+            }
+
+            if (this._config.ActivationSkill1Id > 0)
+            {
+                ids.Add(this._config.ActivationSkill1Id);
+            }
+
+            if (this._config.ActivationSkill2Id > 0)
+            {
+                ids.Add(this._config.ActivationSkill2Id);
+            }
+        }
+
+        return ids;
     }
 
     private byte GetHuntingRange()
@@ -540,17 +736,31 @@ public sealed class OfflineLevelingIntelligence : IDisposable
             return FallbackViewRange;
         }
 
-        return (byte)Math.Min(this._config.HuntingRange * 2, FallbackViewRange);
+        return (byte)Math.Min(this._config.HuntingRange, FallbackViewRange);
     }
 
     private byte GetEffectiveAttackRange()
     {
-        if (this._config?.BasicSkillId > 0)
+        if (this._config is null)
         {
-            var skill = this._player.SkillList?.GetSkill((ushort)this._config.BasicSkillId);
-            if (skill?.Skill?.Range is { } r && r > 0)
+            return FallbackAttackRange;
+        }
+
+        var skillIds = this._config.UseCombo
+            ? this.GetConfiguredComboSkillIds()
+            : (this._config.BasicSkillId > 0 ? [(int)this._config.BasicSkillId] : new List<int>());
+
+        if (skillIds.Count > 0)
+        {
+            var ranges = skillIds
+                .Select(id => this._player.SkillList?.GetSkill((ushort)id)?.Skill?.Range ?? 0)
+                .Where(r => r > 0)
+                .ToList();
+
+            if (ranges.Count > 0)
             {
-                return (byte)r;
+                // In combo mode, we use the minimum range to ensure all skills can hit.
+                return (byte)ranges.Min();
             }
         }
 
@@ -578,4 +788,40 @@ public sealed class OfflineLevelingIntelligence : IDisposable
         => this._player.SkillList?.Skills.FirstOrDefault(s =>
             s.Skill is not null
             && s.Skill.Name.ValueInNeutralLanguage.Contains("Drain Life", StringComparison.OrdinalIgnoreCase));
+
+    private async ValueTask<bool> WalkToAsync(Point target)
+    {
+        if (this._player.IsWalking || this._player.CurrentMap is not { } map)
+        {
+            return false;
+        }
+
+        var pathFinder = await this._player.GameContext.PathFinderPool.GetAsync().ConfigureAwait(false);
+        try
+        {
+            pathFinder.ResetPathFinder();
+            var path = pathFinder.FindPath(this._player.Position, target, map.Terrain.AIgrid, false);
+            if (path is null || path.Count == 0)
+            {
+                return false;
+            }
+
+            // Convert path result to walking steps. Walker handles max 16 steps.
+            var stepsCount = Math.Min(path.Count, 16);
+            var steps = new WalkingStep[stepsCount];
+            for (int i = 0; i < stepsCount; i++)
+            {
+                var node = path[i];
+                var prevPos = i == 0 ? this._player.Position : steps[i - 1].To;
+                steps[i] = new WalkingStep(prevPos, node.Point, prevPos.GetDirectionTo(node.Point));
+            }
+
+            await this._player.WalkToAsync(target, steps).ConfigureAwait(false);
+            return true;
+        }
+        finally
+        {
+            this._player.GameContext.PathFinderPool.Return(pathFinder);
+        }
+    }
 }
