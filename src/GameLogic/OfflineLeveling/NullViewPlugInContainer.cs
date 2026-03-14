@@ -2,8 +2,6 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using System.Reflection;
-
 namespace MUnique.OpenMU.GameLogic.OfflineLeveling;
 
 using MUnique.OpenMU.GameLogic.Views;
@@ -19,6 +17,6 @@ internal sealed class NullViewPlugInContainer : ICustomPlugInContainer<IViewPlug
     public T? GetPlugIn<T>()
         where T : class, IViewPlugIn
     {
-        return DispatchProxy.Create<T, NullViewProxy>();
+        return System.Reflection.DispatchProxy.Create<T, NullViewProxy>();
     }
 }

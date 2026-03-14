@@ -4,29 +4,24 @@
 
 namespace MUnique.OpenMU.GameLogic.OfflineLeveling;
 
-using System.Collections.Concurrent;
 
 /// <summary>
-/// Tracks active <see cref="OfflineLevelingPlayer"/> instances across the game context.
-/// One shared instance is stored on the <see cref="GameContext"/> so both the
-/// chat command and the re-login plug-in can reach it.
+/// Manages active <see cref="OfflineLevelingPlayer"/> sessions.
 /// </summary>
 public sealed class OfflineLevelingManager
 {
-    private readonly ConcurrentDictionary<string, OfflineLevelingPlayer> _activePlayers =
+    private readonly System.Collections.Concurrent.ConcurrentDictionary<string, OfflineLevelingPlayer> _activePlayers =
         new(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>
-    /// Captures the real player's state, disconnects the real client, then spawns a ghost
-    /// that continues leveling in the background.
+    /// Starts an offline leveling session by replacing the real player with a ghost.
     /// </summary>
     /// <param name="realPlayer">The real player who typed the command.</param>
     /// <param name="loginName">The pre-validated account login name.</param>
     /// <returns><c>true</c> if the offline session was started successfully.</returns>
     public async ValueTask<bool> StartAsync(Player realPlayer, string loginName)
     {
-        // Capture all needed references before the real player disconnects,
-        // since disconnect clears SelectedCharacter and Account from the Player instance.
+        // Capture references before disconnect clears them from the player instance.
         var account = realPlayer.Account;
         var character = realPlayer.SelectedCharacter;
 
@@ -35,9 +30,7 @@ public sealed class OfflineLevelingManager
             return false;
         }
 
-        // Use a placeholder sentinel to atomically claim the slot before any async work.
-        // This prevents a second call for the same loginName from racing through while
-        // the real player is being disconnected and the ghost is being initialized.
+        // Atomically claim the slot to prevent racing during initialization.
         var sentinel = new OfflineLevelingPlayer(realPlayer.GameContext);
         if (!this._activePlayers.TryAdd(loginName, sentinel))
         {
@@ -48,7 +41,7 @@ public sealed class OfflineLevelingManager
 
         try
         {
-            // Log off the login server so the player can reconnect once the ghost is running.
+            // Log off from the login server to allow reconnecting while the ghost runs.
             if (realPlayer.GameContext is IGameServerContext gsCtx)
             {
                 try
@@ -61,23 +54,16 @@ public sealed class OfflineLevelingManager
                 }
             }
 
-            // Suppress the PlayerDisconnected event so GameServer.OnPlayerDisconnectedAsync
-            // does not try to log off again or double-save.
+            // Suppress the disconnection event to prevent double-save or redundant log-offs.
             realPlayer.SuppressDisconnectedEvent();
 
-            // DisconnectAsync: removes real player from map, fires PlayerLeftWorld
-            // (freeing the name slot in PlayersByCharacterName), and saves progress.
+            // Perform disconnection: removes player from map and saves progress.
             await realPlayer.DisconnectAsync().ConfigureAwait(false);
 
-            // SuppressDisconnectedEvent() prevents OnPlayerDisconnectedAsync from firing,
-            // so realPlayer.DisposeAsync() is never called by the game server — which means
-            // realPlayer.PersistenceContext is never disposed and its EF DbContext is still
-            // alive and tracking the account/character entities.
-            // We must dispose it explicitly NOW so the entities become fully detached,
-            // allowing the ghost's fresh PersistenceContext to Attach and track them.
+            // Dispose the old context so entities can be attached to the ghost's new context.
             realPlayer.PersistenceContext.Dispose();
 
-            // Now the name slot is free — initialize the ghost in-place.
+            // Now the name slot is free, initialize the ghost in-place.
             if (!await sentinel.InitializeAsync(account, character).ConfigureAwait(false))
             {
                 this._activePlayers.TryRemove(loginName, out _);

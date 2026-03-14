@@ -93,7 +93,7 @@ public sealed class OfflineLevelingIntelligence : IDisposable
     public void Start()
     {
         this._aiTimer ??= new Timer(
-            _ => _ = this.SafeTickAsync(),
+            state => _ = this.SafeTickAsync(),
             null,
             TimeSpan.FromSeconds(1),
             TimeSpan.FromMilliseconds(500));
@@ -317,6 +317,10 @@ public sealed class OfflineLevelingIntelligence : IDisposable
             else if (drop is DroppedItem droppedItem && this.ShouldPickUp(droppedItem.Item))
             {
                 await PickupAction.PickupItemAsync(this._player, drop.Id).ConfigureAwait(false);
+            }
+            else
+            {
+                // Other drops are ignored by configuration.
             }
         }
     }
