@@ -37,10 +37,21 @@ public sealed class OfflineLevelingIntelligence : IDisposable
 {
     private const byte FallbackViewRange = 5;
     private const byte FallbackAttackRange = 2;
+    private const byte MinPickupRange = 3;
+    private const byte RegroupDistanceThreshold = 1;
+
     private const byte JewelItemGroup = 14;
 
-    // How many 500 ms ticks equal one "second".
     private const int TicksPerSecond = 2;
+    private const int ComboFinisherDelayTicks = 3;
+    private const int InterSkillDelayTicks = 1;
+
+    private const int BuffSlotCount = 3;
+
+    private const byte PhysicalAttackAnimationId = 120;
+    private const short DrainLifeBaseSkillId = 214;
+    private const short DrainLifeStrengthenerSkillId = 458;
+    private const short DrainLifeMasterySkillId = 462;
 
     private static readonly PickupItemAction PickupAction = new();
 
@@ -196,14 +207,14 @@ public sealed class OfflineLevelingIntelligence : IDisposable
         int buffId = buffIds[this._buffSkillIndex];
         if (buffId == 0)
         {
-            this._buffSkillIndex = (this._buffSkillIndex + 1) % 3;
+            this._buffSkillIndex = (this._buffSkillIndex + 1) % BuffSlotCount;
             return true;
         }
 
         var skillEntry = this._player.SkillList?.GetSkill((ushort)buffId);
         if (skillEntry?.Skill?.MagicEffectDef is null)
         {
-            this._buffSkillIndex = (this._buffSkillIndex + 1) % 3;
+            this._buffSkillIndex = (this._buffSkillIndex + 1) % BuffSlotCount;
             return true;
         }
 
@@ -214,7 +225,7 @@ public sealed class OfflineLevelingIntelligence : IDisposable
         {
             await this._player.ApplyMagicEffectAsync(this._player, skillEntry).ConfigureAwait(false);
 
-            this._buffSkillIndex = (this._buffSkillIndex + 1) % 3;
+            this._buffSkillIndex = (this._buffSkillIndex + 1) % BuffSlotCount;
             if (this._buffSkillIndex == 0)
             {
                 this._buffTimerTriggered = false;
@@ -223,7 +234,7 @@ public sealed class OfflineLevelingIntelligence : IDisposable
             return false;
         }
 
-        this._buffSkillIndex = (this._buffSkillIndex + 1) % 3;
+        this._buffSkillIndex = (this._buffSkillIndex + 1) % BuffSlotCount;
         return true;
     }
 
@@ -295,7 +306,7 @@ public sealed class OfflineLevelingIntelligence : IDisposable
             return;
         }
 
-        byte range = (byte)Math.Max(this._config.ObtainRange, 3);
+        byte range = (byte)Math.Max(this._config.ObtainRange, MinPickupRange);
         var drops = map.GetDropsInRange(this._player.Position, range);
 
         foreach (var drop in drops)
@@ -367,7 +378,7 @@ public sealed class OfflineLevelingIntelligence : IDisposable
         }
 
         var distance = this._player.GetDistanceTo(this._originalPosition);
-        if (distance > 1)
+        if (distance > RegroupDistanceThreshold)
         {
             if (this._tickCounter == 0)
             {
@@ -466,7 +477,7 @@ public sealed class OfflineLevelingIntelligence : IDisposable
         await target.AttackByAsync(this._player, null, false).ConfigureAwait(false);
 
         await this._player.ForEachWorldObserverAsync<IShowAnimationPlugIn>(
-            p => p.ShowAnimationAsync(this._player, 120, target, this._player.Rotation),
+            p => p.ShowAnimationAsync(this._player, PhysicalAttackAnimationId, target, this._player.Rotation),
             includeThis: true).ConfigureAwait(false);
     }
 
@@ -483,6 +494,7 @@ public sealed class OfflineLevelingIntelligence : IDisposable
         }
 
         // Broadcast the area skill animation to all nearby observers.
+        // Rotation is converted from 360 degrees to a single byte (0-255) as per protocol.
         var rotationByte = (byte)(this._player.Position.GetAngleDegreeTo(target.Position) / 360.0 * 255.0);
         await this._player.ForEachWorldObserverAsync<IShowAreaSkillAnimationPlugIn>(
             p => p.ShowAreaSkillAnimationAsync(this._player, skill, target.Position, rotationByte),
@@ -614,10 +626,10 @@ public sealed class OfflineLevelingIntelligence : IDisposable
         {
             int threshold = subCond switch
             {
-                0 => 2,
-                1 => 3,
-                2 => 4,
-                3 => 5,
+                0 => 2, // At least 2 monsters
+                1 => 3, // At least 3 monsters
+                2 => 4, // At least 4 monsters
+                3 => 5, // At least 5 monsters
                 _ => int.MaxValue,
             };
 
@@ -672,13 +684,13 @@ public sealed class OfflineLevelingIntelligence : IDisposable
             if (isActuallyCombo)
             {
                 // Combo finisher cooldown (3 ticks = 1.5s) to allow animation to finish.
-                this._skillCooldownTicks = 3;
+                this._skillCooldownTicks = ComboFinisherDelayTicks;
                 this._currentComboStep = 0;
             }
             else
             {
                 // Mini-delay (1 tick = 500ms) between skills to help client processing.
-                this._skillCooldownTicks = 1;
+                this._skillCooldownTicks = InterSkillDelayTicks;
                 this._currentComboStep++;
             }
         }
@@ -693,13 +705,13 @@ public sealed class OfflineLevelingIntelligence : IDisposable
             if (stateBefore != comboState?.InitialState && stateAfter == comboState?.InitialState)
             {
                 // Combo finished or reset.
-                this._skillCooldownTicks = 3;
+                this._skillCooldownTicks = ComboFinisherDelayTicks;
                 this._currentComboStep = 0;
             }
             else
             {
                 // Mini-delay (1 tick = 500ms) between skills to help client processing.
-                this._skillCooldownTicks = 1;
+                this._skillCooldownTicks = InterSkillDelayTicks;
                 this._currentComboStep++;
             }
         }
@@ -748,7 +760,7 @@ public sealed class OfflineLevelingIntelligence : IDisposable
 
         var skillIds = this._config.UseCombo
             ? this.GetConfiguredComboSkillIds()
-            : (this._config.BasicSkillId > 0 ? [(int)this._config.BasicSkillId] : new List<int>());
+            : (this._config.BasicSkillId > 0 ? [this._config.BasicSkillId] : []);
 
         if (skillIds.Count > 0)
         {
@@ -764,30 +776,30 @@ public sealed class OfflineLevelingIntelligence : IDisposable
             }
         }
 
+        return this.GetOffensiveSkills()
+            .Select(s => (byte)s.Skill!.Range)
+            .DefaultIfEmpty(FallbackAttackRange)
+            .Max();
+    }
+
+    private IEnumerable<SkillEntry> GetOffensiveSkills()
+    {
         return this._player.SkillList?.Skills
             .Where(s => s.Skill is not null
                         && s.Skill.SkillType != SkillType.PassiveBoost
                         && s.Skill.SkillType != SkillType.Buff
                         && s.Skill.SkillType != SkillType.Regeneration)
-            .Select(s => (byte)s.Skill!.Range)
-            .DefaultIfEmpty(FallbackAttackRange)
-            .Max() ?? FallbackAttackRange;
+               ?? [];
     }
 
-    private SkillEntry? GetAnyOffensiveSkill()
-        => this._player.SkillList?.Skills.FirstOrDefault(s =>
-            s.Skill is not null
-            && s.Skill.SkillType != SkillType.PassiveBoost
-            && s.Skill.SkillType != SkillType.Buff
-            && s.Skill.SkillType != SkillType.Regeneration);
+    private SkillEntry? GetAnyOffensiveSkill() => this.GetOffensiveSkills().FirstOrDefault();
 
     private SkillEntry? FindSkillByType(SkillType type)
         => this._player.SkillList?.Skills.FirstOrDefault(s => s.Skill?.SkillType == type);
 
     private SkillEntry? FindDrainLifeSkill()
         => this._player.SkillList?.Skills.FirstOrDefault(s =>
-            s.Skill is not null
-            && s.Skill.Name.ValueInNeutralLanguage.Contains("Drain Life", StringComparison.OrdinalIgnoreCase));
+            s.Skill is { Number: DrainLifeBaseSkillId or DrainLifeStrengthenerSkillId or DrainLifeMasterySkillId });
 
     private async ValueTask<bool> WalkToAsync(Point target)
     {

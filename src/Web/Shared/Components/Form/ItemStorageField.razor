@@ -1,4 +1,4 @@
-﻿@using System.ComponentModel.DataAnnotations
+@using System.ComponentModel.DataAnnotations
 @using System.Diagnostics.CodeAnalysis
 @using MUnique.OpenMU.DataModel
 @using MUnique.OpenMU.DataModel.Configuration
@@ -67,7 +67,7 @@
                 }
             </div>
             <div class="col-1 middle-column">
-                <button type="button" class="btn-info mb-1" @onclick="@this.OnCreateItemClickAsync" title="Create"><span class="oi oi-plus"></span></button>
+                <button @key="@("create-btn")" type="button" class="btn-info mb-1" @onmousedown="@this.OnCreateItemClickAsync" @onmousedown:preventDefault @onmousedown:stopPropagation title="Create"><span class="oi oi-plus"></span></button>
                 @if (this._selectedItem is null)
                 {
                     <button type="button" class="btn-secondary mb-1 disabled" title="Duplicate"><span class="oi oi-layers"></span></button>
@@ -75,8 +75,8 @@
                 }
                 else
                 {
-                    <button type="button" class="btn-secondary mb-1" @onclick="@this.OnDuplicateItemClickAsync" title="Duplicate"><span class="oi oi-layers"></span></button>
-                    <button type="button" class="btn-warning mb-1" @onclick="this.OnItemDeleteClickAsync" title="Delete"><span class="oi oi-trash"></span></button>
+                    <button @key="@("duplicate-btn")" type="button" class="btn-secondary mb-1" @onmousedown="@this.OnDuplicateItemClickAsync" @onmousedown:preventDefault @onmousedown:stopPropagation title="Duplicate"><span class="oi oi-layers"></span></button>
+                    <button @key="@("delete-btn")" type="button" class="btn-warning mb-1" @onmousedown="this.OnItemDeleteClickAsync" @onmousedown:preventDefault @onmousedown:stopPropagation title="Delete"><span class="oi oi-trash"></span></button>
                 }
             </div>
             <div class="col-7 right-column">
@@ -183,36 +183,124 @@
         }
 
         this._selectedItem = null;
+        this.StateHasChanged();
     }
 
-    private void OnCreateItemClickAsync()
+    private async Task OnCreateItemClickAsync()
     {
         if (this.Value is { } itemStorage)
         {
             var item = this.PersistenceContext.CreateNew<Item>();
             itemStorage.Items.Add(item);
             this._selectedItem = item;
+            await this.InvokeAsync(this.StateHasChanged);
         }
     }
 
-    private void OnDuplicateItemClickAsync()
+    private Task OnDuplicateItemClickAsync()
     {
-        if (this._selectedItem is null || this.Value is not { } itemStorage)
+        if (!this.CanDuplicateItem())
         {
-            return;
+            return Task.CompletedTask;
         }
 
+        var duplicate = this.CreateDuplicateItem();
+        var freeSlot = this.FindFreeSlot();
+
+        if (freeSlot is null)
+        {
+            return Task.CompletedTask;
+        }
+
+        duplicate.ItemSlot = freeSlot.Value;
+        
+        this.Value!.Items.Add(duplicate);
+        this.StateHasChanged();
+        
+        return Task.CompletedTask;
+    }
+
+    private bool CanDuplicateItem()
+    {
+        return this._selectedItem is not null 
+            && this.Value is not null 
+            && this._selectedItem.Definition is not null;
+    }
+
+    private Item CreateDuplicateItem()
+    {
         var duplicate = this.PersistenceContext.CreateNew<Item>();
-        duplicate.AssignValues(this._selectedItem);
+        duplicate.AssignValues(this._selectedItem!);
+        return duplicate;
+    }
 
-        // Place the duplicate in the next available slot after the source item
-        var occupiedSlots = itemStorage.Items.Select(i => i.ItemSlot).ToHashSet();
-        var nextSlot = Enumerable.Range(this._selectedItem.ItemSlot + 1, byte.MaxValue - this._selectedItem.ItemSlot)
-            .Select(i => (byte)i)
-            .FirstOrDefault(s => !occupiedSlots.Contains(s));
-        duplicate.ItemSlot = nextSlot;
+    private byte? FindFreeSlot()
+    {
+        var occupiedSlots = this.GetAllOccupiedSlots();
+        var maxSlot = InventoryConstants.GetInventorySize(this._numberOfExtensions);
+        var itemWidth = this._selectedItem!.Definition!.Width;
+        var itemHeight = this._selectedItem.Definition.Height;
 
-        itemStorage.Items.Add(duplicate);
-        this._selectedItem = duplicate;
+        for (byte slot = 0; slot < maxSlot; slot++)
+        {
+            if (this.CanPlaceItemAt(slot, itemWidth, itemHeight, occupiedSlots, maxSlot))
+            {
+                return slot;
+            }
+        }
+
+        return null;
+    }
+
+    private HashSet<byte> GetAllOccupiedSlots()
+    {
+        return this.Value!.Items
+            .Where(i => !ReferenceEquals(i, this._selectedItem))
+            .SelectMany(this.GetItemSlots)
+            .ToHashSet();
+    }
+
+    private bool CanPlaceItemAt(byte slot, byte width, byte height, HashSet<byte> occupiedSlots, byte maxSlot)
+    {
+        for (byte row = 0; row < height; row++)
+        {
+            for (byte col = 0; col < width; col++)
+            {
+                var currentSlot = (byte)(slot + row * 8 + col);
+                if (currentSlot >= maxSlot || occupiedSlots.Contains(currentSlot))
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private IEnumerable<byte> GetItemSlots(Item item)
+    {
+        if (item.Definition is null)
+        {
+            yield break;
+        }
+
+        var startSlot = item.ItemSlot;
+        var width = item.Definition.Width;
+        var height = item.Definition.Height;
+
+        for (byte row = 0; row < height; row++)
+        {
+            for (byte col = 0; col < width; col++)
+            {
+                yield return (byte)(startSlot + row * 8 + col);
+            }
+        }
+    }
+
+    private void AddItemToStorage(Item item)
+    {
+        this.Value!.Items.Add(item);
+        this._selectedItem = item;
+        this.StateHasChanged();
     }
 }
