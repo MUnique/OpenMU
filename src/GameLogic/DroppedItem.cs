@@ -227,7 +227,7 @@ public sealed class DroppedItem : AsyncDisposable, ILocateable
             this._availableToPick = false;
         }
 
-        player.Logger.LogInformation("Item '{0}' was picked up by player '{1}' and added to his inventory.", this, player);
+        player.Logger.LogDebug("Item '{0}' was picked up by player '{1}' and added to his inventory.", this, player);
         await this.DisposeAsync().ConfigureAwait(false);
 
         return true;

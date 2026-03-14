@@ -29,7 +29,7 @@ public class InventoryStorage : Storage, IInventoryStorage
             GetInventorySize(0),
             EquippableSlotsCount,
             0,
-            new ItemStorageAdapter(player.SelectedCharacter?.Inventory ?? throw Error.NotInitializedProperty(player, "SelectedCharacter.Inventory"), FirstEquippableItemSlotIndex, player.GetInventorySize()))
+            new ItemStorageAdapter(player.SelectedCharacter?.Inventory ?? throw Error.NotInitializedProperty(player, "SelectedCharacter.Inventory"), FirstEquippableItemSlotIndex, player.InventorySize))
     {
         this._player = player;
         this.EquippedItemsChanged += async eventArgs => await this.UpdateItemsOnChangeAsync(eventArgs.Item, eventArgs.IsEquipped).ConfigureAwait(false);

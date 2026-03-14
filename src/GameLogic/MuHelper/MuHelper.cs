@@ -30,7 +30,7 @@ public class MuHelper : AsyncDisposable
     /// <summary>
     /// The current configuration.
     /// </summary>
-    private readonly MuHelperConfiguration _configuration;
+    private readonly MuHelperServerConfiguration _configuration;
 
     private CancellationTokenSource? _stopCts;
     private Task? _runTask;
@@ -43,7 +43,7 @@ public class MuHelper : AsyncDisposable
     public MuHelper(Player player)
     {
         this._player = player;
-        this._configuration = this._player.GameContext.FeaturePlugIns.GetPlugIn<MuHelperFeaturePlugIn>()?.Configuration ?? new MuHelperConfiguration();
+        this._configuration = this._player.GameContext.FeaturePlugIns.GetPlugIn<MuHelperFeaturePlugIn>()?.Configuration ?? new MuHelperServerConfiguration();
     }
 
     /// <summary>

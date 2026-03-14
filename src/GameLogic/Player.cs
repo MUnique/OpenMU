@@ -1401,6 +1401,17 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <summary>
+    /// Clears all subscribers from the <see cref="PlayerDisconnected"/> event so that
+    /// <see cref="DisconnectAsync"/> will not raise it. Used by offline leveling to prevent
+    /// <c>GameServer.OnPlayerDisconnectedAsync</c> from double-saving and double-logging off
+    /// after the real client disconnects.
+    /// </summary>
+    public void SuppressDisconnectedEvent()
+    {
+        this.PlayerDisconnected = null;
+    }
+
+    /// <summary>
     /// Disconnects the player from the game. Remote connections will be closed and data will be saved.
     /// </summary>
     public async ValueTask DisconnectAsync()
@@ -1749,17 +1760,19 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <summary>
-    /// Gets the size of the inventory of the specified player.
+    /// Gets the size of the inventory of the current player.
     /// </summary>
-    /// <returns>The size of the inventory.</returns>
-    public byte GetInventorySize()
+    public byte InventorySize
     {
-        if (this.SelectedCharacter is not { } selectedCharacter)
+        get
         {
-            return 0;
-        }
+            if (this.SelectedCharacter is not { } selectedCharacter)
+            {
+                return 0;
+            }
 
-        return (byte)InventoryConstants.GetInventorySize(selectedCharacter.InventoryExtensions);
+            return (byte)InventoryConstants.GetInventorySize(selectedCharacter.InventoryExtensions);
+        }
     }
 
     /// <summary>
@@ -2025,6 +2038,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 {
                     currentCharacter.State++;
                 }
+                else
+                {
+                    // State is already Normal, no change needed
+                }
 
                 await this.ForEachWorldObserverAsync<IUpdateCharacterHeroStatePlugIn>(p => p.UpdateCharacterHeroStateAsync(this), true).ConfigureAwait(false);
                 currentCharacter.StateRemainingSeconds = currentCharacter.State == HeroState.Normal
@@ -2123,7 +2140,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         if (attacker is IAttackable or AttackerSurrogate)
         {
-            var attackableAttacker = (attacker as AttackerSurrogate)?.Owner ?? (IAttackable)attacker;
+            var attackableAttacker = attacker is AttackerSurrogate surrogate ? surrogate.Owner : (IAttackable)attacker;
 
             var reflectPercentage = this.Attributes[Stats.DamageReflection];
             if (reflectPercentage > 0)
