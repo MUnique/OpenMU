@@ -190,5 +190,9 @@ public sealed class OfflineLevelingIntelligence : IDisposable
             this._player.Logger.LogDebug("Offline leveling stopped for {0} due to insufficient Zen.", this._player.Name);
             await this._player.StopAsync().ConfigureAwait(false);
         }
+        else
+        {
+            // The cost is 0 or less; no action required.
+        }
     }
 }

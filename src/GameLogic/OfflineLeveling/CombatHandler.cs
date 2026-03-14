@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameLogic.OfflineLeveling;
 
-using System.Threading;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
@@ -160,6 +159,10 @@ public sealed class CombatHandler
                     await this.ExecuteAttackAsync(this._currentTarget, drainSkill, false).ConfigureAwait(false);
                 }
             }
+        }
+        else
+        {
+            // No health recovery action required.
         }
     }
 

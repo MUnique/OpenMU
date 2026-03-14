@@ -97,6 +97,10 @@ internal sealed class RepairHandler
                     this._player.Money,
                     this._player.Name);
             }
+            else
+            {
+                // Price is 0 or less; no action required.
+            }
         }
     }
 }
