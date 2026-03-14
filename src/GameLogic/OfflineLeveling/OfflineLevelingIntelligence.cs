@@ -64,7 +64,7 @@ public sealed class OfflineLevelingIntelligence : IDisposable
         this._combatHandler = new CombatHandler(player, config, originalPosition);
         this._buffHandler = new BuffHandler(player, config);
         this._itemPickupHandler = new ItemPickupHandler(player, config);
-        this._movementHandler = new MovementHandler(player, config, originalPosition, () => this._combatHandler.GetHuntingRange());
+        this._movementHandler = new MovementHandler(player, config, originalPosition, () => this._combatHandler.HuntingRange);
         this._repairHandler = new RepairHandler(player, config);
         this._lastPayTimestamp = player.StartTimestamp;
     }

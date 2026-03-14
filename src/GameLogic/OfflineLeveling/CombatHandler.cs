@@ -21,7 +21,7 @@ using MUnique.OpenMU.Pathfinding;
 /// </summary>
 public sealed class CombatHandler
 {
-    private const byte FallbackAttackRange = 2;
+    private const byte DefaultRange = 1;
     private const int ComboFinisherDelayTicks = 3;
     private const int InterSkillDelayTicks = 1;
     private const short DrainLifeBaseSkillId = 214;
@@ -79,15 +79,17 @@ public sealed class CombatHandler
     /// <summary>
     /// Gets the hunting range in tiles.
     /// </summary>
-    /// <returns>The hunting range.</returns>
-    public byte GetHuntingRange()
+    public byte HuntingRange
     {
-        if (this._config is null)
+        get
         {
-            return 5;
-        }
+            if (this._config is null)
+            {
+                return DefaultRange;
+            }
 
-        return (byte)Math.Max(1, this._config.HuntingRange);
+            return (byte)Math.Max(DefaultRange, this._config.HuntingRange);
+        }
     }
 
     /// <summary>
@@ -239,7 +241,7 @@ public sealed class CombatHandler
     {
         if (this._currentTarget is { } t
             && (!t.IsAlive || t.IsAtSafezone() || t.IsTeleporting
-                || !t.IsInRange(this._originPosition, this.GetHuntingRange())))
+                || !t.IsInRange(this._originPosition, this.HuntingRange)))
         {
             this._currentTarget = null;
         }
@@ -259,7 +261,7 @@ public sealed class CombatHandler
             return null;
         }
 
-        byte range = this.GetHuntingRange();
+        byte range = this.HuntingRange;
         return map.GetAttackablesInRange(this._originPosition, range)
             .OfType<Monster>()
             .Where(m => m.IsAlive && !m.IsAtSafezone() && m.Definition.ObjectKind == NpcObjectKind.Monster)
@@ -273,7 +275,7 @@ public sealed class CombatHandler
             return 0;
         }
 
-        return map.GetAttackablesInRange(this._originPosition, this.GetHuntingRange())
+        return map.GetAttackablesInRange(this._originPosition, this.HuntingRange)
             .OfType<Monster>()
             .Count(m => m.IsAlive && !m.IsAtSafezone() && m.Definition.ObjectKind == NpcObjectKind.Monster);
     }
@@ -442,7 +444,7 @@ public sealed class CombatHandler
     {
         if (this._config is null)
         {
-            return FallbackAttackRange;
+            return DefaultRange;
         }
 
         var skillIds = this._config.UseCombo
@@ -464,7 +466,7 @@ public sealed class CombatHandler
 
         return this.GetOffensiveSkills()
             .Select(s => (byte)s.Skill!.Range)
-            .DefaultIfEmpty(FallbackAttackRange)
+            .DefaultIfEmpty(DefaultRange)
             .Max();
     }
 
