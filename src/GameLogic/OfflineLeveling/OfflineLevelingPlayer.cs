@@ -35,6 +35,11 @@ public sealed class OfflineLevelingPlayer : Player
     public string? CharacterName => this.SelectedCharacter?.Name;
 
     /// <summary>
+    /// Gets the start timestamp of the offline leveling session.
+    /// </summary>
+    public DateTime StartTimestamp { get; private set; }
+
+    /// <summary>
     /// Initializes the ghost player from captured references.
     /// </summary>
     /// <param name="account">The account.</param>
@@ -44,6 +49,7 @@ public sealed class OfflineLevelingPlayer : Player
     {
         try
         {
+            this.StartTimestamp = DateTime.UtcNow;
             this.Account = account;
             this.PersistenceContext.Attach(account);
 
@@ -64,7 +70,7 @@ public sealed class OfflineLevelingPlayer : Player
             this._intelligence = new OfflineLevelingIntelligence(this);
             this._intelligence.Start();
 
-            this.Logger.LogInformation(
+            this.Logger.LogDebug(
                 "Offline leveling started for character {CharacterName} on map {Map} at {Position}.",
                 character.Name,
                 character.CurrentMap?.Name,

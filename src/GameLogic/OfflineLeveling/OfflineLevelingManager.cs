@@ -4,6 +4,9 @@
 
 namespace MUnique.OpenMU.GameLogic.OfflineLeveling;
 
+using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.MuHelper;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Manages active <see cref="OfflineLevelingPlayer"/> sessions.
@@ -35,6 +38,19 @@ public sealed class OfflineLevelingManager
         if (!this._activePlayers.TryAdd(loginName, sentinel))
         {
             // Another session is already active or being started for this account.
+            await sentinel.DisposeAsync().ConfigureAwait(false);
+            return false;
+        }
+
+        // Charge initial Zen cost (similar to MuHelper start)
+        var helperConfig = realPlayer.GameContext.FeaturePlugIns.GetPlugIn<MuHelperFeaturePlugIn>()?.Configuration ??
+                           new MuHelperServerConfiguration();
+        var totalLevel = (int)(realPlayer.Level + (realPlayer.Attributes?[Stats.MasterLevel] ?? 0));
+        var initialCost = helperConfig.CostPerStage.FirstOrDefault() * totalLevel;
+
+        if (initialCost > 0 && !realPlayer.TryRemoveMoney(initialCost))
+        {
+            this._activePlayers.TryRemove(loginName, out _);
             await sentinel.DisposeAsync().ConfigureAwait(false);
             return false;
         }
