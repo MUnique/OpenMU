@@ -17,11 +17,10 @@ public sealed class MovementHandler
     private readonly OfflineLevelingPlayer _player;
     private readonly MuHelperPlayerConfiguration? _config;
     private readonly Point _originPosition;
-    private readonly Func<byte> _huntingRangeProvider;
 
     private DateTime? _outOfRangeSince;
 
-    private byte HuntingRange => this._huntingRangeProvider();
+    private byte HuntingRange => CombatHandler.CalculateHuntingRange(this._config);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MovementHandler"/> class.
@@ -30,12 +29,11 @@ public sealed class MovementHandler
     /// <param name="config">The MU Helper configuration.</param>
     /// <param name="originPosition">The original spawn position.</param>
     /// <param name="getHuntingRange">Function to get the current hunting range.</param>
-    public MovementHandler(OfflineLevelingPlayer player, MuHelperPlayerConfiguration? config, Point originPosition, Func<byte> huntingRangeProvider)
+    public MovementHandler(OfflineLevelingPlayer player, MuHelperPlayerConfiguration? config, Point originPosition)
     {
         this._player = player;
         this._config = config;
         this._originPosition = originPosition;
-        this._huntingRangeProvider = huntingRangeProvider;
     }
 
 
