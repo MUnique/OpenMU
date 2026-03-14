@@ -75,7 +75,7 @@ public sealed class OfflineLevelingIntelligence : IDisposable
     private bool _buffTimerTriggered;
 
     // Movement State
-    private Point _originalPosition;
+    private readonly Point _originalPosition;
     private int _secondsAwayFromOrigin;
 
     /// <summary>
@@ -93,7 +93,7 @@ public sealed class OfflineLevelingIntelligence : IDisposable
     public void Start()
     {
         this._aiTimer ??= new Timer(
-            _ => this.SafeTick(),
+            _ => _ = this.SafeTickAsync(),
             null,
             TimeSpan.FromSeconds(1),
             TimeSpan.FromMilliseconds(500));
@@ -113,7 +113,7 @@ public sealed class OfflineLevelingIntelligence : IDisposable
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Timer callback — exceptions are caught internally.")]
-    private async void SafeTick()
+    private async Task SafeTickAsync()
     {
         try
         {
@@ -310,15 +310,13 @@ public sealed class OfflineLevelingIntelligence : IDisposable
 
         foreach (var drop in drops)
         {
-            switch (drop)
+            if (drop is DroppedMoney && this._config.PickZen)
             {
-                case DroppedMoney when this._config.PickZen:
-                    await PickupAction.PickupItemAsync(this._player, drop.Id).ConfigureAwait(false);
-                    break;
-
-                case DroppedItem droppedItem when this.ShouldPickUp(droppedItem.Item):
-                    await PickupAction.PickupItemAsync(this._player, drop.Id).ConfigureAwait(false);
-                    break;
+                await PickupAction.PickupItemAsync(this._player, drop.Id).ConfigureAwait(false);
+            }
+            else if (drop is DroppedItem droppedItem && this.ShouldPickUp(droppedItem.Item))
+            {
+                await PickupAction.PickupItemAsync(this._player, drop.Id).ConfigureAwait(false);
             }
         }
     }
@@ -575,7 +573,7 @@ public sealed class OfflineLevelingIntelligence : IDisposable
         var s1 = this.EvaluateConditionalSkill(
             this._config.ActivationSkill1Id,
             this._config.Skill1UseTimer, this._config.DelayMinSkill1,
-            this._config.Skill1UseCondition, this._config.Skill1ConditionAttacking,
+            this._config.Skill1UseCondition,
             this._config.Skill1SubCondition);
         if (s1 is not null)
         {
@@ -585,7 +583,7 @@ public sealed class OfflineLevelingIntelligence : IDisposable
         var s2 = this.EvaluateConditionalSkill(
             this._config.ActivationSkill2Id,
             this._config.Skill2UseTimer, this._config.DelayMinSkill2,
-            this._config.Skill2UseCondition, this._config.Skill2ConditionAttacking,
+            this._config.Skill2UseCondition,
             this._config.Skill2SubCondition);
         if (s2 is not null)
         {
@@ -606,7 +604,7 @@ public sealed class OfflineLevelingIntelligence : IDisposable
     private SkillEntry? EvaluateConditionalSkill(
         int skillId,
         bool useTimer, int timerInterval,
-        bool useCond, bool conditionIsAttacking,
+        bool useCond,
         int subCond)
     {
         if (skillId <= 0)

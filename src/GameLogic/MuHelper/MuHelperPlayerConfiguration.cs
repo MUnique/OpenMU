@@ -39,6 +39,82 @@ namespace MUnique.OpenMU.GameLogic.MuHelper;
 /// </summary>
 public sealed class MuHelperPlayerConfiguration
 {
+    // Minimum blob length to safely read all structured fields
+    private const int MinBlobLength = 69;
+
+    // Byte offsets
+    private const int PickupFlagsOffset = 1;
+    private const int RangeFlagsOffset = 2;
+    private const int DistanceMinOffset = 3;
+    private const int BasicSkillOffset = 5;
+    private const int ActivationSkill1Offset = 7;
+    private const int DelayMinSkill1Offset = 9;
+    private const int ActivationSkill2Offset = 11;
+    private const int DelayMinSkill2Offset = 13;
+    private const int CastingBuffMinOffset = 15;
+    private const int BuffSkill0Offset = 17;
+    private const int BuffSkill1Offset = 19;
+    private const int BuffSkill2Offset = 21;
+    private const int HpThresholdFlagsOffset = 23;
+    private const int PartyDrainThresholdOffset = 24;
+    private const int BehaviorFlagsOffset = 25;
+    private const int Skill1FlagsOffset = 26;
+    private const int Skill2FlagsOffset = 27;
+    private const int PetAttackOffset = 28;
+    private const int ExtraItemsOffset = 65;
+    private const int ExtraItemsEndOffset = 245;
+    private const int ExtraItemSlotCount = 12;
+    private const int ExtraItemSlotLength = 15;
+
+    // Byte 1 – pickup flags
+    private const int PickJewelFlag = 1 << 3;
+    private const int PickSetItemFlag = 1 << 4;
+    private const int PickExcellentFlag = 1 << 5;
+    private const int PickZenFlag = 1 << 6;
+    private const int PickExtraItemFlag = 1 << 7;
+
+    // Byte 2 – range nibbles
+    private const int HuntingRangeMask = 0x0F;
+    private const int ObtainRangeShift = 4;
+    private const int ObtainRangeMask = 0x0F;
+
+    // Bytes 23/24 – HP threshold nibbles (value * 10 = %)
+    private const int HpPotionNibbleMask = 0x0F;
+    private const int HpHealNibbleShift = 4;
+    private const int HpHealNibbleMask = 0x0F;
+    private const int HpPartyNibbleMask = 0x0F;
+    private const int HpThresholdMultiplier = 10;
+
+    // Byte 25 – behaviour flags
+    private const int AutoPotionFlag = 1 << 0;
+    private const int AutoHealFlag = 1 << 1;
+    private const int DrainLifeFlag = 1 << 2;
+    private const int LongRangeCounterAttackFlag = 1 << 3;
+    private const int ReturnToOriginalFlag = 1 << 4;
+    private const int ComboFlag = 1 << 5;
+    private const int PartyFlag = 1 << 6;
+    private const int PreferPartyHealFlag = 1 << 7;
+
+    // Byte 26 – buff / skill-1 flags
+    private const int BuffDurationPartyFlag = 1 << 0;
+    private const int UseDarkSpiritsFlag = 1 << 1;
+    private const int BuffDurationFlag = 1 << 2;
+    private const int Skill1DelayFlag = 1 << 3;
+    private const int Skill1ConditionFlag = 1 << 4;
+    private const int Skill1PreConditionFlag = 1 << 5;
+    private const int Skill1SubConditionShift = 6;
+    private const int Skill1SubConditionMask = 0x03;
+
+    // Byte 27 – skill-2 / item flags
+    private const int Skill2DelayFlag = 1 << 0;
+    private const int Skill2ConditionFlag = 1 << 1;
+    private const int Skill2PreConditionFlag = 1 << 2;
+    private const int Skill2SubConditionShift = 3;
+    private const int Skill2SubConditionMask = 0x03;
+    private const int RepairItemFlag = 1 << 5;
+    private const int PickAllItemsFlag = 1 << 6;
+    private const int PickSelectItemsFlag = 1 << 7;
+
     /// <summary>Gets the always-active basic attack skill ID (0 = no skill, use normal attack).</summary>
     public int BasicSkillId { get; init; }
 
@@ -181,79 +257,78 @@ public sealed class MuHelperPlayerConfiguration
     /// <param name="blob">The raw Mu Helper configuration.</param>
     public static MuHelperPlayerConfiguration? TryDeserialize(byte[]? blob)
     {
-        if (blob is null || blob.Length < 69)
+        if (blob is null || blob.Length < MinBlobLength)
         {
             return null;
         }
 
-        byte b1 = blob[1];
-        bool jewel = (b1 & (1 << 3)) != 0;
-        bool setItem = (b1 & (1 << 4)) != 0;
-        bool excellent = (b1 & (1 << 5)) != 0;
-        bool zen = (b1 & (1 << 6)) != 0;
-        bool extraItem = (b1 & (1 << 7)) != 0;
+        byte pickupFlags = blob[PickupFlagsOffset];
+        bool jewel = (pickupFlags & PickJewelFlag) != 0;
+        bool setItem = (pickupFlags & PickSetItemFlag) != 0;
+        bool excellent = (pickupFlags & PickExcellentFlag) != 0;
+        bool zen = (pickupFlags & PickZenFlag) != 0;
+        bool extraItem = (pickupFlags & PickExtraItemFlag) != 0;
 
-        byte b2 = blob[2];
-        int huntingRange = b2 & 0x0F;
-        int obtainRange = (b2 >> 4) & 0x0F;
+        byte rangeFlags = blob[RangeFlagsOffset];
+        int huntingRange = rangeFlags & HuntingRangeMask;
+        int obtainRange = (rangeFlags >> ObtainRangeShift) & ObtainRangeMask;
 
-        int distanceMin = BlobReadWord(blob, 3);
+        int distanceMin = BlobReadWord(blob, DistanceMinOffset);
+        int basicSkill = BlobReadWord(blob, BasicSkillOffset);
+        int activationSkill1 = BlobReadWord(blob, ActivationSkill1Offset);
+        int delayMinSkill1 = BlobReadWord(blob, DelayMinSkill1Offset);
+        int activationSkill2 = BlobReadWord(blob, ActivationSkill2Offset);
+        int delayMinSkill2 = BlobReadWord(blob, DelayMinSkill2Offset);
+        int castingBuffMin = BlobReadWord(blob, CastingBuffMinOffset);
+        int buffSkill0 = BlobReadWord(blob, BuffSkill0Offset);
+        int buffSkill1 = BlobReadWord(blob, BuffSkill1Offset);
+        int buffSkill2 = BlobReadWord(blob, BuffSkill2Offset);
 
-        int basicSkill1 = BlobReadWord(blob, 5);
-        int activationSkill1 = BlobReadWord(blob, 7);
-        int delayMinSkill1 = BlobReadWord(blob, 9);
-        int activationSkill2 = BlobReadWord(blob, 11);
-        int delayMinSkill2 = BlobReadWord(blob, 13);
-        int castingBuffMin = BlobReadWord(blob, 15);
-        int buffSkill0 = BlobReadWord(blob, 17);
-        int buffSkill1 = BlobReadWord(blob, 19);
-        int buffSkill2 = BlobReadWord(blob, 21);
+        byte hpThresholdFlags = blob[HpThresholdFlagsOffset];
+        int hpPotion = (hpThresholdFlags & HpPotionNibbleMask) * HpThresholdMultiplier;
+        int hpHeal = ((hpThresholdFlags >> HpHealNibbleShift) & HpHealNibbleMask) * HpThresholdMultiplier;
 
-        byte b23 = blob[23];
-        int hpPotion = (b23 & 0x0F) * 10;
-        int hpHeal = ((b23 >> 4) & 0x0F) * 10;
+        byte partyDrainFlags = blob[PartyDrainThresholdOffset];
+        int hpParty = (partyDrainFlags & HpPartyNibbleMask) * HpThresholdMultiplier;
 
-        byte b24 = blob[24];
-        int hpParty = (b24 & 0x0F) * 10;
-        // HPStatusDrainLife uses the same threshold as HPStatusAutoHeal per the serialize code
-        byte b25 = blob[25];
-        bool autoPotion = (b25 & (1 << 0)) != 0;
-        bool autoHeal = (b25 & (1 << 1)) != 0;
-        bool drainLife = (b25 & (1 << 2)) != 0;
-        bool longRangeCounterAttack = (b25 & (1 << 3)) != 0;
-        bool returnToOriginal = (b25 & (1 << 4)) != 0;
-        bool combo = (b25 & (1 << 5)) != 0;
-        bool party = (b25 & (1 << 6)) != 0;
-        bool prefPartyHeal = (b25 & (1 << 7)) != 0;
+        byte behaviorFlags = blob[BehaviorFlagsOffset];
+        bool autoPotion = (behaviorFlags & AutoPotionFlag) != 0;
+        bool autoHeal = (behaviorFlags & AutoHealFlag) != 0;
+        bool drainLife = (behaviorFlags & DrainLifeFlag) != 0;
+        bool longRangeCounterAttack = (behaviorFlags & LongRangeCounterAttackFlag) != 0;
+        bool returnToOriginal = (behaviorFlags & ReturnToOriginalFlag) != 0;
+        bool combo = (behaviorFlags & ComboFlag) != 0;
+        bool party = (behaviorFlags & PartyFlag) != 0;
+        bool prefPartyHeal = (behaviorFlags & PreferPartyHealFlag) != 0;
 
-        byte b26 = blob[26];
-        bool buffDurationParty = (b26 & (1 << 0)) != 0;
-        bool useDarkSpirits = (b26 & (1 << 1)) != 0;
-        bool buffDuration = (b26 & (1 << 2)) != 0;
-        bool skill1Delay = (b26 & (1 << 3)) != 0;
-        bool skill1Con = (b26 & (1 << 4)) != 0;
-        bool skill1PreCon = (b26 & (1 << 5)) != 0; // 0=nearby, 1=attacking
-        int skill1SubCon = (b26 >> 6) & 0x03;
+        byte skill1Flags = blob[Skill1FlagsOffset];
+        bool buffDurationParty = (skill1Flags & BuffDurationPartyFlag) != 0;
+        bool useDarkSpirits = (skill1Flags & UseDarkSpiritsFlag) != 0;
+        bool buffDuration = (skill1Flags & BuffDurationFlag) != 0;
+        bool skill1Delay = (skill1Flags & Skill1DelayFlag) != 0;
+        bool skill1Con = (skill1Flags & Skill1ConditionFlag) != 0;
+        bool skill1PreCon = (skill1Flags & Skill1PreConditionFlag) != 0;
+        int skill1SubCon = (skill1Flags >> Skill1SubConditionShift) & Skill1SubConditionMask;
 
-        byte b27 = blob[27];
-        bool skill2Delay = (b27 & (1 << 0)) != 0;
-        bool skill2Con = (b27 & (1 << 1)) != 0;
-        bool skill2PreCon = (b27 & (1 << 2)) != 0;
-        int skill2SubCon = (b27 >> 3) & 0x03;
-        bool repairItem = (b27 & (1 << 5)) != 0;
-        bool pickAll = (b27 & (1 << 6)) != 0;
-        bool pickSelect = (b27 & (1 << 7)) != 0;
+        byte skill2Flags = blob[Skill2FlagsOffset];
+        bool skill2Delay = (skill2Flags & Skill2DelayFlag) != 0;
+        bool skill2Con = (skill2Flags & Skill2ConditionFlag) != 0;
+        bool skill2PreCon = (skill2Flags & Skill2PreConditionFlag) != 0;
+        int skill2SubCon = (skill2Flags >> Skill2SubConditionShift) & Skill2SubConditionMask;
+        bool repairItem = (skill2Flags & RepairItemFlag) != 0;
+        bool pickAll = (skill2Flags & PickAllItemsFlag) != 0;
+        bool pickSelect = (skill2Flags & PickSelectItemsFlag) != 0;
 
-        int petAttack = blob[28];
+        int petAttack = blob[PetAttackOffset];
 
         var extraNames = new List<string>();
-        if (blob.Length >= 245)
+        if (blob.Length >= ExtraItemsEndOffset)
         {
-            for (int i = 0; i < 12; i++)
+            for (int i = 0; i < ExtraItemSlotCount; i++)
             {
-                int start = 65 + (i * 15);
+                int start = ExtraItemsOffset + (i * ExtraItemSlotLength);
                 int len = 0;
-                while (len < 15 && blob[start + len] != 0)
+                while (len < ExtraItemSlotLength && blob[start + len] != 0)
                 {
                     len++;
                 }
@@ -267,7 +342,7 @@ public sealed class MuHelperPlayerConfiguration
 
         return new MuHelperPlayerConfiguration
         {
-            BasicSkillId = basicSkill1,
+            BasicSkillId = basicSkill,
             ActivationSkill1Id = activationSkill1,
             ActivationSkill2Id = activationSkill2,
             DelayMinSkill1 = delayMinSkill1,

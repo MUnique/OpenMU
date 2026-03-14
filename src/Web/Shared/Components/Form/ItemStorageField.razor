@@ -237,13 +237,15 @@
     private byte? FindFreeSlot()
     {
         var occupiedSlots = this.GetAllOccupiedSlots();
-        var maxSlot = InventoryConstants.GetInventorySize(this._numberOfExtensions);
+        var maxSlot = this.GetMaxSlot();
+        var boxOffset = this.GetBoxOffset();
+        var rowSize = this.GetRowSize();
         var itemWidth = this._selectedItem!.Definition!.Width;
         var itemHeight = this._selectedItem.Definition.Height;
 
-        for (byte slot = 0; slot < maxSlot; slot++)
+        for (byte slot = boxOffset; slot < maxSlot; slot++)
         {
-            if (this.CanPlaceItemAt(slot, itemWidth, itemHeight, occupiedSlots, maxSlot))
+            if (this.CanPlaceItemAt(slot, itemWidth, itemHeight, occupiedSlots, maxSlot, boxOffset, rowSize))
             {
                 return slot;
             }
@@ -252,21 +254,50 @@
         return null;
     }
 
+    private byte GetMaxSlot()
+    {
+        return this._storageType switch
+        {
+            StorageType.Vault => InventoryConstants.WarehouseSize,
+            StorageType.VaultExtension => InventoryConstants.WarehouseSize,
+            StorageType.Inventory => InventoryConstants.GetInventorySize(this._numberOfExtensions),
+            StorageType.InventoryExtension => (byte)(InventoryConstants.RowsOfOneExtension * InventoryConstants.RowSize),
+            StorageType.PersonalStore => InventoryConstants.StoreSize,
+            StorageType.Merchant => InventoryConstants.WarehouseSize,
+            _ => byte.MaxValue,
+        };
+    }
+
+    private byte GetBoxOffset()
+    {
+        return this._storageType == StorageType.Inventory ? InventoryConstants.EquippableSlotsCount : (byte)0;
+    }
+
+    private byte GetRowSize()
+    {
+        return (byte)InventoryConstants.RowSize;
+    }
+
     private HashSet<byte> GetAllOccupiedSlots()
     {
         return this.Value!.Items
-            .Where(i => !ReferenceEquals(i, this._selectedItem))
             .SelectMany(this.GetItemSlots)
             .ToHashSet();
     }
 
-    private bool CanPlaceItemAt(byte slot, byte width, byte height, HashSet<byte> occupiedSlots, byte maxSlot)
+    private bool CanPlaceItemAt(byte slot, byte width, byte height, HashSet<byte> occupiedSlots, byte maxSlot, byte boxOffset, byte rowSize)
     {
+        var column = (slot - boxOffset) % rowSize;
+        if (column + width > rowSize)
+        {
+            return false;
+        }
+
         for (byte row = 0; row < height; row++)
         {
             for (byte col = 0; col < width; col++)
             {
-                var currentSlot = (byte)(slot + row * 8 + col);
+                var currentSlot = (byte)(slot + row * rowSize + col);
                 if (currentSlot >= maxSlot || occupiedSlots.Contains(currentSlot))
                 {
                     return false;
@@ -287,12 +318,20 @@
         var startSlot = item.ItemSlot;
         var width = item.Definition.Width;
         var height = item.Definition.Height;
+        var boxOffset = this.GetBoxOffset();
+        var rowSize = this.GetRowSize();
+
+        if (startSlot < boxOffset)
+        {
+            yield return startSlot;
+            yield break;
+        }
 
         for (byte row = 0; row < height; row++)
         {
             for (byte col = 0; col < width; col++)
             {
-                yield return (byte)(startSlot + row * 8 + col);
+                yield return (byte)(startSlot + row * rowSize + col);
             }
         }
     }
