@@ -114,8 +114,6 @@ public sealed class OfflineLevelingIntelligence : IDisposable
 
         await this._repairHandler.PerformRepairsAsync().ConfigureAwait(false);
 
-
-
         if (this._combatHandler.SkillCooldownTicks > 0)
         {
             this._combatHandler.DecrementCooldown();

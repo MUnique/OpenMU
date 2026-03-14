@@ -36,8 +36,6 @@ public sealed class MovementHandler
         this._originPosition = originPosition;
     }
 
-
-
     /// <summary>
     /// Returns the character to the original position if configured and distance/time thresholds are met.
     /// </summary>

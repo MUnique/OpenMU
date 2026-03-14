@@ -68,8 +68,6 @@ public sealed class CombatHandler
         }
     }
 
-
-
     /// <summary>
     /// Calculates the hunting range in tiles from the specified configuration.
     /// </summary>
