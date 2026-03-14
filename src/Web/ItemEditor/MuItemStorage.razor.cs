@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Components;
 public partial class MuItemStorage
 {
     private StorageViewModel? _viewModel;
-    private ItemViewModel? _selectedItemModel;
     private Item? _selectedItem;
 
     /// <summary>
@@ -30,7 +29,6 @@ public partial class MuItemStorage
             }
 
             this._selectedItem = value;
-            this.UpdateSelectedModel();
         }
     }
 
@@ -70,7 +68,6 @@ public partial class MuItemStorage
     /// <param name="viewModel">The view model.</param>
     public async Task SetSelectedItemAsync(ItemViewModel viewModel)
     {
-        this._selectedItemModel = viewModel;
         if (this.SelectedItemChanged.HasDelegate)
         {
             await this.SelectedItemChanged.InvokeAsync(viewModel.Item).ConfigureAwait(true);
@@ -84,13 +81,7 @@ public partial class MuItemStorage
         if (this.Value is { } value)
         {
             this._viewModel = value.CreateViewModel(this.StorageType, this.NumberOfExtensions, this.ExtensionIndex);
-            this.UpdateSelectedModel();
         }
-    }
-
-    private void UpdateSelectedModel()
-    {
-        this._selectedItemModel = this._selectedItem is null ? null : this._viewModel?.Items.FirstOrDefault(item => item.Item == this._selectedItem);
     }
 
     /// <inheritdoc />
