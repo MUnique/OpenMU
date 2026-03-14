@@ -48,7 +48,7 @@ public sealed class OfflineLevelingIntelligence : IDisposable
 
         this._buffHandler = new BuffHandler(player, config);
         this._itemPickupHandler = new ItemPickupHandler(player, config);
-        this._movementHandler = new MovementHandler(player, config, originalPosition, () => CombatHandler.GetHuntingRange(config));
+        this._movementHandler = new MovementHandler(player, config, originalPosition, () => CombatHandler.CalculateHuntingRange(config));
         this._combatHandler = new CombatHandler(player, config, this._movementHandler, originalPosition);
         this._repairHandler = new RepairHandler(player, config);
         this._zenHandler = new ZenConsumptionHandler(player);

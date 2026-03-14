@@ -71,11 +71,11 @@ public sealed class CombatHandler
 
 
     /// <summary>
-    /// Gets the hunting range in tiles from the specified configuration.
+    /// Calculates the hunting range in tiles from the specified configuration.
     /// </summary>
     /// <param name="config">The configuration.</param>
     /// <returns>The hunting range.</returns>
-    public static byte GetHuntingRange(MuHelperPlayerConfiguration? config)
+    public static byte CalculateHuntingRange(MuHelperPlayerConfiguration? config)
     {
         if (config is null)
         {
@@ -88,7 +88,7 @@ public sealed class CombatHandler
     /// <summary>
     /// Gets the hunting range in tiles.
     /// </summary>
-    public byte HuntingRange => GetHuntingRange(this._config);
+    public byte HuntingRange => CalculateHuntingRange(this._config);
 
     /// <summary>
     /// Performs combat attacks on targets.

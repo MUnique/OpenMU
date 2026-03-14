@@ -17,7 +17,7 @@ public sealed class MovementHandler
     private readonly OfflineLevelingPlayer _player;
     private readonly MuHelperPlayerConfiguration? _config;
     private readonly Point _originPosition;
-    private readonly Func<byte> _getHuntingRange;
+    private readonly Func<byte> _huntingRangeProvider;
 
     private DateTime? _outOfRangeSince;
 
@@ -28,12 +28,12 @@ public sealed class MovementHandler
     /// <param name="config">The MU Helper configuration.</param>
     /// <param name="originPosition">The original spawn position.</param>
     /// <param name="getHuntingRange">Function to get the current hunting range.</param>
-    public MovementHandler(OfflineLevelingPlayer player, MuHelperPlayerConfiguration? config, Point originPosition, Func<byte> getHuntingRange)
+    public MovementHandler(OfflineLevelingPlayer player, MuHelperPlayerConfiguration? config, Point originPosition, Func<byte> huntingRangeProvider)
     {
         this._player = player;
         this._config = config;
         this._originPosition = originPosition;
-        this._getHuntingRange = getHuntingRange;
+        this._huntingRangeProvider = huntingRangeProvider;
     }
 
 
@@ -55,7 +55,7 @@ public sealed class MovementHandler
             this._outOfRangeSince ??= DateTime.UtcNow;
             var secondsAway = (DateTime.UtcNow - this._outOfRangeSince.Value).TotalSeconds;
 
-            if (secondsAway >= this._config.MaxSecondsAway || distance > this._getHuntingRange())
+            if (secondsAway >= this._config.MaxSecondsAway || distance > this._huntingRangeProvider())
             {
                 await this.WalkToAsync(this._originPosition).ConfigureAwait(false);
                 this._outOfRangeSince = null;
@@ -77,7 +77,7 @@ public sealed class MovementHandler
     /// <param name="range">The range to stop within.</param>
     public async ValueTask MoveCloserToTargetAsync(IAttackable target, byte range)
     {
-        if (target.IsInRange(this._originPosition, this._getHuntingRange()))
+        if (target.IsInRange(this._originPosition, this._huntingRangeProvider()))
         {
             var walkTarget = this._player.CurrentMap!.Terrain.GetRandomCoordinate(target.Position, range);
             await this.WalkToAsync(walkTarget).ConfigureAwait(false);
