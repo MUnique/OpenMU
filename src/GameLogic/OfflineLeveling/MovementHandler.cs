@@ -21,6 +21,8 @@ public sealed class MovementHandler
 
     private DateTime? _outOfRangeSince;
 
+    private byte HuntingRange => this._huntingRangeProvider();
+
     /// <summary>
     /// Initializes a new instance of the <see cref="MovementHandler"/> class.
     /// </summary>
@@ -55,7 +57,7 @@ public sealed class MovementHandler
             this._outOfRangeSince ??= DateTime.UtcNow;
             var secondsAway = (DateTime.UtcNow - this._outOfRangeSince.Value).TotalSeconds;
 
-            if (secondsAway >= this._config.MaxSecondsAway || distance > this._huntingRangeProvider())
+            if (secondsAway >= this._config.MaxSecondsAway || distance > this.HuntingRange)
             {
                 await this.WalkToAsync(this._originPosition).ConfigureAwait(false);
                 this._outOfRangeSince = null;
@@ -77,7 +79,7 @@ public sealed class MovementHandler
     /// <param name="range">The range to stop within.</param>
     public async ValueTask MoveCloserToTargetAsync(IAttackable target, byte range)
     {
-        if (target.IsInRange(this._originPosition, this._huntingRangeProvider()))
+        if (target.IsInRange(this._originPosition, this.HuntingRange))
         {
             var walkTarget = this._player.CurrentMap!.Terrain.GetRandomCoordinate(target.Position, range);
             await this.WalkToAsync(walkTarget).ConfigureAwait(false);
