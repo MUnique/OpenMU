@@ -20,7 +20,7 @@ public sealed class BuffHandler
 
     private int _buffSkillIndex;
     private bool _buffTimerTriggered;
-    private int _secondsElapsed;
+    private DateTime? _nextPeriodicBuffTime;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BuffHandler"/> class.
@@ -31,15 +31,6 @@ public sealed class BuffHandler
     {
         this._player = player;
         this._config = config;
-    }
-
-    /// <summary>
-    /// Updates the elapsed time counter.
-    /// </summary>
-    /// <param name="secondsElapsed">The number of seconds elapsed.</param>
-    public void UpdateElapsedTime(int secondsElapsed)
-    {
-        this._secondsElapsed = secondsElapsed;
     }
 
     /// <summary>
@@ -59,42 +50,70 @@ public sealed class BuffHandler
             return true;
         }
 
-        if (!this._config.BuffOnDuration
-            && this._config.BuffCastIntervalSeconds > 0
-            && this._secondsElapsed > 0
-            && this._secondsElapsed % this._config.BuffCastIntervalSeconds == 0)
+        if (!this._config.BuffOnDuration && this._config.BuffCastIntervalSeconds > 0)
         {
-            this._buffTimerTriggered = true;
+            this._nextPeriodicBuffTime ??= DateTime.UtcNow.AddSeconds(this._config.BuffCastIntervalSeconds);
+
+            if (DateTime.UtcNow >= this._nextPeriodicBuffTime)
+            {
+                this._buffTimerTriggered = true;
+                this._nextPeriodicBuffTime = DateTime.UtcNow.AddSeconds(this._config.BuffCastIntervalSeconds);
+            }
         }
 
-        int buffId = buffIds[this._buffSkillIndex];
-        if (buffId == 0)
+        for (int i = 0; i < BuffSlotCount; i++)
         {
-            this._buffSkillIndex = (this._buffSkillIndex + 1) % BuffSlotCount;
-            return true;
-        }
+            int buffId = buffIds[this._buffSkillIndex];
+            if (buffId == 0)
+            {
+                // Slot is empty, skip to the next one immediately.
+                this._buffSkillIndex = (this._buffSkillIndex + 1) % BuffSlotCount;
+                if (this._buffSkillIndex == 0)
+                {
+                    this._buffTimerTriggered = false;
+                }
 
-        var skillEntry = this._player.SkillList?.GetSkill((ushort)buffId);
-        if (skillEntry?.Skill?.MagicEffectDef is null)
-        {
-            this._buffSkillIndex = (this._buffSkillIndex + 1) % BuffSlotCount;
-            return true;
-        }
+                continue;
+            }
 
-        bool alreadyActive = this._player.MagicEffectList.ActiveEffects.Values
-            .Any(e => e.Definition == skillEntry.Skill.MagicEffectDef);
+            var skillEntry = this._player.SkillList?.GetSkill((ushort)buffId);
+            if (skillEntry?.Skill?.MagicEffectDef is null)
+            {
+                // Skill not found or has no effect, skip to the next one immediately.
+                this._buffSkillIndex = (this._buffSkillIndex + 1) % BuffSlotCount;
+                if (this._buffSkillIndex == 0)
+                {
+                    this._buffTimerTriggered = false;
+                }
 
-        if (!alreadyActive || this._buffTimerTriggered)
-        {
-            await this._player.ApplyMagicEffectAsync(this._player, skillEntry).ConfigureAwait(false);
+                continue;
+            }
 
+            bool alreadyActive = this._player.MagicEffectList.ActiveEffects.Values
+                .Any(e => e.Definition == skillEntry.Skill.MagicEffectDef);
+
+            if (!alreadyActive || this._buffTimerTriggered)
+            {
+                await this._player.ApplyMagicEffectAsync(this._player, skillEntry).ConfigureAwait(false);
+
+                // Move index for the next tick so we don't spam the same slot.
+                this._buffSkillIndex = (this._buffSkillIndex + 1) % BuffSlotCount;
+                if (this._buffSkillIndex == 0)
+                {
+                    this._buffTimerTriggered = false;
+                }
+
+                return false;
+            }
+
+            // If the current buff is already active and no timer was triggered, we cycle to the next slot
+            // immediately to avoid wasting 500ms (one full tick) on an already-active buff.
             this._buffSkillIndex = (this._buffSkillIndex + 1) % BuffSlotCount;
             if (this._buffSkillIndex == 0)
             {
                 this._buffTimerTriggered = false;
+                break;
             }
-
-            return false;
         }
 
         return true;

@@ -24,8 +24,6 @@ using MUnique.OpenMU.GameLogic.Views.MuHelper;
 /// </summary>
 public sealed class OfflineLevelingIntelligence : IDisposable
 {
-    private const int TicksPerSecond = 2;
-
     private readonly OfflineLevelingPlayer _player;
 
     private readonly CombatHandler _combatHandler;
@@ -33,13 +31,10 @@ public sealed class OfflineLevelingIntelligence : IDisposable
     private readonly ItemPickupHandler _itemPickupHandler;
     private readonly MovementHandler _movementHandler;
     private readonly RepairHandler _repairHandler;
+    private readonly ZenConsumptionHandler _zenHandler;
 
     private Timer? _aiTimer;
     private bool _disposed;
-
-    private int _tickCounter;
-    private int _secondsElapsed;
-    private DateTime _lastPayTimestamp;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="OfflineLevelingIntelligence"/> class.
@@ -51,6 +46,13 @@ public sealed class OfflineLevelingIntelligence : IDisposable
         var config = MuHelperPlayerConfiguration.TryDeserialize(player.SelectedCharacter?.MuHelperConfiguration);
         var originalPosition = player.Position;
 
+        this._buffHandler = new BuffHandler(player, config);
+        this._itemPickupHandler = new ItemPickupHandler(player, config);
+        this._movementHandler = new MovementHandler(player, config, originalPosition, () => CombatHandler.GetHuntingRange(config));
+        this._combatHandler = new CombatHandler(player, config, this._movementHandler, originalPosition);
+        this._repairHandler = new RepairHandler(player, config);
+        this._zenHandler = new ZenConsumptionHandler(player);
+
         if (config is null)
         {
             player.Logger.LogDebug("Offline leveling started for {0} without a valid MU Helper configuration.", player.Name);
@@ -59,14 +61,6 @@ public sealed class OfflineLevelingIntelligence : IDisposable
         {
             player.Logger.LogDebug("Offline leveling configuration for {0}: RepairItem={1}, Zen={2}, AutoHeal={3}.", player.Name, config.RepairItem, config.PickZen, config.AutoHeal);
         }
-
-        // Initialize handlers
-        this._combatHandler = new CombatHandler(player, config, originalPosition);
-        this._buffHandler = new BuffHandler(player, config);
-        this._itemPickupHandler = new ItemPickupHandler(player, config);
-        this._movementHandler = new MovementHandler(player, config, originalPosition, () => this._combatHandler.HuntingRange);
-        this._repairHandler = new RepairHandler(player, config);
-        this._lastPayTimestamp = player.StartTimestamp;
     }
 
     /// <summary>Starts the 500 ms AI timer.</summary>
@@ -116,20 +110,11 @@ public sealed class OfflineLevelingIntelligence : IDisposable
             return;
         }
 
-        await this.DeductZenAsync().ConfigureAwait(false);
+        await this._zenHandler.DeductZenAsync().ConfigureAwait(false);
 
         await this._repairHandler.PerformRepairsAsync().ConfigureAwait(false);
 
-        if (++this._tickCounter >= TicksPerSecond)
-        {
-            this._tickCounter = 0;
-            this._secondsElapsed++;
-        }
 
-        // Update handlers with shared state
-        this._combatHandler.UpdateElapsedTime(this._secondsElapsed);
-        this._buffHandler.UpdateElapsedTime(this._secondsElapsed);
-        this._movementHandler.UpdateTickCounter(this._tickCounter);
 
         if (this._combatHandler.SkillCooldownTicks > 0)
         {
@@ -158,41 +143,5 @@ public sealed class OfflineLevelingIntelligence : IDisposable
         }
 
         await this._combatHandler.PerformAttackAsync().ConfigureAwait(false);
-    }
-
-    private async Task DeductZenAsync()
-    {
-        var helperConfig = this._player.GameContext.FeaturePlugIns.GetPlugIn<MuHelperFeaturePlugIn>()?.Configuration
-                           ?? new MuHelperServerConfiguration();
-
-        if (DateTime.UtcNow.Subtract(this._lastPayTimestamp) < helperConfig.PayInterval)
-        {
-            return;
-        }
-
-        var currentStage = (int)(DateTime.UtcNow.Subtract(this._player.StartTimestamp) / helperConfig.StageInterval);
-        currentStage = Math.Max(0, currentStage);
-        currentStage = Math.Min(helperConfig.CostPerStage.Count - 1, currentStage);
-
-        var costMultiplier = helperConfig.CostPerStage[currentStage];
-        var totalLevel = (int)(this._player.Level + (this._player.Attributes?[Stats.MasterLevel] ?? 0));
-        var amount = costMultiplier * totalLevel;
-
-        if (amount > 0 && this._player.TryRemoveMoney(amount))
-        {
-            this._lastPayTimestamp = DateTime.UtcNow;
-            await this._player
-                .InvokeViewPlugInAsync<IMuHelperStatusUpdatePlugIn>(p => p.ConsumeMoneyAsync((uint)amount))
-                .ConfigureAwait(false);
-        }
-        else if (amount > 0)
-        {
-            this._player.Logger.LogDebug("Offline leveling stopped for {0} due to insufficient Zen.", this._player.Name);
-            await this._player.StopAsync().ConfigureAwait(false);
-        }
-        else
-        {
-            // The cost is 0 or less; no action required.
-        }
     }
 }

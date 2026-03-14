@@ -30,13 +30,13 @@ public sealed class CombatHandler
 
     private readonly OfflineLevelingPlayer _player;
     private readonly MuHelperPlayerConfiguration? _config;
+    private readonly MovementHandler _movementHandler;
     private readonly Point _originPosition;
 
     private IAttackable? _currentTarget;
     private int _nearbyMonsterCount;
     private int _currentComboStep;
     private int _skillCooldownTicks;
-    private int _secondsElapsed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CombatHandler"/> class.
@@ -44,10 +44,11 @@ public sealed class CombatHandler
     /// <param name="player">The offline leveling player.</param>
     /// <param name="config">The MU Helper configuration.</param>
     /// <param name="originPosition">The original position to hunt around.</param>
-    public CombatHandler(OfflineLevelingPlayer player, MuHelperPlayerConfiguration? config, Point originPosition)
+    public CombatHandler(OfflineLevelingPlayer player, MuHelperPlayerConfiguration? config, MovementHandler movementHandler, Point originPosition)
     {
         this._player = player;
         this._config = config;
+        this._movementHandler = movementHandler;
         this._originPosition = originPosition;
     }
 
@@ -67,30 +68,27 @@ public sealed class CombatHandler
         }
     }
 
+
+
     /// <summary>
-    /// Updates the elapsed time counter.
+    /// Gets the hunting range in tiles from the specified configuration.
     /// </summary>
-    /// <param name="secondsElapsed">The number of seconds elapsed.</param>
-    public void UpdateElapsedTime(int secondsElapsed)
+    /// <param name="config">The configuration.</param>
+    /// <returns>The hunting range.</returns>
+    public static byte GetHuntingRange(MuHelperPlayerConfiguration? config)
     {
-        this._secondsElapsed = secondsElapsed;
+        if (config is null)
+        {
+            return DefaultRange;
+        }
+
+        return (byte)Math.Max(DefaultRange, config.HuntingRange);
     }
 
     /// <summary>
     /// Gets the hunting range in tiles.
     /// </summary>
-    public byte HuntingRange
-    {
-        get
-        {
-            if (this._config is null)
-            {
-                return DefaultRange;
-            }
-
-            return (byte)Math.Max(DefaultRange, this._config.HuntingRange);
-        }
-    }
+    public byte HuntingRange => GetHuntingRange(this._config);
 
     /// <summary>
     /// Performs combat attacks on targets.
@@ -108,6 +106,7 @@ public sealed class CombatHandler
         byte attackRange = this.GetEffectiveAttackRange();
         if (!this.IsTargetInAttackRange(this._currentTarget, attackRange))
         {
+            await this._movementHandler.MoveCloserToTargetAsync(this._currentTarget, attackRange).ConfigureAwait(false);
             return;
         }
 
@@ -324,9 +323,13 @@ public sealed class CombatHandler
             return null;
         }
 
-        if (useTimer && timerInterval > 0 && this._secondsElapsed > 0 && this._secondsElapsed % timerInterval == 0)
+        if (useTimer && timerInterval > 0)
         {
-            return this._player.SkillList?.GetSkill((ushort)skillId);
+            var secondsElapsed = (int)(DateTime.UtcNow - this._player.StartTimestamp).TotalSeconds;
+            if (secondsElapsed > 0 && secondsElapsed % timerInterval == 0)
+            {
+                return this._player.SkillList?.GetSkill((ushort)skillId);
+            }
         }
 
         if (useCond)

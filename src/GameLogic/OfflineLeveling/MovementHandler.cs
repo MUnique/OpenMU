@@ -19,8 +19,7 @@ public sealed class MovementHandler
     private readonly Point _originPosition;
     private readonly Func<byte> _getHuntingRange;
 
-    private int _secondsAwayFromOrigin;
-    private int _tickCounter;
+    private DateTime? _outOfRangeSince;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MovementHandler"/> class.
@@ -37,14 +36,7 @@ public sealed class MovementHandler
         this._getHuntingRange = getHuntingRange;
     }
 
-    /// <summary>
-    /// Updates the tick counter for timing-based operations.
-    /// </summary>
-    /// <param name="tickCounter">The current tick counter.</param>
-    public void UpdateTickCounter(int tickCounter)
-    {
-        this._tickCounter = tickCounter;
-    }
+
 
     /// <summary>
     /// Returns the character to the original position if configured and distance/time thresholds are met.
@@ -60,22 +52,19 @@ public sealed class MovementHandler
         var distance = this._player.GetDistanceTo(this._originPosition);
         if (distance > RegroupDistanceThreshold)
         {
-            if (this._tickCounter == 0)
+            this._outOfRangeSince ??= DateTime.UtcNow;
+            var secondsAway = (DateTime.UtcNow - this._outOfRangeSince.Value).TotalSeconds;
+
+            if (secondsAway >= this._config.MaxSecondsAway || distance > this._getHuntingRange())
             {
-                this._secondsAwayFromOrigin++;
+                await this.WalkToAsync(this._originPosition).ConfigureAwait(false);
+                this._outOfRangeSince = null;
+                return false;
             }
         }
         else
         {
-            this._secondsAwayFromOrigin = 0;
-            return true;
-        }
-
-        if (this._secondsAwayFromOrigin >= this._config.MaxSecondsAway || distance > this._getHuntingRange())
-        {
-            await this.WalkToAsync(this._originPosition).ConfigureAwait(false);
-            this._secondsAwayFromOrigin = 0;
-            return false;
+            this._outOfRangeSince = null;
         }
 
         return true;
