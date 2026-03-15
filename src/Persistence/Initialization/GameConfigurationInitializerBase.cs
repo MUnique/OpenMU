@@ -167,7 +167,7 @@ public abstract class GameConfigurationInitializerBase : InitializerBase
         var jewelsDropItemGroup = this.Context.CreateNew<DropItemGroup>();
         jewelsDropItemGroup.SetGuid(4);
         jewelsDropItemGroup.Chance = 0.001;
-        jewelsDropItemGroup.ItemType = SpecialItemType.RandomItem;
+        jewelsDropItemGroup.ItemType = SpecialItemType.Jewel;
         jewelsDropItemGroup.Description = "The jewels drop item group (0.1 % drop chance)";
         this.GameConfiguration.DropItemGroups.Add(jewelsDropItemGroup);
         BaseMapInitializer.RegisterDefaultDropItemGroup(jewelsDropItemGroup);
