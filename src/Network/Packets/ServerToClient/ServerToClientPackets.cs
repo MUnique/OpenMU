@@ -6465,6 +6465,24 @@ public readonly struct ObjectHit
     }
 
     /// <summary>
+    /// Gets or sets the is rage fighter streak hit.
+    /// </summary>
+    public bool IsRageFighterStreakHit
+    {
+        get => this._data.Span[7..].GetBoolean(4);
+        set => this._data.Span[7..].SetBoolean(value, 4);
+    }
+
+    /// <summary>
+    /// Gets or sets the is rage fighter streak final hit.
+    /// </summary>
+    public bool IsRageFighterStreakFinalHit
+    {
+        get => this._data.Span[7..].GetBoolean(5);
+        set => this._data.Span[7..].SetBoolean(value, 5);
+    }
+
+    /// <summary>
     /// Gets or sets the is double damage.
     /// </summary>
     public bool IsDoubleDamage
@@ -6568,6 +6586,24 @@ public readonly struct ObjectHitExtended
     {
         get => (DamageKind)this._data.Span[3..].GetByteValue(4, 0);
         set => this._data.Span[3..].SetByteValue((byte)value, 4, 0);
+    }
+
+    /// <summary>
+    /// Gets or sets the is rage fighter streak hit.
+    /// </summary>
+    public bool IsRageFighterStreakHit
+    {
+        get => this._data.Span[3..].GetBoolean(4);
+        set => this._data.Span[3..].SetBoolean(value, 4);
+    }
+
+    /// <summary>
+    /// Gets or sets the is rage fighter streak final hit.
+    /// </summary>
+    public bool IsRageFighterStreakFinalHit
+    {
+        get => this._data.Span[3..].GetBoolean(5);
+        set => this._data.Span[3..].SetBoolean(value, 5);
     }
 
     /// <summary>
@@ -30545,9 +30581,9 @@ public readonly struct MapEventState
             CriticalBlue = 3,
 
         /// <summary>
-        /// Light pink color.
+        /// Light pink color, usually used by reflected damage.
         /// </summary>
-            LightPink = 4,
+            ReflectedLightPink = 4,
 
         /// <summary>
         /// Dark green color, usually used by poison damage.
@@ -30555,9 +30591,9 @@ public readonly struct MapEventState
             PoisonDarkGreen = 5,
 
         /// <summary>
-        /// Dark pink color, usually used by reflected damage.
+        /// Dark pink color.
         /// </summary>
-            ReflectedDarkPink = 6,
+            DarkPink = 6,
 
         /// <summary>
         /// White color.

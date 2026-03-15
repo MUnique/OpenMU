@@ -675,7 +675,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <inheritdoc/>
-    public async ValueTask<HitInfo?> AttackByAsync(IAttacker attacker, SkillEntry? skill, bool isCombo, double damageFactor = 1.0)
+    public async ValueTask<HitInfo?> AttackByAsync(IAttacker attacker, SkillEntry? skill, bool isCombo, double damageFactor = 1.0, bool? isFinalStreakHit = null)
     {
         if (this.Attributes is null)
         {
@@ -722,7 +722,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             this.Attributes[Stats.CurrentMana] = (manaFullyRecovered ? this.Attributes[Stats.MaximumMana] : this.Attributes[Stats.CurrentMana]) - hitInfo.ManaToll;
         }
 
-        await this.HitAsync(hitInfo, attacker, skill?.Skill).ConfigureAwait(false);
+        await this.HitAsync(hitInfo, attacker, skill?.Skill, isFinalStreakHit).ConfigureAwait(false);
         await this.DecreaseItemDurabilityAfterHitAsync(hitInfo).ConfigureAwait(false);
 
         if (attacker as IPlayerSurrogate is { } playerSurrogate)
@@ -1610,8 +1610,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 return powerUp;
             }
 
-            if (masterSkillDefinition.TargetAttribute is not { } masterSkillTargetAttribute
-                || masterSkillTargetAttribute == powerUpDef.TargetAttribute)
+            if (masterSkillDefinition.TargetAttribute is { } masterSkillTargetAttribute
+                && masterSkillTargetAttribute == powerUpDef.TargetAttribute)
             {
                 var additionalValue = new SimpleElement(masterSkillEntry.CalculateValue(), masterSkillEntry.Skill.MasterDefinition?.Aggregation ?? powerUp.AggregateType);
                 powerUp = new CombinedElement(powerUp, additionalValue);
@@ -2085,7 +2085,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                ?? throw new InvalidOperationException($"Game map {spawnTargetMapDefinition} has no spawn gate.");
     }
 
-    private async ValueTask HitAsync(HitInfo hitInfo, IAttacker attacker, Skill? skill)
+    private async ValueTask HitAsync(HitInfo hitInfo, IAttacker attacker, Skill? skill, bool? isFinalStreakHit = null)
     {
         this.Summon?.Item2.RegisterHit(attacker);
         var healthDamage = hitInfo.HealthDamage;
@@ -2101,6 +2101,17 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
 
         this.Attributes[Stats.CurrentHealth] -= healthDamage;
+
+        if (isFinalStreakHit.HasValue)
+        {
+            hitInfo.Attributes |= DamageAttributes.RageFighterStreakHit;
+
+            if (isFinalStreakHit.Value || this.Attributes[Stats.CurrentHealth] < 1)
+            {
+                hitInfo.Attributes |= DamageAttributes.RageFighterStreakFinalHit;
+            }
+        }
+
         await this.InvokeViewPlugInAsync<IShowHitPlugIn>(p => p.ShowHitAsync(this, hitInfo)).ConfigureAwait(false);
         if (attacker is IWorldObserver observer)
         {

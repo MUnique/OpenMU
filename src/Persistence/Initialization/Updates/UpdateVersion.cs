@@ -359,8 +359,12 @@ public enum UpdateVersion
     /// </summary>
     RemoveJewelDropLevelGapSeason6 = 70,
 
+    /// The version of the <see cref="FixRageFighterMultipleHitSkillsPlugIn"/>.
+    /// </summary>
+    FixRageFighterMultipleHitSkills = 71,
+
     /// <summary>
     /// The version of the <see cref="AddCrestOfMonarchDropGroupUpdateSeason6"/>.
     /// </summary>
-    AddCrestOfMonarchDropGroupSeason6 = 71,
+    AddCrestOfMonarchDropGroupSeason6 = 72,
 }
