@@ -22,6 +22,7 @@ public class MonsterAttributeHolder : IAttributeSystem
             { Stats.DamageReceiveDecrement, m => 1.0f },
             { Stats.AttackDamageIncrease, m => 1.0f },
             { Stats.ShieldBypassChance, m => 1.0f },
+            { Stats.DefenseDecrement, m => 1.0f - m.Attributes.GetValueOfAttribute(Stats.InnovationDefDecrement) },
         };
 
     private static readonly IDictionary<AttributeDefinition, Action<AttackableNpcBase, float>> SetterMapping =
