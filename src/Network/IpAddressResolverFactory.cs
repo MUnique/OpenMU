@@ -25,9 +25,10 @@ public static class IpAddressResolverFactory
     /// <returns>The determined resolver.</returns>
     public static IIpAddressResolver CreateIpResolver(string[] args, (IpResolverType, string?)? configuration, ILoggerFactory loggerFactory)
     {
-        var (resolverType, resolverParameter) = DetermineBestFittingResolver(args, configuration);
+        var (resolver, source) = DetermineBestFittingResolverWithSource(args, configuration);
+        var allowRuntimeReconfiguration = source is not ResolverSource.StartParameter and not ResolverSource.EnvironmentVariable;
 
-        return new ConfigurableIpResolver(resolverType, resolverParameter, loggerFactory);
+        return new ConfigurableIpResolver(resolver.Type, resolver.Parameter, loggerFactory, allowRuntimeReconfiguration);
     }
 
     /// <summary>
@@ -38,10 +39,8 @@ public static class IpAddressResolverFactory
     /// <returns>The resolver type with its parameter.</returns>
     public static (IpResolverType Type, string? Parameter) DetermineBestFittingResolver(string[] args, (IpResolverType Type, string? Parameter)? configuration = default)
     {
-        return DetermineIpResolverByParameters(args)
-            ?? DetermineResolverByEnvironmentVariable()
-            ?? configuration
-            ?? DetermineResolverByEnvironment();
+        var (resolver, _) = DetermineBestFittingResolverWithSource(args, configuration);
+        return resolver;
     }
 
     private static (IpResolverType Type, string? Parameter)? DetermineIpResolverByParameters(string[] args)
@@ -94,4 +93,32 @@ public static class IpAddressResolverFactory
     private static string ExtractIpFromParameter(string parameter) => parameter.Substring(parameter.IndexOf(':') + 1);
 
     private static string? GetParameter(string[] args) => args.FirstOrDefault(a => a.StartsWith(ResolveParameterPrefix, StringComparison.InvariantCultureIgnoreCase));
+
+    private static ((IpResolverType Type, string? Parameter) Resolver, ResolverSource Source) DetermineBestFittingResolverWithSource(string[] args, (IpResolverType Type, string? Parameter)? configuration = default)
+    {
+        if (DetermineIpResolverByParameters(args) is { } byParameters)
+        {
+            return (byParameters, ResolverSource.StartParameter);
+        }
+
+        if (DetermineResolverByEnvironmentVariable() is { } byEnvironmentVariable)
+        {
+            return (byEnvironmentVariable, ResolverSource.EnvironmentVariable);
+        }
+
+        if (configuration is { } byConfiguration)
+        {
+            return (byConfiguration, ResolverSource.Configuration);
+        }
+
+        return (DetermineResolverByEnvironment(), ResolverSource.Environment);
+    }
+
+    private enum ResolverSource
+    {
+        StartParameter,
+        EnvironmentVariable,
+        Configuration,
+        Environment,
+    }
 }

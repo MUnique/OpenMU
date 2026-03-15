@@ -132,6 +132,6 @@
         return "badge-danger";
       }
 
-      return this.CurrentValue.GetTranslation(culture, false).Length > 0 ? "badge-success" : "badge-warning";
+      return this.CurrentValue.GetTranslation(culture, false)?.Length > 0 ? "badge-success" : "badge-warning";
     }
 }

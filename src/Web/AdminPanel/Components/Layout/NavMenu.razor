@@ -2,7 +2,7 @@
 
 <nav>
     <div>
-        <a href="">OpenMU</a>
+        <NavLink @onclick="() => NavigationHistory.Clear()">OpenMU</NavLink>
         <button @onclick="ToggleNavMenu">
             <span></span>
         </button>
@@ -14,7 +14,7 @@
             @if (this._isLoadingConfig)
             {
                 <li>
-                    <NavLink href="" Match="NavLinkMatch.All">
+                    <NavLink href="" Match="NavLinkMatch.All" @onclick="() => NavigationHistory.Clear()">
                         <span class="oi oi-clock" aria-hidden="true"></span> @Resources.Loading
                     </NavLink>
                 </li>
@@ -22,7 +22,7 @@
             else if (this._onlyShowSetup)
             {
                 <li>
-                    <NavLink href="setup">
+                    <NavLink href="setup" @onclick="() => NavigationHistory.Clear()">
                         <span class="oi oi-cog" aria-hidden="true"></span> @Resources.Setup
                     </NavLink>
                 </li>
@@ -30,22 +30,22 @@
             else
             {
                 <li>
-                    <NavLink href="" Match="NavLinkMatch.All">
+                    <NavLink href="" Match="NavLinkMatch.All" @onclick="() => NavigationHistory.Clear()">
                         <span class="oi oi-home" aria-hidden="true"></span> @Resources.Home
                     </NavLink>
                 </li>
                 <li>
-                    <NavLink href="servers">
+                    <NavLink href="servers" @onclick="() => NavigationHistory.Clear()">
                         <span class="oi oi-project" aria-hidden="true"></span> @Resources.Servers
                     </NavLink>
                 </li>
                 <li>
-                  <NavLink href="accounts">
+                  <NavLink href="accounts" @onclick="() => NavigationHistory.Clear()">
                     <span class="oi oi-list" aria-hidden="true"></span> @Resources.Accounts
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink href="logged-in">
+                  <NavLink href="logged-in" @onclick="() => NavigationHistory.Clear()">
                     <span class="oi oi-people" aria-hidden="true" /> @Resources.OnlineAccounts
                   </NavLink>
                 </li>
@@ -54,12 +54,12 @@
                     <ConfigNavMenu GameConfigurationId="@gameConfigurationId" />
                 }
                 <li>
-                    <NavLink href="setup">
+                    <NavLink href="setup" @onclick="() => NavigationHistory.Clear()">
                         <span class="oi oi-cog" aria-hidden="true"></span> @Resources.Setup
                     </NavLink>
                 </li>
                 <li>
-                    <NavLink href="config-updates">
+                    <NavLink href="config-updates" @onclick="() => NavigationHistory.Clear()">
                         <span class="oi oi-medical-cross" aria-hidden="true"></span> @Resources.Updates
                         @if (this._availableConfigUpdates > 0)
                         {
@@ -72,7 +72,7 @@
             @if (UserService.IsAvailable)
             {
                 <li>
-                    <NavLink href="users">
+                    <NavLink href="users" @onclick="() => NavigationHistory.Clear()">
                         <span class="oi oi-key" aria-hidden="true"></span> @Resources.Users
                     </NavLink>
                 </li>
@@ -80,7 +80,7 @@
             @if (AdminPanelEnvironment.IsHostingEmbedded)
             {
                 <li>
-                    <NavLink href="logfiles">
+                    <NavLink href="logfiles" @onclick="() => NavigationHistory.Clear()">
                         <span class="oi oi-list" aria-hidden="true"></span> @Resources.LogFiles
                     </NavLink>
                 </li>

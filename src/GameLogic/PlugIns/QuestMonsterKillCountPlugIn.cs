@@ -54,10 +54,11 @@ public class QuestMonsterKillCountPlugIn : IAttackableGotKilledPlugIn, ISupportC
 
                 requirementState!.KillCount++;
 
-                if (killRequirement.MinimumNumber >= requirementState!.KillCount)
+                if (killRequirement.MinimumNumber >= requirementState!.KillCount
+                    && configuration.Message.GetTranslation(player.Culture) is { Length: > 0 } translation)
                 {
                     var message = string.Format(
-                        configuration.Message.GetTranslation(player.Culture),
+                        translation,
                         questState.ActiveQuest.Name.GetTranslation(player.Culture),
                         monster.Definition.Designation.GetTranslation(player.Culture),
                         requirementState.KillCount,

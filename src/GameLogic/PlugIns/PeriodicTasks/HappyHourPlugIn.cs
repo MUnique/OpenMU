@@ -124,7 +124,7 @@ public class HappyHourPlugIn : PeriodicTaskBasePlugIn<HappyHourConfiguration, Pe
 
         try
         {
-            var message = configuration.Message?.GetTranslation(player.Culture) ?? player.GetLocalizedMessage(nameof(PlayerMessage.HappyHourEventHasBeenStarted));
+            var message = configuration.Message.GetTranslation(player.Culture) is { Length: > 0 } translation ? translation : player.GetLocalizedMessage(nameof(PlayerMessage.HappyHourEventHasBeenStarted));
             await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, Interfaces.MessageType.GoldenCenter)).ConfigureAwait(false);
         }
         catch (Exception ex)

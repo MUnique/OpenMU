@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.SourceGenerators;
 
+using System.Collections.Immutable;
 using System.Diagnostics;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -11,11 +12,11 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 
 /// <summary>
-/// A <see cref="ISourceGenerator"/> which implements <see cref="ICloneable{}"/>
+/// A <see cref="IIncrementalGenerator"/> which implements <see cref="ICloneable{}"/>
 /// and for convenience also <see cref="IAssignable"/> and <see cref="IAssignable{}"/>.
 /// </summary>
 [Generator]
-public class CloneableGenerator : ISourceGenerator
+public class CloneableGenerator : IIncrementalGenerator
 {
     private const string CloneableAttributeFullName = "MUnique.OpenMU.Annotations.CloneableAttribute";
 
@@ -24,62 +25,71 @@ public class CloneableGenerator : ISourceGenerator
     private const string IgnoreWhenCloningAttributeName = "IgnoreWhenCloningAttribute";
 
     /// <inheritdoc />
-    public void Initialize(GeneratorInitializationContext context)
+    public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        // No initialization required for this one
+        var classDeclarations = context.SyntaxProvider
+            .CreateSyntaxProvider(
+                predicate: static (node, _) => node is ClassDeclarationSyntax { AttributeLists.Count: > 0 },
+                transform: static (ctx, _) => GetClassWithCloneableAttribute(ctx))
+            .Where(static m => m is not null);
+
+        var compilationAndClasses = context.CompilationProvider.Combine(classDeclarations.Collect());
+
+        context.RegisterSourceOutput(compilationAndClasses, (spc, source) => Execute(source.Left, source.Right!, spc));
     }
 
-    /// <inheritdoc />
-    public void Execute(GeneratorExecutionContext context)
+    private static ClassDeclarationSyntax? GetClassWithCloneableAttribute(GeneratorSyntaxContext context)
     {
-        var attributeSymbol = context.Compilation.GetTypeByMetadataName(CloneableAttributeFullName);
+        var classDeclaration = (ClassDeclarationSyntax)context.Node;
 
-        var classWithAttributes = context.Compilation.SyntaxTrees.Where(st => st.GetRoot().DescendantNodes().OfType<ClassDeclarationSyntax>()
-            .Any(p => p.DescendantNodes().OfType<AttributeSyntax>().Any()));
-
-        if (!Debugger.IsAttached)
+        foreach (var attributeList in classDeclaration.AttributeLists)
         {
-            // Uncomment the following line to be able to debug it during the build:
-            //// Debugger.Launch();
-        }
-
-        foreach (SyntaxTree tree in classWithAttributes)
-        {
-            var semanticModel = context.Compilation.GetSemanticModel(tree);
-
-            foreach (var declaredClass in tree
-                         .GetRoot()
-                         .DescendantNodes()
-                         .OfType<ClassDeclarationSyntax>()
-                         .Where(cd => cd.DescendantNodes().OfType<AttributeSyntax>().Any()))
+            foreach (var attribute in attributeList.Attributes)
             {
-                var nodes = declaredClass
-                    .DescendantNodes()
-                    .OfType<AttributeSyntax>()
-                    .FirstOrDefault(a => a.DescendantTokens().Any(dt => dt.IsKind(SyntaxKind.IdentifierToken) && semanticModel.GetTypeInfo(dt.Parent!).Type?.Name == attributeSymbol!.Name))
-                    ?.DescendantTokens()
-                    ?.Where(dt => dt.IsKind(SyntaxKind.IdentifierToken))
-                    ?.ToList();
-
-                if (nodes == null || !nodes.Any())
+                var symbolInfo = context.SemanticModel.GetSymbolInfo(attribute);
+                if (symbolInfo.Symbol is IMethodSymbol attributeSymbol)
                 {
-                    continue;
+                    var attributeContainingType = attributeSymbol.ContainingType;
+                    var fullName = attributeContainingType.ToDisplayString();
+
+                    if (fullName == CloneableAttributeFullName)
+                    {
+                        return classDeclaration;
+                    }
                 }
-
-                var declaredClassSymbol = semanticModel.GetDeclaredSymbol(declaredClass);
-                if (declaredClassSymbol is null)
-                {
-                    continue;
-                }
-
-                var generatedClass = this.GeneratePartialClass(declaredClass, declaredClassSymbol);
-
-                context.AddSource($"{declaredClass.Identifier}_Cloneable", SourceText.From(generatedClass.ToString(), Encoding.UTF8));
             }
         }
+
+        return null;
     }
 
-    private StringBuilder GeneratePartialClass(ClassDeclarationSyntax annotatedClass, INamedTypeSymbol declaredClassSymbol)
+    private static void Execute(Compilation compilation, ImmutableArray<ClassDeclarationSyntax?> classes, SourceProductionContext context)
+    {
+        if (classes.IsDefaultOrEmpty)
+        {
+            return;
+        }
+
+        foreach (var classDeclaration in classes.Distinct())
+        {
+            if (classDeclaration is null)
+            {
+                continue;
+            }
+
+            var semanticModel = compilation.GetSemanticModel(classDeclaration.SyntaxTree);
+            var declaredClassSymbol = semanticModel.GetDeclaredSymbol(classDeclaration);
+            if (declaredClassSymbol is null)
+            {
+                continue;
+            }
+
+            var generatedClass = GeneratePartialClass(classDeclaration, declaredClassSymbol);
+            context.AddSource($"{classDeclaration.Identifier}_Cloneable", SourceText.From(generatedClass.ToString(), Encoding.UTF8));
+        }
+    }
+
+    private static StringBuilder GeneratePartialClass(ClassDeclarationSyntax annotatedClass, INamedTypeSymbol declaredClassSymbol)
     {
         var sb = new StringBuilder();
         var className = annotatedClass.Identifier.Text;
@@ -128,13 +138,13 @@ public class CloneableGenerator : ISourceGenerator
             sb.AppendLine("        base.AssignValuesOf(other, gameConfiguration);");
         }
 
-        this.GenerateAssignments(sb, declaredClassSymbol);
+        GenerateAssignments(sb, declaredClassSymbol);
         sb.AppendLine("    }");
         sb.AppendLine("}");
         return sb;
     }
 
-    private void GenerateAssignments(StringBuilder sb, INamedTypeSymbol declaredClassSymbol)
+    private static void GenerateAssignments(StringBuilder sb, INamedTypeSymbol declaredClassSymbol)
     {
         var properties = declaredClassSymbol
             .GetMembers()

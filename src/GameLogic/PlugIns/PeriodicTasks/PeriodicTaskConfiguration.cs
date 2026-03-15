@@ -33,7 +33,7 @@ public class PeriodicTaskConfiguration
     /// Gets or sets the text which prints as a golden message in the game.
     /// </summary>
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.PeriodicTaskConfiguration_Message_Name))]
-    public LocalizedString? Message { get; set; }
+    public LocalizedString Message { get; set; }
 
     /// <summary>
     /// Generate a sequence of time points like [00:00, 00:01, ...].

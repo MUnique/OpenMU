@@ -530,7 +530,16 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     /// </param>
     protected async ValueTask ShowGoldenMessageAsync(LocalizedString message, params object?[] args)
     {
-        await this.ForEachPlayerAsync(player => player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(string.Format(message.GetTranslation(player.Culture), args), MessageType.GoldenCenter)).AsTask()).ConfigureAwait(false);
+        if (string.IsNullOrEmpty(message.Value))
+        {
+            return;
+        }
+
+        await this.ForEachPlayerAsync(player => player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p =>
+                message.GetTranslation(player.Culture) is { Length: > 0 } translation
+                    ? p.ShowMessageAsync(string.Format(translation, args), MessageType.GoldenCenter)
+                    : ValueTask.CompletedTask)
+            .AsTask()).ConfigureAwait(false);
     }
 
     /// <summary>

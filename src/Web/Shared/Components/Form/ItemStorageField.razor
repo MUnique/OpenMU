@@ -39,7 +39,8 @@
                         StorageType="@this._storageType"
                                    NumberOfExtensions="@this._numberOfExtensions"
                         SelectedItem="@this._selectedItem"
-                        SelectedItemChanged="this.OnSelectedItemChanged"/>
+                        SelectedItemChanged="this.OnSelectedItemChanged"
+                        OnDelete="this.OnItemDeleteClickAsync"/>
                 </div>
                 @for (byte i = 0; i < this._numberOfExtensions; i++)
                 {
@@ -50,7 +51,8 @@
                         NumberOfExtensions="@this._numberOfExtensions"
                         ExtensionIndex="@i"
                         SelectedItem="@this._selectedItem"
-                        SelectedItemChanged="this.OnSelectedItemChanged"/>
+                        SelectedItemChanged="this.OnSelectedItemChanged"
+                        OnDelete="this.OnItemDeleteClickAsync"/>
                 }
                 @if (this._storageType == StorageType.Inventory)
                 {
@@ -60,7 +62,8 @@
                         StorageType="StorageType.PersonalStore"
                         NumberOfExtensions="@this._numberOfExtensions"
                         SelectedItem="@this._selectedItem"
-                        SelectedItemChanged="this.OnSelectedItemChanged"/>
+                        SelectedItemChanged="this.OnSelectedItemChanged"
+                        OnDelete="this.OnItemDeleteClickAsync"/>
                 }
             </div>
             <div class="col-1 middle-column">

@@ -75,7 +75,11 @@ public class ClearInventoryChatCommandPlugIn : ChatCommandPlugInBase<ClearInvent
             if (!this.pendingConfirmations.TryGetValue(playerId, out var confirmationTime) || (DateTime.UtcNow - confirmationTime).TotalSeconds > ConfirmationTimeoutSeconds)
             {
                 this.pendingConfirmations[playerId] = DateTime.UtcNow;
-                await player.ShowBlueMessageAsync(configuration.ConfirmationMessage.GetTranslation(player.Culture)).ConfigureAwait(false);
+                if (configuration.ConfirmationMessage.GetTranslation(player.Culture) is { Length: > 0 } message)
+                {
+                    await player.ShowBlueMessageAsync(message).ConfigureAwait(false);
+                }
+
                 return;
             }
 
@@ -94,7 +98,11 @@ public class ClearInventoryChatCommandPlugIn : ChatCommandPlugInBase<ClearInvent
 
         if (removeMoney && !player.TryRemoveMoney(configuration.MoneyCost))
         {
-            await player.ShowBlueMessageAsync(configuration.NotEnoughMoneyMessage.GetTranslation(player.Culture)).ConfigureAwait(false);
+            if (configuration.NotEnoughMoneyMessage.GetTranslation(player.Culture) is { Length: > 0 } notEnoughMoneyMessage)
+            {
+                await player.ShowBlueMessageAsync(notEnoughMoneyMessage).ConfigureAwait(false);
+            }
+
             return;
         }
 
@@ -103,7 +111,10 @@ public class ClearInventoryChatCommandPlugIn : ChatCommandPlugInBase<ClearInvent
             await targetPlayer.DestroyInventoryItemAsync(item).ConfigureAwait(false);
         }
 
-        await player.ShowBlueMessageAsync(configuration.InventoryClearedMessage.GetTranslation(player.Culture)).ConfigureAwait(false);
+        if (configuration.InventoryClearedMessage.GetTranslation(player.Culture) is { Length: > 0 } clearedMessage)
+        {
+            await player.ShowBlueMessageAsync(clearedMessage).ConfigureAwait(false);
+        }
     }
 
     /// <summary>
