@@ -281,6 +281,12 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
     /// <inheritdoc />
     public async ValueTask<bool> DisconnectAccountAsync(string accountName)
     {
+        if (this._gameContext.OfflineLevelingManager.IsActive(accountName))
+        {
+            await this._gameContext.OfflineLevelingManager.StopAsync(accountName).ConfigureAwait(false);
+            return true;
+        }
+
         var players = await this._gameContext.GetPlayersAsync().ConfigureAwait(false);
         var player = players.FirstOrDefault(p => p.Account?.LoginName == accountName);
         if (player != null)

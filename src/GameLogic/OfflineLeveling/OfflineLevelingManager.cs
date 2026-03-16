@@ -70,8 +70,18 @@ public sealed class OfflineLevelingManager
                 }
             }
 
+            var party = realPlayer.Party;
+
             // Suppress the disconnection event to prevent double-save or redundant log-offs.
             realPlayer.SuppressDisconnectedEvent();
+
+            // Clear the player's party reference before disconnecting so that DisconnectAsync
+            // does NOT call LeaveTemporarilyAsync and create a stale OfflinePartyMember snapshot.
+            // The ghost will be properly inserted into the party after it is fully initialized.
+            if (party is not null)
+            {
+                realPlayer.Party = null;
+            }
 
             // Perform disconnection: removes player from map and saves progress.
             await realPlayer.DisconnectAsync().ConfigureAwait(false);
@@ -79,11 +89,16 @@ public sealed class OfflineLevelingManager
             // Dispose the old context so entities can be attached to the ghost's new context.
             realPlayer.PersistenceContext.Dispose();
 
-            // Now the name slot is free, initialize the ghost in-place.
             if (!await sentinel.InitializeAsync(account, character).ConfigureAwait(false))
             {
                 this._activePlayers.TryRemove(loginName, out _);
                 return false;
+            }
+
+            // Now that the offline player is fully initialized, swap it into the party.
+            if (party is not null)
+            {
+                await party.ReplaceMemberAsync(realPlayer, sentinel).ConfigureAwait(false);
             }
 
             return true;
@@ -112,4 +127,10 @@ public sealed class OfflineLevelingManager
     /// </summary>
     /// <param name="loginName">The account login name.</param>
     public bool IsActive(string loginName) => this._activePlayers.ContainsKey(loginName);
+
+    /// <summary>
+    /// Returns a snapshot of all currently active offline leveling players.
+    /// </summary>
+    public IReadOnlyCollection<OfflineLevelingPlayer> GetOfflineLevelingPlayers()
+        => this._activePlayers.Values.ToList();
 }

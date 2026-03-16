@@ -13,6 +13,7 @@ using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views;
+using MUnique.OpenMU.GameLogic.OfflineLeveling;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
 
@@ -65,6 +66,7 @@ public static class TestHelper
         characterMock.Setup(c => c.DropItemGroups).Returns(new List<DropItemGroup>());
 
         var inventoryMock = new Mock<ItemStorage>();
+        inventoryMock.SetupAllProperties();
         inventoryMock.Setup(i => i.Items).Returns(new List<Item>());
 
         var character = characterMock.Object;
@@ -133,6 +135,22 @@ public static class TestHelper
         await player.SetSelectedCharacterAsync(character).ConfigureAwait(false);
 
         return player;
+    }
+
+    /// <summary>
+    /// Creates an <see cref="OfflineLevelingPlayer"/>.
+    /// </summary>
+    /// <param name="gameContext">The game context.</param>
+    /// <returns>The offline leveling player at <see cref="PlayerState.EnteredWorld"/>.</returns>
+    public static async ValueTask<OfflineLevelingPlayer> CreateOfflineLevelingPlayerAsync(IGameContext gameContext)
+    {
+        var regularPlayer = await CreatePlayerAsync(gameContext).ConfigureAwait(false);
+        var offlinePlayer = new OfflineLevelingPlayer(gameContext) { Account = regularPlayer.Account };
+        await offlinePlayer.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
+        await offlinePlayer.PlayerState.TryAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
+        await offlinePlayer.PlayerState.TryAdvanceToAsync(PlayerState.CharacterSelection).ConfigureAwait(false);
+        await offlinePlayer.SetSelectedCharacterAsync(regularPlayer.SelectedCharacter!).ConfigureAwait(false);
+        return offlinePlayer;
     }
 
     private class TestPlayer : Player

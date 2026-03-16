@@ -3124,5 +3124,17 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("OfflineLevelingStopOnLoginPlugIn_Description", resourceCulture);
             }
         }
+        
+        public static string PartyAutoRejoinPlugIn_Name {
+            get {
+                return ResourceManager.GetString("PartyAutoRejoinPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        public static string PartyAutoRejoinPlugIn_Description {
+            get {
+                return ResourceManager.GetString("PartyAutoRejoinPlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

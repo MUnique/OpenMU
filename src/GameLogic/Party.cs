@@ -24,6 +24,8 @@ public sealed class Party : Disposable
 
     private readonly ILogger<Party> _logger;
 
+    private readonly IPartyManager _partyManager;
+
     private readonly Timer _healthUpdate;
 
     private readonly byte _maxPartySize;
@@ -31,14 +33,16 @@ public sealed class Party : Disposable
     private readonly List<Player> _distributionList;
 
     private readonly AsyncLock _distributionLock = new AsyncLock();
-
+    
     /// <summary>
     /// Initializes a new instance of the <see cref="Party" /> class.
     /// </summary>
+    /// <param name="partyManager">The party manager for persistence.</param>
     /// <param name="maxPartySize">Maximum size of the party.</param>
     /// <param name="logger">Logger of this party.</param>
-    public Party(byte maxPartySize, ILogger<Party> logger)
+    public Party(IPartyManager partyManager, byte maxPartySize, ILogger<Party> logger)
     {
+        this._partyManager = partyManager;
         this._maxPartySize = maxPartySize;
         this._logger = logger;
 
@@ -64,10 +68,17 @@ public sealed class Party : Disposable
     /// </summary>
     public IPartyMember? PartyMaster { get; private set; }
 
+    private static string MeterName => typeof(Party).FullName ?? nameof(Party);
+
     /// <summary>
-    /// Gets the name of the meter of this class.
+    /// Notifies the party that a member has disconnected temporarily.
+    /// Delegates offline snapshot creation to <see cref="IPartyManager.OnMemberDisconnectedAsync"/>.
     /// </summary>
-    internal static string MeterName => typeof(Party).FullName ?? nameof(Party);
+    /// <param name="member">The member who disconnected.</param>
+    public async ValueTask LeaveTemporarilyAsync(IPartyMember member)
+    {
+        await this._partyManager.OnMemberDisconnectedAsync(member).ConfigureAwait(false);
+    }
 
     /// <summary>
     /// Kicks the player from the party.
@@ -114,9 +125,45 @@ public sealed class Party : Disposable
 
         this.PartyList.Add(newPartyMate);
         newPartyMate.Party = this;
+        this._partyManager.SaveParty(newPartyMate.CharacterId, this);
+
         await this.SendPartyListAsync().ConfigureAwait(false);
         await this.UpdateNearbyCountAsync().ConfigureAwait(false);
         return true;
+    }
+
+    /// <summary>
+    /// Replaces the specified <paramref name="oldMember"/> with a <paramref name="newMember"/>.
+    /// Used during offline leveling handover to keep the party intact.
+    /// </summary>
+    /// <param name="oldMember">The old member.</param>
+    /// <param name="newMember">The new member.</param>
+    public async ValueTask ReplaceMemberAsync(IPartyMember oldMember, IPartyMember newMember)
+    {
+        var index = this.PartyList.IndexOf(oldMember);
+        if (index < 0)
+        {
+            return;
+        }
+
+        this.PartyList[index] = newMember;
+        newMember.Party = this;
+        oldMember.Party = null;
+        this._partyManager.RemoveParty(oldMember.CharacterId);
+        this._partyManager.SaveParty(newMember.CharacterId, this);
+
+        if (this.PartyMaster == oldMember)
+        {
+            this.PartyMaster = newMember;
+        }
+
+        await this.SendPartyListAsync().ConfigureAwait(false);
+        await this.UpdateNearbyCountAsync().ConfigureAwait(false);
+
+        if (oldMember is Player oldPlayer && oldPlayer.Attributes is { } oldAttr)
+        {
+            oldAttr[Stats.NearbyPartyMemberCount] = 0;
+        }
     }
 
     /// <summary>
@@ -172,6 +219,11 @@ public sealed class Party : Disposable
         try
         {
             this._distributionList.AddRange(this.PartyList.OfType<Player>().Where(p => p.CurrentMap == killer.CurrentMap && !p.IsAtSafezone() && p.Attributes is { }));
+            if (this._distributionList.Count == 0)
+            {
+                return;
+            }
+
             var moneyPart = amount / this._distributionList.Count;
             this._distributionList.ForEach(p => p.TryAddMoney((int)(moneyPart * p.Attributes![Stats.MoneyAmountRate])));
         }
@@ -302,7 +354,9 @@ public sealed class Party : Disposable
 
     private async ValueTask ExitPartyAsync(IPartyMember player, byte index)
     {
-        if (this.PartyList.Count < 3 || Equals(this.PartyMaster, player))
+        // We dissolve only if fewer than 2 real members exist.
+        var remainingMembers = this.PartyList.Count(m => m != player);
+        if (remainingMembers < 2)
         {
             this.Dispose();
             return;
@@ -310,6 +364,7 @@ public sealed class Party : Disposable
 
         this.PartyList.Remove(player);
         player.Party = null;
+        this._partyManager.RemoveParty(player.CharacterId);
         try
         {
             await player.InvokeViewPlugInAsync<IPartyMemberRemovedPlugIn>(p => p.PartyMemberRemovedAsync(index)).ConfigureAwait(false);

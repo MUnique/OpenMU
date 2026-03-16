@@ -20,7 +20,6 @@ using MUnique.OpenMU.GameLogic.Views.MuHelper;
 ///   <item>Item pickup (Zen, Jewels, Excellent, Ancient, and named extra items)</item>
 ///   <item>Skill and movement animations broadcast to nearby observers</item>
 /// </list>
-/// Party support is not implemented.
 /// </summary>
 public sealed class OfflineLevelingIntelligence : IDisposable
 {
@@ -86,7 +85,7 @@ public sealed class OfflineLevelingIntelligence : IDisposable
         this._aiTimer = null;
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Timer callback — exceptions are caught internally.")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100", Justification = "Timer callback — exceptions are caught internally.")]
     private async Task SafeTickAsync()
     {
         try

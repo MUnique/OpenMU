@@ -66,6 +66,7 @@ public readonly struct LocalizedString : IEquatable<LocalizedString>
     ///   A <see cref="ReadOnlySpan{T}"/> that contains the neutral language text, or an empty span
     ///   if the underlying value is <see langword="null"/>.
     /// </value>
+    [System.Text.Json.Serialization.JsonIgnore]
     public ReadOnlySpan<char> ValueInNeutralLanguageAsSpan
     {
         get
@@ -159,7 +160,7 @@ public readonly struct LocalizedString : IEquatable<LocalizedString>
     {
         var span = this.GetTranslationAsSpan(cultureInfo, fallbackToNeutral);
         return span.IsEmpty
-            ? null
+            ? string.Empty
             : new(span);
     }
 

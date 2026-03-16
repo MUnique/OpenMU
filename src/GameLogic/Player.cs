@@ -1,4 +1,4 @@
-﻿// <copyright file="Player.cs" company="MUnique">
+// <copyright file="Player.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -193,6 +193,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <inheritdoc cref="IPartyMember" />
     public string Name => this.SelectedCharacter?.Name ?? string.Empty;
 
+    /// <inheritdoc />
+    public Guid CharacterId => this.SelectedCharacter?.Id ?? Guid.Empty;
+
     /// <inheritdoc/>
     public int Level => (int)(this.Attributes?[Stats.Level] ?? 0);
 
@@ -336,7 +339,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public ComboStateMachine? ComboState => this.Attributes?[Stats.IsSkillComboAvailable] > 0 ? this._comboStateLazy?.Value : null;
 
     /// <summary>
-    /// Gets the summon.
+    /// Gets summon.
     /// </summary>
     public (Monster, INpcIntelligence)? Summon { get; private set; }
 
@@ -348,6 +351,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     /// <inheritdoc/>
     public Party? Party { get; set; }
+
+    /// <inheritdoc/>
+    public bool IsConnected => !this.PlayerState.CurrentState.IsDisconnectedOrFinished();
 
     /// <inheritdoc/>
     public bool IsAlive { get; set; }
@@ -557,6 +563,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             }
 
             this.DuelRoom = null;
+
             this._selectedCharacter = null;
         }
         else
@@ -1059,7 +1066,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// Respawns the player to the specified gate.
     /// </summary>
     /// <param name="gate">The gate at which the player should be respawned.</param>
-    public async ValueTask RespawnAtAsync(ExitGate gate)
+    public virtual async ValueTask RespawnAtAsync(ExitGate gate)
     {
         var isRespawnOnSameMap = object.Equals(this.CurrentMap?.Definition, gate.Map);
 
@@ -1700,7 +1707,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <summary>
-    /// Notifies the player object that the summon died.
+    /// Notifies the player object that summon died.
     /// </summary>
     public void SummonDied()
     {
@@ -1708,7 +1715,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <summary>
-    /// Removes the summon.
+    /// Removes summon.
     /// </summary>
     public async ValueTask RemoveSummonAsync()
     {
@@ -1816,7 +1823,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         await this.RemoveFromCurrentMapAsync().ConfigureAwait(false);
         if (this.Party is { } party)
         {
-            await party.KickMySelfAsync(this).ConfigureAwait(false);
+            await party.LeaveTemporarilyAsync(this).ConfigureAwait(false);
         }
 
         await this.RestoreTemporaryStorageItemsAsync().ConfigureAwait(false);
@@ -1864,7 +1871,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         await this.RemoveFromCurrentMapAsync().ConfigureAwait(false);
         if (this.Party is { } party)
         {
-            await party.KickMySelfAsync(this).ConfigureAwait(false);
+            await party.LeaveTemporarilyAsync(this).ConfigureAwait(false);
         }
 
         await this._observerToWorldViewAdapter.ClearObservingObjectsListAsync().ConfigureAwait(false);
@@ -1944,10 +1951,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     private async ValueTask RemoveFromCurrentMapAsync()
     {
-        if (this.CurrentMap != null)
+        if (this._currentMap is { } map)
         {
-            await this.CurrentMap.RemoveAsync(this).ConfigureAwait(false);
-            this.CurrentMap = null;
+            await map.RemoveAsync(this).ConfigureAwait(false);
+            this._currentMap = null;
         }
     }
 
@@ -2206,6 +2213,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             try
             {
                 await Task.Delay(3000, cancellationToken).ConfigureAwait(false);
+
+                if (cancellationToken.IsCancellationRequested || this.CurrentMap is null)
+                {
+                    return;
+                }
+
                 if (this.Summon?.Item1 is { } summon)
                 {
                     await summon.CurrentMap.RemoveAsync(summon).ConfigureAwait(false);

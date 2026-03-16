@@ -1,4 +1,4 @@
-﻿// <copyright file="IGameContext.cs" company="MUnique">
+// <copyright file="IGameContext.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -111,6 +111,11 @@ public interface IGameContext
     /// Gets the state of the active self defenses. The datetime holds the timestamp when self-defense ends.
     /// </summary>
     ConcurrentDictionary<(Player Attacker, Player Defender), DateTime> SelfDefenseState { get; }
+
+    /// <summary>
+    /// Gets the party manager which handles party creation and persistence.
+    /// </summary>
+    IPartyManager PartyManager { get; }
 
     /// <summary>
     /// Gets the initialized maps which are hosted on this context.

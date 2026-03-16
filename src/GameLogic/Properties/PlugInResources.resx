@@ -1140,4 +1140,10 @@
   <data name="OfflineLevelingStopOnLoginPlugIn_Description" xml:space="preserve">
     <value>Automatically stops an active offline leveling session when the account owner logs back in, allowing the real player to take over their character.</value>
   </data>
+  <data name="PartyAutoRejoinPlugIn_Name" xml:space="preserve">
+    <value>Party Auto-Rejoin</value>
+  </data>
+  <data name="PartyAutoRejoinPlugIn_Description" xml:space="preserve">
+    <value>Automatically rejoins players to their previous party upon entering the world.</value>
+  </data>
 </root>
