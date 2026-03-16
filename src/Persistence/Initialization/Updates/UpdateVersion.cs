@@ -345,8 +345,22 @@ public enum UpdateVersion
     /// </summary>
     AddProjectileCountToTripleShot = 67,
 
-    /// <summary>
-    /// The version of the <see cref="AddOfflineLevelingPlugIn"/>.
+    /// The version of the <see cref="RemoveJewelDropLevelGapPlugIn075"/>.
     /// </summary>
-    AddOfflineLeveling = 68,
+    RemoveJewelDropLevelGap075 = 68,
+
+    /// <summary>
+    /// The version of the <see cref="RemoveJewelDropLevelGapPlugIn095D"/>.
+    /// </summary>
+    RemoveJewelDropLevelGap095d = 69,
+
+    /// <summary>
+    /// The version of the <see cref="RemoveJewelDropLevelGapPlugInSeason6"/>.
+    /// </summary>
+    RemoveJewelDropLevelGapSeason6 = 70,
+
+    /// <summary>
+    /// The version of the <see cref="FixRageFighterMultipleHitSkillsPlugIn"/>.
+    /// </summary>
+    FixRageFighterMultipleHitSkills = 71,
 }

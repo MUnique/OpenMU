@@ -13,6 +13,14 @@ internal enum MagicEffectNumber : short
     #region Artificial effects which don't end up as an actual magic effect, but regenerate something
 
     /// <summary>
+    /// The Beast Uppercut skill effect number.
+    /// </summary>
+    /// <remarks>
+    /// Internal. Proxy of <see cref="DefenseReduction"/>.
+    /// </remarks>
+    DefenseReductionBeastUppercut = -5,
+
+    /// <summary>
     /// The Weakness (Summoner) skill effect number.
     /// </summary>
     /// <remarks>
@@ -292,6 +300,11 @@ internal enum MagicEffectNumber : short
     /// The increase block effect of the rage fighter.
     /// </summary>
     IncreaseBlock = 131,
+
+    /// <summary>
+    /// The decrease block effect of the rage fighter.
+    /// </summary>
+    DecreaseBlock = 132,
 
     /// <summary>
     /// The wiz enhance strengthener effect.
