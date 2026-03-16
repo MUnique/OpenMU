@@ -82,6 +82,7 @@ public class MuHelper : AsyncDisposable
         await this._player.InvokeViewPlugInAsync<IMuHelperStatusUpdatePlugIn>(p => p.ConsumeMoneyAsync((uint)requiredMoney)).ConfigureAwait(false);
 
         this._player.Attributes?.AddElement(ActiveElement, Stats.IsMuHelperActive);
+        this._stopCts?.Dispose();
         this._stopCts = new CancellationTokenSource();
         var cts = this._stopCts.Token;
         this._runTask = this.RunLoopAsync(cts);
