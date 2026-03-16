@@ -1634,5 +1634,14 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("OfflineLevelingNoCharacterSelected", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mu Helper is not running..
+        /// </summary>
+        public static string OfflineLevelingMuHelperNotRunning {
+            get {
+                return ResourceManager.GetString("OfflineLevelingMuHelperNotRunning", resourceCulture);
+            }
+        }
     }
 }

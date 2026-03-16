@@ -12,6 +12,7 @@ using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.GuildWar;
 using MUnique.OpenMU.GameLogic.MiniGames;
+using MUnique.OpenMU.GameLogic.MuHelper;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Pet;
 using MUnique.OpenMU.GameLogic.PlayerActions;
@@ -39,6 +40,14 @@ using Nito.AsyncEx;
 /// </summary>
 public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacker, ITrader, IPartyMember, IRotatable, IHasBucketInformation, ISupportWalk, IMovable, ILoggerOwner<Player>
 {
+    private static readonly MagicEffectDefinition GMEffect = new GMMagicEffectDefinition
+    {
+        InformObservers = true,
+        Name = "GM MARK",
+        Number = 28,
+        StopByDeath = false,
+    };
+
     private readonly AsyncLock _moveLock = new();
 
     private readonly Walker _walker;
@@ -429,6 +438,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public BackupItemStorage? BackupInventory { get; set; }
 
     /// <summary>
+    /// Gets or sets the deserialized MU Helper player settings.
+    /// </summary>
+    public IMuHelperSettings? MuHelperSettings { get; set; }
+
+    /// <summary>
     /// Gets the appearance data.
     /// </summary>
     public IAppearanceData AppearanceData => this._appearanceData;
@@ -465,6 +479,22 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// Gets or sets the mini game, which the player has currently entered.
     /// </summary>
     public MiniGameContext? CurrentMiniGame { get; set; }
+
+    /// <summary>
+    /// Gets the size of the inventory of the current player.
+    /// </summary>
+    public byte InventorySize
+    {
+        get
+        {
+            if (this.SelectedCharacter is not { } selectedCharacter)
+            {
+                return 0;
+            }
+
+            return (byte)InventoryConstants.GetInventorySize(selectedCharacter.InventoryExtensions);
+        }
+    }
 
     /// <summary>
     /// Gets the pet command manager.
@@ -515,14 +545,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// Gets a value indicating whether opening the player store after entering the game is supported by this instance.
     /// </summary>
     protected virtual bool IsPlayerStoreOpeningAfterEnterSupported => true;
-
-    private static readonly MagicEffectDefinition GMEffect = new GMMagicEffectDefinition
-    {
-        InformObservers = true,
-        Name = "GM MARK",
-        Number = 28,
-        StopByDeath = false,
-    };
 
     /// <summary>
     /// Sets the selected character.
@@ -1764,22 +1786,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
 
         return $"Account: [{accountName}], Character:[{characterName}]";
-    }
-
-    /// <summary>
-    /// Gets the size of the inventory of the current player.
-    /// </summary>
-    public byte InventorySize
-    {
-        get
-        {
-            if (this.SelectedCharacter is not { } selectedCharacter)
-            {
-                return 0;
-            }
-
-            return (byte)InventoryConstants.GetInventorySize(selectedCharacter.InventoryExtensions);
-        }
     }
 
     /// <summary>

@@ -13,11 +13,11 @@ using MUnique.OpenMU.PlugIns;
 [PlugIn]
 [Display(Name = nameof(PlugInResources.MuHelperFeaturePlugIn_Name), Description = nameof(PlugInResources.MuHelperFeaturePlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("E90A72C3-0459-4323-B6D3-171F88D35542")]
-public class MuHelperFeaturePlugIn : IFeaturePlugIn, ISupportCustomConfiguration<MuHelperServerConfiguration>, ISupportDefaultCustomConfiguration
+public class MuHelperFeaturePlugIn : IFeaturePlugIn, ISupportCustomConfiguration<MuHelperConfiguration>, ISupportDefaultCustomConfiguration
 {
     /// <inheritdoc/>
-    public MuHelperServerConfiguration? Configuration { get; set; }
+    public MuHelperConfiguration? Configuration { get; set; }
 
     /// <inheritdoc />
-    public object CreateDefaultConfig() => new MuHelperServerConfiguration();
+    public object CreateDefaultConfig() => new MuHelperConfiguration();
 }

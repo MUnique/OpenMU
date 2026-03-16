@@ -31,6 +31,7 @@ public sealed class OfflineLevelingIntelligence : IDisposable
     private readonly MovementHandler _movementHandler;
     private readonly RepairHandler _repairHandler;
     private readonly ZenConsumptionHandler _zenHandler;
+    private readonly HealingHandler _healingHandler;
 
     private Timer? _aiTimer;
     private bool _disposed;
@@ -42,10 +43,11 @@ public sealed class OfflineLevelingIntelligence : IDisposable
     public OfflineLevelingIntelligence(OfflineLevelingPlayer player)
     {
         this._player = player;
-        var config = MuHelperPlayerConfiguration.TryDeserialize(player.SelectedCharacter?.MuHelperConfiguration);
         var originalPosition = player.Position;
+        var config = player.MuHelperSettings;
 
         this._buffHandler = new BuffHandler(player, config);
+        this._healingHandler = new HealingHandler(player, config);
         this._itemPickupHandler = new ItemPickupHandler(player, config);
         this._movementHandler = new MovementHandler(player, config, originalPosition);
         this._combatHandler = new CombatHandler(player, config, this._movementHandler, originalPosition);
@@ -54,11 +56,11 @@ public sealed class OfflineLevelingIntelligence : IDisposable
 
         if (config is null)
         {
-            player.Logger.LogDebug("Offline leveling started for {0} without a valid MU Helper configuration.", player.Name);
+            this._player.Logger.LogDebug("Offline leveling started for {CharacterName} without a valid MU Helper configuration.", this._player.Name);
         }
         else
         {
-            player.Logger.LogDebug("Offline leveling configuration for {0}: RepairItem={1}, Zen={2}, AutoHeal={3}.", player.Name, config.RepairItem, config.PickZen, config.AutoHeal);
+            this._player.Logger.LogDebug("Offline leveling configuration for {CharacterName}: MuHelperSettings={Settings}.", this._player.Name, config);
         }
     }
 
@@ -104,7 +106,7 @@ public sealed class OfflineLevelingIntelligence : IDisposable
 
     private async ValueTask TickAsync()
     {
-        if (!this._player.IsAlive || this._player.PlayerState.CurrentState != PlayerState.EnteredWorld)
+        if (!this.CanPerformActions())
         {
             return;
         }
@@ -113,9 +115,8 @@ public sealed class OfflineLevelingIntelligence : IDisposable
 
         await this._repairHandler.PerformRepairsAsync().ConfigureAwait(false);
 
-        if (this._combatHandler.SkillCooldownTicks > 0)
+        if (this.IsOnSkillCooldown())
         {
-            this._combatHandler.DecrementCooldown();
             return;
         }
 
@@ -125,7 +126,9 @@ public sealed class OfflineLevelingIntelligence : IDisposable
             return;
         }
 
-        await this._combatHandler.PerformHealthRecoveryAsync().ConfigureAwait(false);
+        await this._healingHandler.PerformHealthRecoveryAsync().ConfigureAwait(false);
+
+        await this._combatHandler.PerformDrainLifeRecoveryAsync().ConfigureAwait(false);
 
         await this._itemPickupHandler.PickupItemsAsync().ConfigureAwait(false);
 
@@ -140,5 +143,21 @@ public sealed class OfflineLevelingIntelligence : IDisposable
         }
 
         await this._combatHandler.PerformAttackAsync().ConfigureAwait(false);
+    }
+
+    private bool CanPerformActions()
+    {
+        return this._player.IsAlive && this._player.PlayerState.CurrentState == PlayerState.EnteredWorld;
+    }
+
+    private bool IsOnSkillCooldown()
+    {
+        if (this._combatHandler.SkillCooldownTicks > 0)
+        {
+            this._combatHandler.DecrementCooldown();
+            return true;
+        }
+
+        return false;
     }
 }

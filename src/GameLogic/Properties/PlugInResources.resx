@@ -1146,12 +1146,6 @@
   <data name="OfflineLevelingChatCommandPlugIn_Description" xml:space="preserve">
     <value>Allows players to start offline leveling with /offlevel. The character stays in the world after the client disconnects and stops when the player logs back in.</value>
   </data>
-  <data name="OfflineLevelingStopOnLoginPlugIn_Name" xml:space="preserve">
-    <value>Offline Leveling: Stop on Login</value>
-  </data>
-  <data name="OfflineLevelingStopOnLoginPlugIn_Description" xml:space="preserve">
-    <value>Automatically stops an active offline leveling session when the account owner logs back in, allowing the real player to take over their character.</value>
-  </data>
   <data name="PartyAutoRejoinPlugIn_Name" xml:space="preserve">
     <value>Party Auto-Rejoin</value>
   </data>
