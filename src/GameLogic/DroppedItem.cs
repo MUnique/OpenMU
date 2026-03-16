@@ -260,7 +260,7 @@ public sealed class DroppedItem : AsyncDisposable, ILocateable
 
     private async ValueTask DeleteItemAsync(Player player)
     {
-        player.Logger.LogInformation("Item '{0}' which was dropped by player '{1}' is getting deleted.", this, player);
+        player.Logger.LogDebug("Item '{0}' which was dropped by player '{1}' is getting deleted.", this, player);
         if (!this._wasItemPersisted)
         {
             return;

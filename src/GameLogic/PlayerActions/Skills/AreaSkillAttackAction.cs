@@ -1,4 +1,4 @@
-﻿// <copyright file="AreaSkillAttackAction.cs" company="MUnique">
+// <copyright file="AreaSkillAttackAction.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -82,7 +82,8 @@ public class AreaSkillAttackAction
         {
             if (extraTarget?.CheckSkillTargetRestrictions(player, skill) is true
                 && player.IsInRange(extraTarget.Position, skill.Range + 2)
-                && !extraTarget.IsAtSafezone())
+                && !extraTarget.IsAtSafezone()
+                && !(player.Attributes?[Stats.IsMuHelperActive] > 0 && extraTarget is Player))
             {
                 yield return extraTarget;
             }
@@ -130,7 +131,8 @@ public class AreaSkillAttackAction
             targetsInRange = targetsInRange.Where(a => a.GetDistanceTo(targetAreaCenter) < skill.AreaSkillSettings.TargetAreaDiameter * 0.5f);
         }
 
-        if (!player.GameContext.Configuration.AreaSkillHitsPlayer)
+        if (!player.GameContext.Configuration.AreaSkillHitsPlayer
+            || player.Attributes?[Stats.IsMuHelperActive] > 0)
         {
             targetsInRange = targetsInRange.Where(a => a is not Player);
         }

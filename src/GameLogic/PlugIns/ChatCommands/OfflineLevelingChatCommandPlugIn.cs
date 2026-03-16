@@ -5,6 +5,8 @@
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
 using System.Runtime.InteropServices;
+using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.MuHelper;
 using MUnique.OpenMU.GameLogic.OfflineLeveling;
 using MUnique.OpenMU.PlugIns;
 
@@ -55,6 +57,12 @@ public sealed class OfflineLevelingChatCommandPlugIn : IChatCommandPlugIn
             return;
         }
 
+        if (player.Attributes?[Stats.IsMuHelperActive] <= 0)
+        {
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.OfflineLevelingMuHelperNotRunning)).ConfigureAwait(false);
+            return;
+        }
+
         var loginName = player.Account?.LoginName;
         if (loginName is null)
         {
@@ -69,11 +77,8 @@ public sealed class OfflineLevelingChatCommandPlugIn : IChatCommandPlugIn
             return;
         }
 
-        // Show the message before disconnecting so the player sees it.
         await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.OfflineLevelingStarted)).ConfigureAwait(false);
 
-        // StartAsync handles everything: login-server logoff, suppress event,
-        // disconnect real player, then spawn the ghost.
         if (!await manager.StartAsync(player, loginName).ConfigureAwait(false))
         {
             await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.OfflineLevelingFailed)).ConfigureAwait(false);

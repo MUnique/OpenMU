@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameLogic.OfflineLeveling;
 
-using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.MuHelper;
 using MUnique.OpenMU.GameLogic.Views.MuHelper;
 
@@ -14,6 +13,7 @@ using MUnique.OpenMU.GameLogic.Views.MuHelper;
 internal sealed class ZenConsumptionHandler
 {
     private readonly OfflineLevelingPlayer _player;
+    private readonly MuHelperConfiguration _configuration;
     private DateTime _lastPayTimestamp;
 
     /// <summary>
@@ -23,6 +23,8 @@ internal sealed class ZenConsumptionHandler
     public ZenConsumptionHandler(OfflineLevelingPlayer player)
     {
         this._player = player;
+        this._configuration = player.GameContext.FeaturePlugIns.GetPlugIn<MuHelperFeaturePlugIn>()?.Configuration
+                              ?? new MuHelperConfiguration();
         this._lastPayTimestamp = player.StartTimestamp;
     }
 
@@ -31,21 +33,12 @@ internal sealed class ZenConsumptionHandler
     /// </summary>
     public async Task DeductZenAsync()
     {
-        var helperConfig = this._player.GameContext.FeaturePlugIns.GetPlugIn<MuHelperFeaturePlugIn>()?.Configuration
-                           ?? new MuHelperServerConfiguration();
-
-        if (DateTime.UtcNow.Subtract(this._lastPayTimestamp) < helperConfig.PayInterval)
+        if (DateTime.UtcNow - this._lastPayTimestamp < this._configuration.PayInterval)
         {
             return;
         }
 
-        var currentStage = (int)(DateTime.UtcNow.Subtract(this._player.StartTimestamp) / helperConfig.StageInterval);
-        currentStage = Math.Max(0, currentStage);
-        currentStage = Math.Min(helperConfig.CostPerStage.Count - 1, currentStage);
-
-        var costMultiplier = helperConfig.CostPerStage[currentStage];
-        var totalLevel = (int)(this._player.Level + (this._player.Attributes?[Stats.MasterLevel] ?? 0));
-        var amount = costMultiplier * totalLevel;
+        var amount = MuHelperZenCostCalculator.Calculate(this._player, this._configuration, this._player.StartTimestamp);
 
         if (amount > 0 && this._player.TryRemoveMoney(amount))
         {
@@ -56,12 +49,8 @@ internal sealed class ZenConsumptionHandler
         }
         else if (amount > 0)
         {
-            this._player.Logger.LogDebug("Offline leveling stopped for {0} due to insufficient Zen.", this._player.Name);
+            this._player.Logger.LogDebug("Offline leveling stopped for {CharacterName} due to insufficient Zen.", this._player.Name);
             await this._player.StopAsync().ConfigureAwait(false);
-        }
-        else
-        {
-            // The cost is 0 or less; no action required.
         }
     }
 }

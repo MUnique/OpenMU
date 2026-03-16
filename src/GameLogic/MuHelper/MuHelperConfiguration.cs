@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.GameLogic.MuHelper;
 /// <summary>
 /// Configuration for the <see cref="MuHelper"/>.
 /// </summary>
-public class MuHelperServerConfiguration
+public class MuHelperConfiguration
 {
     /// <summary>
     /// Gets or sets the cost of the helper per stage. This value is applied per

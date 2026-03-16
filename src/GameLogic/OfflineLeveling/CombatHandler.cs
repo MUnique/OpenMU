@@ -10,6 +10,7 @@ using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.MuHelper;
 using MUnique.OpenMU.GameLogic.NPC;
+using MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
 using MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.World;
@@ -24,12 +25,13 @@ public sealed class CombatHandler
     private const byte DefaultRange = 1;
     private const int ComboFinisherDelayTicks = 3;
     private const int InterSkillDelayTicks = 1;
+
     private const short DrainLifeBaseSkillId = 214;
     private const short DrainLifeStrengthenerSkillId = 458;
     private const short DrainLifeMasterySkillId = 462;
 
     private readonly OfflineLevelingPlayer _player;
-    private readonly MuHelperPlayerConfiguration? _config;
+    private readonly IMuHelperSettings? _config;
     private readonly MovementHandler _movementHandler;
     private readonly Point _originPosition;
 
@@ -42,9 +44,10 @@ public sealed class CombatHandler
     /// Initializes a new instance of the <see cref="CombatHandler"/> class.
     /// </summary>
     /// <param name="player">The offline leveling player.</param>
-    /// <param name="config">The MU Helper configuration.</param>
+    /// <param name="config">The MU helper settings.</param>
+    /// <param name="movementHandler">The movement handler.</param>
     /// <param name="originPosition">The original position to hunt around.</param>
-    public CombatHandler(OfflineLevelingPlayer player, MuHelperPlayerConfiguration? config, MovementHandler movementHandler, Point originPosition)
+    public CombatHandler(OfflineLevelingPlayer player, IMuHelperSettings? config, MovementHandler movementHandler, Point originPosition)
     {
         this._player = player;
         this._config = config;
@@ -58,6 +61,26 @@ public sealed class CombatHandler
     public int SkillCooldownTicks => this._skillCooldownTicks;
 
     /// <summary>
+    /// Gets the hunting range in tiles.
+    /// </summary>
+    public byte HuntingRange => CalculateHuntingRange(this._config);
+
+    /// <summary>
+    /// Calculates the hunting range in tiles from the specified configuration.
+    /// </summary>
+    /// <param name="config">The configuration.</param>
+    /// <returns>The hunting range.</returns>
+    public static byte CalculateHuntingRange(IMuHelperSettings? config)
+    {
+        if (config is null)
+        {
+            return DefaultRange;
+        }
+
+        return (byte)Math.Max(DefaultRange, config.HuntingRange);
+    }
+
+    /// <summary>
     /// Decrements the skill cooldown counter by one tick.
     /// </summary>
     public void DecrementCooldown()
@@ -69,24 +92,36 @@ public sealed class CombatHandler
     }
 
     /// <summary>
-    /// Calculates the hunting range in tiles from the specified configuration.
+    /// Performs health recovery through Drain Life attacks if configured.
     /// </summary>
-    /// <param name="config">The configuration.</param>
-    /// <returns>The hunting range.</returns>
-    public static byte CalculateHuntingRange(MuHelperPlayerConfiguration? config)
+    public async ValueTask PerformDrainLifeRecoveryAsync()
     {
-        if (config is null)
+        if (this._config is null || this._player.Attributes is null || !this._config.UseDrainLife)
         {
-            return DefaultRange;
+            return;
         }
 
-        return (byte)Math.Max(DefaultRange, config.HuntingRange);
-    }
+        double maxHp = this._player.Attributes[Stats.MaximumHealth];
+        if (maxHp <= 0)
+        {
+            return;
+        }
 
-    /// <summary>
-    /// Gets the hunting range in tiles.
-    /// </summary>
-    public byte HuntingRange => CalculateHuntingRange(this._config);
+        double hp = this._player.Attributes[Stats.CurrentHealth];
+        int hpPercent = (int)(hp * 100.0 / maxHp);
+        if (hpPercent <= this._config.HealThresholdPercent)
+        {
+            var drainSkill = this.FindDrainLifeSkill();
+            if (drainSkill is not null)
+            {
+                this.RefreshTarget();
+                if (this._currentTarget is not null)
+                {
+                    await this.ExecuteAttackAsync(this._currentTarget, drainSkill, false).ConfigureAwait(false);
+                }
+            }
+        }
+    }
 
     /// <summary>
     /// Performs combat attacks on targets.
@@ -120,57 +155,12 @@ public sealed class CombatHandler
     }
 
     /// <summary>
-    /// Performs health recovery actions.
+    /// Executes an attack on the specified target.
     /// </summary>
-    /// <returns>A value task representing the asynchronous operation.</returns>
-    public async ValueTask PerformHealthRecoveryAsync()
-    {
-        if (this._config is null || this._player.Attributes is null)
-        {
-            return;
-        }
-
-        double hp = this._player.Attributes[Stats.CurrentHealth];
-        double maxHp = this._player.Attributes[Stats.MaximumHealth];
-        if (maxHp <= 0)
-        {
-            return;
-        }
-
-        int hpPercent = (int)(hp * 100.0 / maxHp);
-
-        if (this._config.AutoHeal && hpPercent <= this._config.HealThresholdPercent)
-        {
-            var healSkill = this.FindSkillByType(SkillType.Regeneration);
-            if (healSkill is not null)
-            {
-                await this._player.ApplyRegenerationAsync(this._player, healSkill).ConfigureAwait(false);
-            }
-        }
-        else if (this._config.UseDrainLife && hpPercent <= this._config.HealThresholdPercent)
-        {
-            var drainSkill = this.FindDrainLifeSkill();
-            if (drainSkill is not null)
-            {
-                this.RefreshTarget();
-                if (this._currentTarget is not null)
-                {
-                    await this.ExecuteAttackAsync(this._currentTarget, drainSkill, false).ConfigureAwait(false);
-                }
-            }
-        }
-        else
-        {
-            // No health recovery action required.
-        }
-    }
-
-    private bool IsTargetInAttackRange(IAttackable target, byte range)
-    {
-        return target.IsInRange(this._player.Position, range);
-    }
-
-    private async ValueTask ExecuteAttackAsync(IAttackable target, SkillEntry? skillEntry, bool isCombo)
+    /// <param name="target">The target.</param>
+    /// <param name="skillEntry">The skill entry.</param>
+    /// <param name="isCombo">If set to <c>true</c>, it's a combo attack.</param>
+    public async ValueTask ExecuteAttackAsync(IAttackable target, SkillEntry? skillEntry, bool isCombo)
     {
         this._player.Rotation = this._player.GetDirectionTo(target);
 
@@ -188,6 +178,37 @@ public sealed class CombatHandler
         {
             await this.ExecuteTargetedSkillAttackAsync(target, skill).ConfigureAwait(false);
         }
+    }
+
+    private void RefreshTarget()
+    {
+        if (this._currentTarget is { } t && !this.IsTargetStillValid(t))
+        {
+            this._currentTarget = null;
+        }
+
+        this._currentTarget ??= this.FindNearestMonster();
+        this._nearbyMonsterCount = this.CountMonstersNearby();
+    }
+
+    private bool IsTargetInAttackRange(IAttackable target, byte range)
+    {
+        return target.IsInRange(this._player.Position, range);
+    }
+
+    private bool IsTargetStillValid(IAttackable target)
+    {
+        return target.IsAlive
+               && !target.IsAtSafezone()
+               && !target.IsTeleporting
+               && target.IsInRange(this._originPosition, this.HuntingRange);
+    }
+
+    private bool IsMonsterAttackable(Monster monster)
+    {
+        return monster.IsAlive
+               && !monster.IsAtSafezone()
+               && monster.Definition.ObjectKind == NpcObjectKind.Monster;
     }
 
     private async ValueTask ExecutePhysicalAttackAsync(IAttackable target)
@@ -218,7 +239,7 @@ public sealed class CombatHandler
         var monstersInRange = this._player.CurrentMap?
             .GetAttackablesInRange(target.Position, skill.Range)
             .OfType<Monster>()
-            .Where(m => m.IsAlive && !m.IsAtSafezone() && m.Definition.ObjectKind == NpcObjectKind.Monster)
+            .Where(this.IsMonsterAttackable)
             ?? [];
 
         foreach (var monster in monstersInRange)
@@ -234,23 +255,6 @@ public sealed class CombatHandler
         await strategy.PerformSkillAsync(this._player, target, (ushort)skill.Number).ConfigureAwait(false);
     }
 
-    private void RefreshTarget()
-    {
-        if (this._currentTarget is { } t
-            && (!t.IsAlive || t.IsAtSafezone() || t.IsTeleporting
-                || !t.IsInRange(this._originPosition, this.HuntingRange)))
-        {
-            this._currentTarget = null;
-        }
-
-        if (this._currentTarget is null)
-        {
-            this._currentTarget = this.FindNearestMonster();
-        }
-
-        this._nearbyMonsterCount = this.CountMonstersNearby();
-    }
-
     private IAttackable? FindNearestMonster()
     {
         if (this._player.CurrentMap is not { } map)
@@ -258,10 +262,9 @@ public sealed class CombatHandler
             return null;
         }
 
-        byte range = this.HuntingRange;
-        return map.GetAttackablesInRange(this._originPosition, range)
+        return map.GetAttackablesInRange(this._originPosition, this.HuntingRange)
             .OfType<Monster>()
-            .Where(m => m.IsAlive && !m.IsAtSafezone() && m.Definition.ObjectKind == NpcObjectKind.Monster)
+            .Where(this.IsMonsterAttackable)
             .MinBy(m => m.GetDistanceTo(this._player));
     }
 
@@ -274,7 +277,7 @@ public sealed class CombatHandler
 
         return map.GetAttackablesInRange(this._originPosition, this.HuntingRange)
             .OfType<Monster>()
-            .Count(m => m.IsAlive && !m.IsAtSafezone() && m.Definition.ObjectKind == NpcObjectKind.Monster);
+            .Count(this.IsMonsterAttackable);
     }
 
     private SkillEntry? SelectAttackSkill()
@@ -484,11 +487,6 @@ public sealed class CombatHandler
     private SkillEntry? GetAnyOffensiveSkill()
     {
         return this.GetOffensiveSkills().FirstOrDefault();
-    }
-
-    private SkillEntry? FindSkillByType(SkillType type)
-    {
-        return this._player.SkillList?.Skills.FirstOrDefault(s => s.Skill?.SkillType == type);
     }
 
     private SkillEntry? FindDrainLifeSkill()

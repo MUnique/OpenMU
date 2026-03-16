@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.GameLogic.OfflineLeveling;
 
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.MuHelper;
-using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Manages active <see cref="OfflineLevelingPlayer"/> sessions.
@@ -24,7 +23,6 @@ public sealed class OfflineLevelingManager
     /// <returns><c>true</c> if the offline session was started successfully.</returns>
     public async ValueTask<bool> StartAsync(Player realPlayer, string loginName)
     {
-        // Capture references before disconnect clears them from the player instance.
         var account = realPlayer.Account;
         var character = realPlayer.SelectedCharacter;
 
@@ -33,53 +31,25 @@ public sealed class OfflineLevelingManager
             return false;
         }
 
-        // Atomically claim the slot to prevent racing during initialization.
         var sentinel = new OfflineLevelingPlayer(realPlayer.GameContext);
+
+        // Atomically claim the slot to prevent racing during initialization.
         if (!this._activePlayers.TryAdd(loginName, sentinel))
         {
-            // Another session is already active or being started for this account.
             await sentinel.DisposeAsync().ConfigureAwait(false);
             return false;
         }
 
-        // Charge initial Zen cost (similar to MuHelper start)
-        var helperConfig = realPlayer.GameContext.FeaturePlugIns.GetPlugIn<MuHelperFeaturePlugIn>()?.Configuration ??
-                           new MuHelperServerConfiguration();
-        var totalLevel = (int)(realPlayer.Level + (realPlayer.Attributes?[Stats.MasterLevel] ?? 0));
-        var initialCost = helperConfig.CostPerStage.FirstOrDefault() * totalLevel;
-
-        if (initialCost > 0 && !realPlayer.TryRemoveMoney(initialCost))
+        if (!this.TryChargeInitialZenCost(realPlayer))
         {
-            this._activePlayers.TryRemove(loginName, out _);
-            await sentinel.DisposeAsync().ConfigureAwait(false);
+            await this.RemoveAndDisposeAsync(loginName, sentinel).ConfigureAwait(false);
             return false;
         }
 
         try
         {
-            // Log off from the login server to allow reconnecting while the ghost runs.
-            if (realPlayer.GameContext is IGameServerContext gsCtx)
-            {
-                try
-                {
-                    await gsCtx.LoginServer.LogOffAsync(loginName, gsCtx.Id).ConfigureAwait(false);
-                }
-                catch (Exception ex)
-                {
-                    realPlayer.Logger.LogWarning(ex, "Could not log off from login server during offlevel.");
-                }
-            }
+            await this.TransitionToOfflineAsync(realPlayer, loginName).ConfigureAwait(false);
 
-            // Suppress the disconnection event to prevent double-save or redundant log-offs.
-            realPlayer.SuppressDisconnectedEvent();
-
-            // Perform disconnection: removes player from map and saves progress.
-            await realPlayer.DisconnectAsync().ConfigureAwait(false);
-
-            // Dispose the old context so entities can be attached to the ghost's new context.
-            realPlayer.PersistenceContext.Dispose();
-
-            // Now the name slot is free, initialize the ghost in-place.
             if (!await sentinel.InitializeAsync(account, character).ConfigureAwait(false))
             {
                 this._activePlayers.TryRemove(loginName, out _);
@@ -96,7 +66,7 @@ public sealed class OfflineLevelingManager
     }
 
     /// <summary>
-    /// Stops and removes the offline player for the given account, if one exists.
+    /// Stops and removes the offline leveling session for the given account, if one exists.
     /// </summary>
     /// <param name="loginName">The account login name.</param>
     public async ValueTask StopAsync(string loginName)
@@ -112,4 +82,84 @@ public sealed class OfflineLevelingManager
     /// </summary>
     /// <param name="loginName">The account login name.</param>
     public bool IsActive(string loginName) => this._activePlayers.ContainsKey(loginName);
+
+    private async ValueTask TransitionToOfflineAsync(Player realPlayer, string loginName)
+    {
+        await this.LogOffFromLoginServerAsync(realPlayer, loginName).ConfigureAwait(false);
+
+        realPlayer.SuppressDisconnectedEvent();
+        await realPlayer.DisconnectAsync().ConfigureAwait(false);
+        realPlayer.PersistenceContext.Dispose();
+    }
+
+    /// <summary>
+    /// Calculates and deducts the initial Zen cost for starting an offline leveling session.
+    /// The cost is based on the first MuHelper cost stage multiplied by the player's total level.
+    /// </summary>
+    /// <param name="player">The player to charge.</param>
+    /// <returns><c>true</c> if the cost was successfully charged or no cost applies; otherwise <c>false</c>.</returns>
+    private bool TryChargeInitialZenCost(Player player)
+    {
+        var initialCost = this.CalculateInitialZenCost(player);
+
+        return initialCost <= 0 || player.TryRemoveMoney(initialCost);
+    }
+
+    /// <summary>
+    /// Calculates the initial Zen cost for the given player based on the MuHelper configuration
+    /// and the player's combined normal and master level.
+    /// </summary>
+    /// <param name="player">The player for whom to calculate the cost.</param>
+    /// <returns>The Zen amount to charge; 0 if no cost applies.</returns>
+    private int CalculateInitialZenCost(Player player)
+    {
+        var config = player.GameContext.FeaturePlugIns.GetPlugIn<MuHelperFeaturePlugIn>()?.Configuration
+                     ?? new MuHelperConfiguration();
+
+        var costPerStage = config.CostPerStage.FirstOrDefault();
+        if (costPerStage <= 0)
+        {
+            return 0;
+        }
+
+        var totalLevel = player.Level + (int)(player.Attributes?[Stats.MasterLevel] ?? 0);
+
+        return costPerStage * totalLevel;
+    }
+
+    /// <summary>
+    /// Attempts to log the player off from the login server so the account slot is freed
+    /// for reconnection while the ghost session is running. Failures are logged and swallowed
+    /// because the offline session can still proceed without this step.
+    /// </summary>
+    /// <param name="player">The player being transitioned to offline leveling.</param>
+    /// <param name="loginName">The account login name.</param>
+    private async ValueTask LogOffFromLoginServerAsync(Player player, string loginName)
+    {
+        if (player.GameContext is not IGameServerContext gsCtx)
+        {
+            return;
+        }
+
+        try
+        {
+            await gsCtx.LoginServer.LogOffAsync(loginName, gsCtx.Id).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            player.Logger.LogWarning(ex, "Could not log off from login server during offlevel start.");
+        }
+    }
+
+    /// <summary>
+    /// Removes the sentinel entry from the active players dictionary and disposes the ghost.
+    /// Used when startup fails before the ghost is fully initialized.
+    /// </summary>
+    /// <param name="loginName">The account login name.</param>
+    /// <param name="sentinel">The ghost player to dispose.</param>
+    private async ValueTask RemoveAndDisposeAsync(string loginName, OfflineLevelingPlayer sentinel)
+    {
+        this._activePlayers.TryRemove(loginName, out _);
+        await sentinel.DisposeAsync().ConfigureAwait(false);
+    }
 }

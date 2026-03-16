@@ -15,12 +15,10 @@ public sealed class MovementHandler
     private const byte RegroupDistanceThreshold = 1;
 
     private readonly OfflineLevelingPlayer _player;
-    private readonly MuHelperPlayerConfiguration? _config;
+    private readonly IMuHelperSettings? _config;
     private readonly Point _originPosition;
 
     private DateTime? _outOfRangeSince;
-
-    private byte HuntingRange => CombatHandler.CalculateHuntingRange(this._config);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MovementHandler"/> class.
@@ -28,13 +26,17 @@ public sealed class MovementHandler
     /// <param name="player">The offline leveling player.</param>
     /// <param name="config">The MU Helper configuration.</param>
     /// <param name="originPosition">The original spawn position.</param>
-    /// <param name="getHuntingRange">Function to get the current hunting range.</param>
-    public MovementHandler(OfflineLevelingPlayer player, MuHelperPlayerConfiguration? config, Point originPosition)
+    public MovementHandler(OfflineLevelingPlayer player, IMuHelperSettings? config, Point originPosition)
     {
         this._player = player;
         this._config = config;
         this._originPosition = originPosition;
     }
+
+    /// <summary>
+    /// Gets the hunting range in tiles.
+    /// </summary>
+    private byte HuntingRange => CombatHandler.CalculateHuntingRange(this._config);
 
     /// <summary>
     /// Returns the character to the original position if configured and distance/time thresholds are met.
@@ -47,25 +49,33 @@ public sealed class MovementHandler
             return true;
         }
 
-        var distance = this._player.GetDistanceTo(this._originPosition);
-        if (distance > RegroupDistanceThreshold)
+        if (this.ShouldRegroup(out var distance))
         {
-            this._outOfRangeSince ??= DateTime.UtcNow;
-            var secondsAway = (DateTime.UtcNow - this._outOfRangeSince.Value).TotalSeconds;
-
-            if (secondsAway >= this._config.MaxSecondsAway || distance > this.HuntingRange)
-            {
-                await this.WalkToAsync(this._originPosition).ConfigureAwait(false);
-                this._outOfRangeSince = null;
-                return false;
-            }
+            await this.WalkToAsync(this._originPosition).ConfigureAwait(false);
+            this._outOfRangeSince = null;
+            return false;
         }
-        else
+
+        if (distance <= RegroupDistanceThreshold)
         {
             this._outOfRangeSince = null;
         }
 
         return true;
+    }
+
+    private bool ShouldRegroup(out double distance)
+    {
+        distance = this._player.GetDistanceTo(this._originPosition);
+        if (distance <= RegroupDistanceThreshold)
+        {
+            return false;
+        }
+
+        this._outOfRangeSince ??= DateTime.UtcNow;
+        var secondsAway = (DateTime.UtcNow - this._outOfRangeSince.Value).TotalSeconds;
+
+        return secondsAway >= this._config!.MaxSecondsAway || distance > this.HuntingRange;
     }
 
     /// <summary>

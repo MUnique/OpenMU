@@ -1,4 +1,4 @@
-﻿// <copyright file="LoginAction.cs" company="MUnique">
+// <copyright file="LoginAction.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -23,70 +23,141 @@ public class LoginAction
     public async ValueTask LoginAsync(Player player, string username, string password)
     {
         using var loggerScope = player.Logger.BeginScope(this.GetType());
-        Account? account;
+
+        var account = await this.AuthenticateAccountAsync(player, username, password).ConfigureAwait(false);
+        if (account is null || !await this.ValidateAccountStateAsync(player, account).ConfigureAwait(false))
+        {
+            return;
+        }
+
+        var (success, finalAccount) = await this.TryEstablishSessionAsync(player, username, password, account).ConfigureAwait(false);
+        if (success && finalAccount is { })
+        {
+            await this.FinishLoginAsync(player, username, finalAccount).ConfigureAwait(false);
+        }
+    }
+
+    private async ValueTask<Account?> AuthenticateAccountAsync(Player player, string username, string password)
+    {
         try
         {
-            account = await player.PersistenceContext.GetAccountByLoginNameAsync(username, password).ConfigureAwait(false);
+            var account = await player.PersistenceContext.GetAccountByLoginNameAsync(username, password).ConfigureAwait(false);
+            if (account is null)
+            {
+                player.Logger.LogInformation($"Account not found or invalid password, username: [{username}].");
+                await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.InvalidPassword)).ConfigureAwait(false);
+            }
+
+            return account;
         }
         catch (Exception ex)
         {
             player.Logger.LogError(ex, "Login Failed.");
             await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.ConnectionError)).ConfigureAwait(false);
-            return;
+            return null;
         }
+    }
 
-        if (account is null)
-        {
-            player.Logger.LogInformation($"Account not found or invalid password, username: [{username}]");
-            await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.InvalidPassword)).ConfigureAwait(false);
-        }
-        else if (account.State == AccountState.Banned)
+    private async ValueTask<bool> ValidateAccountStateAsync(Player player, Account account)
+    {
+        if (account.State == AccountState.Banned)
         {
             await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.AccountBlocked)).ConfigureAwait(false);
+            return false;
         }
-        else if (account.State == AccountState.TemporarilyBanned)
+
+        if (account.State == AccountState.TemporarilyBanned)
         {
             await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.TemporaryBlocked)).ConfigureAwait(false);
+            return false;
         }
-        else
+
+        return true;
+    }
+
+    private async ValueTask<(bool Success, Account? Account)> TryEstablishSessionAsync(Player player, string username, string password, Account account)
+    {
+        try
         {
-            try
+            await using var context = await player.PlayerState.TryBeginAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
+            if (!context.Allowed)
             {
-                await using var context = await player.PlayerState.TryBeginAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
-                if (context.Allowed
-                    && player.GameContext is IGameServerContext gameServerContext
-                    && (account.IsTemplate || await gameServerContext.LoginServer.TryLoginAsync(username, gameServerContext.Id).ConfigureAwait(false)))
-                {
-                    player.Account = account;
-                    player.Logger.LogDebug("Login successful, username: [{0}]", username);
+                await this.HandleAlreadyConnectedAsync(player, username).ConfigureAwait(false);
+                return (false, null);
+            }
 
-                    if (player.IsTemplatePlayer)
-                    {
-                        foreach (var character in account.Characters)
-                        {
-                            var counter = Interlocked.Increment(ref _templateCounter);
-                            character.Name = $"_{counter}";
-                        }
-                    }
+            if (player.GameContext is not IGameServerContext gameServerContext)
+            {
+                return (false, null);
+            }
 
-                    await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.Ok)).ConfigureAwait(false);
-                }
-                else
+            if (!account.IsTemplate && !await gameServerContext.LoginServer.TryLoginAsync(username, gameServerContext.Id).ConfigureAwait(false))
+            {
+                context.Allowed = false;
+                await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.AccountAlreadyConnected)).ConfigureAwait(false);
+                await gameServerContext.EventPublisher.PlayerAlreadyLoggedInAsync(gameServerContext.Id, username).ConfigureAwait(false);
+                return (false, null);
+            }
+
+            var finalAccount = account;
+            if (player.GameContext.OfflineLevelingManager.IsActive(username))
+            {
+                finalAccount = await this.HandleOfflineSessionHandoverAsync(player, username, password, account).ConfigureAwait(false);
+                if (finalAccount is null)
                 {
                     context.Allowed = false;
-                    await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.AccountAlreadyConnected)).ConfigureAwait(false);
-
-                    if (player.GameContext is IGameServerContext gameServerContext2)
-                    {
-                        await gameServerContext2.EventPublisher.PlayerAlreadyLoggedInAsync(gameServerContext2.Id, username).ConfigureAwait(false);
-                    }
+                    return (false, null);
                 }
             }
-            catch (Exception ex)
+
+            return (true, finalAccount);
+        }
+        catch (Exception ex)
+        {
+            player.Logger.LogError(ex, "Unexpected error during login through login server.");
+            await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.ConnectionError)).ConfigureAwait(false);
+            return (false, null);
+        }
+    }
+
+    private async ValueTask<Account?> HandleOfflineSessionHandoverAsync(Player player, string username, string password, Account account)
+    {
+        player.Logger.LogInformation("Account {username} has an active offline session. Stopping it and reloading account data.", username);
+        await player.GameContext.OfflineLevelingManager.StopAsync(username).ConfigureAwait(false);
+        player.PersistenceContext.Detach(account);
+        var reloadedAccount = await player.PersistenceContext.GetAccountByLoginNameAsync(username, password).ConfigureAwait(false);
+        if (reloadedAccount is null)
+        {
+            player.Logger.LogError("Failed to reload account {username} after stopping offline session.", username);
+            await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.ConnectionError)).ConfigureAwait(false);
+        }
+
+        return reloadedAccount;
+    }
+
+    private async ValueTask HandleAlreadyConnectedAsync(Player player, string username)
+    {
+        await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.AccountAlreadyConnected)).ConfigureAwait(false);
+        if (player.GameContext is IGameServerContext gameServerContext)
+        {
+            await gameServerContext.EventPublisher.PlayerAlreadyLoggedInAsync(gameServerContext.Id, username).ConfigureAwait(false);
+        }
+    }
+
+    private async ValueTask FinishLoginAsync(Player player, string username, Account account)
+    {
+        player.Account = account;
+        player.Logger.LogDebug($"Login successful, username: [{username}].");
+
+        if (player.IsTemplatePlayer)
+        {
+            foreach (var character in account.Characters)
             {
-                player.Logger.LogError(ex, "Unexpected error during login through login server");
-                await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.ConnectionError)).ConfigureAwait(false);
+                var counter = Interlocked.Increment(ref _templateCounter);
+                character.Name = $"_{counter}";
             }
         }
+
+        await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.Ok)).ConfigureAwait(false);
     }
 }

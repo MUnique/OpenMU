@@ -21,14 +21,14 @@ public sealed class ItemPickupHandler
     private static readonly PickupItemAction PickupAction = new();
 
     private readonly OfflineLevelingPlayer _player;
-    private readonly MuHelperPlayerConfiguration? _config;
+    private readonly IMuHelperSettings? _config;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ItemPickupHandler"/> class.
     /// </summary>
     /// <param name="player">The offline leveling player.</param>
     /// <param name="config">The MU Helper configuration.</param>
-    public ItemPickupHandler(OfflineLevelingPlayer player, MuHelperPlayerConfiguration? config)
+    public ItemPickupHandler(OfflineLevelingPlayer player, IMuHelperSettings? config)
     {
         this._player = player;
         this._config = config;
@@ -44,11 +44,7 @@ public sealed class ItemPickupHandler
             return;
         }
 
-        if (!this._config.PickAllItems
-            && !this._config.PickJewel
-            && !this._config.PickAncient
-            && !this._config.PickZen
-            && !this._config.PickExcellent)
+        if (!this._config.PickAllItems && !this._config.PickSelectItems)
         {
             return;
         }
@@ -58,19 +54,36 @@ public sealed class ItemPickupHandler
 
         foreach (var drop in drops)
         {
-            if (drop is DroppedMoney && this._config.PickZen)
+            if (this.ShouldPickUpDrop(drop))
             {
                 await PickupAction.PickupItemAsync(this._player, drop.Id).ConfigureAwait(false);
-            }
-            else if (drop is DroppedItem droppedItem && this.ShouldPickUp(droppedItem.Item))
-            {
-                await PickupAction.PickupItemAsync(this._player, drop.Id).ConfigureAwait(false);
-            }
-            else
-            {
-                // Other drops are ignored by configuration.
             }
         }
+    }
+
+    private bool ShouldPickUpDrop(IIdentifiable drop)
+    {
+        if (this._config!.PickAllItems)
+        {
+            return true;
+        }
+
+        if (!this._config.PickSelectItems)
+        {
+            return false;
+        }
+
+        if (drop is DroppedMoney && this._config.PickZen)
+        {
+            return true;
+        }
+
+        if (drop is DroppedItem droppedItem)
+        {
+            return this.ShouldPickUp(droppedItem.Item);
+        }
+
+        return false;
     }
 
     private bool ShouldPickUp(Item item)
@@ -78,11 +91,6 @@ public sealed class ItemPickupHandler
         if (this._config is null)
         {
             return false;
-        }
-
-        if (this._config.PickAllItems)
-        {
-            return true;
         }
 
         if (this._config.PickJewel && item.Definition?.Group == JewelItemGroup)
@@ -98,6 +106,11 @@ public sealed class ItemPickupHandler
         if (this._config.PickExcellent && item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.Excellent))
         {
             return true;
+        }
+
+        if (this._config.PickExtraItems && item.Definition is { } definition)
+        {
+            return this._config.ExtraItemNames.Any(name => definition.Name.ToString()?.Contains(name, StringComparison.OrdinalIgnoreCase) ?? false);
         }
 
         return false;

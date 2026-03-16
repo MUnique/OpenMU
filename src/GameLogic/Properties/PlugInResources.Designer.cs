@@ -3113,12 +3113,18 @@ namespace MUnique.OpenMU.GameLogic.Properties {
             }
         }
 
+        /// <summary>
+        ///   Looks up a localized string similar to Allows players to start offline leveling.
+        /// </summary>
         public static string OfflineLevelingStopOnLoginPlugIn_Name {
             get {
                 return ResourceManager.GetString("OfflineLevelingStopOnLoginPlugIn_Name", resourceCulture);
             }
         }
 
+        /// <summary>
+        ///   Looks up a localized string similar to Allows players to start offline leveling.
+        /// </summary>        
         public static string OfflineLevelingStopOnLoginPlugIn_Description {
             get {
                 return ResourceManager.GetString("OfflineLevelingStopOnLoginPlugIn_Description", resourceCulture);

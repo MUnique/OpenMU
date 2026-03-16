@@ -5,11 +5,12 @@
 namespace MUnique.OpenMU.GameLogic.OfflineLeveling;
 
 using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.GameLogic.MuHelper;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// A ghost player that continues leveling after the real client disconnects.
+/// An offline player that continues leveling after the real client disconnects.
 /// </summary>
 public sealed class OfflineLevelingPlayer : Player
 {
@@ -25,11 +26,6 @@ public sealed class OfflineLevelingPlayer : Player
     }
 
     /// <summary>
-    /// Gets the login name of the account.
-    /// </summary>
-    public string? AccountLoginName => this.Account?.LoginName;
-
-    /// <summary>
     /// Gets the character name.
     /// </summary>
     public string? CharacterName => this.SelectedCharacter?.Name;
@@ -40,7 +36,7 @@ public sealed class OfflineLevelingPlayer : Player
     public DateTime StartTimestamp { get; private set; }
 
     /// <summary>
-    /// Initializes the ghost player from captured references.
+    /// Initializes the offline player from captured references.
     /// </summary>
     /// <param name="account">The account.</param>
     /// <param name="character">The character.</param>
@@ -53,22 +49,11 @@ public sealed class OfflineLevelingPlayer : Player
             this.Account = account;
             this.PersistenceContext.Attach(account);
 
-            // Advance state to allow the intelligence to perform actions.
-            await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.LoginScreen).ConfigureAwait(false);
-            await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.Authenticated).ConfigureAwait(false);
-            await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.CharacterSelection).ConfigureAwait(false);
+            await this.AdvanceToEnteredWorldStateAsync().ConfigureAwait(false);
 
-            // Add to context and set character.
-            await this.GameContext.AddPlayerAsync(this).ConfigureAwait(false);
-            await this.SetSelectedCharacterAsync(character).ConfigureAwait(false);
+            await this.SetupCharacterAsync(character).ConfigureAwait(false);
 
-            if (this.SelectedCharacter is { } selectedCharacter)
-            {
-                this.PersistenceContext.Attach(selectedCharacter);
-            }
-
-            this._intelligence = new OfflineLevelingIntelligence(this);
-            this._intelligence.Start();
+            this.StartIntelligence();
 
             this.Logger.LogDebug(
                 "Offline leveling started for character {CharacterName} on map {Map} at {Position}.",
@@ -80,18 +65,52 @@ public sealed class OfflineLevelingPlayer : Player
         }
         catch (Exception ex)
         {
-            this.Logger.LogError(ex, "Failed to initialize offline leveling player.");
+            this.Logger.LogError(ex, "Failed to initialize offline player for {CharacterName}.", this.CharacterName);
             return false;
         }
     }
 
+    private async ValueTask AdvanceToEnteredWorldStateAsync()
+    {
+        // Advance state to allow the intelligence to perform actions.
+        await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.LoginScreen).ConfigureAwait(false);
+        await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.Authenticated).ConfigureAwait(false);
+        await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.CharacterSelection).ConfigureAwait(false);
+    }
+
+    private async ValueTask SetupCharacterAsync(Character character)
+    {
+        // Add to context and set character.
+        await this.GameContext.AddPlayerAsync(this).ConfigureAwait(false);
+        await this.SetSelectedCharacterAsync(character).ConfigureAwait(false);
+
+        if (this.SelectedCharacter is { } selectedCharacter)
+        {
+            this.PersistenceContext.Attach(selectedCharacter);
+        }
+    }
+
+    private void StartIntelligence()
+    {
+        this._intelligence = new OfflineLevelingIntelligence(this);
+        this._intelligence.Start();
+    }
+
     /// <summary>
-    /// Stops the ghost player and removes it from the world.
+    /// Stops the offline player and removes it from the world.
     /// </summary>
     public async ValueTask StopAsync()
     {
         this._intelligence?.Dispose();
         this._intelligence = null;
+        try
+        {
+            await this.SaveProgressAsync().ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this.Logger.LogError(ex, "Failed to save progress of offline leveling player {CharacterName}.", this.CharacterName);
+        }
 
         await this.DisconnectAsync().ConfigureAwait(false);
     }
