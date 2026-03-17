@@ -21,7 +21,7 @@ public static class MuHelperZenCostCalculator
     /// <returns>The Zen amount to deduct; 0 if the configuration has no cost entries.</returns>
     public static int Calculate(Player player, MuHelperConfiguration configuration, DateTime startTimestamp)
     {
-        if (configuration.CostPerStage.Count == 0)
+        if (configuration.CostPerStage.Count == 0 || configuration.StageInterval <= TimeSpan.Zero)
         {
             return 0;
         }

@@ -79,9 +79,9 @@
     </Compile>
   </ItemGroup>
 
-  <ItemGroup Condition="'$(ci)'!='true'">
-    <PackageReference Include="BuildWebCompiler2022" />
-  </ItemGroup>
+    <ItemGroup Condition="'$(ci)'!='true' and '$(OS)'=='Windows_NT'">
+        <PackageReference Include="BuildWebCompiler2022" />
+    </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\GameLogic\MUnique.OpenMU.GameLogic.csproj" />

@@ -100,7 +100,7 @@ public sealed class OfflineLevelingIntelligence : IDisposable
         }
         catch (Exception ex)
         {
-            this._player.Logger.LogError(ex, "Error in offline leveling AI tick for {Name}.", this._player.CharacterName);
+            this._player.Logger.LogError(ex, "Error in offline leveling AI tick for {AccountLoginName}.", this._player.AccountLoginName);
         }
     }
 

@@ -10,6 +10,7 @@ using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.MuHelper;
 using MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
+using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Interfaces;
 
 /// <summary>
@@ -64,6 +65,9 @@ public sealed class HealingHandler
             var healSkill = this.FindSkillByType(SkillType.Regeneration);
             if (healSkill is not null && this._config.AutoHeal)
             {
+                await this._player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(
+                    p => p.ShowSkillAnimationAsync(this._player, this._player, healSkill.Skill!, true),
+                    includeThis: true).ConfigureAwait(false);
                 await this._player.ApplyRegenerationAsync(this._player, healSkill).ConfigureAwait(false);
                 return;
             }
@@ -102,7 +106,10 @@ public sealed class HealingHandler
 
             if (this.IsHealthBelowThreshold(member, this._config.HealPartyThresholdPercent))
             {
-                await this._player.ApplyRegenerationAsync(member, healSkill).ConfigureAwait(false);
+                await this._player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(
+                    p => p.ShowSkillAnimationAsync(this._player, member, healSkill.Skill!, true),
+                    includeThis: true).ConfigureAwait(false);
+                await member.ApplyRegenerationAsync(this._player, healSkill).ConfigureAwait(false);
             }
         }
     }

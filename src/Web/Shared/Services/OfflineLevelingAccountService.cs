@@ -23,7 +23,9 @@ public class OfflineLevelingAccountService : IDataService<OfflineLevelingAccount
         this._serverProvider = serverProvider;
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Event raised when the data has changed.
+    /// </summary>
     public event EventHandler? DataChanged;
 
     /// <summary>
@@ -32,13 +34,10 @@ public class OfflineLevelingAccountService : IDataService<OfflineLevelingAccount
     /// <param name="account">The account whose session should be stopped.</param>
     public async Task StopOfflineLevelingAsync(OfflineLevelingAccount account)
     {
-        var server = this._serverProvider.Servers
-            .OfType<IGameServer>()
-            .FirstOrDefault(s => s.Id == account.ServerId);
-
-        if (server is not null)
+        var server = this._serverProvider.Servers.FirstOrDefault(s => s.Id == account.ServerId);
+        if (server is IGameServer gameServer)
         {
-            await server.DisconnectAccountAsync(account.LoginName).ConfigureAwait(false);
+            await gameServer.DisconnectAccountAsync(account.LoginName).ConfigureAwait(false);
         }
 
         this.DataChanged?.Invoke(this, EventArgs.Empty);
@@ -53,7 +52,6 @@ public class OfflineLevelingAccountService : IDataService<OfflineLevelingAccount
                 .GetOfflineLevelingPlayers()
                 .Select(p => new OfflineLevelingAccount(
                     p.AccountLoginName ?? string.Empty,
-                    p.CharacterName ?? string.Empty,
                     (byte)((IManageableServer)s).Id,
                     p.StartTimestamp)))
             .OrderBy(a => a.LoginName)

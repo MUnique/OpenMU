@@ -36,14 +36,12 @@
   <DataTable TItem=@OfflineLevelingAccount>
     <TableHeader>
       <th class="col-3">@typeof(Account).GetPropertyCaption(nameof(Account.LoginName))</th>
-      <th class="col-3">@Resources.Character</th>
       <th class="col-2">@Resources.ServerID</th>
       <th class="col-3">@Resources.StartedAt</th>
       <th class="col-2">@Resources.Action</th>
     </TableHeader>
     <ItemTemplate Context="item">
       <td>@item.LoginName</td>
-      <td>@item.CharacterName</td>
       <td>@item.ServerId</td>
       <td>@item.StartedAt.ToString("yyyy-MM-dd HH:mm:ss") UTC</td>
       <td>

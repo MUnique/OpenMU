@@ -53,6 +53,7 @@ public sealed class BuffHandler
 
         this.UpdatePeriodicBuffTimer();
 
+        this._buffSkillIndex = 0;
         for (int i = 0; i < BuffSlotCount; i++)
         {
             int buffId = buffIds[this._buffSkillIndex];
@@ -86,6 +87,17 @@ public sealed class BuffHandler
         }
 
         return true;
+    }
+
+    private static bool IsSkillQualifiedForTarget(SkillEntry skillEntry)
+    {
+        if (skillEntry.Skill is not { } skill)
+        {
+            return false;
+        }
+
+        return skill.Target != SkillTarget.ImplicitPlayer
+               && skill.TargetRestriction != SkillTargetRestriction.Self;
     }
 
     private List<int> GetConfiguredBuffIds()
@@ -124,6 +136,11 @@ public sealed class BuffHandler
         foreach (var member in party.PartyList.OfType<IAttackable>())
         {
             if (member == (IAttackable)this._player)
+            {
+                continue;
+            }
+
+            if (!IsSkillQualifiedForTarget(skillEntry))
             {
                 continue;
             }
@@ -173,6 +190,9 @@ public sealed class BuffHandler
 
         if (shouldApply)
         {
+            await this._player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(
+                p => p.ShowSkillAnimationAsync(this._player, target, skillEntry.Skill!, true),
+                includeThis: true).ConfigureAwait(false);
             await target.ApplyMagicEffectAsync(this._player, skillEntry).ConfigureAwait(false);
             this.MoveNextSlot();
             return true;

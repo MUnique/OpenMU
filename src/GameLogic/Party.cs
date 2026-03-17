@@ -33,7 +33,7 @@ public sealed class Party : Disposable
     private readonly List<Player> _distributionList;
 
     private readonly AsyncLock _distributionLock = new AsyncLock();
-    
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Party" /> class.
     /// </summary>

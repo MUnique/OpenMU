@@ -14,6 +14,7 @@ using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.MuHelper;
 using MUnique.OpenMU.GameLogic.OfflineLeveling;
+using MUnique.OpenMU.GameServer.RemoteView.MuHelper;
 using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
@@ -53,7 +54,7 @@ public class OfflineLevelingTest
         await player.Inventory!.AddItemAsync(InventoryConstants.ArmorSlot, item).ConfigureAwait(false);
         player.TryAddMoney(1_000_000);
 
-        var config = new MuHelperPlayerConfiguration { RepairItem = true };
+        var config = new MuHelperSettings { RepairItem = true };
         var handler = new RepairHandler(player, config);
         await handler.PerformRepairsAsync().ConfigureAwait(false);
 
@@ -71,7 +72,7 @@ public class OfflineLevelingTest
         await player.Inventory!.AddItemAsync(InventoryConstants.ArmorSlot, item).ConfigureAwait(false);
         player.TryAddMoney(1_000_000);
 
-        var config = new MuHelperPlayerConfiguration { RepairItem = false };
+        var config = new MuHelperSettings { RepairItem = false };
         var handler = new RepairHandler(player, config);
         await handler.PerformRepairsAsync().ConfigureAwait(false);
 
@@ -88,7 +89,7 @@ public class OfflineLevelingTest
         var item = this.CreateDamagedItem(maxDurability: 100, currentDurability: 10);
         await player.Inventory!.AddItemAsync(InventoryConstants.ArmorSlot, item).ConfigureAwait(false);
 
-        var config = new MuHelperPlayerConfiguration { RepairItem = true };
+        var config = new MuHelperSettings { RepairItem = true };
         var handler = new RepairHandler(player, config);
         await handler.PerformRepairsAsync().ConfigureAwait(false);
 
@@ -107,7 +108,7 @@ public class OfflineLevelingTest
         var initialMoney = 1_000_000;
         player.TryAddMoney(initialMoney);
 
-        var config = new MuHelperPlayerConfiguration { RepairItem = true };
+        var config = new MuHelperSettings { RepairItem = true };
         var handler = new RepairHandler(player, config);
         await handler.PerformRepairsAsync().ConfigureAwait(false);
 
@@ -125,7 +126,7 @@ public class OfflineLevelingTest
     public async ValueTask ItemPickupHandler_DoesNothingWhenAllDisabled()
     {
         var player = await this.CreateOfflinePlayerAsync().ConfigureAwait(false);
-        var config = new MuHelperPlayerConfiguration
+        var config = new MuHelperSettings
         {
             PickAllItems = false,
             PickJewel = false,
@@ -157,27 +158,25 @@ public class OfflineLevelingTest
     // -------------------------------------------------------------------------
 
     /// <summary>
-    /// Tests that <see cref="CombatHandler.PerformHealthRecoveryAsync"/> does nothing
+    /// Tests that <see cref="HealingHandler.PerformHealthRecoveryAsync"/> does nothing
     /// when config is null.
     /// </summary>
     [Test]
-    public async ValueTask CombatHandler_HealthRecovery_DoesNothingWhenConfigNull()
+    public async ValueTask HealingHandler_DoesNothingWhenConfigNull()
     {
         var player = await this.CreateOfflinePlayerAsync().ConfigureAwait(false);
-        var origin = player.Position;
-        var movement = new MovementHandler(player, null, origin);
-        var handler = new CombatHandler(player, null, movement, origin);
+        var handler = new HealingHandler(player, null);
 
         Assert.DoesNotThrowAsync(async () =>
             await handler.PerformHealthRecoveryAsync().ConfigureAwait(false));
     }
 
     /// <summary>
-    /// Tests that <see cref="CombatHandler.PerformHealthRecoveryAsync"/> does not consume
+    /// Tests that <see cref="HealingHandler.PerformHealthRecoveryAsync"/> does not consume
     /// a potion when the player's HP is above the threshold.
     /// </summary>
     [Test]
-    public async ValueTask CombatHandler_HealthRecovery_DoesNotUsePotionAboveThreshold()
+    public async ValueTask HealingHandler_DoesNotUsePotionAboveThreshold()
     {
         var player = await this.CreateOfflinePlayerAsync().ConfigureAwait(false);
         var maxHp = player.Attributes![Stats.MaximumHealth];
@@ -186,15 +185,13 @@ public class OfflineLevelingTest
         var potion = this.CreateHealthPotion();
         await player.Inventory!.AddItemAsync((byte)(InventoryConstants.FirstEquippableItemSlotIndex + 12), potion).ConfigureAwait(false);
 
-        var config = new MuHelperPlayerConfiguration
+        var config = new MuHelperSettings
         {
             UseHealPotion = true,
             PotionThresholdPercent = 50,
         };
 
-        var origin = player.Position;
-        var movement = new MovementHandler(player, config, origin);
-        var handler = new CombatHandler(player, config, movement, origin);
+        var handler = new HealingHandler(player, config);
         await handler.PerformHealthRecoveryAsync().ConfigureAwait(false);
 
         Assert.That(player.Inventory?.GetItem(potion.ItemSlot), Is.Not.Null);
@@ -212,7 +209,7 @@ public class OfflineLevelingTest
     public async ValueTask BuffHandler_ReturnsTrue_WhenNoBuffsConfigured()
     {
         var player = await this.CreateOfflinePlayerAsync().ConfigureAwait(false);
-        var config = new MuHelperPlayerConfiguration
+        var config = new MuHelperSettings
         {
             BuffSkill0Id = 0,
             BuffSkill1Id = 0,
