@@ -2,20 +2,15 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic.OfflineLeveling;
-
-using MUnique.OpenMU.DataModel.Configuration;
-using MUnique.OpenMU.DataModel.Configuration.Items;
-using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.MuHelper;
 using MUnique.OpenMU.GameLogic.NPC;
-using MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
 using MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.World;
-using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Pathfinding;
+
+namespace MUnique.OpenMU.GameLogic.OfflineLeveling;
 
 /// <summary>
 /// Handles combat logic including target selection, attacks, combo attacks, and skill usage.
@@ -33,7 +28,9 @@ public sealed class CombatHandler
     private readonly OfflineLevelingPlayer _player;
     private readonly IMuHelperSettings? _config;
     private readonly MovementHandler _movementHandler;
+    private readonly BuffHandler _buffHandler;
     private readonly Point _originPosition;
+    private readonly ConditionalSkillSlot[] _conditionalSkillSlots;
 
     private IAttackable? _currentTarget;
     private int _nearbyMonsterCount;
@@ -46,13 +43,20 @@ public sealed class CombatHandler
     /// <param name="player">The offline leveling player.</param>
     /// <param name="config">The MU helper settings.</param>
     /// <param name="movementHandler">The movement handler.</param>
+    /// <param name="buffHandler">The buff handler.</param>
     /// <param name="originPosition">The original position to hunt around.</param>
-    public CombatHandler(OfflineLevelingPlayer player, IMuHelperSettings? config, MovementHandler movementHandler, Point originPosition)
+    public CombatHandler(OfflineLevelingPlayer player, IMuHelperSettings? config, MovementHandler movementHandler, BuffHandler buffHandler, Point originPosition)
     {
         this._player = player;
         this._config = config;
         this._movementHandler = movementHandler;
+        this._buffHandler = buffHandler;
         this._originPosition = originPosition;
+        this._conditionalSkillSlots = config is null ? [] :
+        [
+            new ConditionalSkillSlot(config.ActivationSkill1Id, config.Skill1UseTimer, config.DelayMinSkill1, config.Skill1UseCondition, config.Skill1ConditionAttacking, config.Skill1SubCondition),
+            new ConditionalSkillSlot(config.ActivationSkill2Id, config.Skill2UseTimer, config.DelayMinSkill2, config.Skill2UseCondition, config.Skill2ConditionAttacking, config.Skill2SubCondition),
+        ];
     }
 
     /// <summary>
@@ -92,6 +96,36 @@ public sealed class CombatHandler
     }
 
     /// <summary>
+    /// Performs combat attacks on targets.
+    /// </summary>
+    /// <returns>A value task representing the asynchronous operation.</returns>
+    public async ValueTask PerformAttackAsync()
+    {
+        this.RefreshTarget();
+
+        if (this._currentTarget is null)
+        {
+            return;
+        }
+
+        byte attackRange = this.GetEffectiveAttackRange();
+        if (!this.IsTargetInAttackRange(this._currentTarget, attackRange))
+        {
+            await this._movementHandler.MoveCloserToTargetAsync(this._currentTarget, attackRange).ConfigureAwait(false);
+            return;
+        }
+
+        if (this._config?.UseCombo == true)
+        {
+            await this.ExecuteComboAttackAsync().ConfigureAwait(false);
+        }
+        else
+        {
+            await this.ExecuteAttackAsync(this._currentTarget).ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
     /// Performs health recovery through Drain Life attacks if configured.
     /// </summary>
     public async ValueTask PerformDrainLifeRecoveryAsync()
@@ -123,44 +157,23 @@ public sealed class CombatHandler
         }
     }
 
-    /// <summary>
-    /// Performs combat attacks on targets.
-    /// </summary>
-    /// <returns>A value task representing the asynchronous operation.</returns>
-    public async ValueTask PerformAttackAsync()
+    private async ValueTask ExecuteAttackAsync(IAttackable target)
     {
-        this.RefreshTarget();
-
-        if (this._currentTarget is null)
+        var skill = this.SelectAttackSkill();
+        if (skill == null)
         {
-            return;
+            // Do not attack if there are buffs configured to handle buff-only classes.
+            var buffs = this._buffHandler.GetConfiguredBuffIds();
+            if (buffs.Count > 0)
+            {
+                return;
+            }
         }
 
-        byte attackRange = this.GetEffectiveAttackRange();
-        if (!this.IsTargetInAttackRange(this._currentTarget, attackRange))
-        {
-            await this._movementHandler.MoveCloserToTargetAsync(this._currentTarget, attackRange).ConfigureAwait(false);
-            return;
-        }
-
-        if (this._config?.UseCombo == true)
-        {
-            await this.ExecuteComboAttackAsync().ConfigureAwait(false);
-        }
-        else
-        {
-            var skill = this.SelectAttackSkill();
-            await this.ExecuteAttackAsync(this._currentTarget, skill, false).ConfigureAwait(false);
-        }
+        await this.ExecuteAttackAsync(target, skill, false).ConfigureAwait(false);
     }
 
-    /// <summary>
-    /// Executes an attack on the specified target.
-    /// </summary>
-    /// <param name="target">The target.</param>
-    /// <param name="skillEntry">The skill entry.</param>
-    /// <param name="isCombo">If set to <c>true</c>, it's a combo attack.</param>
-    public async ValueTask ExecuteAttackAsync(IAttackable target, SkillEntry? skillEntry, bool isCombo)
+    private async ValueTask ExecuteAttackAsync(IAttackable target, SkillEntry? skillEntry, bool isCombo)
     {
         this._player.Rotation = this._player.GetDirectionTo(target);
 
@@ -187,8 +200,28 @@ public sealed class CombatHandler
             this._currentTarget = null;
         }
 
-        this._currentTarget ??= this.FindNearestMonster();
-        this._nearbyMonsterCount = this.CountMonstersNearby();
+        if (this._currentTarget is null)
+        {
+            var monsters = this.GetAttackableMonstersInHuntingRange().ToList();
+            this._currentTarget = monsters.MinBy(m => m.GetDistanceTo(this._player));
+            this._nearbyMonsterCount = monsters.Count;
+        }
+        else
+        {
+            this._nearbyMonsterCount = this.GetAttackableMonstersInHuntingRange().Count();
+        }
+    }
+
+    private IEnumerable<Monster> GetAttackableMonstersInHuntingRange()
+    {
+        if (this._player.CurrentMap is not { } map)
+        {
+            return [];
+        }
+
+        return map.GetAttackablesInRange(this._originPosition, this.HuntingRange)
+            .OfType<Monster>()
+            .Where(this.IsMonsterAttackable);
     }
 
     private bool IsTargetInAttackRange(IAttackable target, byte range)
@@ -255,87 +288,72 @@ public sealed class CombatHandler
         await strategy.PerformSkillAsync(this._player, target, (ushort)skill.Number).ConfigureAwait(false);
     }
 
-    private IAttackable? FindNearestMonster()
-    {
-        if (this._player.CurrentMap is not { } map)
-        {
-            return null;
-        }
-
-        return map.GetAttackablesInRange(this._originPosition, this.HuntingRange)
-            .OfType<Monster>()
-            .Where(this.IsMonsterAttackable)
-            .MinBy(m => m.GetDistanceTo(this._player));
-    }
-
-    private int CountMonstersNearby()
-    {
-        if (this._player.CurrentMap is not { } map)
-        {
-            return 0;
-        }
-
-        return map.GetAttackablesInRange(this._originPosition, this.HuntingRange)
-            .OfType<Monster>()
-            .Count(this.IsMonsterAttackable);
-    }
-
     private SkillEntry? SelectAttackSkill()
     {
         if (this._config is null)
         {
-            return this.GetAnyOffensiveSkill();
+            return null;
         }
 
-        var s1 = this.EvaluateConditionalSkill(
-            this._config.ActivationSkill1Id,
-            this._config.Skill1UseTimer,
-            this._config.DelayMinSkill1,
-            this._config.Skill1UseCondition,
-            this._config.Skill1SubCondition);
-        if (s1 is not null)
-        {
-            return s1;
-        }
-
-        var s2 = this.EvaluateConditionalSkill(
-            this._config.ActivationSkill2Id,
-            this._config.Skill2UseTimer,
-            this._config.DelayMinSkill2,
-            this._config.Skill2UseCondition,
-            this._config.Skill2SubCondition);
-        if (s2 is not null)
-        {
-            return s2;
-        }
-
-        if (this._config.BasicSkillId > 0)
-        {
-            return this._player.SkillList?.GetSkill((ushort)this._config.BasicSkillId);
-        }
-
-        return this.GetAnyOffensiveSkill();
-    }
-
-    private SkillEntry? EvaluateConditionalSkill(int skillId, bool useTimer, int timerInterval, bool useCond, int subCond)
-    {
-        if (skillId <= 0)
+        // If no skills are configured at all, don't attack.
+        if (this._config.BasicSkillId == 0
+            && this._config.ActivationSkill1Id == 0
+            && this._config.ActivationSkill2Id == 0)
         {
             return null;
         }
 
-        if (useTimer && timerInterval > 0)
+        foreach (var slot in this._conditionalSkillSlots)
         {
-            var secondsElapsed = (int)(DateTime.UtcNow - this._player.StartTimestamp).TotalSeconds;
-            if (secondsElapsed > 0 && secondsElapsed % timerInterval == 0)
+            var skill = this.EvaluateConditionalSkill(slot);
+            if (skill is not null && this.HasEnoughResources(skill))
             {
-                return this._player.SkillList?.GetSkill((ushort)skillId);
+                return skill;
             }
         }
 
-        if (useCond)
+        if (this._config.BasicSkillId > 0)
         {
-            int threshold = subCond switch
+            var basicSkill = this._player.SkillList?.GetSkill((ushort)this._config.BasicSkillId);
+            if (basicSkill is not null && this.HasEnoughResources(basicSkill))
+            {
+                return basicSkill;
+            }
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Evaluates whether the skill in the given slot should fire this tick.
+    /// </summary>
+    private SkillEntry? EvaluateConditionalSkill(ConditionalSkillSlot slot)
+    {
+        if (slot.SkillId <= 0)
+        {
+            return null;
+        }
+
+        if (slot.UseTimer && !slot.UseCondition)
+        {
+            if (slot.TimerIntervalSeconds <= 0)
+            {
+                return null;
+            }
+
+            var secondsSinceLastUse = (DateTime.UtcNow - slot.LastUseTime).TotalSeconds;
+            if (secondsSinceLastUse >= slot.TimerIntervalSeconds)
+            {
+                slot.LastUseTime = DateTime.UtcNow;
+                return this._player.SkillList?.GetSkill((ushort)slot.SkillId);
+            }
+
+            return null;
+        }
+
+        if (slot.UseCondition && !slot.UseTimer)
+        {
+            int threshold = slot.SubCondition switch
             {
                 0 => 2,
                 1 => 3,
@@ -344,13 +362,46 @@ public sealed class CombatHandler
                 _ => int.MaxValue,
             };
 
-            if (this._nearbyMonsterCount >= threshold)
+            int monsterCount = slot.ConditionAttacking
+                ? this.CountMonstersAttackingPlayer()
+                : this._nearbyMonsterCount;
+
+            if (monsterCount >= threshold)
             {
-                return this._player.SkillList?.GetSkill((ushort)skillId);
+                return this._player.SkillList?.GetSkill((ushort)slot.SkillId);
             }
         }
 
         return null;
+    }
+
+    private int CountMonstersAttackingPlayer()
+    {
+        return this.GetAttackableMonstersInHuntingRange()
+            .Count(m => m.IsAttackingPlayer(this._player));
+    }
+
+    /// <summary>
+    /// Checks that the player has enough mana AND ability (AG) to cast the skill.
+    /// Both resources are consumed by skills via <see cref="Skill.ConsumeRequirements"/>.
+    /// </summary>
+    private bool HasEnoughResources(SkillEntry? skillEntry)
+    {
+        if (skillEntry?.Skill is not { } skill || this._player.Attributes is null)
+        {
+            return true;
+        }
+
+        foreach (var requirement in skill.ConsumeRequirements)
+        {
+            int required = this._player.GetRequiredValue(requirement, false);
+            if (this._player.Attributes[requirement.Attribute] < required)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private async ValueTask ExecuteComboAttackAsync()
@@ -362,9 +413,9 @@ public sealed class CombatHandler
         }
 
         var ids = this.GetConfiguredComboSkillIds();
-        if (ids.Count == 0)
+        if (ids.Count < 3)
         {
-            await this.ExecuteAttackAsync(this._currentTarget, this.GetAnyOffensiveSkill(), false).ConfigureAwait(false);
+            await this.ExecuteAttackAsync(this._currentTarget).ConfigureAwait(false);
             return;
         }
 
@@ -493,5 +544,19 @@ public sealed class CombatHandler
     {
         return this._player.SkillList?.Skills.FirstOrDefault(s =>
             s.Skill is { Number: DrainLifeBaseSkillId or DrainLifeStrengthenerSkillId or DrainLifeMasterySkillId });
+    }
+
+    /// <summary>
+    /// Holds the configuration for one conditional skill slot, along with its mutable last-use timestamp.
+    /// </summary>
+    private sealed class ConditionalSkillSlot(int skillId, bool useTimer, int timerIntervalSeconds, bool useCondition, bool conditionAttacking, int subCondition)
+    {
+        public int SkillId { get; } = skillId;
+        public bool UseTimer { get; } = useTimer;
+        public int TimerIntervalSeconds { get; } = timerIntervalSeconds;
+        public bool UseCondition { get; } = useCondition;
+        public bool ConditionAttacking { get; } = conditionAttacking;
+        public int SubCondition { get; } = subCondition;
+        public DateTime LastUseTime { get; set; }
     }
 }

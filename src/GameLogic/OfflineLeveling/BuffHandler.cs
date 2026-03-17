@@ -89,6 +89,20 @@ public sealed class BuffHandler
         return true;
     }
 
+    /// <summary>
+    /// Gets the configured buff skill IDs from the settings.
+    /// </summary>
+    /// <returns>A list containing BuffSkill0Id, BuffSkill1Id, and BuffSkill2Id. Returns an empty list if configuration is null.</returns>
+    public List<int> GetConfiguredBuffIds()
+    {
+        if (this._config is null)
+        {
+            return [];
+        }
+
+        return [this._config.BuffSkill0Id, this._config.BuffSkill1Id, this._config.BuffSkill2Id];
+    }
+
     private static bool IsSkillQualifiedForTarget(SkillEntry skillEntry)
     {
         if (skillEntry.Skill is not { } skill)
@@ -98,16 +112,6 @@ public sealed class BuffHandler
 
         return skill.Target != SkillTarget.ImplicitPlayer
                && skill.TargetRestriction != SkillTargetRestriction.Self;
-    }
-
-    private List<int> GetConfiguredBuffIds()
-    {
-        if (this._config is null)
-        {
-            return [];
-        }
-
-        return [this._config.BuffSkill0Id, this._config.BuffSkill1Id, this._config.BuffSkill2Id];
     }
 
     private void UpdatePeriodicBuffTimer()

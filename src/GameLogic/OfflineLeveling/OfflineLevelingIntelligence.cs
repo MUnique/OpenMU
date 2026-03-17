@@ -2,12 +2,10 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic.OfflineLeveling;
-
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
-using MUnique.OpenMU.GameLogic.Attributes;
-using MUnique.OpenMU.GameLogic.MuHelper;
-using MUnique.OpenMU.GameLogic.Views.MuHelper;
+
+namespace MUnique.OpenMU.GameLogic.OfflineLeveling;
 
 /// <summary>
 /// Server-side AI that drives an <see cref="OfflineLevelingPlayer"/> ghost after the real
@@ -50,7 +48,7 @@ public sealed class OfflineLevelingIntelligence : IDisposable
         this._healingHandler = new HealingHandler(player, config);
         this._itemPickupHandler = new ItemPickupHandler(player, config);
         this._movementHandler = new MovementHandler(player, config, originalPosition);
-        this._combatHandler = new CombatHandler(player, config, this._movementHandler, originalPosition);
+        this._combatHandler = new CombatHandler(player, config, this._movementHandler, this._buffHandler, originalPosition);
         this._repairHandler = new RepairHandler(player, config);
         this._zenHandler = new ZenConsumptionHandler(player);
 
@@ -87,7 +85,7 @@ public sealed class OfflineLevelingIntelligence : IDisposable
         this._aiTimer = null;
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100", Justification = "Timer callback — exceptions are caught internally.")]
+    [SuppressMessage("Usage", "VSTHRD100", Justification = "Timer callback — exceptions are caught internally.")]
     private async Task SafeTickAsync()
     {
         try
