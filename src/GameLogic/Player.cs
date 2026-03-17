@@ -348,7 +348,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public ComboStateMachine? ComboState => this.Attributes?[Stats.IsSkillComboAvailable] > 0 ? this._comboStateLazy?.Value : null;
 
     /// <summary>
-    /// Gets summon.
+    /// Gets the player summon.
     /// </summary>
     public (Monster, INpcIntelligence)? Summon { get; private set; }
 
@@ -1697,7 +1697,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// Creates a summoned monster for the player.
     /// </summary>
     /// <param name="definition">The definition.</param>
-    /// <exception cref="InvalidOperationException">Can't add a summon for a player which isn't spawned yet.</exception>
+    /// <exception cref="InvalidOperationException">Can't add the player summon for a player which isn't spawned yet.</exception>
     public async ValueTask CreateSummonedMonsterAsync(MonsterDefinition definition)
     {
         if (this.CurrentMap is not { } gameMap)
@@ -1729,7 +1729,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <summary>
-    /// Notifies the player object that summon died.
+    /// Notifies the player object that the summoned monster died.
     /// </summary>
     public void SummonDied()
     {
@@ -1737,7 +1737,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <summary>
-    /// Removes summon.
+    /// Removes the player summon.
     /// </summary>
     public async ValueTask RemoveSummonAsync()
     {

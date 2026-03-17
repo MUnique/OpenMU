@@ -1514,7 +1514,7 @@
       <Code>D2</Code>
       <SubCode>05</SubCode>
       <Name>CashShopStorageListRequest</Name>
-      <Length>9</Length>
+      <Length>10</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The player opened the cash shop dialog or used paging of the storage.</SentWhen>
       <CausedReaction>In case of opening, the server returns if the cash shop is available. If the player is in the safezone, it's not.</CausedReaction>

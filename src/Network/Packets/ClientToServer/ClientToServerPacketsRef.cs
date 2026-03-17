@@ -6466,7 +6466,7 @@ public readonly ref struct CashShopStorageListRequestRef
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 8;
+    public static int Length => 10;
 
     /// <summary>
     /// Gets the header of this packet.
@@ -6665,7 +6665,7 @@ public readonly ref struct CashShopStorageItemConsumeRequestRef
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 5;
+    public static int Length => 15;
 
     /// <summary>
     /// Gets the header of this packet.
