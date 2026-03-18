@@ -49,11 +49,6 @@ public class HitAction
             return;
         }
 
-        if (attributes[Stats.IsMuHelperActive] > 0 && target is Player)
-        {
-            return;
-        }
-
         if (target is IObservable targetAsObservable)
         {
             using var readerLock = await targetAsObservable.ObserverLock.ReaderLockAsync();

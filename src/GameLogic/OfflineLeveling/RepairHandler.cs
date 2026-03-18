@@ -4,10 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic.OfflineLeveling;
 
-using MUnique.OpenMU.DataModel;
-using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic.MuHelper;
-using MUnique.OpenMU.GameLogic.Views.Inventory;
+using MUnique.OpenMU.GameLogic.PlayerActions.Items;
 
 /// <summary>
 /// Handles auto-repair of equipped items during offline leveling.
@@ -16,7 +14,7 @@ internal sealed class RepairHandler
 {
     private readonly Player _player;
     private readonly IMuHelperSettings? _config;
-    private readonly ItemPriceCalculator _priceCalculator;
+    private readonly ItemRepairAction _repairAction = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RepairHandler"/> class.
@@ -27,7 +25,6 @@ internal sealed class RepairHandler
     {
         this._player = player;
         this._config = config;
-        this._priceCalculator = new ItemPriceCalculator();
     }
 
     /// <summary>
@@ -50,62 +47,7 @@ internal sealed class RepairHandler
                 continue;
             }
 
-            await this.RepairItemInSlotAsync(i).ConfigureAwait(false);
-        }
-    }
-
-    private async ValueTask RepairItemInSlotAsync(byte slot)
-    {
-        var item = this._player.Inventory?.GetItem(slot);
-        if (item is null)
-        {
-            return;
-        }
-
-        var maxDurability = item.GetMaximumDurabilityOfOnePiece();
-        if (maxDurability == 0 || item.Durability >= maxDurability)
-        {
-            return;
-        }
-
-        // NPC discount is false because we repair "in the field"
-        var price = this._priceCalculator.CalculateRepairPrice(item, false);
-        this._player.Logger.LogDebug(
-            "Item {ItemName} in slot {Slot} needs repair. Durability: {Durability}/{MaxDurability}. Cost: {RepairCost}. Player Zen: {PlayerZen}.",
-            item.Definition?.Name,
-            slot,
-            item.Durability,
-            maxDurability,
-            price,
-            this._player.Money);
-
-        if (price > 0 && this._player.TryRemoveMoney((int)price))
-        {
-            item.Durability = maxDurability;
-            await this._player
-                .InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(item, false))
-                .ConfigureAwait(false);
-
-            this._player.Logger.LogDebug(
-                "Successfully auto-repaired item {ItemName} in slot {Slot} for {RepairCost} Zen by character {CharacterName}.",
-                item.Definition?.Name,
-                slot,
-                price,
-                this._player.Name);
-        }
-        else if (price > 0)
-        {
-            this._player.Logger.LogDebug(
-                "Insufficient Zen to repair item {ItemName} in slot {Slot} (Cost: {RepairCost}, Zen: {PlayerZen}) for character {CharacterName}.",
-                item.Definition?.Name,
-                slot,
-                price,
-                this._player.Money,
-                this._player.Name);
-        }
-        else
-        {
-            // Price is 0 or less, no action required.
+            await this._repairAction.RepairItemAsync(this._player, i).ConfigureAwait(false);
         }
     }
 }
