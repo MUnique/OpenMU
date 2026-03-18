@@ -122,17 +122,27 @@ public class LoginAction
 
     private async ValueTask<Account?> HandleOfflineSessionHandoverAsync(Player player, string username, string password, Account account)
     {
-        player.Logger.LogInformation("Account {username} has an active offline session. Stopping it and reloading account data.", username);
-        await player.GameContext.OfflineLevelingManager.StopAsync(username).ConfigureAwait(false);
-        player.PersistenceContext.Detach(account);
-        var reloadedAccount = await player.PersistenceContext.GetAccountByLoginNameAsync(username, password).ConfigureAwait(false);
-        if (reloadedAccount is null)
-        {
-            player.Logger.LogError("Failed to reload account {username} after stopping offline session.", username);
-            await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.ConnectionError)).ConfigureAwait(false);
-        }
+        player.Logger.LogDebug("Account {username} has an active offline session. Stopping it and reloading account data.", username);
 
-        return reloadedAccount;
+        try
+        {
+            await player.GameContext.OfflineLevelingManager.StopAsync(username).ConfigureAwait(false);
+            player.PersistenceContext.Detach(account);
+            var reloadedAccount = await player.PersistenceContext.GetAccountByLoginNameAsync(username, password).ConfigureAwait(false);
+            if (reloadedAccount is null)
+            {
+                player.Logger.LogError("Failed to reload account {username} after stopping offline session.", username);
+                await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.ConnectionError)).ConfigureAwait(false);
+            }
+
+            return reloadedAccount;
+        }
+        catch (Exception ex)
+        {
+            player.Logger.LogError(ex, "Failed to reload account {username} after stopping offline session.", username);
+            await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.ConnectionError)).ConfigureAwait(false);
+            return null;
+        }
     }
 
     private async ValueTask HandleAlreadyConnectedAsync(Player player, string username)
