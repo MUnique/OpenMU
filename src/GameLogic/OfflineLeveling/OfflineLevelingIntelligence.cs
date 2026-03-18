@@ -2,21 +2,21 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using System.Diagnostics.CodeAnalysis;
-using System.Threading;
-
 namespace MUnique.OpenMU.GameLogic.OfflineLeveling;
 
+using System.Threading;
+
 /// <summary>
-/// Server-side AI that drives an <see cref="OfflineLevelingPlayer"/> ghost after the real
+/// Server-side AI that drives an <see cref="OfflineLevelingPlayer"/> after the real
 /// client disconnects. Mirrors the C++ <c>CMuHelper::Work()</c> loop including:
 /// <list type="bullet">
 ///   <item>Basic / conditional / combo skill attack selection</item>
-///   <item>Self-buff application (up to 3 configured buff skills)</item>
-///   <item>Auto-heal / drain-life based on HP %</item>
+///   <item>Buff application (up to 3 configured buff skills)</item>
+///   <item>Heal / drain-life based on HP %</item>
 ///   <item>Return-to-origin regrouping</item>
 ///   <item>Item pickup (Zen, Jewels, Excellent, Ancient, and named extra items)</item>
 ///   <item>Skill and movement animations broadcast to nearby observers</item>
+///   <item>Pet control</item>
 /// </list>
 /// </summary>
 public sealed class OfflineLevelingIntelligence : IDisposable
@@ -30,6 +30,7 @@ public sealed class OfflineLevelingIntelligence : IDisposable
     private readonly RepairHandler _repairHandler;
     private readonly ZenConsumptionHandler _zenHandler;
     private readonly HealingHandler _healingHandler;
+    private readonly PetHandler _petHandler;
 
     private Timer? _aiTimer;
     private bool _disposed;
@@ -51,6 +52,7 @@ public sealed class OfflineLevelingIntelligence : IDisposable
         this._combatHandler = new CombatHandler(player, config, this._movementHandler, this._buffHandler, originalPosition);
         this._repairHandler = new RepairHandler(player, config);
         this._zenHandler = new ZenConsumptionHandler(player);
+        this._petHandler = new PetHandler(player, config);
 
         if (config is null)
         {
@@ -65,6 +67,8 @@ public sealed class OfflineLevelingIntelligence : IDisposable
     /// <summary>Starts the 500 ms AI timer.</summary>
     public void Start()
     {
+        _ = this._petHandler.InitializeAsync();
+
         this._aiTimer ??= new Timer(
             state => _ = this.SafeTickAsync(),
             null,
@@ -85,7 +89,7 @@ public sealed class OfflineLevelingIntelligence : IDisposable
         this._aiTimer = null;
     }
 
-    [SuppressMessage("Usage", "VSTHRD100", Justification = "Timer callback — exceptions are caught internally.")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100", Justification = "Timer callback — exceptions are caught internally.")]
     private async Task SafeTickAsync()
     {
         try
@@ -110,8 +114,8 @@ public sealed class OfflineLevelingIntelligence : IDisposable
         }
 
         await this._zenHandler.DeductZenAsync().ConfigureAwait(false);
-
         await this._repairHandler.PerformRepairsAsync().ConfigureAwait(false);
+        await this._petHandler.CheckPetDurabilityAsync().ConfigureAwait(false);
 
         if (this.IsOnSkillCooldown())
         {
@@ -125,9 +129,7 @@ public sealed class OfflineLevelingIntelligence : IDisposable
         }
 
         await this._healingHandler.PerformHealthRecoveryAsync().ConfigureAwait(false);
-
         await this._combatHandler.PerformDrainLifeRecoveryAsync().ConfigureAwait(false);
-
         await this._itemPickupHandler.PickupItemsAsync().ConfigureAwait(false);
 
         if (this._player.IsWalking)

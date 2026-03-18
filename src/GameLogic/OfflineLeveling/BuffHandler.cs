@@ -6,8 +6,9 @@ namespace MUnique.OpenMU.GameLogic.OfflineLeveling;
 
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic.MuHelper;
+using MUnique.OpenMU.GameLogic.PlayerActions.Skills;
+using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.World;
-using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Handles buff application and management for the offline leveling player.
@@ -70,19 +71,16 @@ public sealed class BuffHandler
                 continue;
             }
 
-            // Try to buff self
-            if (await this.TryBuffTargetAsync(this._player, skillEntry, false).ConfigureAwait(false))
+            if (await this.PerformSelfBuffAsync(skillEntry).ConfigureAwait(false))
             {
                 return false;
             }
 
-            // Try to buff party members
-            if (await this.TryBuffPartyMembersAsync(skillEntry).ConfigureAwait(false))
+            if (await this.PerformPartyBuffAsync(skillEntry).ConfigureAwait(false))
             {
                 return false;
             }
 
-            // Move to next slot if no one needed this buff
             this.MoveNextSlot();
         }
 
@@ -92,7 +90,7 @@ public sealed class BuffHandler
     /// <summary>
     /// Gets the configured buff skill IDs from the settings.
     /// </summary>
-    /// <returns>A list containing BuffSkill0Id, BuffSkill1Id, and BuffSkill2Id. Returns an empty list if configuration is null.</returns>
+    /// <returns>A list containing BuffSkill0Id, BuffSkill1Id, and BuffSkill2Id.</returns>
     public List<int> GetConfiguredBuffIds()
     {
         if (this._config is null)
@@ -130,34 +128,6 @@ public sealed class BuffHandler
         }
     }
 
-    private async ValueTask<bool> TryBuffPartyMembersAsync(SkillEntry skillEntry)
-    {
-        if (this._config is not { SupportParty: true } || this._player.Party is not { } party)
-        {
-            return false;
-        }
-
-        foreach (var member in party.PartyList.OfType<IAttackable>())
-        {
-            if (member == (IAttackable)this._player)
-            {
-                continue;
-            }
-
-            if (!IsSkillQualifiedForTarget(skillEntry))
-            {
-                continue;
-            }
-
-            if (await this.TryBuffTargetAsync(member, skillEntry, true).ConfigureAwait(false))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     private void MoveNextSlot()
     {
         this._buffSkillIndex = (this._buffSkillIndex + 1) % BuffSlotCount;
@@ -167,37 +137,88 @@ public sealed class BuffHandler
         }
     }
 
-    private async ValueTask<bool> TryBuffTargetAsync(IAttackable target, SkillEntry skillEntry, bool isPartyMember)
+    private bool ShouldApplyBuff(IAttackable target, SkillEntry skillEntry, bool isPartyMember)
     {
         if (skillEntry.Skill?.MagicEffectDef is not { } effectDef)
         {
             return false;
         }
 
-        if (!target.IsActive() || !this._player.IsInRange(target, 8))
+        if (!target.IsActive() || !this._player.IsInRange(target, this._config!.HuntingRange))
         {
             return false;
         }
 
-        bool alreadyActive = target.MagicEffectList.ActiveEffects.Values
+        var alreadyActive = target.MagicEffectList.ActiveEffects.Values
             .Any(e => e.Definition == effectDef);
 
-        bool shouldApply;
         if (isPartyMember)
         {
-            shouldApply = this._config!.BuffDurationForParty ? !alreadyActive : this._buffTimerTriggered;
-        }
-        else
-        {
-            shouldApply = !alreadyActive || this._buffTimerTriggered;
+            return this._config!.BuffDurationForParty ? !alreadyActive : this._buffTimerTriggered;
         }
 
-        if (shouldApply)
+        return !alreadyActive || this._buffTimerTriggered;
+    }
+
+    private async ValueTask<bool> PerformSelfBuffAsync(SkillEntry skillEntry)
+    {
+        if (!this.ShouldApplyBuff(this._player, skillEntry, false))
         {
-            await this._player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(
-                p => p.ShowSkillAnimationAsync(this._player, target, skillEntry.Skill!, true),
+            return false;
+        }
+
+        if (skillEntry.Skill?.Target == SkillTarget.ImplicitParty)
+        {
+            return await this.PerformImplicitPartyBuffAsync(skillEntry).ConfigureAwait(false);
+        }
+
+        await ((IObservable)this._player).ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(
+            p => p.ShowSkillAnimationAsync(this._player, this._player, skillEntry.Skill!, true),
+            includeThis: true).ConfigureAwait(false);
+        await this._player.ApplyMagicEffectAsync(this._player, skillEntry).ConfigureAwait(false);
+        this.MoveNextSlot();
+        return true;
+    }
+
+    private async ValueTask<bool> PerformImplicitPartyBuffAsync(SkillEntry skillEntry)
+    {
+        var strategy = this._player.GameContext.PlugInManager
+                           .GetStrategy<short, ITargetedSkillPlugin>((short)skillEntry.Skill!.Number)
+                       ?? new TargetedSkillDefaultPlugin();
+
+        await strategy.PerformSkillAsync(this._player, this._player, (ushort)skillEntry.Skill.Number).ConfigureAwait(false);
+        this.MoveNextSlot();
+        return true;
+    }
+
+    private async ValueTask<bool> PerformPartyBuffAsync(SkillEntry skillEntry)
+    {
+        if (this._config is not { SupportParty: true } || this._player.Party is not { } party)
+        {
+            return false;
+        }
+
+        foreach (var member in party.PartyList.OfType<IAttackable>())
+        {
+            if (member == this._player)
+            {
+                continue;
+            }
+
+            if (!IsSkillQualifiedForTarget(skillEntry))
+            {
+                continue;
+            }
+
+            if (!this.ShouldApplyBuff(member, skillEntry, true))
+            {
+                continue;
+            }
+
+            await (member as IObservable ?? this._player).ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(
+                p => p.ShowSkillAnimationAsync(this._player, member, skillEntry.Skill!, true),
                 includeThis: true).ConfigureAwait(false);
-            await target.ApplyMagicEffectAsync(this._player, skillEntry).ConfigureAwait(false);
+            await member.ApplyMagicEffectAsync(this._player, skillEntry).ConfigureAwait(false);
             this.MoveNextSlot();
             return true;
         }

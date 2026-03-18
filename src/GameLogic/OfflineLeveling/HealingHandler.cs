@@ -99,7 +99,7 @@ public sealed class HealingHandler
                 continue;
             }
 
-            if (!member.IsActive() || !this._player.IsInRange(member, 8))
+            if (!member.IsActive() || !this._player.IsInRange(member, this._config!.HuntingRange))
             {
                 continue;
             }

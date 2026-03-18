@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
+namespace MUnique.OpenMU.GameLogic.OfflineLeveling;
+
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.MuHelper;
 using MUnique.OpenMU.GameLogic.NPC;
@@ -9,8 +11,6 @@ using MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Pathfinding;
-
-namespace MUnique.OpenMU.GameLogic.OfflineLeveling;
 
 /// <summary>
 /// Handles combat logic including target selection, attacks, combo attacks, and skill usage.
@@ -164,7 +164,7 @@ public sealed class CombatHandler
         {
             // Do not attack if there are buffs configured to handle buff-only classes.
             var buffs = this._buffHandler.GetConfiguredBuffIds();
-            if (buffs.Count > 0)
+            if (buffs.Any(id => id > 0))
             {
                 return;
             }
@@ -519,25 +519,7 @@ public sealed class CombatHandler
             }
         }
 
-        return this.GetOffensiveSkills()
-            .Select(s => (byte)s.Skill!.Range)
-            .DefaultIfEmpty(DefaultRange)
-            .Max();
-    }
-
-    private IEnumerable<SkillEntry> GetOffensiveSkills()
-    {
-        return this._player.SkillList?.Skills
-            .Where(s => s.Skill is not null
-                        && s.Skill.SkillType != SkillType.PassiveBoost
-                        && s.Skill.SkillType != SkillType.Buff
-                        && s.Skill.SkillType != SkillType.Regeneration)
-               ?? [];
-    }
-
-    private SkillEntry? GetAnyOffensiveSkill()
-    {
-        return this.GetOffensiveSkills().FirstOrDefault();
+        return DefaultRange;
     }
 
     private SkillEntry? FindDrainLifeSkill()
