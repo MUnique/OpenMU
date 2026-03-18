@@ -83,6 +83,15 @@ public sealed class OfflineLevelingManager
     /// <param name="loginName">The account login name.</param>
     public bool IsActive(string loginName) => this._activePlayers.ContainsKey(loginName);
 
+    /// <summary>
+    /// Tries to get the active offline leveling player for the given account login name.
+    /// </summary>
+    /// <param name="loginName">The account login name.</param>
+    /// <param name="player">The offline leveling player, if found.</param>
+    /// <returns><c>true</c> if an active session exists; otherwise <c>false</c>.</returns>
+    public bool TryGetPlayer(string loginName, out OfflineLevelingPlayer? player)
+        => this._activePlayers.TryGetValue(loginName, out player);
+
     private async ValueTask TransitionToOfflineAsync(Player realPlayer, string loginName)
     {
         await this.LogOffFromLoginServerAsync(realPlayer, loginName).ConfigureAwait(false);
@@ -147,7 +156,7 @@ public sealed class OfflineLevelingManager
         }
         catch (Exception ex)
         {
-            player.Logger.LogWarning(ex, "Could not log off from login server during offlevel start.");
+            player.Logger.LogWarning(ex, "Could not log off from login server during offline leveling start.");
         }
     }
 
