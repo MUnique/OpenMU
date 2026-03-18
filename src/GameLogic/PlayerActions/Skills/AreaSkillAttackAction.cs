@@ -82,8 +82,7 @@ public class AreaSkillAttackAction
         {
             if (extraTarget?.CheckSkillTargetRestrictions(player, skill) is true
                 && player.IsInRange(extraTarget.Position, skill.Range + 2)
-                && !extraTarget.IsAtSafezone()
-                && !(player.Attributes?[Stats.IsMuHelperActive] > 0 && extraTarget is Player))
+                && !extraTarget.IsAtSafezone())
             {
                 yield return extraTarget;
             }
@@ -131,8 +130,7 @@ public class AreaSkillAttackAction
             targetsInRange = targetsInRange.Where(a => a.GetDistanceTo(targetAreaCenter) < skill.AreaSkillSettings.TargetAreaDiameter * 0.5f);
         }
 
-        if (!player.GameContext.Configuration.AreaSkillHitsPlayer
-            || player.Attributes?[Stats.IsMuHelperActive] > 0)
+        if (!player.GameContext.Configuration.AreaSkillHitsPlayer)
         {
             targetsInRange = targetsInRange.Where(a => a is not Player);
         }
