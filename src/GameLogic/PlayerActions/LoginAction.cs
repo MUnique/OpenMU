@@ -24,31 +24,36 @@ public class LoginAction
     {
         using var loggerScope = player.Logger.BeginScope(this.GetType());
 
-        var account = await this.AuthenticateAccountAsync(player, username, password).ConfigureAwait(false);
-        if (account is null || !await this.ValidateAccountStateAsync(player, account).ConfigureAwait(false))
+        var state = await this.AuthenticateAsync(player, username, password).ConfigureAwait(false);
+        if (state is null)
         {
             return;
         }
 
-        var (success, finalAccount) = await this.TryEstablishSessionAsync(player, username, password, account).ConfigureAwait(false);
-        if (success && finalAccount is { })
+        if (!await this.ValidateAccountStateAsync(player, state.Value).ConfigureAwait(false))
         {
-            await this.FinishLoginAsync(player, username, finalAccount).ConfigureAwait(false);
+            return;
+        }
+
+        var (success, account) = await this.TryEstablishSessionAsync(player, username).ConfigureAwait(false);
+        if (success && account is { })
+        {
+            await this.FinishLoginAsync(player, username, account).ConfigureAwait(false);
         }
     }
 
-    private async ValueTask<Account?> AuthenticateAccountAsync(Player player, string username, string password)
+    private async ValueTask<AccountState?> AuthenticateAsync(Player player, string username, string password)
     {
         try
         {
-            var account = await player.PersistenceContext.GetAccountByLoginNameAsync(username, password).ConfigureAwait(false);
-            if (account is null)
+            var state = await player.PersistenceContext.AuthenticateAsync(username, password).ConfigureAwait(false);
+            if (state is null)
             {
-                player.Logger.LogInformation($"Account not found or invalid password, username: [{username}].");
+                player.Logger.LogInformation("Account not found or invalid password, username: [{Username}].", username);
                 await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.InvalidPassword)).ConfigureAwait(false);
             }
 
-            return account;
+            return state;
         }
         catch (Exception ex)
         {
@@ -58,15 +63,15 @@ public class LoginAction
         }
     }
 
-    private async ValueTask<bool> ValidateAccountStateAsync(Player player, Account account)
+    private async ValueTask<bool> ValidateAccountStateAsync(Player player, AccountState state)
     {
-        if (account.State == AccountState.Banned)
+        if (state == AccountState.Banned)
         {
             await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.AccountBlocked)).ConfigureAwait(false);
             return false;
         }
 
-        if (account.State == AccountState.TemporarilyBanned)
+        if (state == AccountState.TemporarilyBanned)
         {
             await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.TemporaryBlocked)).ConfigureAwait(false);
             return false;
@@ -75,7 +80,7 @@ public class LoginAction
         return true;
     }
 
-    private async ValueTask<(bool Success, Account? Account)> TryEstablishSessionAsync(Player player, string username, string password, Account account)
+    private async ValueTask<(bool Success, Account? Account)> TryEstablishSessionAsync(Player player, string username)
     {
         try
         {
@@ -91,7 +96,37 @@ public class LoginAction
                 return (false, null);
             }
 
-            if (!account.IsTemplate && !await gameServerContext.LoginServer.TryLoginAsync(username, gameServerContext.Id).ConfigureAwait(false))
+            if (player.GameContext.OfflineLevelingManager.IsActive(username))
+            {
+                var isTemplateOffline = player.GameContext.OfflineLevelingManager.TryGetPlayer(username, out var offlinePlayer) && offlinePlayer!.IsTemplatePlayer;
+                if (!isTemplateOffline && !await gameServerContext.LoginServer.TryLoginAsync(username, gameServerContext.Id).ConfigureAwait(false))
+                {
+                    context.Allowed = false;
+                    await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.AccountAlreadyConnected)).ConfigureAwait(false);
+                    await gameServerContext.EventPublisher.PlayerAlreadyLoggedInAsync(gameServerContext.Id, username).ConfigureAwait(false);
+                    return (false, null);
+                }
+
+                var offlineAccount = await this.HandleOfflineSessionHandoverAsync(player, username).ConfigureAwait(false);
+                if (offlineAccount is null)
+                {
+                    context.Allowed = false;
+                    return (false, null);
+                }
+
+                return (true, offlineAccount);
+            }
+
+            var loadedAccount = await player.PersistenceContext.GetAccountByLoginNameAsync(username).ConfigureAwait(false);
+            if (loadedAccount is null)
+            {
+                player.Logger.LogError("Failed to load account {Username} after authentication.", username);
+                await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.ConnectionError)).ConfigureAwait(false);
+                context.Allowed = false;
+                return (false, null);
+            }
+
+            if (!loadedAccount.IsTemplate && !await gameServerContext.LoginServer.TryLoginAsync(username, gameServerContext.Id).ConfigureAwait(false))
             {
                 context.Allowed = false;
                 await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.AccountAlreadyConnected)).ConfigureAwait(false);
@@ -99,18 +134,7 @@ public class LoginAction
                 return (false, null);
             }
 
-            var finalAccount = account;
-            if (player.GameContext.OfflineLevelingManager.IsActive(username))
-            {
-                finalAccount = await this.HandleOfflineSessionHandoverAsync(player, username, password, account).ConfigureAwait(false);
-                if (finalAccount is null)
-                {
-                    context.Allowed = false;
-                    return (false, null);
-                }
-            }
-
-            return (true, finalAccount);
+            return (true, loadedAccount);
         }
         catch (Exception ex)
         {
@@ -120,26 +144,25 @@ public class LoginAction
         }
     }
 
-    private async ValueTask<Account?> HandleOfflineSessionHandoverAsync(Player player, string username, string password, Account account)
+    private async ValueTask<Account?> HandleOfflineSessionHandoverAsync(Player player, string username)
     {
-        player.Logger.LogDebug("Account {username} has an active offline session. Stopping it and reloading account data.", username);
+        player.Logger.LogInformation("Account {Username} has an active offline session. Stopping it and reloading account data.", username);
 
         try
         {
             await player.GameContext.OfflineLevelingManager.StopAsync(username).ConfigureAwait(false);
-            player.PersistenceContext.Detach(account);
-            var reloadedAccount = await player.PersistenceContext.GetAccountByLoginNameAsync(username, password).ConfigureAwait(false);
-            if (reloadedAccount is null)
+            var account = await player.PersistenceContext.GetAccountByLoginNameAsync(username).ConfigureAwait(false);
+            if (account is null)
             {
-                player.Logger.LogError("Failed to reload account {username} after stopping offline session.", username);
+                player.Logger.LogError("Failed to reload account {Username} after stopping offline session.", username);
                 await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.ConnectionError)).ConfigureAwait(false);
             }
 
-            return reloadedAccount;
+            return account;
         }
         catch (Exception ex)
         {
-            player.Logger.LogError(ex, "Failed to reload account {username} after stopping offline session.", username);
+            player.Logger.LogError(ex, "Failed to reload account {Username} after stopping offline session.", username);
             await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.ConnectionError)).ConfigureAwait(false);
             return null;
         }
@@ -157,7 +180,7 @@ public class LoginAction
     private async ValueTask FinishLoginAsync(Player player, string username, Account account)
     {
         player.Account = account;
-        player.Logger.LogDebug($"Login successful, username: [{username}].");
+        player.Logger.LogDebug("Login successful, username: [{Username}].", username);
 
         if (player.IsTemplatePlayer)
         {

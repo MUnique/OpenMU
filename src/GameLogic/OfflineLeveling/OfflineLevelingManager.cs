@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.GameLogic.OfflineLeveling;
 
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.MuHelper;
-using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Manages active <see cref="OfflineLevelingPlayer"/> sessions.
@@ -57,13 +56,6 @@ public sealed class OfflineLevelingManager
                 return false;
             }
 
-            // Now that the offline player is fully initialized, swap it into the party.
-            var party = realPlayer.Party;
-            if (party is not null)
-            {
-                await party.ReplaceMemberAsync(realPlayer, sentinel).ConfigureAwait(false);
-            }
-
             return true;
         }
         catch
@@ -92,11 +84,19 @@ public sealed class OfflineLevelingManager
     public bool IsActive(string loginName) => this._activePlayers.ContainsKey(loginName);
 
     /// <summary>
+    /// Tries to get the active offline leveling player for the given account login name.
+    /// </summary>
+    /// <param name="loginName">The account login name.</param>
+    /// <param name="player">The offline leveling player, if found.</param>
+    /// <returns><c>true</c> if an active session exists; otherwise <c>false</c>.</returns>
+    public bool TryGetPlayer(string loginName, out OfflineLevelingPlayer? player)
+        => this._activePlayers.TryGetValue(loginName, out player);
+
+    /// <summary>
     /// Returns a snapshot of all currently active offline leveling players.
     /// </summary>
     public IReadOnlyCollection<OfflineLevelingPlayer> GetOfflineLevelingPlayers()
         => this._activePlayers.Values.ToList();
-
 
     private async ValueTask TransitionToOfflineAsync(Player realPlayer, string loginName)
     {
