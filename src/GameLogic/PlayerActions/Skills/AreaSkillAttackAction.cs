@@ -51,7 +51,6 @@ public class AreaSkillAttackAction
             || (skill.SkillType is SkillType.AreaSkillExplicitHits && hitImplicitlyForExplicitSkill))
         {
             // todo: delayed automatic hits, like evil spirit, flame, triple shot... when hitImplicitlyForExplicitSkill = true.
-
             await this.PerformAutomaticHitsAsync(player, extraTargetId, targetAreaCenter, skillEntry!, skill, rotation).ConfigureAwait(false);
         }
 
@@ -77,6 +76,9 @@ public class AreaSkillAttackAction
     {
         var isExtraTargetDefined = extraTargetId != UndefinedTarget;
         var extraTarget = isExtraTargetDefined ? player.GetObject(extraTargetId) as IAttackable : null;
+
+        player.Logger.LogDebug(
+            "GetTargets: skill={Skill}, extraTargetId={ExtraTargetId}, extraTarget={ExtraTarget}", skill.Name, extraTargetId, extraTarget?.ToString() ?? "null");
 
         if (skill.SkillType == SkillType.AreaSkillExplicitTarget)
         {

@@ -1,4 +1,4 @@
-// <copyright file="Player.cs" company="MUnique">
+﻿// <copyright file="Player.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -2758,6 +2758,22 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
     }
 
+    /// <summary>
+    /// A <see cref="MagicEffectDefinition"/> used to apply the GM mark
+    /// to a <see cref="Player"/> with <see cref="CharacterStatus.GameMaster"/> status.
+    /// </summary>
+    private protected sealed class GMMagicEffectDefinition : MagicEffectDefinition
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GMMagicEffectDefinition"/> class
+        /// with an empty power-up definitions list.
+        /// </summary>
+        public GMMagicEffectDefinition()
+        {
+            this.PowerUpDefinitions = new List<PowerUpDefinition>(0);
+        }
+    }
+
     private sealed class TemporaryItemStorage : ItemStorage
     {
         public TemporaryItemStorage()
@@ -2806,14 +2822,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         {
             this._fullAncientSetEquipped = null;
             this.AppearanceChanged?.Invoke(this, EventArgs.Empty);
-        }
-    }
-
-    private protected sealed class GMMagicEffectDefinition : MagicEffectDefinition
-    {
-        public GMMagicEffectDefinition()
-        {
-            this.PowerUpDefinitions = new List<PowerUpDefinition>(0);
         }
     }
 }

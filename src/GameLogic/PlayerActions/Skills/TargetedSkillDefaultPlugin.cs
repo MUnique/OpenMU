@@ -55,13 +55,13 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
 
         if (attributes[Stats.IsStunned] > 0)
         {
-            player.Logger.LogWarning($"Probably Hacker - player {player} is attacking in stunned state");
+            player.Logger.LogWarning("Probably Hacker - player {Player} is attacking in stunned state", player);
             return;
         }
 
         if (attributes[Stats.IsAsleep] > 0)
         {
-            player.Logger.LogWarning($"Probably Hacker - player {player} is attacking in asleep state");
+            player.Logger.LogWarning("Probably Hacker - player {Player} is attacking in asleep state", player);
             return;
         }
 
@@ -279,7 +279,7 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
                 var canDoBuff = !player.IsAtSafezone() || player.CurrentMiniGame is { };
                 if (!canDoBuff)
                 {
-                    player.Logger.LogWarning($"Can't apply magic effect when being in the safezone. skill: {skill.Name} ({skill.Number}), skillType: {skill.SkillType}.");
+                    player.Logger.LogWarning("Can't apply magic effect when being in the safe-zone. skill: {SkillName} ({SkillNumber}), skillType: {SkillType}.", skill.Name, skill.Number, skill.SkillType);
                     break;
                 }
 
@@ -295,12 +295,12 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
                 }
                 else
                 {
-                    player.Logger.LogWarning($"Skill.MagicEffectDef isn't null, but it's not a buff or regeneration skill. skill: {skill.Name} ({skill.Number}), skillType: {skill.SkillType}.");
+                    player.Logger.LogWarning("Skill.MagicEffectDef isn't null, but it's not a buff or regeneration skill. skill: {SkillName} ({SkillNumber}), skillType: {SkillType}.", skill.Name, skill.Number, skill.SkillType);
                 }
             }
             else
             {
-                player.Logger.LogWarning($"Skill.MagicEffectDef is null, skill: {skill.Name} ({skill.Number}), skillType: {skill.SkillType}.");
+                player.Logger.LogWarning("Skill.MagicEffectDef is null, skill: {SkillName} ({SkillNumber}), skillType: {SkillType}.", skill.Name, skill.Number, skill.SkillType);
             }
         }
 
