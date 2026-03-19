@@ -96,9 +96,9 @@ public class LoginAction
                 return (false, null);
             }
 
-            if (player.GameContext.OfflineLevelingManager.IsActive(username))
+            if (player.GameContext.OfflineLevelingManager.TryGetPlayer(username, out var offlinePlayer))
             {
-                var isTemplateOffline = player.GameContext.OfflineLevelingManager.TryGetPlayer(username, out var offlinePlayer) && offlinePlayer!.IsTemplatePlayer;
+                var isTemplateOffline = offlinePlayer!.IsTemplatePlayer;
                 if (!isTemplateOffline && !await gameServerContext.LoginServer.TryLoginAsync(username, gameServerContext.Id).ConfigureAwait(false))
                 {
                     context.Allowed = false;
