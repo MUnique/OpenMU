@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.Attributes;
 
 using MUnique.OpenMU.AttributeSystem;
+using MUnique.OpenMU.DataModel.Configuration;
 
 /// <summary>
 /// An attribute system which considers items of a character.
@@ -16,11 +17,12 @@ public sealed class ItemAwareAttributeSystem : AttributeSystem, IDisposable
     /// </summary>
     /// <param name="account">The account.</param>
     /// <param name="character">The character.</param>
-    public ItemAwareAttributeSystem(Account account, Character character)
+    /// <param name="gameConfiguration">The game configuration with global attributes.</param>
+    public ItemAwareAttributeSystem(Account account, Character character, GameConfiguration gameConfiguration)
         : base(
             character.Attributes.Concat(account.Attributes),
-            character.CharacterClass!.BaseAttributeValues,
-            character.CharacterClass.AttributeCombinations)
+            character.CharacterClass!.BaseAttributeValues.Concat(gameConfiguration.GlobalBaseAttributeValues),
+            character.CharacterClass.AttributeCombinations.Concat(gameConfiguration.GlobalAttributeCombinations))
     {
         this.ItemPowerUps = new Dictionary<Item, IReadOnlyList<PowerUpWrapper>>();
         foreach (var attribute in this)
