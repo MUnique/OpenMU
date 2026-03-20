@@ -39,6 +39,16 @@ internal static class CharacterExtensions
     {
         builder.Property(p => p.Name).HasConversion(LocalizedStringConverter.Instance);
         builder.HasMany(c => c.RawBaseAttributeValues)
-            .WithOne(c => c.CharacterClass!);
+            .WithOne(c => c.CharacterClass);
+    }
+
+    /// <summary>
+    /// Applies the global attribute settings for the <see cref="GameConfiguration"/> entity.
+    /// </summary>
+    /// <param name="builder">The builder.</param>
+    public static void ApplyGlobalAttributes(this EntityTypeBuilder<GameConfiguration> builder)
+    {
+        builder.HasMany(c => c.RawGlobalBaseAttributeValues)
+            .WithOne(c => c.GameConfiguration);
     }
 }

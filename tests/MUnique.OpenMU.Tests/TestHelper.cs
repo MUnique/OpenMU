@@ -34,6 +34,11 @@ public static class TestHelper
         gameConfig.Setup(c => c.Skills).Returns(new List<Skill>());
         gameConfig.Setup(c => c.PlugInConfigurations).Returns(new List<PlugInConfiguration>());
         gameConfig.Setup(c => c.CharacterClasses).Returns(new List<CharacterClass>());
+        gameConfig.Setup(c => c.GlobalAttributeCombinations).Returns(new List<AttributeRelationship>());
+        gameConfig.Setup(c => c.GlobalBaseAttributeValues).Returns(new List<ConstValueAttribute>
+        {
+            new(1, Stats.MoneyAmountRate),
+        });
         var map = new Mock<GameMapDefinition>();
         map.SetupAllProperties();
         map.Setup(m => m.DropItemGroups).Returns(new List<DropItemGroup>());
@@ -115,7 +120,6 @@ public static class TestHelper
             new (2, Stats.AbilityRecoveryMultiplier),
             new (1, Stats.DamageReceiveDecrement),
             new (1, Stats.AttackDamageIncrease),
-            new (1, Stats.MoneyAmountRate),
         });
         character.CharacterClass = characterClassMock.Object;
 
