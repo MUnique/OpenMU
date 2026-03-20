@@ -1,32 +1,36 @@
-﻿// <copyright file="ConnectServerHostedServiceWrapper.cs" company="MUnique">
+﻿// <copyright file="ChatServerHostedServiceWrapper.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.ConnectServer.Host;
+namespace MUnique.OpenMU.ChatServer.Host;
 
+using System.Collections.Generic;
 using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MUnique.OpenMU.Dapr.Common;
+using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.PlugIns;
+using ChatServer = MUnique.OpenMU.ChatServer.ChatServer;
 
 /// <summary>
-/// A wrapper which takes a <see cref="Interfaces.IConnectServer"/> and wraps it as <see cref="IHostedLifecycleService"/>,
+/// A wrapper which takes a <see cref="ChatServer"/> and wraps it as <see cref="IHostedLifecycleService"/>,
 /// so that additional initialization can be done before actually starting it.
 /// The actual server start is deferred to <see cref="StartedAsync"/> which is called after the web application
 /// has started (i.e. the HTTP API is already available), breaking the circular startup dependency with the Dapr sidecar.
 /// TODO: listen to configuration changes/database reinit.
 /// See also: ServerContainerBase.
 /// </summary>
-public class ConnectServerHostedServiceWrapper : IHostedLifecycleService
+public class ChatServerHostedServiceWrapper : IHostedLifecycleService
 {
     private readonly IServiceProvider _serviceProvider;
-    private ConnectServer? _connectServer;
+    private ChatServer? _chatServer;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ConnectServerHostedServiceWrapper"/> class.
+    /// Initializes a new instance of the <see cref="ChatServerHostedServiceWrapper"/> class.
     /// </summary>
     /// <param name="serviceProvider">The service provider.</param>
-    public ConnectServerHostedServiceWrapper(IServiceProvider serviceProvider)
+    public ChatServerHostedServiceWrapper(IServiceProvider serviceProvider)
     {
         this._serviceProvider = serviceProvider;
     }
@@ -41,8 +45,16 @@ public class ConnectServerHostedServiceWrapper : IHostedLifecycleService
     public async Task StartedAsync(CancellationToken cancellationToken)
     {
         await this._serviceProvider.WaitForDatabaseInitializationAsync(cancellationToken).ConfigureAwait(false);
-        this._connectServer = this._serviceProvider.GetRequiredService<ConnectServer>();
-        await this._connectServer.StartAsync(cancellationToken).ConfigureAwait(false);
+
+        if (this._serviceProvider.GetService<ICollection<PlugInConfiguration>>() is List<PlugInConfiguration> plugInConfigurations)
+        {
+            await this._serviceProvider.TryLoadPlugInConfigurationsAsync(plugInConfigurations).ConfigureAwait(false);
+        }
+
+        var settings = this._serviceProvider.GetRequiredService<ChatServerDefinition>().ConvertToSettings();
+        this._chatServer = this._serviceProvider.GetRequiredService<ChatServer>();
+        this._chatServer.Initialize(settings);
+        await this._chatServer.StartAsync(cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -51,7 +63,7 @@ public class ConnectServerHostedServiceWrapper : IHostedLifecycleService
     /// <inheritdoc/>
     public Task StopAsync(CancellationToken cancellationToken)
     {
-        return this._connectServer?.StopAsync(cancellationToken) ?? Task.CompletedTask;
+        return this._chatServer?.StopAsync(cancellationToken) ?? Task.CompletedTask;
     }
 
     /// <inheritdoc/>
