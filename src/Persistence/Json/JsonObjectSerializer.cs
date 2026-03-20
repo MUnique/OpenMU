@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Persistence.Json;
 
 using System.IO;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 
 /// <summary>
@@ -19,12 +20,30 @@ public class JsonObjectSerializer
     /// <typeparam name="T">The type of the object.</typeparam>
     /// <param name="obj">The object.</param>
     /// <param name="stream">The stream.</param>
+    /// <param name="referenceHandler">An optional external reference handler to share reference state across multiple serializations. If null, a new one is created.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    public async ValueTask SerializeAsync<T>(T obj, Stream stream, ReferenceHandler? referenceHandler, CancellationToken cancellationToken)
+    {
+        await this.SerializeInternalAsync(obj, stream, referenceHandler ?? new IdReferenceHandler(), cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Serializes the specified object into a stream.
+    /// </summary>
+    /// <typeparam name="T">The type of the object.</typeparam>
+    /// <param name="obj">The object.</param>
+    /// <param name="stream">The stream.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     public async ValueTask SerializeAsync<T>(T obj, Stream stream, CancellationToken cancellationToken)
     {
+        await this.SerializeInternalAsync(obj, stream, new IdReferenceHandler(), cancellationToken).ConfigureAwait(false);
+    }
+
+    private async ValueTask SerializeInternalAsync<T>(T obj, Stream stream, ReferenceHandler referenceHandler, CancellationToken cancellationToken)
+    {
         var options = new JsonSerializerOptions
         {
-            ReferenceHandler = new IdReferenceHandler(),
+            ReferenceHandler = referenceHandler,
             WriteIndented = true,
             Converters =
             {

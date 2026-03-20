@@ -264,6 +264,16 @@ internal sealed class Program : IDisposable
                     .WaitAndUnwrapException())
             .AddSingleton<IPersistenceContextProvider>(s => s.GetService<IMigratableDatabaseContextProvider>()!)
             .AddSingleton<Lazy<IPersistenceContextProvider>>(s => new(() => s.GetService<IMigratableDatabaseContextProvider>()!))
+            .AddSingleton<IBackupService>(s =>
+            {
+                var contextProvider = s.GetRequiredService<IMigratableDatabaseContextProvider>();
+                if (contextProvider is PersistenceContextProvider)
+                {
+                    return new EfBackupService(s.GetRequiredService<IPersistenceContextProvider>());
+                }
+
+                return new MUnique.OpenMU.Persistence.InMemory.InMemoryBackupService();
+            })
             .AddSingleton<ILoginServer, LoginServer>()
             .AddSingleton<IGuildServer, GuildServer>()
             .AddSingleton<IFriendServer, FriendServer>()
