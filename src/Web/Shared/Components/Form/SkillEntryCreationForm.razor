@@ -76,6 +76,6 @@
             skills = skills.Where(s => s.QualifiedCharacters.Contains(characterClass));
         }
 
-        this._skillLookupController = new EnumerableLookupController(skills.OrderBy(s => s.Name).ToList());
+        this._skillLookupController = new EnumerableLookupController(skills.OrderBy(s => s.GetName()).ToList());
     }
 }
