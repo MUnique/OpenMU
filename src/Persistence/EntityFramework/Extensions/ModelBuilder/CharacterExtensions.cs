@@ -39,6 +39,6 @@ internal static class CharacterExtensions
     {
         builder.Property(p => p.Name).HasConversion(LocalizedStringConverter.Instance);
         builder.HasMany(c => c.RawBaseAttributeValues)
-            .WithOne(c => c.CharacterClass!);
+            .WithOne(c => c.CharacterClass);
     }
 }

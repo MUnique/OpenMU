@@ -57,8 +57,12 @@ public static class GameConfigurationHelper
         {
             typeof(AttributeRelationship), c => c.CharacterClasses.SelectMany(a => a.AttributeCombinations)
                 .Concat(Enumerables![typeof(PowerUpDefinitionValue)](c).OfType<PowerUpDefinitionValue>().SelectMany(v => v.RelatedValues))
+                .Concat(c.GlobalAttributeCombinations)
         },
-        { typeof(ConstValueAttribute), c => c.CharacterClasses.SelectMany(a => a.BaseAttributeValues) },
+        {
+            typeof(ConstValueAttribute), c => c.CharacterClasses.SelectMany(a => a.BaseAttributeValues)
+                .Concat(c.GlobalBaseAttributeValues)
+        },
         { typeof(SkillComboDefinition), c => c.CharacterClasses.Select(a => a.ComboDefinition).WhereNotNull() },
         { typeof(SkillComboStep), c => c.CharacterClasses.Select(a => a.ComboDefinition).WhereNotNull().SelectMany(d => d.Steps) },
         { typeof(DropItemGroup), c => c.DropItemGroups },

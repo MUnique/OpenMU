@@ -383,6 +383,48 @@ public partial class GameConfiguration : MUnique.OpenMU.DataModel.Configuration.
     }
 
     /// <summary>
+    /// Gets the raw collection of <see cref="GlobalAttributeCombinations" />.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonPropertyName("globalAttributeCombinations")]
+    public ICollection<AttributeRelationship> RawGlobalAttributeCombinations { get; } = new List<AttributeRelationship>();
+    
+    /// <inheritdoc/>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override ICollection<MUnique.OpenMU.AttributeSystem.AttributeRelationship> GlobalAttributeCombinations
+    {
+        get => base.GlobalAttributeCombinations ??= new CollectionAdapter<MUnique.OpenMU.AttributeSystem.AttributeRelationship, AttributeRelationship>(this.RawGlobalAttributeCombinations);
+        protected set
+        {
+            this.GlobalAttributeCombinations.Clear();
+            foreach (var item in value)
+            {
+                this.GlobalAttributeCombinations.Add(item);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets the raw collection of <see cref="GlobalBaseAttributeValues" />.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonPropertyName("globalBaseAttributeValues")]
+    public ICollection<ConstValueAttribute> RawGlobalBaseAttributeValues { get; } = new List<ConstValueAttribute>();
+    
+    /// <inheritdoc/>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override ICollection<MUnique.OpenMU.AttributeSystem.ConstValueAttribute> GlobalBaseAttributeValues
+    {
+        get => base.GlobalBaseAttributeValues ??= new CollectionAdapter<MUnique.OpenMU.AttributeSystem.ConstValueAttribute, ConstValueAttribute>(this.RawGlobalBaseAttributeValues);
+        protected set
+        {
+            this.GlobalBaseAttributeValues.Clear();
+            foreach (var item in value)
+            {
+                this.GlobalBaseAttributeValues.Add(item);
+            }
+        }
+    }
+
+    /// <summary>
     /// Gets the raw collection of <see cref="PlugInConfigurations" />.
     /// </summary>
     [System.Text.Json.Serialization.JsonPropertyName("plugInConfigurations")]
