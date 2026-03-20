@@ -61,7 +61,6 @@ public class EntityDataContext : ExtendedTypeContext
         modelBuilder.Entity<DropItemGroup>().Apply();
         modelBuilder.Entity<ExitGate>().Apply();
         modelBuilder.Entity<GameConfiguration>().Apply();
-        modelBuilder.Entity<GameConfiguration>().ApplyGlobalAttributes();
         modelBuilder.Entity<GameMapDefinition>().Apply();
         modelBuilder.Entity<ItemCrafting>().Apply();
         modelBuilder.Entity<ItemDefinition>().Apply();
