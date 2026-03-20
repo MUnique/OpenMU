@@ -12,5 +12,6 @@ public class PeriodicSaveProgressPlugInConfiguration
     /// <summary>
     /// Gets or sets the save interval.
     /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.PeriodicSaveProgressPlugInConfiguration_Interval_Name))]
     public TimeSpan Interval { get; set; } = TimeSpan.FromMinutes(1);
 }

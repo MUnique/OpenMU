@@ -98,9 +98,9 @@ public class FenrirUpgradeCraftingGold : BaseItemCraftingHandler
             return CraftingResult.LackingMixItems;
         }
 
-        var hornOfFenrir = inputItems.FirstOrDefault(item => item.Definition?.Name == "Horn of Fenrir");
-        var chaos = inputItems.FirstOrDefault(item => item.Definition?.Name == "Jewel of Chaos");
-        var jewelsOfLife = inputItems.Where(item => item.Definition?.Name == "Jewel of Life").Take(5).ToList();
+        var hornOfFenrir = inputItems.FirstOrDefault(item => item.Definition?.Name.ValueInNeutralLanguage == "Horn of Fenrir");
+        var chaos = inputItems.FirstOrDefault(item => item.Definition?.Name.ValueInNeutralLanguage == "Jewel of Chaos");
+        var jewelsOfLife = inputItems.Where(item => item.Definition?.Name.ValueInNeutralLanguage == "Jewel of Life").Take(5).ToList();
 
         if (hornOfFenrir is null
             || chaos is null

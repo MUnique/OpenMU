@@ -41,6 +41,11 @@ public enum SpecialItemType
     /// The money special item type.
     /// </summary>
     Money,
+
+    /// <summary>
+    /// The jewel special item type.
+    /// </summary>
+    Jewel,
 }
 
 /// <summary>
@@ -54,7 +59,7 @@ public partial class DropItemGroup
     /// <summary>
     /// Gets or sets the description.
     /// </summary>
-    public string Description { get; set; } = string.Empty;
+    public LocalizedString Description { get; set; }
 
     /// <summary>
     /// Gets or sets the chance of the item drop group to apply. From 0.0 to 1.0.

@@ -23,4 +23,14 @@ internal static class GameConfigurationExtensions
         builder.Property(c => c.ExperienceFormula).HasDefaultValue("if(level == 0, 0, if(level < 256, 10 * (level + 8) * (level - 1) * (level - 1), (10 * (level + 8) * (level - 1) * (level - 1)) + (1000 * (level - 247) * (level - 256) * (level - 256))))");
         builder.Property(c => c.MasterExperienceFormula).HasDefaultValue("(505 * level * level * level) + (35278500 * level) + (228045 * level * level)");
     }
+
+    /// <summary>
+    /// Applies the settings for the <see cref="GameConfiguration"/> entity.
+    /// </summary>
+    /// <param name="builder">The builder.</param>
+    public static void Apply(this EntityTypeBuilder<ConfigurationUpdate> builder)
+    {
+        builder.Property(p => p.Name).HasConversion(LocalizedStringConverter.Instance);
+        builder.Property(p => p.Description).HasConversion(LocalizedStringConverter.Instance);
+    }
 }

@@ -14,8 +14,9 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which handles charinfo commands.
 /// </summary>
 [Guid("0C7162BC-C74E-4A65-82E3-12811E4BE170")]
-[PlugIn("Char Info command", "Handles the chat command '/charinfo <char>'. Returns information about the character back to the requester.")]
-[ChatCommandHelp(Command, "Returns information about the character back to the requester.", typeof(CharInfoChatCommandArgs), CharacterStatus.GameMaster)]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.CharInfoChatCommandPlugIn_Name), Description = nameof(PlugInResources.CharInfoChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
+[ChatCommandHelp(Command, typeof(CharInfoChatCommandArgs), CharacterStatus.GameMaster)]
 public class CharInfoChatCommandPlugIn : ChatCommandPlugInBase<CharInfoChatCommandArgs>
 {
     private const string Command = "/charinfo";
@@ -29,27 +30,27 @@ public class CharInfoChatCommandPlugIn : ChatCommandPlugInBase<CharInfoChatComma
     /// <inheritdoc />
     protected override async ValueTask DoHandleCommandAsync(Player gameMaster, CharInfoChatCommandArgs arguments)
     {
-        var player = this.GetPlayerByCharacterName(gameMaster, arguments.CharacterName ?? string.Empty);
+        var player = await this.GetPlayerByCharacterNameAsync(gameMaster, arguments.CharacterName ?? string.Empty).ConfigureAwait(false);
 
-        if (player.Account is not { } account
+        if (player?.Account is not { } account
             || player.SelectedCharacter is not { } character)
         {
             return;
         }
 
-        await this.ShowMessageToAsync(gameMaster, $"Account Name: {account.LoginName}").ConfigureAwait(false);
+        await gameMaster.ShowBlueMessageAsync($"Account Name: {account.LoginName}").ConfigureAwait(false);
 
-        await this.ShowAllLinesMessageToAsync(gameMaster, GetCharacterInfo(character)).ConfigureAwait(false);
+        await this.ShowAllLinesMessageToAsync(gameMaster, GetCharacterInfo(gameMaster, character)).ConfigureAwait(false);
 
         await this.ShowAllLinesMessageToAsync(gameMaster, player.Attributes?.ToString()).ConfigureAwait(false);
     }
 
-    private static string GetCharacterInfo(Character character)
+    private static string GetCharacterInfo(Player gameMaster, Character character)
     {
         var stringBuilder = new StringBuilder()
             .AppendLine($"Id: {character.Id}")
             .AppendLine($"Name: {character.Name}")
-            .AppendLine($"Class: {character.CharacterClass?.Name}")
+            .AppendLine($"Class: {character.CharacterClass?.Name.GetTranslation(gameMaster.Culture)}")
             .AppendLine($"Slot: {character.CharacterSlot}")
             .AppendLine($"Create Date: {character.CreateDate}")
             .AppendLine($"Exp: {character.Experience}")
@@ -85,7 +86,7 @@ public class CharInfoChatCommandPlugIn : ChatCommandPlugInBase<CharInfoChatComma
                 break;
             }
 
-            await this.ShowMessageToAsync(gameMaster, line).ConfigureAwait(false);
+            await gameMaster.ShowBlueMessageAsync(line).ConfigureAwait(false);
         }
     }
 }

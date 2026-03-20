@@ -18,7 +18,7 @@ using MUnique.OpenMU.Persistence;
 /// </summary>
 public sealed partial class ItemEdit : IDisposable
 {
-    private ViewModel? _viewModel;
+    private ItemViewModel? _viewModel;
 
     /// <summary>
     /// Gets or sets the item.
@@ -70,7 +70,7 @@ public sealed partial class ItemEdit : IDisposable
             oldModel.PropertyChanged -= this.OnItemPropertyChanged;
         }
 
-        this._viewModel = new ViewModel(this.Item, this.PersistenceContext);
+        this._viewModel = new ItemViewModel(this.Item, this.PersistenceContext);
         this._viewModel.PropertyChanged += this.OnItemPropertyChanged;
         base.OnParametersSet();
     }

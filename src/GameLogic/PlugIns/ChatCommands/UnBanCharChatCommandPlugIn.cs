@@ -12,8 +12,9 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which handles unbanchar commands.
 /// </summary>
 [Guid("2830B01B-57A4-4925-AB6B-242C242B96C9")]
-[PlugIn("Unban Character command", "Handles the chat command '/unbanchar <char>'. Unbans the account of a character from the game.")]
-[ChatCommandHelp(Command, "Unbans the account of a character from the game.", typeof(UnBanCharChatCommandArgs), CharacterStatus.GameMaster)]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.UnBanCharChatCommandPlugIn_Name), Description = nameof(PlugInResources.UnBanCharChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
+[ChatCommandHelp(Command, typeof(UnBanCharChatCommandArgs), CharacterStatus.GameMaster)]
 public class UnBanCharChatCommandPlugIn : ChatCommandPlugInBase<BanCharChatCommandArgs>
 {
     private const string Command = "/unbanchar";
@@ -27,8 +28,11 @@ public class UnBanCharChatCommandPlugIn : ChatCommandPlugInBase<BanCharChatComma
     /// <inheritdoc />
     protected override async ValueTask DoHandleCommandAsync(Player gameMaster, BanCharChatCommandArgs arguments)
     {
-        await this.ChangeAccountStateByCharacterNameAsync(gameMaster, arguments.CharacterName ?? string.Empty, AccountState.Normal).ConfigureAwait(false);
+        if (!await this.TryChangeAccountStateByCharacterNameAsync(gameMaster, arguments.CharacterName ?? string.Empty, AccountState.Normal).ConfigureAwait(false))
+        {
+            return;
+        }
 
-        await this.ShowMessageToAsync(gameMaster, $"[{this.Key}] Account from {arguments.CharacterName} has been unbanned.").ConfigureAwait(false);
+        await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.UnbanAccountOfCharacterResult), this.Key, arguments.CharacterName).ConfigureAwait(false);
     }
 }

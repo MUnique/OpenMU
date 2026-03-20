@@ -5,8 +5,6 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.MuHelper;
 
 using MUnique.OpenMU.GameLogic.MuHelper;
-using MUnique.OpenMU.GameLogic.Views;
-using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Action to change the MU Helper state.
@@ -24,7 +22,7 @@ public class ChangeMuHelperStateAction
 
         if (configuration is null)
         {
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("MU Helper is disabled", MessageType.BlueNormal)).ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MuHelperIsDisabled)).ConfigureAwait(false);
             return;
         }
 
@@ -37,7 +35,7 @@ public class ChangeMuHelperStateAction
                 await player.MuHelper.StopAsync().ConfigureAwait(false);
                 break;
             default: // unknown
-                await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync($"MU Helper can't handle status: {status}", MessageType.BlueNormal)).ConfigureAwait(false);
+                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MuHelperCantHandleStatus), status).ConfigureAwait(false);
                 break;
         }
     }

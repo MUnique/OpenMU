@@ -20,6 +20,7 @@ public class PlayerLosesMoneyAfterDeathPlugInConfiguration
     /// </value>
     [MemberOfAggregate]
     [ScaffoldColumn(true)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.PlayerLosesMoneyAfterDeathPlugInConfiguration_LossesPerLevel_Name))]
     public ICollection<LossOfLevel> LossesPerLevel { get; set; } = new List<LossOfLevel>();
 
     /// <summary>
@@ -55,21 +56,25 @@ public class PlayerLosesMoneyAfterDeathPlugInConfiguration
         /// <value>
         /// The minimum level.
         /// </value>
+        [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.PlayerLosesMoneyAfterDeathPlugInConfiguration_MinimumLevel_Name))]
         public int MinimumLevel { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance applies only to master characters.
         /// </summary>
+        [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.PlayerLosesMoneyAfterDeathPlugInConfiguration_IsMaster_Name))]
         public bool IsMaster { get; set; }
 
         /// <summary>
         /// Gets or sets the money loss percentage of the inventory.
         /// </summary>
+        [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.PlayerLosesMoneyAfterDeathPlugInConfiguration_InventoryMoneyLossPercentage_Name))]
         public double InventoryMoneyLossPercentage { get; set; }
 
         /// <summary>
         /// Gets or sets the money loss percentage of the vault.
         /// </summary>
+        [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.PlayerLosesMoneyAfterDeathPlugInConfiguration_VaultMoneyLossPercentage_Name))]
         public double VaultMoneyLossPercentage { get; set; }
     }
 }

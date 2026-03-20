@@ -15,7 +15,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// This update adds the Sleep, Innovation, Damage Reflection and Weakness Summoner buff skills. It also fixes the 3rd wing full reflect option.
 /// </summary>
-[PlugIn(PlugInName, PlugInDescription)]
+[Display(Name = PlugInName, Description = PlugInDescription)]
+[PlugIn]
 [Guid("B1E2D6C3-1F4A-4D7C-8C2E-3F6D9A7B8E2F")]
 public class AddSummonerBuffSkillsPlugIn : UpdatePlugInBase
 {

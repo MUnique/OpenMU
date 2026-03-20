@@ -19,7 +19,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Packet handler for login packets.
 /// </summary>
-[PlugIn("Login", "Packet handler for login packets.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.LogInHandlerPlugIn_Name), Description = nameof(PlugInResources.LogInHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("4A816FE5-809B-4D42-AF9F-1929FABD3295")]
 [BelongsToGroup(LogInOutGroup.GroupKey)]
 public class LogInHandlerPlugIn : ISubPacketHandlerPlugIn

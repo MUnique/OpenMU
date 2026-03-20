@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Packet Handler which is called when a trade request gets answered by the player.
 /// </summary>
-[PlugIn("TradeAcceptHandlerPlugIn", "Packet Handler which is called when a trade request gets answered by the player.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.TradeAcceptHandlerPlugIn_Name), Description = nameof(PlugInResources.TradeAcceptHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("79014c54-17a3-4e5e-85be-3e9c6051dbef")]
 internal class TradeAcceptHandlerPlugIn : IPacketHandlerPlugIn
 {

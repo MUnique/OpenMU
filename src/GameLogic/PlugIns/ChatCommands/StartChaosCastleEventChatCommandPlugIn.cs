@@ -1,4 +1,4 @@
-// <copyright file="StartChaosCastleEventChatCommandPlugIn.cs" company="MUnique">
+﻿// <copyright file="StartChaosCastleEventChatCommandPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -12,8 +12,9 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which handles the startcc command.
 /// </summary>
 [Guid("A990270E-B9C6-4445-BBA9-56367A90D31D")]
-[PlugIn(nameof(StartChaosCastleEventChatCommandPlugIn), "Handles the chat command '/startcc'. Starts the chaos castle event at the next possible time.")]
-[ChatCommandHelp(Command, "Starts the chaos castle event at the next possible time.", CharacterStatus.GameMaster)]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.StartChaosCastleEventChatCommandPlugIn_Name), Description = nameof(PlugInResources.StartChaosCastleEventChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
+[ChatCommandHelp(Command, CharacterStatus.GameMaster)]
 public class StartChaosCastleEventChatCommandPlugIn : IChatCommandPlugIn
 {
     private const string Command = "/startcc";

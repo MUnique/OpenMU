@@ -2,7 +2,7 @@
 
 <div>
     <select className="btn extensions" name="extensionPoints" @onchange=@OnSelectionChanged>
-        <option value="00000000-0000-0000-0000-000000000000">All</option>
+        <option value="00000000-0000-0000-0000-000000000000">@MUnique.OpenMU.Web.Shared.Properties.Resources.All</option>
         @foreach (var point in this.ExtensionPoints.OrderBy(e => e.Name))
         {
             @if (this.SelectedPointId == point.Id)

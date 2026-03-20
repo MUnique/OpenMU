@@ -14,7 +14,8 @@ using static MUnique.OpenMU.GameLogic.PlugIns.IItemDropPlugIn;
 /// <summary>
 /// This plugin handles the drop of an item box, e.g. box of kundun.
 /// </summary>
-[PlugIn(nameof(ItemBoxDroppedPlugIn), "This plugin handles the drop of an item box, e.g. box of kundun.")]
+[PlugIn]
+[Display(Name = nameof(ItemBoxDroppedPlugIn), Description = "This plugin handles the drop of an item box, e.g. box of kundun.")]
 [Guid("3D15D55D-EEFE-4B5F-89B1-6934AB3F0BEE")]
 public sealed class ItemBoxDroppedPlugIn : IItemDropPlugIn
 {

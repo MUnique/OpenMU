@@ -24,12 +24,12 @@ public partial class MiniGameDefinition
     /// <summary>
     /// Gets or sets the name of the mini game.
     /// </summary>
-    public string Name { get; set; } = string.Empty;
+    public LocalizedString Name { get; set; }
 
     /// <summary>
     /// Gets or sets the description of the mini game.
     /// </summary>
-    public string Description { get; set; } = string.Empty;
+    public LocalizedString Description { get; set; }
 
     /// <summary>
     /// Gets or sets the level of the mini game.

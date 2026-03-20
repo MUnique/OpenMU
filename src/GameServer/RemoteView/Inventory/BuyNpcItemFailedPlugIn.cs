@@ -12,7 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IBuyNpcItemFailedPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn("BuyNpcItemFailedPlugIn", "The default implementation of the IBuyNpcItemFailedPlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.BuyNpcItemFailedPlugIn_Name), Description = nameof(PlugInResources.BuyNpcItemFailedPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("915324d5-ccdf-42c0-b7c9-9479969346d8")]
 public class BuyNpcItemFailedPlugIn : IBuyNpcItemFailedPlugIn
 {

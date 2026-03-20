@@ -2,8 +2,6 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.Web.Shared;
-
 namespace MUnique.OpenMU.Web.AdminPanel.Pages;
 
 using System.Collections;
@@ -17,6 +15,7 @@ using Microsoft.AspNetCore.Components.QuickGrid;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Web.Shared;
 using MUnique.OpenMU.Web.Shared.Components.Form;
 
 /// <summary>
@@ -178,10 +177,17 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
 
             var cancellationToken = this._disposeCts?.Token ?? default;
             var gameConfiguration = await this.DataSource.GetOwnerAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
-            using var deleteContext = this.PersistenceContextProvider.CreateNewContext(gameConfiguration);
-            deleteContext.Attach(viewModel.Parent);
-            await deleteContext.DeleteAsync(viewModel.Parent).ConfigureAwait(false);
+            using var deleteContext = this.PersistenceContextProvider.CreateNewTypedContext(this.Type!, false, gameConfiguration);
+            var toDelete = await deleteContext.GetByIdAsync(viewModel.Id, this.Type!, cancellationToken).ConfigureAwait(false);
+            if (toDelete is null)
+            {
+                this.ToastService.ShowError($"Couldn't find '{viewModel.Name}' to delete.");
+                return;
+            }
+
+            await deleteContext.DeleteAsync(toDelete).ConfigureAwait(false);
             await deleteContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            await this.DataSource.ForceDiscardChangesAsync().ConfigureAwait(false);
             this.ToastService.ShowSuccess($"Deleted '{viewModel.Name}' successfully.");
             this._viewModels = null;
             this._loadTask = Task.Run(() => this.LoadDataAsync(cancellationToken), cancellationToken);
@@ -214,7 +220,7 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
         if (!result.Cancelled)
         {
             await creationContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-            await this.DataSource.DiscardChangesAsync().ConfigureAwait(false);
+            await this.DataSource.ForceDiscardChangesAsync().ConfigureAwait(false);
 
             this.ToastService.ShowSuccess("New object successfully created.");
             this._viewModels = null;

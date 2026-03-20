@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Persistence;
@@ -41,15 +42,26 @@ public static class WebApplicationExtensions
         // Ensure that DataInitialization plugins will get collected - for the setup functionality.
         _ = DataInitialization.Id;
 
-        builder.Services.AddRazorComponents()
+        var services = builder.Services;
+
+        var supportedCultures = CultureHelper
+            .GetAvailableCultures<Properties.Resources>()
+            .Select(culture => culture.TwoLetterISOLanguageName)
+            .ToArray();
+        services.AddLocalization()
+            .Configure<RequestLocalizationOptions>(o =>
+            {
+                o.AddSupportedCultures(supportedCultures);
+                o.AddSupportedUICultures(supportedCultures);
+            });
+        services.AddRazorComponents()
             .AddInteractiveServerComponents();
-        
+
         if (includeMapApp)
         {
             AdminPanelEnvironment.IsHostingEmbedded = true;
         }
 
-        var services = builder.Services;
         services.AddControllers()
             .ConfigureApplicationPartManager(setup =>
                 setup.FeatureProviders.Add(new GenericControllerFeatureProvider()));
@@ -103,6 +115,9 @@ public static class WebApplicationExtensions
         app.UseAntiforgery();
 
         app.MapStaticAssets();
+
+        app.UseRequestLocalization();
+
         app.MapRazorComponents<App>()
             .AddInteractiveServerRenderMode();
 

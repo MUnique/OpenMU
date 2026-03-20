@@ -39,7 +39,8 @@
                         StorageType="@this._storageType"
                                    NumberOfExtensions="@this._numberOfExtensions"
                         SelectedItem="@this._selectedItem"
-                        SelectedItemChanged="this.OnSelectedItemChanged"/>
+                        SelectedItemChanged="this.OnSelectedItemChanged"
+                        OnDelete="this.OnItemDeleteClickAsync"/>
                 </div>
                 @for (byte i = 0; i < this._numberOfExtensions; i++)
                 {
@@ -50,7 +51,8 @@
                         NumberOfExtensions="@this._numberOfExtensions"
                         ExtensionIndex="@i"
                         SelectedItem="@this._selectedItem"
-                        SelectedItemChanged="this.OnSelectedItemChanged"/>
+                        SelectedItemChanged="this.OnSelectedItemChanged"
+                        OnDelete="this.OnItemDeleteClickAsync"/>
                 }
                 @if (this._storageType == StorageType.Inventory)
                 {
@@ -60,7 +62,8 @@
                         StorageType="StorageType.PersonalStore"
                         NumberOfExtensions="@this._numberOfExtensions"
                         SelectedItem="@this._selectedItem"
-                        SelectedItemChanged="this.OnSelectedItemChanged"/>
+                        SelectedItemChanged="this.OnSelectedItemChanged"
+                        OnDelete="this.OnItemDeleteClickAsync"/>
                 }
             </div>
             <div class="col-1 middle-column">
@@ -78,7 +81,7 @@
                 @if (this._selectedItem is { })
                 {
                     <div class="alert alert-secondary item-edit">
-                        <h3>@(this._selectedItem.Definition?.Name ?? @"<Please select a definition>")</h3>
+                        <h3>@(this._selectedItem.Definition?.Name.ToString() ?? Resources.PleaseSelectItemDefinition)</h3>
                         <ItemEdit Item="@this._selectedItem" ItemChanged="this.StateHasChanged"></ItemEdit>
                     </div>
                 }

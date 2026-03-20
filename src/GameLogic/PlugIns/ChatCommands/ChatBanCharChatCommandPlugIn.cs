@@ -1,4 +1,4 @@
-// <copyright file="ChatBanCharChatCommandPlugIn.cs" company="MUnique">
+﻿// <copyright file="ChatBanCharChatCommandPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -12,8 +12,9 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which handles chatban command.
 /// </summary>
 [Guid("287AE9A6-E434-4E52-A791-8AAD267A8E05")]
-[PlugIn("Chat Ban Character command", "Handles the chat command '/chatban <characterName> <durationMinutes>'. Bans the account of a character from chatting for the specified minutes.")]
-[ChatCommandHelp(Command, "Bans the account of a character from chatting for the specified minutes.", typeof(ChatBanCharChatCommandArgs), CharacterStatus.GameMaster)]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.ChatBanCharChatCommandPlugIn_Name), Description = nameof(PlugInResources.ChatBanCharChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
+[ChatCommandHelp(Command, typeof(ChatBanCharChatCommandArgs), CharacterStatus.GameMaster)]
 public class ChatBanCharChatCommandPlugIn : ChatCommandPlugInBase<ChatBanCharChatCommandArgs>
 {
     private const string Command = "/chatban";
@@ -29,26 +30,32 @@ public class ChatBanCharChatCommandPlugIn : ChatCommandPlugInBase<ChatBanCharCha
     {
         if (string.IsNullOrEmpty(arguments.CharacterName))
         {
-            throw new ArgumentException("Character name is required.");
+            await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CharacterNameIsRequired)).ConfigureAwait(false);
+            return;
         }
 
         if (arguments.DurationMinutes == 0)
         {
-            throw new ArgumentException("Duration must be longer than 0 minutes.");
+            await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.DurationMustBeLongerThan0)).ConfigureAwait(false);
+            return;
         }
 
         var player = gameMaster.GameContext.GetPlayerByCharacterName(arguments.CharacterName);
         if (player == null)
         {
-            throw new ArgumentException($"character not found.");
+            await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CharacterNotFound), arguments.CharacterName).ConfigureAwait(false);
+            return;
         }
 
-        await this.ChangeAccountChatBanUntilAsync(player, DateTime.UtcNow.AddMinutes(arguments.DurationMinutes)).ConfigureAwait(false);
+        if (!await this.ChangeAccountChatBanUntilAsync(player, DateTime.UtcNow.AddMinutes(arguments.DurationMinutes)).ConfigureAwait(false))
+        {
+            return;
+        }
 
         // Send ban notice to Game Master
-        await this.ShowMessageToAsync(gameMaster, $"[{this.Key}] Account from {arguments.CharacterName} chat banned for {arguments.DurationMinutes} minutes").ConfigureAwait(false);
+        await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.AccountChatBannedResult), this.Key, arguments.CharacterName, arguments.DurationMinutes).ConfigureAwait(false);
 
         // Send ban notice to character
-        await this.ShowMessageToAsync(player, $"You are chat banned for {arguments.DurationMinutes} minutes").ConfigureAwait(false);
+        await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.YouAreChatBanned), arguments.DurationMinutes).ConfigureAwait(false);
     }
 }

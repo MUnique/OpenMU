@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IShowMessageOfObjectPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn("ShowMessageOfObjectPlugIn", "The default implementation of the IShowMessageOfObjectPlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.ShowMessageOfObjectPlugIn_Name), Description = nameof(PlugInResources.ShowMessageOfObjectPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("41d28cd1-1fb7-4af7-b635-8af9923351bd")]
 public class ShowMessageOfObjectPlugIn : IShowMessageOfObjectPlugIn
 {

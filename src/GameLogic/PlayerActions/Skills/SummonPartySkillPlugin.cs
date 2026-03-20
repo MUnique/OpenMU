@@ -15,7 +15,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The summon skill action for Dark Lord.
 /// </summary>
-[PlugIn(nameof(SummonPartySkillPlugin), "Handles the summon party skill of the dark lord class.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.SummonPartySkillPlugin_Name), Description = nameof(PlugInResources.SummonPartySkillPlugin_Description), ResourceType = typeof(PlugInResources))]
 [Guid("44e34497-c9e1-4c15-9388-589dfa3fa820")]
 public class SummonPartySkillPlugin : TargetedSkillPluginBase
 {
@@ -122,7 +123,7 @@ public class SummonPartySkillPlugin : TargetedSkillPluginBase
 
             if (player.CurrentMap!.Definition.TryGetRequirementError(targetPlayer, out var errorMessage))
             {
-                await targetPlayer.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(errorMessage, Interfaces.MessageType.BlueNormal)).ConfigureAwait(false);
+                await targetPlayer.ShowBlueMessageAsync(errorMessage).ConfigureAwait(false);
                 continue;
             }
 

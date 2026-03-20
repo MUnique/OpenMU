@@ -1,0 +1,80 @@
+﻿@using MUnique.OpenMU.DataModel
+@using MUnique.OpenMU.Web.AdminPanel.Properties
+@using MUnique.OpenMU.DataModel.Configuration
+
+@if (this.Configuration is null)
+{
+    <span>@Resources.Loading</span>
+}
+else
+{
+<EditForm Model="@Configuration" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator/>
+    <TextField Id="descriptionInput" Label=@typeof(ConnectServerDefinition).GetPropertyCaption(nameof(ConnectServerDefinition.Description)) @bind-Value="@Configuration.Description" />
+    <NumberField Id="clientListenerPortInput" Label=@typeof(ConnectServerDefinition).GetPropertyCaption(nameof(ConnectServerDefinition.ClientListenerPort)) @bind-Value="@Configuration.ClientListenerPort" />
+    <LookupField TObject=GameClientDefinition Label=@typeof(ConnectServerDefinition).GetPropertyCaption(nameof(ConnectServerDefinition.Client)) @bind-Value="@Configuration.GameClientDefinition"/>
+    <div>
+        <label htmlFor="patchVersionInput">@typeof(ConnectServerDefinition).GetPropertyCaption(nameof(ConnectServerDefinition.CurrentPatchVersion)))</label>
+        <div id="patchVersionInput">
+            <div>
+                <span id="major-addon">@Resources.MajorVersion</span>
+            </div>
+            <InputNumber id="patchVersionMajorInput" @bind-Value=@this.Configuration.CurrentVersionMajor aria-describedby="major-addon"/>
+            <ValidationMessage For="@(() => this.Configuration.CurrentVersionMajor)"/>
+        </div>
+        <div>
+            <div>
+                <span id="minor-addon">@Resources.MinorVersion</span>
+            </div>
+            <InputNumber id="patchVersionMinorInput" @bind-Value=@this.Configuration.CurrentVersionMinor aria-describedby="minor-addon"/>
+            <ValidationMessage For="@(() => this.Configuration.CurrentVersionMinor)"/>
+        </div>
+        <div>
+            <div>
+                <span id="patch-addon">@Resources.Patch</span>
+            </div>
+            <InputNumber id="patchVersionPatchInput" @bind-Value=@this.Configuration.CurrentVersionPatch aria-describedby="patch-addon"/>
+            <ValidationMessage For="@(() => this.Configuration.CurrentVersionPatch)"/>
+        </div>
+    </div>
+    <div>
+            <label htmlFor="patchAddressInput">@typeof(ConnectServerDefinition).GetPropertyCaption(nameof(ConnectServerDefinition.PatchAddress)))</label>
+        <div id="patchAddressInput">
+            <div>
+                <span id="ftp-addon">ftp://</span>
+            </div>
+            <InputText @bind-Value=@this.Configuration.PatchAddress aria-describedby="ftp-addon"/>
+        </div>
+    </div>
+    <BooleanField Id="disconnectOnUnknownPacketInput" Label=@typeof(ConnectServerDefinition).GetPropertyCaption(nameof(ConnectServerDefinition.DisconnectOnUnknownPacket)) @bind-Value="@Configuration.DisconnectOnUnknownPacket"/>
+    <NumberField Id="maximumReceiveSizeInput" Label=@typeof(ConnectServerDefinition).GetPropertyCaption(nameof(ConnectServerDefinition.MaximumReceiveSize)) @bind-Value="@Configuration.MaximumReceiveSize"/>
+    <div>
+            <label htmlFor="maxConnectionsPerAddressInput">@typeof(ConnectServerDefinition).GetPropertyCaption(nameof(ConnectServerDefinition.MaxConnectionsPerAddress)))</label>
+        <div id="maxConnectionsPerAddressInput">
+            <div>
+                <span id="connections-addon">
+                    <InputCheckbox id="checkMaxConnectionsPerAddressInput" @bind-Value=@this.Configuration.CheckMaxConnectionsPerAddress/>
+                </span>
+            </div>
+            <InputNumber min="1" @bind-Value=@this.Configuration.MaxConnectionsPerAddress aria-describedby="connections-addon"/>
+            <ValidationMessage For="@(() => this.Configuration.MaxConnectionsPerAddress)"/>
+        </div>
+    </div>
+    <NumberField Id="maxConnectionsInput" Label=@typeof(ConnectServerDefinition).GetPropertyCaption(nameof(ConnectServerDefinition.MaxConnections)) @bind-Value="@Configuration.MaxConnections"/>
+    <NumberField Id="listenerBacklogInput" Label="@typeof(ConnectServerDefinition).GetPropertyCaption(nameof(ConnectServerDefinition.ListenerBacklog))" @bind-Value="@Configuration.ListenerBacklog"/>
+        <NumberField Id="maxFtpRequestsInput" Label="@typeof(ConnectServerDefinition).GetPropertyCaption(nameof(ConnectServerDefinition.MaxFtpRequests))" @bind-Value="@Configuration.MaxFtpRequests" />
+        <NumberField Id="maxIpRequestsInput" Label="@typeof(ConnectServerDefinition).GetPropertyCaption(nameof(ConnectServerDefinition.MaxIpRequests))" @bind-Value="@Configuration.MaxIpRequests" />
+        <NumberField Id="maxServerListRequestsInput" Label="@typeof(ConnectServerDefinition).GetPropertyCaption(nameof(ConnectServerDefinition.MaxServerListRequests))" @bind-Value="@Configuration.MaxServerListRequests" />
+    <NumberField Id="timeoutSecondsInput" Label=@($"{typeof(ConnectServerDefinition).GetPropertyCaption(nameof(ConnectServerDefinition.Timeout))} ({Resources.Seconds})") @bind-Value="@Configuration.TimeoutSeconds"/>
+
+    <ValidationSummary/>
+    <div>
+        <button type="submit" class="primary-button">@Resources.Save</button>
+        @if (this.OnCancel != null)
+        {
+            <button type="button" onClick=@this.OnCancel>@Resources.Cancel</button>
+        }
+    </div>
+
+</EditForm>
+}

@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Handler for chaos mix packets.
 /// </summary>
-[PlugIn(nameof(CraftingDialogCloseRequestHandlerPlugIn), "Handler for packets which should close the crafting dialog (Chaos Machine).")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.CraftingDialogCloseRequestHandlerPlugIn_Name), Description = nameof(PlugInResources.CraftingDialogCloseRequestHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("1857513c-d09c-4e03-8bf4-f4ead19ea60f")]
 internal class CraftingDialogCloseRequestHandlerPlugIn : IPacketHandlerPlugIn
 {

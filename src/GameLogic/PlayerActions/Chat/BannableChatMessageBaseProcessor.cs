@@ -4,9 +4,6 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Chat;
 
-using MUnique.OpenMU.GameLogic.Views;
-using MUnique.OpenMU.Interfaces;
-
 /// <summary>
 /// A chat message processor for normal chat.
 /// </summary>
@@ -20,11 +17,11 @@ public abstract class BannableChatMessageBaseProcessor : IChatMessageProcessor
         {
             if (remainingChatBan.TotalMinutes >= 1)
             {
-                await this.SendMessageToPlayerAsync(sender, $"Chat Ban: {(int)Math.Ceiling(remainingChatBan.TotalMinutes)} minute(s) remaining.", MessageType.BlueNormal).ConfigureAwait(false);
+                await sender.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.ChatBanMinutesRemaining), (int)Math.Ceiling(remainingChatBan.TotalMinutes)).ConfigureAwait(false);
             }
             else
             {
-                await this.SendMessageToPlayerAsync(sender, $"Chat Ban: {(int)Math.Ceiling(remainingChatBan.TotalSeconds)} second(s) remaining.", MessageType.BlueNormal).ConfigureAwait(false);
+                await sender.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.ChatBanSecondsRemaining), (int)Math.Ceiling(remainingChatBan.TotalSeconds)).ConfigureAwait(false);
             }
 
             return;
@@ -51,10 +48,5 @@ public abstract class BannableChatMessageBaseProcessor : IChatMessageProcessor
     private bool IsSenderBanned(TimeSpan remainingChatBan)
     {
         return remainingChatBan > TimeSpan.Zero;
-    }
-
-    private async ValueTask SendMessageToPlayerAsync(Player player, string message, MessageType type)
-    {
-        await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, type)).ConfigureAwait(false);
     }
 }

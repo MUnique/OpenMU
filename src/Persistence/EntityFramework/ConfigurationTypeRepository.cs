@@ -76,7 +76,7 @@ internal class ConfigurationTypeRepository<T> : IRepository<T>, IConfigurationTy
             return ValueTask.FromResult<T?>(result);
         }
 
-        throw new InvalidDataException($"The object of {typeof(T).Name} with the specified id {id} could not be found in the game configuration");
+        return ValueTask.FromResult<T?>(null);
     }
 
     /// <inheritdoc />
@@ -95,13 +95,12 @@ internal class ConfigurationTypeRepository<T> : IRepository<T>, IConfigurationTy
     /// <inheritdoc />
     public async ValueTask<bool> DeleteAsync(Guid id)
     {
-        var obj = await this.GetByIdAsync(id).ConfigureAwait(false);
-        if (obj is null)
+        if (await this.GetByIdAsync(id).ConfigureAwait(false) is { } obj)
         {
-            return false;
+            return await this.DeleteAsync(obj).ConfigureAwait(false);
         }
 
-        return await this.DeleteAsync(obj).ConfigureAwait(false);
+        return false;
     }
 
     /// <inheritdoc />

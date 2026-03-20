@@ -17,7 +17,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The extended implementation of the <see cref="IShowHitPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn(nameof(ShowHitExtendedPlugIn), "The extended implementation of the IShowHitPlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.ShowHitExtendedPlugIn_Name), Description = nameof(PlugInResources.ShowHitExtendedPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("E79C8065-21A8-4774-B84F-5B8658F6A820")]
 [MinimumClient(106, 3, ClientLanguage.English)]
 public class ShowHitExtendedPlugIn : IShowHitPlugIn
@@ -52,6 +53,8 @@ public class ShowHitExtendedPlugIn : IShowHitPlugIn
         var targetId = target.GetId(this._player);
         await connection.SendObjectHitExtendedAsync(
             this.GetDamageKind(hitInfo.Attributes),
+            hitInfo.Attributes.HasFlag(DamageAttributes.RageFighterStreakHit),
+            hitInfo.Attributes.HasFlag(DamageAttributes.RageFighterStreakFinalHit),
             hitInfo.Attributes.HasFlag(DamageAttributes.Double),
             hitInfo.Attributes.HasFlag(DamageAttributes.Triple),
             targetId,
@@ -98,7 +101,7 @@ public class ShowHitExtendedPlugIn : IShowHitPlugIn
 
         if (attributes.HasFlag(DamageAttributes.Reflected))
         {
-            return DamageKind.ReflectedDarkPink;
+            return DamageKind.ReflectedLightPink;
         }
 
         if (attributes.HasFlag(DamageAttributes.Poison))

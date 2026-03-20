@@ -20,7 +20,7 @@ public partial class WarpInfo
     /// <summary>
     /// Gets or sets the name.
     /// </summary>
-    public string Name { get; set; } = string.Empty;
+    public LocalizedString Name { get; set; }
 
     /// <summary>
     /// Gets or sets the warp costs.
@@ -39,8 +39,8 @@ public partial class WarpInfo
     public virtual ExitGate? Gate { get; set; }
 
     /// <inheritdoc />
-    public override string ToString()
+    public override string? ToString()
     {
-        return this.Name;
+        return this.Name.ToString();
     }
 }

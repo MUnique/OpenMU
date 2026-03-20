@@ -6,7 +6,9 @@
 
 global using System.ComponentModel.DataAnnotations;
 
+global using MUnique.OpenMU.Annotations;
 global using MUnique.OpenMU.DataModel.Composition;
+global using MUnique.OpenMU.Interfaces;
 
 #pragma warning restore SA1200
 #pragma warning restore IDE0005

@@ -14,7 +14,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// This update fixes several character stats values and DL Force Wave Strengthener master skill.
 /// </summary>
-[PlugIn(PlugInName, PlugInDescription)]
+[PlugIn]
+[Display(Name = PlugInName, Description = PlugInDescription)]
 [Guid("0C1995AB-A1CC-42A8-9EFC-E5FE8F360C53")]
 public class FixCharStatsForceWavePlugInSeason6 : FixCharStatsForceWavePlugInBase
 {

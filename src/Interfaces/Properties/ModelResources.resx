@@ -1,0 +1,451 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+
+  <data name="LetterHeader_TypeCaption" xml:space="preserve">
+    <value>Letter Header</value>
+  </data>
+  <data name="LetterHeader_TypeCaptionPlural" xml:space="preserve">
+    <value>Letter Headers</value>
+  </data>
+  <data name="LetterHeader_TypeDescription" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="LetterHeader_Id_Caption" xml:space="preserve">
+    <value>Id</value>
+  </data>
+  <data name="LetterHeader_Id_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="LetterHeader_SenderName_Caption" xml:space="preserve">
+    <value>Sender Name</value>
+  </data>
+  <data name="LetterHeader_SenderName_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="LetterHeader_ReceiverName_Caption" xml:space="preserve">
+    <value>Receiver Name</value>
+  </data>
+  <data name="LetterHeader_ReceiverName_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="LetterHeader_Subject_Caption" xml:space="preserve">
+    <value>Subject</value>
+  </data>
+  <data name="LetterHeader_Subject_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="LetterHeader_LetterDate_Caption" xml:space="preserve">
+    <value>Letter Date</value>
+  </data>
+  <data name="LetterHeader_LetterDate_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="LetterHeader_ReadFlag_Caption" xml:space="preserve">
+    <value>Read Flag</value>
+  </data>
+  <data name="LetterHeader_ReadFlag_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GuildListEntry_TypeCaption" xml:space="preserve">
+    <value>Guild List Entry</value>
+  </data>
+  <data name="GuildListEntry_TypeCaptionPlural" xml:space="preserve">
+    <value>Guild List Entrys</value>
+  </data>
+  <data name="GuildListEntry_TypeDescription" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GuildListEntry_PlayerName_Caption" xml:space="preserve">
+    <value>Player Name</value>
+  </data>
+  <data name="GuildListEntry_PlayerName_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GuildListEntry_ServerId_Caption" xml:space="preserve">
+    <value>Server Id</value>
+  </data>
+  <data name="GuildListEntry_ServerId_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GuildListEntry_PlayerPosition_Caption" xml:space="preserve">
+    <value>Player Position</value>
+  </data>
+  <data name="GuildListEntry_PlayerPosition_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="Guild_TypeCaption" xml:space="preserve">
+    <value>Guild</value>
+  </data>
+  <data name="Guild_TypeCaptionPlural" xml:space="preserve">
+    <value>Guilds</value>
+  </data>
+  <data name="Guild_TypeDescription" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="Guild_Name_Caption" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Guild_Name_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="Guild_Logo_Caption" xml:space="preserve">
+    <value>Logo</value>
+  </data>
+  <data name="Guild_Logo_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="Guild_Score_Caption" xml:space="preserve">
+    <value>Score</value>
+  </data>
+  <data name="Guild_Score_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="Guild_Notice_Caption" xml:space="preserve">
+    <value>Notice</value>
+  </data>
+  <data name="Guild_Notice_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="Guild_Hostility_Caption" xml:space="preserve">
+    <value>Hostility</value>
+  </data>
+  <data name="Guild_Hostility_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="Guild_AllianceGuild_Caption" xml:space="preserve">
+    <value>Alliance Guild</value>
+  </data>
+  <data name="Guild_AllianceGuild_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="Friend_TypeCaption" xml:space="preserve">
+    <value>Friend</value>
+  </data>
+  <data name="Friend_TypeCaptionPlural" xml:space="preserve">
+    <value>Friends</value>
+  </data>
+  <data name="Friend_TypeDescription" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="Friend_Id_Caption" xml:space="preserve">
+    <value>Id</value>
+  </data>
+  <data name="Friend_Id_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="Friend_CharacterId_Caption" xml:space="preserve">
+    <value>Character Id</value>
+  </data>
+  <data name="Friend_CharacterId_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="Friend_FriendId_Caption" xml:space="preserve">
+    <value>Friend Id</value>
+  </data>
+  <data name="Friend_FriendId_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="Friend_Accepted_Caption" xml:space="preserve">
+    <value>Accepted</value>
+  </data>
+  <data name="Friend_Accepted_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="Friend_RequestOpen_Caption" xml:space="preserve">
+    <value>Request Open</value>
+  </data>
+  <data name="Friend_RequestOpen_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GuildMemberStatus_TypeCaption" xml:space="preserve">
+    <value>Guild Member Status</value>
+  </data>
+  <data name="GuildMemberStatus_TypeCaptionPlural" xml:space="preserve">
+    <value>Guild Member Status</value>
+  </data>
+  <data name="GuildMemberStatus_TypeDescription" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GuildMemberStatus_GuildId_Caption" xml:space="preserve">
+    <value>Guild Id</value>
+  </data>
+  <data name="GuildMemberStatus_GuildId_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GuildMemberStatus_Position_Caption" xml:space="preserve">
+    <value>Position</value>
+  </data>
+  <data name="GuildMemberStatus_Position_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="ChatServerAuthenticationInfo_TypeCaption" xml:space="preserve">
+    <value>Chat Server Authentication Info</value>
+  </data>
+  <data name="ChatServerAuthenticationInfo_TypeCaptionPlural" xml:space="preserve">
+    <value>Chat Server Authentication Infos</value>
+  </data>
+  <data name="ChatServerAuthenticationInfo_TypeDescription" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="ChatServerAuthenticationInfo_Index_Caption" xml:space="preserve">
+    <value>Index</value>
+  </data>
+  <data name="ChatServerAuthenticationInfo_Index_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="ChatServerAuthenticationInfo_RoomId_Caption" xml:space="preserve">
+    <value>Room Id</value>
+  </data>
+  <data name="ChatServerAuthenticationInfo_RoomId_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="ChatServerAuthenticationInfo_ClientName_Caption" xml:space="preserve">
+    <value>Client Name</value>
+  </data>
+  <data name="ChatServerAuthenticationInfo_ClientName_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="ChatServerAuthenticationInfo_AuthenticationToken_Caption" xml:space="preserve">
+    <value>Authentication Token</value>
+  </data>
+  <data name="ChatServerAuthenticationInfo_AuthenticationToken_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="ChatServerAuthenticationInfo_HostAddress_Caption" xml:space="preserve">
+    <value>Host Address</value>
+  </data>
+  <data name="ChatServerAuthenticationInfo_HostAddress_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="ChatServerAuthenticationInfo_AuthenticationRequiredUntil_Caption" xml:space="preserve">
+    <value>Authentication Required Until</value>
+  </data>
+  <data name="ChatServerAuthenticationInfo_AuthenticationRequiredUntil_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="FriendViewItem_TypeCaption" xml:space="preserve">
+    <value>Friend View Item</value>
+  </data>
+  <data name="FriendViewItem_TypeCaptionPlural" xml:space="preserve">
+    <value>Friend View Items</value>
+  </data>
+  <data name="FriendViewItem_TypeDescription" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="FriendViewItem_CharacterName_Caption" xml:space="preserve">
+    <value>Character Name</value>
+  </data>
+  <data name="FriendViewItem_CharacterName_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="FriendViewItem_FriendName_Caption" xml:space="preserve">
+    <value>Friend Name</value>
+  </data>
+  <data name="FriendViewItem_FriendName_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="LocalizableException_TypeCaption" xml:space="preserve">
+    <value>Localizable Exception</value>
+  </data>
+  <data name="LocalizableException_TypeCaptionPlural" xml:space="preserve">
+    <value>Localizable Exceptions</value>
+  </data>
+  <data name="LocalizableException_TypeDescription" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="LocalizableException_InnerException_Caption" xml:space="preserve">
+    <value>Inner Exception</value>
+  </data>
+  <data name="LocalizableException_InnerException_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="SpecialServerId_TypeCaption" xml:space="preserve">
+    <value>Special Server Id</value>
+  </data>
+  <data name="SpecialServerId_TypeDescription" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="SpecialServerId_Offline_Caption" xml:space="preserve">
+    <value>Offline</value>
+  </data>
+  <data name="SpecialServerId_Offline_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="SpecialServerId_Invisible_Caption" xml:space="preserve">
+    <value>Invisible</value>
+  </data>
+  <data name="SpecialServerId_Invisible_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="NoneConfigurationChangePublisher_TypeCaption" xml:space="preserve">
+    <value>None Configuration Change Publisher</value>
+  </data>
+  <data name="NoneConfigurationChangePublisher_TypeCaptionPlural" xml:space="preserve">
+    <value>None Configuration Change Publishers</value>
+  </data>
+  <data name="NoneConfigurationChangePublisher_TypeDescription" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GuildPosition_TypeCaption" xml:space="preserve">
+    <value>Guild Position</value>
+  </data>
+  <data name="GuildPosition_TypeDescription" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GuildPosition_Undefined_Caption" xml:space="preserve">
+    <value>Undefined</value>
+  </data>
+  <data name="GuildPosition_Undefined_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GuildPosition_NormalMember_Caption" xml:space="preserve">
+    <value>Normal Member</value>
+  </data>
+  <data name="GuildPosition_NormalMember_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GuildPosition_GuildMaster_Caption" xml:space="preserve">
+    <value>Guild Master</value>
+  </data>
+  <data name="GuildPosition_GuildMaster_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="GuildPosition_BattleMaster_Caption" xml:space="preserve">
+    <value>Battle Master</value>
+  </data>
+  <data name="GuildPosition_BattleMaster_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="LocalizableExceptionBase_TypeCaption" xml:space="preserve">
+    <value>Localizable Exception Base</value>
+  </data>
+  <data name="LocalizableExceptionBase_TypeCaptionPlural" xml:space="preserve">
+    <value>Localizable Exception Bases</value>
+  </data>
+  <data name="LocalizableExceptionBase_TypeDescription" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="LocalizableExceptionBase_FormatArguments_Caption" xml:space="preserve">
+    <value>Format Arguments</value>
+  </data>
+  <data name="LocalizableExceptionBase_FormatArguments_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="LocalizableExceptionBase_ResourceKey_Caption" xml:space="preserve">
+    <value>Resource Key</value>
+  </data>
+  <data name="LocalizableExceptionBase_ResourceKey_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="SpecialServerIds_TypeCaption" xml:space="preserve">
+    <value>Special Server Ids</value>
+  </data>
+  <data name="SpecialServerIds_TypeCaptionPlural" xml:space="preserve">
+    <value>Special Server Ids</value>
+  </data>
+  <data name="SpecialServerIds_TypeDescription" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="ServerType_TypeCaption" xml:space="preserve">
+    <value>Server Type</value>
+  </data>
+  <data name="ServerType_TypeDescription" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="ServerType_Undefined_Caption" xml:space="preserve">
+    <value>Undefined</value>
+  </data>
+  <data name="ServerType_Undefined_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="ServerType_GameServer_Caption" xml:space="preserve">
+    <value>Game Server</value>
+  </data>
+  <data name="ServerType_GameServer_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="ServerType_ConnectServer_Caption" xml:space="preserve">
+    <value>Connect Server</value>
+  </data>
+  <data name="ServerType_ConnectServer_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="ServerType_ChatServer_Caption" xml:space="preserve">
+    <value>Chat Server</value>
+  </data>
+  <data name="ServerType_ChatServer_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="ServerState_TypeCaption" xml:space="preserve">
+    <value>Server State</value>
+  </data>
+  <data name="ServerState_TypeDescription" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="ServerState_Stopped_Caption" xml:space="preserve">
+    <value>Stopped</value>
+  </data>
+  <data name="ServerState_Stopped_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="ServerState_Starting_Caption" xml:space="preserve">
+    <value>Starting</value>
+  </data>
+  <data name="ServerState_Starting_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="ServerState_Started_Caption" xml:space="preserve">
+    <value>Started</value>
+  </data>
+  <data name="ServerState_Started_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="ServerState_Stopping_Caption" xml:space="preserve">
+    <value>Stopping</value>
+  </data>
+  <data name="ServerState_Stopping_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="ServerState_Timeout_Caption" xml:space="preserve">
+    <value>Timeout</value>
+  </data>
+  <data name="ServerState_Timeout_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="MessageType_TypeCaption" xml:space="preserve">
+    <value>Message Type</value>
+  </data>
+  <data name="MessageType_TypeDescription" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="MessageType_GoldenCenter_Caption" xml:space="preserve">
+    <value>Golden Center</value>
+  </data>
+  <data name="MessageType_GoldenCenter_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="MessageType_BlueNormal_Caption" xml:space="preserve">
+    <value>Blue Normal</value>
+  </data>
+  <data name="MessageType_BlueNormal_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="MessageType_GuildNotice_Caption" xml:space="preserve">
+    <value>Guild Notice</value>
+  </data>
+  <data name="MessageType_GuildNotice_Description" xml:space="preserve">
+    <value></value>
+  </data>
+</root>

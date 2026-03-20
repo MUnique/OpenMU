@@ -8,6 +8,7 @@ using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Interface of a view whose implementation informs about a shown message.
+/// TODO: Offer to pass LocalizedString and formatting parameters.
 /// </summary>
 public interface IShowMessagePlugIn : IViewPlugIn
 {

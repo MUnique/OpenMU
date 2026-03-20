@@ -16,7 +16,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="ISkillListViewPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn("SkillListViewPlugIn", "The default implementation of the ISkillListViewPlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.SkillListViewPlugIn_Name), Description = nameof(PlugInResources.SkillListViewPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("E67BB791-5BE7-4CC8-B2C9-38E86158A356")]
 [MinimumClient(3, 0, ClientLanguage.Invariant)]
 public class SkillListViewPlugIn : ISkillListViewPlugIn
@@ -25,6 +26,12 @@ public class SkillListViewPlugIn : ISkillListViewPlugIn
     private const short ForceSkillId = 60;
     private const short ForceWaveSkillId = 66;
     private const short ForceWaveStrengSkillId = 509;
+    private const short KillingBlowSkillId = 260;
+    private const short BeastUppercutSkillId = 261;
+    private const short KillingBlowStrengSkillId = 551;
+    private const short BeastUppercutStrengSkillId = 552;
+    private const short KillingBlowMasterySkillId = 554;
+    private const short BeastUppercutMasterySkillId = 555;
 
     private readonly RemotePlayer _player;
 
@@ -56,6 +63,18 @@ public class SkillListViewPlugIn : ISkillListViewPlugIn
     public virtual async ValueTask AddSkillAsync(Skill skill)
     {
         if (skill.Number == ForceWaveSkillId)
+        {
+            return;
+        }
+
+        if (skill.Number == KillingBlowSkillId
+            && this.SkillList.Any(s => s?.Number == KillingBlowStrengSkillId || s?.Number == KillingBlowMasterySkillId))
+        {
+            return;
+        }
+
+        if (skill.Number == BeastUppercutSkillId
+            && this.SkillList.Any(s => s?.Number == BeastUppercutStrengSkillId || s?.Number == BeastUppercutMasterySkillId))
         {
             return;
         }

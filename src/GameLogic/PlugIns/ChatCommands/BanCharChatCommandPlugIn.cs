@@ -12,8 +12,9 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which handles banchar commands.
 /// </summary>
 [Guid("7AD1E5F4-4B07-4165-B9A4-188614F00F7C")]
-[PlugIn("Ban Character command", "Handles the chat command '/banchar <char>'. Bans the account of a character from the game.")]
-[ChatCommandHelp(Command, "Bans the account of a character from the game.", typeof(BanCharChatCommandArgs), CharacterStatus.GameMaster)]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.BanCharChatCommandPlugIn_Name), Description = nameof(PlugInResources.BanCharChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
+[ChatCommandHelp(Command, typeof(BanCharChatCommandArgs), CharacterStatus.GameMaster)]
 public class BanCharChatCommandPlugIn : ChatCommandPlugInBase<BanCharChatCommandArgs>
 {
     private const string Command = "/banchar";
@@ -27,8 +28,11 @@ public class BanCharChatCommandPlugIn : ChatCommandPlugInBase<BanCharChatCommand
     /// <inheritdoc />
     protected override async ValueTask DoHandleCommandAsync(Player gameMaster, BanCharChatCommandArgs arguments)
     {
-        await this.ChangeAccountStateByCharacterNameAsync(gameMaster, arguments.CharacterName ?? string.Empty, AccountState.Banned).ConfigureAwait(false);
+        if (!await this.TryChangeAccountStateByCharacterNameAsync(gameMaster, arguments.CharacterName ?? string.Empty, AccountState.Banned).ConfigureAwait(false))
+        {
+            return;
+        }
 
-        await this.ShowMessageToAsync(gameMaster, $"[{this.Key}] Account from {arguments.CharacterName} has been banned.").ConfigureAwait(false);
+        await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.AccountOfHasBeenBanned), this.Key, arguments.CharacterName).ConfigureAwait(false);
     }
 }

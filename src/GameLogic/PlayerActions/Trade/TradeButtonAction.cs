@@ -85,8 +85,9 @@ public class TradeButtonAction : BaseTradeAction
 
         if (!await TryAddItemsOfTradingPartnerAsync(trader).ConfigureAwait(false) || !await TryAddItemsOfTradingPartnerAsync(tradingPartner).ConfigureAwait(false))
         {
-            await this.SendMessageAsync(trader, "Inventory is full.").ConfigureAwait(false);
-            await this.SendMessageAsync(tradingPartner, "Inventory is full.").ConfigureAwait(false);
+            // TODO: Maybe notify which player has the full inventory.
+            await this.SendMessageAsync(trader, nameof(PlayerMessage.InventoryFull)).ConfigureAwait(false);
+            await this.SendMessageAsync(tradingPartner, nameof(PlayerMessage.InventoryFull)).ConfigureAwait(false);
             return TradeResult.FailedByFullInventory;
         }
 
@@ -109,8 +110,8 @@ public class TradeButtonAction : BaseTradeAction
         }
         catch (Exception exception)
         {
-            await this.SendMessageAsync(trader, "An unexpected error occured during closing the trade.").ConfigureAwait(false);
-            await this.SendMessageAsync(tradingPartner, "An unexpected error occured during closing the trade.").ConfigureAwait(false);
+            await this.SendMessageAsync(trader, nameof(PlayerMessage.UnexpectedErrorDuringClosingTrade)).ConfigureAwait(false);
+            await this.SendMessageAsync(tradingPartner, nameof(PlayerMessage.UnexpectedErrorDuringClosingTrade)).ConfigureAwait(false);
             context.Allowed = false;
             partnerContext.Allowed = false;
             (trader as Player)?.Logger.LogError(exception, $"An unexpected error occured during closing the trade. trader: {trader.Name}, partner:{tradingPartner.Name}");

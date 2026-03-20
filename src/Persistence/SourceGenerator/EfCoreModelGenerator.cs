@@ -15,7 +15,7 @@ using MUnique.OpenMU.DataModel.Composition;
 /// Source Generator which creates classes of the our entities specifically for the entity framework core.
 /// </summary>
 [Generator]
-public class EfCoreModelGenerator : ModelGeneratorBase, IUnboundSourceGenerator
+public class EfCoreModelGenerator : IIncrementalGenerator, IUnboundSourceGenerator
 {
     /// <summary>
     /// Holds the Assembly-Name which is the target of this generator.
@@ -46,20 +46,55 @@ public class EfCoreModelGenerator : ModelGeneratorBase, IUnboundSourceGenerator
         ("MUnique.OpenMU.DataModel.Configuration.GameMapDefinition", false),
     };
 
+    /// <inheritdoc />
+    public void Initialize(IncrementalGeneratorInitializationContext context)
+    {
+        var assemblyNameProvider = context.CompilationProvider.Select((compilation, _) => compilation.AssemblyName);
+
+        context.RegisterSourceOutput(assemblyNameProvider, (sourceProductionContext, assemblyName) =>
+        {
+            if (assemblyName != TargetAssemblyName)
+            {
+                return;
+            }
+
+            try
+            {
+                foreach (var (name, source) in this.GenerateSources())
+                {
+                    sourceProductionContext.AddSource(name, SourceText.From(source, Encoding.UTF8));
+                }
+            }
+            catch (Exception e)
+            {
+                sourceProductionContext.ReportDiagnostic(
+                    Diagnostic.Create(
+                        new DiagnosticDescriptor(
+                            "EFCOREGEN001",
+                            "Source generation failed",
+                            $"{e.GetType()}: {e.Message}",
+                            "SourceGeneration",
+                            DiagnosticSeverity.Error,
+                            true),
+                        Location.None));
+            }
+        });
+    }
+
     /// <summary>
     /// Generates the source files.
     /// </summary>
     /// <returns>The created source files.</returns>
     public IEnumerable<(string Name, string Source)> GenerateSources()
     {
-        foreach (var type in this.CustomTypes)
+        foreach (var type in ModelGeneratorHelper.CustomTypes)
         {
             var className = type.Name;
             var fullName = type.FullName;
             var standaloneCollectionProperties = this.GetStandaloneCollectionProperties(type).ToList();
             var isCloneable = type.GetCustomAttribute<CloneableAttribute>(true) is not null;
 
-            var classSource = $@"{string.Format(FileHeaderTemplate, className)}
+            var classSource = $@"{string.Format(ModelGeneratorHelper.FileHeaderTemplate, className)}
 
 namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
 
@@ -69,13 +104,13 @@ using MUnique.OpenMU.Persistence;
 /// <summary>
 /// The Entity Framework Core implementation of <see cref=""{type.FullName}""/>.
 /// </summary>
-[Table(nameof({type.Name}), Schema = {(IsConfigurationType(type) ? "SchemaNames.Configuration" : "SchemaNames.AccountData")})]
+[Table(nameof({type.Name}), Schema = {(ModelGeneratorHelper.IsConfigurationType(type) ? "SchemaNames.Configuration" : "SchemaNames.AccountData")})]
 internal partial class {className} : {fullName}, IIdentifiable
 {{
     {this.CreateConstructors(type, standaloneCollectionProperties.Any())}
     {this.CreateIdPropertyIfRequired(type)}
     {this.CreateNavigationProperties(type)}
-{(isCloneable ? this.OverrideClonable(type, className) : null)}
+{(isCloneable ? ModelGeneratorHelper.OverrideClonable(type, className) : null)}
     /// <inheritdoc/>
     public override bool Equals(object obj)
     {{
@@ -108,29 +143,15 @@ internal partial class {className} : {fullName}, IIdentifiable
         }
     }
 
-    /// <inheritdoc />
-    protected override void InnerExecute(in GeneratorExecutionContext context)
-    {
-        if (context.Compilation.AssemblyName != TargetAssemblyName)
-        {
-            return;
-        }
-
-        foreach (var (name, source) in this.GenerateSources())
-        {
-            context.AddSource(name, SourceText.From(source, Encoding.UTF8));
-        }
-    }
-
     private IEnumerable<(string Name, string Source)> GenerateJoinEntities()
     {
-        var standaloneCollectionProperties = this.CustomTypes.SelectMany(this.GetStandaloneCollectionProperties).ToList();
+        var standaloneCollectionProperties = ModelGeneratorHelper.CustomTypes.SelectMany(this.GetStandaloneCollectionProperties).ToList();
         foreach (PropertyInfo propertyInfo in standaloneCollectionProperties)
         {
             var elementType = propertyInfo.PropertyType.GenericTypeArguments[0];
             var joinTypeName = propertyInfo.ReflectedType!.Name + elementType.Name;
 
-            var source = $@"{string.Format(FileHeaderTemplate, joinTypeName)}
+            var source = $@"{string.Format(ModelGeneratorHelper.FileHeaderTemplate, joinTypeName)}
 
 namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
 
@@ -138,7 +159,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.EntityFramework;
 
-[Table(nameof({joinTypeName}), Schema = {(IsConfigurationType(propertyInfo.ReflectedType) ? "SchemaNames.Configuration" : "SchemaNames.AccountData")})]
+[Table(nameof({joinTypeName}), Schema = {(ModelGeneratorHelper.IsConfigurationType(propertyInfo.ReflectedType) ? "SchemaNames.Configuration" : "SchemaNames.AccountData")})]
 internal partial class {joinTypeName}
 {{
     public Guid {propertyInfo.ReflectedType.Name}Id {{ get; set; }}
@@ -160,7 +181,7 @@ internal partial class {propertyInfo.ReflectedType.Name}
     private string GenerateMapsterConfigurator()
     {
         var configs = new StringBuilder();
-        foreach (var type in this.CustomTypes)
+        foreach (var type in ModelGeneratorHelper.CustomTypes)
         {
             configs
                 .AppendLine($"        Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<{type.FullName}, {type.FullName}>()")
@@ -168,7 +189,7 @@ internal partial class {propertyInfo.ReflectedType.Name}
                 .AppendLine();
         }
 
-        var source = $@"{string.Format(FileHeaderTemplate, "MapsterConfigurator")}
+        var source = $@"{string.Format(ModelGeneratorHelper.FileHeaderTemplate, "MapsterConfigurator")}
 
 namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
 
@@ -216,13 +237,13 @@ public static class MapsterConfigurator
     private string GenerateDbContext()
     {
         var ignores = new StringBuilder();
-        foreach (var type in this.CustomTypes)
+        foreach (var type in ModelGeneratorHelper.CustomTypes)
         {
             ignores.AppendLine($"        modelBuilder.Ignore<{type.FullName}>();");
         }
 
         var joinDefinitions = new StringBuilder();
-        var allStandaloneCollectionProperties = this.CustomTypes
+        var allStandaloneCollectionProperties = ModelGeneratorHelper.CustomTypes
             .Where(t => t.FullName != GameConfigurationFullName)
             .SelectMany(t => t.GetProperties().Where(p =>
                 p.PropertyType.IsGenericType &&
@@ -241,7 +262,7 @@ public static class MapsterConfigurator
 
         var deleteCascades = new StringBuilder();
         deleteCascades.AppendLine("        // All members which are marked with the MemberOfAggregateAttribute, should be defined with ON DELETE CASCADE.");
-        foreach (var type in this.CustomTypes)
+        foreach (var type in ModelGeneratorHelper.CustomTypes)
         {
             foreach (var propertyInfo in type.GetProperties()
                          .Where(p => p.GetCustomAttribute<MemberOfAggregateAttribute>() is { })
@@ -260,7 +281,7 @@ public static class MapsterConfigurator
             }
         }
 
-        var source = $@"{string.Format(FileHeaderTemplate, "ExtendedTypeContext")}
+        var source = $@"{string.Format(ModelGeneratorHelper.FileHeaderTemplate, "ExtendedTypeContext")}
 
 namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
 
@@ -469,7 +490,7 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
                 return false;
             }
 
-            return !st.StandaloneForEntityOnly || !IsConfigurationType(referencingType);
+            return !st.StandaloneForEntityOnly || !ModelGeneratorHelper.IsConfigurationType(referencingType);
         });
     }
 
@@ -504,8 +525,8 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
             var parameters = constructor.GetParameters();
             stringBuilder.Append(@$"
     /// <inheritdoc />
-    public {className}({GetParameterDefinitions(parameters)})
-        : base({GetParameters(parameters)})
+    public {className}({ModelGeneratorHelper.GetParameterDefinitions(parameters)})
+        : base({ModelGeneratorHelper.GetParameters(parameters)})
     {{
 {(requiresJoinCollections ? "        this.InitJoinCollections();" : null)}
     }}

@@ -1,20 +1,20 @@
 ﻿@page "/plugins"
-@using MUnique.OpenMU.Web.Shared.Models;
-@using MUnique.OpenMU.Web.Shared.Services
+@using MUnique.OpenMU.Web.AdminPanel.Properties
+@using MUnique.OpenMU.Web.Shared.Models
 
 @inject PlugInController _plugInController;
 
-<PageTitle>Plugins</PageTitle>
-<Breadcrumb IsFirstFromRoot="true" Caption="Plugins"/>
-<h1>Plugins</h1>
+<PageTitle>@Resources.Plugins</PageTitle>
+<Breadcrumb IsFirstFromRoot="true" Caption="@Resources.Plugins"/>
+<h1>@Resources.Plugins</h1>
 
 <div>
     <DataTable TItem=@PlugInConfigurationViewItem>
         <TableHeader>
-            <th class="col-1">Extension Point</th>
-            <th class="col-1">Plugin Name</th>
-            <th class="col-1">Plugin Type</th>
-            <th class="col-1">Action</th>
+            <th class="col-1">@Resources.ExtensionPoint</th>
+            <th class="col-1">@Resources.PluginName</th>
+            <th class="col-1">@Resources.PluginType</th>
+            <th class="col-1">@Resources.Action</th>
         </TableHeader>
         <FilterHeader>
             <th><PlugInExtensionPointSelection SelectedPointId="@this._plugInController.PointFilter" ExtensionPoints="@this._plugInController.ExtensionPoints" OnSelectionChanged="@this.OnPlugInPointSelected" /></th>
@@ -33,11 +33,11 @@
             <td>
                 @if (item.IsActive)
                 {
-                    <Button class="btn-warning" @onclick="async () => await this._plugInController.DeactivateAsync(item)">Deactivate</Button>
+                    <Button class="btn-warning" @onclick="async () => await this._plugInController.DeactivateAsync(item)">@Resources.Deactivate</Button>
                 }
                 else
                 {
-                    <Button class="btn-success" @onclick="async () => await this._plugInController.ActivateAsync(item)">Activate</Button>
+                    <Button class="btn-success" @onclick="async () => await this._plugInController.ActivateAsync(item)">@Resources.Activate</Button>
                 }
 
                 @if (item.ConfigurationType is { })

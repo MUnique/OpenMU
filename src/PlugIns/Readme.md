@@ -197,7 +197,8 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 /// <seealso cref="IExamplePlugIn" />
 [Guid("9FCA692F-2BD5-4310-8755-E20761F94180")]
-[PlugIn(nameof(ExamplePlugIn), "Just an example plugin.")]
+[PlugIn]
+[Display(Name = nameof(ExamplePlugIn), Description = "Just an example plugin.")]
 internal class ExamplePlugIn : IExamplePlugIn
 {
     /// <inheritdoc />

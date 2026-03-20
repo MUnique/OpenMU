@@ -11,7 +11,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IUpdateRotationPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn("UpdateRotationPlugIn", "The default implementation of the IUpdateRotationPlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.UpdateRotationPlugIn_Name), Description = nameof(PlugInResources.UpdateRotationPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("2ce3ba17-fd67-4674-88c5-f29c83608310")]
 public class UpdateRotationPlugIn : IUpdateRotationPlugIn
 {

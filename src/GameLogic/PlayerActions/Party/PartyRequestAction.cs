@@ -4,9 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Party;
 
-using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Party;
-using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// The party request action.
@@ -23,26 +21,26 @@ public class PartyRequestAction
         var isPartyMember = player.Party != null && !Equals(player.Party.PartyMaster, player);
         if (player.CurrentMiniGame?.Definition.AllowParty is false)
         {
-            await this.SendMessageToPlayerAsync(player, "A party is not possible during this event.", MessageType.BlueNormal).ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.PartyNotPossibleDuringEvent)).ConfigureAwait(false);
             return;
         }
 
         if (toRequest.Party != null || toRequest.LastPartyRequester != null)
         {
-            await this.SendMessageToPlayerAsync(player, $"{toRequest.Name} is already in a party.", MessageType.BlueNormal).ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.PlayerIsAlreadyInParty), toRequest.Name).ConfigureAwait(false);
             return;
         }
 
         if (isPartyMember)
         {
-            await this.SendMessageToPlayerAsync(player, "You are not the Party Master.", MessageType.BlueNormal).ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.YouAreNotPartyMaster)).ConfigureAwait(false);
             return;
         }
 
         if (await toRequest.PlayerState.TryAdvanceToAsync(PlayerState.PartyRequest).ConfigureAwait(false))
         {
             await this.SendPartyRequestAsync(toRequest, player).ConfigureAwait(false);
-            await this.SendMessageToPlayerAsync(player, $"Requested {toRequest.Name} for Party.", MessageType.BlueNormal).ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.RequestedPlayerForParty), toRequest.Name).ConfigureAwait(false);
         }
     }
 
@@ -55,15 +53,5 @@ public class PartyRequestAction
 
         toRequest.LastPartyRequester = requester;
         await toRequest.InvokeViewPlugInAsync<IShowPartyRequestPlugIn>(p => p.ShowPartyRequestAsync(requester)).ConfigureAwait(false);
-    }
-
-    private async ValueTask SendMessageToPlayerAsync(IPartyMember partyMember, string message, MessageType type)
-    {
-        if (partyMember is not Player player)
-        {
-            return;
-        }
-
-        await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, type)).ConfigureAwait(false);
     }
 }

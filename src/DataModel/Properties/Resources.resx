@@ -139,4 +139,19 @@ or behind a firewall) and you want to use it within your computer or private net
 	<data name="SystemConfiguration_AutoUpdateSchema_Description" xml:space="preserve">
 		<value>Defines, if the all-in-one server (MUnique.OpenMU.Startup) automatically updates the database schema when the server process starts. In a distributed deployment, the user must start the update manually over the admin panel.</value>
 	</data>
+    <data name="Slot" xml:space="preserve">
+      <value>Slot</value>
+    </data>
+    <data name="Excellent" xml:space="preserve">
+      <value>Excellent</value>
+    </data>
+    <data name="Skill" xml:space="preserve">
+      <value>Skill</value>
+    </data>
+    <data name="Luck" xml:space="preserve">
+      <value>Luck</value>
+    </data>
+    <data name="SocketAbbreviation" xml:space="preserve">
+      <value>S</value>
+    </data>
 </root>

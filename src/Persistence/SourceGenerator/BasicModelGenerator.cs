@@ -2,25 +2,59 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.Annotations;
-using MUnique.OpenMU.DataModel;
-
 namespace MUnique.OpenMU.Persistence.SourceGenerator;
 
 using System.Reflection;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 
+using MUnique.OpenMU.Annotations;
+
 /// <summary>
 /// A generator for the plain and simple objects for the persistence project.
 /// </summary>
 [Generator]
-public class BasicModelGenerator : ModelGeneratorBase, IUnboundSourceGenerator
+public class BasicModelGenerator : IIncrementalGenerator, IUnboundSourceGenerator
 {
     /// <summary>
     /// Holds the Assembly-Name which is the target of this generator.
     /// </summary>
     internal const string TargetAssemblyName = "MUnique.OpenMU.Persistence";
+
+    /// <inheritdoc />
+    public void Initialize(IncrementalGeneratorInitializationContext context)
+    {
+        var assemblyNameProvider = context.CompilationProvider.Select((compilation, _) => compilation.AssemblyName);
+
+        context.RegisterSourceOutput(assemblyNameProvider, (sourceProductionContext, assemblyName) =>
+        {
+            if (!(assemblyName?.EndsWith("Persistence") ?? false))
+            {
+                return;
+            }
+
+            try
+            {
+                foreach (var (name, source) in this.GenerateSources())
+                {
+                    sourceProductionContext.AddSource(name, SourceText.From(source, Encoding.UTF8));
+                }
+            }
+            catch (Exception e)
+            {
+                sourceProductionContext.ReportDiagnostic(
+                    Diagnostic.Create(
+                        new DiagnosticDescriptor(
+                            "BASICGEN001",
+                            "Source generation failed",
+                            $"{e.GetType()}: {e.Message}",
+                            "SourceGeneration",
+                            DiagnosticSeverity.Error,
+                            true),
+                        Location.None));
+            }
+        });
+    }
 
     /// <summary>
     /// Generates the source files.
@@ -28,13 +62,13 @@ public class BasicModelGenerator : ModelGeneratorBase, IUnboundSourceGenerator
     /// <returns>The created source files.</returns>
     public IEnumerable<(string Name, string Source)> GenerateSources()
     {
-        foreach (var type in this.CustomTypes)
+        foreach (var type in ModelGeneratorHelper.CustomTypes)
         {
             var className = type.Name;
             var fullName = type.FullName;
             var isCloneable = type.GetCustomAttribute<CloneableAttribute>(true) is not null;
 
-            var classSource = $@"{string.Format(FileHeaderTemplate, className)}
+            var classSource = $@"{string.Format(ModelGeneratorHelper.FileHeaderTemplate, className)}
 
 namespace MUnique.OpenMU.Persistence.BasicModel;
 
@@ -48,7 +82,7 @@ public partial class {className} : {fullName}, IIdentifiable, IConvertibleTo<{cl
     {this.CreateConstructors(type)}
     {this.CreateIdPropertyIfRequired(type)}
     {this.CreateNavigationProperties(type)}
-{(isCloneable ? this.OverrideClonable(type, className) : null)}
+{(isCloneable ? ModelGeneratorHelper.OverrideClonable(type, className) : null)}
     /// <inheritdoc/>
     public override bool Equals(object obj)
     {{
@@ -72,20 +106,6 @@ public partial class {className} : {fullName}, IIdentifiable, IConvertibleTo<{cl
 }}
 ";
             yield return (className, classSource);
-        }
-    }
-
-    /// <inheritdoc />
-    protected override void InnerExecute(in GeneratorExecutionContext context)
-    {
-        if (!(context.Compilation.AssemblyName?.EndsWith("Persistence") ?? false))
-        {
-            return;
-        }
-
-        foreach (var (name, source) in this.GenerateSources())
-        {
-            context.AddSource(name, SourceText.From(source, Encoding.UTF8));
         }
     }
 
@@ -232,8 +252,8 @@ public partial class {className} : {fullName}, IIdentifiable, IConvertibleTo<{cl
             var parameters = constructor.GetParameters();
             stringBuilder.AppendLine(@$"
     /// <inheritdoc />
-    public {className}({GetParameterDefinitions(parameters)})
-        : base({GetParameters(parameters)})
+    public {className}({ModelGeneratorHelper.GetParameterDefinitions(parameters)})
+        : base({ModelGeneratorHelper.GetParameters(parameters)})
     {{
     }}");
         }

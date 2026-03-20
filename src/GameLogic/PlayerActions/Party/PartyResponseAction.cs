@@ -5,8 +5,6 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Party;
 
 using MUnique.OpenMU.GameLogic;
-using MUnique.OpenMU.GameLogic.Views;
-using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// The party response action.
@@ -47,7 +45,7 @@ public class PartyResponseAction
 
         if (player.CurrentMiniGame?.Definition.AllowParty is false)
         {
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("A party is not possible during this event.", MessageType.BlueNormal)).ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.PartyNotPossibleDuringEvent)).ConfigureAwait(false);
             player.LastPartyRequester = null;
             return;
         }

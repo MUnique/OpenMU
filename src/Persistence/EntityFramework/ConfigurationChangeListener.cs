@@ -56,16 +56,7 @@ public class ConfigurationChangeListener : IConfigurationChangeListener
             }
 
             using var context = this._contextProvider.Value.CreateNewContext(gameConfiguration);
-            object? cachedParent = null;
-            try
-            {
-                cachedParent = await context.GetByIdAsync(parentId, parentCollectionNavigation.DeclaringEntityType.ClrType).ConfigureAwait(false);
-            }
-            catch (InvalidDataException)
-            {
-                // It can happen when the object and the parent object were created at the same time.
-                // In this case, we just ignore it.
-            }
+            var cachedParent = await context.GetByIdAsync(parentId, parentCollectionNavigation.DeclaringEntityType.ClrType).ConfigureAwait(false);
 
             if (cachedParent is not null)
             {

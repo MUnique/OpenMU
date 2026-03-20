@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// Consume handler for small health potions.
 /// </summary>
 [Guid("A55849BC-7BD7-4444-A35A-F1AC1D48F179")]
-[PlugIn(nameof(SmallManaPotionConsumeHandler), "Plugin which handles the small mana potion consumption.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.SmallManaPotionConsumeHandler_Name), Description = nameof(PlugInResources.SmallManaPotionConsumeHandler_Description), ResourceType = typeof(PlugInResources))]
 public class SmallManaPotionConsumeHandler : ManaPotionConsumeHandler
 {
     /// <inheritdoc />

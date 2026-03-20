@@ -12,7 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the chat view which is forwarding everything to the game client which specific data packets.
 /// </summary>
-[PlugIn("Chat View PlugIn", "View Plugin to send chat messages to the player")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.ChatViewPlugIn_Name), Description = nameof(PlugInResources.ChatViewPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("F0B5BAD4-B97C-49F1-84E0-25EDC796B0E4")]
 public class ChatViewPlugIn : IChatViewPlugIn
 {

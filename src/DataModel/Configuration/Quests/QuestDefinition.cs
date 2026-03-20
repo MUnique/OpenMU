@@ -20,7 +20,7 @@ public partial class QuestDefinition
     /// <summary>
     /// Gets or sets the name of the quest.
     /// </summary>
-    public string Name { get; set; } = string.Empty;
+    public LocalizedString Name { get; set; }
 
     /// <summary>
     /// Gets or sets the group identifier of the quest.
@@ -100,8 +100,8 @@ public partial class QuestDefinition
     public virtual ICollection<QuestReward> Rewards { get; protected set; } = null!;
 
     /// <inheritdoc />
-    public override string ToString()
+    public override string? ToString()
     {
-        return this.Name;
+        return this.Name.ToString();
     }
 }

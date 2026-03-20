@@ -199,7 +199,7 @@ public partial class Skill
     /// <summary>
     /// Gets or sets the name.
     /// </summary>
-    public string Name { get; set; } = string.Empty;
+    public LocalizedString Name { get; set; }
 
     /// <summary>
     /// Gets or sets the attack damage. Only relevant for attack skills.
@@ -308,9 +308,14 @@ public partial class Skill
     [MemberOfAggregate]
     public virtual AreaSkillSettings? AreaSkillSettings { get; set; }
 
+    /// <summary>
+    /// Gets or sets the number of hits per attack.
+    /// </summary>
+    public short NumberOfHitsPerAttack { get; set; }
+
     /// <inheritdoc />
-    public override string ToString()
+    public override string? ToString()
     {
-        return this.Name;
+        return this.Name.ToString();
     }
 }

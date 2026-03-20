@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// Action to reset a character.
 /// </summary>
 [Guid("08953BE6-DABF-49CC-A500-FDB9DC2C4D80")]
-[PlugIn(nameof(ResetCharacterNpcPlugin), "Handle Reset Character NPC Request")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.ResetCharacterNpcPlugin_Name), Description = nameof(PlugInResources.ResetCharacterNpcPlugin_Description), ResourceType = typeof(PlugInResources))]
 public class ResetCharacterNpcPlugin : IPlayerTalkToNpcPlugIn
 {
     /// <summary>

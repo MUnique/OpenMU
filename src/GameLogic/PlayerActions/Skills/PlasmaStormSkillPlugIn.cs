@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Handles the plasma storm skill of the fenrir pet. It randomly halves the durability of a target's equipped item.
 /// </summary>
-[PlugIn("Plasma Storm Skill", "Handles the plasma storm skill of the fenrir pet. It randomly halves the durability of a target's equipped item.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.PlasmaStormSkillPlugIn_Name), Description = nameof(PlugInResources.PlasmaStormSkillPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("5EF7C564-B32B-4630-9380-0233BECFA663")]
 public class PlasmaStormSkillPlugIn : IAreaSkillPlugIn
 {

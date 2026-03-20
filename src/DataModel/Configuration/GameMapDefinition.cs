@@ -34,7 +34,7 @@ public partial class GameMapDefinition
     /// <summary>
     /// Gets or sets the name of the map.
     /// </summary>
-    public string Name { get; set; } = string.Empty;
+    public LocalizedString Name { get; set; }
 
     /// <summary>
     /// Gets or sets the terrain data.

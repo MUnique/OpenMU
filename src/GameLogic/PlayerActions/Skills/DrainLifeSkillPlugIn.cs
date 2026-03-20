@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Handles the drain life skill of the summoner class. Additionally to the attacked target, it regains life for damage dealt.
 /// </summary>
-[PlugIn(nameof(DrainLifeSkillPlugIn), "Handles the drain life skill of the summoner class. Additionally to the attacked target, it regains life for damage dealt.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.DrainLifeSkillPlugIn_Name), Description = nameof(PlugInResources.DrainLifeSkillPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("9A5A5671-3A8C-4C01-984F-1A8F8E0E7BDA")]
 public class DrainLifeSkillPlugIn : IAreaSkillPlugIn
 {

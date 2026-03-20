@@ -12,7 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Updates the Triple Shot skill to use 3 projectiles for proper arrow direction handling.
 /// </summary>
-[PlugIn(PlugInName, PlugInDescription)]
+[PlugIn]
+[Display(Name = PlugInName, Description = PlugInDescription)]
 [Guid("E3A8F7C9-2D4B-4A1E-9F3C-8B5D7A6C1E4F")]
 public class AddProjectileCountToTripleShotUpdatePlugIn : UpdatePlugInBase
 {

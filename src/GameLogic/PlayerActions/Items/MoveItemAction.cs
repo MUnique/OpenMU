@@ -7,10 +7,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items;
 using System.ComponentModel;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.PlugIns;
-using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.GameLogic.Views.Trade;
-using MUnique.OpenMU.Interfaces;
 using static MUnique.OpenMU.DataModel.InventoryConstants;
 
 /// <summary>
@@ -219,7 +217,7 @@ public class MoveItemAction
             && toStorage.Storage == player.Inventory
             && player.IsVaultLocked)
         {
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("The vault is locked.", MessageType.BlueNormal)).ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.TheVaultIsLocked)).ConfigureAwait(false);
             return Movement.None;
         }
 
@@ -235,7 +233,7 @@ public class MoveItemAction
             if (player.CurrentMiniGame is { } miniGame
                 && !miniGame.IsItemAllowedToEquip(item))
             {
-                await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("You can't equip this item during the event.", MessageType.BlueNormal)).ConfigureAwait(false);
+                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CantEquipItemDuringEvent)).ConfigureAwait(false);
                 return Movement.None;
             }
 
@@ -263,13 +261,13 @@ public class MoveItemAction
                 return Movement.Normal;
             }
 
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("You can't wear this item.", MessageType.BlueNormal)).ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.YouCantWearThisItem)).ConfigureAwait(false);
             return Movement.None;
         }
 
         if (item.Definition!.IsBoundToCharacter && toStorage != fromStorage)
         {
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("This item is bound to the inventory of this character.", MessageType.BlueNormal)).ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.ItemIsBoundToInventoryOfCharacter)).ConfigureAwait(false);
             return Movement.None;
         }
 

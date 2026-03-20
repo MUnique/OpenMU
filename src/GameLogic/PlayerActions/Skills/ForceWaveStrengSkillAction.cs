@@ -10,7 +10,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The Force Wave Strengthener skill action.
 /// </summary>
-[PlugIn(nameof(ForceWaveStrengSkillAction), "Handles the force wave strengthener skill of the dark lord.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.ForceWaveStrengSkillAction_Name), Description = nameof(PlugInResources.ForceWaveStrengSkillAction_Description), ResourceType = typeof(PlugInResources))]
 [Guid("9072ce9c-1482-4838-ba0a-4c312062e090")]
 public class ForceWaveStrengSkillAction : ForceSkillAction
 {

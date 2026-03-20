@@ -17,7 +17,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.0")
+                .HasAnnotation("ProductVersion", "10.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -40,6 +40,13 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<bool>("IsVaultExtended")
                         .HasColumnType("boolean");
+
+                    b.Property<string>("LanguageIsoCode")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)")
+                        .HasDefaultValue("en");
 
                     b.Property<string>("LoginName")
                         .IsRequired()
@@ -624,12 +631,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime?>("InstalledAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("Version")
@@ -2077,7 +2086,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<string>("RawItemSlots")
                         .HasColumnType("text")
                         .HasColumnName("ItemSlots")
-                        .HasAnnotation("Relational:JsonPropertyName", "itemSlots");
+                        .HasJsonPropertyName("itemSlots");
 
                     b.HasKey("Id");
 
@@ -2370,12 +2379,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("Index")
                         .HasColumnType("integer");
 
                     b.Property<string>("Message")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<Guid?>("MiniGameDefinitionId")
@@ -2574,12 +2585,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<TimeSpan>("EndTime")
                         .HasColumnType("interval");
 
                     b.Property<string>("Message")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<Guid?>("MiniGameDefinitionId")
@@ -3172,6 +3185,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasColumnType("text");
 
                     b.Property<short>("Number")
+                        .HasColumnType("smallint");
+
+                    b.Property<short>("NumberOfHitsPerAttack")
                         .HasColumnType("smallint");
 
                     b.Property<short>("Range")

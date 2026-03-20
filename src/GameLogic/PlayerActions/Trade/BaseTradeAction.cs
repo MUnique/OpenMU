@@ -78,14 +78,14 @@ public class BaseTradeAction
     /// Sends the message to the trader.
     /// </summary>
     /// <param name="trader">The trader.</param>
-    /// <param name="message">The message.</param>
-    protected async ValueTask SendMessageAsync(ITrader trader, string message)
+    /// <param name="messageKey">The key of the message in <see cref="PlayerMessage"/>.</param>
+    protected async ValueTask SendMessageAsync(ITrader trader, string messageKey)
     {
-        if (trader is IWorldObserver observer)
+        if (trader is Player player)
         {
             try
             {
-                await observer.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.BlueNormal)).ConfigureAwait(false);
+                await player.ShowLocalizedBlueMessageAsync(messageKey).ConfigureAwait(false);
             }
             catch (Exception ex)
             {

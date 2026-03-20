@@ -5,9 +5,7 @@
 namespace MUnique.OpenMU.GameLogic;
 
 using System.Threading;
-using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Duel;
-using MUnique.OpenMU.Interfaces;
 using Nito.AsyncEx;
 
 /// <summary>
@@ -247,8 +245,8 @@ public sealed class DuelRoom : AsyncDisposable
 
             for (int i = 5; i > 0; i--)
             {
-                var message = $"The battle begins in {i} seconds";
-                await this.AllPlayers.ForEachAsync(p => p.InvokeViewPlugInAsync<IShowMessagePlugIn>(m => m.ShowMessageAsync(message, MessageType.GoldenCenter))).ConfigureAwait(false);
+                var seconds = i;
+                await this.AllPlayers.ForEachAsync(p => p.ShowLocalizedGoldenMessageAsync(nameof(PlayerMessage.DuelBattleBeginsInSecondsFormat), seconds)).ConfigureAwait(false);
                 await Task.Delay(1000, cancellationToken).ConfigureAwait(false);
             }
 

@@ -1,5 +1,7 @@
-﻿@using MUnique.OpenMU.DataModel.Configuration
+﻿@using MUnique.OpenMU.DataModel
+@using MUnique.OpenMU.DataModel.Configuration
 @using MUnique.OpenMU.Persistence
+@using MUnique.OpenMU.Web.Shared.Properties
 @using SixLabors.ImageSharp
 @using SixLabors.ImageSharp.Formats.Png
 
@@ -19,28 +21,28 @@
 <h3>@this.SelectedMap.Name</h3>
 
 <div class="map-select">
-    <label for="mapSelect">Selected Map:</label>
+    <label for="mapSelect">@Resources.SelectedMap:</label>
     <select title="Map" @onchange=this.OnMapSelectedAsync id="mapSelect" autocomplete="off">
         @foreach (var map in this.Maps ?? Enumerable.Empty<GameMapDefinition>())
         {
-            <option value="@map.GetId()" selected=@(object.Equals(this.SelectedMap, map))>Map: @map.ToString()</option>
+            <option value="@map.GetId()" selected=@(object.Equals(this.SelectedMap, map))>@Resources.Map: @map.ToString()</option>
         }
     </select>
 </div>
 
-<div class="btn-toolbar my-2" role="toolbar" aria-label="Toolbar">
-    <div class="btn-group mr-2" role="group" aria-label="Creation Group">
+<div class="btn-toolbar my-2" role="toolbar" aria-label="@Resources.Toolbar">
+    <div class="btn-group mr-2" role="group" aria-label="@Resources.CreationGroup">
         <button type="button" class="btn btn-secondary" @onclick="@this.CreateNewSpawnArea" disabled="@this._createMode">
-            <span class="oi oi-plus"></span> Spawn Area
+            <span class="oi oi-plus"></span> @typeof(MonsterSpawnArea).GetTypeCaption()
         </button>
         <button type="button" class="btn btn-secondary" @onclick="@this.CreateNewEnterGate" disabled="@this._createMode">
-            <span class="oi oi-plus"></span> Enter Gate
+            <span class="oi oi-plus"></span> @typeof(EnterGate).GetTypeCaption()
         </button>
         <button type="button" class="btn btn-secondary" @onclick="@this.CreateNewExitGate" disabled="@this._createMode">
-            <span class="oi oi-plus"></span> Exit Gate
+            <span class="oi oi-plus"></span> @typeof(ExitGate).GetTypeCaption()
         </button>
     </div>
-    <div class="btn-group" role="group" aria-label="Control Group">
+    <div class="btn-group" role="group" aria-label="@Resources.ControlGroup">
         @if (this._createMode)
         {
             <button id="applyCreate" type="button" class="btn btn-primary" @onclick="@(_ => this._createMode = false)"><span class="oi oi-circle-check"></span></button>
@@ -48,7 +50,7 @@
         }
         else if (this._focusedObject is not null)
         {
-            <button id="removeFocused" type="button" class="btn btn-secondary" @onclick="@this.RemoveFocusedObjectAsync"><span class="oi oi-x"></span> Remove</button>
+            <button id="removeFocused" type="button" class="btn btn-secondary" @onclick="@this.RemoveFocusedObjectAsync"><span class="oi oi-x"></span> @Resources.Remove</button>
         }
     </div>
 </div>
@@ -60,7 +62,7 @@
             <img src="@(this._terrainImage.ToBase64String(PngFormat.Instance))"
                  width="@(_scale * 255)"
                  height="@(_scale * 255)"
-                 alt="Terrain of @this.SelectedMap.Name" />
+                 alt="@string.Format(Resources.TerrainOf, this.SelectedMap.Name)" />
             @foreach (var obj in this.GetMapObjects())
             {
                 <div class="@this.GetCssClass(obj)"
@@ -88,20 +90,20 @@
         @if (!this._createMode)
         {
             <div class="map-object-select">
-                <label for="objectSelect">Selected Object:</label>
+                <label for="objectSelect">@Resources.SelectedObject:</label>
                 <select title="Object" @onchange=this.OnObjectSelected id="objectSelect" autocomplete="off" disabled="@this._createMode">
                     <option value="@Guid.Empty" selected=@(this._focusedObject is null)></option>
                     @foreach (var enterGate in this.SelectedMap.EnterGates)
                     {
-                        <option value="@enterGate.GetId()" selected=@(object.Equals(this._focusedObject, enterGate))>EnterGate: @enterGate.ToString()</option>
+                        <option value="@enterGate.GetId()" selected=@(object.Equals(this._focusedObject, enterGate))>@typeof(EnterGate).GetTypeCaption(): @enterGate.ToString()</option>
                     }
                     @foreach (var exitGate in this.SelectedMap.ExitGates)
                     {
-                        <option value="@exitGate.GetId()" selected=@(object.Equals(this._focusedObject, exitGate))>ExitGate: @exitGate.ToString()</option>
+                        <option value="@exitGate.GetId()" selected=@(object.Equals(this._focusedObject, exitGate))>@typeof(ExitGate).GetTypeCaption(): @exitGate.ToString()</option>
                     }
                     @foreach (var spawn in this.SelectedMap.MonsterSpawns)
                     {
-                        <option value="@spawn.GetId()" selected=@(object.Equals(this._focusedObject, spawn))>Spawn: @spawn.ToString()</option>
+                        <option value="@spawn.GetId()" selected=@(object.Equals(this._focusedObject, spawn))>@typeof(MonsterSpawnArea).GetTypeCaption(): @spawn.ToString()</option>
                     }
                 </select>
             </div>

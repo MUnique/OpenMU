@@ -1,29 +1,25 @@
-// <copyright file="SetMasterLevelChatCommandPlugIn.cs" company="MUnique">
+﻿// <copyright file="SetMasterLevelChatCommandPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
-using System.Globalization;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views.Character;
-using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// A chat command plugin which sets a character's master level.
 /// </summary>
 [Guid("E401CA16-7827-495B-9DD0-EABDFF39901E")]
-[PlugIn("Set master level command", "Sets master level of a player. Usage: /setmasterlevel (level) (optional:character)")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.SetMasterLevelChatCommandPlugIn_Name), Description = nameof(PlugInResources.SetMasterLevelChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [ChatCommandHelp(Command, "Sets master level of a player. Usage: /setmasterlevel (level) (optional:character)", null)]
 public class SetMasterLevelChatCommandPlugIn : ChatCommandPlugInBase<SetMasterLevelChatCommandPlugIn.Arguments>, IDisabledByDefault
 {
     private const string Command = "/setmasterlevel";
     private const CharacterStatus MinimumStatus = CharacterStatus.GameMaster;
-    private const string CharacterNotFoundMessage = "Character '{0}' not found.";
-    private const string InvalidLevelMessage = "Invalid level - must be between 1 and {0}.";
-    private const string MasterLevelSetMessage = "Master level set to {0}.";
 
     /// <inheritdoc />
     public override string Key => Command;
@@ -41,7 +37,7 @@ public class SetMasterLevelChatCommandPlugIn : ChatCommandPlugInBase<SetMasterLe
             if (targetPlayer?.SelectedCharacter is null ||
                 !targetPlayer.SelectedCharacter.Name.Equals(characterName, StringComparison.OrdinalIgnoreCase))
             {
-                await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, CharacterNotFoundMessage, characterName)).ConfigureAwait(false);
+                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CharacterNotFound), characterName).ConfigureAwait(false);
                 return;
             }
         }
@@ -53,14 +49,14 @@ public class SetMasterLevelChatCommandPlugIn : ChatCommandPlugInBase<SetMasterLe
 
         if (arguments is null || arguments.MasterLevel < 1 || arguments.MasterLevel > targetPlayer.GameContext.Configuration.MaximumMasterLevel)
         {
-            await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, InvalidLevelMessage, targetPlayer.GameContext.Configuration.MaximumMasterLevel)).ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.InvalidCharacterLevel), targetPlayer.GameContext.Configuration.MaximumMasterLevel).ConfigureAwait(false);
             return;
         }
 
         targetPlayer.Attributes![Stats.MasterLevel] = checked(arguments.MasterLevel);
         await targetPlayer.InvokeViewPlugInAsync<IUpdateLevelPlugIn>(p => p.UpdateMasterLevelAsync()).ConfigureAwait(false);
         await targetPlayer.ForEachWorldObserverAsync<IShowEffectPlugIn>(p => p.ShowEffectAsync(targetPlayer, IShowEffectPlugIn.EffectType.LevelUp), true).ConfigureAwait(false);
-        await this.ShowMessageToAsync(player, string.Format(CultureInfo.InvariantCulture, MasterLevelSetMessage, arguments.MasterLevel)).ConfigureAwait(false);
+        await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.SetMasterLevelResult), arguments.MasterLevel).ConfigureAwait(false);
     }
 
     /// <summary>

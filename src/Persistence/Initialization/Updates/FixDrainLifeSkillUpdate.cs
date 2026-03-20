@@ -14,7 +14,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// This adds the items required to enter the kalima map.
 /// </summary>
-[PlugIn(PlugInName, PlugInDescription)]
+[PlugIn]
+[Display(Name = PlugInName, Description = PlugInDescription)]
 [Guid("A8827A3C-7F52-47CF-9EA5-562A9C06B986")]
 public class FixDrainLifeSkillUpdate : UpdatePlugInBase
 {

@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.DataModel.Configuration.Items;
 
 using MUnique.OpenMU.Annotations;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// The item slot type. Each of this may have one or more actual item slots.
@@ -15,7 +16,7 @@ public partial class ItemSlotType
     /// <summary>
     /// Gets or sets the description.
     /// </summary>
-    public string Description { get; set; } = string.Empty;
+    public LocalizedString Description { get; set; }
 
     /// <summary>
     /// Gets or sets the item slots of this slot type.

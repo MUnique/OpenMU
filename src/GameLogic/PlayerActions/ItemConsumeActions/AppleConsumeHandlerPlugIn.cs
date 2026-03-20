@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// Consume handler for apples.
 /// </summary>
 [Guid("58518298-42BC-48D1-AB07-17A9D83A2103")]
-[PlugIn(nameof(AppleConsumeHandlerPlugIn), "Plugin which handles the apple consumption.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.AppleConsumeHandlerPlugIn_Name), Description = nameof(PlugInResources.AppleConsumeHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 public class AppleConsumeHandlerPlugIn : HealthPotionConsumeHandlerPlugIn
 {
     /// <inheritdoc />

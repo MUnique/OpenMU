@@ -18,7 +18,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// This update fixes the Chaos Weapon, First Wings, Dinorant, Item Level Upgrade, Second Wings, Third Wings, Cape, SD Potions, Guardian Option, and Secromicon crafting settings; Blue Fenrir (Protect) damage decrease option value; Wizard's Ring wizardry option; lvl 380 item guardian options for Summoner and Rage Fighter.
 /// </summary>
-[PlugIn(PlugInName, PlugInDescription)]
+[PlugIn]
+[Display(Name = PlugInName, Description = PlugInDescription)]
 [Guid("EFD7EA69-56AE-48A3-ACE2-1C3B5B87780A")]
 public class FixChaosMixesPlugInSeason6 : FixChaosMixesPlugInBase
 {

@@ -12,7 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// This update fixes the wings damage absorption and increase bonus level tables values for a <see cref="CombinedElement"/> (sum) calculation, instead of a compound calculation
 /// for version 075.
 /// </summary>
-[PlugIn(PlugInName, PlugInDescription)]
+[PlugIn]
+[Display(Name = PlugInName, Description = PlugInDescription)]
 [Guid("3821267A-9C37-40E5-B023-BAB1A8E4DAB7")]
 public class FixWingsDmgRatesUpdatePlugIn075 : FixWingsDmgRatesUpdatePlugInBase
 {

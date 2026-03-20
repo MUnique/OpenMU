@@ -43,7 +43,7 @@ public class ElfSoldierBuffRequestAction
 
         if (player.Level > 220)
         {
-            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync("You're strong enough on your own.", MessageType.BlueNormal)).ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.ElfSoldierStrongEnoughMessage)).ConfigureAwait(false);
             return;
         }
 

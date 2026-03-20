@@ -14,10 +14,12 @@ public class WanderingMerchantsConfiguration : PeriodicTaskConfiguration
     /// <summary>
     /// Gets or sets the minimum duration of the spawn.
     /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.WanderingMerchantsConfiguration_MinimumSpawnDuration_Name))]
     public TimeSpan MinimumSpawnDuration { get; set; } = TimeSpan.FromMinutes(60);
 
     /// <summary>
     /// Gets or sets the maximum duration of the spawn.
     /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.WanderingMerchantsConfiguration_MaximumSpawnDuration_Name))]
     public TimeSpan MaximumSpawnDuration { get; set; } = TimeSpan.FromMinutes(180);
 }

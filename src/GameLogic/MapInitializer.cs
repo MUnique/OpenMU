@@ -278,6 +278,22 @@ public class MapInitializer : IMapInitializer
                     return;
                 }
 
+                // If the monster definition changed, we need to spawn a completely new NPC
+                // because MonsterAttributeHolder caches stats from the definition at construction time.
+                if (area.MonsterDefinition != o.Definition)
+                {
+                    await o.DisposeAsync().ConfigureAwait(false);
+                    unregisterAction();
+                    var newNpc = await this.InitializeSpawnAsync(o.SpawnIndex, createdMap, area).ConfigureAwait(false);
+                    if (newNpc is not null)
+                    {
+                        this._spawnedMonsters.AddOrUpdate(spawnArea, spawnArea.Quantity, (_, _) => spawnArea.Quantity);
+                        this.RegisterForConfigChanges(createdMap, area, newNpc);
+                    }
+
+                    return;
+                }
+
                 await createdMap.RemoveAsync(o).ConfigureAwait(false);
                 o.Initialize();
                 await createdMap.AddAsync(o).ConfigureAwait(false);

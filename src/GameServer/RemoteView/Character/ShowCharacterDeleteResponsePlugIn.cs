@@ -12,7 +12,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IShowCharacterDeleteResponsePlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn("ShowCharacterDeleteResponsePlugIn", "The default implementation of the IShowCharacterDeleteResponsePlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.ShowCharacterDeleteResponsePlugIn_Name), Description = nameof(PlugInResources.ShowCharacterDeleteResponsePlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("303af9ef-4f7d-4e07-9976-a0241311e50d")]
 public class ShowCharacterDeleteResponsePlugIn : IShowCharacterDeleteResponsePlugIn
 {

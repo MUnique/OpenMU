@@ -1,5 +1,5 @@
 ﻿@using Nito.AsyncEx
-@using MUnique.OpenMU.Web.Map.Components
+@using MUnique.OpenMU.Web.Map.Properties
 
 @implements IAsyncDisposable
 @implements IDisposable
@@ -14,7 +14,7 @@
             <div><MapPlayerList MapController="@this._controller"/></div>
             <!-- TODO -->
             <div id="selected_info" style="padding-left: 8px; position: absolute; bottom: 0; display: none">
-                <p>Name: <span id="objectData_name"></span>, ID: <span id="objectData_id"></span>, Position: (<span id="objectData_x"></span>, <span id="objectData_y"></span>)</p>
+                <p>{Resources.Name}: <span id="objectData_name"></span>, {Resources.Id}: <span id="objectData_id"></span>, {Resources.Position}: (<span id="objectData_x"></span>, <span id="objectData_y"></span>)</p>
             </div>
         </div>
     }

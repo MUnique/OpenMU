@@ -22,7 +22,8 @@ using static ItemSerializerHelper;
 /// long part of an array.
 /// </summary>
 [Guid("9EBB4761-93D4-49DE-AC53-BD8744315439")]
-[PlugIn("Item Serializer", "The extended item serializer. It's most likely only correct for season 6.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.ItemSerializerExtended_Name), Description = nameof(PlugInResources.ItemSerializerExtended_Description), ResourceType = typeof(PlugInResources))]
 [MinimumClient(106, 3, ClientLanguage.Invariant)]
 public class ItemSerializerExtended : IItemSerializer
 {

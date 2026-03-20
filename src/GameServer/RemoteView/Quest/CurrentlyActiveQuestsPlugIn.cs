@@ -15,7 +15,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="ICurrentlyActiveQuestsPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn("Quest - Currently Active Quests", "The default implementation of the ICurrentlyActiveQuestsPlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.CurrentlyActiveQuestsPlugIn_Name), Description = nameof(PlugInResources.CurrentlyActiveQuestsPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("9851157D-97CA-42F3-840C-8448D02B49A4")]
 [MinimumClient(5, 0, ClientLanguage.Invariant)]
 public class CurrentlyActiveQuestsPlugIn : ICurrentlyActiveQuestsPlugIn

@@ -17,7 +17,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IPetInfoViewPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn(nameof(PetInfoViewPlugIn), "The default implementation of the IPetInfoViewPlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.PetInfoViewPlugIn_Name), Description = nameof(PlugInResources.PetInfoViewPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("9346B880-7B4E-4FEF-A342-419E88392250")]
 public class PetInfoViewPlugIn : IPetInfoViewPlugIn
 {

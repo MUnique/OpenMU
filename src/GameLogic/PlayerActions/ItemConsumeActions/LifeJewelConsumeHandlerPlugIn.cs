@@ -14,7 +14,8 @@ using MUnique.OpenMU.PlugIns;
 /// Consume handler for the Jewel of Life which adds and increases the item option of <see cref="ItemOptionTypes.Option"/>.
 /// </summary>
 [Guid("8AC6592D-D51C-47C9-B491-4778C615691D")]
-[PlugIn(nameof(LifeJewelConsumeHandlerPlugIn), "Plugin which handles the jewel of life consumption.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.LifeJewelConsumeHandlerPlugIn_Name), Description = nameof(PlugInResources.LifeJewelConsumeHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 public class LifeJewelConsumeHandlerPlugIn : ItemUpgradeConsumeHandlerPlugIn
 {
     /// <summary>

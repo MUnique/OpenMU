@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.DataModel.Configuration;
 
 using MUnique.OpenMU.Annotations;
 using MUnique.OpenMU.DataModel.Attributes;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Magic Effect Definition. It can be an effect from a consumed item, a buff, or the result of an attack skill.
@@ -25,7 +26,7 @@ public partial class MagicEffectDefinition
     /// <summary>
     /// Gets or sets the name.
     /// </summary>
-    public string Name { get; set; } = string.Empty;
+    public LocalizedString Name { get; set; }
 
     /// <summary>
     /// Gets or sets the sub type.

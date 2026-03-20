@@ -1,18 +1,22 @@
 ﻿@page "/edit-config-grid/{typeString}"
 
-@using Microsoft.AspNetCore.Components.QuickGrid;
+@using MUnique.OpenMU.DataModel
+@using MUnique.OpenMU.Web.AdminPanel.Properties
+@using Microsoft.AspNetCore.Components.QuickGrid
 
 @if (this.Type is not null)
 {
-  <h1>@CaptionHelper.GetPluralizedTypeCaption(this.Type)</h1>
-  <PageTitle>@CaptionHelper.GetPluralizedTypeCaption(this.Type)</PageTitle>
-    <Breadcrumb Caption=@CaptionHelper.GetPluralizedTypeCaption(this.Type) IsFirstFromRoot="true"></Breadcrumb>
+    var typeCaption = this.Type.GetPluralizedTypeCaption();
+    
+    <h1>@typeCaption</h1>
+    <PageTitle>@typeCaption</PageTitle>
+    <Breadcrumb Caption=@typeCaption IsFirstFromRoot="true"></Breadcrumb>
 }
 
 @if (this.ViewModels is null)
 {
     <span class="spinner-border" role="status" aria-hidden="true"></span>
-    <span class="sr-only">Loading...</span>
+    <span class="sr-only">@Resources.Loading</span>
     return;
 }
 
@@ -25,7 +29,7 @@
                     <div class="sort-indicator" aria-hidden="true"></div>
                 </button>
                 <div class="col-search ml-5">
-                    <input class="small" type="search" autofocus @bind="@NameFilter" @bind:event="oninput" placeholder="Search ..."/>
+                    <input class="small" type="search" autofocus @bind="@NameFilter" @bind:event="oninput" placeholder="@Resources.Search ..."/>
                 </div>
             </HeaderTemplate>
         </PropertyColumn>
@@ -34,11 +38,11 @@
             @{
                 var targetUrl = $"edit-config/{this.TypeString}/" + context.Id;
             }
-            <a href="@(targetUrl)" class="btn btn-info">Edit</a>
-            <button type="button" class="btn-danger" @onclick="@(() => this.OnDeleteButtonClickAsync(context))"><span class="oi oi-trash"></span> Delete</button>
+            <a href="@(targetUrl)" class="btn btn-info">@Resources.Edit</a>
+            <button type="button" class="btn-danger" @onclick="@(() => this.OnDeleteButtonClickAsync(context))"><span class="oi oi-trash"></span> @Resources.Delete</button>
         </TemplateColumn>
     </QuickGrid>
 </div>
 <Paginator State="@_pagination" />
 <hr />
-<button type="button" class="btn-outline-primary" @onclick="OnCreateButtonClickAsync"><span class="oi oi-plus"></span> Add New</button>
+<button type="button" class="btn-outline-primary" @onclick="OnCreateButtonClickAsync"><span class="oi oi-plus"></span> @Resources.AddNew</button>

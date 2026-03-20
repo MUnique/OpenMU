@@ -16,7 +16,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IQuestStartedPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn("Quest - Started", "The default implementation of the IQuestStartedPlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.QuestStartedPlugIn_Name), Description = nameof(PlugInResources.QuestStartedPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("2D813203-8266-4BB7-A267-E476AD11AC4B")]
 public class QuestStartedPlugIn : IQuestStartedPlugIn
 {

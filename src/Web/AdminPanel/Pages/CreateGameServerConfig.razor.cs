@@ -2,8 +2,6 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using MUnique.OpenMU.Interfaces;
-
 namespace MUnique.OpenMU.Web.AdminPanel.Pages;
 
 using System.ComponentModel.DataAnnotations;
@@ -12,7 +10,9 @@ using Blazored.Modal.Services;
 using Blazored.Toast.Services;
 using Microsoft.AspNetCore.Components;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Web.AdminPanel.Properties;
 
 /// <summary>
 /// Razor page which shows objects of the specified type in a grid.
@@ -102,7 +102,6 @@ public partial class CreateGameServerConfig : ComponentBase, IAsyncDisposable
         var clients = await persistenceContext.GetAsync<GameClientDefinition>(cancellationToken).ConfigureAwait(false);
         var existingServerDefinitions = (await persistenceContext.GetAsync<GameServerDefinition>(cancellationToken).ConfigureAwait(false)).ToList();
 
-
         var nextServerId = 0;
         var networkPort = 55901;
         if (existingServerDefinitions.Count > 0)
@@ -159,39 +158,39 @@ public partial class CreateGameServerConfig : ComponentBase, IAsyncDisposable
             var existingServerDefinitions = (await saveContext.GetAsync<GameServerDefinition>().ConfigureAwait(false)).ToList();
             if (existingServerDefinitions.Any(def => def.ServerID == this._viewModel?.ServerId))
             {
-                this.ToastService.ShowError($"Server with Id {this._viewModel?.ServerId} already exists. Please use another value.");
+                this.ToastService.ShowError(string.Format(Resources.ServerWithIdAlreadyExists, this._viewModel?.ServerId));
                 return;
             }
 
             if (existingServerDefinitions.Any(def => def.Endpoints.Any(endpoint => endpoint.NetworkPort == this._viewModel?.NetworkPort)))
             {
-                this.ToastService.ShowError($"A server with tcp port {this._viewModel?.NetworkPort} already exists. Please use another tcp port.");
+                this.ToastService.ShowError(string.Format(Resources.ServerWithPortAlreadyExists, this._viewModel?.NetworkPort));
                 return;
             }
 
-            this._initState = "Creating Configuration ...";
+            this._initState = Resources.CreatingConfigurationInfo;
             await this.InvokeAsync(this.StateHasChanged);
             var gameServerDefinition = await this.CreateDefinitionByViewModelAsync(saveContext).ConfigureAwait(false);
-            this._initState = "Saving Configuration ...";
+            this._initState = Resources.SavingConfigurationInfo;
             await this.InvokeAsync(this.StateHasChanged);
             var success = await saveContext.SaveChangesAsync().ConfigureAwait(true);
 
             // if success, init new game server instance
             if (success)
             {
-                this.ToastService.ShowSuccess("The game server configuration has been saved. Initializing game server ...");
-                this._initState = "Initializing Game Server ...";
+                this.ToastService.ShowSuccess(Resources.GameServerConfigurationSavedInfo);
+                this._initState = Resources.InitializingGameServerInfo;
                 await this.InvokeAsync(this.StateHasChanged);
                 await this.ServerInstanceManager.InitializeGameServerAsync(gameServerDefinition.ServerID);
                 this.NavigationManager.NavigateTo("servers");
                 return;
             }
 
-            this.ToastService.ShowError("No changes have been saved.");
+            this.ToastService.ShowError(Resources.NoChangesSaved);
         }
         catch (Exception ex)
         {
-            this.ToastService.ShowError($"An unexpected error occurred: {ex.Message}.");
+            this.ToastService.ShowError(string.Format(Resources.UnexpectedErrorOccurred, ex.Message));
         }
 
         this._initState = null;

@@ -15,7 +15,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IPlayerShopBuyRequestResultPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn(nameof(PlayerShopBuyRequestResultPlugIn), "The default implementation of the IPlayerShopBuyRequestResultPlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.PlayerShopBuyRequestResultPlugIn_Name), Description = nameof(PlugInResources.PlayerShopBuyRequestResultPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("3b2498f2-3ae8-4700-8a61-1ffe49822caf")]
 public class PlayerShopBuyRequestResultPlugIn : IPlayerShopBuyRequestResultPlugIn
 {

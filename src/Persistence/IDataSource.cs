@@ -50,6 +50,13 @@ public interface IDataSource : IDisposable
     ValueTask DiscardChangesAsync();
 
     /// <summary>
+    /// Discards the changes and resets the cache unconditionally, regardless of whether
+    /// the context has tracked changes. Use this after an external context (e.g. a typed
+    /// context) has persisted structural changes such as creating or deleting objects.
+    /// </summary>
+    ValueTask ForceDiscardChangesAsync();
+
+    /// <summary>
     /// Gets all objects of the given type.
     /// </summary>
     /// <typeparam name="T">The type of the requested objects.</typeparam>

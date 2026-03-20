@@ -12,8 +12,9 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which handles banacc commands.
 /// </summary>
 [Guid("FCBC9CC0-3C8F-45E2-96DF-9C55BE30C5D9")]
-[PlugIn("Unban Account command", "Handles the chat command '/unbanacc <acc>'. Unbans an account from the game.")]
-[ChatCommandHelp(Command, "Unbans an account from the game.", typeof(UnBanAccChatCommandArgs), CharacterStatus.GameMaster)]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.UnBanAccChatCommandPlugIn_Name), Description = nameof(PlugInResources.UnBanAccChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
+[ChatCommandHelp(Command, typeof(UnBanAccChatCommandArgs), CharacterStatus.GameMaster)]
 public class UnBanAccChatCommandPlugIn : ChatCommandPlugInBase<UnBanAccChatCommandArgs>
 {
     private const string Command = "/unbanacc";
@@ -29,6 +30,6 @@ public class UnBanAccChatCommandPlugIn : ChatCommandPlugInBase<UnBanAccChatComma
     {
         await this.ChangeAccountStateByLoginNameAsync(gameMaster, arguments.AccountName ?? string.Empty, AccountState.Normal).ConfigureAwait(false);
 
-        await this.ShowMessageToAsync(gameMaster, $"[{this.Key}] Account {arguments.AccountName} has been unbanned.").ConfigureAwait(false);
+        await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.UnbanAccountResult), this.Key, arguments.AccountName).ConfigureAwait(false);
     }
 }

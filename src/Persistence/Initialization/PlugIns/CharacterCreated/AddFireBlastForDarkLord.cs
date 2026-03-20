@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// Adds the Fire Blast skill (active in castle siege) to a created dark lord character.
 /// </summary>
 [Guid("49D2D6F2-4E70-4F4B-B7CE-0645EC2F094A")]
-[PlugIn(nameof(AddFireBlastForDarkLord), "Adds the Fire Blast skill (active in castle siege) to a created dark lord character.")]
+[PlugIn]
+[Display(Name = nameof(AddFireBlastForDarkLord), Description = "Adds the Fire Blast skill (active in castle siege) to a created dark lord character.")]
 public class AddFireBlastForDarkLord : AddInitialSkillPlugInBase
 {
     /// <summary>

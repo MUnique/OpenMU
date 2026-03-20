@@ -1,13 +1,12 @@
 ﻿@using MUnique.OpenMU.DataModel.Entities
-@using MUnique.OpenMU.GameLogic
-@using MUnique.OpenMU.Web.Map.Map
+@using MUnique.OpenMU.Web.Map.Properties
 
 <table>
     <thead>
     <tr>
-        <td>Player Name</td>
-        <td>ID</td>
-        <td>Actions</td>
+        <td>@(Resources.PlayerName)</td>
+        <td>@(Resources.Id)</td>
+        <td>@(Resources.Actions)</td>
     </tr>
     </thead>
     <tbody>
@@ -17,8 +16,8 @@
             <td>@player.Name</td>
             <td>@player.Id</td>
             <td>
-                <button type="button" class="oi oi-account-logout" @onclick=@(async () => await player.DisconnectAsync()) title="Disconnect"></button>
-                <button type="button" class="oi oi-ban" @onclick=@(async () => { if (player.Account is not null) { player.Account.State = AccountState.TemporarilyBanned; } await player.DisconnectAsync(); }) title="Temporarily ban"></button>
+                <button type="button" class="oi oi-account-logout" @onclick=@(async () => await player.DisconnectAsync()) title="@(Resources.Disconnect)"></button>
+                <button type="button" class="oi oi-ban" @onclick=@(async () => { if (player.Account is not null) { player.Account.State = AccountState.TemporarilyBanned; } await player.DisconnectAsync(); }) title="@(Resources.TemporarilyBan)"></button>
             </td>
         </tr>
     }

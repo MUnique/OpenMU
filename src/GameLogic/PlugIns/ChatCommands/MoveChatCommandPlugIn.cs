@@ -13,8 +13,9 @@ using MUnique.OpenMU.PlugIns;
 /// A chat command plugin which handles move commands.
 /// </summary>
 [Guid("4564AE2B-4819-4155-B5B2-FE2ED0CF7A7F")]
-[PlugIn("Move chat command", "Handles the chat command '/move <target> <mapIdOrName?> <x?> <y?>'. Moves the character to the specified destination.")]
-[ChatCommandHelp(Command, "Moves the character to the specified destination.", typeof(MoveChatCommandArgs), CharacterStatus.Normal)]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.MoveChatCommandPlugIn_Name), Description = nameof(PlugInResources.MoveChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
+[ChatCommandHelp(Command, typeof(MoveChatCommandArgs), CharacterStatus.Normal)]
 public class MoveChatCommandPlugIn : ChatCommandPlugInBase<MoveChatCommandArgs>
 {
     private const string Command = "/move";
@@ -33,14 +34,19 @@ public class MoveChatCommandPlugIn : ChatCommandPlugInBase<MoveChatCommandArgs>
 
         if (isGameMasterWarpingCharacter)
         {
-            var targetPlayer = this.GetPlayerByCharacterName(sender, arguments.Target!);
+            var targetPlayer = await this.GetPlayerByCharacterNameAsync(sender, arguments.Target!).ConfigureAwait(false);
             var exitGate = await this.GetExitGateAsync(sender, arguments.MapIdOrName!, arguments.Coordinates).ConfigureAwait(false);
+            if (targetPlayer is null || exitGate is null)
+            {
+                return;
+            }
+
             await targetPlayer.WarpToAsync(exitGate).ConfigureAwait(false);
 
             if (!targetPlayer.Name.Equals(sender.Name))
             {
-                await this.ShowMessageToAsync(targetPlayer, "You have been moved by the game master.").ConfigureAwait(false);
-                await this.ShowMessageToAsync(sender, $"[{this.Key}] {targetPlayer.Name} has been moved to {exitGate!.Map!.Name} at {targetPlayer.Position.X}, {targetPlayer.Position.Y}").ConfigureAwait(false);
+                await targetPlayer.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MovedByGameMaster)).ConfigureAwait(false);
+                await sender.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MovedPlayerResult), this.Key, targetPlayer.Name, exitGate!.Map!.Name.GetTranslation(sender.Culture), targetPlayer.Position.X, targetPlayer.Position.Y).ConfigureAwait(false);
             }
         }
         else

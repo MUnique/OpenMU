@@ -12,6 +12,7 @@
             Model="item"
             OnClick="async () => await this.SetSelectedItemAsync(item)"
             OnItemMoved="this.OnItemMovedAsync"
+            OnDelete="this.OnDelete"
             IsSelected="this.SelectedItem == item.Item"/>
     }
 </div>

@@ -13,7 +13,8 @@ using MiniGameType = MUnique.OpenMU.DataModel.Configuration.MiniGameType;
 /// <summary>
 /// The default implementation of the <see cref="IUpdateMiniGameStateViewPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn(nameof(UpdateMiniGameStateViewViewPlugIn), "The default implementation of the IUpdateMiniGameStateViewPlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.UpdateMiniGameStateViewViewPlugIn_Name), Description = nameof(PlugInResources.UpdateMiniGameStateViewViewPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("FB4622A0-65CE-4D86-9A02-848A874F0AC1")]
 public class UpdateMiniGameStateViewViewPlugIn : IUpdateMiniGameStateViewPlugIn
 {

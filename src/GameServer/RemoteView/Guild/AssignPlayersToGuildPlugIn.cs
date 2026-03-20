@@ -16,7 +16,8 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IAssignPlayersToGuildPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
-[PlugIn(nameof(AssignPlayersToGuildPlugIn), "The default implementation of the IAssignPlayersToGuildPlugIn which is forwarding everything to the game client with specific data packets.")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.AssignPlayersToGuildPlugIn_Name), Description = nameof(PlugInResources.AssignPlayersToGuildPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("f42f571e-0cd1-4c22-ba53-8344848ba998")]
 [MinimumClient(0, 90, ClientLanguage.Invariant)]
 public class AssignPlayersToGuildPlugIn : IAssignPlayersToGuildPlugIn
