@@ -169,7 +169,7 @@ public class AreaSkillAttackAction
         }
 
         // Skills that move attacker to target (e.g., Twisting Slash, Death Stab) require a weapon
-        if (skill.MovesToTarget && player.Inventory?.GetRandomOffensiveItem() is null)
+        if (skill.MovesToTarget && player.Attributes[Stats.EquippedWeaponCount] == 0)
         {
             return;
         }
