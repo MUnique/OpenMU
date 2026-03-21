@@ -49,9 +49,11 @@ public sealed class OfflineLevelingPlayer : Player
             this.Account = account;
             this.PersistenceContext.Attach(account);
 
-            await this.AdvanceToEnteredWorldStateAsync().ConfigureAwait(false);
+            await this.AdvanceToCharacterSelectionStateAsync().ConfigureAwait(false);
 
             await this.SetupCharacterAsync(character).ConfigureAwait(false);
+
+            await this.ClientReadyAfterMapChangeAsync().ConfigureAwait(false);
 
             this.StartIntelligence();
 
@@ -65,35 +67,12 @@ public sealed class OfflineLevelingPlayer : Player
         }
         catch (Exception ex)
         {
-            this.Logger.LogError(ex, "Failed to initialize offline player for {AccountLoginName}.", this.AccountLoginName);
+            this.Logger.LogError(ex, "Failed to initialize offline player for {AccountLoginName}.", this.Account?.LoginName);
             return false;
         }
     }
 
-    /// <summary>
-    /// Stops the offline player and removes it from the world.
-    /// </summary>
-    public async ValueTask StopAsync()
-    {
-        this._intelligence?.Dispose();
-        this._intelligence = null;
-        try
-        {
-            await this.SaveProgressAsync().ConfigureAwait(false);
-        }
-        catch (Exception ex)
-        {
-            this.Logger.LogError(ex, "Failed to save progress of offline leveling player {AccountLoginName}.", this.AccountLoginName);
-        }
-
-        await this.DisconnectAsync().ConfigureAwait(false);
-    }
-
-    /// <inheritdoc />
-    protected override ICustomPlugInContainer<IViewPlugIn> CreateViewPlugInContainer()
-        => new NullViewPlugInContainer();
-
-    private async ValueTask AdvanceToEnteredWorldStateAsync()
+    private async ValueTask AdvanceToCharacterSelectionStateAsync()
     {
         // Advance state to allow the intelligence to perform actions.
         await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.LoginScreen).ConfigureAwait(false);
@@ -118,4 +97,29 @@ public sealed class OfflineLevelingPlayer : Player
         this._intelligence = new OfflineLevelingIntelligence(this);
         this._intelligence.Start();
     }
+
+    /// <summary>
+    /// Stops the offline player and removes it from the world.
+    /// </summary>
+    public async ValueTask StopAsync()
+    {
+        this._intelligence?.Dispose();
+        this._intelligence = null;
+        try
+        {
+            await this.SaveProgressAsync().ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this.Logger.LogError(ex, "Failed to save progress of offline leveling player {Name}.", this.Name);
+        }
+
+        await this.DisconnectAsync().ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    protected override ICustomPlugInContainer<IViewPlugIn> CreateViewPlugInContainer()
+        => new OfflineViewPlugInContainer(this);
+
+
 }

@@ -182,6 +182,24 @@ internal partial class GameConfiguration : MUnique.OpenMU.DataModel.Configuratio
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.MasterSkillRoot> MasterSkillRoots => base.MasterSkillRoots ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.MasterSkillRoot, MasterSkillRoot>(this.RawMasterSkillRoots);
 
     /// <summary>
+    /// Gets the raw collection of <see cref="GlobalAttributeCombinations" />.
+    /// </summary>
+    public ICollection<AttributeRelationship> RawGlobalAttributeCombinations { get; } = new EntityFramework.List<AttributeRelationship>();
+    
+    /// <inheritdoc/>
+    [NotMapped]
+    public override ICollection<MUnique.OpenMU.AttributeSystem.AttributeRelationship> GlobalAttributeCombinations => base.GlobalAttributeCombinations ??= new CollectionAdapter<MUnique.OpenMU.AttributeSystem.AttributeRelationship, AttributeRelationship>(this.RawGlobalAttributeCombinations);
+
+    /// <summary>
+    /// Gets the raw collection of <see cref="GlobalBaseAttributeValues" />.
+    /// </summary>
+    public ICollection<ConstValueAttribute> RawGlobalBaseAttributeValues { get; } = new EntityFramework.List<ConstValueAttribute>();
+    
+    /// <inheritdoc/>
+    [NotMapped]
+    public override ICollection<MUnique.OpenMU.AttributeSystem.ConstValueAttribute> GlobalBaseAttributeValues => base.GlobalBaseAttributeValues ??= new CollectionAdapter<MUnique.OpenMU.AttributeSystem.ConstValueAttribute, ConstValueAttribute>(this.RawGlobalBaseAttributeValues);
+
+    /// <summary>
     /// Gets the raw collection of <see cref="PlugInConfigurations" />.
     /// </summary>
     public ICollection<PlugInConfiguration> RawPlugInConfigurations { get; } = new EntityFramework.List<PlugInConfiguration>();

@@ -38,7 +38,20 @@ public class LoginAction
         var (success, account) = await this.TryEstablishSessionAsync(player, username).ConfigureAwait(false);
         if (success && account is { })
         {
-            await this.FinishLoginAsync(player, username, account).ConfigureAwait(false);
+            try
+            {
+                await this.FinishLoginAsync(player, username, account).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                player.Logger.LogError(ex, "Failed to finish login for [{Username}].", username);
+                if (!account.IsTemplate && player.GameContext is IGameServerContext gameServerContext)
+                {
+                    await gameServerContext.LoginServer.LogOffAsync(username, gameServerContext.Id).ConfigureAwait(false);
+                }
+
+                await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.ConnectionError)).ConfigureAwait(false);
+            }
         }
     }
 
@@ -93,6 +106,7 @@ public class LoginAction
 
             if (player.GameContext is not IGameServerContext gameServerContext)
             {
+                context.Allowed = false;
                 return (false, null);
             }
 
@@ -110,6 +124,11 @@ public class LoginAction
                 var offlineAccount = await this.HandleOfflineSessionHandoverAsync(player, username).ConfigureAwait(false);
                 if (offlineAccount is null)
                 {
+                    if (!isTemplateOffline)
+                    {
+                        await gameServerContext.LoginServer.LogOffAsync(username, gameServerContext.Id).ConfigureAwait(false);
+                    }
+
                     context.Allowed = false;
                     return (false, null);
                 }
