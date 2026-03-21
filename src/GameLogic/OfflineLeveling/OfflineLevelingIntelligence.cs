@@ -92,7 +92,7 @@ public sealed class OfflineLevelingIntelligence : IDisposable
         this._aiTimer = null;
     }
 
-    private void OnPlayerDied(object? sender, DeathInformation e)
+    private void OnPlayerDied(object? _, DeathInformation e)
     {
         this._player.Logger.LogDebug("Offline leveling player '{Name}' died. Killer: {KillerName}.", this._player.Name, e.KillerName);
         this._isDead = true;
