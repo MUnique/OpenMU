@@ -36,6 +36,7 @@ public sealed class OfflineLevelingIntelligence : IDisposable
 
     private Timer? _aiTimer;
     private bool _disposed;
+    private bool _isDead;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="OfflineLevelingIntelligence"/> class.
@@ -63,6 +64,8 @@ public sealed class OfflineLevelingIntelligence : IDisposable
         {
             this._player.Logger.LogDebug("Offline leveling configuration for {CharacterName}: MuHelperSettings={Settings}.", this._player.Name, config);
         }
+
+        this._player.Died += this.OnPlayerDied;
     }
 
     /// <summary>Starts the 500 ms AI timer.</summary>
@@ -83,9 +86,15 @@ public sealed class OfflineLevelingIntelligence : IDisposable
             return;
         }
 
+        this._player.Died -= this.OnPlayerDied;
         this._disposed = true;
         this._aiTimer?.Dispose();
         this._aiTimer = null;
+    }
+
+    private void OnPlayerDied(object? sender, DeathInformation e)
+    {
+        this._isDead = true;
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100", Justification = "Timer callback — exceptions are caught internally.")]
@@ -101,13 +110,18 @@ public sealed class OfflineLevelingIntelligence : IDisposable
         }
         catch (Exception ex)
         {
-            this._player.Logger.LogError(ex, "Error in offline leveling AI tick for {Name}.", this._player.CharacterName);
+            this._player.Logger.LogError(ex, "Error in offline leveling AI tick for {Name}.", this._player.Name);
         }
     }
 
     private async ValueTask TickAsync()
     {
-        if (!this.CanPerformActions())
+        if (await this.HandleDeathAsync().ConfigureAwait(false))
+        {
+            return;
+        }
+
+        if (this._player.PlayerState.CurrentState != PlayerState.EnteredWorld)
         {
             return;
         }
@@ -146,9 +160,26 @@ public sealed class OfflineLevelingIntelligence : IDisposable
         await this._combatHandler.PerformAttackAsync().ConfigureAwait(false);
     }
 
-    private bool CanPerformActions()
+    private async ValueTask<bool> HandleDeathAsync()
     {
-        return this._player.IsAlive && this._player.PlayerState.CurrentState == PlayerState.EnteredWorld;
+        if (this._isDead)
+        {
+            if (!this._player.IsAlive)
+            {
+                // The offline player is dead. We wait for the server's 3-second respawn timer to finish.
+                return true;
+            }
+
+            if (this._player.Account?.LoginName is { } loginName)
+            {
+                this._player.Logger.LogInformation("Offline leveling player died and successfully respawned. Stopping session for {0}.", loginName);
+                await this._player.GameContext.OfflineLevelingManager.StopAsync(loginName).ConfigureAwait(false);
+            }
+
+            return true;
+        }
+
+        return false;
     }
 
     private bool IsOnSkillCooldown()
