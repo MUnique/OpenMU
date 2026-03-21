@@ -8,20 +8,22 @@ using System.IO;
 using System.Threading;
 
 /// <summary>
-/// A stub implementation of <see cref="IBackupService"/> for the in-memory persistence layer.
-/// Backup creation is not meaningful for an in-memory store; restore is not supported.
+/// An implementation of <see cref="IBackupService"/> for the in-memory persistence layer.
+/// Export is supported via the base <see cref="BackupService"/>; restore is not supported.
 /// </summary>
-public class InMemoryBackupService : IBackupService
+public class InMemoryBackupService : BackupService
 {
-    /// <inheritdoc />
-    public Task CreateBackupAsync(Stream outputStream, CancellationToken cancellationToken = default)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="InMemoryBackupService"/> class.
+    /// </summary>
+    /// <param name="contextProvider">The persistence context provider.</param>
+    public InMemoryBackupService(IPersistenceContextProvider contextProvider)
+        : base(contextProvider)
     {
-        // In-memory persistence has no persistent data to back up.
-        return Task.CompletedTask;
     }
 
     /// <inheritdoc />
-    public Task RestoreBackupAsync(Stream inputStream, CancellationToken cancellationToken = default)
+    public override Task RestoreBackupAsync(Stream inputStream, CancellationToken cancellationToken = default)
     {
         throw new NotSupportedException("Backup restore is not supported for in-memory persistence.");
     }

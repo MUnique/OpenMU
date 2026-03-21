@@ -2,29 +2,29 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Persistence.EntityFramework;
+namespace MUnique.OpenMU.Persistence;
 
 using System.IO;
 using System.IO.Compression;
 using System.Reflection;
 using System.Threading;
-using Microsoft.EntityFrameworkCore;
-using MUnique.OpenMU.Persistence.EntityFramework.Json;
-using MUnique.OpenMU.Persistence.EntityFramework.Model;
+using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Persistence.Json;
 
 /// <summary>
-/// Implementation of <see cref="IBackupService"/> for the EntityFramework persistence layer.
+/// Implementation of <see cref="IBackupService"/> which uses the available repositories
+/// and does not depend on a specific persistence backend.
 /// </summary>
 public class BackupService : IBackupService
 {
-    private static readonly (string Prefix, Type BasicModelType)[] EntryTypeInfos =
+    private static readonly (string Prefix, Type DataModelType, Type BasicModelType)[] EntryTypeInfos =
     [
-        ("GameConfiguration_", typeof(BasicModel.GameConfiguration)),
-        ("ChatServerDefinition_", typeof(BasicModel.ChatServerDefinition)),
-        ("ConnectServerDefinition_", typeof(BasicModel.ConnectServerDefinition)),
-        ("GameServerDefinition_", typeof(BasicModel.GameServerDefinition)),
-        ("Account_", typeof(BasicModel.Account)),
+        ("GameConfiguration_", typeof(GameConfiguration), typeof(BasicModel.GameConfiguration)),
+        ("ChatServerDefinition_", typeof(ChatServerDefinition), typeof(BasicModel.ChatServerDefinition)),
+        ("ConnectServerDefinition_", typeof(ConnectServerDefinition), typeof(BasicModel.ConnectServerDefinition)),
+        ("GameServerDefinition_", typeof(GameServerDefinition), typeof(BasicModel.GameServerDefinition)),
+        ("Account_", typeof(Account), typeof(BasicModel.Account)),
     ];
 
     private readonly IPersistenceContextProvider _contextProvider;
@@ -46,24 +46,19 @@ public class BackupService : IBackupService
         // A single shared reference handler ensures cross-type references are written as $ref.
         var sharedHandler = new IdReferenceHandler();
 
-        await using var dbContext = new EntityDataContext();
-        await dbContext.Database.OpenConnectionAsync(cancellationToken).ConfigureAwait(false);
-        try
-        {
-            await ExportGameConfigurationsAsync(archive, dbContext, sharedHandler, cancellationToken).ConfigureAwait(false);
-            await ExportByLoaderAsync<ChatServerDefinition, BasicModel.ChatServerDefinition>(archive, "ChatServerDefinition_", dbContext, sharedHandler, cancellationToken).ConfigureAwait(false);
-            await ExportByLoaderAsync<ConnectServerDefinition, BasicModel.ConnectServerDefinition>(archive, "ConnectServerDefinition_", dbContext, sharedHandler, cancellationToken).ConfigureAwait(false);
-            await ExportByLoaderAsync<GameServerDefinition, BasicModel.GameServerDefinition>(archive, "GameServerDefinition_", dbContext, sharedHandler, cancellationToken).ConfigureAwait(false);
-            await ExportByLoaderAsync<Account, BasicModel.Account>(archive, "Account_", dbContext, sharedHandler, cancellationToken).ConfigureAwait(false);
-        }
-        finally
-        {
-            await dbContext.Database.CloseConnectionAsync().ConfigureAwait(false);
-        }
+        // Use a single context so the context stack is set up correctly for all repository calls.
+        using var context = this._contextProvider.CreateNewContext();
+
+        // Export in dependency order: configuration first so that accounts can reference config objects.
+        await ExportAsync<GameConfiguration, BasicModel.GameConfiguration>(archive, "GameConfiguration_", context, sharedHandler, cancellationToken).ConfigureAwait(false);
+        await ExportAsync<ChatServerDefinition, BasicModel.ChatServerDefinition>(archive, "ChatServerDefinition_", context, sharedHandler, cancellationToken).ConfigureAwait(false);
+        await ExportAsync<ConnectServerDefinition, BasicModel.ConnectServerDefinition>(archive, "ConnectServerDefinition_", context, sharedHandler, cancellationToken).ConfigureAwait(false);
+        await ExportAsync<GameServerDefinition, BasicModel.GameServerDefinition>(archive, "GameServerDefinition_", context, sharedHandler, cancellationToken).ConfigureAwait(false);
+        await ExportAsync<Account, BasicModel.Account>(archive, "Account_", context, sharedHandler, cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
-    public async Task RestoreBackupAsync(Stream inputStream, CancellationToken cancellationToken = default)
+    public virtual async Task RestoreBackupAsync(Stream inputStream, CancellationToken cancellationToken = default)
     {
         using var archive = new ZipArchive(inputStream, ZipArchiveMode.Read, leaveOpen: true);
 
@@ -96,10 +91,42 @@ public class BackupService : IBackupService
                     continue;
                 }
 
-                this.GetOrCreateEfObject(context, basicModelObj, createdObjects);
+                this.GetOrCreateObject(context, basicModelObj, createdObjects);
             }
 
             await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        }
+    }
+
+    private static async Task ExportAsync<TData, TBasic>(
+        ZipArchive archive,
+        string filePrefix,
+        IContext context,
+        IdReferenceHandler sharedHandler,
+        CancellationToken cancellationToken)
+        where TData : class
+        where TBasic : class
+    {
+        var items = await context.GetAsync<TData>(cancellationToken).ConfigureAwait(false);
+        var serializer = new JsonObjectSerializer();
+        foreach (var item in items)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            if (item is not IConvertibleTo<TBasic> convertible)
+            {
+                continue;
+            }
+
+            if (item is not IIdentifiable identifiable)
+            {
+                continue;
+            }
+
+            var basicModel = convertible.Convert();
+            var entryName = $"{filePrefix}{identifiable.Id}.json";
+            var entry = archive.CreateEntry(entryName);
+            await using var stream = entry.Open();
+            await serializer.SerializeAsync(basicModel, stream, sharedHandler, cancellationToken).ConfigureAwait(false);
         }
     }
 
@@ -114,7 +141,7 @@ public class BackupService : IBackupService
         await stream.CopyToAsync(ms, cancellationToken).ConfigureAwait(false);
         ms.Position = 0;
 
-        var deserializer = new Persistence.Json.JsonObjectDeserializer();
+        var deserializer = new JsonObjectDeserializer();
 
         if (basicModelType == typeof(BasicModel.GameConfiguration))
         {
@@ -157,7 +184,7 @@ public class BackupService : IBackupService
         return EntryTypeInfos.Length;
     }
 
-    private static (string Prefix, Type BasicModelType)? GetTypeInfoForEntry(string entryName)
+    private static (string Prefix, Type DataModelType, Type BasicModelType)? GetTypeInfoForEntry(string entryName)
     {
         foreach (var typeInfo in EntryTypeInfos)
         {
@@ -170,59 +197,7 @@ public class BackupService : IBackupService
         return null;
     }
 
-    private static async ValueTask WriteJsonEntryAsync<T>(
-        ZipArchive archive,
-        string entryName,
-        T obj,
-        IdReferenceHandler referenceHandler,
-        CancellationToken cancellationToken)
-        where T : class
-    {
-        var entry = archive.CreateEntry(entryName);
-        await using var stream = entry.Open();
-        var serializer = new JsonObjectSerializer();
-        await serializer.SerializeAsync(obj, stream, referenceHandler, cancellationToken).ConfigureAwait(false);
-    }
-
-    private static async Task ExportGameConfigurationsAsync(
-        ZipArchive archive,
-        EntityDataContext dbContext,
-        IdReferenceHandler sharedHandler,
-        CancellationToken cancellationToken)
-    {
-        // Use the specialised query builder so that maps (which depend on all other data) come last.
-        var loader = new GameConfigurationJsonObjectLoader();
-        var gameConfigs = await loader.LoadAllObjectsAsync<GameConfiguration>(dbContext, cancellationToken).ConfigureAwait(false);
-        MapsterConfigurator.EnsureConfigured();
-        foreach (var config in gameConfigs)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            var basicModel = config.Convert();
-            await WriteJsonEntryAsync(archive, $"GameConfiguration_{config.Id}.json", basicModel, sharedHandler, cancellationToken).ConfigureAwait(false);
-        }
-    }
-
-    private static async Task ExportByLoaderAsync<TEfModel, TBasicModel>(
-        ZipArchive archive,
-        string filePrefix,
-        EntityDataContext dbContext,
-        IdReferenceHandler sharedHandler,
-        CancellationToken cancellationToken)
-        where TEfModel : class, IIdentifiable, IConvertibleTo<TBasicModel>
-        where TBasicModel : class
-    {
-        var loader = new JsonObjectLoader(new JsonQueryBuilder(), new Json.JsonObjectDeserializer(), new CachingReferenceHandler());
-        var items = await loader.LoadAllObjectsAsync<TEfModel>(dbContext, cancellationToken).ConfigureAwait(false);
-        MapsterConfigurator.EnsureConfigured();
-        foreach (var item in items)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            var basicModel = item.Convert();
-            await WriteJsonEntryAsync(archive, $"{filePrefix}{item.Id}.json", basicModel, sharedHandler, cancellationToken).ConfigureAwait(false);
-        }
-    }
-
-    private object GetOrCreateEfObject(IContext context, object basicModelObj, Dictionary<Guid, object> createdObjects)
+    private object GetOrCreateObject(IContext context, object basicModelObj, Dictionary<Guid, object> createdObjects)
     {
         if (basicModelObj is IIdentifiable identifiable && createdObjects.TryGetValue(identifiable.Id, out var existing))
         {
@@ -230,18 +205,18 @@ public class BackupService : IBackupService
         }
 
         var dataModelBaseType = FindDataModelBaseType(basicModelObj.GetType());
-        var efObj = context.CreateNew(dataModelBaseType);
+        var newObj = context.CreateNew(dataModelBaseType);
 
         if (basicModelObj is IIdentifiable id2)
         {
-            createdObjects[id2.Id] = efObj;
-            SetId(efObj, id2.Id);
+            createdObjects[id2.Id] = newObj;
+            SetId(newObj, id2.Id);
         }
 
-        this.CopyBaseTypeProperties(basicModelObj, efObj, dataModelBaseType, context, createdObjects);
-        this.CopyRawCollectionProperties(basicModelObj, efObj, context, createdObjects);
+        this.CopyBaseTypeProperties(basicModelObj, newObj, dataModelBaseType, context, createdObjects);
+        this.CopyRawCollectionProperties(basicModelObj, newObj, context, createdObjects);
 
-        return efObj;
+        return newObj;
     }
 
     private static Type FindDataModelBaseType(Type basicModelType)
@@ -261,10 +236,10 @@ public class BackupService : IBackupService
         return basicModelType;
     }
 
-    private static void SetId(object efObj, Guid id)
+    private static void SetId(object obj, Guid id)
     {
-        var idProp = efObj.GetType().GetProperty("Id", BindingFlags.Public | BindingFlags.Instance);
-        idProp?.SetValue(efObj, id);
+        var idProp = obj.GetType().GetProperty("Id", BindingFlags.Public | BindingFlags.Instance);
+        idProp?.SetValue(obj, id);
     }
 
     private void CopyBaseTypeProperties(
@@ -305,10 +280,10 @@ public class BackupService : IBackupService
 
             if (value is IIdentifiable)
             {
-                var efChild = this.GetOrCreateEfObject(context, value, createdObjects);
+                var child = this.GetOrCreateObject(context, value, createdObjects);
                 try
                 {
-                    targetProp.SetValue(target, efChild);
+                    targetProp.SetValue(target, child);
                 }
                 catch
                 {
@@ -408,8 +383,8 @@ public class BackupService : IBackupService
                 {
                     if (item is IIdentifiable)
                     {
-                        var efItem = this.GetOrCreateEfObject(context, item, createdObjects);
-                        addMethod.Invoke(targetCollection, new[] { efItem });
+                        var createdItem = this.GetOrCreateObject(context, item, createdObjects);
+                        addMethod.Invoke(targetCollection, new[] { createdItem });
                     }
                     else
                     {

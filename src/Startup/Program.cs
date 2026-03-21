@@ -272,7 +272,7 @@ internal sealed class Program : IDisposable
                     return new BackupService(s.GetRequiredService<IPersistenceContextProvider>());
                 }
 
-                return new MUnique.OpenMU.Persistence.InMemory.InMemoryBackupService();
+                return new InMemoryBackupService(s.GetRequiredService<IPersistenceContextProvider>());
             })
             .AddSingleton<ILoginServer, LoginServer>()
             .AddSingleton<IGuildServer, GuildServer>()
