@@ -8,6 +8,7 @@ using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Class to serialize an object to a json string or stream.
@@ -47,6 +48,7 @@ public class JsonObjectSerializer
             WriteIndented = true,
             Converters =
             {
+                new LocalizedStringJsonConverter(),
                 new OnlyWriteBelowRootConverter<BasicModel.ItemDefinition>(),
                 new OnlyWriteBelowRootConverter<BasicModel.DropItemGroup>(),
                 new OnlyWriteBelowRootConverter<BasicModel.Skill>(),
