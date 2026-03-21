@@ -49,6 +49,7 @@ public class AutoFields : ComponentBase
         Builders.Add(new ItemStorageFieldBuilder());
         Builders.Add(new LookupFieldBuilder());
         Builders.Add(new EmbeddedFormFieldBuilder());
+        Builders.Add(new SkillListFieldBuilder());
         Builders.Add(new ObjectCollectionFieldBuilder());
         Builders.Add(new IntCollectionFieldBuilder());
         Builders.Add(new ByteArrayFieldBuilder());
