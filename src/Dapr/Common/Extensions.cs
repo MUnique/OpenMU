@@ -54,7 +54,7 @@ public static class Extensions
             .AddSingleton(s => (PersistenceContextProvider)s.GetService<IMigratableDatabaseContextProvider>()!)
             .AddSingleton(s => (IPersistenceContextProvider)s.GetService<IMigratableDatabaseContextProvider>()!)
             .AddSingleton(s => new Lazy<IPersistenceContextProvider>(s.GetRequiredService<IPersistenceContextProvider>))
-            .AddSingleton<IBackupService>(s => new EfBackupService(s.GetRequiredService<IPersistenceContextProvider>()));
+            .AddSingleton<IBackupService>(s => new BackupService(s.GetRequiredService<IPersistenceContextProvider>()));
     }
 
     /// <summary>

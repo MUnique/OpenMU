@@ -55,5 +55,5 @@ else
     {
         <p class="text-muted">@Resources.SelectZipFileToRestore</p>
     }
-    <InputFile OnChange="this.OnImportFileChangeAsync" accept=".zip" class="form-control mb-2" disabled="@this._isImporting" />
+    <Microsoft.AspNetCore.Components.Forms.InputFile OnChange="this.OnImportFileChangeAsync" accept=".zip" class="form-control mb-2" disabled="@this._isImporting" />
 }

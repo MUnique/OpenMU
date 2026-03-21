@@ -1,4 +1,4 @@
-// <copyright file="EfBackupService.cs" company="MUnique">
+// <copyright file="BackupService.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -9,8 +9,6 @@ using System.IO.Compression;
 using System.Reflection;
 using System.Threading;
 using Microsoft.EntityFrameworkCore;
-using MUnique.OpenMU.DataModel.Configuration;
-using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Persistence.EntityFramework.Json;
 using MUnique.OpenMU.Persistence.EntityFramework.Model;
 using MUnique.OpenMU.Persistence.Json;
@@ -18,7 +16,7 @@ using MUnique.OpenMU.Persistence.Json;
 /// <summary>
 /// Implementation of <see cref="IBackupService"/> for the EntityFramework persistence layer.
 /// </summary>
-public class EfBackupService : IBackupService
+public class BackupService : IBackupService
 {
     private static readonly (string Prefix, Type BasicModelType)[] EntryTypeInfos =
     [
@@ -32,10 +30,10 @@ public class EfBackupService : IBackupService
     private readonly IPersistenceContextProvider _contextProvider;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="EfBackupService"/> class.
+    /// Initializes a new instance of the <see cref="BackupService"/> class.
     /// </summary>
     /// <param name="contextProvider">The persistence context provider.</param>
-    public EfBackupService(IPersistenceContextProvider contextProvider)
+    public BackupService(IPersistenceContextProvider contextProvider)
     {
         this._contextProvider = contextProvider;
     }
@@ -45,7 +43,7 @@ public class EfBackupService : IBackupService
     {
         using var archive = new ZipArchive(outputStream, ZipArchiveMode.Create, leaveOpen: true);
 
-        // A single shared reference handler ensures cross-type references are written as $ref
+        // A single shared reference handler ensures cross-type references are written as $ref.
         var sharedHandler = new IdReferenceHandler();
 
         await using var dbContext = new EntityDataContext();
@@ -53,10 +51,10 @@ public class EfBackupService : IBackupService
         try
         {
             await ExportGameConfigurationsAsync(archive, dbContext, sharedHandler, cancellationToken).ConfigureAwait(false);
-            await ExportChatServerDefinitionsAsync(archive, dbContext, sharedHandler, cancellationToken).ConfigureAwait(false);
-            await ExportConnectServerDefinitionsAsync(archive, dbContext, sharedHandler, cancellationToken).ConfigureAwait(false);
-            await ExportGameServerDefinitionsAsync(archive, dbContext, sharedHandler, cancellationToken).ConfigureAwait(false);
-            await ExportAccountsAsync(archive, dbContext, sharedHandler, cancellationToken).ConfigureAwait(false);
+            await ExportByLoaderAsync<ChatServerDefinition, BasicModel.ChatServerDefinition>(archive, "ChatServerDefinition_", dbContext, sharedHandler, cancellationToken).ConfigureAwait(false);
+            await ExportByLoaderAsync<ConnectServerDefinition, BasicModel.ConnectServerDefinition>(archive, "ConnectServerDefinition_", dbContext, sharedHandler, cancellationToken).ConfigureAwait(false);
+            await ExportByLoaderAsync<GameServerDefinition, BasicModel.GameServerDefinition>(archive, "GameServerDefinition_", dbContext, sharedHandler, cancellationToken).ConfigureAwait(false);
+            await ExportByLoaderAsync<Account, BasicModel.Account>(archive, "Account_", dbContext, sharedHandler, cancellationToken).ConfigureAwait(false);
         }
         finally
         {
@@ -69,11 +67,11 @@ public class EfBackupService : IBackupService
     {
         using var archive = new ZipArchive(inputStream, ZipArchiveMode.Read, leaveOpen: true);
 
-        // A single shared handler accumulates deserialized objects so cross-file $ref references resolve correctly
+        // A single shared handler accumulates deserialized objects so cross-file $ref references resolve correctly.
         var sharedHandler = new IdReferenceHandler();
         var createdObjects = new Dictionary<Guid, object>();
 
-        // Sort entries so GameConfiguration is processed first (other types reference it)
+        // Sort entries so GameConfiguration is processed first (other types reference its sub-objects).
         var orderedEntries = archive.Entries
             .OrderBy(e => GetTypeOrder(e.Name))
             .ThenBy(e => e.Name)
@@ -91,8 +89,8 @@ public class EfBackupService : IBackupService
                     continue;
                 }
 
-                await using var stream = entry.Open();
-                var basicModelObj = await DeserializeAsync(stream, typeInfo.Value.BasicModelType, sharedHandler, cancellationToken).ConfigureAwait(false);
+                await using var entryStream = entry.Open();
+                var basicModelObj = await DeserializeAsync(entryStream, typeInfo.Value.BasicModelType, sharedHandler, cancellationToken).ConfigureAwait(false);
                 if (basicModelObj is null)
                 {
                     continue;
@@ -105,21 +103,45 @@ public class EfBackupService : IBackupService
         }
     }
 
-    private static async Task<object?> DeserializeAsync(Stream stream, Type basicModelType, IdReferenceHandler referenceHandler, CancellationToken cancellationToken)
+    private static async Task<object?> DeserializeAsync(
+        Stream stream,
+        Type basicModelType,
+        IdReferenceHandler referenceHandler,
+        CancellationToken cancellationToken)
     {
-        // Read stream to memory first (ZipArchive streams don't support seeking)
+        // Read to memory first because ZipArchive entry streams don't support seeking.
         using var ms = new MemoryStream();
         await stream.CopyToAsync(ms, cancellationToken).ConfigureAwait(false);
         ms.Position = 0;
 
         var deserializer = new Persistence.Json.JsonObjectDeserializer();
 
-        // Invoke the generic Deserialize<T> method via reflection
-        var method = typeof(Persistence.Json.JsonObjectDeserializer)
-            .GetMethod(nameof(Persistence.Json.JsonObjectDeserializer.Deserialize), BindingFlags.Public | BindingFlags.Instance)!
-            .MakeGenericMethod(basicModelType);
+        if (basicModelType == typeof(BasicModel.GameConfiguration))
+        {
+            return deserializer.Deserialize<BasicModel.GameConfiguration>(ms, referenceHandler);
+        }
 
-        return method.Invoke(deserializer, [ms, referenceHandler]);
+        if (basicModelType == typeof(BasicModel.ChatServerDefinition))
+        {
+            return deserializer.Deserialize<BasicModel.ChatServerDefinition>(ms, referenceHandler);
+        }
+
+        if (basicModelType == typeof(BasicModel.ConnectServerDefinition))
+        {
+            return deserializer.Deserialize<BasicModel.ConnectServerDefinition>(ms, referenceHandler);
+        }
+
+        if (basicModelType == typeof(BasicModel.GameServerDefinition))
+        {
+            return deserializer.Deserialize<BasicModel.GameServerDefinition>(ms, referenceHandler);
+        }
+
+        if (basicModelType == typeof(BasicModel.Account))
+        {
+            return deserializer.Deserialize<BasicModel.Account>(ms, referenceHandler);
+        }
+
+        throw new ArgumentException($"Unsupported backup entry type: {basicModelType}", nameof(basicModelType));
     }
 
     private static int GetTypeOrder(string entryName)
@@ -168,6 +190,7 @@ public class EfBackupService : IBackupService
         IdReferenceHandler sharedHandler,
         CancellationToken cancellationToken)
     {
+        // Use the specialised query builder so that maps (which depend on all other data) come last.
         var loader = new GameConfigurationJsonObjectLoader();
         var gameConfigs = await loader.LoadAllObjectsAsync<GameConfiguration>(dbContext, cancellationToken).ConfigureAwait(false);
         MapsterConfigurator.EnsureConfigured();
@@ -179,78 +202,23 @@ public class EfBackupService : IBackupService
         }
     }
 
-    private static async Task ExportChatServerDefinitionsAsync(
+    private static async Task ExportByLoaderAsync<TEfModel, TBasicModel>(
         ZipArchive archive,
+        string filePrefix,
         EntityDataContext dbContext,
         IdReferenceHandler sharedHandler,
         CancellationToken cancellationToken)
+        where TEfModel : class, IIdentifiable, IConvertibleTo<TBasicModel>
+        where TBasicModel : class
     {
-        var chatServers = await dbContext.Set<ChatServerDefinition>()
-            .Include(c => c.RawEndpoints)
-                .ThenInclude(e => e.RawClient)
-            .ToListAsync(cancellationToken).ConfigureAwait(false);
+        var loader = new JsonObjectLoader(new JsonQueryBuilder(), new Json.JsonObjectDeserializer(), new CachingReferenceHandler());
+        var items = await loader.LoadAllObjectsAsync<TEfModel>(dbContext, cancellationToken).ConfigureAwait(false);
         MapsterConfigurator.EnsureConfigured();
-        foreach (var server in chatServers)
+        foreach (var item in items)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var basicModel = server.Convert();
-            await WriteJsonEntryAsync(archive, $"ChatServerDefinition_{server.Id}.json", basicModel, sharedHandler, cancellationToken).ConfigureAwait(false);
-        }
-    }
-
-    private static async Task ExportConnectServerDefinitionsAsync(
-        ZipArchive archive,
-        EntityDataContext dbContext,
-        IdReferenceHandler sharedHandler,
-        CancellationToken cancellationToken)
-    {
-        var connectServers = await dbContext.Set<ConnectServerDefinition>()
-            .Include(c => c.RawClient)
-            .ToListAsync(cancellationToken).ConfigureAwait(false);
-        MapsterConfigurator.EnsureConfigured();
-        foreach (var server in connectServers)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            var basicModel = server.Convert();
-            await WriteJsonEntryAsync(archive, $"ConnectServerDefinition_{server.Id}.json", basicModel, sharedHandler, cancellationToken).ConfigureAwait(false);
-        }
-    }
-
-    private static async Task ExportGameServerDefinitionsAsync(
-        ZipArchive archive,
-        EntityDataContext dbContext,
-        IdReferenceHandler sharedHandler,
-        CancellationToken cancellationToken)
-    {
-        var gameServers = await dbContext.Set<GameServerDefinition>()
-            .Include(g => g.RawEndpoints)
-                .ThenInclude(e => e.RawClient)
-            .Include(g => g.RawServerConfiguration)
-            .Include(g => g.RawGameConfiguration)
-            .ToListAsync(cancellationToken).ConfigureAwait(false);
-        MapsterConfigurator.EnsureConfigured();
-        foreach (var server in gameServers)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            var basicModel = server.Convert();
-            await WriteJsonEntryAsync(archive, $"GameServerDefinition_{server.Id}.json", basicModel, sharedHandler, cancellationToken).ConfigureAwait(false);
-        }
-    }
-
-    private static async Task ExportAccountsAsync(
-        ZipArchive archive,
-        EntityDataContext dbContext,
-        IdReferenceHandler sharedHandler,
-        CancellationToken cancellationToken)
-    {
-        var loader = new AccountJsonObjectLoader();
-        var accounts = await loader.LoadAllObjectsAsync<Account>(dbContext, cancellationToken).ConfigureAwait(false);
-        MapsterConfigurator.EnsureConfigured();
-        foreach (var account in accounts)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            var basicModel = account.Convert();
-            await WriteJsonEntryAsync(archive, $"Account_{account.Id}.json", basicModel, sharedHandler, cancellationToken).ConfigureAwait(false);
+            var basicModel = item.Convert();
+            await WriteJsonEntryAsync(archive, $"{filePrefix}{item.Id}.json", basicModel, sharedHandler, cancellationToken).ConfigureAwait(false);
         }
     }
 
@@ -262,7 +230,6 @@ public class EfBackupService : IBackupService
         }
 
         var dataModelBaseType = FindDataModelBaseType(basicModelObj.GetType());
-
         var efObj = context.CreateNew(dataModelBaseType);
 
         if (basicModelObj is IIdentifiable id2)
@@ -345,7 +312,7 @@ public class EfBackupService : IBackupService
                 }
                 catch
                 {
-                    // ignore type incompatibility
+                    // Ignore type incompatibilities.
                 }
             }
             else
@@ -356,12 +323,12 @@ public class EfBackupService : IBackupService
                 }
                 catch
                 {
-                    // ignore
+                    // Ignore.
                 }
             }
         }
 
-        // Recurse into MUnique parent base types
+        // Recurse into MUnique parent base types for inherited properties.
         if (baseType.BaseType is { } parentBase
             && parentBase != typeof(object)
             && parentBase.Namespace?.StartsWith("MUnique", StringComparison.Ordinal) is true)
@@ -442,16 +409,16 @@ public class EfBackupService : IBackupService
                     if (item is IIdentifiable)
                     {
                         var efItem = this.GetOrCreateEfObject(context, item, createdObjects);
-                        addMethod.Invoke(targetCollection, [efItem]);
+                        addMethod.Invoke(targetCollection, new[] { efItem });
                     }
                     else
                     {
-                        addMethod.Invoke(targetCollection, [item]);
+                        addMethod.Invoke(targetCollection, new[] { item });
                     }
                 }
                 catch
                 {
-                    // ignore individual item errors
+                    // Ignore individual item errors.
                 }
             }
         }

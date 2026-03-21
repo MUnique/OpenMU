@@ -4,6 +4,9 @@
 
 namespace MUnique.OpenMU.Persistence.InMemory;
 
+using System.IO;
+using System.Threading;
+
 /// <summary>
 /// A stub implementation of <see cref="IBackupService"/> for the in-memory persistence layer.
 /// Backup creation is not meaningful for an in-memory store; restore is not supported.

@@ -269,7 +269,7 @@ internal sealed class Program : IDisposable
                 var contextProvider = s.GetRequiredService<IMigratableDatabaseContextProvider>();
                 if (contextProvider is PersistenceContextProvider)
                 {
-                    return new EfBackupService(s.GetRequiredService<IPersistenceContextProvider>());
+                    return new BackupService(s.GetRequiredService<IPersistenceContextProvider>());
                 }
 
                 return new MUnique.OpenMU.Persistence.InMemory.InMemoryBackupService();
