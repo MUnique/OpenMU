@@ -46,8 +46,13 @@ public class GameServerHostedServiceWrapper : IHostedLifecycleService
     {
         await this._serviceProvider.WaitForDatabaseInitializationAsync(cancellationToken).ConfigureAwait(false);
 
-        if (this._serviceProvider.GetService<ICollection<PlugInConfiguration>>() is List<PlugInConfiguration> plugInConfigurations)
+        if (this._serviceProvider.GetService<ICollection<PlugInConfiguration>>() is { } plugInCollection)
         {
+            if (plugInCollection is not List<PlugInConfiguration> plugInConfigurations)
+            {
+                throw new InvalidOperationException($"The registered {nameof(ICollection<PlugInConfiguration>)} must be a {nameof(List<PlugInConfiguration>)} to be able to load plugin configurations.");
+            }
+
             await this._serviceProvider.TryLoadPlugInConfigurationsAsync(plugInConfigurations).ConfigureAwait(false);
         }
 

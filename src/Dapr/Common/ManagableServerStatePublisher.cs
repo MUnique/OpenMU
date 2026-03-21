@@ -123,8 +123,9 @@ public sealed class ManagableServerStatePublisher : IHostedLifecycleService, IDi
             try
             {
                 var server = this._serviceProvider.GetRequiredService<IManageableServer>();
-                this._data = new ServerStateData(server);
+                server.PropertyChanged -= this.OnPropertyChanged; // Ensure single subscription in case of retry
                 server.PropertyChanged += this.OnPropertyChanged;
+                this._data = new ServerStateData(server);
                 this._server = server;
             }
             catch (Exception ex)
