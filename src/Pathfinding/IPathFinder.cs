@@ -1,4 +1,4 @@
-﻿// <copyright file="IPathFinder.cs" company="MUnique">
+// <copyright file="IPathFinder.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -9,8 +9,13 @@ using System.Threading;
 /// <summary>
 /// Interface for a path finder.
 /// </summary>
-internal interface IPathFinder
+public interface IPathFinder
 {
+    /// <summary>
+    /// Resets the path finder.
+    /// </summary>
+    void ResetPathFinder();
+
     /// <summary>
     /// Finds the path between two points.
     /// </summary>

@@ -15,17 +15,22 @@ internal sealed class PetHandler
 {
     private readonly OfflineLevelingPlayer _player;
     private readonly IMuHelperSettings? _config;
+    private readonly IPetCommandManager? _petCommandManager;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PetHandler"/> class.
     /// </summary>
     /// <param name="player">The offline leveling player.</param>
     /// <param name="config">The MU Helper configuration.</param>
-    public PetHandler(OfflineLevelingPlayer player, IMuHelperSettings? config)
+    /// <param name="petCommandManager">Optional pet command manager for testing.</param>
+    public PetHandler(OfflineLevelingPlayer player, IMuHelperSettings? config, IPetCommandManager? petCommandManager = null)
     {
         this._player = player;
         this._config = config;
+        this._petCommandManager = petCommandManager;
     }
+
+    private IPetCommandManager? PetCommandManager => this._petCommandManager ?? this._player.PetCommandManager;
 
     /// <summary>
     /// Initializes the dark raven behavior if configured.
@@ -52,7 +57,7 @@ internal sealed class PetHandler
     /// </summary>
     public async ValueTask CheckPetDurabilityAsync()
     {
-        if (this._player.PetCommandManager is null)
+        if (this.PetCommandManager is null)
         {
             return;
         }
@@ -61,7 +66,7 @@ internal sealed class PetHandler
         {
             if (this._player.Inventory?.GetItem(InventoryConstants.PetSlot) is { Durability: 0 })
             {
-                await this._player.PetCommandManager.SetBehaviourAsync(PetBehaviour.Idle, null).ConfigureAwait(false);
+                await this.PetCommandManager.SetBehaviourAsync(PetBehaviour.Idle, null).ConfigureAwait(false);
             }
         }
         catch (OperationCanceledException)
@@ -76,7 +81,7 @@ internal sealed class PetHandler
 
     private async ValueTask InitializeDarkRavenAsync()
     {
-        if (this._config is not { UseDarkRaven: true } || this._player.PetCommandManager is not { } petCommandManager)
+        if (this._config is not { UseDarkRaven: true } || this.PetCommandManager is not { } petCommandManager)
         {
             return;
         }
@@ -96,7 +101,7 @@ internal sealed class PetHandler
     /// </summary>
     public async ValueTask StopAsync()
     {
-        if (this._player.PetCommandManager is { } petCommandManager)
+        if (this.PetCommandManager is { } petCommandManager)
         {
             try
             {

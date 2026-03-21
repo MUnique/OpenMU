@@ -1,4 +1,4 @@
-﻿// <copyright file="PreCalculatedPathFinder.cs" company="MUnique">
+// <copyright file="PreCalculatedPathFinder.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -20,6 +20,12 @@ public class PreCalculatedPathFinder : IPathFinder
     public PreCalculatedPathFinder(IEnumerable<PathInfo> pathInfos)
     {
         this._nextSteps = pathInfos.ToDictionary(info => info.Combination, info => info.NextStep);
+    }
+
+    /// <inheritdoc/>
+    public void ResetPathFinder()
+    {
+        // No state to reset in this implementation.
     }
 
     /// <inheritdoc/>

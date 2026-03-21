@@ -184,7 +184,7 @@ public class PartyTest
 
     private async ValueTask<Player> CreatePartyMemberAsync()
     {
-        var result = await TestHelper.CreatePlayerAsync(this.GetGameContext()).ConfigureAwait(false);
+        var result = await PlayerTestHelper.CreatePlayerAsync(GameContextTestHelper.CreateGameContext()).ConfigureAwait(false);
         await result.PlayerState.TryAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
         return result;
     }
@@ -199,20 +199,5 @@ public class PartyTest
         }
 
         return party;
-    }
-
-    private IGameContext GetGameContext()
-    {
-        var contextProvider = new InMemoryPersistenceContextProvider();
-        var gameConfig = contextProvider.CreateNewContext().CreateNew<GameConfiguration>();
-        gameConfig.Maps.Add(contextProvider.CreateNewContext().CreateNew<GameMapDefinition>());
-
-        gameConfig.MaximumPartySize = 5;
-        var mapInitializer = new MapInitializer(gameConfig, new NullLogger<MapInitializer>(), NullDropGenerator.Instance, null);
-        var gameContext = new GameContext(gameConfig, contextProvider, mapInitializer, new NullLoggerFactory(), new PlugInManager(new List<PlugInConfiguration>(), new NullLoggerFactory(), null, null), NullDropGenerator.Instance, new ConfigurationChangeMediator());
-        mapInitializer.PlugInManager = gameContext.PlugInManager;
-        mapInitializer.PathFinderPool = gameContext.PathFinderPool;
-
-        return gameContext;
     }
 }

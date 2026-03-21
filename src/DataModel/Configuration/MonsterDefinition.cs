@@ -1,4 +1,4 @@
-﻿// <copyright file="MonsterDefinition.cs" company="MUnique">
+// <copyright file="MonsterDefinition.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -219,6 +219,17 @@ public enum NpcObjectKind
 [Cloneable]
 public partial class MonsterDefinition
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MonsterDefinition"/> class.
+    /// </summary>
+    public MonsterDefinition()
+    {
+        this.ItemCraftings = new List<ItemCrafting.ItemCrafting>();
+        this.DropItemGroups = new List<DropItemGroup>();
+        this.Attributes = new List<MonsterAttribute>();
+        this.Quests = new List<QuestDefinition>();
+    }
+
     /// <summary>
     /// Gets or sets the unique number of this monster.
     /// </summary>

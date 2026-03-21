@@ -1,4 +1,4 @@
-﻿// <copyright file="Monster.cs" company="MUnique">
+// <copyright file="Monster.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -38,7 +38,7 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
     /// </summary>
     private readonly AttributeDefinition? _skillPowerUpTarget;
 
-    private readonly IObjectPool<PathFinder> _pathFinderPool;
+    private readonly IObjectPool<IPathFinder> _pathFinderPool;
 
     private bool _isCalculatingPath;
 
@@ -55,7 +55,7 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
     /// <param name="plugInManager">The plug in manager.</param>
     /// <param name="pathFinderPool">The path finder pool.</param>
     /// <param name="eventStateProvider">The event state provider.</param>
-    public Monster(MonsterSpawnArea spawnInfo, MonsterDefinition stats, GameMap map, IDropGenerator dropGenerator, INpcIntelligence npcIntelligence, PlugInManager plugInManager, IObjectPool<PathFinder> pathFinderPool, IEventStateProvider? eventStateProvider = null)
+    public Monster(MonsterSpawnArea spawnInfo, MonsterDefinition stats, GameMap map, IDropGenerator dropGenerator, INpcIntelligence npcIntelligence, PlugInManager plugInManager, IObjectPool<IPathFinder> pathFinderPool, IEventStateProvider? eventStateProvider = null)
         : base(spawnInfo, stats, map, eventStateProvider, dropGenerator, plugInManager)
     {
         this._pathFinderPool = pathFinderPool;
@@ -148,7 +148,7 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
 
         IList<PathResultNode>? calculatedPath;
         this._isCalculatingPath = true;
-        PathFinder? pathFinder = null;
+        IPathFinder? pathFinder = null;
         try
         {
             pathFinder = await this._pathFinderPool.GetAsync().ConfigureAwait(false);

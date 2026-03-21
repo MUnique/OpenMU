@@ -33,7 +33,7 @@ public sealed class OfflineLevelingPlayer : Player
     /// <summary>
     /// Gets the start timestamp of the offline leveling session.
     /// </summary>
-    public DateTime StartTimestamp { get; private set; }
+    public DateTime StartTimestamp { get; internal set; }
 
     /// <summary>
     /// Initializes the offline player from captured references.

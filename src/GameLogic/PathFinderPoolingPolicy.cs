@@ -1,4 +1,4 @@
-﻿// <copyright file="PathFinderPoolingPolicy.cs" company="MUnique">
+// <copyright file="PathFinderPoolingPolicy.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -8,19 +8,19 @@ using Microsoft.Extensions.ObjectPool;
 using MUnique.OpenMU.Pathfinding;
 
 /// <summary>
-/// The <see cref="PooledObjectPolicy{PathFinder}"/> which implements the creation
-/// of the <see cref="PathFinder"/> with an <see cref="ScopedGridNetwork"/>.
+/// The <see cref="PooledObjectPolicy{IPathFinder}"/> which implements the creation
+/// of the <see cref="IPathFinder"/> with an <see cref="ScopedGridNetwork"/>.
 /// </summary>
-public class PathFinderPoolingPolicy : PooledObjectPolicy<PathFinder>
+public class PathFinderPoolingPolicy : PooledObjectPolicy<IPathFinder>
 {
     /// <inheritdoc />
-    public override PathFinder Create()
+    public override IPathFinder Create()
     {
         return new PathFinder(new ScopedGridNetwork());
     }
 
     /// <inheritdoc />
-    public override bool Return(PathFinder obj)
+    public override bool Return(IPathFinder obj)
     {
         return true;
     }

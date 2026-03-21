@@ -1,4 +1,4 @@
-﻿// <copyright file="MapInitializer.cs" company="MUnique">
+// <copyright file="MapInitializer.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -50,7 +50,7 @@ public class MapInitializer : IMapInitializer
     /// <value>
     /// The path finder pool.
     /// </value>
-    public IObjectPool<PathFinder>? PathFinderPool { get; set; }
+    public IObjectPool<IPathFinder>? PathFinderPool { get; set; }
 
     /// <summary>
     /// Gets or sets the size of the chunk of created <see cref="GameMap"/>s.

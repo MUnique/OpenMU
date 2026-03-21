@@ -33,12 +33,12 @@ public class GuildActionTest : GuildTestBase
         await base.SetupAsync().ConfigureAwait(false);
 
         var gameServerContext = this.CreateGameServer();
-        this._guildMasterPlayer = await TestHelper.CreatePlayerAsync(gameServerContext).ConfigureAwait(false);
+        this._guildMasterPlayer = await PlayerTestHelper.CreatePlayerAsync(gameServerContext).ConfigureAwait(false);
         this._guildMasterPlayer.SelectedCharacter!.Id = this.GuildMaster.Id;
         this._guildMasterPlayer.SelectedCharacter.Name = this.GuildMaster.Name;
         await this.GuildServer.PlayerEnteredGameAsync(this.GuildMaster.Id, this.GuildMaster.Name, 0).ConfigureAwait(false);
         this._guildMasterPlayer.Attributes![Stats.Level] = 100;
-        this._player = await TestHelper.CreatePlayerAsync(gameServerContext).ConfigureAwait(false);
+        this._player = await PlayerTestHelper.CreatePlayerAsync(gameServerContext).ConfigureAwait(false);
         await this._player.CurrentMap!.AddAsync(this._guildMasterPlayer).ConfigureAwait(false);
         this._player.SelectedCharacter!.Name = "Player";
         this._player.SelectedCharacter.Id = Guid.NewGuid();

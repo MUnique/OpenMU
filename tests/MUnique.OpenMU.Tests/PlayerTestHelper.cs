@@ -1,4 +1,4 @@
-﻿// <copyright file="TestHelper.cs" company="MUnique">
+// <copyright file="PlayerTestHelper.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -12,18 +12,18 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
-using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.OfflineLeveling;
+using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// Some helper functions to create test objects.
+/// Helper functions to create test players.
 /// </summary>
-public static class TestHelper
+public static class PlayerTestHelper
 {
     /// <summary>
-    /// Gets the player.
+    /// Gets a test player with a new in-memory game context.
     /// </summary>
     /// <returns>The test player.</returns>
     public static async ValueTask<Player> CreatePlayerAsync()
@@ -56,12 +56,10 @@ public static class TestHelper
     }
 
     /// <summary>
-    /// Gets a test player.
+    /// Gets a test player with the specified game context.
     /// </summary>
     /// <param name="gameContext">The game context.</param>
-    /// <returns>
-    /// The test player.
-    /// </returns>
+    /// <returns>The test player.</returns>
     public static async ValueTask<Player> CreatePlayerAsync(IGameContext gameContext)
     {
         var characterMock = new Mock<Character>();
@@ -76,7 +74,7 @@ public static class TestHelper
 
         var character = characterMock.Object;
         character.Inventory = inventoryMock.Object;
-        character.CurrentMap = (await gameContext.GetMapAsync(0).ConfigureAwait(false))?.Definition;
+        character.CurrentMap = gameContext.Configuration.Maps.FirstOrDefault(m => m.Number == 0);
         var characterClassMock = new Mock<CharacterClass>();
         characterClassMock.Setup(c => c.StatAttributes).Returns(
             new List<StatAttributeDefinition>
@@ -92,7 +90,6 @@ public static class TestHelper
             });
         characterClassMock.Setup(c => c.AttributeCombinations).Returns(new List<AttributeRelationship>
         {
-            // Params: TargetAttribute, Multiplier, SourceAttribute
             new (Stats.TotalStrength, 1, Stats.BaseStrength),
             new (Stats.TotalAgility, 1, Stats.BaseAgility),
             new (Stats.TotalVitality, 1, Stats.BaseVitality),
@@ -142,10 +139,10 @@ public static class TestHelper
     }
 
     /// <summary>
-    /// Creates an <see cref="OfflineLevelingPlayer"/>.
+    /// Creates an offline leveling player at <see cref="PlayerState.EnteredWorld"/>.
     /// </summary>
     /// <param name="gameContext">The game context.</param>
-    /// <returns>The offline leveling player at <see cref="PlayerState.EnteredWorld"/>.</returns>
+    /// <returns>The offline leveling player.</returns>
     public static async ValueTask<OfflineLevelingPlayer> CreateOfflineLevelingPlayerAsync(IGameContext gameContext)
     {
         var regularPlayer = await CreatePlayerAsync(gameContext).ConfigureAwait(false);
