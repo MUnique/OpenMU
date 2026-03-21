@@ -33,6 +33,7 @@ public sealed class OfflineLevelingIntelligence : IDisposable
     private readonly RepairHandler _repairHandler;
     private readonly ZenConsumptionHandler _zenHandler;
     private readonly HealingHandler _healingHandler;
+    private readonly EventHandler<DeathInformation> _deathHandler;
 
     private Timer? _aiTimer;
     private bool _disposed;
@@ -65,7 +66,8 @@ public sealed class OfflineLevelingIntelligence : IDisposable
             this._player.Logger.LogDebug("Offline leveling configuration for {CharacterName}: MuHelperSettings={Settings}.", this._player.Name, config);
         }
 
-        this._player.Died += this.OnPlayerDied;
+        this._deathHandler = (_, e) => this.OnPlayerDied(e);
+        this._player.Died += this._deathHandler;
     }
 
     /// <summary>Starts the 500 ms AI timer.</summary>
@@ -86,13 +88,13 @@ public sealed class OfflineLevelingIntelligence : IDisposable
             return;
         }
 
-        this._player.Died -= this.OnPlayerDied;
+        this._player.Died -= this._deathHandler;
         this._disposed = true;
         this._aiTimer?.Dispose();
         this._aiTimer = null;
     }
 
-    private void OnPlayerDied(object? _, DeathInformation e)
+    private void OnPlayerDied(DeathInformation e)
     {
         this._player.Logger.LogDebug("Offline leveling player '{Name}' died. Killer: {KillerName}.", this._player.Name, e.KillerName);
         this._isDead = true;
