@@ -5,9 +5,12 @@
 namespace MUnique.OpenMU.GameLogic.OfflineLeveling;
 
 using System.Threading;
+using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.MuHelper;
+using MUnique.OpenMU.GameLogic.Views.MuHelper;
 
 /// <summary>
-/// Server-side AI that drives an <see cref="OfflineLevelingPlayer"/> after the real
+/// Server-side AI that drives an <see cref="OfflineLevelingPlayer"/> ghost after the real
 /// client disconnects. Mirrors the C++ <c>CMuHelper::Work()</c> loop including:
 /// <list type="bullet">
 ///   <item>Basic / conditional / combo skill attack selection</item>
@@ -18,6 +21,7 @@ using System.Threading;
 ///   <item>Skill and movement animations broadcast to nearby observers</item>
 ///   <item>Pet control</item>
 /// </list>
+/// Party support is not implemented.
 /// </summary>
 public sealed class OfflineLevelingIntelligence : AsyncDisposable
 {
@@ -32,6 +36,7 @@ public sealed class OfflineLevelingIntelligence : AsyncDisposable
     private readonly HealingHandler _healingHandler;
     private readonly PetHandler _petHandler;
     private readonly CancellationTokenSource _cts = new();
+    private readonly EventHandler<DeathInformation> _deathHandler;
 
     private Timer? _aiTimer;
     private bool _isDead;
@@ -63,8 +68,9 @@ public sealed class OfflineLevelingIntelligence : AsyncDisposable
         {
             this._player.Logger.LogDebug("Offline leveling configuration for {CharacterName}: MuHelperSettings={Settings}.", this._player.Name, config);
         }
- 
-        this._player.Died += this.OnPlayerDied;
+
+        this._deathHandler = (_, e) => this.OnPlayerDied(e);
+        this._player.Died += this._deathHandler;
     }
 
     /// <summary>Starts the 500 ms AI timer and a separate pet AI.</summary>
@@ -92,7 +98,7 @@ public sealed class OfflineLevelingIntelligence : AsyncDisposable
     {
         if (disposing)
         {
-            this._player.Died -= this.OnPlayerDied;
+            this._player.Died -= this._deathHandler;
             this._aiTimer?.Dispose();
             this._aiTimer = null;
             this._cts.Dispose();
@@ -101,7 +107,7 @@ public sealed class OfflineLevelingIntelligence : AsyncDisposable
         base.Dispose(disposing);
     }
 
-    private void OnPlayerDied(object? _, DeathInformation e)
+    private void OnPlayerDied(DeathInformation e)
     {
         this._player.Logger.LogDebug("Offline leveling player '{Name}' died. Killer: {KillerName}.", this._player.Name, e.KillerName);
         this._isDead = true;
