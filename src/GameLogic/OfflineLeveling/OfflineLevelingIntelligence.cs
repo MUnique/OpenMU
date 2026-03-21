@@ -19,7 +19,7 @@ using System.Threading;
 ///   <item>Pet control</item>
 /// </list>
 /// </summary>
-public sealed class OfflineLevelingIntelligence : IDisposable
+public sealed class OfflineLevelingIntelligence : AsyncDisposable
 {
     private readonly OfflineLevelingPlayer _player;
 
@@ -31,9 +31,9 @@ public sealed class OfflineLevelingIntelligence : IDisposable
     private readonly ZenConsumptionHandler _zenHandler;
     private readonly HealingHandler _healingHandler;
     private readonly PetHandler _petHandler;
+    private readonly CancellationTokenSource _cts = new();
 
     private Timer? _aiTimer;
-    private bool _disposed;
     private bool _isDead;
 
     /// <summary>
@@ -63,48 +63,57 @@ public sealed class OfflineLevelingIntelligence : IDisposable
         {
             this._player.Logger.LogDebug("Offline leveling configuration for {CharacterName}: MuHelperSettings={Settings}.", this._player.Name, config);
         }
-
+ 
         this._player.Died += this.OnPlayerDied;
     }
 
-    /// <summary>Starts the 500 ms AI timer.</summary>
+    /// <summary>Starts the 500 ms AI timer and a separate pet AI.</summary>
     public void Start()
     {
         _ = this._petHandler.InitializeAsync();
-
+ 
         this._aiTimer ??= new Timer(
-            state => _ = this.SafeTickAsync(),
+            _ => _ = this.SafeTickAsync(this._cts.Token),
             null,
             TimeSpan.FromSeconds(1),
             TimeSpan.FromMilliseconds(500));
     }
 
     /// <inheritdoc />
-    public void Dispose()
+    protected override async ValueTask DisposeAsyncCore()
     {
-        if (this._disposed)
-        {
-            return;
-        }
+        await this._cts.CancelAsync().ConfigureAwait(false);
+        await this._petHandler.StopAsync().ConfigureAwait(false);
+        await base.DisposeAsyncCore().ConfigureAwait(false);
+    }
 
-        this._player.Died -= this.OnPlayerDied;
-        this._disposed = true;
-        this._aiTimer?.Dispose();
-        this._aiTimer = null;
+    /// <inheritdoc />
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            this._player.Died -= this.OnPlayerDied;
+            this._aiTimer?.Dispose();
+            this._aiTimer = null;
+            this._cts.Dispose();
+        }
+ 
+        base.Dispose(disposing);
     }
 
     private void OnPlayerDied(object? sender, DeathInformation e)
     {
         this._player.Logger.LogDebug("Offline leveling player '{Name}' died. Killer: {KillerName}.", this._player.Name, e.KillerName);
         this._isDead = true;
+        this._cts.Cancel();
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100", Justification = "Timer callback — exceptions are caught internally.")]
-    private async Task SafeTickAsync()
+    private async Task SafeTickAsync(CancellationToken cancellationToken)
     {
         try
         {
-            await this.TickAsync().ConfigureAwait(false);
+            await this.TickAsync(cancellationToken).ConfigureAwait(false);
         }
         catch (OperationCanceledException)
         {
@@ -116,9 +125,14 @@ public sealed class OfflineLevelingIntelligence : IDisposable
         }
     }
 
-    private async ValueTask TickAsync()
+    private async ValueTask TickAsync(CancellationToken cancellationToken)
     {
         if (await this.HandleDeathAsync().ConfigureAwait(false))
+        {
+            return;
+        }
+
+        if (cancellationToken.IsCancellationRequested)
         {
             return;
         }

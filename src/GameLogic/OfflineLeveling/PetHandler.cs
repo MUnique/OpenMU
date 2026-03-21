@@ -91,5 +91,23 @@ internal sealed class PetHandler
         await petCommandManager.SetBehaviourAsync(behaviour, null).ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// Stops the pet behavior.
+    /// </summary>
+    public async ValueTask StopAsync()
+    {
+        if (this._player.PetCommandManager is { } petCommandManager)
+        {
+            try
+            {
+                await petCommandManager.SetBehaviourAsync(PetBehaviour.Idle, null).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                this._player.Logger.LogError(ex, "Error stopping pet for {AccountLoginName}.", this._player.AccountLoginName);
+            }
+        }
+    }
+
 
 }

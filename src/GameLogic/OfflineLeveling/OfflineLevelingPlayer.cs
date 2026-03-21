@@ -103,8 +103,12 @@ public sealed class OfflineLevelingPlayer : Player
     /// </summary>
     public async ValueTask StopAsync()
     {
-        this._intelligence?.Dispose();
-        this._intelligence = null;
+        if (this._intelligence is { } intelligence)
+        {
+            await intelligence.DisposeAsync().ConfigureAwait(false);
+            this._intelligence = null;
+        }
+
         try
         {
             await this.SaveProgressAsync().ConfigureAwait(false);
