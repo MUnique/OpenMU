@@ -1,0 +1,81 @@
+@* <copyright file="SkillEntryCreationForm.razor" company="MUnique">
+   Licensed under the MIT License. See LICENSE file in the project root for full license information.
+   </copyright> *@
+
+@using MUnique.OpenMU.DataModel.Configuration
+@using MUnique.OpenMU.DataModel.Entities
+@using MUnique.OpenMU.Persistence
+@using MUnique.OpenMU.Web.Shared.Services
+
+@inject IDataSource<GameConfiguration> GameConfigurationSource
+
+<EditForm Model="@SkillEntry">
+    <CascadingValue Value="@PersistenceContext">
+        <DataAnnotationsValidator />
+        <LookupField TObject="Skill"
+                     @bind-Value="SkillEntry.Skill"
+                     ExplicitLookupController="@this._skillLookupController" />
+        <NumberField @bind-Value="SkillEntry.Level" />
+        <ValidationSummary />
+    </CascadingValue>
+    <button type="submit" @onclick="@OnSubmit" class="primary-button">Submit</button>
+    <button type="button" @onclick="@OnCancel" class="cancel-button">Cancel</button>
+</EditForm>
+
+@code {
+
+    private ILookupController? _skillLookupController;
+
+    private CharacterClass? _lastCharacterClass;
+
+    /// <summary>
+    /// Gets or sets the skill entry which is being created.
+    /// </summary>
+    [Parameter]
+    public SkillEntry SkillEntry { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the character for which the skill entry is being created.
+    /// The character's class is used to filter the available skills.
+    /// </summary>
+    [Parameter]
+    public Character Character { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the persistence context.
+    /// </summary>
+    [Parameter]
+    public IContext PersistenceContext { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the callback invoked when the form is submitted.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnSubmit { get; set; }
+
+    /// <summary>
+    /// Gets or sets the callback invoked when the form is cancelled.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+
+    /// <inheritdoc />
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        var characterClass = this.Character?.CharacterClass;
+        if (characterClass == this._lastCharacterClass && this._skillLookupController is not null)
+        {
+            return;
+        }
+
+        this._lastCharacterClass = characterClass;
+        var skills = this.GameConfigurationSource.GetAll<Skill>();
+        if (characterClass is not null)
+        {
+            skills = skills.Where(s => s.QualifiedCharacters.Contains(characterClass));
+        }
+
+        this._skillLookupController = new EnumerableLookupController(skills.OrderBy(s => s.GetName()).ToList());
+    }
+}
