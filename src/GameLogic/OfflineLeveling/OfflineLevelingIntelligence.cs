@@ -78,7 +78,7 @@ public sealed class OfflineLevelingIntelligence : AsyncDisposable
         _ = this._petHandler.InitializeAsync();
 
         this._aiTimer ??= new Timer(
-            _ => this.SafeTick(this._cts.Token),
+            state => _ = this.SafeTickAsync(this._cts.Token),
             null,
             TimeSpan.FromSeconds(1),
             TimeSpan.FromMilliseconds(500));
@@ -104,12 +104,6 @@ public sealed class OfflineLevelingIntelligence : AsyncDisposable
         }
 
         base.Dispose(disposing);
-    }
-
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100", Justification = "Timer callback — exceptions are caught internally.")]
-    private async void SafeTick(CancellationToken cancellationToken)
-    {
-        await this.SafeTickAsync(cancellationToken).ConfigureAwait(false);
     }
 
     private void OnPlayerDied(DeathInformation e)
