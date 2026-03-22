@@ -45,7 +45,10 @@ else
     <h5>@Resources.ImportBackup</h5>
     @if (this._isImporting)
     {
-        <p>@Resources.ImportingBackupPleaseWait</p>
+        <div class="d-flex align-items-center gap-2">
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            <span>@Resources.ImportingBackupPleaseWait</span>
+        </div>
     }
     else if (this._importMessage is not null)
     {

@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Pages;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
+using System.IO;
 
 using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.Persistence;
@@ -89,9 +90,15 @@ public partial class Setup
 
         try
         {
-            await using var stream = file.OpenReadStream(maxAllowedSize: long.MaxValue);
+            // BrowserFileStream doesn't support synchronous reads (which ZipArchive requires),
+            // so copy it into a MemoryStream first. Pre-size with file.Size to avoid reallocations.
+            using var memoryStream = new MemoryStream((int)Math.Min(file.Size, int.MaxValue));
+            await using var browserStream = file.OpenReadStream(maxAllowedSize: long.MaxValue);
+            await browserStream.CopyToAsync(memoryStream).ConfigureAwait(false);
+            memoryStream.Position = 0;
+
             await this.SetupService.CreateDatabaseAsync(
-                () => this.BackupService.RestoreBackupAsync(stream)).ConfigureAwait(false);
+                () => this.BackupService.RestoreBackupAsync(memoryStream)).ConfigureAwait(false);
             this._importMessage = Resources.BackupImportSucceeded;
             this._importMessageCssClass = "text-success";
         }
