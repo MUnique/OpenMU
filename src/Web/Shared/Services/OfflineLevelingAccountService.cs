@@ -49,7 +49,7 @@ public class OfflineLevelingAccountService : IDataService<OfflineLevelingAccount
         var result = this._serverProvider.Servers
             .OfType<IGameServerContextProvider>()
             .SelectMany(s => s.Context.OfflineLevelingManager
-                .GetOfflineLevelingPlayers()
+                .OfflineLevelingPlayers
                 .Select(p => new OfflineLevelingAccount(
                     p.AccountLoginName ?? string.Empty,
                     (byte)((IManageableServer)s).Id,

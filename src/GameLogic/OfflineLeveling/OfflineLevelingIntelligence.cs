@@ -21,7 +21,6 @@ using MUnique.OpenMU.GameLogic.Views.MuHelper;
 ///   <item>Skill and movement animations broadcast to nearby observers</item>
 ///   <item>Pet control</item>
 /// </list>
-/// Party support is not implemented.
 /// </summary>
 public sealed class OfflineLevelingIntelligence : AsyncDisposable
 {
@@ -77,9 +76,9 @@ public sealed class OfflineLevelingIntelligence : AsyncDisposable
     public void Start()
     {
         _ = this._petHandler.InitializeAsync();
- 
+
         this._aiTimer ??= new Timer(
-            _ => _ = this.SafeTickAsync(this._cts.Token),
+            _ => this.SafeTick(this._cts.Token),
             null,
             TimeSpan.FromSeconds(1),
             TimeSpan.FromMilliseconds(500));
@@ -103,8 +102,14 @@ public sealed class OfflineLevelingIntelligence : AsyncDisposable
             this._aiTimer = null;
             this._cts.Dispose();
         }
- 
+
         base.Dispose(disposing);
+    }
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100", Justification = "Timer callback — exceptions are caught internally.")]
+    private async void SafeTick(CancellationToken cancellationToken)
+    {
+        await this.SafeTickAsync(cancellationToken).ConfigureAwait(false);
     }
 
     private void OnPlayerDied(DeathInformation e)
@@ -114,7 +119,6 @@ public sealed class OfflineLevelingIntelligence : AsyncDisposable
         this._cts.Cancel();
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100", Justification = "Timer callback — exceptions are caught internally.")]
     private async Task SafeTickAsync(CancellationToken cancellationToken)
     {
         try

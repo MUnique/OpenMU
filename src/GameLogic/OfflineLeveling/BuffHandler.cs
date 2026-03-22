@@ -36,6 +36,22 @@ public sealed class BuffHandler
     }
 
     /// <summary>
+    /// Gets the configured buff skill IDs from the settings.
+    /// </summary>
+    public IList<int> ConfiguredBuffIds
+    {
+        get
+        {
+            if (this._config is null)
+            {
+                return [];
+            }
+
+            return [this._config.BuffSkill0Id, this._config.BuffSkill1Id, this._config.BuffSkill2Id];
+        }
+    }
+
+    /// <summary>
     /// Checks and applies buffs if configured and needed.
     /// </summary>
     /// <returns>True, if the loop can continue to the next step; False, if a buff was cast and the tick should end.</returns>
@@ -46,7 +62,7 @@ public sealed class BuffHandler
             return true;
         }
 
-        var buffIds = this.GetConfiguredBuffIds();
+        var buffIds = this.ConfiguredBuffIds;
         if (buffIds.Count == 0)
         {
             return true;
@@ -85,20 +101,6 @@ public sealed class BuffHandler
         }
 
         return true;
-    }
-
-    /// <summary>
-    /// Gets the configured buff skill IDs from the settings.
-    /// </summary>
-    /// <returns>A list containing BuffSkill0Id, BuffSkill1Id, and BuffSkill2Id.</returns>
-    public List<int> GetConfiguredBuffIds()
-    {
-        if (this._config is null)
-        {
-            return [];
-        }
-
-        return [this._config.BuffSkill0Id, this._config.BuffSkill1Id, this._config.BuffSkill2Id];
     }
 
     private static bool IsSkillQualifiedForTarget(SkillEntry skillEntry)

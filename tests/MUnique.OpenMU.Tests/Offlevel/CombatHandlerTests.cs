@@ -25,7 +25,7 @@ using MonsterAttribute = MUnique.OpenMU.Persistence.BasicModel.MonsterAttribute;
 public class CombatHandlerTests
 {
     private IGameContext _gameContext = null!;
-    private Point _origin = new(100, 100);
+    private readonly Point _origin = new(100, 100);
 
     /// <summary>
     /// Sets up a fresh game context before each test.

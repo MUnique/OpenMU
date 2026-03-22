@@ -130,7 +130,7 @@ public class PartyManagerTest
     [Test]
     public async ValueTask KickedMember_IsRemovedFromPartyList()
     {
-        var (party, member1, member2) = await this.CreatePartyWithTwoMembersAsync().ConfigureAwait(false);
+        var (party, _, member2) = await this.CreatePartyWithTwoMembersAsync().ConfigureAwait(false);
 
         await party.KickPlayerAsync((byte)party.PartyList.IndexOf(member2)).ConfigureAwait(false);
 

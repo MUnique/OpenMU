@@ -16,6 +16,12 @@ public sealed class OfflineLevelingManager
         new(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>
+    /// Gets a snapshot of all currently active offline leveling players.
+    /// </summary>
+    public IReadOnlyCollection<OfflineLevelingPlayer> OfflineLevelingPlayers
+        => this._activePlayers.Values.ToList();
+
+    /// <summary>
     /// Starts an offline leveling session by replacing the real player with a ghost.
     /// </summary>
     /// <param name="realPlayer">The real player who typed the command.</param>
@@ -91,12 +97,6 @@ public sealed class OfflineLevelingManager
     /// <returns><c>true</c> if an active session exists; otherwise <c>false</c>.</returns>
     public bool TryGetPlayer(string loginName, out OfflineLevelingPlayer? player)
         => this._activePlayers.TryGetValue(loginName, out player);
-
-    /// <summary>
-    /// Returns a snapshot of all currently active offline leveling players.
-    /// </summary>
-    public IReadOnlyCollection<OfflineLevelingPlayer> GetOfflineLevelingPlayers()
-        => this._activePlayers.Values.ToList();
 
     private async ValueTask TransitionToOfflineAsync(Player realPlayer, string loginName)
     {

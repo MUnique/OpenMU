@@ -163,7 +163,7 @@ public sealed class CombatHandler
         if (skill == null)
         {
             // Do not attack if there are buffs configured to handle buff-only classes.
-            var buffs = this._buffHandler.GetConfiguredBuffIds();
+            var buffs = this._buffHandler.ConfiguredBuffIds;
             if (buffs.Any(id => id > 0))
             {
                 return;
