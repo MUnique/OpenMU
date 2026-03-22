@@ -15,6 +15,8 @@ using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.OfflineLeveling;
 using MUnique.OpenMU.GameServer.RemoteView.MuHelper;
 using MUnique.OpenMU.Pathfinding;
+using MonsterDefinition = MUnique.OpenMU.Persistence.BasicModel.MonsterDefinition;
+using MonsterAttribute = MUnique.OpenMU.Persistence.BasicModel.MonsterAttribute;
 
 /// <summary>
 /// Tests for <see cref="CombatHandler"/>.

@@ -220,17 +220,6 @@ public enum NpcObjectKind
 public partial class MonsterDefinition
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="MonsterDefinition"/> class.
-    /// </summary>
-    public MonsterDefinition()
-    {
-        this.ItemCraftings = new List<ItemCrafting.ItemCrafting>();
-        this.DropItemGroups = new List<DropItemGroup>();
-        this.Attributes = new List<MonsterAttribute>();
-        this.Quests = new List<QuestDefinition>();
-    }
-
-    /// <summary>
     /// Gets or sets the unique number of this monster.
     /// </summary>
     public short Number { get; set; }
