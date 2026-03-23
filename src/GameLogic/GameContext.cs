@@ -136,6 +136,9 @@ public class GameContext : AsyncDisposable, IGameContext
     /// <inheritdoc />
     public FeaturePlugInContainer FeaturePlugIns { get; }
 
+    /// <inheritdoc />
+    public OfflineLeveling.OfflineLevelingManager OfflineLevelingManager { get; } = new();
+
     /// <inheritdoc/>
     public IItemPowerUpFactory ItemPowerUpFactory { get; }
 
@@ -145,7 +148,7 @@ public class GameContext : AsyncDisposable, IGameContext
     /// <summary>
     /// Gets the players by character name dictionary.
     /// </summary>
-    public IDictionary<string, Player> PlayersByCharacterName { get; } = new ConcurrentDictionary<string, Player>();
+    public ConcurrentDictionary<string, Player> PlayersByCharacterName { get; } = new(StringComparer.OrdinalIgnoreCase);
 
     /// <inheritdoc />
     public DuelRoomManager DuelRoomManager { get; set; }
@@ -338,7 +341,7 @@ public class GameContext : AsyncDisposable, IGameContext
         PlayerCounter.Add(-1);
         if (player.SelectedCharacter != null)
         {
-            this.PlayersByCharacterName.Remove(player.SelectedCharacter.Name);
+            this.PlayersByCharacterName.TryRemove(player.SelectedCharacter.Name, out _);
         }
 
         player.CurrentMap?.RemoveAsync(player);
@@ -504,13 +507,13 @@ public class GameContext : AsyncDisposable, IGameContext
 
     private ValueTask PlayerEnteredWorldAsync(Player player)
     {
-        this.PlayersByCharacterName.Add(player.SelectedCharacter!.Name, player);
+        this.PlayersByCharacterName.TryAdd(player.SelectedCharacter!.Name, player);
         return ValueTask.CompletedTask;
     }
 
     private ValueTask PlayerLeftWorldAsync(Player player)
     {
-        this.PlayersByCharacterName.Remove(player.SelectedCharacter!.Name);
+        this.PlayersByCharacterName.TryRemove(player.SelectedCharacter!.Name, out _);
         return ValueTask.CompletedTask;
     }
 }

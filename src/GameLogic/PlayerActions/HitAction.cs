@@ -28,19 +28,19 @@ public class HitAction
 
         if (attributes[Stats.IsStunned] > 0)
         {
-            player.Logger.LogWarning($"Probably Hacker - player {player} is attacking in stunned state");
+            player.Logger.LogWarning("Probably Hacker - player {Player} is attacking in stunned state", player);
             return;
         }
 
         if (attributes[Stats.IsAsleep] > 0)
         {
-            player.Logger.LogWarning($"Probably Hacker - player {player} is attacking in asleep state");
+            player.Logger.LogWarning("Probably Hacker - player {Player} is attacking in asleep state", player);
             return;
         }
 
         if (player.IsAtSafezone())
         {
-            player.Logger.LogWarning($"Probably Hacker - player {player} is attacking from safezone");
+            player.Logger.LogWarning("Probably Hacker - player {Player} is attacking from safezone", player);
             return;
         }
 
@@ -88,7 +88,7 @@ public class HitAction
         }
 
         // Currently, we just support one effect for monsters.
-        // E.g. Poison for Poison Bull Fighters.
+        // E.g. Poison for Poison BullFighters.
         if (skill.MagicEffectDef is { Duration: not null } effectDefinition
             && !target.MagicEffectList.ActiveEffects.ContainsKey(effectDefinition.Number)
             && effectDefinition.PowerUpDefinitions.FirstOrDefault() is { Boost: not null } powerUpDef)

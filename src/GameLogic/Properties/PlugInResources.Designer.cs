@@ -3130,5 +3130,41 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("WeatherUpdatePlugIn_Name", resourceCulture);
             }
         }
+ 
+        /// <summary>
+        ///   Looks up a localized string similar to Offline Leveling Command.
+        /// </summary>
+        public static string OfflineLevelingChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("OfflineLevelingChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Allows players to start offline leveling.
+        /// </summary>
+        public static string OfflineLevelingChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("OfflineLevelingChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Allows players to start offline leveling.
+        /// </summary>
+        public static string OfflineLevelingStopOnLoginPlugIn_Name {
+            get {
+                return ResourceManager.GetString("OfflineLevelingStopOnLoginPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Allows players to start offline leveling.
+        /// </summary>        
+        public static string OfflineLevelingStopOnLoginPlugIn_Description {
+            get {
+                return ResourceManager.GetString("OfflineLevelingStopOnLoginPlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

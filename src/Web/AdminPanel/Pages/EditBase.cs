@@ -1,4 +1,4 @@
-﻿// <copyright file="EditBase.cs" company="MUnique">
+// <copyright file="EditBase.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -187,6 +187,8 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
         var editorsMarkup = this.GetEditorsMarkup();
 
         builder.AddMarkupContent(10, $"<h1>{Resources.Edit} {this.Type!.GetTypeCaption()}</h1>{downloadMarkup}{editorsMarkup}\r\n");
+        this.RenderRefreshButton(builder);
+
         builder.OpenComponent<CascadingValue<IContext>>(11);
         builder.AddAttribute(12, nameof(CascadingValue<IContext>.Value), this._persistenceContext);
         builder.AddAttribute(13, nameof(CascadingValue<IContext>.IsFixed), this._isOwningContext);
@@ -265,6 +267,30 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
             var text = string.Format(Resources.UnexpectedErrorOccurred, ex.Message);
             this.ToastService.ShowError(text);
         }
+    }
+
+    /// <summary>
+    /// Refreshes the data by discarding changes and reloading it from the database.
+    /// </summary>
+    protected async Task RefreshAsync()
+    {
+        await this.EditDataSource.ForceDiscardChangesAsync().ConfigureAwait(true);
+        this._loadingState = DataLoadingState.LoadingStarted;
+        var cts = new CancellationTokenSource();
+        this._disposeCts = cts;
+        this._loadTask = Task.Run(() => this.LoadDataAsync(cts.Token), cts.Token);
+        this.StateHasChanged();
+    }
+
+    private void RenderRefreshButton(RenderTreeBuilder builder)
+    {
+        builder.OpenElement(100, "p");
+        builder.OpenElement(101, "button");
+        builder.AddAttribute(102, "class", "btn btn-secondary");
+        builder.AddAttribute(103, "onclick", EventCallback.Factory.Create(this, this.RefreshAsync));
+        builder.AddContent(104, Resources.Refresh);
+        builder.CloseElement();
+        builder.CloseElement();
     }
 
     /// <summary>

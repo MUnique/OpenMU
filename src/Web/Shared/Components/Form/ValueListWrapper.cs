@@ -64,23 +64,26 @@ public class ValueListWrapper<TValue> : List<ValueWrapper<TValue>>, IList<TValue
     /// <inheritdoc />
     public bool Remove(TValue item)
     {
-        if (this._innerList.Remove(item))
+        var wrapperIndex = this.FindIndex(v => Equals(v.Value, item));
+        if (wrapperIndex >= 0)
         {
-            var wrapperIndex = this.FindIndex(v => Equals(v.Value, item));
-            if (wrapperIndex >= 0)
-            {
-                this[wrapperIndex].PropertyChanged -= this.OnValueChanged;
-                this.RemoveAt(wrapperIndex);
-                for (int i = wrapperIndex; i < this._innerList.Count; i++)
-                {
-                    this[i].Index = i;
-                }
-            }
-
+            this.RemoveAt(wrapperIndex);
             return true;
         }
 
         return false;
+    }
+
+    /// <inheritdoc cref="IList{T}.RemoveAt" />
+    public new void RemoveAt(int index)
+    {
+        this[index].PropertyChanged -= this.OnValueChanged;
+        base.RemoveAt(index);
+        this._innerList.RemoveAt(index);
+        for (int i = index; i < this.Count; i++)
+        {
+            this[i].Index = i;
+        }
     }
 
     /// <inheritdoc />

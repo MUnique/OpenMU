@@ -161,7 +161,7 @@ public class MoveItemAction
                     player.Inventory,
                     (byte)(InventoryRows + (player.SelectedCharacter!.InventoryExtensions * RowsOfOneExtension)),
                     EquippableSlotsCount,
-                    (byte)(EquippableSlotsCount + player.GetInventorySize()));
+                    (byte)(EquippableSlotsCount + player.InventorySize));
                 break;
             case Storages.PersonalStore when player.ShopStorage is not null:
                 result = new StorageInfo(

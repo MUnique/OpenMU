@@ -1580,5 +1580,68 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("YourChatBanRemovedByGameMaster", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Offline leveling started. You can log back in at any time to stop it..
+        /// </summary>
+        public static string OfflineLevelingStarted {
+            get {
+                return ResourceManager.GetString("OfflineLevelingStarted", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Could not start offline leveling. Try again in a safe spot..
+        /// </summary>
+        public static string OfflineLevelingFailed {
+            get {
+                return ResourceManager.GetString("OfflineLevelingFailed", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Offline leveling is already active for this account..
+        /// </summary>
+        public static string OfflineLevelingAlreadyActive {
+            get {
+                return ResourceManager.GetString("OfflineLevelingAlreadyActive", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to You must be alive to start offline leveling..
+        /// </summary>
+        public static string OfflineLevelingMustBeAlive {
+            get {
+                return ResourceManager.GetString("OfflineLevelingMustBeAlive", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to You must be on a map to start offline leveling..
+        /// </summary>
+        public static string OfflineLevelingNotOnMap {
+            get {
+                return ResourceManager.GetString("OfflineLevelingNotOnMap", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to No character is selected..
+        /// </summary>
+        public static string OfflineLevelingNoCharacterSelected {
+            get {
+                return ResourceManager.GetString("OfflineLevelingNoCharacterSelected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mu Helper is not running..
+        /// </summary>
+        public static string OfflineLevelingMuHelperNotRunning {
+            get {
+                return ResourceManager.GetString("OfflineLevelingMuHelperNotRunning", resourceCulture);
+            }
+        }
     }
 }

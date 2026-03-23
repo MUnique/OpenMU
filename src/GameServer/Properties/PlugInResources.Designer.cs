@@ -2671,6 +2671,23 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Initializes the MU Helper settings when the player enters the world..
+        /// </summary>
+        public static string MuHelperSettingsInitializationPlugIn_Description {
+            get {
+                return ResourceManager.GetString("MuHelperSettingsInitializationPlugIn_Description", resourceCulture);
+            }
+        }
+        /// <summary>
+        ///   Looks up a localized string similar to MU Helper Settings Initialization.
+        /// </summary>
+        public static string MuHelperSettingsInitializationPlugIn_Name {
+            get {
+                return ResourceManager.GetString("MuHelperSettingsInitializationPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handler for MU Helper status change requests..
         /// </summary>
         public static string MuHelperStatusChangeRequestHandlerPlugIn_Description {
