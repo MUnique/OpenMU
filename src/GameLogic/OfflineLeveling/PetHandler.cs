@@ -79,23 +79,6 @@ internal sealed class PetHandler
         }
     }
 
-    private async ValueTask InitializeDarkRavenAsync()
-    {
-        if (this._config is not { UseDarkRaven: true } || this.PetCommandManager is not { } petCommandManager)
-        {
-            return;
-        }
-
-        var behaviour = this._config.DarkRavenMode switch
-        {
-            1 => PetBehaviour.AttackRandom,
-            2 => PetBehaviour.AttackWithOwner,
-            _ => PetBehaviour.Idle,
-        };
-
-        await petCommandManager.SetBehaviourAsync(behaviour, null).ConfigureAwait(false);
-    }
-
     /// <summary>
     /// Stops the pet behavior.
     /// </summary>
@@ -114,5 +97,20 @@ internal sealed class PetHandler
         }
     }
 
+    private async ValueTask InitializeDarkRavenAsync()
+    {
+        if (this._config is not { UseDarkRaven: true } || this.PetCommandManager is not { } petCommandManager)
+        {
+            return;
+        }
 
+        var behaviour = this._config.DarkRavenMode switch
+        {
+            1 => PetBehaviour.AttackRandom,
+            2 => PetBehaviour.AttackWithOwner,
+            _ => PetBehaviour.Idle,
+        };
+
+        await petCommandManager.SetBehaviourAsync(behaviour, null).ConfigureAwait(false);
+    }
 }

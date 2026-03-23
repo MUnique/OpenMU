@@ -78,5 +78,4 @@ public sealed class PartyManager : IPartyManager, IDisposable
     {
         this._cache.Dispose();
     }
-
 }

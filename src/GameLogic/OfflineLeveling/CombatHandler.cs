@@ -283,7 +283,7 @@ public sealed class CombatHandler
 
     private async ValueTask ExecuteTargetedSkillAttackAsync(IAttackable target, Skill skill)
     {
-        var strategy = this._player.GameContext.PlugInManager.GetStrategy<short, ITargetedSkillPlugin>((short)skill.Number)
+        var strategy = this._player.GameContext.PlugInManager.GetStrategy<short, ITargetedSkillPlugin>(skill.Number)
             ?? new TargetedSkillDefaultPlugin();
         await strategy.PerformSkillAsync(this._player, target, (ushort)skill.Number).ConfigureAwait(false);
     }
@@ -394,7 +394,7 @@ public sealed class CombatHandler
 
         foreach (var requirement in skill.ConsumeRequirements)
         {
-            int required = this._player.GetRequiredValue(requirement, false);
+            int required = this._player.GetRequiredValue(requirement);
             if (this._player.Attributes[requirement.Attribute] < required)
             {
                 return false;

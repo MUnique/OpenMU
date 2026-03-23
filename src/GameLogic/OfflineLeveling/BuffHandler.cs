@@ -174,7 +174,7 @@ public sealed class BuffHandler
             return await this.PerformImplicitPartyBuffAsync(skillEntry).ConfigureAwait(false);
         }
 
-        await ((IObservable)this._player).ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(
+        await this._player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(
             p => p.ShowSkillAnimationAsync(this._player, this._player, skillEntry.Skill!, true),
             includeThis: true).ConfigureAwait(false);
         await this._player.ApplyMagicEffectAsync(this._player, skillEntry).ConfigureAwait(false);
@@ -185,7 +185,7 @@ public sealed class BuffHandler
     private async ValueTask<bool> PerformImplicitPartyBuffAsync(SkillEntry skillEntry)
     {
         var strategy = this._player.GameContext.PlugInManager
-                           .GetStrategy<short, ITargetedSkillPlugin>((short)skillEntry.Skill!.Number)
+                           .GetStrategy<short, ITargetedSkillPlugin>(skillEntry.Skill!.Number)
                        ?? new TargetedSkillDefaultPlugin();
 
         await strategy.PerformSkillAsync(this._player, this._player, (ushort)skillEntry.Skill.Number).ConfigureAwait(false);

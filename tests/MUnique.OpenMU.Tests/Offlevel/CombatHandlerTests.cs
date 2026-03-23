@@ -76,7 +76,7 @@ public class CombatHandlerTests
         player.Attributes[Stats.MaximumHealth] = 100;
 
         // Place monster slightly away from player so GetDirectionTo doesn't return Undefined
-        var monsterPosition = new Point((byte)(this._origin.X + 1), (byte)this._origin.Y);
+        var monsterPosition = new Point((byte)(this._origin.X + 1), this._origin.Y);
         var monster = await this.CreateMonsterAsync(monsterPosition).ConfigureAwait(false);
         await player.CurrentMap!.AddAsync(monster).ConfigureAwait(false);
 

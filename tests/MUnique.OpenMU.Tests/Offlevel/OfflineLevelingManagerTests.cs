@@ -20,6 +20,8 @@ using MUnique.OpenMU.GameLogic.OfflineLeveling;
 [TestFixture]
 public class OfflineLevelingManagerTests
 {
+    private const string TestUserLoginName = "test";
+
     private IGameContext _gameContext = null!;
 
     /// <summary>
@@ -35,64 +37,64 @@ public class OfflineLevelingManagerTests
     /// Tests that <see cref="OfflineLevelingManager.StartAsync"/> returns true on success.
     /// </summary>
     [Test]
-    public async ValueTask StartAsync_ReturnsTrueOnSuccessAsync()
+    public async ValueTask StartAsync_WithValidPlayer_ReturnsTrueAsync()
     {
         // Arrange
         var manager = new OfflineLevelingManager();
         var realPlayer = await PlayerTestHelper.CreatePlayerAsync(this._gameContext).ConfigureAwait(false);
-        realPlayer.Account!.LoginName = "testuser";
+        realPlayer.Account!.LoginName = TestUserLoginName;
         realPlayer.TryAddMoney(1_000_000);
         realPlayer.Attributes![Stats.Level] = 100;
 
         // Act
-        var result = await manager.StartAsync(realPlayer, "testuser").ConfigureAwait(false);
+        var result = await manager.StartAsync(realPlayer, TestUserLoginName).ConfigureAwait(false);
 
         // Assert
         Assert.That(result, Is.True);
-        Assert.That(manager.IsActive("testuser"), Is.True);
+        Assert.That(manager.IsActive(TestUserLoginName), Is.True);
     }
 
     /// <summary>
     /// Tests that <see cref="OfflineLevelingManager.StartAsync"/> fails if the player has insufficient Zen.
     /// </summary>
     [Test]
-    public async ValueTask StartAsync_FailsOnInsufficientZenAsync()
+    public async ValueTask StartAsync_WithInsufficientZen_ReturnsFalseAsync()
     {
         // Arrange
         var manager = new OfflineLevelingManager();
         var realPlayer = await PlayerTestHelper.CreatePlayerAsync(this._gameContext).ConfigureAwait(false);
-        realPlayer.Account!.LoginName = "testuser";
+        realPlayer.Account!.LoginName = TestUserLoginName;
         realPlayer.Money = 0; // No money
         realPlayer.Attributes![Stats.Level] = 100;
 
         // Act
-        var result = await manager.StartAsync(realPlayer, "testuser").ConfigureAwait(false);
+        var result = await manager.StartAsync(realPlayer, TestUserLoginName).ConfigureAwait(false);
 
         // Assert
         Assert.That(result, Is.False);
-        Assert.That(manager.IsActive("testuser"), Is.False);
+        Assert.That(manager.IsActive(TestUserLoginName), Is.False);
     }
 
     /// <summary>
     /// Tests that <see cref="OfflineLevelingManager.StopAsync"/> successfully stops a session.
     /// </summary>
     [Test]
-    public async ValueTask StopAsync_StopsActiveSessionAsync()
+    public async ValueTask StopAsync_WhenSessionActive_StopsSuccessfullyAsync()
     {
         // Arrange
         var manager = new OfflineLevelingManager();
         var realPlayer = await PlayerTestHelper.CreatePlayerAsync(this._gameContext).ConfigureAwait(false);
-        realPlayer.Account!.LoginName = "testuser";
+        realPlayer.Account!.LoginName = TestUserLoginName;
         realPlayer.TryAddMoney(1_000_000);
         realPlayer.Attributes![Stats.Level] = 100;
 
-        await manager.StartAsync(realPlayer, "testuser").ConfigureAwait(false);
-        Assert.That(manager.IsActive("testuser"), Is.True);
+        await manager.StartAsync(realPlayer, TestUserLoginName).ConfigureAwait(false);
+        Assert.That(manager.IsActive(TestUserLoginName), Is.True);
 
         // Act
-        await manager.StopAsync("testuser").ConfigureAwait(false);
+        await manager.StopAsync(TestUserLoginName).ConfigureAwait(false);
 
         // Assert
-        Assert.That(manager.IsActive("testuser"), Is.False);
+        Assert.That(manager.IsActive(TestUserLoginName), Is.False);
     }
 }

@@ -162,7 +162,7 @@ public sealed class OfflineLevelingManager
         }
         catch (Exception ex)
         {
-            player.Logger.LogWarning(ex, "Could not log off from login server during offlevel start.");
+            player.Logger.LogWarning(ex, "Could not log off from login server during offline leveling start.");
         }
     }
 

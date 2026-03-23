@@ -28,7 +28,7 @@ public sealed class OfflinePartyMember : IPartyMember
         this.MaximumHealth = player.MaximumHealth;
         this.CurrentMap = player.CurrentMap;
         this.Position = player.Position;
-        this.Logger = (player as ILoggerOwner)?.Logger ?? Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
+        this.Logger = player?.Logger ?? Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
     }
 
     /// <inheritdoc />
