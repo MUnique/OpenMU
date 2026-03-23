@@ -1,4 +1,4 @@
-﻿// <copyright file="Player.cs" company="MUnique">
+// <copyright file="Player.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -1804,33 +1804,14 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// </summary>
     public async ValueTask RemoveFromGameAsync()
     {
-        var moveToNextSafezone = false;
-        if (this._respawnAfterDeathCts is { IsCancellationRequested: false })
-        {
-            await this._respawnAfterDeathCts.CancelAsync().ConfigureAwait(false);
-            moveToNextSafezone = true;
-        }
-
-        if (this.CurrentMiniGame is { })
-        {
-            moveToNextSafezone = true;
-        }
-
-        if (this.DuelRoom is { })
-        {
-            moveToNextSafezone = true;
-        }
-
-        if (moveToNextSafezone)
-        {
-            await this.WarpToSafezoneAsync().ConfigureAwait(false);
-        }
-
-        await this.RemoveFromCurrentMapAsync().ConfigureAwait(false);
         if (this.Party is { } party)
         {
             await party.LeaveTemporarilyAsync(this).ConfigureAwait(false);
         }
+
+        await this.HandleMoveToNextSafezoneAsync().ConfigureAwait(false);
+
+        await this.RemoveFromCurrentMapAsync().ConfigureAwait(false);
 
         await this.RestoreTemporaryStorageItemsAsync().ConfigureAwait(false);
 
@@ -1875,11 +1856,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         this.PersistenceContext.Dispose();
         await this.RemoveFromCurrentMapAsync().ConfigureAwait(false);
-        if (this.Party is { } party)
-        {
-            await party.LeaveTemporarilyAsync(this).ConfigureAwait(false);
-        }
-
         await this._observerToWorldViewAdapter.ClearObservingObjectsListAsync().ConfigureAwait(false);
         this._observerToWorldViewAdapter.Dispose();
         this._walker.Dispose();
@@ -1910,6 +1886,35 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     protected virtual ICustomPlugInContainer<IViewPlugIn> CreateViewPlugInContainer()
     {
         throw new NotImplementedException("CreateViewPlugInContainer must be overwritten in derived classes.");
+    }
+
+    /// <summary>
+    /// Handles the move to next safezone logic after death or disconnect.
+    /// </summary>
+    private async ValueTask HandleMoveToNextSafezoneAsync()
+    {
+        bool moveToNextSafezone = false;
+
+        if (this._respawnAfterDeathCts is { IsCancellationRequested: false })
+        {
+            await this._respawnAfterDeathCts.CancelAsync().ConfigureAwait(false);
+            moveToNextSafezone = true;
+        }
+
+        if (this.CurrentMiniGame is { })
+        {
+            moveToNextSafezone = true;
+        }
+
+        if (this.DuelRoom is { })
+        {
+            moveToNextSafezone = true;
+        }
+
+        if (moveToNextSafezone)
+        {
+            await this.WarpToSafezoneAsync().ConfigureAwait(false);
+        }
     }
 
     private async ValueTask<bool> TryRemoveFromCurrentMapAsync(bool willRespawnOnSameMap)

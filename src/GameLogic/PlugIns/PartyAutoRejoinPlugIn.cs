@@ -29,11 +29,5 @@ public sealed class PartyAutoRejoinPlugIn : IPlayerStateChangedPlugIn
         }
 
         await player.GameContext.PartyManager.OnMemberReconnectedAsync(player).ConfigureAwait(false);
-
-        if (player.Party is not null)
-        {
-            player.Logger.LogDebug("Player {PlayerName} rejoined their previous party.", player.Name);
-            await player.InvokeViewPlugInAsync<IPartyHealthViewPlugIn>(p => p.UpdatePartyHealthAsync()).ConfigureAwait(false);
-        }
     }
 }

@@ -125,7 +125,7 @@ public sealed class Party : Disposable
 
         this.PartyList.Add(newPartyMate);
         newPartyMate.Party = this;
-        this._partyManager.SaveParty(newPartyMate.CharacterId, this);
+        this._partyManager.TrackPartyMembership(newPartyMate.CharacterId, this);
 
         await this.SendPartyListAsync().ConfigureAwait(false);
         await this.UpdateNearbyCountAsync().ConfigureAwait(false);
@@ -149,8 +149,8 @@ public sealed class Party : Disposable
         this.PartyList[index] = newMember;
         newMember.Party = this;
         oldMember.Party = null;
-        this._partyManager.RemoveParty(oldMember.CharacterId);
-        this._partyManager.SaveParty(newMember.CharacterId, this);
+        this._partyManager.RemovePartyMembership(oldMember.CharacterId);
+        this._partyManager.TrackPartyMembership(newMember.CharacterId, this);
 
         if (this.PartyMaster == oldMember)
         {
@@ -364,7 +364,7 @@ public sealed class Party : Disposable
 
         this.PartyList.Remove(player);
         player.Party = null;
-        this._partyManager.RemoveParty(player.CharacterId);
+        this._partyManager.RemovePartyMembership(player.CharacterId);
         try
         {
             await player.InvokeViewPlugInAsync<IPartyMemberRemovedPlugIn>(p => p.PartyMemberRemovedAsync(index)).ConfigureAwait(false);

@@ -109,7 +109,11 @@ public sealed class HealingHandler
                 await this._player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(
                     p => p.ShowSkillAnimationAsync(this._player, member, healSkill.Skill!, true),
                     includeThis: true).ConfigureAwait(false);
+
                 await member.ApplyRegenerationAsync(this._player, healSkill).ConfigureAwait(false);
+
+                // Notify party of health change
+                await member.InvokeViewPlugInAsync<Views.Party.IUpdatePartyListPlugIn>(p => p.UpdatePartyListAsync()).ConfigureAwait(false);
             }
         }
     }

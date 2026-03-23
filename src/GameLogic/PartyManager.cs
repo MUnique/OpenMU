@@ -4,15 +4,16 @@
 
 namespace MUnique.OpenMU.GameLogic;
 
-using Microsoft.Extensions.Caching.Memory;
+using System.Collections.Concurrent;
+using MUnique.OpenMU.GameLogic.Views.Party;
 
 /// <summary>
-/// Default implementation of <see cref="IPartyManager"/> using <see cref="IMemoryCache"/> for persistence.
+/// Manages party creation and tracks character-to-party membership for reconnection.
 /// </summary>
-public sealed class PartyManager : IPartyManager, IDisposable
+public sealed class PartyManager : IPartyManager
 {
-    private readonly IMemoryCache _cache = new MemoryCache(new MemoryCacheOptions());
-    private readonly ILogger<Party> _partyLogger;
+    private readonly ConcurrentDictionary<Guid, Party> _partyByCharacterId = new();
+    private readonly ILogger<Party> _logger;
     private readonly byte _maxPartySize;
 
     /// <summary>
@@ -23,25 +24,25 @@ public sealed class PartyManager : IPartyManager, IDisposable
     public PartyManager(byte maxPartySize, ILogger<Party> partyLogger)
     {
         this._maxPartySize = maxPartySize;
-        this._partyLogger = partyLogger;
+        this._logger = partyLogger;
     }
 
     /// <inheritdoc />
     public Party CreateParty()
     {
-        return new Party(this, this._maxPartySize, this._partyLogger);
+        return new Party(this, this._maxPartySize, this._logger);
     }
 
     /// <inheritdoc />
-    public void SaveParty(Guid characterId, Party party)
+    public void TrackPartyMembership(Guid characterId, Party party)
     {
-        this._cache.Set(characterId, party, TimeSpan.FromHours(24));
+        this._partyByCharacterId[characterId] = party;
     }
 
     /// <inheritdoc />
-    public void RemoveParty(Guid characterId)
+    public void RemovePartyMembership(Guid characterId)
     {
-        this._cache.Remove(characterId);
+        this._partyByCharacterId.TryRemove(characterId, out _);
     }
 
     /// <inheritdoc />
@@ -59,23 +60,23 @@ public sealed class PartyManager : IPartyManager, IDisposable
     /// <inheritdoc />
     public async ValueTask OnMemberReconnectedAsync(IPartyMember member)
     {
-        if (!this._cache.TryGetValue(member.CharacterId, out Party? party) || party is null)
+        if (!this._partyByCharacterId.TryGetValue(member.CharacterId, out var party))
         {
+            this._logger.LogDebug("Party not found for {CharacterId}", member.CharacterId);
             return;
         }
 
-        var offlineMember = party.PartyList.FirstOrDefault(m => m.CharacterId == member.CharacterId && !m.IsConnected);
+        var offlineMember = party.PartyList.FirstOrDefault(m =>
+            m.CharacterId == member.CharacterId && !m.IsConnected);
+
         if (offlineMember is null)
         {
+            this._logger.LogDebug("Ignoring replace party member for online character {CharacterId}", member.CharacterId);
             return;
         }
 
         await party.ReplaceMemberAsync(offlineMember, member).ConfigureAwait(false);
-    }
-
-    /// <inheritdoc />
-    public void Dispose()
-    {
-        this._cache.Dispose();
+        await member.InvokeViewPlugInAsync<IUpdatePartyListPlugIn>(p => p.UpdatePartyListAsync()).ConfigureAwait(false);
+        await member.InvokeViewPlugInAsync<IPartyHealthViewPlugIn>(p => p.UpdatePartyHealthAsync()).ConfigureAwait(false);
     }
 }
