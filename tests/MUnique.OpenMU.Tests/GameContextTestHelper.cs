@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 public static class GameContextTestHelper
 {
     /// <summary>
-    /// Creates a game context for offline leveling tests.
+    /// Creates a game context.
     /// </summary>
     /// <returns>The game context with MuHelperFeaturePlugIn configured.</returns>
     public static IGameContext CreateGameContext()
