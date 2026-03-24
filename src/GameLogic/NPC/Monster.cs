@@ -23,7 +23,7 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
     private readonly Walker _walker;
 
     /// <summary>
-    /// The power up element of the monsters skill.
+    /// The power up element of the monster skill.
     /// It is a "cached" element which will be created on demand and can be applied multiple times.
     /// </summary>
     private readonly IElement? _skillPowerUp;

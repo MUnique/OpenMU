@@ -426,7 +426,7 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
 
     private async ValueTask RemovePlayerFromGuildAsync(Player player, bool unregisterFromContext = true)
     {
-        if (unregisterFromContext && player.GuildStatus?.GuildId is { } guildId)
+        if (unregisterFromContext && player.GuildStatus?.GuildId is not null)
         {
             await this._gameContext.UnregisterGuildMemberAsync(player).ConfigureAwait(false);
         }
