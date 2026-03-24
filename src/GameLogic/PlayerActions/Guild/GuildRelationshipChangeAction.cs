@@ -40,6 +40,7 @@ public class GuildRelationshipChangeAction
         // For hostility leave (clearing hostility), no target needed
         if (relationshipType == GuildRelationshipType.Hostility && requestType == GuildRelationshipRequestType.Leave)
         {
+            // When clearing hostility, targetGuildId is not used (the current hostility target is removed)
             await serverContext.GuildServer.SetHostilityAsync(guildStatus.GuildId, 0, false).ConfigureAwait(false);
             await player.InvokeViewPlugInAsync<IGuildRelationshipChangeResultPlugIn>(
                 p => p.ShowResultAsync(relationshipType, requestType, true)).ConfigureAwait(false);

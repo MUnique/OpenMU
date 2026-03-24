@@ -25,6 +25,11 @@ public class GuildServer : IGuildServer
     /// </summary>
     public static readonly byte OfflineServerId = 0xFF;
 
+    /// <summary>
+    /// The maximum number of guilds allowed in a single alliance.
+    /// </summary>
+    public const int MaxAllianceSize = 5;
+
     private readonly ILogger<GuildServer> _logger;
 
     private readonly IDictionary<uint, GuildContainer> _guildDictionary;
@@ -267,8 +272,7 @@ public class GuildServer : IGuildServer
             return false;
         }
 
-        // Check max alliance size (default 5)
-        const int MaxAllianceSize = 5;
+        // Check max alliance size
         var currentAllianceSize = this._guildDictionary.Values
             .Count(g => IsInSameAlliance(g.Guild, masterContainer.Guild));
         if (currentAllianceSize >= MaxAllianceSize)
@@ -431,6 +435,11 @@ public class GuildServer : IGuildServer
 
         // Find the uint ID of the alliance master
         var masterEntry = this._guildDictionary.FirstOrDefault(kvp => kvp.Value.Guild.Id == masterGuid);
+        if (masterEntry.Value is null)
+        {
+            return ValueTask.FromResult(0u);
+        }
+
         return ValueTask.FromResult(masterEntry.Key);
     }
 
