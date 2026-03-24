@@ -48,4 +48,26 @@ public class GuildChangeToGameServerPublisher : IGuildChangePublisher
             await gameServer.AssignGuildToPlayerAsync(characterName, status).ConfigureAwait(false);
         }
     }
+
+    /// <inheritdoc />
+    public ValueTask AllianceCreatedAsync(uint masterGuildId, uint memberGuildId)
+    {
+        // The alliance relationship is tracked on the GuildServer.
+        // Game servers query alliance membership dynamically via GetAllianceGuildsAsync.
+        return ValueTask.CompletedTask;
+    }
+
+    /// <inheritdoc />
+    public ValueTask AllianceGuildRemovedAsync(uint masterGuildId, uint memberGuildId)
+    {
+        // The alliance relationship is tracked on the GuildServer.
+        return ValueTask.CompletedTask;
+    }
+
+    /// <inheritdoc />
+    public ValueTask AllianceDisbandedAsync(uint masterGuildId)
+    {
+        // The alliance relationship is tracked on the GuildServer.
+        return ValueTask.CompletedTask;
+    }
 }

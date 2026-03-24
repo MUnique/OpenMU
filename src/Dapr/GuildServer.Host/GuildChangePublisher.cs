@@ -66,4 +66,25 @@ public class GuildChangePublisher : IGuildChangePublisher
             this._logger.LogError(ex, nameof(this.AssignGuildToPlayerAsync));
         }
     }
+
+    /// <inheritdoc />
+    public ValueTask AllianceCreatedAsync(uint masterGuildId, uint memberGuildId)
+    {
+        // The alliance relationship is tracked on the GuildServer.
+        return ValueTask.CompletedTask;
+    }
+
+    /// <inheritdoc />
+    public ValueTask AllianceGuildRemovedAsync(uint masterGuildId, uint memberGuildId)
+    {
+        // The alliance relationship is tracked on the GuildServer.
+        return ValueTask.CompletedTask;
+    }
+
+    /// <inheritdoc />
+    public ValueTask AllianceDisbandedAsync(uint masterGuildId)
+    {
+        // The alliance relationship is tracked on the GuildServer.
+        return ValueTask.CompletedTask;
+    }
 }

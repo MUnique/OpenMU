@@ -30,4 +30,24 @@ public interface IGuildChangePublisher
     /// <param name="characterName">Name of the character.</param>
     /// <param name="status">The status.</param>
     ValueTask AssignGuildToPlayerAsync(byte serverId, string characterName, GuildMemberStatus status);
+
+    /// <summary>
+    /// Notifies game servers that an alliance was created (or a guild was added to an existing alliance).
+    /// </summary>
+    /// <param name="masterGuildId">The identifier of the alliance master guild.</param>
+    /// <param name="memberGuildId">The identifier of the newly added member guild.</param>
+    ValueTask AllianceCreatedAsync(uint masterGuildId, uint memberGuildId);
+
+    /// <summary>
+    /// Notifies game servers that a guild was removed from an alliance.
+    /// </summary>
+    /// <param name="masterGuildId">The identifier of the alliance master guild.</param>
+    /// <param name="memberGuildId">The identifier of the removed member guild.</param>
+    ValueTask AllianceGuildRemovedAsync(uint masterGuildId, uint memberGuildId);
+
+    /// <summary>
+    /// Notifies game servers that an alliance was disbanded entirely.
+    /// </summary>
+    /// <param name="masterGuildId">The identifier of the disbanded alliance master guild.</param>
+    ValueTask AllianceDisbandedAsync(uint masterGuildId);
 }

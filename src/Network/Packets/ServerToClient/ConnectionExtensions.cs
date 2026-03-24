@@ -4432,6 +4432,70 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="GuildRelationshipRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="relationshipType">The relationship type.</param>
+    /// <param name="requestType">The request type.</param>
+    /// <param name="guildName">The requesting guild name.</param>
+    /// <remarks>
+    /// Is sent by the server when: A guild master sent a relationship change request and the server forwards this to the target guild master.
+    /// Causes reaction on client side: The target guild master sees the incoming request dialog.
+    /// </remarks>
+    public static async ValueTask SendGuildRelationshipRequestAsync(this IConnection? connection, GuildRelationshipRequest.GuildRelationshipType @relationshipType, GuildRelationshipRequest.GuildRequestType @requestType, string @guildName)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = GuildRelationshipRequestRef.Length;
+            var packet = new GuildRelationshipRequestRef(connection.Output.GetSpan(length)[..length]);
+            packet.RelationshipType = @relationshipType;
+            packet.RequestType = @requestType;
+            packet.GuildName = @guildName;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="GuildRelationshipChangeResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="relationshipType">The relationship type.</param>
+    /// <param name="requestType">The request type.</param>
+    /// <param name="success">Whether the relationship change was successful.</param>
+    /// <remarks>
+    /// Is sent by the server when: The result of a guild relationship change request is sent back to the requester.
+    /// Causes reaction on client side: The requester sees the result.
+    /// </remarks>
+    public static async ValueTask SendGuildRelationshipChangeResultAsync(this IConnection? connection, GuildRelationshipRequest.GuildRelationshipType @relationshipType, GuildRelationshipRequest.GuildRequestType @requestType, bool @success)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = GuildRelationshipChangeResultRef.Length;
+            var packet = new GuildRelationshipChangeResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.RelationshipType = @relationshipType;
+            packet.RequestType = @requestType;
+            packet.Success = @success;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="GuildInformation" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>

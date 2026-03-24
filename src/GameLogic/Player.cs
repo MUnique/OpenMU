@@ -332,6 +332,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public Player? LastGuildRequester { get; set; }
 
     /// <summary>
+    /// Gets or sets the player who sent a pending alliance request to this player.
+    /// </summary>
+    public Player? PendingAllianceRequest { get; set; }
+
+    /// <summary>
     /// Gets or sets the guild war context.
     /// </summary>
     public GuildWarContext? GuildWarContext { get; set; }
