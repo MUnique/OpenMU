@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameLogic;
 
-using System.Collections.Concurrent;
 using MUnique.OpenMU.GameLogic.Views.Party;
 
 /// <summary>
@@ -12,7 +11,7 @@ using MUnique.OpenMU.GameLogic.Views.Party;
 /// </summary>
 public sealed class PartyManager : IPartyManager
 {
-    private readonly ConcurrentDictionary<Guid, Party> _partyByCharacterId = new();
+    private readonly System.Collections.Concurrent.ConcurrentDictionary<Guid, Party> _partyByCharacterId = new();
     private readonly ILogger<Party> _logger;
     private readonly byte _maxPartySize;
 
