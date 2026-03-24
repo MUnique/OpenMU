@@ -23,12 +23,6 @@ public class PreCalculatedPathFinder : IPathFinder
     }
 
     /// <inheritdoc/>
-    public void ResetPathFinder()
-    {
-        // No state to reset in this implementation.
-    }
-
-    /// <inheritdoc/>
     public IList<PathResultNode>? FindPath(Point start, Point end, byte[,] terrain, bool includeSafezone, CancellationToken cancellationToken = default)
     {
         var result = new List<PathResultNode>();

@@ -140,6 +140,7 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
 
         possibleTargets.AddRange(summons);
 
+        // todo: check the walk distance
         return possibleTargets.MinBy(a => a.GetDistanceTo(this.Npc));
     }
 

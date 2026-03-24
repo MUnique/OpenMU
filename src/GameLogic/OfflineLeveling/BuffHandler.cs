@@ -152,6 +152,7 @@ public sealed class BuffHandler
         }
 
         var alreadyActive = target.MagicEffectList.ActiveEffects.Values
+            .ToList()
             .Any(e => e.Definition == effectDef);
 
         if (isPartyMember)

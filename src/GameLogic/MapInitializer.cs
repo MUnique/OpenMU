@@ -50,7 +50,7 @@ public class MapInitializer : IMapInitializer
     /// <value>
     /// The path finder pool.
     /// </value>
-    public IObjectPool<IPathFinder>? PathFinderPool { get; set; }
+    public IObjectPool<PathFinder>? PathFinderPool { get; set; }
 
     /// <summary>
     /// Gets or sets the size of the chunk of created <see cref="GameMap"/>s.

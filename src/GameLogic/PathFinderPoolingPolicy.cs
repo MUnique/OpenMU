@@ -11,16 +11,16 @@ using MUnique.OpenMU.Pathfinding;
 /// The <see cref="PooledObjectPolicy{IPathFinder}"/> which implements the creation
 /// of the <see cref="IPathFinder"/> with an <see cref="ScopedGridNetwork"/>.
 /// </summary>
-public class PathFinderPoolingPolicy : PooledObjectPolicy<IPathFinder>
+public class PathFinderPoolingPolicy : PooledObjectPolicy<PathFinder>
 {
     /// <inheritdoc />
-    public override IPathFinder Create()
+    public override PathFinder Create()
     {
         return new PathFinder(new ScopedGridNetwork());
     }
 
     /// <inheritdoc />
-    public override bool Return(IPathFinder obj)
+    public override bool Return(PathFinder obj)
     {
         return true;
     }

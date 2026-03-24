@@ -100,7 +100,7 @@ public interface IGameContext
     /// <summary>
     /// Gets the object pool for path finders.
     /// </summary>
-    IObjectPool<IPathFinder> PathFinderPool { get; }
+    IObjectPool<PathFinder> PathFinderPool { get; }
 
     /// <summary>
     /// Gets the duel room manager.

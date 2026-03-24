@@ -35,7 +35,7 @@ public class GameContext : AsyncDisposable, IGameContext
 
     private static readonly Counter<int> MiniGameCounter = Meter.CreateCounter<int>("MiniGameCount");
 
-    private static readonly IObjectPool<IPathFinder> PathFinderPoolInstance = new LimitedObjectPool<IPathFinder>(new PathFinderPoolingPolicy());
+    private static readonly IObjectPool<PathFinder> PathFinderPoolInstance = new LimitedObjectPool<PathFinder>(new PathFinderPoolingPolicy());
 
     private readonly Dictionary<ushort, GameMap> _mapList = new();
 
@@ -166,7 +166,7 @@ public class GameContext : AsyncDisposable, IGameContext
     /// <summary>
     /// Gets the path finder pool.
     /// </summary>
-    public IObjectPool<IPathFinder> PathFinderPool => PathFinderPoolInstance;
+    public IObjectPool<PathFinder> PathFinderPool => PathFinderPoolInstance;
 
     /// <inheritdoc />
     public int PlayerCount => this._playerList.Count;

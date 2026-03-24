@@ -9,13 +9,8 @@ using System.Threading;
 /// <summary>
 /// Interface for a path finder.
 /// </summary>
-public interface IPathFinder
+internal interface IPathFinder
 {
-    /// <summary>
-    /// Resets the path finder.
-    /// </summary>
-    void ResetPathFinder();
-
     /// <summary>
     /// Finds the path between two points.
     /// </summary>
