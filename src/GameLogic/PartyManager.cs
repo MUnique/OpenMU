@@ -11,7 +11,7 @@ using MUnique.OpenMU.GameLogic.Views.Party;
 /// </summary>
 public sealed class PartyManager : IPartyManager
 {
-    private readonly System.Collections.Concurrent.ConcurrentDictionary<Guid, Party> _partyByCharacterId = new();
+    private readonly System.Collections.Concurrent.ConcurrentDictionary<string, Party> _partyByCharacterName = new();
     private readonly ILogger<Party> _logger;
     private readonly byte _maxPartySize;
 
@@ -33,15 +33,15 @@ public sealed class PartyManager : IPartyManager
     }
 
     /// <inheritdoc />
-    public void TrackPartyMembership(Guid characterId, Party party)
+    public void TrackPartyMembership(string characterName, Party party)
     {
-        this._partyByCharacterId[characterId] = party;
+        this._partyByCharacterName[characterName] = party;
     }
 
     /// <inheritdoc />
-    public void RemovePartyMembership(Guid characterId)
+    public void RemovePartyMembership(string characterName)
     {
-        this._partyByCharacterId.TryRemove(characterId, out _);
+        this._partyByCharacterName.TryRemove(characterName, out _);
     }
 
     /// <inheritdoc />
@@ -59,18 +59,18 @@ public sealed class PartyManager : IPartyManager
     /// <inheritdoc />
     public async ValueTask OnMemberReconnectedAsync(IPartyMember member)
     {
-        if (!this._partyByCharacterId.TryGetValue(member.CharacterId, out var party))
+        if (!this._partyByCharacterName.TryGetValue(member.Name, out var party))
         {
-            this._logger.LogDebug("Party not found for {CharacterId}", member.CharacterId);
+            this._logger.LogDebug("Party not found for {CharacterName}", member.Name);
             return;
         }
 
         var offlineMember = party.PartyList.FirstOrDefault(m =>
-            m.CharacterId == member.CharacterId && !m.IsConnected);
+            m.Name == member.Name && !m.IsConnected);
 
         if (offlineMember is null)
         {
-            this._logger.LogDebug("Ignoring replace party member for online character {CharacterId}", member.CharacterId);
+            this._logger.LogDebug("Ignoring replace party member for online character {CharacterName}", member.Name);
             return;
         }
 

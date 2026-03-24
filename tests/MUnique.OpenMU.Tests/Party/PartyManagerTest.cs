@@ -65,7 +65,7 @@ public class PartyManagerTest
         await this._partyManager.OnMemberDisconnectedAsync(member1).ConfigureAwait(false);
 
         Assert.That(party.PartyList[0], Is.InstanceOf<OfflinePartyMember>());
-        Assert.That(party.PartyList[0].CharacterId, Is.EqualTo(member1.CharacterId));
+        Assert.That(party.PartyList[0].Name, Is.EqualTo(member1.Name));
     }
 
     /// <summary>

@@ -23,7 +23,6 @@ public sealed class OfflinePartyMember : IPartyMember
     {
         this.Name = player.Name;
         this.Id = player.Id;
-        this.CharacterId = player.CharacterId;
         this.CurrentHealth = player.CurrentHealth;
         this.MaximumHealth = player.MaximumHealth;
         this.CurrentMap = player.CurrentMap;
@@ -45,9 +44,6 @@ public sealed class OfflinePartyMember : IPartyMember
 
     /// <inheritdoc />
     public string Name { get; }
-
-    /// <inheritdoc />
-    public Guid CharacterId { get; }
 
     /// <inheritdoc />
     public bool IsConnected => false;

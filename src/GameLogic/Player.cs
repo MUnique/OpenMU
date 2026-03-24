@@ -202,9 +202,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <inheritdoc cref="IPartyMember" />
     public string Name => this.SelectedCharacter?.Name ?? string.Empty;
 
-    /// <inheritdoc />
-    public Guid CharacterId => this.SelectedCharacter?.Id ?? Guid.Empty;
-
     /// <inheritdoc/>
     public int Level => (int)(this.Attributes?[Stats.Level] ?? 0);
 

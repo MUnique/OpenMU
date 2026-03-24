@@ -111,9 +111,6 @@ public sealed class HealingHandler
                     includeThis: true).ConfigureAwait(false);
 
                 await member.ApplyRegenerationAsync(this._player, healSkill).ConfigureAwait(false);
-
-                // Notify party of health change
-                await member.InvokeViewPlugInAsync<Views.Party.IUpdatePartyListPlugIn>(p => p.UpdatePartyListAsync()).ConfigureAwait(false);
             }
         }
     }

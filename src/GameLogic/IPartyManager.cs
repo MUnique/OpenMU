@@ -18,15 +18,15 @@ public interface IPartyManager
     /// <summary>
     /// Tracks that a character belongs to a party.
     /// </summary>
-    /// <param name="characterId">The character identifier.</param>
+    /// <param name="characterName">The character name.</param>
     /// <param name="party">The party.</param>
-    void TrackPartyMembership(Guid characterId, Party party);
+    void TrackPartyMembership(string characterName, Party party);
 
     /// <summary>
     /// Removes the party membership tracking for a character.
     /// </summary>
-    /// <param name="characterId">The character identifier.</param>
-    void RemovePartyMembership(Guid characterId);
+    /// <param name="characterName">The character name.</param>
+    void RemovePartyMembership(string characterName);
 
     /// <summary>
     /// Called when a party member disconnects. Replaces the live member with an

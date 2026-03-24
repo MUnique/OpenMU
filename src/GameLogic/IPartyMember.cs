@@ -35,11 +35,6 @@ public interface IPartyMember : IWorldObserver, IObservable, IIdentifiable, ILoc
     string Name { get; }
 
     /// <summary>
-    /// Gets the unique character identifier.
-    /// </summary>
-    Guid CharacterId { get; }
-
-    /// <summary>
     /// Gets a value indicating whether the member is currently connected to the game.
     /// </summary>
     bool IsConnected { get; }

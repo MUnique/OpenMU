@@ -160,7 +160,7 @@ public readonly struct LocalizedString : IEquatable<LocalizedString>
     {
         var span = this.GetTranslationAsSpan(cultureInfo, fallbackToNeutral);
         return span.IsEmpty
-            ? string.Empty
+            ? null
             : new(span);
     }
 

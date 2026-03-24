@@ -17,6 +17,8 @@ public sealed class BuffHandler
 {
     private const int BuffSlotCount = 3;
 
+    private static readonly TargetedSkillDefaultPlugin DefaultPlugin = new();
+
     private readonly OfflineLevelingPlayer _player;
     private readonly IMuHelperSettings? _config;
 
@@ -187,7 +189,7 @@ public sealed class BuffHandler
     {
         var strategy = this._player.GameContext.PlugInManager
                            .GetStrategy<short, ITargetedSkillPlugin>(skillEntry.Skill!.Number)
-                       ?? new TargetedSkillDefaultPlugin();
+                       ?? DefaultPlugin;
 
         await strategy.PerformSkillAsync(this._player, this._player, (ushort)skillEntry.Skill.Number).ConfigureAwait(false);
         this.MoveNextSlot();

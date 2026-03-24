@@ -20,6 +20,9 @@ public sealed class CombatHandler
     private const byte DefaultRange = 1;
     private const int ComboFinisherDelayTicks = 3;
     private const int InterSkillDelayTicks = 1;
+    private const int MinComboSkillCount = 3;
+
+    private static readonly TargetedSkillDefaultPlugin DefaultPlugin = new();
 
     private const short DrainLifeBaseSkillId = 214;
     private const short DrainLifeStrengthenerSkillId = 458;
@@ -284,7 +287,7 @@ public sealed class CombatHandler
     private async ValueTask ExecuteTargetedSkillAttackAsync(IAttackable target, Skill skill)
     {
         var strategy = this._player.GameContext.PlugInManager.GetStrategy<short, ITargetedSkillPlugin>(skill.Number)
-            ?? new TargetedSkillDefaultPlugin();
+            ?? DefaultPlugin;
         await strategy.PerformSkillAsync(this._player, target, (ushort)skill.Number).ConfigureAwait(false);
     }
 
@@ -413,7 +416,7 @@ public sealed class CombatHandler
         }
 
         var ids = this.GetConfiguredComboSkillIds();
-        if (ids.Count < 3)
+        if (ids.Count < MinComboSkillCount)
         {
             await this.ExecuteAttackAsync(this._currentTarget).ConfigureAwait(false);
             return;
