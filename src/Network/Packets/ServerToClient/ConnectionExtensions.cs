@@ -6188,4 +6188,898 @@ public static class ConnectionExtensions
         }
 
         await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CastleSiegeStatusResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="state">The state.</param>
+    /// <param name="startYear">The start year.</param>
+    /// <param name="startMonth">The start month.</param>
+    /// <param name="startDay">The start day.</param>
+    /// <param name="startHour">The start hour.</param>
+    /// <param name="startMinute">The start minute.</param>
+    /// <param name="endYear">The end year.</param>
+    /// <param name="endMonth">The end month.</param>
+    /// <param name="endDay">The end day.</param>
+    /// <param name="endHour">The end hour.</param>
+    /// <param name="endMinute">The end minute.</param>
+    /// <param name="siegeStartYear">The siege start year.</param>
+    /// <param name="siegeStartMonth">The siege start month.</param>
+    /// <param name="siegeStartDay">The siege start day.</param>
+    /// <param name="siegeStartHour">The siege start hour.</param>
+    /// <param name="siegeStartMinute">The siege start minute.</param>
+    /// <param name="guildName">The guild name.</param>
+    /// <param name="guildMasterName">The guild master name.</param>
+    /// <param name="remainingTime">The remaining time.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the player requested the current castle siege status from a castle siege npc.
+    /// Causes reaction on client side: The client shows the castle siege status.
+    /// </remarks>
+    public static async ValueTask SendCastleSiegeStatusResponseAsync(this IConnection? connection, byte @result, byte @state, ushort @startYear, byte @startMonth, byte @startDay, byte @startHour, byte @startMinute, ushort @endYear, byte @endMonth, byte @endDay, byte @endHour, byte @endMinute, ushort @siegeStartYear, byte @siegeStartMonth, byte @siegeStartDay, byte @siegeStartHour, byte @siegeStartMinute, string @guildName, string @guildMasterName, uint @remainingTime)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CastleSiegeStatusResponseRef.Length;
+            var packet = new CastleSiegeStatusResponseRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+            packet.State = @state;
+            packet.StartYear = @startYear;
+            packet.StartMonth = @startMonth;
+            packet.StartDay = @startDay;
+            packet.StartHour = @startHour;
+            packet.StartMinute = @startMinute;
+            packet.EndYear = @endYear;
+            packet.EndMonth = @endMonth;
+            packet.EndDay = @endDay;
+            packet.EndHour = @endHour;
+            packet.EndMinute = @endMinute;
+            packet.SiegeStartYear = @siegeStartYear;
+            packet.SiegeStartMonth = @siegeStartMonth;
+            packet.SiegeStartDay = @siegeStartDay;
+            packet.SiegeStartHour = @siegeStartHour;
+            packet.SiegeStartMinute = @siegeStartMinute;
+            packet.GuildName = @guildName;
+            packet.GuildMasterName = @guildMasterName;
+            packet.RemainingTime = @remainingTime;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CastleSiegeRegistrationResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="guildName">The guild name.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the player requested to register his guild for the next castle siege.
+    /// Causes reaction on client side: The client shows the result of the registration attempt.
+    /// </remarks>
+    public static async ValueTask SendCastleSiegeRegistrationResponseAsync(this IConnection? connection, byte @result, string @guildName)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CastleSiegeRegistrationResponseRef.Length;
+            var packet = new CastleSiegeRegistrationResponseRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+            packet.GuildName = @guildName;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CastleSiegeUnregisterResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the player requested to un-register his guild from the next castle siege.
+    /// Causes reaction on client side: The client shows the result of the un-registration attempt.
+    /// </remarks>
+    public static async ValueTask SendCastleSiegeUnregisterResponseAsync(this IConnection? connection, byte @result)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CastleSiegeUnregisterResponseRef.Length;
+            var packet = new CastleSiegeUnregisterResponseRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CastleSiegeRegistrationStateResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="guildName">The guild name.</param>
+    /// <param name="guildMarkCount">The guild mark count.</param>
+    /// <param name="registrationId">The registration id.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the player requested the current registration state of his guild.
+    /// Causes reaction on client side: The client shows the current registration state including the number of submitted guild marks.
+    /// </remarks>
+    public static async ValueTask SendCastleSiegeRegistrationStateResponseAsync(this IConnection? connection, string @guildName, uint @guildMarkCount, uint @registrationId)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CastleSiegeRegistrationStateResponseRef.Length;
+            var packet = new CastleSiegeRegistrationStateResponseRef(connection.Output.GetSpan(length)[..length]);
+            packet.GuildName = @guildName;
+            packet.GuildMarkCount = @guildMarkCount;
+            packet.RegistrationId = @registrationId;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CastleSiegeMarkRegistrationResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="guildName">The guild name.</param>
+    /// <param name="guildMarkCount">The guild mark count.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the player submitted a guild mark for the castle siege registration.
+    /// Causes reaction on client side: The client shows the updated guild mark count.
+    /// </remarks>
+    public static async ValueTask SendCastleSiegeMarkRegistrationResponseAsync(this IConnection? connection, byte @result, string @guildName, uint @guildMarkCount)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CastleSiegeMarkRegistrationResponseRef.Length;
+            var packet = new CastleSiegeMarkRegistrationResponseRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+            packet.GuildName = @guildName;
+            packet.GuildMarkCount = @guildMarkCount;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CastleSiegeDefenseBuyResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="npcNumber">The npc number.</param>
+    /// <param name="npcIndex">The npc index.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the player requested to buy a castle siege defense structure (gate or statue).
+    /// Causes reaction on client side: The client shows the result of the buy request.
+    /// </remarks>
+    public static async ValueTask SendCastleSiegeDefenseBuyResponseAsync(this IConnection? connection, byte @result, uint @npcNumber, uint @npcIndex)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CastleSiegeDefenseBuyResponseRef.Length;
+            var packet = new CastleSiegeDefenseBuyResponseRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+            packet.NpcNumber = @npcNumber;
+            packet.NpcIndex = @npcIndex;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CastleSiegeDefenseRepairResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="npcNumber">The npc number.</param>
+    /// <param name="npcIndex">The npc index.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the player requested to repair a castle siege defense structure (gate or statue).
+    /// Causes reaction on client side: The client shows the result of the repair request.
+    /// </remarks>
+    public static async ValueTask SendCastleSiegeDefenseRepairResponseAsync(this IConnection? connection, byte @result, uint @npcNumber, uint @npcIndex)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CastleSiegeDefenseRepairResponseRef.Length;
+            var packet = new CastleSiegeDefenseRepairResponseRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+            packet.NpcNumber = @npcNumber;
+            packet.NpcIndex = @npcIndex;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CastleSiegeDefenseUpgradeResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="npcNumber">The npc number.</param>
+    /// <param name="npcIndex">The npc index.</param>
+    /// <param name="npcUpgradeType">The npc upgrade type.</param>
+    /// <param name="npcUpgradeValue">The npc upgrade value.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the player requested to upgrade a castle siege defense structure (gate or statue).
+    /// Causes reaction on client side: The client shows the result of the upgrade request and the new upgrade values.
+    /// </remarks>
+    public static async ValueTask SendCastleSiegeDefenseUpgradeResponseAsync(this IConnection? connection, byte @result, uint @npcNumber, uint @npcIndex, uint @npcUpgradeType, uint @npcUpgradeValue)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CastleSiegeDefenseUpgradeResponseRef.Length;
+            var packet = new CastleSiegeDefenseUpgradeResponseRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+            packet.NpcNumber = @npcNumber;
+            packet.NpcIndex = @npcIndex;
+            packet.NpcUpgradeType = @npcUpgradeType;
+            packet.NpcUpgradeValue = @npcUpgradeValue;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CastleSiegeTaxInfoResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="taxRateChaosMachine">The tax rate chaos machine.</param>
+    /// <param name="taxRateNormal">The tax rate normal.</param>
+    /// <param name="taxRateLandOfTrials">The tax rate land of trials.</param>
+    /// <param name="isPublicHuntingAllowed">The is public hunting allowed.</param>
+    /// <param name="treasury">The treasury.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the guild master opened the castle npc to manage the castle taxes.
+    /// Causes reaction on client side: The client shows the current tax configuration and treasury amount.
+    /// </remarks>
+    public static async ValueTask SendCastleSiegeTaxInfoResponseAsync(this IConnection? connection, byte @taxRateChaosMachine, byte @taxRateNormal, uint @taxRateLandOfTrials, bool @isPublicHuntingAllowed, ulong @treasury)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CastleSiegeTaxInfoResponseRef.Length;
+            var packet = new CastleSiegeTaxInfoResponseRef(connection.Output.GetSpan(length)[..length]);
+            packet.TaxRateChaosMachine = @taxRateChaosMachine;
+            packet.TaxRateNormal = @taxRateNormal;
+            packet.TaxRateLandOfTrials = @taxRateLandOfTrials;
+            packet.IsPublicHuntingAllowed = @isPublicHuntingAllowed;
+            packet.Treasury = @treasury;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CastleSiegeTaxChangeResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="taxType">The tax type.</param>
+    /// <param name="taxRate">The tax rate.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the guild master changed the tax rate.
+    /// Causes reaction on client side: The client shows the result of the tax rate change.
+    /// </remarks>
+    public static async ValueTask SendCastleSiegeTaxChangeResponseAsync(this IConnection? connection, byte @result, byte @taxType, uint @taxRate)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CastleSiegeTaxChangeResponseRef.Length;
+            var packet = new CastleSiegeTaxChangeResponseRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+            packet.TaxType = @taxType;
+            packet.TaxRate = @taxRate;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CastleSiegeTributeWithdrawResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="money">The money.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the guild master requested to withdraw tax money from the castle treasury.
+    /// Causes reaction on client side: The client shows the result of the withdrawal and the withdrawn amount.
+    /// </remarks>
+    public static async ValueTask SendCastleSiegeTributeWithdrawResponseAsync(this IConnection? connection, byte @result, ulong @money)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CastleSiegeTributeWithdrawResponseRef.Length;
+            var packet = new CastleSiegeTributeWithdrawResponseRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+            packet.Money = @money;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CastleSiegeJoinSideNotification" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="side">0 = defender, 1 = attacker, 2 = neutral</param>
+    /// <remarks>
+    /// Is sent by the server when: The server notifies the player of which siege side (attacker/defender) they are on.
+    /// Causes reaction on client side: The client updates the castle siege mini-map accordingly.
+    /// </remarks>
+    public static async ValueTask SendCastleSiegeJoinSideNotificationAsync(this IConnection? connection, byte @side)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CastleSiegeJoinSideNotificationRef.Length;
+            var packet = new CastleSiegeJoinSideNotificationRef(connection.Output.GetSpan(length)[..length]);
+            packet.Side = @side;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CastleSiegeGateOperateResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="gateIndex">The gate index.</param>
+    /// <remarks>
+    /// Is sent by the server when: After a guild member of the castle owner requested to toggle a castle gate.
+    /// Causes reaction on client side: The client shows the result of the gate toggle operation.
+    /// </remarks>
+    public static async ValueTask SendCastleSiegeGateOperateResponseAsync(this IConnection? connection, byte @result, ushort @gateIndex)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CastleSiegeGateOperateResponseRef.Length;
+            var packet = new CastleSiegeGateOperateResponseRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+            packet.GateIndex = @gateIndex;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CastleSiegeCrownStateUpdate" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="state">0 = locked, 1 = available</param>
+    /// <remarks>
+    /// Is sent by the server when: The server updates the state of the castle crown during the siege.
+    /// Causes reaction on client side: The client updates the crown state display.
+    /// </remarks>
+    public static async ValueTask SendCastleSiegeCrownStateUpdateAsync(this IConnection? connection, byte @state)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CastleSiegeCrownStateUpdateRef.Length;
+            var packet = new CastleSiegeCrownStateUpdateRef(connection.Output.GetSpan(length)[..length]);
+            packet.State = @state;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CastleSiegeCrownAccessState" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="state">The state.</param>
+    /// <param name="accumulatedTimeMs">The accumulated time ms.</param>
+    /// <remarks>
+    /// Is sent by the server when: The server updates the access state of the castle crown during the siege.
+    /// Causes reaction on client side: The client updates the crown access state and accumulated time display.
+    /// </remarks>
+    public static async ValueTask SendCastleSiegeCrownAccessStateAsync(this IConnection? connection, byte @state, uint @accumulatedTimeMs)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CastleSiegeCrownAccessStateRef.Length;
+            var packet = new CastleSiegeCrownAccessStateRef(connection.Output.GetSpan(length)[..length]);
+            packet.State = @state;
+            packet.AccumulatedTimeMs = @accumulatedTimeMs;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CastleSiegeSwitchInfo" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="switchIndex">The switch index.</param>
+    /// <param name="switchId">The switch id.</param>
+    /// <param name="state">The state.</param>
+    /// <param name="joinSide">The join side.</param>
+    /// <param name="guildName">The guild name.</param>
+    /// <param name="userName">The user name.</param>
+    /// <remarks>
+    /// Is sent by the server when: The server sends information about a castle siege switch (e.g., life stone activation).
+    /// Causes reaction on client side: The client updates the switch state display.
+    /// </remarks>
+    public static async ValueTask SendCastleSiegeSwitchInfoAsync(this IConnection? connection, ushort @switchIndex, byte @switchId, byte @state, byte @joinSide, string @guildName, string @userName)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CastleSiegeSwitchInfoRef.Length;
+            var packet = new CastleSiegeSwitchInfoRef(connection.Output.GetSpan(length)[..length]);
+            packet.SwitchIndex = @switchIndex;
+            packet.SwitchId = @switchId;
+            packet.State = @state;
+            packet.JoinSide = @joinSide;
+            packet.GuildName = @guildName;
+            packet.UserName = @userName;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CastleSiegeOwnershipChangeNotification" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="guildName">The guild name.</param>
+    /// <remarks>
+    /// Is sent by the server when: The server notifies all players that the castle ownership has changed.
+    /// Causes reaction on client side: The client shows the new castle owner guild name.
+    /// </remarks>
+    public static async ValueTask SendCastleSiegeOwnershipChangeNotificationAsync(this IConnection? connection, string @guildName)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CastleSiegeOwnershipChangeNotificationRef.Length;
+            var packet = new CastleSiegeOwnershipChangeNotificationRef(connection.Output.GetSpan(length)[..length]);
+            packet.GuildName = @guildName;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CastleSiegeBattleStartEnd" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="isStarted">The is started.</param>
+    /// <remarks>
+    /// Is sent by the server when: The server notifies all players that the castle siege battle has started or ended.
+    /// Causes reaction on client side: The client updates the siege state accordingly.
+    /// </remarks>
+    public static async ValueTask SendCastleSiegeBattleStartEndAsync(this IConnection? connection, bool @isStarted)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CastleSiegeBattleStartEndRef.Length;
+            var packet = new CastleSiegeBattleStartEndRef(connection.Output.GetSpan(length)[..length]);
+            packet.IsStarted = @isStarted;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CastleSiegeRemainingTime" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="hour">The hour.</param>
+    /// <param name="minute">The minute.</param>
+    /// <remarks>
+    /// Is sent by the server when: The server sends the remaining siege time.
+    /// Causes reaction on client side: The client updates the remaining siege time display.
+    /// </remarks>
+    public static async ValueTask SendCastleSiegeRemainingTimeAsync(this IConnection? connection, byte @hour, byte @minute)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CastleSiegeRemainingTimeRef.Length;
+            var packet = new CastleSiegeRemainingTimeRef(connection.Output.GetSpan(length)[..length]);
+            packet.Hour = @hour;
+            packet.Minute = @minute;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CastleSiegeGateOperateState" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="gateIndex">The gate index.</param>
+    /// <param name="state">The state.</param>
+    /// <remarks>
+    /// Is sent by the server when: The server sends the current operation state of a castle gate.
+    /// Causes reaction on client side: The client updates the gate state display.
+    /// </remarks>
+    public static async ValueTask SendCastleSiegeGateOperateStateAsync(this IConnection? connection, ushort @gateIndex, byte @state)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CastleSiegeGateOperateStateRef.Length;
+            var packet = new CastleSiegeGateOperateStateRef(connection.Output.GetSpan(length)[..length]);
+            packet.GateIndex = @gateIndex;
+            packet.State = @state;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CastleSiegeGateState" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="gateIndex">The gate index.</param>
+    /// <param name="state">The state.</param>
+    /// <remarks>
+    /// Is sent by the server when: The server sends the current state of a castle gate.
+    /// Causes reaction on client side: The client updates the gate state display.
+    /// </remarks>
+    public static async ValueTask SendCastleSiegeGateStateAsync(this IConnection? connection, ushort @gateIndex, byte @state)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CastleSiegeGateStateRef.Length;
+            var packet = new CastleSiegeGateStateRef(connection.Output.GetSpan(length)[..length]);
+            packet.GateIndex = @gateIndex;
+            packet.State = @state;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CastleSiegeMachineUseResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="npcIndex">The npc index.</param>
+    /// <param name="targetX">The target x.</param>
+    /// <param name="targetY">The target y.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the player fired a siege machine (catapult).
+    /// Causes reaction on client side: The client shows the catapult animation toward the target area.
+    /// </remarks>
+    public static async ValueTask SendCastleSiegeMachineUseResultAsync(this IConnection? connection, ushort @npcIndex, byte @targetX, byte @targetY)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CastleSiegeMachineUseResultRef.Length;
+            var packet = new CastleSiegeMachineUseResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.NpcIndex = @npcIndex;
+            packet.TargetX = @targetX;
+            packet.TargetY = @targetY;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CastleSiegeMachineRegionNotify" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="targetX">The target x.</param>
+    /// <param name="targetY">The target y.</param>
+    /// <remarks>
+    /// Is sent by the server when: The server notifies the player of the impact region of a siege machine.
+    /// Causes reaction on client side: The client shows the impact area effect.
+    /// </remarks>
+    public static async ValueTask SendCastleSiegeMachineRegionNotifyAsync(this IConnection? connection, byte @targetX, byte @targetY)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CastleSiegeMachineRegionNotifyRef.Length;
+            var packet = new CastleSiegeMachineRegionNotifyRef(connection.Output.GetSpan(length)[..length]);
+            packet.TargetX = @targetX;
+            packet.TargetY = @targetY;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CastleSiegeMachineInterface" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="machineType">The machine type.</param>
+    /// <remarks>
+    /// Is sent by the server when: The server sends the siege machine interface to a player who is operating the machine.
+    /// Causes reaction on client side: The client shows the siege machine operation interface.
+    /// </remarks>
+    public static async ValueTask SendCastleSiegeMachineInterfaceAsync(this IConnection? connection, byte @machineType)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CastleSiegeMachineInterfaceRef.Length;
+            var packet = new CastleSiegeMachineInterfaceRef(connection.Output.GetSpan(length)[..length]);
+            packet.MachineType = @machineType;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CastleSiegeLifeStoneState" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="state">The creation stage of the life stone (0 to 4).</param>
+    /// <remarks>
+    /// Is sent by the server when: The server sends the current state of the castle life stone.
+    /// Causes reaction on client side: The client updates the life stone state display.
+    /// </remarks>
+    public static async ValueTask SendCastleSiegeLifeStoneStateAsync(this IConnection? connection, byte @state)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CastleSiegeLifeStoneStateRef.Length;
+            var packet = new CastleSiegeLifeStoneStateRef(connection.Output.GetSpan(length)[..length]);
+            packet.State = @state;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CastleOwnerLogo" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="logo">The logo.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the client requested the guild logo of the current castle owner.
+    /// Causes reaction on client side: The client shows the castle owner guild logo.
+    /// </remarks>
+    public static async ValueTask SendCastleOwnerLogoAsync(this IConnection? connection, Memory<byte> @logo)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CastleOwnerLogoRef.Length;
+            var packet = new CastleOwnerLogoRef(connection.Output.GetSpan(length)[..length]);
+            @logo.Span.CopyTo(packet.Logo);
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="HuntingZoneGuardInfo" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="isEnabled">The is enabled.</param>
+    /// <param name="taxRate">The tax rate.</param>
+    /// <remarks>
+    /// Is sent by the server when: The server sends information about the hunting zone guard configuration.
+    /// Causes reaction on client side: The client shows the hunting zone entrance configuration.
+    /// </remarks>
+    public static async ValueTask SendHuntingZoneGuardInfoAsync(this IConnection? connection, bool @isEnabled, uint @taxRate)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = HuntingZoneGuardInfoRef.Length;
+            var packet = new HuntingZoneGuardInfoRef(connection.Output.GetSpan(length)[..length]);
+            packet.IsEnabled = @isEnabled;
+            packet.TaxRate = @taxRate;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="GuildRelationshipChangeResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="relationshipType">The relationship type.</param>
+    /// <param name="targetGuildId">The target guild id.</param>
+    /// <remarks>
+    /// Is sent by the server when: After a guild relationship change was processed by the server.
+    /// Causes reaction on client side: The client shows the result of the guild relationship change request.
+    /// </remarks>
+    public static async ValueTask SendGuildRelationshipChangeResponseAsync(this IConnection? connection, byte @result, byte @relationshipType, uint @targetGuildId)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = GuildRelationshipChangeResponseRef.Length;
+            var packet = new GuildRelationshipChangeResponseRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+            packet.RelationshipType = @relationshipType;
+            packet.TargetGuildId = @targetGuildId;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
     }}
