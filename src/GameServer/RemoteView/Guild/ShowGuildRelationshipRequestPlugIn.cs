@@ -26,11 +26,11 @@ public class ShowGuildRelationshipRequestPlugIn : IShowGuildRelationshipRequestP
     public ShowGuildRelationshipRequestPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public async ValueTask ShowRequestAsync(string requestingGuildName, GuildRelationshipType relationshipType, GuildRelationshipRequestType requestType)
+    public async ValueTask ShowRequestAsync(string requestingGuildName, GameLogic.Views.Guild.GuildRelationshipType relationshipType, GameLogic.Views.Guild.GuildRelationshipRequestType requestType)
     {
         await this._player.Connection.SendGuildRelationshipRequestAsync(
-            (GuildRelationshipRequest.GuildRelationshipType)(byte)relationshipType,
-            (GuildRelationshipRequest.GuildRequestType)(byte)requestType,
+            relationshipType.Convert(),
+            requestType.Convert(),
             requestingGuildName).ConfigureAwait(false);
     }
 }

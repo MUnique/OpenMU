@@ -21460,48 +21460,6 @@ public readonly struct GuildWarScoreUpdate
 /// </summary>
 public readonly struct GuildRelationshipRequest
 {
-    /// <summary>
-    /// Describes the relationship type between guilds.
-    /// </summary>
-    public enum GuildRelationshipType
-    {
-        /// <summary>
-        /// The undefined relationship type.
-        /// </summary>
-        Undefined = 0,
-
-        /// <summary>
-        /// The alliance relationship type.
-        /// </summary>
-        Alliance = 1,
-
-        /// <summary>
-        /// The hostility relationship type.
-        /// </summary>
-        Hostility = 2,
-    }
-
-    /// <summary>
-    /// Describes the request type.
-    /// </summary>
-    public enum GuildRequestType
-    {
-        /// <summary>
-        /// The undefined request type.
-        /// </summary>
-        Undefined = 0,
-
-        /// <summary>
-        /// The join type.
-        /// </summary>
-        Join = 1,
-
-        /// <summary>
-        /// The leave type.
-        /// </summary>
-        Leave = 2,
-    }
-
     private readonly Memory<byte> _data;
 
     /// <summary>
@@ -21553,18 +21511,18 @@ public readonly struct GuildRelationshipRequest
     /// <summary>
     /// Gets or sets the relationship type.
     /// </summary>
-    public GuildRelationshipRequest.GuildRelationshipType RelationshipType
+    public GuildRelationshipType RelationshipType
     {
-        get => (GuildRelationshipRequest.GuildRelationshipType)this._data.Span[3];
+        get => (GuildRelationshipType)this._data.Span[3];
         set => this._data.Span[3] = (byte)value;
     }
 
     /// <summary>
     /// Gets or sets the request type.
     /// </summary>
-    public GuildRelationshipRequest.GuildRequestType RequestType
+    public GuildRelationshipRequestType RequestType
     {
-        get => (GuildRelationshipRequest.GuildRequestType)this._data.Span[4];
+        get => (GuildRelationshipRequestType)this._data.Span[4];
         set => this._data.Span[4] = (byte)value;
     }
 
@@ -21589,7 +21547,7 @@ public readonly struct GuildRelationshipRequest
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(GuildRelationshipRequest packet) => packet._data;
+    public static implicit operator Memory<byte>(GuildRelationshipRequest packet) => packet._data; 
 }
 
 
@@ -21650,28 +21608,28 @@ public readonly struct GuildRelationshipChangeResult
     /// <summary>
     /// Gets or sets the relationship type.
     /// </summary>
-    public GuildRelationshipRequest.GuildRelationshipType RelationshipType
+    public GuildRelationshipType RelationshipType
     {
-        get => (GuildRelationshipRequest.GuildRelationshipType)this._data.Span[3];
+        get => (GuildRelationshipType)this._data.Span[3];
         set => this._data.Span[3] = (byte)value;
     }
 
     /// <summary>
     /// Gets or sets the request type.
     /// </summary>
-    public GuildRelationshipRequest.GuildRequestType RequestType
+    public GuildRelationshipRequestType RequestType
     {
-        get => (GuildRelationshipRequest.GuildRequestType)this._data.Span[4];
+        get => (GuildRelationshipRequestType)this._data.Span[4];
         set => this._data.Span[4] = (byte)value;
     }
 
     /// <summary>
-    /// Gets or sets a value indicating whether the relationship change was successful.
+    /// Gets or sets the success.
     /// </summary>
     public bool Success
     {
-        get => this._data.Span[5] != 0;
-        set => this._data.Span[5] = value ? (byte)1 : (byte)0;
+        get => this._data.Span[5..].GetBoolean();
+        set => this._data.Span[5..].SetBoolean(value);
     }
 
     /// <summary>
@@ -21686,7 +21644,7 @@ public readonly struct GuildRelationshipChangeResult
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(GuildRelationshipChangeResult packet) => packet._data;
+    public static implicit operator Memory<byte>(GuildRelationshipChangeResult packet) => packet._data; 
 }
 
 
@@ -21720,7 +21678,7 @@ public readonly struct AllianceList
             var header = this.Header;
             header.Type = HeaderType;
             header.Code = Code;
-            header.Length = (byte)Math.Min(data.Length, byte.MaxValue);
+            header.Length = (byte)data.Length;
         }
     }
 
@@ -21733,13 +21691,6 @@ public readonly struct AllianceList
     /// Gets the operation code of this data packet.
     /// </summary>
     public static byte Code => 0xE9;
-
-    /// <summary>
-    /// Gets the required size of this packet for the given number of guilds.
-    /// </summary>
-    /// <param name="guildCount">The number of guilds in the alliance.</param>
-    /// <returns>The required size in bytes.</returns>
-    public static int GetRequiredSize(int guildCount) => 4 + guildCount * AllianceGuildEntry.Length;
 
     /// <summary>
     /// Gets the header of this packet.
@@ -21756,11 +21707,9 @@ public readonly struct AllianceList
     }
 
     /// <summary>
-    /// Gets the alliance guild entry at the specified index.
+    /// Gets the <see cref="AllianceGuildEntry"/> of the specified index.
     /// </summary>
-    /// <param name="index">The zero-based index.</param>
-    /// <returns>The alliance guild entry at the specified index.</returns>
-    public AllianceGuildEntry this[int index] => new (this._data.Slice(4 + (index * AllianceGuildEntry.Length), AllianceGuildEntry.Length));
+        public AllianceGuildEntry this[int index] => new (this._data.Slice(4 + index * AllianceGuildEntry.Length));
 
     /// <summary>
     /// Performs an implicit conversion from a Memory of bytes to a <see cref="AllianceList"/>.
@@ -21774,44 +21723,55 @@ public readonly struct AllianceList
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(AllianceList packet) => packet._data;
+    public static implicit operator Memory<byte>(AllianceList packet) => packet._data; 
 
     /// <summary>
-    /// Contains the data of one alliance guild entry.
+    /// Calculates the size of the packet for the specified count of <see cref="AllianceGuildEntry"/>.
     /// </summary>
-    public readonly struct AllianceGuildEntry
+    /// <param name="guildsCount">The count of <see cref="AllianceGuildEntry"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int guildsCount) => guildsCount * AllianceGuildEntry.Length + 4;
+
+
+/// <summary>
+/// Contains the data of one alliance guild entry..
+/// </summary>
+public readonly struct AllianceGuildEntry
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AllianceGuildEntry"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public AllianceGuildEntry(Memory<byte> data)
     {
-        /// <summary>
-        /// The length of one entry in bytes.
-        /// </summary>
-        public const int Length = 13;
-
-        private readonly Memory<byte> _data;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AllianceGuildEntry"/> struct.
-        /// </summary>
-        /// <param name="data">The underlying data.</param>
-        public AllianceGuildEntry(Memory<byte> data) => this._data = data;
-
-        /// <summary>
-        /// Gets or sets the guild identifier.
-        /// </summary>
-        public uint GuildId
-        {
-            get => System.Buffers.Binary.BinaryPrimitives.ReadUInt32LittleEndian(this._data.Span);
-            set => System.Buffers.Binary.BinaryPrimitives.WriteUInt32LittleEndian(this._data.Span, value);
-        }
-
-        /// <summary>
-        /// Gets or sets the guild name.
-        /// </summary>
-        public string GuildName
-        {
-            get => this._data.Span.ExtractString(4, 9, System.Text.Encoding.UTF8);
-            set => this._data.Slice(4, 9).Span.WriteString(value, System.Text.Encoding.UTF8);
-        }
+        this._data = data;
     }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 13;
+
+    /// <summary>
+    /// Gets or sets the guild id.
+    /// </summary>
+    public uint GuildId
+    {
+        get => ReadUInt32LittleEndian(this._data.Span);
+        set => WriteUInt32LittleEndian(this._data.Span, value);
+    }
+
+    /// <summary>
+    /// Gets or sets the guild name.
+    /// </summary>
+    public string GuildName
+    {
+        get => this._data.Span.ExtractString(4, 9, System.Text.Encoding.UTF8);
+        set => this._data.Slice(4, 9).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+}
 }
 
 
@@ -30483,6 +30443,48 @@ public readonly struct MapEventState
         /// A guild soccer match.
         /// </summary>
             Soccer = 1,
+    }
+
+    /// <summary>
+    /// Describes the relationship type between guilds.
+    /// </summary>
+    public enum GuildRelationshipType
+    {
+        /// <summary>
+        /// The undefined relationship type.
+        /// </summary>
+            Undefined = 0,
+
+        /// <summary>
+        /// The alliance relationship type.
+        /// </summary>
+            Alliance = 1,
+
+        /// <summary>
+        /// The hostility relationship type.
+        /// </summary>
+            Hostility = 2,
+    }
+
+    /// <summary>
+    /// Describes the request type.
+    /// </summary>
+    public enum GuildRelationshipRequestType
+    {
+        /// <summary>
+        /// The undefined request type.
+        /// </summary>
+            Undefined = 0,
+
+        /// <summary>
+        /// The join type.
+        /// </summary>
+            Join = 1,
+
+        /// <summary>
+        /// The leave type.
+        /// </summary>
+            Leave = 2,
     }
 
     /// <summary>

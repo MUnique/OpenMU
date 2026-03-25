@@ -7874,7 +7874,7 @@
           <Index>4</Index>
           <Type>Enum</Type>
           <Name>RequestType</Name>
-          <TypeName>GuildRequestType</TypeName>
+          <TypeName>GuildRelationshipRequestType</TypeName>
         </Field>
         <Field>
           <Index>5</Index>
@@ -7883,50 +7883,6 @@
           <Length>8</Length>
         </Field>
       </Fields>
-      <Enums>
-        <Enum>
-          <Name>GuildRelationshipType</Name>
-          <Description>Describes the relationship type between guilds.</Description>
-          <Values>
-            <EnumValue>
-              <Name>Undefined</Name>
-              <Description>The undefined relationship type.</Description>
-              <Value>0</Value>
-            </EnumValue>
-            <EnumValue>
-              <Name>Alliance</Name>
-              <Description>The alliance relationship type.</Description>
-              <Value>1</Value>
-            </EnumValue>
-            <EnumValue>
-              <Name>Hostility</Name>
-              <Description>The hostility relationship type.</Description>
-              <Value>2</Value>
-            </EnumValue>
-          </Values>
-        </Enum>
-        <Enum>
-          <Name>GuildRequestType</Name>
-          <Description>Describes the request type.</Description>
-          <Values>
-            <EnumValue>
-              <Name>Undefined</Name>
-              <Description>The undefined request type.</Description>
-              <Value>0</Value>
-            </EnumValue>
-            <EnumValue>
-              <Name>Join</Name>
-              <Description>The join type.</Description>
-              <Value>1</Value>
-            </EnumValue>
-            <EnumValue>
-              <Name>Leave</Name>
-              <Description>The leave type.</Description>
-              <Value>2</Value>
-            </EnumValue>
-          </Values>
-        </Enum>
-      </Enums>
     </Packet>
     <Packet>
       <HeaderType>C1Header</HeaderType>
@@ -7947,7 +7903,7 @@
           <Index>4</Index>
           <Type>Enum</Type>
           <Name>RequestType</Name>
-          <TypeName>GuildRequestType</TypeName>
+          <TypeName>GuildRelationshipRequestType</TypeName>
         </Field>
         <Field>
           <Index>5</Index>
@@ -10978,6 +10934,48 @@
           <Name>Soccer</Name>
           <Description>A guild soccer match.</Description>
           <Value>1</Value>
+        </EnumValue>
+      </Values>
+    </Enum>
+    <Enum>
+      <Name>GuildRelationshipType</Name>
+      <Description>Describes the relationship type between guilds.</Description>
+      <Values>
+        <EnumValue>
+          <Name>Undefined</Name>
+          <Description>The undefined relationship type.</Description>
+          <Value>0</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Alliance</Name>
+          <Description>The alliance relationship type.</Description>
+          <Value>1</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Hostility</Name>
+          <Description>The hostility relationship type.</Description>
+          <Value>2</Value>
+        </EnumValue>
+      </Values>
+    </Enum>
+    <Enum>
+      <Name>GuildRelationshipRequestType</Name>
+      <Description>Describes the request type.</Description>
+      <Values>
+        <EnumValue>
+          <Name>Undefined</Name>
+          <Description>The undefined request type.</Description>
+          <Value>0</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Join</Name>
+          <Description>The join type.</Description>
+          <Value>1</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Leave</Name>
+          <Description>The leave type.</Description>
+          <Value>2</Value>
         </EnumValue>
       </Values>
     </Enum>

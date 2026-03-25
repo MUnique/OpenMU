@@ -7,43 +7,43 @@ namespace MUnique.OpenMU.GameLogic.Views.Guild;
 /// <summary>
 /// The type of guild relationship.
 /// </summary>
-public enum GuildRelationshipType : byte
+public enum GuildRelationshipType
 {
     /// <summary>
     /// An undefined relationship type.
     /// </summary>
-    Undefined = 0,
+    Undefined,
 
     /// <summary>
     /// An alliance relationship.
     /// </summary>
-    Alliance = 1,
+    Alliance,
 
     /// <summary>
     /// A hostility relationship.
     /// </summary>
-    Hostility = 2,
+    Hostility,
 }
 
 /// <summary>
 /// The type of guild relationship request.
 /// </summary>
-public enum GuildRelationshipRequestType : byte
+public enum GuildRelationshipRequestType
 {
     /// <summary>
     /// An undefined request type.
     /// </summary>
-    Undefined = 0,
+    Undefined,
 
     /// <summary>
     /// A join request.
     /// </summary>
-    Join = 1,
+    Join,
 
     /// <summary>
     /// A leave request.
     /// </summary>
-    Leave = 2,
+    Leave,
 }
 
 /// <summary>

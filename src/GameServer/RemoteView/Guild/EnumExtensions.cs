@@ -149,4 +149,36 @@ public static class EnumExtensions
             _ => throw new NotImplementedException($"The case {result} is not implemented."),
         };
     }
+
+    /// <summary>
+    /// Converts the specified relationship type.
+    /// </summary>
+    /// <param name="relationshipType">Type of the relationship.</param>
+    /// <returns>The converted <see cref="Network.Packets.ServerToClient.GuildRelationshipType"/>.</returns>
+    public static Network.Packets.ServerToClient.GuildRelationshipType Convert(this GameLogic.Views.Guild.GuildRelationshipType relationshipType)
+    {
+        return relationshipType switch
+        {
+            GameLogic.Views.Guild.GuildRelationshipType.Undefined => Network.Packets.ServerToClient.GuildRelationshipType.Undefined,
+            GameLogic.Views.Guild.GuildRelationshipType.Alliance => Network.Packets.ServerToClient.GuildRelationshipType.Alliance,
+            GameLogic.Views.Guild.GuildRelationshipType.Hostility => Network.Packets.ServerToClient.GuildRelationshipType.Hostility,
+            _ => throw new NotImplementedException($"The case {relationshipType} is not implemented."),
+        };
+    }
+
+    /// <summary>
+    /// Converts the specified request type.
+    /// </summary>
+    /// <param name="requestType">Type of the request.</param>
+    /// <returns>The converted <see cref="Network.Packets.ServerToClient.GuildRelationshipRequestType"/>.</returns>
+    public static Network.Packets.ServerToClient.GuildRelationshipRequestType Convert(this GameLogic.Views.Guild.GuildRelationshipRequestType requestType)
+    {
+        return requestType switch
+        {
+            GameLogic.Views.Guild.GuildRelationshipRequestType.Undefined => Network.Packets.ServerToClient.GuildRelationshipRequestType.Undefined,
+            GameLogic.Views.Guild.GuildRelationshipRequestType.Join => Network.Packets.ServerToClient.GuildRelationshipRequestType.Join,
+            GameLogic.Views.Guild.GuildRelationshipRequestType.Leave => Network.Packets.ServerToClient.GuildRelationshipRequestType.Leave,
+            _ => throw new NotImplementedException($"The case {requestType} is not implemented."),
+        };
+    }
 }

@@ -26,11 +26,11 @@ public class ShowGuildRelationshipChangeResultPlugIn : IGuildRelationshipChangeR
     public ShowGuildRelationshipChangeResultPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public async ValueTask ShowResultAsync(GuildRelationshipType relationshipType, GuildRelationshipRequestType requestType, bool success)
+    public async ValueTask ShowResultAsync(GameLogic.Views.Guild.GuildRelationshipType relationshipType, GameLogic.Views.Guild.GuildRelationshipRequestType requestType, bool success)
     {
         await this._player.Connection.SendGuildRelationshipChangeResultAsync(
-            (GuildRelationshipRequest.GuildRelationshipType)(byte)relationshipType,
-            (GuildRelationshipRequest.GuildRequestType)(byte)requestType,
+            relationshipType.Convert(),
+            requestType.Convert(),
             success).ConfigureAwait(false);
     }
 }

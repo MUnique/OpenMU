@@ -20444,11 +20444,26 @@ public readonly ref struct GuildRelationshipRequestRef
         if (initialize)
         {
             var header = this.Header;
-            header.Type = GuildRelationshipRequest.HeaderType;
-            header.Code = GuildRelationshipRequest.Code;
-            header.Length = (byte)Math.Min(data.Length, GuildRelationshipRequest.Length);
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
         }
     }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xE5;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 13;
 
     /// <summary>
     /// Gets the header of this packet.
@@ -20456,25 +20471,20 @@ public readonly ref struct GuildRelationshipRequestRef
     public C1HeaderRef Header => new (this._data);
 
     /// <summary>
-    /// Gets the initial length of this data packet.
-    /// </summary>
-    public static int Length => GuildRelationshipRequest.Length;
-
-    /// <summary>
     /// Gets or sets the relationship type.
     /// </summary>
-    public GuildRelationshipRequest.GuildRelationshipType RelationshipType
+    public GuildRelationshipType RelationshipType
     {
-        get => (GuildRelationshipRequest.GuildRelationshipType)this._data[3];
+        get => (GuildRelationshipType)this._data[3];
         set => this._data[3] = (byte)value;
     }
 
     /// <summary>
     /// Gets or sets the request type.
     /// </summary>
-    public GuildRelationshipRequest.GuildRequestType RequestType
+    public GuildRelationshipRequestType RequestType
     {
-        get => (GuildRelationshipRequest.GuildRequestType)this._data[4];
+        get => (GuildRelationshipRequestType)this._data[4];
         set => this._data[4] = (byte)value;
     }
 
@@ -20488,18 +20498,18 @@ public readonly ref struct GuildRelationshipRequestRef
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="GuildRelationshipRequestRef"/>.
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="GuildRelationshipRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
     public static implicit operator GuildRelationshipRequestRef(Span<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="GuildRelationshipRequestRef"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="GuildRelationshipRequest"/> to a Span of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(GuildRelationshipRequestRef packet) => packet._data;
+    public static implicit operator Span<byte>(GuildRelationshipRequestRef packet) => packet._data; 
 }
 
 
@@ -20531,11 +20541,26 @@ public readonly ref struct GuildRelationshipChangeResultRef
         if (initialize)
         {
             var header = this.Header;
-            header.Type = GuildRelationshipChangeResult.HeaderType;
-            header.Code = GuildRelationshipChangeResult.Code;
-            header.Length = (byte)Math.Min(data.Length, GuildRelationshipChangeResult.Length);
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
         }
     }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xE6;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 6;
 
     /// <summary>
     /// Gets the header of this packet.
@@ -20543,50 +20568,45 @@ public readonly ref struct GuildRelationshipChangeResultRef
     public C1HeaderRef Header => new (this._data);
 
     /// <summary>
-    /// Gets the initial length of this data packet.
-    /// </summary>
-    public static int Length => GuildRelationshipChangeResult.Length;
-
-    /// <summary>
     /// Gets or sets the relationship type.
     /// </summary>
-    public GuildRelationshipRequest.GuildRelationshipType RelationshipType
+    public GuildRelationshipType RelationshipType
     {
-        get => (GuildRelationshipRequest.GuildRelationshipType)this._data[3];
+        get => (GuildRelationshipType)this._data[3];
         set => this._data[3] = (byte)value;
     }
 
     /// <summary>
     /// Gets or sets the request type.
     /// </summary>
-    public GuildRelationshipRequest.GuildRequestType RequestType
+    public GuildRelationshipRequestType RequestType
     {
-        get => (GuildRelationshipRequest.GuildRequestType)this._data[4];
+        get => (GuildRelationshipRequestType)this._data[4];
         set => this._data[4] = (byte)value;
     }
 
     /// <summary>
-    /// Gets or sets a value indicating whether the relationship change was successful.
+    /// Gets or sets the success.
     /// </summary>
     public bool Success
     {
-        get => this._data[5] != 0;
-        set => this._data[5] = value ? (byte)1 : (byte)0;
+        get => this._data[5..].GetBoolean();
+        set => this._data[5..].SetBoolean(value);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="GuildRelationshipChangeResultRef"/>.
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="GuildRelationshipChangeResult"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
     public static implicit operator GuildRelationshipChangeResultRef(Span<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="GuildRelationshipChangeResultRef"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="GuildRelationshipChangeResult"/> to a Span of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(GuildRelationshipChangeResultRef packet) => packet._data;
+    public static implicit operator Span<byte>(GuildRelationshipChangeResultRef packet) => packet._data; 
 }
 
 
@@ -20618,11 +20638,21 @@ public readonly ref struct AllianceListRef
         if (initialize)
         {
             var header = this.Header;
-            header.Type = AllianceList.HeaderType;
-            header.Code = AllianceList.Code;
-            header.Length = (byte)Math.Min(data.Length, byte.MaxValue);
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)data.Length;
         }
     }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xE9;
 
     /// <summary>
     /// Gets the header of this packet.
@@ -20639,53 +20669,60 @@ public readonly ref struct AllianceListRef
     }
 
     /// <summary>
-    /// Gets the alliance guild entry at the specified index.
+    /// Gets the <see cref="AllianceGuildEntryRef"/> of the specified index.
     /// </summary>
-    /// <param name="index">The zero-based index.</param>
-    /// <returns>The alliance guild entry ref at the specified index.</returns>
-    public AllianceGuildEntryRef this[int index] => new (this._data.Slice(4 + (index * AllianceGuildEntryRef.Length)));
+        public AllianceGuildEntryRef this[int index] => new (this._data[(4 + index * AllianceGuildEntryRef.Length)..]);
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="AllianceListRef"/>.
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="AllianceList"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
     public static implicit operator AllianceListRef(Span<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="AllianceListRef"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="AllianceList"/> to a Span of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(AllianceListRef packet) => packet._data;
-}
+    public static implicit operator Span<byte>(AllianceListRef packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="AllianceGuildEntryRef"/>.
+    /// </summary>
+    /// <param name="guildsCount">The count of <see cref="AllianceGuildEntryRef"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int guildsCount) => guildsCount * AllianceGuildEntryRef.Length + 4;
 
 
 /// <summary>
-/// Contains the data of one alliance guild entry (ref struct version).
+/// Contains the data of one alliance guild entry..
 /// </summary>
 public readonly ref struct AllianceGuildEntryRef
 {
-    /// <summary>
-    /// The length of one entry in bytes.
-    /// </summary>
-    public const int Length = AllianceList.AllianceGuildEntry.Length;
-
     private readonly Span<byte> _data;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AllianceGuildEntryRef"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public AllianceGuildEntryRef(Span<byte> data) => this._data = data;
+    public AllianceGuildEntryRef(Span<byte> data)
+    {
+        this._data = data;
+    }
 
     /// <summary>
-    /// Gets or sets the guild identifier.
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 13;
+
+    /// <summary>
+    /// Gets or sets the guild id.
     /// </summary>
     public uint GuildId
     {
-        get => System.Buffers.Binary.BinaryPrimitives.ReadUInt32LittleEndian(this._data);
-        set => System.Buffers.Binary.BinaryPrimitives.WriteUInt32LittleEndian(this._data, value);
+        get => ReadUInt32LittleEndian(this._data);
+        set => WriteUInt32LittleEndian(this._data, value);
     }
 
     /// <summary>
@@ -20696,6 +20733,7 @@ public readonly ref struct AllianceGuildEntryRef
         get => this._data.ExtractString(4, 9, System.Text.Encoding.UTF8);
         set => this._data.Slice(4, 9).WriteString(value, System.Text.Encoding.UTF8);
     }
+}
 }
 
 

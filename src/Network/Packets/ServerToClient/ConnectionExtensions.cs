@@ -4437,12 +4437,12 @@ public static class ConnectionExtensions
     /// <param name="connection">The connection.</param>
     /// <param name="relationshipType">The relationship type.</param>
     /// <param name="requestType">The request type.</param>
-    /// <param name="guildName">The requesting guild name.</param>
+    /// <param name="guildName">The guild name.</param>
     /// <remarks>
-    /// Is sent by the server when: A guild master sent a relationship change request and the server forwards this to the target guild master.
+    /// Is sent by the server when: A guild master sent a relationship change request (alliance or hostility) and the server forwards this request to the target guild master.
     /// Causes reaction on client side: The target guild master sees the incoming request dialog.
     /// </remarks>
-    public static async ValueTask SendGuildRelationshipRequestAsync(this IConnection? connection, GuildRelationshipRequest.GuildRelationshipType @relationshipType, GuildRelationshipRequest.GuildRequestType @requestType, string @guildName)
+    public static async ValueTask SendGuildRelationshipRequestAsync(this IConnection? connection, GuildRelationshipType @relationshipType, GuildRelationshipRequestType @requestType, string @guildName)
     {
         if (connection is null)
         {
@@ -4469,12 +4469,12 @@ public static class ConnectionExtensions
     /// <param name="connection">The connection.</param>
     /// <param name="relationshipType">The relationship type.</param>
     /// <param name="requestType">The request type.</param>
-    /// <param name="success">Whether the relationship change was successful.</param>
+    /// <param name="success">The success.</param>
     /// <remarks>
-    /// Is sent by the server when: The result of a guild relationship change request is sent back to the requester.
-    /// Causes reaction on client side: The requester sees the result.
+    /// Is sent by the server when: The result of a guild relationship change request (alliance or hostility) is sent back to the requester.
+    /// Causes reaction on client side: The requester sees the result of the relationship change.
     /// </remarks>
-    public static async ValueTask SendGuildRelationshipChangeResultAsync(this IConnection? connection, GuildRelationshipRequest.GuildRelationshipType @relationshipType, GuildRelationshipRequest.GuildRequestType @requestType, bool @success)
+    public static async ValueTask SendGuildRelationshipChangeResultAsync(this IConnection? connection, GuildRelationshipType @relationshipType, GuildRelationshipRequestType @requestType, bool @success)
     {
         if (connection is null)
         {
