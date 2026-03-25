@@ -381,7 +381,7 @@ public sealed class CombatHandler
     private int CountMonstersAttackingPlayer()
     {
         return this.GetAttackableMonstersInHuntingRange()
-            .Count(m => m.IsAttackingPlayer(this._player));
+            .Count(m => m.IsTargetingPlayer(this._player));
     }
 
     /// <summary>

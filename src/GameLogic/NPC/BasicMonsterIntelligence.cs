@@ -49,7 +49,7 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
     /// <summary>
     /// Gets the current target.
     /// </summary>
-    public IAttackable? CurrentTarget { get; private set; }
+    protected IAttackable? CurrentTarget { get; private set; }
 
     /// <inheritdoc/>
     public void Start()
@@ -88,7 +88,11 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
         return this.Monster.CurrentMap.Terrain.AIgrid[target.X, target.Y] == 1;
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Determines whether the specified player is being targeted by this monster.
+    /// </summary>
+    /// <param name="player">The player to check.</param>
+    /// <returns>True if the player is the current target; otherwise, false.</returns>
     public bool IsTargetingPlayer(Player player) => this.CurrentTarget == player;
 
     /// <summary>

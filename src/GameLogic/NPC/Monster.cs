@@ -97,15 +97,15 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
     protected override bool CanSpawnInSafezone => base.CanSpawnInSafezone || this.SummonedBy is not null;
 
     /// <summary>
-    /// Checks if this monster is currently attacking the specified player.
+    /// Determines whether the specified player is being targeted by this monster.
     /// </summary>
     /// <param name="player">The player to check.</param>
-    /// <returns>True if this monster is attacking the player; otherwise, false.</returns>
-    public bool IsAttackingPlayer(Player player)
+    /// <returns>True if the player is the current target; otherwise, false.</returns>
+    public bool IsTargetingPlayer(Player player)
     {
         if (this._intelligence is BasicMonsterIntelligence basicIntelligence)
         {
-            return basicIntelligence.CurrentTarget == player;
+            return basicIntelligence.IsTargetingPlayer(player);
         }
 
         return false;
