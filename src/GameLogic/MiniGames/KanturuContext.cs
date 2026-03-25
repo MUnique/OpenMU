@@ -191,7 +191,7 @@ public sealed class KanturuContext : MiniGameContext
                 complete = killed == this._waveKillTarget;
                 var remaining = (byte)Math.Max(0, this._waveKillTarget - killed);
                 var pc = (byte)Math.Min(255, this.PlayerCount);
-                _ = Task.Run(() => this.SendMonsterUserCountAsync(remaining, pc).AsTask());
+                this.FireAndForgetMonsterCountAsync(remaining, pc);
                 break;
             }
 
@@ -199,7 +199,7 @@ public sealed class KanturuContext : MiniGameContext
             {
                 complete = true;
                 var pc = (byte)Math.Min(255, this.PlayerCount);
-                _ = Task.Run(() => this.SendMonsterUserCountAsync(0, pc).AsTask());
+                this.FireAndForgetMonsterCountAsync(0, pc);
                 break;
             }
 
@@ -209,7 +209,7 @@ public sealed class KanturuContext : MiniGameContext
                 complete = killed == this._waveKillTarget;
                 var remaining = (byte)Math.Max(0, this._waveKillTarget - killed);
                 var pc = (byte)Math.Min(255, this.PlayerCount);
-                _ = Task.Run(() => this.SendMonsterUserCountAsync(remaining, pc).AsTask());
+                this.FireAndForgetMonsterCountAsync(remaining, pc);
                 break;
             }
 
@@ -217,7 +217,7 @@ public sealed class KanturuContext : MiniGameContext
             {
                 complete = true;
                 var pc = (byte)Math.Min(255, this.PlayerCount);
-                _ = Task.Run(() => this.SendMonsterUserCountAsync(0, pc).AsTask());
+                this.FireAndForgetMonsterCountAsync(0, pc);
                 break;
             }
 
@@ -227,7 +227,7 @@ public sealed class KanturuContext : MiniGameContext
                 complete = killed == this._waveKillTarget;
                 var remaining = (byte)Math.Max(0, this._waveKillTarget - killed);
                 var pc = (byte)Math.Min(255, this.PlayerCount);
-                _ = Task.Run(() => this.SendMonsterUserCountAsync(remaining, pc).AsTask());
+                this.FireAndForgetMonsterCountAsync(remaining, pc);
                 break;
             }
 
@@ -237,7 +237,7 @@ public sealed class KanturuContext : MiniGameContext
                 complete = killed == this._waveKillTarget;
                 var remaining = (byte)Math.Max(0, this._waveKillTarget - killed);
                 var pc = (byte)Math.Min(255, this.PlayerCount);
-                _ = Task.Run(() => this.SendMonsterUserCountAsync(remaining, pc).AsTask());
+                this.FireAndForgetMonsterCountAsync(remaining, pc);
                 break;
             }
 
@@ -247,7 +247,7 @@ public sealed class KanturuContext : MiniGameContext
                 complete = killed == this._waveKillTarget;
                 var remaining = (byte)Math.Max(0, this._waveKillTarget - killed);
                 var pc = (byte)Math.Min(255, this.PlayerCount);
-                _ = Task.Run(() => this.SendMonsterUserCountAsync(remaining, pc).AsTask());
+                this.FireAndForgetMonsterCountAsync(remaining, pc);
                 break;
             }
 
@@ -259,7 +259,7 @@ public sealed class KanturuContext : MiniGameContext
                 var killed = Interlocked.Increment(ref this._waveKillCount);
                 var remaining = (byte)Math.Max(0, this._waveKillTarget - killed);
                 var pc = (byte)Math.Min(255, this.PlayerCount);
-                _ = Task.Run(() => this.SendMonsterUserCountAsync(remaining, pc).AsTask());
+                this.FireAndForgetMonsterCountAsync(remaining, pc);
                 complete = false;
                 break;
             }
@@ -279,11 +279,21 @@ public sealed class KanturuContext : MiniGameContext
                     this.Logger.LogWarning(
                         "Kanturu: Nightmare died but _phase={Phase} (expected NightmareActive). Barrier NOT opened.",
                         phase);
-                    _ = Task.Run(() => this.ForEachPlayerAsync(p =>
-                        p.InvokeViewPlugInAsync<IShowMessagePlugIn>(v =>
-                            v.ShowMessageAsync(
-                                $"[Kanturu] Nightmare died out of phase! Phase={phase}",
-                                MessageType.BlueNormal)).AsTask()).AsTask());
+                    _ = Task.Run(async () =>
+                    {
+                        try
+                        {
+                            await this.ForEachPlayerAsync(p =>
+                                p.InvokeViewPlugInAsync<IShowMessagePlugIn>(v =>
+                                    v.ShowMessageAsync(
+                                        $"[Kanturu] Nightmare died out of phase! Phase={phase}",
+                                        MessageType.BlueNormal)).AsTask()).ConfigureAwait(false);
+                        }
+                        catch (Exception ex)
+                        {
+                            this.Logger.LogWarning(ex, "{context}: Error broadcasting out-of-phase diagnostic message.", this);
+                        }
+                    });
                 }
 
                 complete = false;
@@ -642,6 +652,8 @@ public sealed class KanturuContext : MiniGameContext
             return;
         }
 
+        try
+        {
         this.Logger.LogInformation("Kanturu: opening Elphis barrier.");
 
         // Diagnostic confirmation message — visible in the game client.
@@ -693,6 +705,11 @@ public sealed class KanturuContext : MiniGameContext
             player.InvokeViewPlugInAsync<IChangeTerrainAttributesViewPlugin>(p =>
                 p.ChangeAttributesAsync(TerrainAttributeType.NoGround, setAttribute: false, areas))
             .AsTask()).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this.Logger.LogError(ex, "{context}: Unexpected error while opening Elphis barrier.", this);
+        }
     }
 
     /// <summary>
@@ -808,9 +825,16 @@ public sealed class KanturuContext : MiniGameContext
             // Skip the broadcast during inter-phase standby — Maya stays idle, no visual attacks.
             if (!this._mayaAttacksPaused)
             {
-                await this.ForEachPlayerAsync(player =>
-                    player.InvokeViewPlugInAsync<IKanturuEventViewPlugIn>(p =>
-                        p.SendMayaWideAreaAttackAsync(attackType)).AsTask()).ConfigureAwait(false);
+                try
+                {
+                    await this.ForEachPlayerAsync(player =>
+                        player.InvokeViewPlugInAsync<IKanturuEventViewPlugIn>(p =>
+                            p.SendMayaWideAreaAttackAsync(attackType)).AsTask()).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    this.Logger.LogWarning(ex, "{context}: Error sending Maya wide-area attack broadcast.", this);
+                }
             }
 
             attackType = (byte)(1 - attackType); // alternate 0 → 1 → 0 → …
@@ -919,6 +943,24 @@ public sealed class KanturuContext : MiniGameContext
             player.InvokeViewPlugInAsync<IKanturuEventViewPlugIn>(p =>
                 p.SendStateChangeAsync(state, detailState)).AsTask());
     }
+
+    /// <summary>
+    /// Fires a monster/user-count broadcast without blocking the caller.
+    /// Exceptions are caught and logged so that an unreachable player cannot
+    /// propagate an unhandled exception through the fire-and-forget task.
+    /// </summary>
+    private void FireAndForgetMonsterCountAsync(byte remaining, byte pc) =>
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                await this.SendMonsterUserCountAsync(remaining, pc).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                this.Logger.LogWarning(ex, "{context}: Error sending monster/user count update.", this);
+            }
+        });
 
     /// <summary>
     /// Broadcasts packet 0xD1/0x07 (Kanturu monster/user count) to all players currently on the map.
