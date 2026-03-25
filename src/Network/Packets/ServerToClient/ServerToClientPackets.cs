@@ -30419,6 +30419,11 @@ public readonly struct MapEventState
             BattleMaster = 32,
 
         /// <summary>
+        /// The member is the assistant guild master.
+        /// </summary>
+            AssistantMaster = 64,
+
+        /// <summary>
         /// The member is the guild master.
         /// </summary>
             GuildMaster = 128,

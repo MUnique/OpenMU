@@ -39,6 +39,7 @@ public static class EnumExtensions
         return playerPosition switch
         {
             GuildPosition.GuildMaster => GuildMemberRole.GuildMaster,
+            GuildPosition.AssistantMaster => GuildMemberRole.AssistantMaster,
             GuildPosition.NormalMember => GuildMemberRole.NormalMember,
             GuildPosition.BattleMaster => GuildMemberRole.BattleMaster,
             _ => GuildMemberRole.Undefined,

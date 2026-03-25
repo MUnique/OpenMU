@@ -10910,6 +10910,11 @@
           <Value>32</Value>
         </EnumValue>
         <EnumValue>
+          <Name>AssistantMaster</Name>
+          <Description>The member is the assistant guild master.</Description>
+          <Value>64</Value>
+        </EnumValue>
+        <EnumValue>
           <Name>GuildMaster</Name>
           <Description>The member is the guild master.</Description>
           <Value>128</Value>
