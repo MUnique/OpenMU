@@ -7,22 +7,6 @@ namespace MUnique.OpenMU.Interfaces;
 using System.Collections.Immutable;
 
 /// <summary>
-/// An entry of the alliance guild list.
-/// </summary>
-public class AllianceGuildEntry
-{
-    /// <summary>
-    /// Gets or sets the name of the guild.
-    /// </summary>
-    public string GuildName { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Gets or sets the guild identifier.
-    /// </summary>
-    public uint GuildId { get; set; }
-}
-
-/// <summary>
 /// Describes the relationship between two guilds.
 /// </summary>
 public enum GuildRelationship : byte

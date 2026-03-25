@@ -15,16 +15,20 @@ The client shows the list of guilds in the alliance.
 | 0 | 1 |   Byte   | 0xC1  | [Packet type](PacketTypes.md) |
 | 1 | 1 |    Byte   |      | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0xE9  | Packet header - packet type identifier |
-| 3 | 1 | Byte |  | GuildCount |
-| 4 | AllianceGuildEntry.Length * GuildCount | Array of AllianceGuildEntry |  | Guilds |
+| 4 | 1 | Byte |  | GuildCount |
+| 5 | 1 | Boolean |  | Success |
+| 6 | 1 | Byte |  | __RivalCount |
+| 7 | 1 | Byte |  | __UnionCount |
+| 8 | AllianceGuildEntry.Length * GuildCount | Array of AllianceGuildEntry |  | Guilds |
 
 ### AllianceGuildEntry Structure
 
 Contains the data of one alliance guild entry.
 
-Length: 13 Bytes
+Length: 41 Bytes
 
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
-| 0 | 4 | IntegerLittleEndian |  | GuildId |
-| 4 | 9 | String |  | GuildName |
+| 0 | 1 | Byte |  | MemberCount |
+| 1 | 32 | Binary |  | Logo |
+| 33 | 8 | String |  | GuildName |

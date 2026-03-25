@@ -21456,7 +21456,7 @@ public readonly struct GuildWarScoreUpdate
 
 /// <summary>
 /// Is sent by the server when: A guild master sent a relationship change request (alliance or hostility) and the server forwards this request to the target guild master.
-/// Causes reaction on client side: The target guild master sees the incoming request dialog.
+/// Causes reaction on client side: The target guild master (receiver of this message) sees the incoming request dialog.
 /// </summary>
 public readonly struct GuildRelationshipRequest
 {
@@ -21501,7 +21501,7 @@ public readonly struct GuildRelationshipRequest
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 13;
+    public static int Length => 7;
 
     /// <summary>
     /// Gets the header of this packet.
@@ -21527,12 +21527,12 @@ public readonly struct GuildRelationshipRequest
     }
 
     /// <summary>
-    /// Gets or sets the guild name.
+    /// Gets or sets the sender id.
     /// </summary>
-    public string GuildName
+    public ushort SenderId
     {
-        get => this._data.Span.ExtractString(5, 8, System.Text.Encoding.UTF8);
-        set => this._data.Slice(5, 8).Span.WriteString(value, System.Text.Encoding.UTF8);
+        get => ReadUInt16BigEndian(this._data.Span[5..]);
+        set => WriteUInt16BigEndian(this._data.Span[5..], value);
     }
 
     /// <summary>
@@ -21557,6 +21557,117 @@ public readonly struct GuildRelationshipRequest
 /// </summary>
 public readonly struct GuildRelationshipChangeResult
 {
+    /// <summary>
+    /// Defines the result of a guild relationship change request.
+    /// </summary>
+    public enum GuildRelationshipChangeResultType
+    {
+        /// <summary>
+        /// The request failed.
+        /// </summary>
+            Failed = 0,
+
+        /// <summary>
+        /// The request was successful.
+        /// </summary>
+            Success = 1,
+
+        /// <summary>
+        /// GUILD_ANS_NOTEXIST_GUILD: The guild does not exist.
+        /// </summary>
+            GuildNotFound = 16,
+
+        /// <summary>
+        /// GUILD_ANS_UNIONFAIL_BY_CASTLE: Alliance function will be restricted due to the Castle Siege.
+        /// </summary>
+            FailedDuringCastleSiege = 16,
+
+        /// <summary>
+        /// GUILD_ANS_NOTEXIST_PERMISSION: No authorization to perform this action.
+        /// </summary>
+            NoAuthorization = 17,
+
+        /// <summary>
+        /// GUILD_ANS_NOTEXIST_EXTRA_STATUS: The extra status does not exist.
+        /// </summary>
+            NotExistExtraStatus = 18,
+
+        /// <summary>
+        /// GUILD_ANS_NOTEXIST_EXTRA_TYPE: The extra type does not exist.
+        /// </summary>
+            NotExistExtraType = 19,
+
+        /// <summary>
+        /// GUILD_ANS_EXIST_RELATIONSHIP_UNION: The guild already has an alliance relationship.
+        /// </summary>
+            AlreadyInAlliance = 21,
+
+        /// <summary>
+        /// GUILD_ANS_EXIST_RELATIONSHIP_RIVAL: The guild already has a hostility relationship.
+        /// </summary>
+            AlreadyInHostility = 22,
+
+        /// <summary>
+        /// GUILD_ANS_EXIST_UNION: A guild alliance already exists.
+        /// </summary>
+            GuildAllianceExists = 23,
+
+        /// <summary>
+        /// GUILD_ANS_EXIST_RIVAL: A hostile guild already exists.
+        /// </summary>
+            HostileGuildExists = 24,
+
+        /// <summary>
+        /// GUILD_ANS_NOTEXIST_UNION: The guild alliance does not exist.
+        /// </summary>
+            GuildAllianceDoesNotExist = 25,
+
+        /// <summary>
+        /// GUILD_ANS_NOTEXIST_RIVAL: The hostile guild does not exist.
+        /// </summary>
+            HostileGuildDoesNotExist = 26,
+
+        /// <summary>
+        /// GUILD_ANS_NOT_UNION_MASTER: The player is not the master of the guild alliance.
+        /// </summary>
+            NotMasterOfGuildAlliance = 27,
+
+        /// <summary>
+        /// GUILD_ANS_NOT_GUILD_RIVAL: The guild is not a rival guild.
+        /// </summary>
+            NotGuildRival = 28,
+
+        /// <summary>
+        /// GUILD_ANS_CANNOT_BE_UNION_MASTER_GUILD: The requirements to create an alliance are incomplete.
+        /// </summary>
+            IncompleteRequirementsToCreateAlliance = 29,
+
+        /// <summary>
+        /// GUILD_ANS_EXCEED_MAX_UNION_MEMBER: The maximum number of guilds in the alliance has been reached.
+        /// </summary>
+            MaximumNumberOfGuildsInAllianceReached = 30,
+
+        /// <summary>
+        /// GUILD_ANS_CANCEL_REQUEST: The request has been cancelled.
+        /// </summary>
+            RequestCancelled = 32,
+
+        /// <summary>
+        /// GUILD_ANS_UNION_MASTER_NOT_GENS: The alliance master is not in a Gens.
+        /// </summary>
+            AllianceMasterNotInGens = 161,
+
+        /// <summary>
+        /// GUILD_ANS_GUILD_MASTER_NOT_GENS: The guild master is not in a Gens.
+        /// </summary>
+            GuildMasterNotInGens = 162,
+
+        /// <summary>
+        /// GUILD_ANS_UNION_MASTER_DISAGREE_GENS: The alliance master and guild master belong to different Gens.
+        /// </summary>
+            DifferentGens = 163,
+    }
+
     private readonly Memory<byte> _data;
 
     /// <summary>
@@ -21598,7 +21709,7 @@ public readonly struct GuildRelationshipChangeResult
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 6;
+    public static int Length => 8;
 
     /// <summary>
     /// Gets the header of this packet.
@@ -21624,12 +21735,21 @@ public readonly struct GuildRelationshipChangeResult
     }
 
     /// <summary>
-    /// Gets or sets the success.
+    /// Gets or sets the result.
     /// </summary>
-    public bool Success
+    public GuildRelationshipChangeResult.GuildRelationshipChangeResultType Result
     {
-        get => this._data.Span[5..].GetBoolean();
-        set => this._data.Span[5..].SetBoolean(value);
+        get => (GuildRelationshipChangeResultType)this._data.Span[5];
+        set => this._data.Span[5] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the guild master id.
+    /// </summary>
+    public ushort GuildMasterId
+    {
+        get => ReadUInt16BigEndian(this._data.Span[6..]);
+        set => WriteUInt16BigEndian(this._data.Span[6..], value);
     }
 
     /// <summary>
@@ -21702,14 +21822,41 @@ public readonly struct AllianceList
     /// </summary>
     public byte GuildCount
     {
-        get => this._data.Span[3];
-        set => this._data.Span[3] = value;
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the success.
+    /// </summary>
+    public bool Success
+    {
+        get => this._data.Span[5..].GetBoolean();
+        set => this._data.Span[5..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the__ rival count.
+    /// </summary>
+    public byte __RivalCount
+    {
+        get => this._data.Span[6];
+        set => this._data.Span[6] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the__ union count.
+    /// </summary>
+    public byte __UnionCount
+    {
+        get => this._data.Span[7];
+        set => this._data.Span[7] = value;
     }
 
     /// <summary>
     /// Gets the <see cref="AllianceGuildEntry"/> of the specified index.
     /// </summary>
-        public AllianceGuildEntry this[int index] => new (this._data.Slice(4 + index * AllianceGuildEntry.Length));
+        public AllianceGuildEntry this[int index] => new (this._data.Slice(8 + index * AllianceGuildEntry.Length));
 
     /// <summary>
     /// Performs an implicit conversion from a Memory of bytes to a <see cref="AllianceList"/>.
@@ -21730,7 +21877,7 @@ public readonly struct AllianceList
     /// </summary>
     /// <param name="guildsCount">The count of <see cref="AllianceGuildEntry"/> from which the size will be calculated.</param>
         
-    public static int GetRequiredSize(int guildsCount) => guildsCount * AllianceGuildEntry.Length + 4;
+    public static int GetRequiredSize(int guildsCount) => guildsCount * AllianceGuildEntry.Length + 8;
 
 
 /// <summary>
@@ -21752,15 +21899,23 @@ public readonly struct AllianceGuildEntry
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 13;
+    public static int Length => 41;
 
     /// <summary>
-    /// Gets or sets the guild id.
+    /// Gets or sets the member count.
     /// </summary>
-    public uint GuildId
+    public byte MemberCount
     {
-        get => ReadUInt32LittleEndian(this._data.Span);
-        set => WriteUInt32LittleEndian(this._data.Span, value);
+        get => this._data.Span[0];
+        set => this._data.Span[0] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the logo.
+    /// </summary>
+    public Span<byte> Logo
+    {
+        get => this._data.Slice(1, 32).Span;
     }
 
     /// <summary>
@@ -21768,8 +21923,8 @@ public readonly struct AllianceGuildEntry
     /// </summary>
     public string GuildName
     {
-        get => this._data.Span.ExtractString(4, 9, System.Text.Encoding.UTF8);
-        set => this._data.Slice(4, 9).Span.WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.Span.ExtractString(33, 8, System.Text.Encoding.UTF8);
+        set => this._data.Slice(33, 8).Span.WriteString(value, System.Text.Encoding.UTF8);
     }
 }
 }

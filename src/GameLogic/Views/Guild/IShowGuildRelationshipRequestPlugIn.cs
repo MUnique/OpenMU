@@ -12,8 +12,8 @@ public interface IShowGuildRelationshipRequestPlugIn : IViewPlugIn
     /// <summary>
     /// Shows the incoming guild relationship change request.
     /// </summary>
-    /// <param name="requestingGuildName">Name of the requesting guild.</param>
+    /// <param name="requestingGuildMaster">The guild master which is requesting the relationship change.</param>
     /// <param name="relationshipType">The type of relationship being requested.</param>
     /// <param name="requestType">The type of request (join/leave).</param>
-    ValueTask ShowRequestAsync(string requestingGuildName, GuildRelationshipType relationshipType, GuildRelationshipRequestType requestType);
+    ValueTask ShowRequestAsync(Player requestingGuildMaster, GuildRelationshipType relationshipType, GuildRelationshipRequestType requestType);
 }

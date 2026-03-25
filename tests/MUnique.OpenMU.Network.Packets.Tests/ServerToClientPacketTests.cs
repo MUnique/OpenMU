@@ -4519,7 +4519,7 @@ public class PacketStructureTests
     public void GuildRelationshipRequest_PacketSizeValidation()
     {
         // Fixed-length packet validation
-        const int expectedLength = 13;
+        const int expectedLength = 7;
         var actualLength = GuildRelationshipRequestRef.Length;
         
         Assert.That(actualLength, Is.EqualTo(expectedLength), 
@@ -4533,9 +4533,9 @@ public class PacketStructureTests
         Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'RequestType' exceeds packet boundary");
         
-        // Validate field 'GuildName' boundary
-        Assert.That(5 + 8, Is.LessThanOrEqualTo(expectedLength), 
-            "Field 'GuildName' exceeds packet boundary");
+        // Validate field 'SenderId' boundary
+        Assert.That(5 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'SenderId' exceeds packet boundary");
     }
 
     /// <summary>
@@ -4545,7 +4545,7 @@ public class PacketStructureTests
     public void GuildRelationshipChangeResult_PacketSizeValidation()
     {
         // Fixed-length packet validation
-        const int expectedLength = 6;
+        const int expectedLength = 8;
         var actualLength = GuildRelationshipChangeResultRef.Length;
         
         Assert.That(actualLength, Is.EqualTo(expectedLength), 
@@ -4559,9 +4559,13 @@ public class PacketStructureTests
         Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'RequestType' exceeds packet boundary");
         
-        // Validate field 'Success' boundary
+        // Validate field 'Result' boundary
         Assert.That(5 + 1, Is.LessThanOrEqualTo(expectedLength), 
-            "Field 'Success' exceeds packet boundary");
+            "Field 'Result' exceeds packet boundary");
+        
+        // Validate field 'GuildMasterId' boundary
+        Assert.That(6 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'GuildMasterId' exceeds packet boundary");
     }
 
     /// <summary>
@@ -4573,9 +4577,21 @@ public class PacketStructureTests
         // Basic packet validation
         // Validate header type and field boundaries
         
-        // Field 'GuildCount' starts at index 3 with size 1
-        Assert.That(3, Is.GreaterThanOrEqualTo(0), 
+        // Field 'GuildCount' starts at index 4 with size 1
+        Assert.That(4, Is.GreaterThanOrEqualTo(0), 
             "Field 'GuildCount' has invalid negative index");
+        
+        // Field 'Success' starts at index 5 with size 1
+        Assert.That(5, Is.GreaterThanOrEqualTo(0), 
+            "Field 'Success' has invalid negative index");
+        
+        // Field '__RivalCount' starts at index 6 with size 1
+        Assert.That(6, Is.GreaterThanOrEqualTo(0), 
+            "Field '__RivalCount' has invalid negative index");
+        
+        // Field '__UnionCount' starts at index 7 with size 1
+        Assert.That(7, Is.GreaterThanOrEqualTo(0), 
+            "Field '__UnionCount' has invalid negative index");
     }
 
     /// <summary>

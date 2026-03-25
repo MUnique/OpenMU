@@ -44,6 +44,68 @@ public enum GuildRelationshipRequestType
     /// A leave request.
     /// </summary>
     Leave,
+
+    /// <summary>
+    /// A disband request? Only possible for <see cref="GuildRelationshipType.Alliance"/>.
+    /// </summary>
+    Disband,
+}
+
+public enum GuildRelationshipChangeResultType
+{
+    Failed,
+
+    Success,
+
+    GuildNotFound,
+
+    // GUILD_ANS_UNIONFAIL_BY_CASTLE: Alliance function will be restricted due to the Castle Siege.
+    FailedDuringCastleSiege,
+
+    // GUILD_ANS_NOTEXIST_PERMISSION
+    NoAuthorization,
+
+    // GUILD_ANS_EXIST_RELATIONSHIP_UNION
+    AlreadyInAlliance,
+
+    // GUILD_ANS_EXIST_RELATIONSHIP_RIVAL
+    AlreadyInHostility,
+
+    // GUILD_ANS_EXIST_UNION
+    GuildAllianceExists,
+
+    // GUILD_ANS_EXIST_RIVAL
+    HostileGuildExists,
+
+    // GUILD_ANS_NOTEXIST_UNION
+    GuildAllianceDoesNotExist,
+
+    // GUILD_ANS_NOTEXIST_RIVAL
+    HostileGuildDoesNotExist,
+
+    // GUILD_ANS_NOT_UNION_MASTER
+    NotMasterOfGuildAlliance,
+
+    // GUILD_ANS_NOT_GUILD_RIVAL
+    NotGuildRival,
+
+    // GUILD_ANS_CANNOT_BE_UNION_MASTER_GUILD
+    IncompleteRequirementsToCreateAlliance,
+
+    // GUILD_ANS_EXCEED_MAX_UNION_MEMBER
+    MaximumNumberOfGuildsInAllianceReached,
+
+    // GUILD_ANS_CANCEL_REQUEST
+    RequestCancelled,
+
+    // GUILD_ANS_UNION_MASTER_NOT_GENS
+    AllianceMasterNotInGens,
+
+    // GUILD_ANS_GUILD_MASTER_NOT_GENS
+    GuildMasterNotInGens,
+
+    // GUILD_ANS_UNION_MASTER_DISAGREE_GENS
+    DifferentGens = 0xA3,
 }
 
 /// <summary>
@@ -56,6 +118,7 @@ public interface IGuildRelationshipChangeResultPlugIn : IViewPlugIn
     /// </summary>
     /// <param name="relationshipType">The type of relationship that was being changed.</param>
     /// <param name="requestType">The type of request (join/leave).</param>
-    /// <param name="success">Whether the relationship change was successful.</param>
-    ValueTask ShowResultAsync(GuildRelationshipType relationshipType, GuildRelationshipRequestType requestType, bool success);
+    /// <param name="resultType">The result of the relationship change request.</param>
+    /// <param name="guildMasterId">The id of the guild master which was asked for the relationship change.</param>
+    ValueTask ShowResultAsync(GuildRelationshipType relationshipType, GuildRelationshipRequestType requestType, GuildRelationshipChangeResultType resultType, ushort guildMasterId);
 }

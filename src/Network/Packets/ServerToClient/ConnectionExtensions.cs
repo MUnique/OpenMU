@@ -4437,12 +4437,12 @@ public static class ConnectionExtensions
     /// <param name="connection">The connection.</param>
     /// <param name="relationshipType">The relationship type.</param>
     /// <param name="requestType">The request type.</param>
-    /// <param name="guildName">The guild name.</param>
+    /// <param name="senderId">The sender id.</param>
     /// <remarks>
     /// Is sent by the server when: A guild master sent a relationship change request (alliance or hostility) and the server forwards this request to the target guild master.
-    /// Causes reaction on client side: The target guild master sees the incoming request dialog.
+    /// Causes reaction on client side: The target guild master (receiver of this message) sees the incoming request dialog.
     /// </remarks>
-    public static async ValueTask SendGuildRelationshipRequestAsync(this IConnection? connection, GuildRelationshipType @relationshipType, GuildRelationshipRequestType @requestType, string @guildName)
+    public static async ValueTask SendGuildRelationshipRequestAsync(this IConnection? connection, GuildRelationshipType @relationshipType, GuildRelationshipRequestType @requestType, ushort @senderId)
     {
         if (connection is null)
         {
@@ -4455,7 +4455,7 @@ public static class ConnectionExtensions
             var packet = new GuildRelationshipRequestRef(connection.Output.GetSpan(length)[..length]);
             packet.RelationshipType = @relationshipType;
             packet.RequestType = @requestType;
-            packet.GuildName = @guildName;
+            packet.SenderId = @senderId;
 
             return packet.Header.Length;
         }
@@ -4469,12 +4469,13 @@ public static class ConnectionExtensions
     /// <param name="connection">The connection.</param>
     /// <param name="relationshipType">The relationship type.</param>
     /// <param name="requestType">The request type.</param>
-    /// <param name="success">The success.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="guildMasterId">The guild master id.</param>
     /// <remarks>
     /// Is sent by the server when: The result of a guild relationship change request (alliance or hostility) is sent back to the requester.
     /// Causes reaction on client side: The requester sees the result of the relationship change.
     /// </remarks>
-    public static async ValueTask SendGuildRelationshipChangeResultAsync(this IConnection? connection, GuildRelationshipType @relationshipType, GuildRelationshipRequestType @requestType, bool @success)
+    public static async ValueTask SendGuildRelationshipChangeResultAsync(this IConnection? connection, GuildRelationshipType @relationshipType, GuildRelationshipRequestType @requestType, GuildRelationshipChangeResult.GuildRelationshipChangeResultType @result, ushort @guildMasterId)
     {
         if (connection is null)
         {
@@ -4487,7 +4488,8 @@ public static class ConnectionExtensions
             var packet = new GuildRelationshipChangeResultRef(connection.Output.GetSpan(length)[..length]);
             packet.RelationshipType = @relationshipType;
             packet.RequestType = @requestType;
-            packet.Success = @success;
+            packet.Result = @result;
+            packet.GuildMasterId = @guildMasterId;
 
             return packet.Header.Length;
         }

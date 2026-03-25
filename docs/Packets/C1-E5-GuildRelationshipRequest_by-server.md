@@ -6,18 +6,18 @@ A guild master sent a relationship change request (alliance or hostility) and th
 
 ## Causes the following actions on the client side
 
-The target guild master sees the incoming request dialog.
+The target guild master (receiver of this message) sees the incoming request dialog.
 
 ## Structure
 
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
 | 0 | 1 |   Byte   | 0xC1  | [Packet type](PacketTypes.md) |
-| 1 | 1 |    Byte   |   13   | Packet header - length of the packet |
+| 1 | 1 |    Byte   |   7   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0xE5  | Packet header - packet type identifier |
 | 3 | 1 | GuildRelationshipType |  | RelationshipType |
 | 4 | 1 | GuildRelationshipRequestType |  | RequestType |
-| 5 | 8 | String |  | GuildName |
+| 5 | 2 | ShortBigEndian |  | SenderId |
 
 ### GuildRelationshipType Enum
 

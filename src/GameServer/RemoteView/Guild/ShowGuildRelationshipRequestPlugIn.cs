@@ -5,6 +5,8 @@
 namespace MUnique.OpenMU.GameServer.RemoteView.Guild;
 
 using System.Runtime.InteropServices;
+using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Guild;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.PlugIns;
@@ -26,11 +28,11 @@ public class ShowGuildRelationshipRequestPlugIn : IShowGuildRelationshipRequestP
     public ShowGuildRelationshipRequestPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public async ValueTask ShowRequestAsync(string requestingGuildName, GameLogic.Views.Guild.GuildRelationshipType relationshipType, GameLogic.Views.Guild.GuildRelationshipRequestType requestType)
+    public async ValueTask ShowRequestAsync(Player requestingGuildMaster, GameLogic.Views.Guild.GuildRelationshipType relationshipType, GameLogic.Views.Guild.GuildRelationshipRequestType requestType)
     {
         await this._player.Connection.SendGuildRelationshipRequestAsync(
             relationshipType.Convert(),
             requestType.Convert(),
-            requestingGuildName).ConfigureAwait(false);
+            requestingGuildMaster.GetId(this._player)).ConfigureAwait(false);
     }
 }

@@ -2,11 +2,10 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using System.Collections.Immutable;
-
 namespace MUnique.OpenMU.GuildServer;
 
 using System.Collections.Concurrent;
+using System.Collections.Immutable;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
@@ -403,7 +402,7 @@ public class GuildServer : IGuildServer
 
         return this._guildDictionary.Values
             .Where(g => GetAllianceMasterGuid(g.Guild) == masterGuid)
-            .Select(g => new AllianceGuildEntry { GuildId = g.Id, GuildName = g.Guild.Name ?? string.Empty })
+            .Select(g => new AllianceGuildEntry(g.Id, g.Guild.Name ?? string.Empty, g.Guild.Members.Count, g.Guild.Logo))
             .ToImmutableList();
     }
 

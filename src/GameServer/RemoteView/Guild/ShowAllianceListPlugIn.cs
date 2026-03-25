@@ -50,8 +50,9 @@ public class ShowAllianceListPlugIn : IShowAllianceListPlugIn
             for (int i = 0; i < guildCount; i++)
             {
                 var entry = packet[i];
-                entry.GuildId = guildList[i].GuildId;
                 entry.GuildName = guildList[i].GuildName;
+                entry.MemberCount = (byte)guildList[i].MemberCount;
+                guildList[i].Logo.Span.CopyTo(entry.Logo);
             }
 
             return size;

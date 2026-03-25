@@ -6,10 +6,12 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Guild;
 
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Guild;
 using MUnique.OpenMU.Interfaces;
-using RemoveAllianceGuildRequest = MUnique.OpenMU.Network.Packets.ClientToServer.RemoveAllianceGuildRequest;
 using MUnique.OpenMU.PlugIns;
+using RemoveAllianceGuildRequest = MUnique.OpenMU.Network.Packets.ClientToServer.RemoveAllianceGuildRequest;
+
 /// <summary>
 /// Handler for remove alliance guild request packets (C1 EB 01).
 /// </summary>
@@ -61,10 +63,11 @@ internal class RemoveAllianceGuildHandlerPlugIn : ISubPacketHandlerPlugIn
             return;
         }
 
-        var success = await serverContext.GuildServer.RemoveAllianceGuildAsync(
-            guildStatus.GuildId, targetGuildId).ConfigureAwait(false);
+        // TODO: Maybe return GuildRelationshipChangeResult from the guild server to be more specific about the failure reason
+        var success = await serverContext.GuildServer.RemoveAllianceGuildAsync(guildStatus.GuildId, targetGuildId).ConfigureAwait(false)
+            ? GuildRelationshipChangeResultType.Success
+            : GuildRelationshipChangeResultType.Failed;
 
-        await player.InvokeViewPlugInAsync<IGuildRelationshipChangeResultPlugIn>(
-            p => p.ShowResultAsync(GuildRelationshipType.Alliance, GuildRelationshipRequestType.Leave, success)).ConfigureAwait(false);
+        await player.InvokeViewPlugInAsync<IGuildRelationshipChangeResultPlugIn>(p => p.ShowResultAsync(GuildRelationshipType.Alliance, GuildRelationshipRequestType.Leave, success, player.GetId(player))).ConfigureAwait(false);
     }
 }

@@ -7859,10 +7859,10 @@
       <HeaderType>C1Header</HeaderType>
       <Code>E5</Code>
       <Name>GuildRelationshipRequest</Name>
-      <Length>13</Length>
+      <Length>7</Length>
       <Direction>ServerToClient</Direction>
       <SentWhen>A guild master sent a relationship change request (alliance or hostility) and the server forwards this request to the target guild master.</SentWhen>
-      <CausedReaction>The target guild master sees the incoming request dialog.</CausedReaction>
+      <CausedReaction>The target guild master (receiver of this message) sees the incoming request dialog.</CausedReaction>
       <Fields>
         <Field>
           <Index>3</Index>
@@ -7878,9 +7878,8 @@
         </Field>
         <Field>
           <Index>5</Index>
-          <Type>String</Type>
-          <Name>GuildName</Name>
-          <Length>8</Length>
+          <Type>ShortBigEndian</Type>
+          <Name>SenderId</Name>
         </Field>
       </Fields>
     </Packet>
@@ -7888,7 +7887,7 @@
       <HeaderType>C1Header</HeaderType>
       <Code>E6</Code>
       <Name>GuildRelationshipChangeResult</Name>
-      <Length>6</Length>
+      <Length>8</Length>
       <Direction>ServerToClient</Direction>
       <SentWhen>The result of a guild relationship change request (alliance or hostility) is sent back to the requester.</SentWhen>
       <CausedReaction>The requester sees the result of the relationship change.</CausedReaction>
@@ -7907,10 +7906,129 @@
         </Field>
         <Field>
           <Index>5</Index>
-          <Type>Boolean</Type>
-          <Name>Success</Name>
+          <Type>Enum</Type>
+          <TypeName>GuildRelationshipChangeResultType</TypeName>
+          <Name>Result</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>GuildMasterId</Name>
         </Field>
       </Fields>
+      <Enums>
+        <Enum>
+          <Name>GuildRelationshipChangeResultType</Name>
+          <Description>Defines the result of a guild relationship change request.</Description>
+          <Values>
+            <EnumValue>
+              <Name>Failed</Name>
+              <Description>The request failed.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Success</Name>
+              <Description>The request was successful.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>GuildNotFound</Name>
+              <Description>GUILD_ANS_NOTEXIST_GUILD: The guild does not exist.</Description>
+              <Value>16</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>FailedDuringCastleSiege</Name>
+              <Description>GUILD_ANS_UNIONFAIL_BY_CASTLE: Alliance function will be restricted due to the Castle Siege.</Description>
+              <Value>16</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>NoAuthorization</Name>
+              <Description>GUILD_ANS_NOTEXIST_PERMISSION: No authorization to perform this action.</Description>
+              <Value>17</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>NotExistExtraStatus</Name>
+              <Description>GUILD_ANS_NOTEXIST_EXTRA_STATUS: The extra status does not exist.</Description>
+              <Value>18</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>NotExistExtraType</Name>
+              <Description>GUILD_ANS_NOTEXIST_EXTRA_TYPE: The extra type does not exist.</Description>
+              <Value>19</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>AlreadyInAlliance</Name>
+              <Description>GUILD_ANS_EXIST_RELATIONSHIP_UNION: The guild already has an alliance relationship.</Description>
+              <Value>21</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>AlreadyInHostility</Name>
+              <Description>GUILD_ANS_EXIST_RELATIONSHIP_RIVAL: The guild already has a hostility relationship.</Description>
+              <Value>22</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>GuildAllianceExists</Name>
+              <Description>GUILD_ANS_EXIST_UNION: A guild alliance already exists.</Description>
+              <Value>23</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>HostileGuildExists</Name>
+              <Description>GUILD_ANS_EXIST_RIVAL: A hostile guild already exists.</Description>
+              <Value>24</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>GuildAllianceDoesNotExist</Name>
+              <Description>GUILD_ANS_NOTEXIST_UNION: The guild alliance does not exist.</Description>
+              <Value>25</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>HostileGuildDoesNotExist</Name>
+              <Description>GUILD_ANS_NOTEXIST_RIVAL: The hostile guild does not exist.</Description>
+              <Value>26</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>NotMasterOfGuildAlliance</Name>
+              <Description>GUILD_ANS_NOT_UNION_MASTER: The player is not the master of the guild alliance.</Description>
+              <Value>27</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>NotGuildRival</Name>
+              <Description>GUILD_ANS_NOT_GUILD_RIVAL: The guild is not a rival guild.</Description>
+              <Value>28</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>IncompleteRequirementsToCreateAlliance</Name>
+              <Description>GUILD_ANS_CANNOT_BE_UNION_MASTER_GUILD: The requirements to create an alliance are incomplete.</Description>
+              <Value>29</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>MaximumNumberOfGuildsInAllianceReached</Name>
+              <Description>GUILD_ANS_EXCEED_MAX_UNION_MEMBER: The maximum number of guilds in the alliance has been reached.</Description>
+              <Value>30</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>RequestCancelled</Name>
+              <Description>GUILD_ANS_CANCEL_REQUEST: The request has been cancelled.</Description>
+              <Value>32</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>AllianceMasterNotInGens</Name>
+              <Description>GUILD_ANS_UNION_MASTER_NOT_GENS: The alliance master is not in a Gens.</Description>
+              <Value>161</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>GuildMasterNotInGens</Name>
+              <Description>GUILD_ANS_GUILD_MASTER_NOT_GENS: The guild master is not in a Gens.</Description>
+              <Value>162</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>DifferentGens</Name>
+              <Description>GUILD_ANS_UNION_MASTER_DISAGREE_GENS: The alliance master and guild master belong to different Gens.</Description>
+              <Value>163</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
     </Packet>
     <Packet>
       <HeaderType>C1Header</HeaderType>
@@ -7921,12 +8039,27 @@
       <CausedReaction>The client shows the list of guilds in the alliance.</CausedReaction>
       <Fields>
         <Field>
-          <Index>3</Index>
+          <Index>4</Index>
           <Type>Byte</Type>
           <Name>GuildCount</Name>
         </Field>
         <Field>
-          <Index>4</Index>
+          <Index>5</Index>
+          <Type>Boolean</Type>
+          <Name>Success</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>__RivalCount</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>__UnionCount</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
           <Type>Structure[]</Type>
           <TypeName>AllianceGuildEntry</TypeName>
           <Name>Guilds</Name>
@@ -7937,18 +8070,24 @@
         <Structure>
           <Name>AllianceGuildEntry</Name>
           <Description>Contains the data of one alliance guild entry.</Description>
-          <Length>13</Length>
+          <Length>41</Length>
           <Fields>
             <Field>
               <Index>0</Index>
-              <Type>IntegerLittleEndian</Type>
-              <Name>GuildId</Name>
+              <Type>Byte</Type>
+              <Name>MemberCount</Name>
             </Field>
             <Field>
-              <Index>4</Index>
+              <Index>1</Index>
+              <Type>Binary</Type>
+              <Name>Logo</Name>
+              <Length>32</Length>
+            </Field>
+            <Field>
+              <Index>33</Index>
               <Type>String</Type>
               <Name>GuildName</Name>
-              <Length>9</Length>
+              <Length>8</Length>
             </Field>
           </Fields>
         </Structure>
@@ -10984,6 +11123,7 @@
         </EnumValue>
       </Values>
     </Enum>
+    
     <Enum>
       <Name>CharacterStatus</Name>
       <Description>The status of a character.</Description>

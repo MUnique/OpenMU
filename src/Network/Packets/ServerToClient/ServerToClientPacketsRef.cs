@@ -20418,7 +20418,7 @@ public readonly ref struct GuildWarScoreUpdateRef
 
 /// <summary>
 /// Is sent by the server when: A guild master sent a relationship change request (alliance or hostility) and the server forwards this request to the target guild master.
-/// Causes reaction on client side: The target guild master sees the incoming request dialog.
+/// Causes reaction on client side: The target guild master (receiver of this message) sees the incoming request dialog.
 /// </summary>
 public readonly ref struct GuildRelationshipRequestRef
 {
@@ -20463,7 +20463,7 @@ public readonly ref struct GuildRelationshipRequestRef
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 13;
+    public static int Length => 7;
 
     /// <summary>
     /// Gets the header of this packet.
@@ -20489,12 +20489,12 @@ public readonly ref struct GuildRelationshipRequestRef
     }
 
     /// <summary>
-    /// Gets or sets the guild name.
+    /// Gets or sets the sender id.
     /// </summary>
-    public string GuildName
+    public ushort SenderId
     {
-        get => this._data.ExtractString(5, 8, System.Text.Encoding.UTF8);
-        set => this._data.Slice(5, 8).WriteString(value, System.Text.Encoding.UTF8);
+        get => ReadUInt16BigEndian(this._data[5..]);
+        set => WriteUInt16BigEndian(this._data[5..], value);
     }
 
     /// <summary>
@@ -20560,7 +20560,7 @@ public readonly ref struct GuildRelationshipChangeResultRef
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 6;
+    public static int Length => 8;
 
     /// <summary>
     /// Gets the header of this packet.
@@ -20586,12 +20586,21 @@ public readonly ref struct GuildRelationshipChangeResultRef
     }
 
     /// <summary>
-    /// Gets or sets the success.
+    /// Gets or sets the result.
     /// </summary>
-    public bool Success
+    public GuildRelationshipChangeResult.GuildRelationshipChangeResultType Result
     {
-        get => this._data[5..].GetBoolean();
-        set => this._data[5..].SetBoolean(value);
+        get => (GuildRelationshipChangeResult.GuildRelationshipChangeResultType)this._data[5];
+        set => this._data[5] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the guild master id.
+    /// </summary>
+    public ushort GuildMasterId
+    {
+        get => ReadUInt16BigEndian(this._data[6..]);
+        set => WriteUInt16BigEndian(this._data[6..], value);
     }
 
     /// <summary>
@@ -20664,14 +20673,41 @@ public readonly ref struct AllianceListRef
     /// </summary>
     public byte GuildCount
     {
-        get => this._data[3];
-        set => this._data[3] = value;
+        get => this._data[4];
+        set => this._data[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the success.
+    /// </summary>
+    public bool Success
+    {
+        get => this._data[5..].GetBoolean();
+        set => this._data[5..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the__ rival count.
+    /// </summary>
+    public byte __RivalCount
+    {
+        get => this._data[6];
+        set => this._data[6] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the__ union count.
+    /// </summary>
+    public byte __UnionCount
+    {
+        get => this._data[7];
+        set => this._data[7] = value;
     }
 
     /// <summary>
     /// Gets the <see cref="AllianceGuildEntryRef"/> of the specified index.
     /// </summary>
-        public AllianceGuildEntryRef this[int index] => new (this._data[(4 + index * AllianceGuildEntryRef.Length)..]);
+        public AllianceGuildEntryRef this[int index] => new (this._data[(8 + index * AllianceGuildEntryRef.Length)..]);
 
     /// <summary>
     /// Performs an implicit conversion from a Span of bytes to a <see cref="AllianceList"/>.
@@ -20692,7 +20728,7 @@ public readonly ref struct AllianceListRef
     /// </summary>
     /// <param name="guildsCount">The count of <see cref="AllianceGuildEntryRef"/> from which the size will be calculated.</param>
         
-    public static int GetRequiredSize(int guildsCount) => guildsCount * AllianceGuildEntryRef.Length + 4;
+    public static int GetRequiredSize(int guildsCount) => guildsCount * AllianceGuildEntryRef.Length + 8;
 
 
 /// <summary>
@@ -20714,15 +20750,23 @@ public readonly ref struct AllianceGuildEntryRef
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 13;
+    public static int Length => 41;
 
     /// <summary>
-    /// Gets or sets the guild id.
+    /// Gets or sets the member count.
     /// </summary>
-    public uint GuildId
+    public byte MemberCount
     {
-        get => ReadUInt32LittleEndian(this._data);
-        set => WriteUInt32LittleEndian(this._data, value);
+        get => this._data[0];
+        set => this._data[0] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the logo.
+    /// </summary>
+    public Span<byte> Logo
+    {
+        get => this._data.Slice(1, 32);
     }
 
     /// <summary>
@@ -20730,8 +20774,8 @@ public readonly ref struct AllianceGuildEntryRef
     /// </summary>
     public string GuildName
     {
-        get => this._data.ExtractString(4, 9, System.Text.Encoding.UTF8);
-        set => this._data.Slice(4, 9).WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.ExtractString(33, 8, System.Text.Encoding.UTF8);
+        set => this._data.Slice(33, 8).WriteString(value, System.Text.Encoding.UTF8);
     }
 }
 }

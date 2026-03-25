@@ -121,7 +121,7 @@ public class GameServerContext : GameContext, IGameServerContext
 
         foreach (var allianceGuild in allianceGuilds)
         {
-            if (!this._playersByGuild.TryGetValue(allianceGuild.GuildId, out var playerList))
+            if (!this._playersByGuild.TryGetValue(allianceGuild.Id, out var playerList))
             {
                 continue;
             }
