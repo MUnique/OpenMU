@@ -239,7 +239,9 @@ public static class AttackableExtensions
         if (soulBarrierManaToll > 0 && defender.Attributes[Stats.CurrentMana] > soulBarrierManaToll)
         {
             manaToll = soulBarrierManaToll;
-            dmg -= (int)(dmg * defender.Attributes[Stats.SoulBarrierReceiveDecrement]);
+            float soulBarrierReduction = defender.Attributes[Stats.SoulBarrierReceiveDecrement];
+            soulBarrierReduction = Math.Clamp(soulBarrierReduction, 0f, 0.9f);
+            dmg -= (int)(dmg * soulBarrierReduction);
         }
 
         dmg += (int)attacker.Attributes[Stats.FinalDamageBonus];
