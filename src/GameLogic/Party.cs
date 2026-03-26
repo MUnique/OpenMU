@@ -15,7 +15,7 @@ using Nito.AsyncEx;
 /// <summary>
 /// A group of players who share chat, health visibility, and experience distribution.
 /// </summary>
-public sealed class Party : AsyncDisposable, IDisposable
+public sealed class Party : AsyncDisposable
 {
     private static readonly Meter Meter = new(MeterName);
     private static readonly Counter<int> PartyCount = Meter.CreateCounter<int>("PartyCount");
