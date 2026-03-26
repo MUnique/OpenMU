@@ -238,8 +238,6 @@ public sealed class Party : AsyncDisposable
         if (this._healthUpdateCts is { } cts)
         {
             await cts.CancelAsync().ConfigureAwait(false);
-            cts.Dispose();
-            this._healthUpdateCts = null;
         }
 
         foreach (var member in this.PartyList)
@@ -261,6 +259,18 @@ public sealed class Party : AsyncDisposable
         PartyCount.Add(-1);
 
         await base.DisposeAsyncCore().ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            this._healthUpdateCts?.Dispose();
+            this._healthUpdateCts = null;
+        }
+
+        base.Dispose(disposing);
     }
 
     private async ValueTask ExitPartyAsync(IPartyMember member, byte index)
