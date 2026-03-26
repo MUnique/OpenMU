@@ -8,8 +8,8 @@ using Microsoft.Extensions.ObjectPool;
 using MUnique.OpenMU.Pathfinding;
 
 /// <summary>
-/// The <see cref="PooledObjectPolicy{IPathFinder}"/> which implements the creation
-/// of the <see cref="IPathFinder"/> with an <see cref="ScopedGridNetwork"/>.
+/// The <see cref="PooledObjectPolicy{PathFinder}"/> which implements the creation
+/// of the <see cref="PathFinder"/> with an <see cref="ScopedGridNetwork"/>.
 /// </summary>
 public class PathFinderPoolingPolicy : PooledObjectPolicy<PathFinder>
 {

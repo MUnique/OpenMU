@@ -314,15 +314,16 @@ public sealed class Party : AsyncDisposable
                 .ToList();
         }
 
-        if (recipients.Count == 0)
+        var count = recipients.Count;
+        if (count == 0)
         {
-            return 0;
+            return count;
         }
 
         var totalLevel = recipients.Sum(p => (int)p.Attributes![Stats.TotalLevel]);
-        var averageLevel = totalLevel / recipients.Count;
+        var averageLevel = totalLevel / count;
         var averageExperience = killedObject.CalculateBaseExperience(averageLevel);
-        var totalAverageExperience = averageExperience * recipients.Count * Math.Pow(1.05, recipients.Count - 1);
+        var totalAverageExperience = averageExperience * count * Math.Pow(1.05, count - 1);
         totalAverageExperience *= killedObject.CurrentMap?.Definition.ExpMultiplier ?? 1;
         totalAverageExperience *= recipients[0].GameContext.ExperienceRate;
 
