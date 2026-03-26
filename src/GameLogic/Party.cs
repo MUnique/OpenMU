@@ -15,6 +15,7 @@ using Nito.AsyncEx;
 /// <summary>
 /// A group of players who share chat, health visibility, and experience distribution.
 /// </summary>
+[SuppressMessage("IDisposableAnalyzers.Correctness", "S2931", Justification = "Disposed via Disposable base class; _healthUpdate cleaned up in Dispose(bool).")]
 public sealed class Party : AsyncDisposable
 {
     private static readonly Meter Meter = new(MeterName);
