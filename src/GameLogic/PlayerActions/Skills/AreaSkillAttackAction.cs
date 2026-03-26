@@ -283,9 +283,20 @@ public class AreaSkillAttackAction
                         continue; // This projectile cannot hit this target
                     }
 
-                    var hitChance = attackRound < areaSkillSettings.MinimumNumberOfHitsPerTarget
-                        ? 1.0
-                        : Math.Min(areaSkillSettings.HitChancePerDistanceMultiplier, Math.Pow(areaSkillSettings.HitChancePerDistanceMultiplier, player.GetDistanceTo(target)));
+                    double hitChance;
+                    if (attackRound >= areaSkillSettings.MinimumNumberOfHitsPerTarget)
+                    {
+                        hitChance = Math.Pow(areaSkillSettings.HitChancePerDistanceMultiplier, player.GetDistanceTo(target));
+                    }
+                    else if (attackCount >= minAttacks)
+                    {
+                        hitChance = 0.5;
+                    }
+                    else
+                    {
+                        hitChance = 1.0;
+                    }
+
                     if (hitChance < 1.0 && !Rand.NextRandomBool(hitChance))
                     {
                         continue;

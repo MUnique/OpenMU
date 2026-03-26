@@ -33,7 +33,6 @@ public class StunEffectInitializer : InitializerBase
         magicEffect.InformObservers = true;
         magicEffect.SendDuration = false;
         magicEffect.StopByDeath = true;
-        magicEffect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
 
         var isStunnedPowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
         magicEffect.PowerUpDefinitions.Add(isStunnedPowerUpDefinition);

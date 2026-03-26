@@ -52,12 +52,16 @@ internal class AreaSkillAttackHandlerPlugIn : IPacketHandlerPlugIn
 
         if (message.SkillId == PollutionSkillId)
         {
+            var point = new Point(message.TargetX, message.TargetY);
+            var extraTargetId = message.ExtraTargetId;
+            var rotation = message.Rotation;
+
             _ = Task.Run(async () =>
             {
                 for (int i = 1; i <= 5; i++)
                 {
                     await Task.Delay(1000).ConfigureAwait(false);
-                    await this._attackAction.AttackAsync(player, message.ExtraTargetId, message.SkillId, new Point(message.TargetX, message.TargetY), message.Rotation).ConfigureAwait(false);
+                    await this._attackAction.AttackAsync(player, extraTargetId, PollutionSkillId, point, rotation).ConfigureAwait(false);
                 }
             });
         }

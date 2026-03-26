@@ -19,7 +19,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("A1B2C3D4-E5F6-7890-ABCD-EF1234567890")]
 public class RequiemSkillPlugIn : IAreaSkillPlugIn
 {
-    private readonly int stunnedMagicEffectNumber = 61; // 0x3D
+    private const int StunnedMagicEffectNumber = 61; // 0x3D
 
     private MagicEffectDefinition? _stunEffectDefinition;
 
@@ -29,7 +29,7 @@ public class RequiemSkillPlugIn : IAreaSkillPlugIn
     /// <inheritdoc />
     public async ValueTask AfterTargetGotAttackedAsync(IAttacker attacker, IAttackable target, SkillEntry skillEntry, Point targetAreaCenter, HitInfo? hitInfo)
     {
-        this._stunEffectDefinition ??= ((Player)attacker).GameContext.Configuration.MagicEffects.First(m => m.Number == this.stunnedMagicEffectNumber);
+        this._stunEffectDefinition ??= ((Player)attacker).GameContext.Configuration.MagicEffects.First(m => m.Number == StunnedMagicEffectNumber);
 
         if (!target.IsAlive || !Rand.NextRandomBool(Convert.ToDouble(attacker.Attributes[Stats.StunChance])))
         {

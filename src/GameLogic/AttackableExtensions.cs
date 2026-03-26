@@ -19,6 +19,8 @@ using MUnique.OpenMU.Pathfinding;
 /// </summary>
 public static class AttackableExtensions
 {
+    private const short ExplosionMagicEffectNumber = 75;   // 0x4B
+
     private static readonly IDictionary<AttributeDefinition, AttributeDefinition> ReductionModifiers =
         new Dictionary<AttributeDefinition, AttributeDefinition>
         {
@@ -853,7 +855,9 @@ public static class AttackableExtensions
                 return;
             }
 
-            magicEffect = new BleedingMagicEffect(powerUps[0].Boost, magicEffectDefinition, durationSpan, attacker, target, hit.HealthDamage + hit.ShieldDamage);
+            var multiplier = magicEffectDefinition.Number == ExplosionMagicEffectNumber ? attacker.Attributes[Stats.BleedingDamageMultiplier] : 0.6f;
+            var damage = (hit.HealthDamage + hit.ShieldDamage) * multiplier;
+            magicEffect = new BleedingMagicEffect(powerUps[0].Boost, magicEffectDefinition, durationSpan, attacker, target, damage);
         }
         else
         {
