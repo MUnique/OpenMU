@@ -15,7 +15,7 @@ using Nito.AsyncEx;
 /// <summary>
 /// A group of players who share chat, health visibility, and experience distribution.
 /// </summary>
-public sealed class Party : AsyncDisposable
+public sealed class Party : AsyncDisposable, IDisposable
 {
     private static readonly Meter Meter = new(MeterName);
     private static readonly Counter<int> PartyCount = Meter.CreateCounter<int>("PartyCount");
@@ -231,17 +231,6 @@ public sealed class Party : AsyncDisposable
     }
 
     /// <inheritdoc/>
-    protected override void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            this._healthUpdate?.Dispose();
-        }
-
-        base.Dispose(disposing);
-    }
-
-    /// <inheritdoc/>
     protected override async ValueTask DisposeAsyncCore()
     {
         foreach (var member in this.PartyList)
@@ -263,6 +252,17 @@ public sealed class Party : AsyncDisposable
         PartyCount.Add(-1);
 
         await base.DisposeAsyncCore().ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            this._healthUpdate?.Dispose();
+        }
+
+        base.Dispose(disposing);
     }
 
     private async ValueTask ExitPartyAsync(IPartyMember member, byte index)
