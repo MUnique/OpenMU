@@ -22,9 +22,11 @@ public sealed class Party : AsyncDisposable
 
     private readonly ILogger<Party> _logger;
     private readonly IPartyManager _partyManager;
-    private readonly Timer _healthUpdate;
     private readonly byte _maxPartySize;
     private readonly AsyncLock _experienceDistributionLock = new();
+    private readonly TimeSpan _healthUpdateInterval = TimeSpan.FromMilliseconds(500);
+
+    private CancellationTokenSource? _healthUpdateCts;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Party"/> class.
@@ -39,8 +41,8 @@ public sealed class Party : AsyncDisposable
         this._logger = logger;
         this.PartyList = new List<IPartyMember>(maxPartySize);
 
-        var updateInterval = TimeSpan.FromMilliseconds(500);
-        this._healthUpdate = new Timer(this.HealthUpdateElapsed, null, updateInterval, updateInterval);
+        this._healthUpdateCts = new CancellationTokenSource();
+        _ = this.HealthUpdateLoopAsync(this._healthUpdateCts.Token);
         PartyCount.Add(1);
     }
 
@@ -233,6 +235,13 @@ public sealed class Party : AsyncDisposable
     /// <inheritdoc/>
     protected override async ValueTask DisposeAsyncCore()
     {
+        if (this._healthUpdateCts is { } cts)
+        {
+            await cts.CancelAsync().ConfigureAwait(false);
+            cts.Dispose();
+            this._healthUpdateCts = null;
+        }
+
         foreach (var member in this.PartyList)
         {
             try
@@ -250,8 +259,6 @@ public sealed class Party : AsyncDisposable
 
         this.PartyList.Clear();
         PartyCount.Add(-1);
-
-        await this._healthUpdate.DisposeAsync().ConfigureAwait(false);
 
         await base.DisposeAsyncCore().ConfigureAwait(false);
     }
@@ -408,6 +415,36 @@ public sealed class Party : AsyncDisposable
             {
                 this._logger.LogDebug(ex, "Error sending party list to {Name}", member.Name);
             }
+        }
+    }
+
+    private async Task HealthUpdateLoopAsync(CancellationToken cancellationToken)
+    {
+        using var timer = new PeriodicTimer(this._healthUpdateInterval);
+        try
+        {
+            while (await timer.WaitForNextTickAsync(cancellationToken).ConfigureAwait(false))
+            {
+                try
+                {
+                    foreach (var member in this.PartyList)
+                    {
+                        var plugIn = member.ViewPlugIns.GetPlugIn<IPartyHealthViewPlugIn>();
+                        if (plugIn?.IsHealthUpdateNeeded() is true)
+                        {
+                            await plugIn.UpdatePartyHealthAsync().ConfigureAwait(false);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    this._logger.LogError(ex, "Unexpected error during health update");
+                }
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // expected during shutdown
         }
     }
 }
