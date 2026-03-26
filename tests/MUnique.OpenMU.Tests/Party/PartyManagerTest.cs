@@ -150,12 +150,12 @@ public class PartyManagerTest
     [Test]
     public async ValueTask ReplaceMember_PreservesMasterStatus()
     {
-        var (party, member1, member2) = await this.CreatePartyWithTwoMembersAsync().ConfigureAwait(false);
+        var (party, member1, _) = await this.CreatePartyWithTwoMembersAsync().ConfigureAwait(false);
 
         // member1 is master (first member added)
         var snapshot = new OfflinePartyMember(member1);
         await party.ReplaceMemberAsync(member1, snapshot).ConfigureAwait(false);
-
+        
         Assert.That(party.PartyMaster, Is.SameAs(snapshot));
     }
 

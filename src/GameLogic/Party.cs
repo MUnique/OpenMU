@@ -231,10 +231,19 @@ public sealed class Party : AsyncDisposable
     }
 
     /// <inheritdoc/>
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            this._healthUpdate?.Dispose();
+        }
+
+        base.Dispose(disposing);
+    }
+
+    /// <inheritdoc/>
     protected override async ValueTask DisposeAsyncCore()
     {
-        await this._healthUpdate.DisposeAsync().ConfigureAwait(false);
-
         foreach (var member in this.PartyList)
         {
             try
