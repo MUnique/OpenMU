@@ -4,15 +4,16 @@
 
 namespace MUnique.OpenMU.GameLogic;
 
+using System.Collections.Concurrent;
 using MUnique.OpenMU.GameLogic.Views.Party;
 
 /// <summary>
-/// Manages party creation and tracks character-to-party membership for reconnection.
+/// Manages party creation and tracks character-to-party membership for member reconnection.
 /// </summary>
 public sealed class PartyManager : IPartyManager
 {
-    private readonly System.Collections.Concurrent.ConcurrentDictionary<string, Party> _partyByCharacterName = new();
-    private readonly ILogger<Party> _logger;
+    private readonly ConcurrentDictionary<string, Party> _partyByCharacterName = new(StringComparer.OrdinalIgnoreCase);
+    private readonly ILogger<Party> _partyLogger;
     private readonly byte _maxPartySize;
 
     /// <summary>
@@ -23,59 +24,40 @@ public sealed class PartyManager : IPartyManager
     public PartyManager(byte maxPartySize, ILogger<Party> partyLogger)
     {
         this._maxPartySize = maxPartySize;
-        this._logger = partyLogger;
+        this._partyLogger = partyLogger;
     }
 
     /// <inheritdoc />
-    public Party CreateParty()
-    {
-        return new Party(this, this._maxPartySize, this._logger);
-    }
-
-    /// <inheritdoc />
-    public void TrackPartyMembership(string characterName, Party party)
-    {
-        this._partyByCharacterName[characterName] = party;
-    }
-
-    /// <inheritdoc />
-    public void RemovePartyMembership(string characterName)
-    {
-        this._partyByCharacterName.TryRemove(characterName, out _);
-    }
-
-    /// <inheritdoc />
-    public async ValueTask OnMemberDisconnectedAsync(IPartyMember member)
-    {
-        if (member.Party is not { } party)
-        {
-            return;
-        }
-
-        var snapshot = new OfflinePartyMember(member);
-        await party.ReplaceMemberAsync(member, snapshot).ConfigureAwait(false);
-    }
+    public Party CreateParty() => new(this, this._maxPartySize, this._partyLogger);
 
     /// <inheritdoc />
     public async ValueTask OnMemberReconnectedAsync(IPartyMember member)
     {
         if (!this._partyByCharacterName.TryGetValue(member.Name, out var party))
         {
-            this._logger.LogDebug("Party not found for {CharacterName}", member.Name);
             return;
         }
 
-        var offlineMember = party.PartyList.FirstOrDefault(m =>
-            m.Name == member.Name && !m.IsConnected);
-
-        if (offlineMember is null)
+        // Find the offline snapshot that was created when the member disconnected.
+        var snapshot = party.PartyList.FirstOrDefault(m => m.Name == member.Name && !m.IsConnected);
+        if (snapshot is null)
         {
-            this._logger.LogDebug("Ignoring replace party member for online character {CharacterName}", member.Name);
+            // Already replaced (e.g., duplicate reconnect event) — nothing to do.
             return;
         }
 
-        await party.ReplaceMemberAsync(offlineMember, member).ConfigureAwait(false);
+        await party.ReplaceMemberAsync(snapshot, member).ConfigureAwait(false);
+
+        // Send the full party state to the rejoined player since they missed updates while offline.
         await member.InvokeViewPlugInAsync<IUpdatePartyListPlugIn>(p => p.UpdatePartyListAsync()).ConfigureAwait(false);
         await member.InvokeViewPlugInAsync<IPartyHealthViewPlugIn>(p => p.UpdatePartyHealthAsync()).ConfigureAwait(false);
     }
+
+    /// <inheritdoc />
+    void IPartyManager.TrackMembership(string characterName, Party party)
+        => this._partyByCharacterName[characterName] = party;
+
+    /// <inheritdoc />
+    void IPartyManager.UntrackMembership(string characterName)
+        => this._partyByCharacterName.TryRemove(characterName, out _);
 }

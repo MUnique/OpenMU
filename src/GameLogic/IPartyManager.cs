@@ -5,39 +5,35 @@
 namespace MUnique.OpenMU.GameLogic;
 
 /// <summary>
-/// Manages party creation and tracks character-to-party membership.
+/// Manages party creation and tracks party membership for member reconnection.
 /// </summary>
 public interface IPartyManager
 {
     /// <summary>
-    /// Creates a new party using the configured maximum party size.
+    /// Creates a new party with the configured maximum party size.
     /// </summary>
     /// <returns>The newly created party.</returns>
     Party CreateParty();
 
     /// <summary>
-    /// Tracks that a character belongs to a party.
+    /// Called when a party member reconnects. Restores the live player into their previous party,
+    /// replacing the <see cref="OfflinePartyMember"/> snapshot that was created on disconnect.
+    /// </summary>
+    /// <param name="member">The reconnected member.</param>
+    ValueTask OnMemberReconnectedAsync(IPartyMember member);
+
+    /// <summary>
+    /// Registers that a character belongs to a party. Called by <see cref="Party"/> internally
+    /// when members are added, replaced, or removed.
     /// </summary>
     /// <param name="characterName">The character name.</param>
     /// <param name="party">The party.</param>
-    void TrackPartyMembership(string characterName, Party party);
+    internal void TrackMembership(string characterName, Party party);
 
     /// <summary>
-    /// Removes the party membership tracking for a character.
+    /// Removes the party tracking for a character. Called by <see cref="Party"/> internally
+    /// when members leave or are replaced.
     /// </summary>
     /// <param name="characterName">The character name.</param>
-    void RemovePartyMembership(string characterName);
-
-    /// <summary>
-    /// Called when a party member disconnects. Replaces the live member with an
-    /// <see cref="OfflinePartyMember"/> snapshot so the party stays intact.
-    /// </summary>
-    /// <param name="member">The member who disconnected.</param>
-    ValueTask OnMemberDisconnectedAsync(IPartyMember member);
-
-    /// <summary>
-    /// Called when a party member reconnects. Replaces the old member reference in the party with the new player.
-    /// </summary>
-    /// <param name="member">The member who reconnected.</param>
-    ValueTask OnMemberReconnectedAsync(IPartyMember member);
+    internal void UntrackMembership(string characterName);
 }
