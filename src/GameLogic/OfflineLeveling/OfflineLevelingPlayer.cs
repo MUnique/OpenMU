@@ -67,7 +67,7 @@ public sealed class OfflineLevelingPlayer : Player
         }
         catch (Exception ex)
         {
-            this.Logger.LogError(ex, "Failed to initialize offline player for {AccountLoginName}.", this.AccountLoginName);
+            this.Logger.LogError(ex, "Failed to initialize offline player for {player}.", this);
             return false;
         }
     }

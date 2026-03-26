@@ -75,7 +75,7 @@ public class PartyManagerTest
     {
         var (party, _, member2) = await this.CreatePartyWithTwoMembersAsync().ConfigureAwait(false);
 
-        await party.KickPlayerAsync((byte)party.PartyList.IndexOf(member2)).ConfigureAwait(false);
+        await party.KickPlayerAsync((byte)((List<IPartyMember>)party.PartyList).IndexOf(member2)).ConfigureAwait(false);
 
         Assert.That(party.PartyList, Is.Not.Contains(member2));
         Assert.That(member2.Party, Is.Null);

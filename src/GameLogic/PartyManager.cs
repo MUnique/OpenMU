@@ -11,7 +11,7 @@ using MUnique.OpenMU.GameLogic.Views.Party;
 /// </summary>
 public sealed class PartyManager : IPartyManager
 {
-    private readonly System.Collections.Concurrent.ConcurrentDictionary<string, Party> _partyByCharacterName = new(StringComparer.OrdinalIgnoreCase);
+    private readonly System.Collections.Concurrent.ConcurrentDictionary<string, Party> _partyByCharacterName = new(StringComparer.Ordinal);
     private readonly ILogger<Party> _partyLogger;
     private readonly byte _maxPartySize;
 
