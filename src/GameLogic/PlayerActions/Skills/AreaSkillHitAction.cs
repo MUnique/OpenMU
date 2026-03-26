@@ -33,8 +33,8 @@ public class AreaSkillHitAction
 
         if (target.CheckSkillTargetRestrictions(player, skill.Skill))
         {
-            await target.AttackByAsync(player, skill, false).ConfigureAwait(false);
-            await target.TryApplyElementalEffectsAsync(player, skill).ConfigureAwait(false);
+            var hitInfo = await target.AttackByAsync(player, skill, false).ConfigureAwait(false);
+            await target.TryApplyElementalEffectsAsync(player, skill, hitInfo).ConfigureAwait(false);
         }
     }
 }

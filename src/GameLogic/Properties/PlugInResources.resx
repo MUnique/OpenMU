@@ -423,6 +423,18 @@
   <data name="PlasmaStormSkillPlugIn_Description" xml:space="preserve">
     <value>Handles the plasma storm skill of the fenrir pet. It randomly halves the durability of a target's equipped item.</value>
   </data>
+  <data name="PollutionSkillPlugIn_Name" xml:space="preserve">
+    <value>Pollution Skill</value>
+  </data>
+  <data name="PollutionSkillPlugIn_Description" xml:space="preserve">
+    <value>Handles the pollution skill (book of lagle) of the summoner class. Based on a chance, it may push the targets 2 squares away from the attacker.</value>
+  </data>
+  <data name="RequiemSkillPlugIn_Name" xml:space="preserve">
+    <value>Requiem Skill</value>
+  </data>
+  <data name="RequiemSkillPlugIn_Description" xml:space="preserve">
+    <value>Handles the requiem skill (book of neil) of the summoner class. Based on a chance, it may stun the target.</value>
+  </data>
   <data name="SoulBarrierProficieSkillAction_Name" xml:space="preserve">
     <value>SoulBarrierProficieSkillAction</value>
   </data>

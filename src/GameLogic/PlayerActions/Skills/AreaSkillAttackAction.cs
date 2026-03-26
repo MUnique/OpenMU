@@ -113,8 +113,9 @@ public class AreaSkillAttackAction
 
     private static IEnumerable<IAttackable> GetTargetsInRange(Player player, Point targetAreaCenter, Skill skill, byte rotation)
     {
+        var range = skill.AreaSkillSettings?.EffectRange > 0 ? skill.AreaSkillSettings.EffectRange : skill.Range;
         var targetsInRange = player.CurrentMap?
-                    .GetAttackablesInRange(targetAreaCenter, skill.Range)
+                    .GetAttackablesInRange(targetAreaCenter, range)
                     .Where(a => a != player)
                     .Where(a => !a.IsAtSafezone())
             ?? [];
@@ -217,6 +218,7 @@ public class AreaSkillAttackAction
         IAttackable? extraTarget = null;
         var attackCount = 0;
         var maxAttacks = areaSkillSettings.MaximumNumberOfHitsPerAttack == 0 ? int.MaxValue : areaSkillSettings.MaximumNumberOfHitsPerAttack;
+        var minAttacks = areaSkillSettings.MinimumNumberOfHitsPerAttack == 0 ? maxAttacks : areaSkillSettings.MinimumNumberOfHitsPerAttack;
         var currentDelay = TimeSpan.Zero;
 
         // Order targets by distance to process nearest targets first
@@ -335,7 +337,7 @@ public class AreaSkillAttackAction
         }
 
         var hitInfo = await target.AttackByAsync(player, skillEntry, isCombo, 1, skill.NumberOfHitsPerAttack > 1 ? false : null).ConfigureAwait(false);
-        await target.TryApplyElementalEffectsAsync(player, skillEntry).ConfigureAwait(false);
+        await target.TryApplyElementalEffectsAsync(player, skillEntry, hitInfo).ConfigureAwait(false);
 
         for (int hit = 2; hit <= skill.NumberOfHitsPerAttack; hit++)
         {

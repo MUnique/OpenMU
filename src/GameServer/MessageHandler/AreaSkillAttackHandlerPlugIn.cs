@@ -22,6 +22,8 @@ using MUnique.OpenMU.PlugIns;
 [MinimumClient(1, 0, ClientLanguage.Invariant)]
 internal class AreaSkillAttackHandlerPlugIn : IPacketHandlerPlugIn
 {
+    private const int PollutionSkillId = 225;
+
     private readonly AreaSkillAttackAction _attackAction = new();
 
     /// <inheritdoc/>
@@ -47,5 +49,17 @@ internal class AreaSkillAttackHandlerPlugIn : IPacketHandlerPlugIn
         }
 
         await this._attackAction.AttackAsync(player, message.ExtraTargetId, message.SkillId, new Point(message.TargetX, message.TargetY), message.Rotation).ConfigureAwait(false);
+
+        if (message.SkillId == PollutionSkillId)
+        {
+            _ = Task.Run(async () =>
+            {
+                for (int i = 1; i <= 5; i++)
+                {
+                    await Task.Delay(1000).ConfigureAwait(false);
+                    await this._attackAction.AttackAsync(player, message.ExtraTargetId, message.SkillId, new Point(message.TargetX, message.TargetY), message.Rotation).ConfigureAwait(false);
+                }
+            });
+        }
     }
 }
