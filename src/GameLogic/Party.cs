@@ -15,7 +15,6 @@ using Nito.AsyncEx;
 /// <summary>
 /// A group of players who share chat, health visibility, and experience distribution.
 /// </summary>
-[SuppressMessage("IDisposableAnalyzers.Correctness", "S2931", Justification = "Disposed via Disposable base class; _healthUpdate cleaned up in Dispose(bool).")]
 public sealed class Party : AsyncDisposable
 {
     private static readonly Meter Meter = new(MeterName);
@@ -252,18 +251,9 @@ public sealed class Party : AsyncDisposable
         this.PartyList.Clear();
         PartyCount.Add(-1);
 
+        await this._healthUpdate.DisposeAsync().ConfigureAwait(false);
+
         await base.DisposeAsyncCore().ConfigureAwait(false);
-    }
-
-    /// <inheritdoc/>
-    protected override void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            this._healthUpdate?.Dispose();
-        }
-
-        base.Dispose(disposing);
     }
 
     private async ValueTask ExitPartyAsync(IPartyMember member, byte index)
