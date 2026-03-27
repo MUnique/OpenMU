@@ -4,53 +4,20 @@
 
 namespace MUnique.OpenMU.GameServer.RemoteView.MiniGames;
 
-using System.Buffers.Binary;
-using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic.MiniGames;
-using MUnique.OpenMU.Network;
+using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.PlugIns;
-using MUnique.OpenMU.GameServer.RemoteView;
 
 /// <summary>
-/// Sends Kanturu-specific state/result/HUD packets (0xD1 group) to the client.
+/// Sends Kanturu-specific state, result, and HUD packets (0xD1 group) to the client.
+/// Packets are defined in <c>ServerToClientPackets.xml</c> and this plugin uses the
+/// auto-generated extension methods from <c>ConnectionExtensions</c>.
 /// </summary>
-/// <remarks>
-/// Packet map (all C1 headers, subcode-bearing):
-/// <list type="table">
-///   <item><term>0xD1 0x00</term><description>State info — opens the gateway NPC dialog (INTERFACE_KANTURU2ND_ENTERNPC).</description></item>
-///   <item><term>0xD1 0x01</term><description>Enter result — stops NPC animation, shows error popup on failure.</description></item>
-///   <item><term>0xD1 0x03</term><description>State change — controls HUD, music, and terrain reload.</description></item>
-///   <item><term>0xD1 0x04</term><description>Battle result — displays Success_kantru.tga or Failure_kantru.tga.</description></item>
-///   <item><term>0xD1 0x05</term><description>Time limit — countdown timer for the in-map HUD (milliseconds).</description></item>
-///   <item><term>0xD1 0x06</term><description>Maya wide-area attack — triggers the visual MayaAction sequence on the Maya body object.</description></item>
-///   <item><term>0xD1 0x07</term><description>Monster/user count — numbers displayed in the HUD.</description></item>
-/// </list>
-/// </remarks>
 [PlugIn]
-[Display(Name = "Kanturu Event View Plugin", Description = "Sends Kanturu event state/result/HUD packets (0xD1 group) to the client.")]
+[Display(Name = "Kanturu Event View Plugin", Description = "Sends Kanturu event packets (0xD1 group) to the client.")]
 [Guid("A3F1C8D2-5E94-4B7A-8C31-D6F2E0A49B15")]
 public sealed class KanturuEventViewPlugIn : IKanturuEventViewPlugIn
 {
-    // Packet byte-lengths (C1 + Length + Code + SubCode + data):
-    private const int StateInfoLength = 12;          // + btState + btDetailState + btEnter + btUserCount + int iRemainTime (4 bytes LE)
-    private const int EnterResultLength = 5;         // + btResult
-    private const int StateChangeLength = 6;         // + btState + btDetailState
-    private const int BattleResultLength = 5;        // + btResult
-    private const int TimeLimitLength = 8;           // + int btTimeLimit (4 bytes LE)
-    private const int MonsterUserCountLength = 6;    // + bMonsterCount + btUserCount
-    private const int WideAreaAttackLength = 7;      // + btObjClassH + btObjClassL + btType
-
-    private const byte C1 = 0xC1;
-    private const byte GroupCode = 0xD1;
-
-    private const byte SubCodeStateInfo = 0x00;
-    private const byte SubCodeEnterResult = 0x01;
-    private const byte SubCodeStateChange = 0x03;
-    private const byte SubCodeResult = 0x04;
-    private const byte SubCodeTimeLimit = 0x05;
-    private const byte SubCodeWideAreaAttack = 0x06;
-    private const byte SubCodeMonsterUserCount = 0x07;
-
     private readonly RemotePlayer _player;
 
     /// <summary>
@@ -60,169 +27,181 @@ public sealed class KanturuEventViewPlugIn : IKanturuEventViewPlugIn
     public KanturuEventViewPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc />
-    public async ValueTask SendStateInfoAsync(byte state, byte detailState, byte enter, byte userCount, int remainTimeSec)
+    public async ValueTask ShowStateInfoAsync(KanturuState state, byte detailState, bool canEnter, int userCount, TimeSpan remainingTime)
     {
         if (this._player.Connection is not { } connection)
         {
             return;
         }
 
-        int Write()
-        {
-            var span = connection.Output.GetSpan(StateInfoLength)[..StateInfoLength];
-            span[0] = C1;
-            span[1] = StateInfoLength;
-            span[2] = GroupCode;
-            span[3] = SubCodeStateInfo;
-            span[4] = state;
-            span[5] = detailState;
-            span[6] = enter;
-            span[7] = userCount;
-            // The client struct field iRemainTime is a plain C int — write as little-endian.
-            BinaryPrimitives.WriteInt32LittleEndian(span[8..], remainTimeSec);
-            return StateInfoLength;
-        }
-
-        await connection.SendAsync(Write).ConfigureAwait(false);
+        await connection.SendKanturuStateInfoAsync(
+            ConvertState(state),
+            detailState,
+            canEnter,
+            (byte)Math.Min(userCount, byte.MaxValue),
+            (int)remainingTime.TotalSeconds).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
-    public async ValueTask SendEnterResultAsync(byte result)
+    public async ValueTask ShowEnterResultAsync(KanturuEnterResult result)
     {
         if (this._player.Connection is not { } connection)
         {
             return;
         }
 
-        int Write()
-        {
-            var span = connection.Output.GetSpan(EnterResultLength)[..EnterResultLength];
-            span[0] = C1;
-            span[1] = EnterResultLength;
-            span[2] = GroupCode;
-            span[3] = SubCodeEnterResult;
-            span[4] = result;
-            return EnterResultLength;
-        }
-
-        await connection.SendAsync(Write).ConfigureAwait(false);
+        await connection.SendKanturuEnterResultAsync(ConvertEnterResult(result)).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
-    public async ValueTask SendStateChangeAsync(byte state, byte detailState)
+    public async ValueTask ShowMayaBattleStateAsync(KanturuMayaDetailState detailState)
     {
         if (this._player.Connection is not { } connection)
         {
             return;
         }
 
-        int Write()
-        {
-            var span = connection.Output.GetSpan(StateChangeLength)[..StateChangeLength];
-            span[0] = C1;
-            span[1] = StateChangeLength;
-            span[2] = GroupCode;
-            span[3] = SubCodeStateChange;
-            span[4] = state;
-            span[5] = detailState;
-            return StateChangeLength;
-        }
-
-        await connection.SendAsync(Write).ConfigureAwait(false);
+        await connection.SendKanturuStateChangeAsync(
+            KanturuStateChange.StateType.MayaBattle,
+            ConvertMayaDetail(detailState)).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
-    public async ValueTask SendBattleResultAsync(byte result)
+    public async ValueTask ShowNightmareStateAsync(KanturuNightmareDetailState detailState)
     {
         if (this._player.Connection is not { } connection)
         {
             return;
         }
 
-        int Write()
-        {
-            var span = connection.Output.GetSpan(BattleResultLength)[..BattleResultLength];
-            span[0] = C1;
-            span[1] = BattleResultLength;
-            span[2] = GroupCode;
-            span[3] = SubCodeResult;
-            span[4] = result;
-            return BattleResultLength;
-        }
-
-        await connection.SendAsync(Write).ConfigureAwait(false);
+        await connection.SendKanturuStateChangeAsync(
+            KanturuStateChange.StateType.NightmareBattle,
+            ConvertNightmareDetail(detailState)).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
-    public async ValueTask SendTimeLimitAsync(int timeLimitMs)
+    public async ValueTask ShowTowerStateAsync(KanturuTowerDetailState detailState)
     {
         if (this._player.Connection is not { } connection)
         {
             return;
         }
 
-        int Write()
-        {
-            var span = connection.Output.GetSpan(TimeLimitLength)[..TimeLimitLength];
-            span[0] = C1;
-            span[1] = TimeLimitLength;
-            span[2] = GroupCode;
-            span[3] = SubCodeTimeLimit;
-            // The client struct uses a plain C int — write as little-endian.
-            BinaryPrimitives.WriteInt32LittleEndian(span[4..], timeLimitMs);
-            return TimeLimitLength;
-        }
-
-        await connection.SendAsync(Write).ConfigureAwait(false);
+        await connection.SendKanturuStateChangeAsync(
+            KanturuStateChange.StateType.Tower,
+            ConvertTowerDetail(detailState)).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
-    public async ValueTask SendMonsterUserCountAsync(byte monsterCount, byte userCount)
+    public async ValueTask ShowBattleResultAsync(KanturuBattleResult result)
     {
         if (this._player.Connection is not { } connection)
         {
             return;
         }
 
-        int Write()
-        {
-            var span = connection.Output.GetSpan(MonsterUserCountLength)[..MonsterUserCountLength];
-            span[0] = C1;
-            span[1] = MonsterUserCountLength;
-            span[2] = GroupCode;
-            span[3] = SubCodeMonsterUserCount;
-            span[4] = monsterCount;
-            span[5] = userCount;
-            return MonsterUserCountLength;
-        }
-
-        await connection.SendAsync(Write).ConfigureAwait(false);
+        await connection.SendKanturuBattleResultAsync(ConvertBattleResult(result)).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
-    public async ValueTask SendMayaWideAreaAttackAsync(byte attackType)
+    public async ValueTask ShowTimeLimitAsync(TimeSpan timeLimit)
     {
         if (this._player.Connection is not { } connection)
         {
             return;
         }
 
-        int Write()
+        await connection.SendKanturuTimeLimitAsync((int)timeLimit.TotalMilliseconds).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public async ValueTask ShowMonsterUserCountAsync(int monsterCount, int userCount)
+    {
+        if (this._player.Connection is not { } connection)
         {
-            var span = connection.Output.GetSpan(WideAreaAttackLength)[..WideAreaAttackLength];
-            span[0] = C1;
-            span[1] = WideAreaAttackLength;
-            span[2] = GroupCode;
-            span[3] = SubCodeWideAreaAttack;
-            // btObjClassH / btObjClassL — the client ignores these bytes and only reads btType,
-            // so we send zeros. (Confirmed in WSclient.cpp: RecevieKanturu3rdMayaSKill reads
-            // only pData->btType and passes it to MayaSceneMayaAction.)
-            span[4] = 0x00; // btObjClassH
-            span[5] = 0x00; // btObjClassL
-            span[6] = attackType;
-            return WideAreaAttackLength;
+            return;
         }
 
-        await connection.SendAsync(Write).ConfigureAwait(false);
+        await connection.SendKanturuMonsterUserCountAsync(
+            (byte)Math.Min(monsterCount, byte.MaxValue),
+            (byte)Math.Min(userCount, byte.MaxValue)).ConfigureAwait(false);
     }
+
+    /// <inheritdoc />
+    public async ValueTask ShowMayaWideAreaAttackAsync(KanturuMayaAttackType attackType)
+    {
+        if (this._player.Connection is not { } connection)
+        {
+            return;
+        }
+
+        // ObjClassH and ObjClassL are ignored by the client (confirmed in WSclient.cpp:
+        // RecevieKanturu3rdMayaSKill reads only btType and passes it to MayaSceneMayaAction).
+        await connection.SendKanturuMayaWideAreaAttackAsync(0x00, 0x00, ConvertMayaAttackType(attackType)).ConfigureAwait(false);
+    }
+
+    private static KanturuStateInfo.StateType ConvertState(KanturuState state) => state switch
+    {
+        KanturuState.None => KanturuStateInfo.StateType.None,
+        KanturuState.Standby => KanturuStateInfo.StateType.Standby,
+        KanturuState.MayaBattle => KanturuStateInfo.StateType.MayaBattle,
+        KanturuState.NightmareBattle => KanturuStateInfo.StateType.NightmareBattle,
+        KanturuState.Tower => KanturuStateInfo.StateType.Tower,
+        KanturuState.End => KanturuStateInfo.StateType.End,
+        _ => throw new ArgumentOutOfRangeException(nameof(state), state, null),
+    };
+
+    private static KanturuEnterResult.EnterResult ConvertEnterResult(KanturuEnterResult result) => result switch
+    {
+        KanturuEnterResult.Failed => KanturuEnterResult.EnterResult.Failed,
+        KanturuEnterResult.Success => KanturuEnterResult.EnterResult.Success,
+        _ => throw new ArgumentOutOfRangeException(nameof(result), result, null),
+    };
+
+    private static KanturuBattleResult.BattleResult ConvertBattleResult(KanturuBattleResult result) => result switch
+    {
+        KanturuBattleResult.Failure => KanturuBattleResult.BattleResult.Failure,
+        KanturuBattleResult.Victory => KanturuBattleResult.BattleResult.Victory,
+        _ => throw new ArgumentOutOfRangeException(nameof(result), result, null),
+    };
+
+    private static byte ConvertMayaDetail(KanturuMayaDetailState detail) => detail switch
+    {
+        KanturuMayaDetailState.None => 0,
+        KanturuMayaDetailState.Notify => 2,
+        KanturuMayaDetailState.Monster1 => 3,
+        KanturuMayaDetailState.MayaLeft => 4,
+        KanturuMayaDetailState.Monster2 => 8,
+        KanturuMayaDetailState.MayaRight => 9,
+        KanturuMayaDetailState.Monster3 => 13,
+        KanturuMayaDetailState.BothHands => 14,
+        KanturuMayaDetailState.EndCycleMaya3 => 16,
+        _ => throw new ArgumentOutOfRangeException(nameof(detail), detail, null),
+    };
+
+    private static byte ConvertNightmareDetail(KanturuNightmareDetailState detail) => detail switch
+    {
+        KanturuNightmareDetailState.None => 0,
+        KanturuNightmareDetailState.Idle => 1,
+        KanturuNightmareDetailState.Intro => 2,
+        KanturuNightmareDetailState.Battle => 3,
+        KanturuNightmareDetailState.End => 4,
+        _ => throw new ArgumentOutOfRangeException(nameof(detail), detail, null),
+    };
+
+    private static byte ConvertTowerDetail(KanturuTowerDetailState detail) => detail switch
+    {
+        KanturuTowerDetailState.None => 0,
+        KanturuTowerDetailState.Revitalization => 1,
+        KanturuTowerDetailState.Notify => 2,
+        KanturuTowerDetailState.Close => 3,
+        _ => throw new ArgumentOutOfRangeException(nameof(detail), detail, null),
+    };
+
+    private static KanturuMayaWideAreaAttack.AttackType ConvertMayaAttackType(KanturuMayaAttackType attackType) => attackType switch
+    {
+        KanturuMayaAttackType.Storm => KanturuMayaWideAreaAttack.AttackType.Storm,
+        KanturuMayaAttackType.Rain => KanturuMayaWideAreaAttack.AttackType.Rain,
+        _ => throw new ArgumentOutOfRangeException(nameof(attackType), attackType, null),
+    };
 }

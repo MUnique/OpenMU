@@ -72,11 +72,11 @@ public class KanturuGatewayPlugIn : IPlayerTalkToNpcPlugIn
             .GetDurationUntilNextStartAsync(player.GameContext, miniGameDefinition)
             .ConfigureAwait(false);
 
-        byte state;
+        KanturuState state;
         byte detailState;
-        byte enter;
-        byte userCount;
-        int remainTimeSec;
+        bool canEnter;
+        int userCount;
+        TimeSpan remainingTime;
 
         if (ctx is KanturuContext kanturuCtx)
         {
@@ -90,35 +90,33 @@ public class KanturuGatewayPlugIn : IPlayerTalkToNpcPlugIn
             // NightmareBattle and Tower phase are both sealed — players who are already
             // inside the event access the Refinery Tower by walking through the opened
             // Elphis barrier; the Gateway does not re-admit anyone for those phases.
-            enter = state == KanturuStateCode.MayaBattle ? (byte)1 : (byte)0;
+            canEnter = state == KanturuState.MayaBattle;
 
-            userCount = (byte)Math.Min(255, ctx.PlayerCount);
-            remainTimeSec = 0;
+            userCount = ctx.PlayerCount;
+            remainingTime = TimeSpan.Zero;
         }
         else if (timeUntilOpening == TimeSpan.Zero)
         {
             // Entry window is open but the game context has not been created yet
             // (race: the scheduler opened the window but OnGameStartAsync hasn't run).
-            state = KanturuStateCode.MayaBattle;
+            state = KanturuState.MayaBattle;
             detailState = DetailStandbyOpen;
-            enter = 1;
+            canEnter = true;
             userCount = 0;
-            remainTimeSec = 0;
+            remainingTime = TimeSpan.Zero;
         }
         else
         {
             // No active event — show countdown to the next scheduled start.
-            state = KanturuStateCode.Standby;
+            state = KanturuState.Standby;
             detailState = 1;   // STANBY_START — client shows "Opens in X minutes"
-            enter = 0;
+            canEnter = false;
             userCount = 0;
-            remainTimeSec = timeUntilOpening.HasValue
-                ? (int)Math.Ceiling(timeUntilOpening.Value.TotalSeconds)
-                : 0;
+            remainingTime = timeUntilOpening ?? TimeSpan.Zero;
         }
 
         await player.InvokeViewPlugInAsync<IKanturuEventViewPlugIn>(p =>
-            p.SendStateInfoAsync(state, detailState, enter, userCount, remainTimeSec))
+            p.ShowStateInfoAsync(state, detailState, canEnter, userCount, remainingTime))
             .ConfigureAwait(false);
     }
 }

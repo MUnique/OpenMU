@@ -8,188 +8,218 @@ using MUnique.OpenMU.GameLogic.Views;
 
 /// <summary>
 /// View plugin interface for Kanturu-specific server-to-client packets (0xD1 group).
-/// Each method maps to one packet subcode.
+/// Each method maps to one packet subcode. Names use Show... to signal that the game
+/// logic is expressing intent, not dictating the transport mechanism.
 /// </summary>
 public interface IKanturuEventViewPlugIn : IViewPlugIn
 {
     /// <summary>
-    /// Sends packet 0xD1/0x00 — Kanturu state info (response to NPC talk / info request).
-    /// This opens the <c>INTERFACE_KANTURU2ND_ENTERNPC</c> dialog on the client, showing
-    /// the current event state, how many players are inside, and whether entry is possible.
+    /// Shows the Kanturu state info dialog to the player (packet 0xD1/0x00).
+    /// This opens the <c>INTERFACE_KANTURU2ND_ENTERNPC</c> dialog on the client,
+    /// showing the current event state, whether entry is possible, how many players
+    /// are inside, and how much time remains.
     /// </summary>
-    /// <param name="state">Main event state (see <see cref="KanturuStateCode"/>).</param>
-    /// <param name="detailState">Detail state for the current main state.</param>
-    /// <param name="enter">1 = entrance is open (Enter button enabled); 0 = entrance closed.</param>
-    /// <param name="userCount">Number of players currently inside the event map.</param>
-    /// <param name="remainTimeSec">
-    /// Seconds remaining. Semantics depend on state:
-    /// Standby → seconds until the event opens (client shows minutes).
-    /// Tower   → seconds the tower has been open (client shows hours).
-    /// Otherwise 0.
+    /// <param name="state">Main event state.</param>
+    /// <param name="detailState">
+    /// Protocol detail-state byte. Pass the raw byte value from the appropriate
+    /// detail-state enum (<see cref="KanturuMayaDetailState"/>,
+    /// <see cref="KanturuNightmareDetailState"/>, or <see cref="KanturuTowerDetailState"/>).
     /// </param>
-    ValueTask SendStateInfoAsync(byte state, byte detailState, byte enter, byte userCount, int remainTimeSec);
+    /// <param name="canEnter"><c>true</c> if the Enter button should be enabled.</param>
+    /// <param name="userCount">Number of players currently inside the event map.</param>
+    /// <param name="remainingTime">
+    /// Remaining time. Standby: time until the event opens.
+    /// Tower: time the tower has been open. Otherwise <see cref="TimeSpan.Zero"/>.
+    /// </param>
+    ValueTask ShowStateInfoAsync(KanturuState state, byte detailState, bool canEnter, int userCount, TimeSpan remainingTime);
 
     /// <summary>
-    /// Sends packet 0xD1/0x01 — Kanturu enter result.
-    /// Sent after the player's entry attempt is processed.
-    /// On the client side this stops the NPC animation and closes the dialog.
-    /// Result codes: 0 = failed (generic), use specific POPUP_* values for other errors.
-    /// On success the player is teleported before this is sent, so the packet is only
-    /// needed for failure cases.
+    /// Shows the result of the player's entry attempt (packet 0xD1/0x01).
+    /// On success the player has already been teleported before this is sent;
+    /// on failure the client displays the appropriate error popup.
     /// </summary>
-    ValueTask SendEnterResultAsync(byte result);
+    ValueTask ShowEnterResultAsync(KanturuEnterResult result);
 
     /// <summary>
-    /// Sends packet 0xD1/0x03 — Kanturu state change.
-    /// On the client side this:
-    ///   - Shows/hides the in-map HUD (<c>INTERFACE_KANTURU_INFO</c>).
-    ///   - Switches background music (Maya, Nightmare, Tower themes).
-    ///   - When <paramref name="state"/> == <see cref="KanturuStateCode.Tower"/> and
-    ///     <paramref name="detailState"/> is 1 or 2, reloads the success terrain file
-    ///     (<c>EncTerrain&lt;n&gt;01.att</c>), which visually removes the Elphis barrier.
+    /// Updates the client HUD and audio for a Maya battle phase transition (packet 0xD1/0x03).
     /// </summary>
-    /// <param name="state">Main state (see <see cref="KanturuStateCode"/>).</param>
-    /// <param name="detailState">Detail state for the current main state.</param>
-    ValueTask SendStateChangeAsync(byte state, byte detailState);
+    ValueTask ShowMayaBattleStateAsync(KanturuMayaDetailState detailState);
 
     /// <summary>
-    /// Sends packet 0xD1/0x04 — Kanturu battle result.
-    /// <list type="bullet">
-    ///   <item>0 = failure — shows <c>Failure_kantru.tga</c> overlay.</item>
-    ///   <item>1 = success — shows <c>Success_kantru.tga</c> overlay
-    ///     (only when client state is already <see cref="KanturuStateCode.NightmareBattle"/>).</item>
-    /// </list>
+    /// Updates the client HUD and audio for a Nightmare battle phase transition (packet 0xD1/0x03).
     /// </summary>
-    ValueTask SendBattleResultAsync(byte result);
+    ValueTask ShowNightmareStateAsync(KanturuNightmareDetailState detailState);
 
     /// <summary>
-    /// Sends packet 0xD1/0x05 — countdown timer for the Kanturu HUD (in milliseconds).
-    /// The HUD divides by 1000 to get seconds and counts down visually.
+    /// Updates the client HUD and audio for a Tower of Refinement phase transition (packet 0xD1/0x03).
+    /// When <paramref name="detailState"/> is <see cref="KanturuTowerDetailState.Revitalization"/>
+    /// the client additionally reloads the success terrain file to remove the Elphis barrier visually.
     /// </summary>
-    ValueTask SendTimeLimitAsync(int timeLimitMs);
+    ValueTask ShowTowerStateAsync(KanturuTowerDetailState detailState);
 
     /// <summary>
-    /// Sends packet 0xD1/0x07 — remaining monster count and current user count.
-    /// Updates the numbers displayed in the Kanturu HUD.
+    /// Shows the battle outcome overlay to the player (packet 0xD1/0x04).
     /// </summary>
-    ValueTask SendMonsterUserCountAsync(byte monsterCount, byte userCount);
+    ValueTask ShowBattleResultAsync(KanturuBattleResult result);
 
     /// <summary>
-    /// Sends packet 0xD1/0x06 — Maya wide-area attack visual trigger.
-    /// The client calls <c>MayaSceneMayaAction(attackType)</c> on receipt, which plays
-    /// one of two client-side visual sequences on the Maya body object:
-    /// <list type="bullet">
-    ///   <item>0 = stone-storm effect (<c>MODEL_STORM3</c> + falling debris around Hero)</item>
-    ///   <item>1 = stone-rain effect (<c>MODEL_MAYASTONE</c> projectiles falling on Hero)</item>
-    /// </list>
-    /// This is a purely cosmetic broadcast — damage is handled by the server-side
-    /// <see cref="MonsterDefinition.AttackSkill"/> on Maya Hands (#362/#363).
+    /// Starts the HUD countdown timer (packet 0xD1/0x05).
+    /// The client converts the value to seconds for display.
     /// </summary>
-    /// <param name="attackType">0 = storm visual; 1 = stone-rain visual.</param>
-    ValueTask SendMayaWideAreaAttackAsync(byte attackType);
+    ValueTask ShowTimeLimitAsync(TimeSpan timeLimit);
+
+    /// <summary>
+    /// Updates the monster and user count numbers in the Kanturu HUD (packet 0xD1/0x07).
+    /// </summary>
+    ValueTask ShowMonsterUserCountAsync(int monsterCount, int userCount);
+
+    /// <summary>
+    /// Triggers a Maya wide-area attack visual on the client (packet 0xD1/0x06).
+    /// This is purely cosmetic — damage is handled server-side by the monster's
+    /// <c>AttackSkill</c>.
+    /// </summary>
+    ValueTask ShowMayaWideAreaAttackAsync(KanturuMayaAttackType attackType);
 }
 
 /// <summary>
-/// Kanturu main state codes matching the client's <c>KANTURU_STATE_TYPE</c> enum.
+/// Main state of the Kanturu event. Values are defined by the client's
+/// <c>KANTURU_STATE_TYPE</c> enum and mapped to packet bytes in the view plugin layer.
 /// </summary>
-public static class KanturuStateCode
+public enum KanturuState
 {
     /// <summary>No active state.</summary>
-    public const byte None = 0;
+    None,
 
-    /// <summary>Waiting for players to enter.</summary>
-    public const byte Standby = 1;
+    /// <summary>Waiting for players to enter before the event starts.</summary>
+    Standby,
 
-    /// <summary>Maya battle phase (Phases 1–3 + boss waves).</summary>
-    public const byte MayaBattle = 2;
+    /// <summary>Maya battle phase covering Phases 1–3 and their boss waves.</summary>
+    MayaBattle,
 
-    /// <summary>Nightmare battle phase.</summary>
-    public const byte NightmareBattle = 3;
+    /// <summary>Nightmare battle phase after all three Maya phases are cleared.</summary>
+    NightmareBattle,
 
-    /// <summary>Tower of Refinement open (post-victory).</summary>
-    public const byte Tower = 4;
+    /// <summary>Tower of Refinement phase; opens after Nightmare is defeated.</summary>
+    Tower,
 
-    /// <summary>Event ended.</summary>
-    public const byte End = 5;
+    /// <summary>Event has ended.</summary>
+    End,
 }
 
 /// <summary>
-/// Detail state codes for the Nightmare battle phase,
-/// matching <c>KANTURU_NIGHTMARE_DIRECTION_TYPE</c>.
+/// Detail states for the <see cref="KanturuState.MayaBattle"/> phase,
+/// matching <c>KANTURU_MAYA_DIRECTION_TYPE</c> on the client.
 /// </summary>
-public static class KanturuNightmareDetail
+public enum KanturuMayaDetailState
+{
+    /// <summary>No direction; HUD is hidden.</summary>
+    None,
+
+    /// <summary>Maya notify/cinematic intro — camera pans to Maya room.</summary>
+    Notify,
+
+    /// <summary>Phase 1 monster wave; HUD visible.</summary>
+    Monster1,
+
+    /// <summary>Phase 1 boss: Maya Left Hand.</summary>
+    MayaLeft,
+
+    /// <summary>Phase 2 monster wave; HUD visible.</summary>
+    Monster2,
+
+    /// <summary>Phase 2 boss: Maya Right Hand.</summary>
+    MayaRight,
+
+    /// <summary>Phase 3 monster wave; HUD visible.</summary>
+    Monster3,
+
+    /// <summary>Phase 3 bosses: both Maya hands simultaneously.</summary>
+    BothHands,
+
+    /// <summary>
+    /// Maya phase 3 end cycle — triggers the full Maya explosion and player-fall cinematic
+    /// (<c>KANTURU_MAYA_DIRECTION_ENDCYCLE_MAYA3 = 16</c> on the client).
+    /// </summary>
+    EndCycleMaya3,
+}
+
+/// <summary>
+/// Detail states for the <see cref="KanturuState.NightmareBattle"/> phase,
+/// matching <c>KANTURU_NIGHTMARE_DIRECTION_TYPE</c> on the client.
+/// </summary>
+public enum KanturuNightmareDetailState
 {
     /// <summary>No direction set.</summary>
-    public const byte None = 0;
+    None,
 
-    /// <summary>Idle — Nightmare present but not yet in battle.</summary>
-    public const byte Idle = 1;
+    /// <summary>Nightmare present but idle — not yet in active battle.</summary>
+    Idle,
 
-    /// <summary>Nightmare intro animation.</summary>
-    public const byte NightmareIntro = 2;
+    /// <summary>Nightmare intro animation playing.</summary>
+    Intro,
 
     /// <summary>Active battle — shows the HUD on the client.</summary>
-    public const byte Battle = 3;
+    Battle,
 
-    /// <summary>Battle ended.</summary>
-    public const byte End = 4;
+    /// <summary>Battle ended (Nightmare defeated).</summary>
+    End,
 }
 
 /// <summary>
-/// Detail state codes for the Tower of Refinement phase,
-/// matching <c>KANTURU_TOWER_STATE_TYPE</c>.
+/// Detail states for the <see cref="KanturuState.Tower"/> phase,
+/// matching <c>KANTURU_TOWER_STATE_TYPE</c> on the client.
 /// </summary>
-public static class KanturuTowerDetail
+public enum KanturuTowerDetailState
 {
     /// <summary>No tower state.</summary>
-    public const byte None = 0;
+    None,
 
     /// <summary>
     /// Tower is open after Nightmare's defeat.
     /// Sending this triggers the client to reload <c>EncTerrain&lt;n&gt;01.att</c>
     /// (the success terrain), which visually removes the Elphis barrier.
     /// </summary>
-    public const byte Revitalization = 1;
+    Revitalization,
 
     /// <summary>Tower closing soon — client warns players.</summary>
-    public const byte Notify = 2;
+    Notify,
 
-    /// <summary>Tower closed.</summary>
-    public const byte Close = 3;
+    /// <summary>Tower is closed.</summary>
+    Close,
 }
 
 /// <summary>
-/// Detail state codes for the Maya battle phase,
-/// matching <c>KANTURU_MAYA_DIRECTION_TYPE</c>.
+/// Result of a Kanturu entry request.
 /// </summary>
-public static class KanturuMayaDetail
+public enum KanturuEnterResult
 {
-    /// <summary>No direction.</summary>
-    public const byte None = 0;
+    /// <summary>Entry failed (generic failure — level, missing pendant, event not open, etc.).</summary>
+    Failed,
 
-    /// <summary>Phase 1 monster wave active — shows HUD.</summary>
-    public const byte Monster1 = 3;
+    /// <summary>The player was successfully entered into the event.</summary>
+    Success,
+}
 
-    /// <summary>Phase 1 boss (Maya Left Hand) — shows HUD.</summary>
-    public const byte Maya1 = 4;
+/// <summary>
+/// Outcome of the Kanturu Refinery Tower battle.
+/// </summary>
+public enum KanturuBattleResult
+{
+    /// <summary>Event ended in failure; shows the <c>Failure_kantru.tga</c> overlay.</summary>
+    Failure,
 
-    /// <summary>Phase 2 monster wave active — shows HUD.</summary>
-    public const byte Monster2 = 8;
+    /// <summary>Nightmare was defeated; shows the <c>Success_kantru.tga</c> overlay.</summary>
+    Victory,
+}
 
-    /// <summary>Phase 2 boss (Maya Right Hand) — shows HUD.</summary>
-    public const byte Maya2 = 9;
+/// <summary>
+/// Visual type of a Maya wide-area attack broadcast.
+/// </summary>
+public enum KanturuMayaAttackType
+{
+    /// <summary>Stone-storm effect (<c>MODEL_STORM3</c> + falling debris).</summary>
+    Storm,
 
-    /// <summary>Phase 3 monster wave active — shows HUD.</summary>
-    public const byte Monster3 = 13;
-
-    /// <summary>Phase 3 bosses (both hands) — shows HUD.</summary>
-    public const byte Maya3 = 14;
-
-    /// <summary>
-    /// Maya phase 3 end cycle — triggers the full Maya explosion + player fall cinematic
-    /// (<c>KANTURU_MAYA_DIRECTION_ENDCYCLE_MAYA3 = 16</c> on the client).
-    /// Sending this via 0xD1/0x03 activates <c>Move2ndDirection()</c>:
-    /// camera pans to Maya room → <c>m_bMayaDie = true</c> (explosion) → <c>m_bDownHero = true</c> (fall).
-    /// </summary>
-    public const byte EndCycleMaya3 = 16;
+    /// <summary>Stone-rain effect (<c>MODEL_MAYASTONE</c> projectiles).</summary>
+    Rain,
 }
