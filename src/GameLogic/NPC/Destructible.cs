@@ -43,7 +43,7 @@ public sealed class Destructible : AttackableNpcBase, IAttackable
     /// <inheritdoc />
     public override ValueTask ApplyBleedingDamageAsync(IAttacker initialAttacker, uint damage)
     {
-        // A destructible is not an organism which can be exploded.
+        // A destructible is not an organism which can bleed.
         return ValueTask.CompletedTask;
     }
 }

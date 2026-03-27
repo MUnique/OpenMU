@@ -35,8 +35,8 @@ public class ExplosionEffectInitializer : InitializerBase
         magicEffect.StopByDeath = true;
         magicEffect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
 
-        // Damage is applied 6 times for every second
-        magicEffect.Duration.ConstantValue.Value = 6;
+        // Damage is applied 5 times for every second
+        magicEffect.Duration.ConstantValue.Value = 5;
 
         var isBleedingPowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
         magicEffect.PowerUpDefinitions.Add(isBleedingPowerUpDefinition);
