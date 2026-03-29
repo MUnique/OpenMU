@@ -6,9 +6,9 @@ namespace MUnique.OpenMU.Web.Shared.Components.Form;
 
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
-using System.Threading;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Web.Shared.Services;
 
@@ -30,15 +30,16 @@ public partial class MultiLookupField<TObject> : IDisposable
     /// </summary>
     private const int BlurDelayMs = 150;
 
-    private string _searchText = string.Empty;
+    private readonly Debouncer _debouncer = new(SearchDebounceDelayMs);
+
     private bool _isOpen;
     private bool _hasSearched;
     private bool _isLoading;
     private bool _mouseDownOnDropdown;
+    private bool _disposed;
+    private string _searchText = string.Empty;
     private IEnumerable<TObject> _filteredItems = Enumerable.Empty<TObject>();
     private ElementReference _searchInput;
-    private Debouncer _debouncer = new(SearchDebounceDelayMs);
-    private bool _disposed;
 
     /// <summary>
     /// Gets or sets the label which should be displayed.
@@ -51,6 +52,12 @@ public partial class MultiLookupField<TObject> : IDisposable
     /// </summary>
     [Inject]
     public ILookupController LookupController { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the logger.
+    /// </summary>
+    [Inject]
+    public ILogger<MultiLookupField<TObject>> Logger { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the explicit lookup controller which should be used instead
@@ -110,6 +117,7 @@ public partial class MultiLookupField<TObject> : IDisposable
     /// </summary>
     private void OnFocus(FocusEventArgs e)
     {
+        this.Logger.LogDebug("Focus event fired: Type={Type}", e.Type);
         this._isOpen = true;
     }
 
@@ -118,6 +126,8 @@ public partial class MultiLookupField<TObject> : IDisposable
     /// </summary>
     private void OnBlur(FocusEventArgs e)
     {
+        this.Logger.LogDebug("Blur event fired: Type={Type}", e.Type);
+
         _ = Task.Run(async () =>
         {
             await Task.Delay(BlurDelayMs).ConfigureAwait(true);

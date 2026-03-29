@@ -366,6 +366,9 @@ public partial class MapEditor : IDisposable
                     this._dragObjX2 = gate.X2;
                     this._dragObjY2 = gate.Y2;
                     break;
+                default:
+                    // Dragging not supported
+                    break;
             }
         }
     }
@@ -417,6 +420,9 @@ public partial class MapEditor : IDisposable
                 gate.Y1 = (byte)newY1;
                 gate.X2 = (byte)newX2;
                 gate.Y2 = (byte)newY2;
+                break;
+            default:
+                // Dragging not supported
                 break;
         }
     }
@@ -638,6 +644,10 @@ public partial class MapEditor : IDisposable
                 newExitGate.IsSpawnGate = originalExitGate.IsSpawnGate;
                 this.SelectedMap.ExitGates.Add(newExitGate);
                 this._focusedObject = newExitGate;
+                break;
+
+            default:
+                // Duplicate not supported
                 break;
         }
     }

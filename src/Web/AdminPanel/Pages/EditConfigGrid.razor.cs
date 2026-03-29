@@ -259,7 +259,6 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
             }
 
             var newObject = context.CreateNew(this.Type!);
-            var newId = newObject.GetId();
 
             var properties = this.Type!.GetProperties(BindingFlags.Public | BindingFlags.Instance)
                 .Where(p => p.CanWrite && p.CanRead && p.Name != "Id");
