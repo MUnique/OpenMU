@@ -30,7 +30,6 @@ public sealed class Party : AsyncDisposable
     private readonly TimeSpan _healthUpdateInterval = TimeSpan.FromMilliseconds(500);
     private readonly Task? _healthUpdateTask;
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2000:Dispose objects before losing scope", Justification = "Disposed in Dispose(bool disposing) method.")]
     private CancellationTokenSource? _healthUpdateCts;
 
     /// <summary>
