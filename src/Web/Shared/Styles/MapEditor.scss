@@ -1,10 +1,7 @@
 ﻿@import "Common";
 
-.map-container {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 20px;
+.map-column {
+    flex-shrink: 0;
 }
 
 .map-host {
@@ -21,28 +18,14 @@
     left: 0px;
 }
 
-.map-content {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    width: auto;
-    min-width: 100px;
-    max-width: 300px;
-    flex: 1;
-}
-
 .map-object-select {
     position: relative;
-    width: auto;
-    min-width: 100px;
-    max-width: 300px;
+    width: 100%;
 }
 
 .map-object-form {
     position: relative;
-    width: auto;
-    min-width: 100px;
-    max-width: 300px;
+    width: 100%;
 }
 
 .map-object {
@@ -86,8 +69,8 @@
 }
 
 .resizers .resizer {
-    width: 20px;
-    height: 20px;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
     background: indigo;
     border: 3px solid white;

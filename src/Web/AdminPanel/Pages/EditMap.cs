@@ -177,6 +177,9 @@ public sealed class EditMap : ComponentBase, IDisposable
         await this.GameConfigurationSource.DiscardChangesAsync().ConfigureAwait(true);
         this._maps = null;
 
+        // Refresh the context so the CascadingValue doesn't hand a disposed instance to MapEditor
+        this._context = await this.GameConfigurationSource.GetContextAsync(cancellationToken).ConfigureAwait(true);
+
         // OnAfterRender will load the maps again ...
         return true;
     }

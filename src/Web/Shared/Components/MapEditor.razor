@@ -50,65 +50,73 @@
         }
         else if (this._focusedObject is not null)
         {
+            <button id="duplicateFocused" type="button" class="btn btn-secondary" @onclick="@this.DuplicateFocusedObject"><span class="oi oi-copy"></span> @Resources.Duplicate</button>
             <button id="removeFocused" type="button" class="btn btn-secondary" @onclick="@this.RemoveFocusedObjectAsync"><span class="oi oi-x"></span> @Resources.Remove</button>
         }
     </div>
 </div>
 
-<div class="map-container">
-    @if (this._terrainImage is { })
-    {
-        <div class="map-host" width="@(_scale * 255)" height="@(_scale * 255)" @onmousemove="@this.OnMouseMoveAsync" @onmouseup="() => _resizerPosition = null">
-            <img src="@(this._terrainImage.ToBase64String(PngFormat.Instance))"
-                 width="@(_scale * 255)"
-                 height="@(_scale * 255)"
-                 alt="@string.Format(Resources.TerrainOf, this.SelectedMap.Name)" />
-            @foreach (var obj in this.GetMapObjects())
-            {
-                <div class="@this.GetCssClass(obj)"
-                     title="@obj.ToString()"
-                     style="@this.GetSizeAndPositionStyle(obj)"
-                     @onclick="@(_ => { if (!this._createMode) { this._focusedObject = obj; } })">
-                    @if (this.ShowResizers(obj))
-                    {
-                        <Resizers Resizing="@this.OnStartResizing" />
-                    }
-                    else if (this.ShowArrow(obj, out var spawn))
-                    {
-                        <div class="arrow @this.GetFocusedRotation()"></div>
-                    }
-                    else
-                    {
-                        // show nothing
-                    }
-                </div>
-            }
-        </div>
-    }
+<div class="row flex-nowrap">
+    <div class="map-column">
+        @if (this._terrainImage is { })
+        {
+            <div class="map-host" width="@(_scale * 255)" height="@(_scale * 255)" @onmousemove="@this.OnMouseMoveAsync" @onmouseup="() => { _resizerPosition = null; _isDragging = false; }">
+                <img src="@(this._terrainImage.ToBase64String(PngFormat.Instance))"
+                     width="@(_scale * 255)"
+                     height="@(_scale * 255)"
+                     alt="@string.Format(Resources.TerrainOf, this.SelectedMap.Name)" />
+                @foreach (var obj in this.GetMapObjects())
+                {
+                    <div class="@this.GetCssClass(obj)"
+                         title="@obj.ToString()"
+                         style="@this.GetSizeAndPositionStyle(obj)"
+                         @onmousedown="@(args => this.OnStartDraggingAsync(args, obj))"
+                         @onclick="@(_ => { if (!this._createMode) { this._focusedObject = obj; } })">
+                        @if (this.ShowResizers(obj))
+                        {
+                            <Resizers Resizing="@this.OnStartResizing" />
+                        }
+                        else if (this.ShowArrow(obj, out var spawn))
+                        {
+                            <div class="arrow @this.GetFocusedRotation()"></div>
+                        }
+                        else
+                        {
+                            // show nothing
+                        }
+                    </div>
+                }
+            </div>
+        }
+    </div>
 
-    <div class="map-content">
+    <div class="col-4">
         @if (!this._createMode)
         {
+            <div class="map-object-filter mb-2">
+                <input class="small form-control" type="search" autofocus @bind="@_searchFilter" @bind:event="oninput" placeholder="@Resources.Search ..."/>
+            </div>
             <div class="map-object-select">
-                <label for="objectSelect">@Resources.SelectedObject:</label>
-                <select title="Object" @onchange=this.OnObjectSelected id="objectSelect" autocomplete="off" disabled="@this._createMode">
-                    <option value="@Guid.Empty" selected=@(this._focusedObject is null)></option>
-                    @foreach (var enterGate in this.SelectedMap.EnterGates)
+                <select title="Object" id="objectSelect" class="form-control" size="@this.GetObjectListSize()" @onchange=this.OnObjectSelected autocomplete="off" disabled="@this._createMode">
+                    <option value="@Guid.Empty" selected=@(this._focusedObject is null)>&lt;No selection&gt;</option>
+                    @foreach (var enterGate in this.SelectedMap.EnterGates.Where(this.MatchesSearch))
                     {
                         <option value="@enterGate.GetId()" selected=@(object.Equals(this._focusedObject, enterGate))>@typeof(EnterGate).GetTypeCaption(): @enterGate.ToString()</option>
                     }
-                    @foreach (var exitGate in this.SelectedMap.ExitGates)
+                    @foreach (var exitGate in this.SelectedMap.ExitGates.Where(this.MatchesSearch))
                     {
                         <option value="@exitGate.GetId()" selected=@(object.Equals(this._focusedObject, exitGate))>@typeof(ExitGate).GetTypeCaption(): @exitGate.ToString()</option>
                     }
-                    @foreach (var spawn in this.SelectedMap.MonsterSpawns)
+                    @foreach (var spawn in this.SelectedMap.MonsterSpawns.Where(this.MatchesSearch))
                     {
                         <option value="@spawn.GetId()" selected=@(object.Equals(this._focusedObject, spawn))>@typeof(MonsterSpawnArea).GetTypeCaption(): @spawn.ToString()</option>
                     }
                 </select>
             </div>
         }
+    </div>
 
+    <div class="col">
         @if (this._focusedObject != null)
         {
             <div class="map-object-form">

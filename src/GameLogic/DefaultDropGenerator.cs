@@ -66,17 +66,14 @@ public class DefaultDropGenerator : IDropGenerator
 
         using var l = await this._lock.LockAsync();
         this._dropGroups.Clear();
-        if (monster.DropItemGroups.MaxBy(g => g.Chance) is { Chance: >= 1.0 } alwaysDrops)
+
+        if (monster.ObjectKind == NpcObjectKind.Destructible)
         {
-            this._dropGroups.Add(alwaysDrops);
-        }
-        else if (monster.ObjectKind == NpcObjectKind.Destructible)
-        {
-            this._dropGroups.AddRange(monster.DropItemGroups ?? []);
+            this._dropGroups.AddRange(monster.DropItemGroups.Where(g => g.Chance < 1.0));
         }
         else
         {
-            this._dropGroups.AddRange(monster.DropItemGroups ?? []);
+            this._dropGroups.AddRange(monster.DropItemGroups.Where(g => g.Chance < 1.0));
             this._dropGroups.AddRange(character.DropItemGroups ?? []);
             this._dropGroups.AddRange(map.DropItemGroups ?? []);
             this._dropGroups.AddRange(await GetQuestItemGroupsAsync(player).ConfigureAwait(false) ?? []);
@@ -88,6 +85,25 @@ public class DefaultDropGenerator : IDropGenerator
         var totalChance = this._dropGroups.Sum(g => g.Chance);
         uint money = 0;
         IList<Item>? droppedItems = null;
+
+        // Always-drop groups: all fire unconditionally, outside the NumberOfMaximumItemDrops cap.
+        var alwaysDropGroups = monster.DropItemGroups.Where(g => g.Chance >= 1.0).ToList();
+        foreach (var group in alwaysDropGroups)
+        {
+            var item = this.GenerateItemDropOrMoney(monster, group, gainedExperience, out var droppedMoney);
+            if (item is not null)
+            {
+                droppedItems ??= new List<Item>(1);
+                droppedItems.Add(item);
+            }
+
+            if (droppedMoney is not null)
+            {
+                money += droppedMoney.Value;
+            }
+        }
+
+        // Probabilistic groups: capped by NumberOfMaximumItemDrops.
         for (int i = 0; i < monster.NumberOfMaximumItemDrops; i++)
         {
             var group = this.SelectRandomGroup(this._dropGroups, totalChance);

@@ -21,7 +21,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
 /// <summary>
-/// An graphical editor for a <see cref="GameMapDefinition"/>.
+/// A graphical editor for a <see cref="GameMapDefinition"/>.
 /// </summary>
 public partial class MapEditor : IDisposable
 {
@@ -35,9 +35,18 @@ public partial class MapEditor : IDisposable
     private Resizers.ResizerPosition? _resizerPosition;
     private bool _createMode;
     private GameMapDefinition? _selectedMap;
+    private string? _searchFilter;
+
+    private bool _isDragging;
+    private byte _dragStartX;
+    private byte _dragStartY;
+    private byte _dragObjX1;
+    private byte _dragObjY1;
+    private byte _dragObjX2;
+    private byte _dragObjY2;
 
     /// <summary>
-    /// Occurs before the selected map changes by user input.
+    /// Gets or sets the <see cref="MapChangingArgs"/> event callback, that occurs before the selected map changes by user input.
     /// </summary>
     [Parameter]
     public EventCallback<MapChangingArgs>? SelectedMapChanging { get; set; }
@@ -134,7 +143,7 @@ public partial class MapEditor : IDisposable
         }
         catch
         {
-            // must be catched because it's an async void method.
+            // must be caught because it's an async void method.
         }
     }
 
@@ -142,6 +151,24 @@ public partial class MapEditor : IDisposable
     {
         this._focusedObject = null;
         return null;
+    }
+
+    private bool MatchesSearch(object? obj)
+    {
+        if (string.IsNullOrWhiteSpace(this._searchFilter))
+        {
+            return true;
+        }
+
+        return obj?.ToString()?.Contains(this._searchFilter, StringComparison.InvariantCultureIgnoreCase) ?? false;
+    }
+
+    private int GetObjectListSize()
+    {
+        return 1 // for "No selection" option
+            + this.SelectedMap.EnterGates.Count(this.MatchesSearch)
+            + this.SelectedMap.ExitGates.Count(this.MatchesSearch)
+            + this.SelectedMap.MonsterSpawns.Count(this.MatchesSearch);
     }
 
     private IEnumerable<object> GetMapObjects()
@@ -253,7 +280,7 @@ public partial class MapEditor : IDisposable
         var obj = this.SelectedMap.EnterGates.FirstOrDefault<object>(g => g.GetId().ToString() == args.Value?.ToString())
                   ?? this.SelectedMap.ExitGates.FirstOrDefault<object>(g => g.GetId().ToString() == args.Value?.ToString())
                   ?? this.SelectedMap.MonsterSpawns.FirstOrDefault(g => g.GetId().ToString() == args.Value?.ToString());
-        
+
         this._focusedObject = obj;
     }
 
@@ -278,7 +305,7 @@ public partial class MapEditor : IDisposable
 
     private async Task OnMouseMoveAsync(MouseEventArgs args)
     {
-        if (this._resizerPosition is null)
+        if (this._resizerPosition is null && !this._isDragging)
         {
             return;
         }
@@ -287,20 +314,110 @@ public partial class MapEditor : IDisposable
         {
             var (x, y) = coordinates;
 
-            switch (this._focusedObject)
+            if (this._isDragging)
             {
-                case MonsterSpawnArea spawnArea:
-                    this.OnSpawnAreaResizing(spawnArea, x, y);
-                    break;
-                case Gate gate:
-                    this.OnGateResizing(gate, x, y);
-                    break;
-                default:
-                    // do nothing
-                    return;
+                this.OnObjectDragging(x, y);
+            }
+            else
+            {
+                switch (this._focusedObject)
+                {
+                    case MonsterSpawnArea spawnArea:
+                        this.OnSpawnAreaResizing(spawnArea, x, y);
+                        break;
+                    case Gate gate:
+                        this.OnGateResizing(gate, x, y);
+                        break;
+                    default:
+                        return;
+                }
             }
 
             this.NotificationService.NotifyChange(this._focusedObject, null);
+        }
+    }
+
+    private async Task OnStartDraggingAsync(MouseEventArgs args, object obj)
+    {
+        if (this._createMode || this._resizerPosition is not null)
+        {
+            return;
+        }
+
+        this._focusedObject = obj;
+
+        if (await this.OnGetObjectCoordinatesAsync(args).ConfigureAwait(false) is { } coordinates)
+        {
+            this._isDragging = true;
+            this._dragStartX = coordinates.X;
+            this._dragStartY = coordinates.Y;
+
+            switch (obj)
+            {
+                case MonsterSpawnArea spawn:
+                    this._dragObjX1 = spawn.X1;
+                    this._dragObjY1 = spawn.Y1;
+                    this._dragObjX2 = spawn.X2;
+                    this._dragObjY2 = spawn.Y2;
+                    break;
+                case Gate gate:
+                    this._dragObjX1 = gate.X1;
+                    this._dragObjY1 = gate.Y1;
+                    this._dragObjX2 = gate.X2;
+                    this._dragObjY2 = gate.Y2;
+                    break;
+            }
+        }
+    }
+
+    private void OnObjectDragging(byte x, byte y)
+    {
+        int dx = x - this._dragStartX;
+        int dy = y - this._dragStartY;
+
+        var newX1 = this._dragObjX1 + dx;
+        var newY1 = this._dragObjY1 + dy;
+        var newX2 = this._dragObjX2 + dx;
+        var newY2 = this._dragObjY2 + dy;
+
+        if (newX1 < 0)
+        {
+            newX2 -= newX1;
+            newX1 = 0;
+        }
+
+        if (newY1 < 0)
+        {
+            newY2 -= newY1;
+            newY1 = 0;
+        }
+
+        if (newX2 > byte.MaxValue)
+        {
+            newX1 -= newX2 - byte.MaxValue;
+            newX2 = byte.MaxValue;
+        }
+
+        if (newY2 > byte.MaxValue)
+        {
+            newY1 -= newY2 - byte.MaxValue;
+            newY2 = byte.MaxValue;
+        }
+
+        switch (this._focusedObject)
+        {
+            case MonsterSpawnArea spawn:
+                spawn.X1 = (byte)newX1;
+                spawn.Y1 = (byte)newY1;
+                spawn.X2 = (byte)newX2;
+                spawn.Y2 = (byte)newY2;
+                break;
+            case Gate gate:
+                gate.X1 = (byte)newX1;
+                gate.Y1 = (byte)newY1;
+                gate.X2 = (byte)newX2;
+                gate.Y2 = (byte)newY2;
+                break;
         }
     }
 
@@ -456,7 +573,7 @@ public partial class MapEditor : IDisposable
             var cancelEventArgs = new MapChangingArgs(mapId);
             if (this.SelectedMapChanging is { } callback)
             {
-                await callback.InvokeAsync(cancelEventArgs);
+                await callback.InvokeAsync(cancelEventArgs).ConfigureAwait(true);
             }
 
             if (cancelEventArgs.Cancel)
@@ -465,6 +582,63 @@ public partial class MapEditor : IDisposable
             }
 
             this.SelectedMap = this.Maps.First(m => m.GetId() == mapId);
+        }
+    }
+
+    private void DuplicateFocusedObject()
+    {
+        if (this._focusedObject is null)
+        {
+            return;
+        }
+
+        const byte maxCoord = byte.MaxValue;
+        const byte offset = 5;
+
+        switch (this._focusedObject)
+        {
+            case MonsterSpawnArea originalSpawn:
+                var newSpawn = this.PersistenceContext.CreateNew<MonsterSpawnArea>();
+                newSpawn.GameMap = this.SelectedMap;
+                newSpawn.MonsterDefinition = originalSpawn.MonsterDefinition;
+                newSpawn.X1 = (byte)Math.Min(originalSpawn.X1 + offset, maxCoord);
+                newSpawn.Y1 = (byte)Math.Min(originalSpawn.Y1 + offset, maxCoord);
+                newSpawn.X2 = (byte)Math.Min(originalSpawn.X2 + offset, maxCoord);
+                newSpawn.Y2 = (byte)Math.Min(originalSpawn.Y2 + offset, maxCoord);
+                newSpawn.Direction = originalSpawn.Direction;
+                newSpawn.Quantity = originalSpawn.Quantity;
+                newSpawn.SpawnTrigger = originalSpawn.SpawnTrigger;
+                newSpawn.WaveNumber = originalSpawn.WaveNumber;
+                newSpawn.MaximumHealthOverride = originalSpawn.MaximumHealthOverride;
+                this.SelectedMap.MonsterSpawns.Add(newSpawn);
+                this._focusedObject = newSpawn;
+                break;
+
+            case EnterGate originalEnterGate:
+                var newEnterGate = this.PersistenceContext.CreateNew<EnterGate>();
+                newEnterGate.X1 = (byte)Math.Min(originalEnterGate.X1 + offset, maxCoord);
+                newEnterGate.Y1 = (byte)Math.Min(originalEnterGate.Y1 + offset, maxCoord);
+                newEnterGate.X2 = (byte)Math.Min(originalEnterGate.X2 + offset, maxCoord);
+                newEnterGate.Y2 = (byte)Math.Min(originalEnterGate.Y2 + offset, maxCoord);
+                newEnterGate.TargetGate = originalEnterGate.TargetGate;
+                newEnterGate.LevelRequirement = originalEnterGate.LevelRequirement;
+                newEnterGate.Number = originalEnterGate.Number;
+                this.SelectedMap.EnterGates.Add(newEnterGate);
+                this._focusedObject = newEnterGate;
+                break;
+
+            case ExitGate originalExitGate:
+                var newExitGate = this.PersistenceContext.CreateNew<ExitGate>();
+                newExitGate.Map = this.SelectedMap;
+                newExitGate.X1 = (byte)Math.Min(originalExitGate.X1 + offset, maxCoord);
+                newExitGate.Y1 = (byte)Math.Min(originalExitGate.Y1 + offset, maxCoord);
+                newExitGate.X2 = (byte)Math.Min(originalExitGate.X2 + offset, maxCoord);
+                newExitGate.Y2 = (byte)Math.Min(originalExitGate.Y2 + offset, maxCoord);
+                newExitGate.Direction = originalExitGate.Direction;
+                newExitGate.IsSpawnGate = originalExitGate.IsSpawnGate;
+                this.SelectedMap.ExitGates.Add(newExitGate);
+                this._focusedObject = newExitGate;
+                break;
         }
     }
 

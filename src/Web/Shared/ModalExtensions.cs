@@ -8,7 +8,7 @@ using System.Threading;
 using Blazored.Modal;
 using Blazored.Modal.Services;
 using MUnique.OpenMU.Web.Shared.Components;
-using MUnique.OpenMU.Web.Shared.Components.Form;
+using MUnique.OpenMU.Web.Shared.Components.Form.Modal;
 
 /// <summary>
 /// Extension methods for the <see cref="IModalService"/>.

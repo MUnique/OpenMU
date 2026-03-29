@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Components;
 using MUnique.OpenMU.DataModel.Composition;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Web.Shared;
+using MUnique.OpenMU.Web.Shared.Components.Form.Modal;
 
 /// <summary>
 /// A component which shows a collection of <typeparamref name="TItem"/> in a table.
@@ -74,12 +75,15 @@ public partial class ItemTable<TItem>
     {
         var parameters = new ModalParameters();
         parameters.Add(nameof(ModalCreateNew<TItem>.PersistenceContext), this.PersistenceContext);
-        var modal = this._modal.Show<ModalObjectSelection<TItem>>($"Select {typeof(TItem).Name}", parameters);
+        var modal = this._modal.Show<ModalObjectMultiSelection<TItem>>($"Select {typeof(TItem).Name}", parameters);
         var result = await modal.Result.ConfigureAwait(false);
-        if (!result.Cancelled && result.Data is TItem item)
+        if (!result.Cancelled && result.Data is IList<TItem> items)
         {
             this.Value ??= new List<TItem>();
-            this.Value.Add(item);
+            foreach (var item in items)
+            {
+                this.Value.Add(item);
+            }
             await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
         }
     }

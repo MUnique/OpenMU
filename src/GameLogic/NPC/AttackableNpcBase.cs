@@ -390,7 +390,7 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
             }
             else
             {
-                dropCoordinates = this.CurrentMap.Terrain.GetRandomCoordinate(this.Position, 4);
+                dropCoordinates = this.CurrentMap.Terrain.GetRandomCoordinate(this.Position, 2);
             }
 
             var owners = killer.Party?.PartyList.AsEnumerable() ?? killer.GetAsEnumerable();
