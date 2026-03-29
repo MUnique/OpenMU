@@ -31,11 +31,11 @@ public partial class MapEditor : IDisposable
 
     private Image<Rgba32>? _terrainImage;
 
-    private object? _focusedObject;
-    private Resizers.ResizerPosition? _resizerPosition;
     private bool _createMode;
+    private object? _focusedObject;
+    private string _searchFilter = string.Empty;
     private GameMapDefinition? _selectedMap;
-    private string? _searchFilter;
+    private Resizers.ResizerPosition? _resizerPosition;
 
     private bool _isDragging;
     private byte _dragStartX;
@@ -663,7 +663,7 @@ public partial class MapEditor : IDisposable
         /// <param name="nextMap">The next map.</param>
         public MapChangingArgs(Guid nextMap)
         {
-            NextMap = nextMap;
+            this.NextMap = nextMap;
         }
 
         /// <summary>

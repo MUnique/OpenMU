@@ -75,17 +75,21 @@ public partial class ItemTable<TItem>
     {
         var parameters = new ModalParameters();
         parameters.Add(nameof(ModalCreateNew<TItem>.PersistenceContext), this.PersistenceContext);
+
         var modal = this._modal.Show<ModalObjectMultiSelection<TItem>>($"Select {typeof(TItem).Name}", parameters);
         var result = await modal.Result.ConfigureAwait(false);
-        if (!result.Cancelled && result.Data is IList<TItem> items)
+        if (result.Cancelled || result.Data is not IList<TItem> items)
         {
-            this.Value ??= new List<TItem>();
-            foreach (var item in items)
-            {
-                this.Value.Add(item);
-            }
-            await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
+            return;
         }
+
+        this.Value ??= new List<TItem>();
+        foreach (var item in items)
+        {
+            this.Value.Add(item);
+        }
+
+        await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
     }
 
     private async Task OnCreateClickAsync()

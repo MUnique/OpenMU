@@ -38,8 +38,8 @@ public partial class MultiLookupField<TObject> : IDisposable
     private bool _mouseDownOnDropdown;
     private bool _disposed;
     private string _searchText = string.Empty;
-    private IEnumerable<TObject> _filteredItems = Enumerable.Empty<TObject>();
     private ElementReference _searchInput;
+    private IEnumerable<TObject> _filteredItems = Enumerable.Empty<TObject>();
 
     /// <summary>
     /// Gets or sets the label which should be displayed.
