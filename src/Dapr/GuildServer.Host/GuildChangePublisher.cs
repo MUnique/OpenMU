@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GuildServer.Host;
 using global::Dapr.Client;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.EntityFramework.Model;
 using MUnique.OpenMU.ServerClients;
 
 /// <summary>
@@ -68,23 +69,28 @@ public class GuildChangePublisher : IGuildChangePublisher
     }
 
     /// <inheritdoc />
-    public ValueTask AllianceCreatedAsync(uint masterGuildId, uint memberGuildId)
+    public async ValueTask AllianceCreatedAsync(uint masterGuildId, uint memberGuildId)
     {
-        // The alliance relationship is tracked on the GuildServer.
-        return ValueTask.CompletedTask;
+        try
+        {
+            await this._daprClient.InvokeMethodAsync("pubsub", nameof(IGameServer.AssignGuildToPlayerAsync), (masterGuildId, memberGuildId)).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, nameof(this.AllianceCreatedAsync));
+        }
     }
 
     /// <inheritdoc />
-    public ValueTask AllianceGuildRemovedAsync(uint masterGuildId, uint memberGuildId)
+    public async ValueTask AllianceDisbandedAsync(uint masterGuildId, uint memberGuildId)
     {
-        // The alliance relationship is tracked on the GuildServer.
-        return ValueTask.CompletedTask;
-    }
-
-    /// <inheritdoc />
-    public ValueTask AllianceDisbandedAsync(uint masterGuildId)
-    {
-        // The alliance relationship is tracked on the GuildServer.
-        return ValueTask.CompletedTask;
+        try
+        {
+            await this._daprClient.InvokeMethodAsync("pubsub", nameof(IGameServer.AllianceDisbandedAsync), (masterGuildId, memberGuildId)).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, nameof(this.AllianceDisbandedAsync));
+        }
     }
 }

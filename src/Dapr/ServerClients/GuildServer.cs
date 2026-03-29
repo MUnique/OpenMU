@@ -181,16 +181,16 @@ public class GuildServer : IGuildServer
     }
 
     /// <inheritdoc />
-    public async ValueTask<bool> CreateAllianceAsync(uint masterGuildId, uint targetGuildId)
+    public async ValueTask<AllianceCreationResult> CreateAllianceAsync(uint masterGuildId, uint targetGuildId)
     {
         try
         {
-            return await this._daprClient.InvokeMethodAsync<(uint, uint), bool>(this._targetAppId, nameof(this.CreateAllianceAsync), (masterGuildId, targetGuildId)).ConfigureAwait(false);
+            return await this._daprClient.InvokeMethodAsync<(uint, uint), AllianceCreationResult>(this._targetAppId, nameof(this.CreateAllianceAsync), (masterGuildId, targetGuildId)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
             this._logger.LogError(ex, "Unexpected error when creating an alliance.");
-            return false;
+            return AllianceCreationResult.Error;
         }
     }
 

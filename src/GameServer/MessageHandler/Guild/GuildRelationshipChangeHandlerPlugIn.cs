@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler.Guild;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.PlayerActions.Guild;
+using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.Network.Packets.ClientToServer;
 using MUnique.OpenMU.PlugIns;
 using ViewGuildRelationshipType = MUnique.OpenMU.GameLogic.Views.Guild.GuildRelationshipType;
@@ -32,10 +33,19 @@ internal class GuildRelationshipChangeHandlerPlugIn : IPacketHandlerPlugIn
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         GuildRelationshipChangeRequest request = packet;
-        await this._action.RequestAsync(
-            player,
-            request.TargetPlayerId,
-            (ViewGuildRelationshipType)(byte)request.RelationshipType,
-            (ViewGuildRelationshipRequestType)(byte)request.RequestType).ConfigureAwait(false);
+
+        var targetPlayer = player.GetObject(request.TargetPlayerId);
+        if (player == targetPlayer && request.RelationshipType == GuildRelationshipType.Alliance && request.RequestType == GuildRequestType.Leave)
+        {
+            await this._action.RequestLeaveAllianceAsync(player).ConfigureAwait(false);
+        }
+        else
+        {
+            await this._action.RequestAsync(
+                player,
+                request.TargetPlayerId,
+                (ViewGuildRelationshipType)(byte)request.RelationshipType,
+                (ViewGuildRelationshipRequestType)(byte)request.RequestType).ConfigureAwait(false);
+        }
     }
 }

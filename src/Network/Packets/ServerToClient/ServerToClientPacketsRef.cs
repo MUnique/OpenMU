@@ -20649,14 +20649,14 @@ public readonly ref struct AllianceListRef
             var header = this.Header;
             header.Type = HeaderType;
             header.Code = Code;
-            header.Length = (byte)data.Length;
+            header.Length = (ushort)data.Length;
         }
     }
 
     /// <summary>
     /// Gets the header type of this data packet.
     /// </summary>
-    public static byte HeaderType => 0xC1;
+    public static byte HeaderType => 0xC2;
 
     /// <summary>
     /// Gets the operation code of this data packet.
@@ -20666,7 +20666,7 @@ public readonly ref struct AllianceListRef
     /// <summary>
     /// Gets the header of this packet.
     /// </summary>
-    public C1HeaderRef Header => new (this._data);
+    public C2HeaderRef Header => new (this._data);
 
     /// <summary>
     /// Gets or sets the guild count.
@@ -20778,6 +20778,110 @@ public readonly ref struct AllianceGuildEntryRef
         set => this._data.Slice(33, 8).WriteString(value, System.Text.Encoding.UTF8);
     }
 }
+}
+
+
+/// <summary>
+/// Is sent by the server when: A guild master sent a message to kick the guild from the alliance and it has been processed.
+/// Causes reaction on client side: The list of guilds is updated accordingly.
+/// </summary>
+public readonly ref struct RemoveAllianceGuildResultRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RemoveAllianceGuildResultRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public RemoveAllianceGuildResultRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RemoveAllianceGuildResultRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private RemoveAllianceGuildResultRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEB;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x01;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 7;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public bool Result
+    {
+        get => this._data[4..].GetBoolean();
+        set => this._data[4..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the request type.
+    /// </summary>
+    public GuildRelationshipRequestType RequestType
+    {
+        get => (GuildRelationshipRequestType)this._data[5];
+        set => this._data[5] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the relationship type.
+    /// </summary>
+    public GuildRelationshipType RelationshipType
+    {
+        get => (GuildRelationshipType)this._data[6];
+        set => this._data[6] = (byte)value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="RemoveAllianceGuildResult"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator RemoveAllianceGuildResultRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="RemoveAllianceGuildResult"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(RemoveAllianceGuildResultRef packet) => packet._data; 
 }
 
 

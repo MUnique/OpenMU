@@ -8,6 +8,7 @@ using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Views.Guild;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
@@ -69,7 +70,12 @@ public class GameServerContext : GameContext, IGameServerContext
     /// <summary>
     /// Occurs when a guild has been deleted.
     /// </summary>
-    public event EventHandler<GuildDeletedEventArgs>? GuildDeleted;
+    public event EventHandler<GuildEventArgs>? GuildDeleted;
+
+    /// <summary>
+    /// Occurs when a guild has been deleted.
+    /// </summary>
+    public event EventHandler<GuildEventArgs>? GuildChanged;
 
     /// <inheritdoc/>
     public byte Id { get; }
@@ -99,6 +105,19 @@ public class GameServerContext : GameContext, IGameServerContext
     public override string ToString()
     {
         return $"Game Server {this.Id}";
+    }
+
+    /// <inheritdoc />
+    public async ValueTask RefreshGuildInfoAsync(uint guildId)
+    {
+        this.GuildChanged?.Invoke(this, new GuildEventArgs(guildId));
+        await this.ForEachGuildPlayerAsync(
+                guildId,
+                member =>
+                    member.ForEachWorldObserverAsync<IShowGuildInfoPlugIn>(
+                        p => p.ShowGuildInfoAsync(guildId),
+                        true).AsTask())
+            .ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -151,7 +170,7 @@ public class GameServerContext : GameContext, IGameServerContext
     public async ValueTask RemoveGuildAsync(uint guildId)
     {
         this._playersByGuild.Remove(guildId, out _);
-        this.GuildDeleted?.Invoke(this, new GuildDeletedEventArgs(guildId));
+        this.GuildDeleted?.Invoke(this, new GuildEventArgs(guildId));
     }
 
     /// <inheritdoc />

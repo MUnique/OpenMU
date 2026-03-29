@@ -40,14 +40,9 @@ public interface IGuildChangePublisher
 
     /// <summary>
     /// Notifies game servers that a guild was removed from an alliance.
+    /// When master and member guild are the same, the whole alliance got disbanded.
     /// </summary>
     /// <param name="masterGuildId">The identifier of the alliance master guild.</param>
     /// <param name="memberGuildId">The identifier of the removed member guild.</param>
-    ValueTask AllianceGuildRemovedAsync(uint masterGuildId, uint memberGuildId);
-
-    /// <summary>
-    /// Notifies game servers that an alliance was disbanded entirely.
-    /// </summary>
-    /// <param name="masterGuildId">The identifier of the disbanded alliance master guild.</param>
-    ValueTask AllianceDisbandedAsync(uint masterGuildId);
+    ValueTask AllianceDisbandedAsync(uint masterGuildId, uint memberGuildId);
 }

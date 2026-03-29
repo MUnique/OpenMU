@@ -23,15 +23,31 @@ public class ShowGuildRelationshipChangeResultPlugIn : IGuildRelationshipChangeR
     /// Initializes a new instance of the <see cref="ShowGuildRelationshipChangeResultPlugIn"/> class.
     /// </summary>
     /// <param name="player">The player.</param>
-    public ShowGuildRelationshipChangeResultPlugIn(RemotePlayer player) => this._player = player;
+    public ShowGuildRelationshipChangeResultPlugIn(RemotePlayer player)
+    {
+        this._player = player;
+    }
 
     /// <inheritdoc/>
-    public async ValueTask ShowResultAsync(GameLogic.Views.Guild.GuildRelationshipType relationshipType, GameLogic.Views.Guild.GuildRelationshipRequestType requestType, GameLogic.Views.Guild.GuildRelationshipChangeResultType result, ushort guildMasterId)
+    public async ValueTask ShowRemoveResultAsync(
+        bool result,
+        GameLogic.Views.Guild.GuildRelationshipType relationshipType = GameLogic.Views.Guild.GuildRelationshipType.Alliance,
+        GameLogic.Views.Guild.GuildRelationshipRequestType requestType = GameLogic.Views.Guild.GuildRelationshipRequestType.Leave)
+    {
+        await this._player.Connection.SendRemoveAllianceGuildResultAsync(result, requestType.Convert(), relationshipType.Convert()).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    public async ValueTask ShowResultAsync(
+        GameLogic.Views.Guild.GuildRelationshipType relationshipType,
+        GameLogic.Views.Guild.GuildRelationshipRequestType requestType,
+        GameLogic.Views.Guild.GuildRelationshipChangeResultType result,
+        ushort? guildMasterId)
     {
         await this._player.Connection.SendGuildRelationshipChangeResultAsync(
             relationshipType.Convert(),
             requestType.Convert(),
             result.Convert(),
-            guildMasterId).ConfigureAwait(false);
+            guildMasterId ?? 0).ConfigureAwait(false);
     }
 }

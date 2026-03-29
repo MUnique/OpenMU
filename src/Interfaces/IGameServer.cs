@@ -131,4 +131,18 @@ public interface IGameServer : IManageableServer, IFriendSystemSubscriber
     /// <param name="serverId">The identifier of the server on which the client tried to enter.</param>
     /// <param name="loginName">The login name.</param>
     ValueTask PlayerAlreadyLoggedInAsync(byte serverId, string loginName);
+
+    /// <summary>
+    /// Notifies the game server that an alliance between two guilds has been created.
+    /// </summary>
+    /// <param name="masterGuildId">The master guild identifier.</param>
+    /// <param name="memberGuildId">The member guild identifier.</param>
+    ValueTask AllianceCreatedAsync(uint masterGuildId, uint memberGuildId);
+
+    /// <summary>
+    /// Notifies the game server that an alliance between two guilds has been disbanded.
+    /// </summary>
+    /// <param name="masterGuildId">The master guild identifier.</param>
+    /// <param name="memberGuildId">The member guild identifier.</param>
+    ValueTask AllianceDisbandedAsync(uint masterGuildId, uint memberGuildId);
 }

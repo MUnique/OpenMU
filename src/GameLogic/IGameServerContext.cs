@@ -14,7 +14,12 @@ public interface IGameServerContext : IGameContext
     /// <summary>
     /// Occurs when a guild has been deleted.
     /// </summary>
-    event EventHandler<GuildDeletedEventArgs>? GuildDeleted;
+    event EventHandler<GuildEventArgs>? GuildDeleted;
+
+    /// <summary>
+    /// Occurs when a guild alliance has been changed.
+    /// </summary>
+    event EventHandler<GuildEventArgs>? GuildChanged;
 
     /// <summary>
     /// Gets the identifier of the server.
@@ -45,6 +50,12 @@ public interface IGameServerContext : IGameContext
     /// Gets the server configuration.
     /// </summary>
     GameServerConfiguration ServerConfiguration { get; }
+
+    /// <summary>
+    /// Refreshes the guild information.
+    /// </summary>
+    /// <param name="guildId">The guild identifier.</param>
+    ValueTask RefreshGuildInfoAsync(uint guildId);
 
     /// <summary>
     /// Executes an action for each player of the guild.

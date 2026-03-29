@@ -397,6 +397,18 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
         await this.RemovePlayerFromGuildAsync(player).ConfigureAwait(false);
     }
 
+    /// <inheritdoc/>
+    public async ValueTask AllianceCreatedAsync(uint masterGuildId, uint memberGuildId)
+    {
+        await this._gameContext.RefreshGuildInfoAsync(memberGuildId).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    public async ValueTask AllianceDisbandedAsync(uint masterGuildId, uint memberGuildId)
+    {
+        await this._gameContext.RefreshGuildInfoAsync(memberGuildId).ConfigureAwait(false);
+    }
+
     /// <summary>
     /// Creates an instance of <see cref="ServerInfo"/> with the data of this instance.
     /// </summary>

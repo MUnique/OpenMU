@@ -45,6 +45,7 @@ public class ShowAllianceListPlugIn : IShowAllianceListPlugIn
             var packet = new AllianceListRef(connection.Output.GetSpan(size)[..size])
             {
                 GuildCount = (byte)guildCount,
+                Success = true,
             };
 
             for (int i = 0; i < guildCount; i++)

@@ -8031,7 +8031,7 @@
       </Enums>
     </Packet>
     <Packet>
-      <HeaderType>C1Header</HeaderType>
+      <HeaderType>C2Header</HeaderType>
       <Code>E9</Code>
       <Name>AllianceList</Name>
       <Direction>ServerToClient</Direction>
@@ -8092,6 +8092,35 @@
           </Fields>
         </Structure>
       </Structures>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EB</Code>
+      <SubCode>01</SubCode>
+      <Name>RemoveAllianceGuildResult</Name>
+      <Length>7</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>A guild master sent a message to kick the guild from the alliance and it has been processed.</SentWhen>
+      <CausedReaction>The list of guilds is updated accordingly.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Boolean</Type>
+          <Name>Result</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Enum</Type>
+          <Name>RequestType</Name>
+          <TypeName>GuildRelationshipRequestType</TypeName>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Enum</Type>
+          <Name>RelationshipType</Name>
+          <TypeName>GuildRelationshipType</TypeName>
+        </Field>
+      </Fields>
     </Packet>
     <Packet>
       <HeaderType>C2Header</HeaderType>

@@ -9,7 +9,7 @@ using System.Collections.Immutable;
 /// <summary>
 /// Describes the relationship between two guilds.
 /// </summary>
-public enum GuildRelationship : byte
+public enum GuildRelationship
 {
     /// <summary>
     /// No special relationship.
@@ -25,6 +25,52 @@ public enum GuildRelationship : byte
     /// The guilds are rivals / hostile to each other.
     /// </summary>
     Rival = 2,
+}
+
+/// <summary>
+/// Defines the result of an alliance creation attempt.
+/// </summary>
+public enum AllianceCreationResult
+{
+    /// <summary>
+    /// The alliance creation failed for an unspecified reason.
+    /// </summary>
+    Failed,
+
+    /// <summary>
+    /// The alliance was created successfully.
+    /// </summary>
+    Success,
+
+    /// <summary>
+    /// The master guild could not be found.
+    /// </summary>
+    MasterGuildNotFound,
+
+    /// <summary>
+    /// The target guild could not be found.
+    /// </summary>
+    TargetGuildNotFound,
+
+    /// <summary>
+    /// The target guild is already a member of an alliance.
+    /// </summary>
+    TargetGuildAlreadyInAlliance,
+
+    /// <summary>
+    /// The maximum number of guilds allowed in an alliance has been reached.
+    /// </summary>
+    MaximumAllianceSizeReached,
+
+    /// <summary>
+    /// The guild could not be found in the target context.
+    /// </summary>
+    GuildNotFoundInTargetContext,
+
+    /// <summary>
+    /// An unexpected error occurred during alliance creation.
+    /// </summary>
+    Error,
 }
 
 /// <summary>
@@ -137,7 +183,7 @@ public interface IGuildServer
     /// <param name="masterGuildId">The identifier of the master guild that initiates the alliance.</param>
     /// <param name="targetGuildId">The identifier of the target guild to add to the alliance.</param>
     /// <returns><c>true</c> if the alliance was created successfully; <c>false</c> otherwise.</returns>
-    ValueTask<bool> CreateAllianceAsync(uint masterGuildId, uint targetGuildId);
+    ValueTask<AllianceCreationResult> CreateAllianceAsync(uint masterGuildId, uint targetGuildId);
 
     /// <summary>
     /// Removes a guild from an alliance. Only the alliance master can remove members.

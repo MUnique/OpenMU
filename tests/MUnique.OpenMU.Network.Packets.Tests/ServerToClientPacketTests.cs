@@ -4595,6 +4595,32 @@ public class PacketStructureTests
     }
 
     /// <summary>
+    /// Tests the packet size calculation for RemoveAllianceGuildResult.
+    /// </summary>
+    [Test]
+    public void RemoveAllianceGuildResult_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 7;
+        var actualLength = RemoveAllianceGuildResultRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Result' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Result' exceeds packet boundary");
+        
+        // Validate field 'RequestType' boundary
+        Assert.That(5 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'RequestType' exceeds packet boundary");
+        
+        // Validate field 'RelationshipType' boundary
+        Assert.That(6 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'RelationshipType' exceeds packet boundary");
+    }
+
+    /// <summary>
     /// Tests the packet size calculation for AssignCharacterToGuild.
     /// </summary>
     [Test]

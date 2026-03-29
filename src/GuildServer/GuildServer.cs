@@ -257,28 +257,30 @@ public class GuildServer : IGuildServer
     }
 
     /// <inheritdoc />
-    public async ValueTask<bool> CreateAllianceAsync(uint masterGuildId, uint targetGuildId)
+    public async ValueTask<AllianceCreationResult> CreateAllianceAsync(uint masterGuildId, uint targetGuildId)
     {
-        if (!this._guildDictionary.TryGetValue(masterGuildId, out var masterContainer)
-            || !this._guildDictionary.TryGetValue(targetGuildId, out var targetContainer))
+        if (!this._guildDictionary.TryGetValue(masterGuildId, out var masterContainer))
         {
-            return false;
+            return AllianceCreationResult.MasterGuildNotFound;
         }
 
-        // Target must not already be in an alliance
+        if (!this._guildDictionary.TryGetValue(targetGuildId, out var targetContainer))
+        {
+            return AllianceCreationResult.TargetGuildNotFound;
+        }
+
         if (targetContainer.Guild.AllianceGuild is not null)
         {
-            return false;
+            return AllianceCreationResult.TargetGuildAlreadyInAlliance;
         }
 
-        // Check max alliance size
-        var currentAllianceSize = this._guildDictionary.Values
-            .Count(g => IsInSameAlliance(g.Guild, masterContainer.Guild));
+        var currentAllianceSize = this._guildDictionary.Values.Count(g => IsInSameAlliance(g.Guild, masterContainer.Guild));
         if (currentAllianceSize >= MaxAllianceSize)
         {
-            return false;
+            return AllianceCreationResult.MaximumAllianceSizeReached;
         }
 
+        bool isNewAlliance = false;
         try
         {
             // Set the master guild as alliance master (self-reference)
@@ -286,6 +288,7 @@ public class GuildServer : IGuildServer
             {
                 masterContainer.Guild.AllianceGuild = masterContainer.Guild;
                 await masterContainer.DatabaseContext.SaveChangesAsync().ConfigureAwait(false);
+                isNewAlliance = true;
             }
 
             // In the target guild's context, load the master guild and set the relationship
@@ -293,7 +296,7 @@ public class GuildServer : IGuildServer
                 .GetByIdAsync<Guild>(masterContainer.Guild.Id).ConfigureAwait(false);
             if (masterGuildInTargetContext is null)
             {
-                return false;
+                return AllianceCreationResult.GuildNotFoundInTargetContext;
             }
 
             targetContainer.Guild.AllianceGuild = masterGuildInTargetContext;
@@ -302,11 +305,16 @@ public class GuildServer : IGuildServer
         catch (Exception ex)
         {
             this._logger.LogError(ex, "Error when creating an alliance.");
-            return false;
+            return AllianceCreationResult.Error;
+        }
+
+        if (isNewAlliance)
+        {
+            await this._changePublisher.AllianceCreatedAsync(masterGuildId, masterGuildId).ConfigureAwait(false);
         }
 
         await this._changePublisher.AllianceCreatedAsync(masterGuildId, targetGuildId).ConfigureAwait(false);
-        return true;
+        return AllianceCreationResult.Success;
     }
 
     /// <inheritdoc />
@@ -314,12 +322,6 @@ public class GuildServer : IGuildServer
     {
         if (!this._guildDictionary.TryGetValue(masterGuildId, out var masterContainer)
             || !this._guildDictionary.TryGetValue(targetGuildId, out var targetContainer))
-        {
-            return false;
-        }
-
-        // Only the alliance master can remove members
-        if (!IsAllianceMaster(masterContainer.Guild))
         {
             return false;
         }
@@ -334,15 +336,25 @@ public class GuildServer : IGuildServer
         {
             targetContainer.Guild.AllianceGuild = null;
             await targetContainer.DatabaseContext.SaveChangesAsync().ConfigureAwait(false);
+            await this._changePublisher.AllianceDisbandedAsync(masterGuildId, targetGuildId).ConfigureAwait(false);
+
+            // If the master guild itself is the alliance master, check if we need to update the alliance master reference for remaining members
+            var remainingAllianceGuilds = await this.GetAllianceGuildsAsync(masterGuildId).ConfigureAwait(false);
+            if (remainingAllianceGuilds.Count < 2)
+            {
+                // No more members in the alliance, clear the master's alliance reference
+                masterContainer.Guild.AllianceGuild = null;
+                await masterContainer.DatabaseContext.SaveChangesAsync().ConfigureAwait(false);
+                await this._changePublisher.AllianceDisbandedAsync(masterGuildId, masterGuildId).ConfigureAwait(false);
+            }
+
+            return true;
         }
         catch (Exception ex)
         {
             this._logger.LogError(ex, "Error when removing a guild from alliance.");
             return false;
         }
-
-        await this._changePublisher.AllianceGuildRemovedAsync(masterGuildId, targetGuildId).ConfigureAwait(false);
-        return true;
     }
 
     /// <inheritdoc />
@@ -370,15 +382,15 @@ public class GuildServer : IGuildServer
                 member.Guild.AllianceGuild = null;
                 await member.DatabaseContext.SaveChangesAsync().ConfigureAwait(false);
             }
+
+            await this._changePublisher.AllianceDisbandedAsync(masterGuildId, masterGuildId).ConfigureAwait(false);
+            return true;
         }
         catch (Exception ex)
         {
             this._logger.LogError(ex, "Error when disbanding alliance.");
             return false;
         }
-
-        await this._changePublisher.AllianceDisbandedAsync(masterGuildId).ConfigureAwait(false);
-        return true;
     }
 
     /// <inheritdoc />
@@ -509,44 +521,12 @@ public class GuildServer : IGuildServer
         }
 
         // Check hostility (transitively through alliances)
-        if (HasHostility(guild1, guild2) || HasHostility(guild2, guild1))
+        if (this.HasHostility(guild1, guild2) || this.HasHostility(guild2, guild1))
         {
             return ValueTask.FromResult(GuildRelationship.Rival);
         }
 
         return ValueTask.FromResult(GuildRelationship.None);
-    }
-
-    /// <summary>
-    /// Removes a guild from the server and the database.
-    /// First we are trying to get the guild out of our dictionary.
-    /// We are assuming that all guilds are in the dictionary, because
-    /// we are holding all guilds of all ingame-characters in it.
-    /// So this method is only called usefully from the gameserver itself,
-    /// by player interaction.
-    /// </summary>
-    /// <param name="guildContainer">The container of the guild which should be deleted.</param>
-    private async ValueTask DeleteGuildAsync(GuildContainer guildContainer)
-    {
-        // If this guild is alliance master, disband the alliance first
-        if (IsAllianceMaster(guildContainer.Guild))
-        {
-            await this.DisbandAllianceAsync(guildContainer.Id).ConfigureAwait(false);
-        }
-        else if (guildContainer.Guild.AllianceGuild is not null)
-        {
-            // Remove from alliance
-            guildContainer.Guild.AllianceGuild = null;
-            await guildContainer.DatabaseContext.SaveChangesAsync().ConfigureAwait(false);
-        }
-
-        await guildContainer.DatabaseContext.DeleteAsync(guildContainer.Guild).ConfigureAwait(false);
-        await guildContainer.DatabaseContext.SaveChangesAsync().ConfigureAwait(false);
-        this.RemoveGuildContainer(guildContainer);
-
-        await this._changePublisher.GuildDeletedAsync(guildContainer.Id).ConfigureAwait(false);
-
-        // TODO: Inform gameServers that guildwar/hostility ended
     }
 
     private static bool IsAllianceMaster(Guild guild)
@@ -591,6 +571,38 @@ public class GuildServer : IGuildServer
         }
 
         return GetAllianceMasterGuid(guild) == masterGuid;
+    }
+
+    /// <summary>
+    /// Removes a guild from the server and the database.
+    /// First we are trying to get the guild out of our dictionary.
+    /// We are assuming that all guilds are in the dictionary, because
+    /// we are holding all guilds of all ingame-characters in it.
+    /// So this method is only called usefully from the gameserver itself,
+    /// by player interaction.
+    /// </summary>
+    /// <param name="guildContainer">The container of the guild which should be deleted.</param>
+    private async ValueTask DeleteGuildAsync(GuildContainer guildContainer)
+    {
+        // If this guild is alliance master, disband the alliance first
+        if (IsAllianceMaster(guildContainer.Guild))
+        {
+            await this.DisbandAllianceAsync(guildContainer.Id).ConfigureAwait(false);
+        }
+        else if (guildContainer.Guild.AllianceGuild is not null)
+        {
+            // Remove from alliance
+            guildContainer.Guild.AllianceGuild = null;
+            await guildContainer.DatabaseContext.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        await guildContainer.DatabaseContext.DeleteAsync(guildContainer.Guild).ConfigureAwait(false);
+        await guildContainer.DatabaseContext.SaveChangesAsync().ConfigureAwait(false);
+        this.RemoveGuildContainer(guildContainer);
+
+        await this._changePublisher.GuildDeletedAsync(guildContainer.Id).ConfigureAwait(false);
+
+        // TODO: Inform gameServers that guildwar/hostility ended
     }
 
     private bool HasHostility(Guild aggressor, Guild target)

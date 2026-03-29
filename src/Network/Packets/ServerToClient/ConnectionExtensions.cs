@@ -4498,6 +4498,38 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="RemoveAllianceGuildResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="requestType">The request type.</param>
+    /// <param name="relationshipType">The relationship type.</param>
+    /// <remarks>
+    /// Is sent by the server when: A guild master sent a message to kick the guild from the alliance and it has been processed.
+    /// Causes reaction on client side: The list of guilds is updated accordingly.
+    /// </remarks>
+    public static async ValueTask SendRemoveAllianceGuildResultAsync(this IConnection? connection, bool @result, GuildRelationshipRequestType @requestType, GuildRelationshipType @relationshipType)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = RemoveAllianceGuildResultRef.Length;
+            var packet = new RemoveAllianceGuildResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+            packet.RequestType = @requestType;
+            packet.RelationshipType = @relationshipType;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="GuildInformation" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
