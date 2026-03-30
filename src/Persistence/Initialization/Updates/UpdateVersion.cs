@@ -382,4 +382,9 @@ public enum UpdateVersion
     /// The version of the <see cref="AddGlobalMoneyAmountRateAttributePlugInSeason6"/>.
     /// </summary>
     AddGlobalMoneyAmountRateAttributeSeason6 = 75,
+
+    /// <summary>
+    /// The version of the <see cref="FixSummonerCurseSkillsPlugIn"/>.
+    /// </summary>
+    FixSummonerCurseSkills = 78,
 }
