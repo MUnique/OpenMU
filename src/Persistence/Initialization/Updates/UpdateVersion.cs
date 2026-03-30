@@ -386,5 +386,5 @@ public enum UpdateVersion
     /// <summary>
     /// The version of the <see cref="FixSummonerCurseSkillsPlugIn"/>.
     /// </summary>
-    FixSummonerCurseSkills = 78,
+    FixSummonerCurseSkills = 76,
 }
