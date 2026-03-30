@@ -52,18 +52,6 @@ public class FixSummonerCurseSkillsPlugIn : UpdatePlugInBase
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
-        // Set default values for all new Skill and AreaSkillSettings properties
-        /*foreach (var skill in gameConfiguration.Skills)
-        {
-            skill.SkipElementalModifier = false;
-        }
-
-        foreach (var skill in gameConfiguration.Skills.Where(s => s.AreaSkillSettings != null))
-        {
-            skill.AreaSkillSettings!.MinimumNumberOfHitsPerAttack = 0;
-            skill.AreaSkillSettings.EffectRange = 0;
-        }*/
-
         // Add new attributes
         this.AddStatIfNotExists(context, gameConfiguration, Stats.BleedingDamageMultiplier);
         var bleedingDamageMultiplier = Stats.BleedingDamageMultiplier.GetPersistent(gameConfiguration);
