@@ -16,7 +16,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [PlugIn]
 [Display(Name = nameof(PlugInResources.PollutionSkillPlugIn_Name), Description = nameof(PlugInResources.PollutionSkillPlugIn_Description), ResourceType = typeof(PlugInResources))]
-[Guid("A2B3C4D5-E6F7-4812-3456-7890ABCDEF12")]
+[Guid("9F4B2C1D-E7A6-4B3C-8D9E-0FAB12C3D4E5")]
 public class PollutionSkillPlugIn : IAreaSkillPlugIn
 {
     /// <inheritdoc />

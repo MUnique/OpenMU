@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameServer.MessageHandler;
 
 using System.Runtime.InteropServices;
+using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.PlayerActions.Skills;
@@ -58,10 +59,17 @@ internal class AreaSkillAttackHandlerPlugIn : IPacketHandlerPlugIn
 
             _ = Task.Run(async () =>
             {
-                for (int i = 1; i <= 5; i++)
+                try
                 {
-                    await Task.Delay(1000).ConfigureAwait(false);
-                    await this._attackAction.AttackAsync(player, extraTargetId, PollutionSkillId, point, rotation).ConfigureAwait(false);
+                    for (int i = 1; i <= 5; i++)
+                    {
+                        await Task.Delay(1000).ConfigureAwait(false);
+                        await this._attackAction.AttackAsync(player, extraTargetId, PollutionSkillId, point, rotation).ConfigureAwait(false);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    player.Logger.LogError(ex, "Error during pollution skill execution.");
                 }
             });
         }

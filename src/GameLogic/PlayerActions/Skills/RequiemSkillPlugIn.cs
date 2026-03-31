@@ -16,7 +16,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [PlugIn]
 [Display(Name = nameof(PlugInResources.RequiemSkillPlugIn_Name), Description = nameof(PlugInResources.RequiemSkillPlugIn_Description), ResourceType = typeof(PlugInResources))]
-[Guid("A1B2C3D4-E5F6-7890-ABCD-EF1234567890")]
+[Guid("3F1A4C8E-9B72-4D5F-A1B3-C6E7D8F90123")]
 public class RequiemSkillPlugIn : IAreaSkillPlugIn
 {
     private const int StunnedMagicEffectNumber = 61; // 0x3D
