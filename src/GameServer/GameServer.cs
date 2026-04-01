@@ -409,6 +409,13 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
         await this._gameContext.RefreshGuildInfoAsync(memberGuildId).ConfigureAwait(false);
     }
 
+    /// <inheritdoc/>
+    public ValueTask GuildHostilityChangedAsync(uint guildIdA, IReadOnlyList<uint> allianceGuildIdsA, uint guildIdB, IReadOnlyList<uint> allianceGuildIdsB, bool created)
+    {
+        this._gameContext.UpdateGuildHostility(guildIdA, allianceGuildIdsA, guildIdB, allianceGuildIdsB, created);
+        return ValueTask.CompletedTask;
+    }
+
     /// <summary>
     /// Creates an instance of <see cref="ServerInfo"/> with the data of this instance.
     /// </summary>

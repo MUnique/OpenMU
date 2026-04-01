@@ -500,6 +500,11 @@ public class GuildServer : IGuildServer
             return false;
         }
 
+        // Compute all alliance members for both sides to propagate transitive hostility
+        var allianceIdsA = this.GetAllianceMemberIds(guildIdA);
+        var allianceIdsB = this.GetAllianceMemberIds(guildIdB);
+        await this._changePublisher.GuildHostilityChangedAsync(guildIdA, allianceIdsA, guildIdB, allianceIdsB, create).ConfigureAwait(false);
+
         return true;
     }
 
@@ -691,5 +696,33 @@ public class GuildServer : IGuildServer
         this._guildIdMapping.Remove(guildContainer.Guild.Id);
         this._idGenerator.GiveBack((int)guildContainer.Id);
         guildContainer.DatabaseContext.Dispose();
+    }
+
+    /// <summary>
+    /// Gets the runtime uint IDs of all guilds in the alliance of the given guild.
+    /// If the guild is not in an alliance, returns a list containing only the guild's own ID.
+    /// </summary>
+    /// <remarks>
+    /// Note: this iterates all entries in <see cref="_guildDictionary"/> to find alliance members.
+    /// For the expected number of online guilds this is acceptable; a separate alliance-to-members index
+    /// could be introduced in the future if profiling shows this to be a bottleneck.
+    /// </remarks>
+    private IReadOnlyList<uint> GetAllianceMemberIds(uint guildId)
+    {
+        if (!this._guildDictionary.TryGetValue(guildId, out var guildContainer))
+        {
+            return [guildId];
+        }
+
+        var masterGuid = GetAllianceMasterGuid(guildContainer.Guild);
+        if (masterGuid == Guid.Empty)
+        {
+            return [guildId];
+        }
+
+        return this._guildDictionary
+            .Where(kvp => GetAllianceMasterGuid(kvp.Value.Guild) == masterGuid)
+            .Select(kvp => kvp.Key)
+            .ToList();
     }
 }

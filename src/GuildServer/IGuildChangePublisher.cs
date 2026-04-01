@@ -45,4 +45,14 @@ public interface IGuildChangePublisher
     /// <param name="masterGuildId">The identifier of the alliance master guild.</param>
     /// <param name="memberGuildId">The identifier of the removed member guild.</param>
     ValueTask AllianceDisbandedAsync(uint masterGuildId, uint memberGuildId);
+
+    /// <summary>
+    /// Notifies game servers that the hostility between two guilds (or alliances) has changed.
+    /// </summary>
+    /// <param name="guildIdA">The identifier of the first guild.</param>
+    /// <param name="allianceGuildIdsA">All guild IDs in the alliance of guild A (or just [guildIdA] if not in an alliance).</param>
+    /// <param name="guildIdB">The identifier of the second guild.</param>
+    /// <param name="allianceGuildIdsB">All guild IDs in the alliance of guild B (or just [guildIdB] if not in an alliance).</param>
+    /// <param name="created"><c>true</c> if the hostility was created; <c>false</c> if it was removed.</param>
+    ValueTask GuildHostilityChangedAsync(uint guildIdA, IReadOnlyList<uint> allianceGuildIdsA, uint guildIdB, IReadOnlyList<uint> allianceGuildIdsB, bool created);
 }

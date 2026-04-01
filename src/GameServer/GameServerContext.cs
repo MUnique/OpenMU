@@ -24,6 +24,13 @@ public class GameServerContext : GameContext, IGameServerContext
     private readonly ConcurrentDictionary<uint, LockableList<Player>> _playersByGuild = new();
 
     /// <summary>
+    /// A set of normalized (lower, higher) guild ID pairs that are rivals.
+    /// Normalized so that we can look up both directions with a single entry.
+    /// The value is unused; only the key matters (set semantics via dictionary).
+    /// </summary>
+    private readonly ConcurrentDictionary<(uint, uint), bool> _rivalGuildPairs = new();
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="GameServerContext" /> class.
     /// </summary>
     /// <param name="gameServerDefinition">The game server definition.</param>
@@ -171,6 +178,34 @@ public class GameServerContext : GameContext, IGameServerContext
     {
         this._playersByGuild.Remove(guildId, out _);
         this.GuildDeleted?.Invoke(this, new GuildEventArgs(guildId));
+    }
+
+    /// <inheritdoc />
+    public void UpdateGuildHostility(uint guildIdA, IReadOnlyList<uint> allianceGuildIdsA, uint guildIdB, IReadOnlyList<uint> allianceGuildIdsB, bool created)
+    {
+        // Expand to all cross-alliance pairs
+        foreach (var idA in allianceGuildIdsA)
+        {
+            foreach (var idB in allianceGuildIdsB)
+            {
+                var key = idA < idB ? (idA, idB) : (idB, idA);
+                if (created)
+                {
+                    this._rivalGuildPairs.TryAdd(key, true);
+                }
+                else
+                {
+                    this._rivalGuildPairs.TryRemove(key, out _);
+                }
+            }
+        }
+    }
+
+    /// <inheritdoc />
+    public bool AreGuildsRival(uint guild1Id, uint guild2Id)
+    {
+        var key = guild1Id < guild2Id ? (guild1Id, guild2Id) : (guild2Id, guild1Id);
+        return this._rivalGuildPairs.ContainsKey(key);
     }
 
     /// <inheritdoc />

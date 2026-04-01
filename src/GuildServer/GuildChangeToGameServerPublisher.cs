@@ -66,4 +66,13 @@ public class GuildChangeToGameServerPublisher : IGuildChangePublisher
             await gameServer.AllianceDisbandedAsync(masterGuildId, memberGuildId).ConfigureAwait(false);
         }
     }
+
+    /// <inheritdoc />
+    public async ValueTask GuildHostilityChangedAsync(uint guildIdA, IReadOnlyList<uint> allianceGuildIdsA, uint guildIdB, IReadOnlyList<uint> allianceGuildIdsB, bool created)
+    {
+        foreach (var gameServer in this._gameServers.Values)
+        {
+            await gameServer.GuildHostilityChangedAsync(guildIdA, allianceGuildIdsA, guildIdB, allianceGuildIdsB, created).ConfigureAwait(false);
+        }
+    }
 }

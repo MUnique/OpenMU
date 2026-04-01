@@ -93,4 +93,17 @@ public class GuildChangePublisher : IGuildChangePublisher
             this._logger.LogError(ex, nameof(this.AllianceDisbandedAsync));
         }
     }
+
+    /// <inheritdoc />
+    public async ValueTask GuildHostilityChangedAsync(uint guildIdA, IReadOnlyList<uint> allianceGuildIdsA, uint guildIdB, IReadOnlyList<uint> allianceGuildIdsB, bool created)
+    {
+        try
+        {
+            await this._daprClient.PublishEventAsync("pubsub", nameof(IGameServer.GuildHostilityChangedAsync), (guildIdA, allianceGuildIdsA, guildIdB, allianceGuildIdsB, created)).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, nameof(this.GuildHostilityChangedAsync));
+        }
+    }
 }

@@ -2312,6 +2312,15 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return;
         }
 
+        // Killing a rival guild member (hostility) is allowed without PK penalty.
+        if (this.GuildStatus is { } killerStatus
+            && killedPlayer.GuildStatus is { } killedStatus
+            && this.GameContext is IGameServerContext serverContext
+            && serverContext.AreGuildsRival(killerStatus.GuildId, killedStatus.GuildId))
+        {
+            return;
+        }
+
         if (this._selectedCharacter!.State != HeroState.PlayerKiller2ndStage)
         {
             if (this._selectedCharacter.State < HeroState.Normal)
