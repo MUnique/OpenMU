@@ -455,9 +455,10 @@ public class GuildServer : IGuildServer
     }
 
     /// <inheritdoc />
-    public async ValueTask<bool> SetHostilityAsync(uint guildId, uint targetGuildId, bool create)
+    public async ValueTask<bool> SetHostilityAsync(uint guildIdA, uint guildIdB, bool create)
     {
-        if (!this._guildDictionary.TryGetValue(guildId, out var guildContainer))
+        if (!this._guildDictionary.TryGetValue(guildIdA, out var guildContainerA)
+            || !this._guildDictionary.TryGetValue(guildIdB, out var guildContainerB))
         {
             return false;
         }
@@ -466,27 +467,32 @@ public class GuildServer : IGuildServer
         {
             if (create)
             {
-                if (!this._guildDictionary.TryGetValue(targetGuildId, out var targetContainer))
-                {
-                    return false;
-                }
-
                 // Load target guild in requester's context to set the hostility FK correctly
-                var targetGuildInRequesterContext = await guildContainer.DatabaseContext
-                    .GetByIdAsync<Guild>(targetContainer.Guild.Id).ConfigureAwait(false);
-                if (targetGuildInRequesterContext is null)
+                var guildBInContainerA = await guildContainerA.DatabaseContext
+                    .GetByIdAsync<Guild>(guildContainerB.Guild.Id).ConfigureAwait(false);
+                if (guildBInContainerA is null)
                 {
                     return false;
                 }
 
-                guildContainer.Guild.Hostility = targetGuildInRequesterContext;
+                var guildAInContainerB = await guildContainerB.DatabaseContext
+                    .GetByIdAsync<Guild>(guildContainerA.Guild.Id).ConfigureAwait(false);
+                if (guildAInContainerB is null)
+                {
+                    return false;
+                }
+
+                guildContainerA.Guild.Hostility = guildBInContainerA;
+                guildContainerB.Guild.Hostility = guildAInContainerB;
             }
             else
             {
-                guildContainer.Guild.Hostility = null;
+                guildContainerA.Guild.Hostility = null;
+                guildContainerB.Guild.Hostility = null;
             }
 
-            await guildContainer.DatabaseContext.SaveChangesAsync().ConfigureAwait(false);
+            await guildContainerA.DatabaseContext.SaveChangesAsync().ConfigureAwait(false);
+            await guildContainerB.DatabaseContext.SaveChangesAsync().ConfigureAwait(false);
         }
         catch (Exception ex)
         {

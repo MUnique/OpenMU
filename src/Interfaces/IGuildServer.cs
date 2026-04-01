@@ -224,11 +224,11 @@ public interface IGuildServer
     /// <summary>
     /// Sets or clears the hostility between guilds.
     /// </summary>
-    /// <param name="guildId">The guild identifier of the requesting guild.</param>
-    /// <param name="targetGuildId">The identifier of the target guild. Only used when <paramref name="create"/> is <c>true</c>.</param>
+    /// <param name="guildIdA">The guild identifier of the requesting guild.</param>
+    /// <param name="guildIdB">The identifier of the target guild. Only used when <paramref name="create"/> is <c>true</c>.</param>
     /// <param name="create"><c>true</c> to set hostility; <c>false</c> to clear any existing hostility.</param>
     /// <returns><c>true</c> if the hostility state was changed successfully; <c>false</c> otherwise.</returns>
-    ValueTask<bool> SetHostilityAsync(uint guildId, uint targetGuildId, bool create);
+    ValueTask<bool> SetHostilityAsync(uint guildIdA, uint guildIdB, bool create);
 
     /// <summary>
     /// Gets the relationship between two guilds.

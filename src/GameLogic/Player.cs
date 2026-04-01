@@ -23,6 +23,7 @@ using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Properties;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Character;
+using MUnique.OpenMU.GameLogic.Views.Guild;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.GameLogic.Views.MuHelper;
 using MUnique.OpenMU.GameLogic.Views.Pet;
@@ -334,7 +335,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <summary>
     /// Gets or sets the player who sent a pending alliance request to this player.
     /// </summary>
-    public Player? PendingAllianceRequest { get; set; }
+    public (Player?, GuildRelationshipType, GuildRelationshipRequestType) PendingAllianceRequest { get; set; }
 
     /// <summary>
     /// Gets or sets the guild war context.

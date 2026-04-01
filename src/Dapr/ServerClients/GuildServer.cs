@@ -266,11 +266,11 @@ public class GuildServer : IGuildServer
     }
 
     /// <inheritdoc />
-    public async ValueTask<bool> SetHostilityAsync(uint guildId, uint targetGuildId, bool create)
+    public async ValueTask<bool> SetHostilityAsync(uint guildIdA, uint guildIdB, bool create)
     {
         try
         {
-            return await this._daprClient.InvokeMethodAsync<(uint, uint, bool), bool>(this._targetAppId, nameof(this.SetHostilityAsync), (guildId, targetGuildId, create)).ConfigureAwait(false);
+            return await this._daprClient.InvokeMethodAsync<(uint, uint, bool), bool>(this._targetAppId, nameof(this.SetHostilityAsync), (guildIdA, guildIdB, create)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
