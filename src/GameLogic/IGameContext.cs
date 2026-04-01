@@ -33,6 +33,11 @@ public interface IGameContext
     float ExperienceRate { get; }
 
     /// <summary>
+    /// Gets the global master experience rate.
+    /// </summary>
+    float MasterExperienceRate { get; }
+
+    /// <summary>
     /// Gets a value indicating whether PVP is enabled.
     /// </summary>
     bool PvpEnabled { get; }
