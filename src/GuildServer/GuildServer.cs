@@ -503,6 +503,15 @@ public class GuildServer : IGuildServer
         // Compute all alliance members for both sides to propagate transitive hostility
         var allianceIdsA = this.GetAllianceMemberIds(guildIdA);
         var allianceIdsB = this.GetAllianceMemberIds(guildIdB);
+
+        // When removing a hostility, only notify game servers if no other cross-alliance
+        // hostility remains between the two alliances (transitive rule: if any pair is still
+        // hostile all members of both alliances are still rivals).
+        if (!create && this.AreAlliancesStillHostile(allianceIdsA, allianceIdsB))
+        {
+            return true;
+        }
+
         await this._changePublisher.GuildHostilityChangedAsync(guildIdA, allianceIdsA, guildIdB, allianceIdsB, create).ConfigureAwait(false);
 
         return true;
@@ -696,6 +705,49 @@ public class GuildServer : IGuildServer
         this._guildIdMapping.Remove(guildContainer.Guild.Id);
         this._idGenerator.GiveBack((int)guildContainer.Id);
         guildContainer.DatabaseContext.Dispose();
+    }
+
+    /// <summary>
+    /// Returns <c>true</c> if any guild in <paramref name="allianceIdsA"/> still has a
+    /// hostility relationship pointing to any guild in <paramref name="allianceIdsB"/>,
+    /// or vice versa.  Used to avoid sending a spurious "no longer rivals" notification
+    /// when only one of several cross-alliance hostilities has been removed.
+    /// </summary>
+    private bool AreAlliancesStillHostile(IReadOnlyList<uint> allianceIdsA, IReadOnlyList<uint> allianceIdsB)
+    {
+        var setB = new HashSet<Guid>(
+            allianceIdsB
+                .Select(id => this._guildDictionary.TryGetValue(id, out var c) ? c.Guild.Id : Guid.Empty)
+                .Where(g => g != Guid.Empty));
+
+        // Check A→B direction
+        foreach (var idA in allianceIdsA)
+        {
+            if (this._guildDictionary.TryGetValue(idA, out var cA)
+                && cA.Guild.Hostility is Guild hA
+                && setB.Contains(hA.Id))
+            {
+                return true;
+            }
+        }
+
+        // Check B→A direction (only build setA if not already returned)
+        var setA = new HashSet<Guid>(
+            allianceIdsA
+                .Select(id => this._guildDictionary.TryGetValue(id, out var c) ? c.Guild.Id : Guid.Empty)
+                .Where(g => g != Guid.Empty));
+
+        foreach (var idB in allianceIdsB)
+        {
+            if (this._guildDictionary.TryGetValue(idB, out var cB)
+                && cB.Guild.Hostility is Guild hB
+                && setA.Contains(hB.Id))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /// <summary>
