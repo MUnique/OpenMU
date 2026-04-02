@@ -2286,7 +2286,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// Is called after the player killed a <see cref="Player"/>.
     /// Increment PK Level.
     /// </summary>
-    private async ValueTask AfterKilledPlayerAsync(Player killedPlayer)
+    internal async ValueTask AfterKilledPlayerAsync(Player killedPlayer)
     {
         if (this.DuelRoom?.State == DuelState.DuelStarted)
         {

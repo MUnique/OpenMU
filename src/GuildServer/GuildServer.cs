@@ -22,12 +22,15 @@ public class GuildServer : IGuildServer
     /// <summary>
     /// The offline server identifier.
     /// </summary>
-    public static readonly byte OfflineServerId = 0xFF;
-
-    /// <summary>
+        /// <summary>
     /// The maximum number of guilds allowed in a single alliance.
     /// </summary>
     public const int MaxAllianceSize = 5;
+
+    /// <summary>
+    /// The server id value that is used to indicate that the guild member is offline.
+    /// </summary>
+    public static readonly byte OfflineServerId = 0xFF;
 
     private readonly ILogger<GuildServer> _logger;
 
@@ -328,6 +331,12 @@ public class GuildServer : IGuildServer
 
         // Verify target is actually in the master's alliance
         if (!IsInSameAlliance(targetContainer.Guild, masterContainer.Guild))
+        {
+            return false;
+        }
+
+        // Only the alliance master can remove member guilds
+        if (!IsAllianceMaster(masterContainer.Guild))
         {
             return false;
         }
