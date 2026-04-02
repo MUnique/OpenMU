@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Items;
 
 using System.ComponentModel;
+using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
@@ -37,6 +38,12 @@ public class MoveItemAction
     /// <param name="toStorage">To storage.</param>
     public async ValueTask MoveItemAsync(Player player, byte fromSlot, Storages fromStorage, byte toSlot, Storages toStorage)
     {
+        if (!this.IsMoveAllowed(player))
+        {
+            await player.InvokeViewPlugInAsync<IItemMoveFailedPlugIn>(p => p.ItemMoveFailedAsync(null)).ConfigureAwait(false);
+            return;
+        }
+
         var fromStorageInfo = this.GetStorageInfo(player, fromStorage);
         var fromItemStorage = fromStorageInfo?.Storage;
         var item = fromItemStorage?.GetItem(fromSlot);
@@ -55,7 +62,7 @@ public class MoveItemAction
         if (movement != Movement.None)
         {
             var cancelEventArgs = new CancelEventArgs();
-            player.GameContext.PlugInManager.GetPlugInPoint<IItemMovingPlugIn>()?.ItemMoving(player, item, fromStorage, toSlot, cancelEventArgs);
+            player.GameContext.PlugInManager.GetPlugInPoint<IItemMovingPlugIn>()?.ItemMoving(player, item, toStorage, toSlot, cancelEventArgs);
             if (cancelEventArgs.Cancel)
             {
                 movement = Movement.None;
@@ -65,13 +72,13 @@ public class MoveItemAction
         switch (movement)
         {
             case Movement.Normal:
-                await this.MoveNormalAsync(player, fromSlot, toSlot, toStorage, fromItemStorage!, item, toItemStorage!).ConfigureAwait(false);
+                await this.MoveNormalAsync(player, fromStorage, fromSlot, toStorage, toSlot, fromItemStorage!, item, toItemStorage!).ConfigureAwait(false);
                 break;
             case Movement.PartiallyStack when toItemStorage?.GetItem(toSlot) is { } targetItem:
                 await this.PartiallyStackAsync(player, item, targetItem).ConfigureAwait(false);
                 break;
             case Movement.CompleteStack when toItemStorage?.GetItem(toSlot) is { } targetItem:
-                await this.FullStackAsync(player, item, targetItem).ConfigureAwait(false);
+                await this.FullStackAsync(player, fromItemStorage!, item, targetItem).ConfigureAwait(false);
                 break;
             default:
                 await player.InvokeViewPlugInAsync<IItemMoveFailedPlugIn>(p => p.ItemMoveFailedAsync(item)).ConfigureAwait(false);
@@ -92,9 +99,10 @@ public class MoveItemAction
         }
     }
 
-    private async ValueTask FullStackAsync(Player player, Item sourceItem, Item targetItem)
+    private async ValueTask FullStackAsync(Player player, IStorage sourceStorage, Item sourceItem, Item targetItem)
     {
         targetItem.Durability += sourceItem.Durability;
+        await sourceStorage.RemoveItemAsync(sourceItem).ConfigureAwait(false);
         await player.InvokeViewPlugInAsync<IItemMoveFailedPlugIn>(p => p.ItemMoveFailedAsync(sourceItem)).ConfigureAwait(false);
         await player.InvokeViewPlugInAsync<Views.Inventory.IItemRemovedPlugIn>(p => p.RemoveItemAsync(sourceItem.ItemSlot)).ConfigureAwait(false);
         await player.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(targetItem, false)).ConfigureAwait(false);
@@ -110,12 +118,26 @@ public class MoveItemAction
         await player.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(targetItem, false)).ConfigureAwait(false);
     }
 
-    private async ValueTask MoveNormalAsync(Player player, byte fromSlot, byte toSlot, Storages toStorage, IStorage fromItemStorage, Item item, IStorage toItemStorage)
+    private async ValueTask MoveNormalAsync(Player player, Storages fromStorage, byte fromSlot, Storages toStorage, byte toSlot, IStorage fromItemStorage, Item item, IStorage toItemStorage)
     {
         await fromItemStorage.RemoveItemAsync(item).ConfigureAwait(false);
         if (!await toItemStorage.AddItemAsync(toSlot, item).ConfigureAwait(false))
         {
-            await fromItemStorage.AddItemAsync(item).ConfigureAwait(false);
+            var restoredToOriginalSlot = await fromItemStorage.AddItemAsync(fromSlot, item).ConfigureAwait(false);
+            if (!restoredToOriginalSlot)
+            {
+                var restoredToAnySlot = await fromItemStorage.AddItemAsync(item).ConfigureAwait(false);
+                player.Logger.LogCritical(
+                    "Inconsistent inventory state after failed item move rollback. Player: {player}, fromStorage: {fromStorage}, fromSlot: {fromSlot}, toStorage: {toStorage}, toSlot: {toSlot}, item: {item}, restoredToAnySlot: {restoredToAnySlot}",
+                    player,
+                    fromStorage,
+                    fromSlot,
+                    toStorage,
+                    toSlot,
+                    item,
+                    restoredToAnySlot);
+                await player.InvokeViewPlugInAsync<IUpdateInventoryListPlugIn>(p => p.UpdateInventoryListAsync()).ConfigureAwait(false);
+            }
 
             await player.InvokeViewPlugInAsync<IItemMoveFailedPlugIn>(p => p.ItemMoveFailedAsync(item)).ConfigureAwait(false);
             return;
@@ -305,12 +327,12 @@ public class MoveItemAction
 
         for (var i = toStorage.StartIndex; i < toStorage.EndIndex; i++)
         {
-            if (toStorage.StartIndex == fromSlot && sameStorage)
+            if (i == fromSlot && sameStorage)
             {
                 continue; // to make sure that the same item is not blocking itself
             }
 
-            var blockingItem = toStorage.Storage.GetItem(toStorage.StartIndex);
+            var blockingItem = toStorage.Storage.GetItem((byte)i);
             if (blockingItem is null)
             {
                 continue; // no item is blocking the slot
@@ -324,15 +346,7 @@ public class MoveItemAction
 
     private bool AreTargetSlotsBlocked(Item item, byte toSlot, StorageInfo toStorage, bool[,] usedSlots)
     {
-        for (var i = toStorage.StartIndex; i < toStorage.EndIndex; i++)
-        {
-            if (this.IsTargetSlotBlocked(item, toSlot, toStorage, usedSlots))
-            {
-                return true;
-            }
-        }
-
-        return false;
+        return this.IsTargetSlotBlocked(item, toSlot, toStorage, usedSlots);
     }
 
     private bool IsTargetSlotBlocked(Item item, byte toSlot, StorageInfo toStorage, bool[,] usedSlots)
@@ -377,6 +391,19 @@ public class MoveItemAction
                 usedSlots[r, c] = true;
             }
         }
+    }
+
+    private bool IsMoveAllowed(Player player)
+    {
+        if (player.SelectedCharacter is null)
+        {
+            return false;
+        }
+
+        return player.PlayerState.CurrentState == PlayerState.EnteredWorld
+               || player.PlayerState.CurrentState == PlayerState.NpcDialogOpened
+               || player.PlayerState.CurrentState == PlayerState.TradeOpened
+               || player.PlayerState.CurrentState == PlayerState.TradeButtonPressed;
     }
 
     private record StorageInfo(IStorage Storage, byte Rows, byte StartIndex, byte EndIndex);
