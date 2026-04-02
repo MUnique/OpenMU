@@ -207,4 +207,25 @@
   <data name="NoResultsFound" xml:space="preserve">
     <value>No results found</value>
   </data>
+  <data name="Monster" xml:space="preserve">
+    <value>Monster</value>
+  </data>
+  <data name="TargetMaps" xml:space="preserve">
+    <value>Target Maps</value>
+  </data>
+  <data name="Quantity" xml:space="preserve">
+    <value>Quantity</value>
+  </data>
+  <data name="SpawnRules" xml:space="preserve">
+    <value>Spawn Rules</value>
+  </data>
+  <data name="SpawnOnAllSelectedMaps" xml:space="preserve">
+    <value>Spawn on All Selected Maps</value>
+  </data>
+  <data name="SpawnOnAllSelectedMapsTooltip" xml:space="preserve">
+    <value>If enabled spawn monster on all selected maps, if disabled, it will select a random map.</value>
+  </data>
+  <data name="AddValue" xml:space="preserve">
+    <value>Add Value</value>
+  </data>
 </root>

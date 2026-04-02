@@ -21,6 +21,7 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
 {
     private readonly IDataSource<GameConfiguration> _dataSource;
     private readonly IModalService _modalService;
+    private readonly PlugInManager? _plugInManager;
     private string _nameFilter = string.Empty;
     private Guid _pointFilter;
     private string _typeFilter = string.Empty;
@@ -30,10 +31,12 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
     /// </summary>
     /// <param name="dataSource">The data source.</param>
     /// <param name="modalService">The modal service.</param>
-    public PlugInController(IDataSource<GameConfiguration> dataSource, IModalService modalService)
+    /// <param name="plugInManager">The plug in manager.</param>
+    public PlugInController(IDataSource<GameConfiguration> dataSource, IModalService modalService, PlugInManager? plugInManager = null)
     {
         this._dataSource = dataSource;
         this._modalService = modalService;
+        this._plugInManager = plugInManager;
     }
 
     /// <inheritdoc />
@@ -42,9 +45,6 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
     /// <summary>
     /// Gets or sets the name filter.
     /// </summary>
-    /// <value>
-    /// The name filter.
-    /// </value>
     public string NameFilter
     {
         get => this._nameFilter;
@@ -58,9 +58,6 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
     /// <summary>
     /// Gets or sets the type filter.
     /// </summary>
-    /// <value>
-    /// The type filter.
-    /// </value>
     public string TypeFilter
     {
         get => this._typeFilter;
@@ -130,7 +127,7 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
 
         try
         {
-            var gameConfiguration = await this._dataSource.GetOwnerAsync(Guid.Empty);
+            var gameConfiguration = await this._dataSource.GetOwnerAsync(Guid.Empty).ConfigureAwait(true);
             var allPlugIns = GetPluginTypes().ToDictionary(t => t.GUID, t => t);
 
             var rest = count - result.Count;
@@ -180,7 +177,7 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
                             ?? Activator.CreateInstance(item.ConfigurationType);
         var parameters = new ModalParameters();
         parameters.Add(nameof(ModalCreateNew<object>.Item), configuration!);
-        parameters.Add(nameof(ModalCreateNew<object>.PersistenceContext), await this._dataSource.GetContextAsync());
+        parameters.Add(nameof(ModalCreateNew<object>.PersistenceContext), await this._dataSource.GetContextAsync().ConfigureAwait(true));
         var options = new ModalOptions
         {
             DisableBackgroundCancel = true,
@@ -198,6 +195,9 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
         {
             item.Configuration.SetConfiguration(configuration!, referenceResolver);
             await (await this._dataSource.GetContextAsync().ConfigureAwait(false)).SaveChangesAsync().ConfigureAwait(false);
+
+            this._plugInManager?.ConfigurePlugIn(item.Configuration.TypeId, item.Configuration);
+
             this.DataChanged?.Invoke(this, EventArgs.Empty);
         }
     }

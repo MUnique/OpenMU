@@ -13,9 +13,20 @@ using MUnique.OpenMU.Pathfinding;
 public class GameMapTerrain
 {
     /// <summary>
+    /// The size of the map in each dimension (byte range: 0–255).
+    /// </summary>
+    private const int MapSize = 256;
+
+    /// <summary>
     /// The default terrain where all coordinates are walkable and not a safezone.
     /// </summary>
     private static readonly byte[] DefaultTerrain = Enumerable.Repeat<byte>(0, short.MaxValue).ToArray();
+
+    /// <summary>
+    /// Pre-computed array of walkable, non-safezone points.
+    /// Built once during construction for O(1) random spawn lookups.
+    /// </summary>
+    private readonly Point[] _spawnPoints;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GameMapTerrain"/> class.
@@ -40,22 +51,41 @@ public class GameMapTerrain
         {
             this.ReadTerrainData(DefaultTerrain);
         }
+
+        this._spawnPoints = this.BuildSpawnPoints();
     }
 
     /// <summary>
     /// Gets a grid of all safezone coordinates.
     /// </summary>
-    public bool[,] SafezoneMap { get; } = new bool[256, 256];
+    public bool[,] SafezoneMap { get; } = new bool[MapSize, MapSize];
 
     /// <summary>
     /// Gets a grid of all walkable coordinates.
     /// </summary>
-    public bool[,] WalkMap { get; } = new bool[256, 256];
+    public bool[,] WalkMap { get; } = new bool[MapSize, MapSize];
 
     /// <summary>
     /// Gets a grid of the walkable coordinates of monsters.
     /// </summary>
-    public byte[,] AIgrid { get; } = new byte[256, 256];
+    public byte[,] AIgrid { get; } = new byte[MapSize, MapSize];
+
+    /// <summary>
+    /// Gets a random walkable, non-safezone point anywhere on the map.
+    /// Samples from a pre-computed array in O(1) per call.
+    /// </summary>
+    /// <returns>A valid spawn point, or null if none exists.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Point? GetRandomWalkableCoordinate()
+    {
+        var points = this._spawnPoints;
+        if (points.Length == 0)
+        {
+            return null;
+        }
+
+        return points[Random.Shared.Next(points.Length)];
+    }
 
     /// <summary>
     /// Gets a random drop coordinate at the specified point in the specified radius.
@@ -109,5 +139,28 @@ public class GameMapTerrain
             this.SafezoneMap[x, y] = value == 1;
             this.UpdateAiGridValue(x, y);
         }
+    }
+
+    /// <summary>
+    /// Builds the array of valid spawn points.
+    /// A valid spawn point is walkable and not in a safezone.
+    /// </summary>
+    /// <returns>Array of valid spawn points.</returns>
+    private Point[] BuildSpawnPoints()
+    {
+        var result = new List<Point>(MapSize * MapSize);
+
+        for (var x = 0; x < MapSize; x++)
+        {
+            for (var y = 0; y < MapSize; y++)
+            {
+                if (this.WalkMap[x, y] && !this.SafezoneMap[x, y])
+                {
+                    result.Add(new Point((byte)x, (byte)y));
+                }
+            }
+        }
+
+        return result.ToArray();
     }
 }

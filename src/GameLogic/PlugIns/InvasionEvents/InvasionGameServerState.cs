@@ -1,4 +1,4 @@
-﻿// <copyright file="InvasionGameServerState.cs" company="MUnique">
+// <copyright file="InvasionGameServerState.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -27,18 +27,13 @@ public class InvasionGameServerState : PeriodicTaskGameServerState
     public ushort MapId { get; set; }
 
     /// <summary>
-    /// Gets the map.
+    /// Gets the map identifiers where monsters will spawn.
     /// </summary>
-    public GameMapDefinition Map => this.Context.Configuration.Maps.First(m => m.Number == this.MapId);
+    public HashSet<ushort> MapIds { get; } = new();
 
     /// <summary>
-    /// Gets the name of the map.
+    /// Gets the mapping of monster ID to the selected map identifier.
+    /// Used when a random map is picked from the configuration's list.
     /// </summary>
-    public LocalizedString MapName => this.Map.Name;
-
-    /// <inheritdoc />
-    public override string? ToString()
-    {
-        return this.MapName.ToString();
-    }
+    public IDictionary<ushort, ushort> SelectedMaps { get; } = new Dictionary<ushort, ushort>();
 }

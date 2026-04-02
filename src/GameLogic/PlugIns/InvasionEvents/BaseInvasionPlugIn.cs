@@ -1,4 +1,4 @@
-﻿// <copyright file="BaseInvasionPlugIn.cs" company="MUnique">
+// <copyright file="BaseInvasionPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -8,6 +8,7 @@ using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -17,55 +18,29 @@ using MUnique.OpenMU.PlugIns;
 public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugIn<TConfiguration, InvasionGameServerState>, IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, ISupportCustomConfiguration<TConfiguration>
     where TConfiguration : PeriodicInvasionConfiguration
 {
-    /// <summary>
-    /// Lorencia.
-    /// </summary>
-    protected const ushort LorenciaId = 0;
-
-    /// <summary>
-    /// Devias.
-    /// </summary>
-    protected const ushort DeviasId = 2;
-
-    /// <summary>
-    /// Noria.
-    /// </summary>
-    protected const ushort NoriaId = 3;
-
-    /// <summary>
-    /// Gets mobs which spawn on event starting only on the selected map (MapId is null).
-    /// </summary>
-    private readonly InvasionMobSpawn[] _mobsOnSelectedMap;
-
-    /// <summary>
-    /// Gets mobs which spawn on event starting on specific maps (MapId is not null).
-    /// </summary>
-    private readonly InvasionMobSpawn[] _mobs;
-
     private readonly MapEventType? _mapEventType;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BaseInvasionPlugIn{TConfiguration}" /> class.
     /// </summary>
-    /// <param name="mapEventType">Type of the map event.</param>
-    /// <param name="mobs">The mobs which spawn on specific maps (MapId is not null).</param>
-    /// <param name="mobsOnSelectedMap">The mobs which always spawn on event starting on the selected map (MapId is null).</param>
-    protected BaseInvasionPlugIn(MapEventType? mapEventType, InvasionMobSpawn[]? mobs, InvasionMobSpawn[]? mobsOnSelectedMap)
+    /// <param name="mapEventType">Type of the map event. If null, no map event state updates are sent.</param>
+    protected BaseInvasionPlugIn(MapEventType? mapEventType = null)
     {
         this._mapEventType = mapEventType;
-        this._mobs = mobs ?? [];
-        this._mobsOnSelectedMap = mobsOnSelectedMap ?? [];
     }
 
     /// <summary>
     /// Occurs when the event has finished.
     /// </summary>
-    public event EventHandler? Finished;
+    public event Func<Task>? Finished;
 
     /// <summary>
-    /// Gets possible maps for the event.
+    /// Gets the list of map IDs from which the event display map is randomly selected.
+    /// When set, <see cref="InvasionGameServerState.MapId"/> is chosen from this list
+    /// and the map event state UI is only shown on that single map.
+    /// If null, <see cref="InvasionGameServerState.MapId"/> is chosen from <see cref="InvasionGameServerState.MapIds"/>.
     /// </summary>
-    protected virtual ushort[] PossibleMaps { get; } = { LorenciaId, NoriaId, DeviasId };
+    protected virtual IReadOnlyList<ushort>? EventDisplayMapIds => null;
 
     /// <inheritdoc />
     public virtual async ValueTask ObjectAddedToMapAsync(GameMap map, ILocateable addedObject)
@@ -84,71 +59,82 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
     }
 
     /// <summary>
-    /// Create a new monster.
+    /// Spawns the given quantity of a monster on the map.
+    /// For each monster, picks a random walkable coordinate via a spiral search —
+    /// no allocation, no exception on invalid terrain.
     /// </summary>
     /// <param name="gameContext">The game context.</param>
     /// <param name="gameMap">The game map.</param>
     /// <param name="monsterDefinition">The monster definition.</param>
-    /// <param name="x1">The x1.</param>
-    /// <param name="x2">The x2.</param>
-    /// <param name="y1">The y1.</param>
-    /// <param name="y2">The y2.</param>
     /// <param name="quantity">The quantity.</param>
-    protected async ValueTask CreateMonstersAsync(IGameContext gameContext, GameMap gameMap, MonsterDefinition monsterDefinition, byte x1, byte x2, byte y1, byte y2, ushort quantity)
+    /// <param name="x">The optional fixed X coordinate.</param>
+    /// <param name="y">The optional fixed Y coordinate.</param>
+    protected async ValueTask CreateMonstersAsync(IGameContext gameContext, GameMap gameMap, MonsterDefinition monsterDefinition, ushort quantity, byte? x = null, byte? y = null)
     {
-        var area = new MonsterSpawnArea
-        {
-            GameMap = gameMap.Definition,
-            MonsterDefinition = monsterDefinition,
-            SpawnTrigger = SpawnTrigger.OnceAtEventStart,
-            Quantity = 1,
-            X1 = x1,
-            X2 = x2,
-            Y1 = y1,
-            Y2 = y2,
-        };
+        var logger = gameContext.LoggerFactory.CreateLogger(this.GetType());
 
         while (quantity-- > 0)
         {
-            var intelligence = new BasicMonsterIntelligence();
+            Point? spawnPoint;
+            if (x.HasValue && y.HasValue)
+            {
+                spawnPoint = new Point(x.Value, y.Value);
+            }
+            else
+            {
+                spawnPoint = gameMap.Terrain.GetRandomWalkableCoordinate();
+            }
 
+            if (spawnPoint is null)
+            {
+                logger.LogDebug(
+                    "Skipping one {monster} on {map}: no walkable cell found in rolled area.",
+                    monsterDefinition.Designation,
+                    gameMap.Definition.Name);
+                continue;
+            }
+
+            var area = new MonsterSpawnArea
+            {
+                GameMap = gameMap.Definition,
+                MonsterDefinition = monsterDefinition,
+                SpawnTrigger = SpawnTrigger.OnceAtEventStart,
+                Quantity = 1,
+                X1 = spawnPoint.Value.X,
+                X2 = spawnPoint.Value.X,
+                Y1 = spawnPoint.Value.Y,
+                Y2 = spawnPoint.Value.Y,
+            };
+
+            var intelligence = new BasicMonsterIntelligence();
             var monster = new Monster(area, monsterDefinition, gameMap, gameContext.DropGenerator, intelligence, gameContext.PlugInManager, gameContext.PathFinderPool);
 
             monster.Initialize();
             await gameMap.AddAsync(monster).ConfigureAwait(false);
             monster.OnSpawn();
 
-            this.Finished += CleanUpOnFinish;
-            monster.Died += (_, _) => this.Finished -= CleanUpOnFinish;
-
-#pragma warning disable VSTHRD100
-            async void CleanUpOnFinish(object? sender, EventArgs e)
-#pragma warning restore VSTHRD100
+            async Task CleanUpOnFinishAsync()
             {
-                try
+                this.Finished -= CleanUpOnFinishAsync;
+                if (monster is not null && !monster.IsDisposed)
                 {
-                    this.Finished -= CleanUpOnFinish;
-                    if (monster is not null && !monster.IsDisposed)
-                    {
-                        await monster.CurrentMap.RemoveAsync(monster).ConfigureAwait(false);
-                        monster.Dispose();
-                    }
-                }
-                catch
-                {
-                    // must be catched in async void method
+                    await monster.CurrentMap.RemoveAsync(monster).ConfigureAwait(false);
+                    monster.Dispose();
                 }
             }
+
+            this.Finished += CleanUpOnFinishAsync;
+            monster.Died += (_, _) => this.Finished -= CleanUpOnFinishAsync;
         }
     }
 
     /// <summary>
-    /// Spawn mobs on the map.
+    /// Spawn mobs on a specific map.
     /// </summary>
     /// <param name="gameContext">The game context.</param>
     /// <param name="mapId">The map id.</param>
-    /// <param name="mobs">The mobs.</param>
-    protected async ValueTask SpawnMobsAsync(IGameContext gameContext, ushort mapId, IEnumerable<InvasionMobSpawn> mobs)
+    /// <param name="spawns">The spawn configurations.</param>
+    protected async ValueTask SpawnMobsAsync(IGameContext gameContext, ushort mapId, IEnumerable<InvasionSpawnConfiguration> spawns)
     {
         var gameMap = await gameContext.GetMapAsync(mapId).ConfigureAwait(false);
 
@@ -158,29 +144,58 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
         }
 
         var logger = gameContext.LoggerFactory.CreateLogger(this.GetType());
-        foreach (var mob in mobs)
+        foreach (var spawn in spawns)
         {
-            if (gameContext.Configuration.Monsters.FirstOrDefault(m => m.Number == mob.MonsterId) is { } monsterDefinition)
+            if (gameContext.Configuration.Monsters.FirstOrDefault(m => m.Number == spawn.MonsterId) is { } monsterDefinition)
             {
-                // Use custom coordinates if provided, otherwise use default (10, 240, 10, 240)
-                var spawnX1 = mob.X1 ?? 10;
-                var spawnX2 = mob.X2 ?? 240;
-                var spawnY1 = mob.Y1 ?? 10;
-                var spawnY2 = mob.Y2 ?? 240;
-
-                await this.CreateMonstersAsync(gameContext, gameMap, monsterDefinition, spawnX1, spawnX2, spawnY1, spawnY2, mob.Count).ConfigureAwait(false);
+                await this.CreateMonstersAsync(gameContext, gameMap, monsterDefinition, spawn.Count, spawn.X, spawn.Y).ConfigureAwait(false);
             }
             else
             {
-                logger.LogDebug("Skipping spawning of monster with number {mobId}, because monster definition wasn't found.", mob.MonsterId);
+                logger.LogDebug("Skipping spawning of monster with number {mobId}, because monster definition wasn't found.", spawn.MonsterId);
             }
         }
     }
 
     /// <inheritdoc />
-    protected async override ValueTask OnPrepareEventAsync(InvasionGameServerState state)
+    protected override async ValueTask OnPrepareEventAsync(InvasionGameServerState state)
     {
-        state.MapId = this.PossibleMaps[Rand.NextInt(0, this.PossibleMaps.Length)];
+        var config = this.Configuration;
+        if (config?.Mobs is null || config.Mobs.Count == 0)
+        {
+            return;
+        }
+
+        foreach (var mob in config.Mobs)
+        {
+            if (mob.MapIds.Count == 0)
+            {
+                continue;
+            }
+
+            if (mob.IsSpawnOnAllMaps)
+            {
+                foreach (var mapId in mob.MapIds)
+                {
+                    state.MapIds.Add(mapId);
+                }
+            }
+            else
+            {
+                var randomMapId = mob.MapIds[Rand.NextInt(0, mob.MapIds.Count)];
+                state.MapIds.Add(randomMapId);
+                state.SelectedMaps[mob.MonsterId] = randomMapId;
+            }
+        }
+
+        if (this.EventDisplayMapIds is { Count: > 0 } displayMaps)
+        {
+            state.MapId = displayMaps[Rand.NextInt(0, displayMaps.Count)];
+        }
+        else if (state.MapIds.Count > 0)
+        {
+            state.MapId = state.MapIds.Min();
+        }
     }
 
     /// <inheritdoc />
@@ -190,55 +205,41 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
     }
 
     /// <summary>
-    /// Returns true if the player stays on the map.
+    /// Send a golden message to all online players.
     /// </summary>
     /// <param name="player">The player.</param>
-    /// <param name="checkForCurrentMap">True, if need to check current event map.</param>
-    protected bool IsPlayerOnMap(Player player, bool checkForCurrentMap = false)
-    {
-        var state = this.GetStateByGameContext(player.GameContext);
-
-        return player.CurrentMap is { } map
-            && !player.PlayerState.CurrentState.IsDisconnectedOrFinished()
-            && (!checkForCurrentMap || map.MapId == state.MapId);
-    }
-
-    /// <summary>
-    /// Send a golden message to player's client.
-    /// </summary>
-    /// <param name="player">The player.</param>
-    /// <param name="mapName">The map name.</param>
-    protected async Task TrySendStartMessageAsync(Player player, LocalizedString mapName)
+    /// <param name="state">The server state.</param>
+    protected async Task TrySendStartMessageAsync(Player player, InvasionGameServerState state)
     {
         var configuration = this.Configuration;
 
-        if (configuration is null)
+        if (configuration is null || state.MapIds.Count == 0)
         {
             return;
         }
 
-        var message = (configuration.Message.GetTranslation(player.Culture) ?? PlugInResources.BaseInvasionPlugIn_DefaultStartMessage).Replace("{mapName}", mapName.GetTranslation(player.Culture), StringComparison.InvariantCulture);
+        var mapName = state.Context.Configuration.Maps
+                          .FirstOrDefault(m => m.Number == state.MapId)
+                          ?.Name.GetTranslation(player.Culture)
+                      ?? string.Empty;
 
-        if (this.IsPlayerOnMap(player))
+        var message = (configuration.Message.GetTranslation(player.Culture)
+                       ?? PlugInResources.BaseInvasionPlugIn_DefaultStartMessage).Replace("{mapName}", mapName, StringComparison.InvariantCulture);
+
+        try
         {
-            try
-            {
-                await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, Interfaces.MessageType.GoldenCenter)).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                player.Logger.LogDebug(ex, "Unexpected error sending start message.");
-            }
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, Interfaces.MessageType.GoldenCenter)).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            player.Logger.LogDebug(ex, "Unexpected error sending start message.");
         }
     }
 
-    /// <summary>
-    /// Calls after the state changed to Prepared.
-    /// </summary>
-    /// <param name="state">The state.</param>
+    /// <inheritdoc />
     protected override async ValueTask OnPreparedAsync(InvasionGameServerState state)
     {
-        await state.Context.ForEachPlayerAsync(p => this.TrySendStartMessageAsync(p, state.MapName)).ConfigureAwait(false);
+        await state.Context.ForEachPlayerAsync(p => this.TrySendStartMessageAsync(p, state)).ConfigureAwait(false);
 
         if (this._mapEventType is not null)
         {
@@ -246,20 +247,13 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
         }
     }
 
-    /// <summary>
-    /// Calls after the state changed to Started.
-    /// </summary>
-    /// <param name="state">State.</param>
+    /// <inheritdoc />
     protected override async ValueTask OnStartedAsync(InvasionGameServerState state)
     {
-        await this.SpawnMobsOnSelectedMapAsync(state).ConfigureAwait(false);
         await this.SpawnMobsOnMapsAsync(state).ConfigureAwait(false);
     }
 
-    /// <summary>
-    /// Calls after the state changed to Finished.
-    /// </summary>
-    /// <param name="state">State.</param>
+    /// <inheritdoc />
     protected override async ValueTask OnFinishedAsync(InvasionGameServerState state)
     {
         if (this._mapEventType is not null)
@@ -267,39 +261,45 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
             await state.Context.ForEachPlayerAsync(p => this.TrySendMapEventStateUpdateAsync(p, false)).ConfigureAwait(false);
         }
 
-        this.Finished?.Invoke(this, EventArgs.Empty);
+        if (this.Finished is not null)
+        {
+            await this.Finished.Invoke().ConfigureAwait(false);
+        }
     }
 
     /// <summary>
-    /// Spawn mobs on the selected map.
-    /// </summary>
-    /// <param name="state">The state.</param>
-    protected virtual async ValueTask SpawnMobsOnSelectedMapAsync(InvasionGameServerState state)
-    {
-        var gameContext = state.Context;
-        await this.SpawnMobsAsync(gameContext, state.MapId, this._mobsOnSelectedMap).ConfigureAwait(false);
-    }
-
-    /// <summary>
-    /// Spawn mobs on the map.
+    /// Spawn mobs based on pre-selected maps in the state.
     /// </summary>
     /// <param name="state">The state.</param>
     protected virtual async ValueTask SpawnMobsOnMapsAsync(InvasionGameServerState state)
     {
+        var config = this.Configuration;
+        if (config?.Mobs is not { } spawns || spawns.Count == 0)
+        {
+            return;
+        }
+
         var gameContext = state.Context;
 
-        foreach (var group in this._mobs.GroupBy(mob => mob.MapId!.Value))
+        foreach (var spawn in spawns)
         {
-            var mapId = group.Key;
-            var mobs = group;
-
-            await this.SpawnMobsAsync(gameContext, mapId, mobs).ConfigureAwait(false);
+            if (spawn.IsSpawnOnAllMaps)
+            {
+                foreach (var mapId in spawn.MapIds)
+                {
+                    await this.SpawnMobsAsync(gameContext, mapId, [spawn]).ConfigureAwait(false);
+                }
+            }
+            else if (state.SelectedMaps.TryGetValue(spawn.MonsterId, out var selectedMapId))
+            {
+                await this.SpawnMobsAsync(gameContext, selectedMapId, [spawn]).ConfigureAwait(false);
+            }
         }
     }
 
     private async Task TrySendMapEventStateUpdateAsync(Player player, bool enabled)
     {
-        if (this._mapEventType is null || !this.IsPlayerOnMap(player, true))
+        if (this._mapEventType is null || !this.IsPlayerOnMap(player))
         {
             return;
         }
@@ -310,7 +310,16 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
         }
         catch (Exception ex)
         {
-            player.Logger.LogDebug(ex, $"Unexpected error sending map event state update, event type {this._mapEventType}.");
+            player.Logger.LogDebug(ex, "Unexpected error sending map event state update, event type: {MapEventType}", this._mapEventType);
         }
+    }
+
+    private bool IsPlayerOnMap(Player player)
+    {
+        var state = this.GetStateByGameContext(player.GameContext);
+
+        return player.CurrentMap is { } map
+               && !player.PlayerState.CurrentState.IsDisconnectedOrFinished()
+               && map.MapId == state.MapId;
     }
 }

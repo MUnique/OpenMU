@@ -214,7 +214,7 @@ public partial class MultiLookupField<TObject> : IDisposable
             this.Value.Add(item);
         }
 
-        this.StateHasChanged();
+        this.CurrentValue = this.Value;
     }
 
     /// <summary>
