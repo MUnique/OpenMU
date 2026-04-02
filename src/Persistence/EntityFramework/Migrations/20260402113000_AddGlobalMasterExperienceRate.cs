@@ -22,26 +22,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 defaultValue: 1f);
 
             migrationBuilder.Sql("""UPDATE config."GameConfiguration" SET "MasterExperienceRate" = "ExperienceRate";""");
-
-            migrationBuilder.DropColumn(
-                name: "MasterExperienceRate",
-                schema: "config",
-                table: "GameServerDefinition");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<float>(
-                name: "MasterExperienceRate",
-                schema: "config",
-                table: "GameServerDefinition",
-                type: "real",
-                nullable: false,
-                defaultValue: 1f);
-
-            migrationBuilder.Sql("""UPDATE config."GameServerDefinition" SET "MasterExperienceRate" = "ExperienceRate";""");
-
             migrationBuilder.DropColumn(
                 name: "MasterExperienceRate",
                 schema: "config",
