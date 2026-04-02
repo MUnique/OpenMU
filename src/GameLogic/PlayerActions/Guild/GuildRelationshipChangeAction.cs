@@ -44,12 +44,22 @@ public class GuildRelationshipChangeAction
             return;
         }
 
-        if (relationshipType == GuildRelationshipType.Hostility
-            && requestType == GuildRelationshipRequestType.Join
-            && (targetGuild.Hostility is not null || sourceGuild.Hostility is not null))
+        if (relationshipType == GuildRelationshipType.Hostility)
         {
-            await player.InvokeViewPlugInAsync<IGuildRelationshipChangeResultPlugIn>(p => p.ShowResultAsync(relationshipType, requestType, GuildRelationshipChangeResultType.AlreadyInHostility, targetPlayerId)).ConfigureAwait(false);
-            return;
+            if (requestType == GuildRelationshipRequestType.Join
+                && (targetGuild.Hostility is not null || sourceGuild.Hostility is not null))
+            {
+                await player.InvokeViewPlugInAsync<IGuildRelationshipChangeResultPlugIn>(p => p.ShowResultAsync(relationshipType, requestType, GuildRelationshipChangeResultType.AlreadyInHostility, targetPlayerId)).ConfigureAwait(false);
+                return;
+            }
+
+            if (requestType == GuildRelationshipRequestType.Leave
+                && targetGuild.Hostility?.Name != sourceGuild.Name
+                && sourceGuild.Hostility?.Name != targetGuild.Name)
+            {
+                await player.InvokeViewPlugInAsync<IGuildRelationshipChangeResultPlugIn>(p => p.ShowResultAsync(relationshipType, requestType, GuildRelationshipChangeResultType.HostileGuildDoesNotExist, targetPlayerId)).ConfigureAwait(false);
+                return;
+            }
         }
 
         if (relationshipType == GuildRelationshipType.Alliance
