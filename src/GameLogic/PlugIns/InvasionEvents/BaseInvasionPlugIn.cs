@@ -182,7 +182,10 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
             }
             else
             {
-                var randomMapId = mob.MapIds[Rand.NextInt(0, mob.MapIds.Count)];
+                var randomMapId = mob.MapIds.Count == 1
+                    ? mob.MapIds[0]
+                    : mob.MapIds[Rand.NextInt(0, mob.MapIds.Count)];
+
                 state.MapIds.Add(randomMapId);
                 state.SelectedMaps[mob.MonsterId] = randomMapId;
             }
