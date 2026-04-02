@@ -278,7 +278,7 @@ public sealed class Party : Disposable
         totalAverageExperience *= killedObject.CurrentMap?.Definition.ExpMultiplier ?? 1;
 
         var randomizedTotalExperience = Rand.NextInt((int)(totalAverageExperience * 0.8), (int)(totalAverageExperience * 1.2));
-        var randomizedTotalExperiencePerLevel = randomizedTotalExperience / totalLevel;
+        var randomizedTotalExperiencePerLevel = (double)randomizedTotalExperience / totalLevel;
         foreach (var player in this._distributionList)
         {
             if ((short)player.Attributes![Stats.Level] == player.GameContext.Configuration.MaximumLevel)

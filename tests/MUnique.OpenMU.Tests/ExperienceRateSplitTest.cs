@@ -47,6 +47,32 @@ public class ExperienceRateSplitTest
     }
 
     [Test]
+    public async ValueTask SoloKillAppliesServerExperienceRateToMasterExperienceAsync()
+    {
+        var highRateContext = this.CreateGameServerContext(
+            normalExperienceRate: 3.0f,
+            globalMasterExperienceRate: 2.0f,
+            maximumLevel: 10,
+            maximumMasterLevel: 200);
+        var baseRateContext = this.CreateGameServerContext(
+            normalExperienceRate: 1.0f,
+            globalMasterExperienceRate: 2.0f,
+            maximumLevel: 10,
+            maximumMasterLevel: 200);
+
+        var highRatePlayer = await this.CreatePlayerAsync(highRateContext, level: 10, totalLevel: 10, isMasterClass: true).ConfigureAwait(false);
+        var baseRatePlayer = await this.CreatePlayerAsync(baseRateContext, level: 10, totalLevel: 10, isMasterClass: true).ConfigureAwait(false);
+        var killedObject = CreateKilledObject(level: 100);
+
+        var highRateGain = await highRatePlayer.AddExpAfterKillAsync(killedObject.Object).ConfigureAwait(false);
+        var baseRateGain = await baseRatePlayer.AddExpAfterKillAsync(killedObject.Object).ConfigureAwait(false);
+
+        Assert.That(highRateGain, Is.GreaterThan(0));
+        Assert.That(baseRateGain, Is.GreaterThan(0));
+        Assert.That(highRateGain, Is.GreaterThan(baseRateGain * 2));
+    }
+
+    [Test]
     public async ValueTask PartyDistributionUsesMasterExperienceRateForMasterMembersAsync()
     {
         var context = this.CreateGameServerContext(
