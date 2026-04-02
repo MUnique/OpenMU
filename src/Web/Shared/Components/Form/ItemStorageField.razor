@@ -1,4 +1,4 @@
-﻿@using System.ComponentModel.DataAnnotations
+@using System.ComponentModel.DataAnnotations
 @using System.Diagnostics.CodeAnalysis
 @using MUnique.OpenMU.DataModel
 @using MUnique.OpenMU.DataModel.Configuration
@@ -67,14 +67,16 @@
                 }
             </div>
             <div class="col-1 middle-column">
-                <button type="button" class="btn-info mb-1" @onclick="@this.OnCreateItemClickAsync" title="Create"><span class="oi oi-plus"></span></button>
+                <button @key="@("create-btn")" type="button" class="btn-info mb-1" @onmousedown="@this.OnCreateItemClickAsync" @onmousedown:preventDefault @onmousedown:stopPropagation title="Create"><span class="oi oi-plus"></span></button>
                 @if (this._selectedItem is null)
                 {
+                    <button type="button" class="btn-secondary mb-1 disabled" title="Duplicate"><span class="oi oi-layers"></span></button>
                     <button type="button" class="btn-warning mb-1 disabled" title="Delete"><span class="oi oi-trash"></span></button>
                 }
                 else
                 {
-                    <button type="button" class="btn-warning mb-1" @onclick="this.OnItemDeleteClickAsync" title="Delete"><span class="oi oi-trash"></span></button>
+                    <button @key="@("duplicate-btn")" type="button" class="btn-secondary mb-1" @onmousedown="@this.OnDuplicateItemClickAsync" @onmousedown:preventDefault @onmousedown:stopPropagation title="Duplicate"><span class="oi oi-layers"></span></button>
+                    <button @key="@("delete-btn")" type="button" class="btn-warning mb-1" @onmousedown="this.OnItemDeleteClickAsync" @onmousedown:preventDefault @onmousedown:stopPropagation title="Delete"><span class="oi oi-trash"></span></button>
                 }
             </div>
             <div class="col-7 right-column">
@@ -97,6 +99,8 @@
 }
 
 @code {
+
+    private InventoryPlacementService? _placementService;
 
     /// <summary>
     /// Gets or sets the label which should be displayed. If it's not explicitly provided, the component shows the
@@ -145,6 +149,8 @@
             default:
                 throw new NotImplementedException($"Unknown owner ({model}) of storage.");
         }
+
+        this._placementService = new InventoryPlacementService(this._storageType, this._numberOfExtensions);
     }
 
     /// <inheritdoc />
@@ -181,15 +187,72 @@
         }
 
         this._selectedItem = null;
+        this.StateHasChanged();
     }
 
-    private void OnCreateItemClickAsync()
+    private async Task OnCreateItemClickAsync()
     {
         if (this.Value is { } itemStorage)
         {
             var item = this.PersistenceContext.CreateNew<Item>();
-            itemStorage.Items.Add(item);
-            this._selectedItem = item;
+            var freeSlot = this._placementService!.FindFreeSlot(item, itemStorage.Items);
+            
+            if (freeSlot is { } slot)
+            {
+                item.ItemSlot = slot;
+                itemStorage.Items.Add(item);
+                this._selectedItem = item;
+            }
+            
+            await this.InvokeAsync(this.StateHasChanged);
         }
+    }
+
+    private Task OnDuplicateItemClickAsync()
+    {
+        if (!this.CanDuplicateItem())
+        {
+            return Task.CompletedTask;
+        }
+
+        var freeSlot = this.FindFreeSlot();
+        if (freeSlot is null)
+        {
+            return Task.CompletedTask;
+        }
+
+        var duplicate = this.CreateDuplicateItem();
+        duplicate.ItemSlot = freeSlot.Value;
+        
+        this.Value!.Items.Add(duplicate);
+        this.StateHasChanged();
+        
+        return Task.CompletedTask;
+    }
+
+    private bool CanDuplicateItem()
+    {
+        return this._selectedItem is not null 
+            && this.Value is not null 
+            && this._selectedItem.Definition is not null;
+    }
+
+    private Item CreateDuplicateItem()
+    {
+        var duplicate = this.PersistenceContext.CreateNew<Item>();
+        duplicate.AssignValues(this._selectedItem!);
+        return duplicate;
+    }
+
+    private byte? FindFreeSlot()
+    {
+        return this._placementService!.FindFreeSlot(this._selectedItem!, this.Value!.Items);
+    }
+
+    private void AddItemToStorage(Item item)
+    {
+        this.Value!.Items.Add(item);
+        this._selectedItem = item;
+        this.StateHasChanged();
     }
 }

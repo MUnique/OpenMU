@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -2108,5 +2108,11 @@
   </data>
   <data name="AppearanceChangedExtendedPlugIn_Description" xml:space="preserve">
     <value>The extended implementation of the IAppearanceChangedPlugIn which is forwarding appearance changes of other players to the game client with specific data packets.</value>
+  </data>
+  <data name="MuHelperSettingsInitializationPlugIn_Name" xml:space="preserve">
+    <value>MU Helper Settings Initialization</value>
+  </data>
+  <data name="MuHelperSettingsInitializationPlugIn_Description" xml:space="preserve">
+    <value>Initializes the MU Helper settings when the player enters the world.</value>
   </data>
 </root>
