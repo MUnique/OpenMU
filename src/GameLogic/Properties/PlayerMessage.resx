@@ -624,4 +624,25 @@
   <data name="CharacterHasNoStatAttribute" xml:space="preserve">
     <value>The character has no stat attribute '{0}'.</value>
   </data>
+  <data name="OfflineLevelingStarted" xml:space="preserve">
+    <value>Offline leveling started. You can log back in at any time to stop it.</value>
+  </data>
+  <data name="OfflineLevelingFailed" xml:space="preserve">
+    <value>Could not start offline leveling. Try again in a safe spot.</value>
+  </data>
+  <data name="OfflineLevelingAlreadyActive" xml:space="preserve">
+    <value>Offline leveling is already active for this account.</value>
+  </data>
+  <data name="OfflineLevelingMustBeAlive" xml:space="preserve">
+    <value>You must be alive to start offline leveling.</value>
+  </data>
+  <data name="OfflineLevelingNotOnMap" xml:space="preserve">
+    <value>You must be on a map to start offline leveling.</value>
+  </data>
+  <data name="OfflineLevelingNoCharacterSelected" xml:space="preserve">
+    <value>No character is selected.</value>
+  </data>
+  <data name="OfflineLevelingMuHelperNotRunning" xml:space="preserve">
+    <value>MU Helper must be running to start offline leveling.</value>
+  </data>
 </root>

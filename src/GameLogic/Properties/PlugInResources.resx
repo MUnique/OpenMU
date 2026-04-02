@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -1139,5 +1139,11 @@
   </data>
   <data name="BaseInvasionPlugIn_DefaultStartMessage" xml:space="preserve">
     <value>[{mapName}] Invasion!</value>
+  </data>
+  <data name="OfflineLevelingChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Offline Leveling Command</value>
+  </data>
+  <data name="OfflineLevelingChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Allows players to start offline leveling with /offlevel. The character stays in the world after the client disconnects and stops when the player logs back in.</value>
   </data>
 </root>

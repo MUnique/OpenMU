@@ -266,6 +266,18 @@ public partial class GameConfiguration
     public virtual ICollection<MasterSkillRoot> MasterSkillRoots { get; protected set; } = null!;
 
     /// <summary>
+    /// Gets or sets the attribute combinations.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<AttributeRelationship> GlobalAttributeCombinations { get; protected set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the base attribute values.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<ConstValueAttribute> GlobalBaseAttributeValues { get; protected set; } = null!;
+
+    /// <summary>
     /// Gets or sets the plug in configurations.
     /// </summary>
     [MemberOfAggregate]

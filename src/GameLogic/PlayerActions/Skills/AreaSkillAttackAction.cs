@@ -1,4 +1,4 @@
-﻿// <copyright file="AreaSkillAttackAction.cs" company="MUnique">
+// <copyright file="AreaSkillAttackAction.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -165,6 +165,12 @@ public class AreaSkillAttackAction
         if (player.IsAtSafezone())
         {
             player.Logger.LogWarning("Probably Hacker - player {player} is attacking from safezone", player);
+            return;
+        }
+
+        // Skills that move attacker to target (e.g., Twisting Slash, Death Stab) require a weapon
+        if (skill.MovesToTarget && player.Attributes[Stats.EquippedWeaponCount] == 0)
+        {
             return;
         }
 

@@ -34,6 +34,19 @@ public interface IPlayerContext : IContext
     ValueTask<bool> CanSaveLetterAsync(LetterHeader letterHeader, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Authenticates the account by login name and password, returning minimal account state.
+    /// This is a lightweight alternative to <see cref="GetAccountByLoginNameAsync(string, string, CancellationToken)"/>
+    /// that avoids loading the full account data.
+    /// </summary>
+    /// <param name="loginName">The login name.</param>
+    /// <param name="password">The password.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>
+    /// The <see cref="AccountState"/> if credentials are valid; otherwise, null.
+    /// </returns>
+    ValueTask<AccountState?> AuthenticateAsync(string loginName, string password, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Gets the account by login name if the password is correct.
     /// </summary>
     /// <param name="loginName">The login name.</param>

@@ -40,9 +40,9 @@ public class StatAttribute : BaseStatAttribute
     {
         get
         {
-            if (this.Definition.MaximumValue.HasValue)
+            if (this.Definition?.MaximumValue is { } maxValue)
             {
-                return Math.Min(this.Definition.MaximumValue.Value, this._statValue);
+                return Math.Min(maxValue, this._statValue);
             }
 
             return this._statValue;
