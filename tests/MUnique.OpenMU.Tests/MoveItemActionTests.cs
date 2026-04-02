@@ -44,6 +44,35 @@ public class MoveItemActionTests
     }
 
     [Test]
+    public async ValueTask CompleteStackAndRelogKeepsSinglePersistedItemAsync()
+    {
+        var player = await CreateTestPlayerAsync().ConfigureAwait(false);
+        var selectedCharacter = player.SelectedCharacter!;
+        var definition = CreateDefinition(1, 1, 10);
+        var source = CreateItem(definition, 3);
+        var target = CreateItem(definition, 2);
+
+        await player.Inventory!.AddItemAsync(20, source).ConfigureAwait(false);
+        await player.Inventory.AddItemAsync(21, target).ConfigureAwait(false);
+
+        var action = new MoveItemAction();
+        await action.MoveItemAsync(player, 20, Storages.Inventory, 21, Storages.Inventory).ConfigureAwait(false);
+
+        Assert.That(player.Inventory.GetItem(20), Is.Null);
+        Assert.That(player.Inventory.GetItem(21), Is.Not.Null);
+        Assert.That(player.Inventory.GetItem(21)!.Durability, Is.EqualTo(5));
+
+        await player.RemoveFromGameAsync().ConfigureAwait(false);
+        await player.SetSelectedCharacterAsync(selectedCharacter).ConfigureAwait(false);
+
+        var persistedTarget = player.Inventory!.GetItem(21);
+        Assert.That(persistedTarget, Is.Not.Null);
+        Assert.That(persistedTarget!.Durability, Is.EqualTo(5));
+        Assert.That(player.Inventory.GetItem(20), Is.Null);
+        Assert.That(player.Inventory.Items.Count(i => i.Definition == definition), Is.EqualTo(1));
+    }
+
+    [Test]
     public async ValueTask FailedMoveToOccupiedSlotKeepsSourceAtOriginalSlotAsync()
     {
         var player = await CreateTestPlayerAsync().ConfigureAwait(false);
