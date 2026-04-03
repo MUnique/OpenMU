@@ -4,6 +4,9 @@
 
 namespace MUnique.OpenMU.GameLogic.Resets;
 
+using MUnique.OpenMU.DataModel.Composition;
+using MUnique.OpenMU.DataModel.Configuration.Items;
+
 /// <summary>
 /// Configuration of the Reset System.
 /// </summary>
@@ -41,21 +44,39 @@ public class ResetConfiguration
     public bool MultiplyRequiredMoneyByResetCount { get; set; } = true;
 
     /// <summary>
+    /// Gets or sets the required item for a reset.
+    /// </summary>
+    [Display(Name = "Required reset item")]
+    public ItemDefinition? RequiredResetItem { get; set; }
+
+    /// <summary>
+    /// Gets or sets the item costs per reset range.
+    /// </summary>
+    [Display(Name = "Item cost tiers")]
+    [MemberOfAggregate]
+    [ScaffoldColumn(true)]
+    public ICollection<ResetItemCostTier> ItemCostTiers { get; set; } = [];
+
+    /// <summary>
     /// Gets or sets a value indicating whether a reset sets the stat points back to the initial values.
     /// </summary>
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.ResetConfiguration_ResetStats_Name))]
     public bool ResetStats { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the amount of points which will be set at the <see cref="Character.LevelUpPoints"/> when doing a reset.
+    /// Gets or sets the legacy amount of points which will be set at the <see cref="Character.LevelUpPoints"/> when doing a reset.
+    /// Use <see cref="PointsTiers"/> instead.
     /// </summary>
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.ResetConfiguration_PointsPerReset_Name))]
+    [ScaffoldColumn(false)]
     public int PointsPerReset { get; set; } = 1500;
 
     /// <summary>
-    /// Gets or sets a value indicating whether the <see cref="PointsPerReset"/> should be multiplied with the current reset count.
+    /// Gets or sets a value indicating whether the legacy <see cref="PointsPerReset"/> should be multiplied with the current reset count.
+    /// Use <see cref="PointsTiers"/> instead.
     /// </summary>
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.ResetConfiguration_MultiplyPointsByResetCount_Name))]
+    [ScaffoldColumn(false)]
     public bool MultiplyPointsByResetCount { get; set; } = true;
 
     /// <summary>
@@ -63,6 +84,14 @@ public class ResetConfiguration
     /// </summary>
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.ResetConfiguration_ReplacePointsPerReset_Name))]
     public bool ReplacePointsPerReset { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets the points granted per reset range.
+    /// </summary>
+    [Display(Name = "Point tiers")]
+    [MemberOfAggregate]
+    [ScaffoldColumn(true)]
+    public ICollection<ResetPointTier> PointsTiers { get; set; } = [];
 
     /// <summary>
     /// Gets or sets a value indicating whether a reset moves the player home.
@@ -75,4 +104,40 @@ public class ResetConfiguration
     /// </summary>
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.ResetConfiguration_LogOut_Name))]
     public bool LogOut { get; set; } = true;
+
+    /// <summary>
+    /// Tier definition for the points which are granted when resetting.
+    /// </summary>
+    public class ResetPointTier
+    {
+        /// <summary>
+        /// Gets or sets the minimum reset count at which this tier applies.
+        /// </summary>
+        [Display(Name = "Minimum reset count")]
+        public int MinimumResetCount { get; set; }
+
+        /// <summary>
+        /// Gets or sets the points granted for this tier.
+        /// </summary>
+        [Display(Name = "Points granted")]
+        public int PointsGranted { get; set; }
+    }
+
+    /// <summary>
+    /// Tier definition for required reset item amounts.
+    /// </summary>
+    public class ResetItemCostTier
+    {
+        /// <summary>
+        /// Gets or sets the minimum reset count at which this tier applies.
+        /// </summary>
+        [Display(Name = "Minimum reset count")]
+        public int MinimumResetCount { get; set; }
+
+        /// <summary>
+        /// Gets or sets the required item amount for this tier.
+        /// </summary>
+        [Display(Name = "Required item amount")]
+        public int RequiredItemAmount { get; set; }
+    }
 }
