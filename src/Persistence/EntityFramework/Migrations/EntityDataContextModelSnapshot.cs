@@ -1040,6 +1040,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<float>("ExperienceRate")
                         .HasColumnType("real");
 
+                    b.Property<float>("MasterExperienceRate")
+                        .HasColumnType("real");
+
                     b.Property<double>("HitsPerOneItemDurability")
                         .HasColumnType("double precision");
 
