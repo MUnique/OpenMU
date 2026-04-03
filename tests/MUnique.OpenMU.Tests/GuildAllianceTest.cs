@@ -15,7 +15,6 @@ using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
 
 using BasicModel = MUnique.OpenMU.Persistence.BasicModel;
-using GuildServerImpl = MUnique.OpenMU.GuildServer.GuildServer;
 
 /// <summary>
 /// Unit tests for guild alliance and hostility logic in <see cref="MUnique.OpenMU.GuildServer.GuildServer"/>.
@@ -88,13 +87,18 @@ public class GuildAllianceTest : GuildTestBase
     }
 
     /// <summary>
-    /// Alliance creation fails when the maximum alliance size is already reached.
+    /// The guild server does not enforce a maximum alliance size — that limit
+    /// is now applied at the action layer (<c>GuildRelationshipChangeAction</c>)
+    /// using the <c>Stats.MaximumAllianceSize</c> player attribute.
+    /// This test verifies that the server allows building an alliance larger than 5
+    /// (the old hard-coded constant).
     /// </summary>
     [Test]
-    public async ValueTask CreateAlliance_MaxSizeReached_Fails()
+    public async ValueTask CreateAlliance_ServerDoesNotEnforceMaxSize()
     {
-        // Fill the alliance to its maximum capacity
-        for (var i = 0; i < GuildServerImpl.MaxAllianceSize - 1; i++)
+        // Add 6 guilds beyond the old hard-coded limit of 5 to confirm no server limit
+        const int beyondOldLimit = 6;
+        for (var i = 0; i < beyondOldLimit - 1; i++)
         {
             var memberName = $"FillGuildMaster{i}";
             var fillContext = this.PersistenceContextProvider.CreateNewContext();
@@ -107,10 +111,10 @@ public class GuildAllianceTest : GuildTestBase
             await this.GuildServer.CreateAllianceAsync(this._firstGuildId, fillGuildId).ConfigureAwait(false);
         }
 
-        // Now try to add the second guild — the alliance is full
+        // Adding the sixth guild should still succeed — no server-side hard limit
         var result = await this.GuildServer.CreateAllianceAsync(this._firstGuildId, this._secondGuildId).ConfigureAwait(false);
 
-        Assert.That(result, Is.EqualTo(AllianceCreationResult.MaximumAllianceSizeReached));
+        Assert.That(result, Is.EqualTo(AllianceCreationResult.Success));
     }
 
     // -------------------------------------------------------------------------

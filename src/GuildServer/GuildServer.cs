@@ -21,14 +21,6 @@ using GuildMember = MUnique.OpenMU.DataModel.Entities.GuildMember;
 public class GuildServer : IGuildServer
 {
     /// <summary>
-    /// The offline server identifier.
-    /// </summary>
-        /// <summary>
-    /// The maximum number of guilds allowed in a single alliance.
-    /// </summary>
-    public const int MaxAllianceSize = 5;
-
-    /// <summary>
     /// The server id value that is used to indicate that the guild member is offline.
     /// </summary>
     public static readonly byte OfflineServerId = 0xFF;
@@ -277,12 +269,6 @@ public class GuildServer : IGuildServer
         if (targetContainer.Guild.AllianceGuild is not null)
         {
             return AllianceCreationResult.TargetGuildAlreadyInAlliance;
-        }
-
-        var currentAllianceSize = this._guildDictionary.Values.Count(g => IsInSameAlliance(g.Guild, masterContainer.Guild));
-        if (currentAllianceSize >= MaxAllianceSize)
-        {
-            return AllianceCreationResult.MaximumAllianceSizeReached;
         }
 
         bool isNewAlliance = false;

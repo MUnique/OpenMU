@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Guild;
 
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Guild;
 using MUnique.OpenMU.Interfaces;
@@ -23,7 +24,7 @@ public class GuildRelationshipChangeAction
     /// <param name="requestType">The type of request (Join or Leave).</param>
     public async ValueTask RequestAsync(Player player, ushort targetPlayerId, GuildRelationshipType relationshipType, GuildRelationshipRequestType requestType)
     {
-        var (success, (_, serverContext, sourceGuild)) = await this.CommonChecksAsync(player, targetPlayerId, relationshipType, requestType).ConfigureAwait(false);
+        var (success, (sourceGuildId, serverContext, sourceGuild)) = await this.CommonChecksAsync(player, targetPlayerId, relationshipType, requestType).ConfigureAwait(false);
         if (!success)
         {
             return;
@@ -76,6 +77,24 @@ public class GuildRelationshipChangeAction
                 // Request is not done by the master of the alliance, but by the master of a sub-guild
                 await player.InvokeViewPlugInAsync<IGuildRelationshipChangeResultPlugIn>(p => p.ShowResultAsync(relationshipType, requestType, GuildRelationshipChangeResultType.NoAuthorization, targetPlayerId)).ConfigureAwait(false);
                 return;
+            }
+
+            // Check the maximum alliance size configured for this game version.
+            // A value of 0 means no limit is configured (e.g. for game versions that pre-date alliances).
+            var maxAllianceSize = (int)(player.Attributes?[Stats.MaximumAllianceSize] ?? 0);
+            if (maxAllianceSize > 0)
+            {
+                var allianceGuilds = await serverContext.GuildServer.GetAllianceGuildsAsync(sourceGuildId).ConfigureAwait(false);
+
+                // Compute the size of the alliance after the target guild would be added.
+                // When there is no alliance yet (count == 0), the source guild itself is the first
+                // member, so the resulting alliance would have 2 guilds (source + target).
+                var sizeAfterAdding = allianceGuilds.Count == 0 ? 2 : allianceGuilds.Count + 1;
+                if (sizeAfterAdding > maxAllianceSize)
+                {
+                    await player.InvokeViewPlugInAsync<IGuildRelationshipChangeResultPlugIn>(p => p.ShowResultAsync(relationshipType, requestType, GuildRelationshipChangeResultType.MaximumNumberOfGuildsInAllianceReached, targetPlayerId)).ConfigureAwait(false);
+                    return;
+                }
             }
         }
 
