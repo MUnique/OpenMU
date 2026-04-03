@@ -186,12 +186,11 @@ public interface IGuildServer
     ValueTask<AllianceCreationResult> CreateAllianceAsync(uint masterGuildId, uint targetGuildId);
 
     /// <summary>
-    /// Removes a guild from an alliance. Only the alliance master can remove members.
+    /// Removes a guild from an alliance.
     /// </summary>
-    /// <param name="masterGuildId">The identifier of the alliance master guild.</param>
-    /// <param name="targetGuildId">The identifier of the guild to remove from the alliance.</param>
+    /// <param name="targetGuildId">The identifier of the guild to remove from its alliance.</param>
     /// <returns><c>true</c> if the guild was removed successfully; <c>false</c> otherwise.</returns>
-    ValueTask<bool> RemoveAllianceGuildAsync(uint masterGuildId, uint targetGuildId);
+    ValueTask<bool> RemoveAllianceGuildAsync(uint targetGuildId);
 
     /// <summary>
     /// Disbands the entire alliance, clearing alliance membership for all guilds.

@@ -6,13 +6,10 @@ namespace MUnique.OpenMU.Tests;
 
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
-using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
-using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameServer;
-using MUnique.OpenMU.GuildServer;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
@@ -197,12 +194,12 @@ public class GuildAllianceTest : GuildTestBase
     /// The alliance master can successfully remove a member guild.
     /// </summary>
     [Test]
-    public async ValueTask RemoveAllianceGuild_ByMaster_Success()
+    public async ValueTask RemoveAllianceGuild_Member_Success()
     {
         await this.GuildServer.CreateAllianceAsync(this._firstGuildId, this._secondGuildId).ConfigureAwait(false);
         await this.GuildServer.CreateAllianceAsync(this._firstGuildId, this._thirdGuildId).ConfigureAwait(false);
 
-        var removed = await this.GuildServer.RemoveAllianceGuildAsync(this._firstGuildId, this._secondGuildId).ConfigureAwait(false);
+        var removed = await this.GuildServer.RemoveAllianceGuildAsync(this._secondGuildId).ConfigureAwait(false);
         var guilds = await this.GuildServer.GetAllianceGuildsAsync(this._firstGuildId).ConfigureAwait(false);
 
         Assert.That(removed, Is.True);
@@ -210,18 +207,19 @@ public class GuildAllianceTest : GuildTestBase
     }
 
     /// <summary>
-    /// A non-master guild cannot remove members from the alliance.
+    /// The alliance master can successfully remove a member guild.
     /// </summary>
     [Test]
-    public async ValueTask RemoveAllianceGuild_ByNonMaster_Fails()
+    public async ValueTask RemoveAllianceGuild_Master_Disbands_Success()
     {
         await this.GuildServer.CreateAllianceAsync(this._firstGuildId, this._secondGuildId).ConfigureAwait(false);
         await this.GuildServer.CreateAllianceAsync(this._firstGuildId, this._thirdGuildId).ConfigureAwait(false);
 
-        // The second guild is a member, not the master
-        var removed = await this.GuildServer.RemoveAllianceGuildAsync(this._secondGuildId, this._thirdGuildId).ConfigureAwait(false);
+        var removed = await this.GuildServer.RemoveAllianceGuildAsync(this._firstGuildId).ConfigureAwait(false);
+        var guilds = await this.GuildServer.GetAllianceGuildsAsync(this._firstGuildId).ConfigureAwait(false);
 
-        Assert.That(removed, Is.False);
+        Assert.That(removed, Is.True);
+        Assert.That(guilds, Is.Empty);
     }
 
     // -------------------------------------------------------------------------

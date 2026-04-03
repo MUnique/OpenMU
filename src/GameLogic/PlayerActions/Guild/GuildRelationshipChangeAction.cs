@@ -121,7 +121,7 @@ public class GuildRelationshipChangeAction
             targetGuildId = await serverContext.GuildServer.GetGuildIdByNameAsync(targetGuildName).ConfigureAwait(false);
         }
 
-        var removeSuccess = await serverContext.GuildServer.RemoveAllianceGuildAsync(sourceGuildId, targetGuildId).ConfigureAwait(false);
+        var removeSuccess = await serverContext.GuildServer.RemoveAllianceGuildAsync(targetGuildId).ConfigureAwait(false);
         await player.InvokeViewPlugInAsync<IGuildRelationshipChangeResultPlugIn>(p => p.ShowRemoveResultAsync(removeSuccess)).ConfigureAwait(false);
     }
 

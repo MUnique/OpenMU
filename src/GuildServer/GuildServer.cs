@@ -9,6 +9,7 @@ using System.Collections.Immutable;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
+using Nito.AsyncEx;
 using Guild = MUnique.OpenMU.DataModel.Entities.Guild;
 using GuildMember = MUnique.OpenMU.DataModel.Entities.GuildMember;
 
@@ -33,7 +34,7 @@ public class GuildServer : IGuildServer
     public static readonly byte OfflineServerId = 0xFF;
 
     private readonly ILogger<GuildServer> _logger;
-
+    private readonly AsyncLock _createContainerLock = new AsyncLock();
     private readonly IDictionary<uint, GuildContainer> _guildDictionary;
     private readonly IDictionary<Guid, uint> _guildIdMapping;
     private readonly IdGenerator _idGenerator;
@@ -196,7 +197,8 @@ public class GuildServer : IGuildServer
         if (this._guildDictionary.TryGetValue(guildId, out var guild))
         {
             guild.SetServerId(guildMemberId, OfflineServerId);
-            if (guild.Members.Values.All(member => member.ServerId == OfflineServerId))
+            if (guild.Members.Values.All(member => member.ServerId == OfflineServerId)
+                && guild.Guild.AllianceGuild is null) // Keep alliances in memory for simplicity
             {
                 this.RemoveGuildContainer(guild);
             }
@@ -321,25 +323,24 @@ public class GuildServer : IGuildServer
     }
 
     /// <inheritdoc />
-    public async ValueTask<bool> RemoveAllianceGuildAsync(uint masterGuildId, uint targetGuildId)
+    public async ValueTask<bool> RemoveAllianceGuildAsync(uint targetGuildId)
     {
-        if (!this._guildDictionary.TryGetValue(masterGuildId, out var masterContainer)
-            || !this._guildDictionary.TryGetValue(targetGuildId, out var targetContainer))
+        if (!this._guildDictionary.TryGetValue(targetGuildId, out var targetContainer))
         {
             return false;
         }
 
-        // Verify target is actually in the master's alliance
-        if (!IsInSameAlliance(targetContainer.Guild, masterContainer.Guild))
+        if (targetContainer.Guild.AllianceGuild?.Name is not { } allianceMaster)
         {
             return false;
         }
 
-        // Only the alliance master can remove member guilds
-        if (!IsAllianceMaster(masterContainer.Guild))
+        if (IsAllianceMaster(targetContainer.Guild))
         {
-            return false;
+            return await this.DisbandAllianceAsync(targetGuildId).ConfigureAwait(false);
         }
+
+        var masterGuildId = await this.GetGuildIdByNameAsync(allianceMaster).ConfigureAwait(false);
 
         try
         {
@@ -347,9 +348,9 @@ public class GuildServer : IGuildServer
             await targetContainer.DatabaseContext.SaveChangesAsync().ConfigureAwait(false);
             await this._changePublisher.AllianceDisbandedAsync(masterGuildId, targetGuildId).ConfigureAwait(false);
 
-            // If the master guild itself is the alliance master, check if we need to update the alliance master reference for remaining members
             var remainingAllianceGuilds = await this.GetAllianceGuildsAsync(masterGuildId).ConfigureAwait(false);
-            if (remainingAllianceGuilds.Count < 2)
+            if (remainingAllianceGuilds.Count < 2
+                && this._guildDictionary.TryGetValue(masterGuildId, out var masterContainer))
             {
                 // No more members in the alliance, clear the master's alliance reference
                 masterContainer.Guild.AllianceGuild = null;
@@ -679,19 +680,49 @@ public class GuildServer : IGuildServer
 
     private async ValueTask<GuildContainer?> GetOrCreateGuildContainerAsync(Guid guildId)
     {
-        if (!this._guildIdMapping.TryGetValue(guildId, out var shortGuildId) || !this._guildDictionary.TryGetValue(shortGuildId, out var guild))
+        if (!this._guildIdMapping.TryGetValue(guildId, out var shortGuildId)
+            || !this._guildDictionary.TryGetValue(shortGuildId, out var guild))
         {
-            var context = this._persistenceContextProvider.CreateNewGuildContext();
-            var guildinfo = await context.GetByIdAsync<Guild>(guildId).ConfigureAwait(false);
-            if (guildinfo is null)
-            {
-                this._logger.LogWarning("GuildMemberEnter: Guild {0} not found", guildId);
-                context.Dispose();
-                return null;
-            }
+            guild = await this.CreateGuildContainerAsync(guildId).ConfigureAwait(false);
+        }
 
-            guild = this.CreateGuildContainer(guildinfo, context);
-            await guild.LoadMemberNamesAsync().ConfigureAwait(false);
+        return guild;
+    }
+
+    private async ValueTask<GuildContainer?> CreateGuildContainerAsync(Guid guildId)
+    {
+        using var l = await this._createContainerLock.LockAsync();
+        if (this._guildIdMapping.TryGetValue(guildId, out var existingId)
+            && this._guildDictionary.TryGetValue(existingId, out var existingContainer))
+        {
+            return existingContainer;
+        }
+
+        var context = this._persistenceContextProvider.CreateNewGuildContext();
+        var guildinfo = await context.GetByIdAsync<Guild>(guildId).ConfigureAwait(false);
+        if (guildinfo is null)
+        {
+            this._logger.LogWarning("GuildMemberEnter: Guild {0} not found", guildId);
+            context.Dispose();
+            return null;
+        }
+
+        var guild = this.CreateGuildContainer(guildinfo, context);
+        await guild.LoadMemberNamesAsync().ConfigureAwait(false);
+
+        if (guildinfo.AllianceGuild is { } allianceMaster)
+        {
+            var allianceGuilds = await context.GetAlliancesAsync(allianceMaster.GetId()).ConfigureAwait(false);
+            foreach (var allianceGuild in allianceGuilds)
+            {
+                if (!this._guildIdMapping.ContainsKey(allianceGuild.GetId()))
+                {
+                    var allyContext = this._persistenceContextProvider.CreateNewGuildContext();
+                    allyContext.Attach(allianceGuild);
+                    var allyGuild = this.CreateGuildContainer(allianceGuild, allyContext);
+                    await allyGuild.LoadMemberNamesAsync().ConfigureAwait(false);
+                }
+            }
         }
 
         return guild;

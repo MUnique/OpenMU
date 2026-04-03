@@ -195,11 +195,11 @@ public class GuildServer : IGuildServer
     }
 
     /// <inheritdoc />
-    public async ValueTask<bool> RemoveAllianceGuildAsync(uint masterGuildId, uint targetGuildId)
+    public async ValueTask<bool> RemoveAllianceGuildAsync(uint targetGuildId)
     {
         try
         {
-            return await this._daprClient.InvokeMethodAsync<(uint, uint), bool>(this._targetAppId, nameof(this.RemoveAllianceGuildAsync), (masterGuildId, targetGuildId)).ConfigureAwait(false);
+            return await this._daprClient.InvokeMethodAsync<uint, bool>(this._targetAppId, nameof(this.RemoveAllianceGuildAsync), targetGuildId).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
