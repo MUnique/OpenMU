@@ -362,6 +362,10 @@ public sealed class Party : AsyncDisposable
 
             await player.AddExperienceAsync(exp, killed).ConfigureAwait(false);
         }
+        else
+        {
+            // Player is at max level but did not complete master quest. Do not award experience.
+        }
     }
 
     private async ValueTask ExitPartyAsync(IPartyMember member, byte index)
