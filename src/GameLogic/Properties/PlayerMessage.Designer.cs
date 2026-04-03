@@ -907,6 +907,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Reset #{0}: requires level {1}, zen {2}; grants {3} points, {4} total.
+        /// </summary>
+        public static string NextResetInfoCompactNoItem {
+            get {
+                return ResourceManager.GetString("NextResetInfoCompactNoItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset #{0}: requires level {1}, zen {2}, {3} x {4}; grants {5} points, {6} total.
+        /// </summary>
+        public static string NextResetInfoCompactWithItem {
+            get {
+                return ResourceManager.GetString("NextResetInfoCompactWithItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You cannot start a duel during guild war..
         /// </summary>
         public static string NoDuelDuringGuildWar {
@@ -1006,11 +1024,29 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You don&apos;t have enough required items for reset, required {0} x {1}..
+        /// </summary>
+        public static string NotEnoughItemsForReset {
+            get {
+                return ResourceManager.GetString("NotEnoughItemsForReset", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You don&apos;t have enough Money.
         /// </summary>
         public static string NotEnoughMoney {
             get {
                 return ResourceManager.GetString("NotEnoughMoney", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You don&apos;t have enough money for reset, required zen is {0}..
+        /// </summary>
+        public static string NotEnoughMoneyForReset {
+            get {
+                return ResourceManager.GetString("NotEnoughMoneyForReset", resourceCulture);
             }
         }
         

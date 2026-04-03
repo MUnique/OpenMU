@@ -21455,6 +21455,586 @@ public readonly struct GuildWarScoreUpdate
 
 
 /// <summary>
+/// Is sent by the server when: A guild master sent a relationship change request (alliance or hostility) and the server forwards this request to the target guild master.
+/// Causes reaction on client side: The target guild master (receiver of this message) sees the incoming request dialog.
+/// </summary>
+public readonly struct GuildRelationshipRequest
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GuildRelationshipRequest"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public GuildRelationshipRequest(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GuildRelationshipRequest"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private GuildRelationshipRequest(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xE5;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 7;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1Header Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the relationship type.
+    /// </summary>
+    public GuildRelationshipType RelationshipType
+    {
+        get => (GuildRelationshipType)this._data.Span[3];
+        set => this._data.Span[3] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the request type.
+    /// </summary>
+    public GuildRelationshipRequestType RequestType
+    {
+        get => (GuildRelationshipRequestType)this._data.Span[4];
+        set => this._data.Span[4] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the sender id.
+    /// </summary>
+    public ushort SenderId
+    {
+        get => ReadUInt16BigEndian(this._data.Span[5..]);
+        set => WriteUInt16BigEndian(this._data.Span[5..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="GuildRelationshipRequest"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator GuildRelationshipRequest(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="GuildRelationshipRequest"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(GuildRelationshipRequest packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: The result of a guild relationship change request (alliance or hostility) is sent back to the requester.
+/// Causes reaction on client side: The requester sees the result of the relationship change.
+/// </summary>
+public readonly struct GuildRelationshipChangeResult
+{
+    /// <summary>
+    /// Defines the result of a guild relationship change request.
+    /// </summary>
+    public enum GuildRelationshipChangeResultType
+    {
+        /// <summary>
+        /// The request failed.
+        /// </summary>
+            Failed = 0,
+
+        /// <summary>
+        /// The request was successful.
+        /// </summary>
+            Success = 1,
+
+        /// <summary>
+        /// GUILD_ANS_NOTEXIST_GUILD: The guild does not exist.
+        /// </summary>
+            GuildNotFound = 16,
+
+        /// <summary>
+        /// GUILD_ANS_UNIONFAIL_BY_CASTLE: Alliance function will be restricted due to the Castle Siege.
+        /// </summary>
+            FailedDuringCastleSiege = 16,
+
+        /// <summary>
+        /// GUILD_ANS_NOTEXIST_PERMISSION: No authorization to perform this action.
+        /// </summary>
+            NoAuthorization = 17,
+
+        /// <summary>
+        /// GUILD_ANS_NOTEXIST_EXTRA_STATUS: The extra status does not exist.
+        /// </summary>
+            NotExistExtraStatus = 18,
+
+        /// <summary>
+        /// GUILD_ANS_NOTEXIST_EXTRA_TYPE: The extra type does not exist.
+        /// </summary>
+            NotExistExtraType = 19,
+
+        /// <summary>
+        /// GUILD_ANS_EXIST_RELATIONSHIP_UNION: The guild already has an alliance relationship.
+        /// </summary>
+            AlreadyInAlliance = 21,
+
+        /// <summary>
+        /// GUILD_ANS_EXIST_RELATIONSHIP_RIVAL: The guild already has a hostility relationship.
+        /// </summary>
+            AlreadyInHostility = 22,
+
+        /// <summary>
+        /// GUILD_ANS_EXIST_UNION: A guild alliance already exists.
+        /// </summary>
+            GuildAllianceExists = 23,
+
+        /// <summary>
+        /// GUILD_ANS_EXIST_RIVAL: A hostile guild already exists.
+        /// </summary>
+            HostileGuildExists = 24,
+
+        /// <summary>
+        /// GUILD_ANS_NOTEXIST_UNION: The guild alliance does not exist.
+        /// </summary>
+            GuildAllianceDoesNotExist = 25,
+
+        /// <summary>
+        /// GUILD_ANS_NOTEXIST_RIVAL: The hostile guild does not exist.
+        /// </summary>
+            HostileGuildDoesNotExist = 26,
+
+        /// <summary>
+        /// GUILD_ANS_NOT_UNION_MASTER: The player is not the master of the guild alliance.
+        /// </summary>
+            NotMasterOfGuildAlliance = 27,
+
+        /// <summary>
+        /// GUILD_ANS_NOT_GUILD_RIVAL: The guild is not a rival guild.
+        /// </summary>
+            NotGuildRival = 28,
+
+        /// <summary>
+        /// GUILD_ANS_CANNOT_BE_UNION_MASTER_GUILD: The requirements to create an alliance are incomplete.
+        /// </summary>
+            IncompleteRequirementsToCreateAlliance = 29,
+
+        /// <summary>
+        /// GUILD_ANS_EXCEED_MAX_UNION_MEMBER: The maximum number of guilds in the alliance has been reached.
+        /// </summary>
+            MaximumNumberOfGuildsInAllianceReached = 30,
+
+        /// <summary>
+        /// GUILD_ANS_CANCEL_REQUEST: The request has been cancelled.
+        /// </summary>
+            RequestCancelled = 32,
+
+        /// <summary>
+        /// GUILD_ANS_UNION_MASTER_NOT_GENS: The alliance master is not in a Gens.
+        /// </summary>
+            AllianceMasterNotInGens = 161,
+
+        /// <summary>
+        /// GUILD_ANS_GUILD_MASTER_NOT_GENS: The guild master is not in a Gens.
+        /// </summary>
+            GuildMasterNotInGens = 162,
+
+        /// <summary>
+        /// GUILD_ANS_UNION_MASTER_DISAGREE_GENS: The alliance master and guild master belong to different Gens.
+        /// </summary>
+            DifferentGens = 163,
+    }
+
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GuildRelationshipChangeResult"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public GuildRelationshipChangeResult(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GuildRelationshipChangeResult"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private GuildRelationshipChangeResult(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xE6;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 8;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1Header Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the relationship type.
+    /// </summary>
+    public GuildRelationshipType RelationshipType
+    {
+        get => (GuildRelationshipType)this._data.Span[3];
+        set => this._data.Span[3] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the request type.
+    /// </summary>
+    public GuildRelationshipRequestType RequestType
+    {
+        get => (GuildRelationshipRequestType)this._data.Span[4];
+        set => this._data.Span[4] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public GuildRelationshipChangeResult.GuildRelationshipChangeResultType Result
+    {
+        get => (GuildRelationshipChangeResultType)this._data.Span[5];
+        set => this._data.Span[5] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the guild master id.
+    /// </summary>
+    public ushort GuildMasterId
+    {
+        get => ReadUInt16BigEndian(this._data.Span[6..]);
+        set => WriteUInt16BigEndian(this._data.Span[6..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="GuildRelationshipChangeResult"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator GuildRelationshipChangeResult(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="GuildRelationshipChangeResult"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(GuildRelationshipChangeResult packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: A player requested the alliance list dialog.
+/// Causes reaction on client side: The client shows the list of guilds in the alliance.
+/// </summary>
+public readonly struct AllianceList
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AllianceList"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public AllianceList(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AllianceList"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private AllianceList(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (ushort)data.Length;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC2;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xE9;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C2Header Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the guild count.
+    /// </summary>
+    public byte GuildCount
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the success.
+    /// </summary>
+    public bool Success
+    {
+        get => this._data.Span[5..].GetBoolean();
+        set => this._data.Span[5..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the__ rival count.
+    /// </summary>
+    public byte __RivalCount
+    {
+        get => this._data.Span[6];
+        set => this._data.Span[6] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the__ union count.
+    /// </summary>
+    public byte __UnionCount
+    {
+        get => this._data.Span[7];
+        set => this._data.Span[7] = value;
+    }
+
+    /// <summary>
+    /// Gets the <see cref="AllianceGuildEntry"/> of the specified index.
+    /// </summary>
+        public AllianceGuildEntry this[int index] => new (this._data.Slice(8 + index * AllianceGuildEntry.Length));
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="AllianceList"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator AllianceList(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="AllianceList"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(AllianceList packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="AllianceGuildEntry"/>.
+    /// </summary>
+    /// <param name="guildsCount">The count of <see cref="AllianceGuildEntry"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int guildsCount) => guildsCount * AllianceGuildEntry.Length + 8;
+
+
+/// <summary>
+/// Contains the data of one alliance guild entry..
+/// </summary>
+public readonly struct AllianceGuildEntry
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AllianceGuildEntry"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public AllianceGuildEntry(Memory<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 41;
+
+    /// <summary>
+    /// Gets or sets the member count.
+    /// </summary>
+    public byte MemberCount
+    {
+        get => this._data.Span[0];
+        set => this._data.Span[0] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the logo.
+    /// </summary>
+    public Span<byte> Logo
+    {
+        get => this._data.Slice(1, 32).Span;
+    }
+
+    /// <summary>
+    /// Gets or sets the guild name.
+    /// </summary>
+    public string GuildName
+    {
+        get => this._data.Span.ExtractString(33, 8, System.Text.Encoding.UTF8);
+        set => this._data.Slice(33, 8).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+}
+}
+
+
+/// <summary>
+/// Is sent by the server when: A guild master sent a message to kick the guild from the alliance and it has been processed.
+/// Causes reaction on client side: The list of guilds is updated accordingly.
+/// </summary>
+public readonly struct RemoveAllianceGuildResult
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RemoveAllianceGuildResult"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public RemoveAllianceGuildResult(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RemoveAllianceGuildResult"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private RemoveAllianceGuildResult(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEB;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x01;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 7;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public bool Result
+    {
+        get => this._data.Span[4..].GetBoolean();
+        set => this._data.Span[4..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the request type.
+    /// </summary>
+    public GuildRelationshipRequestType RequestType
+    {
+        get => (GuildRelationshipRequestType)this._data.Span[5];
+        set => this._data.Span[5] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the relationship type.
+    /// </summary>
+    public GuildRelationshipType RelationshipType
+    {
+        get => (GuildRelationshipType)this._data.Span[6];
+        set => this._data.Span[6] = (byte)value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="RemoveAllianceGuildResult"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator RemoveAllianceGuildResult(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="RemoveAllianceGuildResult"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(RemoveAllianceGuildResult packet) => packet._data; 
+}
+
+
+/// <summary>
 /// Is sent by the server when: The server wants to visibly assign a player to a guild, e.g. when two players met each other and one of them is a guild member.
 /// Causes reaction on client side: The players which belong to the guild are shown as guild players. If the game client doesn't met a player of this guild yet, it will send another request to get the guild information.
 /// </summary>
@@ -33662,239 +34242,6 @@ public readonly struct HuntingZoneGuardInfo
     /// <returns>The packet as byte span.</returns>
     public static implicit operator Memory<byte>(HuntingZoneGuardInfo packet) => packet._data; 
 }
-
-
-/// <summary>
-/// Is sent by the server when: After a guild relationship change was processed by the server.
-/// Causes reaction on client side: The client shows the result of the guild relationship change request.
-/// </summary>
-public readonly struct GuildRelationshipChangeResponse
-{
-    private readonly Memory<byte> _data;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GuildRelationshipChangeResponse"/> struct.
-    /// </summary>
-    /// <param name="data">The underlying data.</param>
-    public GuildRelationshipChangeResponse(Memory<byte> data)
-        : this(data, true)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GuildRelationshipChangeResponse"/> struct.
-    /// </summary>
-    /// <param name="data">The underlying data.</param>
-    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private GuildRelationshipChangeResponse(Memory<byte> data, bool initialize)
-    {
-        this._data = data;
-        if (initialize)
-        {
-            var header = this.Header;
-            header.Type = HeaderType;
-            header.Code = Code;
-            header.Length = (byte)Math.Min(data.Length, Length);
-        }
-    }
-
-    /// <summary>
-    /// Gets the header type of this data packet.
-    /// </summary>
-    public static byte HeaderType => 0xC1;
-
-    /// <summary>
-    /// Gets the operation code of this data packet.
-    /// </summary>
-    public static byte Code => 0xE6;
-
-    /// <summary>
-    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
-    /// </summary>
-    public static int Length => 9;
-
-    /// <summary>
-    /// Gets the header of this packet.
-    /// </summary>
-    public C1Header Header => new (this._data);
-
-    /// <summary>
-    /// Gets or sets the result.
-    /// </summary>
-    public byte Result
-    {
-        get => this._data.Span[3];
-        set => this._data.Span[3] = value;
-    }
-
-    /// <summary>
-    /// Gets or sets the relationship type.
-    /// </summary>
-    public byte RelationshipType
-    {
-        get => this._data.Span[4];
-        set => this._data.Span[4] = value;
-    }
-
-    /// <summary>
-    /// Gets or sets the target guild id.
-    /// </summary>
-    public uint TargetGuildId
-    {
-        get => ReadUInt32BigEndian(this._data.Span[5..]);
-        set => WriteUInt32BigEndian(this._data.Span[5..], value);
-    }
-
-    /// <summary>
-    /// Performs an implicit conversion from a Memory of bytes to a <see cref="GuildRelationshipChangeResponse"/>.
-    /// </summary>
-    /// <param name="packet">The packet as span.</param>
-    /// <returns>The packet as struct.</returns>
-    public static implicit operator GuildRelationshipChangeResponse(Memory<byte> packet) => new (packet, false);
-
-    /// <summary>
-    /// Performs an implicit conversion from <see cref="GuildRelationshipChangeResponse"/> to a Memory of bytes.
-    /// </summary>
-    /// <param name="packet">The packet as struct.</param>
-    /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(GuildRelationshipChangeResponse packet) => packet._data; 
-}
-
-
-/// <summary>
-/// Is sent by the server when: After the player requested the alliance list.
-/// Causes reaction on client side: The client shows the list of guilds in the alliance.
-/// </summary>
-public readonly struct AllianceList
-{
-    private readonly Memory<byte> _data;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="AllianceList"/> struct.
-    /// </summary>
-    /// <param name="data">The underlying data.</param>
-    public AllianceList(Memory<byte> data)
-        : this(data, true)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="AllianceList"/> struct.
-    /// </summary>
-    /// <param name="data">The underlying data.</param>
-    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private AllianceList(Memory<byte> data, bool initialize)
-    {
-        this._data = data;
-        if (initialize)
-        {
-            var header = this.Header;
-            header.Type = HeaderType;
-            header.Code = Code;
-            header.Length = (ushort)data.Length;
-        }
-    }
-
-    /// <summary>
-    /// Gets the header type of this data packet.
-    /// </summary>
-    public static byte HeaderType => 0xC2;
-
-    /// <summary>
-    /// Gets the operation code of this data packet.
-    /// </summary>
-    public static byte Code => 0xE9;
-
-    /// <summary>
-    /// Gets the header of this packet.
-    /// </summary>
-    public C2Header Header => new (this._data);
-
-    /// <summary>
-    /// Gets or sets the guild count.
-    /// </summary>
-    public byte GuildCount
-    {
-        get => this._data.Span[4];
-        set => this._data.Span[4] = value;
-    }
-
-    /// <summary>
-    /// Gets the <see cref="AllianceGuildEntry"/> of the specified index.
-    /// </summary>
-        public AllianceGuildEntry this[int index] => new (this._data.Slice(5 + index * AllianceGuildEntry.Length));
-
-    /// <summary>
-    /// Performs an implicit conversion from a Memory of bytes to a <see cref="AllianceList"/>.
-    /// </summary>
-    /// <param name="packet">The packet as span.</param>
-    /// <returns>The packet as struct.</returns>
-    public static implicit operator AllianceList(Memory<byte> packet) => new (packet, false);
-
-    /// <summary>
-    /// Performs an implicit conversion from <see cref="AllianceList"/> to a Memory of bytes.
-    /// </summary>
-    /// <param name="packet">The packet as struct.</param>
-    /// <returns>The packet as byte span.</returns>
-    public static implicit operator Memory<byte>(AllianceList packet) => packet._data; 
-
-    /// <summary>
-    /// Calculates the size of the packet for the specified count of <see cref="AllianceGuildEntry"/>.
-    /// </summary>
-    /// <param name="guildsCount">The count of <see cref="AllianceGuildEntry"/> from which the size will be calculated.</param>
-        
-    public static int GetRequiredSize(int guildsCount) => guildsCount * AllianceGuildEntry.Length + 5;
-
-
-/// <summary>
-/// Information about one guild in the alliance..
-/// </summary>
-public readonly struct AllianceGuildEntry
-{
-    private readonly Memory<byte> _data;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="AllianceGuildEntry"/> struct.
-    /// </summary>
-    /// <param name="data">The underlying data.</param>
-    public AllianceGuildEntry(Memory<byte> data)
-    {
-        this._data = data;
-    }
-
-    /// <summary>
-    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
-    /// </summary>
-    public static int Length => 19;
-
-    /// <summary>
-    /// Gets or sets the guild name.
-    /// </summary>
-    public string GuildName
-    {
-        get => this._data.Span.ExtractString(0, 8, System.Text.Encoding.UTF8);
-        set => this._data.Slice(0, 8).Span.WriteString(value, System.Text.Encoding.UTF8);
-    }
-
-    /// <summary>
-    /// Gets or sets the member count.
-    /// </summary>
-    public byte MemberCount
-    {
-        get => this._data.Span[8];
-        set => this._data.Span[8] = value;
-    }
-
-    /// <summary>
-    /// Gets or sets the guild master name.
-    /// </summary>
-    public string GuildMasterName
-    {
-        get => this._data.Span.ExtractString(9, 10, System.Text.Encoding.UTF8);
-        set => this._data.Slice(9, 10).Span.WriteString(value, System.Text.Encoding.UTF8);
-    }
-}
-}
     /// <summary>
     /// Defines the role of a guild member.
     /// </summary>
@@ -33909,6 +34256,11 @@ public readonly struct AllianceGuildEntry
         /// The member is a battle master.
         /// </summary>
             BattleMaster = 32,
+
+        /// <summary>
+        /// The member is the assistant guild master.
+        /// </summary>
+            AssistantMaster = 64,
 
         /// <summary>
         /// The member is the guild master.
@@ -33935,6 +34287,48 @@ public readonly struct AllianceGuildEntry
         /// A guild soccer match.
         /// </summary>
             Soccer = 1,
+    }
+
+    /// <summary>
+    /// Describes the relationship type between guilds.
+    /// </summary>
+    public enum GuildRelationshipType
+    {
+        /// <summary>
+        /// The undefined relationship type.
+        /// </summary>
+            Undefined = 0,
+
+        /// <summary>
+        /// The alliance relationship type.
+        /// </summary>
+            Alliance = 1,
+
+        /// <summary>
+        /// The hostility relationship type.
+        /// </summary>
+            Hostility = 2,
+    }
+
+    /// <summary>
+    /// Describes the request type.
+    /// </summary>
+    public enum GuildRelationshipRequestType
+    {
+        /// <summary>
+        /// The undefined request type.
+        /// </summary>
+            Undefined = 0,
+
+        /// <summary>
+        /// The join type.
+        /// </summary>
+            Join = 1,
+
+        /// <summary>
+        /// The leave type.
+        /// </summary>
+            Leave = 2,
     }
 
     /// <summary>

@@ -3067,7 +3067,7 @@
         </Field>
         <Field>
           <Index>5</Index>
-          <Type>ShortLittleEndian</Type>
+          <Type>ShortBigEndian</Type>
           <Name>TargetPlayerId</Name>
         </Field>
       </Fields>
@@ -3100,7 +3100,7 @@
         </Field>
         <Field>
           <Index>6</Index>
-          <Type>ShortLittleEndian</Type>
+          <Type>ShortBigEndian</Type>
           <Name>TargetPlayerId</Name>
         </Field>
       </Fields>

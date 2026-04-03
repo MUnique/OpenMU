@@ -561,11 +561,23 @@
   <data name="ResetNotConfigured" xml:space="preserve">
     <value>Reset is not configured.</value>
   </data>
+  <data name="NextResetInfoCompactWithItem" xml:space="preserve">
+    <value>Reset #{0}: requires level {1}, zen {2}, {3} x {4}; grants {5} points, {6} total</value>
+  </data>
+  <data name="NextResetInfoCompactNoItem" xml:space="preserve">
+    <value>Reset #{0}: requires level {1}, zen {2}; grants {3} points, {4} total</value>
+  </data>
   <data name="RequiredLevelForReset" xml:space="preserve">
     <value>Required level for reset is {0}.</value>
   </data>
   <data name="MaximumResetsReached" xml:space="preserve">
     <value>Maximum resets of {0} reached.</value>
+  </data>
+  <data name="NotEnoughItemsForReset" xml:space="preserve">
+    <value>You don't have enough required items for reset, required {0} x {1}.</value>
+  </data>
+  <data name="NotEnoughMoneyForReset" xml:space="preserve">
+    <value>You don't have enough money for reset, required zen is {0}.</value>
   </data>
   <data name="DuelBattleBeginsInSecondsFormat" xml:space="preserve">
     <value>The battle begins in {0} seconds</value>
