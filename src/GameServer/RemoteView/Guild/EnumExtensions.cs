@@ -39,6 +39,7 @@ public static class EnumExtensions
         return playerPosition switch
         {
             GuildPosition.GuildMaster => GuildMemberRole.GuildMaster,
+            GuildPosition.AssistantMaster => GuildMemberRole.AssistantMaster,
             GuildPosition.NormalMember => GuildMemberRole.NormalMember,
             GuildPosition.BattleMaster => GuildMemberRole.BattleMaster,
             _ => GuildMemberRole.Undefined,
@@ -146,6 +147,70 @@ public static class EnumExtensions
             GameLogic.Views.Guild.GuildWarRequestResult.NotInGuild => Network.Packets.ServerToClient.GuildWarRequestResult.RequestResult.NotInGuild,
             GameLogic.Views.Guild.GuildWarRequestResult.NotTheGuildMaster => Network.Packets.ServerToClient.GuildWarRequestResult.RequestResult.NotTheGuildMaster,
             GameLogic.Views.Guild.GuildWarRequestResult.RequestSentToGuildMaster => Network.Packets.ServerToClient.GuildWarRequestResult.RequestResult.RequestSentToGuildMaster,
+            _ => throw new NotImplementedException($"The case {result} is not implemented."),
+        };
+    }
+
+    /// <summary>
+    /// Converts the specified relationship type.
+    /// </summary>
+    /// <param name="relationshipType">Type of the relationship.</param>
+    /// <returns>The converted <see cref="Network.Packets.ServerToClient.GuildRelationshipType"/>.</returns>
+    public static Network.Packets.ServerToClient.GuildRelationshipType Convert(this GameLogic.Views.Guild.GuildRelationshipType relationshipType)
+    {
+        return relationshipType switch
+        {
+            GameLogic.Views.Guild.GuildRelationshipType.Undefined => Network.Packets.ServerToClient.GuildRelationshipType.Undefined,
+            GameLogic.Views.Guild.GuildRelationshipType.Alliance => Network.Packets.ServerToClient.GuildRelationshipType.Alliance,
+            GameLogic.Views.Guild.GuildRelationshipType.Hostility => Network.Packets.ServerToClient.GuildRelationshipType.Hostility,
+            _ => throw new NotImplementedException($"The case {relationshipType} is not implemented."),
+        };
+    }
+
+    /// <summary>
+    /// Converts the specified request type.
+    /// </summary>
+    /// <param name="requestType">Type of the request.</param>
+    /// <returns>The converted <see cref="Network.Packets.ServerToClient.GuildRelationshipRequestType"/>.</returns>
+    public static Network.Packets.ServerToClient.GuildRelationshipRequestType Convert(this GameLogic.Views.Guild.GuildRelationshipRequestType requestType)
+    {
+        return requestType switch
+        {
+            GameLogic.Views.Guild.GuildRelationshipRequestType.Undefined => Network.Packets.ServerToClient.GuildRelationshipRequestType.Undefined,
+            GameLogic.Views.Guild.GuildRelationshipRequestType.Join => Network.Packets.ServerToClient.GuildRelationshipRequestType.Join,
+            GameLogic.Views.Guild.GuildRelationshipRequestType.Leave => Network.Packets.ServerToClient.GuildRelationshipRequestType.Leave,
+            _ => throw new NotImplementedException($"The case {requestType} is not implemented."),
+        };
+    }
+
+    /// <summary>
+    /// Converts the specified result type.
+    /// </summary>
+    /// <param name="result">The <see cref="GameLogic.Views.Guild.GuildRelationshipChangeResultType"/> which should be converted.</param>
+    /// <returns>The converted <see cref="Network.Packets.ServerToClient.GuildRelationshipChangeResult.GuildRelationshipChangeResultType"/>.</returns>
+    public static Network.Packets.ServerToClient.GuildRelationshipChangeResult.GuildRelationshipChangeResultType Convert(this GameLogic.Views.Guild.GuildRelationshipChangeResultType result)
+    {
+        return result switch
+        {
+            GameLogic.Views.Guild.GuildRelationshipChangeResultType.Failed => Network.Packets.ServerToClient.GuildRelationshipChangeResult.GuildRelationshipChangeResultType.Failed,
+            GameLogic.Views.Guild.GuildRelationshipChangeResultType.Success => Network.Packets.ServerToClient.GuildRelationshipChangeResult.GuildRelationshipChangeResultType.Success,
+            GameLogic.Views.Guild.GuildRelationshipChangeResultType.GuildNotFound => Network.Packets.ServerToClient.GuildRelationshipChangeResult.GuildRelationshipChangeResultType.GuildNotFound,
+            GameLogic.Views.Guild.GuildRelationshipChangeResultType.NoAuthorization => Network.Packets.ServerToClient.GuildRelationshipChangeResult.GuildRelationshipChangeResultType.NoAuthorization,
+            GameLogic.Views.Guild.GuildRelationshipChangeResultType.AlreadyInAlliance => Network.Packets.ServerToClient.GuildRelationshipChangeResult.GuildRelationshipChangeResultType.AlreadyInAlliance,
+            GameLogic.Views.Guild.GuildRelationshipChangeResultType.FailedDuringCastleSiege => Network.Packets.ServerToClient.GuildRelationshipChangeResult.GuildRelationshipChangeResultType.FailedDuringCastleSiege,
+            GameLogic.Views.Guild.GuildRelationshipChangeResultType.AlreadyInHostility => Network.Packets.ServerToClient.GuildRelationshipChangeResult.GuildRelationshipChangeResultType.AlreadyInHostility,
+            GameLogic.Views.Guild.GuildRelationshipChangeResultType.GuildAllianceExists => Network.Packets.ServerToClient.GuildRelationshipChangeResult.GuildRelationshipChangeResultType.GuildAllianceExists,
+            GameLogic.Views.Guild.GuildRelationshipChangeResultType.HostileGuildExists => Network.Packets.ServerToClient.GuildRelationshipChangeResult.GuildRelationshipChangeResultType.HostileGuildExists,
+            GameLogic.Views.Guild.GuildRelationshipChangeResultType.GuildAllianceDoesNotExist => Network.Packets.ServerToClient.GuildRelationshipChangeResult.GuildRelationshipChangeResultType.GuildAllianceDoesNotExist,
+            GameLogic.Views.Guild.GuildRelationshipChangeResultType.HostileGuildDoesNotExist => Network.Packets.ServerToClient.GuildRelationshipChangeResult.GuildRelationshipChangeResultType.HostileGuildDoesNotExist,
+            GameLogic.Views.Guild.GuildRelationshipChangeResultType.NotMasterOfGuildAlliance => Network.Packets.ServerToClient.GuildRelationshipChangeResult.GuildRelationshipChangeResultType.NotMasterOfGuildAlliance,
+            GameLogic.Views.Guild.GuildRelationshipChangeResultType.NotGuildRival => Network.Packets.ServerToClient.GuildRelationshipChangeResult.GuildRelationshipChangeResultType.NotGuildRival,
+            GameLogic.Views.Guild.GuildRelationshipChangeResultType.IncompleteRequirementsToCreateAlliance => Network.Packets.ServerToClient.GuildRelationshipChangeResult.GuildRelationshipChangeResultType.IncompleteRequirementsToCreateAlliance,
+            GameLogic.Views.Guild.GuildRelationshipChangeResultType.MaximumNumberOfGuildsInAllianceReached => Network.Packets.ServerToClient.GuildRelationshipChangeResult.GuildRelationshipChangeResultType.MaximumNumberOfGuildsInAllianceReached,
+            GameLogic.Views.Guild.GuildRelationshipChangeResultType.RequestCancelled => Network.Packets.ServerToClient.GuildRelationshipChangeResult.GuildRelationshipChangeResultType.RequestCancelled,
+            GameLogic.Views.Guild.GuildRelationshipChangeResultType.AllianceMasterNotInGens => Network.Packets.ServerToClient.GuildRelationshipChangeResult.GuildRelationshipChangeResultType.AllianceMasterNotInGens,
+            GameLogic.Views.Guild.GuildRelationshipChangeResultType.GuildMasterNotInGens => Network.Packets.ServerToClient.GuildRelationshipChangeResult.GuildRelationshipChangeResultType.GuildMasterNotInGens,
+            GameLogic.Views.Guild.GuildRelationshipChangeResultType.DifferentGens => Network.Packets.ServerToClient.GuildRelationshipChangeResult.GuildRelationshipChangeResultType.DifferentGens,
             _ => throw new NotImplementedException($"The case {result} is not implemented."),
         };
     }

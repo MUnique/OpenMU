@@ -1229,6 +1229,13 @@ public class Stats
     public static AttributeDefinition MaximumGuildSize { get; } = new(new Guid("898EF69B-3965-4DBF-9783-E9709698236B"), "Maximum Guild Size", string.Empty);
 
     /// <summary>
+    /// Gets the maximum alliance size attribute definition.
+    /// The maximum number of guilds that can participate in a single alliance.
+    /// A value of 0 means no limit is enforced.
+    /// </summary>
+    public static AttributeDefinition MaximumAllianceSize { get; } = new(new Guid("B3C7E9D2-5A1F-4E8B-92C7-6D3F8A4B7E5C"), "Maximum Alliance Size", string.Empty);
+
+    /// <summary>
     /// Gets the fully recover mana after hit chance definition.
     /// </summary>
     public static AttributeDefinition FullyRecoverManaAfterHitChance { get; } = new(new Guid("EB06D3A2-DA82-4B81-81B9-A16D39974531"), "Chance to fully recover mana when getting hit", "3rd Wing Option");

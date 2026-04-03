@@ -23,6 +23,7 @@ using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Properties;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Character;
+using MUnique.OpenMU.GameLogic.Views.Guild;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.GameLogic.Views.MuHelper;
 using MUnique.OpenMU.GameLogic.Views.Pet;
@@ -330,6 +331,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// Gets or sets the last guild requester.
     /// </summary>
     public Player? LastGuildRequester { get; set; }
+
+    /// <summary>
+    /// Gets or sets the player who sent a pending alliance request to this player.
+    /// </summary>
+    public (Player?, GuildRelationshipType, GuildRelationshipRequestType) PendingAllianceRequest { get; set; }
 
     /// <summary>
     /// Gets or sets the guild war context.
@@ -2281,7 +2287,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// Is called after the player killed a <see cref="Player"/>.
     /// Increment PK Level.
     /// </summary>
-    private async ValueTask AfterKilledPlayerAsync(Player killedPlayer)
+    internal async ValueTask AfterKilledPlayerAsync(Player killedPlayer)
     {
         if (this.DuelRoom?.State == DuelState.DuelStarted)
         {
@@ -2304,6 +2310,15 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             && this.IsSelfDefenseActive(killedPlayer))
         {
             // Self defense is allowed.
+            return;
+        }
+
+        // Killing a rival guild member (hostility) is allowed without PK penalty.
+        if (this.GuildStatus is { } killerStatus
+            && killedPlayer.GuildStatus is { } killedStatus
+            && this.GameContext is IGameServerContext serverContext
+            && serverContext.AreGuildsRival(killerStatus.GuildId, killedStatus.GuildId))
+        {
             return;
         }
 

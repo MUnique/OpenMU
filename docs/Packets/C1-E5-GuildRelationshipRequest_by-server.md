@@ -1,24 +1,23 @@
-# C1 E6 - GuildRelationshipChangeResponse (by client)
+# C1 E5 - GuildRelationshipRequest (by server)
 
 ## Is sent when
 
-A guild master answered the request to another guild master about changing the relationship between their guilds.
+A guild master sent a relationship change request (alliance or hostility) and the server forwards this request to the target guild master.
 
-## Causes the following actions on the server side
+## Causes the following actions on the client side
 
-The server sends a response back to the requester. If the guild master agreed, it takes the necessary actions.
+The target guild master (receiver of this message) sees the incoming request dialog.
 
 ## Structure
 
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
 | 0 | 1 |   Byte   | 0xC1  | [Packet type](PacketTypes.md) |
-| 1 | 1 |    Byte   |   8   | Packet header - length of the packet |
-| 2 | 1 |    Byte   | 0xE6  | Packet header - packet type identifier |
+| 1 | 1 |    Byte   |   7   | Packet header - length of the packet |
+| 2 | 1 |    Byte   | 0xE5  | Packet header - packet type identifier |
 | 3 | 1 | GuildRelationshipType |  | RelationshipType |
-| 4 | 1 | GuildRequestType |  | RequestType |
-| 5 | 1 | Boolean |  | Response |
-| 6 | 2 | ShortBigEndian |  | TargetPlayerId |
+| 4 | 1 | GuildRelationshipRequestType |  | RequestType |
+| 5 | 2 | ShortBigEndian |  | SenderId |
 
 ### GuildRelationshipType Enum
 
@@ -30,7 +29,7 @@ Describes the relationship type between guilds.
 | 1 | Alliance | The alliance relationship type. |
 | 2 | Hostility | The hostility relationship type. |
 
-### GuildRequestType Enum
+### GuildRelationshipRequestType Enum
 
 Describes the request type.
 
