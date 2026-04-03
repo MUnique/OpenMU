@@ -114,11 +114,11 @@ public sealed class DroppedMoney : AsyncDisposable, ILocateable
 
         if (clampMoneyOnPickup && amountToAdd < this.Amount)
         {
-            player.Logger.LogInformation("Money '{0}' was partially picked up by player '{1}' - added {2} out of {3} (player at max limit).", this, player, amountToAdd, this.Amount);
+            player.Logger.LogDebug("Money '{0}' was partially picked up by player '{1}' - added {2} out of {3} (player at max limit).", this, player, amountToAdd, this.Amount);
         }
         else
         {
-            player.Logger.LogInformation("Money '{0}' was picked up by player '{1}' and added to his inventory.", this, player);
+            player.Logger.LogDebug("Money '{0}' was picked up by player '{1}' and added to his inventory.", this, player);
         }
 
         await this.DisposeAsync().ConfigureAwait(false);

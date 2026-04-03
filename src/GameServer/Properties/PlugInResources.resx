@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -404,6 +404,36 @@
   </data>
   <data name="GuildWarResponseHandlerPlugIn_Description" xml:space="preserve">
     <value>Handler for guild war response packets.</value>
+  </data>
+  <data name="GuildRelationshipChangeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Guild Relationship Change Handler</value>
+  </data>
+  <data name="GuildRelationshipChangeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for guild relationship change request packets (alliance/hostility requests).</value>
+  </data>
+  <data name="GuildRelationshipChangeResponseHandlerPlugIn_Name" xml:space="preserve">
+    <value>Guild Relationship Change Response Handler</value>
+  </data>
+  <data name="GuildRelationshipChangeResponseHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for guild relationship change response packets (the target guild master's answer).</value>
+  </data>
+  <data name="AllianceListRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Alliance List Request Handler</value>
+  </data>
+  <data name="AllianceListRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for alliance list request packets.</value>
+  </data>
+  <data name="AllianceGroupHandlerPlugIn_Name" xml:space="preserve">
+    <value>Alliance Group Handler</value>
+  </data>
+  <data name="AllianceGroupHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler group for alliance packets (0xEB identifier).</value>
+  </data>
+  <data name="RemoveAllianceGuildHandlerPlugIn_Name" xml:space="preserve">
+    <value>Remove Alliance Guild Handler</value>
+  </data>
+  <data name="RemoveAllianceGuildHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for remove alliance guild request packets.</value>
   </data>
   <data name="BuyNpcItemHandlerPlugIn_Name" xml:space="preserve">
     <value>Buy Npc Item Handler</value>
@@ -1028,6 +1058,24 @@
   </data>
   <data name="ShowGuildWarResultPlugIn_Description" xml:space="preserve">
     <value>The default implementation of the IShowGuildWarResultPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowGuildRelationshipChangeResultPlugIn_Name" xml:space="preserve">
+    <value>Show Guild Relationship Change Result</value>
+  </data>
+  <data name="ShowGuildRelationshipChangeResultPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IGuildRelationshipChangeResultPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowGuildRelationshipRequestPlugIn_Name" xml:space="preserve">
+    <value>Show Guild Relationship Request</value>
+  </data>
+  <data name="ShowGuildRelationshipRequestPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowGuildRelationshipRequestPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="ShowAllianceListPlugIn_Name" xml:space="preserve">
+    <value>Show Alliance List</value>
+  </data>
+  <data name="ShowAllianceListPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IShowAllianceListPlugIn which is forwarding everything to the game client with specific data packets.</value>
   </data>
   <data name="ShowShowGuildWarRequestResultPlugIn_Name" xml:space="preserve">
     <value>Show Show Guild War Request Result</value>
@@ -2108,5 +2156,11 @@
   </data>
   <data name="AppearanceChangedExtendedPlugIn_Description" xml:space="preserve">
     <value>The extended implementation of the IAppearanceChangedPlugIn which is forwarding appearance changes of other players to the game client with specific data packets.</value>
+  </data>
+  <data name="MuHelperSettingsInitializationPlugIn_Name" xml:space="preserve">
+    <value>MU Helper Settings Initialization</value>
+  </data>
+  <data name="MuHelperSettingsInitializationPlugIn_Description" xml:space="preserve">
+    <value>Initializes the MU Helper settings when the player enters the world.</value>
   </data>
 </root>

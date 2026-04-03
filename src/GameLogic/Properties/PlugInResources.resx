@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -1117,7 +1117,7 @@
     <value>Multiply required money by reset count</value>
   </data>
   <data name="ResetConfiguration_ResetStats_Name" xml:space="preserve">
-    <value>Reset stats</value>
+    <value>Reset base stats to class defaults</value>
   </data>
   <data name="ResetConfiguration_PointsPerReset_Name" xml:space="preserve">
     <value>Points per reset</value>
@@ -1126,7 +1126,7 @@
     <value>Multiply points by reset count</value>
   </data>
   <data name="ResetConfiguration_ReplacePointsPerReset_Name" xml:space="preserve">
-    <value>Reset points per reset</value>
+    <value>Replace level-up points with reset total</value>
   </data>
   <data name="ResetConfiguration_MoveHome_Name" xml:space="preserve">
     <value>Move home</value>
@@ -1151,5 +1151,11 @@
   </data>
   <data name="BaseInvasionPlugIn_DefaultStartMessage" xml:space="preserve">
     <value>[{mapName}] Invasion!</value>
+  </data>
+  <data name="OfflineLevelingChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Offline Leveling Command</value>
+  </data>
+  <data name="OfflineLevelingChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Allows players to start offline leveling with /offlevel. The character stays in the world after the client disconnects and stops when the player logs back in.</value>
   </data>
 </root>

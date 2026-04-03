@@ -15,5 +15,6 @@ public interface IShowGuildListPlugIn : IViewPlugIn
     /// Shows the guild list.
     /// </summary>
     /// <param name="players">The players of the guild.</param>
-    ValueTask ShowGuildListAsync(IEnumerable<GuildListEntry> players);
+    /// <param name="guild">The guild.</param>
+    ValueTask ShowGuildListAsync(IReadOnlyCollection<GuildListEntry> players, Guild guild);
 }

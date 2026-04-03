@@ -18,7 +18,6 @@ public class AreaSkillHitAction
     public async ValueTask AttackTargetAsync(Player player, IAttackable target, SkillEntry skill)
     {
         if (skill.Skill?.SkillType != SkillType.AreaSkillExplicitHits
-            || target is null
             || !target.IsAlive
             || target.IsAtSafezone())
         {
@@ -29,6 +28,11 @@ public class AreaSkillHitAction
         {
             // It's possible, when the player did some area skill (Evil Spirit), and walked into the safezone.
             // We don't log it as hacker attempt, since the AreaSkillAttackAction already does handle this.
+        }
+
+        if (target is Player && !player.GameContext.Configuration.AreaSkillHitsPlayer)
+        {
+            return;
         }
 
         if (target.CheckSkillTargetRestrictions(player, skill.Skill))
