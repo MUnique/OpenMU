@@ -387,4 +387,9 @@ public enum UpdateVersion
     /// The version of the <see cref="AddMaximumAllianceSizeUpdatePlugInSeason6"/>.
     /// </summary>
     AddMaximumAllianceSizeSeason6 = 76,
+
+    /// <summary>
+    /// The version of the <see cref="FixSummonerCurseSkillsPlugIn"/>.
+    /// </summary>
+    FixSummonerCurseSkills = 77,
 }

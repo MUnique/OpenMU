@@ -788,6 +788,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         return this.HitAsync(new HitInfo(damage, 0, DamageAttributes.Poison), initialAttacker, null);
     }
 
+    /// <inheritdoc/>
+    public ValueTask ApplyBleedingDamageAsync(IAttacker initialAttacker, uint damage)
+    {
+        return this.HitAsync(this.GetHitInfo(damage, DamageAttributes.Undefined, initialAttacker), initialAttacker, null);
+    }
+
     /// <summary>
     /// Teleports this player to the specified target with the specified skill animation.
     /// </summary>

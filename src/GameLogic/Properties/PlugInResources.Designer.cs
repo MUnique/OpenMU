@@ -1843,6 +1843,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Handles the pollution skill (book of lagle) of the summoner class. Based on a chance, it may push the targets 2 squares away from the attacker..
+        /// </summary>
+        public static string PollutionSkillPlugIn_Description {
+            get {
+                return ResourceManager.GetString("PollutionSkillPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pollution Skill.
+        /// </summary>
+        public static string PollutionSkillPlugIn_Name {
+            get {
+                return ResourceManager.GetString("PollutionSkillPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the chat command &apos;/post message&apos;. Sends a global blue system message to all players of the game..
         /// </summary>
         public static string PostChatCommandPlugIn_Description {
@@ -2012,6 +2030,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string RemoveNpcChatCommand_Name {
             get {
                 return ResourceManager.GetString("RemoveNpcChatCommand_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the requiem skill (book of neil) of the summoner class. Based on a chance, it may stun the target..
+        /// </summary>
+        public static string RequiemSkillPlugIn_Description {
+            get {
+                return ResourceManager.GetString("RequiemSkillPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Requiem Skill.
+        /// </summary>
+        public static string RequiemSkillPlugIn_Name {
+            get {
+                return ResourceManager.GetString("RequiemSkillPlugIn_Name", resourceCulture);
             }
         }
         

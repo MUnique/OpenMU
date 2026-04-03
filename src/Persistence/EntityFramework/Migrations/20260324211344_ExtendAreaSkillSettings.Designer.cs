@@ -3,6 +3,7 @@ using System;
 using MUnique.OpenMU.Persistence.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 {
     [DbContext(typeof(EntityDataContext))]
-    partial class EntityDataContextModelSnapshot : ModelSnapshot
+    [Migration("20260324211344_ExtendAreaSkillSettings")]
+    partial class ExtendAreaSkillSettings
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1044,9 +1047,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasDefaultValue("if(level == 0, 0, if(level < 256, 10 * (level + 8) * (level - 1) * (level - 1), (10 * (level + 8) * (level - 1) * (level - 1)) + (1000 * (level - 247) * (level - 256) * (level - 256))))");
 
                     b.Property<float>("ExperienceRate")
-                        .HasColumnType("real");
-
-                    b.Property<float>("MasterExperienceRate")
                         .HasColumnType("real");
 
                     b.Property<double>("HitsPerOneItemDurability")

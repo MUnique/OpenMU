@@ -958,6 +958,12 @@ public class Stats
     public static AttributeDefinition IsAsleep { get; } = new(new Guid("0518F532-7A8F-4491-8A23-98B620608CB3"), "Is asleep", "The player is asleep and can't move until hit.");
 
     /// <summary>
+    /// Gets the attribute definition, which defines if a player has explosion effect applied.
+    /// </summary>
+    /// <remarks>This can be caused by Explosion (book of samut) and Requiem (book of neil) skills.</remarks>
+    public static AttributeDefinition IsBleeding { get; } = new(new Guid("BD5C685D-C360-4CC5-A43E-46644AD61F09"), "Is bleeding", "The player is damaged every second for a while.");
+
+    /// <summary>
     /// Gets the ice resistance attribute definition. Value range from 0 to 1.
     /// </summary>
     public static AttributeDefinition IceResistance { get; } = new(new Guid("47235C36-41BB-44B4-8823-6FC415709F59"), "Ice Resistance", string.Empty);
@@ -1058,6 +1064,11 @@ public class Stats
     public static AttributeDefinition PoisonDamageMultiplier { get; } = new(new Guid("8581CD4D-C6AE-4C35-9147-9642DE7CC013"), "Poison Damage Multiplier", string.Empty);
 
     /// <summary>
+    /// Gets the bleeding damage multiplier attribute definition.
+    /// </summary>
+    public static AttributeDefinition BleedingDamageMultiplier { get; } = new(new Guid("12C20F28-F219-4044-899D-E9277D251515"), "Bleeding Damage Multiplier", string.Empty);
+
+    /// <summary>
     /// Gets the mana recovery absolute attribute definition.
     /// </summary>
     public static AttributeDefinition ManaRecoveryAbsolute { get; } = new(new Guid("33DE588D-1FAB-493A-8FB1-837BF9C5131F"), "Mana Recovery Absolute Increase", string.Empty);
@@ -1117,6 +1128,16 @@ public class Stats
     /// Gets the double damage chance attribute definition.
     /// </summary>
     public static AttributeDefinition DoubleDamageChance { get; } = new(new Guid("2B8A03E6-1CC2-48A0-8633-3F36E17050F4"), "Double Damage Chance", string.Empty);
+
+    /// <summary>
+    /// Gets the stun chance attribute definition.
+    /// </summary>
+    public static AttributeDefinition StunChance { get; } = new(new Guid("610D3259-1158-424A-8738-9EB7A71DE600"), "Stun Chance", string.Empty);
+
+    /// <summary>
+    /// Gets the pollution skill MST target move chance, which rises with lightning tome mastery.
+    /// </summary>
+    public static AttributeDefinition PollutionMoveTargetChance { get; } = new(new Guid("6F9619FF-8B86-D011-B42D-00C04FC964FF"), "Pollution Move Target Chance (MST)", "The pollution skill (book of lagle) move chance, which rises with lightning tome mastery.");
 
     /// <summary>
     /// Gets the mana after monster kill attribute definition.
