@@ -11316,4 +11316,285 @@
       </Values>
     </Enum>
   </Enums>
+  <Packet>
+    <HeaderType>C1HeaderWithSubCode</HeaderType>
+    <Code>D1</Code>
+    <SubCode>00</SubCode>
+    <Name>KanturuStateInfo</Name>
+    <Length>12</Length>
+    <Direction>ServerToClient</Direction>
+    <SentWhen>The player requests state information from the Kanturu gateway NPC.</SentWhen>
+    <CausedReaction>The client shows the Kanturu entry dialog (INTERFACE_KANTURU2ND_ENTERNPC) with event state, detail state, whether entry is possible, current player count and remaining time.</CausedReaction>
+    <Fields>
+      <Field>
+        <Index>4</Index>
+        <Type>Enum</Type>
+        <TypeName>StateType</TypeName>
+        <Name>State</Name>
+      </Field>
+      <Field>
+        <Index>5</Index>
+        <Type>Byte</Type>
+        <Name>DetailState</Name>
+        <Description>Detail state; semantics depend on the main State field. See the game logic enums for per-state values.</Description>
+      </Field>
+      <Field>
+        <Index>6</Index>
+        <Type>Boolean</Type>
+        <Name>CanEnter</Name>
+        <Description>1 = entrance is open (Enter button enabled); 0 = entrance closed.</Description>
+      </Field>
+      <Field>
+        <Index>7</Index>
+        <Type>Byte</Type>
+        <Name>UserCount</Name>
+        <Description>Number of players currently inside the event map (capped at 255).</Description>
+      </Field>
+      <Field>
+        <Index>8</Index>
+        <Type>IntegerLittleEndian</Type>
+        <Name>RemainSeconds</Name>
+        <Description>Remaining time in seconds. Standby: seconds until event opens. Tower: seconds the tower has been open. Otherwise 0.</Description>
+      </Field>
+    </Fields>
+    <Enums>
+      <Enum>
+        <Name>StateType</Name>
+        <Description>Main state of the Kanturu event, matching the client KANTURU_STATE_TYPE enum.</Description>
+        <Values>
+          <EnumValue>
+            <Name>None</Name>
+            <Description>No active state.</Description>
+            <Value>0</Value>
+          </EnumValue>
+          <EnumValue>
+            <Name>Standby</Name>
+            <Description>Waiting for players to enter before the event starts.</Description>
+            <Value>1</Value>
+          </EnumValue>
+          <EnumValue>
+            <Name>MayaBattle</Name>
+            <Description>Maya battle phase covering Phases 1 through 3 and their boss waves.</Description>
+            <Value>2</Value>
+          </EnumValue>
+          <EnumValue>
+            <Name>NightmareBattle</Name>
+            <Description>Nightmare battle phase after all three Maya phases are cleared.</Description>
+            <Value>3</Value>
+          </EnumValue>
+          <EnumValue>
+            <Name>Tower</Name>
+            <Description>Tower of Refinement phase; opens after Nightmare is defeated.</Description>
+            <Value>4</Value>
+          </EnumValue>
+          <EnumValue>
+            <Name>End</Name>
+            <Description>Event has ended.</Description>
+            <Value>5</Value>
+          </EnumValue>
+        </Values>
+      </Enum>
+    </Enums>
+  </Packet>
+  <Packet>
+    <HeaderType>C1HeaderWithSubCode</HeaderType>
+    <Code>D1</Code>
+    <SubCode>01</SubCode>
+    <Name>KanturuEnterResult</Name>
+    <Length>5</Length>
+    <Direction>ServerToClient</Direction>
+    <SentWhen>The player attempted to enter the Kanturu event through the gateway NPC.</SentWhen>
+    <CausedReaction>The client closes the NPC animation and shows an error popup on failure. On success the player has already been teleported to the event map.</CausedReaction>
+    <Fields>
+      <Field>
+        <Index>4</Index>
+        <Type>Enum</Type>
+        <TypeName>EnterResult</TypeName>
+        <Name>Result</Name>
+      </Field>
+    </Fields>
+    <Enums>
+      <Enum>
+        <Name>EnterResult</Name>
+        <Description>Result of the Kanturu enter request.</Description>
+        <Values>
+          <EnumValue>
+            <Name>Failed</Name>
+            <Description>Entry failed (generic failure).</Description>
+            <Value>0</Value>
+          </EnumValue>
+          <EnumValue>
+            <Name>Success</Name>
+            <Description>The player has been successfully entered into the event.</Description>
+            <Value>1</Value>
+          </EnumValue>
+        </Values>
+      </Enum>
+    </Enums>
+  </Packet>
+  <Packet>
+    <HeaderType>C1HeaderWithSubCode</HeaderType>
+    <Code>D1</Code>
+    <SubCode>03</SubCode>
+    <Name>KanturuStateChange</Name>
+    <Length>6</Length>
+    <Direction>ServerToClient</Direction>
+    <SentWhen>The Kanturu event transitions to a new phase or sub-phase.</SentWhen>
+    <CausedReaction>The client shows or hides the in-map HUD, switches background music, and when entering the Tower state reloads the barrier-open terrain file (EncTerrain_n_01.att) to visually remove the Elphis barrier.</CausedReaction>
+    <Fields>
+      <Field>
+        <Index>4</Index>
+        <Type>Enum</Type>
+        <TypeName>StateType</TypeName>
+        <Name>State</Name>
+        <Description>Refers to the KanturuStateInfo.StateType enum values.</Description>
+      </Field>
+      <Field>
+        <Index>5</Index>
+        <Type>Byte</Type>
+        <Name>DetailState</Name>
+        <Description>Detail state within the main state. Maya battle: 0=none, 2=notify, 3=monster1, 4=maya1, 8=monster2, 9=maya2, 13=monster3, 14=maya3, 16=endcycle. Nightmare: 0=none, 1=idle, 2=intro, 3=battle, 4=end. Tower: 0=none, 1=revitalization, 2=notify, 3=close.</Description>
+      </Field>
+    </Fields>
+    <Enums>
+      <Enum>
+        <Name>StateType</Name>
+        <Description>Main state; see KanturuStateInfo.StateType for value descriptions.</Description>
+        <Values>
+          <EnumValue><Name>None</Name><Value>0</Value></EnumValue>
+          <EnumValue><Name>Standby</Name><Value>1</Value></EnumValue>
+          <EnumValue><Name>MayaBattle</Name><Value>2</Value></EnumValue>
+          <EnumValue><Name>NightmareBattle</Name><Value>3</Value></EnumValue>
+          <EnumValue><Name>Tower</Name><Value>4</Value></EnumValue>
+          <EnumValue><Name>End</Name><Value>5</Value></EnumValue>
+        </Values>
+      </Enum>
+    </Enums>
+  </Packet>
+  <Packet>
+    <HeaderType>C1HeaderWithSubCode</HeaderType>
+    <Code>D1</Code>
+    <SubCode>04</SubCode>
+    <Name>KanturuBattleResult</Name>
+    <Length>5</Length>
+    <Direction>ServerToClient</Direction>
+    <SentWhen>The Kanturu event ends with a victory or defeat outcome.</SentWhen>
+    <CausedReaction>The client displays the Success_kantru.tga overlay on victory or the Failure_kantru.tga overlay on defeat.</CausedReaction>
+    <Fields>
+      <Field>
+        <Index>4</Index>
+        <Type>Enum</Type>
+        <TypeName>BattleResult</TypeName>
+        <Name>Result</Name>
+      </Field>
+    </Fields>
+    <Enums>
+      <Enum>
+        <Name>BattleResult</Name>
+        <Description>Outcome of the Kanturu battle.</Description>
+        <Values>
+          <EnumValue>
+            <Name>Failure</Name>
+            <Description>The event ended in failure; shows Failure_kantru.tga.</Description>
+            <Value>0</Value>
+          </EnumValue>
+          <EnumValue>
+            <Name>Victory</Name>
+            <Description>Nightmare was defeated; shows Success_kantru.tga.</Description>
+            <Value>1</Value>
+          </EnumValue>
+        </Values>
+      </Enum>
+    </Enums>
+  </Packet>
+  <Packet>
+    <HeaderType>C1HeaderWithSubCode</HeaderType>
+    <Code>D1</Code>
+    <SubCode>05</SubCode>
+    <Name>KanturuTimeLimit</Name>
+    <Length>8</Length>
+    <Direction>ServerToClient</Direction>
+    <SentWhen>A timed phase begins in the Kanturu event.</SentWhen>
+    <CausedReaction>The client starts a countdown timer shown in the Kanturu HUD. The value is divided by 1000 to obtain seconds.</CausedReaction>
+    <Fields>
+      <Field>
+        <Index>4</Index>
+        <Type>IntegerLittleEndian</Type>
+        <Name>TimeLimitMilliseconds</Name>
+        <Description>Countdown duration in milliseconds.</Description>
+      </Field>
+    </Fields>
+  </Packet>
+  <Packet>
+    <HeaderType>C1HeaderWithSubCode</HeaderType>
+    <Code>D1</Code>
+    <SubCode>06</SubCode>
+    <Name>KanturuMayaWideAreaAttack</Name>
+    <Length>7</Length>
+    <Direction>ServerToClient</Direction>
+    <SentWhen>The Maya body executes a wide-area attack during the Maya battle phase.</SentWhen>
+    <CausedReaction>The client calls MayaSceneMayaAction(type) which plays one of two visual sequences on the Maya body model: storm (0) or stone-rain (1). This is a purely cosmetic packet — damage is handled server-side.</CausedReaction>
+    <Fields>
+      <Field>
+        <Index>4</Index>
+        <Type>Byte</Type>
+        <Name>ObjClassH</Name>
+        <Description>High byte of the Maya object class; ignored by the client.</Description>
+      </Field>
+      <Field>
+        <Index>5</Index>
+        <Type>Byte</Type>
+        <Name>ObjClassL</Name>
+        <Description>Low byte of the Maya object class; ignored by the client.</Description>
+      </Field>
+      <Field>
+        <Index>6</Index>
+        <Type>Enum</Type>
+        <TypeName>AttackType</TypeName>
+        <Name>Type</Name>
+      </Field>
+    </Fields>
+    <Enums>
+      <Enum>
+        <Name>AttackType</Name>
+        <Description>Visual type of the Maya wide-area attack.</Description>
+        <Values>
+          <EnumValue>
+            <Name>Storm</Name>
+            <Description>Stone-storm effect (MODEL_STORM3 plus falling debris around the hero).</Description>
+            <Value>0</Value>
+          </EnumValue>
+          <EnumValue>
+            <Name>Rain</Name>
+            <Description>Stone-rain effect (MODEL_MAYASTONE projectiles falling on the hero).</Description>
+            <Value>1</Value>
+          </EnumValue>
+        </Values>
+      </Enum>
+    </Enums>
+  </Packet>
+  <Packet>
+    <HeaderType>C1HeaderWithSubCode</HeaderType>
+    <Code>D1</Code>
+    <SubCode>07</SubCode>
+    <Name>KanturuMonsterUserCount</Name>
+    <Length>6</Length>
+    <Direction>ServerToClient</Direction>
+    <SentWhen>A monster is killed or the player count changes during the Kanturu event.</SentWhen>
+    <CausedReaction>The client updates the monster count and user count numbers displayed in the Kanturu HUD.</CausedReaction>
+    <Fields>
+      <Field>
+        <Index>4</Index>
+        <Type>Byte</Type>
+        <Name>MonsterCount</Name>
+        <Description>Number of monsters still alive in the current wave (capped at 255).</Description>
+      </Field>
+      <Field>
+        <Index>5</Index>
+        <Type>Byte</Type>
+        <Name>UserCount</Name>
+        <Description>Number of players currently inside the event map (capped at 255).</Description>
+      </Field>
+    </Fields>
+  </Packet>
 </PacketDefinitions>
