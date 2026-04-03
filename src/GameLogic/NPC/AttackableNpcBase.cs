@@ -141,6 +141,9 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
     /// <inheritdoc />
     public abstract ValueTask ApplyPoisonDamageAsync(IAttacker initialAttacker, uint damage);
 
+    /// <inheritdoc />
+    public abstract ValueTask ApplyBleedingDamageAsync(IAttacker initialAttacker, uint damage);
+
     /// <inheritdoc/>
     public ValueTask KillInstantlyAsync()
     {

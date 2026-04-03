@@ -78,6 +78,13 @@ public interface IAttackable : IIdentifiable, ILocateable
     ValueTask ApplyPoisonDamageAsync(IAttacker initialAttacker, uint damage);
 
     /// <summary>
+    /// Applies the bleeding damage.
+    /// </summary>
+    /// <param name="initialAttacker">The initial attacker.</param>
+    /// <param name="damage">The damage.</param>
+    ValueTask ApplyBleedingDamageAsync(IAttacker initialAttacker, uint damage);
+
+    /// <summary>
     /// Kills the attackable instantly.
     /// </summary>
     ValueTask KillInstantlyAsync();

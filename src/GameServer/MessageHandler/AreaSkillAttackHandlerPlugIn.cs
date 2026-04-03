@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameServer.MessageHandler;
 
 using System.Runtime.InteropServices;
+using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.PlayerActions.Skills;
@@ -22,6 +23,8 @@ using MUnique.OpenMU.PlugIns;
 [MinimumClient(1, 0, ClientLanguage.Invariant)]
 internal class AreaSkillAttackHandlerPlugIn : IPacketHandlerPlugIn
 {
+    private const int PollutionSkillId = 225;
+
     private readonly AreaSkillAttackAction _attackAction = new();
 
     /// <inheritdoc/>
@@ -47,5 +50,28 @@ internal class AreaSkillAttackHandlerPlugIn : IPacketHandlerPlugIn
         }
 
         await this._attackAction.AttackAsync(player, message.ExtraTargetId, message.SkillId, new Point(message.TargetX, message.TargetY), message.Rotation).ConfigureAwait(false);
+
+        if (message.SkillId == PollutionSkillId)
+        {
+            var point = new Point(message.TargetX, message.TargetY);
+            var extraTargetId = message.ExtraTargetId;
+            var rotation = message.Rotation;
+
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    for (int i = 1; i <= 5; i++)
+                    {
+                        await Task.Delay(1000).ConfigureAwait(false);
+                        await this._attackAction.AttackAsync(player, extraTargetId, PollutionSkillId, point, rotation).ConfigureAwait(false);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    player.Logger.LogError(ex, "Error during pollution skill execution.");
+                }
+            });
+        }
     }
 }

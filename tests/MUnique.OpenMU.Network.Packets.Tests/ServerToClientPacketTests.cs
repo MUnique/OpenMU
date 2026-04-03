@@ -4513,6 +4513,114 @@ public class PacketStructureTests
     }
 
     /// <summary>
+    /// Tests the packet size calculation for GuildRelationshipRequest.
+    /// </summary>
+    [Test]
+    public void GuildRelationshipRequest_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 7;
+        var actualLength = GuildRelationshipRequestRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'RelationshipType' boundary
+        Assert.That(3 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'RelationshipType' exceeds packet boundary");
+        
+        // Validate field 'RequestType' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'RequestType' exceeds packet boundary");
+        
+        // Validate field 'SenderId' boundary
+        Assert.That(5 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'SenderId' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for GuildRelationshipChangeResult.
+    /// </summary>
+    [Test]
+    public void GuildRelationshipChangeResult_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 8;
+        var actualLength = GuildRelationshipChangeResultRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'RelationshipType' boundary
+        Assert.That(3 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'RelationshipType' exceeds packet boundary");
+        
+        // Validate field 'RequestType' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'RequestType' exceeds packet boundary");
+        
+        // Validate field 'Result' boundary
+        Assert.That(5 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Result' exceeds packet boundary");
+        
+        // Validate field 'GuildMasterId' boundary
+        Assert.That(6 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'GuildMasterId' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for AllianceList.
+    /// </summary>
+    [Test]
+    public void AllianceList_PacketSizeValidation()
+    {
+        // Basic packet validation
+        // Validate header type and field boundaries
+        
+        // Field 'GuildCount' starts at index 4 with size 1
+        Assert.That(4, Is.GreaterThanOrEqualTo(0), 
+            "Field 'GuildCount' has invalid negative index");
+        
+        // Field 'Success' starts at index 5 with size 1
+        Assert.That(5, Is.GreaterThanOrEqualTo(0), 
+            "Field 'Success' has invalid negative index");
+        
+        // Field '__RivalCount' starts at index 6 with size 1
+        Assert.That(6, Is.GreaterThanOrEqualTo(0), 
+            "Field '__RivalCount' has invalid negative index");
+        
+        // Field '__UnionCount' starts at index 7 with size 1
+        Assert.That(7, Is.GreaterThanOrEqualTo(0), 
+            "Field '__UnionCount' has invalid negative index");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for RemoveAllianceGuildResult.
+    /// </summary>
+    [Test]
+    public void RemoveAllianceGuildResult_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 7;
+        var actualLength = RemoveAllianceGuildResultRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Result' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Result' exceeds packet boundary");
+        
+        // Validate field 'RequestType' boundary
+        Assert.That(5 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'RequestType' exceeds packet boundary");
+        
+        // Validate field 'RelationshipType' boundary
+        Assert.That(6 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'RelationshipType' exceeds packet boundary");
+    }
+
+    /// <summary>
     /// Tests the packet size calculation for AssignCharacterToGuild.
     /// </summary>
     [Test]

@@ -137,6 +137,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<TimeSpan>("DelayPerOneDistance")
                         .HasColumnType("interval");
 
+                    b.Property<int>("EffectRange")
+                        .HasColumnType("integer");
+
                     b.Property<float>("FrustumDistance")
                         .HasColumnType("real");
 
@@ -153,6 +156,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasColumnType("integer");
 
                     b.Property<int>("MaximumNumberOfHitsPerTarget")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MinimumNumberOfHitsPerAttack")
                         .HasColumnType("integer");
 
                     b.Property<int>("MinimumNumberOfHitsPerTarget")
@@ -1038,6 +1044,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasDefaultValue("if(level == 0, 0, if(level < 256, 10 * (level + 8) * (level - 1) * (level - 1), (10 * (level + 8) * (level - 1) * (level - 1)) + (1000 * (level - 247) * (level - 256) * (level - 256))))");
 
                     b.Property<float>("ExperienceRate")
+                        .HasColumnType("real");
+
+                    b.Property<float>("MasterExperienceRate")
                         .HasColumnType("real");
 
                     b.Property<double>("HitsPerOneItemDurability")
@@ -3205,6 +3214,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<int>("SkillType")
                         .HasColumnType("integer");
+
+                    b.Property<bool>("SkipElementalModifier")
+                        .HasColumnType("boolean");
 
                     b.Property<int>("Target")
                         .HasColumnType("integer");
