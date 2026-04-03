@@ -1,4 +1,4 @@
-﻿// <copyright file="ResetCharacterAction.cs" company="MUnique">
+// <copyright file="ResetCharacterAction.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -62,27 +62,29 @@ public class ResetCharacterAction
             return;
         }
 
+        var resetProgression = ResetProgressionCalculator.Calculate(this.GetResetCount(), (int)this._player.Attributes[Stats.PointsPerReset], configuration);
+
         if (this._player.Level < configuration.RequiredLevel)
         {
             await this.ShowMessageAsync(nameof(PlayerMessage.RequiredLevelForReset), configuration.RequiredLevel).ConfigureAwait(false);
             return;
         }
 
-        if (configuration.ResetLimit > 0 && (this.GetResetCount() + 1) > configuration.ResetLimit)
+        if (configuration.ResetLimit > 0 && resetProgression.NextResetCount > configuration.ResetLimit)
         {
             await this.ShowMessageAsync(nameof(PlayerMessage.MaximumResetsReached), configuration.ResetLimit).ConfigureAwait(false);
             return;
         }
 
-        if (!await this.TryConsumeMoneyAsync(configuration).ConfigureAwait(false))
+        if (!await this.TryConsumeResetCostsAsync(configuration, resetProgression).ConfigureAwait(false))
         {
             return;
         }
 
-        this._player.Attributes[Stats.Resets]++;
+        this._player.Attributes[Stats.Resets] = resetProgression.NextResetCount;
         this._player.Attributes[Stats.Level] = configuration.LevelAfterReset;
         this._player.SelectedCharacter.Experience = 0;
-        this.UpdateStats(configuration);
+        this.UpdateStats(configuration, resetProgression);
         if (configuration.MoveHome)
         {
             await this.MoveHomeAsync().ConfigureAwait(false);
@@ -116,31 +118,65 @@ public class ResetCharacterAction
         return (int)this._player.Attributes![Stats.Resets];
     }
 
-    private async ValueTask<bool> TryConsumeMoneyAsync(ResetConfiguration configuration)
+    private async ValueTask<bool> TryConsumeResetCostsAsync(ResetConfiguration configuration, ResetProgression resetProgression)
     {
-        var calculatedRequiredZen = configuration.RequiredMoney;
-        if (configuration.MultiplyRequiredMoneyByResetCount)
+        var requiredItems = await this.GetRequiredItemsToConsumeAsync(configuration, resetProgression.RequiredItemAmount).ConfigureAwait(false);
+        if (requiredItems is null)
         {
-            calculatedRequiredZen *= this.GetResetCount() + 1;
+            return false;
         }
 
-        if (!this._player.TryRemoveMoney(calculatedRequiredZen))
+        if (this._player.Money < resetProgression.RequiredZen)
         {
-            await this.ShowMessageAsync($"You don't have enough money for reset, required zen is {calculatedRequiredZen}").ConfigureAwait(false);
+            await this.ShowMessageAsync($"You don't have enough money for reset, required zen is {resetProgression.RequiredZen}").ConfigureAwait(false);
             return false;
+        }
+
+        if (resetProgression.RequiredZen > 0 && !this._player.TryRemoveMoney(resetProgression.RequiredZen))
+        {
+            await this.ShowMessageAsync($"You don't have enough money for reset, required zen is {resetProgression.RequiredZen}").ConfigureAwait(false);
+            return false;
+        }
+
+        foreach (var item in requiredItems)
+        {
+            await this._player.DestroyInventoryItemAsync(item).ConfigureAwait(false);
         }
 
         return true;
     }
 
-    private void UpdateStats(ResetConfiguration configuration)
+    private async ValueTask<IList<Item>?> GetRequiredItemsToConsumeAsync(ResetConfiguration configuration, int requiredItemAmount)
     {
-        var calculatedPointsPerReset = Math.Max(0, this.GetResetPoints(configuration));
-        if (configuration.MultiplyPointsByResetCount)
+        if (requiredItemAmount <= 0 || configuration.RequiredResetItem is null)
         {
-            calculatedPointsPerReset *= this.GetResetCount();
+            return [];
         }
 
+        if (this._player.Inventory is null)
+        {
+            return null;
+        }
+
+        var requiredDefinition = configuration.RequiredResetItem;
+        var requiredItems = this._player.Inventory.Items
+            .Where(item => item.Definition is { } definition
+                           && definition.Group == requiredDefinition.Group
+                           && definition.Number == requiredDefinition.Number)
+            .Take(requiredItemAmount)
+            .ToList();
+        if (requiredItems.Count < requiredItemAmount)
+        {
+            await this.ShowMessageAsync(
+                $"You don't have enough required items for reset, required {requiredItemAmount} x {configuration.RequiredResetItem.Name}.").ConfigureAwait(false);
+            return null;
+        }
+
+        return requiredItems;
+    }
+
+    private void UpdateStats(ResetConfiguration configuration, ResetProgression resetProgression)
+    {
         if (configuration.ResetStats)
         {
             this._player.SelectedCharacter!.CharacterClass!.StatAttributes
@@ -150,23 +186,12 @@ public class ResetCharacterAction
 
         if (configuration.ReplacePointsPerReset)
         {
-            this._player.SelectedCharacter!.LevelUpPoints = calculatedPointsPerReset;
+            this._player.SelectedCharacter!.LevelUpPoints = resetProgression.TotalPointsAfterReset;
         }
         else
         {
-            this._player.SelectedCharacter!.LevelUpPoints += calculatedPointsPerReset;
+            this._player.SelectedCharacter!.LevelUpPoints += resetProgression.PointsForReset;
         }
-    }
-
-    private int GetResetPoints(ResetConfiguration configuration)
-    {
-        var pointsPerReset = (int)this._player.Attributes![Stats.PointsPerReset];
-        if (pointsPerReset == 0)
-        {
-            pointsPerReset = configuration.PointsPerReset;
-        }
-
-        return pointsPerReset;
     }
 
     private async ValueTask MoveHomeAsync()

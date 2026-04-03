@@ -1093,7 +1093,7 @@
     <value>Multiply required money by reset count</value>
   </data>
   <data name="ResetConfiguration_ResetStats_Name" xml:space="preserve">
-    <value>Reset stats</value>
+    <value>Reset base stats to class defaults</value>
   </data>
   <data name="ResetConfiguration_PointsPerReset_Name" xml:space="preserve">
     <value>Points per reset</value>
@@ -1102,7 +1102,7 @@
     <value>Multiply points by reset count</value>
   </data>
   <data name="ResetConfiguration_ReplacePointsPerReset_Name" xml:space="preserve">
-    <value>Reset points per reset</value>
+    <value>Replace level-up points with reset total</value>
   </data>
   <data name="ResetConfiguration_MoveHome_Name" xml:space="preserve">
     <value>Move home</value>
