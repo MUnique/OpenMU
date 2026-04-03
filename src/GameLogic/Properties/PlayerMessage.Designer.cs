@@ -907,11 +907,20 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Reset #{0}: requires level {1}, zen {2}; grants {3} points, {4} total.
+        /// </summary>
+        public static string NextResetInfoCompactNoItem {
+            get {
+                return ResourceManager.GetString("NextResetInfoCompactNoItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Reset #{0}: requires level {1}, zen {2}, {3} x {4}; grants {5} points, {6} total.
         /// </summary>
-        public static string NextResetInfoCompact {
+        public static string NextResetInfoCompactWithItem {
             get {
-                return ResourceManager.GetString("NextResetInfoCompact", resourceCulture);
+                return ResourceManager.GetString("NextResetInfoCompactWithItem", resourceCulture);
             }
         }
         
