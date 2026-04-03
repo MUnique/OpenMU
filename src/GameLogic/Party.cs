@@ -276,23 +276,28 @@ public sealed class Party : Disposable
         var averageExperience = killedObject.CalculateBaseExperience(averageLevel);
         var totalAverageExperience = averageExperience * count * Math.Pow(1.05, count - 1);
         totalAverageExperience *= killedObject.CurrentMap?.Definition.ExpMultiplier ?? 1;
-        totalAverageExperience *= this._distributionList.First().GameContext.ExperienceRate;
 
         var randomizedTotalExperience = Rand.NextInt((int)(totalAverageExperience * 0.8), (int)(totalAverageExperience * 1.2));
-        var randomizedTotalExperiencePerLevel = randomizedTotalExperience / totalLevel;
+        var randomizedTotalExperiencePerLevel = (double)randomizedTotalExperience / totalLevel;
         foreach (var player in this._distributionList)
         {
             if ((short)player.Attributes![Stats.Level] == player.GameContext.Configuration.MaximumLevel)
             {
                 if (player.SelectedCharacter?.CharacterClass?.IsMasterClass ?? false)
                 {
-                    var expMaster = (int)(randomizedTotalExperiencePerLevel * player.Attributes![Stats.TotalLevel] * (player.Attributes[Stats.MasterExperienceRate] + player.Attributes[Stats.BonusExperienceRate]));
+                    var expMaster = (int)(randomizedTotalExperiencePerLevel
+                                          * player.Attributes![Stats.TotalLevel]
+                                          * player.GameContext.MasterExperienceRate
+                                          * (player.Attributes[Stats.MasterExperienceRate] + player.Attributes[Stats.BonusExperienceRate]));
                     await player.AddMasterExperienceAsync(expMaster, killedObject).ConfigureAwait(false);
                 }
             }
             else
             {
-                var exp = (int)(randomizedTotalExperiencePerLevel * player.Attributes![Stats.Level] * (player.Attributes[Stats.ExperienceRate] + player.Attributes[Stats.BonusExperienceRate]));
+                var exp = (int)(randomizedTotalExperiencePerLevel
+                                * player.Attributes![Stats.Level]
+                                * player.GameContext.ExperienceRate
+                                * (player.Attributes[Stats.ExperienceRate] + player.Attributes[Stats.BonusExperienceRate]));
                 await player.AddExperienceAsync(exp, killedObject).ConfigureAwait(false);
             }
         }

@@ -1170,9 +1170,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         var addMasterExperience = characterClass.IsMasterClass
                             && (short)this.Attributes![Stats.Level] == this.GameContext.Configuration.MaximumLevel;
         var expRateAttribute = addMasterExperience ? Stats.MasterExperienceRate : Stats.ExperienceRate;
+        var gameRate = addMasterExperience ? this.GameContext.MasterExperienceRate : this.GameContext.ExperienceRate;
 
         var experience = killedObject.CalculateBaseExperience(this.Attributes![Stats.TotalLevel]);
-        experience *= this.GameContext.ExperienceRate;
+        experience *= gameRate;
         experience *= this.Attributes[expRateAttribute] + this.Attributes[Stats.BonusExperienceRate];
         experience *= this.CurrentMap?.Definition.ExpMultiplier ?? 1;
         experience = Rand.NextInt((int)(experience * 0.8), (int)(experience * 1.2));
