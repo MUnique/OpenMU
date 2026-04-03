@@ -114,7 +114,7 @@ public class GuildAllianceTest : GuildTestBase
     }
 
     // -------------------------------------------------------------------------
-    // IsAllianceMasterAsync / GetAllianceMasterIdAsync
+    // IsAllianceMasterAsync
     // -------------------------------------------------------------------------
 
     /// <summary>
@@ -141,19 +141,6 @@ public class GuildAllianceTest : GuildTestBase
         var isMaster = await this.GuildServer.IsAllianceMasterAsync(this._secondGuildId).ConfigureAwait(false);
 
         Assert.That(isMaster, Is.False);
-    }
-
-    /// <summary>
-    /// GetAllianceMasterIdAsync returns the ID of the master guild when queried from a member.
-    /// </summary>
-    [Test]
-    public async ValueTask GetAllianceMasterId_ForMemberGuild_ReturnsMasterGuildId()
-    {
-        await this.GuildServer.CreateAllianceAsync(this._firstGuildId, this._secondGuildId).ConfigureAwait(false);
-
-        var masterId = await this.GuildServer.GetAllianceMasterIdAsync(this._secondGuildId).ConfigureAwait(false);
-
-        Assert.That(masterId, Is.EqualTo(this._firstGuildId));
     }
 
     // -------------------------------------------------------------------------
@@ -199,7 +186,7 @@ public class GuildAllianceTest : GuildTestBase
         await this.GuildServer.CreateAllianceAsync(this._firstGuildId, this._secondGuildId).ConfigureAwait(false);
         await this.GuildServer.CreateAllianceAsync(this._firstGuildId, this._thirdGuildId).ConfigureAwait(false);
 
-        var removed = await this.GuildServer.RemoveAllianceGuildAsync(this._secondGuildId).ConfigureAwait(false);
+        var removed = await this.GuildServer.RemoveAllianceAsync(this._secondGuildId).ConfigureAwait(false);
         var guilds = await this.GuildServer.GetAllianceGuildsAsync(this._firstGuildId).ConfigureAwait(false);
 
         Assert.That(removed, Is.True);
@@ -215,44 +202,11 @@ public class GuildAllianceTest : GuildTestBase
         await this.GuildServer.CreateAllianceAsync(this._firstGuildId, this._secondGuildId).ConfigureAwait(false);
         await this.GuildServer.CreateAllianceAsync(this._firstGuildId, this._thirdGuildId).ConfigureAwait(false);
 
-        var removed = await this.GuildServer.RemoveAllianceGuildAsync(this._firstGuildId).ConfigureAwait(false);
+        var removed = await this.GuildServer.RemoveAllianceAsync(this._firstGuildId).ConfigureAwait(false);
         var guilds = await this.GuildServer.GetAllianceGuildsAsync(this._firstGuildId).ConfigureAwait(false);
 
         Assert.That(removed, Is.True);
         Assert.That(guilds, Is.Empty);
-    }
-
-    // -------------------------------------------------------------------------
-    // DisbandAllianceAsync
-    // -------------------------------------------------------------------------
-
-    /// <summary>
-    /// Disbanding an alliance clears membership for all guilds.
-    /// </summary>
-    [Test]
-    public async ValueTask DisbandAlliance_ClearsAllMemberships()
-    {
-        await this.GuildServer.CreateAllianceAsync(this._firstGuildId, this._secondGuildId).ConfigureAwait(false);
-        await this.GuildServer.CreateAllianceAsync(this._firstGuildId, this._thirdGuildId).ConfigureAwait(false);
-
-        var disbanded = await this.GuildServer.DisbandAllianceAsync(this._firstGuildId).ConfigureAwait(false);
-        var guildsAfter = await this.GuildServer.GetAllianceGuildsAsync(this._firstGuildId).ConfigureAwait(false);
-
-        Assert.That(disbanded, Is.True);
-        Assert.That(guildsAfter, Is.Empty);
-    }
-
-    /// <summary>
-    /// A non-master guild cannot disband the alliance.
-    /// </summary>
-    [Test]
-    public async ValueTask DisbandAlliance_ByNonMaster_Fails()
-    {
-        await this.GuildServer.CreateAllianceAsync(this._firstGuildId, this._secondGuildId).ConfigureAwait(false);
-
-        var disbanded = await this.GuildServer.DisbandAllianceAsync(this._secondGuildId).ConfigureAwait(false);
-
-        Assert.That(disbanded, Is.False);
     }
 
     // -------------------------------------------------------------------------

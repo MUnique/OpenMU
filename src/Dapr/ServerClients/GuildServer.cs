@@ -195,11 +195,11 @@ public class GuildServer : IGuildServer
     }
 
     /// <inheritdoc />
-    public async ValueTask<bool> RemoveAllianceGuildAsync(uint targetGuildId)
+    public async ValueTask<bool> RemoveAllianceAsync(uint targetGuildId)
     {
         try
         {
-            return await this._daprClient.InvokeMethodAsync<uint, bool>(this._targetAppId, nameof(this.RemoveAllianceGuildAsync), targetGuildId).ConfigureAwait(false);
+            return await this._daprClient.InvokeMethodAsync<uint, bool>(this._targetAppId, nameof(this.RemoveAllianceAsync), targetGuildId).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -209,31 +209,16 @@ public class GuildServer : IGuildServer
     }
 
     /// <inheritdoc />
-    public async ValueTask<bool> DisbandAllianceAsync(uint masterGuildId)
-    {
-        try
-        {
-            return await this._daprClient.InvokeMethodAsync<uint, bool>(this._targetAppId, nameof(this.DisbandAllianceAsync), masterGuildId).ConfigureAwait(false);
-        }
-        catch (Exception ex)
-        {
-            this._logger.LogError(ex, "Unexpected error when disbanding an alliance.");
-            return false;
-        }
-    }
-
-    /// <inheritdoc />
     public async ValueTask<IImmutableList<AllianceGuildEntry>> GetAllianceGuildsAsync(uint guildId)
     {
         try
         {
-            return await this._daprClient.InvokeMethodAsync<uint, IImmutableList<AllianceGuildEntry>>(this._targetAppId, nameof(this.GetAllianceGuildsAsync), guildId).ConfigureAwait(false)
-                   ?? ImmutableList<AllianceGuildEntry>.Empty;
+            return await this._daprClient.InvokeMethodAsync<uint, IImmutableList<AllianceGuildEntry>>(this._targetAppId, nameof(this.GetAllianceGuildsAsync), guildId).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
             this._logger.LogError(ex, "Unexpected error when getting alliance guilds.");
-            return ImmutableList<AllianceGuildEntry>.Empty;
+            return [];
         }
     }
 
@@ -248,20 +233,6 @@ public class GuildServer : IGuildServer
         {
             this._logger.LogError(ex, "Unexpected error when checking alliance master.");
             return false;
-        }
-    }
-
-    /// <inheritdoc />
-    public async ValueTask<uint> GetAllianceMasterIdAsync(uint guildId)
-    {
-        try
-        {
-            return await this._daprClient.InvokeMethodAsync<uint, uint>(this._targetAppId, nameof(this.GetAllianceMasterIdAsync), guildId).ConfigureAwait(false);
-        }
-        catch (Exception ex)
-        {
-            this._logger.LogError(ex, "Unexpected error when getting alliance master id.");
-            return 0;
         }
     }
 

@@ -190,14 +190,7 @@ public interface IGuildServer
     /// </summary>
     /// <param name="targetGuildId">The identifier of the guild to remove from its alliance.</param>
     /// <returns><c>true</c> if the guild was removed successfully; <c>false</c> otherwise.</returns>
-    ValueTask<bool> RemoveAllianceGuildAsync(uint targetGuildId);
-
-    /// <summary>
-    /// Disbands the entire alliance, clearing alliance membership for all guilds.
-    /// </summary>
-    /// <param name="masterGuildId">The identifier of the alliance master guild.</param>
-    /// <returns><c>true</c> if the alliance was disbanded successfully; <c>false</c> otherwise.</returns>
-    ValueTask<bool> DisbandAllianceAsync(uint masterGuildId);
+    ValueTask<bool> RemoveAllianceAsync(uint targetGuildId);
 
     /// <summary>
     /// Gets the list of guilds in the alliance of the specified guild.
@@ -212,13 +205,6 @@ public interface IGuildServer
     /// <param name="guildId">The guild identifier.</param>
     /// <returns><c>true</c> if the guild is the alliance master; <c>false</c> otherwise.</returns>
     ValueTask<bool> IsAllianceMasterAsync(uint guildId);
-
-    /// <summary>
-    /// Gets the alliance master guild identifier for the given guild.
-    /// </summary>
-    /// <param name="guildId">The guild identifier of any alliance member.</param>
-    /// <returns>The uint identifier of the alliance master guild, or 0 if not in an alliance.</returns>
-    ValueTask<uint> GetAllianceMasterIdAsync(uint guildId);
 
     /// <summary>
     /// Sets or clears the hostility between guilds.

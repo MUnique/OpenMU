@@ -323,7 +323,7 @@ public class GuildServer : IGuildServer
     }
 
     /// <inheritdoc />
-    public async ValueTask<bool> RemoveAllianceGuildAsync(uint targetGuildId)
+    public async ValueTask<bool> RemoveAllianceAsync(uint targetGuildId)
     {
         if (!this._guildDictionary.TryGetValue(targetGuildId, out var targetContainer))
         {
@@ -437,31 +437,6 @@ public class GuildServer : IGuildServer
         }
 
         return ValueTask.FromResult(IsAllianceMaster(guildContainer.Guild));
-    }
-
-    /// <inheritdoc />
-    public ValueTask<uint> GetAllianceMasterIdAsync(uint guildId)
-    {
-        if (!this._guildDictionary.TryGetValue(guildId, out var guildContainer)
-            || guildContainer.Guild.AllianceGuild is null)
-        {
-            return ValueTask.FromResult(0u);
-        }
-
-        var masterGuid = GetAllianceMasterGuid(guildContainer.Guild);
-        if (masterGuid == Guid.Empty)
-        {
-            return ValueTask.FromResult(0u);
-        }
-
-        // Find the uint ID of the alliance master
-        var masterEntry = this._guildDictionary.FirstOrDefault(kvp => kvp.Value.Guild.Id == masterGuid);
-        if (masterEntry.Value is null)
-        {
-            return ValueTask.FromResult(0u);
-        }
-
-        return ValueTask.FromResult(masterEntry.Key);
     }
 
     /// <inheritdoc />
