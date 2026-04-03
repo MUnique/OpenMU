@@ -73,7 +73,7 @@ public class GuildChangePublisher : IGuildChangePublisher
     {
         try
         {
-            await this._daprClient.InvokeMethodAsync("pubsub", nameof(IGameServer.AssignGuildToPlayerAsync), (masterGuildId, memberGuildId)).ConfigureAwait(false);
+            await this._daprClient.InvokeMethodAsync("pubsub", nameof(IGameServer.AllianceCreatedAsync), (masterGuildId, memberGuildId)).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
