@@ -128,13 +128,13 @@ public class ResetCharacterAction
 
         if (this._player.Money < resetProgression.RequiredZen)
         {
-            await this.ShowMessageAsync($"You don't have enough money for reset, required zen is {resetProgression.RequiredZen}").ConfigureAwait(false);
+            await this.ShowMessageAsync(nameof(PlayerMessage.NotEnoughMoneyForReset), resetProgression.RequiredZen).ConfigureAwait(false);
             return false;
         }
 
         if (resetProgression.RequiredZen > 0 && !this._player.TryRemoveMoney(resetProgression.RequiredZen))
         {
-            await this.ShowMessageAsync($"You don't have enough money for reset, required zen is {resetProgression.RequiredZen}").ConfigureAwait(false);
+            await this.ShowMessageAsync(nameof(PlayerMessage.NotEnoughMoneyForReset), resetProgression.RequiredZen).ConfigureAwait(false);
             return false;
         }
 
@@ -168,7 +168,9 @@ public class ResetCharacterAction
         if (requiredItems.Count < requiredItemAmount)
         {
             await this.ShowMessageAsync(
-                $"You don't have enough required items for reset, required {requiredItemAmount} x {configuration.RequiredResetItem.Name}.").ConfigureAwait(false);
+                nameof(PlayerMessage.NotEnoughItemsForReset),
+                requiredItemAmount,
+                configuration.RequiredResetItem.Name).ConfigureAwait(false);
             return null;
         }
 

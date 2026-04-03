@@ -1006,11 +1006,29 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You don&apos;t have enough required items for reset, required {0} x {1}..
+        /// </summary>
+        public static string NotEnoughItemsForReset {
+            get {
+                return ResourceManager.GetString("NotEnoughItemsForReset", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You don&apos;t have enough Money.
         /// </summary>
         public static string NotEnoughMoney {
             get {
                 return ResourceManager.GetString("NotEnoughMoney", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You don&apos;t have enough money for reset, required zen is {0}..
+        /// </summary>
+        public static string NotEnoughMoneyForReset {
+            get {
+                return ResourceManager.GetString("NotEnoughMoneyForReset", resourceCulture);
             }
         }
         
