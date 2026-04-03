@@ -102,15 +102,8 @@ public class GuildRelationshipChangeAction
         }
 
         var targetGuildId = sourceGuildId;
-        var isOtherGuildThanOwn = sourceGuild.Name != targetGuildName;
-        if (!isOtherGuildThanOwn)
-        {
-            // Not allowed in other sources?
-            await player.InvokeViewPlugInAsync<IGuildRelationshipChangeResultPlugIn>(p => p.ShowResultAsync(GuildRelationshipType.Alliance, GuildRelationshipRequestType.Leave, GuildRelationshipChangeResultType.GuildNotFound, null)).ConfigureAwait(false);
-            return;
-        }
-
-        if (!string.IsNullOrEmpty(targetGuildName) && isOtherGuildThanOwn)
+        var leaveWithOwnGuild = string.IsNullOrEmpty(targetGuildName) || sourceGuild.Name == targetGuildName;
+        if (!leaveWithOwnGuild)
         {
             if (!await serverContext.GuildServer.IsAllianceMasterAsync(sourceGuildId).ConfigureAwait(false))
             {
@@ -118,7 +111,7 @@ public class GuildRelationshipChangeAction
                 return;
             }
 
-            targetGuildId = await serverContext.GuildServer.GetGuildIdByNameAsync(targetGuildName).ConfigureAwait(false);
+            targetGuildId = await serverContext.GuildServer.GetGuildIdByNameAsync(targetGuildName!).ConfigureAwait(false);
         }
 
         var removeSuccess = await serverContext.GuildServer.RemoveAllianceAsync(targetGuildId).ConfigureAwait(false);
