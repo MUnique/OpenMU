@@ -907,6 +907,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Reset #{0}: requires level {1}, zen {2}, {3} x {4}; grants {5} points, {6} total.
+        /// </summary>
+        public static string NextResetInfoCompact {
+            get {
+                return ResourceManager.GetString("NextResetInfoCompact", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You cannot start a duel during guild war..
         /// </summary>
         public static string NoDuelDuringGuildWar {

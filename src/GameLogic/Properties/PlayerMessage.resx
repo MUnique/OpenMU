@@ -561,6 +561,9 @@
   <data name="ResetNotConfigured" xml:space="preserve">
     <value>Reset is not configured.</value>
   </data>
+  <data name="NextResetInfoCompact" xml:space="preserve">
+    <value>Reset #{0}: requires level {1}, zen {2}, {3} x {4}; grants {5} points, {6} total</value>
+  </data>
   <data name="RequiredLevelForReset" xml:space="preserve">
     <value>Required level for reset is {0}.</value>
   </data>

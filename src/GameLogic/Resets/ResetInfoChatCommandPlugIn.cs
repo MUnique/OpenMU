@@ -46,14 +46,16 @@ public class ResetInfoChatCommandPlugIn : IChatCommandPlugIn
             (int)player.Attributes[Stats.Resets],
             (int)player.Attributes[Stats.PointsPerReset],
             configuration);
-        var itemCostText = progression.RequiredItemAmount <= 0 || configuration.RequiredResetItem is not { Name: { } itemName }
-            ? "none"
-            : $"{progression.RequiredItemAmount} x {itemName}";
-        var pointsText = configuration.ReplacePointsPerReset
-            ? $"{progression.PointsForReset} this reset ({progression.TotalPointsAfterReset} total after reset)"
-            : $"{progression.PointsForReset}";
-
-        var message = $"Next reset #{progression.NextResetCount}: requires level {configuration.RequiredLevel}, zen {progression.RequiredZen}, item cost {itemCostText}; grants {pointsText} stat points.";
-        await player.ShowBlueMessageAsync(message).ConfigureAwait(false);
+        var itemName = configuration.RequiredResetItem?.Name ?? "none";
+        await player.ShowLocalizedBlueMessageAsync(
+                nameof(PlayerMessage.NextResetInfoCompact),
+                progression.NextResetCount,
+                configuration.RequiredLevel,
+                progression.RequiredZen,
+                itemName,
+                progression.RequiredItemAmount,
+                progression.PointsForReset,
+                progression.TotalPointsAfterReset)
+            .ConfigureAwait(false);
     }
 }
