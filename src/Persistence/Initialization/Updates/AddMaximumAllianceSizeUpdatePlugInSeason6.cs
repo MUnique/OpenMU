@@ -18,7 +18,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [PlugIn]
 [Display(Name = PlugInName, Description = PlugInDescription)]
-[Guid("A1B2C3D4-E5F6-7890-ABCD-EF1234567890")]
+[Guid("2C2743B0-1305-47BF-85D9-09F6CA64AD54")]
 public class AddMaximumAllianceSizeUpdatePlugInSeason6 : UpdatePlugInBase
 {
     /// <summary>
