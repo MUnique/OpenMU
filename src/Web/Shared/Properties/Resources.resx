@@ -207,4 +207,55 @@
   <data name="NoResultsFound" xml:space="preserve">
     <value>No results found</value>
   </data>
+  <data name="Monster" xml:space="preserve">
+    <value>Monster</value>
+  </data>
+  <data name="TargetMaps" xml:space="preserve">
+    <value>Target Maps</value>
+  </data>
+  <data name="Quantity" xml:space="preserve">
+    <value>Quantity</value>
+  </data>
+  <data name="SpawnRules" xml:space="preserve">
+    <value>Spawn Rules</value>
+  </data>
+  <data name="SpawnOnAllSelectedMaps" xml:space="preserve">
+    <value>Spawn on All Selected Maps</value>
+  </data>
+  <data name="SpawnOnAllSelectedMapsTooltip" xml:space="preserve">
+    <value>If enabled spawn monster on all selected maps, if disabled, it will select a random map.</value>
+  </data>
+  <data name="AddValue" xml:space="preserve">
+    <value>Add Value</value>
+  </data>
+  <data name="ResetZoom" xml:space="preserve">
+    <value>Reset zoom (100%)</value>
+  </data>
+  <data name="ToggleGrid" xml:space="preserve">
+    <value>Toggle grid</value>
+  </data>
+  <data name="NoSelection" xml:space="preserve">
+    <value>No selection</value>
+  </data>
+  <data name="Undo" xml:space="preserve">
+    <value>Undo</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="TypeFilter" xml:space="preserve">
+    <value>Type Filter</value>
+  </data>
+  <data name="Monsters" xml:space="preserve">
+    <value>Monsters</value>
+  </data>
+  <data name="Npcs" xml:space="preserve">
+    <value>NPCs</value>
+  </data>
+  <data name="Gates" xml:space="preserve">
+    <value>Gates</value>
+  </data>
+  <data name="Others" xml:space="preserve">
+    <value>Others</value>
+  </data>
 </root>

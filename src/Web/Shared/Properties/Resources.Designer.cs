@@ -320,5 +320,192 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
                 return ResourceManager.GetString("UserCreationParameters_Password_Name", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Monster.
+        /// </summary>
+        public static string Monster
+        {
+            get
+            {
+                return ResourceManager.GetString("Monster", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Target Maps.
+        /// </summary>
+        public static string TargetMaps
+        {
+            get
+            {
+                return ResourceManager.GetString("TargetMaps", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Quantity.
+        /// </summary>
+        public static string Quantity
+        {
+            get
+            {
+                return ResourceManager.GetString("Quantity", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Spawn Rules.
+        /// </summary>
+        public static string SpawnRules
+        {
+            get
+            {
+                return ResourceManager.GetString("SpawnRules", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Spawn on All Selected Maps.
+        /// </summary>
+        public static string SpawnOnAllSelectedMaps
+        {
+            get
+            {
+                return ResourceManager.GetString("SpawnOnAllSelectedMaps", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to If enabled spawn monster on all selected maps, if false, select a random map..
+        /// </summary>
+        public static string SpawnOnAllSelectedMapsTooltip
+        {
+            get
+            {
+                return ResourceManager.GetString("SpawnOnAllSelectedMapsTooltip", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Add Value.
+        /// </summary>
+        public static string AddValue
+        {
+            get
+            {
+                return ResourceManager.GetString("AddValue", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Reset zoom (100%).
+        /// </summary>
+        public static string ResetZoom
+        {
+            get
+            {
+                return ResourceManager.GetString("ResetZoom", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Toggle grid.
+        /// </summary>
+        public static string ToggleGrid
+        {
+            get
+            {
+                return ResourceManager.GetString("ToggleGrid", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to No selection.
+        /// </summary>
+        public static string NoSelection
+        {
+            get
+            {
+                return ResourceManager.GetString("NoSelection", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Undo.
+        /// </summary>
+        public static string Undo
+        {
+            get
+            {
+                return ResourceManager.GetString("Undo", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Save.
+        /// </summary>
+        public static string Save
+        {
+            get
+            {
+                return ResourceManager.GetString("Save", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Type Filter.
+        /// </summary>
+        public static string TypeFilter
+        {
+            get
+            {
+                return ResourceManager.GetString("TypeFilter", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Monsters.
+        /// </summary>
+        public static string Monsters
+        {
+            get
+            {
+                return ResourceManager.GetString("Monsters", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to NPCs.
+        /// </summary>
+        public static string Npcs
+        {
+            get
+            {
+                return ResourceManager.GetString("Npcs", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Gates.
+        /// </summary>
+        public static string Gates
+        {
+            get
+            {
+                return ResourceManager.GetString("Gates", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Others.
+        /// </summary>
+        public static string Others
+        {
+            get
+            {
+                return ResourceManager.GetString("Others", resourceCulture);
+            }
+        }
     }
 }
