@@ -520,6 +520,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Handles the dragon roar skill of the rage fighter class. Additionally to the attacked target, it will hit up to seven additional targets..
+        /// </summary>
+        public static string DragonRoarSkillPlugIn_Description {
+            get {
+                return ResourceManager.GetString("DragonRoarSkillPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Dragon Roar Skill.
+        /// </summary>
+        public static string DragonRoarSkillPlugIn_Name {
+            get {
+                return ResourceManager.GetString("DragonRoarSkillPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the drain life skill of the summoner class. Additionally to the attacked target, it regains life for damage dealt..
         /// </summary>
         public static string DrainLifeSkillPlugIn_Description {
@@ -1614,6 +1632,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string PeriodicTaskConfiguration_Timetable_Name {
             get {
                 return ResourceManager.GetString("PeriodicTaskConfiguration_Timetable_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the phoenix shot weapon skill of the rage fighter class. Additionally to the attacked target, it will hit up to seven additional targets..
+        /// </summary>
+        public static string PhoenixShotSkillPlugIn_Description {
+            get {
+                return ResourceManager.GetString("PhoenixShotSkillPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Phoenix Shot Skill.
+        /// </summary>
+        public static string PhoenixShotSkillPlugIn_Name {
+            get {
+                return ResourceManager.GetString("PhoenixShotSkillPlugIn_Name", resourceCulture);
             }
         }
         
@@ -3092,6 +3128,42 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string WeatherUpdatePlugIn_Name {
             get {
                 return ResourceManager.GetString("WeatherUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+ 
+        /// <summary>
+        ///   Looks up a localized string similar to Offline Leveling Command.
+        /// </summary>
+        public static string OfflineLevelingChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("OfflineLevelingChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Allows players to start offline leveling.
+        /// </summary>
+        public static string OfflineLevelingChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("OfflineLevelingChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Allows players to start offline leveling.
+        /// </summary>
+        public static string OfflineLevelingStopOnLoginPlugIn_Name {
+            get {
+                return ResourceManager.GetString("OfflineLevelingStopOnLoginPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Allows players to start offline leveling.
+        /// </summary>        
+        public static string OfflineLevelingStopOnLoginPlugIn_Description {
+            get {
+                return ResourceManager.GetString("OfflineLevelingStopOnLoginPlugIn_Description", resourceCulture);
             }
         }
     }

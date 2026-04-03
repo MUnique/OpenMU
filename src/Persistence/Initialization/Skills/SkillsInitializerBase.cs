@@ -47,6 +47,7 @@ internal abstract class SkillsInitializerBase : InitializerBase
     /// <param name="movesToTarget">If set to <c>true</c>, the skill moves the player to the target.</param>
     /// <param name="movesTarget">If set to <c>true</c>, it moves target randomly.</param>
     /// <param name="cooldownMinutes">The cooldown minutes.</param>
+    /// <param name="hitsPerAttack">The number of hits per attack.</param>
     protected void CreateSkill(
         SkillNumber number,
         string name,
@@ -66,7 +67,8 @@ internal abstract class SkillsInitializerBase : InitializerBase
         SkillTargetRestriction targetRestriction = SkillTargetRestriction.Undefined,
         bool movesToTarget = false,
         bool movesTarget = false,
-        int cooldownMinutes = 0)
+        int cooldownMinutes = 0,
+        byte hitsPerAttack = 1)
     {
         var skill = this.Context.CreateNew<Skill>();
         this.GameConfiguration.Skills.Add(skill);
@@ -75,6 +77,7 @@ internal abstract class SkillsInitializerBase : InitializerBase
         skill.MovesToTarget = movesToTarget;
         skill.MovesTarget = movesTarget;
         skill.AttackDamage = damage;
+        skill.NumberOfHitsPerAttack = hitsPerAttack;
 
         this.CreateSkillRequirementIfNeeded(skill, Stats.Level, levelRequirement);
         this.CreateSkillRequirementIfNeeded(skill, Stats.TotalLeadership, leadershipRequirement);
@@ -160,7 +163,7 @@ internal abstract class SkillsInitializerBase : InitializerBase
 
     private void ApplyElementalModifier(ElementalType elementalModifier, Skill skill)
     {
-        if ((SkillNumber)skill.Number is SkillNumber.IceArrow or SkillNumber.IceArrowStrengthener)
+        if ((SkillNumber)skill.Number is SkillNumber.IceArrow)
         {
             skill.ElementalModifierTarget = Stats.IceResistance.GetPersistent(this.GameConfiguration);
             skill.MagicEffectDef = this.CreateEffect(ElementalType.Ice, MagicEffectNumber.Freeze, Stats.IsFrozen, 5);
@@ -172,6 +175,13 @@ internal abstract class SkillsInitializerBase : InitializerBase
             case ElementalType.Ice:
                 skill.ElementalModifierTarget = Stats.IceResistance.GetPersistent(this.GameConfiguration);
                 skill.MagicEffectDef = this.CreateEffect(ElementalType.Ice, MagicEffectNumber.Iced, Stats.IsIced, 10);
+
+                if ((SkillNumber)skill.Number is SkillNumber.ChainDrive)
+                {
+                    skill.MagicEffectDef.Chance = this.Context.CreateNew<PowerUpDefinitionValue>();
+                    skill.MagicEffectDef.Chance.ConstantValue.Value = 0.4f;
+                }
+
                 break;
             case ElementalType.Poison:
                 skill.ElementalModifierTarget = Stats.PoisonResistance.GetPersistent(this.GameConfiguration);

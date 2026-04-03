@@ -12,6 +12,7 @@ using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.GuildWar;
 using MUnique.OpenMU.GameLogic.MiniGames;
+using MUnique.OpenMU.GameLogic.MuHelper;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Pet;
 using MUnique.OpenMU.GameLogic.PlayerActions;
@@ -39,6 +40,14 @@ using Nito.AsyncEx;
 /// </summary>
 public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacker, ITrader, IPartyMember, IRotatable, IHasBucketInformation, ISupportWalk, IMovable, ILoggerOwner<Player>
 {
+    private static readonly MagicEffectDefinition GMEffect = new GMMagicEffectDefinition
+    {
+        InformObservers = true,
+        Name = "GM MARK",
+        Number = 28,
+        StopByDeath = false,
+    };
+
     private readonly AsyncLock _moveLock = new();
 
     private readonly Walker _walker;
@@ -423,6 +432,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public BackupItemStorage? BackupInventory { get; set; }
 
     /// <summary>
+    /// Gets or sets the deserialized MU Helper player settings.
+    /// </summary>
+    public IMuHelperSettings? MuHelperSettings { get; set; }
+
+    /// <summary>
     /// Gets the appearance data.
     /// </summary>
     public IAppearanceData AppearanceData => this._appearanceData;
@@ -459,6 +473,22 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// Gets or sets the mini game, which the player has currently entered.
     /// </summary>
     public MiniGameContext? CurrentMiniGame { get; set; }
+
+    /// <summary>
+    /// Gets the size of the inventory of the current player.
+    /// </summary>
+    public byte InventorySize
+    {
+        get
+        {
+            if (this.SelectedCharacter is not { } selectedCharacter)
+            {
+                return 0;
+            }
+
+            return (byte)InventoryConstants.GetInventorySize(selectedCharacter.InventoryExtensions);
+        }
+    }
 
     /// <summary>
     /// Gets the pet command manager.
@@ -509,14 +539,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// Gets a value indicating whether opening the player store after entering the game is supported by this instance.
     /// </summary>
     protected virtual bool IsPlayerStoreOpeningAfterEnterSupported => true;
-
-    private static readonly MagicEffectDefinition GMEffect = new GMMagicEffectDefinition
-    {
-        InformObservers = true,
-        Name = "GM MARK",
-        Number = 28,
-        StopByDeath = false,
-    };
 
     /// <summary>
     /// Sets the selected character.
@@ -675,7 +697,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <inheritdoc/>
-    public async ValueTask<HitInfo?> AttackByAsync(IAttacker attacker, SkillEntry? skill, bool isCombo, double damageFactor = 1.0)
+    public async ValueTask<HitInfo?> AttackByAsync(IAttacker attacker, SkillEntry? skill, bool isCombo, double damageFactor = 1.0, bool? isFinalStreakHit = null)
     {
         if (this.Attributes is null)
         {
@@ -722,7 +744,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             this.Attributes[Stats.CurrentMana] = (manaFullyRecovered ? this.Attributes[Stats.MaximumMana] : this.Attributes[Stats.CurrentMana]) - hitInfo.ManaToll;
         }
 
-        await this.HitAsync(hitInfo, attacker, skill?.Skill).ConfigureAwait(false);
+        await this.HitAsync(hitInfo, attacker, skill?.Skill, isFinalStreakHit).ConfigureAwait(false);
         await this.DecreaseItemDurabilityAfterHitAsync(hitInfo).ConfigureAwait(false);
 
         if (attacker as IPlayerSurrogate is { } playerSurrogate)
@@ -1401,6 +1423,17 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <summary>
+    /// Clears all subscribers from the <see cref="PlayerDisconnected"/> event so that
+    /// <see cref="DisconnectAsync"/> will not raise it. Used by offline leveling to prevent
+    /// <c>GameServer.OnPlayerDisconnectedAsync</c> from double-saving and double-logging off
+    /// after the real client disconnects.
+    /// </summary>
+    public void SuppressDisconnectedEvent()
+    {
+        this.PlayerDisconnected = null;
+    }
+
+    /// <summary>
     /// Disconnects the player from the game. Remote connections will be closed and data will be saved.
     /// </summary>
     public async ValueTask DisconnectAsync()
@@ -1610,8 +1643,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 return powerUp;
             }
 
-            if (masterSkillDefinition.TargetAttribute is not { } masterSkillTargetAttribute
-                || masterSkillTargetAttribute == powerUpDef.TargetAttribute)
+            if (masterSkillDefinition.TargetAttribute is { } masterSkillTargetAttribute
+                && masterSkillTargetAttribute == powerUpDef.TargetAttribute)
             {
                 var additionalValue = new SimpleElement(masterSkillEntry.CalculateValue(), masterSkillEntry.Skill.MasterDefinition?.Aggregation ?? powerUp.AggregateType);
                 powerUp = new CombinedElement(powerUp, additionalValue);
@@ -1746,20 +1779,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
 
         return $"Account: [{accountName}], Character:[{characterName}]";
-    }
-
-    /// <summary>
-    /// Gets the size of the inventory of the specified player.
-    /// </summary>
-    /// <returns>The size of the inventory.</returns>
-    public byte GetInventorySize()
-    {
-        if (this.SelectedCharacter is not { } selectedCharacter)
-        {
-            return 0;
-        }
-
-        return (byte)InventoryConstants.GetInventorySize(selectedCharacter.InventoryExtensions);
     }
 
     /// <summary>
@@ -2025,6 +2044,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 {
                     currentCharacter.State++;
                 }
+                else
+                {
+                    // State is already Normal, no change needed
+                }
 
                 await this.ForEachWorldObserverAsync<IUpdateCharacterHeroStatePlugIn>(p => p.UpdateCharacterHeroStateAsync(this), true).ConfigureAwait(false);
                 currentCharacter.StateRemainingSeconds = currentCharacter.State == HeroState.Normal
@@ -2085,7 +2108,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                ?? throw new InvalidOperationException($"Game map {spawnTargetMapDefinition} has no spawn gate.");
     }
 
-    private async ValueTask HitAsync(HitInfo hitInfo, IAttacker attacker, Skill? skill)
+    private async ValueTask HitAsync(HitInfo hitInfo, IAttacker attacker, Skill? skill, bool? isFinalStreakHit = null)
     {
         this.Summon?.Item2.RegisterHit(attacker);
         var healthDamage = hitInfo.HealthDamage;
@@ -2101,6 +2124,17 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
 
         this.Attributes[Stats.CurrentHealth] -= healthDamage;
+
+        if (isFinalStreakHit.HasValue)
+        {
+            hitInfo.Attributes |= DamageAttributes.RageFighterStreakHit;
+
+            if (isFinalStreakHit.Value || this.Attributes[Stats.CurrentHealth] < 1)
+            {
+                hitInfo.Attributes |= DamageAttributes.RageFighterStreakFinalHit;
+            }
+        }
+
         await this.InvokeViewPlugInAsync<IShowHitPlugIn>(p => p.ShowHitAsync(this, hitInfo)).ConfigureAwait(false);
         if (attacker is IWorldObserver observer)
         {
@@ -2123,7 +2157,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         if (attacker is IAttackable or AttackerSurrogate)
         {
-            var attackableAttacker = (attacker as AttackerSurrogate)?.Owner ?? (IAttackable)attacker;
+            var attackableAttacker = attacker is AttackerSurrogate surrogate ? surrogate.Owner : (IAttackable)attacker;
 
             var reflectPercentage = this.Attributes[Stats.DamageReflection];
             if (reflectPercentage > 0)
@@ -2381,7 +2415,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         selectedCharacter.CurrentMap ??= selectedCharacter.CharacterClass?.HomeMap;
         this.AddMissingStatAttributes();
 
-        this.Attributes = new ItemAwareAttributeSystem(this.Account!, selectedCharacter);
+        this.Attributes = new ItemAwareAttributeSystem(this.Account!, selectedCharacter, this.GameContext.Configuration);
         this.Attributes[Stats.NearbyPartyMemberCount] = 0;
         this.LogInvalidInventoryItems();
 

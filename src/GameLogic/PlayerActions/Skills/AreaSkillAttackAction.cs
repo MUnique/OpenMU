@@ -1,4 +1,4 @@
-﻿// <copyright file="AreaSkillAttackAction.cs" company="MUnique">
+// <copyright file="AreaSkillAttackAction.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -168,6 +168,12 @@ public class AreaSkillAttackAction
             return;
         }
 
+        // Skills that move attacker to target (e.g., Twisting Slash, Death Stab) require a weapon
+        if (skill.MovesToTarget && player.Attributes[Stats.EquippedWeaponCount] == 0)
+        {
+            return;
+        }
+
         if (player.Attributes[Stats.AmmunitionConsumptionRate] > player.Attributes[Stats.AmmunitionAmount])
         {
             return;
@@ -320,15 +326,22 @@ public class AreaSkillAttackAction
     private async ValueTask ApplySkillAsync(Player player, SkillEntry skillEntry, IAttackable target, Point targetAreaCenter, bool isCombo)
     {
         skillEntry.ThrowNotInitializedProperty(skillEntry.Skill is null, nameof(skillEntry.Skill));
+        var skill = skillEntry.Skill;
 
-        if (skillEntry.Skill.SkillType == SkillType.Buff)
+        if (skill.SkillType == SkillType.Buff)
         {
             await target.ApplyMagicEffectAsync(player, skillEntry).ConfigureAwait(false);
             return;
         }
 
-        var hitInfo = await target.AttackByAsync(player, skillEntry, isCombo).ConfigureAwait(false);
+        var hitInfo = await target.AttackByAsync(player, skillEntry, isCombo, 1, skill.NumberOfHitsPerAttack > 1 ? false : null).ConfigureAwait(false);
         await target.TryApplyElementalEffectsAsync(player, skillEntry).ConfigureAwait(false);
+
+        for (int hit = 2; hit <= skill.NumberOfHitsPerAttack; hit++)
+        {
+            await target.AttackByAsync(player, skillEntry, isCombo, 1, hit == skill.NumberOfHitsPerAttack).ConfigureAwait(false);
+        }
+
         var baseSkill = skillEntry.GetBaseSkill();
 
         if (player.GameContext.PlugInManager.GetStrategy<short, IAreaSkillPlugIn>(baseSkill.Number) is { } strategy)

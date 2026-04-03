@@ -78,6 +78,11 @@ public interface IGameContext
     FeaturePlugInContainer FeaturePlugIns { get; }
 
     /// <summary>
+    /// Gets the offline leveling manager which tracks active ghost players.
+    /// </summary>
+    OfflineLeveling.OfflineLevelingManager OfflineLevelingManager { get; }
+
+    /// <summary>
     /// Gets the players count of the game.
     /// </summary>
     int PlayerCount { get; }

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -369,6 +369,12 @@
   <data name="ChainLightningSkillPlugIn_Description" xml:space="preserve">
     <value>Handles the chain lightning skill of the summoner class. Additionally to the attacked target, it will hit up to two additional targets.</value>
   </data>
+  <data name="DragonRoarSkillPlugIn_Name" xml:space="preserve">
+    <value>Dragon Roar Skill</value>
+  </data>
+  <data name="DragonRoarSkillPlugIn_Description" xml:space="preserve">
+    <value>Handles the dragon roar skill of the rage fighter class. Additionally to the attacked target, it will hit up to seven additional targets.</value>
+  </data>
   <data name="DrainLifeSkillPlugIn_Name" xml:space="preserve">
     <value>Drain Life Skill</value>
   </data>
@@ -404,6 +410,12 @@
   </data>
   <data name="NovaSkillStopPlugin_Description" xml:space="preserve">
     <value>Handles the stopping of nova skill of the wizard class.</value>
+  </data>
+  <data name="PhoenixShotSkillPlugIn_Name" xml:space="preserve">
+    <value>Phoenix Shot Skill</value>
+  </data>
+  <data name="PhoenixShotSkillPlugIn_Description" xml:space="preserve">
+    <value>Handles the phoenix shot weapon skill of the rage fighter class. Additionally to the attacked target, it will hit up to seven additional targets.</value>
   </data>
   <data name="PlasmaStormSkillPlugIn_Name" xml:space="preserve">
     <value>Plasma Storm Skill</value>
@@ -1127,5 +1139,11 @@
   </data>
   <data name="BaseInvasionPlugIn_DefaultStartMessage" xml:space="preserve">
     <value>[{mapName}] Invasion!</value>
+  </data>
+  <data name="OfflineLevelingChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Offline Leveling Command</value>
+  </data>
+  <data name="OfflineLevelingChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Allows players to start offline leveling with /offlevel. The character stays in the world after the client disconnects and stops when the player logs back in.</value>
   </data>
 </root>
