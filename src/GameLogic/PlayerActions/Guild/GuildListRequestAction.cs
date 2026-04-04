@@ -22,10 +22,12 @@ public class GuildListRequestAction
             return;
         }
 
-        if ((player.GameContext as IGameServerContext)?.GuildServer is { } guildServer)
+        // TODO: We may want to retrieve guild and guild members in one call, to avoid multiple calls. But for now, we can live with that.
+        if ((player.GameContext as IGameServerContext)?.GuildServer is { } guildServer
+            && await guildServer.GetGuildAsync(player.GuildStatus.GuildId).ConfigureAwait(false) is { } guild)
         {
             var players = await guildServer.GetGuildListAsync(player.GuildStatus.GuildId).ConfigureAwait(false);
-            await player.InvokeViewPlugInAsync<IShowGuildListPlugIn>(p => p.ShowGuildListAsync(players)).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<IShowGuildListPlugIn>(p => p.ShowGuildListAsync(players, guild)).ConfigureAwait(false);
         }
     }
 }

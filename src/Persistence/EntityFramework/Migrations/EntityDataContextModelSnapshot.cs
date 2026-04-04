@@ -137,6 +137,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<TimeSpan>("DelayPerOneDistance")
                         .HasColumnType("interval");
 
+                    b.Property<int>("EffectRange")
+                        .HasColumnType("integer");
+
                     b.Property<float>("FrustumDistance")
                         .HasColumnType("real");
 
@@ -153,6 +156,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasColumnType("integer");
 
                     b.Property<int>("MaximumNumberOfHitsPerTarget")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MinimumNumberOfHitsPerAttack")
                         .HasColumnType("integer");
 
                     b.Property<int>("MinimumNumberOfHitsPerTarget")
@@ -215,6 +221,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<Guid?>("CharacterClassId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("GameConfigurationId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid?>("InputAttributeId")
                         .HasColumnType("uuid");
 
@@ -239,6 +248,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CharacterClassId");
+
+                    b.HasIndex("GameConfigurationId");
 
                     b.HasIndex("InputAttributeId");
 
@@ -735,10 +746,13 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("CharacterClassId")
+                    b.Property<Guid?>("CharacterClassId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid?>("DefinitionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("GameConfigurationId")
                         .HasColumnType("uuid");
 
                     b.Property<float>("Value")
@@ -749,6 +763,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasIndex("CharacterClassId");
 
                     b.HasIndex("DefinitionId");
+
+                    b.HasIndex("GameConfigurationId");
 
                     b.ToTable("ConstValueAttribute", "config");
                 });
@@ -1028,6 +1044,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasDefaultValue("if(level == 0, 0, if(level < 256, 10 * (level + 8) * (level - 1) * (level - 1), (10 * (level + 8) * (level - 1) * (level - 1)) + (1000 * (level - 247) * (level - 256) * (level - 256))))");
 
                     b.Property<float>("ExperienceRate")
+                        .HasColumnType("real");
+
+                    b.Property<float>("MasterExperienceRate")
                         .HasColumnType("real");
 
                     b.Property<double>("HitsPerOneItemDurability")
@@ -3192,11 +3211,17 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<short>("Number")
                         .HasColumnType("smallint");
 
+                    b.Property<short>("NumberOfHitsPerAttack")
+                        .HasColumnType("smallint");
+
                     b.Property<short>("Range")
                         .HasColumnType("smallint");
 
                     b.Property<int>("SkillType")
                         .HasColumnType("integer");
+
+                    b.Property<bool>("SkipElementalModifier")
+                        .HasColumnType("boolean");
 
                     b.Property<int>("Target")
                         .HasColumnType("integer");
@@ -3474,6 +3499,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasForeignKey("CharacterClassId")
                         .OnDelete(DeleteBehavior.Cascade);
 
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration", null)
+                        .WithMany("RawGlobalAttributeCombinations")
+                        .HasForeignKey("GameConfigurationId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeDefinition", "RawInputAttribute")
                         .WithMany()
                         .HasForeignKey("InputAttributeId");
@@ -3693,14 +3723,20 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.CharacterClass", "CharacterClass")
                         .WithMany("RawBaseAttributeValues")
                         .HasForeignKey("CharacterClassId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeDefinition", "RawDefinition")
                         .WithMany()
                         .HasForeignKey("DefinitionId");
 
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.GameConfiguration", "GameConfiguration")
+                        .WithMany("RawGlobalBaseAttributeValues")
+                        .HasForeignKey("GameConfigurationId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.Navigation("CharacterClass");
+
+                    b.Navigation("GameConfiguration");
 
                     b.Navigation("RawDefinition");
                 });
@@ -4982,6 +5018,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Navigation("RawCharacterClasses");
 
                     b.Navigation("RawDropItemGroups");
+
+                    b.Navigation("RawGlobalAttributeCombinations");
+
+                    b.Navigation("RawGlobalBaseAttributeValues");
 
                     b.Navigation("RawItemLevelBonusTables");
 

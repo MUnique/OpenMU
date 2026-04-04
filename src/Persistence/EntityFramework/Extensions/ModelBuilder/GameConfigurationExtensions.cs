@@ -22,6 +22,7 @@ internal static class GameConfigurationExtensions
         builder.Property(c => c.ItemDropDuration).HasDefaultValue(TimeSpan.FromSeconds(60));
         builder.Property(c => c.ExperienceFormula).HasDefaultValue("if(level == 0, 0, if(level < 256, 10 * (level + 8) * (level - 1) * (level - 1), (10 * (level + 8) * (level - 1) * (level - 1)) + (1000 * (level - 247) * (level - 256) * (level - 256))))");
         builder.Property(c => c.MasterExperienceFormula).HasDefaultValue("(505 * level * level * level) + (35278500 * level) + (228045 * level * level)");
+        builder.HasMany(c => c.RawGlobalBaseAttributeValues).WithOne(c => c.GameConfiguration);
     }
 
     /// <summary>

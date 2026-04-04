@@ -1,4 +1,4 @@
-﻿// <copyright file="MuItemStorage.razor.cs" company="MUnique">
+// <copyright file="MuItemStorage.razor.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Components;
 public partial class MuItemStorage
 {
     private StorageViewModel? _viewModel;
-    private ItemViewModel? _selectedItemModel;
+    private Item? _selectedItem;
 
     /// <summary>
     /// Gets or sets the selected item.
@@ -20,11 +20,15 @@ public partial class MuItemStorage
     [Parameter]
     public Item? SelectedItem
     {
-        get => this._selectedItemModel?.Item;
+        get => this._selectedItem;
         set
         {
-            this._selectedItemModel = value is null ? null : this._viewModel?.Items.FirstOrDefault(item => item.Item == value);
-            _ = this.InvokeAsync(this.StateHasChanged);
+            if (this._selectedItem == value)
+            {
+                return;
+            }
+
+            this._selectedItem = value;
         }
     }
 
@@ -64,7 +68,6 @@ public partial class MuItemStorage
     /// <param name="viewModel">The view model.</param>
     public async Task SetSelectedItemAsync(ItemViewModel viewModel)
     {
-        this._selectedItemModel = viewModel;
         if (this.SelectedItemChanged.HasDelegate)
         {
             await this.SelectedItemChanged.InvokeAsync(viewModel.Item).ConfigureAwait(true);
@@ -77,7 +80,7 @@ public partial class MuItemStorage
         base.OnParametersSet();
         if (this.Value is { } value)
         {
-            this._viewModel ??= value.CreateViewModel(this.StorageType, this.NumberOfExtensions, this.ExtensionIndex);
+            this._viewModel = value.CreateViewModel(this.StorageType, this.NumberOfExtensions, this.ExtensionIndex);
         }
     }
 
