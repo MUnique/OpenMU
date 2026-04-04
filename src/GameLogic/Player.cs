@@ -1249,11 +1249,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         // Check the lvl up
         if (lvlup)
         {
-            if (this.Attributes[Stats.MasterLevel] >= this.GameContext.Configuration.MaximumMasterLevel)
-            {
-                return;
-            }
-
             this.Attributes[Stats.MasterLevel]++;
             this.SelectedCharacter.MasterLevelUpPoints += (int)this.Attributes[Stats.MasterPointsPerLevelUp];
             this.SetReclaimableAttributesToMaximum();
