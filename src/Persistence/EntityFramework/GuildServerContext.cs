@@ -39,4 +39,13 @@ internal class GuildServerContext : CachingEntityFrameworkContext, IGuildServerC
             select new { character.Id, character.Name })
             .ToDictionaryAsync(member => member.Id, member => member.Name).ConfigureAwait(false);
     }
+
+    /// <inheritdoc/>
+    public async ValueTask<IReadOnlyList<DataModel.Entities.Guild>> GetAlliancesAsync(Guid allianceMasterId)
+    {
+        return await this.Context.Set<Guild>()
+            .Where(g => g.AllianceGuildId == allianceMasterId)
+            .Include(g => g.RawMembers)
+            .ToListAsync().ConfigureAwait(false);
+    }
 }

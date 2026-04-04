@@ -131,4 +131,28 @@ public interface IGameServer : IManageableServer, IFriendSystemSubscriber
     /// <param name="serverId">The identifier of the server on which the client tried to enter.</param>
     /// <param name="loginName">The login name.</param>
     ValueTask PlayerAlreadyLoggedInAsync(byte serverId, string loginName);
+
+    /// <summary>
+    /// Notifies the game server that an alliance between two guilds has been created.
+    /// </summary>
+    /// <param name="masterGuildId">The master guild identifier.</param>
+    /// <param name="memberGuildId">The member guild identifier.</param>
+    ValueTask AllianceCreatedAsync(uint masterGuildId, uint memberGuildId);
+
+    /// <summary>
+    /// Notifies the game server that an alliance between two guilds has been disbanded.
+    /// </summary>
+    /// <param name="masterGuildId">The master guild identifier.</param>
+    /// <param name="memberGuildId">The member guild identifier.</param>
+    ValueTask AllianceDisbandedAsync(uint masterGuildId, uint memberGuildId);
+
+    /// <summary>
+    /// Notifies the game server that the hostility between two guilds (or alliances) has changed.
+    /// </summary>
+    /// <param name="guildIdA">The identifier of the first guild.</param>
+    /// <param name="allianceGuildIdsA">All guild IDs in the alliance of guild A (or just [guildIdA] if not in an alliance).</param>
+    /// <param name="guildIdB">The identifier of the second guild.</param>
+    /// <param name="allianceGuildIdsB">All guild IDs in the alliance of guild B (or just [guildIdB] if not in an alliance).</param>
+    /// <param name="created"><c>true</c> if hostility was created; <c>false</c> if it was removed.</param>
+    ValueTask GuildHostilityChangedAsync(uint guildIdA, IReadOnlyList<uint> allianceGuildIdsA, uint guildIdB, IReadOnlyList<uint> allianceGuildIdsB, bool created);
 }

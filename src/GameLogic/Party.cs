@@ -331,7 +331,6 @@ public sealed class Party : AsyncDisposable
 
         var totalAvg = baseExp * count * Math.Pow(1.05, count - 1);
         totalAvg *= killed.CurrentMap?.Definition.ExpMultiplier ?? 1;
-        totalAvg *= recipients[0].GameContext.ExperienceRate;
 
         var total = Rand.NextInt((int)(totalAvg * 0.8), (int)(totalAvg * 1.2));
         var perLevel = total / totalLevel;
@@ -341,24 +340,31 @@ public sealed class Party : AsyncDisposable
 
     private static async ValueTask AwardExperienceAsync(Player player, int perLevel, IAttackable killed)
     {
-        var isMasterAtCap =
-            (short)player.Attributes![Stats.Level] == player.GameContext.Configuration.MaximumLevel
-            && (player.SelectedCharacter?.CharacterClass?.IsMasterClass ?? false);
+        var attributes = player.Attributes!;
+        var isAtMaxLevel = (short)attributes[Stats.Level] == player.GameContext.Configuration.MaximumLevel;
+        var isMasterClass = player.SelectedCharacter?.CharacterClass?.IsMasterClass ?? false;
 
-        var levelStat = isMasterAtCap ? Stats.TotalLevel : Stats.Level;
-        var rateStat = isMasterAtCap ? Stats.MasterExperienceRate : Stats.ExperienceRate;
-
-        var exp = (int)(perLevel
-                        * player.Attributes![levelStat]
-                        * (player.Attributes[rateStat] + player.Attributes[Stats.BonusExperienceRate]));
-
-        if (isMasterAtCap)
+        if (isAtMaxLevel && isMasterClass)
         {
-            await player.AddMasterExperienceAsync(exp, killed).ConfigureAwait(false);
+            var expMaster = (int)(perLevel
+                                  * attributes[Stats.TotalLevel]
+                                  * player.GameContext.MasterExperienceRate
+                                  * (attributes[Stats.MasterExperienceRate] + attributes[Stats.BonusExperienceRate]));
+
+            await player.AddMasterExperienceAsync(expMaster, killed).ConfigureAwait(false);
+        }
+        else if (!isAtMaxLevel)
+        {
+            var exp = (int)(perLevel
+                            * attributes[Stats.Level]
+                            * player.GameContext.ExperienceRate
+                            * (attributes[Stats.ExperienceRate] + attributes[Stats.BonusExperienceRate]));
+
+            await player.AddExperienceAsync(exp, killed).ConfigureAwait(false);
         }
         else
         {
-            await player.AddExperienceAsync(exp, killed).ConfigureAwait(false);
+            // Player is at max level but did not complete master quest. Do not award experience.
         }
     }
 
@@ -401,11 +407,12 @@ public sealed class Party : AsyncDisposable
             return 0;
         }
 
-        using (await killer.ObserverLock.ReaderLockAsync())
+        using (await killer.ObserverLock.ReaderLockAsync().ConfigureAwait(false))
         {
             this._distributionList.AddRange(
                 this._partyList.OfType<Player>()
-                    .Where(p => p == killer || killer.Observers.Contains(p)));
+                    .Where(p => p.Attributes is { }
+                                && (p == killer || killer.Observers.Contains(p))));
         }
 
         if (this._distributionList.Count == 0)
@@ -422,7 +429,6 @@ public sealed class Party : AsyncDisposable
 
         return total;
     }
-
 
     private async ValueTask UpdateNearbyCountAsync()
     {

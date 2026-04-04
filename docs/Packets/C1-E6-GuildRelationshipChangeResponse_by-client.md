@@ -18,7 +18,7 @@ The server sends a response back to the requester. If the guild master agreed, i
 | 3 | 1 | GuildRelationshipType |  | RelationshipType |
 | 4 | 1 | GuildRequestType |  | RequestType |
 | 5 | 1 | Boolean |  | Response |
-| 6 | 2 | ShortLittleEndian |  | TargetPlayerId |
+| 6 | 2 | ShortBigEndian |  | TargetPlayerId |
 
 ### GuildRelationshipType Enum
 
