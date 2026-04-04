@@ -1305,11 +1305,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 return;
             }
 
-            if (this.Attributes[Stats.Level] >= this.GameContext.Configuration.MaximumLevel)
-            {
-                return;
-            }
-
             this.Attributes[Stats.Level]++;
             this.SelectedCharacter.LevelUpPoints += (int)this.Attributes[Stats.PointsPerLevelUp];
             this.SetReclaimableAttributesToMaximum();
