@@ -47,6 +47,11 @@ internal sealed class RepairHandler
                 continue;
             }
 
+            if (this._player.Inventory?.GetItem(i) is null)
+            {
+                continue;
+            }
+
             await this._repairAction.RepairItemAsync(this._player, i).ConfigureAwait(false);
         }
     }

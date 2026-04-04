@@ -24,7 +24,7 @@ public class ResetCharacterActionTest
     [Test]
     public async Task NotEnoughItemsRejectsResetAndKeepsZenAsync()
     {
-        var player = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
         player.Attributes![Stats.Level] = 400;
         player.Money = 1_000;
 
@@ -48,7 +48,7 @@ public class ResetCharacterActionTest
     [Test]
     public async Task EnoughItemsAndZenConsumesCostsOnceAsync()
     {
-        var player = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
         player.Attributes![Stats.Level] = 400;
         player.Money = 1_000;
 
@@ -82,7 +82,7 @@ public class ResetCharacterActionTest
     [Test]
     public async Task ReplacePointsUsesCumulativeTierTotalAcrossResetsAsync()
     {
-        var player = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
         player.Attributes![Stats.Level] = 400;
         player.Money = 2_000;
 
@@ -112,7 +112,7 @@ public class ResetCharacterActionTest
     [Test]
     public async Task TieredPointsAreAddedWhenReplaceIsDisabledAsync()
     {
-        var player = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
         player.Attributes![Stats.Level] = 400;
         player.Money = 1_000;
         player.SelectedCharacter!.LevelUpPoints = 1_000;

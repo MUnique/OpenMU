@@ -16,6 +16,12 @@ public sealed class OfflineLevelingManager
         new(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>
+    /// Gets a snapshot of all currently active offline leveling players.
+    /// </summary>
+    public IReadOnlyCollection<OfflineLevelingPlayer> OfflineLevelingPlayers
+        => this._activePlayers.Values.ToList();
+
+    /// <summary>
     /// Starts an offline leveling session by replacing the real player with a ghost.
     /// </summary>
     /// <param name="realPlayer">The real player who typed the command.</param>
