@@ -40,6 +40,7 @@ using Nito.AsyncEx;
 public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacker, ITrader, IPartyMember, IRotatable, IHasBucketInformation, ISupportWalk, IMovable, ILoggerOwner<Player>
 {
     private readonly AsyncLock _moveLock = new();
+    private readonly AsyncLock _experienceLock = new();
 
     private readonly Walker _walker;
 
@@ -1176,6 +1177,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <param name="killedObject">The killed object which caused the experience gain.</param>
     public async ValueTask AddMasterExperienceAsync(int experience, IAttackable? killedObject)
     {
+        using var d = await this._experienceLock.LockAsync().ConfigureAwait(false);
+        await this.AddMasterExperienceCoreAsync(experience, killedObject).ConfigureAwait(false);
+    }
+
+    private async ValueTask AddMasterExperienceCoreAsync(int experience, IAttackable? killedObject)
+    {
         if (this.Attributes![Stats.MasterLevel] >= this.GameContext.Configuration.MaximumMasterLevel)
         {
             await this.InvokeViewPlugInAsync<IAddExperiencePlugIn>(p => p.AddExperienceAsync(0, killedObject, ExperienceType.MaxMasterLevelReached)).ConfigureAwait(false);
@@ -1207,6 +1214,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         // Check the lvl up
         if (lvlup)
         {
+            if (this.Attributes[Stats.MasterLevel] >= this.GameContext.Configuration.MaximumMasterLevel)
+            {
+                return;
+            }
+
             this.Attributes[Stats.MasterLevel]++;
             this.SelectedCharacter.MasterLevelUpPoints += (int)this.Attributes[Stats.MasterPointsPerLevelUp];
             this.SetReclaimableAttributesToMaximum();
@@ -1223,30 +1235,46 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <param name="killedObject">The killed object which caused the experience gain.</param>
     public async ValueTask AddExperienceAsync(int experience, IAttackable? killedObject)
     {
-        if (this.Attributes![Stats.Level] >= this.GameContext.Configuration.MaximumLevel)
+        using var d = await this._experienceLock.LockAsync().ConfigureAwait(false);
+        await this.AddExperienceCoreAsync(experience, killedObject).ConfigureAwait(false);
+    }
+
+    private async ValueTask AddExperienceCoreAsync(int experience, IAttackable? killedObject)
+    {
+        var remainingExperience = experience;
+        while (remainingExperience > 0)
         {
-            await this.InvokeViewPlugInAsync<IAddExperiencePlugIn>(p => p.AddExperienceAsync(0, killedObject, ExperienceType.MaxLevelReached)).ConfigureAwait(false);
-            return;
-        }
+            if (this.Attributes![Stats.Level] >= this.GameContext.Configuration.MaximumLevel)
+            {
+                await this.InvokeViewPlugInAsync<IAddExperiencePlugIn>(p => p.AddExperienceAsync(0, killedObject, ExperienceType.MaxLevelReached)).ConfigureAwait(false);
+                return;
+            }
 
-        long exp = experience;
-        bool isLevelUp = false;
-        var expTable = this.GameContext.ExperienceTable;
-        var expForNextLevel = expTable[(int)this.Attributes[Stats.Level] + 1];
-        if (expForNextLevel - this.SelectedCharacter!.Experience < exp)
-        {
-            exp = expForNextLevel - this.SelectedCharacter.Experience;
-            isLevelUp = true;
-        }
+            long gainedExperience = remainingExperience;
+            bool isLevelUp = false;
+            var expTable = this.GameContext.ExperienceTable;
+            var expForNextLevel = expTable[(int)this.Attributes[Stats.Level] + 1];
+            if (expForNextLevel - this.SelectedCharacter!.Experience < gainedExperience)
+            {
+                gainedExperience = expForNextLevel - this.SelectedCharacter.Experience;
+                isLevelUp = true;
+            }
 
-        this.SelectedCharacter.Experience += exp;
+            this.SelectedCharacter.Experience += gainedExperience;
 
-        // Tell it to the Player
-        await this.InvokeViewPlugInAsync<IAddExperiencePlugIn>(p => p.AddExperienceAsync((int)exp, killedObject, ExperienceType.Normal)).ConfigureAwait(false);
+            // Tell it to the Player
+            await this.InvokeViewPlugInAsync<IAddExperiencePlugIn>(p => p.AddExperienceAsync((int)gainedExperience, killedObject, ExperienceType.Normal)).ConfigureAwait(false);
 
-        // Check the lvl up
-        if (isLevelUp)
-        {
+            if (!isLevelUp)
+            {
+                return;
+            }
+
+            if (this.Attributes[Stats.Level] >= this.GameContext.Configuration.MaximumLevel)
+            {
+                return;
+            }
+
             this.Attributes[Stats.Level]++;
             this.SelectedCharacter.LevelUpPoints += (int)this.Attributes[Stats.PointsPerLevelUp];
             this.SetReclaimableAttributesToMaximum();
@@ -1257,14 +1285,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             await this.InvokeViewPlugInAsync<IUpdateLevelPlugIn>(p => p.UpdateLevelAsync()).ConfigureAwait(false);
             await this.ForEachWorldObserverAsync<IShowEffectPlugIn>(p => p.ShowEffectAsync(this, IShowEffectPlugIn.EffectType.LevelUp), true).ConfigureAwait(false);
 
-            var remainingExp = experience - exp;
-            if (remainingExp > 0 && this.Attributes![Stats.Level] < this.GameContext.Configuration.MaximumLevel)
+            remainingExperience -= (int)gainedExperience;
+            if (remainingExperience <= 0
+                || this.Attributes[Stats.Level] >= this.GameContext.Configuration.MaximumLevel
+                || this.GameContext.Configuration.PreventExperienceOverflow)
             {
-                // Only apply overflow if the configuration allows it
-                if (!this.GameContext.Configuration.PreventExperienceOverflow)
-                {
-                    await this.AddExperienceAsync((int)remainingExp, killedObject).ConfigureAwait(false);
-                }
+                return;
             }
         }
     }
