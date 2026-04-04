@@ -152,8 +152,7 @@ public class ExperienceRateSplitTest
             normalExperienceRate: 1.0f,
             globalMasterExperienceRate: 1.0f,
             maximumLevel: 10,
-            maximumMasterLevel: 200,
-            preventExperienceOverflow: false);
+            maximumMasterLevel: 200);
 
         var player = await this.CreatePlayerAsync(context, level: 1, totalLevel: 1, isMasterClass: false).ConfigureAwait(false);
         var requiredForLevel2 = context.ExperienceTable[2] - player.SelectedCharacter!.Experience;
