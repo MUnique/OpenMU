@@ -85,6 +85,12 @@ public partial class GameConfiguration
     public bool ClampMoneyOnPickup { get; set; }
 
     /// <summary>
+    /// Gets or sets the level delta used to determine the pool of items eligible for excellent drops.
+    /// A monster must be at least this many levels above an item's DropLevel for the item to be eligible as excellent.
+    /// </summary>
+    public byte ExcellentItemDropLevelDelta { get; set; }
+
+    /// <summary>
     /// Gets or sets the experience formula per level. The variable name for the level is "level".
     /// </summary>
     public string? ExperienceFormula { get; set; }

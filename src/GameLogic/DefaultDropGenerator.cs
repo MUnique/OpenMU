@@ -37,6 +37,8 @@ public class DefaultDropGenerator : IDropGenerator
 
     private readonly IList<ItemDefinition>?[] _droppableItemsPerMonsterLevel = new IList<ItemDefinition>?[byte.MaxValue + 1];
 
+    private readonly byte _excellentItemDropLevelDelta;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="DefaultDropGenerator" /> class.
     /// </summary>
@@ -44,6 +46,7 @@ public class DefaultDropGenerator : IDropGenerator
     /// <param name="randomizer">The randomizer.</param>
     public DefaultDropGenerator(GameConfiguration config, IRandomizer randomizer)
     {
+        this._excellentItemDropLevelDelta = config.ExcellentItemDropLevelDelta;
         this._randomizer = randomizer;
         this._maxItemOptionLevelDrop = config.MaximumItemOptionLevelDrop < 1 || config.MaximumItemOptionLevelDrop > 4 ? (byte)3 : config.MaximumItemOptionLevelDrop;
         this._droppableItems = config.Items.Where(i => i.DropsFromMonsters).ToList();
@@ -194,12 +197,12 @@ public class DefaultDropGenerator : IDropGenerator
     /// <returns>A random excellent item.</returns>
     protected Item? GenerateRandomExcellentItem(int monsterLvl = 0, ICollection<ItemDefinition>? possibleItems = null)
     {
-        if (monsterLvl < 25 && possibleItems is null)
+        if (monsterLvl < this._excellentItemDropLevelDelta && possibleItems is null)
         {
             return null;
         }
 
-        var possible = possibleItems ?? this.GetPossibleList(monsterLvl - 25);
+        var possible = possibleItems ?? this.GetPossibleList(monsterLvl - this._excellentItemDropLevelDelta);
         var item = this.GenerateRandomItem(possible);
         if (item is null)
         {
