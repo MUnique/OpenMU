@@ -55,7 +55,7 @@ public sealed class SoccerBall : NonPlayerCharacter, IAttackable, IMovable
     public DeathInformation? LastDeath => null;
 
     /// <inheritdoc />
-    public async ValueTask<HitInfo?> AttackByAsync(IAttacker attacker, SkillEntry? skill, bool isCombo, double damageFactor = 1.0)
+    public async ValueTask<HitInfo?> AttackByAsync(IAttacker attacker, SkillEntry? skill, bool isCombo, double damageFactor = 1.0, bool? isFinalStreakHit = null)
     {
         var direction = attacker.GetDirectionTo(this);
         await this.MoveToDirectionAsync(direction, skill is { }).ConfigureAwait(false);
@@ -71,6 +71,13 @@ public sealed class SoccerBall : NonPlayerCharacter, IAttackable, IMovable
 
     /// <inheritdoc />
     public ValueTask ApplyPoisonDamageAsync(IAttacker initialAttacker, uint damage)
+    {
+        // A ball doesn't take any damage
+        return ValueTask.CompletedTask;
+    }
+
+    /// <inheritdoc />
+    public ValueTask ApplyBleedingDamageAsync(IAttacker initialAttacker, uint damage)
     {
         // A ball doesn't take any damage
         return ValueTask.CompletedTask;

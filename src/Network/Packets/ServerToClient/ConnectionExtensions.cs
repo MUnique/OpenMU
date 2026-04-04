@@ -1049,6 +1049,8 @@ public static class ConnectionExtensions
     /// <param name="objectId">The object id.</param>
     /// <param name="healthDamage">The health damage.</param>
     /// <param name="kind">The kind.</param>
+    /// <param name="isRageFighterStreakHit">The is rage fighter streak hit.</param>
+    /// <param name="isRageFighterStreakFinalHit">The is rage fighter streak final hit.</param>
     /// <param name="isDoubleDamage">The is double damage.</param>
     /// <param name="isTripleDamage">The is triple damage.</param>
     /// <param name="shieldDamage">The shield damage.</param>
@@ -1056,7 +1058,7 @@ public static class ConnectionExtensions
     /// Is sent by the server when: An object got hit in two cases: 1. When the own player is hit; 2. When the own player attacked some other object which got hit.
     /// Causes reaction on client side: The damage is shown at the object which received the hit.
     /// </remarks>
-    public static async ValueTask SendObjectHitAsync(this IConnection? connection, byte @headerCode, ushort @objectId, ushort @healthDamage, DamageKind @kind, bool @isDoubleDamage, bool @isTripleDamage, ushort @shieldDamage)
+    public static async ValueTask SendObjectHitAsync(this IConnection? connection, byte @headerCode, ushort @objectId, ushort @healthDamage, DamageKind @kind, bool @isRageFighterStreakHit, bool @isRageFighterStreakFinalHit, bool @isDoubleDamage, bool @isTripleDamage, ushort @shieldDamage)
     {
         if (connection is null)
         {
@@ -1071,6 +1073,8 @@ public static class ConnectionExtensions
             packet.ObjectId = @objectId;
             packet.HealthDamage = @healthDamage;
             packet.Kind = @kind;
+            packet.IsRageFighterStreakHit = @isRageFighterStreakHit;
+            packet.IsRageFighterStreakFinalHit = @isRageFighterStreakFinalHit;
             packet.IsDoubleDamage = @isDoubleDamage;
             packet.IsTripleDamage = @isTripleDamage;
             packet.ShieldDamage = @shieldDamage;
@@ -1086,6 +1090,8 @@ public static class ConnectionExtensions
     /// </summary>
     /// <param name="connection">The connection.</param>
     /// <param name="kind">The kind.</param>
+    /// <param name="isRageFighterStreakHit">The is rage fighter streak hit.</param>
+    /// <param name="isRageFighterStreakFinalHit">The is rage fighter streak final hit.</param>
     /// <param name="isDoubleDamage">The is double damage.</param>
     /// <param name="isTripleDamage">The is triple damage.</param>
     /// <param name="objectId">The object id.</param>
@@ -1097,7 +1103,7 @@ public static class ConnectionExtensions
     /// Is sent by the server when: An object got hit in two cases: 1. When the own player is hit; 2. When the own player attacked some other object which got hit.
     /// Causes reaction on client side: The damage is shown at the object which received the hit.
     /// </remarks>
-    public static async ValueTask SendObjectHitExtendedAsync(this IConnection? connection, DamageKind @kind, bool @isDoubleDamage, bool @isTripleDamage, ushort @objectId, byte @healthStatus, byte @shieldStatus, uint @healthDamage, uint @shieldDamage)
+    public static async ValueTask SendObjectHitExtendedAsync(this IConnection? connection, DamageKind @kind, bool @isRageFighterStreakHit, bool @isRageFighterStreakFinalHit, bool @isDoubleDamage, bool @isTripleDamage, ushort @objectId, byte @healthStatus, byte @shieldStatus, uint @healthDamage, uint @shieldDamage)
     {
         if (connection is null)
         {
@@ -1109,6 +1115,8 @@ public static class ConnectionExtensions
             var length = ObjectHitExtendedRef.Length;
             var packet = new ObjectHitExtendedRef(connection.Output.GetSpan(length)[..length]);
             packet.Kind = @kind;
+            packet.IsRageFighterStreakHit = @isRageFighterStreakHit;
+            packet.IsRageFighterStreakFinalHit = @isRageFighterStreakFinalHit;
             packet.IsDoubleDamage = @isDoubleDamage;
             packet.IsTripleDamage = @isTripleDamage;
             packet.ObjectId = @objectId;
@@ -4416,6 +4424,104 @@ public static class ConnectionExtensions
             packet.ScoreOfOwnGuild = @scoreOfOwnGuild;
             packet.ScoreOfEnemyGuild = @scoreOfEnemyGuild;
             packet.Type = @type;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="GuildRelationshipRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="relationshipType">The relationship type.</param>
+    /// <param name="requestType">The request type.</param>
+    /// <param name="senderId">The sender id.</param>
+    /// <remarks>
+    /// Is sent by the server when: A guild master sent a relationship change request (alliance or hostility) and the server forwards this request to the target guild master.
+    /// Causes reaction on client side: The target guild master (receiver of this message) sees the incoming request dialog.
+    /// </remarks>
+    public static async ValueTask SendGuildRelationshipRequestAsync(this IConnection? connection, GuildRelationshipType @relationshipType, GuildRelationshipRequestType @requestType, ushort @senderId)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = GuildRelationshipRequestRef.Length;
+            var packet = new GuildRelationshipRequestRef(connection.Output.GetSpan(length)[..length]);
+            packet.RelationshipType = @relationshipType;
+            packet.RequestType = @requestType;
+            packet.SenderId = @senderId;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="GuildRelationshipChangeResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="relationshipType">The relationship type.</param>
+    /// <param name="requestType">The request type.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="guildMasterId">The guild master id.</param>
+    /// <remarks>
+    /// Is sent by the server when: The result of a guild relationship change request (alliance or hostility) is sent back to the requester.
+    /// Causes reaction on client side: The requester sees the result of the relationship change.
+    /// </remarks>
+    public static async ValueTask SendGuildRelationshipChangeResultAsync(this IConnection? connection, GuildRelationshipType @relationshipType, GuildRelationshipRequestType @requestType, GuildRelationshipChangeResult.GuildRelationshipChangeResultType @result, ushort @guildMasterId)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = GuildRelationshipChangeResultRef.Length;
+            var packet = new GuildRelationshipChangeResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.RelationshipType = @relationshipType;
+            packet.RequestType = @requestType;
+            packet.Result = @result;
+            packet.GuildMasterId = @guildMasterId;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="RemoveAllianceGuildResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="requestType">The request type.</param>
+    /// <param name="relationshipType">The relationship type.</param>
+    /// <remarks>
+    /// Is sent by the server when: A guild master sent a message to kick the guild from the alliance and it has been processed.
+    /// Causes reaction on client side: The list of guilds is updated accordingly.
+    /// </remarks>
+    public static async ValueTask SendRemoveAllianceGuildResultAsync(this IConnection? connection, bool @result, GuildRelationshipRequestType @requestType, GuildRelationshipType @relationshipType)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = RemoveAllianceGuildResultRef.Length;
+            var packet = new RemoveAllianceGuildResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+            packet.RequestType = @requestType;
+            packet.RelationshipType = @relationshipType;
 
             return packet.Header.Length;
         }

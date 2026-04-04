@@ -97,7 +97,7 @@ public class MagicEffectsList : AsyncDisposable
     /// <summary>
     /// Clear the effects that produce a specific stat.
     /// </summary>
-    /// <param name="stat">The stat produced by effect</param>
+    /// <param name="stat">The stat produced by effect.</param>
     public async ValueTask ClearAllEffectsProducingSpecificStatAsync(AttributeDefinition stat)
     {
         var effects = this.ActiveEffects.Values.ToArray();

@@ -102,12 +102,12 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
     /// <param name="target">The target.</param>
     public async ValueTask AttackAsync(IAttackable target)
     {
-        await target.AttackByAsync(this, null, false).ConfigureAwait(false);
+        var hitInfo = await target.AttackByAsync(this, null, false).ConfigureAwait(false);
 
         await this.ForEachWorldObserverAsync<IShowAnimationPlugIn>(p => p.ShowMonsterAttackAnimationAsync(this, target, this.GetDirectionTo(target)), true).ConfigureAwait(false);
         if (this.Definition.AttackSkill is { } attackSkill)
         {
-            await target.TryApplyElementalEffectsAsync(this, attackSkill, this._skillPowerUp, this._skillPowerUpDuration, this._skillPowerUpTarget).ConfigureAwait(false);
+            await target.TryApplyElementalEffectsAsync(this, attackSkill, this._skillPowerUp, this._skillPowerUpDuration, this._skillPowerUpTarget, hitInfo).ConfigureAwait(false);
 
             await this.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowSkillAnimationAsync(this, target, attackSkill, true), true).ConfigureAwait(false);
         }
@@ -224,6 +224,12 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
     public override ValueTask ApplyPoisonDamageAsync(IAttacker initialAttacker, uint damage)
     {
         return this.HitAsync(new HitInfo(damage, 0, DamageAttributes.Poison), initialAttacker, null);
+    }
+
+    /// <inheritdoc />
+    public override ValueTask ApplyBleedingDamageAsync(IAttacker initialAttacker, uint damage)
+    {
+        return this.HitAsync(new HitInfo(damage, 0, DamageAttributes.Undefined), initialAttacker, null);
     }
 
     /// <inheritdoc/>

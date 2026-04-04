@@ -520,6 +520,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Handles the dragon roar skill of the rage fighter class. Additionally to the attacked target, it will hit up to seven additional targets..
+        /// </summary>
+        public static string DragonRoarSkillPlugIn_Description {
+            get {
+                return ResourceManager.GetString("DragonRoarSkillPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Dragon Roar Skill.
+        /// </summary>
+        public static string DragonRoarSkillPlugIn_Name {
+            get {
+                return ResourceManager.GetString("DragonRoarSkillPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the drain life skill of the summoner class. Additionally to the attacked target, it regains life for damage dealt..
         /// </summary>
         public static string DrainLifeSkillPlugIn_Description {
@@ -1618,6 +1636,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Handles the phoenix shot weapon skill of the rage fighter class. Additionally to the attacked target, it will hit up to seven additional targets..
+        /// </summary>
+        public static string PhoenixShotSkillPlugIn_Description {
+            get {
+                return ResourceManager.GetString("PhoenixShotSkillPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Phoenix Shot Skill.
+        /// </summary>
+        public static string PhoenixShotSkillPlugIn_Name {
+            get {
+                return ResourceManager.GetString("PhoenixShotSkillPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the chat command &apos;/pk &lt;char&gt; &lt;pk_lvl&gt; &lt;pk_count&gt;&apos;. Sets player kill level and count of a character..
         /// </summary>
         public static string PkChatCommandPlugIn_Description {
@@ -1807,6 +1843,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Handles the pollution skill (book of lagle) of the summoner class. Based on a chance, it may push the targets 2 squares away from the attacker..
+        /// </summary>
+        public static string PollutionSkillPlugIn_Description {
+            get {
+                return ResourceManager.GetString("PollutionSkillPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pollution Skill.
+        /// </summary>
+        public static string PollutionSkillPlugIn_Name {
+            get {
+                return ResourceManager.GetString("PollutionSkillPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the chat command &apos;/post message&apos;. Sends a global blue system message to all players of the game..
         /// </summary>
         public static string PostChatCommandPlugIn_Description {
@@ -1976,6 +2030,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string RemoveNpcChatCommand_Name {
             get {
                 return ResourceManager.GetString("RemoveNpcChatCommand_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the requiem skill (book of neil) of the summoner class. Based on a chance, it may stun the target..
+        /// </summary>
+        public static string RequiemSkillPlugIn_Description {
+            get {
+                return ResourceManager.GetString("RequiemSkillPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Requiem Skill.
+        /// </summary>
+        public static string RequiemSkillPlugIn_Name {
+            get {
+                return ResourceManager.GetString("RequiemSkillPlugIn_Name", resourceCulture);
             }
         }
         
@@ -3092,6 +3164,42 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string WeatherUpdatePlugIn_Name {
             get {
                 return ResourceManager.GetString("WeatherUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+ 
+        /// <summary>
+        ///   Looks up a localized string similar to Offline Leveling Command.
+        /// </summary>
+        public static string OfflineLevelingChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("OfflineLevelingChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Allows players to start offline leveling.
+        /// </summary>
+        public static string OfflineLevelingChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("OfflineLevelingChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Allows players to start offline leveling.
+        /// </summary>
+        public static string OfflineLevelingStopOnLoginPlugIn_Name {
+            get {
+                return ResourceManager.GetString("OfflineLevelingStopOnLoginPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Allows players to start offline leveling.
+        /// </summary>        
+        public static string OfflineLevelingStopOnLoginPlugIn_Description {
+            get {
+                return ResourceManager.GetString("OfflineLevelingStopOnLoginPlugIn_Description", resourceCulture);
             }
         }
     }

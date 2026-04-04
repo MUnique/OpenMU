@@ -28,7 +28,7 @@ public sealed class PoisonMagicEffect : MagicEffect
     {
         this.Attacker = attacker;
         this.Owner = owner;
-        this._damageTimer = new System.Timers.Timer(3000);
+        this._damageTimer = new Timer(3000);
         this._damageTimer.Elapsed += this.OnDamageTimerElapsed;
         this._damageTimer.Start();
     }
@@ -71,7 +71,7 @@ public sealed class PoisonMagicEffect : MagicEffect
         }
         catch (Exception ex)
         {
-            (this.Owner as ILoggerOwner)?.Logger.LogError(ex, "Error when applying posion damage");
+            (this.Owner as ILoggerOwner)?.Logger.LogError(ex, "Error when applying poison damage");
         }
     }
 }
