@@ -20,11 +20,8 @@ public partial class InvasionSpawnTable : InputBase<IList<InvasionSpawnConfigura
     private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNameCaseInsensitive = true };
 
     private List<SpawnViewModel> _viewModels = new();
-
     private IEnumerable<MonsterDefinition>? _allMonsters;
-
     private IEnumerable<GameMapDefinition>? _allMaps;
-
     private bool _parsing;
 
     /// <summary>
@@ -194,6 +191,8 @@ public partial class InvasionSpawnTable : InputBase<IList<InvasionSpawnConfigura
 
         /// <summary>
         /// Gets or sets a value indicating whether to spawn on all maps or just a random one.
+        /// Delegates to <see cref="InvasionSpawnConfiguration.MapStrategy"/> via the
+        /// <see cref="InvasionSpawnConfiguration.IsSpawnOnAllMaps"/> bridge property.
         /// </summary>
         public bool IsSpawnOnAllMaps
         {
@@ -234,16 +233,24 @@ public partial class InvasionSpawnTable : InputBase<IList<InvasionSpawnConfigura
             private readonly List<GameMapDefinition> _inner;
             private readonly SpawnViewModel _owner;
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="SyncedMapList"/> class.
+            /// </summary>
+            /// <param name="items">The initial map items.</param>
+            /// <param name="owner">The owning view model to sync back to.</param>
             public SyncedMapList(IEnumerable<GameMapDefinition> items, SpawnViewModel owner)
             {
                 this._inner = new List<GameMapDefinition>(items);
                 this._owner = owner;
             }
 
+            /// <inheritdoc />
             public int Count => this._inner.Count;
 
+            /// <inheritdoc />
             public bool IsReadOnly => false;
 
+            /// <inheritdoc />
             public GameMapDefinition this[int index]
             {
                 get => this._inner[index];
@@ -254,12 +261,14 @@ public partial class InvasionSpawnTable : InputBase<IList<InvasionSpawnConfigura
                 }
             }
 
+            /// <inheritdoc />
             public void Add(GameMapDefinition item)
             {
                 this._inner.Add(item);
                 this._owner.SyncMapIdsToModel();
             }
 
+            /// <inheritdoc />
             public bool Remove(GameMapDefinition item)
             {
                 var result = this._inner.Remove(item);
@@ -271,32 +280,40 @@ public partial class InvasionSpawnTable : InputBase<IList<InvasionSpawnConfigura
                 return result;
             }
 
+            /// <inheritdoc />
             public void Clear()
             {
                 this._inner.Clear();
                 this._owner.SyncMapIdsToModel();
             }
 
+            /// <inheritdoc />
             public void Insert(int index, GameMapDefinition item)
             {
                 this._inner.Insert(index, item);
                 this._owner.SyncMapIdsToModel();
             }
 
+            /// <inheritdoc />
             public void RemoveAt(int index)
             {
                 this._inner.RemoveAt(index);
                 this._owner.SyncMapIdsToModel();
             }
 
+            /// <inheritdoc />
             public bool Contains(GameMapDefinition item) => this._inner.Contains(item);
 
+            /// <inheritdoc />
             public void CopyTo(GameMapDefinition[] array, int arrayIndex) => this._inner.CopyTo(array, arrayIndex);
 
+            /// <inheritdoc />
             public int IndexOf(GameMapDefinition item) => this._inner.IndexOf(item);
 
+            /// <inheritdoc />
             public IEnumerator<GameMapDefinition> GetEnumerator() => this._inner.GetEnumerator();
 
+            /// <inheritdoc />
             System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => this.GetEnumerator();
         }
     }

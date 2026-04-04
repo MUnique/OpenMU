@@ -13,6 +13,7 @@ public class InvasionSpawnConfiguration
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="InvasionSpawnConfiguration"/> class.
+    /// Required for serialization and UI binding.
     /// </summary>
     public InvasionSpawnConfiguration()
     {
@@ -24,15 +25,21 @@ public class InvasionSpawnConfiguration
     /// <param name="monsterId">The monster ID to spawn.</param>
     /// <param name="count">The number of monsters to spawn (1-254).</param>
     /// <param name="mapIds">The list of map IDs where the monster can spawn.</param>
-    /// <param name="isSpawnOnAllMaps">If true, spawns on all maps in the list. If false, picks a random map.</param>
+    /// <param name="mapStrategy">Controls whether to spawn on a random map or all maps.</param>
     /// <param name="x">The optional fixed X coordinate.</param>
     /// <param name="y">The optional fixed Y coordinate.</param>
-    public InvasionSpawnConfiguration(ushort monsterId, ushort count, IList<ushort> mapIds, bool isSpawnOnAllMaps, byte? x = null, byte? y = null)
+    public InvasionSpawnConfiguration(
+        ushort monsterId,
+        ushort count,
+        IList<ushort> mapIds,
+        SpawnMapStrategy mapStrategy,
+        byte? x = null,
+        byte? y = null)
     {
         this.MonsterId = monsterId;
         this.Count = count;
         this.MapIds = mapIds;
-        this.IsSpawnOnAllMaps = isSpawnOnAllMaps;
+        this.MapStrategy = mapStrategy;
         this.X = x;
         this.Y = y;
     }
@@ -54,33 +61,44 @@ public class InvasionSpawnConfiguration
     /// </summary>
     [Required]
     [MinLength(1)]
-    public IList<ushort> MapIds { get; set; } = new List<ushort>();
+    public IList<ushort> MapIds { get; set; } = [];
 
     /// <summary>
-    /// Gets or sets a value indicating whether to spawn on all maps in the list.
-    /// If false, picks a random map.
+    /// Gets or sets the strategy used to select a map when spawning.
     /// </summary>
-    public bool IsSpawnOnAllMaps { get; set; }
+    public SpawnMapStrategy MapStrategy { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the monster spawns on all maps in <see cref="MapIds"/>.
+    /// When set to <c>true</c>, <see cref="MapStrategy"/> is changed to <see cref="SpawnMapStrategy.AllMaps"/>.
+    /// When set to <c>false</c>, <see cref="MapStrategy"/> is changed to <see cref="SpawnMapStrategy.RandomMap"/>.
+    /// This property exists for UI binding and serialization compatibility.
+    /// </summary>
+    public bool IsSpawnOnAllMaps
+    {
+        get => this.MapStrategy == SpawnMapStrategy.AllMaps;
+        set => this.MapStrategy = value ? SpawnMapStrategy.AllMaps : SpawnMapStrategy.RandomMap;
+    }
 
     /// <summary>
     /// Gets or sets the fixed X coordinate.
-    /// If null, a random coordinate is used.
+    /// If <c>null</c>, a random walkable coordinate is used.
     /// </summary>
     [Range(0, 255)]
     public byte? X { get; set; }
 
     /// <summary>
     /// Gets or sets the fixed Y coordinate.
-    /// If null, a random coordinate is used.
+    /// If <c>null</c>, a random walkable coordinate is used.
     /// </summary>
     [Range(0, 255)]
     public byte? Y { get; set; }
 
-    /// <summary>
-    /// Determines whether this instance is equal to another <see cref="InvasionSpawnConfiguration"/>.
-    /// </summary>
-    /// <param name="obj">The object to compare with.</param>
-    /// <returns>True if the instances are equal; otherwise, false.</returns>
+    /// <inheritdoc />
+    /// <remarks>
+    /// Equality is based solely on <see cref="MonsterId"/>, as each monster type
+    /// may only have one spawn configuration per invasion event.
+    /// </remarks>
     public override bool Equals(object? obj)
     {
         if (obj is not InvasionSpawnConfiguration other)
@@ -88,26 +106,14 @@ public class InvasionSpawnConfiguration
             return false;
         }
 
-        return this.MonsterId == other.MonsterId
-            && this.Count == other.Count
-            && this.IsSpawnOnAllMaps == other.IsSpawnOnAllMaps
-            && this.X == other.X
-            && this.Y == other.Y
-            && this.MapIds.SequenceEqual(other.MapIds);
+        return this.MonsterId == other.MonsterId;
     }
 
-    /// <summary>
-    /// Returns a hash code for this instance based on <see cref="MonsterId"/>, <see cref="Count"/>, <see cref="IsSpawnOnAllMaps"/>, <see cref="X"/>, <see cref="Y"/>, and <see cref="MapIds"/>.
-    /// </summary>
-    /// <returns>A hash code based on the configuration properties.</returns>
-    public override int GetHashCode()
-    {
-        var hash = HashCode.Combine(this.MonsterId, this.Count, this.IsSpawnOnAllMaps, this.X, this.Y);
-        foreach (var mapId in this.MapIds)
-        {
-            hash = HashCode.Combine(hash, mapId);
-        }
-
-        return hash;
-    }
+    /// <inheritdoc />
+    /// <remarks>
+    /// The hash code is based solely on <see cref="MonsterId"/>, consistent with <see cref="Equals"/>.
+    /// This means the object can be safely mutated (maps, count, strategy, coordinates)
+    /// while held in a hash-based collection without becoming unreachable.
+    /// </remarks>
+    public override int GetHashCode() => this.MonsterId.GetHashCode();
 }
