@@ -208,19 +208,19 @@
                         disabled="@this._createMode"
                         @ref="_objectSelectRef">
                     <option value="@Guid.Empty" selected=@(this._focusedObject is null)>&lt;@Resources.NoSelection&gt;</option>
-                    @foreach (var enterGate in this.SelectedMap.EnterGates.Where(g => MapObjectSelector.MatchesFilters(g, this._activeFilter) && this.MatchesSearch(g)))
+                    @foreach (var enterGate in this.SelectedMap.EnterGates.Where(g => MapObjectSelector.MatchesFilters(g, this._activeFilter, this._searchFilter)))
                     {
                         <option value="@enterGate.GetId()" selected=@(object.Equals(this._focusedObject, enterGate))>
                             @typeof(EnterGate).GetTypeCaption(): @enterGate.ToString()
                         </option>
                     }
-                    @foreach (var exitGate in this.SelectedMap.ExitGates.Where(g => MapObjectSelector.MatchesFilters(g, this._activeFilter) && this.MatchesSearch(g)))
+                    @foreach (var exitGate in this.SelectedMap.ExitGates.Where(g => MapObjectSelector.MatchesFilters(g, this._activeFilter, this._searchFilter)))
                     {
                         <option value="@exitGate.GetId()" selected=@(object.Equals(this._focusedObject, exitGate))>
                             @typeof(ExitGate).GetTypeCaption(): @exitGate.ToString()
                         </option>
                     }
-                    @foreach (var spawn in this.SelectedMap.MonsterSpawns.Where(s => MapObjectSelector.MatchesFilters(s, this._activeFilter) && this.MatchesSearch(s)))
+                    @foreach (var spawn in this.SelectedMap.MonsterSpawns.Where(s => MapObjectSelector.MatchesFilters(s, this._activeFilter, this._searchFilter)))
                     {
                         <option value="@spawn.GetId()" selected=@(object.Equals(this._focusedObject, spawn))>
                             @typeof(MonsterSpawnArea).GetTypeCaption(): @spawn.ToString()

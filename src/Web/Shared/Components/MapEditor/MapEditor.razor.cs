@@ -39,11 +39,11 @@ public partial class MapEditor : IAsyncDisposable
 
     private MapZoomManager? _zoomManager;
     private MapObjectFactory? _objectFactory;
-
     private Image<Rgba32>? _terrainImage;
     private ElementReference _mapHostRef;
     private ElementReference _objectSelectRef;
     private IJSObjectReference? _jsModule;
+
     private bool _showGrid;
     private bool _isInitialized;
     private bool _createMode;
@@ -219,29 +219,18 @@ public partial class MapEditor : IAsyncDisposable
     private void SetActiveFilter(ObjectTypeFilter filter)
     {
         this._activeFilter = filter;
-        if (this._focusedObject is not null && !MapObjectSelector.MatchesFilters(this._focusedObject, this._activeFilter))
+        if (this._focusedObject is not null && !MapObjectSelector.MatchesFilters(this._focusedObject, this._activeFilter, this._searchFilter))
         {
             this._focusedObject = null;
         }
     }
 
-    private bool MatchesSearch(object? obj)
-    {
-        if (string.IsNullOrWhiteSpace(this._searchFilter))
-        {
-            return true;
-        }
-
-        return obj?.ToString()?.Contains(
-            this._searchFilter, StringComparison.InvariantCultureIgnoreCase) ?? false;
-    }
-
     private int GetObjectListSize()
     {
         var count = 1
-            + this.SelectedMap.EnterGates.Count(g => MapObjectSelector.MatchesFilters(g, this._activeFilter) && this.MatchesSearch(g))
-            + this.SelectedMap.ExitGates.Count(g => MapObjectSelector.MatchesFilters(g, this._activeFilter) && this.MatchesSearch(g))
-            + this.SelectedMap.MonsterSpawns.Count(s => MapObjectSelector.MatchesFilters(s, this._activeFilter) && this.MatchesSearch(s));
+            + this.SelectedMap.EnterGates.Count(g => MapObjectSelector.MatchesFilters(g, this._activeFilter, this._searchFilter))
+            + this.SelectedMap.ExitGates.Count(g => MapObjectSelector.MatchesFilters(g, this._activeFilter, this._searchFilter))
+            + this.SelectedMap.MonsterSpawns.Count(s => MapObjectSelector.MatchesFilters(s, this._activeFilter, this._searchFilter));
 
         return Math.Min(count, MaxObjectSelectSize);
     }
@@ -253,13 +242,15 @@ public partial class MapEditor : IAsyncDisposable
             ObjectTypeFilter.All =>
                 this.SelectedMap.EnterGates.Cast<object>()
                     .Concat(this.SelectedMap.ExitGates)
-                    .Concat(this.SelectedMap.MonsterSpawns),
+                    .Concat(this.SelectedMap.MonsterSpawns)
+                    .Where(o => MapObjectSelector.MatchesFilters(o, this._activeFilter, this._searchFilter)),
             ObjectTypeFilter.Gates =>
                 this.SelectedMap.EnterGates.Cast<object>()
-                    .Concat(this.SelectedMap.ExitGates),
+                    .Concat(this.SelectedMap.ExitGates)
+                    .Where(o => MapObjectSelector.MatchesFilters(o, this._activeFilter, this._searchFilter)),
             _ =>
                 this.SelectedMap.MonsterSpawns
-                    .Where(s => MapObjectSelector.MatchesFilters(s, this._activeFilter)),
+                    .Where(s => MapObjectSelector.MatchesFilters(s, this._activeFilter, this._searchFilter)),
         };
     }
 
@@ -302,7 +293,7 @@ public partial class MapEditor : IAsyncDisposable
                   ?? this.SelectedMap.MonsterSpawns
                       .FirstOrDefault(g => g.GetId().ToString() == args.Value?.ToString());
 
-        if (obj is not null && !MapObjectSelector.MatchesFilters(obj, this._activeFilter))
+        if (obj is not null && !MapObjectSelector.MatchesFilters(obj, this._activeFilter, this._searchFilter))
         {
             return;
         }
@@ -350,7 +341,7 @@ public partial class MapEditor : IAsyncDisposable
 
         var (x, y) = coords.Value;
         var objectAtPosition = this._objectSelector.GetObjectAtPosition(
-            this.SelectedMap, x, y, this._activeFilter);
+            this.SelectedMap, x, y, this._activeFilter, this._searchFilter);
 
         if (objectAtPosition is not null)
         {
@@ -488,6 +479,7 @@ public partial class MapEditor : IAsyncDisposable
                 gate.Y2 = (byte)newY2;
                 break;
             default:
+                // Not supported.
                 break;
         }
     }
@@ -513,6 +505,7 @@ public partial class MapEditor : IAsyncDisposable
                 spawnArea.Y1 = Math.Min(y, spawnArea.Y2);
                 break;
             default:
+                // Not supported.
                 break;
         }
     }
@@ -538,6 +531,7 @@ public partial class MapEditor : IAsyncDisposable
                 gate.Y1 = Math.Min(y, gate.Y2);
                 break;
             default:
+                // Not supported.
                 break;
         }
     }
@@ -667,6 +661,7 @@ public partial class MapEditor : IAsyncDisposable
                 this._pendingDeletions.Add(exitGate);
                 break;
             default:
+                // Not supported.
                 return;
         }
 
@@ -754,6 +749,7 @@ public partial class MapEditor : IAsyncDisposable
                     this._history.RecordSnapshot(gate);
                     break;
                 default:
+                    // Not supported.
                     break;
             }
         }

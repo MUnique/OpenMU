@@ -77,15 +77,26 @@ public sealed class MapObjectSelector
     /// </summary>
     /// <param name="obj">The map object to test.</param>
     /// <param name="filter">The active object type filter.</param>
+    /// <param name="search">An optional search string to match the object's name.</param>
     /// <returns><see langword="true"/> if the object should be considered visible.</returns>
-    public static bool MatchesFilters(object? obj, ObjectTypeFilter filter)
+    public static bool MatchesFilters(object? obj, ObjectTypeFilter filter, string? search = null)
     {
-        return filter switch
+        if (obj is null)
         {
-            ObjectTypeFilter.All => true,
-            ObjectTypeFilter.Gates => obj is EnterGate or ExitGate,
-            _ => obj is MonsterSpawnArea spawn && SpawnMatchesFilter(spawn, filter),
-        };
+            return true;
+        }
+
+        if (!MatchesTypeFilter(obj, filter))
+        {
+            return false;
+        }
+
+        if (!string.IsNullOrWhiteSpace(search) && !MatchesSearch(obj, search))
+        {
+            return false;
+        }
+
+        return true;
     }
 
     /// <summary>
@@ -96,6 +107,7 @@ public sealed class MapObjectSelector
     /// <param name="x">The map X coordinate to test.</param>
     /// <param name="y">The map Y coordinate to test.</param>
     /// <param name="filter">The active object type filter to apply.</param>
+    /// <param name="search">An optional search string to further restrict hits.</param>
     /// <returns>
     /// The best matching <see cref="MonsterSpawnArea"/>, <see cref="ExitGate"/>,
     /// or <see cref="EnterGate"/> at the position; or <see langword="null"/> if none found.
@@ -104,9 +116,10 @@ public sealed class MapObjectSelector
         GameMapDefinition map,
         byte x,
         byte y,
-        ObjectTypeFilter filter)
+        ObjectTypeFilter filter,
+        string? search = null)
     {
-        var bestSpawn = this.FindBestSpawn(map.MonsterSpawns, x, y, filter);
+        var bestSpawn = this.FindBestSpawn(map.MonsterSpawns, x, y, filter, search);
         if (bestSpawn is not null)
         {
             return bestSpawn;
@@ -116,7 +129,7 @@ public sealed class MapObjectSelector
         {
             foreach (var gate in map.ExitGates)
             {
-                if (IsPointInGate(gate, x, y))
+                if (MatchesSearch(gate, search) && IsPointInGate(gate, x, y))
                 {
                     return gate;
                 }
@@ -124,7 +137,7 @@ public sealed class MapObjectSelector
 
             foreach (var gate in map.EnterGates)
             {
-                if (IsPointInGate(gate, x, y))
+                if (MatchesSearch(gate, search) && IsPointInGate(gate, x, y))
                 {
                     return gate;
                 }
@@ -134,19 +147,27 @@ public sealed class MapObjectSelector
         return null;
     }
 
-    /// <summary>
-    /// Computes the distance from the given position to the spawn area,
-    /// and indicates whether the position is considered inside the spawn.
-    /// </summary>
-    /// <param name="spawn">The spawn area to test.</param>
-    /// <param name="x">The map X coordinate.</param>
-    /// <param name="y">The map Y coordinate.</param>
-    /// <param name="isInside">
-    /// <see langword="true"/> if the coordinate is within the spawn's hit region.
-    /// </param>
-    /// <returns>The distance from the position to the spawn's center or origin point.</returns>
-    private static float GetDistanceToSpawn(
-        MonsterSpawnArea spawn, byte x, byte y, out bool isInside)
+    private static bool MatchesTypeFilter(object obj, ObjectTypeFilter filter)
+    {
+        return filter switch
+        {
+            ObjectTypeFilter.All => true,
+            ObjectTypeFilter.Gates => obj is EnterGate or ExitGate,
+            _ => obj is MonsterSpawnArea spawn && SpawnMatchesFilter(spawn, filter),
+        };
+    }
+
+    private static bool MatchesSearch(object obj, string? search)
+    {
+        if (string.IsNullOrWhiteSpace(search))
+        {
+            return true;
+        }
+
+        return obj?.ToString()?.Contains(search, StringComparison.InvariantCultureIgnoreCase) ?? false;
+    }
+
+    private static float GetDistanceToSpawn(MonsterSpawnArea spawn, byte x, byte y, out bool isInside)
     {
         if (spawn.IsPoint())
         {
@@ -171,19 +192,9 @@ public sealed class MapObjectSelector
         return MathF.Sqrt(MathF.Pow(x - cx, 2) + MathF.Pow(y - cy, 2));
     }
 
-    /// <summary>
-    /// Determines whether the given coordinate falls within a gate's bounds.
-    /// </summary>
-    /// <param name="gate">The gate to test against.</param>
-    /// <param name="x">The map X coordinate.</param>
-    /// <param name="y">The map Y coordinate.</param>
-    /// <returns><see langword="true"/> if the coordinate is inside the gate's bounds.</returns>
     private static bool IsPointInGate(Gate gate, byte x, byte y) =>
         x >= gate.X1 && x <= gate.X2 && y >= gate.Y1 && y <= gate.Y2;
 
-    /// <summary>
-    /// Returns whether a spawn matches the active filter.
-    /// </summary>
     private static bool SpawnMatchesFilter(MonsterSpawnArea spawn, ObjectTypeFilter filter)
     {
         var objectKind = spawn.MonsterDefinition?.ObjectKind;
@@ -209,10 +220,11 @@ public sealed class MapObjectSelector
     /// <param name="x">The map X coordinate.</param>
     /// <param name="y">The map Y coordinate.</param>
     /// <param name="filter">The active object type filter.</param>
+    /// <param name="search">An optional search string to further restrict hits.</param>
     /// <returns>
     /// The best matching <see cref="MonsterSpawnArea"/>, or <see langword="null"/> if none intersect the position.
     /// </returns>
-    private MonsterSpawnArea? FindBestSpawn(IEnumerable<MonsterSpawnArea> spawns, byte x, byte y, ObjectTypeFilter filter)
+    private MonsterSpawnArea? FindBestSpawn(IEnumerable<MonsterSpawnArea> spawns, byte x, byte y, ObjectTypeFilter filter, string? search)
     {
         MonsterSpawnArea? best = null;
         float bestDistance = float.MaxValue;
@@ -221,6 +233,11 @@ public sealed class MapObjectSelector
         foreach (var spawn in spawns)
         {
             if (!SpawnMatchesFilter(spawn, filter))
+            {
+                continue;
+            }
+
+            if (!MatchesSearch(spawn, search))
             {
                 continue;
             }

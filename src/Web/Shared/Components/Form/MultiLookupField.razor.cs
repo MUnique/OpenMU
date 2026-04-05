@@ -38,9 +38,7 @@ public partial class MultiLookupField<TObject> : IDisposable
     private bool _mouseDownOnDropdown;
     private bool _disposed;
     private string _searchText = string.Empty;
-#pragma warning disable CS0649 // Field is never assigned to (assigned by Blazor @ref)
     private ElementReference _searchInput;
-#pragma warning restore CS0649
     private IEnumerable<TObject> _filteredItems = Enumerable.Empty<TObject>();
 
     /// <summary>
