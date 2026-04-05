@@ -537,8 +537,19 @@ System.register("Player", ["three", "Attackable"], function (exports_8, context_
 });
 System.register("NonPlayerCharacter", ["three", "Attackable"], function (exports_9, context_9) {
     "use strict";
-    var THREE, Attackable_2, NonPlayerCharacter;
+    var THREE, Attackable_2, NpcObjectKind, NonPlayerCharacter;
     var __moduleName = context_9 && context_9.id;
+    function getColorForObjectKind(kind) {
+        switch (kind) {
+            case NpcObjectKind.Monster:
+                return 0x00FFFF;
+            case NpcObjectKind.PassiveNpc:
+            case NpcObjectKind.Guard:
+                return 0xFF8800;
+            default:
+                return 0xFFFF00;
+        }
+    }
     return {
         setters: [
             function (THREE_6) {
@@ -549,10 +560,21 @@ System.register("NonPlayerCharacter", ["three", "Attackable"], function (exports
             }
         ],
         execute: function () {
+            (function (NpcObjectKind) {
+                NpcObjectKind[NpcObjectKind["Monster"] = 0] = "Monster";
+                NpcObjectKind[NpcObjectKind["PassiveNpc"] = 1] = "PassiveNpc";
+                NpcObjectKind[NpcObjectKind["Guard"] = 2] = "Guard";
+                NpcObjectKind[NpcObjectKind["Trap"] = 3] = "Trap";
+                NpcObjectKind[NpcObjectKind["Gate"] = 4] = "Gate";
+                NpcObjectKind[NpcObjectKind["Statue"] = 5] = "Statue";
+                NpcObjectKind[NpcObjectKind["SoccerBall"] = 6] = "SoccerBall";
+                NpcObjectKind[NpcObjectKind["Destructible"] = 7] = "Destructible";
+            })(NpcObjectKind || (NpcObjectKind = {}));
             NonPlayerCharacter = (function (_super) {
                 __extends(NonPlayerCharacter, _super);
                 function NonPlayerCharacter(data) {
-                    return _super.call(this, data, NonPlayerCharacter.defaultGeometry, new THREE.MeshBasicMaterial({ color: 0x00FFFF, alphaMap: Attackable_2.attackableAlphaMapTexture, transparent: true })) || this;
+                    var color = getColorForObjectKind(data.npcObjectKind);
+                    return _super.call(this, data, NonPlayerCharacter.defaultGeometry, new THREE.MeshBasicMaterial({ color: color, alphaMap: Attackable_2.attackableAlphaMapTexture, transparent: true })) || this;
                 }
                 NonPlayerCharacter.size = 4;
                 NonPlayerCharacter.defaultGeometry = new THREE.BoxGeometry(NonPlayerCharacter.size, NonPlayerCharacter.size, NonPlayerCharacter.size);
