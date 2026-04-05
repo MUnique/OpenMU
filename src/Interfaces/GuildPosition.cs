@@ -29,4 +29,9 @@ public enum GuildPosition : byte
     /// The battle master.
     /// </summary>
     BattleMaster,
+
+    /// <summary>
+    /// The assistant guild master (needed for castle siege NPC management).
+    /// </summary>
+    AssistantMaster,
 }

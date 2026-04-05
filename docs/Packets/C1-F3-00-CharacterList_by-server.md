@@ -56,6 +56,7 @@ Defines the role of a guild member.
 |-------|------|-------------|
 | 0 | NormalMember | The member is a normal member without special rights. |
 | 32 | BattleMaster | The member is a battle master. |
+| 64 | AssistantMaster | The member is the assistant guild master. |
 | 128 | GuildMaster | The member is the guild master. |
 | 255 | Undefined | The character is not a member, therefore the role is undefined. |
 
