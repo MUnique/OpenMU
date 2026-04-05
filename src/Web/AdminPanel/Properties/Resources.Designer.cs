@@ -320,6 +320,60 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("Delete", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Duplicate.
+        /// </summary>
+        internal static string Duplicate {
+            get {
+                return ResourceManager.GetString("Duplicate", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Duplicated '{0}' successfully..
+        /// </summary>
+        internal static string DuplicatedSuccessfully {
+            get {
+                return ResourceManager.GetString("DuplicatedSuccessfully", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Couldn't find '{0}' to duplicate..
+        /// </summary>
+        internal static string CouldNotFindToDuplicate {
+            get {
+                return ResourceManager.GetString("CouldNotFindToDuplicate", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Type '{0}' does not support cloning..
+        /// </summary>
+        internal static string TypeDoesNotSupportCloning {
+            get {
+                return ResourceManager.GetString("TypeDoesNotSupportCloning", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to clone '{0}'..
+        /// </summary>
+        internal static string FailedToClone {
+            get {
+                return ResourceManager.GetString("FailedToClone", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Error duplicating '{0}': {1}.
+        /// </summary>
+        internal static string ErrorDuplicating {
+            get {
+                return ResourceManager.GetString("ErrorDuplicating", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to &lt;strong&gt;The Development environment shouldn&apos;t be enabled for deployed applications.&lt;/strong&gt;
@@ -1329,6 +1383,33 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         internal static string YesCreateTestAccounts {
             get {
                 return ResourceManager.GetString("YesCreateTestAccounts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Character.
+        /// </summary>
+        public static string Character {
+            get {
+                return ResourceManager.GetString("Character", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Started at.
+        /// </summary>
+        public static string StartedAt {
+            get {
+                return ResourceManager.GetString("StartedAt", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Offline Leveling.
+        /// </summary>
+        public static string OfflineLeveling {
+            get {
+                return ResourceManager.GetString("OfflineLeveling", resourceCulture);
             }
         }
     }

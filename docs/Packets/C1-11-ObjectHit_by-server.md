@@ -19,6 +19,8 @@ The damage is shown at the object which received the hit.
 | 3 | 2 | ShortBigEndian |  | ObjectId |
 | 5 | 2 | ShortBigEndian |  | HealthDamage |
 | 7 << 0 | 4 bit | DamageKind |  | Kind |
+| 7 << 4 | 1 bit | Boolean |  | IsRageFighterStreakHit |
+| 7 << 5 | 1 bit | Boolean |  | IsRageFighterStreakFinalHit |
 | 7 << 6 | 1 bit | Boolean |  | IsDoubleDamage |
 | 7 << 7 | 1 bit | Boolean |  | IsTripleDamage |
 | 8 | 2 | ShortBigEndian |  | ShieldDamage |
@@ -33,7 +35,7 @@ Defines the kind of the damage.
 | 1 | IgnoreDefenseCyan | Cyan color, usually used by ignore defense damage. |
 | 2 | ExcellentLightGreen | Light green color, usually used by excellent damage. |
 | 3 | CriticalBlue | Blue color, usually used by critical damage. |
-| 4 | LightPink | Light pink color. |
+| 4 | ReflectedLightPink | Light pink color, usually used by reflected damage. |
 | 5 | PoisonDarkGreen | Dark green color, usually used by poison damage. |
-| 6 | ReflectedDarkPink | Dark pink color, usually used by reflected damage. |
+| 6 | DarkPink | Dark pink color. |
 | 7 | White | White color. |

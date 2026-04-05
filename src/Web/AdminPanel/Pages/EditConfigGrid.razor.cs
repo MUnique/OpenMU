@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Pages;
 
 using System.Collections;
 using System.ComponentModel;
+using System.Reflection;
 using System.Threading;
 using Blazored.Modal;
 using Blazored.Modal.Services;
@@ -15,8 +16,9 @@ using Microsoft.AspNetCore.Components.QuickGrid;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Web.AdminPanel.Properties;
 using MUnique.OpenMU.Web.Shared;
-using MUnique.OpenMU.Web.Shared.Components.Form;
+using MUnique.OpenMU.Web.Shared.Components.Form.Modal;
 
 /// <summary>
 /// Razor page which shows objects of the specified type in a grid.
@@ -225,6 +227,79 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
             this.ToastService.ShowSuccess("New object successfully created.");
             this._viewModels = null;
             this._loadTask = Task.Run(() => this.LoadDataAsync(cancellationToken), cancellationToken);
+        }
+    }
+
+    private async Task OnDuplicateButtonClickAsync(ViewModel viewModel)
+    {
+        try
+        {
+            var cancellationToken = this._disposeCts?.Token ?? default;
+            var gameConfiguration = await this.DataSource.GetOwnerAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+            using var context = this.PersistenceContextProvider.CreateNewTypedContext(this.Type!, true, gameConfiguration);
+            var original = await context.GetByIdAsync(viewModel.Id, this.Type!, cancellationToken).ConfigureAwait(false);
+            if (original is null)
+            {
+                this.ToastService.ShowError(string.Format(Resources.CouldNotFindToDuplicate, viewModel.Name));
+                return;
+            }
+
+            var cloneMethod = this.Type!.GetMethod("Clone", BindingFlags.Public | BindingFlags.Instance);
+            if (cloneMethod is null)
+            {
+                this.ToastService.ShowError(string.Format(Resources.TypeDoesNotSupportCloning, this.Type.Name));
+                return;
+            }
+
+            var cloned = cloneMethod.Invoke(original, new object[] { gameConfiguration });
+            if (cloned is null)
+            {
+                this.ToastService.ShowError(string.Format(Resources.FailedToClone, viewModel.Name));
+                return;
+            }
+
+            var newObject = context.CreateNew(this.Type!);
+
+            var properties = this.Type!.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Where(p => p.CanWrite && p.CanRead && p.Name != "Id");
+            foreach (var prop in properties)
+            {
+                try
+                {
+                    prop.SetValue(newObject, prop.GetValue(cloned));
+                }
+                catch (Exception)
+                {
+                    // Skip properties that can't be copied (e.g. read-only collections)
+                }
+            }
+
+            var parameters = new ModalParameters();
+            var modalType = typeof(ModalCreateNew<>).MakeGenericType(this.Type!);
+
+            parameters.Add(nameof(ModalCreateNew<object>.Item), newObject);
+            parameters.Add(nameof(ModalCreateNew<object>.PersistenceContext), context);
+            var options = new ModalOptions
+            {
+                DisableBackgroundCancel = true,
+            };
+
+            var modal = this.ModalService.Show(modalType, $"Duplicate '{viewModel.Name}'", parameters, options);
+            var result = await modal.Result.ConfigureAwait(false);
+            if (!result.Cancelled)
+            {
+                await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+                await this.DataSource.ForceDiscardChangesAsync().ConfigureAwait(false);
+
+                this.ToastService.ShowSuccess(string.Format(Resources.DuplicatedSuccessfully, viewModel.Name));
+                this._viewModels = null;
+                this._loadTask = Task.Run(() => this.LoadDataAsync(cancellationToken), cancellationToken);
+            }
+        }
+        catch (Exception ex)
+        {
+            this.Logger.LogError(ex, $"Error duplicating '{viewModel.Name}'.");
+            this.ToastService.ShowError(string.Format(Resources.ErrorDuplicating, viewModel.Name, ex.Message));
         }
     }
 

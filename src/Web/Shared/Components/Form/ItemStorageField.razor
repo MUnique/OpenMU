@@ -84,7 +84,7 @@
                 {
                     <div class="alert alert-secondary item-edit">
                         <h3>@(this._selectedItem.Definition?.Name.ToString() ?? Resources.PleaseSelectItemDefinition)</h3>
-                        <ItemEdit Item="@this._selectedItem" ItemChanged="this.StateHasChanged"></ItemEdit>
+                        <ItemEdit Item="@this._selectedItem"></ItemEdit>
                     </div>
                 }
             </div>

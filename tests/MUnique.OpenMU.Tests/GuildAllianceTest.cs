@@ -514,8 +514,8 @@ public class RivalGuildCombatTest
         mapInitializer.PlugInManager = this._gameServerContext.PlugInManager;
         mapInitializer.PathFinderPool = this._gameServerContext.PathFinderPool;
 
-        this._killer = await TestHelper.CreatePlayerAsync(this._gameServerContext).ConfigureAwait(false);
-        this._victim = await TestHelper.CreatePlayerAsync(this._gameServerContext).ConfigureAwait(false);
+        this._killer = await PlayerTestHelper.CreatePlayerAsync(this._gameServerContext).ConfigureAwait(false);
+        this._victim = await PlayerTestHelper.CreatePlayerAsync(this._gameServerContext).ConfigureAwait(false);
         await this._killer.CurrentMap!.AddAsync(this._victim).ConfigureAwait(false);
 
         this._killer.GuildStatus = new GuildMemberStatus(KillerGuildId, GuildPosition.GuildMaster);

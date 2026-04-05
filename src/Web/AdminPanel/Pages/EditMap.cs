@@ -18,6 +18,7 @@ using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Web.AdminPanel.Properties;
 using MUnique.OpenMU.Web.Shared;
 using MUnique.OpenMU.Web.Shared.Components;
+using MUnique.OpenMU.Web.Shared.Components.MapEditor;
 
 /// <summary>
 /// A page, which shows an <see cref="MapEditor"/> for all <see cref="GameConfiguration.Maps"/>.
@@ -50,11 +51,14 @@ public sealed class EditMap : ComponentBase, IDisposable
     private IToastService ToastService { get; set; } = null!;
 
     /// <summary>
-    /// Gets or sets the game configuration.
+    /// Gets or sets the game configuration source.
     /// </summary>
     [Inject]
     private IDataSource<GameConfiguration> GameConfigurationSource { get; set; } = null!;
 
+    /// <summary>
+    /// Gets or sets the logger.
+    /// </summary>
     [Inject]
     private ILogger<EditMap> Logger { get; set; } = null!;
 
@@ -62,13 +66,13 @@ public sealed class EditMap : ComponentBase, IDisposable
     /// Gets or sets the navigation manager.
     /// </summary>
     [Inject]
-    public NavigationManager NavigationManager { get; set; } = null!;
+    private NavigationManager NavigationManager { get; set; } = null!;
 
     /// <summary>
-    /// Gets or sets the java script runtime.
+    /// Gets or sets the JavaScript runtime.
     /// </summary>
     [Inject]
-    public IJSRuntime JavaScript { get; set; } = null!;
+    private IJSRuntime JavaScript { get; set; } = null!;
 
     /// <inheritdoc />
     public void Dispose()
@@ -84,26 +88,20 @@ public sealed class EditMap : ComponentBase, IDisposable
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        if (this._maps is { })
+        if (this._maps is null)
         {
-            builder.OpenComponent<Breadcrumb>(0);
-            builder.AddAttribute(1, nameof(Breadcrumb.Caption), Resources.MapEditor);
-            builder.CloseComponent();
-            builder.OpenComponent<CascadingValue<IContext>>(10);
-            builder.AddAttribute(12, nameof(CascadingValue<IContext>.Value), this._context);
-            builder.AddAttribute(13, nameof(CascadingValue<IContext>.IsFixed), false);
-            builder.AddAttribute(14, nameof(CascadingValue<IContext>.ChildContent), (RenderFragment)(builder2 =>
-            {
-                builder2.OpenComponent(15, typeof(MapEditor));
-                builder2.AddAttribute(16, nameof(MapEditor.Maps), this._maps);
-                builder2.AddAttribute(17, nameof(MapEditor.SelectedMapId), this.SelectedMapId);
-                builder2.AddAttribute(18, nameof(MapEditor.OnValidSubmit), EventCallback.Factory.Create(this, this.SaveChangesAsync));
-                builder2.AddAttribute(19, nameof(MapEditor.SelectedMapChanging), EventCallback.Factory.Create<MapEditor.MapChangingArgs>(this, this.OnSelectedMapChanging));
-                builder2.CloseComponent();
-            }));
-
-            builder.CloseComponent();
+            return;
         }
+
+        builder.OpenComponent<Breadcrumb>(0);
+        builder.AddAttribute(1, nameof(Breadcrumb.Caption), Resources.MapEditor);
+        builder.CloseComponent();
+
+        builder.OpenComponent<CascadingValue<IContext>>(10);
+        builder.AddAttribute(11, nameof(CascadingValue<IContext>.Value), this._context);
+        builder.AddAttribute(12, nameof(CascadingValue<IContext>.IsFixed), false);
+        builder.AddAttribute(13, nameof(CascadingValue<IContext>.ChildContent), (RenderFragment)this.BuildMapEditorFragment);
+        builder.CloseComponent();
     }
 
     /// <inheritdoc />
@@ -113,7 +111,9 @@ public sealed class EditMap : ComponentBase, IDisposable
         this._disposeCts?.Dispose();
         this._disposeCts = new CancellationTokenSource();
 
-        this._context = await this.GameConfigurationSource.GetContextAsync(this._disposeCts.Token).ConfigureAwait(false);
+        this._context = await this.GameConfigurationSource
+            .GetContextAsync(this._disposeCts.Token)
+            .ConfigureAwait(false);
 
         await base.OnParametersSetAsync().ConfigureAwait(false);
     }
@@ -133,11 +133,11 @@ public sealed class EditMap : ComponentBase, IDisposable
     /// <inheritdoc />
     protected override Task OnInitializedAsync()
     {
-        this._navigationLockDisposable = this.NavigationManager.RegisterLocationChangingHandler(this.OnBeforeInternalNavigation);
+        this._navigationLockDisposable = this.NavigationManager.RegisterLocationChangingHandler(this.OnBeforeInternalNavigationAsync);
         return base.OnInitializedAsync();
     }
 
-    private async ValueTask OnBeforeInternalNavigation(LocationChangingContext context)
+    private async ValueTask OnBeforeInternalNavigationAsync(LocationChangingContext context)
     {
         if (!await this.AllowChangeAsync().ConfigureAwait(false))
         {
@@ -145,7 +145,7 @@ public sealed class EditMap : ComponentBase, IDisposable
         }
     }
 
-    private async Task OnSelectedMapChanging(MapEditor.MapChangingArgs eventArgs)
+    private async Task OnSelectedMapChangingAsync(MapEditor.MapChangingArgs eventArgs)
     {
         eventArgs.Cancel = !await this.AllowChangeAsync().ConfigureAwait(true);
         if (!eventArgs.Cancel)
@@ -157,16 +157,17 @@ public sealed class EditMap : ComponentBase, IDisposable
     private async ValueTask<bool> AllowChangeAsync()
     {
         var cancellationToken = this._disposeCts?.Token ?? default;
-        var persistenceContext = await this.GameConfigurationSource.GetContextAsync(cancellationToken).ConfigureAwait(true);
+        var persistenceContext = await this.GameConfigurationSource
+            .GetContextAsync(cancellationToken)
+            .ConfigureAwait(true);
+
         if (persistenceContext?.HasChanges is not true)
         {
             return true;
         }
 
-        var isConfirmed = await this.JavaScript.InvokeAsync<bool>(
-                "window.confirm",
-                cancellationToken,
-                Resources.UnsavedChangesQuestion)
+        var isConfirmed = await this.JavaScript
+            .InvokeAsync<bool>("window.confirm", cancellationToken, Resources.UnsavedChangesQuestion)
             .ConfigureAwait(true);
 
         if (!isConfirmed)
@@ -177,7 +178,10 @@ public sealed class EditMap : ComponentBase, IDisposable
         await this.GameConfigurationSource.DiscardChangesAsync().ConfigureAwait(true);
         this._maps = null;
 
-        // OnAfterRender will load the maps again ...
+        this._context = await this.GameConfigurationSource
+            .GetContextAsync(cancellationToken)
+            .ConfigureAwait(true);
+
         return true;
     }
 
@@ -190,15 +194,26 @@ public sealed class EditMap : ComponentBase, IDisposable
         {
             if (!cancellationToken.IsCancellationRequested)
             {
-                var gameConfig = await this.GameConfigurationSource.GetOwnerAsync(Guid.Empty, cancellationToken).ConfigureAwait(false);
+                var gameConfig = await this.GameConfigurationSource
+                    .GetOwnerAsync(Guid.Empty, cancellationToken)
+                    .ConfigureAwait(false);
+
                 try
                 {
                     this._maps = gameConfig.Maps.OrderBy(c => c.Number).ToList();
                 }
                 catch (Exception ex)
                 {
-                    this.Logger.LogError(ex, $"Could not load game maps: {ex.Message}{Environment.NewLine}{ex.StackTrace}");
-                    await this.ModalService.ShowMessageAsync(Resources.Error, Resources.CouldNotLoadMapDataCheckTheLogs).ConfigureAwait(false);
+                    this.Logger.LogError(
+                        ex,
+                        "Could not load game maps: {Message}{NewLine}{StackTrace}",
+                        ex.Message,
+                        Environment.NewLine,
+                        ex.StackTrace);
+
+                    await this.ModalService
+                        .ShowMessageAsync(Resources.Error, Resources.CouldNotLoadMapDataCheckTheLogs)
+                        .ConfigureAwait(false);
                 }
 
                 await showModalTask.ConfigureAwait(false);
@@ -212,9 +227,8 @@ public sealed class EditMap : ComponentBase, IDisposable
         }
         catch (ObjectDisposedException)
         {
-            // Happens when the user navigated away (shouldn't happen with the modal loading indicator, but we check it anyway).
-            // It would be great to have an async api with cancellation token support in the persistence layer
-            // For the moment, we swallow the exception
+            // Happens when the user navigated away. The persistence layer does not
+            // yet have a cancellation token based async API so we swallow this.
         }
     }
 
@@ -229,8 +243,21 @@ public sealed class EditMap : ComponentBase, IDisposable
         }
         catch (Exception ex)
         {
-            this.Logger.LogError(ex, $"Error during saving");
+            this.Logger.LogError(ex, "Error during saving");
             this.ToastService.ShowError(string.Format(Resources.UnexpectedErrorCheckLogs, ex.Message));
         }
+    }
+
+    private void BuildMapEditorFragment(RenderTreeBuilder builder)
+    {
+        builder.OpenComponent<MapEditor>(15);
+        builder.AddAttribute(16, nameof(MapEditor.Maps), this._maps);
+        builder.AddAttribute(17, nameof(MapEditor.SelectedMapId), this.SelectedMapId);
+        builder.AddAttribute(18, nameof(MapEditor.OnValidSubmit), EventCallback.Factory.Create(this, this.SaveChangesAsync));
+        builder.AddAttribute(
+            19,
+            nameof(MapEditor.SelectedMapChanging),
+            EventCallback.Factory.Create<MapEditor.MapChangingArgs>(this, this.OnSelectedMapChangingAsync));
+        builder.CloseComponent();
     }
 }

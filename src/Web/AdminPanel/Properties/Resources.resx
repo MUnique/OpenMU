@@ -135,6 +135,24 @@
   <data name="Delete" xml:space="preserve">
     <value>Delete</value>
   </data>
+  <data name="Duplicate" xml:space="preserve">
+    <value>Duplicate</value>
+  </data>
+  <data name="DuplicatedSuccessfully" xml:space="preserve">
+    <value>Duplicated '{0}' successfully.</value>
+  </data>
+  <data name="CouldNotFindToDuplicate" xml:space="preserve">
+    <value>Couldn't find '{0}' to duplicate.</value>
+  </data>
+  <data name="TypeDoesNotSupportCloning" xml:space="preserve">
+    <value>Type '{0}' does not support cloning.</value>
+  </data>
+  <data name="FailedToClone" xml:space="preserve">
+    <value>Failed to clone '{0}'.</value>
+  </data>
+  <data name="ErrorDuplicating" xml:space="preserve">
+    <value>Error duplicating '{0}': {1}</value>
+  </data>
   <data name="CreateUser" xml:space="preserve">
     <value>Create User</value>
   </data>
@@ -542,5 +560,14 @@
   </data>
   <data name="GameServerCount" xml:space="preserve">
     <value>Game server count</value>
+  </data>
+  <data name="Character" xml:space="preserve">
+    <value>Character</value>
+  </data>
+  <data name="StartedAt" xml:space="preserve">
+    <value>Started At</value>
+  </data>
+  <data name="OfflineLeveling" xml:space="preserve">
+    <value>Offline Leveling</value>
   </data>
 </root>

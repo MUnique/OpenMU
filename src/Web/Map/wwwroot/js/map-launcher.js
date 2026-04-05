@@ -14,7 +14,16 @@ function CreateMap(serverId, mapId, containerId, appId) {
     System.import("MapApp")
         .then((module) => {
             console.log('MapApp module resolved');
-            window[appId] = new module.MapApp(stats, serverId, mapId, document.getElementById(containerId));
+            window[appId] = new module.MapApp(stats, serverId, mapId, document.getElementById(containerId), (data) => {
+                const info = document.getElementById("selected_info");
+                if (info) {
+                    info.style.display = "block";
+                    document.getElementById("objectData_name").textContent = data.name.split(" - Id:")[0];
+                    document.getElementById("objectData_id").textContent = data.id;
+                    document.getElementById("objectData_x").textContent = data.x;
+                    document.getElementById("objectData_y").textContent = data.y;
+                }
+            });
         });
 }
 

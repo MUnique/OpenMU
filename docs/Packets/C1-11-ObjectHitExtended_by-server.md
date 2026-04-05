@@ -16,6 +16,8 @@ The damage is shown at the object which received the hit.
 | 1 | 1 |    Byte   |   16   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0x11  | Packet header - packet type identifier |
 | 3 << 0 | 4 bit | DamageKind |  | Kind |
+| 3 << 4 | 1 bit | Boolean |  | IsRageFighterStreakHit |
+| 3 << 5 | 1 bit | Boolean |  | IsRageFighterStreakFinalHit |
 | 3 << 6 | 1 bit | Boolean |  | IsDoubleDamage |
 | 3 << 7 | 1 bit | Boolean |  | IsTripleDamage |
 | 4 | 2 | ShortLittleEndian |  | ObjectId |
@@ -34,7 +36,7 @@ Defines the kind of the damage.
 | 1 | IgnoreDefenseCyan | Cyan color, usually used by ignore defense damage. |
 | 2 | ExcellentLightGreen | Light green color, usually used by excellent damage. |
 | 3 | CriticalBlue | Blue color, usually used by critical damage. |
-| 4 | LightPink | Light pink color. |
+| 4 | ReflectedLightPink | Light pink color, usually used by reflected damage. |
 | 5 | PoisonDarkGreen | Dark green color, usually used by poison damage. |
-| 6 | ReflectedDarkPink | Dark pink color, usually used by reflected damage. |
+| 6 | DarkPink | Dark pink color. |
 | 7 | White | White color. |

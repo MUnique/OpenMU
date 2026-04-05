@@ -84,6 +84,8 @@ public static class WebApplicationExtensions
         services.AddScoped<NavigationHistory>();
         services.AddScoped<LoggedInAccountService>();
         services.AddScoped<IDataService<LoggedInAccount>>(serviceProvider => serviceProvider.GetService<LoggedInAccountService>()!);
+        services.AddScoped<OfflineLevelingAccountService>();
+        services.AddScoped<IDataService<OfflineLevelingAccount>>(serviceProvider => serviceProvider.GetService<OfflineLevelingAccountService>()!);
 
         StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configuration);
         return builder;

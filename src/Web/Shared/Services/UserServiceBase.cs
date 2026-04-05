@@ -9,7 +9,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using Blazored.Modal;
 using Blazored.Modal.Services;
-using MUnique.OpenMU.Web.Shared.Components.Form;
+using MUnique.OpenMU.Web.Shared.Components.Form.Modal;
 using MUnique.OpenMU.Web.Shared.Properties;
 
 /// <summary>
