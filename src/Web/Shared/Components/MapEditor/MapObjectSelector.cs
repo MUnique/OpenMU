@@ -40,6 +40,23 @@ public sealed class MapObjectSelector
     }
 
     /// <summary>
+    /// Returns the most appropriate scroll target coordinates for the given map object.
+    /// For point spawns this is the center, for areas and gates this is the top left corner.
+    /// </summary>
+    /// <param name="obj">The map object to compute the scroll target for.</param>
+    /// <returns>A tuple of (X, Y) coordinates, or <see langword="null"/> if the type is not supported.</returns>
+    public static (float X, float Y)? GetScrollTarget(object obj)
+    {
+        return obj switch
+        {
+            MonsterSpawnArea spawn when spawn.IsPoint() => GetObjectCenter(spawn),
+            MonsterSpawnArea spawn => (spawn.X1, spawn.Y1),
+            Gate gate => (gate.X1, gate.Y1),
+            _ => null,
+        };
+    }
+
+    /// <summary>
     /// Returns the center map coordinates of the given map object.
     /// </summary>
     /// <param name="obj">The map object to compute the center for.</param>
@@ -48,6 +65,7 @@ public sealed class MapObjectSelector
     {
         return obj switch
         {
+            MonsterSpawnArea spawn when spawn.IsPoint() => (spawn.X1, spawn.Y1),
             MonsterSpawnArea spawn => ((spawn.X1 + spawn.X2) / 2.0f, (spawn.Y1 + spawn.Y2) / 2.0f),
             Gate gate => ((gate.X1 + gate.X2) / 2.0f, (gate.Y1 + gate.Y2) / 2.0f),
             _ => null,

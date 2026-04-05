@@ -11069,7 +11069,7 @@ mark {
 }
 
 .spawn, .spawn-single, .spawn-area {
-  background: rgba(138, 43, 226, 0.5);
+  background: rgba(138, 43, 226, 0.6);
 }
 
 .spawn-area {
@@ -11088,7 +11088,7 @@ mark {
   border-color: #fff !important;
   border-style: solid !important;
   border-width: 2px !important;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
   z-index: 20 !important;
 }
 
@@ -11186,10 +11186,4 @@ mark {
   pointer-events: none;
   user-select: none;
   z-index: 10;
-}
-
-.filtered-out {
-  opacity: 0.15;
-  filter: grayscale(100%);
-  pointer-events: none;
 }

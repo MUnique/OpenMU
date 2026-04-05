@@ -167,27 +167,27 @@
                 <div class="btn-group w-100 mb-1" role="group" aria-label="@Resources.TypeFilter">
                     <button type="button"
                             class="btn btn-sm @(this._activeFilter == ObjectTypeFilter.All ? "btn-primary" : "btn-outline-primary")"
-                            @onclick="@(() => this._activeFilter = ObjectTypeFilter.All)">
+                            @onclick="@(() => this.SetActiveFilter(ObjectTypeFilter.All))">
                         @Resources.All
                     </button>
                     <button type="button"
                             class="btn btn-sm @(this._activeFilter == ObjectTypeFilter.Monsters ? "btn-primary" : "btn-outline-primary")"
-                            @onclick="@(() => this._activeFilter = ObjectTypeFilter.Monsters)">
+                            @onclick="@(() => this.SetActiveFilter(ObjectTypeFilter.Monsters))">
                         @Resources.Monsters
                     </button>
                     <button type="button"
                             class="btn btn-sm @(this._activeFilter == ObjectTypeFilter.Npcs ? "btn-primary" : "btn-outline-primary")"
-                            @onclick="@(() => this._activeFilter = ObjectTypeFilter.Npcs)">
+                            @onclick="@(() => this.SetActiveFilter(ObjectTypeFilter.Npcs))">
                         @Resources.Npcs
                     </button>
                     <button type="button"
                             class="btn btn-sm @(this._activeFilter == ObjectTypeFilter.Gates ? "btn-primary" : "btn-outline-primary")"
-                            @onclick="@(() => this._activeFilter = ObjectTypeFilter.Gates)">
+                            @onclick="@(() => this.SetActiveFilter(ObjectTypeFilter.Gates))">
                         @Resources.Gates
                     </button>
                     <button type="button"
                             class="btn btn-sm @(this._activeFilter == ObjectTypeFilter.Others ? "btn-primary" : "btn-outline-primary")"
-                            @onclick="@(() => this._activeFilter = ObjectTypeFilter.Others)">
+                            @onclick="@(() => this.SetActiveFilter(ObjectTypeFilter.Others))">
                         @Resources.Others
                     </button>
                 </div>
@@ -208,19 +208,19 @@
                         disabled="@this._createMode"
                         @ref="_objectSelectRef">
                     <option value="@Guid.Empty" selected=@(this._focusedObject is null)>&lt;@Resources.NoSelection&gt;</option>
-                    @foreach (var enterGate in this.SelectedMap.EnterGates.Where(this.MatchesFilters))
+                    @foreach (var enterGate in this.SelectedMap.EnterGates.Where(g => this.MatchesFilters(g) && this.MatchesSearch(g)))
                     {
                         <option value="@enterGate.GetId()" selected=@(object.Equals(this._focusedObject, enterGate))>
                             @typeof(EnterGate).GetTypeCaption(): @enterGate.ToString()
                         </option>
                     }
-                    @foreach (var exitGate in this.SelectedMap.ExitGates.Where(this.MatchesFilters))
+                    @foreach (var exitGate in this.SelectedMap.ExitGates.Where(g => this.MatchesFilters(g) && this.MatchesSearch(g)))
                     {
                         <option value="@exitGate.GetId()" selected=@(object.Equals(this._focusedObject, exitGate))>
                             @typeof(ExitGate).GetTypeCaption(): @exitGate.ToString()
                         </option>
                     }
-                    @foreach (var spawn in this.SelectedMap.MonsterSpawns.Where(this.MatchesFilters))
+                    @foreach (var spawn in this.SelectedMap.MonsterSpawns.Where(s => this.MatchesFilters(s) && this.MatchesSearch(s)))
                     {
                         <option value="@spawn.GetId()" selected=@(object.Equals(this._focusedObject, spawn))>
                             @typeof(MonsterSpawnArea).GetTypeCaption(): @spawn.ToString()

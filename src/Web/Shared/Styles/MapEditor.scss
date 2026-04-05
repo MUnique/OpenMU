@@ -240,9 +240,3 @@ $map-host-size: 768px;
   user-select: none;
   z-index: 10;
 }
-
-.filtered-out {
-  opacity: 0.15;
-  filter: grayscale(100%);
-  pointer-events: none;
-}

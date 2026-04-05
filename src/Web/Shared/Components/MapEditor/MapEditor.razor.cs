@@ -46,8 +46,11 @@ public partial class MapEditor : IAsyncDisposable
     private IJSObjectReference? _jsModule;
     private bool _showGrid;
     private bool _isInitialized;
-
     private bool _createMode;
+    private bool _isDragging;
+    private bool _isPanning;
+    private bool _isRendering;
+
     private object? _focusedObject;
     private string _searchFilter = string.Empty;
     private ObjectTypeFilter _activeFilter = ObjectTypeFilter.All;
@@ -57,9 +60,6 @@ public partial class MapEditor : IAsyncDisposable
     private int _mouseMapX;
     private int _mouseMapY;
 
-    private bool _isDragging;
-    private bool _isPanning;
-    private bool _isRendering;
     private byte _dragStartX;
     private byte _dragStartY;
     private byte _dragObjX1;
@@ -198,6 +198,22 @@ public partial class MapEditor : IAsyncDisposable
         }
     }
 
+    private static bool SpawnMatchesFilter(MonsterSpawnArea spawn, ObjectTypeFilter filter)
+    {
+        var objectKind = spawn.MonsterDefinition?.ObjectKind;
+
+        return filter switch
+        {
+            ObjectTypeFilter.Monsters => objectKind == NpcObjectKind.Monster,
+            ObjectTypeFilter.Npcs => objectKind == NpcObjectKind.PassiveNpc || objectKind == NpcObjectKind.Guard,
+            ObjectTypeFilter.Others => objectKind == NpcObjectKind.Trap
+                                       || objectKind == NpcObjectKind.Statue
+                                       || objectKind == NpcObjectKind.SoccerBall
+                                       || objectKind == NpcObjectKind.Destructible,
+            _ => true,
+        };
+    }
+
     [SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
     private async void OnPropertyChanged(object? sender, PropertyChangedEventArgs args)
     {
@@ -216,11 +232,15 @@ public partial class MapEditor : IAsyncDisposable
         }
     }
 
-    /// <summary>
-    /// Returns <see langword="true"/> if the given object matches the current search filter.
-    /// </summary>
-    /// <param name="obj">The object to test against the search filter.</param>
-    /// <returns><see langword="true"/> if the object matches or the filter is empty.</returns>
+    private void SetActiveFilter(ObjectTypeFilter filter)
+    {
+        this._activeFilter = filter;
+        if (this._focusedObject is not null && !this.MatchesFilters(this._focusedObject))
+        {
+            this._focusedObject = null;
+        }
+    }
+
     private bool MatchesSearch(object? obj)
     {
         if (string.IsNullOrWhiteSpace(this._searchFilter))
@@ -232,47 +252,46 @@ public partial class MapEditor : IAsyncDisposable
             this._searchFilter, StringComparison.InvariantCultureIgnoreCase) ?? false;
     }
 
-    /// <summary>
-    /// Returns the number of objects in the object list, capped at <see cref="MaxObjectSelectSize"/>.
-    /// </summary>
-    /// <returns>The capped object count for the select element size attribute.</returns>
+    private bool MatchesFilters(object? obj)
+    {
+        return this._activeFilter switch
+        {
+            ObjectTypeFilter.All => true,
+            ObjectTypeFilter.Gates => obj is EnterGate or ExitGate,
+            _ => obj is MonsterSpawnArea spawn && SpawnMatchesFilter(spawn, this._activeFilter),
+        };
+    }
+
     private int GetObjectListSize()
     {
         var count = 1
-            + this.SelectedMap.EnterGates.Count(this.MatchesSearch)
-            + this.SelectedMap.ExitGates.Count(this.MatchesSearch)
-            + this.SelectedMap.MonsterSpawns.Count(this.MatchesSearch);
+            + this.SelectedMap.EnterGates.Count(g => this.MatchesFilters(g) && this.MatchesSearch(g))
+            + this.SelectedMap.ExitGates.Count(g => this.MatchesFilters(g) && this.MatchesSearch(g))
+            + this.SelectedMap.MonsterSpawns.Count(s => this.MatchesFilters(s) && this.MatchesSearch(s));
 
         return Math.Min(count, MaxObjectSelectSize);
     }
 
-    /// <summary>
-    /// Returns all map objects as a flat sequence for rendering and selection.
-    /// </summary>
-    /// <returns>A sequence of enter gates, exit gates, and monster spawns.</returns>
     private IEnumerable<object> GetMapObjects()
     {
-        return this.SelectedMap.EnterGates.OfType<object>()
-            .Concat(this.SelectedMap.ExitGates)
-            .Concat(this.SelectedMap.MonsterSpawns);
+        return this._activeFilter switch
+        {
+            ObjectTypeFilter.All =>
+                this.SelectedMap.EnterGates.Cast<object>()
+                    .Concat(this.SelectedMap.ExitGates)
+                    .Concat(this.SelectedMap.MonsterSpawns),
+            ObjectTypeFilter.Gates =>
+                this.SelectedMap.EnterGates.Cast<object>()
+                    .Concat(this.SelectedMap.ExitGates),
+            _ =>
+                this.SelectedMap.MonsterSpawns
+                    .Where(s => SpawnMatchesFilter(s, this._activeFilter)),
+        };
     }
 
-    /// <summary>
-    /// Returns a display string for the size of the focused map object,
-    /// or <see langword="null"/> if the object does not have a displayable size.
-    /// </summary>
-    /// <param name="obj">The map object to compute the size for.</param>
-    /// <returns>A formatted size string, or <see langword="null"/>.</returns>
     private string? GetObjectSize(object obj) =>
         MapObjectSelector.GetObjectSize(obj, this._focusedObject);
 
-    /// <summary>
-    /// Returns <see langword="true"/> if resize handles should be shown for the given object.
-    /// </summary>
-    /// <param name="obj">The map object to check.</param>
-    /// <returns>
-    /// <see langword="true"/> if the object is focused and is not a point spawn.
-    /// </returns>
     private bool ShowResizers(object obj)
     {
         if (obj is MonsterSpawnArea spawn && spawn.IsPoint())
@@ -283,17 +302,6 @@ public partial class MapEditor : IAsyncDisposable
         return obj == this._focusedObject;
     }
 
-    /// <summary>
-    /// Returns <see langword="true"/> if a direction arrow should be shown for the given object.
-    /// </summary>
-    /// <param name="obj">The map object to check.</param>
-    /// <param name="spawn">
-    /// When this method returns <see langword="true"/>, contains the focused point spawn;
-    /// otherwise <see langword="null"/>.
-    /// </param>
-    /// <returns>
-    /// <see langword="true"/> if the object is a focused point spawn; otherwise <see langword="false"/>.
-    /// </returns>
     private bool ShowArrow(object obj, [MaybeNullWhen(false)] out MonsterSpawnArea spawn)
     {
         spawn = obj as MonsterSpawnArea;
@@ -302,69 +310,15 @@ public partial class MapEditor : IAsyncDisposable
                && spawn.IsPoint();
     }
 
-    /// <summary>
-    /// Returns the CSS class string for the given map object.
-    /// </summary>
-    /// <param name="obj">The map object to style.</param>
-    /// <returns>A CSS class string appropriate for the object type and focus state.</returns>
-    private string GetCssClass(object obj)
-    {
-        var css = this._styleService.GetCssClass(obj, this._focusedObject);
-        if (!this.MatchesFilters(obj))
-        {
-            css += " filtered-out";
-        }
+    private string GetCssClass(object obj) =>
+        this._styleService.GetCssClass(obj, this._focusedObject);
 
-        return css;
-    }
-
-    /// <summary>
-    /// Returns <see langword="true"/> if the given object passes the active type filter and search filter.
-    /// </summary>
-    /// <param name="obj">The object to test.</param>
-    /// <returns><see langword="true"/> if the object should be shown.</returns>
-    private bool MatchesFilters(object? obj)
-    {
-        if (!this.MatchesSearch(obj))
-        {
-            return false;
-        }
-
-        var isSpawn = obj is MonsterSpawnArea;
-        var objectKind = (obj as MonsterSpawnArea)?.MonsterDefinition?.ObjectKind;
-
-        return this._activeFilter switch
-        {
-            ObjectTypeFilter.Monsters => isSpawn && objectKind == NpcObjectKind.Monster,
-            ObjectTypeFilter.Npcs => isSpawn && (objectKind == NpcObjectKind.PassiveNpc || objectKind == NpcObjectKind.Guard),
-            ObjectTypeFilter.Gates => obj is EnterGate or ExitGate,
-            ObjectTypeFilter.Others => isSpawn && (objectKind == NpcObjectKind.Trap
-                                           || objectKind == NpcObjectKind.Statue
-                                           || objectKind == NpcObjectKind.SoccerBall
-                                           || objectKind == NpcObjectKind.Destructible),
-            _ => true,
-        };
-    }
-
-    /// <summary>
-    /// Returns the CSS background-size style for the map grid overlay.
-    /// </summary>
-    /// <returns>An inline CSS style string for the grid background size.</returns>
     private string GetGridStyle() =>
         this._coordinateService.GetGridStyle(this.EffectiveScale);
 
-    /// <summary>
-    /// Returns the inline CSS size and position style for the given map object.
-    /// </summary>
-    /// <param name="obj">The map object to compute styles for.</param>
-    /// <returns>An inline CSS style string defining width, height, top, and left.</returns>
     private string GetSizeAndPositionStyle(object obj) =>
         this._styleService.GetSizeAndPositionStyle(obj, this.EffectiveScale);
 
-    /// <summary>
-    /// Handles selection of a map object from the object list dropdown.
-    /// </summary>
-    /// <param name="args">The change event args containing the selected object ID.</param>
     private async Task OnObjectSelectedAsync(ChangeEventArgs args)
     {
         var obj = this.SelectedMap.EnterGates
@@ -374,27 +328,28 @@ public partial class MapEditor : IAsyncDisposable
                   ?? this.SelectedMap.MonsterSpawns
                       .FirstOrDefault(g => g.GetId().ToString() == args.Value?.ToString());
 
+        if (obj is not null && !this.MatchesFilters(obj))
+        {
+            return;
+        }
+
         this._focusedObject = obj;
 
         if (obj is not null && this._jsModule is not null)
         {
-            var center = MapObjectSelector.GetObjectCenter(obj);
-            if (center is { } c)
+            var scrollTarget = MapObjectSelector.GetScrollTarget(obj);
+            if (scrollTarget is { } st)
             {
                 await this._jsModule.InvokeVoidAsync(
                     "centerOn",
                     this._mapHostRef,
-                    c.X,
-                    c.Y,
+                    st.X,
+                    st.Y,
                     MapCoordinateService.BaseScale).ConfigureAwait(true);
             }
         }
     }
 
-    /// <summary>
-    /// Handles a mouse down event on the map, initiating dragging or panning.
-    /// </summary>
-    /// <param name="args">The mouse event args.</param>
     private async Task OnMapMouseDownAsync(MouseEventArgs args)
     {
         if (args.Button != 0 || this._createMode || this._jsModule is null || this._zoomManager is null)
@@ -457,11 +412,6 @@ public partial class MapEditor : IAsyncDisposable
         }
     }
 
-    /// <summary>
-    /// Handles mouse move events on the map, updating coordinates and applying
-    /// dragging, resizing, or panning as appropriate.
-    /// </summary>
-    /// <param name="args">The mouse event args.</param>
     private async Task OnMouseMoveAsync(MouseEventArgs args)
     {
         if (this._jsModule is null || this._zoomManager is null)
@@ -516,10 +466,6 @@ public partial class MapEditor : IAsyncDisposable
         }
     }
 
-    /// <summary>
-    /// Handles the mouse up event on the map, ending any drag, resize, or pan operation.
-    /// </summary>
-    /// <param name="args">The mouse event args.</param>
     private void OnMapMouseUp(MouseEventArgs args)
     {
         this._resizerPosition = null;
@@ -527,20 +473,11 @@ public partial class MapEditor : IAsyncDisposable
         this._isPanning = false;
     }
 
-    /// <summary>
-    /// Handles the mouse leave event on the map, ending any active panning.
-    /// </summary>
-    /// <param name="args">The mouse event args.</param>
     private void OnMapMouseLeave(MouseEventArgs args)
     {
         this._isPanning = false;
     }
 
-    /// <summary>
-    /// Applies drag movement to the focused object, keeping it within map bounds.
-    /// </summary>
-    /// <param name="x">The current map X coordinate of the mouse.</param>
-    /// <param name="y">The current map Y coordinate of the mouse.</param>
     private void OnObjectDragging(byte x, byte y)
     {
         int dx = x - this._dragStartX;
@@ -571,12 +508,6 @@ public partial class MapEditor : IAsyncDisposable
         }
     }
 
-    /// <summary>
-    /// Applies resize logic to a <see cref="MonsterSpawnArea"/> based on the active resizer handle.
-    /// </summary>
-    /// <param name="spawnArea">The spawn area being resized.</param>
-    /// <param name="x">The current map X coordinate of the mouse.</param>
-    /// <param name="y">The current map Y coordinate of the mouse.</param>
     private void OnSpawnAreaResizing(MonsterSpawnArea spawnArea, byte x, byte y)
     {
         switch (this._resizerPosition)
@@ -600,12 +531,6 @@ public partial class MapEditor : IAsyncDisposable
         }
     }
 
-    /// <summary>
-    /// Applies resize logic to a <see cref="Gate"/> based on the active resizer handle.
-    /// </summary>
-    /// <param name="gate">The gate being resized.</param>
-    /// <param name="x">The current map X coordinate of the mouse.</param>
-    /// <param name="y">The current map Y coordinate of the mouse.</param>
     private void OnGateResizing(Gate gate, byte x, byte y)
     {
         switch (this._resizerPosition)
@@ -629,10 +554,6 @@ public partial class MapEditor : IAsyncDisposable
         }
     }
 
-    /// <summary>
-    /// Returns the direction name of the focused spawn, if applicable.
-    /// </summary>
-    /// <returns>A lowercase direction name, or <see langword="null"/> if the focused object is not a spawn.</returns>
     private string? GetFocusedRotation()
     {
         if (this._focusedObject is MonsterSpawnArea spawn)
@@ -643,10 +564,6 @@ public partial class MapEditor : IAsyncDisposable
         return null;
     }
 
-    /// <summary>
-    /// Handles a mouse wheel event to zoom the map in or out.
-    /// </summary>
-    /// <param name="args">The wheel event args.</param>
     private async Task OnWheelAsync(WheelEventArgs args)
     {
         if (this._zoomManager is null)
@@ -657,9 +574,6 @@ public partial class MapEditor : IAsyncDisposable
         await this._zoomManager.HandleWheelAsync(args.DeltaY, args.ClientX, args.ClientY).ConfigureAwait(true);
     }
 
-    /// <summary>
-    /// Zooms the map in by one step.
-    /// </summary>
     private async Task ZoomInAsync()
     {
         if (this._zoomManager is null)
@@ -670,9 +584,6 @@ public partial class MapEditor : IAsyncDisposable
         await this._zoomManager.ZoomInAsync().ConfigureAwait(true);
     }
 
-    /// <summary>
-    /// Zooms the map out by one step.
-    /// </summary>
     private async Task ZoomOutAsync()
     {
         if (this._zoomManager is null)
@@ -683,9 +594,6 @@ public partial class MapEditor : IAsyncDisposable
         await this._zoomManager.ZoomOutAsync().ConfigureAwait(true);
     }
 
-    /// <summary>
-    /// Resets the zoom level to fit the map within the viewport.
-    /// </summary>
     private async Task ResetZoomAsync()
     {
         if (this._zoomManager is null)
@@ -696,34 +604,25 @@ public partial class MapEditor : IAsyncDisposable
         await this._zoomManager.ResetZoomAsync().ConfigureAwait(true);
     }
 
-    /// <summary>
-    /// Synchronizes the object select element's value to match the focused object.
-    /// </summary>
     private async Task UpdateSelectValueAsync()
     {
-        if (this._jsModule is not null && this._focusedObject is not null)
+        if (this._jsModule is null)
         {
-            var id = this._focusedObject switch
-            {
-                EnterGate gate => gate.GetId(),
-                ExitGate gate => gate.GetId(),
-                MonsterSpawnArea spawn => spawn.GetId(),
-                _ => Guid.Empty,
-            };
+            return;
+        }
 
-            await this._jsModule.InvokeVoidAsync(
-                "setSelectValue", this._objectSelectRef, id.ToString()).ConfigureAwait(true);
-        }
-        else if (this._jsModule is not null)
+        var id = this._focusedObject switch
         {
-            await this._jsModule.InvokeVoidAsync(
-                "setSelectValue", this._objectSelectRef, Guid.Empty.ToString()).ConfigureAwait(true);
-        }
+            EnterGate gate => gate.GetId(),
+            ExitGate gate => gate.GetId(),
+            MonsterSpawnArea spawn => spawn.GetId(),
+            _ => Guid.Empty,
+        };
+
+        await this._jsModule.InvokeVoidAsync(
+            "setSelectValue", this._objectSelectRef, id.ToString()).ConfigureAwait(true);
     }
 
-    /// <summary>
-    /// Creates a new <see cref="MonsterSpawnArea"/> and enters creation mode.
-    /// </summary>
     private void CreateNewSpawnArea()
     {
         this._createMode = true;
@@ -731,9 +630,6 @@ public partial class MapEditor : IAsyncDisposable
         this._history.RecordCreation(this.SelectedMap, this._focusedObject);
     }
 
-    /// <summary>
-    /// Creates a new <see cref="EnterGate"/> and enters creation mode.
-    /// </summary>
     private void CreateNewEnterGate()
     {
         this._createMode = true;
@@ -741,9 +637,6 @@ public partial class MapEditor : IAsyncDisposable
         this._history.RecordCreation(this.SelectedMap, this._focusedObject);
     }
 
-    /// <summary>
-    /// Creates a new <see cref="ExitGate"/> and enters creation mode.
-    /// </summary>
     private void CreateNewExitGate()
     {
         this._createMode = true;
@@ -751,9 +644,6 @@ public partial class MapEditor : IAsyncDisposable
         this._history.RecordCreation(this.SelectedMap, this._focusedObject);
     }
 
-    /// <summary>
-    /// Cancels the current creation operation, removing the newly created object.
-    /// </summary>
     private void CancelCreation()
     {
         if (!this._createMode)
@@ -765,10 +655,6 @@ public partial class MapEditor : IAsyncDisposable
         this.RemoveFocusedObject();
     }
 
-    /// <summary>
-    /// Removes the currently focused object from the map.
-    /// The deletion is not persisted until the user explicitly saves.
-    /// </summary>
     private void RemoveFocusedObject()
     {
         if (this._focusedObject is null)
@@ -799,37 +685,32 @@ public partial class MapEditor : IAsyncDisposable
         this._focusedObject = null;
     }
 
-    /// <summary>
-    /// Handles the map selection dropdown change, loading the newly selected map.
-    /// </summary>
-    /// <param name="args">The change event args containing the selected map ID.</param>
     private async Task OnMapSelectedAsync(ChangeEventArgs args)
     {
-        if (args.Value is string idString && Guid.TryParse(idString, out var mapId))
+        if (args.Value is not string idString || !Guid.TryParse(idString, out var mapId))
         {
-            var cancelEventArgs = new MapChangingArgs(mapId);
-            if (this.SelectedMapChanging is { } callback)
-            {
-                await callback.InvokeAsync(cancelEventArgs).ConfigureAwait(true);
-            }
-
-            if (cancelEventArgs.Cancel)
-            {
-                return;
-            }
-
-            this.SelectedMap = this.Maps.First(m => m.GetId() == mapId);
-            this._focusedObject = null;
-            this._isInitialized = false;
-            this._zoomManager = null;
-            this._history.Clear();
-            this._pendingDeletions.Clear();
+            return;
         }
+
+        var cancelEventArgs = new MapChangingArgs(mapId);
+        if (this.SelectedMapChanging is { } callback)
+        {
+            await callback.InvokeAsync(cancelEventArgs).ConfigureAwait(true);
+        }
+
+        if (cancelEventArgs.Cancel)
+        {
+            return;
+        }
+
+        this.SelectedMap = this.Maps.First(m => m.GetId() == mapId);
+        this._focusedObject = null;
+        this._isInitialized = false;
+        this._zoomManager = null;
+        this._history.Clear();
+        this._pendingDeletions.Clear();
     }
 
-    /// <summary>
-    /// Duplicates the currently focused object with a positional offset.
-    /// </summary>
     private void DuplicateFocusedObject()
     {
         if (this._focusedObject is null)
@@ -845,9 +726,6 @@ public partial class MapEditor : IAsyncDisposable
         }
     }
 
-    /// <summary>
-    /// Undoes the most recent map edit operation.
-    /// </summary>
     private void UndoLastAction()
     {
         var affected = this._history.Undo();
@@ -859,9 +737,6 @@ public partial class MapEditor : IAsyncDisposable
         this._focusedObject = affected;
     }
 
-    /// <summary>
-    /// Saves all pending changes to the persistence context, including deferred deletions.
-    /// </summary>
     private async Task SaveAsync()
     {
         foreach (var obj in this._pendingDeletions)
@@ -870,6 +745,7 @@ public partial class MapEditor : IAsyncDisposable
         }
 
         this._pendingDeletions.Clear();
+        this._history.Clear();
 
         if (this.OnValidSubmit.HasDelegate)
         {
@@ -877,10 +753,6 @@ public partial class MapEditor : IAsyncDisposable
         }
     }
 
-    /// <summary>
-    /// Handles the resizer position being set when a resize handle is activated.
-    /// </summary>
-    /// <param name="position">The resizer handle position that was activated, or <see langword="null"/> to stop resizing.</param>
     private void OnStartResizing(Resizers.ResizerPosition? position)
     {
         if (position is not null && this._focusedObject is not null)
