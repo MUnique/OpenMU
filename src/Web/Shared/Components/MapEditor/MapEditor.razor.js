@@ -149,11 +149,6 @@ export function handleWheel(element, deltaY, clientX, clientY) {
     const zoomDelta = -deltaY * sensitivity;
     const newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, oldZoom * (1.0 + zoomDelta)));
 
-    const zoomThreshold = 1e-4;
-    if (Math.abs(newZoom - oldZoom) < zoomThreshold) {
-        return { zoomLevel: oldZoom, handled: false };
-    }
-
     const rect = element.getBoundingClientRect();
     const mouseX = clientX - rect.left;
     const mouseY = clientY - rect.top;
@@ -191,11 +186,6 @@ export function zoomTo(element, newZoom) {
 
     const oldZoom = _getZoomLevel(element);
     const clampedZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, newZoom));
-
-    const zoomThreshold = 1e-4;
-    if (Math.abs(clampedZoom - oldZoom) < zoomThreshold) {
-        return oldZoom;
-    }
 
     const rect = element.getBoundingClientRect();
     const centerX = rect.width / 2;

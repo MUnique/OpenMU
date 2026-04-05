@@ -225,7 +225,7 @@ System.register("Attack", ["three", "tween", "Queue"], function (exports_4, cont
 });
 System.register("NameLabel", ["three"], function (exports_5, context_5) {
     "use strict";
-    var THREE, NameLabel;
+    var THREE, CANVAS_WIDTH, CANVAS_HEIGHT, LABEL_SCALE_X, LABEL_SCALE_Y, LABEL_SCALE_Z, CLEAR_X, CLEAR_Y, SCALE_MULTIPLIER, NameLabel;
     var __moduleName = context_5 && context_5.id;
     return {
         setters: [
@@ -234,14 +234,25 @@ System.register("NameLabel", ["three"], function (exports_5, context_5) {
             }
         ],
         execute: function () {
+            CANVAS_WIDTH = 512;
+            CANVAS_HEIGHT = 64;
+            LABEL_SCALE_X = 40;
+            LABEL_SCALE_Y = 6;
+            LABEL_SCALE_Z = 1;
+            CLEAR_X = 0;
+            CLEAR_Y = 0;
+            SCALE_MULTIPLIER = 8;
             NameLabel = (function (_super) {
                 __extends(NameLabel, _super);
                 function NameLabel() {
                     var _this = this;
                     var canvas = document.createElement("canvas");
-                    canvas.width = 512;
-                    canvas.height = 64;
+                    canvas.width = CANVAS_WIDTH;
+                    canvas.height = CANVAS_HEIGHT;
                     var context = canvas.getContext("2d");
+                    if (!context) {
+                        throw new Error("Failed to get 2D context");
+                    }
                     var texture = new THREE.CanvasTexture(canvas);
                     var material = new THREE.SpriteMaterial({ map: texture, transparent: true });
                     _this = _super.call(this, material) || this;
@@ -249,7 +260,7 @@ System.register("NameLabel", ["three"], function (exports_5, context_5) {
                     _this.canvas = canvas;
                     _this.context = context;
                     _this.texture = texture;
-                    _this.scale.set(40, 6, 1);
+                    _this.scale.set(LABEL_SCALE_X, LABEL_SCALE_Y, LABEL_SCALE_Z);
                     _this.visible = false;
                     return _this;
                 }
@@ -275,8 +286,8 @@ System.register("NameLabel", ["three"], function (exports_5, context_5) {
                     canvas.width = this.nextPowerOfTwo(labelWidth + padding * 2);
                     canvas.height = labelHeight + padding * 2;
                     ctx.font = "bold 28px Consolas, monospace";
-                    this.scale.set((canvas.width / canvas.height) * 8, 8, 1);
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    this.scale.set((canvas.width / canvas.height) * SCALE_MULTIPLIER, SCALE_MULTIPLIER, LABEL_SCALE_Z);
+                    ctx.clearRect(CLEAR_X, CLEAR_Y, canvas.width, canvas.height);
                     var x = (canvas.width - labelWidth) / 2;
                     var y = (canvas.height - labelHeight) / 2;
                     var radius = 8;
@@ -310,7 +321,7 @@ System.register("NameLabel", ["three"], function (exports_5, context_5) {
 });
 System.register("Attackable", ["three", "tween", "NameLabel"], function (exports_6, context_6) {
     "use strict";
-    var THREE, tween_2, NameLabel_1, Attackable, attackableAlphaMapTexture;
+    var THREE, tween_2, NameLabel_1, NAME_LABEL_Z_POSITION, NAME_INDEX, Attackable, attackableAlphaMapTexture;
     var __moduleName = context_6 && context_6.id;
     return {
         setters: [
@@ -325,6 +336,8 @@ System.register("Attackable", ["three", "tween", "NameLabel"], function (exports
             }
         ],
         execute: function () {
+            NAME_LABEL_Z_POSITION = 200;
+            NAME_INDEX = 0;
             Attackable = (function (_super) {
                 __extends(Attackable, _super);
                 function Attackable(data, geometry, material) {
@@ -332,12 +345,12 @@ System.register("Attackable", ["three", "tween", "NameLabel"], function (exports
                     _this.data = data;
                     _this.moveTween = null;
                     _this.nameLabel = new NameLabel_1.NameLabel();
-                    _this.nameLabel.position.z = 200;
+                    _this.nameLabel.position.z = NAME_LABEL_Z_POSITION;
                     _this.add(_this.nameLabel);
                     return _this;
                 }
                 Attackable.prototype.showLabel = function () {
-                    this.nameLabel.show(this.data.name.split(" - Id:")[0]);
+                    this.nameLabel.show(this.data.name.split(" - Id:")[NAME_INDEX]);
                 };
                 Attackable.prototype.hideLabel = function () {
                     this.nameLabel.hide();
@@ -791,13 +804,10 @@ System.register("WorldObjectPicker", ["three"], function (exports_11, context_11
                         mouse.y = -(mouseEvent.offsetY / worldCanvas.clientHeight) * 2 + 1;
                         raycaster.setFromCamera(mouse, camera);
                         var intersects = raycaster.intersectObjects(worldMesh.children, true);
-                        if (intersects.length > 0) {
-                            var data = _this.extractObjectData(intersects[0]);
-                            onHit(data);
-                        }
-                        else {
-                            onHit(null);
-                        }
+                        var data = intersects.length
+                            ? _this.extractObjectData(intersects[0])
+                            : null;
+                        onHit(data);
                     };
                     worldCanvas.addEventListener("click", function (mouseEvent) {
                         pick(mouseEvent, function (data) {

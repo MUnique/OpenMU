@@ -198,22 +198,6 @@ public partial class MapEditor : IAsyncDisposable
         }
     }
 
-    private static bool SpawnMatchesFilter(MonsterSpawnArea spawn, ObjectTypeFilter filter)
-    {
-        var objectKind = spawn.MonsterDefinition?.ObjectKind;
-
-        return filter switch
-        {
-            ObjectTypeFilter.Monsters => objectKind == NpcObjectKind.Monster,
-            ObjectTypeFilter.Npcs => objectKind == NpcObjectKind.PassiveNpc || objectKind == NpcObjectKind.Guard,
-            ObjectTypeFilter.Others => objectKind == NpcObjectKind.Trap
-                                       || objectKind == NpcObjectKind.Statue
-                                       || objectKind == NpcObjectKind.SoccerBall
-                                       || objectKind == NpcObjectKind.Destructible,
-            _ => true,
-        };
-    }
-
     [SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
     private async void OnPropertyChanged(object? sender, PropertyChangedEventArgs args)
     {
@@ -235,7 +219,7 @@ public partial class MapEditor : IAsyncDisposable
     private void SetActiveFilter(ObjectTypeFilter filter)
     {
         this._activeFilter = filter;
-        if (this._focusedObject is not null && !this.MatchesFilters(this._focusedObject))
+        if (this._focusedObject is not null && !MapObjectSelector.MatchesFilters(this._focusedObject, this._activeFilter))
         {
             this._focusedObject = null;
         }
@@ -252,22 +236,12 @@ public partial class MapEditor : IAsyncDisposable
             this._searchFilter, StringComparison.InvariantCultureIgnoreCase) ?? false;
     }
 
-    private bool MatchesFilters(object? obj)
-    {
-        return this._activeFilter switch
-        {
-            ObjectTypeFilter.All => true,
-            ObjectTypeFilter.Gates => obj is EnterGate or ExitGate,
-            _ => obj is MonsterSpawnArea spawn && SpawnMatchesFilter(spawn, this._activeFilter),
-        };
-    }
-
     private int GetObjectListSize()
     {
         var count = 1
-            + this.SelectedMap.EnterGates.Count(g => this.MatchesFilters(g) && this.MatchesSearch(g))
-            + this.SelectedMap.ExitGates.Count(g => this.MatchesFilters(g) && this.MatchesSearch(g))
-            + this.SelectedMap.MonsterSpawns.Count(s => this.MatchesFilters(s) && this.MatchesSearch(s));
+            + this.SelectedMap.EnterGates.Count(g => MapObjectSelector.MatchesFilters(g, this._activeFilter) && this.MatchesSearch(g))
+            + this.SelectedMap.ExitGates.Count(g => MapObjectSelector.MatchesFilters(g, this._activeFilter) && this.MatchesSearch(g))
+            + this.SelectedMap.MonsterSpawns.Count(s => MapObjectSelector.MatchesFilters(s, this._activeFilter) && this.MatchesSearch(s));
 
         return Math.Min(count, MaxObjectSelectSize);
     }
@@ -285,7 +259,7 @@ public partial class MapEditor : IAsyncDisposable
                     .Concat(this.SelectedMap.ExitGates),
             _ =>
                 this.SelectedMap.MonsterSpawns
-                    .Where(s => SpawnMatchesFilter(s, this._activeFilter)),
+                    .Where(s => MapObjectSelector.MatchesFilters(s, this._activeFilter)),
         };
     }
 
@@ -328,7 +302,7 @@ public partial class MapEditor : IAsyncDisposable
                   ?? this.SelectedMap.MonsterSpawns
                       .FirstOrDefault(g => g.GetId().ToString() == args.Value?.ToString());
 
-        if (obj is not null && !this.MatchesFilters(obj))
+        if (obj is not null && !MapObjectSelector.MatchesFilters(obj, this._activeFilter))
         {
             return;
         }
@@ -375,7 +349,8 @@ public partial class MapEditor : IAsyncDisposable
         }
 
         var (x, y) = coords.Value;
-        var objectAtPosition = this._objectSelector.GetObjectAtPosition(this.SelectedMap, x, y);
+        var objectAtPosition = this._objectSelector.GetObjectAtPosition(
+            this.SelectedMap, x, y, this._activeFilter);
 
         if (objectAtPosition is not null)
         {
@@ -399,6 +374,11 @@ public partial class MapEditor : IAsyncDisposable
                 this._dragObjY1 = gate.Y1;
                 this._dragObjX2 = gate.X2;
                 this._dragObjY2 = gate.Y2;
+            }
+            else
+            {
+                // Other object types (e.g. single-tile objects) don't have rectangular
+                // drag coordinates; only the top-left position is moved in OnObjectDragging.
             }
 
             await this.UpdateSelectValueAsync().ConfigureAwait(true);
@@ -441,6 +421,11 @@ public partial class MapEditor : IAsyncDisposable
             else if (this._focusedObject is Gate gate)
             {
                 this.OnGateResizing(gate, x, y);
+            }
+            else
+            {
+                // Other object types don't support corner-resizing;
+                // they are moved via dragging handled separately.
             }
 
             this.NotificationService.NotifyChange(this._focusedObject, null);

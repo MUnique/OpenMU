@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.Web.Shared.Components.MapEditor;
 /// <summary>
 /// Defines the available object type filters for the map object list.
 /// </summary>
-internal enum ObjectTypeFilter
+public enum ObjectTypeFilter
 {
     /// <summary>All object types are shown.</summary>
     All,

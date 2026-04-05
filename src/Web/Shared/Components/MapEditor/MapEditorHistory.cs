@@ -180,6 +180,7 @@ public sealed class MapEditorHistory
                     this._map.ExitGates.Remove(exitGate);
                     break;
                 default:
+                    // Unsupported object type.
                     break;
             }
 
@@ -212,6 +213,7 @@ public sealed class MapEditorHistory
                     this._map.ExitGates.Add(exitGate);
                     break;
                 default:
+                    // Unsupported object type.
                     break;
             }
 

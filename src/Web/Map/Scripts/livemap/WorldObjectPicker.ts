@@ -20,12 +20,10 @@ export class WorldObjectPicker {
             mouse.y = -(mouseEvent.offsetY / worldCanvas.clientHeight) * 2 + 1;
             raycaster.setFromCamera(mouse, camera);
             const intersects = raycaster.intersectObjects(worldMesh.children, true);
-            if (intersects.length > 0) {
-                const data = this.extractObjectData(intersects[0]);
-                onHit(data);
-            } else {
-                onHit(null);
-            }
+            const data = intersects.length
+                ? this.extractObjectData(intersects[0])
+                : null;
+            onHit(data);
         };
 
         worldCanvas.addEventListener("click", (mouseEvent: MouseEvent) => {

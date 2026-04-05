@@ -73,37 +73,61 @@ public sealed class MapObjectSelector
     }
 
     /// <summary>
+    /// Determines whether the given object is visible under the specified filter.
+    /// </summary>
+    /// <param name="obj">The map object to test.</param>
+    /// <param name="filter">The active object type filter.</param>
+    /// <returns><see langword="true"/> if the object should be considered visible.</returns>
+    public static bool MatchesFilters(object? obj, ObjectTypeFilter filter)
+    {
+        return filter switch
+        {
+            ObjectTypeFilter.All => true,
+            ObjectTypeFilter.Gates => obj is EnterGate or ExitGate,
+            _ => obj is MonsterSpawnArea spawn && SpawnMatchesFilter(spawn, filter),
+        };
+    }
+
+    /// <summary>
     /// Returns the map object at the specified coordinates, giving priority
     /// to point spawns over area spawns, and spawns over gates.
     /// </summary>
     /// <param name="map">The map definition containing all objects to test.</param>
     /// <param name="x">The map X coordinate to test.</param>
     /// <param name="y">The map Y coordinate to test.</param>
+    /// <param name="filter">The active object type filter to apply.</param>
     /// <returns>
     /// The best matching <see cref="MonsterSpawnArea"/>, <see cref="ExitGate"/>,
     /// or <see cref="EnterGate"/> at the position; or <see langword="null"/> if none found.
     /// </returns>
-    public object? GetObjectAtPosition(GameMapDefinition map, byte x, byte y)
+    public object? GetObjectAtPosition(
+        GameMapDefinition map,
+        byte x,
+        byte y,
+        ObjectTypeFilter filter)
     {
-        var bestSpawn = this.FindBestSpawn(map.MonsterSpawns, x, y);
+        var bestSpawn = this.FindBestSpawn(map.MonsterSpawns, x, y, filter);
         if (bestSpawn is not null)
         {
             return bestSpawn;
         }
 
-        foreach (var gate in map.ExitGates)
+        if (filter is ObjectTypeFilter.All or ObjectTypeFilter.Gates)
         {
-            if (IsPointInGate(gate, x, y))
+            foreach (var gate in map.ExitGates)
             {
-                return gate;
+                if (IsPointInGate(gate, x, y))
+                {
+                    return gate;
+                }
             }
-        }
 
-        foreach (var gate in map.EnterGates)
-        {
-            if (IsPointInGate(gate, x, y))
+            foreach (var gate in map.EnterGates)
             {
-                return gate;
+                if (IsPointInGate(gate, x, y))
+                {
+                    return gate;
+                }
             }
         }
 
@@ -158,16 +182,37 @@ public sealed class MapObjectSelector
         x >= gate.X1 && x <= gate.X2 && y >= gate.Y1 && y <= gate.Y2;
 
     /// <summary>
+    /// Returns whether a spawn matches the active filter.
+    /// </summary>
+    private static bool SpawnMatchesFilter(MonsterSpawnArea spawn, ObjectTypeFilter filter)
+    {
+        var objectKind = spawn.MonsterDefinition?.ObjectKind;
+
+        return filter switch
+        {
+            ObjectTypeFilter.Gates => false,
+            ObjectTypeFilter.Monsters => objectKind == NpcObjectKind.Monster,
+            ObjectTypeFilter.Npcs => objectKind == NpcObjectKind.PassiveNpc || objectKind == NpcObjectKind.Guard,
+            ObjectTypeFilter.Others => objectKind == NpcObjectKind.Trap
+                                       || objectKind == NpcObjectKind.Statue
+                                       || objectKind == NpcObjectKind.SoccerBall
+                                       || objectKind == NpcObjectKind.Destructible,
+            _ => true,
+        };
+    }
+
+    /// <summary>
     /// Finds the best matching spawn area at the given position,
     /// preferring point spawns and closer center distances.
     /// </summary>
     /// <param name="spawns">The collection of spawn areas to search.</param>
     /// <param name="x">The map X coordinate.</param>
     /// <param name="y">The map Y coordinate.</param>
+    /// <param name="filter">The active object type filter.</param>
     /// <returns>
     /// The best matching <see cref="MonsterSpawnArea"/>, or <see langword="null"/> if none intersect the position.
     /// </returns>
-    private MonsterSpawnArea? FindBestSpawn(IEnumerable<MonsterSpawnArea> spawns, byte x, byte y)
+    private MonsterSpawnArea? FindBestSpawn(IEnumerable<MonsterSpawnArea> spawns, byte x, byte y, ObjectTypeFilter filter)
     {
         MonsterSpawnArea? best = null;
         float bestDistance = float.MaxValue;
@@ -175,6 +220,11 @@ public sealed class MapObjectSelector
 
         foreach (var spawn in spawns)
         {
+            if (!SpawnMatchesFilter(spawn, filter))
+            {
+                continue;
+            }
+
             var distance = GetDistanceToSpawn(spawn, x, y, out var isInside);
             if (!isInside)
             {

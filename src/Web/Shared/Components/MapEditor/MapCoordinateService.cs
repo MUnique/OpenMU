@@ -67,8 +67,7 @@ public sealed class MapCoordinateService
     /// <returns>A CSS style string for the grid background size.</returns>
     public string GetGridStyle(float effectiveScale)
     {
-        var gridSize = 16 * effectiveScale;
-        var gridSizeString = gridSize.ToString(CultureInfo.InvariantCulture);
+        var gridSizeString = effectiveScale.ToString(CultureInfo.InvariantCulture);
         return $"background-size: {gridSizeString}px {gridSizeString}px;";
     }
 }
