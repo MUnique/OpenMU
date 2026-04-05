@@ -8,28 +8,51 @@ export class WorldObjectPicker {
         worldCanvas: HTMLElement,
         worldMesh: World,
         camera: THREE.Camera,
-        onObjectPicked: (data: ObjectData) => void) {
+        onObjectPicked: (data: ObjectData) => void,
+        onObjectHovered?: (data: ObjectData | null) => void) {
 
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
         raycaster.setFromCamera(mouse, camera);
 
-        worldCanvas.addEventListener("click", (mouseEvent: MouseEvent) => {
+        const pick = (mouseEvent: MouseEvent, onHit: (data: ObjectData | null) => void): void => {
             mouse.x = (mouseEvent.offsetX / worldCanvas.clientWidth) * 2 - 1;
             mouse.y = -(mouseEvent.offsetY / worldCanvas.clientHeight) * 2 + 1;
             raycaster.setFromCamera(mouse, camera);
             const intersects = raycaster.intersectObjects(worldMesh.children, true);
-            if (intersects.length > 0 && onObjectPicked) {
+            if (intersects.length > 0) {
                 const data = this.extractObjectData(intersects[0]);
-                onObjectPicked(data);
+                onHit(data);
+            } else {
+                onHit(null);
             }
+        };
+
+        worldCanvas.addEventListener("click", (mouseEvent: MouseEvent) => {
+            pick(mouseEvent, (data) => {
+                if (data !== null && onObjectPicked) {
+                    onObjectPicked(data);
+                }
+            });
+        }, false);
+
+        worldCanvas.addEventListener("mousemove", (mouseEvent: MouseEvent) => {
+            pick(mouseEvent, (data) => {
+                if (onObjectHovered) {
+                    onObjectHovered(data);
+                }
+            });
         }, false);
     }
 
-    private extractObjectData(intersection: THREE.Intersection): ObjectData {
-        const gameObject = intersection.object as GameObject;
-        if (gameObject != null) {
-            return gameObject.data;
+    private extractObjectData(intersection: THREE.Intersection): ObjectData | null {
+        let obj: THREE.Object3D | null = intersection.object;
+        while (obj) {
+            const gameObject = obj as GameObject;
+            if (gameObject.data && gameObject.data.id !== undefined) {
+                return gameObject.data;
+            }
+            obj = obj.parent;
         }
 
         return null;

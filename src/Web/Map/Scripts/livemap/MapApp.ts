@@ -38,8 +38,9 @@ export class MapApp {
         this.onWindowResize();
         this.resizeEventListener = () => this.onWindowResize();
         window.addEventListener("resize", this.resizeEventListener, false);
-        
-        this.picker = new WorldObjectPicker(mapContainer, this.world, this.camera, onPickObjectHandler);
+
+        this.picker = new WorldObjectPicker(this.renderer.domElement, this.world, this.camera, onPickObjectHandler, (data) => this.onObjectHovered(data));
+        this.container.appendChild(this.renderer.domElement);
 
         this.animate(); //starts the rendering loop
     }
@@ -106,5 +107,13 @@ export class MapApp {
         const newSize = Math.min(preferredWidth, preferredHeigth);
         this.renderer.setSize(newSize, newSize);
         this.world.onSizeChanged(newSize);
+    }
+
+    private onObjectHovered(data: ObjectData | null): void {
+        if (data !== null) {
+            this.world.showLabel(data.id);
+        } else {
+            this.world.hideLastLabel();
+        }
     }
 }

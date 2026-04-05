@@ -10752,7 +10752,7 @@ div.log-notifications {
 
 .livemap {
   display: grid;
-  grid-template-columns: auto 250px;
+  grid-template-columns: auto 400px;
 }
 
 .livemap-target {

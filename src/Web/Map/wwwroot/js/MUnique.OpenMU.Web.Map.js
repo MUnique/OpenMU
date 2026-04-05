@@ -223,17 +223,105 @@ System.register("Attack", ["three", "tween", "Queue"], function (exports_4, cont
         }
     };
 });
-System.register("Attackable", ["three", "tween"], function (exports_5, context_5) {
+System.register("NameLabel", ["three"], function (exports_5, context_5) {
     "use strict";
-    var THREE, tween_2, Attackable, attackableAlphaMapTexture;
+    var THREE, NameLabel;
     var __moduleName = context_5 && context_5.id;
     return {
         setters: [
             function (THREE_2) {
                 THREE = THREE_2;
+            }
+        ],
+        execute: function () {
+            NameLabel = (function (_super) {
+                __extends(NameLabel, _super);
+                function NameLabel() {
+                    var _this = this;
+                    var canvas = document.createElement("canvas");
+                    canvas.width = 512;
+                    canvas.height = 64;
+                    var context = canvas.getContext("2d");
+                    var texture = new THREE.CanvasTexture(canvas);
+                    var material = new THREE.SpriteMaterial({ map: texture, transparent: true });
+                    _this = _super.call(this, material) || this;
+                    _this.isVisible = false;
+                    _this.canvas = canvas;
+                    _this.context = context;
+                    _this.texture = texture;
+                    _this.scale.set(40, 6, 1);
+                    _this.visible = false;
+                    return _this;
+                }
+                NameLabel.prototype.raycast = function () {
+                };
+                NameLabel.prototype.show = function (name) {
+                    this.renderLabel(name);
+                    this.visible = true;
+                    this.isVisible = true;
+                };
+                NameLabel.prototype.hide = function () {
+                    this.visible = false;
+                    this.isVisible = false;
+                };
+                NameLabel.prototype.renderLabel = function (name) {
+                    var ctx = this.context;
+                    var canvas = this.canvas;
+                    ctx.font = "bold 28px Consolas, monospace";
+                    var textWidth = ctx.measureText(name).width;
+                    var padding = 12;
+                    var labelWidth = textWidth + padding * 2;
+                    var labelHeight = 40;
+                    canvas.width = this.nextPowerOfTwo(labelWidth + padding * 2);
+                    canvas.height = labelHeight + padding * 2;
+                    ctx.font = "bold 28px Consolas, monospace";
+                    this.scale.set((canvas.width / canvas.height) * 8, 8, 1);
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    var x = (canvas.width - labelWidth) / 2;
+                    var y = (canvas.height - labelHeight) / 2;
+                    var radius = 8;
+                    ctx.fillStyle = "rgba(0, 0, 0, 0.65)";
+                    ctx.beginPath();
+                    ctx.moveTo(x + radius, y);
+                    ctx.lineTo(x + labelWidth - radius, y);
+                    ctx.quadraticCurveTo(x + labelWidth, y, x + labelWidth, y + radius);
+                    ctx.lineTo(x + labelWidth, y + labelHeight - radius);
+                    ctx.quadraticCurveTo(x + labelWidth, y + labelHeight, x + labelWidth - radius, y + labelHeight);
+                    ctx.lineTo(x + radius, y + labelHeight);
+                    ctx.quadraticCurveTo(x, y + labelHeight, x, y + labelHeight - radius);
+                    ctx.lineTo(x, y + radius);
+                    ctx.quadraticCurveTo(x, y, x + radius, y);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.fillStyle = "#ffffff";
+                    ctx.textAlign = "center";
+                    ctx.textBaseline = "middle";
+                    ctx.fillText(name, canvas.width / 2, canvas.height / 2);
+                    this.texture.needsUpdate = true;
+                };
+                NameLabel.prototype.nextPowerOfTwo = function (value) {
+                    return Math.pow(2, Math.ceil(Math.log2(value)));
+                };
+                return NameLabel;
+            }(THREE.Sprite));
+            exports_5("NameLabel", NameLabel);
+        }
+    };
+});
+System.register("Attackable", ["three", "tween", "NameLabel"], function (exports_6, context_6) {
+    "use strict";
+    var THREE, tween_2, NameLabel_1, Attackable, attackableAlphaMapTexture;
+    var __moduleName = context_6 && context_6.id;
+    return {
+        setters: [
+            function (THREE_3) {
+                THREE = THREE_3;
             },
             function (tween_2_1) {
                 tween_2 = tween_2_1;
+            },
+            function (NameLabel_1_1) {
+                NameLabel_1 = NameLabel_1_1;
             }
         ],
         execute: function () {
@@ -243,8 +331,17 @@ System.register("Attackable", ["three", "tween"], function (exports_5, context_5
                     var _this = _super.call(this, geometry, material) || this;
                     _this.data = data;
                     _this.moveTween = null;
+                    _this.nameLabel = new NameLabel_1.NameLabel();
+                    _this.nameLabel.position.z = 200;
+                    _this.add(_this.nameLabel);
                     return _this;
                 }
+                Attackable.prototype.showLabel = function () {
+                    this.nameLabel.show(this.data.name.split(" - Id:")[0]);
+                };
+                Attackable.prototype.hideLabel = function () {
+                    this.nameLabel.hide();
+                };
                 Attackable.prototype.gotKilled = function () {
                     var _this = this;
                     var fadeOutDurationMs = 1000;
@@ -304,10 +401,20 @@ System.register("Attackable", ["three", "tween"], function (exports_5, context_5
                     this.moveTween.start();
                 };
                 Attackable.prototype.rotateTo = function (rotation) {
+                    var _this = this;
                     if (this.data !== undefined) {
                         this.data = Object.assign({}, this.data, rotation);
                     }
-                    this.setRotation(rotation);
+                    var degreesOfOneTurn = 360;
+                    var numberOfDirectionValues = 8;
+                    var targetAngle = THREE.Math.degToRad((rotation * degreesOfOneTurn) / numberOfDirectionValues);
+                    var rotateDurationMs = 200;
+                    var state = { z: this.rotation.z };
+                    new tween_2.default.Tween(state)
+                        .to({ z: targetAngle }, rotateDurationMs)
+                        .onUpdate(function () { return _this.rotation.z = state.z; })
+                        .easing(tween_2.default.Easing.Quadratic.Out)
+                        .start();
                 };
                 Attackable.prototype.setRotation = function (value) {
                     var degreesOfOneTurn = 360;
@@ -321,26 +428,25 @@ System.register("Attackable", ["three", "tween"], function (exports_5, context_5
                 };
                 return Attackable;
             }(THREE.Mesh));
-            exports_5("Attackable", Attackable);
-            ;
+            exports_6("Attackable", Attackable);
             new THREE.TextureLoader().load("_content/MUnique.OpenMU.Web.Map/img/attackable_alphamap.png", function (t) {
-                exports_5("attackableAlphaMapTexture", attackableAlphaMapTexture = t);
+                exports_6("attackableAlphaMapTexture", attackableAlphaMapTexture = t);
             });
         }
     };
 });
-System.register("TerrainShader", ["three"], function (exports_6, context_6) {
+System.register("TerrainShader", ["three"], function (exports_7, context_7) {
     "use strict";
     var THREE, terrainShader;
-    var __moduleName = context_6 && context_6.id;
+    var __moduleName = context_7 && context_7.id;
     return {
         setters: [
-            function (THREE_3) {
-                THREE = THREE_3;
+            function (THREE_4) {
+                THREE = THREE_4;
             }
         ],
         execute: function () {
-            exports_6("terrainShader", terrainShader = {
+            exports_7("terrainShader", terrainShader = {
                 fragmentShader: [
                     "uniform sampler2D tColor;",
                     "uniform float tPixelSize;",
@@ -374,14 +480,14 @@ System.register("TerrainShader", ["three"], function (exports_6, context_6) {
         }
     };
 });
-System.register("Player", ["three", "Attackable"], function (exports_7, context_7) {
+System.register("Player", ["three", "Attackable"], function (exports_8, context_8) {
     "use strict";
     var THREE, Attackable_1, Player;
-    var __moduleName = context_7 && context_7.id;
+    var __moduleName = context_8 && context_8.id;
     return {
         setters: [
-            function (THREE_4) {
-                THREE = THREE_4;
+            function (THREE_5) {
+                THREE = THREE_5;
             },
             function (Attackable_1_1) {
                 Attackable_1 = Attackable_1_1;
@@ -411,19 +517,19 @@ System.register("Player", ["three", "Attackable"], function (exports_7, context_
                 Player.defaultGeometry = new THREE.BoxGeometry(Player.size, Player.size, Player.size);
                 return Player;
             }(Attackable_1.Attackable));
-            exports_7("Player", Player);
+            exports_8("Player", Player);
             ;
         }
     };
 });
-System.register("NonPlayerCharacter", ["three", "Attackable"], function (exports_8, context_8) {
+System.register("NonPlayerCharacter", ["three", "Attackable"], function (exports_9, context_9) {
     "use strict";
     var THREE, Attackable_2, NonPlayerCharacter;
-    var __moduleName = context_8 && context_8.id;
+    var __moduleName = context_9 && context_9.id;
     return {
         setters: [
-            function (THREE_5) {
-                THREE = THREE_5;
+            function (THREE_6) {
+                THREE = THREE_6;
             },
             function (Attackable_2_1) {
                 Attackable_2 = Attackable_2_1;
@@ -439,19 +545,19 @@ System.register("NonPlayerCharacter", ["three", "Attackable"], function (exports
                 NonPlayerCharacter.defaultGeometry = new THREE.BoxGeometry(NonPlayerCharacter.size, NonPlayerCharacter.size, NonPlayerCharacter.size);
                 return NonPlayerCharacter;
             }(Attackable_2.Attackable));
-            exports_8("NonPlayerCharacter", NonPlayerCharacter);
+            exports_9("NonPlayerCharacter", NonPlayerCharacter);
             ;
         }
     };
 });
-System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attackable", "NonPlayerCharacter"], function (exports_9, context_9) {
+System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attackable", "NonPlayerCharacter"], function (exports_10, context_10) {
     "use strict";
     var THREE, Attack_1, TerrainShader_1, Player_1, Attackable_3, NonPlayerCharacter_1, World;
-    var __moduleName = context_9 && context_9.id;
+    var __moduleName = context_10 && context_10.id;
     return {
         setters: [
-            function (THREE_6) {
-                THREE = THREE_6;
+            function (THREE_7) {
+                THREE = THREE_7;
             },
             function (Attack_1_1) {
                 Attack_1 = Attack_1_1;
@@ -474,6 +580,7 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
                 __extends(World, _super);
                 function World(serverId, mapId) {
                     var _this = _super.call(this) || this;
+                    _this.lastLabelObjectId = null;
                     _this.objects = {};
                     var attacksZ = 100;
                     _this.attacks = new Attack_1.Attacks();
@@ -610,6 +717,21 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
                         player.data = __assign(__assign({}, player.data), { isHighlighted: false });
                     }
                 };
+                World.prototype.showLabel = function (objectId) {
+                    this.hideLastLabel();
+                    var obj = this.getObjectById(objectId);
+                    if (obj) {
+                        obj.showLabel();
+                        this.lastLabelObjectId = objectId;
+                    }
+                };
+                World.prototype.hideLastLabel = function () {
+                    if (this.lastLabelObjectId !== null) {
+                        var obj = this.getObjectById(this.lastLabelObjectId);
+                        obj === null || obj === void 0 ? void 0 : obj.hideLabel();
+                        this.lastLabelObjectId = null;
+                    }
+                };
                 World.prototype.onSizeChanged = function (newSize) {
                     TerrainShader_1.terrainShader.uniforms.tPixelSize.value = World.sideLength / newSize;
                 };
@@ -643,59 +765,80 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
                 World.rotationAnimationId = 122;
                 return World;
             }(THREE.Object3D));
-            exports_9("World", World);
+            exports_10("World", World);
         }
     };
 });
-System.register("WorldObjectPicker", ["three"], function (exports_10, context_10) {
+System.register("WorldObjectPicker", ["three"], function (exports_11, context_11) {
     "use strict";
     var THREE, WorldObjectPicker;
-    var __moduleName = context_10 && context_10.id;
-    return {
-        setters: [
-            function (THREE_7) {
-                THREE = THREE_7;
-            }
-        ],
-        execute: function () {
-            WorldObjectPicker = (function () {
-                function WorldObjectPicker(worldCanvas, worldMesh, camera, onObjectPicked) {
-                    var _this = this;
-                    var raycaster = new THREE.Raycaster();
-                    var mouse = new THREE.Vector2();
-                    raycaster.setFromCamera(mouse, camera);
-                    worldCanvas.addEventListener("click", function (mouseEvent) {
-                        mouse.x = (mouseEvent.offsetX / worldCanvas.clientWidth) * 2 - 1;
-                        mouse.y = -(mouseEvent.offsetY / worldCanvas.clientHeight) * 2 + 1;
-                        raycaster.setFromCamera(mouse, camera);
-                        var intersects = raycaster.intersectObjects(worldMesh.children, true);
-                        if (intersects.length > 0 && onObjectPicked) {
-                            var data = _this.extractObjectData(intersects[0]);
-                            onObjectPicked(data);
-                        }
-                    }, false);
-                }
-                WorldObjectPicker.prototype.extractObjectData = function (intersection) {
-                    var gameObject = intersection.object;
-                    if (gameObject != null) {
-                        return gameObject.data;
-                    }
-                    return null;
-                };
-                return WorldObjectPicker;
-            }());
-            exports_10("WorldObjectPicker", WorldObjectPicker);
-        }
-    };
-});
-System.register("MapApp", ["three", "tween", "WorldObjectPicker", "World"], function (exports_11, context_11) {
-    "use strict";
-    var THREE, tween_3, WorldObjectPicker_1, World_1, MapApp;
     var __moduleName = context_11 && context_11.id;
     return {
         setters: [
             function (THREE_8) {
                 THREE = THREE_8;
+            }
+        ],
+        execute: function () {
+            WorldObjectPicker = (function () {
+                function WorldObjectPicker(worldCanvas, worldMesh, camera, onObjectPicked, onObjectHovered) {
+                    var _this = this;
+                    var raycaster = new THREE.Raycaster();
+                    var mouse = new THREE.Vector2();
+                    raycaster.setFromCamera(mouse, camera);
+                    var pick = function (mouseEvent, onHit) {
+                        mouse.x = (mouseEvent.offsetX / worldCanvas.clientWidth) * 2 - 1;
+                        mouse.y = -(mouseEvent.offsetY / worldCanvas.clientHeight) * 2 + 1;
+                        raycaster.setFromCamera(mouse, camera);
+                        var intersects = raycaster.intersectObjects(worldMesh.children, true);
+                        if (intersects.length > 0) {
+                            var data = _this.extractObjectData(intersects[0]);
+                            onHit(data);
+                        }
+                        else {
+                            onHit(null);
+                        }
+                    };
+                    worldCanvas.addEventListener("click", function (mouseEvent) {
+                        pick(mouseEvent, function (data) {
+                            if (data !== null && onObjectPicked) {
+                                onObjectPicked(data);
+                            }
+                        });
+                    }, false);
+                    worldCanvas.addEventListener("mousemove", function (mouseEvent) {
+                        pick(mouseEvent, function (data) {
+                            if (onObjectHovered) {
+                                onObjectHovered(data);
+                            }
+                        });
+                    }, false);
+                }
+                WorldObjectPicker.prototype.extractObjectData = function (intersection) {
+                    var obj = intersection.object;
+                    while (obj) {
+                        var gameObject = obj;
+                        if (gameObject.data && gameObject.data.id !== undefined) {
+                            return gameObject.data;
+                        }
+                        obj = obj.parent;
+                    }
+                    return null;
+                };
+                return WorldObjectPicker;
+            }());
+            exports_11("WorldObjectPicker", WorldObjectPicker);
+        }
+    };
+});
+System.register("MapApp", ["three", "tween", "WorldObjectPicker", "World"], function (exports_12, context_12) {
+    "use strict";
+    var THREE, tween_3, WorldObjectPicker_1, World_1, MapApp;
+    var __moduleName = context_12 && context_12.id;
+    return {
+        setters: [
+            function (THREE_9) {
+                THREE = THREE_9;
             },
             function (tween_3_1) {
                 tween_3 = tween_3_1;
@@ -725,7 +868,8 @@ System.register("MapApp", ["three", "tween", "WorldObjectPicker", "World"], func
                     this.onWindowResize();
                     this.resizeEventListener = function () { return _this.onWindowResize(); };
                     window.addEventListener("resize", this.resizeEventListener, false);
-                    this.picker = new WorldObjectPicker_1.WorldObjectPicker(mapContainer, this.world, this.camera, onPickObjectHandler);
+                    this.picker = new WorldObjectPicker_1.WorldObjectPicker(this.renderer.domElement, this.world, this.camera, onPickObjectHandler, function (data) { return _this.onObjectHovered(data); });
+                    this.container.appendChild(this.renderer.domElement);
                     this.animate();
                 }
                 MapApp.prototype.dispose = function () {
@@ -772,9 +916,17 @@ System.register("MapApp", ["three", "tween", "WorldObjectPicker", "World"], func
                     this.renderer.setSize(newSize, newSize);
                     this.world.onSizeChanged(newSize);
                 };
+                MapApp.prototype.onObjectHovered = function (data) {
+                    if (data !== null) {
+                        this.world.showLabel(data.id);
+                    }
+                    else {
+                        this.world.hideLastLabel();
+                    }
+                };
                 return MapApp;
             }());
-            exports_11("MapApp", MapApp);
+            exports_12("MapApp", MapApp);
         }
     };
 });
