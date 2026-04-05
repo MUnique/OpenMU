@@ -377,8 +377,8 @@ public partial class MapEditor : IAsyncDisposable
             }
             else
             {
-                // Other object types (e.g. single-tile objects) don't have rectangular
-                // drag coordinates; only the top-left position is moved in OnObjectDragging.
+                // Other object types (e.g. single-tile objects) don't have rectangular drag coordinates,
+                // only the top-left position is moved in OnObjectDragging.
             }
 
             await this.UpdateSelectValueAsync().ConfigureAwait(true);
@@ -424,8 +424,7 @@ public partial class MapEditor : IAsyncDisposable
             }
             else
             {
-                // Other object types don't support corner-resizing;
-                // they are moved via dragging handled separately.
+                // Other object types don't support corner-resizing they are moved via dragging handled separately.
             }
 
             this.NotificationService.NotifyChange(this._focusedObject, null);
