@@ -907,6 +907,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Reset #{0}: requires level {1}, zen {2}; grants {3} points, {4} total.
+        /// </summary>
+        public static string NextResetInfoCompactNoItem {
+            get {
+                return ResourceManager.GetString("NextResetInfoCompactNoItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset #{0}: requires level {1}, zen {2}, {3} x {4}; grants {5} points, {6} total.
+        /// </summary>
+        public static string NextResetInfoCompactWithItem {
+            get {
+                return ResourceManager.GetString("NextResetInfoCompactWithItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You cannot start a duel during guild war..
         /// </summary>
         public static string NoDuelDuringGuildWar {
@@ -1006,11 +1024,29 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You don&apos;t have enough required items for reset, required {0} x {1}..
+        /// </summary>
+        public static string NotEnoughItemsForReset {
+            get {
+                return ResourceManager.GetString("NotEnoughItemsForReset", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You don&apos;t have enough Money.
         /// </summary>
         public static string NotEnoughMoney {
             get {
                 return ResourceManager.GetString("NotEnoughMoney", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You don&apos;t have enough money for reset, required zen is {0}..
+        /// </summary>
+        public static string NotEnoughMoneyForReset {
+            get {
+                return ResourceManager.GetString("NotEnoughMoneyForReset", resourceCulture);
             }
         }
         
@@ -1578,6 +1614,69 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string YourChatBanRemovedByGameMaster {
             get {
                 return ResourceManager.GetString("YourChatBanRemovedByGameMaster", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Offline leveling started. You can log back in at any time to stop it..
+        /// </summary>
+        public static string OfflineLevelingStarted {
+            get {
+                return ResourceManager.GetString("OfflineLevelingStarted", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Could not start offline leveling. Try again in a safe spot..
+        /// </summary>
+        public static string OfflineLevelingFailed {
+            get {
+                return ResourceManager.GetString("OfflineLevelingFailed", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Offline leveling is already active for this account..
+        /// </summary>
+        public static string OfflineLevelingAlreadyActive {
+            get {
+                return ResourceManager.GetString("OfflineLevelingAlreadyActive", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to You must be alive to start offline leveling..
+        /// </summary>
+        public static string OfflineLevelingMustBeAlive {
+            get {
+                return ResourceManager.GetString("OfflineLevelingMustBeAlive", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to You must be on a map to start offline leveling..
+        /// </summary>
+        public static string OfflineLevelingNotOnMap {
+            get {
+                return ResourceManager.GetString("OfflineLevelingNotOnMap", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to No character is selected..
+        /// </summary>
+        public static string OfflineLevelingNoCharacterSelected {
+            get {
+                return ResourceManager.GetString("OfflineLevelingNoCharacterSelected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mu Helper is not running..
+        /// </summary>
+        public static string OfflineLevelingMuHelperNotRunning {
+            get {
+                return ResourceManager.GetString("OfflineLevelingMuHelperNotRunning", resourceCulture);
             }
         }
     }

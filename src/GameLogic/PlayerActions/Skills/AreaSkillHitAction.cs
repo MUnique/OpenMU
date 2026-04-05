@@ -18,7 +18,6 @@ public class AreaSkillHitAction
     public async ValueTask AttackTargetAsync(Player player, IAttackable target, SkillEntry skill)
     {
         if (skill.Skill?.SkillType != SkillType.AreaSkillExplicitHits
-            || target is null
             || !target.IsAlive
             || target.IsAtSafezone())
         {
@@ -31,10 +30,15 @@ public class AreaSkillHitAction
             // We don't log it as hacker attempt, since the AreaSkillAttackAction already does handle this.
         }
 
+        if (target is Player && !player.GameContext.Configuration.AreaSkillHitsPlayer)
+        {
+            return;
+        }
+
         if (target.CheckSkillTargetRestrictions(player, skill.Skill))
         {
-            await target.AttackByAsync(player, skill, false).ConfigureAwait(false);
-            await target.TryApplyElementalEffectsAsync(player, skill).ConfigureAwait(false);
+            var hitInfo = await target.AttackByAsync(player, skill, false).ConfigureAwait(false);
+            await target.TryApplyElementalEffectsAsync(player, skill, hitInfo).ConfigureAwait(false);
         }
     }
 }

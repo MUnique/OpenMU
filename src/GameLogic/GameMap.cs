@@ -115,6 +115,19 @@ public class GameMap
     }
 
     /// <summary>
+    /// Gets all dropped items and money within the specified range of a point.
+    /// </summary>
+    /// <param name="point">The coordinates.</param>
+    /// <param name="range">The range.</param>
+    /// <returns>Dropped items and money in range.</returns>
+    public IList<ILocateable> GetDropsInRange(Point point, int range)
+    {
+        return this._areaOfInterestManager.GetInRange(point, range)
+            .Where(l => l is DroppedItem or DroppedMoney)
+            .ToList();
+    }
+
+    /// <summary>
     /// Gets the drop by id.
     /// </summary>
     /// <param name="dropId">The drop identifier.</param>

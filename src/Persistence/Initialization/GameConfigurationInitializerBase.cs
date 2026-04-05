@@ -67,6 +67,7 @@ public abstract class GameConfigurationInitializerBase : InitializerBase
         this.AddItemDropGroups();
 
         this.CreateStatAttributes();
+        this.AddGlobalBaseAttributeValues();
 
         new SlotTypesInitializer(this.Context, this.GameConfiguration).Initialize();
         this.CreateItemOptionTypes();
@@ -167,7 +168,7 @@ public abstract class GameConfigurationInitializerBase : InitializerBase
         var jewelsDropItemGroup = this.Context.CreateNew<DropItemGroup>();
         jewelsDropItemGroup.SetGuid(4);
         jewelsDropItemGroup.Chance = 0.001;
-        jewelsDropItemGroup.ItemType = SpecialItemType.RandomItem;
+        jewelsDropItemGroup.ItemType = SpecialItemType.Jewel;
         jewelsDropItemGroup.Description = "The jewels drop item group (0.1 % drop chance)";
         this.GameConfiguration.DropItemGroups.Add(jewelsDropItemGroup);
         BaseMapInitializer.RegisterDefaultDropItemGroup(jewelsDropItemGroup);
@@ -227,6 +228,15 @@ public abstract class GameConfigurationInitializerBase : InitializerBase
             persistentAttribute.MaximumValue = attribute.MaximumValue;
             this.GameConfiguration.Attributes.Add(persistentAttribute);
         }
+    }
+
+    /// <summary>
+    /// Adds the global base attribute values which apply to all characters.
+    /// </summary>
+    private void AddGlobalBaseAttributeValues()
+    {
+        var moneyAmountRate = this.Context.CreateNew<ConstValueAttribute>(1f, Stats.MoneyAmountRate.GetPersistent(this.GameConfiguration));
+        this.GameConfiguration.GlobalBaseAttributeValues.Add(moneyAmountRate);
     }
 
     private long CalcNeededMasterExp(long lvl)

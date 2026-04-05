@@ -29,7 +29,7 @@ public class ShowGuildListPlugIn : IShowGuildListPlugIn
     public ShowGuildListPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public async ValueTask ShowGuildListAsync(IEnumerable<OpenMU.Interfaces.GuildListEntry> players)
+    public async ValueTask ShowGuildListAsync(IReadOnlyCollection<OpenMU.Interfaces.GuildListEntry> players, Interfaces.Guild guild)
     {
         var connection = this._player.Connection;
         if (connection is null)
@@ -37,7 +37,7 @@ public class ShowGuildListPlugIn : IShowGuildListPlugIn
             return;
         }
 
-        var playerCount = players.Count();
+        var playerCount = players.Count;
         int Write()
         {
             var size = GuildListRef.GetRequiredSize(playerCount);
@@ -46,9 +46,9 @@ public class ShowGuildListPlugIn : IShowGuildListPlugIn
             {
                 GuildMemberCount = (byte)playerCount,
                 IsInGuild = playerCount > 0,
-                RivalGuildName = string.Empty, // TODO
-                CurrentScore = 0, // TODO
-                TotalScore = 0, // TODO
+                RivalGuildName = guild.Hostility?.Name ?? string.Empty,
+                CurrentScore = 0, // TODO: What is this? Maybe a rank?
+                TotalScore = (uint)guild.Score,
             };
 
             int i = 0;

@@ -2,10 +2,9 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-using System.Threading;
-
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
+using System.Threading;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Persistence.EntityFramework.Model;
@@ -48,6 +47,20 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
 
         persistentHeader.Receiver = await this.Context.Set<Character>().FirstOrDefaultAsync(c => c.Name == letterHeader.ReceiverName, cancellationToken).ConfigureAwait(false);
         return persistentHeader.Receiver != null;
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<DataModel.Entities.AccountState?> AuthenticateAsync(string loginName, string password, CancellationToken cancellationToken = default)
+    {
+        using (this.RepositoryProvider.ContextStack.UseContext(this))
+        {
+            if (this.RepositoryProvider.GetRepository<Account, AccountRepository>() is { } accountRepository)
+            {
+                return await accountRepository.AuthenticateAsync(loginName, password, cancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        return null;
     }
 
     /// <inheritdoc />

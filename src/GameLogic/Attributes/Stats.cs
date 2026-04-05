@@ -737,7 +737,7 @@ public class Stats
     /// <see cref="AggregateType.Multiplicate"/> values include:
     ///     <see cref="DefenseIncreaseWithEquippedShield"/>.
     /// <see cref="AggregateType.AddFinal"/> values include:
-    ///     Greater defense buff; MST bonus defense with shield (shield strengthener); MST dark horse strengthener; Jack O'Lantern Cry bonus (halved).
+    ///     Greater defense buff; MST bonus defense with shield (shield strengthener); MST dark horse strengthener; Jack O'Lantern Cry bonus (halved); Berserker defense reduction.
     /// </remarks>
     public static AttributeDefinition DefenseFinal { get; } = new(new Guid("0888AD48-0CC8-47CA-B6A3-99F3771AA5FC"), "Final Defense", string.Empty);
 
@@ -747,10 +747,6 @@ public class Stats
     /// <remarks>
     /// <see cref="AggregateType.AddRaw"/> values include:
     ///     <see cref="DefenseFinal"/>.
-    /// <see cref="AggregateType.Multiplicate"/> values include:
-    ///     Fire slash defense reduction.
-    /// <see cref="AggregateType.AddFinal"/> values include:
-    ///     Berserker defense reduction.
     /// </remarks>
     public static AttributeDefinition DefensePvm { get; } = new(new Guid("B4201610-2824-4EC1-A145-76B15DB9DEC6"), "Defense (PvM)", string.Empty);
 
@@ -760,10 +756,6 @@ public class Stats
     /// <remarks>
     /// <see cref="AggregateType.AddRaw"/> values include:
     ///     <see cref="DefenseFinal"/>; pants guardian option (halved).
-    /// <see cref="AggregateType.Multiplicate"/> values include:
-    ///     Fire slash defense reduction.
-    /// <see cref="AggregateType.AddFinal"/> values include:
-    ///     Berserker defense reduction.
     /// </remarks>
     public static AttributeDefinition DefensePvp { get; } = new(new Guid("28D14EB7-1049-45BE-A7B7-D5E28E63943B"), "Defense (PvP)", string.Empty);
 
@@ -781,7 +773,7 @@ public class Stats
     /// <see cref="AggregateType.Multiplicate"/> values include:
     ///     Complete set bonus multiplier (+10%); excellent DR option; socket DR option; MST PvM defense rate increase.
     /// <see cref="AggregateType.AddFinal"/> values include:
-    ///     MST bonus defense rate with shield (shield mastery).
+    ///     MST bonus defense rate with shield (shield mastery); Phoenix Shot decrease block effect.
     /// </remarks>
     public static AttributeDefinition DefenseRatePvm { get; } = new(new Guid("C520DD2D-1B06-4392-95EE-3C41F33E68DA"), "Defense Rate (PvM)", string.Empty);
 
@@ -926,6 +918,16 @@ public class Stats
     public static AttributeDefinition InnovationDefDecrement { get; } = new(new Guid("D8B3B1C9-B409-4A07-8F4D-8F315DCB173A"), "Innovation Defense Decrement", "The defense decrement due to the magic effect of innovation skill, which is multiplied with the final defense and subtracted from it.");
 
     /// <summary>
+    /// Gets the defense decrement attribute definition.
+    /// </summary>
+    /// <remarks>
+    ///     Includes the multiplier <see cref="Stats.InnovationDefDecrement"/>, and the ones from the magic effects of beast uppercut (RF) and fire slash (MG).
+    ///     Beast uppercut and fire slash share the same magic effect number, while innovation's is different.
+    ///     This means that the first two effects can only exist 1 at a time, while innovation can coexist with either of them.
+    /// </remarks>
+    public static AttributeDefinition DefenseDecrement { get; } = new(new Guid("D19A0E33-5C9A-4B8E-AF12-3C4D5E6F7890"), "Defense Decrement", "The defense decrement due to magic effects of various skills, which is multiplied with the final defense and subtracted from it.");
+
+    /// <summary>
     /// Gets the 'is shield equipped' attribute definition.
     /// </summary>
     public static AttributeDefinition IsShieldEquipped { get; } = new(new Guid("394DFAA0-B18D-44DA-A99D-094BC5E7C9C5"), "Is Shield Equipped", string.Empty);
@@ -954,6 +956,12 @@ public class Stats
     /// Gets the attribute definition, which defines if a player has asleep effect applied.
     /// </summary>
     public static AttributeDefinition IsAsleep { get; } = new(new Guid("0518F532-7A8F-4491-8A23-98B620608CB3"), "Is asleep", "The player is asleep and can't move until hit.");
+
+    /// <summary>
+    /// Gets the attribute definition, which defines if a player has explosion effect applied.
+    /// </summary>
+    /// <remarks>This can be caused by Explosion (book of samut) and Requiem (book of neil) skills.</remarks>
+    public static AttributeDefinition IsBleeding { get; } = new(new Guid("BD5C685D-C360-4CC5-A43E-46644AD61F09"), "Is bleeding", "The player is damaged every second for a while.");
 
     /// <summary>
     /// Gets the ice resistance attribute definition. Value range from 0 to 1.
@@ -1056,6 +1064,11 @@ public class Stats
     public static AttributeDefinition PoisonDamageMultiplier { get; } = new(new Guid("8581CD4D-C6AE-4C35-9147-9642DE7CC013"), "Poison Damage Multiplier", string.Empty);
 
     /// <summary>
+    /// Gets the bleeding damage multiplier attribute definition.
+    /// </summary>
+    public static AttributeDefinition BleedingDamageMultiplier { get; } = new(new Guid("12C20F28-F219-4044-899D-E9277D251515"), "Bleeding Damage Multiplier", string.Empty);
+
+    /// <summary>
     /// Gets the mana recovery absolute attribute definition.
     /// </summary>
     public static AttributeDefinition ManaRecoveryAbsolute { get; } = new(new Guid("33DE588D-1FAB-493A-8FB1-837BF9C5131F"), "Mana Recovery Absolute Increase", string.Empty);
@@ -1115,6 +1128,16 @@ public class Stats
     /// Gets the double damage chance attribute definition.
     /// </summary>
     public static AttributeDefinition DoubleDamageChance { get; } = new(new Guid("2B8A03E6-1CC2-48A0-8633-3F36E17050F4"), "Double Damage Chance", string.Empty);
+
+    /// <summary>
+    /// Gets the stun chance attribute definition.
+    /// </summary>
+    public static AttributeDefinition StunChance { get; } = new(new Guid("610D3259-1158-424A-8738-9EB7A71DE600"), "Stun Chance", string.Empty);
+
+    /// <summary>
+    /// Gets the pollution skill MST target move chance, which rises with lightning tome mastery.
+    /// </summary>
+    public static AttributeDefinition PollutionMoveTargetChance { get; } = new(new Guid("6F9619FF-8B86-D011-B42D-00C04FC964FF"), "Pollution Move Target Chance (MST)", "The pollution skill (book of lagle) move chance, which rises with lightning tome mastery.");
 
     /// <summary>
     /// Gets the mana after monster kill attribute definition.
@@ -1225,6 +1248,13 @@ public class Stats
     /// Gets the maximum guild size attribute definition.
     /// </summary>
     public static AttributeDefinition MaximumGuildSize { get; } = new(new Guid("898EF69B-3965-4DBF-9783-E9709698236B"), "Maximum Guild Size", string.Empty);
+
+    /// <summary>
+    /// Gets the maximum alliance size attribute definition.
+    /// The maximum number of guilds that can participate in a single alliance.
+    /// A value of 0 means no limit is enforced.
+    /// </summary>
+    public static AttributeDefinition MaximumAllianceSize { get; } = new(new Guid("B3C7E9D2-5A1F-4E8B-92C7-6D3F8A4B7E5C"), "Maximum Alliance Size", string.Empty);
 
     /// <summary>
     /// Gets the fully recover mana after hit chance definition.

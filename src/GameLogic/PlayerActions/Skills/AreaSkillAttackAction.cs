@@ -1,4 +1,4 @@
-﻿// <copyright file="AreaSkillAttackAction.cs" company="MUnique">
+// <copyright file="AreaSkillAttackAction.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -113,8 +113,9 @@ public class AreaSkillAttackAction
 
     private static IEnumerable<IAttackable> GetTargetsInRange(Player player, Point targetAreaCenter, Skill skill, byte rotation)
     {
+        var range = skill.AreaSkillSettings?.EffectRange > 0 ? skill.AreaSkillSettings.EffectRange : skill.Range;
         var targetsInRange = player.CurrentMap?
-                    .GetAttackablesInRange(targetAreaCenter, skill.Range)
+                    .GetAttackablesInRange(targetAreaCenter, range)
                     .Where(a => a != player)
                     .Where(a => !a.IsAtSafezone())
             ?? [];
@@ -168,6 +169,12 @@ public class AreaSkillAttackAction
             return;
         }
 
+        // Skills that move attacker to target (e.g., Twisting Slash, Death Stab) require a weapon
+        if (skill.MovesToTarget && player.Attributes[Stats.EquippedWeaponCount] == 0)
+        {
+            return;
+        }
+
         if (player.Attributes[Stats.AmmunitionConsumptionRate] > player.Attributes[Stats.AmmunitionAmount])
         {
             return;
@@ -211,6 +218,7 @@ public class AreaSkillAttackAction
         IAttackable? extraTarget = null;
         var attackCount = 0;
         var maxAttacks = areaSkillSettings.MaximumNumberOfHitsPerAttack == 0 ? int.MaxValue : areaSkillSettings.MaximumNumberOfHitsPerAttack;
+        var minAttacks = areaSkillSettings.MinimumNumberOfHitsPerAttack == 0 ? maxAttacks : areaSkillSettings.MinimumNumberOfHitsPerAttack;
         var currentDelay = TimeSpan.Zero;
 
         // Order targets by distance to process nearest targets first
@@ -275,9 +283,20 @@ public class AreaSkillAttackAction
                         continue; // This projectile cannot hit this target
                     }
 
-                    var hitChance = attackRound < areaSkillSettings.MinimumNumberOfHitsPerTarget
-                        ? 1.0
-                        : Math.Min(areaSkillSettings.HitChancePerDistanceMultiplier, Math.Pow(areaSkillSettings.HitChancePerDistanceMultiplier, player.GetDistanceTo(target)));
+                    double hitChance;
+                    if (attackRound >= areaSkillSettings.MinimumNumberOfHitsPerTarget)
+                    {
+                        hitChance = Math.Pow(areaSkillSettings.HitChancePerDistanceMultiplier, player.GetDistanceTo(target));
+                    }
+                    else if (attackCount >= minAttacks)
+                    {
+                        hitChance = 0.5;
+                    }
+                    else
+                    {
+                        hitChance = 1.0;
+                    }
+
                     if (hitChance < 1.0 && !Rand.NextRandomBool(hitChance))
                     {
                         continue;
@@ -320,15 +339,22 @@ public class AreaSkillAttackAction
     private async ValueTask ApplySkillAsync(Player player, SkillEntry skillEntry, IAttackable target, Point targetAreaCenter, bool isCombo)
     {
         skillEntry.ThrowNotInitializedProperty(skillEntry.Skill is null, nameof(skillEntry.Skill));
+        var skill = skillEntry.Skill;
 
-        if (skillEntry.Skill.SkillType == SkillType.Buff)
+        if (skill.SkillType == SkillType.Buff)
         {
             await target.ApplyMagicEffectAsync(player, skillEntry).ConfigureAwait(false);
             return;
         }
 
-        var hitInfo = await target.AttackByAsync(player, skillEntry, isCombo).ConfigureAwait(false);
-        await target.TryApplyElementalEffectsAsync(player, skillEntry).ConfigureAwait(false);
+        var hitInfo = await target.AttackByAsync(player, skillEntry, isCombo, 1, skill.NumberOfHitsPerAttack > 1 ? false : null).ConfigureAwait(false);
+        await target.TryApplyElementalEffectsAsync(player, skillEntry, hitInfo).ConfigureAwait(false);
+
+        for (int hit = 2; hit <= skill.NumberOfHitsPerAttack; hit++)
+        {
+            await target.AttackByAsync(player, skillEntry, isCombo, 1, hit == skill.NumberOfHitsPerAttack).ConfigureAwait(false);
+        }
+
         var baseSkill = skillEntry.GetBaseSkill();
 
         if (player.GameContext.PlugInManager.GetStrategy<short, IAreaSkillPlugIn>(baseSkill.Number) is { } strategy)

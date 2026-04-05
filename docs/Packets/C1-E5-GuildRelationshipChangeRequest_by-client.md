@@ -17,7 +17,7 @@ The server sends a response with the result.
 | 2 | 1 |    Byte   | 0xE5  | Packet header - packet type identifier |
 | 3 | 1 | GuildRelationshipType |  | RelationshipType |
 | 4 | 1 | GuildRequestType |  | RequestType |
-| 5 | 2 | ShortLittleEndian |  | TargetPlayerId |
+| 5 | 2 | ShortBigEndian |  | TargetPlayerId |
 
 ### GuildRelationshipType Enum
 

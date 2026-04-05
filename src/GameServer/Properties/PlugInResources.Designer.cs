@@ -151,6 +151,42 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Packet handler group for alliance packets (0xEB identifier)..
+        /// </summary>
+        public static string AllianceGroupHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("AllianceGroupHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Alliance Group Handler.
+        /// </summary>
+        public static string AllianceGroupHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("AllianceGroupHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handler for alliance list request packets..
+        /// </summary>
+        public static string AllianceListRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("AllianceListRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Alliance List Request Handler.
+        /// </summary>
+        public static string AllianceListRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("AllianceListRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handler for animation packets..
         /// </summary>
         public static string AnimationHandlerPlugIn_Description {
@@ -1807,6 +1843,42 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Handler for guild relationship change request packets (alliance/hostility requests)..
+        /// </summary>
+        public static string GuildRelationshipChangeHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("GuildRelationshipChangeHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Guild Relationship Change Handler.
+        /// </summary>
+        public static string GuildRelationshipChangeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("GuildRelationshipChangeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handler for guild relationship change response packets (the target guild master&apos;s answer)..
+        /// </summary>
+        public static string GuildRelationshipChangeResponseHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("GuildRelationshipChangeResponseHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Guild Relationship Change Response Handler.
+        /// </summary>
+        public static string GuildRelationshipChangeResponseHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("GuildRelationshipChangeResponseHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handler for guild request answer packets..
         /// </summary>
         public static string GuildRequestAnswerHandlerPlugIn_Description {
@@ -2667,6 +2739,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         public static string MuHelperSaveDataRequestHandlerPlugin_Name {
             get {
                 return ResourceManager.GetString("MuHelperSaveDataRequestHandlerPlugin_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Initializes the MU Helper settings when the player enters the world..
+        /// </summary>
+        public static string MuHelperSettingsInitializationPlugIn_Description {
+            get {
+                return ResourceManager.GetString("MuHelperSettingsInitializationPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MU Helper Settings Initialization.
+        /// </summary>
+        public static string MuHelperSettingsInitializationPlugIn_Name {
+            get {
+                return ResourceManager.GetString("MuHelperSettingsInitializationPlugIn_Name", resourceCulture);
             }
         }
         
@@ -3769,6 +3859,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Handler for remove alliance guild request packets..
+        /// </summary>
+        public static string RemoveAllianceGuildHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("RemoveAllianceGuildHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove Alliance Guild Handler.
+        /// </summary>
+        public static string RemoveAllianceGuildHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("RemoveAllianceGuildHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Packet handler for vault pin remove packets (0x83, 0x02 identifier)..
         /// </summary>
         public static string RemoveVaultPinPlugIn_Description {
@@ -3963,6 +4071,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         public static string SetVaultPinPlugIn_Name {
             get {
                 return ResourceManager.GetString("SetVaultPinPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The default implementation of the IShowAllianceListPlugIn which is forwarding everything to the game client with specific data packets..
+        /// </summary>
+        public static string ShowAllianceListPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ShowAllianceListPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show Alliance List.
+        /// </summary>
+        public static string ShowAllianceListPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ShowAllianceListPlugIn_Name", resourceCulture);
             }
         }
         
@@ -4485,6 +4611,42 @@ namespace MUnique.OpenMU.GameServer.Properties {
         public static string ShowGuildMasterDialogPlugIn_Name {
             get {
                 return ResourceManager.GetString("ShowGuildMasterDialogPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The default implementation of the IGuildRelationshipChangeResultPlugIn which is forwarding everything to the game client with specific data packets..
+        /// </summary>
+        public static string ShowGuildRelationshipChangeResultPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ShowGuildRelationshipChangeResultPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show Guild Relationship Change Result.
+        /// </summary>
+        public static string ShowGuildRelationshipChangeResultPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ShowGuildRelationshipChangeResultPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The default implementation of the IShowGuildRelationshipRequestPlugIn which is forwarding everything to the game client with specific data packets..
+        /// </summary>
+        public static string ShowGuildRelationshipRequestPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ShowGuildRelationshipRequestPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show Guild Relationship Request.
+        /// </summary>
+        public static string ShowGuildRelationshipRequestPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ShowGuildRelationshipRequestPlugIn_Name", resourceCulture);
             }
         }
         

@@ -7,6 +7,73 @@ namespace MUnique.OpenMU.Interfaces;
 using System.Collections.Immutable;
 
 /// <summary>
+/// Describes the relationship between two guilds.
+/// </summary>
+public enum GuildRelationship
+{
+    /// <summary>
+    /// No special relationship.
+    /// </summary>
+    None = 0,
+
+    /// <summary>
+    /// Both guilds are in the same alliance.
+    /// </summary>
+    Union = 1,
+
+    /// <summary>
+    /// The guilds are rivals / hostile to each other.
+    /// </summary>
+    Rival = 2,
+}
+
+/// <summary>
+/// Defines the result of an alliance creation attempt.
+/// </summary>
+public enum AllianceCreationResult
+{
+    /// <summary>
+    /// The alliance creation failed for an unspecified reason.
+    /// </summary>
+    Failed,
+
+    /// <summary>
+    /// The alliance was created successfully.
+    /// </summary>
+    Success,
+
+    /// <summary>
+    /// The master guild could not be found.
+    /// </summary>
+    MasterGuildNotFound,
+
+    /// <summary>
+    /// The target guild could not be found.
+    /// </summary>
+    TargetGuildNotFound,
+
+    /// <summary>
+    /// The target guild is already a member of an alliance.
+    /// </summary>
+    TargetGuildAlreadyInAlliance,
+
+    /// <summary>
+    /// The maximum number of guilds allowed in an alliance has been reached.
+    /// </summary>
+    MaximumAllianceSizeReached,
+
+    /// <summary>
+    /// The guild could not be found in the target context.
+    /// </summary>
+    GuildNotFoundInTargetContext,
+
+    /// <summary>
+    /// An unexpected error occurred during alliance creation.
+    /// </summary>
+    Error,
+}
+
+/// <summary>
 /// Interface for the guild server.
 /// </summary>
 /// <remarks>
@@ -108,6 +175,53 @@ public interface IGuildServer
     /// </summary>
     /// <param name="guildId">The identifier of the guild.</param>
     ValueTask IncreaseGuildScoreAsync(uint guildId);
+
+    /// <summary>
+    /// Creates an alliance between the master guild and the target guild.
+    /// The master guild becomes (or remains) the alliance master.
+    /// </summary>
+    /// <param name="masterGuildId">The identifier of the master guild that initiates the alliance.</param>
+    /// <param name="targetGuildId">The identifier of the target guild to add to the alliance.</param>
+    /// <returns><c>true</c> if the alliance was created successfully; <c>false</c> otherwise.</returns>
+    ValueTask<AllianceCreationResult> CreateAllianceAsync(uint masterGuildId, uint targetGuildId);
+
+    /// <summary>
+    /// Removes a guild from an alliance.
+    /// </summary>
+    /// <param name="targetGuildId">The identifier of the guild to remove from its alliance.</param>
+    /// <returns><c>true</c> if the guild was removed successfully; <c>false</c> otherwise.</returns>
+    ValueTask<bool> RemoveAllianceAsync(uint targetGuildId);
+
+    /// <summary>
+    /// Gets the list of guilds in the alliance of the specified guild.
+    /// </summary>
+    /// <param name="guildId">The identifier of any guild in the alliance.</param>
+    /// <returns>The list of alliance guilds.</returns>
+    ValueTask<IImmutableList<AllianceGuildEntry>> GetAllianceGuildsAsync(uint guildId);
+
+    /// <summary>
+    /// Determines whether the specified guild is the alliance master.
+    /// </summary>
+    /// <param name="guildId">The guild identifier.</param>
+    /// <returns><c>true</c> if the guild is the alliance master; <c>false</c> otherwise.</returns>
+    ValueTask<bool> IsAllianceMasterAsync(uint guildId);
+
+    /// <summary>
+    /// Sets or clears the hostility between guilds.
+    /// </summary>
+    /// <param name="guildIdA">The guild identifier of the requesting guild.</param>
+    /// <param name="guildIdB">The identifier of the target guild. Only used when <paramref name="create"/> is <c>true</c>.</param>
+    /// <param name="create"><c>true</c> to set hostility; <c>false</c> to clear any existing hostility.</param>
+    /// <returns><c>true</c> if the hostility state was changed successfully; <c>false</c> otherwise.</returns>
+    ValueTask<bool> SetHostilityAsync(uint guildIdA, uint guildIdB, bool create);
+
+    /// <summary>
+    /// Gets the relationship between two guilds.
+    /// </summary>
+    /// <param name="guild1">The first guild identifier.</param>
+    /// <param name="guild2">The second guild identifier.</param>
+    /// <returns>The relationship between the two guilds.</returns>
+    ValueTask<GuildRelationship> GetGuildRelationshipAsync(uint guild1, uint guild2);
 }
 
 /// <summary>

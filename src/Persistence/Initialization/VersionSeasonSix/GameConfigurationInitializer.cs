@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix;
 
 using System.Reflection;
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
@@ -50,6 +51,10 @@ public class GameConfigurationInitializer : GameConfigurationInitializerBase
 
         this.GameConfiguration.ItemOptions.Add(this.CreateOptionDefinition(Stats.BaseDamageBonus, ItemOptionDefinitionNumbers.PhysicalAndWizardryAttack));
         this.GameConfiguration.ItemOptions.Add(this.CreateOptionDefinition(Stats.CurseBaseDmg, ItemOptionDefinitionNumbers.CurseAttack));
+
+        var maximumAllianceSizeDef = Stats.MaximumAllianceSize.GetPersistent(this.GameConfiguration);
+        var maximumAllianceSizeValue = this.Context.CreateNew<ConstValueAttribute>(5f, maximumAllianceSizeDef);
+        this.GameConfiguration.GlobalBaseAttributeValues.Add(maximumAllianceSizeValue);
 
         new CharacterClassInitialization(this.Context, this.GameConfiguration).Initialize();
         new SkillsInitializer(this.Context, this.GameConfiguration).Initialize();

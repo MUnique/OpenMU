@@ -47,6 +47,7 @@ internal abstract class SkillsInitializerBase : InitializerBase
     /// <param name="movesToTarget">If set to <c>true</c>, the skill moves the player to the target.</param>
     /// <param name="movesTarget">If set to <c>true</c>, it moves target randomly.</param>
     /// <param name="cooldownMinutes">The cooldown minutes.</param>
+    /// <param name="hitsPerAttack">The number of hits per attack.</param>
     protected void CreateSkill(
         SkillNumber number,
         string name,
@@ -66,7 +67,8 @@ internal abstract class SkillsInitializerBase : InitializerBase
         SkillTargetRestriction targetRestriction = SkillTargetRestriction.Undefined,
         bool movesToTarget = false,
         bool movesTarget = false,
-        int cooldownMinutes = 0)
+        int cooldownMinutes = 0,
+        byte hitsPerAttack = 1)
     {
         var skill = this.Context.CreateNew<Skill>();
         this.GameConfiguration.Skills.Add(skill);
@@ -75,6 +77,7 @@ internal abstract class SkillsInitializerBase : InitializerBase
         skill.MovesToTarget = movesToTarget;
         skill.MovesTarget = movesTarget;
         skill.AttackDamage = damage;
+        skill.NumberOfHitsPerAttack = hitsPerAttack;
 
         this.CreateSkillRequirementIfNeeded(skill, Stats.Level, levelRequirement);
         this.CreateSkillRequirementIfNeeded(skill, Stats.TotalLeadership, leadershipRequirement);
@@ -116,11 +119,13 @@ internal abstract class SkillsInitializerBase : InitializerBase
     /// <param name="delayBetweenHits">The delay between hits.</param>
     /// <param name="minimumHitsPerTarget">The minimum hits per target.</param>
     /// <param name="maximumHitsPerTarget">The maximum hits per target.</param>
+    /// <param name="minimumHitsPerAttack">The minimum hits per attack.</param>
     /// <param name="maximumHitsPerAttack">The maximum hits per attack.</param>
     /// <param name="hitChancePerDistanceMultiplier">The hit chance per distance multiplier.</param>
     /// <param name="useTargetAreaFilter">If set to <c>true</c>, the skill should use a target area filter.</param>
     /// <param name="targetAreaDiameter">The target area diameter.</param>
     /// <param name="projectileCount">The number of projectiles/arrows. When greater than 1, they are evenly distributed within the frustum.</param>
+    /// <param name="effectRange">The effect range of the skill, from the target area center.</param>
     protected void AddAreaSkillSettings(
         SkillNumber skillNumber,
         bool useFrustumFilter,
@@ -132,11 +137,13 @@ internal abstract class SkillsInitializerBase : InitializerBase
         TimeSpan delayBetweenHits = default,
         int minimumHitsPerTarget = 1,
         int maximumHitsPerTarget = 1,
+        int minimumHitsPerAttack = default,
         int maximumHitsPerAttack = default,
         float hitChancePerDistanceMultiplier = 1.0f,
         bool useTargetAreaFilter = false,
         float targetAreaDiameter = default,
-        int projectileCount = 1)
+        int projectileCount = 1,
+        int effectRange = default)
     {
         var skill = this.GameConfiguration.Skills.First(s => s.Number == (short)skillNumber);
         var areaSkillSettings = this.Context.CreateNew<AreaSkillSettings>();
@@ -153,17 +160,27 @@ internal abstract class SkillsInitializerBase : InitializerBase
         areaSkillSettings.DelayBetweenHits = delayBetweenHits;
         areaSkillSettings.MinimumNumberOfHitsPerTarget = minimumHitsPerTarget;
         areaSkillSettings.MaximumNumberOfHitsPerTarget = maximumHitsPerTarget;
+        areaSkillSettings.MinimumNumberOfHitsPerAttack = minimumHitsPerAttack;
         areaSkillSettings.MaximumNumberOfHitsPerAttack = maximumHitsPerAttack;
         areaSkillSettings.HitChancePerDistanceMultiplier = hitChancePerDistanceMultiplier;
         areaSkillSettings.ProjectileCount = projectileCount;
+        areaSkillSettings.EffectRange = effectRange;
     }
 
     private void ApplyElementalModifier(ElementalType elementalModifier, Skill skill)
     {
-        if ((SkillNumber)skill.Number is SkillNumber.IceArrow or SkillNumber.IceArrowStrengthener)
+        if ((SkillNumber)skill.Number is SkillNumber.IceArrow)
         {
             skill.ElementalModifierTarget = Stats.IceResistance.GetPersistent(this.GameConfiguration);
             skill.MagicEffectDef = this.CreateEffect(ElementalType.Ice, MagicEffectNumber.Freeze, Stats.IsFrozen, 5);
+            return;
+        }
+
+        if ((SkillNumber)skill.Number is SkillNumber.Pollution)
+        {
+            skill.ElementalModifierTarget = Stats.LightningResistance.GetPersistent(this.GameConfiguration);
+            skill.SkipElementalModifier = true;
+            skill.MagicEffectDef = this.CreateEffect(ElementalType.Ice, MagicEffectNumber.Iced, Stats.IsIced, 2);
             return;
         }
 
@@ -172,6 +189,14 @@ internal abstract class SkillsInitializerBase : InitializerBase
             case ElementalType.Ice:
                 skill.ElementalModifierTarget = Stats.IceResistance.GetPersistent(this.GameConfiguration);
                 skill.MagicEffectDef = this.CreateEffect(ElementalType.Ice, MagicEffectNumber.Iced, Stats.IsIced, 10);
+
+                if ((SkillNumber)skill.Number is SkillNumber.ChainDrive)
+                {
+                    skill.SkipElementalModifier = true;
+                    skill.MagicEffectDef.Chance = this.Context.CreateNew<PowerUpDefinitionValue>();
+                    skill.MagicEffectDef.Chance.ConstantValue.Value = 0.4f;
+                }
+
                 break;
             case ElementalType.Poison:
                 skill.ElementalModifierTarget = Stats.PoisonResistance.GetPersistent(this.GameConfiguration);
@@ -183,15 +208,30 @@ internal abstract class SkillsInitializerBase : InitializerBase
                 break;
             case ElementalType.Lightning:
                 skill.ElementalModifierTarget = Stats.LightningResistance.GetPersistent(this.GameConfiguration);
+                if ((SkillNumber)skill.Number is SkillNumber.LightningShock || (SkillNumber)skill.Number is SkillNumber.Earthshake)
+                {
+                    skill.SkipElementalModifier = true;
+                }
+
                 break;
             case ElementalType.Fire:
                 skill.ElementalModifierTarget = Stats.FireResistance.GetPersistent(this.GameConfiguration);
+                if ((SkillNumber)skill.Number is SkillNumber.Explosion223)
+                {
+                    skill.SkipElementalModifier = true;
+                }
+
                 break;
             case ElementalType.Earth:
                 skill.ElementalModifierTarget = Stats.EarthResistance.GetPersistent(this.GameConfiguration);
                 break;
             case ElementalType.Wind:
                 skill.ElementalModifierTarget = Stats.WindResistance.GetPersistent(this.GameConfiguration);
+                if ((SkillNumber)skill.Number is SkillNumber.Requiem)
+                {
+                    skill.SkipElementalModifier = true;
+                }
+
                 break;
             case ElementalType.Water:
                 skill.ElementalModifierTarget = Stats.WaterResistance.GetPersistent(this.GameConfiguration);

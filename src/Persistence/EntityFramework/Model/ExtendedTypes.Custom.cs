@@ -66,7 +66,7 @@ internal partial class ConstValueAttribute
     /// <value>
     /// The character class identifier.
     /// </value>
-    public Guid CharacterClassId { get; set; }
+    public Guid? CharacterClassId { get; set; }
 
     /// <summary>
     /// Gets or sets the character class.
@@ -75,6 +75,22 @@ internal partial class ConstValueAttribute
     /// The character class.
     /// </value>
     public CharacterClass? CharacterClass { get; set; }
+
+    /// <summary>
+    /// Gets or sets the game configuration identifier.
+    /// </summary>
+    /// <value>
+    /// The game configuration identifier.
+    /// </value>
+    public Guid? GameConfigurationId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the game configuration.
+    /// </summary>
+    /// <value>
+    /// The game configuration.
+    /// </value>
+    public GameConfiguration? GameConfiguration { get; set; }
 
     /// <inheritdoc />
     public new float Value

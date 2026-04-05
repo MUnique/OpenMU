@@ -34,6 +34,11 @@ public partial class GameConfiguration
     public float ExperienceRate { get; set; }
 
     /// <summary>
+    /// Gets or sets the master experience rate of the game.
+    /// </summary>
+    public float MasterExperienceRate { get; set; } = 1.0f;
+
+    /// <summary>
     /// Gets or sets a value indicating whether experience overflow should be prevented.
     /// When <c>true</c>, if gaining experience would exceed the amount needed for the next level,
     /// only the necessary experience for the next level is gained, and the overflow is discarded.
@@ -264,6 +269,18 @@ public partial class GameConfiguration
     /// </summary>
     [MemberOfAggregate]
     public virtual ICollection<MasterSkillRoot> MasterSkillRoots { get; protected set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the attribute combinations.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<AttributeRelationship> GlobalAttributeCombinations { get; protected set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the base attribute values.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<ConstValueAttribute> GlobalBaseAttributeValues { get; protected set; } = null!;
 
     /// <summary>
     /// Gets or sets the plug in configurations.

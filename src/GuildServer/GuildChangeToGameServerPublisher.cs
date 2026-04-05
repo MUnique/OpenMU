@@ -48,4 +48,31 @@ public class GuildChangeToGameServerPublisher : IGuildChangePublisher
             await gameServer.AssignGuildToPlayerAsync(characterName, status).ConfigureAwait(false);
         }
     }
+
+    /// <inheritdoc />
+    public async ValueTask AllianceCreatedAsync(uint masterGuildId, uint memberGuildId)
+    {
+        foreach (var gameServer in this._gameServers.Values)
+        {
+            await gameServer.AllianceCreatedAsync(masterGuildId, memberGuildId).ConfigureAwait(false);
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask AllianceDisbandedAsync(uint masterGuildId, uint memberGuildId)
+    {
+        foreach (var gameServer in this._gameServers.Values)
+        {
+            await gameServer.AllianceDisbandedAsync(masterGuildId, memberGuildId).ConfigureAwait(false);
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask GuildHostilityChangedAsync(uint guildIdA, IReadOnlyList<uint> allianceGuildIdsA, uint guildIdB, IReadOnlyList<uint> allianceGuildIdsB, bool created)
+    {
+        foreach (var gameServer in this._gameServers.Values)
+        {
+            await gameServer.GuildHostilityChangedAsync(guildIdA, allianceGuildIdsA, guildIdB, allianceGuildIdsB, created).ConfigureAwait(false);
+        }
+    }
 }
