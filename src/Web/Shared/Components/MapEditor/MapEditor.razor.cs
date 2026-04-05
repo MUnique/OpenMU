@@ -384,22 +384,21 @@ public partial class MapEditor : IAsyncDisposable
             this._dragStartX = x;
             this._dragStartY = y;
 
-            switch (objectAtPosition)
+            if (objectAtPosition is MonsterSpawnArea spawn)
             {
-                case MonsterSpawnArea spawn:
-                    this._history.RecordSnapshot(spawn);
-                    this._dragObjX1 = spawn.X1;
-                    this._dragObjY1 = spawn.Y1;
-                    this._dragObjX2 = spawn.X2;
-                    this._dragObjY2 = spawn.Y2;
-                    break;
-                case Gate gate:
-                    this._history.RecordSnapshot(gate);
-                    this._dragObjX1 = gate.X1;
-                    this._dragObjY1 = gate.Y1;
-                    this._dragObjX2 = gate.X2;
-                    this._dragObjY2 = gate.Y2;
-                    break;
+                this._history.RecordSnapshot(spawn);
+                this._dragObjX1 = spawn.X1;
+                this._dragObjY1 = spawn.Y1;
+                this._dragObjX2 = spawn.X2;
+                this._dragObjY2 = spawn.Y2;
+            }
+            else if (objectAtPosition is Gate gate)
+            {
+                this._history.RecordSnapshot(gate);
+                this._dragObjX1 = gate.X1;
+                this._dragObjY1 = gate.Y1;
+                this._dragObjX2 = gate.X2;
+                this._dragObjY2 = gate.Y2;
             }
 
             await this.UpdateSelectValueAsync().ConfigureAwait(true);
@@ -435,14 +434,13 @@ public partial class MapEditor : IAsyncDisposable
         if (this._resizerPosition is not null && this._focusedObject is not null && coords.HasValue)
         {
             var (x, y) = coords.Value;
-            switch (this._focusedObject)
+            if (this._focusedObject is MonsterSpawnArea spawnArea)
             {
-                case MonsterSpawnArea spawnArea:
-                    this.OnSpawnAreaResizing(spawnArea, x, y);
-                    break;
-                case Gate gate:
-                    this.OnGateResizing(gate, x, y);
-                    break;
+                this.OnSpawnAreaResizing(spawnArea, x, y);
+            }
+            else if (this._focusedObject is Gate gate)
+            {
+                this.OnGateResizing(gate, x, y);
             }
 
             this.NotificationService.NotifyChange(this._focusedObject, null);
@@ -466,14 +464,14 @@ public partial class MapEditor : IAsyncDisposable
         }
     }
 
-    private void OnMapMouseUp(MouseEventArgs args)
+    private void OnMapMouseUp(MouseEventArgs _)
     {
         this._resizerPosition = null;
         this._isDragging = false;
         this._isPanning = false;
     }
 
-    private void OnMapMouseLeave(MouseEventArgs args)
+    private void OnMapMouseLeave(MouseEventArgs _)
     {
         this._isPanning = false;
     }
@@ -505,6 +503,8 @@ public partial class MapEditor : IAsyncDisposable
                 gate.X2 = (byte)newX2;
                 gate.Y2 = (byte)newY2;
                 break;
+            default:
+                break;
         }
     }
 
@@ -528,6 +528,8 @@ public partial class MapEditor : IAsyncDisposable
                 spawnArea.X2 = Math.Max(x, spawnArea.X1);
                 spawnArea.Y1 = Math.Min(y, spawnArea.Y2);
                 break;
+            default:
+                break;
         }
     }
 
@@ -550,6 +552,8 @@ public partial class MapEditor : IAsyncDisposable
             case Resizers.ResizerPosition.BottomLeft:
                 gate.X2 = Math.Max(x, gate.X1);
                 gate.Y1 = Math.Min(y, gate.Y2);
+                break;
+            default:
                 break;
         }
     }
@@ -764,6 +768,8 @@ public partial class MapEditor : IAsyncDisposable
                     break;
                 case Gate gate:
                     this._history.RecordSnapshot(gate);
+                    break;
+                default:
                     break;
             }
         }

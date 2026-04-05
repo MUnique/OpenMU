@@ -179,6 +179,8 @@ public sealed class MapEditorHistory
                 case ExitGate exitGate:
                     this._map.ExitGates.Remove(exitGate);
                     break;
+                default:
+                    break;
             }
 
             return null;
@@ -208,6 +210,8 @@ public sealed class MapEditorHistory
                     break;
                 case ExitGate exitGate:
                     this._map.ExitGates.Add(exitGate);
+                    break;
+                default:
                     break;
             }
 

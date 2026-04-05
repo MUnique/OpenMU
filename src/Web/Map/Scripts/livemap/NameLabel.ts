@@ -1,5 +1,14 @@
 import * as THREE from "three";
 
+const CANVAS_WIDTH = 512;
+const CANVAS_HEIGHT = 64;
+const LABEL_SCALE_X = 40;
+const LABEL_SCALE_Y = 6;
+const LABEL_SCALE_Z = 1;
+const CLEAR_X = 0;
+const CLEAR_Y = 0;
+const SCALE_MULTIPLIER = 8;
+
 export class NameLabel extends THREE.Sprite {
     private readonly canvas: HTMLCanvasElement;
     private readonly context: CanvasRenderingContext2D;
@@ -8,9 +17,12 @@ export class NameLabel extends THREE.Sprite {
 
     constructor() {
         const canvas = document.createElement("canvas");
-        canvas.width = 512;
-        canvas.height = 64;
-        const context = canvas.getContext("2d")!;
+        canvas.width = CANVAS_WIDTH;
+        canvas.height = CANVAS_HEIGHT;
+        const context = canvas.getContext("2d");
+        if (!context) {
+            throw new Error("Failed to get 2D context");
+        }
         const texture = new THREE.CanvasTexture(canvas);
         const material = new THREE.SpriteMaterial({ map: texture, transparent: true });
 
@@ -20,7 +32,7 @@ export class NameLabel extends THREE.Sprite {
         this.context = context;
         this.texture = texture;
 
-        this.scale.set(40, 6, 1);
+        this.scale.set(LABEL_SCALE_X, LABEL_SCALE_Y, LABEL_SCALE_Z);
         this.visible = false;
     }
 
@@ -55,9 +67,9 @@ export class NameLabel extends THREE.Sprite {
 
         // Re-apply font after canvas resize (resize resets context state)
         ctx.font = "bold 28px Consolas, monospace";
-        this.scale.set((canvas.width / canvas.height) * 8, 8, 1);
+        this.scale.set((canvas.width / canvas.height) * SCALE_MULTIPLIER, SCALE_MULTIPLIER, LABEL_SCALE_Z);
 
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.clearRect(CLEAR_X, CLEAR_Y, canvas.width, canvas.height);
 
         const x = (canvas.width - labelWidth) / 2;
         const y = (canvas.height - labelHeight) / 2;

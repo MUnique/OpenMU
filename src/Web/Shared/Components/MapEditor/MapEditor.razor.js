@@ -17,41 +17,45 @@ function _setZoomLevel(element, zoom) {
 }
 
 /**
- * Applies a zoom level to the map content and updates the zoom display label.
- * @param {HTMLElement} element - The map host element.
- * @param {number} zoom - The zoom level to apply.
- */
-function _applyZoom(element, zoom) {
-    const content = element.querySelector('.map-content');
-    const img = element.querySelector('.map-content img');
-
-    if (!content) return;
-
-    const size = Math.round(BASE_SIZE * zoom);
-    content.style.width = size + 'px';
-    content.style.height = size + 'px';
-
-    if (img) {
-        img.style.width = size + 'px';
-        img.style.height = size + 'px';
-    }
-
-    _updateZoomDisplay(element, zoom);
-}
-
-/**
  * Updates the zoom percentage label in the map host container.
  * @param {HTMLElement} element - The map host element.
  * @param {number} zoom - The current zoom level.
  */
 function _updateZoomDisplay(element, zoom) {
-    const container = element.closest('.map-host-container');
-    if (!container) return;
-
-    const zoomLabel = container.querySelector('.zoom-label');
-    if (zoomLabel) {
-        zoomLabel.textContent = Math.round(zoom * 100) + '%';
+    const container = element.closest(".map-host-container");
+    if (!container) {
+        return;
     }
+
+    const zoomLabel = container.querySelector(".zoom-label");
+    if (zoomLabel) {
+        zoomLabel.textContent = Math.round(zoom * 100) + "%";
+    }
+}
+
+/**
+ * Applies a zoom level to the map content and updates the zoom display label.
+ * @param {HTMLElement} element - The map host element.
+ * @param {number} zoom - The zoom level to apply.
+ */
+function _applyZoom(element, zoom) {
+    const content = element.querySelector(".map-content");
+    const img = element.querySelector(".map-content img");
+
+    if (!content) {
+        return;
+    }
+
+    const size = Math.round(BASE_SIZE * zoom);
+    content.style.width = size + "px";
+    content.style.height = size + "px";
+
+    if (img) {
+        img.style.width = size + "px";
+        img.style.height = size + "px";
+    }
+
+    _updateZoomDisplay(element, zoom);
 }
 
 /**
@@ -61,7 +65,9 @@ function _updateZoomDisplay(element, zoom) {
  * @param {number} initialZoom - The initial zoom level to apply.
  */
 export function initialize(dotNetRef, element, initialZoom) {
-    if (!element) return;
+    if (!element) {
+        return;
+    }
     _setZoomLevel(element, initialZoom);
     _applyZoom(element, initialZoom);
 }
@@ -72,7 +78,9 @@ export function initialize(dotNetRef, element, initialZoom) {
  * @param {string} value - The value to select.
  */
 export function setSelectValue(selectElement, value) {
-    if (!selectElement) return;
+    if (!selectElement) {
+        return;
+    }
     selectElement.value = value;
 }
 
@@ -115,7 +123,9 @@ export function getState(element) {
  * @param {number} scrollTop - The vertical scroll offset.
  */
 export function setScroll(element, scrollLeft, scrollTop) {
-    if (!element) return;
+    if (!element) {
+        return;
+    }
     element.scrollLeft = Math.max(0, scrollLeft);
     element.scrollTop = Math.max(0, scrollTop);
 }
@@ -130,14 +140,17 @@ export function setScroll(element, scrollLeft, scrollTop) {
  * @returns {{ zoomLevel: number, handled: boolean, scrollLeft?: number, scrollTop?: number }}
  */
 export function handleWheel(element, deltaY, clientX, clientY) {
-    if (!element) return { zoomLevel: 1.0, handled: false };
+    if (!element) {
+        return { zoomLevel: 1.0, handled: false };
+    }
 
     const oldZoom = _getZoomLevel(element);
     const sensitivity = 0.001;
     const zoomDelta = -deltaY * sensitivity;
     const newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, oldZoom * (1.0 + zoomDelta)));
 
-    if (Math.abs(newZoom - oldZoom) < 0.0001) {
+    const zoomThreshold = 1e-4;
+    if (Math.abs(newZoom - oldZoom) < zoomThreshold) {
         return { zoomLevel: oldZoom, handled: false };
     }
 
@@ -172,12 +185,15 @@ export function handleWheel(element, deltaY, clientX, clientY) {
  * @returns {number} The applied zoom level.
  */
 export function zoomTo(element, newZoom) {
-    if (!element) return 1.0;
+    if (!element) {
+        return 1.0;
+    }
 
     const oldZoom = _getZoomLevel(element);
     const clampedZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, newZoom));
 
-    if (Math.abs(clampedZoom - oldZoom) < 0.0001) {
+    const zoomThreshold = 1e-4;
+    if (Math.abs(clampedZoom - oldZoom) < zoomThreshold) {
         return oldZoom;
     }
 
@@ -206,7 +222,9 @@ export function zoomTo(element, newZoom) {
  * @returns {number} The reset zoom level (always 1.0).
  */
 export function resetZoom(element) {
-    if (!element) return 1.0;
+    if (!element) {
+        return 1.0;
+    }
 
     _setZoomLevel(element, 1.0);
     _applyZoom(element, 1.0);
@@ -224,7 +242,9 @@ export function resetZoom(element) {
  * @param {number} baseScale - The base pixel scale factor.
  */
 export function centerOn(element, mapX, mapY, baseScale) {
-    if (!element) return;
+    if (!element) {
+        return;
+    }
 
     const zoom = _getZoomLevel(element);
     const scale = baseScale * zoom;
@@ -238,7 +258,7 @@ export function centerOn(element, mapX, mapY, baseScale) {
     element.scrollTo({
         left: Math.max(0, Math.min(pixelX - (element.clientWidth / 2), maxScrollLeft)),
         top: Math.max(0, Math.min(pixelY - (element.clientHeight / 2), maxScrollTop)),
-        behavior: 'smooth'
+        behavior: "smooth"
     });
 }
 

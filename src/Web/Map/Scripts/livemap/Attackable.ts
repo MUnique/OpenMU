@@ -4,6 +4,9 @@ import { ObjectData, Step, Direction } from "./Types";
 import { GameObject } from "./GameObject";
 import { NameLabel } from "./NameLabel";
 
+const NAME_LABEL_Z_POSITION = 200;
+const NAME_INDEX = 0;
+
 export class Attackable<TData extends ObjectData> extends THREE.Mesh implements GameObject {
     public data: TData;
     public material: THREE.Material;
@@ -16,12 +19,12 @@ export class Attackable<TData extends ObjectData> extends THREE.Mesh implements 
         this.data = data;
         this.moveTween = null;
         this.nameLabel = new NameLabel();
-        this.nameLabel.position.z = 200;
+        this.nameLabel.position.z = NAME_LABEL_Z_POSITION;
         this.add(this.nameLabel);
     }
 
     public showLabel(): void {
-        this.nameLabel.show(this.data.name.split(" - Id:")[0]);
+        this.nameLabel.show(this.data.name.split(" - Id:")[NAME_INDEX]);
     }
 
     public hideLabel(): void {
