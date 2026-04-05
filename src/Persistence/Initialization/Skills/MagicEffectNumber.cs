@@ -252,6 +252,16 @@ internal enum MagicEffectNumber : short
     Blind = 0x49,
 
     /// <summary>
+    /// The requiem (book of neil) effect. Similar to <see cref="Poisoned"/> but damage is every second.
+    /// </summary>
+    Requiem = 0x4A,
+
+    /// <summary>
+    /// The explosion (book of samut) effect. Similar to <see cref="Poisoned"/> but damage is every second.
+    /// </summary>
+    Explosion = 0x4B,
+
+    /// <summary>
     /// The weakness effect, which decreases the physical damage.
     /// </summary>
     Weakness = 0x4C,

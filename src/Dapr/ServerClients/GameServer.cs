@@ -178,4 +178,22 @@ public class GameServer : IGameServer
     {
         return await this._client.InvokeMethodAsync<string, bool>(this._targetAppId, nameof(this.BanPlayerAsync), playerName).ConfigureAwait(false);
     }
+
+    /// <inheritdoc />
+    public async ValueTask AllianceCreatedAsync(uint masterGuildId, uint memberGuildId)
+    {
+        await this._client.InvokeMethodAsync(this._targetAppId, nameof(this.AllianceCreatedAsync), (masterGuildId, memberGuildId)).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public async ValueTask AllianceDisbandedAsync(uint masterGuildId, uint memberGuildId)
+    {
+        await this._client.InvokeMethodAsync(this._targetAppId, nameof(this.AllianceDisbandedAsync), (masterGuildId, memberGuildId)).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public async ValueTask GuildHostilityChangedAsync(uint guildIdA, IReadOnlyList<uint> allianceGuildIdsA, uint guildIdB, IReadOnlyList<uint> allianceGuildIdsB, bool created)
+    {
+        await this._client.InvokeMethodAsync(this._targetAppId, nameof(this.GuildHostilityChangedAsync), (guildIdA, allianceGuildIdsA, guildIdB, allianceGuildIdsB, created)).ConfigureAwait(false);
+    }
 }

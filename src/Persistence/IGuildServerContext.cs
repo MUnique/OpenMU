@@ -25,4 +25,11 @@ public interface IGuildServerContext : IContext
     /// <returns>The member names of a guild.</returns>
     /// <remarks>Since names are stored in Character.Name and not duplicated.</remarks>
     ValueTask<IReadOnlyDictionary<Guid, string>> GetMemberNamesAsync(Guid guildId);
+
+    /// <summary>
+    /// Gets the alliances of a guild.
+    /// </summary>
+    /// <param name="guildId">The guild identifier.</param>
+    /// <returns>The ids of the alliances of a guild.</returns>
+    ValueTask<IReadOnlyList<DataModel.Entities.Guild>> GetAlliancesAsync(Guid guildId);
 }

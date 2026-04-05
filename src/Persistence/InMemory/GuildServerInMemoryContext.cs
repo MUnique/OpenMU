@@ -37,4 +37,14 @@ public class GuildServerInMemoryContext : InMemoryContext, IGuildServerContext
             .Where(m => m.Name is not null)
             .ToDictionary(m => m.Id, m => m.Name);
     }
+
+    /// <inheritdoc/>
+    public async ValueTask<IReadOnlyList<DataModel.Entities.Guild>> GetAlliancesAsync(Guid guildId)
+    {
+        return (await this.Provider.GetRepository<DataModel.Entities.Guild>()
+            .GetAllAsync()
+            .ConfigureAwait(false))
+            .Where(g => g.AllianceGuild?.GetId() == guildId)
+            .ToList();
+    }
 }

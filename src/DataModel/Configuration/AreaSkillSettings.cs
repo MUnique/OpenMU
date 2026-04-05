@@ -69,6 +69,11 @@ public partial class AreaSkillSettings
     public int MaximumNumberOfHitsPerTarget { get; set; }
 
     /// <summary>
+    /// Gets or sets the minimum number of hits per attack, after which subsequent hits have a reduced chance to hit.
+    /// </summary>
+    public int MinimumNumberOfHitsPerAttack { get; set; }
+
+    /// <summary>
     /// Gets or sets the maximum number of hits per attack.
     /// </summary>
     public int MaximumNumberOfHitsPerAttack { get; set; }
@@ -76,7 +81,7 @@ public partial class AreaSkillSettings
     /// <summary>
     /// Gets or sets the hit chance per distance multiplier.
     /// E.g. when set to 0.9 and the target is 5 steps away,
-    /// the chance to hit is 5^0.9 = 0.59.
+    /// the chance to hit is 0.9^5 = 0.59.
     /// </summary>
     public float HitChancePerDistanceMultiplier { get; set; }
 
@@ -87,6 +92,11 @@ public partial class AreaSkillSettings
     /// Default is 1 (single projectile).
     /// </summary>
     public int ProjectileCount { get; set; }
+
+    /// <summary>
+    /// Gets or sets the effect range of the skill, which is the maximum distance from the target area center.
+    /// </summary>
+    public int EffectRange { get; set; }
 
     /// <inheritdoc />
     public override string ToString()

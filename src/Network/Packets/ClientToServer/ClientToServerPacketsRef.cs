@@ -12182,8 +12182,8 @@ public readonly ref struct GuildRelationshipChangeRequestRef
     /// </summary>
     public ushort TargetPlayerId
     {
-        get => ReadUInt16LittleEndian(this._data[5..]);
-        set => WriteUInt16LittleEndian(this._data[5..], value);
+        get => ReadUInt16BigEndian(this._data[5..]);
+        set => WriteUInt16BigEndian(this._data[5..], value);
     }
 
     /// <summary>
@@ -12288,8 +12288,8 @@ public readonly ref struct GuildRelationshipChangeResponseRef
     /// </summary>
     public ushort TargetPlayerId
     {
-        get => ReadUInt16LittleEndian(this._data[6..]);
-        set => WriteUInt16LittleEndian(this._data[6..], value);
+        get => ReadUInt16BigEndian(this._data[6..]);
+        set => WriteUInt16BigEndian(this._data[6..], value);
     }
 
     /// <summary>

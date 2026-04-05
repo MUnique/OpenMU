@@ -67,6 +67,15 @@ public class SelfDefensePlugIn : IPeriodicTaskPlugIn, IAttackableGotHitPlugIn, I
             return;
         }
 
+        // No self-defense between rival guild members - they can fight without consequences.
+        if (attackerPlayer.GuildStatus is { } attackerGuildStatus
+            && defender.GuildStatus is { } defenderGuildStatus
+            && attackerPlayer.GameContext is IGameServerContext serverContext
+            && serverContext.AreGuildsRival(attackerGuildStatus.GuildId, defenderGuildStatus.GuildId))
+        {
+            return;
+        }
+
         if (attackerPlayer.IsSelfDefenseActive(defender))
         {
             // Attacking during self defense period does not initiate another self defense.

@@ -287,6 +287,17 @@ public partial class Skill
     public virtual AttributeDefinition? ElementalModifierTarget { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the elemental modifier resistance should be ignored, which means the skill uses a specific logic.
+    /// </summary>
+    /// <remarks>
+    /// Not all skills have magic effects corresponding to their element,
+    /// e.g. Pollution (book of lagle, lightning) has a 100% chance iceing effect.
+    /// Other skills have magic effects which may or may not be related to their element, but which apply regardless of resistance,
+    /// e.g. Explosion (book of samut, fire) and Requiem (book of neil, wind) have 100% bleeding effects.
+    /// </remarks>
+    public bool SkipElementalModifier { get; set; }
+
+    /// <summary>
     /// Gets or sets the magic effect definition. It will be applied for buff skills.
     /// </summary>
     public virtual MagicEffectDefinition? MagicEffectDef { get; set; }
