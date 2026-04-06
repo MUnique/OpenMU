@@ -42,12 +42,15 @@ public sealed class MapCoordinateService
         var contentY = (clientY - rect.Top) + scroll.ScrollTop;
 
         var scale = this.GetEffectiveScale(zoomLevel);
-        var mapY = (int)(contentX / scale);
-        var mapX = (int)(contentY / scale);
 
-        if (mapX >= 0 && mapX < MapSize && mapY >= 0 && mapY < MapSize)
+        // Game X maps to screen Y (vertical/top), game Y maps to screen X (horizontal/left).
+        // This inversion matches the rendering convention used in MapObjectStyleService.
+        var gameX = (int)(contentY / scale);
+        var gameY = (int)(contentX / scale);
+
+        if (gameX >= 0 && gameX < MapSize && gameY >= 0 && gameY < MapSize)
         {
-            return ((byte)mapX, (byte)mapY);
+            return ((byte)gameX, (byte)gameY);
         }
 
         return null;

@@ -60,11 +60,10 @@ function _applyZoom(element, zoom) {
 
 /**
  * Initializes the map editor for the given host element.
- * @param dotNetRef - The .NET component reference (reserved for future callbacks).
  * @param {HTMLElement} element - The map host element.
  * @param {number} initialZoom - The initial zoom level to apply.
  */
-export function initialize(dotNetRef, element, initialZoom) {
+export function initialize(element, initialZoom) {
     if (!element) {
         return;
     }
@@ -137,7 +136,7 @@ export function setScroll(element, scrollLeft, scrollTop) {
  * @param {number} deltaY - The vertical scroll delta from the wheel event.
  * @param {number} clientX - The client X position of the cursor.
  * @param {number} clientY - The client Y position of the cursor.
- * @returns {{ zoomLevel: number, handled: boolean, scrollLeft?: number, scrollTop?: number }}
+ * @returns {{ zoomLevel: number, handled: boolean }}
  */
 export function handleWheel(element, deltaY, clientX, clientY) {
     if (!element) {
@@ -167,9 +166,7 @@ export function handleWheel(element, deltaY, clientX, clientY) {
 
     return {
         zoomLevel: newZoom,
-        handled: true,
-        scrollLeft: element.scrollLeft,
-        scrollTop: element.scrollTop
+        handled: true
     };
 }
 

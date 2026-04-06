@@ -120,17 +120,5 @@ public sealed class MapZoomManager
 
         /// <summary>Gets or sets a value indicating whether the wheel event was consumed.</summary>
         public bool Handled { get; set; }
-
-        /// <summary>
-        /// Gets or sets the horizontal scroll offset after zooming.
-        /// Only meaningful when <see cref="Handled"/> is <see langword="true"/>.
-        /// </summary>
-        public double? ScrollLeft { get; set; }
-
-        /// <summary>
-        /// Gets or sets the vertical scroll offset after zooming.
-        /// Only meaningful when <see cref="Handled"/> is <see langword="true"/>.
-        /// </summary>
-        public double? ScrollTop { get; set; }
     }
 }

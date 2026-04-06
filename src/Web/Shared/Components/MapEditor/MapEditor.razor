@@ -90,7 +90,7 @@
                      @onwheel:stopPropagation="true"
                      @ref="_mapHostRef">
                     <div class="map-content">
-                        <img src="@(this._terrainImage.ToBase64String(PngFormat.Instance))"
+                        <img src="@this._terrainImageDataUrl"
                              draggable="false"
                              alt="@string.Format(Resources.TerrainOf, this.SelectedMap.Name)" />
                         @foreach (var obj in this.GetMapObjects())

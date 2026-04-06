@@ -14,12 +14,12 @@ public sealed class MapEditorHistory
 {
     private const int MaxUndoSteps = 50;
 
-    private readonly Stack<IUndoStep> _undoStack = new();
+    private readonly List<IUndoStep> _undoList = [];
 
     /// <summary>
     /// Gets a value indicating whether there are any steps available to undo.
     /// </summary>
-    public bool CanUndo => this._undoStack.Count > 0;
+    public bool CanUndo => this._undoList.Count > 0;
 
     /// <summary>
     /// Records the current state of a spawn area before a mutation.
@@ -27,7 +27,7 @@ public sealed class MapEditorHistory
     /// <param name="spawn">The spawn area to snapshot.</param>
     public void RecordSnapshot(MonsterSpawnArea spawn)
     {
-        this.Push(new SpawnAreaSnapshot(spawn));
+        this.Add(new SpawnAreaSnapshot(spawn));
     }
 
     /// <summary>
@@ -36,7 +36,7 @@ public sealed class MapEditorHistory
     /// <param name="gate">The gate to snapshot.</param>
     public void RecordSnapshot(Gate gate)
     {
-        this.Push(new GateSnapshot(gate));
+        this.Add(new GateSnapshot(gate));
     }
 
     /// <summary>
@@ -46,7 +46,7 @@ public sealed class MapEditorHistory
     /// <param name="obj">The object that was created.</param>
     public void RecordCreation(GameMapDefinition map, object obj)
     {
-        this.Push(new CreationStep(map, obj));
+        this.Add(new CreationStep(map, obj));
     }
 
     /// <summary>
@@ -56,7 +56,7 @@ public sealed class MapEditorHistory
     /// <param name="obj">The object that was deleted.</param>
     public void RecordDeletion(GameMapDefinition map, object obj)
     {
-        this.Push(new DeletionStep(map, obj));
+        this.Add(new DeletionStep(map, obj));
     }
 
     /// <summary>
@@ -65,10 +65,14 @@ public sealed class MapEditorHistory
     /// <returns>The object that was affected by the undo, or <see langword="null"/>.</returns>
     public object? Undo()
     {
-        if (!this._undoStack.TryPop(out var step))
+        if (this._undoList.Count == 0)
         {
             return null;
         }
+
+        var index = this._undoList.Count - 1;
+        var step = this._undoList[index];
+        this._undoList.RemoveAt(index);
 
         return step.Undo();
     }
@@ -76,21 +80,16 @@ public sealed class MapEditorHistory
     /// <summary>
     /// Clears all recorded history.
     /// </summary>
-    public void Clear() => this._undoStack.Clear();
+    public void Clear() => this._undoList.Clear();
 
-    private void Push(IUndoStep step)
+    private void Add(IUndoStep step)
     {
-        if (this._undoStack.Count >= MaxUndoSteps)
+        if (this._undoList.Count >= MaxUndoSteps)
         {
-            var items = this._undoStack.ToArray();
-            this._undoStack.Clear();
-            foreach (var item in items.Take(items.Length - 1).Reverse())
-            {
-                this._undoStack.Push(item);
-            }
+            this._undoList.RemoveAt(0);
         }
 
-        this._undoStack.Push(step);
+        this._undoList.Add(step);
     }
 
     private interface IUndoStep
@@ -172,19 +171,17 @@ public sealed class MapEditorHistory
             {
                 case MonsterSpawnArea spawn:
                     this._map.MonsterSpawns.Remove(spawn);
-                    break;
+                    return spawn;
                 case EnterGate enterGate:
                     this._map.EnterGates.Remove(enterGate);
-                    break;
+                    return enterGate;
                 case ExitGate exitGate:
                     this._map.ExitGates.Remove(exitGate);
-                    break;
+                    return exitGate;
                 default:
                     // Unsupported object type.
-                    break;
+                    return null;
             }
-
-            return null;
         }
     }
 

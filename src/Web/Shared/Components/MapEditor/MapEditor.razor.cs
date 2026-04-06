@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Web.Shared.Components.MapEditor;
 
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
@@ -14,6 +15,7 @@ using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Web.Shared.Services;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.PixelFormats;
 
 /// <summary>
@@ -40,9 +42,12 @@ public partial class MapEditor : IAsyncDisposable
     private MapZoomManager? _zoomManager;
     private MapObjectFactory? _objectFactory;
     private Image<Rgba32>? _terrainImage;
+    private string? _terrainImageDataUrl;
     private ElementReference _mapHostRef;
     private ElementReference _objectSelectRef;
     private IJSObjectReference? _jsModule;
+
+    private GameMapDefinition? _selectedMap;
 
     private bool _showGrid;
     private bool _isInitialized;
@@ -50,11 +55,11 @@ public partial class MapEditor : IAsyncDisposable
     private bool _isDragging;
     private bool _isPanning;
     private bool _isRendering;
+    private bool _undoStepRecorded;
 
     private object? _focusedObject;
     private string _searchFilter = string.Empty;
     private ObjectTypeFilter _activeFilter = ObjectTypeFilter.All;
-    private GameMapDefinition? _selectedMap;
     private Resizers.ResizerPosition? _resizerPosition;
 
     private int _mouseMapX;
@@ -72,13 +77,14 @@ public partial class MapEditor : IAsyncDisposable
     /// allowing the caller to cancel the change.
     /// </summary>
     [Parameter]
-    public EventCallback<MapChangingArgs>? SelectedMapChanging { get; set; }
+    public EventCallback<MapChangingArgs> SelectedMapChanging { get; set; }
 
     /// <summary>
     /// Gets or sets the full list of available maps to display in the map selector.
     /// </summary>
     [Parameter]
-    public List<GameMapDefinition> Maps { get; set; } = null!;
+    [EditorRequired]
+    public required List<GameMapDefinition> Maps { get; set; }
 
     /// <summary>
     /// Gets or sets the ID of the initially selected map.
@@ -118,8 +124,7 @@ public partial class MapEditor : IAsyncDisposable
     /// <summary>
     /// Gets the effective pixel scale for the current zoom level.
     /// </summary>
-    private float EffectiveScale => this._coordinateService.GetEffectiveScale(
-        this._zoomManager?.ZoomLevel ?? 1.0f);
+    private float EffectiveScale => this._coordinateService.GetEffectiveScale(this._zoomManager?.ZoomLevel ?? 1.0f);
 
     /// <summary>
     /// Gets or sets the currently selected map, rebuilding the terrain image when changed.
@@ -129,8 +134,10 @@ public partial class MapEditor : IAsyncDisposable
         get => this._selectedMap ?? throw new InvalidOperationException($"{nameof(this.SelectedMap)} is not initialized.");
         set
         {
+            this._terrainImage?.Dispose();
             this._selectedMap = value;
             this._terrainImage = new GameMapTerrain(this.SelectedMap).ToImage();
+            this._terrainImageDataUrl = this._terrainImage.ToBase64String(PngFormat.Instance);
         }
     }
 
@@ -178,7 +185,6 @@ public partial class MapEditor : IAsyncDisposable
 
             await this._jsModule.InvokeVoidAsync(
                 "initialize",
-                DotNetObjectReference.Create(this),
                 this._mapHostRef,
                 zoomLevel).ConfigureAwait(true);
 
@@ -190,6 +196,11 @@ public partial class MapEditor : IAsyncDisposable
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
+        if (this.Maps is not { Count: > 0 })
+        {
+            throw new InvalidOperationException("The Maps parameter is required and must not be empty.");
+        }
+
         if (this._selectedMap is null)
         {
             this.SelectedMap = this.SelectedMapId == Guid.Empty
@@ -210,16 +221,21 @@ public partial class MapEditor : IAsyncDisposable
                 this._isRendering = false;
             }
         }
-        catch
+        catch (ObjectDisposedException)
         {
-            // Ignore
+            // Ignored, component was disposed before callback completed.
+        }
+        catch (JSDisconnectedException)
+        {
+            // Ignored, browser tab was closed or navigated away.
         }
     }
 
     private void SetActiveFilter(ObjectTypeFilter filter)
     {
         this._activeFilter = filter;
-        if (this._focusedObject is not null && !MapObjectSelector.MatchesFilters(this._focusedObject, this._activeFilter, this._searchFilter))
+        if (this._focusedObject is not null &&
+            !MapObjectSelector.MatchesFilters(this._focusedObject, this._activeFilter, this._searchFilter))
         {
             this._focusedObject = null;
         }
@@ -228,9 +244,12 @@ public partial class MapEditor : IAsyncDisposable
     private int GetObjectListSize()
     {
         var count = 1
-            + this.SelectedMap.EnterGates.Count(g => MapObjectSelector.MatchesFilters(g, this._activeFilter, this._searchFilter))
-            + this.SelectedMap.ExitGates.Count(g => MapObjectSelector.MatchesFilters(g, this._activeFilter, this._searchFilter))
-            + this.SelectedMap.MonsterSpawns.Count(s => MapObjectSelector.MatchesFilters(s, this._activeFilter, this._searchFilter));
+            + this.SelectedMap.EnterGates
+                .Count(g => MapObjectSelector.MatchesFilters(g, this._activeFilter, this._searchFilter))
+            + this.SelectedMap.ExitGates
+                .Count(g => MapObjectSelector.MatchesFilters(g, this._activeFilter, this._searchFilter))
+            + this.SelectedMap.MonsterSpawns
+                .Count(s => MapObjectSelector.MatchesFilters(s, this._activeFilter, this._searchFilter));
 
         return Math.Min(count, MaxObjectSelectSize);
     }
@@ -286,12 +305,17 @@ public partial class MapEditor : IAsyncDisposable
 
     private async Task OnObjectSelectedAsync(ChangeEventArgs args)
     {
+        if (!Guid.TryParse(args.Value?.ToString(), out var selectedId))
+        {
+            return;
+        }
+
         var obj = this.SelectedMap.EnterGates
-                      .FirstOrDefault<object>(g => g.GetId().ToString() == args.Value?.ToString())
+                      .FirstOrDefault<object>(g => g.GetId() == selectedId)
                   ?? this.SelectedMap.ExitGates
-                      .FirstOrDefault<object>(g => g.GetId().ToString() == args.Value?.ToString())
+                      .FirstOrDefault<object>(g => g.GetId() == selectedId)
                   ?? this.SelectedMap.MonsterSpawns
-                      .FirstOrDefault(g => g.GetId().ToString() == args.Value?.ToString());
+                      .FirstOrDefault(g => g.GetId() == selectedId);
 
         if (obj is not null && !MapObjectSelector.MatchesFilters(obj, this._activeFilter, this._searchFilter))
         {
@@ -347,12 +371,12 @@ public partial class MapEditor : IAsyncDisposable
         {
             this._focusedObject = objectAtPosition;
             this._isDragging = true;
+            this._undoStepRecorded = false;
             this._dragStartX = x;
             this._dragStartY = y;
 
             if (objectAtPosition is MonsterSpawnArea spawn)
             {
-                this._history.RecordSnapshot(spawn);
                 this._dragObjX1 = spawn.X1;
                 this._dragObjY1 = spawn.Y1;
                 this._dragObjX2 = spawn.X2;
@@ -360,16 +384,10 @@ public partial class MapEditor : IAsyncDisposable
             }
             else if (objectAtPosition is Gate gate)
             {
-                this._history.RecordSnapshot(gate);
                 this._dragObjX1 = gate.X1;
                 this._dragObjY1 = gate.Y1;
                 this._dragObjX2 = gate.X2;
                 this._dragObjY2 = gate.Y2;
-            }
-            else
-            {
-                // Other object types (e.g. single-tile objects) don't have rectangular drag coordinates,
-                // only the top-left position is moved in OnObjectDragging.
             }
 
             await this.UpdateSelectValueAsync().ConfigureAwait(true);
@@ -467,20 +485,40 @@ public partial class MapEditor : IAsyncDisposable
         switch (this._focusedObject)
         {
             case MonsterSpawnArea spawn:
-                spawn.X1 = (byte)newX1;
-                spawn.Y1 = (byte)newY1;
-                spawn.X2 = (byte)newX2;
-                spawn.Y2 = (byte)newY2;
+                if (spawn.X1 != newX1 || spawn.Y1 != newY1 || spawn.X2 != newX2 || spawn.Y2 != newY2)
+                {
+                    if (!this._undoStepRecorded)
+                    {
+                        this._history.RecordSnapshot(spawn);
+                        this._undoStepRecorded = true;
+                    }
+
+
+                    spawn.X1 = (byte)newX1;
+                    spawn.Y1 = (byte)newY1;
+                    spawn.X2 = (byte)newX2;
+                    spawn.Y2 = (byte)newY2;
+                }
+
                 break;
             case Gate gate:
-                gate.X1 = (byte)newX1;
-                gate.Y1 = (byte)newY1;
-                gate.X2 = (byte)newX2;
-                gate.Y2 = (byte)newY2;
+                if (gate.X1 != newX1 || gate.Y1 != newY1 || gate.X2 != newX2 || gate.Y2 != newY2)
+                {
+                    if (!this._undoStepRecorded)
+                    {
+                        this._history.RecordSnapshot(gate);
+                        this._undoStepRecorded = true;
+                    }
+
+                    gate.X1 = (byte)newX1;
+                    gate.Y1 = (byte)newY1;
+                    gate.X2 = (byte)newX2;
+                    gate.Y2 = (byte)newY2;
+                }
+
                 break;
             default:
-                // Not supported.
-                break;
+                throw new InvalidOperationException($"Dragging is not supported for {this._focusedObject!.GetType().Name}.");
         }
     }
 
@@ -676,9 +714,9 @@ public partial class MapEditor : IAsyncDisposable
         }
 
         var cancelEventArgs = new MapChangingArgs(mapId);
-        if (this.SelectedMapChanging is { } callback)
+        if (this.SelectedMapChanging.HasDelegate)
         {
-            await callback.InvokeAsync(cancelEventArgs).ConfigureAwait(true);
+            await this.SelectedMapChanging.InvokeAsync(cancelEventArgs).ConfigureAwait(true);
         }
 
         if (cancelEventArgs.Cancel)
@@ -714,7 +752,22 @@ public partial class MapEditor : IAsyncDisposable
         var affected = this._history.Undo();
         if (affected is not null)
         {
-            this._pendingDeletions.Remove(affected);
+            var inMap = affected switch
+            {
+                MonsterSpawnArea spawn => this.SelectedMap.MonsterSpawns.Contains(spawn),
+                EnterGate enterGate => this.SelectedMap.EnterGates.Contains(enterGate),
+                ExitGate exitGate => this.SelectedMap.ExitGates.Contains(exitGate),
+                _ => false,
+            };
+
+            if (inMap)
+            {
+                this._pendingDeletions.Remove(affected);
+            }
+            else
+            {
+                this.PersistenceContext.Detach(affected);
+            }
         }
 
         this._focusedObject = affected;
@@ -767,12 +820,6 @@ public partial class MapEditor : IAsyncDisposable
 
         /// <summary>Gets or sets the top edge position relative to the viewport.</summary>
         public double Top { get; set; }
-
-        /// <summary>Gets or sets the width of the element.</summary>
-        public double Width { get; set; }
-
-        /// <summary>Gets or sets the height of the element.</summary>
-        public double Height { get; set; }
     }
 
     /// <summary>

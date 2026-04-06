@@ -93,12 +93,20 @@ public sealed class MapObjectFactory
     };
 
     /// <summary>
-    /// Applies the default positional offset to a coordinate, clamping to <see cref="byte.MaxValue"/>.
+    /// Applies a positional offset to a coordinate pair, clamping to map bounds
+    /// while preserving the original width and height.
     /// </summary>
-    /// <param name="value">The original coordinate value.</param>
-    /// <returns>The offset coordinate value.</returns>
-    private static byte Offset(byte value) =>
-        (byte)Math.Min(value + DefaultOffset, byte.MaxValue);
+    private static void ApplyOffset(byte x1, byte y1, byte x2, byte y2, out byte outX1, out byte outY1, out byte outX2, out byte outY2)
+    {
+        outX1 = (byte)Math.Min(x1 + DefaultOffset, byte.MaxValue);
+        outY1 = (byte)Math.Min(y1 + DefaultOffset, byte.MaxValue);
+
+        var actualXOffset = outX1 - x1;
+        var actualYOffset = outY1 - y1;
+
+        outX2 = (byte)Math.Min(x2 + actualXOffset, byte.MaxValue);
+        outY2 = (byte)Math.Min(y2 + actualYOffset, byte.MaxValue);
+    }
 
     /// <summary>
     /// Duplicates a <see cref="MonsterSpawnArea"/> with a positional offset.
@@ -108,13 +116,14 @@ public sealed class MapObjectFactory
     /// <returns>The duplicated spawn area.</returns>
     private MonsterSpawnArea DuplicateSpawn(MonsterSpawnArea original, GameMapDefinition map)
     {
+        ApplyOffset(original.X1, original.Y1, original.X2, original.Y2, out var x1, out var y1, out var x2, out var y2);
         var spawn = this._persistenceContext.CreateNew<MonsterSpawnArea>();
         spawn.GameMap = map;
         spawn.MonsterDefinition = original.MonsterDefinition;
-        spawn.X1 = Offset(original.X1);
-        spawn.Y1 = Offset(original.Y1);
-        spawn.X2 = Offset(original.X2);
-        spawn.Y2 = Offset(original.Y2);
+        spawn.X1 = x1;
+        spawn.Y1 = y1;
+        spawn.X2 = x2;
+        spawn.Y2 = y2;
         spawn.Direction = original.Direction;
         spawn.Quantity = original.Quantity;
         spawn.SpawnTrigger = original.SpawnTrigger;
@@ -132,11 +141,12 @@ public sealed class MapObjectFactory
     /// <returns>The duplicated enter gate.</returns>
     private EnterGate DuplicateEnterGate(EnterGate original, GameMapDefinition map)
     {
+        ApplyOffset(original.X1, original.Y1, original.X2, original.Y2, out var outX1, out var outY1, out var outX2, out var outY2);
         var gate = this._persistenceContext.CreateNew<EnterGate>();
-        gate.X1 = Offset(original.X1);
-        gate.Y1 = Offset(original.Y1);
-        gate.X2 = Offset(original.X2);
-        gate.Y2 = Offset(original.Y2);
+        gate.X1 = outX1;
+        gate.Y1 = outY1;
+        gate.X2 = outX2;
+        gate.Y2 = outY2;
         gate.TargetGate = original.TargetGate;
         gate.LevelRequirement = original.LevelRequirement;
         gate.Number = original.Number;
@@ -152,12 +162,13 @@ public sealed class MapObjectFactory
     /// <returns>The duplicated exit gate.</returns>
     private ExitGate DuplicateExitGate(ExitGate original, GameMapDefinition map)
     {
+        ApplyOffset(original.X1, original.Y1, original.X2, original.Y2, out var outX1, out var outY1, out var outX2, out var outY2);
         var gate = this._persistenceContext.CreateNew<ExitGate>();
         gate.Map = map;
-        gate.X1 = Offset(original.X1);
-        gate.Y1 = Offset(original.Y1);
-        gate.X2 = Offset(original.X2);
-        gate.Y2 = Offset(original.Y2);
+        gate.X1 = outX1;
+        gate.Y1 = outY1;
+        gate.X2 = outX2;
+        gate.Y2 = outY2;
         gate.Direction = original.Direction;
         gate.IsSpawnGate = original.IsSpawnGate;
         map.ExitGates.Add(gate);
