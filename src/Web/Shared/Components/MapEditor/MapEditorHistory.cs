@@ -17,6 +17,17 @@ public sealed class MapEditorHistory
     private readonly List<IUndoStep> _undoList = [];
 
     /// <summary>
+    /// Represents a single undoable step that can be reverted.
+    /// </summary>
+    private interface IUndoStep
+    {
+        /// <summary>
+        /// Reverts the step and returns the affected object, or <see langword="null"/>.
+        /// </summary>
+        object? Undo();
+    }
+
+    /// <summary>
     /// Gets a value indicating whether there are any steps available to undo.
     /// </summary>
     public bool CanUndo => this._undoList.Count > 0;
@@ -90,11 +101,6 @@ public sealed class MapEditorHistory
         }
 
         this._undoList.Add(step);
-    }
-
-    private interface IUndoStep
-    {
-        object? Undo();
     }
 
     private sealed class SpawnAreaSnapshot : IUndoStep

@@ -16,18 +16,19 @@ let _hasMoved = false;
 let _lastClientX = 0;
 let _lastClientY = 0;
 
+function _isElementWithClass(node, className) {
+    return node.nodeType === Node.ELEMENT_NODE && node.classList?.contains(className);
+}
+
 /**
  * Manually walks up the DOM tree checking classList.
  * Safe for SVG elements that lack HTMLElement.closest().
  */
 function _closestByClass(node, className) {
     while (node) {
-        if (node.nodeType === Node.ELEMENT_NODE &&
-            node.classList &&
-            node.classList.contains(className)) {
+        if (_isElementWithClass(node, className)) {
             return node;
         }
-
         node = node.parentNode;
     }
     return null;
@@ -47,6 +48,18 @@ function _getMapTileCoords(clientX, clientY) {
         x: Math.floor(contentY / scale),
         y: Math.floor(contentX / scale)
     };
+}
+
+function _updateZoomDisplay() {
+    let container = _element ? _element.closest(".map-host-container") : null;
+    if (!container) {
+        return;
+    }
+
+    let zoomLabel = container.querySelector(".zoom-label");
+    if (zoomLabel) {
+        zoomLabel.textContent = Math.round(_zoomLevel * 100) + "%";
+    }
 }
 
 function _applyZoom(zoom) {
@@ -73,18 +86,6 @@ function _applyZoom(zoom) {
     _updateZoomDisplay();
 }
 
-function _updateZoomDisplay() {
-    let container = _element ? _element.closest(".map-host-container") : null;
-    if (!container) {
-        return;
-    }
-
-    let zoomLabel = container.querySelector(".zoom-label");
-    if (zoomLabel) {
-        zoomLabel.textContent = Math.round(_zoomLevel * 100) + "%";
-    }
-}
-
 function _updateCoordsLabel(mapX, mapY) {
     let container = _element ? _element.closest(".map-host-container") : null;
     if (!container) {
@@ -94,6 +95,68 @@ function _updateCoordsLabel(mapX, mapY) {
     let coordLabel = container.querySelector(".coord-label");
     if (coordLabel) {
         coordLabel.textContent = "X: " + mapX + ", Y: " + mapY;
+    }
+}
+
+function _tryStartResize(e) {
+    let resizer = _closestByClass(e.target, "resizer");
+    if (resizer) {
+        _isResizing = true;
+        _hasMoved = false;
+        return true;
+    }
+    return false;
+}
+
+function _notifyPointerDown(x, y) {
+    if (_dotNetRef) {
+        _dotNetRef.invokeMethodAsync("OnPointerDown", x, y);
+    }
+}
+
+function _handlePanning(e) {
+    _element.scrollLeft = Math.max(0, _element.scrollLeft - (e.clientX - _lastClientX));
+    _element.scrollTop = Math.max(0, _element.scrollTop - (e.clientY - _lastClientY));
+    _lastClientX = e.clientX;
+    _lastClientY = e.clientY;
+}
+
+function _notifyPointerMove(x, y) {
+    if (_dotNetRef) {
+        _dotNetRef.invokeMethodAsync("OnPointerMove", x, y);
+    }
+}
+
+function _handlePanEnd() {
+    if (!_hasMoved && _dotNetRef) {
+        _dotNetRef.invokeMethodAsync("OnPointerClickAsync");
+    }
+
+    _isPanning = false;
+}
+
+function _handleDragOrResizeEnd() {
+    if (_hasMoved) {
+        if (_isDragging) {
+            _isDragging = false;
+            if (_dotNetRef) {
+                _dotNetRef.invokeMethodAsync("OnPointerUp");
+            }
+        }
+
+        if (_isResizing) {
+            _isResizing = false;
+            if (_dotNetRef) {
+                _dotNetRef.invokeMethodAsync("OnResizingEnd");
+            }
+        }
+    }
+
+    if (!_hasMoved && _isResizing) {
+        _isResizing = false;
+        if (_dotNetRef) {
+            _dotNetRef.invokeMethodAsync("OnResizingEnd");
+        }
     }
 }
 
@@ -107,14 +170,10 @@ function _onDocumentMouseDown(e) {
         _element = container;
     }
 
-    let resizer = _closestByClass(e.target, "resizer");
-    if (resizer) {
-        _isResizing = true;
-        _hasMoved = false;
+    if (_tryStartResize(e)) {
         return;
     }
 
-    // Prevent text selection during drag.
     e.preventDefault();
 
     _lastClientX = e.clientX;
@@ -126,9 +185,7 @@ function _onDocumentMouseDown(e) {
     let x = Math.max(0, Math.min(255, coords.x));
     let y = Math.max(0, Math.min(255, coords.y));
 
-    if (_dotNetRef) {
-        _dotNetRef.invokeMethodAsync("OnPointerDown", x, y);
-    }
+    _notifyPointerDown(x, y);
 }
 
 function _onDocumentMouseMove(e) {
@@ -153,17 +210,12 @@ function _onDocumentMouseMove(e) {
     _hasMoved = true;
 
     if (_isPanning) {
-        _element.scrollLeft = Math.max(0, _element.scrollLeft - (e.clientX - _lastClientX));
-        _element.scrollTop = Math.max(0, _element.scrollTop - (e.clientY - _lastClientY));
-        _lastClientX = e.clientX;
-        _lastClientY = e.clientY;
+        _handlePanning(e);
         return;
     }
 
     if (_isDragging || _isResizing) {
-        if (_dotNetRef) {
-            _dotNetRef.invokeMethodAsync("OnPointerMove", x, y);
-        }
+        _notifyPointerMove(x, y);
     }
 }
 
@@ -173,31 +225,11 @@ function _onDocumentMouseUp(e) {
     }
 
     if (_isPanning) {
-        if (!_hasMoved) {
-            if (_dotNetRef) {
-                _dotNetRef.invokeMethodAsync("OnPointerClickAsync");
-            }
-        }
-        _isPanning = false;
+        _handlePanEnd();
         return;
     }
 
-    if (_hasMoved) {
-        if (_dotNetRef && _isDragging) {
-            _isDragging = false;
-            _dotNetRef.invokeMethodAsync("OnPointerUp");
-        }
-
-        if (_dotNetRef && _isResizing) {
-            _isResizing = false;
-            _dotNetRef.invokeMethodAsync("OnResizingEnd");
-        }
-    } else if (_isResizing) {
-        _isResizing = false;
-        if (_dotNetRef) {
-            _dotNetRef.invokeMethodAsync("OnResizingEnd");
-        }
-    }
+    _handleDragOrResizeEnd();
 
     _isDragging = false;
     _isResizing = false;
@@ -226,7 +258,6 @@ export function initialize(element, dotNetRef, initialZoom) {
     document.addEventListener("mousedown", _onDocumentMouseDown);
     document.addEventListener("mousemove", _onDocumentMouseMove);
     document.addEventListener("mouseup", _onDocumentMouseUp);
-
 }
 
 /**

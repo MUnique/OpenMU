@@ -548,30 +548,40 @@ public partial class MapEditor : IAsyncDisposable
         if (!this._hasDragSnapshot)
         {
             this._hasDragSnapshot = true;
-            switch (this._focusedObject)
-            {
-                case MonsterSpawnArea spawn:
-                    this._history.RecordSnapshot(spawn);
-                    break;
-                case Gate gate:
-                    this._history.RecordSnapshot(gate);
-                    break;
-            }
+            this.RecordDragSnapshot();
         }
 
+        this.ApplyNewBounds(newX1, newY1, newX2, newY2);
+    }
+
+    private void RecordDragSnapshot()
+    {
         switch (this._focusedObject)
         {
             case MonsterSpawnArea spawn:
-                spawn.X1 = newX1;
-                spawn.Y1 = newY1;
-                spawn.X2 = newX2;
-                spawn.Y2 = newY2;
+                this._history.RecordSnapshot(spawn);
                 break;
             case Gate gate:
-                gate.X1 = newX1;
-                gate.Y1 = newY1;
-                gate.X2 = newX2;
-                gate.Y2 = newY2;
+                this._history.RecordSnapshot(gate);
+                break;
+        }
+    }
+
+    private void ApplyNewBounds(byte x1, byte y1, byte x2, byte y2)
+    {
+        switch (this._focusedObject)
+        {
+            case MonsterSpawnArea spawn:
+                spawn.X1 = x1;
+                spawn.Y1 = y1;
+                spawn.X2 = x2;
+                spawn.Y2 = y2;
+                break;
+            case Gate gate:
+                gate.X1 = x1;
+                gate.Y1 = y1;
+                gate.X2 = x2;
+                gate.Y2 = y2;
                 break;
         }
     }
