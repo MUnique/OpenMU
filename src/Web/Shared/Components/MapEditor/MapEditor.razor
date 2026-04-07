@@ -81,14 +81,10 @@
         {
             <div class="map-host-container">
                 <div class="map-host"
-                     @onmousedown="@this.OnMapMouseDownAsync"
-                     @onmousemove="@this.OnMouseMoveAsync"
-                     @onmouseup="@this.OnMapMouseUp"
-                     @onmouseleave="@this.OnMapMouseLeave"
+                     @ref="_mapHostRef"
                      @onwheel="@this.OnWheelAsync"
                      @onwheel:preventDefault="true"
-                     @onwheel:stopPropagation="true"
-                     @ref="_mapHostRef">
+                     @onwheel:stopPropagation="true">
                     <div class="map-content">
                         <img src="@this._terrainImageDataUrl"
                              draggable="false"
@@ -100,7 +96,7 @@
                                  style="@this.GetSizeAndPositionStyle(obj)">
                                 @if (this.ShowResizers(obj))
                                 {
-                                    <Resizers Resizing="@this.OnStartResizing" />
+                                    <Resizers ResizeStart="@this.OnStartResizing" />
                                 }
                                 else if (this.ShowArrow(obj, out var spawn))
                                 {

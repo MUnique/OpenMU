@@ -6,47 +6,62 @@ const BASE_SIZE = 768;
 const MIN_ZOOM = 1.0;
 const MAX_ZOOM = 4.0;
 
-const _zoomLevels = new WeakMap();
-
-function _getZoomLevel(element) {
-    return _zoomLevels.get(element) ?? 1.0;
-}
-
-function _setZoomLevel(element, zoom) {
-    _zoomLevels.set(element, zoom);
-}
+let _element = null;
+let _dotNetRef = null;
+let _zoomLevel = 1.0;
+let _isDragging = false;
+let _isPanning = false;
+let _isResizing = false;
+let _hasMoved = false;
+let _lastClientX = 0;
+let _lastClientY = 0;
 
 /**
- * Updates the zoom percentage label in the map host container.
- * @param {HTMLElement} element - The map host element.
- * @param {number} zoom - The current zoom level.
+ * Manually walks up the DOM tree checking classList.
+ * Safe for SVG elements that lack HTMLElement.closest().
  */
-function _updateZoomDisplay(element, zoom) {
-    const container = element.closest(".map-host-container");
-    if (!container) {
+function _closestByClass(node, className) {
+    while (node) {
+        if (node.nodeType === Node.ELEMENT_NODE &&
+            node.classList &&
+            node.classList.contains(className)) {
+            return node;
+        }
+
+        node = node.parentNode;
+    }
+    return null;
+}
+
+function _getMapTileCoords(clientX, clientY) {
+    if (!_element) {
+        return { x: 0, y: 0 };
+    }
+
+    const rect = _element.getBoundingClientRect();
+    let contentX = (clientX - rect.left) + _element.scrollLeft;
+    let contentY = (clientY - rect.top) + _element.scrollTop;
+    let scale = 3 * _zoomLevel;
+
+    return {
+        x: Math.floor(contentY / scale),
+        y: Math.floor(contentX / scale)
+    };
+}
+
+function _applyZoom(zoom) {
+    if (!_element) {
         return;
     }
 
-    const zoomLabel = container.querySelector(".zoom-label");
-    if (zoomLabel) {
-        zoomLabel.textContent = Math.round(zoom * 100) + "%";
-    }
-}
-
-/**
- * Applies a zoom level to the map content and updates the zoom display label.
- * @param {HTMLElement} element - The map host element.
- * @param {number} zoom - The zoom level to apply.
- */
-function _applyZoom(element, zoom) {
-    const content = element.querySelector(".map-content");
-    const img = element.querySelector(".map-content img");
+    let content = _element.querySelector(".map-content");
+    let img = _element.querySelector(".map-content img");
 
     if (!content) {
         return;
     }
 
-    const size = Math.round(BASE_SIZE * zoom);
+    let size = Math.round(BASE_SIZE * zoom);
     content.style.width = size + "px";
     content.style.height = size + "px";
 
@@ -55,20 +70,177 @@ function _applyZoom(element, zoom) {
         img.style.height = size + "px";
     }
 
-    _updateZoomDisplay(element, zoom);
+    _updateZoomDisplay();
+}
+
+function _updateZoomDisplay() {
+    let container = _element ? _element.closest(".map-host-container") : null;
+    if (!container) {
+        return;
+    }
+
+    let zoomLabel = container.querySelector(".zoom-label");
+    if (zoomLabel) {
+        zoomLabel.textContent = Math.round(_zoomLevel * 100) + "%";
+    }
+}
+
+function _updateCoordsLabel(mapX, mapY) {
+    let container = _element ? _element.closest(".map-host-container") : null;
+    if (!container) {
+        return;
+    }
+
+    let coordLabel = container.querySelector(".coord-label");
+    if (coordLabel) {
+        coordLabel.textContent = "X: " + mapX + ", Y: " + mapY;
+    }
+}
+
+function _onDocumentMouseDown(e) {
+    let container = _closestByClass(e.target, "map-host");
+    if (!container) {
+        return;
+    }
+
+    if (container !== _element) {
+        _element = container;
+    }
+
+    let resizer = _closestByClass(e.target, "resizer");
+    if (resizer) {
+        _isResizing = true;
+        _hasMoved = false;
+        return;
+    }
+
+    // Prevent text selection during drag.
+    e.preventDefault();
+
+    _lastClientX = e.clientX;
+    _lastClientY = e.clientY;
+    _hasMoved = false;
+    _isDragging = true;
+
+    let coords = _getMapTileCoords(e.clientX, e.clientY);
+    let x = Math.max(0, Math.min(255, coords.x));
+    let y = Math.max(0, Math.min(255, coords.y));
+
+    if (_dotNetRef) {
+        _dotNetRef.invokeMethodAsync("OnPointerDown", x, y);
+    }
+}
+
+function _onDocumentMouseMove(e) {
+    if (!_element) {
+        return;
+    }
+
+    let container = _closestByClass(e.target, "map-host");
+    if (!container || !_element.contains(e.target)) {
+        return;
+    }
+
+    if (container !== _element) {
+        _element = container;
+    }
+
+    let coords = _getMapTileCoords(e.clientX, e.clientY);
+    let x = Math.max(0, Math.min(255, coords.x));
+    let y = Math.max(0, Math.min(255, coords.y));
+
+    _updateCoordsLabel(x, y);
+    _hasMoved = true;
+
+    if (_isPanning) {
+        _element.scrollLeft = Math.max(0, _element.scrollLeft - (e.clientX - _lastClientX));
+        _element.scrollTop = Math.max(0, _element.scrollTop - (e.clientY - _lastClientY));
+        _lastClientX = e.clientX;
+        _lastClientY = e.clientY;
+        return;
+    }
+
+    if (_isDragging || _isResizing) {
+        if (_dotNetRef) {
+            _dotNetRef.invokeMethodAsync("OnPointerMove", x, y);
+        }
+    }
+}
+
+function _onDocumentMouseUp(e) {
+    if (!_element) {
+        return;
+    }
+
+    if (_isPanning) {
+        if (!_hasMoved) {
+            if (_dotNetRef) {
+                _dotNetRef.invokeMethodAsync("OnPointerClickAsync");
+            }
+        }
+        _isPanning = false;
+        return;
+    }
+
+    if (_hasMoved) {
+        if (_dotNetRef && _isDragging) {
+            _isDragging = false;
+            _dotNetRef.invokeMethodAsync("OnPointerUp");
+        }
+
+        if (_dotNetRef && _isResizing) {
+            _isResizing = false;
+            _dotNetRef.invokeMethodAsync("OnResizingEnd");
+        }
+    } else if (_isResizing) {
+        _isResizing = false;
+        if (_dotNetRef) {
+            _dotNetRef.invokeMethodAsync("OnResizingEnd");
+        }
+    }
+
+    _isDragging = false;
+    _isResizing = false;
+    _hasMoved = false;
 }
 
 /**
  * Initializes the map editor for the given host element.
  * @param {HTMLElement} element - The map host element.
+ * @param {object} dotNetRef - JSInvokable reference to the Blazor component.
  * @param {number} initialZoom - The initial zoom level to apply.
  */
-export function initialize(element, initialZoom) {
+export function initialize(element, dotNetRef, initialZoom) {
     if (!element) {
         return;
     }
-    _setZoomLevel(element, initialZoom);
-    _applyZoom(element, initialZoom);
+
+    _element = element;
+    _dotNetRef = dotNetRef;
+    _zoomLevel = initialZoom;
+    _applyZoom(_zoomLevel);
+
+    document.removeEventListener("mousedown", _onDocumentMouseDown);
+    document.removeEventListener("mousemove", _onDocumentMouseMove);
+    document.removeEventListener("mouseup", _onDocumentMouseUp);
+    document.addEventListener("mousedown", _onDocumentMouseDown);
+    document.addEventListener("mousemove", _onDocumentMouseMove);
+    document.addEventListener("mouseup", _onDocumentMouseUp);
+
+}
+
+/**
+ * Scrolls the map host by the given delta.
+ * @param {HTMLElement} element - The map host element.
+ * @param {number} deltaX - The horizontal scroll delta.
+ * @param {number} deltaY - The vertical scroll delta.
+ */
+export function scrollBy(element, deltaX, deltaY) {
+    if (!element) {
+        return;
+    }
+    element.scrollLeft = Math.max(0, element.scrollLeft - deltaX);
+    element.scrollTop = Math.max(0, element.scrollTop - deltaY);
 }
 
 /**
@@ -81,38 +253,6 @@ export function setSelectValue(selectElement, value) {
         return;
     }
     selectElement.value = value;
-}
-
-/**
- * Returns the current state of the map host element including its bounding rect,
- * scroll position, and zoom level.
- * @param {HTMLElement} element - The map host element.
- * @returns {{ rect: object, scroll: object, zoomLevel: number }}
- */
-export function getState(element) {
-    if (!element) {
-        return {
-            rect: { left: 0, top: 0, width: 0, height: 0 },
-            scroll: { scrollLeft: 0, scrollTop: 0 },
-            zoomLevel: 1.0
-        };
-    }
-
-    const rect = element.getBoundingClientRect();
-
-    return {
-        rect: {
-            left: rect.left,
-            top: rect.top,
-            width: rect.width,
-            height: rect.height
-        },
-        scroll: {
-            scrollLeft: element.scrollLeft,
-            scrollTop: element.scrollTop
-        },
-        zoomLevel: _getZoomLevel(element)
-    };
 }
 
 /**
@@ -130,8 +270,34 @@ export function setScroll(element, scrollLeft, scrollTop) {
 }
 
 /**
- * Handles a mouse wheel event to zoom the map in or out, keeping the point
- * under the cursor stationary.
+ * Scrolls the map host so that the given map coordinates are centered in the viewport.
+ * @param {HTMLElement} element - The map host element.
+ * @param {number} mapX - The map X coordinate to center on.
+ * @param {number} mapY - The map Y coordinate to center on.
+ * @param {number} baseScale - The base pixel scale factor.
+ */
+export function centerOn(element, mapX, mapY, baseScale) {
+    if (!element) {
+        return;
+    }
+
+    let scale = baseScale * _zoomLevel;
+
+    let pixelX = mapY * scale;
+    let pixelY = mapX * scale;
+
+    let maxScrollLeft = element.scrollWidth - element.clientWidth;
+    let maxScrollTop = element.scrollHeight - element.clientHeight;
+
+    element.scrollTo({
+        left: Math.max(0, Math.min(pixelX - (element.clientWidth / 2), maxScrollLeft)),
+        top: Math.max(0, Math.min(pixelY - (element.clientHeight / 2), maxScrollTop)),
+        behavior: "smooth"
+    });
+}
+
+/**
+ * Handles a mouse wheel event to zoom in or out centered on the cursor position.
  * @param {HTMLElement} element - The map host element.
  * @param {number} deltaY - The vertical scroll delta from the wheel event.
  * @param {number} clientX - The client X position of the cursor.
@@ -143,7 +309,7 @@ export function handleWheel(element, deltaY, clientX, clientY) {
         return { zoomLevel: 1.0, handled: false };
     }
 
-    const oldZoom = _getZoomLevel(element);
+    const oldZoom = _zoomLevel;
     const sensitivity = 0.001;
     const zoomDelta = -deltaY * sensitivity;
     const newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, oldZoom * (1.0 + zoomDelta)));
@@ -155,8 +321,8 @@ export function handleWheel(element, deltaY, clientX, clientY) {
     const baseX = (element.scrollLeft + mouseX) / oldZoom;
     const baseY = (element.scrollTop + mouseY) / oldZoom;
 
-    _setZoomLevel(element, newZoom);
-    _applyZoom(element, newZoom);
+    _zoomLevel = newZoom;
+    _applyZoom(_zoomLevel);
 
     const maxScrollLeft = Math.max(0, BASE_SIZE * newZoom - rect.width);
     const maxScrollTop = Math.max(0, BASE_SIZE * newZoom - rect.height);
@@ -174,14 +340,14 @@ export function handleWheel(element, deltaY, clientX, clientY) {
  * Zooms the map to a specific level, keeping the viewport center stationary.
  * @param {HTMLElement} element - The map host element.
  * @param {number} newZoom - The target zoom level.
- * @returns {number} The applied zoom level.
+ * @returns {Number} The applied zoom level.
  */
 export function zoomTo(element, newZoom) {
     if (!element) {
         return 1.0;
     }
 
-    const oldZoom = _getZoomLevel(element);
+    const oldZoom = _zoomLevel;
     const clampedZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, newZoom));
 
     const rect = element.getBoundingClientRect();
@@ -191,8 +357,8 @@ export function zoomTo(element, newZoom) {
     const baseX = (element.scrollLeft + centerX) / oldZoom;
     const baseY = (element.scrollTop + centerY) / oldZoom;
 
-    _setZoomLevel(element, clampedZoom);
-    _applyZoom(element, clampedZoom);
+    _zoomLevel = clampedZoom;
+    _applyZoom(_zoomLevel);
 
     const maxScrollLeft = Math.max(0, BASE_SIZE * clampedZoom - rect.width);
     const maxScrollTop = Math.max(0, BASE_SIZE * clampedZoom - rect.height);
@@ -213,8 +379,8 @@ export function resetZoom(element) {
         return 1.0;
     }
 
-    _setZoomLevel(element, 1.0);
-    _applyZoom(element, 1.0);
+    _zoomLevel = 1.0;
+    _applyZoom(1.0);
     element.scrollLeft = 0;
     element.scrollTop = 0;
 
@@ -222,31 +388,21 @@ export function resetZoom(element) {
 }
 
 /**
- * Scrolls the map host so that the given map coordinates are centered in the viewport.
- * @param {HTMLElement} element - The map host element.
- * @param {number} mapX - The map X coordinate to center on.
- * @param {number} mapY - The map Y coordinate to center on.
- * @param {number} baseScale - The base pixel scale factor.
+ * Sets the pan state. Called from Blazor to signal panning mode.
+ * @param {boolean} panning - Whether panning is active.
  */
-export function centerOn(element, mapX, mapY, baseScale) {
-    if (!element) {
-        return;
-    }
+export function setPanning(panning) {
+    _isPanning = panning;
+    _hasMoved = false;
+}
 
-    const zoom = _getZoomLevel(element);
-    const scale = baseScale * zoom;
-
-    const pixelX = mapY * scale;
-    const pixelY = mapX * scale;
-
-    const maxScrollLeft = element.scrollWidth - element.clientWidth;
-    const maxScrollTop = element.scrollHeight - element.clientHeight;
-
-    element.scrollTo({
-        left: Math.max(0, Math.min(pixelX - (element.clientWidth / 2), maxScrollLeft)),
-        top: Math.max(0, Math.min(pixelY - (element.clientHeight / 2), maxScrollTop)),
-        behavior: "smooth"
-    });
+/**
+ * Sets the drag state. Called from Blazor to signal dragging mode.
+ * @param {boolean} dragging - Whether dragging is active.
+ */
+export function setDragging(dragging) {
+    _isDragging = dragging;
+    _hasMoved = false;
 }
 
 /**
@@ -254,6 +410,9 @@ export function centerOn(element, mapX, mapY, baseScale) {
  * Called when the Blazor component is disposed.
  */
 export function dispose() {
-    // WeakMap entries are automatically cleaned up when their element keys
-    // are garbage collected, so no explicit cleanup is required here.
+    document.removeEventListener("mousedown", _onDocumentMouseDown);
+    document.removeEventListener("mousemove", _onDocumentMouseMove);
+    document.removeEventListener("mouseup", _onDocumentMouseUp);
+    _element = null;
+    _dotNetRef = null;
 }

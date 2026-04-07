@@ -145,7 +145,7 @@ public sealed class EditMap : ComponentBase, IDisposable
         }
     }
 
-    private async Task OnSelectedMapChangingAsync(MapEditor.MapChangingArgs eventArgs)
+    private async Task OnSelectedMapChangingAsync(MapChangingArgs eventArgs)
     {
         eventArgs.Cancel = !await this.AllowChangeAsync().ConfigureAwait(true);
         if (!eventArgs.Cancel)
@@ -257,7 +257,7 @@ public sealed class EditMap : ComponentBase, IDisposable
         builder.AddAttribute(
             19,
             nameof(MapEditor.SelectedMapChanging),
-            EventCallback.Factory.Create<MapEditor.MapChangingArgs>(this, this.OnSelectedMapChangingAsync));
+            EventCallback.Factory.Create<MapChangingArgs>(this, this.OnSelectedMapChangingAsync));
         builder.CloseComponent();
     }
 }

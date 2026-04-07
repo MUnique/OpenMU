@@ -16,16 +16,10 @@ enum NpcObjectKind {
     Destructible = 7,
 }
 
-function getColorForObjectKind(kind: NpcObjectKind): number {
-    switch (kind) {
-        case NpcObjectKind.Monster:
-            return 0x00FFFF;
-        case NpcObjectKind.PassiveNpc:
-        case NpcObjectKind.Guard:
-            return 0xFF8800;
-        default:
-            return 0xFFFF00;
-    }
+const enum NpcColors {
+    Monster = 0x00FFFF,
+    Passive = 0xFF8800,
+    Default = 0xFFFF00,
 }
 
 export class NonPlayerCharacter extends Attackable<NpcData> {
@@ -34,8 +28,21 @@ export class NonPlayerCharacter extends Attackable<NpcData> {
         NonPlayerCharacter.size,
         NonPlayerCharacter.size,
         NonPlayerCharacter.size);
+
+    private static getColorForObjectKind(kind: NpcObjectKind): number {
+        switch (kind) {
+            case NpcObjectKind.Monster:
+                return NpcColors.Monster;
+            case NpcObjectKind.PassiveNpc:
+            case NpcObjectKind.Guard:
+                return NpcColors.Passive;
+            default:
+                return NpcColors.Default;
+        }
+    }
+
     constructor(data: NpcData) {
-        const color = getColorForObjectKind(data.npcObjectKind);
+        const color = NonPlayerCharacter.getColorForObjectKind(data.npcObjectKind);
         super(
             data,
             NonPlayerCharacter.defaultGeometry,

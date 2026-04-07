@@ -1,4 +1,4 @@
-﻿// <copyright file="MapEditor.razor.cs" company="MUnique">
+// <copyright file="MapEditor.razor.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -46,31 +46,25 @@ public partial class MapEditor : IAsyncDisposable
     private ElementReference _mapHostRef;
     private ElementReference _objectSelectRef;
     private IJSObjectReference? _jsModule;
+    private DotNetObjectReference<MapEditor>? _dotNetRef;
 
     private GameMapDefinition? _selectedMap;
+    private object? _focusedObject;
 
-    private bool _showGrid;
     private bool _isInitialized;
     private bool _createMode;
-    private bool _isDragging;
-    private bool _isPanning;
     private bool _isRendering;
-    private bool _undoStepRecorded;
+    private bool _showGrid;
 
-    private object? _focusedObject;
     private string _searchFilter = string.Empty;
     private ObjectTypeFilter _activeFilter = ObjectTypeFilter.All;
-    private Resizers.ResizerPosition? _resizerPosition;
 
     private int _mouseMapX;
     private int _mouseMapY;
 
-    private byte _dragStartX;
-    private byte _dragStartY;
-    private byte _dragObjX1;
-    private byte _dragObjY1;
-    private byte _dragObjX2;
-    private byte _dragObjY2;
+    private Resizers.ResizerPosition? _resizerPosition;
+    private MapDragState _dragState;
+    private bool _hasDragSnapshot;
 
     /// <summary>
     /// Gets or sets the callback invoked before the selected map changes,
@@ -144,6 +138,8 @@ public partial class MapEditor : IAsyncDisposable
     /// <inheritdoc />
     public async ValueTask DisposeAsync()
     {
+        this._dotNetRef?.Dispose();
+        this._terrainImage?.Dispose();
         this.NotificationService.PropertyChanged -= this.OnPropertyChanged;
 
         if (this._jsModule is not null)
@@ -157,6 +153,132 @@ public partial class MapEditor : IAsyncDisposable
             {
                 // Ignore
             }
+        }
+    }
+
+    /// <summary>
+    /// Called from JavaScript when the pointer goes down on the map.
+    /// </summary>
+    /// <param name="x">Map X coordinate.</param>
+    /// <param name="y">Map Y coordinate.</param>
+    [JSInvokable]
+    public void OnPointerDown(byte x, byte y)
+    {
+        if (this._resizerPosition is not null)
+        {
+            return;
+        }
+
+        var objectAtPosition = this._objectSelector.GetObjectAtPosition(
+            this.SelectedMap, x, y, this._activeFilter, this._searchFilter);
+
+        if (objectAtPosition is MonsterSpawnArea spawn)
+        {
+            this._focusedObject = spawn;
+            this._dragState.StartX = x;
+            this._dragState.StartY = y;
+            this._dragState.Capture(spawn);
+        }
+        else if (objectAtPosition is Gate gate)
+        {
+            this._focusedObject = gate;
+            this._dragState.StartX = x;
+            this._dragState.StartY = y;
+            this._dragState.Capture(gate);
+        }
+        else if (objectAtPosition is not null)
+        {
+            this._focusedObject = objectAtPosition;
+            _ = this._jsModule?.InvokeVoidAsync("setDragging", false);
+        }
+        else
+        {
+            this._focusedObject = null;
+            _ = this._jsModule?.InvokeVoidAsync("setDragging", false);
+            _ = this._jsModule?.InvokeVoidAsync("setPanning", true);
+        }
+
+        this.StateHasChanged();
+    }
+
+    /// <summary>
+    /// Called from JavaScript when the pointer moves while on the map.
+    /// </summary>
+    /// <param name="x">Map X coordinate.</param>
+    /// <param name="y">Map Y coordinate.</param>
+    [JSInvokable]
+    public void OnPointerMove(byte x, byte y)
+    {
+        this._mouseMapX = x;
+        this._mouseMapY = y;
+
+        if (this._resizerPosition is { } pos && this._focusedObject is not null)
+        {
+            if (this._focusedObject is MonsterSpawnArea spawnArea)
+            {
+                MapObjectResizer.Resize(spawnArea, pos, x, y);
+            }
+            else if (this._focusedObject is Gate gate)
+            {
+                MapObjectResizer.Resize(gate, pos, x, y);
+            }
+
+            this.NotificationService.NotifyChange(this._focusedObject, null);
+            return;
+        }
+
+        if (this._focusedObject is Gate or MonsterSpawnArea)
+        {
+            this.OnObjectDragging(x, y);
+            this.NotificationService.NotifyChange(this._focusedObject, null);
+        }
+    }
+
+    /// <summary>
+    /// Called from JavaScript when the pointer goes up after a drag.
+    /// </summary>
+    [JSInvokable]
+    public void OnPointerUp()
+    {
+        this._hasDragSnapshot = false;
+    }
+
+    /// <summary>
+    /// Called from JavaScript when clicking empty space without dragging.
+    /// </summary>
+    [JSInvokable]
+    public async Task OnPointerClickAsync()
+    {
+        if (this._createMode || this._jsModule is null)
+        {
+            return;
+        }
+
+        this._focusedObject = null;
+        await this.UpdateSelectValueAsync().ConfigureAwait(true);
+        this.StateHasChanged();
+    }
+
+    /// <summary>
+    /// Called from JavaScript when the zoom level changes.
+    /// </summary>
+    /// <param name="zoomLevel">The new zoom level.</param>
+    [JSInvokable]
+    public void OnZoomChanged(float zoomLevel)
+    {
+        this._zoomManager?.SyncZoomLevel(zoomLevel);
+    }
+
+    /// <summary>
+    /// Called from JavaScript when a resize operation ends.
+    /// </summary>
+    [JSInvokable]
+    public void OnResizingEnd()
+    {
+        this._resizerPosition = null;
+        if (this._focusedObject is not null)
+        {
+            this.NotificationService.NotifyChange(this._focusedObject, null);
         }
     }
 
@@ -177,18 +299,36 @@ public partial class MapEditor : IAsyncDisposable
                 .ConfigureAwait(true);
         }
 
-        if (this._jsModule is not null && !this._isInitialized)
+        if (this._jsModule is not { } jsModule)
+        {
+            return;
+        }
+
+        if (!this._isInitialized)
         {
             var zoomLevel = this._zoomManager?.ZoomLevel ?? 1.0f;
-            this._zoomManager = new MapZoomManager(this._jsModule, this._mapHostRef);
+            this._zoomManager = new MapZoomManager(jsModule, this._mapHostRef);
             this._objectFactory = new MapObjectFactory(this.PersistenceContext);
+            this._dotNetRef = DotNetObjectReference.Create(this);
 
-            await this._jsModule.InvokeVoidAsync(
+            await jsModule.InvokeVoidAsync(
                 "initialize",
                 this._mapHostRef,
+                this._dotNetRef,
                 zoomLevel).ConfigureAwait(true);
 
             this._isInitialized = true;
+        }
+        else if (!firstRender)
+        {
+            // Re-register document listeners after each render,
+            // keeping them resilient to DOM replacement by Blazor.
+            var zoomLevel = this._zoomManager?.ZoomLevel ?? 1.0f;
+            await jsModule.InvokeVoidAsync(
+                "initialize",
+                this._mapHostRef,
+                this._dotNetRef,
+                zoomLevel).ConfigureAwait(true);
         }
     }
 
@@ -339,251 +479,6 @@ public partial class MapEditor : IAsyncDisposable
         }
     }
 
-    private async Task OnMapMouseDownAsync(MouseEventArgs args)
-    {
-        if (args.Button != 0 || this._createMode || this._jsModule is null || this._zoomManager is null)
-        {
-            return;
-        }
-
-        if (this._resizerPosition is not null)
-        {
-            return;
-        }
-
-        var state = await this._jsModule
-            .InvokeAsync<MapHostState>("getState", this._mapHostRef)
-            .ConfigureAwait(true);
-
-        var coords = this._coordinateService.GetMapCoordinates(
-            args.ClientX, args.ClientY, state.Rect, state.Scroll, state.ZoomLevel);
-
-        if (!coords.HasValue)
-        {
-            return;
-        }
-
-        var (x, y) = coords.Value;
-        var objectAtPosition = this._objectSelector.GetObjectAtPosition(
-            this.SelectedMap, x, y, this._activeFilter, this._searchFilter);
-
-        if (objectAtPosition is not null)
-        {
-            this._focusedObject = objectAtPosition;
-            this._isDragging = true;
-            this._undoStepRecorded = false;
-            this._dragStartX = x;
-            this._dragStartY = y;
-
-            if (objectAtPosition is MonsterSpawnArea spawn)
-            {
-                this._dragObjX1 = spawn.X1;
-                this._dragObjY1 = spawn.Y1;
-                this._dragObjX2 = spawn.X2;
-                this._dragObjY2 = spawn.Y2;
-            }
-            else if (objectAtPosition is Gate gate)
-            {
-                this._dragObjX1 = gate.X1;
-                this._dragObjY1 = gate.Y1;
-                this._dragObjX2 = gate.X2;
-                this._dragObjY2 = gate.Y2;
-            }
-
-            await this.UpdateSelectValueAsync().ConfigureAwait(true);
-        }
-        else
-        {
-            this._focusedObject = null;
-            await this.UpdateSelectValueAsync().ConfigureAwait(true);
-            this._isPanning = true;
-        }
-    }
-
-    private async Task OnMouseMoveAsync(MouseEventArgs args)
-    {
-        if (this._jsModule is null || this._zoomManager is null)
-        {
-            return;
-        }
-
-        var state = await this._jsModule
-            .InvokeAsync<MapHostState>("getState", this._mapHostRef)
-            .ConfigureAwait(true);
-
-        var coords = this._coordinateService.GetMapCoordinates(
-            args.ClientX, args.ClientY, state.Rect, state.Scroll, state.ZoomLevel);
-
-        if (coords.HasValue)
-        {
-            this._mouseMapX = coords.Value.X;
-            this._mouseMapY = coords.Value.Y;
-        }
-
-        if (this._resizerPosition is not null && this._focusedObject is not null && coords.HasValue)
-        {
-            var (x, y) = coords.Value;
-            if (this._focusedObject is MonsterSpawnArea spawnArea)
-            {
-                this.OnSpawnAreaResizing(spawnArea, x, y);
-            }
-            else if (this._focusedObject is Gate gate)
-            {
-                this.OnGateResizing(gate, x, y);
-            }
-            else
-            {
-                // Other object types don't support corner-resizing they are moved via dragging handled separately.
-            }
-
-            this.NotificationService.NotifyChange(this._focusedObject, null);
-            return;
-        }
-
-        if (this._isDragging && this._focusedObject is not null && coords.HasValue)
-        {
-            this.OnObjectDragging(coords.Value.X, coords.Value.Y);
-            this.NotificationService.NotifyChange(this._focusedObject, null);
-            return;
-        }
-
-        if (this._isPanning && args.Buttons == 1)
-        {
-            var newScrollLeft = state.Scroll.ScrollLeft - args.MovementX;
-            var newScrollTop = state.Scroll.ScrollTop - args.MovementY;
-
-            await this._jsModule.InvokeVoidAsync(
-                "setScroll", this._mapHostRef, newScrollLeft, newScrollTop).ConfigureAwait(true);
-        }
-    }
-
-    private void OnMapMouseUp(MouseEventArgs _)
-    {
-        this._resizerPosition = null;
-        this._isDragging = false;
-        this._isPanning = false;
-    }
-
-    private void OnMapMouseLeave(MouseEventArgs _)
-    {
-        this._isPanning = false;
-    }
-
-    private void OnObjectDragging(byte x, byte y)
-    {
-        int dx = x - this._dragStartX;
-        int dy = y - this._dragStartY;
-
-        var width = this._dragObjX2 - this._dragObjX1;
-        var height = this._dragObjY2 - this._dragObjY1;
-
-        var newX1 = Math.Clamp(this._dragObjX1 + dx, 0, MapSize - 1 - width);
-        var newY1 = Math.Clamp(this._dragObjY1 + dy, 0, MapSize - 1 - height);
-        var newX2 = newX1 + width;
-        var newY2 = newY1 + height;
-
-        switch (this._focusedObject)
-        {
-            case MonsterSpawnArea spawn:
-                if (spawn.X1 != newX1 || spawn.Y1 != newY1 || spawn.X2 != newX2 || spawn.Y2 != newY2)
-                {
-                    if (!this._undoStepRecorded)
-                    {
-                        this._history.RecordSnapshot(spawn);
-                        this._undoStepRecorded = true;
-                    }
-
-
-                    spawn.X1 = (byte)newX1;
-                    spawn.Y1 = (byte)newY1;
-                    spawn.X2 = (byte)newX2;
-                    spawn.Y2 = (byte)newY2;
-                }
-
-                break;
-            case Gate gate:
-                if (gate.X1 != newX1 || gate.Y1 != newY1 || gate.X2 != newX2 || gate.Y2 != newY2)
-                {
-                    if (!this._undoStepRecorded)
-                    {
-                        this._history.RecordSnapshot(gate);
-                        this._undoStepRecorded = true;
-                    }
-
-                    gate.X1 = (byte)newX1;
-                    gate.Y1 = (byte)newY1;
-                    gate.X2 = (byte)newX2;
-                    gate.Y2 = (byte)newY2;
-                }
-
-                break;
-            default:
-                throw new InvalidOperationException($"Dragging is not supported for {this._focusedObject!.GetType().Name}.");
-        }
-    }
-
-    private void OnSpawnAreaResizing(MonsterSpawnArea spawnArea, byte x, byte y)
-    {
-        switch (this._resizerPosition)
-        {
-            case Resizers.ResizerPosition.TopLeft:
-                spawnArea.X1 = Math.Min(x, spawnArea.X2);
-                spawnArea.Y1 = Math.Min(y, spawnArea.Y2);
-                break;
-            case Resizers.ResizerPosition.TopRight:
-                spawnArea.X1 = Math.Min(x, spawnArea.X2);
-                spawnArea.Y2 = Math.Max(y, spawnArea.Y1);
-                break;
-            case Resizers.ResizerPosition.BottomRight:
-                spawnArea.X2 = Math.Max(x, spawnArea.X1);
-                spawnArea.Y2 = Math.Max(y, spawnArea.Y1);
-                break;
-            case Resizers.ResizerPosition.BottomLeft:
-                spawnArea.X2 = Math.Max(x, spawnArea.X1);
-                spawnArea.Y1 = Math.Min(y, spawnArea.Y2);
-                break;
-            default:
-                // Not supported.
-                break;
-        }
-    }
-
-    private void OnGateResizing(Gate gate, byte x, byte y)
-    {
-        switch (this._resizerPosition)
-        {
-            case Resizers.ResizerPosition.TopLeft:
-                gate.X1 = Math.Min(x, gate.X2);
-                gate.Y1 = Math.Min(y, gate.Y2);
-                break;
-            case Resizers.ResizerPosition.TopRight:
-                gate.X1 = Math.Min(x, gate.X2);
-                gate.Y2 = Math.Max(y, gate.Y1);
-                break;
-            case Resizers.ResizerPosition.BottomRight:
-                gate.X2 = Math.Max(x, gate.X1);
-                gate.Y2 = Math.Max(y, gate.Y1);
-                break;
-            case Resizers.ResizerPosition.BottomLeft:
-                gate.X2 = Math.Max(x, gate.X1);
-                gate.Y1 = Math.Min(y, gate.Y2);
-                break;
-            default:
-                // Not supported.
-                break;
-        }
-    }
-
-    private string? GetFocusedRotation()
-    {
-        if (this._focusedObject is MonsterSpawnArea spawn)
-        {
-            return DirectionNames[(int)spawn.Direction];
-        }
-
-        return null;
-    }
-
     private async Task OnWheelAsync(WheelEventArgs args)
     {
         if (this._zoomManager is null)
@@ -641,6 +536,54 @@ public partial class MapEditor : IAsyncDisposable
 
         await this._jsModule.InvokeVoidAsync(
             "setSelectValue", this._objectSelectRef, id.ToString()).ConfigureAwait(true);
+    }
+
+    private void OnObjectDragging(byte x, byte y)
+    {
+        if (!this._dragState.ApplyDrag(x, y, MapSize, out var newX1, out var newY1, out var newX2, out var newY2))
+        {
+            return;
+        }
+
+        if (!this._hasDragSnapshot)
+        {
+            this._hasDragSnapshot = true;
+            switch (this._focusedObject)
+            {
+                case MonsterSpawnArea spawn:
+                    this._history.RecordSnapshot(spawn);
+                    break;
+                case Gate gate:
+                    this._history.RecordSnapshot(gate);
+                    break;
+            }
+        }
+
+        switch (this._focusedObject)
+        {
+            case MonsterSpawnArea spawn:
+                spawn.X1 = newX1;
+                spawn.Y1 = newY1;
+                spawn.X2 = newX2;
+                spawn.Y2 = newY2;
+                break;
+            case Gate gate:
+                gate.X1 = newX1;
+                gate.Y1 = newY1;
+                gate.X2 = newX2;
+                gate.Y2 = newY2;
+                break;
+        }
+    }
+
+    private string? GetFocusedRotation()
+    {
+        if (this._focusedObject is MonsterSpawnArea spawn)
+        {
+            return DirectionNames[(int)spawn.Direction];
+        }
+
+        return null;
     }
 
     private void CreateNewSpawnArea()
@@ -832,38 +775,5 @@ public partial class MapEditor : IAsyncDisposable
 
         /// <summary>Gets or sets the vertical scroll offset in pixels.</summary>
         public double ScrollTop { get; set; }
-    }
-
-    /// <summary>
-    /// Provides event data for the map changing event, supporting cancellation.
-    /// </summary>
-    public sealed class MapChangingArgs : CancelEventArgs
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MapChangingArgs"/> class.
-        /// </summary>
-        /// <param name="nextMap">The ID of the map being switched to.</param>
-        public MapChangingArgs(Guid nextMap)
-        {
-            this.NextMap = nextMap;
-        }
-
-        /// <summary>Gets the ID of the map that is about to be selected.</summary>
-        public Guid NextMap { get; }
-    }
-
-    /// <summary>
-    /// Represents the full state of the map host element retrieved from JavaScript.
-    /// </summary>
-    private sealed class MapHostState
-    {
-        /// <summary>Gets or sets the bounding client rect of the map host element.</summary>
-        public BoundingClientRect Rect { get; set; } = new();
-
-        /// <summary>Gets or sets the current scroll position of the map host element.</summary>
-        public ScrollInfo Scroll { get; set; } = new();
-
-        /// <summary>Gets or sets the current zoom level as maintained by the JS module.</summary>
-        public float ZoomLevel { get; set; } = 1.0f;
     }
 }
