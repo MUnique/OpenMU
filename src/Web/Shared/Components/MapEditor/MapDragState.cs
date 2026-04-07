@@ -29,6 +29,8 @@ internal struct MapDragState
     /// <summary>Gets or sets the original Y2 corner of the dragged object.</summary>
     public byte OrigY2;
 
+    private const int MapSize = 256;
+
     /// <summary>Captures the current bounds of the given spawn area as drag origin.</summary>
     /// <param name="spawn">The spawn area to capture bounds from.</param>
     public void Capture(MonsterSpawnArea spawn)
@@ -54,21 +56,20 @@ internal struct MapDragState
     /// </summary>
     /// <param name="x">Current mouse X in map coordinates.</param>
     /// <param name="y">Current mouse Y in map coordinates.</param>
-    /// <param name="mapSize">The map size in tiles.</param>
     /// <param name="newX1">Computed new X1 value.</param>
     /// <param name="newY1">Computed new Y1 value.</param>
     /// <param name="newX2">Computed new X2 value.</param>
     /// <param name="newY2">Computed new Y2 value.</param>
     /// <returns>True if the computed bounds differ from the originals.</returns>
-    public bool ApplyDrag(byte x, byte y, int mapSize, out byte newX1, out byte newY1, out byte newX2, out byte newY2)
+    public bool ApplyDrag(byte x, byte y, out byte newX1, out byte newY1, out byte newX2, out byte newY2)
     {
         int dx = x - this.StartX;
         int dy = y - this.StartY;
         int width = this.OrigX2 - this.OrigX1;
         int height = this.OrigY2 - this.OrigY1;
 
-        newX1 = (byte)Math.Clamp(this.OrigX1 + dx, 0, mapSize - 1 - width);
-        newY1 = (byte)Math.Clamp(this.OrigY1 + dy, 0, mapSize - 1 - height);
+        newX1 = (byte)Math.Clamp(this.OrigX1 + dx, 0, MapSize - 1 - width);
+        newY1 = (byte)Math.Clamp(this.OrigY1 + dy, 0, MapSize - 1 - height);
         newX2 = (byte)(newX1 + width);
         newY2 = (byte)(newY1 + height);
 

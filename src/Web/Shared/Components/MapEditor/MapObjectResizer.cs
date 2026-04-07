@@ -38,6 +38,9 @@ internal static class MapObjectResizer
                 spawn.X2 = Math.Max(x, spawn.X1);
                 spawn.Y1 = Math.Min(y, spawn.Y2);
                 break;
+            default:
+                // Not supported.
+                break;
         }
     }
 

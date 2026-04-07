@@ -13,6 +13,7 @@ using Microsoft.JSInterop;
 /// </summary>
 public sealed class MapZoomManager
 {
+    // Values match MIN_ZOOM / MAX_ZOOM in MapEditor.razor.js.
     private const float MinZoom = 1.0f;
     private const float MaxZoom = 4.0f;
     private const float ZoomButtonFactor = 1.25f;

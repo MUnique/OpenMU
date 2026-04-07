@@ -23,7 +23,6 @@ using SixLabors.ImageSharp.PixelFormats;
 /// </summary>
 public partial class MapEditor : IAsyncDisposable
 {
-    private const int MapSize = 256;
     private const int MaxObjectSelectSize = 30;
 
     private static readonly string JsModulePath =
@@ -214,13 +213,17 @@ public partial class MapEditor : IAsyncDisposable
 
         if (this._resizerPosition is { } pos && this._focusedObject is not null)
         {
-            if (this._focusedObject is MonsterSpawnArea spawnArea)
+            switch (this._focusedObject)
             {
-                MapObjectResizer.Resize(spawnArea, pos, x, y);
-            }
-            else if (this._focusedObject is Gate gate)
-            {
-                MapObjectResizer.Resize(gate, pos, x, y);
+                case MonsterSpawnArea spawn:
+                    MapObjectResizer.Resize(spawn, pos, x, y);
+                    break;
+                case Gate gate:
+                    MapObjectResizer.Resize(gate, pos, x, y);
+                    break;
+                default:
+                    // Not supported.
+                    break;
             }
 
             this.NotificationService.NotifyChange(this._focusedObject, null);
@@ -540,7 +543,7 @@ public partial class MapEditor : IAsyncDisposable
 
     private void OnObjectDragging(byte x, byte y)
     {
-        if (!this._dragState.ApplyDrag(x, y, MapSize, out var newX1, out var newY1, out var newX2, out var newY2))
+        if (!this._dragState.ApplyDrag(x, y, out var newX1, out var newY1, out var newX2, out var newY2))
         {
             return;
         }
