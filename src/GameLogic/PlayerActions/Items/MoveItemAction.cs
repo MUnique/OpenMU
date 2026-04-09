@@ -341,12 +341,7 @@ public class MoveItemAction
             this.SetUsedSlots(toStorage, blockingItem, usedSlots);
         }
 
-        return this.AreTargetSlotsBlocked(item, toSlot, toStorage, usedSlots) ? Movement.None : Movement.Normal;
-    }
-
-    private bool AreTargetSlotsBlocked(Item item, byte toSlot, StorageInfo toStorage, bool[,] usedSlots)
-    {
-        return this.IsTargetSlotBlocked(item, toSlot, toStorage, usedSlots);
+        return this.IsTargetSlotBlocked(item, toSlot, toStorage, usedSlots) ? Movement.None : Movement.Normal;
     }
 
     private bool IsTargetSlotBlocked(Item item, byte toSlot, StorageInfo toStorage, bool[,] usedSlots)
