@@ -76,7 +76,7 @@ public class KanturuGatewayPlugIn : IPlayerTalkToNpcPlugIn
         byte detailState;
         bool canEnter;
         int userCount;
-        TimeSpan remainingTime;
+        TimeSpan remainTime;
 
         if (ctx is KanturuContext kanturuCtx)
         {
@@ -87,13 +87,15 @@ public class KanturuGatewayPlugIn : IPlayerTalkToNpcPlugIn
             detailState = kanturuCtx.CurrentKanturuDetailState;
 
             // Entry allowed only during Maya-battle phases (including inter-phase standby).
-            // NightmareBattle and Tower phase are both sealed — players who are already
-            // inside the event access the Refinery Tower by walking through the opened
-            // Elphis barrier; the Gateway does not re-admit anyone for those phases.
+            // NightmareBattle: sealed — the Nightmare encounter cannot be joined mid-fight.
+            // Tower phase: sealed — survivors are auto-teleported to the Tower when the
+            //   Elphis barrier opens; players who died are excluded from the Tower for that
+            //   cycle and cannot re-enter via the Gateway (which would drop them in the Maya
+            //   room and let them appear to restart the event).
             canEnter = state == KanturuState.MayaBattle;
 
             userCount = ctx.PlayerCount;
-            remainingTime = TimeSpan.Zero;
+            remainTime = TimeSpan.Zero;
         }
         else if (timeUntilOpening == TimeSpan.Zero)
         {
@@ -103,7 +105,7 @@ public class KanturuGatewayPlugIn : IPlayerTalkToNpcPlugIn
             detailState = DetailStandbyOpen;
             canEnter = true;
             userCount = 0;
-            remainingTime = TimeSpan.Zero;
+            remainTime = TimeSpan.Zero;
         }
         else
         {
@@ -112,11 +114,11 @@ public class KanturuGatewayPlugIn : IPlayerTalkToNpcPlugIn
             detailState = 1;   // STANBY_START — client shows "Opens in X minutes"
             canEnter = false;
             userCount = 0;
-            remainingTime = timeUntilOpening ?? TimeSpan.Zero;
+            remainTime = timeUntilOpening ?? TimeSpan.Zero;
         }
 
         await player.InvokeViewPlugInAsync<IKanturuEventViewPlugIn>(p =>
-            p.ShowStateInfoAsync(state, detailState, canEnter, userCount, remainingTime))
+            p.ShowStateInfoAsync(state, detailState, canEnter, userCount, remainTime))
             .ConfigureAwait(false);
     }
 }
