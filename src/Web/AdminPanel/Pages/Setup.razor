@@ -38,4 +38,25 @@ else
     }
 
     <button class="btn bg-warning text-dark" @onclick="this.OnReInstallClickAsync">@Resources.ReInstall</button>
+    <hr />
+    <h5>@Resources.ExportBackup</h5>
+    <a href="/admin/backup" class="btn btn-secondary">@Resources.ExportBackup</a>
+    <hr />
+    <h5>@Resources.ImportBackup</h5>
+    @if (this._isImporting)
+    {
+        <div class="d-flex align-items-center gap-2">
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            <span>@Resources.ImportingBackupPleaseWait</span>
+        </div>
+    }
+    else if (this._importMessage is not null)
+    {
+        <p class="@this._importMessageCssClass">@this._importMessage</p>
+    }
+    else
+    {
+        <p class="text-muted">@Resources.SelectZipFileToRestore</p>
+    }
+    <Microsoft.AspNetCore.Components.Forms.InputFile OnChange="this.OnImportFileChangeAsync" accept=".zip" class="form-control mb-2" disabled="@this._isImporting" />
 }

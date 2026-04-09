@@ -256,3 +256,21 @@ internal partial class LetterHeader
     /// </summary>
     public Guid ReceiverId { get; set; }
 }
+
+internal partial class ChatServerDefinition : IConvertibleTo<BasicModel.ChatServerDefinition>
+{
+    public BasicModel.ChatServerDefinition Convert()
+    {
+        MapsterConfigurator.EnsureConfigured();
+        return this.Adapt<BasicModel.ChatServerDefinition>();
+    }
+}
+
+internal partial class GameServerDefinition : IConvertibleTo<BasicModel.GameServerDefinition>
+{
+    public BasicModel.GameServerDefinition Convert()
+    {
+        MapsterConfigurator.EnsureConfigured();
+        return this.Adapt<BasicModel.GameServerDefinition>();
+    }
+}
