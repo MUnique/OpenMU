@@ -1,4 +1,4 @@
-// <copyright file="AreaSkillAttackAction.cs" company="MUnique">
+﻿// <copyright file="AreaSkillAttackAction.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
-
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
@@ -21,6 +20,7 @@ using MUnique.OpenMU.Pathfinding;
 public class AreaSkillAttackAction
 {
     private const int UndefinedTarget = 0xFFFF;
+    private const short ElectricSpikeSkillId = 65;
 
     private static readonly ConcurrentDictionary<AreaSkillSettings, FrustumBasedTargetFilter> FrustumFilters = new();
 
@@ -330,6 +330,15 @@ public class AreaSkillAttackAction
                 }
 
                 currentDelay += areaSkillSettings.DelayBetweenHits;
+            }
+        }
+
+        if (skillEntry.Skill?.Number == ElectricSpikeSkillId && attackCount > 0 && player.Attributes![Stats.NearbyPartyMemberCount] > 0)
+        {
+            foreach (var partyMember in player.Party?.PartyList.OfType<Player>().Where(m => m.Observers.Contains(player)) ?? [])
+            {
+                partyMember.Attributes![Stats.CurrentHealth] *= 0.8f;
+                partyMember.Attributes[Stats.CurrentMana] *= 0.95f;
             }
         }
 
