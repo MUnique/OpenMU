@@ -8,7 +8,7 @@ using System.Threading;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
-using MUnique.OpenMU.GameLogic.Views;
+using MUnique.OpenMU.GameLogic.Properties;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Pathfinding;
@@ -76,47 +76,30 @@ public sealed class KanturuContext : MiniGameContext
     private readonly IMapInitializer _mapInitializer;
     private readonly TimeSpan _towerOfRefinementDuration;
 
-    // volatile: _phase is written by the game-loop task (RunKanturuGameLoopAsync) and read
-    // by OnMonsterDied, which runs on the thread-pool via the monster's death event.
-    // volatile ensures the death handler always sees the latest phase assignment without
-    // a memory-barrier instruction on every increment in the hot path.
-    private volatile KanturuPhase _phase = KanturuPhase.Open;
+    private KanturuPhase _phase = KanturuPhase.Open;
     private int _waveKillCount;
     private int _waveKillTarget;
     private TaskCompletionSource _phaseComplete = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
-    // volatile: written by the game loop on victory/defeat and read by GameEndedAsync,
-    // which can be called from a different thread when the game ends by timeout.
-    private volatile bool _isVictory;
-
-    // Interlocked flag: 0 = not yet opened, 1 = opened (or in progress).
-    // Ensures the barrier is opened exactly once regardless of whether the trigger
-    // comes from OnMonsterDied (fire-and-forget) or the game loop.
+    // Interlocked flags (0 = false, 1 = true) — avoids volatile by using explicit atomic reads/writes.
+    private int _isVictory;
     private int _barrierOpened;
+    private int _nightmareTeleporting;
+    private int _mayaAttacksPaused;
 
     // Nightmare HP-phase tracking
     private Monster? _nightmareMonster;
     private int _nightmarePhase;
 
-    // True while ExecuteNightmareTeleportAsync is in progress.
-    // Prevents MonitorNightmareHpAsync from re-triggering a teleport during the animation window.
-    private volatile bool _nightmareTeleporting;
-
-    // True while inter-phase standby is running — suppresses Maya wide-area attacks so
-    // Maya stays visually idle (no storm/stone-rain effects) during the break between phases.
-    private volatile bool _mayaAttacksPaused;
-
     /// <summary>
-    /// Gets the current Kanturu main state (the last state sent via 0xD1/0x03).
+    /// Gets the current Kanturu main state code (the last state sent via 0xD1/0x03).
     /// The Gateway NPC plugin reads this to populate the 0xD1/0x00 StateInfo dialog
     /// while the event is in progress.
     /// </summary>
     public KanturuState CurrentKanturuState { get; private set; } = KanturuState.MayaBattle;
 
     /// <summary>
-    /// Gets the current Kanturu detail state byte (the last detailState sent via 0xD1/0x03).
-    /// Passed directly to <see cref="IKanturuEventViewPlugIn.ShowStateInfoAsync"/> as the
-    /// protocol-level byte, since detail-state enums differ per main state.
+    /// Gets the current Kanturu detail state code (the last detailState sent via 0xD1/0x03).
     /// </summary>
     public byte CurrentKanturuDetailState { get; private set; }
 
@@ -172,10 +155,10 @@ public sealed class KanturuContext : MiniGameContext
         _ = Task.Run(() => this.RunKanturuGameLoopAsync(this.GameEndedToken), this.GameEndedToken);
     }
 
-#pragma warning disable VSTHRD100 // Avoid async void methods
     /// <inheritdoc/>
+#pragma warning disable VSTHRD100 // Avoid async void methods
     protected override async void OnMonsterDied(object? sender, DeathInformation e)
-#pragma warning restore VSTHRD100 // Avoid async void methods
+#pragma warning restore VSTHRD100
     {
         try
         {
@@ -196,7 +179,8 @@ public sealed class KanturuContext : MiniGameContext
                 {
                     var killed = Interlocked.Increment(ref this._waveKillCount);
                     complete = killed == this._waveKillTarget;
-                    await this.ShowMonsterUserCountAsync(Math.Max(0, this._waveKillTarget - killed), this.PlayerCount).ConfigureAwait(false);
+                    var remaining = Math.Max(0, this._waveKillTarget - killed);
+                    await this.ShowMonsterUserCountAsync(remaining, this.PlayerCount).ConfigureAwait(false);
                     break;
                 }
 
@@ -211,7 +195,8 @@ public sealed class KanturuContext : MiniGameContext
                 {
                     var killed = Interlocked.Increment(ref this._waveKillCount);
                     complete = killed == this._waveKillTarget;
-                    await this.ShowMonsterUserCountAsync(Math.Max(0, this._waveKillTarget - killed), this.PlayerCount).ConfigureAwait(false);
+                    var remaining = Math.Max(0, this._waveKillTarget - killed);
+                    await this.ShowMonsterUserCountAsync(remaining, this.PlayerCount).ConfigureAwait(false);
                     break;
                 }
 
@@ -226,7 +211,8 @@ public sealed class KanturuContext : MiniGameContext
                 {
                     var killed = Interlocked.Increment(ref this._waveKillCount);
                     complete = killed == this._waveKillTarget;
-                    await this.ShowMonsterUserCountAsync(Math.Max(0, this._waveKillTarget - killed), this.PlayerCount).ConfigureAwait(false);
+                    var remaining = Math.Max(0, this._waveKillTarget - killed);
+                    await this.ShowMonsterUserCountAsync(remaining, this.PlayerCount).ConfigureAwait(false);
                     break;
                 }
 
@@ -234,7 +220,8 @@ public sealed class KanturuContext : MiniGameContext
                 {
                     var killed = Interlocked.Increment(ref this._waveKillCount);
                     complete = killed == this._waveKillTarget;
-                    await this.ShowMonsterUserCountAsync(Math.Max(0, this._waveKillTarget - killed), this.PlayerCount).ConfigureAwait(false);
+                    var remaining = Math.Max(0, this._waveKillTarget - killed);
+                    await this.ShowMonsterUserCountAsync(remaining, this.PlayerCount).ConfigureAwait(false);
                     break;
                 }
 
@@ -242,24 +229,14 @@ public sealed class KanturuContext : MiniGameContext
                 {
                     var killed = Interlocked.Increment(ref this._waveKillCount);
                     complete = killed == this._waveKillTarget;
-                    await this.ShowMonsterUserCountAsync(Math.Max(0, this._waveKillTarget - killed), this.PlayerCount).ConfigureAwait(false);
-                    break;
-                }
-
-                case KanturuPhase.NightmareActive when num is GenociderNumber or DreadfearNumber or PersonaNumber:
-                {
-                    // A guardian died while Nightmare is alive — update the HUD counter but do NOT
-                    // advance the phase. _waveKillTarget=46 (45 guardians + 1 Nightmare), so
-                    // remaining = 46 − killed still accounts for Nightmare being alive.
-                    var killed = Interlocked.Increment(ref this._waveKillCount);
-                    await this.ShowMonsterUserCountAsync(Math.Max(0, this._waveKillTarget - killed), this.PlayerCount).ConfigureAwait(false);
-                    complete = false;
+                    var remaining = Math.Max(0, this._waveKillTarget - killed);
+                    await this.ShowMonsterUserCountAsync(remaining, this.PlayerCount).ConfigureAwait(false);
                     break;
                 }
 
                 case KanturuPhase.NightmareActive when num == NightmareNumber:
                     complete = true;
-                    // Open the barrier immediately from the death event.
+                    // Fire barrier opening immediately from the death event.
                     // Do NOT wait for the game loop — it may be interrupted by
                     // GameEndedToken cancellation before reaching OpenElphisBarrierAsync.
                     await this.OpenElphisBarrierAsync().ConfigureAwait(false);
@@ -272,11 +249,6 @@ public sealed class KanturuContext : MiniGameContext
                         this.Logger.LogWarning(
                             "Kanturu: Nightmare died but _phase={Phase} (expected NightmareActive). Barrier NOT opened.",
                             phase);
-                        await this.ForEachPlayerAsync(p =>
-                            p.InvokeViewPlugInAsync<IShowMessagePlugIn>(v =>
-                                v.ShowMessageAsync(
-                                    $"[Kanturu] Nightmare died out of phase! Phase={phase}",
-                                    MessageType.BlueNormal)).AsTask()).ConfigureAwait(false);
                     }
 
                     complete = false;
@@ -290,25 +262,26 @@ public sealed class KanturuContext : MiniGameContext
         }
         catch (Exception ex)
         {
-            this.Logger.LogError(ex, "Unexpected error when handling a monster death.");
+            this.Logger.LogError(ex, "Unexpected error in OnMonsterDied.");
         }
     }
 
     /// <inheritdoc/>
     protected override async ValueTask GameEndedAsync(ICollection<Player> finishers)
     {
-        await this.ShowGoldenMessageAsync(
-            this._isVictory
-                ? nameof(PlayerMessage.KanturuVictory)
-                : nameof(PlayerMessage.KanturuDefeat)).ConfigureAwait(false);
+        var isVictory = Volatile.Read(ref this._isVictory) != 0;
+
+        await this.ShowGoldenMessageAsync(isVictory
+            ? nameof(PlayerMessage.KanturuVictory)
+            : nameof(PlayerMessage.KanturuDefeat)).ConfigureAwait(false);
 
         // On defeat show the Failure_kantru.tga overlay.
         // On victory the Success_kantru.tga and Tower state are sent from OpenElphisBarrierAsync.
-        if (!this._isVictory)
+        if (!isVictory)
         {
             await this.ForEachPlayerAsync(player =>
                 player.InvokeViewPlugInAsync<IKanturuEventViewPlugIn>(p =>
-                    p.ShowBattleResultAsync(KanturuBattleResult.Failure)).AsTask()).ConfigureAwait(false);
+                    p.ShowBattleResultAsync(false)).AsTask()).ConfigureAwait(false);
         }
 
         await base.GameEndedAsync(finishers).ConfigureAwait(false);
@@ -320,7 +293,7 @@ public sealed class KanturuContext : MiniGameContext
         {
             // Maya "notify" cinematic — camera pans to Maya, Maya body rises from below.
             // Must be sent first so the client camera is in position before the first wave.
-            await this.ShowMayaBattleStateToAllAsync(KanturuMayaDetailState.Notify).ConfigureAwait(false);
+            await this.ShowKanturuStateAsync(KanturuState.MayaBattle, (byte)KanturuMayaDetailState.Notify).ConfigureAwait(false);
             await Task.Delay(TimeSpan.FromSeconds(3), ct).ConfigureAwait(false);
 
             // Start the Maya wide-area attack visual loop for the duration of all Maya phases.
@@ -329,46 +302,46 @@ public sealed class KanturuContext : MiniGameContext
             _ = Task.Run(() => this.RunMayaWideAreaAttacksAsync(mayaAttackCts.Token), mayaAttackCts.Token);
 
             // Phase 1: wave of monsters — 10-minute timer covers wave + boss.
-            await this.ShowMayaBattleStateToAllAsync(KanturuMayaDetailState.Monster1).ConfigureAwait(false);
+            await this.ShowKanturuStateAsync(KanturuState.MayaBattle, (byte)KanturuMayaDetailState.Monster1).ConfigureAwait(false);
             await this.ShowTimeLimitToAllAsync(TimeSpan.FromMinutes(10)).ConfigureAwait(false);
             await this.AdvancePhaseAsync(KanturuPhase.Phase1Monsters, WavePhase1Monsters, 40,
-                PlayerMessage.KanturuPhase1Start, ct).ConfigureAwait(false);
+                nameof(PlayerMessage.KanturuPhase1Start), ct).ConfigureAwait(false);
 
             // Phase 1: Maya Left Hand boss
-            await this.ShowMayaBattleStateToAllAsync(KanturuMayaDetailState.MayaLeft).ConfigureAwait(false);
+            await this.ShowKanturuStateAsync(KanturuState.MayaBattle, (byte)KanturuMayaDetailState.Maya1).ConfigureAwait(false);
             await this.AdvancePhaseAsync(KanturuPhase.Phase1Boss, WavePhase1Boss, 1,
-                PlayerMessage.KanturuMayaLeftHandAppeared, ct).ConfigureAwait(false);
+                nameof(PlayerMessage.KanturuMayaLeftHandAppeared), ct).ConfigureAwait(false);
 
             // Standby between phases
-            await this.SendStandbyMessageAsync(PlayerMessage.KanturuPhase1Cleared, ct).ConfigureAwait(false);
+            await this.ShowStandbyMessageAsync(nameof(PlayerMessage.KanturuPhase1Cleared), ct).ConfigureAwait(false);
 
             // Phase 2: wave of monsters — fresh 10-minute timer.
-            await this.ShowMayaBattleStateToAllAsync(KanturuMayaDetailState.Monster2).ConfigureAwait(false);
+            await this.ShowKanturuStateAsync(KanturuState.MayaBattle, (byte)KanturuMayaDetailState.Monster2).ConfigureAwait(false);
             await this.ShowTimeLimitToAllAsync(TimeSpan.FromMinutes(10)).ConfigureAwait(false);
             await this.AdvancePhaseAsync(KanturuPhase.Phase2Monsters, WavePhase2Monsters, 40,
-                PlayerMessage.KanturuPhase2Start, ct).ConfigureAwait(false);
+                nameof(PlayerMessage.KanturuPhase2Start), ct).ConfigureAwait(false);
 
             // Phase 2: Maya Right Hand boss
-            await this.ShowMayaBattleStateToAllAsync(KanturuMayaDetailState.MayaRight).ConfigureAwait(false);
+            await this.ShowKanturuStateAsync(KanturuState.MayaBattle, (byte)KanturuMayaDetailState.Maya2).ConfigureAwait(false);
             await this.AdvancePhaseAsync(KanturuPhase.Phase2Boss, WavePhase2Boss, 1,
-                PlayerMessage.KanturuMayaRightHandAppeared, ct).ConfigureAwait(false);
+                nameof(PlayerMessage.KanturuMayaRightHandAppeared), ct).ConfigureAwait(false);
 
             // Standby between phases
-            await this.SendStandbyMessageAsync(PlayerMessage.KanturuPhase2Cleared, ct).ConfigureAwait(false);
+            await this.ShowStandbyMessageAsync(nameof(PlayerMessage.KanturuPhase2Cleared), ct).ConfigureAwait(false);
 
             // Phase 3: wave of monsters — fresh 10-minute timer.
-            await this.ShowMayaBattleStateToAllAsync(KanturuMayaDetailState.Monster3).ConfigureAwait(false);
+            await this.ShowKanturuStateAsync(KanturuState.MayaBattle, (byte)KanturuMayaDetailState.Monster3).ConfigureAwait(false);
             await this.ShowTimeLimitToAllAsync(TimeSpan.FromMinutes(10)).ConfigureAwait(false);
             await this.AdvancePhaseAsync(KanturuPhase.Phase3Monsters, WavePhase3Monsters, 20,
-                PlayerMessage.KanturuPhase3Start, ct).ConfigureAwait(false);
+                nameof(PlayerMessage.KanturuPhase3Start), ct).ConfigureAwait(false);
 
             // Phase 3: Both Maya bosses simultaneously
-            await this.ShowMayaBattleStateToAllAsync(KanturuMayaDetailState.BothHands).ConfigureAwait(false);
+            await this.ShowKanturuStateAsync(KanturuState.MayaBattle, (byte)KanturuMayaDetailState.Maya3).ConfigureAwait(false);
             await this.AdvancePhaseAsync(KanturuPhase.Phase3Bosses, WavePhase3Bosses, 2,
-                PlayerMessage.KanturuBothMayaHandsAppeared, ct).ConfigureAwait(false);
+                nameof(PlayerMessage.KanturuBothMayaHandsAppeared), ct).ConfigureAwait(false);
 
             // Hide HUD during the loot window — same reason as inter-phase standby.
-            await this.ShowMayaBattleStateToAllAsync(KanturuMayaDetailState.None).ConfigureAwait(false);
+            await this.ShowKanturuStateAsync(KanturuState.MayaBattle, (byte)KanturuMayaDetailState.None).ConfigureAwait(false);
 
             // 10-second loot window: players pick up drops from both Maya hands
             // before the Nightmare transition cinematic begins.
@@ -385,7 +358,7 @@ public sealed class KanturuContext : MiniGameContext
             //   2. NightmareBattle/Idle is sent AFTER teleport so the HUD change applies in
             //      the Nightmare zone, not the Maya battlefield.
             await this.TeleportToNightmareRoomAsync(ct).ConfigureAwait(false);
-            await this.ShowNightmareStateToAllAsync(KanturuNightmareDetailState.Idle).ConfigureAwait(false);
+            await this.ShowKanturuStateAsync(KanturuState.NightmareBattle, (byte)KanturuNightmareDetailState.Idle).ConfigureAwait(false);
 
             // Nightmare Prep: spawn guardians immediately, then spawn Nightmare after 3 seconds.
             // No kill requirement — guardians fight alongside Nightmare.
@@ -405,7 +378,7 @@ public sealed class KanturuContext : MiniGameContext
             await this.RunNightmarePhaseAsync(ct).ConfigureAwait(false);
 
             // Victory
-            this._isVictory = true;
+            Interlocked.Exchange(ref this._isVictory, 1);
             this._phase = KanturuPhase.Ended;
 
             // Open the Elphis barrier (also sends the Success screen + Tower state).
@@ -436,16 +409,14 @@ public sealed class KanturuContext : MiniGameContext
         this._nightmarePhase = 1;
         this._nightmareMonster = null;
 
-        // Do NOT reset _waveKillCount — it holds guardian kills from the 3-second prep window.
-        // _waveKillTarget = 46 (45 guardians + 1 Nightmare) so the HUD counter correctly
-        // reflects every remaining mob in the Nightmare zone, not just the boss.
-        this._waveKillTarget = 46;
+        Interlocked.Exchange(ref this._waveKillCount, 0);
+        this._waveKillTarget = 1;
         this._phaseComplete = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         this._phase = KanturuPhase.NightmareActive;
 
         // Nightmare intro cinematic — camera moves to Nightmare zone and summons Nightmare.
-        // This uses detail=Intro(2) = KANTURU_NIGHTMARE_DIRECTION_NIGHTMARE on the client.
-        await this.ShowNightmareStateToAllAsync(KanturuNightmareDetailState.Intro).ConfigureAwait(false);
+        // This uses detail=NightmareIntro(2) = KANTURU_NIGHTMARE_DIRECTION_NIGHTMARE on the client.
+        await this.ShowKanturuStateAsync(KanturuState.NightmareBattle, (byte)KanturuNightmareDetailState.NightmareIntro).ConfigureAwait(false);
         await Task.Delay(TimeSpan.FromSeconds(3), ct).ConfigureAwait(false);
 
         // Subscribe to ObjectAdded to capture the Nightmare reference as soon as it spawns.
@@ -480,11 +451,10 @@ public sealed class KanturuContext : MiniGameContext
         }
 
         // Switch to active battle state — shows Nightmare HUD on client (INTERFACE_KANTURU_INFO).
-        await this.ShowNightmareStateToAllAsync(KanturuNightmareDetailState.Battle).ConfigureAwait(false);
+        await this.ShowKanturuStateAsync(KanturuState.NightmareBattle, (byte)KanturuNightmareDetailState.Battle).ConfigureAwait(false);
 
-        // Show total remaining: alive guardians (45 − killed during prep) + 1 Nightmare.
-        var totalRemaining = Math.Max(1, this._waveKillTarget - this._waveKillCount);
-        await this.ShowMonsterUserCountAsync(totalRemaining, this.PlayerCount).ConfigureAwait(false);
+        // Show initial monster count: 1 Nightmare alive.
+        await this.ShowMonsterUserCountAsync(1, this.PlayerCount).ConfigureAwait(false);
 
         await this.ShowGoldenMessageAsync(nameof(PlayerMessage.KanturuNightmareAppeared)).ConfigureAwait(false);
 
@@ -519,7 +489,7 @@ public sealed class KanturuContext : MiniGameContext
             // Do NOT check HP while a teleport is already in progress.
             // ExecuteNightmareTeleportAsync restores Nightmare's HP as part of the sequence;
             // reading HP mid-teleport would give a stale (low) value and re-trigger.
-            if (this._nightmareTeleporting)
+            if (Volatile.Read(ref this._nightmareTeleporting) != 0)
             {
                 continue;
             }
@@ -560,7 +530,7 @@ public sealed class KanturuContext : MiniGameContext
             return;
         }
 
-        this._nightmareTeleporting = true;
+        Interlocked.Exchange(ref this._nightmareTeleporting, 1);
         try
         {
             var newPos = phase switch
@@ -571,12 +541,12 @@ public sealed class KanturuContext : MiniGameContext
                 _ => NightmarePhase2Pos,
             };
 
-            var msgKey = phase switch
+            var messageKey = phase switch
             {
                 2 => nameof(PlayerMessage.KanturuNightmareTeleport2),
                 3 => nameof(PlayerMessage.KanturuNightmareTeleport3),
                 4 => nameof(PlayerMessage.KanturuNightmareTeleport4),
-                _ => null,
+                _ => string.Empty,
             };
 
             // Restore HP FIRST — any damage during the brief animation window will not kill Nightmare.
@@ -594,14 +564,14 @@ public sealed class KanturuContext : MiniGameContext
             // Restore HP a second time as a safety net — covers any hits landing in the 500 ms window.
             nightmare.Health = (int)nightmare.Attributes[Stats.MaximumHealth];
 
-            if (msgKey is not null)
+            if (messageKey.Length > 0)
             {
-                await this.ShowGoldenMessageAsync(msgKey).ConfigureAwait(false);
+                await this.ShowGoldenMessageAsync(messageKey).ConfigureAwait(false);
             }
         }
         finally
         {
-            this._nightmareTeleporting = false;
+            Interlocked.Exchange(ref this._nightmareTeleporting, 0);
         }
     }
 
@@ -625,8 +595,6 @@ public sealed class KanturuContext : MiniGameContext
             return;
         }
 
-        try
-        {
         this.Logger.LogInformation("Kanturu: opening Elphis barrier.");
 
         await this.ShowGoldenMessageAsync(nameof(PlayerMessage.KanturuBarrierOpening)).ConfigureAwait(false);
@@ -635,7 +603,7 @@ public sealed class KanturuContext : MiniGameContext
         await this.ShowMonsterUserCountAsync(0, this.PlayerCount).ConfigureAwait(false);
 
         // Victory camera-out cinematic (KANTURU_NIGHTMARE_DIRECTION_END = 4).
-        await this.ShowNightmareStateToAllAsync(KanturuNightmareDetailState.End).ConfigureAwait(false);
+        await this.ShowKanturuStateAsync(KanturuState.NightmareBattle, (byte)KanturuNightmareDetailState.End).ConfigureAwait(false);
         await Task.Delay(TimeSpan.FromSeconds(2)).ConfigureAwait(false);
 
         // 1. Send SUCCESS result overlay (Success_kantru.tga).
@@ -644,12 +612,12 @@ public sealed class KanturuContext : MiniGameContext
         //    the overlay renders while the client is still in the Nightmare state.
         await this.ForEachPlayerAsync(player =>
             player.InvokeViewPlugInAsync<IKanturuEventViewPlugIn>(p =>
-                p.ShowBattleResultAsync(KanturuBattleResult.Victory))
+                p.ShowBattleResultAsync(true))
             .AsTask()).ConfigureAwait(false);
 
         // 2. Send Tower state → client reloads EncTerrain(n)01.att (barrier-open terrain),
         //    switches to Tower music, and plays the success sound.
-        await this.ShowTowerStateToAllAsync(KanturuTowerDetailState.Revitalization).ConfigureAwait(false);
+        await this.ShowKanturuStateAsync(KanturuState.Tower, (byte)KanturuTowerDetailState.Revitalization).ConfigureAwait(false);
 
         // 3. Update server-side walkmap so the AI pathfinder and movement checks
         //    treat the formerly-blocked cells as passable.
@@ -674,11 +642,6 @@ public sealed class KanturuContext : MiniGameContext
             player.InvokeViewPlugInAsync<IChangeTerrainAttributesViewPlugin>(p =>
                 p.ChangeAttributesAsync(TerrainAttributeType.NoGround, setAttribute: false, areas))
             .AsTask()).ConfigureAwait(false);
-        }
-        catch (Exception ex)
-        {
-            this.Logger.LogError(ex, "{context}: Unexpected error while opening Elphis barrier.", this);
-        }
     }
 
     /// <summary>
@@ -711,11 +674,9 @@ public sealed class KanturuContext : MiniGameContext
         }
 
         // Tower closing notification
-        await this.ShowTowerStateToAllAsync(KanturuTowerDetailState.Notify).ConfigureAwait(false);
-
+        await this.ShowKanturuStateAsync(KanturuState.Tower, (byte)KanturuTowerDetailState.Notify).ConfigureAwait(false);
         await this.ShowGoldenMessageAsync(nameof(PlayerMessage.KanturuTowerClosed)).ConfigureAwait(false);
-
-        await this.ShowTowerStateToAllAsync(KanturuTowerDetailState.Close).ConfigureAwait(false);
+        await this.ShowKanturuStateAsync(KanturuState.Tower, (byte)KanturuTowerDetailState.Close).ConfigureAwait(false);
     }
 
     private async Task TeleportToNightmareRoomAsync(CancellationToken ct)
@@ -730,7 +691,7 @@ public sealed class KanturuContext : MiniGameContext
         //   Stage 2 — m_bDownHero=true: the hero "falls through the floor" into the Nightmare zone.
         // NOTE: 0xD1/0x04 result=1 (Success_kantru.tga) must NOT be sent here — that overlay
         // is only correct after Nightmare is defeated and is already sent in OpenElphisBarrierAsync.
-        await this.ShowMayaBattleStateToAllAsync(KanturuMayaDetailState.EndCycleMaya3).ConfigureAwait(false);
+        await this.ShowKanturuStateAsync(KanturuState.MayaBattle, (byte)KanturuMayaDetailState.EndCycleMaya3).ConfigureAwait(false);
 
         // Step 2: Wait for the client cinematic to complete before teleporting.
         // The three stages take roughly: camera pan ~3 s + explosion ~4 s + fall ~3 s ≈ 10 s.
@@ -766,7 +727,7 @@ public sealed class KanturuContext : MiniGameContext
     /// </summary>
     private async Task RunMayaWideAreaAttacksAsync(CancellationToken ct)
     {
-        var attackType = KanturuMayaAttackType.Storm;
+        byte attackType = 0;
         while (!ct.IsCancellationRequested)
         {
             try
@@ -779,24 +740,15 @@ public sealed class KanturuContext : MiniGameContext
             }
 
             // Skip the broadcast during inter-phase standby — Maya stays idle, no visual attacks.
-            if (!this._mayaAttacksPaused)
+            if (Volatile.Read(ref this._mayaAttacksPaused) == 0)
             {
-                try
-                {
-                    await this.ForEachPlayerAsync(player =>
-                        player.InvokeViewPlugInAsync<IKanturuEventViewPlugIn>(p =>
-                            p.ShowMayaWideAreaAttackAsync(attackType)).AsTask()).ConfigureAwait(false);
-                }
-                catch (Exception ex)
-                {
-                    this.Logger.LogWarning(ex, "{context}: Error sending Maya wide-area attack broadcast.", this);
-                }
+                var isStorm = attackType == 0;
+                await this.ForEachPlayerAsync(player =>
+                    player.InvokeViewPlugInAsync<IKanturuEventViewPlugIn>(p =>
+                        p.ShowMayaWideAreaAttackAsync(isStorm)).AsTask()).ConfigureAwait(false);
             }
 
-            // Alternate Storm → Rain → Storm → …
-            attackType = attackType == KanturuMayaAttackType.Storm
-                ? KanturuMayaAttackType.Rain
-                : KanturuMayaAttackType.Storm;
+            attackType = (byte)(1 - attackType); // alternate storm → rain → storm → …
         }
     }
 
@@ -830,7 +782,7 @@ public sealed class KanturuContext : MiniGameContext
             }
 
             // Skip during a teleport sequence to avoid animation conflicts.
-            if (this._nightmareTeleporting)
+            if (Volatile.Read(ref this._nightmareTeleporting) != 0)
             {
                 continue;
             }
@@ -844,11 +796,11 @@ public sealed class KanturuContext : MiniGameContext
         }
     }
 
-    private async Task SendStandbyMessageAsync(string messageKey, CancellationToken ct)
+    private async Task ShowStandbyMessageAsync(string messageKey, CancellationToken ct)
     {
         // Pause Maya wide-area attacks for the full duration of the standby so the
         // body stays visually idle (no storm/stone-rain effects between phases).
-        this._mayaAttacksPaused = true;
+        Interlocked.Exchange(ref this._mayaAttacksPaused, 1);
         try
         {
             // Hide the in-map HUD (INTERFACE_KANTURU_INFO) during the inter-phase standby.
@@ -856,19 +808,17 @@ public sealed class KanturuContext : MiniGameContext
             // the monster count / user count / timer panel until the next phase begins.
             // Maya body (#364) stays at its spawn position — it is ~27 tiles from the fight
             // room and well outside its ViewRange=9, so it naturally idles without attacking.
-            await this.ShowMayaBattleStateToAllAsync(KanturuMayaDetailState.None).ConfigureAwait(false);
-
+            await this.ShowKanturuStateAsync(KanturuState.MayaBattle, (byte)KanturuMayaDetailState.None).ConfigureAwait(false);
             await this.ShowGoldenMessageAsync(messageKey).ConfigureAwait(false);
-
             await Task.Delay(TimeSpan.FromMinutes(2), ct).ConfigureAwait(false);
         }
         finally
         {
-            this._mayaAttacksPaused = false;
+            Interlocked.Exchange(ref this._mayaAttacksPaused, 0);
         }
     }
 
-    private async Task AdvancePhaseAsync(KanturuPhase phase, byte waveNumber, int killTarget, string messageKey, CancellationToken ct)
+    private async Task AdvancePhaseAsync(KanturuPhase phase, byte waveNumber, int killTarget, string message, CancellationToken ct)
     {
         Interlocked.Exchange(ref this._waveKillCount, 0);
         this._waveKillTarget = killTarget;
@@ -879,56 +829,27 @@ public sealed class KanturuContext : MiniGameContext
 
         // Broadcast the initial monster count so the HUD shows the correct number from the start.
         await this.ShowMonsterUserCountAsync(killTarget, this.PlayerCount).ConfigureAwait(false);
-
-        await this.ShowGoldenMessageAsync(messageKey).ConfigureAwait(false);
+        await this.ShowGoldenMessageAsync(message).ConfigureAwait(false);
 
         await this._phaseComplete.Task.WaitAsync(ct).ConfigureAwait(false);
     }
 
     /// <summary>
-    /// Broadcasts the Maya battle detail state (0xD1/0x03) to all players.
-    /// Updates <see cref="CurrentKanturuState"/> and <see cref="CurrentKanturuDetailState"/>
-    /// so the Gateway NPC can report the current phase in the 0xD1/0x00 dialog.
+    /// Broadcasts packet 0xD1/0x03 (Kanturu state change) to all players currently on the map.
+    /// Also updates <see cref="CurrentKanturuState"/> and <see cref="CurrentKanturuDetailState"/>
+    /// so the Gateway NPC plugin can report the current event phase in the 0xD1/0x00 dialog.
     /// </summary>
-    private ValueTask ShowMayaBattleStateToAllAsync(KanturuMayaDetailState detailState)
+    private ValueTask ShowKanturuStateAsync(KanturuState state, byte detailState)
     {
-        this.CurrentKanturuState = KanturuState.MayaBattle;
-        this.CurrentKanturuDetailState = ConvertMayaDetail(detailState);
+        this.CurrentKanturuState = state;
+        this.CurrentKanturuDetailState = detailState;
         return this.ForEachPlayerAsync(player =>
             player.InvokeViewPlugInAsync<IKanturuEventViewPlugIn>(p =>
-                p.ShowMayaBattleStateAsync(detailState)).AsTask());
-    }
-
-    /// <summary>
-    /// Broadcasts the Nightmare battle detail state (0xD1/0x03) to all players.
-    /// Updates <see cref="CurrentKanturuState"/> and <see cref="CurrentKanturuDetailState"/>.
-    /// </summary>
-    private ValueTask ShowNightmareStateToAllAsync(KanturuNightmareDetailState detailState)
-    {
-        this.CurrentKanturuState = KanturuState.NightmareBattle;
-        this.CurrentKanturuDetailState = ConvertNightmareDetail(detailState);
-        return this.ForEachPlayerAsync(player =>
-            player.InvokeViewPlugInAsync<IKanturuEventViewPlugIn>(p =>
-                p.ShowNightmareStateAsync(detailState)).AsTask());
-    }
-
-    /// <summary>
-    /// Broadcasts the Tower detail state (0xD1/0x03) to all players.
-    /// Updates <see cref="CurrentKanturuState"/> and <see cref="CurrentKanturuDetailState"/>.
-    /// </summary>
-    private ValueTask ShowTowerStateToAllAsync(KanturuTowerDetailState detailState)
-    {
-        this.CurrentKanturuState = KanturuState.Tower;
-        this.CurrentKanturuDetailState = ConvertTowerDetail(detailState);
-        return this.ForEachPlayerAsync(player =>
-            player.InvokeViewPlugInAsync<IKanturuEventViewPlugIn>(p =>
-                p.ShowTowerStateAsync(detailState)).AsTask());
+                p.ShowStateChangeAsync(state, detailState)).AsTask());
     }
 
     /// <summary>
     /// Broadcasts packet 0xD1/0x07 (Kanturu monster/user count) to all players currently on the map.
-    /// The view plugin clamps the values to byte range before sending.
-    /// This method does not throw — callers in <see cref="OnMonsterDied"/> rely on this guarantee.
     /// </summary>
     private ValueTask ShowMonsterUserCountAsync(int monsterCount, int userCount)
     {
@@ -946,37 +867,4 @@ public sealed class KanturuContext : MiniGameContext
             player.InvokeViewPlugInAsync<IKanturuEventViewPlugIn>(p =>
                 p.ShowTimeLimitAsync(timeLimit)).AsTask());
     }
-
-    private static byte ConvertMayaDetail(KanturuMayaDetailState detail) => detail switch
-    {
-        KanturuMayaDetailState.None => 0,
-        KanturuMayaDetailState.Notify => 2,
-        KanturuMayaDetailState.Monster1 => 3,
-        KanturuMayaDetailState.MayaLeft => 4,
-        KanturuMayaDetailState.Monster2 => 8,
-        KanturuMayaDetailState.MayaRight => 9,
-        KanturuMayaDetailState.Monster3 => 13,
-        KanturuMayaDetailState.BothHands => 14,
-        KanturuMayaDetailState.EndCycleMaya3 => 16,
-        _ => throw new ArgumentOutOfRangeException(nameof(detail), detail, null),
-    };
-
-    private static byte ConvertNightmareDetail(KanturuNightmareDetailState detail) => detail switch
-    {
-        KanturuNightmareDetailState.None => 0,
-        KanturuNightmareDetailState.Idle => 1,
-        KanturuNightmareDetailState.Intro => 2,
-        KanturuNightmareDetailState.Battle => 3,
-        KanturuNightmareDetailState.End => 4,
-        _ => throw new ArgumentOutOfRangeException(nameof(detail), detail, null),
-    };
-
-    private static byte ConvertTowerDetail(KanturuTowerDetailState detail) => detail switch
-    {
-        KanturuTowerDetailState.None => 0,
-        KanturuTowerDetailState.Revitalization => 1,
-        KanturuTowerDetailState.Notify => 2,
-        KanturuTowerDetailState.Close => 3,
-        _ => throw new ArgumentOutOfRangeException(nameof(detail), detail, null),
-    };
 }
