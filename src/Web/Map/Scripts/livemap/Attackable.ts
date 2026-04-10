@@ -2,10 +2,15 @@
 import TWEEN from "tween";
 import { ObjectData, Step, Direction } from "./Types";
 import { GameObject } from "./GameObject";
+import { NameLabel } from "./NameLabel";
+
+const NAME_LABEL_Z_POSITION = 200;
+const NAME_INDEX = 0;
 
 export class Attackable<TData extends ObjectData> extends THREE.Mesh implements GameObject {
     public data: TData;
     public material: THREE.Material;
+    public readonly nameLabel: NameLabel;
 
     private moveTween: TWEEN.Tween;
 
@@ -13,6 +18,17 @@ export class Attackable<TData extends ObjectData> extends THREE.Mesh implements 
         super(geometry, material);
         this.data = data;
         this.moveTween = null;
+        this.nameLabel = new NameLabel();
+        this.nameLabel.position.z = NAME_LABEL_Z_POSITION;
+        this.add(this.nameLabel);
+    }
+
+    public showLabel(): void {
+        this.nameLabel.show(this.data.name.split(" - Id:")[NAME_INDEX]);
+    }
+
+    public hideLabel(): void {
+        this.nameLabel.hide();
     }
 
     public gotKilled(): void {
@@ -79,9 +95,17 @@ export class Attackable<TData extends ObjectData> extends THREE.Mesh implements 
             this.data = Object.assign({}, this.data, rotation);
         }
 
-        // TODO: Tween it :)
+        const degreesOfOneTurn = 360;
+        const numberOfDirectionValues = 8;
+        const targetAngle = THREE.Math.degToRad((rotation * degreesOfOneTurn) / numberOfDirectionValues);
+        const rotateDurationMs = 200;
 
-        this.setRotation(rotation);
+        const state = { z: this.rotation.z };
+        new TWEEN.Tween(state)
+            .to({ z: targetAngle }, rotateDurationMs)
+            .onUpdate(() => this.rotation.z = state.z)
+            .easing(TWEEN.Easing.Quadratic.Out)
+            .start();
     }
 
     private setRotation(value: Direction): void {
@@ -96,7 +120,7 @@ export class Attackable<TData extends ObjectData> extends THREE.Mesh implements 
         this.position.y = offset - newX;
         this.position.x = newY - offset;
     }
-};
+}
 
 export var attackableAlphaMapTexture: THREE.Texture;
 new THREE.TextureLoader().load("_content/MUnique.OpenMU.Web.Map/img/attackable_alphamap.png", (t: THREE.Texture) => {

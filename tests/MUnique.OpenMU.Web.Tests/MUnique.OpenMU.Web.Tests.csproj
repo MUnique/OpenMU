@@ -1,0 +1,52 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <WarningsAsErrors>nullable;CS4014;VSTHRD110;VSTHRD100</WarningsAsErrors>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>bin\Debug\</OutputPath>
+    <DocumentationFile>bin\Debug\MUnique.OpenMU.Web.Tests.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>bin\Release\</OutputPath>
+    <DocumentationFile>bin\Release\MUnique.OpenMU.Web.Tests.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\src\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
+    <Compile Include="..\..\src\SharedGlobalUsings.cs" Link="SharedGlobalUsings.cs" />
+    <Compile Include="..\SharedTestUsings.cs" Link="SharedTestUsings.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="..\..\src\stylecop.json" Link="stylecop.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\src\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="Moq" />
+    <PackageReference Include="NUnit" />
+    <PackageReference Include="NUnit3TestAdapter" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Web\Shared\MUnique.OpenMU.Web.Shared.csproj" />
+    <ProjectReference Include="..\..\src\Web\AdminPanel\MUnique.OpenMU.Web.AdminPanel.csproj" />
+    <ProjectReference Include="..\..\src\Web\ItemEditor\MUnique.OpenMU.Web.ItemEditor.csproj" />
+    <ProjectReference Include="..\..\src\Web\Map\MUnique.OpenMU.Web.Map.csproj" />
+    <ProjectReference Include="..\..\src\Persistence\MUnique.OpenMU.Persistence.csproj" />
+    <ProjectReference Include="..\..\src\Persistence\InMemory\MUnique.OpenMU.Persistence.InMemory.csproj" />
+    <ProjectReference Include="..\..\src\DataModel\MUnique.OpenMU.DataModel.csproj" />
+    <ProjectReference Include="..\..\src\Interfaces\MUnique.OpenMU.Interfaces.csproj" />
+    <ProjectReference Include="..\..\src\GameLogic\MUnique.OpenMU.GameLogic.csproj" />
+  </ItemGroup>
+</Project>
