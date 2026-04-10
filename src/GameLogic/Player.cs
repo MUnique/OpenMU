@@ -2864,11 +2864,4 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             this.AppearanceChanged?.Invoke(this, EventArgs.Empty);
         }
     }
-    private protected sealed class GMMagicEffectDefinition : MagicEffectDefinition
-    {
-        public GMMagicEffectDefinition()
-        {
-            this.PowerUpDefinitions = new List<PowerUpDefinition>(0);
-        }
-    }
 }
