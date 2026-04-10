@@ -9,7 +9,7 @@ using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// A plugin container for the <see cref="OfflineLevelingPlayer"/>, providing stub implementations 
+/// A plugin container for the <see cref="OfflineLevelingPlayer"/>, providing stub implementations
 /// of client-facing views necessary for successful safe-zone respawns.
 /// </summary>
 internal sealed class OfflineViewPlugInContainer : ICustomPlugInContainer<IViewPlugIn>

@@ -15,9 +15,16 @@ using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
 
+/// <summary>
+/// Tests for experience rate splitting between normal and master experience.
+/// </summary>
 [TestFixture]
 public class ExperienceRateSplitTest
 {
+    /// <summary>
+    /// Verifies that master classes receive master experience at the global master rate,
+    /// while non-master classes receive normal experience.
+    /// </summary>
     [Test]
     public async ValueTask SoloKillUsesMasterExperienceRateForMasterClassesAsync()
     {
@@ -46,6 +53,9 @@ public class ExperienceRateSplitTest
         Assert.That(normalPlayer.SelectedCharacter!.Experience, Is.EqualTo(normalGained));
     }
 
+    /// <summary>
+    /// Verifies that the server experience rate is correctly applied to master experience gains.
+    /// </summary>
     [Test]
     public async ValueTask SoloKillAppliesServerExperienceRateToMasterExperienceAsync()
     {
@@ -72,6 +82,9 @@ public class ExperienceRateSplitTest
         Assert.That(highRateGain, Is.GreaterThan(baseRateGain * 2));
     }
 
+    /// <summary>
+    /// Verifies that party experience distribution applies master experience rates for master class members.
+    /// </summary>
     [Test]
     public async ValueTask PartyDistributionUsesMasterExperienceRateForMasterMembersAsync()
     {
@@ -84,7 +97,7 @@ public class ExperienceRateSplitTest
         var masterPlayer = await this.CreatePlayerAsync(context, level: 3, totalLevel: 2, isMasterClass: true).ConfigureAwait(false);
         var normalPlayer = await this.CreatePlayerAsync(context, level: 2, totalLevel: 2, isMasterClass: false).ConfigureAwait(false);
 
-        var party = new Party(5, new NullLogger<Party>());
+        var party = new Party(new PartyManager(5, new NullLogger<Party>()), 5, new NullLogger<Party>());
         await party.AddAsync(masterPlayer).ConfigureAwait(false);
         await party.AddAsync(normalPlayer).ConfigureAwait(false);
         await masterPlayer.AddObserverAsync(normalPlayer).ConfigureAwait(false);
@@ -214,7 +227,7 @@ public class ExperienceRateSplitTest
 
     private async ValueTask<Player> CreatePlayerAsync(IGameContext context, short level, float totalLevel, bool isMasterClass)
     {
-        var player = await TestHelper.CreatePlayerAsync(context).ConfigureAwait(false);
+        var player = await PlayerTestHelper.CreatePlayerAsync(context).ConfigureAwait(false);
         player.SelectedCharacter!.CharacterClass!.IsMasterClass = isMasterClass;
         player.Attributes![Stats.Level] = level;
         player.Attributes[Stats.MasterLevel] = 0;

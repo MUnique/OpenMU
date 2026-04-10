@@ -64,20 +64,6 @@ public sealed class MovementHandler
         return true;
     }
 
-    private bool ShouldRegroup(out double distance)
-    {
-        distance = this._player.GetDistanceTo(this._originPosition);
-        if (distance <= RegroupDistanceThreshold)
-        {
-            return false;
-        }
-
-        this._outOfRangeSince ??= DateTime.UtcNow;
-        var secondsAway = (DateTime.UtcNow - this._outOfRangeSince.Value).TotalSeconds;
-
-        return secondsAway >= this._config!.MaxSecondsAway || distance > this.HuntingRange;
-    }
-
     /// <summary>
     /// Moves the player closer to a target within the specified range.
     /// </summary>
@@ -97,7 +83,7 @@ public sealed class MovementHandler
     /// </summary>
     /// <param name="target">The target position to walk to.</param>
     /// <returns>True if the walk was successful; otherwise, false.</returns>
-    public async ValueTask<bool> WalkToAsync(Point target)
+    private async ValueTask<bool> WalkToAsync(Point target)
     {
         if (this._player.IsWalking || this._player.CurrentMap is not { } map)
         {
@@ -130,5 +116,19 @@ public sealed class MovementHandler
         {
             this._player.GameContext.PathFinderPool.Return(pathFinder);
         }
+    }
+
+    private bool ShouldRegroup(out double distance)
+    {
+        distance = this._player.GetDistanceTo(this._originPosition);
+        if (distance <= RegroupDistanceThreshold)
+        {
+            return false;
+        }
+
+        this._outOfRangeSince ??= DateTime.UtcNow;
+        var secondsAway = (DateTime.UtcNow - this._outOfRangeSince.Value).TotalSeconds;
+
+        return secondsAway >= this._config!.MaxSecondsAway || distance > this.HuntingRange;
     }
 }
