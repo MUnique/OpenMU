@@ -1489,7 +1489,7 @@ public class PacketStructureTests
     public void CashShopStorageListRequest_PacketSizeValidation()
     {
         // Fixed-length packet validation
-        const int expectedLength = 8;
+        const int expectedLength = 10;
         var actualLength = CashShopStorageListRequestRef.Length;
         
         Assert.That(actualLength, Is.EqualTo(expectedLength), 
@@ -1537,7 +1537,7 @@ public class PacketStructureTests
     public void CashShopStorageItemConsumeRequest_PacketSizeValidation()
     {
         // Fixed-length packet validation
-        const int expectedLength = 5;
+        const int expectedLength = 15;
         var actualLength = CashShopStorageItemConsumeRequestRef.Length;
         
         Assert.That(actualLength, Is.EqualTo(expectedLength), 

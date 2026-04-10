@@ -1,4 +1,4 @@
-﻿// <copyright file="IPartyMember.cs" company="MUnique">
+// <copyright file="IPartyMember.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -33,4 +33,9 @@ public interface IPartyMember : IWorldObserver, IObservable, IIdentifiable, ILoc
     /// Gets the name.
     /// </summary>
     string Name { get; }
+
+    /// <summary>
+    /// Gets a value indicating whether the member is currently connected to the game.
+    /// </summary>
+    bool IsConnected { get; }
 }

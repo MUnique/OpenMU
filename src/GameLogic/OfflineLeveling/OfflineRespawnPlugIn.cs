@@ -4,8 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic.OfflineLeveling;
 
-using MUnique.OpenMU.GameLogic.Views.World;
 using System.Threading.Tasks;
+using MUnique.OpenMU.GameLogic.Views.World;
 
 /// <summary>
 /// Simulates a respawn response for an offline leveling character.

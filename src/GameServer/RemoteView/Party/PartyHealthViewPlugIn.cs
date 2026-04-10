@@ -50,6 +50,9 @@ public class PartyHealthViewPlugIn : IPartyHealthViewPlugIn
             return;
         }
 
+        // Refresh the cache before sending so direct calls don't send stale values.
+        this.UpdateHealthValues();
+
         var connection = this._player.Connection;
         if (connection is null)
         {

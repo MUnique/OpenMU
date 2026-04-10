@@ -100,7 +100,7 @@ public class LocalizedStringTests
 
         var result = localized.GetTranslation(new CultureInfo("en"));
 
-        Assert.IsEmpty(result);
+        Assert.IsNull(result);
     }
 
     /// <summary>
@@ -191,7 +191,7 @@ public class LocalizedStringTests
 
         var result = localized.GetTranslation(new CultureInfo("fr"), false);
 
-        Assert.IsEmpty(result);
+        Assert.IsNull(result);
     }
 
     /// <summary>

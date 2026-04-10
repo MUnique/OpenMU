@@ -14,15 +14,15 @@ using MUnique.OpenMU.GameLogic.Views.MuHelper;
 /// client disconnects. Mirrors the C++ <c>CMuHelper::Work()</c> loop including:
 /// <list type="bullet">
 ///   <item>Basic / conditional / combo skill attack selection</item>
-///   <item>Self-buff application (up to 3 configured buff skills)</item>
-///   <item>Auto-heal / drain-life based on HP %</item>
+///   <item>Buff application (up to 3 configured buff skills)</item>
+///   <item>Heal / drain-life based on HP %</item>
 ///   <item>Return-to-origin regrouping</item>
 ///   <item>Item pickup (Zen, Jewels, Excellent, Ancient, and named extra items)</item>
 ///   <item>Skill and movement animations broadcast to nearby observers</item>
+///   <item>Pet control</item>
 /// </list>
-/// Party support is not implemented.
 /// </summary>
-public sealed class OfflineLevelingIntelligence : IDisposable
+public sealed class OfflineLevelingIntelligence : AsyncDisposable
 {
     private readonly OfflineLevelingPlayer _player;
 
@@ -33,10 +33,11 @@ public sealed class OfflineLevelingIntelligence : IDisposable
     private readonly RepairHandler _repairHandler;
     private readonly ZenConsumptionHandler _zenHandler;
     private readonly HealingHandler _healingHandler;
+    private readonly PetHandler _petHandler;
+    private readonly CancellationTokenSource _cts = new();
     private readonly EventHandler<DeathInformation> _deathHandler;
 
     private Timer? _aiTimer;
-    private bool _disposed;
     private bool _isDead;
 
     /// <summary>
@@ -53,9 +54,10 @@ public sealed class OfflineLevelingIntelligence : IDisposable
         this._healingHandler = new HealingHandler(player, config);
         this._itemPickupHandler = new ItemPickupHandler(player, config);
         this._movementHandler = new MovementHandler(player, config, originalPosition);
-        this._combatHandler = new CombatHandler(player, config, this._movementHandler, originalPosition);
+        this._combatHandler = new CombatHandler(player, config, this._movementHandler, this._buffHandler, originalPosition);
         this._repairHandler = new RepairHandler(player, config);
         this._zenHandler = new ZenConsumptionHandler(player);
+        this._petHandler = new PetHandler(player, config);
 
         if (config is null)
         {
@@ -70,42 +72,52 @@ public sealed class OfflineLevelingIntelligence : IDisposable
         this._player.Died += this._deathHandler;
     }
 
-    /// <summary>Starts the 500 ms AI timer.</summary>
+    /// <summary>Starts the 500 ms AI timer and a separate pet AI.</summary>
     public void Start()
     {
+        _ = this._petHandler.InitializeAsync();
+
         this._aiTimer ??= new Timer(
-            state => _ = this.SafeTickAsync(),
+            state => _ = this.SafeTickAsync(this._cts.Token),
             null,
             TimeSpan.FromSeconds(1),
             TimeSpan.FromMilliseconds(500));
     }
 
     /// <inheritdoc />
-    public void Dispose()
+    protected override async ValueTask DisposeAsyncCore()
     {
-        if (this._disposed)
+        await this._cts.CancelAsync().ConfigureAwait(false);
+        await this._petHandler.StopAsync().ConfigureAwait(false);
+        await base.DisposeAsyncCore().ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
         {
-            return;
+            this._player.Died -= this._deathHandler;
+            this._aiTimer?.Dispose();
+            this._aiTimer = null;
+            this._cts.Dispose();
         }
 
-        this._player.Died -= this._deathHandler;
-        this._disposed = true;
-        this._aiTimer?.Dispose();
-        this._aiTimer = null;
+        base.Dispose(disposing);
     }
 
     private void OnPlayerDied(DeathInformation e)
     {
         this._player.Logger.LogDebug("Offline leveling player '{Name}' died. Killer: {KillerName}.", this._player.Name, e.KillerName);
         this._isDead = true;
+        this._cts.Cancel();
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100", Justification = "Timer callback — exceptions are caught internally.")]
-    private async Task SafeTickAsync()
+    private async Task SafeTickAsync(CancellationToken cancellationToken)
     {
         try
         {
-            await this.TickAsync().ConfigureAwait(false);
+            await this.TickAsync(cancellationToken).ConfigureAwait(false);
         }
         catch (OperationCanceledException)
         {
@@ -113,13 +125,18 @@ public sealed class OfflineLevelingIntelligence : IDisposable
         }
         catch (Exception ex)
         {
-            this._player.Logger.LogError(ex, "Error in offline leveling AI tick for {Name}.", this._player.Name);
+            this._player.Logger.LogError(ex, "Error in offline leveling AI tick for {AccountLoginName}.", this._player.AccountLoginName);
         }
     }
 
-    private async ValueTask TickAsync()
+    private async ValueTask TickAsync(CancellationToken cancellationToken)
     {
         if (await this.HandleDeathAsync().ConfigureAwait(false))
+        {
+            return;
+        }
+
+        if (cancellationToken.IsCancellationRequested)
         {
             return;
         }
@@ -132,6 +149,7 @@ public sealed class OfflineLevelingIntelligence : IDisposable
         await this._zenHandler.DeductZenAsync().ConfigureAwait(false);
 
         await this._repairHandler.PerformRepairsAsync().ConfigureAwait(false);
+        await this._petHandler.CheckPetDurabilityAsync().ConfigureAwait(false);
 
         if (this.IsOnSkillCooldown())
         {
@@ -145,9 +163,7 @@ public sealed class OfflineLevelingIntelligence : IDisposable
         }
 
         await this._healingHandler.PerformHealthRecoveryAsync().ConfigureAwait(false);
-
         await this._combatHandler.PerformDrainLifeRecoveryAsync().ConfigureAwait(false);
-
         await this._itemPickupHandler.PickupItemsAsync().ConfigureAwait(false);
 
         if (this._player.IsWalking)
