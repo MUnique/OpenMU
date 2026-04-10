@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -386,6 +386,12 @@
   </data>
   <data name="EarthShakeSkillPlugIn_Description" xml:space="preserve">
     <value>Handles the earth shake skill of the dark horse. Pushes the targets away from the attacker.</value>
+  </data>
+  <data name="FireScreamSkillPlugIn_Name" xml:space="preserve">
+    <value>Fire scream skill</value>
+  </data>
+  <data name="FireScreamSkillPlugIn_Description" xml:space="preserve">
+    <value>Handles the fire scream skill of the dark lord class. Based on a chance, it does an additional damage (explosion) to any targets in a radius which origin is the target itself.</value>
   </data>
   <data name="ForceSkillAction_Name" xml:space="preserve">
     <value>ForceSkillAction</value>

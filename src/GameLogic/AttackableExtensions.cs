@@ -859,9 +859,19 @@ public static class AttackableExtensions
             var damage = (hit.HealthDamage + hit.ShieldDamage) * multiplier;
             magicEffect = new BleedingMagicEffect(powerUps[0].Boost, magicEffectDefinition, durationSpan, attacker, target, damage);
         }
+        else if (magicEffectDefinition.PowerUpDefinitions.Any(e => e.TargetAttribute == Stats.IsStunned))
+        {
+            var stunChancePowerUp = powerUps.First(p => p.Target == Stats.StunChance);
+            if (!Rand.NextRandomBool(Convert.ToDouble(stunChancePowerUp.Boost.Value)))
+            {
+                return;
+            }
+
+            magicEffect = new MagicEffect(durationSpan, magicEffectDefinition, [.. powerUps.Where(p => p != stunChancePowerUp).Select(p => new MagicEffect.ElementWithTarget(p.Boost, p.Target))]);
+        }
         else
         {
-            magicEffect = new MagicEffect(durationSpan, magicEffectDefinition, powerUps.Select(p => new MagicEffect.ElementWithTarget(p.Boost, p.Target)).ToArray());
+            magicEffect = new MagicEffect(durationSpan, magicEffectDefinition, [.. powerUps.Select(p => new MagicEffect.ElementWithTarget(p.Boost, p.Target))]);
         }
 
         await target.MagicEffectList.AddEffectAsync(magicEffect).ConfigureAwait(false);

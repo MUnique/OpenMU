@@ -36,6 +36,7 @@ public class CriticalDamageIncreaseEffectInitializer : InitializerBase
         magicEffect.StopByDeath = true;
         magicEffect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.Duration.ConstantValue.Value = 60f;
+        magicEffect.Duration.MaximumValue = 180f;
 
         var durationPerEnergy = this.Context.CreateNew<AttributeRelationship>();
         durationPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(this.GameConfiguration);
