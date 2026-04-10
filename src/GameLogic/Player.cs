@@ -1,4 +1,4 @@
-﻿// <copyright file="Player.cs" company="MUnique">
+// <copyright file="Player.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -351,7 +351,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public ComboStateMachine? ComboState => this.Attributes?[Stats.IsSkillComboAvailable] > 0 ? this._comboStateLazy?.Value : null;
 
     /// <summary>
-    /// Gets the summon.
+    /// Gets the player summon.
     /// </summary>
     public (Monster, INpcIntelligence)? Summon { get; private set; }
 
@@ -363,6 +363,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     /// <inheritdoc/>
     public Party? Party { get; set; }
+
+    /// <inheritdoc/>
+    public bool IsConnected => !this.PlayerState.CurrentState.IsDisconnectedOrFinished();
 
     /// <inheritdoc/>
     public bool IsAlive { get; set; }
@@ -585,6 +588,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             }
 
             this.DuelRoom = null;
+
             this._selectedCharacter = null;
         }
         else
@@ -1093,7 +1097,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// Respawns the player to the specified gate.
     /// </summary>
     /// <param name="gate">The gate at which the player should be respawned.</param>
-    public async ValueTask RespawnAtAsync(ExitGate gate)
+    public virtual async ValueTask RespawnAtAsync(ExitGate gate)
     {
         var isRespawnOnSameMap = object.Equals(this.CurrentMap?.Definition, gate.Map);
 
@@ -1703,7 +1707,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// Creates a summoned monster for the player.
     /// </summary>
     /// <param name="definition">The definition.</param>
-    /// <exception cref="InvalidOperationException">Can't add a summon for a player which isn't spawned yet.</exception>
+    /// <exception cref="InvalidOperationException">Can't add the player summon for a player which isn't spawned yet.</exception>
     public async ValueTask CreateSummonedMonsterAsync(MonsterDefinition definition)
     {
         if (this.CurrentMap is not { } gameMap)
@@ -1735,7 +1739,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <summary>
-    /// Notifies the player object that the summon died.
+    /// Notifies the player object that the summoned monster died.
     /// </summary>
     public void SummonDied()
     {
@@ -1743,7 +1747,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <summary>
-    /// Removes the summon.
+    /// Removes the player summon.
     /// </summary>
     public async ValueTask RemoveSummonAsync()
     {
@@ -1810,33 +1814,14 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// </summary>
     public async ValueTask RemoveFromGameAsync()
     {
-        var moveToNextSafezone = false;
-        if (this._respawnAfterDeathCts is { IsCancellationRequested: false })
-        {
-            await this._respawnAfterDeathCts.CancelAsync().ConfigureAwait(false);
-            moveToNextSafezone = true;
-        }
-
-        if (this.CurrentMiniGame is { })
-        {
-            moveToNextSafezone = true;
-        }
-
-        if (this.DuelRoom is { })
-        {
-            moveToNextSafezone = true;
-        }
-
-        if (moveToNextSafezone)
-        {
-            await this.WarpToSafezoneAsync().ConfigureAwait(false);
-        }
-
-        await this.RemoveFromCurrentMapAsync().ConfigureAwait(false);
         if (this.Party is { } party)
         {
-            await party.KickMySelfAsync(this).ConfigureAwait(false);
+            await party.LeaveTemporarilyAsync(this).ConfigureAwait(false);
         }
+
+        await this.HandleMoveToNextSafezoneAsync().ConfigureAwait(false);
+
+        await this.RemoveFromCurrentMapAsync().ConfigureAwait(false);
 
         await this.RestoreTemporaryStorageItemsAsync().ConfigureAwait(false);
 
@@ -1881,11 +1866,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         this.PersistenceContext.Dispose();
         await this.RemoveFromCurrentMapAsync().ConfigureAwait(false);
-        if (this.Party is { } party)
-        {
-            await party.KickMySelfAsync(this).ConfigureAwait(false);
-        }
-
         await this._observerToWorldViewAdapter.ClearObservingObjectsListAsync().ConfigureAwait(false);
         this._observerToWorldViewAdapter.Dispose();
         this._walker.Dispose();
@@ -1916,6 +1896,35 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     protected virtual ICustomPlugInContainer<IViewPlugIn> CreateViewPlugInContainer()
     {
         throw new NotImplementedException("CreateViewPlugInContainer must be overwritten in derived classes.");
+    }
+
+    /// <summary>
+    /// Handles the move to next safezone logic after death or disconnect.
+    /// </summary>
+    private async ValueTask HandleMoveToNextSafezoneAsync()
+    {
+        bool moveToNextSafezone = false;
+
+        if (this._respawnAfterDeathCts is { IsCancellationRequested: false })
+        {
+            await this._respawnAfterDeathCts.CancelAsync().ConfigureAwait(false);
+            moveToNextSafezone = true;
+        }
+
+        if (this.CurrentMiniGame is { })
+        {
+            moveToNextSafezone = true;
+        }
+
+        if (this.DuelRoom is { })
+        {
+            moveToNextSafezone = true;
+        }
+
+        if (moveToNextSafezone)
+        {
+            await this.WarpToSafezoneAsync().ConfigureAwait(false);
+        }
     }
 
     private async ValueTask<bool> TryRemoveFromCurrentMapAsync(bool willRespawnOnSameMap)
@@ -1963,10 +1972,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     private async ValueTask RemoveFromCurrentMapAsync()
     {
-        if (this.CurrentMap != null)
+        if (this._currentMap is { } map)
         {
-            await this.CurrentMap.RemoveAsync(this).ConfigureAwait(false);
-            this.CurrentMap = null;
+            await map.RemoveAsync(this).ConfigureAwait(false);
+            this._currentMap = null;
         }
     }
 
@@ -2247,6 +2256,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             try
             {
                 await Task.Delay(3000, cancellationToken).ConfigureAwait(false);
+
+                if (cancellationToken.IsCancellationRequested || this.CurrentMap is null)
+                {
+                    return;
+                }
+
                 if (this.Summon?.Item1 is { } summon)
                 {
                     await summon.CurrentMap.RemoveAsync(summon).ConfigureAwait(false);
@@ -2778,6 +2793,22 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
     }
 
+    /// <summary>
+    /// A <see cref="MagicEffectDefinition"/> used to apply the GM mark
+    /// to a <see cref="Player"/> with <see cref="CharacterStatus.GameMaster"/> status.
+    /// </summary>
+    private protected sealed class GMMagicEffectDefinition : MagicEffectDefinition
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GMMagicEffectDefinition"/> class
+        /// with an empty power-up definitions list.
+        /// </summary>
+        public GMMagicEffectDefinition()
+        {
+            this.PowerUpDefinitions = new List<PowerUpDefinition>(0);
+        }
+    }
+
     private sealed class TemporaryItemStorage : ItemStorage
     {
         public TemporaryItemStorage()
@@ -2826,14 +2857,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         {
             this._fullAncientSetEquipped = null;
             this.AppearanceChanged?.Invoke(this, EventArgs.Empty);
-        }
-    }
-
-    private protected sealed class GMMagicEffectDefinition : MagicEffectDefinition
-    {
-        public GMMagicEffectDefinition()
-        {
-            this.PowerUpDefinitions = new List<PowerUpDefinition>(0);
         }
     }
 }

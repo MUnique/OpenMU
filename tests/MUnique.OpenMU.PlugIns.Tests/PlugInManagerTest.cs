@@ -39,7 +39,7 @@ public class PlugInManagerTest
         var plugIn = new ExamplePlugIn();
         manager.RegisterPlugInAtPlugInPoint<IExamplePlugIn>(plugIn);
 
-        var player = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
         var command = "test";
         var args = new MyEventArgs();
 
@@ -59,7 +59,7 @@ public class PlugInManagerTest
         manager.RegisterPlugInAtPlugInPoint<IExamplePlugIn>(plugIn);
         manager.DeactivatePlugIn<ExamplePlugIn>();
 
-        var player = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
         var command = "test";
         var args = new MyEventArgs();
 
@@ -80,7 +80,7 @@ public class PlugInManagerTest
         manager.DeactivatePlugIn<ExamplePlugIn>();
         manager.DeactivatePlugIn<ExamplePlugIn>();
 
-        var player = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
         var command = "test";
         var args = new MyEventArgs();
 
@@ -101,7 +101,7 @@ public class PlugInManagerTest
         manager.ActivatePlugIn<ExamplePlugIn>();
         manager.ActivatePlugIn<ExamplePlugIn>();
 
-        var player = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
         var command = "test";
         var args = new MyEventArgs();
 
@@ -124,7 +124,7 @@ public class PlugInManagerTest
         manager.ActivatePlugIn<ExamplePlugIn.NestedPlugIn>();
         manager.DeactivatePlugIn<ExamplePlugIn.NestedPlugIn>();
 
-        var player = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
         var command = "test";
         var args = new MyEventArgs();
 
@@ -147,7 +147,7 @@ public class PlugInManagerTest
             IsActive = active,
         };
         var manager = new PlugInManager(new List<PlugInConfiguration> { configuration }, new NullLoggerFactory(), this.CreateServiceProvider(), null);
-        var player = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
         var command = "test";
         var args = new MyEventArgs();
 
@@ -217,7 +217,7 @@ public class PlugInManagerTest
         manager.DeactivatePlugIn<ExamplePlugIn>();
         manager.ActivatePlugIn<ExamplePlugIn>();
 
-        var player = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
         var command = "test";
         var args = new MyEventArgs();
 

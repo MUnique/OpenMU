@@ -19,7 +19,8 @@ public class AreaSkillHitAction
     {
         if (skill.Skill?.SkillType != SkillType.AreaSkillExplicitHits
             || !target.IsAlive
-            || target.IsAtSafezone())
+            || target.IsAtSafezone()
+            || (target is Player && !player.GameContext.Configuration.AreaSkillHitsPlayer))
         {
             return;
         }
@@ -28,11 +29,6 @@ public class AreaSkillHitAction
         {
             // It's possible, when the player did some area skill (Evil Spirit), and walked into the safezone.
             // We don't log it as hacker attempt, since the AreaSkillAttackAction already does handle this.
-        }
-
-        if (target is Player && !player.GameContext.Configuration.AreaSkillHitsPlayer)
-        {
-            return;
         }
 
         if (target.CheckSkillTargetRestrictions(player, skill.Skill))

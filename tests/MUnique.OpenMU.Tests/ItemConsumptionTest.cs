@@ -365,7 +365,7 @@ public class ItemConsumptionTest
 
     private async ValueTask<Player> GetPlayerAsync()
     {
-        var player = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
 
         player.SelectedCharacter!.Attributes.Add(new StatAttribute(Stats.Level, 100));
         player.SelectedCharacter.Attributes.Add(new StatAttribute(Stats.CurrentHealth, 0));

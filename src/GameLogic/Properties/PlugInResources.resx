@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -1157,5 +1157,11 @@
   </data>
   <data name="OfflineLevelingChatCommandPlugIn_Description" xml:space="preserve">
     <value>Allows players to start offline leveling with /offlevel. The character stays in the world after the client disconnects and stops when the player logs back in.</value>
+  </data>
+  <data name="PartyAutoRejoinPlugIn_Name" xml:space="preserve">
+    <value>Party Auto-Rejoin</value>
+  </data>
+  <data name="PartyAutoRejoinPlugIn_Description" xml:space="preserve">
+    <value>Automatically rejoins players to their previous party upon entering the world.</value>
   </data>
 </root>

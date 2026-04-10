@@ -115,8 +115,8 @@ public class TradeTest
     [Test]
     public async ValueTask TradeItemsAsync()
     {
-        var trader1 = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
-        var trader2 = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var trader1 = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var trader2 = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
         var tradeRequestAction = new TradeRequestAction();
         var tradeResponseAction = new TradeAcceptAction();
 
@@ -144,8 +144,8 @@ public class TradeTest
     [Test]
     public async ValueTask TradeFailedItemsNotFitAsync()
     {
-        var trader1 = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
-        var trader2 = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var trader1 = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var trader2 = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
         var tradeRequestAction = new TradeRequestAction();
         var tradeResponseAction = new TradeAcceptAction();
 
