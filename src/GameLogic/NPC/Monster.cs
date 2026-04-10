@@ -1,4 +1,4 @@
-﻿// <copyright file="Monster.cs" company="MUnique">
+// <copyright file="Monster.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -23,7 +23,7 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
     private readonly Walker _walker;
 
     /// <summary>
-    /// The power up element of the monsters skill.
+    /// The power up element of the monster skill.
     /// It is a "cached" element which will be created on demand and can be applied multiple times.
     /// </summary>
     private readonly IElement? _skillPowerUp;
@@ -95,6 +95,21 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
 
     /// <inheritdoc/>
     protected override bool CanSpawnInSafezone => base.CanSpawnInSafezone || this.SummonedBy is not null;
+
+    /// <summary>
+    /// Determines whether the specified player is being targeted by this monster.
+    /// </summary>
+    /// <param name="player">The player to check.</param>
+    /// <returns>True if the player is the current target; otherwise, false.</returns>
+    public bool IsTargetingPlayer(Player player)
+    {
+        if (this._intelligence is BasicMonsterIntelligence basicIntelligence)
+        {
+            return basicIntelligence.IsTargetingPlayer(player);
+        }
+
+        return false;
+    }
 
     /// <summary>
     /// Attacks the specified target.
