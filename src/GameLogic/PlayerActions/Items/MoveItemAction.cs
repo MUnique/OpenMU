@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Items;
 
 using System.ComponentModel;
+using MUnique.OpenMU.DataModel.Configuration;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.PlugIns;
@@ -38,7 +39,7 @@ public class MoveItemAction
     /// <param name="toStorage">To storage.</param>
     public async ValueTask MoveItemAsync(Player player, byte fromSlot, Storages fromStorage, byte toSlot, Storages toStorage)
     {
-        if (!this.IsMoveAllowed(player))
+        if (!this.IsMoveAllowed(player, fromStorage, toStorage))
         {
             await player.InvokeViewPlugInAsync<IItemMoveFailedPlugIn>(p => p.ItemMoveFailedAsync(null)).ConfigureAwait(false);
             return;
@@ -388,17 +389,43 @@ public class MoveItemAction
         }
     }
 
-    private bool IsMoveAllowed(Player player)
+    private bool IsMoveAllowed(Player player, Storages fromStorage, Storages toStorage)
     {
         if (player.SelectedCharacter is null)
         {
             return false;
         }
 
-        return player.PlayerState.CurrentState == PlayerState.EnteredWorld
-               || player.PlayerState.CurrentState == PlayerState.NpcDialogOpened
-               || player.PlayerState.CurrentState == PlayerState.TradeOpened
-               || player.PlayerState.CurrentState == PlayerState.TradeButtonPressed;
+        return this.IsStorageContextAllowed(player, fromStorage)
+               && this.IsStorageContextAllowed(player, toStorage);
+    }
+
+    private bool IsStorageContextAllowed(Player player, Storages storage)
+    {
+        var state = player.PlayerState.CurrentState;
+        var openedWindow = player.OpenedNpc?.Definition.NpcWindow;
+
+        return storage switch
+        {
+            Storages.Inventory => state == PlayerState.EnteredWorld
+                                  || state == PlayerState.NpcDialogOpened
+                                  || state == PlayerState.TradeOpened,
+            Storages.PersonalStore => state == PlayerState.EnteredWorld,
+            Storages.Vault => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.VaultStorage,
+            Storages.Trade => state == PlayerState.TradeOpened,
+            Storages.ChaosMachine => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.ChaosMachine,
+            Storages.PetTrainer => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.PetTrainer,
+            Storages.Refinery => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.ElphisRefinery,
+            Storages.Smelting => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.RefineStoneMaking,
+            Storages.ItemRestore => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.RemoveJohOption,
+            Storages.ChaosCardMaster => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.ChaosCardCombination,
+            Storages.CherryBlossomSpirit => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.CherryBlossomBranchesAssembly,
+            Storages.SeedCrafting => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.SeedMaster,
+            Storages.SeedSphereCrafting => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.SeedResearcher,
+            Storages.SeedMountCrafting => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.SeedResearcher,
+            Storages.SeedUnmountCrafting => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.SeedResearcher,
+            _ => false,
+        };
     }
 
     private record StorageInfo(IStorage Storage, byte Rows, byte StartIndex, byte EndIndex);

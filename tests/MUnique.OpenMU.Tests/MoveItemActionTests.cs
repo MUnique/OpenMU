@@ -11,8 +11,12 @@ using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlayerActions.Items;
+using MUnique.OpenMU.GameLogic.PlayerActions.Trade;
+using MUnique.OpenMU.GameLogic.Views.Trade;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
 
@@ -140,12 +144,57 @@ public class MoveItemActionTests
     }
 
     [Test]
+    public async ValueTask MoveToTradeStorageOutsideTradeIsRejectedWithoutMutationAsync()
+    {
+        var player = await CreateTestPlayerAsync().ConfigureAwait(false);
+        var source = CreateItem(CreateDefinition(), 1);
+        await player.Inventory!.AddItemAsync(20, source).ConfigureAwait(false);
+
+        var action = new MoveItemAction();
+        await action.MoveItemAsync(player, 20, Storages.Inventory, 0, Storages.Trade).ConfigureAwait(false);
+
+        Assert.That(player.Inventory.GetItem(20), Is.SameAs(source));
+        Assert.That(player.TemporaryStorage!.Items, Does.Not.Contain(source));
+    }
+
+    [Test]
+    public async ValueTask MoveRequestInTradeButtonPressedStateIsRejectedWithoutMutationAsync()
+    {
+        var trader1 = await CreateTestPlayerAsync().ConfigureAwait(false);
+        var trader2 = await CreateTestPlayerAsync().ConfigureAwait(false);
+        var tradeRequestAction = new TradeRequestAction();
+        var tradeResponseAction = new TradeAcceptAction();
+        var tradeButtonAction = new TradeButtonAction();
+
+        var itemInTrade = CreateItem(CreateDefinition(), 1);
+        var blockedMoveItem = CreateItem(CreateDefinition(), 1);
+        await trader1.Inventory!.AddItemAsync(20, itemInTrade).ConfigureAwait(false);
+        await trader1.Inventory.AddItemAsync(21, blockedMoveItem).ConfigureAwait(false);
+
+        await tradeRequestAction.RequestTradeAsync(trader1, trader2).ConfigureAwait(false);
+        await tradeResponseAction.HandleTradeAcceptAsync(trader2, true).ConfigureAwait(false);
+
+        var action = new MoveItemAction();
+        await action.MoveItemAsync(trader1, 20, Storages.Inventory, 0, Storages.Trade).ConfigureAwait(false);
+        await tradeButtonAction.TradeButtonChangedAsync(trader1, TradeButtonState.Checked).ConfigureAwait(false);
+
+        Assert.That(trader1.PlayerState.CurrentState, Is.EqualTo(PlayerState.TradeButtonPressed));
+
+        await action.MoveItemAsync(trader1, 21, Storages.Inventory, 1, Storages.Trade).ConfigureAwait(false);
+
+        Assert.That(trader1.Inventory.GetItem(21), Is.SameAs(blockedMoveItem));
+        Assert.That(trader1.TemporaryStorage!.GetItem(1), Is.Null);
+    }
+
+    [Test]
     public async ValueTask LogoutAndRelogAfterInventoryToVaultMoveKeepsSinglePersistedCopyAsync()
     {
         var player = await CreateTestPlayerAsync().ConfigureAwait(false);
         var selectedCharacter = player.SelectedCharacter!;
         var vaultStorage = CreateVaultStorage();
         player.Vault = vaultStorage;
+        player.OpenedNpc = new NonPlayerCharacter(null!, new MonsterDefinition { NpcWindow = NpcWindow.VaultStorage }, null!);
+        Assert.That(await player.PlayerState.TryAdvanceToAsync(PlayerState.NpcDialogOpened).ConfigureAwait(false), Is.True);
 
         var movedItem = CreateItem(CreateDefinition(), 1);
         await player.Inventory!.AddItemAsync(20, movedItem).ConfigureAwait(false);
@@ -180,6 +229,11 @@ public class MoveItemActionTests
         gameConfig.Setup(c => c.PlugInConfigurations).Returns(new List<PlugInConfiguration>());
         gameConfig.Setup(c => c.CharacterClasses).Returns(new List<CharacterClass>());
         gameConfig.Setup(c => c.Attributes).Returns(new List<AttributeDefinition>());
+        gameConfig.Setup(c => c.GlobalAttributeCombinations).Returns(new List<AttributeRelationship>());
+        gameConfig.Setup(c => c.GlobalBaseAttributeValues).Returns(new List<ConstValueAttribute>
+        {
+            new(1, Stats.MoneyAmountRate),
+        });
         var map = new Mock<GameMapDefinition>();
         map.SetupAllProperties();
         map.Setup(m => m.DropItemGroups).Returns(new List<DropItemGroup>());
@@ -199,7 +253,7 @@ public class MoveItemActionTests
             new ConfigurationChangeMediator());
         mapInitializer.PlugInManager = gameContext.PlugInManager;
         mapInitializer.PathFinderPool = gameContext.PathFinderPool;
-        return await TestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
+        return await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
     }
 
     private static ItemDefinition CreateDefinition(byte width = 1, byte height = 1, byte durability = 1)
