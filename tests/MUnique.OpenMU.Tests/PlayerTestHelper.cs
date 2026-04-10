@@ -131,6 +131,7 @@ public static class PlayerTestHelper
 
         var accountMock = new Mock<Account>();
         accountMock.Setup(mock => mock.Attributes).Returns(new List<StatAttribute>());
+        accountMock.Setup(mock => mock.UnlockedCharacterClasses).Returns(new List<CharacterClass>());
         var player = new TestPlayer(gameContext) { Account = accountMock.Object };
         await player.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
         await player.PlayerState.TryAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
