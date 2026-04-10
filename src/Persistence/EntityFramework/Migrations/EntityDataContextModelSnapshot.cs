@@ -1060,6 +1060,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasColumnType("interval")
                         .HasDefaultValue(new TimeSpan(0, 0, 1, 0, 0));
 
+                    b.Property<byte>("ExcellentItemDropLevelDelta")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("smallint")
+                        .HasDefaultValue((byte)25);
+
                     b.Property<int>("LetterSendPrice")
                         .HasColumnType("integer");
 
