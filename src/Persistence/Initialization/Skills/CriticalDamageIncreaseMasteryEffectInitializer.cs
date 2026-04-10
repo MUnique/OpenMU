@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.Skills;
 
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
@@ -31,14 +32,39 @@ public class CriticalDamageIncreaseMasteryEffectInitializer : InitializerBase
         magicEffect.Number = (byte)MagicEffectNumber.CriticalDamageIncreaseMastery;
         magicEffect.Name = "Critical Damage Increase Mastery Skill Effect";
 
-        var effect = this.GameConfiguration.MagicEffects.First(e => e.Number == (short)MagicEffectNumber.CriticalDamageIncrease);
-        magicEffect.InformObservers = effect.InformObservers;
-        magicEffect.SendDuration = effect.SendDuration;
-        magicEffect.StopByDeath = effect.StopByDeath;
-        magicEffect.Duration = effect.Duration;
-        foreach (var powerUpDefinition in effect.PowerUpDefinitions)
+        var critDmgIncEffect = this.GameConfiguration.MagicEffects.First(e => e.Number == (short)MagicEffectNumber.CriticalDamageIncrease);
+        magicEffect.InformObservers = critDmgIncEffect.InformObservers;
+        magicEffect.SendDuration = critDmgIncEffect.SendDuration;
+        magicEffect.StopByDeath = critDmgIncEffect.StopByDeath;
+        magicEffect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
+        magicEffect.Duration.ConstantValue.Value = critDmgIncEffect.Duration!.ConstantValue.Value;
+        magicEffect.Duration.MaximumValue = critDmgIncEffect.Duration.MaximumValue;
+
+        foreach (var durationRelatedValue in critDmgIncEffect.Duration.RelatedValues)
         {
-            magicEffect.PowerUpDefinitions.Add(powerUpDefinition);
+            var durationRelatedValueCopy = this.Context.CreateNew<AttributeRelationship>();
+            durationRelatedValueCopy.InputAttribute = durationRelatedValue.InputAttribute!.GetPersistent(this.GameConfiguration);
+            durationRelatedValueCopy.InputOperator = durationRelatedValue.InputOperator;
+            durationRelatedValueCopy.InputOperand = durationRelatedValue.InputOperand;
+            magicEffect.Duration.RelatedValues.Add(durationRelatedValueCopy);
+        }
+
+        foreach (var powerUp in critDmgIncEffect.PowerUpDefinitions)
+        {
+            var powerUpCopy = this.Context.CreateNew<PowerUpDefinition>();
+            magicEffect.PowerUpDefinitions.Add(powerUpCopy);
+            powerUpCopy.TargetAttribute = powerUp.TargetAttribute!.GetPersistent(this.GameConfiguration);
+            powerUpCopy.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+            powerUpCopy.Boost.ConstantValue.Value = powerUp.Boost!.ConstantValue.Value;
+
+            foreach (var boostRelatedValue in powerUp.Boost.RelatedValues)
+            {
+                var boostRelatedValueCopy = this.Context.CreateNew<AttributeRelationship>();
+                boostRelatedValueCopy.InputAttribute = boostRelatedValue.InputAttribute!.GetPersistent(this.GameConfiguration);
+                boostRelatedValueCopy.InputOperator = boostRelatedValue.InputOperator;
+                boostRelatedValueCopy.InputOperand = boostRelatedValue.InputOperand;
+                powerUpCopy.Boost.RelatedValues.Add(boostRelatedValueCopy);
+            }
         }
 
         var critChancePowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();

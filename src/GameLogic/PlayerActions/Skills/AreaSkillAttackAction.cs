@@ -69,6 +69,7 @@ public class AreaSkillAttackAction
                && settings.DelayPerOneDistance <= TimeSpan.Zero
                && settings.MinimumNumberOfHitsPerTarget == 1
                && settings.MaximumNumberOfHitsPerTarget == 1
+               && settings.MinimumNumberOfHitsPerAttack == 0
                && settings.MaximumNumberOfHitsPerAttack == 0
                && Math.Abs(settings.HitChancePerDistanceMultiplier - 1.0) <= 0.00001f;
     }
