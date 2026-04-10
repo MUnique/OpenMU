@@ -71,6 +71,9 @@ internal static class MapObjectResizer
                 gate.X2 = Math.Max(x, gate.X1);
                 gate.Y1 = Math.Min(y, gate.Y2);
                 break;
+            default:
+                // Not supported.
+                break;
         }
     }
 }

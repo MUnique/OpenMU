@@ -135,28 +135,27 @@ function _handlePanEnd() {
     _isPanning = false;
 }
 
-function _handleDragOrResizeEnd() {
-    if (_hasMoved) {
-        if (_isDragging) {
-            _isDragging = false;
-            if (_dotNetRef) {
-                _dotNetRef.invokeMethodAsync("OnPointerUp");
-            }
-        }
+function _notifyPointerUp() {
+    if (_dotNetRef) {
+        _dotNetRef.invokeMethodAsync("OnPointerUp");
+    }
+}
 
-        if (_isResizing) {
-            _isResizing = false;
-            if (_dotNetRef) {
-                _dotNetRef.invokeMethodAsync("OnResizingEnd");
-            }
-        }
+function _notifyResizingEnd() {
+    if (_dotNetRef) {
+        _dotNetRef.invokeMethodAsync("OnResizingEnd");
+    }
+}
+
+function _handleDragOrResizeEnd() {
+    if (_hasMoved && _isDragging) {
+        _isDragging = false;
+        _notifyPointerUp();
     }
 
-    if (!_hasMoved && _isResizing) {
+    if (_isResizing) {
         _isResizing = false;
-        if (_dotNetRef) {
-            _dotNetRef.invokeMethodAsync("OnResizingEnd");
-        }
+        _notifyResizingEnd();
     }
 }
 
@@ -188,19 +187,35 @@ function _onDocumentMouseDown(e) {
     _notifyPointerDown(x, y);
 }
 
-function _onDocumentMouseMove(e) {
+function _isValidMouseMoveTarget(e) {
     if (!_element) {
-        return;
+        return false;
     }
-
     let container = _closestByClass(e.target, "map-host");
-    if (!container || !_element.contains(e.target)) {
-        return;
-    }
+    return container !== null && _element.contains(e.target);
+}
 
+function _updateElementIfChanged(e) {
+    let container = _closestByClass(e.target, "map-host");
     if (container !== _element) {
         _element = container;
     }
+}
+
+function _applyMouseMoveAction(e, x, y) {
+    if (_isPanning) {
+        _handlePanning(e);
+    } else if (_isDragging || _isResizing) {
+        _notifyPointerMove(x, y);
+    }
+}
+
+function _onDocumentMouseMove(e) {
+    if (!_isValidMouseMoveTarget(e)) {
+        return;
+    }
+
+    _updateElementIfChanged(e);
 
     let coords = _getMapTileCoords(e.clientX, e.clientY);
     let x = Math.max(0, Math.min(255, coords.x));
@@ -209,14 +224,7 @@ function _onDocumentMouseMove(e) {
     _updateCoordsLabel(x, y);
     _hasMoved = true;
 
-    if (_isPanning) {
-        _handlePanning(e);
-        return;
-    }
-
-    if (_isDragging || _isResizing) {
-        _notifyPointerMove(x, y);
-    }
+    _applyMouseMoveAction(e, x, y);
 }
 
 function _onDocumentMouseUp(e) {
