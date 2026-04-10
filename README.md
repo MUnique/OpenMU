@@ -52,8 +52,8 @@ At the moment the persistence layer uses the [Entity Framework Core](https://git
 and [PostgreSQL](https://www.postgresql.org) as database. Additionally, it's
 also possible to start it in a non-persistent in-memory mode.
 
-The project supports distributed hosting based on Dapr. Alternatively, it can be
-hosted in one process as well.
+The project is prepared to be hosted in a single process or distributed in multiple processes.
+For the communication between the processes, we use [Dapr](https://dapr.io/).
 
 ## Deployment
 
@@ -94,8 +94,9 @@ If you want to contribute code, please do the following steps:
 1. fork this project from the original MUnique OpenMU Project.
 2. create a feature branch from the master branch
 3. commit your changes to your feature branch
-4. submit a pull request to the original master branch
-5. lean back, wait for the code review and merge :)
+4. please test your changes, don't send AI generated code without testing it yourself
+5. submit a pull request to the original master branch
+6. wait for the code review and merge :)
 
 ## How to use
 
