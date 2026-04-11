@@ -1,4 +1,4 @@
-// <copyright file="OfflineLevelingAccountService.cs" company="MUnique">
+// <copyright file="OfflineAccountService.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -8,17 +8,17 @@ using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.Interfaces;
 
 /// <summary>
-/// Service for the offline leveling table on the <c>LoggedIn</c> page.
+/// Service for the offline player table on the <c>LoggedIn</c> page.
 /// </summary>
-public class OfflineLevelingAccountService : IDataService<OfflineLevelingAccount>, ISupportDataChangedNotification
+public class OfflineAccountService : IDataService<OfflineAccount>, ISupportDataChangedNotification
 {
     private readonly IServerProvider _serverProvider;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="OfflineLevelingAccountService"/> class.
+    /// Initializes a new instance of the <see cref="OfflineAccountService"/> class.
     /// </summary>
     /// <param name="serverProvider">The server provider.</param>
-    public OfflineLevelingAccountService(IServerProvider serverProvider)
+    public OfflineAccountService(IServerProvider serverProvider)
     {
         this._serverProvider = serverProvider;
     }
@@ -29,10 +29,10 @@ public class OfflineLevelingAccountService : IDataService<OfflineLevelingAccount
     public event EventHandler? DataChanged;
 
     /// <summary>
-    /// Stops the offline leveling session for the given account.
+    /// Stops the offline session for the given account.
     /// </summary>
     /// <param name="account">The account whose session should be stopped.</param>
-    public async Task StopOfflineLevelingAsync(OfflineLevelingAccount account)
+    public async Task StopOfflinePlayerAsync(OfflineAccount account)
     {
         var server = this._serverProvider.Servers.FirstOrDefault(s => s.Id == account.ServerId);
         if (server is IGameServer gameServer)
@@ -44,13 +44,13 @@ public class OfflineLevelingAccountService : IDataService<OfflineLevelingAccount
     }
 
     /// <inheritdoc />
-    public Task<List<OfflineLevelingAccount>> GetAsync(int offset, int count)
+    public Task<List<OfflineAccount>> GetAsync(int offset, int count)
     {
         var result = this._serverProvider.Servers
             .OfType<IGameServerContextProvider>()
-            .SelectMany(s => s.Context.OfflineLevelingManager
-                .OfflineLevelingPlayers
-                .Select(p => new OfflineLevelingAccount(
+            .SelectMany(s => s.Context.OfflinePlayerManager
+                .OfflinePlayers
+                .Select(p => new OfflineAccount(
                     p.AccountLoginName ?? string.Empty,
                     (byte)((IManageableServer)s).Id,
                     p.StartTimestamp)))

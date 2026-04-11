@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic.OfflineLeveling;
+namespace MUnique.OpenMU.GameLogic.Offline;
 
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
@@ -14,7 +14,7 @@ using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Interfaces;
 
 /// <summary>
-/// Handles health recovery for the offline leveling player and their party.
+/// Handles health recovery for the offline player and their party.
 /// </summary>
 public sealed class HealingHandler
 {
@@ -28,15 +28,15 @@ public sealed class HealingHandler
         ItemConstants.Apple,
     ];
 
-    private readonly OfflineLevelingPlayer _player;
+    private readonly OfflinePlayer _player;
     private readonly IMuHelperSettings? _config;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="HealingHandler"/> class.
     /// </summary>
-    /// <param name="player">The offline leveling player.</param>
+    /// <param name="player">The offline player.</param>
     /// <param name="config">The MU helper settings.</param>
-    public HealingHandler(OfflineLevelingPlayer player, IMuHelperSettings? config)
+    public HealingHandler(OfflinePlayer player, IMuHelperSettings? config)
     {
         this._player = player;
         this._config = config;

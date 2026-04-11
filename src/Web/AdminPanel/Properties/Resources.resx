@@ -549,7 +549,7 @@
   <data name="StartedAt" xml:space="preserve">
     <value>Started At</value>
   </data>
-  <data name="OfflineLeveling" xml:space="preserve">
-    <value>Offline Leveling</value>
+  <data name="ActiveOfflinePlayer" xml:space="preserve">
+    <value>Active Offline Player</value>
   </data>
 </root>

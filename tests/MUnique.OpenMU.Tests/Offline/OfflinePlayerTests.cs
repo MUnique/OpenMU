@@ -1,19 +1,19 @@
-// <copyright file="OfflineLevelingPlayerTests.cs" company="MUnique">
+// <copyright file="OfflinePlayerTests.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Tests.Offlevel;
+namespace MUnique.OpenMU.Tests.Offline;
 
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
-using MUnique.OpenMU.GameLogic.OfflineLeveling;
+using MUnique.OpenMU.GameLogic.Offline;
 
 /// <summary>
-/// Tests for <see cref="OfflineLevelingPlayer"/>.
+/// Tests for <see cref="OfflinePlayer"/>.
 /// </summary>
 [TestFixture]
-public class OfflineLevelingPlayerTests
+public class OfflinePlayerTests
 {
     private IGameContext _gameContext = null!;
 
@@ -27,7 +27,7 @@ public class OfflineLevelingPlayerTests
     }
 
     /// <summary>
-    /// Tests that the offline leveling player is created and started successfully.
+    /// Tests that the offline player is created and started successfully.
     /// </summary>
     [Test]
     public async ValueTask InitializesSuccessfullyAsync()
@@ -41,7 +41,7 @@ public class OfflineLevelingPlayerTests
     }
 
     /// <summary>
-    /// Tests that <see cref="OfflineLevelingPlayer.StopAsync"/> cleans up resources.
+    /// Tests that <see cref="OfflinePlayer.StopAsync"/> cleans up resources.
     /// </summary>
     [Test]
     public async ValueTask StopAsync_CleansUpAsync()
@@ -56,7 +56,7 @@ public class OfflineLevelingPlayerTests
         Assert.That(player.PlayerState.CurrentState, Is.EqualTo(PlayerState.Finished));
     }
 
-    private async ValueTask<OfflineLevelingPlayer> CreateOfflinePlayerAsync()
+    private async ValueTask<OfflinePlayer> CreateOfflinePlayerAsync()
     {
         return await PlayerTestHelper.CreateOfflineLevelingPlayerAsync(this._gameContext).ConfigureAwait(false);
     }

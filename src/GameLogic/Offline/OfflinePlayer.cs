@@ -1,8 +1,8 @@
-// <copyright file="OfflineLevelingPlayer.cs" company="MUnique">
+// <copyright file="OfflinePlayer.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic.OfflineLeveling;
+namespace MUnique.OpenMU.GameLogic.Offline;
 
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic.MuHelper;
@@ -12,15 +12,15 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// An offline player that continues leveling after the real client disconnects.
 /// </summary>
-public sealed class OfflineLevelingPlayer : Player
+public sealed class OfflinePlayer : Player
 {
-    private OfflineLevelingIntelligence? _intelligence;
+    private OfflinePlayerMuHelper? _intelligence;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="OfflineLevelingPlayer"/> class.
+    /// Initializes a new instance of the <see cref="OfflinePlayer"/> class.
     /// </summary>
     /// <param name="gameContext">The game context.</param>
-    public OfflineLevelingPlayer(IGameContext gameContext)
+    public OfflinePlayer(IGameContext gameContext)
         : base(gameContext)
     {
     }
@@ -31,7 +31,7 @@ public sealed class OfflineLevelingPlayer : Player
     public string? AccountLoginName => this.Account?.LoginName;
 
     /// <summary>
-    /// Gets the start timestamp of the offline leveling session.
+    /// Gets the start timestamp of the offline session.
     /// </summary>
     public DateTime StartTimestamp { get; internal set; }
 
@@ -58,7 +58,7 @@ public sealed class OfflineLevelingPlayer : Player
             this.StartIntelligence();
 
             this.Logger.LogDebug(
-                "Offline leveling started for character {CharacterName} on map {Map} at {Position}.",
+                "Offline player started for character {CharacterName} on map {Map} at {Position}.",
                 character.Name,
                 character.CurrentMap?.Name,
                 this.Position);
@@ -89,7 +89,7 @@ public sealed class OfflineLevelingPlayer : Player
         }
         catch (Exception ex)
         {
-            this.Logger.LogError(ex, "Failed to save progress of offline leveling player {AccountLoginName}.", this.AccountLoginName);
+            this.Logger.LogError(ex, "Failed to save progress of offline player {AccountLoginName}.", this.AccountLoginName);
         }
 
         await this.DisconnectAsync().ConfigureAwait(false);
@@ -121,7 +121,7 @@ public sealed class OfflineLevelingPlayer : Player
 
     private void StartIntelligence()
     {
-        this._intelligence = new OfflineLevelingIntelligence(this);
+        this._intelligence = new OfflinePlayerMuHelper(this);
         this._intelligence.Start();
     }
 }

@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.GameLogic.MuHelper;
 using MUnique.OpenMU.GameLogic.Attributes;
 
 /// <summary>
-/// Calculates the Zen cost for the MU Helper and offline leveling based on the
+/// Calculates the Zen cost for the MU Helper and offline player based on the
 /// player's total level and the elapsed stage derived from the server configuration.
 /// </summary>
 public static class MuHelperZenCostCalculator

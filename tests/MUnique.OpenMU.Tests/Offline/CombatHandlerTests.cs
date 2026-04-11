@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Tests.Offlevel;
+namespace MUnique.OpenMU.Tests.Offline;
 
 using Moq;
 using MUnique.OpenMU.AttributeSystem;
@@ -12,7 +12,7 @@ using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
-using MUnique.OpenMU.GameLogic.OfflineLeveling;
+using MUnique.OpenMU.GameLogic.Offline;
 using MUnique.OpenMU.GameServer.RemoteView.MuHelper;
 using MUnique.OpenMU.Pathfinding;
 using MonsterDefinition = MUnique.OpenMU.Persistence.BasicModel.MonsterDefinition;
@@ -107,7 +107,7 @@ public class CombatHandlerTests
         Assert.That(player.Rotation, Is.Not.EqualTo(default(Direction)));
     }
 
-    private async ValueTask<OfflineLevelingPlayer> CreateOfflinePlayerAsync()
+    private async ValueTask<OfflinePlayer> CreateOfflinePlayerAsync()
     {
         return await PlayerTestHelper.CreateOfflineLevelingPlayerAsync(this._gameContext).ConfigureAwait(false);
     }

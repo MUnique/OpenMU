@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic.OfflineLeveling;
+namespace MUnique.OpenMU.GameLogic.Offline;
 
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
@@ -11,7 +11,7 @@ using MUnique.OpenMU.GameLogic.PlayerActions.Items;
 using MUnique.OpenMU.Interfaces;
 
 /// <summary>
-/// Handles item and zen pickup for the offline leveling player.
+/// Handles item and zen pickup for the offline player.
 /// </summary>
 public sealed class ItemPickupHandler
 {
@@ -20,15 +20,15 @@ public sealed class ItemPickupHandler
 
     private static readonly PickupItemAction PickupAction = new();
 
-    private readonly OfflineLevelingPlayer _player;
+    private readonly OfflinePlayer _player;
     private readonly IMuHelperSettings? _config;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ItemPickupHandler"/> class.
     /// </summary>
-    /// <param name="player">The offline leveling player.</param>
+    /// <param name="player">The offline player.</param>
     /// <param name="config">The MU Helper configuration.</param>
-    public ItemPickupHandler(OfflineLevelingPlayer player, IMuHelperSettings? config)
+    public ItemPickupHandler(OfflinePlayer player, IMuHelperSettings? config)
     {
         this._player = player;
         this._config = config;

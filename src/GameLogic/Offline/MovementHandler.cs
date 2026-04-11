@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic.OfflineLeveling;
+namespace MUnique.OpenMU.GameLogic.Offline;
 
 using MUnique.OpenMU.GameLogic.MuHelper;
 using MUnique.OpenMU.Pathfinding;
@@ -14,7 +14,7 @@ public sealed class MovementHandler
 {
     private const byte RegroupDistanceThreshold = 1;
 
-    private readonly OfflineLevelingPlayer _player;
+    private readonly OfflinePlayer _player;
     private readonly IMuHelperSettings? _config;
     private readonly Point _originPosition;
 
@@ -23,10 +23,10 @@ public sealed class MovementHandler
     /// <summary>
     /// Initializes a new instance of the <see cref="MovementHandler"/> class.
     /// </summary>
-    /// <param name="player">The offline leveling player.</param>
+    /// <param name="player">The offline player.</param>
     /// <param name="config">The MU Helper configuration.</param>
     /// <param name="originPosition">The original spawn position.</param>
-    public MovementHandler(OfflineLevelingPlayer player, IMuHelperSettings? config, Point originPosition)
+    public MovementHandler(OfflinePlayer player, IMuHelperSettings? config, Point originPosition)
     {
         this._player = player;
         this._config = config;
