@@ -33,7 +33,7 @@ public sealed class Party : AsyncDisposable
     private readonly Task? _healthUpdateTask;
     private CancellationTokenSource? _healthUpdateCts;
 
-    private volatile IPartyMember[] _partyMembers = [];
+    private IPartyMember[] _partyMembers = [];
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Party"/> class.
@@ -158,7 +158,6 @@ public sealed class Party : AsyncDisposable
     /// <param name="index">The party list index of the member to kick.</param>
     public async ValueTask KickPlayerAsync(byte index)
     {
-        // Volatile load — no lock needed for a single reference read.
         var toKick = this._partyMembers[index];
         await this.ExitPartyAsync(toKick, index).ConfigureAwait(false);
     }
@@ -183,8 +182,7 @@ public sealed class Party : AsyncDisposable
     /// <param name="senderCharacterName">The name of the sending character.</param>
     public async ValueTask SendChatMessageAsync(string message, string senderCharacterName)
     {
-        var members = this._partyMembers;
-        foreach (var member in members)
+        foreach (var member in this._partyMembers)
         {
             try
             {
@@ -348,7 +346,6 @@ public sealed class Party : AsyncDisposable
         var count = recipients.Count;
         var totalLevel = recipients.Sum(p => (int)p.Attributes![Stats.TotalLevel]);
         var averageLevel = totalLevel / count;
-
         var baseExp = killed.CalculateBaseExperience(averageLevel);
 
         var totalAvg = baseExp * count * Math.Pow(1.05, count - 1);
@@ -369,18 +366,18 @@ public sealed class Party : AsyncDisposable
         if (isAtMaxLevel && isMasterClass)
         {
             var exp = (int)(perLevel
-                                 * attributes[Stats.TotalLevel]
-                                 * player.GameContext.MasterExperienceRate
-                                 * (attributes[Stats.MasterExperienceRate] + attributes[Stats.BonusExperienceRate]));
+                            * attributes[Stats.TotalLevel]
+                            * player.GameContext.MasterExperienceRate
+                            * (attributes[Stats.MasterExperienceRate] + attributes[Stats.BonusExperienceRate]));
 
             await player.AddMasterExperienceAsync(exp, killed).ConfigureAwait(false);
         }
         else if (!isAtMaxLevel)
         {
             var exp = (int)(perLevel
-                                 * attributes[Stats.Level]
-                                 * player.GameContext.ExperienceRate
-                                 * (attributes[Stats.ExperienceRate] + attributes[Stats.BonusExperienceRate]));
+                            * attributes[Stats.Level]
+                            * player.GameContext.ExperienceRate
+                            * (attributes[Stats.ExperienceRate] + attributes[Stats.BonusExperienceRate]));
 
             await player.AddExperienceAsync(exp, killed).ConfigureAwait(false);
         }
@@ -434,30 +431,22 @@ public sealed class Party : AsyncDisposable
             return 0;
         }
 
-        var distributionList = new List<Player>(this._maxPartySize);
-        var members = this._partyMembers;
-
         using (await killer.ObserverLock.ReaderLockAsync().ConfigureAwait(false))
         {
-            foreach (var member in members)
-            {
-                if (member is Player p
-                    && p.Attributes is { }
-                    && (p == killer || killer.Observers.Contains(p)))
-                {
-                    distributionList.Add(p);
-                }
-            }
+            this._distributionList.AddRange(
+                this._partyMembers.OfType<Player>()
+                    .Where(p => p.Attributes is { }
+                                && (p == killer || killer.Observers.Contains(p))));
         }
 
-        if (distributionList.Count == 0)
+        if (this._distributionList.Count == 0)
         {
             return 0;
         }
 
-        var (total, perLevel) = CalculatePartyExperience(distributionList, killedObject);
+        var (total, perLevel) = CalculatePartyExperience(this._distributionList, killedObject);
 
-        foreach (var player in distributionList)
+        foreach (var player in this._distributionList)
         {
             await AwardExperienceAsync(player, perLevel, killedObject).ConfigureAwait(false);
         }
