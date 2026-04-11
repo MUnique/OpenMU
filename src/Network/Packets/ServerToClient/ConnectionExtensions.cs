@@ -6286,4 +6286,213 @@ public static class ConnectionExtensions
         }
 
         await connection.SendAsync(WritePacket).ConfigureAwait(false);
-    }}
+    }
+    /// <summary>
+    /// Sends a <see cref="KanturuStateInfo" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="state">The state.</param>
+    /// <param name="detailState">The detail state.</param>
+    /// <param name="canEnter">The can enter.</param>
+    /// <param name="userCount">The user count.</param>
+    /// <param name="remainSeconds">The remain seconds.</param>
+    /// <remarks>
+    /// Is sent by the server when: The player requests state information from the Kanturu gateway NPC.
+    /// Causes reaction on client side: The client shows the Kanturu entry dialog with event state, detail state, whether entry is possible, current player count and remaining time.
+    /// </remarks>
+    public static async ValueTask SendKanturuStateInfoAsync(this IConnection? connection, KanturuStateInfo.StateType @state, byte @detailState, bool @canEnter, byte @userCount, uint @remainSeconds)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = KanturuStateInfoRef.Length;
+            var packet = new KanturuStateInfoRef(connection.Output.GetSpan(length)[..length]);
+            packet.State = @state;
+            packet.DetailState = @detailState;
+            packet.CanEnter = @canEnter;
+            packet.UserCount = @userCount;
+            packet.RemainSeconds = @remainSeconds;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="KanturuEnterResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <remarks>
+    /// Is sent by the server when: The player attempted to enter the Kanturu event through the gateway NPC.
+    /// Causes reaction on client side: The client stops the NPC animation. On success the player has already been teleported. On failure a corresponding message is shown.
+    /// </remarks>
+    public static async ValueTask SendKanturuEnterResultAsync(this IConnection? connection, KanturuEnterResult.EnterResult @result)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = KanturuEnterResultRef.Length;
+            var packet = new KanturuEnterResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="KanturuStateChange" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="state">The state.</param>
+    /// <param name="detailState">The detail state.</param>
+    /// <remarks>
+    /// Is sent by the server when: The Kanturu event transitions to a new phase or sub-phase.
+    /// Causes reaction on client side: The client shows or hides the in-map HUD, switches background music, and when entering the Tower state reloads the barrier-open terrain file to visually remove the Elphis barrier.
+    /// </remarks>
+    public static async ValueTask SendKanturuStateChangeAsync(this IConnection? connection, KanturuStateChange.StateType @state, byte @detailState)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = KanturuStateChangeRef.Length;
+            var packet = new KanturuStateChangeRef(connection.Output.GetSpan(length)[..length]);
+            packet.State = @state;
+            packet.DetailState = @detailState;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="KanturuBattleResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <remarks>
+    /// Is sent by the server when: The Kanturu event ends with a victory or defeat outcome.
+    /// Causes reaction on client side: The client displays the Success_kantru.tga overlay on victory or the Failure_kantru.tga overlay on defeat.
+    /// </remarks>
+    public static async ValueTask SendKanturuBattleResultAsync(this IConnection? connection, KanturuBattleResult.BattleResult @result)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = KanturuBattleResultRef.Length;
+            var packet = new KanturuBattleResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="KanturuTimeLimit" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="timeLimitMilliseconds">The time limit milliseconds.</param>
+    /// <remarks>
+    /// Is sent by the server when: A timed phase begins in the Kanturu event.
+    /// Causes reaction on client side: The client starts a countdown timer shown in the Kanturu HUD. The value is divided by 1000 to obtain seconds.
+    /// </remarks>
+    public static async ValueTask SendKanturuTimeLimitAsync(this IConnection? connection, uint @timeLimitMilliseconds)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = KanturuTimeLimitRef.Length;
+            var packet = new KanturuTimeLimitRef(connection.Output.GetSpan(length)[..length]);
+            packet.TimeLimitMilliseconds = @timeLimitMilliseconds;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="KanturuMayaWideAreaAttack" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="type">The type.</param>
+    /// <remarks>
+    /// Is sent by the server when: The Maya body executes a wide-area attack during the Maya battle phase.
+    /// Causes reaction on client side: The client plays a visual attack sequence on the Maya body model: storm (0) or stone-rain (1). This is a purely cosmetic packet - damage is handled server-side.
+    /// </remarks>
+    public static async ValueTask SendKanturuMayaWideAreaAttackAsync(this IConnection? connection, KanturuMayaWideAreaAttack.AttackType @type)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = KanturuMayaWideAreaAttackRef.Length;
+            var packet = new KanturuMayaWideAreaAttackRef(connection.Output.GetSpan(length)[..length]);
+            packet.Type = @type;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="KanturuMonsterUserCount" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="monsterCount">The monster count.</param>
+    /// <param name="userCount">The user count.</param>
+    /// <remarks>
+    /// Is sent by the server when: A monster is killed or the player count changes during the Kanturu event.
+    /// Causes reaction on client side: The client updates the monster count and user count numbers displayed in the Kanturu HUD.
+    /// </remarks>
+    public static async ValueTask SendKanturuMonsterUserCountAsync(this IConnection? connection, byte @monsterCount, byte @userCount)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = KanturuMonsterUserCountRef.Length;
+            var packet = new KanturuMonsterUserCountRef(connection.Output.GetSpan(length)[..length]);
+            packet.MonsterCount = @monsterCount;
+            packet.UserCount = @userCount;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+}
