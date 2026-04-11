@@ -247,7 +247,6 @@ public sealed class BuffHandler
         }
 
         return target.MagicEffectList.ActiveEffects.Values
-            .ToList()
             .Any(e => e.Definition == effectDef);
     }
 

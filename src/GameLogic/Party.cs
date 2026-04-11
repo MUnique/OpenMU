@@ -1,4 +1,4 @@
-﻿// <copyright file="Party.cs" company="MUnique">
+// <copyright file="Party.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -315,8 +315,7 @@ public sealed class Party : AsyncDisposable
                 var index = i;
                 await member.InvokeViewPlugInAsync<IPartyMemberRemovedPlugIn>(
                     p => p.PartyMemberRemovedAsync(index)).ConfigureAwait(false);
-                member.Party = null;
-                this._partyManager.UntrackMembership(member.Name);
+                this.CleanupMember(member);
             }
             catch (Exception ex)
             {
@@ -389,14 +388,30 @@ public sealed class Party : AsyncDisposable
 
     private async ValueTask ExitPartyAsync(IPartyMember member, byte index)
     {
-        var remainingCount = this._partyMembers.Count(m => m != member);
+        bool shouldDispose;
+        lock (this._writeLock)
+        {
+            if (!this._partyMembers.Contains(member))
+            {
+                return;
+            }
 
-        if (remainingCount < 2)
+            var remainingCount = this._partyMembers.Length - 1;
+            shouldDispose = remainingCount < 2;
+
+            if (!shouldDispose)
+            {
+                this._partyMembers = this._partyMembers.Where(m => m != member).ToArray();
+            }
+        }
+
+        if (shouldDispose)
         {
             await this.DisposeAsync().ConfigureAwait(false);
             return;
         }
 
+        // Notify the member before cleaning up so the index is still valid.
         try
         {
             await member.InvokeViewPlugInAsync<IPartyMemberRemovedPlugIn>(
@@ -407,11 +422,14 @@ public sealed class Party : AsyncDisposable
             this._logger.LogDebug(ex, "Error notifying kicked member {Name}", member.Name);
         }
 
-        lock (this._writeLock)
-        {
-            this._partyMembers = this._partyMembers.Where(m => m != member).ToArray();
-        }
+        this.CleanupMember(member);
 
+        await this.SendPartyListAsync().ConfigureAwait(false);
+        await this.UpdateNearbyCountAsync().ConfigureAwait(false);
+    }
+
+    private void CleanupMember(IPartyMember member)
+    {
         member.Party = null;
         this._partyManager.UntrackMembership(member.Name);
 
@@ -419,9 +437,6 @@ public sealed class Party : AsyncDisposable
         {
             attributes[Stats.NearbyPartyMemberCount] = 0;
         }
-
-        await this.SendPartyListAsync().ConfigureAwait(false);
-        await this.UpdateNearbyCountAsync().ConfigureAwait(false);
     }
 
     private async ValueTask<int> InternalDistributeExperienceAfterKillAsync(IAttackable killedObject, IObservable killer)
