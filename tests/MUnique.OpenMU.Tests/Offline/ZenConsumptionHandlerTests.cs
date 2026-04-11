@@ -2,12 +2,12 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Tests.Offlevel;
+namespace MUnique.OpenMU.Tests.Offline;
 
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.MuHelper;
-using MUnique.OpenMU.GameLogic.OfflineLeveling;
+using MUnique.OpenMU.GameLogic.Offline;
 
 /// <summary>
 /// Tests for <see cref="ZenConsumptionHandler"/>.
@@ -67,7 +67,7 @@ public class ZenConsumptionHandlerTests
     }
 
     /// <summary>
-    /// Tests that offline leveling stops when the player has insufficient Zen.
+    /// Tests that offline player stops when the player has insufficient Zen.
     /// </summary>
     [Test]
     public async ValueTask StopsOfflineLevelingWhenInsufficientZenAsync()
@@ -83,11 +83,11 @@ public class ZenConsumptionHandlerTests
         // Act
         await handler.DeductZenAsync().ConfigureAwait(false);
 
-        // Assert - Offline leveling stops when insufficient Zen
+        // Assert
         Assert.That(player.PlayerState.CurrentState, Is.EqualTo(PlayerState.Finished));
     }
 
-    private async ValueTask<OfflineLevelingPlayer> CreateOfflinePlayerAsync()
+    private async ValueTask<OfflinePlayer> CreateOfflinePlayerAsync()
     {
         var player = await PlayerTestHelper.CreateOfflineLevelingPlayerAsync(this._gameContext).ConfigureAwait(false);
         player.Attributes![Stats.MasterLevel] = 0;

@@ -5,7 +5,7 @@
 @using MUnique.OpenMU.Web.Shared.Services
 
 @inject LoggedInAccountService AccountService;
-@inject OfflineLevelingAccountService OfflineLevelingService;
+@inject OfflineAccountService OfflineService;
 
 <PageTitle>OpenMU: @Resources.OnlineAccounts</PageTitle>
 <Breadcrumb IsFirstFromRoot="true" Caption="@Resources.OnlineAccounts"/>
@@ -30,10 +30,10 @@
   </DataTable>
 </div>
 
-<h2>@Resources.OfflineLeveling</h2>
+<h2>@Resources.ActiveOfflinePlayer</h2>
 
 <div class="w-100">
-  <DataTable TItem=@OfflineLevelingAccount>
+  <DataTable TItem=@OfflineAccount>
     <TableHeader>
       <th class="col-3">@typeof(Account).GetPropertyCaption(nameof(Account.LoginName))</th>
       <th class="col-2">@Resources.ServerID</th>
@@ -45,7 +45,7 @@
       <td>@item.ServerId</td>
       <td>@item.StartedAt.ToString("yyyy-MM-dd HH:mm:ss") UTC</td>
       <td>
-        <button class="btn btn-warning" type="button" @onclick="() => this.OfflineLevelingService.StopOfflineLevelingAsync(item)">
+        <button class="btn btn-warning" type="button" @onclick="() => this.OfflineService.StopOfflinePlayerAsync(item)">
           <span class="oi oi-media-stop" aria-hidden="true" /> @Resources.Stop
         </button>
       </td>

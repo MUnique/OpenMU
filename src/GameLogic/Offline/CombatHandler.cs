@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic.OfflineLeveling;
+namespace MUnique.OpenMU.GameLogic.Offline;
 
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.MuHelper;
@@ -28,7 +28,7 @@ public sealed class CombatHandler
     private const short DrainLifeStrengthenerSkillId = 458;
     private const short DrainLifeMasterySkillId = 462;
 
-    private readonly OfflineLevelingPlayer _player;
+    private readonly OfflinePlayer _player;
     private readonly IMuHelperSettings? _config;
     private readonly MovementHandler _movementHandler;
     private readonly BuffHandler _buffHandler;
@@ -43,12 +43,12 @@ public sealed class CombatHandler
     /// <summary>
     /// Initializes a new instance of the <see cref="CombatHandler"/> class.
     /// </summary>
-    /// <param name="player">The offline leveling player.</param>
+    /// <param name="player">The offline player.</param>
     /// <param name="config">The MU helper settings.</param>
     /// <param name="movementHandler">The movement handler.</param>
     /// <param name="buffHandler">The buff handler.</param>
     /// <param name="originPosition">The original position to hunt around.</param>
-    public CombatHandler(OfflineLevelingPlayer player, IMuHelperSettings? config, MovementHandler movementHandler, BuffHandler buffHandler, Point originPosition)
+    public CombatHandler(OfflinePlayer player, IMuHelperSettings? config, MovementHandler movementHandler, BuffHandler buffHandler, Point originPosition)
     {
         this._player = player;
         this._config = config;

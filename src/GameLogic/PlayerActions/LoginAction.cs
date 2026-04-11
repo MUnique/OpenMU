@@ -110,7 +110,7 @@ public class LoginAction
                 return (false, null);
             }
 
-            if (player.GameContext.OfflineLevelingManager.TryGetPlayer(username, out var offlinePlayer))
+            if (player.GameContext.OfflinePlayerManager.TryGetPlayer(username, out var offlinePlayer))
             {
                 var isTemplateOffline = offlinePlayer!.IsTemplatePlayer;
                 if (!isTemplateOffline && !await gameServerContext.LoginServer.TryLoginAsync(username, gameServerContext.Id).ConfigureAwait(false))
@@ -169,7 +169,7 @@ public class LoginAction
 
         try
         {
-            await player.GameContext.OfflineLevelingManager.StopAsync(username).ConfigureAwait(false);
+            await player.GameContext.OfflinePlayerManager.StopAsync(username).ConfigureAwait(false);
             var account = await player.PersistenceContext.GetAccountByLoginNameAsync(username).ConfigureAwait(false);
             if (account is null)
             {

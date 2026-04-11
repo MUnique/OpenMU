@@ -24,13 +24,16 @@ public sealed class Party : AsyncDisposable
     private readonly ILogger<Party> _logger;
     private readonly IPartyManager _partyManager;
     private readonly byte _maxPartySize;
-    private readonly List<IPartyMember> _partyList;
+
+    private readonly object _writeLock = new();
     private readonly AsyncLock _distributionLock = new();
     private readonly List<Player> _distributionList;
+
     private readonly TimeSpan _healthUpdateInterval = TimeSpan.FromMilliseconds(500);
     private readonly Task? _healthUpdateTask;
-
     private CancellationTokenSource? _healthUpdateCts;
+
+    private volatile IPartyMember[] _partyMembers = [];
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Party"/> class.
@@ -43,7 +46,6 @@ public sealed class Party : AsyncDisposable
         this._partyManager = partyManager;
         this._maxPartySize = maxPartySize;
         this._logger = logger;
-        this._partyList = new List<IPartyMember>(maxPartySize);
         this._distributionList = new List<Player>(maxPartySize);
 
         this._healthUpdateCts = new CancellationTokenSource();
@@ -54,7 +56,7 @@ public sealed class Party : AsyncDisposable
     /// <summary>
     /// Gets the party members.
     /// </summary>
-    public IReadOnlyList<IPartyMember> PartyList => this._partyList;
+    public IReadOnlyList<IPartyMember> PartyList => this._partyMembers;
 
     /// <summary>
     /// Gets the maximum party size.
@@ -75,19 +77,22 @@ public sealed class Party : AsyncDisposable
     /// <returns>True if the member was added successfully; false if the party is full.</returns>
     public async ValueTask<bool> AddAsync(IPartyMember newMember)
     {
-        if (this._partyList.Count >= this._maxPartySize)
+        lock (this._writeLock)
         {
-            return false;
-        }
+            if (this._partyMembers.Length >= this._maxPartySize)
+            {
+                return false;
+            }
 
-        if (this._partyList.Count == 0)
-        {
-            this.PartyMaster = newMember;
-        }
+            if (this._partyMembers.Length == 0)
+            {
+                this.PartyMaster = newMember;
+            }
 
-        this._partyList.Add(newMember);
-        newMember.Party = this;
-        this._partyManager.TrackMembership(newMember.Name, this);
+            newMember.Party = this;
+            this._partyManager.TrackMembership(newMember.Name, this);
+            this._partyMembers = [..this._partyMembers, newMember];
+        }
 
         await this.SendPartyListAsync().ConfigureAwait(false);
         await this.UpdateNearbyCountAsync().ConfigureAwait(false);
@@ -102,27 +107,34 @@ public sealed class Party : AsyncDisposable
     /// <param name="newMember">The new member to insert.</param>
     public async ValueTask ReplaceMemberAsync(IPartyMember oldMember, IPartyMember newMember)
     {
-        var index = this._partyList.IndexOf(oldMember);
-        if (index < 0)
+        lock (this._writeLock)
         {
-            return;
-        }
+            var index = Array.IndexOf(this._partyMembers, oldMember);
+            if (index < 0)
+            {
+                return;
+            }
 
-        this._partyList[index] = newMember;
-        newMember.Party = this;
-        oldMember.Party = null;
+            var updated = (IPartyMember[])this._partyMembers.Clone();
+            updated[index] = newMember;
 
-        this._partyManager.UntrackMembership(oldMember.Name);
-        this._partyManager.TrackMembership(newMember.Name, this);
+            newMember.Party = this;
+            oldMember.Party = null;
 
-        if (this.PartyMaster == oldMember)
-        {
-            this.PartyMaster = newMember;
-        }
+            this._partyManager.UntrackMembership(oldMember.Name);
+            this._partyManager.TrackMembership(newMember.Name, this);
 
-        if (oldMember is Player oldPlayer && oldPlayer.Attributes is { } oldAttr)
-        {
-            oldAttr[Stats.NearbyPartyMemberCount] = 0;
+            if (this.PartyMaster == oldMember)
+            {
+                this.PartyMaster = newMember;
+            }
+
+            if (oldMember is Player oldPlayer && oldPlayer.Attributes is { } oldAttr)
+            {
+                oldAttr[Stats.NearbyPartyMemberCount] = 0;
+            }
+
+            this._partyMembers = updated;
         }
 
         await this.SendPartyListAsync().ConfigureAwait(false);
@@ -146,7 +158,8 @@ public sealed class Party : AsyncDisposable
     /// <param name="index">The party list index of the member to kick.</param>
     public async ValueTask KickPlayerAsync(byte index)
     {
-        var toKick = this._partyList[index];
+        // Volatile load — no lock needed for a single reference read.
+        var toKick = this._partyMembers[index];
         await this.ExitPartyAsync(toKick, index).ConfigureAwait(false);
     }
 
@@ -156,7 +169,7 @@ public sealed class Party : AsyncDisposable
     /// <param name="sender">The member who initiated the kick.</param>
     public async ValueTask KickMySelfAsync(IPartyMember sender)
     {
-        var index = this._partyList.IndexOf(sender);
+        var index = Array.IndexOf(this._partyMembers, sender);
         if (index >= 0)
         {
             await this.ExitPartyAsync(sender, (byte)index).ConfigureAwait(false);
@@ -170,7 +183,8 @@ public sealed class Party : AsyncDisposable
     /// <param name="senderCharacterName">The name of the sending character.</param>
     public async ValueTask SendChatMessageAsync(string message, string senderCharacterName)
     {
-        foreach (var member in this._partyList)
+        var members = this._partyMembers;
+        foreach (var member in members)
         {
             try
             {
@@ -216,7 +230,7 @@ public sealed class Party : AsyncDisposable
         {
             this._logger.LogDebug("Distributing money after killing {name}", killed.GetName());
             this._distributionList.AddRange(
-                this._partyList.OfType<Player>()
+                this._partyMembers.OfType<Player>()
                     .Where(p => p.CurrentMap == killer.CurrentMap
                                 && !p.IsAtSafezone()
                                 && p.Attributes is { }));
@@ -251,7 +265,7 @@ public sealed class Party : AsyncDisposable
             using (await killer.ObserverLock.ReaderLockAsync().ConfigureAwait(false))
             {
                 this._distributionList.AddRange(
-                    this._partyList.OfType<Player>()
+                    this._partyMembers.OfType<Player>()
                         .Where(p => p.CurrentMap == killer.CurrentMap
                                     && !p.IsAtSafezone()
                                     && p.IsAlive
@@ -288,15 +302,23 @@ public sealed class Party : AsyncDisposable
             await task.ConfigureAwait(false);
         }
 
-        for (byte i = 0; i < this._partyList.Count; i++)
+        IPartyMember[] members;
+        lock (this._writeLock)
         {
-            var member = this._partyList[i];
+            members = this._partyMembers;
+            this._partyMembers = [];
+        }
+
+        for (byte i = 0; i < members.Length; i++)
+        {
+            var member = members[i];
             try
             {
                 var index = i;
                 await member.InvokeViewPlugInAsync<IPartyMemberRemovedPlugIn>(
                     p => p.PartyMemberRemovedAsync(index)).ConfigureAwait(false);
                 member.Party = null;
+                this._partyManager.UntrackMembership(member.Name);
             }
             catch (Exception ex)
             {
@@ -304,9 +326,7 @@ public sealed class Party : AsyncDisposable
             }
         }
 
-        this._partyList.Clear();
         PartyCount.Add(-1);
-
         await base.DisposeAsyncCore().ConfigureAwait(false);
     }
 
@@ -315,6 +335,7 @@ public sealed class Party : AsyncDisposable
     {
         if (disposing)
         {
+            this._healthUpdateCts?.Cancel();
             this._healthUpdateCts?.Dispose();
             this._healthUpdateCts = null;
         }
@@ -322,23 +343,24 @@ public sealed class Party : AsyncDisposable
         base.Dispose(disposing);
     }
 
-    private static (int Total, int PerLevel) CalculatePartyExperience(List<Player> recipients, IAttackable killed)
+    private static (int Total, float PerLevel) CalculatePartyExperience(List<Player> recipients, IAttackable killed)
     {
         var count = recipients.Count;
         var totalLevel = recipients.Sum(p => (int)p.Attributes![Stats.TotalLevel]);
         var averageLevel = totalLevel / count;
+
         var baseExp = killed.CalculateBaseExperience(averageLevel);
 
         var totalAvg = baseExp * count * Math.Pow(1.05, count - 1);
         totalAvg *= killed.CurrentMap?.Definition.ExpMultiplier ?? 1;
 
         var total = Rand.NextInt((int)(totalAvg * 0.8), (int)(totalAvg * 1.2));
-        var perLevel = total / totalLevel;
+        var perLevel = (float)total / totalLevel;
 
         return (total, perLevel);
     }
 
-    private static async ValueTask AwardExperienceAsync(Player player, int perLevel, IAttackable killed)
+    private static async ValueTask AwardExperienceAsync(Player player, float perLevel, IAttackable killed)
     {
         var attributes = player.Attributes!;
         var isAtMaxLevel = (short)attributes[Stats.Level] == player.GameContext.Configuration.MaximumLevel;
@@ -346,44 +368,36 @@ public sealed class Party : AsyncDisposable
 
         if (isAtMaxLevel && isMasterClass)
         {
-            var expMaster = (int)(perLevel
-                                  * attributes[Stats.TotalLevel]
-                                  * player.GameContext.MasterExperienceRate
-                                  * (attributes[Stats.MasterExperienceRate] + attributes[Stats.BonusExperienceRate]));
+            var exp = (int)(perLevel
+                                 * attributes[Stats.TotalLevel]
+                                 * player.GameContext.MasterExperienceRate
+                                 * (attributes[Stats.MasterExperienceRate] + attributes[Stats.BonusExperienceRate]));
 
-            await player.AddMasterExperienceAsync(expMaster, killed).ConfigureAwait(false);
+            await player.AddMasterExperienceAsync(exp, killed).ConfigureAwait(false);
         }
         else if (!isAtMaxLevel)
         {
             var exp = (int)(perLevel
-                            * attributes[Stats.Level]
-                            * player.GameContext.ExperienceRate
-                            * (attributes[Stats.ExperienceRate] + attributes[Stats.BonusExperienceRate]));
+                                 * attributes[Stats.Level]
+                                 * player.GameContext.ExperienceRate
+                                 * (attributes[Stats.ExperienceRate] + attributes[Stats.BonusExperienceRate]));
 
             await player.AddExperienceAsync(exp, killed).ConfigureAwait(false);
         }
         else
         {
-            // Player is at max level but did not complete master quest. Do not award experience.
+            // Player is at max level but has not completed master quest. No experience awarded.
         }
     }
 
     private async ValueTask ExitPartyAsync(IPartyMember member, byte index)
     {
-        var remainingCount = this._partyList.Count(m => m != member);
+        var remainingCount = this._partyMembers.Count(m => m != member);
+
         if (remainingCount < 2)
         {
             await this.DisposeAsync().ConfigureAwait(false);
             return;
-        }
-
-        this._partyList.Remove(member);
-        member.Party = null;
-        this._partyManager.UntrackMembership(member.Name);
-
-        if (member is Player player && player.Attributes is { } attributes)
-        {
-            attributes[Stats.NearbyPartyMemberCount] = 0;
         }
 
         try
@@ -394,6 +408,19 @@ public sealed class Party : AsyncDisposable
         catch (Exception ex)
         {
             this._logger.LogDebug(ex, "Error notifying kicked member {Name}", member.Name);
+        }
+
+        lock (this._writeLock)
+        {
+            this._partyMembers = this._partyMembers.Where(m => m != member).ToArray();
+        }
+
+        member.Party = null;
+        this._partyManager.UntrackMembership(member.Name);
+
+        if (member is Player player && player.Attributes is { } attributes)
+        {
+            attributes[Stats.NearbyPartyMemberCount] = 0;
         }
 
         await this.SendPartyListAsync().ConfigureAwait(false);
@@ -407,22 +434,30 @@ public sealed class Party : AsyncDisposable
             return 0;
         }
 
+        var distributionList = new List<Player>(this._maxPartySize);
+        var members = this._partyMembers;
+
         using (await killer.ObserverLock.ReaderLockAsync().ConfigureAwait(false))
         {
-            this._distributionList.AddRange(
-                this._partyList.OfType<Player>()
-                    .Where(p => p.Attributes is { }
-                                && (p == killer || killer.Observers.Contains(p))));
+            foreach (var member in members)
+            {
+                if (member is Player p
+                    && p.Attributes is { }
+                    && (p == killer || killer.Observers.Contains(p)))
+                {
+                    distributionList.Add(p);
+                }
+            }
         }
 
-        if (this._distributionList.Count == 0)
+        if (distributionList.Count == 0)
         {
             return 0;
         }
 
-        var (total, perLevel) = CalculatePartyExperience(this._distributionList, killedObject);
+        var (total, perLevel) = CalculatePartyExperience(distributionList, killedObject);
 
-        foreach (var player in this._distributionList)
+        foreach (var player in distributionList)
         {
             await AwardExperienceAsync(player, perLevel, killedObject).ConfigureAwait(false);
         }
@@ -432,7 +467,7 @@ public sealed class Party : AsyncDisposable
 
     private async ValueTask UpdateNearbyCountAsync()
     {
-        foreach (var member in this._partyList)
+        foreach (var member in this._partyMembers)
         {
             if (member is not Player player || player.Attributes is not { } attributes)
             {
@@ -442,7 +477,7 @@ public sealed class Party : AsyncDisposable
             try
             {
                 using var _ = await player.ObserverLock.ReaderLockAsync().ConfigureAwait(false);
-                attributes[Stats.NearbyPartyMemberCount] = this._partyList.Count(player.Observers.Contains);
+                attributes[Stats.NearbyPartyMemberCount] = this._partyMembers.Count(player.Observers.Contains);
             }
             catch (Exception ex)
             {
@@ -453,7 +488,7 @@ public sealed class Party : AsyncDisposable
 
     private async ValueTask SendPartyListAsync()
     {
-        foreach (var member in this._partyList)
+        foreach (var member in this._partyMembers)
         {
             try
             {
@@ -476,7 +511,7 @@ public sealed class Party : AsyncDisposable
             {
                 try
                 {
-                    foreach (var member in this._partyList)
+                    foreach (var member in this._partyMembers)
                     {
                         var plugIn = member.ViewPlugIns.GetPlugIn<IPartyHealthViewPlugIn>();
                         if (plugIn?.IsHealthUpdateNeeded() is true)

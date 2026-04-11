@@ -1441,7 +1441,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     /// <summary>
     /// Clears all subscribers from the <see cref="PlayerDisconnected"/> event so that
-    /// <see cref="DisconnectAsync"/> will not raise it. Used by offline leveling to prevent
+    /// <see cref="DisconnectAsync"/> will not raise it. Used by offline player to prevent
     /// <c>GameServer.OnPlayerDisconnectedAsync</c> from double-saving and double-logging off
     /// after the real client disconnects.
     /// </summary>

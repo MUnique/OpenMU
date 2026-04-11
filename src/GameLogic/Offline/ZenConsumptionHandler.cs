@@ -2,17 +2,17 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic.OfflineLeveling;
+namespace MUnique.OpenMU.GameLogic.Offline;
 
 using MUnique.OpenMU.GameLogic.MuHelper;
 using MUnique.OpenMU.GameLogic.Views.MuHelper;
 
 /// <summary>
-/// Handles the periodic Zen consumption during offline leveling.
+/// Handles the periodic Zen consumption for the offline player.
 /// </summary>
 internal sealed class ZenConsumptionHandler
 {
-    private readonly OfflineLevelingPlayer _player;
+    private readonly OfflinePlayer _player;
     private readonly MuHelperConfiguration _configuration;
     private DateTime _lastPayTimestamp;
 
@@ -20,7 +20,7 @@ internal sealed class ZenConsumptionHandler
     /// Initializes a new instance of the <see cref="ZenConsumptionHandler"/> class.
     /// </summary>
     /// <param name="player">The player.</param>
-    public ZenConsumptionHandler(OfflineLevelingPlayer player)
+    public ZenConsumptionHandler(OfflinePlayer player)
     {
         this._player = player;
         this._configuration = player.GameContext.FeaturePlugIns.GetPlugIn<MuHelperFeaturePlugIn>()?.Configuration
@@ -49,7 +49,7 @@ internal sealed class ZenConsumptionHandler
         }
         else if (amount > 0)
         {
-            this._player.Logger.LogDebug("Offline leveling stopped for {CharacterName} due to insufficient Zen.", this._player.Name);
+            this._player.Logger.LogDebug("Offline player stopped for {CharacterName} due to insufficient Zen.", this._player.Name);
             await this._player.StopAsync().ConfigureAwait(false);
         }
         else
