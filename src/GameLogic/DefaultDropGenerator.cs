@@ -85,7 +85,7 @@ public class DefaultDropGenerator : IDropGenerator
             this.PartitionDropGroups(monster.DropItemGroups ?? []);
             this.PartitionDropGroups(character.DropItemGroups ?? [], monster);
             this.PartitionDropGroups(map.DropItemGroups ?? [], monster);
-            this.PartitionDropGroups(await GetQuestItemGroupsAsync(player).ConfigureAwait(false), monster);
+            this.PartitionDropGroups(await GetQuestItemGroupsAsync(player).ConfigureAwait(false) ?? [], monster);
         }
 
         uint money = 0;
