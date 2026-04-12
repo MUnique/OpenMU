@@ -16,7 +16,7 @@ public class DefaultDropGenerator : IDropGenerator
     /// <summary>
     /// The amount of money which is dropped at least, and added to the gained experience.
     /// </summary>
-    public const int BaseMoneyDrop = 7;
+    public static readonly int BaseMoneyDrop = 7;
 
     private const int DropLevelMaxGap = 12;
     private const int JewelOfChaosMaxMonsterLevel = 66;
