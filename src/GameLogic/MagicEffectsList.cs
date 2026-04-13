@@ -46,6 +46,14 @@ public class MagicEffectsList : AsyncDisposable
     public async ValueTask AddEffectAsync(MagicEffect effect)
     {
         bool added = false;
+
+        if (effect.Definition.SubType > 0
+            && await this.TryGetActiveEffectOfSubTypeAsync(effect.Definition.SubType).ConfigureAwait(false) is { } existingEffect
+            && existingEffect.Id != effect.Id)
+        {
+            await existingEffect.DisposeAsync().ConfigureAwait(false);
+        }
+
         using (await this._addLock.LockAsync())
         {
             if (this._contains[effect.Id])

@@ -34,6 +34,7 @@ public class CriticalDamageIncreaseMasteryEffectInitializer : InitializerBase
 
         var critDmgIncEffect = this.GameConfiguration.MagicEffects.First(e => e.Number == (short)MagicEffectNumber.CriticalDamageIncrease);
         magicEffect.InformObservers = critDmgIncEffect.InformObservers;
+        magicEffect.SubType = critDmgIncEffect.SubType;
         magicEffect.SendDuration = critDmgIncEffect.SendDuration;
         magicEffect.StopByDeath = critDmgIncEffect.StopByDeath;
         magicEffect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
