@@ -874,6 +874,14 @@ public static class AttackableExtensions
             magicEffect = new MagicEffect(durationSpan, magicEffectDefinition, [.. powerUps.Select(p => new MagicEffect.ElementWithTarget(p.Boost, p.Target))]);
         }
 
+        if (magicEffect.Definition.SubType > 0
+            && await target.MagicEffectList.TryGetActiveEffectOfSubTypeAsync(magicEffect.Definition.SubType).ConfigureAwait(false) is { } existingEffect
+            && existingEffect.Id != magicEffect.Id)
+        {
+            // The new effect replaces an existing effect with a different number
+            await existingEffect.DisposeAsync().ConfigureAwait(false);
+        }
+
         await target.MagicEffectList.AddEffectAsync(magicEffect).ConfigureAwait(false);
         if (target is ISupportWalk walkSupporter
             && walkSupporter.IsWalking
