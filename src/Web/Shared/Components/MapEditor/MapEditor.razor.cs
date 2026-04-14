@@ -43,6 +43,7 @@ public partial class MapEditor : IAsyncDisposable
     private Image<Rgba32>? _terrainImage;
     private string? _terrainImageDataUrl;
     private ElementReference _mapHostRef;
+    private ElementReference _mapSelectRef;
     private ElementReference _objectSelectRef;
     private IJSObjectReference? _jsModule;
     private DotNetObjectReference<MapEditor>? _dotNetRef;
@@ -677,6 +678,12 @@ public partial class MapEditor : IAsyncDisposable
 
         if (cancelEventArgs.Cancel)
         {
+            if (this._jsModule is not null)
+            {
+                await this._jsModule.InvokeVoidAsync(
+                    "setSelectValue", this._mapSelectRef, this.SelectedMap.GetId().ToString()).ConfigureAwait(true);
+            }
+
             return;
         }
 

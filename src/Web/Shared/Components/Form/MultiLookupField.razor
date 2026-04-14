@@ -1,4 +1,4 @@
-﻿@using System.ComponentModel.DataAnnotations
+@using System.ComponentModel.DataAnnotations
 @using System.Diagnostics.CodeAnalysis
 @using MUnique.OpenMU.Web.Shared.Services
 @using MUnique.OpenMU.Persistence
@@ -31,7 +31,7 @@
                    value="@_searchText"
                    @oninput="OnSearchInputAsync"
                    @onfocus="OnFocus"
-                   @onblur="OnBlur"
+                   @onblur="OnBlurAsync"
                    @onkeydown="OnKeyDown" />
         </div>
 

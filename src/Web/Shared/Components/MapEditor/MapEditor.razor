@@ -1,4 +1,4 @@
-﻿@using MUnique.OpenMU.DataModel
+@using MUnique.OpenMU.DataModel
 @using MUnique.OpenMU.DataModel.Configuration
 @using MUnique.OpenMU.Persistence
 @using MUnique.OpenMU.Web.Shared.Properties
@@ -17,7 +17,7 @@
 
 <div class="map-select">
     <label for="mapSelect">@Resources.SelectedMap:</label>
-    <select title="Map" @onchange=this.OnMapSelectedAsync id="mapSelect" autocomplete="off">
+    <select title="Map" @onchange=this.OnMapSelectedAsync id="mapSelect" autocomplete="off" @ref="_mapSelectRef">
         @foreach (var map in this.Maps ?? Enumerable.Empty<GameMapDefinition>())
         {
             <option value="@map.GetId()" selected=@(object.Equals(this.SelectedMap, map))>@Resources.Map: @map.ToString()</option>

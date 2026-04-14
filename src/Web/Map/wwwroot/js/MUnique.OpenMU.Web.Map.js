@@ -813,6 +813,9 @@ System.register("WorldObjectPicker", ["three"], function (exports_11, context_11
     "use strict";
     var THREE, WorldObjectPicker;
     var __moduleName = context_11 && context_11.id;
+    function isGameObject(obj) {
+        return obj.data !== undefined;
+    }
     return {
         setters: [
             function (THREE_8) {
@@ -822,46 +825,71 @@ System.register("WorldObjectPicker", ["three"], function (exports_11, context_11
         execute: function () {
             WorldObjectPicker = (function () {
                 function WorldObjectPicker(worldCanvas, worldMesh, camera, onObjectPicked, onObjectHovered) {
-                    var _this = this;
-                    var raycaster = new THREE.Raycaster();
-                    var mouse = new THREE.Vector2();
-                    raycaster.setFromCamera(mouse, camera);
-                    var pick = function (mouseEvent, onHit) {
-                        mouse.x = (mouseEvent.offsetX / worldCanvas.clientWidth) * 2 - 1;
-                        mouse.y = -(mouseEvent.offsetY / worldCanvas.clientHeight) * 2 + 1;
-                        raycaster.setFromCamera(mouse, camera);
-                        var intersects = raycaster.intersectObjects(worldMesh.children, true);
-                        var data = intersects.length
-                            ? _this.extractObjectData(intersects[0])
-                            : null;
-                        onHit(data);
-                    };
-                    worldCanvas.addEventListener("click", function (mouseEvent) {
-                        pick(mouseEvent, function (data) {
-                            if (data !== null && onObjectPicked) {
-                                onObjectPicked(data);
-                            }
-                        });
-                    }, false);
-                    worldCanvas.addEventListener("mousemove", function (mouseEvent) {
-                        pick(mouseEvent, function (data) {
-                            if (onObjectHovered) {
-                                onObjectHovered(data);
-                            }
-                        });
-                    }, false);
+                    this.worldCanvas = worldCanvas;
+                    this.worldMesh = worldMesh;
+                    this.camera = camera;
+                    this.onObjectPicked = onObjectPicked;
+                    this.onObjectHovered = onObjectHovered;
+                    this.raycaster = new THREE.Raycaster();
+                    this.mouse = new THREE.Vector2();
+                    this.isHoverRaycastPending = false;
+                    this.lastMouseX = 0;
+                    this.lastMouseY = 0;
+                    this.handleClick = this.onClick.bind(this);
+                    this.handleMouseMove = this.onMouseMove.bind(this);
+                    worldCanvas.addEventListener("click", this.handleClick, false);
+                    worldCanvas.addEventListener("mousemove", this.handleMouseMove, false);
                 }
+                WorldObjectPicker.prototype.dispose = function () {
+                    this.worldCanvas.removeEventListener("click", this.handleClick);
+                    this.worldCanvas.removeEventListener("mousemove", this.handleMouseMove);
+                };
+                WorldObjectPicker.prototype.onClick = function (e) {
+                    var data = this.pickAt(e.offsetX, e.offsetY);
+                    if (data !== null) {
+                        this.onObjectPicked(data);
+                    }
+                };
+                WorldObjectPicker.prototype.onMouseMove = function (e) {
+                    var _this = this;
+                    if (!this.onObjectHovered) {
+                        return;
+                    }
+                    var dx = e.offsetX - this.lastMouseX;
+                    var dy = e.offsetY - this.lastMouseY;
+                    if (dx * dx + dy * dy < WorldObjectPicker.hoverThresholdSquared) {
+                        return;
+                    }
+                    if (!this.isHoverRaycastPending) {
+                        this.isHoverRaycastPending = true;
+                        this.lastMouseX = e.offsetX;
+                        this.lastMouseY = e.offsetY;
+                        var offsetX_1 = e.offsetX;
+                        var offsetY_1 = e.offsetY;
+                        requestAnimationFrame(function () {
+                            _this.isHoverRaycastPending = false;
+                            _this.onObjectHovered(_this.pickAt(offsetX_1, offsetY_1));
+                        });
+                    }
+                };
+                WorldObjectPicker.prototype.pickAt = function (offsetX, offsetY) {
+                    this.mouse.x = (offsetX / this.worldCanvas.clientWidth) * 2 - 1;
+                    this.mouse.y = -(offsetY / this.worldCanvas.clientHeight) * 2 + 1;
+                    this.raycaster.setFromCamera(this.mouse, this.camera);
+                    var intersects = this.raycaster.intersectObjects(this.worldMesh.children, true);
+                    return intersects.length ? this.extractObjectData(intersects[0]) : null;
+                };
                 WorldObjectPicker.prototype.extractObjectData = function (intersection) {
                     var obj = intersection.object;
                     while (obj) {
-                        var gameObject = obj;
-                        if (gameObject.data && gameObject.data.id !== undefined) {
-                            return gameObject.data;
+                        if (isGameObject(obj) && obj.data.id !== undefined) {
+                            return obj.data;
                         }
                         obj = obj.parent;
                     }
                     return null;
                 };
+                WorldObjectPicker.hoverThresholdSquared = 16;
                 return WorldObjectPicker;
             }());
             exports_11("WorldObjectPicker", WorldObjectPicker);
