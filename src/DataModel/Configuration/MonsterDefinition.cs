@@ -165,6 +165,16 @@ public enum NpcWindow
     /// The dialog for the legacy quest system.
     /// </summary>
     LegacyQuest,
+
+    /// <summary>
+    /// The castle siege gate NPC interaction window.
+    /// </summary>
+    CastleSiegeGateNpc,
+
+    /// <summary>
+    /// The castle siege lever NPC interaction window.
+    /// </summary>
+    CastleSiegeLeverNpc,
 }
 
 /// <summary>
