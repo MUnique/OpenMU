@@ -300,6 +300,12 @@ public partial class GameConfiguration
     [MemberOfAggregate]
     public virtual ICollection<MiniGameDefinition> MiniGameDefinitions { get; protected set; } = null!;
 
+    /// <summary>
+    /// Gets or sets the castle siege configuration.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual CastleSiegeConfiguration? CastleSiegeConfiguration { get; set; }
+
     /// <inheritdoc />
     public override string ToString()
     {
