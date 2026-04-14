@@ -3,18 +3,21 @@ import { ObjectData } from "./Types";
 import { GameObject } from "./GameObject";
 import { World } from "./World";
 
-function isGameObject(obj: THREE.Object3D): obj is GameObject {
-    return (obj as GameObject).data !== undefined;
-}
+const isGameObject = (obj: THREE.Object3D): obj is GameObject =>
+    (obj as GameObject).data !== undefined;
 
 export class WorldObjectPicker {
-    private readonly raycaster = new THREE.Raycaster();
-    private readonly mouse = new THREE.Vector2();
+    private static readonly hoverThresholdSquared: number = 16;
 
-    private isHoverRaycastPending = false;
-    private lastMouseX = 0;
-    private lastMouseY = 0;
-    private static readonly hoverThresholdSquared = 16;
+    private readonly raycaster: THREE.Raycaster = new THREE.Raycaster();
+    private readonly mouse: THREE.Vector2 = new THREE.Vector2();
+
+    private readonly onObjectPicked: (data: ObjectData) => void;
+    private readonly onObjectHovered?: (data: ObjectData | null) => void;
+
+    private isHoverRaycastPending: boolean = false;
+    private lastMouseX: number = 0;
+    private lastMouseY: number = 0;
 
     private readonly handleClick: (e: MouseEvent) => void;
     private readonly handleMouseMove: (e: MouseEvent) => void;
@@ -23,9 +26,12 @@ export class WorldObjectPicker {
         private readonly worldCanvas: HTMLElement,
         private readonly worldMesh: World,
         private readonly camera: THREE.Camera,
-        private readonly onObjectPicked: (data: ObjectData) => void,
-        private readonly onObjectHovered?: (data: ObjectData | null) => void,
+        onObjectPicked: (data: ObjectData) => void,
+        onObjectHovered?: (data: ObjectData | null) => void,
     ) {
+        this.onObjectPicked = onObjectPicked;
+        this.onObjectHovered = onObjectHovered;
+
         this.handleClick = this.onClick.bind(this);
         this.handleMouseMove = this.onMouseMove.bind(this);
 
@@ -61,12 +67,13 @@ export class WorldObjectPicker {
             this.lastMouseX = e.offsetX;
             this.lastMouseY = e.offsetY;
 
-            const offsetX = e.offsetX;
-            const offsetY = e.offsetY;
+            const offsetX: number = e.offsetX;
+            const offsetY: number = e.offsetY;
+            const onObjectHovered = this.onObjectHovered;
 
             requestAnimationFrame(() => {
                 this.isHoverRaycastPending = false;
-                this.onObjectHovered!(this.pickAt(offsetX, offsetY));
+                onObjectHovered(this.pickAt(offsetX, offsetY));
             });
         }
     }

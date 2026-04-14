@@ -811,11 +811,8 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
 });
 System.register("WorldObjectPicker", ["three"], function (exports_11, context_11) {
     "use strict";
-    var THREE, WorldObjectPicker;
+    var THREE, isGameObject, WorldObjectPicker;
     var __moduleName = context_11 && context_11.id;
-    function isGameObject(obj) {
-        return obj.data !== undefined;
-    }
     return {
         setters: [
             function (THREE_8) {
@@ -823,18 +820,21 @@ System.register("WorldObjectPicker", ["three"], function (exports_11, context_11
             }
         ],
         execute: function () {
+            isGameObject = function (obj) {
+                return obj.data !== undefined;
+            };
             WorldObjectPicker = (function () {
                 function WorldObjectPicker(worldCanvas, worldMesh, camera, onObjectPicked, onObjectHovered) {
                     this.worldCanvas = worldCanvas;
                     this.worldMesh = worldMesh;
                     this.camera = camera;
-                    this.onObjectPicked = onObjectPicked;
-                    this.onObjectHovered = onObjectHovered;
                     this.raycaster = new THREE.Raycaster();
                     this.mouse = new THREE.Vector2();
                     this.isHoverRaycastPending = false;
                     this.lastMouseX = 0;
                     this.lastMouseY = 0;
+                    this.onObjectPicked = onObjectPicked;
+                    this.onObjectHovered = onObjectHovered;
                     this.handleClick = this.onClick.bind(this);
                     this.handleMouseMove = this.onMouseMove.bind(this);
                     worldCanvas.addEventListener("click", this.handleClick, false);
@@ -866,9 +866,10 @@ System.register("WorldObjectPicker", ["three"], function (exports_11, context_11
                         this.lastMouseY = e.offsetY;
                         var offsetX_1 = e.offsetX;
                         var offsetY_1 = e.offsetY;
+                        var onObjectHovered_1 = this.onObjectHovered;
                         requestAnimationFrame(function () {
                             _this.isHoverRaycastPending = false;
-                            _this.onObjectHovered(_this.pickAt(offsetX_1, offsetY_1));
+                            onObjectHovered_1(_this.pickAt(offsetX_1, offsetY_1));
                         });
                     }
                 };

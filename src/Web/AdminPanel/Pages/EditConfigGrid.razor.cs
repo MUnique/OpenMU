@@ -387,7 +387,7 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
     private async Task CopySinglePropertyAsync(PropertyInfo prop, object? sourceValue, object target, IContext context, CancellationToken cancellationToken)
     {
         var sourceValueToSet = sourceValue;
-        if (sourceValueToSet is IIdentifiable identifiable && identifiable.Id != Guid.Empty && prop.PropertyType.Namespace?.StartsWith("MUnique.") == true)
+        if (sourceValueToSet is IIdentifiable identifiable && identifiable.Id != Guid.Empty)
         {
             var trackedItem = await context.GetByIdAsync(identifiable.Id, prop.PropertyType, cancellationToken).ConfigureAwait(false);
             if (trackedItem is not null)

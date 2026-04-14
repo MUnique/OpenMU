@@ -568,6 +568,9 @@ public partial class MapEditor : IAsyncDisposable
             case Gate gate:
                 this._history.RecordSnapshot(gate);
                 break;
+            default:
+                // Not supported.
+                break;
         }
     }
 
@@ -586,6 +589,9 @@ public partial class MapEditor : IAsyncDisposable
                 gate.Y1 = y1;
                 gate.X2 = x2;
                 gate.Y2 = y2;
+                break;
+            default:
+                // Not supported.
                 break;
         }
     }
