@@ -1,4 +1,4 @@
-// <copyright file="FinishDLMasterTreePlugIn.cs" company="MUnique">
+// <copyright file="FinishDarkLordMasterTreePlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -18,7 +18,7 @@ using MUnique.OpenMU.PlugIns;
 [PlugIn]
 [Display(Name = PlugInName, Description = PlugInDescription)]
 [Guid("1A2B3C4D-5E6F-7890-ABCD-EF1234567890")]
-public class FinishDLMasterTreePlugIn : UpdatePlugInBase
+public class FinishDarkLordMasterTreePlugIn : UpdatePlugInBase
 {
     /// <summary>
     /// The plug in name.
@@ -31,7 +31,7 @@ public class FinishDLMasterTreePlugIn : UpdatePlugInBase
     internal const string PlugInDescription = "This update completes the dark lord master tree skills and effects.";
 
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.FixSummonerCurseSkills;
+    public override UpdateVersion Version => UpdateVersion.FinishDarkLordMasterTree;
 
     /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
@@ -46,7 +46,7 @@ public class FinishDLMasterTreePlugIn : UpdatePlugInBase
     public override bool IsMandatory => true;
 
     /// <inheritdoc />
-    public override DateTime CreatedAt => new(2026, 4, 10, 16, 0, 0, DateTimeKind.Utc);
+    public override DateTime CreatedAt => new(2026, 4, 14, 16, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
@@ -127,7 +127,9 @@ public class FinishDLMasterTreePlugIn : UpdatePlugInBase
 
         var critDmgIncEffect = gameConfiguration.MagicEffects.First(e => e.Number == (short)MagicEffectNumber.CriticalDamageIncrease);
         critDmgIncEffect.Duration?.MaximumValue = 180;
+        critDmgIncEffect.SubType = 17;
         magicEffect.InformObservers = critDmgIncEffect.InformObservers;
+        magicEffect.SubType = critDmgIncEffect.SubType;
         magicEffect.SendDuration = critDmgIncEffect.SendDuration;
         magicEffect.StopByDeath = critDmgIncEffect.StopByDeath;
         magicEffect.Duration = context.CreateNew<PowerUpDefinitionValue>();

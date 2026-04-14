@@ -392,4 +392,9 @@ public enum UpdateVersion
     /// The version of the <see cref="FixSummonerCurseSkillsPlugIn"/>.
     /// </summary>
     FixSummonerCurseSkills = 77,
+
+    /// <summary>
+    /// The version of the <see cref="FinishDarkLordMasterTreePlugIn"/>.
+    /// </summary>
+    FinishDarkLordMasterTree = 78,
 }
