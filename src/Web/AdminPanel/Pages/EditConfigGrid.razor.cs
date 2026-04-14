@@ -171,7 +171,7 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
     {
         try
         {
-            var dialogResult = await this.ModalService.ShowQuestionAsync("Are you sure?", $"You're about to delete '{viewModel.Name}. Are you sure?");
+            var dialogResult = await this.ModalService.ShowQuestionAsync("Are you sure?", $"You're about to delete '{viewModel.Name}. Are you sure?").ConfigureAwait(true);
             if (!dialogResult)
             {
                 return;
@@ -183,8 +183,8 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
             var toDelete = await deleteContext.GetByIdAsync(viewModel.Id, this.Type!, cancellationToken).ConfigureAwait(false);
             if (toDelete is null)
             {
-                this.ToastService.ShowError($"Couldn't find '{viewModel.Name}' to delete.");
-                return;
+                 this.ToastService.ShowError(string.Format(Resources.CouldNotFindToDelete, viewModel.Name));
+                 return;
             }
 
             await deleteContext.DeleteAsync(toDelete).ConfigureAwait(false);
@@ -196,8 +196,8 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
         }
         catch (Exception ex)
         {
-            this.Logger.LogError(ex, $"Couldn't delete '{viewModel.Name}', probably because it's referenced by another object.");
-            this.ToastService.ShowError($"Couldn't delete '{viewModel.Name}', probably because it's referenced by another object. For details, see log");
+             this.Logger.LogError(ex, "Couldn't delete {viewModelName}, probably because it's referenced by another object.", viewModel.Name);
+             this.ToastService.ShowError(Resources.DeleteFailedReferenced);
         }
     }
 
@@ -298,7 +298,7 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
         }
         catch (Exception ex)
         {
-            this.Logger.LogError(ex, $"Error duplicating '{viewModel.Name}'.");
+            this.Logger.LogError(ex, "Error duplicating {viewModelName}.", viewModel.Name);
             this.ToastService.ShowError(string.Format(Resources.ErrorDuplicating, viewModel.Name, ex.Message));
         }
     }

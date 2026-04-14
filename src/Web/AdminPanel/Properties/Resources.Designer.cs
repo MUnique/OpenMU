@@ -1412,5 +1412,23 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("OfflineLeveling", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Couldn't find '{0}' to delete..
+        /// </summary>
+        public static string CouldNotFindToDelete {
+            get {
+                return ResourceManager.GetString("CouldNotFindToDelete", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Couldn't delete '{0}', probably because it's referenced by another object. For details, see log.
+        /// </summary>
+        public static string DeleteFailedReferenced {
+            get {
+                return ResourceManager.GetString("DeleteFailedReferenced", resourceCulture);
+            }
+        }
     }
 }

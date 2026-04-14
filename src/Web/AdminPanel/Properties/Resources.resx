@@ -570,4 +570,10 @@
   <data name="OfflineLeveling" xml:space="preserve">
     <value>Offline Leveling</value>
   </data>
+  <data name="CouldNotFindToDelete" xml:space="preserve">
+    <value>Couldn't find '{0}' to delete.</value>
+  </data>
+  <data name="DeleteFailedReferenced" xml:space="preserve">
+    <value>Couldn't delete '{0}', probably because it's referenced by another object. For details, see log</value>
+  </data>
 </root>
