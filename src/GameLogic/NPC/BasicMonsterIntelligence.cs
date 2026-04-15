@@ -28,9 +28,6 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
     /// <summary>
     /// Gets or sets a value indicating whether this instance can walk on safezone.
     /// </summary>
-    /// <value>
-    ///   <c>true</c> if this instance can walk on safezone; otherwise, <c>false</c>.
-    /// </value>
     public bool CanWalkOnSafezone { get; protected set; }
 
     /// <inheritdoc/>
@@ -92,6 +89,13 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
     }
 
     /// <summary>
+    /// Determines whether the specified player is being targeted by this monster.
+    /// </summary>
+    /// <param name="player">The player to check.</param>
+    /// <returns>True if the player is the current target; otherwise, false.</returns>
+    public bool IsTargetingPlayer(Player player) => this.CurrentTarget == player;
+
+    /// <summary>
     /// Called when the intelligence starts.
     /// </summary>
     protected virtual void OnStart()
@@ -129,30 +133,28 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
         var possibleTargets = tempObservers.OfType<IAttackable>()
             .Where(a => a.IsActive() && !a.IsAtSafezone() && a is not Player { IsInvisible: true })
             .ToList();
+
+        // Also consider summoned monsters belonging to players in range.
         var summons = possibleTargets.OfType<Player>()
             .Select(p => p.Summon?.Item1)
             .Where(s => s is not null)
             .Cast<IAttackable>()
             .WhereActive()
             .ToList();
-        possibleTargets.AddRange(summons);
-        var closestTarget = possibleTargets.MinBy(a => a.GetDistanceTo(this.Npc));
 
-        return closestTarget;
+        possibleTargets.AddRange(summons);
 
         // todo: check the walk distance
+        return possibleTargets.MinBy(a => a.GetDistanceTo(this.Npc));
     }
 
     /// <summary>
-    /// Determines whether this instance can attack.
+    /// Determines whether this instance can attack this tick.
     /// </summary>
-    /// <returns>
-    ///   <c>true</c> if this instance can attack; otherwise, <c>false</c>.
-    /// </returns>
     protected virtual ValueTask<bool> CanAttackAsync() => ValueTask.FromResult(true);
 
     /// <summary>
-    /// Handles the tick without having a target.
+    /// Handles the tick when no target is available, moves the monster randomly.
     /// </summary>
     protected virtual async ValueTask TickWithoutTargetAsync()
     {
@@ -161,7 +163,6 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
             return;
         }
 
-        // we move around randomly, so the monster does not look dead when watched from distance.
         if (await this.IsObservedByAttackerAsync().ConfigureAwait(false))
         {
             await this.Monster.RandomMoveAsync().ConfigureAwait(false);
@@ -169,11 +170,8 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
     }
 
     /// <summary>
-    /// Determines whether the handled monster is observed by an attacker.
+    /// Determines whether the handled monster is observed by any attacker.
     /// </summary>
-    /// <returns>
-    ///   <c>true</c> if the handled monster is observed by an attacker; otherwise, <c>false</c>.
-    /// </returns>
     protected async ValueTask<bool> IsObservedByAttackerAsync()
     {
         using var readerLock = await this.Monster.ObserverLock.ReaderLockAsync();
@@ -197,7 +195,7 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
         }
         catch (OperationCanceledException)
         {
-            // can be ignored.
+            // expected during shutdown.
         }
         catch (Exception ex)
         {
@@ -228,36 +226,19 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
             return;
         }
 
-        var target = this.CurrentTarget;
-        if (target != null)
-        {
-            // Old Target out of Range?
-            if (!target.IsAlive
-                || target is Player { IsInvisible: true }
-                || target.IsTeleporting
-                || target.IsAtSafezone()
-                || !target.IsInRange(this.Monster.Position, this.Npc.Definition.ViewRange)
-                || (target is IWorldObserver && !await this.IsTargetInObserversAsync(target).ConfigureAwait(false)))
-            {
-                target = this.CurrentTarget = await this.SearchNextTargetAsync().ConfigureAwait(false);
-            }
-        }
-        else
-        {
-            target = this.CurrentTarget = await this.SearchNextTargetAsync().ConfigureAwait(false);
-        }
+        this.CurrentTarget = await this.ResolveTargetAsync().ConfigureAwait(false);
 
-        // no target?
-        if (target is null)
+        if (this.CurrentTarget is null)
         {
             await this.TickWithoutTargetAsync().ConfigureAwait(false);
             return;
         }
 
-        // Target in Attack Range?
-        if (target.IsInRange(this.Monster.Position, this.Monster.Definition.AttackRange) && !this.Monster.IsAtSafezone())
+        // Target in attack range — attack.
+        if (this.CurrentTarget.IsInRange(this.Monster.Position, this.Monster.Definition.AttackRange)
+            && !this.Monster.IsAtSafezone())
         {
-            await this.Monster.AttackAsync(target).ConfigureAwait(false);  // yes, attack
+            await this.Monster.AttackAsync(this.CurrentTarget).ConfigureAwait(false);
             return;
         }
 
@@ -266,18 +247,51 @@ public class BasicMonsterIntelligence : INpcIntelligence, IDisposable
             return;
         }
 
-        // Target in View Range?
-        if (target.IsInRange(this.Monster.Position, this.Monster.Definition.ViewRange + 1))
+        // Target visible but outside attack range, walk toward it.
+        if (this.CurrentTarget.IsInRange(this.Monster.Position, this.Monster.Definition.ViewRange + 1))
         {
-            // no, walk to the target
-            var walkTarget = this.Monster.CurrentMap!.Terrain.GetRandomCoordinate(target.Position, this.Monster.Definition.AttackRange);
+            var walkTarget = this.Monster.CurrentMap!.Terrain.GetRandomCoordinate(this.CurrentTarget.Position, this.Monster.Definition.AttackRange);
             if (await this.Monster.WalkToAsync(walkTarget).ConfigureAwait(false))
             {
                 return;
             }
         }
 
-        // we move around randomly, so the monster does not look dead when watched from distance.
+        // Nothing else to do, wander randomly.
         await this.Monster.RandomMoveAsync().ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Returns the current target if still valid, otherwise searches for a new one.
+    /// </summary>
+    private async ValueTask<IAttackable?> ResolveTargetAsync()
+    {
+        if (this.CurrentTarget is not null && this.IsCurrentTargetValid())
+        {
+            // Double-check the target is still within the observer list (needed for
+            // players who have moved out of view range server-side).
+            if (!await this.IsTargetInObserversAsync(this.CurrentTarget).ConfigureAwait(false)
+                && this.CurrentTarget is IWorldObserver)
+            {
+                return await this.SearchNextTargetAsync().ConfigureAwait(false);
+            }
+
+            return this.CurrentTarget;
+        }
+
+        return await this.SearchNextTargetAsync().ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Returns <c>true</c> if the current target is still a valid attack candidate.
+    /// </summary>
+    private bool IsCurrentTargetValid()
+    {
+        return this.CurrentTarget is not null
+               && this.CurrentTarget.IsAlive
+               && this.CurrentTarget is not Player { IsInvisible: true }
+               && !this.CurrentTarget.IsTeleporting
+               && !this.CurrentTarget.IsAtSafezone()
+               && this.CurrentTarget.IsInRange(this.Monster.Position, this.Npc.Definition.ViewRange);
     }
 }

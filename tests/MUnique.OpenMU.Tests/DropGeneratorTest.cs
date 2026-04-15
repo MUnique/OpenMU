@@ -24,7 +24,7 @@ public class DropGeneratorTest
     {
         var config = this.GetGameConfig();
         var generator = new DefaultDropGenerator(config, this.GetRandomizer(9999));
-        var (items, _) = await generator.GenerateItemDropsAsync(this.GetMonster(1), 0, await TestHelper.CreatePlayerAsync().ConfigureAwait(false));
+        var (items, _) = await generator.GenerateItemDropsAsync(this.GetMonster(1, 0), 0, await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false));
         var item = items.FirstOrDefault();
         Assert.That(item, Is.Null);
     }
@@ -36,12 +36,12 @@ public class DropGeneratorTest
     public async ValueTask TestItemDropItemByMonsterAsync()
     {
         var config = this.GetGameConfig();
-        var monster = this.GetMonster(1);
+        var monster = this.GetMonster(1, 0);
         monster.DropItemGroups.AddBasicDropItemGroups();
         monster.DropItemGroups.Add(3000, SpecialItemType.RandomItem, true);
 
         var generator = new DefaultDropGenerator(config, this.GetRandomizer2(0, 0.5));
-        var (items, _) = await generator.GenerateItemDropsAsync(monster, 1, await TestHelper.CreatePlayerAsync().ConfigureAwait(false));
+        var (items, _) = await generator.GenerateItemDropsAsync(monster, 1, await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false));
         var item = items.FirstOrDefault();
         
         Assert.That(item, Is.Not.Null);
@@ -66,14 +66,32 @@ public class DropGeneratorTest
         // to be implemented
     }
 
-    private MonsterDefinition GetMonster(int numberOfDrops)
+    /// <summary>
+    /// Tests that ExcellentItemDropLevelDelta property exists and has correct default.
+    /// </summary>
+    [Test]
+    public void TestExcellentItemDropLevelDelta_PropertyExists()
+    {
+        var config = this.GetGameConfig();
+        // The initializer sets default to 25 for backward compatibility
+        config.ExcellentItemDropLevelDelta = 25;
+        Assert.That(config.ExcellentItemDropLevelDelta, Is.EqualTo(25));
+
+        config.ExcellentItemDropLevelDelta = 0;
+        Assert.That(config.ExcellentItemDropLevelDelta, Is.EqualTo(0));
+
+        config.ExcellentItemDropLevelDelta = 50;
+        Assert.That(config.ExcellentItemDropLevelDelta, Is.EqualTo(50));
+    }
+
+    private MonsterDefinition GetMonster(int numberOfDrops, byte level)
     {
         var monster = new Mock<MonsterDefinition>();
         monster.SetupAllProperties();
         monster.Setup(m => m.DropItemGroups).Returns(new List<DropItemGroup>());
         monster.Setup(m => m.Attributes).Returns(new List<MonsterAttribute>());
         monster.Object.NumberOfMaximumItemDrops = numberOfDrops;
-        monster.Object.Attributes.Add(new MonsterAttribute { AttributeDefinition = Stats.Level, Value = 0 });
+        monster.Object.Attributes.Add(new MonsterAttribute { AttributeDefinition = Stats.Level, Value = level });
         return monster.Object;
     }
 

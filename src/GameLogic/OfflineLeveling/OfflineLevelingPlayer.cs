@@ -7,9 +7,7 @@ namespace MUnique.OpenMU.GameLogic.OfflineLeveling;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic.MuHelper;
 using MUnique.OpenMU.GameLogic.Views;
-using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.PlugIns;
-using System.Threading.Tasks;
 
 /// <summary>
 /// An offline player that continues leveling after the real client disconnects.
@@ -28,9 +26,14 @@ public sealed class OfflineLevelingPlayer : Player
     }
 
     /// <summary>
+    /// Gets the login name this offline player belongs to.
+    /// </summary>
+    public string? AccountLoginName => this.Account?.LoginName;
+
+    /// <summary>
     /// Gets the start timestamp of the offline leveling session.
     /// </summary>
-    public DateTime StartTimestamp { get; private set; }
+    public DateTime StartTimestamp { get; internal set; }
 
     /// <summary>
     /// Initializes the offline player from captured references.
@@ -64,10 +67,37 @@ public sealed class OfflineLevelingPlayer : Player
         }
         catch (Exception ex)
         {
-            this.Logger.LogError(ex, "Failed to initialize offline player for {Name}.", this.Name);
+            this.Logger.LogError(ex, "Failed to initialize offline player for {player}.", this);
             return false;
         }
     }
+
+    /// <summary>
+    /// Stops the offline player and removes it from the world.
+    /// </summary>
+    public async ValueTask StopAsync()
+    {
+        if (this._intelligence is { } intelligence)
+        {
+            await intelligence.DisposeAsync().ConfigureAwait(false);
+            this._intelligence = null;
+        }
+
+        try
+        {
+            await this.SaveProgressAsync().ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this.Logger.LogError(ex, "Failed to save progress of offline leveling player {AccountLoginName}.", this.AccountLoginName);
+        }
+
+        await this.DisconnectAsync().ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    protected override ICustomPlugInContainer<IViewPlugIn> CreateViewPlugInContainer()
+        => new OfflineViewPlugInContainer(this);
 
     private async ValueTask AdvanceToCharacterSelectionStateAsync()
     {
@@ -94,29 +124,4 @@ public sealed class OfflineLevelingPlayer : Player
         this._intelligence = new OfflineLevelingIntelligence(this);
         this._intelligence.Start();
     }
-
-    /// <summary>
-    /// Stops the offline player and removes it from the world.
-    /// </summary>
-    public async ValueTask StopAsync()
-    {
-        this._intelligence?.Dispose();
-        this._intelligence = null;
-        try
-        {
-            await this.SaveProgressAsync().ConfigureAwait(false);
-        }
-        catch (Exception ex)
-        {
-            this.Logger.LogError(ex, "Failed to save progress of offline leveling player {Name}.", this.Name);
-        }
-
-        await this.DisconnectAsync().ConfigureAwait(false);
-    }
-
-    /// <inheritdoc />
-    protected override ICustomPlugInContainer<IViewPlugIn> CreateViewPlugInContainer()
-        => new OfflineViewPlugInContainer(this);
-
-
 }

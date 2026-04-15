@@ -58,8 +58,6 @@ app.UseStaticFiles();
 app.UseAntiforgery();
 app.MapRazorComponents<MUnique.OpenMU.GameServer.Host.App>()
     .AddInteractiveServerRenderMode();
-await app.WaitForUpdatedDatabaseAsync().ConfigureAwait(false);
+await app.WaitForDatabaseConnectionInitializationAsync().ConfigureAwait(false);
 
-await app.Services.TryLoadPlugInConfigurationsAsync(plugInConfigurations).ConfigureAwait(false);
-await ((ObservableGameServerAdapter)app.Services.GetRequiredService<IObservableGameServer>()).InitializeAsync().ConfigureAwait(false);
 app.Run();

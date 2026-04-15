@@ -543,4 +543,13 @@
   <data name="GameServerCount" xml:space="preserve">
     <value>Game server count</value>
   </data>
+  <data name="Character" xml:space="preserve">
+    <value>Character</value>
+  </data>
+  <data name="StartedAt" xml:space="preserve">
+    <value>Started At</value>
+  </data>
+  <data name="OfflineLeveling" xml:space="preserve">
+    <value>Offline Leveling</value>
+  </data>
 </root>
