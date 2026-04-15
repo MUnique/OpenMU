@@ -592,6 +592,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Handles the fire scream skill of the dark lord class. Based on a chance, it does an additional damage (explosion) to any targets in a radius which origin is the target itself..
+        /// </summary>
+        public static string FireScreamSkillPlugIn_Description {
+            get {
+                return ResourceManager.GetString("FireScreamSkillPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fire scream skill.
+        /// </summary>
+        public static string FireScreamSkillPlugIn_Name {
+            get {
+                return ResourceManager.GetString("FireScreamSkillPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the force skill of the dark lord..
         /// </summary>
         public static string ForceSkillAction_Description {
