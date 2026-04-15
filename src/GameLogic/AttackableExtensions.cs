@@ -861,8 +861,8 @@ public static class AttackableExtensions
         }
         else if (magicEffectDefinition.PowerUpDefinitions.Any(e => e.TargetAttribute == Stats.IsStunned))
         {
-            var stunChancePowerUp = powerUps.First(p => p.Target == Stats.StunChance);
-            if (!Rand.NextRandomBool(Convert.ToDouble(stunChancePowerUp.Boost.Value)))
+            var stunChancePowerUp = powerUps.FirstOrDefault(p => p.Target == Stats.StunChance);
+            if (stunChancePowerUp.Boost is null || !Rand.NextRandomBool(Convert.ToDouble(stunChancePowerUp.Boost.Value)))
             {
                 return;
             }

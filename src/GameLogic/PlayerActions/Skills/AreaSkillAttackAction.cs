@@ -338,8 +338,11 @@ public class AreaSkillAttackAction
         {
             foreach (var partyMember in player.Party?.PartyList.OfType<Player>().Where(m => m.Observers.Contains(player)) ?? [])
             {
-                partyMember.Attributes![Stats.CurrentHealth] *= 0.8f;
-                partyMember.Attributes[Stats.CurrentMana] *= 0.95f;
+                if (partyMember.Attributes is { } memberAttributes)
+                {
+                    memberAttributes[Stats.CurrentHealth] *= 0.8f;
+                    memberAttributes[Stats.CurrentMana] *= 0.95f;
+                }
             }
         }
 
