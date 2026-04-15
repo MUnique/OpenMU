@@ -30,7 +30,7 @@ public class DefaultDropGenerator : IDropGenerator
     /// A re-usable list of drop item groups.
     /// </summary>
     private readonly List<DropItemGroup> _chanceDropGroups = new(64);
-    private readonly List<DropItemGroup> _guaranteedDropGroups = new(8);
+    private readonly List<DropItemGroup> _guaranteedDropGroups = new(16);
 
     private readonly AsyncLock _lock = new();
 
