@@ -115,6 +115,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.CreateSkill(SkillNumber.EvilSpirit, "Evil Spirit", CharacterClasses.AllMagicians, DamageType.Wizardry, 45, 7, manaConsumption: 90, energyRequirement: 220, skillType: SkillType.AreaSkillAutomaticHits);
         this.AddAreaSkillSettings(SkillNumber.EvilSpirit, false, default, default, default, true, TimeSpan.FromMilliseconds(100), TimeSpan.FromMilliseconds(1000), 0, 2, default, default, 0.7f);
         this.CreateSkill(SkillNumber.Hellfire, "Hellfire", CharacterClasses.AllMagicians, DamageType.Wizardry, 120, 4, manaConsumption: 160, energyRequirement: 260, elementalModifier: ElementalType.Fire, skillType: SkillType.AreaSkillAutomaticHits);
+        this.AddAreaSkillSettings(SkillNumber.Hellfire, false, 0, 0, 0, effectRange: 2);
         this.CreateSkill(SkillNumber.PowerWave, "Power Wave", CharacterClasses.AllMagicians | CharacterClasses.AllSummoners, DamageType.Wizardry, 14, 6, manaConsumption: 5, energyRequirement: 56);
         this.CreateSkill(SkillNumber.AquaBeam, "Aqua Beam", CharacterClasses.AllMagicians, DamageType.Wizardry, 80, 6, manaConsumption: 140, energyRequirement: 345, elementalModifier: ElementalType.Water, skillType: SkillType.AreaSkillAutomaticHits);
         this.AddAreaSkillSettings(SkillNumber.AquaBeam, true, 1.5f, 1.5f, 8f);
@@ -143,8 +144,9 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.CreateSkill(SkillNumber.SummonBali, "Summon Bali", CharacterClasses.AllElfs, manaConsumption: 250, energyRequirement: 260, skillType: SkillType.SummonMonster);
         this.CreateSkill(SkillNumber.SummonSoldier, "Summon Soldier", CharacterClasses.AllElfs, manaConsumption: 350, energyRequirement: 280, skillType: SkillType.SummonMonster);
         this.CreateSkill(SkillNumber.Decay, "Decay", CharacterClasses.SoulMasterAndGrandMaster, DamageType.Wizardry, 95, 6, 7, 110, energyRequirement: 953, elementalModifier: ElementalType.Poison, skillType: SkillType.AreaSkillAutomaticHits);
+        this.AddAreaSkillSettings(SkillNumber.Decay, false, 0, 0, 0, effectRange: 2);
         this.CreateSkill(SkillNumber.IceStorm, "Ice Storm", CharacterClasses.SoulMasterAndGrandMaster, DamageType.Wizardry, 80, 6, 5, 100, energyRequirement: 849, elementalModifier: ElementalType.Ice, skillType: SkillType.AreaSkillAutomaticHits);
-        this.AddAreaSkillSettings(SkillNumber.IceStorm, false, default, default, default, true, TimeSpan.Zero, TimeSpan.FromMilliseconds(200), targetAreaDiameter: 3, useTargetAreaFilter: true);
+        this.AddAreaSkillSettings(SkillNumber.IceStorm, false, default, default, default, true, TimeSpan.Zero, TimeSpan.Zero, targetAreaDiameter: 3, useTargetAreaFilter: true);
         this.CreateSkill(SkillNumber.Nova, "Nova", CharacterClasses.SoulMasterAndGrandMaster, DamageType.Wizardry, distance: 6, manaConsumption: 180 / 12 /* mana per stage */, levelRequirement: 100, energyRequirement: 1052, elementalModifier: ElementalType.Fire);
         this.CreateSkill(SkillNumber.NovaStart, "Nova (Start)", CharacterClasses.SoulMasterAndGrandMaster, DamageType.None, abilityConsumption: 45, levelRequirement: 100, energyRequirement: 1052, skillType: SkillType.Other);
         this.CreateSkill(SkillNumber.TwistingSlash, "Twisting Slash", CharacterClasses.AllKnights | CharacterClasses.AllMGs, DamageType.Physical, distance: 2, abilityConsumption: 10, manaConsumption: 10, elementalModifier: ElementalType.Wind, skillType: SkillType.AreaSkillAutomaticHits);
@@ -300,8 +302,10 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.CreateSkill(SkillNumber.PoisonStrengthener, "Poison Strengthener", CharacterClasses.GrandMaster, DamageType.Wizardry, 3, 6, manaConsumption: 46, levelRequirement: 30, energyRequirement: 100, elementalModifier: ElementalType.Poison);
         this.CreateSkill(SkillNumber.EvilSpiritStreng, "Evil Spirit Streng", CharacterClasses.GrandMaster, DamageType.Wizardry, 22, 6, manaConsumption: 108, levelRequirement: 50, energyRequirement: 100);
         this.CreateSkill(SkillNumber.MagicMasteryGrandMaster, "Magic Mastery", CharacterClasses.GrandMaster, damage: 22, levelRequirement: 50, skillType: SkillType.PassiveBoost);
-        this.CreateSkill(SkillNumber.DecayStrengthener, "Decay Strengthener", CharacterClasses.GrandMaster, DamageType.Wizardry, 22, 6, 10, 120, 96, 243, elementalModifier: ElementalType.Poison);
-        this.CreateSkill(SkillNumber.HellfireStrengthener, "Hellfire Strengthener", CharacterClasses.GrandMaster, DamageType.Wizardry, 3, manaConsumption: 176, levelRequirement: 60, energyRequirement: 100, elementalModifier: ElementalType.Fire);
+        this.CreateSkill(SkillNumber.DecayStrengthener, "Decay Strengthener", CharacterClasses.GrandMaster, DamageType.Wizardry, 22, 6, 10, 120, 96, 243, elementalModifier: ElementalType.Poison, skillType: SkillType.AreaSkillAutomaticHits);
+        this.AddAreaSkillSettings(SkillNumber.DecayStrengthener, false, 0, 0, 0, effectRange: 2);
+        this.CreateSkill(SkillNumber.HellfireStrengthener, "Hellfire Strengthener", CharacterClasses.GrandMaster, DamageType.Wizardry, 3, 4, manaConsumption: 176, levelRequirement: 60, energyRequirement: 100, elementalModifier: ElementalType.Fire, skillType: SkillType.AreaSkillAutomaticHits);
+        this.AddAreaSkillSettings(SkillNumber.HellfireStrengthener, false, 0, 0, 0, effectRange: 2);
         this.CreateSkill(SkillNumber.IceStrengthener, "Ice Strengthener", CharacterClasses.GrandMaster, DamageType.Wizardry, 3, 6, manaConsumption: 42, levelRequirement: 25, energyRequirement: 100, elementalModifier: ElementalType.Ice);
         this.CreateSkill(SkillNumber.OneHandedStaffStrengthener, "One-handed Staff Stren", CharacterClasses.GrandMaster | CharacterClasses.DuelMaster, DamageType.Wizardry, 22, skillType: SkillType.PassiveBoost);
         this.CreateSkill(SkillNumber.TwoHandedStaffStrengthener, "Two-handed Staff Stren", CharacterClasses.GrandMaster | CharacterClasses.DuelMaster, DamageType.Wizardry, 4, skillType: SkillType.PassiveBoost);
