@@ -158,3 +158,18 @@ progress of the project. See also:
 
 * [Startup](https://github.com/MUnique/OpenMU/tree/master/src/Startup): It's the
   project for the executeable which puts every piece of the puzzle together
+
+* [Private MU Implementation Plan](ImplementationPlan-PrivateMU.md):
+  Checklist-based rollout plan for local setup, cross-platform client and web phase
+
+* [Checklist - Server Engineer](Checklist-Server.md):
+  Role-based execution checklist for backend and protocol work
+
+* [Checklist - Client Engineer](Checklist-Client.md):
+  Role-based execution checklist for Unity/MonoGame and mobile optimization
+
+* [Checklist - DevOps/Platform Engineer](Checklist-DevOps.md):
+  Role-based execution checklist for CI/CD, observability and operations
+
+* [Checklist - Project Lead/Product Owner](Checklist-ProjectLead.md):
+  Role-based checklist for scope, milestones and quality gates
