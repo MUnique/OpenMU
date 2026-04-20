@@ -334,6 +334,10 @@ public partial class MapEditor : IAsyncDisposable
                 this._dotNetRef,
                 zoomLevel).ConfigureAwait(true);
         }
+        else
+        {
+            // no initialization required.
+        }
     }
 
     /// <inheritdoc />
