@@ -299,6 +299,10 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
             {
                 await this.SpawnMobsAsync(gameContext, selectedMapId, [spawn]).ConfigureAwait(false);
             }
+            else
+            {
+                // This indicates an unexpected state or configuration mismatch.
+            }
         }
     }
 
