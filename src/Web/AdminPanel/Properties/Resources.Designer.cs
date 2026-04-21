@@ -1405,11 +1405,11 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
 
         /// <summary>
-        ///   Looks up a localized string similar to Offline Leveling.
+        ///   Looks up a localized string similar to Active Offline Player.
         /// </summary>
-        public static string OfflineLeveling {
+        public static string ActiveOfflinePlayer {
             get {
-                return ResourceManager.GetString("OfflineLeveling", resourceCulture);
+                return ResourceManager.GetString("ActiveOfflinePlayer", resourceCulture);
             }
         }
 

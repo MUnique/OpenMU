@@ -2,13 +2,13 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Tests.Offlevel;
+namespace MUnique.OpenMU.Tests.Offline;
 
 using Moq;
 using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.MuHelper;
-using MUnique.OpenMU.GameLogic.OfflineLeveling;
+using MUnique.OpenMU.GameLogic.Offline;
 using MUnique.OpenMU.GameServer.RemoteView.MuHelper;
 using MUnique.OpenMU.GameLogic.Pet;
 using MUnique.OpenMU.GameLogic.PlayerActions.Items;
@@ -110,7 +110,7 @@ public class PetHandlerTests
         petCommandManagerMock.Verify(m => m.SetBehaviourAsync(PetBehaviour.Idle, null), Times.Once);
     }
 
-    private async ValueTask<OfflineLevelingPlayer> CreateOfflinePlayerAsync()
+    private async ValueTask<OfflinePlayer> CreateOfflinePlayerAsync()
     {
         return await PlayerTestHelper.CreateOfflineLevelingPlayerAsync(this._gameContext).ConfigureAwait(false);
     }

@@ -1,28 +1,28 @@
-// <copyright file="OfflineLevelingManager.cs" company="MUnique">
+// <copyright file="OfflinePlayerManager.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic.OfflineLeveling;
+namespace MUnique.OpenMU.GameLogic.Offline;
 
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.MuHelper;
 
 /// <summary>
-/// Manages active <see cref="OfflineLevelingPlayer"/> sessions.
+/// Manages active <see cref="OfflinePlayer"/> sessions.
 /// </summary>
-public sealed class OfflineLevelingManager
+public sealed class OfflinePlayerManager
 {
-    private readonly System.Collections.Concurrent.ConcurrentDictionary<string, OfflineLevelingPlayer> _activePlayers =
+    private readonly System.Collections.Concurrent.ConcurrentDictionary<string, OfflinePlayer> _activePlayers =
         new(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>
-    /// Gets a snapshot of all currently active offline leveling players.
+    /// Gets a snapshot of all currently active offline players.
     /// </summary>
-    public IReadOnlyCollection<OfflineLevelingPlayer> OfflineLevelingPlayers
+    public IReadOnlyCollection<OfflinePlayer> OfflinePlayers
         => this._activePlayers.Values.ToList();
 
     /// <summary>
-    /// Starts an offline leveling session by replacing the real player with a ghost.
+    /// Starts an offline player session by replacing the real player with a copy.
     /// </summary>
     /// <param name="realPlayer">The real player who typed the command.</param>
     /// <param name="loginName">The pre-validated account login name.</param>
@@ -37,7 +37,7 @@ public sealed class OfflineLevelingManager
             return false;
         }
 
-        var sentinel = new OfflineLevelingPlayer(realPlayer.GameContext);
+        var sentinel = new OfflinePlayer(realPlayer.GameContext);
 
         // Atomically claim the slot to prevent racing during initialization.
         if (!this._activePlayers.TryAdd(loginName, sentinel))
@@ -72,7 +72,7 @@ public sealed class OfflineLevelingManager
     }
 
     /// <summary>
-    /// Stops and removes the offline leveling session for the given account, if one exists.
+    /// Stops and removes the offline session for the given account, if one exists.
     /// </summary>
     /// <param name="loginName">The account login name.</param>
     public async ValueTask StopAsync(string loginName)
@@ -84,18 +84,18 @@ public sealed class OfflineLevelingManager
     }
 
     /// <summary>
-    /// Returns whether an offline leveling session is currently active for <paramref name="loginName"/>.
+    /// Returns whether an offline player session is currently active for <paramref name="loginName"/>.
     /// </summary>
     /// <param name="loginName">The account login name.</param>
     public bool IsActive(string loginName) => this._activePlayers.ContainsKey(loginName);
 
     /// <summary>
-    /// Tries to get the active offline leveling player for the given account login name.
+    /// Tries to get the active offline player for the given account login name.
     /// </summary>
     /// <param name="loginName">The account login name.</param>
-    /// <param name="player">The offline leveling player, if found.</param>
+    /// <param name="player">The offline player, if found.</param>
     /// <returns><c>true</c> if an active session exists; otherwise <c>false</c>.</returns>
-    public bool TryGetPlayer(string loginName, out OfflineLevelingPlayer? player)
+    public bool TryGetPlayer(string loginName, out OfflinePlayer? player)
         => this._activePlayers.TryGetValue(loginName, out player);
 
     private async ValueTask TransitionToOfflineAsync(Player realPlayer, string loginName)
@@ -108,7 +108,7 @@ public sealed class OfflineLevelingManager
     }
 
     /// <summary>
-    /// Calculates and deducts the initial Zen cost for starting an offline leveling session.
+    /// Calculates and deducts the initial Zen cost for starting an offline player session.
     /// The cost is based on the first MuHelper cost stage multiplied by the player's total level.
     /// </summary>
     /// <param name="player">The player to charge.</param>
@@ -147,7 +147,7 @@ public sealed class OfflineLevelingManager
     /// for reconnection while the ghost session is running. Failures are logged and swallowed
     /// because the offline session can still proceed without this step.
     /// </summary>
-    /// <param name="player">The player being transitioned to offline leveling.</param>
+    /// <param name="player">The player being transitioned to offline.</param>
     /// <param name="loginName">The account login name.</param>
     private async ValueTask LogOffFromLoginServerAsync(Player player, string loginName)
     {
@@ -162,7 +162,7 @@ public sealed class OfflineLevelingManager
         }
         catch (Exception ex)
         {
-            player.Logger.LogWarning(ex, "Could not log off from login server during offline leveling start.");
+            player.Logger.LogWarning(ex, "Could not log off from login server during offline player start.");
         }
     }
 
@@ -172,7 +172,7 @@ public sealed class OfflineLevelingManager
     /// </summary>
     /// <param name="loginName">The account login name.</param>
     /// <param name="sentinel">The ghost player to dispose.</param>
-    private async ValueTask RemoveAndDisposeAsync(string loginName, OfflineLevelingPlayer sentinel)
+    private async ValueTask RemoveAndDisposeAsync(string loginName, OfflinePlayer sentinel)
     {
         this._activePlayers.TryRemove(loginName, out _);
         await sentinel.DisposeAsync().ConfigureAwait(false);

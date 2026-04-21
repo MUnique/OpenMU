@@ -2,14 +2,14 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic.OfflineLeveling;
+namespace MUnique.OpenMU.GameLogic.Offline;
 
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// A plugin container for the <see cref="OfflineLevelingPlayer"/>, providing stub implementations
+/// A plugin container for the <see cref="OfflinePlayer"/>, providing stub implementations
 /// of client-facing views necessary for successful safe-zone respawns.
 /// </summary>
 internal sealed class OfflineViewPlugInContainer : ICustomPlugInContainer<IViewPlugIn>
@@ -20,8 +20,8 @@ internal sealed class OfflineViewPlugInContainer : ICustomPlugInContainer<IViewP
     /// <summary>
     /// Initializes a new instance of the <see cref="OfflineViewPlugInContainer"/> class.
     /// </summary>
-    /// <param name="player">The offline leveling player.</param>
-    public OfflineViewPlugInContainer(OfflineLevelingPlayer player)
+    /// <param name="player">The offline player.</param>
+    public OfflineViewPlugInContainer(OfflinePlayer player)
     {
         this._mapChangePlugIn = new OfflineMapChangePlugIn(player);
     }

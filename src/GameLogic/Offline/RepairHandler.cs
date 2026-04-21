@@ -2,13 +2,13 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic.OfflineLeveling;
+namespace MUnique.OpenMU.GameLogic.Offline;
 
 using MUnique.OpenMU.GameLogic.MuHelper;
 using MUnique.OpenMU.GameLogic.PlayerActions.Items;
 
 /// <summary>
-/// Handles auto-repair of equipped items during offline leveling.
+/// Handles auto-repair of equipped items for the offline player.
 /// </summary>
 internal sealed class RepairHandler
 {

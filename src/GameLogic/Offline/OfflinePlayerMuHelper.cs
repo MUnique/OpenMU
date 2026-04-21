@@ -1,8 +1,8 @@
-// <copyright file="OfflineLevelingIntelligence.cs" company="MUnique">
+// <copyright file="OfflinePlayerMuHelper.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic.OfflineLeveling;
+namespace MUnique.OpenMU.GameLogic.Offline;
 
 using System.Threading;
 using MUnique.OpenMU.GameLogic.Attributes;
@@ -10,7 +10,7 @@ using MUnique.OpenMU.GameLogic.MuHelper;
 using MUnique.OpenMU.GameLogic.Views.MuHelper;
 
 /// <summary>
-/// Server-side AI that drives an <see cref="OfflineLevelingPlayer"/> ghost after the real
+/// Server-side intelligence that drives an <see cref="OfflinePlayer"/> after the real
 /// client disconnects. Mirrors the C++ <c>CMuHelper::Work()</c> loop including:
 /// <list type="bullet">
 ///   <item>Basic / conditional / combo skill attack selection</item>
@@ -22,9 +22,9 @@ using MUnique.OpenMU.GameLogic.Views.MuHelper;
 ///   <item>Pet control</item>
 /// </list>
 /// </summary>
-public sealed class OfflineLevelingIntelligence : AsyncDisposable
+public sealed class OfflinePlayerMuHelper : AsyncDisposable
 {
-    private readonly OfflineLevelingPlayer _player;
+    private readonly OfflinePlayer _player;
 
     private readonly CombatHandler _combatHandler;
     private readonly BuffHandler _buffHandler;
@@ -41,10 +41,10 @@ public sealed class OfflineLevelingIntelligence : AsyncDisposable
     private bool _isDead;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="OfflineLevelingIntelligence"/> class.
+    /// Initializes a new instance of the <see cref="OfflinePlayerMuHelper"/> class.
     /// </summary>
-    /// <param name="player">The offline leveling player.</param>
-    public OfflineLevelingIntelligence(OfflineLevelingPlayer player)
+    /// <param name="player">The offline player.</param>
+    public OfflinePlayerMuHelper(OfflinePlayer player)
     {
         this._player = player;
         var originalPosition = player.Position;
@@ -61,11 +61,11 @@ public sealed class OfflineLevelingIntelligence : AsyncDisposable
 
         if (config is null)
         {
-            this._player.Logger.LogDebug("Offline leveling started for {CharacterName} without a valid MU Helper configuration.", this._player.Name);
+            this._player.Logger.LogDebug("Offline player started for {CharacterName} without a valid MU Helper configuration.", this._player.Name);
         }
         else
         {
-            this._player.Logger.LogDebug("Offline leveling configuration for {CharacterName}: MuHelperSettings={Settings}.", this._player.Name, config);
+            this._player.Logger.LogDebug("Offline player configuration for {CharacterName}: MuHelperSettings={Settings}.", this._player.Name, config);
         }
 
         this._deathHandler = (_, e) => this.OnPlayerDied(e);
@@ -108,7 +108,7 @@ public sealed class OfflineLevelingIntelligence : AsyncDisposable
 
     private void OnPlayerDied(DeathInformation e)
     {
-        this._player.Logger.LogDebug("Offline leveling player '{Name}' died. Killer: {KillerName}.", this._player.Name, e.KillerName);
+        this._player.Logger.LogDebug("Offline player '{Name}' died. Killer: {KillerName}.", this._player.Name, e.KillerName);
         this._isDead = true;
         this._cts.Cancel();
     }
@@ -125,7 +125,7 @@ public sealed class OfflineLevelingIntelligence : AsyncDisposable
         }
         catch (Exception ex)
         {
-            this._player.Logger.LogError(ex, "Error in offline leveling AI tick for {AccountLoginName}.", this._player.AccountLoginName);
+            this._player.Logger.LogError(ex, "Error in offline player helper tick for {AccountLoginName}.", this._player.AccountLoginName);
         }
     }
 
@@ -191,8 +191,8 @@ public sealed class OfflineLevelingIntelligence : AsyncDisposable
 
             if (this._player.Account?.LoginName is { } loginName)
             {
-                this._player.Logger.LogInformation("Offline leveling player died and successfully respawned. Stopping session for {0}.", loginName);
-                await this._player.GameContext.OfflineLevelingManager.StopAsync(loginName).ConfigureAwait(false);
+                this._player.Logger.LogInformation("Offline player died and successfully respawned. Stopping session for {0}.", loginName);
+                await this._player.GameContext.OfflinePlayerManager.StopAsync(loginName).ConfigureAwait(false);
             }
 
             return true;

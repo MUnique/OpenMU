@@ -2,28 +2,28 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.GameLogic.OfflineLeveling;
+namespace MUnique.OpenMU.GameLogic.Offline;
 
 using MUnique.OpenMU.GameLogic.MuHelper;
 using MUnique.OpenMU.GameLogic.Pet;
 using MUnique.OpenMU.GameLogic.PlayerActions.Items;
 
 /// <summary>
-/// Handles pet behavior initialization and management for the offline leveling player.
+/// Handles pet behavior initialization and management for the offline player.
 /// </summary>
 internal sealed class PetHandler
 {
-    private readonly OfflineLevelingPlayer _player;
+    private readonly OfflinePlayer _player;
     private readonly IMuHelperSettings? _config;
     private readonly IPetCommandManager? _petCommandManager;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PetHandler"/> class.
     /// </summary>
-    /// <param name="player">The offline leveling player.</param>
+    /// <param name="player">The offline player.</param>
     /// <param name="config">The MU Helper configuration.</param>
     /// <param name="petCommandManager">Optional pet command manager for testing.</param>
-    public PetHandler(OfflineLevelingPlayer player, IMuHelperSettings? config, IPetCommandManager? petCommandManager = null)
+    public PetHandler(OfflinePlayer player, IMuHelperSettings? config, IPetCommandManager? petCommandManager = null)
     {
         this._player = player;
         this._config = config;
