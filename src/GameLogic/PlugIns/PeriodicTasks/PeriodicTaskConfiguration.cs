@@ -30,10 +30,16 @@ public class PeriodicTaskConfiguration
     public TimeSpan TaskDuration { get; set; } = TimeSpan.FromMinutes(5);
 
     /// <summary>
-    /// Gets or sets the text which prints as a golden message in the game.
+    /// Gets or sets the text which prints as a golden message in the game when task starts.
     /// </summary>
-    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.PeriodicTaskConfiguration_Message_Name), Order = 3)]
-    public LocalizedString Message { get; set; }
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.PeriodicTaskConfiguration_StartMessage_Name), Order = 3)]
+    public LocalizedString StartMessage { get; set; }
+
+    /// <summary>
+    /// Gets or sets the text which prints as a golden message in the game when task ends.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.PeriodicTaskConfiguration_EndMessage_Name), Order = 4)]
+    public LocalizedString EndMessage { get; set; }
 
     /// <summary>
     /// Generate a sequence of time points like [00:00, 00:01, ...].

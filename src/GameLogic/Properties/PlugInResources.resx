@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -1101,11 +1101,17 @@
   <data name="PeriodicTaskConfiguration_TaskDuration_Name" xml:space="preserve">
     <value>Task duration (minimum)</value>
   </data>
-  <data name="PeriodicTaskConfiguration_Message_Name" xml:space="preserve">
-    <value>Message</value>
+  <data name="PeriodicTaskConfiguration_StartMessage_Name" xml:space="preserve">
+    <value>Start message</value>
   </data>
-  <data name="PeriodicTaskConfiguration_Message_Description" xml:space="preserve">
-    <value>The text which prints as a golden message in the game.</value>
+  <data name="PeriodicTaskConfiguration_StartMessage_Description" xml:space="preserve">
+    <value>The text which prints as a golden message in the game when task starts.</value>
+  </data>
+  <data name="PeriodicTaskConfiguration_EndMessage_Name" xml:space="preserve">
+    <value>End message</value>
+  </data>
+  <data name="PeriodicTaskConfiguration_EndMessage_Description" xml:space="preserve">
+    <value>The text which prints as a golden message in the game when task ends.</value>
   </data>
   <data name="ResetConfiguration_ResetLimit_Name" xml:space="preserve">
     <value>Reset limit</value>

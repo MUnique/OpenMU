@@ -8,7 +8,7 @@ using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 using MUnique.OpenMU.Interfaces;
 
 /// <summary>
-/// Invasion state that is created fresh for every periodic invasion run.
+/// Invasion state that is created for every periodic invasion run.
 /// </summary>
 public class InvasionGameServerState : PeriodicTaskGameServerState
 {

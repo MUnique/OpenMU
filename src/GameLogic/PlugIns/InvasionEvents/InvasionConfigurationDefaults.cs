@@ -16,9 +16,10 @@ internal static class InvasionConfigurationDefaults
     /// </summary>
     public static PeriodicInvasionConfiguration Golden => new()
     {
-        TaskDuration = TimeSpan.FromMinutes(5),
+        TaskDuration = TimeSpan.FromMinutes(30),
         PreStartMessageDelay = TimeSpan.FromSeconds(3),
-        Message = "[{mapName}] Golden Invasion!",
+        StartMessage = "[{mapName}] Golden invasion!",
+        EndMessage = "[{mapName}] Golden invasion has ended.",
         Timetable = PeriodicTaskConfiguration.GenerateTimeSequence(TimeSpan.FromHours(4)).ToList(),
         Mobs =
         [
@@ -30,7 +31,7 @@ internal static class InvasionConfigurationDefaults
             new(InvasionMonsters.GoldenLizardKing, 10, [InvasionMaps.Atlans], SpawnMapStrategy.RandomMap),
             new(InvasionMonsters.GoldenWheel, 20, [InvasionMaps.Tarkan], SpawnMapStrategy.RandomMap),
             new(InvasionMonsters.GoldenTantallos, 10, [InvasionMaps.Tarkan], SpawnMapStrategy.RandomMap),
-            new(InvasionMonsters.GoldenDragon, 10, [InvasionMaps.Lorencia, InvasionMaps.Noria, InvasionMaps.Devias, InvasionMaps.Atlans, InvasionMaps.Tarkan ], SpawnMapStrategy.RandomMap),
+            new(InvasionMonsters.GoldenDragon, 10, [InvasionMaps.Lorencia, InvasionMaps.Noria, InvasionMaps.Devias, InvasionMaps.Atlans, InvasionMaps.Tarkan], SpawnMapStrategy.RandomMap),
         ],
     };
 
@@ -39,9 +40,10 @@ internal static class InvasionConfigurationDefaults
     /// </summary>
     public static PeriodicInvasionConfiguration RedDragon => new()
     {
-        TaskDuration = TimeSpan.FromMinutes(10),
+        TaskDuration = TimeSpan.FromMinutes(30),
         PreStartMessageDelay = TimeSpan.FromSeconds(3),
-        Message = "[{mapName}] Red Dragon Invasion!",
+        StartMessage = "[{mapName}] Red Dragon invasion!",
+        EndMessage = "[{mapName}] Red Dragon invasion has ended.",
         Timetable = PeriodicTaskConfiguration.GenerateTimeSequence(TimeSpan.FromHours(6), new TimeOnly(2, 0)).ToList(),
         Mobs =
         [

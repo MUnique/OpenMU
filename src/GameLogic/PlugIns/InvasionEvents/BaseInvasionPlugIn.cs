@@ -187,7 +187,7 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
                           ?.Name.GetTranslation(player.Culture)
                       ?? string.Empty;
 
-        var message = (configuration.Message.GetTranslation(player.Culture)
+        var message = (configuration.StartMessage.GetTranslation(player.Culture)
                        ?? PlugInResources.BaseInvasionPlugIn_DefaultStartMessage)
             .Replace("{mapName}", mapName, StringComparison.InvariantCulture);
 
@@ -198,6 +198,42 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
         catch (Exception ex)
         {
             player.Logger.LogDebug(ex, "Unexpected error sending invasion start message.");
+        }
+    }
+
+    /// <summary>
+    /// Sends the invasion end message to a single player.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="state">The server state.</param>
+    protected async Task TrySendEndMessageAsync(Player player, InvasionGameServerState state)
+    {
+        var configuration = this.Configuration;
+        if (configuration is null || state.MapIds.Count == 0 || string.IsNullOrWhiteSpace(configuration.EndMessage))
+        {
+            return;
+        }
+
+        var mapName = state.Context.Configuration.Maps
+                          .FirstOrDefault(m => m.Number == state.MapId)
+                          ?.Name.GetTranslation(player.Culture)
+                      ?? string.Empty;
+
+        var message = (configuration.EndMessage.GetTranslation(player.Culture) ?? string.Empty)
+            .Replace("{mapName}", mapName, StringComparison.InvariantCulture);
+
+        if (string.IsNullOrWhiteSpace(message))
+        {
+            return;
+        }
+
+        try
+        {
+            await player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, MessageType.GoldenCenter)).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            player.Logger.LogDebug(ex, "Unexpected error sending invasion end message.");
         }
     }
 
@@ -222,6 +258,8 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
     /// <inheritdoc />
     protected override async ValueTask OnFinishedAsync(InvasionGameServerState state)
     {
+        await state.Context.ForEachPlayerAsync(p => this.TrySendEndMessageAsync(p, state)).ConfigureAwait(false);
+
         if (this._mapEventType is not null)
         {
             await state.Context.ForEachPlayerAsync(p => this.TrySendMapEventStateUpdateAsync(p, false, state)).ConfigureAwait(false);

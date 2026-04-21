@@ -19,7 +19,8 @@ public class PeriodicInvasionConfiguration : PeriodicTaskConfiguration
     /// </summary>
     public PeriodicInvasionConfiguration()
     {
-        this.Message = "Invasion has started!";
+        this.StartMessage = "Invasion has started!";
+        this.EndMessage = "Invasion has ended!";
     }
 
     /// <summary>
