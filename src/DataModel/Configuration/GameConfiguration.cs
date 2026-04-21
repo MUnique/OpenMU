@@ -34,6 +34,11 @@ public partial class GameConfiguration
     public float ExperienceRate { get; set; }
 
     /// <summary>
+    /// Gets or sets the master experience rate of the game.
+    /// </summary>
+    public float MasterExperienceRate { get; set; } = 1.0f;
+
+    /// <summary>
     /// Gets or sets a value indicating whether experience overflow should be prevented.
     /// When <c>true</c>, if gaining experience would exceed the amount needed for the next level,
     /// only the necessary experience for the next level is gained, and the overflow is discarded.
@@ -78,6 +83,12 @@ public partial class GameConfiguration
     /// When <c>false</c>, the pickup will fail if it would exceed the maximum (default behavior).
     /// </remarks>
     public bool ClampMoneyOnPickup { get; set; }
+
+    /// <summary>
+    /// Gets or sets the level delta used to determine the pool of items eligible for excellent drops.
+    /// A monster must be at least this many levels above an item's DropLevel for the item to be eligible as excellent.
+    /// </summary>
+    public byte ExcellentItemDropLevelDelta { get; set; }
 
     /// <summary>
     /// Gets or sets the experience formula per level. The variable name for the level is "level".

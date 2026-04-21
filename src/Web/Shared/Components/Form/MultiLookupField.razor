@@ -1,4 +1,4 @@
-﻿@using System.ComponentModel.DataAnnotations
+@using System.ComponentModel.DataAnnotations
 @using System.Diagnostics.CodeAnalysis
 @using MUnique.OpenMU.Web.Shared.Services
 @using MUnique.OpenMU.Persistence
@@ -31,13 +31,13 @@
                    value="@_searchText"
                    @oninput="OnSearchInputAsync"
                    @onfocus="OnFocus"
-                   @onblur="OnBlur"
+                   @onblur="OnBlurAsync"
                    @onkeydown="OnKeyDown" />
         </div>
 
         @if (_isOpen && _hasSearched && _filteredItems is not null)
         {
-            <div class="multi-lookup-field__dropdown">
+            <div class="multi-lookup-field__dropdown" @onmousedown="() => _mouseDownOnDropdown = true">
                 @if (_isLoading)
                 {
                     <div class="multi-lookup-field__dropdown-item multi-lookup-field__dropdown-item--loading">

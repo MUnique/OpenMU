@@ -30,7 +30,7 @@ public class ShowGuildListPlugIn075 : IShowGuildListPlugIn
     public ShowGuildListPlugIn075(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public async ValueTask ShowGuildListAsync(IEnumerable<GuildListEntry> players)
+    public async ValueTask ShowGuildListAsync(IReadOnlyCollection<GuildListEntry> players, Guild guild)
     {
         var connection = this._player.Connection;
         if (connection is null)
@@ -52,7 +52,7 @@ public class ShowGuildListPlugIn075 : IShowGuildListPlugIn
                 GuildMemberCount = (byte)playerCount,
                 IsInGuild = playerCount > 0,
                 CurrentScore = 0, // TODO
-                TotalScore = 0, // TODO
+                TotalScore = (uint)guild.Score,
             };
 
             int i = 0;

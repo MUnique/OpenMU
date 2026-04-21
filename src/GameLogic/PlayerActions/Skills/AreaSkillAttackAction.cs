@@ -1,4 +1,4 @@
-// <copyright file="AreaSkillAttackAction.cs" company="MUnique">
+﻿// <copyright file="AreaSkillAttackAction.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -6,7 +6,6 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
-
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
@@ -21,6 +20,7 @@ using MUnique.OpenMU.Pathfinding;
 public class AreaSkillAttackAction
 {
     private const int UndefinedTarget = 0xFFFF;
+    private const short ElectricSpikeSkillId = 65;
 
     private static readonly ConcurrentDictionary<AreaSkillSettings, FrustumBasedTargetFilter> FrustumFilters = new();
 
@@ -68,6 +68,7 @@ public class AreaSkillAttackAction
                && settings.DelayPerOneDistance <= TimeSpan.Zero
                && settings.MinimumNumberOfHitsPerTarget == 1
                && settings.MaximumNumberOfHitsPerTarget == 1
+               && settings.MinimumNumberOfHitsPerAttack == 0
                && settings.MaximumNumberOfHitsPerAttack == 0
                && Math.Abs(settings.HitChancePerDistanceMultiplier - 1.0) <= 0.00001f;
     }
@@ -115,8 +116,9 @@ public class AreaSkillAttackAction
 
     private static IEnumerable<IAttackable> GetTargetsInRange(Player player, Point targetAreaCenter, Skill skill, byte rotation)
     {
+        var range = skill.AreaSkillSettings?.EffectRange > 0 ? skill.AreaSkillSettings.EffectRange : skill.Range;
         var targetsInRange = player.CurrentMap?
-                    .GetAttackablesInRange(targetAreaCenter, skill.Range)
+                    .GetAttackablesInRange(targetAreaCenter, range)
                     .Where(a => a != player)
                     .Where(a => !a.IsAtSafezone())
             ?? [];
@@ -219,6 +221,7 @@ public class AreaSkillAttackAction
         IAttackable? extraTarget = null;
         var attackCount = 0;
         var maxAttacks = areaSkillSettings.MaximumNumberOfHitsPerAttack == 0 ? int.MaxValue : areaSkillSettings.MaximumNumberOfHitsPerAttack;
+        var minAttacks = areaSkillSettings.MinimumNumberOfHitsPerAttack == 0 ? maxAttacks : areaSkillSettings.MinimumNumberOfHitsPerAttack;
         var currentDelay = TimeSpan.Zero;
 
         // Order targets by distance to process nearest targets first
@@ -283,9 +286,20 @@ public class AreaSkillAttackAction
                         continue; // This projectile cannot hit this target
                     }
 
-                    var hitChance = attackRound < areaSkillSettings.MinimumNumberOfHitsPerTarget
-                        ? 1.0
-                        : Math.Min(areaSkillSettings.HitChancePerDistanceMultiplier, Math.Pow(areaSkillSettings.HitChancePerDistanceMultiplier, player.GetDistanceTo(target)));
+                    double hitChance;
+                    if (attackRound >= areaSkillSettings.MinimumNumberOfHitsPerTarget)
+                    {
+                        hitChance = Math.Pow(areaSkillSettings.HitChancePerDistanceMultiplier, player.GetDistanceTo(target));
+                    }
+                    else if (attackCount >= minAttacks)
+                    {
+                        hitChance = 0.5;
+                    }
+                    else
+                    {
+                        hitChance = 1.0;
+                    }
+
                     if (hitChance < 1.0 && !Rand.NextRandomBool(hitChance))
                     {
                         continue;
@@ -322,6 +336,18 @@ public class AreaSkillAttackAction
             }
         }
 
+        if (skillEntry.Skill?.Number == ElectricSpikeSkillId && attackCount > 0 && player.Attributes![Stats.NearbyPartyMemberCount] > 0)
+        {
+            foreach (var partyMember in player.Party?.PartyList.OfType<Player>().Where(m => m.Observers.Contains(player)) ?? [])
+            {
+                if (partyMember.Attributes is { } memberAttributes)
+                {
+                    memberAttributes[Stats.CurrentHealth] *= 0.8f;
+                    memberAttributes[Stats.CurrentMana] *= 0.95f;
+                }
+            }
+        }
+
         return extraTarget;
     }
 
@@ -337,7 +363,7 @@ public class AreaSkillAttackAction
         }
 
         var hitInfo = await target.AttackByAsync(player, skillEntry, isCombo, 1, skill.NumberOfHitsPerAttack > 1 ? false : null).ConfigureAwait(false);
-        await target.TryApplyElementalEffectsAsync(player, skillEntry).ConfigureAwait(false);
+        await target.TryApplyElementalEffectsAsync(player, skillEntry, hitInfo).ConfigureAwait(false);
 
         for (int hit = 2; hit <= skill.NumberOfHitsPerAttack; hit++)
         {

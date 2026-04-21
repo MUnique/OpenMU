@@ -8,6 +8,7 @@ using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Views.Guild;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
@@ -21,6 +22,13 @@ public class GameServerContext : GameContext, IGameServerContext
     private readonly GameServerDefinition _gameServerDefinition;
 
     private readonly ConcurrentDictionary<uint, LockableList<Player>> _playersByGuild = new();
+
+    /// <summary>
+    /// A set of normalized (lower, higher) guild ID pairs that are rivals.
+    /// Normalized so that we can look up both directions with a single entry.
+    /// The value is unused; only the key matters (set semantics via dictionary).
+    /// </summary>
+    private readonly ConcurrentDictionary<(uint, uint), bool> _rivalGuildPairs = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GameServerContext" /> class.
@@ -69,7 +77,12 @@ public class GameServerContext : GameContext, IGameServerContext
     /// <summary>
     /// Occurs when a guild has been deleted.
     /// </summary>
-    public event EventHandler<GuildDeletedEventArgs>? GuildDeleted;
+    public event EventHandler<GuildEventArgs>? GuildDeleted;
+
+    /// <summary>
+    /// Occurs when a guild has been deleted.
+    /// </summary>
+    public event EventHandler<GuildEventArgs>? GuildChanged;
 
     /// <inheritdoc/>
     public byte Id { get; }
@@ -93,12 +106,28 @@ public class GameServerContext : GameContext, IGameServerContext
     public override float ExperienceRate => base.ExperienceRate * this._gameServerDefinition.ExperienceRate;
 
     /// <inheritdoc />
+    public override float MasterExperienceRate => base.MasterExperienceRate * this._gameServerDefinition.ExperienceRate;
+
+    /// <inheritdoc />
     public override bool PvpEnabled => this._gameServerDefinition.PvpEnabled;
 
     /// <inheritdoc />
     public override string ToString()
     {
         return $"Game Server {this.Id}";
+    }
+
+    /// <inheritdoc />
+    public async ValueTask RefreshGuildInfoAsync(uint guildId)
+    {
+        this.GuildChanged?.Invoke(this, new GuildEventArgs(guildId));
+        await this.ForEachGuildPlayerAsync(
+                guildId,
+                member =>
+                    member.ForEachWorldObserverAsync<IShowGuildInfoPlugIn>(
+                        p => p.ShowGuildInfoAsync(guildId),
+                        true).AsTask())
+            .ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -116,14 +145,19 @@ public class GameServerContext : GameContext, IGameServerContext
     /// <inheritdoc />
     public async ValueTask ForEachAlliancePlayerAsync(uint guildId, Func<Player, Task> action)
     {
-        if (!this._playersByGuild.TryGetValue(guildId, out var playerList))
-        {
-            return;
-        }
+        // Get all guilds in the alliance
+        var allianceGuilds = await this.GuildServer.GetAllianceGuildsAsync(guildId).ConfigureAwait(false);
 
-        // TODO: iterate other guilds of the alliance as well; maybe introduce another dictionary with alliance players
-        using var readLock = await playerList.Lock.ReaderLockAsync();
-        await playerList.Select(action).WhenAll().ConfigureAwait(false);
+        foreach (var allianceGuild in allianceGuilds)
+        {
+            if (!this._playersByGuild.TryGetValue(allianceGuild.Id, out var playerList))
+            {
+                continue;
+            }
+
+            using var readLock = await playerList.Lock.ReaderLockAsync();
+            await playerList.Select(action).WhenAll().ConfigureAwait(false);
+        }
     }
 
     /// <inheritdoc/>
@@ -146,7 +180,35 @@ public class GameServerContext : GameContext, IGameServerContext
     public async ValueTask RemoveGuildAsync(uint guildId)
     {
         this._playersByGuild.Remove(guildId, out _);
-        this.GuildDeleted?.Invoke(this, new GuildDeletedEventArgs(guildId));
+        this.GuildDeleted?.Invoke(this, new GuildEventArgs(guildId));
+    }
+
+    /// <inheritdoc />
+    public void UpdateGuildHostility(uint guildIdA, IReadOnlyList<uint> allianceGuildIdsA, uint guildIdB, IReadOnlyList<uint> allianceGuildIdsB, bool created)
+    {
+        // Expand to all cross-alliance pairs
+        foreach (var idA in allianceGuildIdsA)
+        {
+            foreach (var idB in allianceGuildIdsB)
+            {
+                var key = idA < idB ? (idA, idB) : (idB, idA);
+                if (created)
+                {
+                    this._rivalGuildPairs.TryAdd(key, true);
+                }
+                else
+                {
+                    this._rivalGuildPairs.TryRemove(key, out _);
+                }
+            }
+        }
+    }
+
+    /// <inheritdoc />
+    public bool AreGuildsRival(uint guild1Id, uint guild2Id)
+    {
+        var key = guild1Id < guild2Id ? (guild1Id, guild2Id) : (guild2Id, guild1Id);
+        return this._rivalGuildPairs.ContainsKey(key);
     }
 
     /// <inheritdoc />

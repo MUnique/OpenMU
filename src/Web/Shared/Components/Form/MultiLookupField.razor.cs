@@ -1,4 +1,4 @@
-﻿// <copyright file="MultiLookupField.razor.cs" company="MUnique">
+// <copyright file="MultiLookupField.razor.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -124,24 +124,37 @@ public partial class MultiLookupField<TObject> : IDisposable
     /// <summary>
     /// Handles input blur (focus loss).
     /// </summary>
-    private void OnBlur(FocusEventArgs e)
+    private async Task OnBlurAsync(FocusEventArgs e)
     {
         this.Logger.LogDebug("Blur event fired: Type={Type}", e.Type);
 
-        _ = Task.Run(async () =>
-        {
-            await Task.Delay(BlurDelayMs).ConfigureAwait(true);
-            if (!this._mouseDownOnDropdown)
-            {
-                this._isOpen = false;
-                this._hasSearched = false;
-                this._searchText = string.Empty;
-                this.CurrentValue = this.Value;
-                await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(true);
-            }
+        await Task.Delay(BlurDelayMs).ConfigureAwait(true);
 
-            this._mouseDownOnDropdown = false;
-        });
+        if (this._disposed)
+        {
+            return;
+        }
+
+        if (!this._mouseDownOnDropdown)
+        {
+            this._isOpen = false;
+            this._hasSearched = false;
+            this._searchText = string.Empty;
+            this.CurrentValue = this.Value;
+        }
+        else
+        {
+            try
+            {
+                await this._searchInput.FocusAsync().ConfigureAwait(true);
+            }
+            catch
+            {
+                // Focus might occasionally fail if the component is being rapidly manipulated, ignore.
+            }
+        }
+
+        this._mouseDownOnDropdown = false;
     }
 
     /// <summary>
@@ -215,6 +228,7 @@ public partial class MultiLookupField<TObject> : IDisposable
         }
 
         this.CurrentValue = this.Value;
+        this.StateHasChanged();
     }
 
     /// <summary>

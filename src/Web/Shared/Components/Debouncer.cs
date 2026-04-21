@@ -156,7 +156,16 @@ public sealed class Debouncer : IDisposable
         }
 
         this._disposed = true;
-        this.CancelPending();
+        this._lock.Wait();
+        try
+        {
+            this.CancelPending();
+        }
+        finally
+        {
+            this._lock.Release();
+        }
+
         this._lock.Dispose();
     }
 

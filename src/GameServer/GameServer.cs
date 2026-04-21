@@ -281,9 +281,9 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
     /// <inheritdoc />
     public async ValueTask<bool> DisconnectAccountAsync(string accountName)
     {
-        if (this._gameContext.OfflineLevelingManager.IsActive(accountName))
+        if (this._gameContext.OfflinePlayerManager.IsActive(accountName))
         {
-            await this._gameContext.OfflineLevelingManager.StopAsync(accountName).ConfigureAwait(false);
+            await this._gameContext.OfflinePlayerManager.StopAsync(accountName).ConfigureAwait(false);
             return true;
         }
 
@@ -401,6 +401,24 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
         }
 
         await this.RemovePlayerFromGuildAsync(player).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    public async ValueTask AllianceCreatedAsync(uint masterGuildId, uint memberGuildId)
+    {
+        await this._gameContext.RefreshGuildInfoAsync(memberGuildId).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    public async ValueTask AllianceDisbandedAsync(uint masterGuildId, uint memberGuildId)
+    {
+        await this._gameContext.RefreshGuildInfoAsync(memberGuildId).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    public async ValueTask GuildHostilityChangedAsync(uint guildIdA, IReadOnlyList<uint> allianceGuildIdsA, uint guildIdB, IReadOnlyList<uint> allianceGuildIdsB, bool created)
+    {
+        this._gameContext.UpdateGuildHostility(guildIdA, allianceGuildIdsA, guildIdB, allianceGuildIdsB, created);
     }
 
     /// <summary>

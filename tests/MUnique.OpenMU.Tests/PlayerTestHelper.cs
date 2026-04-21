@@ -12,7 +12,7 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
-using MUnique.OpenMU.GameLogic.OfflineLeveling;
+using MUnique.OpenMU.GameLogic.Offline;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
@@ -87,6 +87,8 @@ public static class PlayerTestHelper
                 new (Stats.CurrentHealth, 0, false),
                 new (Stats.CurrentMana, 0, false),
                 new (Stats.CurrentShield, 0, false),
+                new (Stats.Resets, 0, false),
+                new (Stats.PointsPerReset, 0, false),
             });
         characterClassMock.Setup(c => c.AttributeCombinations).Returns(new List<AttributeRelationship>
         {
@@ -129,6 +131,7 @@ public static class PlayerTestHelper
 
         var accountMock = new Mock<Account>();
         accountMock.Setup(mock => mock.Attributes).Returns(new List<StatAttribute>());
+        accountMock.Setup(mock => mock.UnlockedCharacterClasses).Returns(new List<CharacterClass>());
         var player = new TestPlayer(gameContext) { Account = accountMock.Object };
         await player.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
         await player.PlayerState.TryAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
@@ -139,14 +142,14 @@ public static class PlayerTestHelper
     }
 
     /// <summary>
-    /// Creates an offline leveling player at <see cref="PlayerState.EnteredWorld"/>.
+    /// Creates an offline player at <see cref="PlayerState.EnteredWorld"/>.
     /// </summary>
     /// <param name="gameContext">The game context.</param>
-    /// <returns>The offline leveling player.</returns>
-    public static async ValueTask<OfflineLevelingPlayer> CreateOfflineLevelingPlayerAsync(IGameContext gameContext)
+    /// <returns>The offline player.</returns>
+    public static async ValueTask<OfflinePlayer> CreateOfflineLevelingPlayerAsync(IGameContext gameContext)
     {
         var regularPlayer = await CreatePlayerAsync(gameContext).ConfigureAwait(false);
-        var offlinePlayer = new OfflineLevelingPlayer(gameContext) { Account = regularPlayer.Account };
+        var offlinePlayer = new OfflinePlayer(gameContext) { Account = regularPlayer.Account };
         await offlinePlayer.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
         await offlinePlayer.PlayerState.TryAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
         await offlinePlayer.PlayerState.TryAdvanceToAsync(PlayerState.CharacterSelection).ConfigureAwait(false);

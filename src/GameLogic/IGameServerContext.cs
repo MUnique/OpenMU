@@ -14,7 +14,12 @@ public interface IGameServerContext : IGameContext
     /// <summary>
     /// Occurs when a guild has been deleted.
     /// </summary>
-    event EventHandler<GuildDeletedEventArgs>? GuildDeleted;
+    event EventHandler<GuildEventArgs>? GuildDeleted;
+
+    /// <summary>
+    /// Occurs when a guild alliance has been changed.
+    /// </summary>
+    event EventHandler<GuildEventArgs>? GuildChanged;
 
     /// <summary>
     /// Gets the identifier of the server.
@@ -47,6 +52,12 @@ public interface IGameServerContext : IGameContext
     GameServerConfiguration ServerConfiguration { get; }
 
     /// <summary>
+    /// Refreshes the guild information.
+    /// </summary>
+    /// <param name="guildId">The guild identifier.</param>
+    ValueTask RefreshGuildInfoAsync(uint guildId);
+
+    /// <summary>
     /// Executes an action for each player of the guild.
     /// </summary>
     /// <param name="guildId">The guild id.</param>
@@ -77,4 +88,23 @@ public interface IGameServerContext : IGameContext
     /// </summary>
     /// <param name="guildId">The id of the guild.</param>
     ValueTask RemoveGuildAsync(uint guildId);
+
+    /// <summary>
+    /// Updates the cached rival guild pairs when the hostility state between two guilds changes.
+    /// </summary>
+    /// <param name="guildIdA">The first guild identifier.</param>
+    /// <param name="allianceGuildIdsA">All guild IDs in guild A's alliance.</param>
+    /// <param name="guildIdB">The second guild identifier.</param>
+    /// <param name="allianceGuildIdsB">All guild IDs in guild B's alliance.</param>
+    /// <param name="created"><c>true</c> if the hostility was created; <c>false</c> if it was removed.</param>
+    void UpdateGuildHostility(uint guildIdA, IReadOnlyList<uint> allianceGuildIdsA, uint guildIdB, IReadOnlyList<uint> allianceGuildIdsB, bool created);
+
+    /// <summary>
+    /// Determines whether two guilds are rivals (hostile to each other).
+    /// This uses a local cache and does not call the guild server.
+    /// </summary>
+    /// <param name="guild1Id">The first guild identifier.</param>
+    /// <param name="guild2Id">The second guild identifier.</param>
+    /// <returns><c>true</c> if the guilds are rivals; <c>false</c> otherwise.</returns>
+    bool AreGuildsRival(uint guild1Id, uint guild2Id);
 }

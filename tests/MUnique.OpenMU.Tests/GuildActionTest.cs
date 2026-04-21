@@ -137,7 +137,10 @@ public class GuildActionTest : GuildTestBase
         var action = new GuildListRequestAction();
         await action.RequestGuildListAsync(this._player).ConfigureAwait(false);
         var guildList = await this.GuildServer.GetGuildListAsync(this._player.GuildStatus!.GuildId).ConfigureAwait(false);
-        Mock.Get(this._player.ViewPlugIns.GetPlugIn<IShowGuildListPlugIn>()!).Verify(v => v!.ShowGuildListAsync(It.Is<IEnumerable<GuildListEntry>>(list => list.Any(entry => entry.PlayerName == this._player.SelectedCharacter!.Name))), Times.Once());
+        Mock.Get(this._player.ViewPlugIns.GetPlugIn<IShowGuildListPlugIn>()!)
+            .Verify(v => v!.ShowGuildListAsync(
+                It.Is<IReadOnlyCollection<GuildListEntry>>(list => list.Any(entry => entry.PlayerName == this._player.SelectedCharacter!.Name)),
+                It.Is<Interfaces.Guild>(g => g.Name == GuildName)), Times.Once());
         Assert.That(guildList.Any(entry => entry.PlayerName == this._player.SelectedCharacter!.Name), Is.True);
     }
 

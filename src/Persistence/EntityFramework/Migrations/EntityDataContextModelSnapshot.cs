@@ -137,6 +137,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<TimeSpan>("DelayPerOneDistance")
                         .HasColumnType("interval");
 
+                    b.Property<int>("EffectRange")
+                        .HasColumnType("integer");
+
                     b.Property<float>("FrustumDistance")
                         .HasColumnType("real");
 
@@ -153,6 +156,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasColumnType("integer");
 
                     b.Property<int>("MaximumNumberOfHitsPerTarget")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MinimumNumberOfHitsPerAttack")
                         .HasColumnType("integer");
 
                     b.Property<int>("MinimumNumberOfHitsPerTarget")
@@ -1040,6 +1046,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<float>("ExperienceRate")
                         .HasColumnType("real");
 
+                    b.Property<float>("MasterExperienceRate")
+                        .HasColumnType("real");
+
                     b.Property<double>("HitsPerOneItemDurability")
                         .HasColumnType("double precision");
 
@@ -1050,6 +1059,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("interval")
                         .HasDefaultValue(new TimeSpan(0, 0, 1, 0, 0));
+
+                    b.Property<byte>("ExcellentItemDropLevelDelta")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("smallint")
+                        .HasDefaultValue((byte)25);
 
                     b.Property<int>("LetterSendPrice")
                         .HasColumnType("integer");
@@ -3205,6 +3219,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<int>("SkillType")
                         .HasColumnType("integer");
+
+                    b.Property<bool>("SkipElementalModifier")
+                        .HasColumnType("boolean");
 
                     b.Property<int>("Target")
                         .HasColumnType("integer");

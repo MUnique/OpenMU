@@ -19,6 +19,8 @@ using MUnique.OpenMU.Pathfinding;
 /// </summary>
 public static class AttackableExtensions
 {
+    private const short ExplosionMagicEffectNumber = 75;   // 0x4B
+
     private static readonly IDictionary<AttributeDefinition, AttributeDefinition> ReductionModifiers =
         new Dictionary<AttributeDefinition, AttributeDefinition>
         {
@@ -316,7 +318,8 @@ public static class AttackableExtensions
     /// <param name="target">The target.</param>
     /// <param name="attacker">The attacker.</param>
     /// <param name="skillEntry">The skill entry.</param>
-    public static async ValueTask ApplyMagicEffectAsync(this IAttackable target, IAttacker attacker, SkillEntry skillEntry)
+    /// <param name="hitInfo">The hit information.</param>
+    public static async ValueTask ApplyMagicEffectAsync(this IAttackable target, IAttacker attacker, SkillEntry skillEntry, HitInfo? hitInfo = null)
     {
         if (skillEntry.PowerUps is null && attacker is Player player)
         {
@@ -331,7 +334,7 @@ public static class AttackableExtensions
 
         var duration = target is Player ? skillEntry.PowerUpDurationPvp! : skillEntry.PowerUpDuration!;
         var powerUps = target is Player ? skillEntry.PowerUpsPvp! : skillEntry.PowerUps!;
-        await target.ApplyMagicEffectAsync(attacker, skillEntry.Skill!.MagicEffectDef!, duration, powerUps).ConfigureAwait(false);
+        await target.ApplyMagicEffectAsync(attacker, skillEntry.Skill!.MagicEffectDef!, duration, hitInfo, powerUps).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -375,8 +378,9 @@ public static class AttackableExtensions
     /// <param name="target">The target.</param>
     /// <param name="attacker">The attacker.</param>
     /// <param name="skillEntry">The skill entry.</param>
+    /// <param name="hitInfo">The hit information.</param>
     /// <returns>The success of the appliance.</returns>
-    public static async ValueTask<bool> TryApplyElementalEffectsAsync(this IAttackable target, IAttacker attacker, SkillEntry skillEntry)
+    public static async ValueTask<bool> TryApplyElementalEffectsAsync(this IAttackable target, IAttacker attacker, SkillEntry skillEntry, HitInfo? hitInfo = null)
     {
         if (!target.IsAlive)
         {
@@ -385,15 +389,15 @@ public static class AttackableExtensions
 
         skillEntry.ThrowNotInitializedProperty(skillEntry.Skill is null, nameof(skillEntry.Skill));
         var modifier = skillEntry.Skill.ElementalModifierTarget;
-        if (modifier is null)
-        {
-            return false;
-        }
+        var skipModifier = skillEntry.Skill.SkipElementalModifier;
 
-        var resistance = target.Attributes[modifier];
-        if (resistance >= 255 || !Rand.NextRandomBool(1 / (resistance + 1)))
+        if (modifier is not null && !skipModifier)
         {
-            return false;
+            var resistance = target.Attributes[modifier];
+            if (resistance >= 255 || !Rand.NextRandomBool(1 / (resistance + 1)))
+            {
+                return false;
+            }
         }
 
         var applied = false;
@@ -402,11 +406,11 @@ public static class AttackableExtensions
             && !target.MagicEffectList.ActiveEffects.ContainsKey(effectDefinition.Number))
         {
             // power-up is the wrong term here... it's more like a power-down ;-)
-            await target.ApplyMagicEffectAsync(attacker, skillEntry).ConfigureAwait(false);
+            await target.ApplyMagicEffectAsync(attacker, skillEntry, hitInfo).ConfigureAwait(false);
             applied = true;
         }
 
-        if (modifier == Stats.LightningResistance)
+        if (modifier == Stats.LightningResistance && !skipModifier)
         {
             await target.MoveRandomlyAsync().ConfigureAwait(false);
             applied = true;
@@ -424,10 +428,9 @@ public static class AttackableExtensions
     /// <param name="powerUp">The power up.</param>
     /// <param name="duration">The duration.</param>
     /// <param name="targetAttribute">The target attribute.</param>
-    /// <returns>
-    /// The success of the appliance.
-    /// </returns>
-    public static async ValueTask<bool> TryApplyElementalEffectsAsync(this IAttackable target, IAttacker attacker, Skill skill, IElement? powerUp, IElement? duration, AttributeDefinition? targetAttribute)
+    /// <param name="hitInfo">The hit information.</param>
+    /// <returns>The success of the appliance.</returns>
+    public static async ValueTask<bool> TryApplyElementalEffectsAsync(this IAttackable target, IAttacker attacker, Skill skill, IElement? powerUp, IElement? duration, AttributeDefinition? targetAttribute, HitInfo? hitInfo)
     {
         if (!target.IsAlive)
         {
@@ -455,7 +458,7 @@ public static class AttackableExtensions
             && targetAttribute is not null)
         {
             // power-up is the wrong term here... it's more like a power-down ;-)
-            await target.ApplyMagicEffectAsync(attacker, effectDefinition, duration, (targetAttribute, powerUp)).ConfigureAwait(false);
+            await target.ApplyMagicEffectAsync(attacker, effectDefinition, duration, hitInfo, (targetAttribute, powerUp)).ConfigureAwait(false);
             applied = true;
         }
 
@@ -821,8 +824,9 @@ public static class AttackableExtensions
     /// <param name="attacker">The attacker.</param>
     /// <param name="magicEffectDefinition">The magic effect definition.</param>
     /// <param name="duration">The duration.</param>
+    /// <param name="hitInfo">The hit information.</param>
     /// <param name="powerUps">The power ups of the effect.</param>
-    private static async ValueTask ApplyMagicEffectAsync(this IAttackable target, IAttacker attacker, MagicEffectDefinition magicEffectDefinition, IElement duration, params (AttributeDefinition Target, IElement Boost)[] powerUps)
+    private static async ValueTask ApplyMagicEffectAsync(this IAttackable target, IAttacker attacker, MagicEffectDefinition magicEffectDefinition, IElement duration, HitInfo? hitInfo, params (AttributeDefinition Target, IElement Boost)[] powerUps)
     {
         float finalDuration = duration.Value;
 
@@ -841,10 +845,44 @@ public static class AttackableExtensions
             return;
         }
 
-        var isPoisonEffect = magicEffectDefinition.PowerUpDefinitions.Any(e => e.TargetAttribute == Stats.IsPoisoned);
-        var magicEffect = isPoisonEffect
-            ? new PoisonMagicEffect(powerUps[0].Boost, magicEffectDefinition, durationSpan, attacker, target)
-            : new MagicEffect(durationSpan, magicEffectDefinition, powerUps.Select(p => new MagicEffect.ElementWithTarget(p.Boost, p.Target)).ToArray());
+        MagicEffect magicEffect;
+        if (magicEffectDefinition.PowerUpDefinitions.Any(e => e.TargetAttribute == Stats.IsPoisoned))
+        {
+            magicEffect = new PoisonMagicEffect(powerUps[0].Boost, magicEffectDefinition, durationSpan, attacker, target);
+        }
+        else if (magicEffectDefinition.PowerUpDefinitions.Any(e => e.TargetAttribute == Stats.IsBleeding))
+        {
+            if (hitInfo is not { } hit || hit.HealthDamage + hit.ShieldDamage < 1)
+            {
+                return;
+            }
+
+            var multiplier = magicEffectDefinition.Number == ExplosionMagicEffectNumber ? attacker.Attributes[Stats.BleedingDamageMultiplier] : 0.6f;
+            var damage = (hit.HealthDamage + hit.ShieldDamage) * multiplier;
+            magicEffect = new BleedingMagicEffect(powerUps[0].Boost, magicEffectDefinition, durationSpan, attacker, target, damage);
+        }
+        else if (magicEffectDefinition.PowerUpDefinitions.Any(e => e.TargetAttribute == Stats.IsStunned))
+        {
+            var stunChancePowerUp = powerUps.FirstOrDefault(p => p.Target == Stats.StunChance);
+            if (stunChancePowerUp.Boost is null || !Rand.NextRandomBool(Convert.ToDouble(stunChancePowerUp.Boost.Value)))
+            {
+                return;
+            }
+
+            magicEffect = new MagicEffect(durationSpan, magicEffectDefinition, [.. powerUps.Where(p => p != stunChancePowerUp).Select(p => new MagicEffect.ElementWithTarget(p.Boost, p.Target))]);
+        }
+        else
+        {
+            magicEffect = new MagicEffect(durationSpan, magicEffectDefinition, [.. powerUps.Select(p => new MagicEffect.ElementWithTarget(p.Boost, p.Target))]);
+        }
+
+        if (magicEffect.Definition.SubType > 0
+            && await target.MagicEffectList.TryGetActiveEffectOfSubTypeAsync(magicEffect.Definition.SubType).ConfigureAwait(false) is { } existingEffect
+            && existingEffect.Id != magicEffect.Id)
+        {
+            // The new effect replaces an existing effect with a different number
+            await existingEffect.DisposeAsync().ConfigureAwait(false);
+        }
 
         await target.MagicEffectList.AddEffectAsync(magicEffect).ConfigureAwait(false);
         if (target is ISupportWalk walkSupporter

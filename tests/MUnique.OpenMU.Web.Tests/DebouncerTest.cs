@@ -39,12 +39,16 @@ public class DebouncerTests
     {
         using var debouncer = new Debouncer(50);
         var executed = false;
+        var executionCompleted = new TaskCompletionSource<bool>();
 
         await debouncer.DebounceAsync(() =>
         {
             executed = true;
+            executionCompleted.TrySetResult(true);
             return Task.CompletedTask;
         });
+
+        await executionCompleted.Task;
 
         Assert.That(executed, Is.True);
     }
@@ -58,6 +62,7 @@ public class DebouncerTests
         using var debouncer = new Debouncer(100);
         var callCount = 0;
         var lastValue = string.Empty;
+        var executionCompleted = new TaskCompletionSource<bool>();
 
         // Fire 5 rapid calls
         var tasks = new List<Task>();
@@ -68,6 +73,7 @@ public class DebouncerTests
             {
                 Interlocked.Increment(ref callCount);
                 lastValue = $"call-{captured}";
+                executionCompleted.TrySetResult(true);
                 return Task.CompletedTask;
             }));
 
@@ -78,6 +84,7 @@ public class DebouncerTests
         }
 
         await Task.WhenAll(tasks);
+        await executionCompleted.Task;
 
         Assert.That(callCount, Is.EqualTo(1));
         Assert.That(lastValue, Is.EqualTo("call-5"));
@@ -128,10 +135,12 @@ public class DebouncerTests
     {
         using var debouncer = new Debouncer(200);
         var executed = false;
+        var executionCompleted = new TaskCompletionSource<bool>();
 
         var task = debouncer.DebounceAsync(() =>
         {
             executed = true;
+            executionCompleted.TrySetResult(true);
             return Task.CompletedTask;
         });
 
@@ -140,6 +149,7 @@ public class DebouncerTests
         await task;
 
         Assert.That(executed, Is.False);
+        Assert.That(executionCompleted.Task.IsCompleted, Is.False, "Execution should not have completed");
     }
 
     /// <summary>
@@ -178,21 +188,28 @@ public class DebouncerTests
     {
         using var debouncer = new Debouncer(50);
         var callCount = 0;
+        var executionCompleted = new TaskCompletionSource<bool>();
 
-        // Two calls spaced apart beyond the debounce window
+        // First call
         await debouncer.DebounceAsync(() =>
         {
             Interlocked.Increment(ref callCount);
+            executionCompleted.TrySetResult(true);
             return Task.CompletedTask;
         });
 
-        await Task.Delay(100);
+        await executionCompleted.Task;
+        executionCompleted = new TaskCompletionSource<bool>();
 
+        // Second call - no fixed delay, just let the first complete
         await debouncer.DebounceAsync(() =>
         {
             Interlocked.Increment(ref callCount);
+            executionCompleted.TrySetResult(true);
             return Task.CompletedTask;
         });
+
+        await executionCompleted.Task;
 
         Assert.That(callCount, Is.EqualTo(2));
     }
