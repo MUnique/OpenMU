@@ -140,7 +140,7 @@ public partial class Merchants : ComponentBase, IAsyncDisposable
 
             this._persistenceContext = await this.DataSource.GetContextAsync(cancellationToken).ConfigureAwait(true);
             await this.DataSource.GetOwnerAsync(cancellationToken: cancellationToken).ConfigureAwait(true);
-            
+
             var data = this.DataSource.GetAll<MonsterDefinition>()
                 .Where(m => m is { ObjectKind: NpcObjectKind.PassiveNpc, MerchantStore: { } });
             this._viewModels = data
@@ -148,10 +148,7 @@ public partial class Merchants : ComponentBase, IAsyncDisposable
                 .OrderBy(o => o.Name)
                 .ToList();
 
-            await this.InvokeAsync(() =>
-            {
-                this.StateHasChanged();
-            }).ConfigureAwait(true);
+            await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(true);
         }
         catch (OperationCanceledException)
         {

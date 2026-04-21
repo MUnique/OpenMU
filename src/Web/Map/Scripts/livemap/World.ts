@@ -3,11 +3,11 @@
 import { Attacks } from "./Attack";
 import { terrainShader } from "./TerrainShader";
 import { Player } from "./Player";
-import { attackableAlphaMapTexture } from "./Attackable";
+import { Attackable, attackableAlphaMapTexture } from "./Attackable";
 import { GameObject } from "./GameObject";
 import { NonPlayerCharacter as NPC } from "./NonPlayerCharacter";
 
-import { NpcData, PlayerData, Step } from "./Types";
+import { NpcData, PlayerData, ObjectData, Step } from "./Types";
 
 export class World extends THREE.Object3D {
     private static readonly sideLength: number = 256;
@@ -18,6 +18,7 @@ export class World extends THREE.Object3D {
             [id: number]: GameObject,
         };
     private attacks: Attacks;
+    private lastLabelObjectId: number | null = null;
 
     /*
      * Constructs a new World object.
@@ -154,6 +155,23 @@ export class World extends THREE.Object3D {
         const player = this.getObjectById(objectId) as Player;
         if (player != null) {
             player.data = { ... player.data, isHighlighted: false };
+        }
+    }
+
+    public showLabel(objectId: number): void {
+        this.hideLastLabel();
+        const obj = this.getObjectById(objectId) as Attackable<ObjectData>;
+        if (obj) {
+            obj.showLabel();
+            this.lastLabelObjectId = objectId;
+        }
+    }
+
+    public hideLastLabel(): void {
+        if (this.lastLabelObjectId !== null) {
+            const obj = this.getObjectById(this.lastLabelObjectId) as Attackable<ObjectData>;
+            obj?.hideLabel();
+            this.lastLabelObjectId = null;
         }
     }
 
