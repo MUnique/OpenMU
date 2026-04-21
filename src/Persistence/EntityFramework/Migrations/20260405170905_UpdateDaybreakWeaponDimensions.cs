@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -5,6 +6,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 {
     /// <inheritdoc />
+    [DbContext(typeof(EntityDataContext))]
+    [Migration("20260405170905_UpdateDaybreakWeaponDimensions")]
     public partial class UpdateDaybreakWeaponDimensions : Migration
     {
         /// <inheritdoc />
@@ -14,8 +17,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 @"UPDATE config.""ItemDefinition"" 
                 SET ""Height"" = 4 
                 WHERE ""Group"" = 0 AND ""Number"" = 24");
-        }
-
+}
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
