@@ -24,11 +24,6 @@ public class InvasionGameServerState : PeriodicTaskGameServerState
     {
     }
 
-    /// <summary>
-    /// Gets or sets the UTC timestamp of when the last event run started.
-    /// Used to prevent a new event from starting before the previous task duration has elapsed.
-    /// </summary>
-    public DateTime LastRunUtc { get; set; }
 
     /// <summary>
     /// Gets or sets the map identifier used for UI display / map-event state broadcasts.

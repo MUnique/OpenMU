@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlugIns.InvasionEvents;
 
+using System.Collections.Concurrent;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 using MUnique.OpenMU.GameLogic.Views;
@@ -19,7 +20,7 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
     where TConfiguration : PeriodicInvasionConfiguration
 {
     private readonly MapEventType? _mapEventType;
-    private readonly List<Func<Task>> _cleanupHandlers = [];
+    private readonly ConcurrentDictionary<MonsterCleanupHandler, byte> _cleanupHandlers = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BaseInvasionPlugIn{TConfiguration}"/> class.
@@ -111,8 +112,8 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
             monster.OnSpawn();
 
             var handler = new MonsterCleanupHandler(this, monster);
-            this._cleanupHandlers.Add(handler.CleanUpAsync);
-            monster.Died += (_, _) => this._cleanupHandlers.Remove(handler.CleanUpAsync);
+            this._cleanupHandlers.TryAdd(handler, 0);
+            monster.Died += (_, _) => this._cleanupHandlers.TryRemove(handler, out _);
         }
     }
 
@@ -148,11 +149,6 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
     /// <inheritdoc />
     protected override async ValueTask OnPrepareEventAsync(InvasionGameServerState state)
     {
-        if (this.IsPreviousEventStillRunning(state))
-        {
-            return;
-        }
-
         state.Reset();
 
         var config = this.Configuration;
@@ -251,7 +247,6 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
     /// <inheritdoc />
     protected override async ValueTask OnStartedAsync(InvasionGameServerState state)
     {
-        state.LastRunUtc = DateTime.UtcNow;
         await this.SpawnMobsOnMapsAsync(state).ConfigureAwait(false);
     }
 
@@ -267,8 +262,11 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
 
         if (this._cleanupHandlers.Count > 0)
         {
-            var handlers = this._cleanupHandlers.ToArray();
-            await Task.WhenAll(handlers.Select(h => h())).ConfigureAwait(false);
+            var handlers = this._cleanupHandlers.Keys.ToArray();
+            if (handlers.Length > 0)
+            {
+                await Task.WhenAll(handlers.Select(h => h.CleanUpAsync())).ConfigureAwait(false);
+            }
         }
     }
 
@@ -305,16 +303,6 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
             }
         }
     }
-
-    /// <summary>
-    /// Determines whether the previous event run is still within its configured task duration.
-    /// Prevents a new event from starting before the previous one has fully elapsed.
-    /// </summary>
-    /// <param name="state">The current invasion state.</param>
-    /// <returns><c>true</c> if the previous event duration has not elapsed yet; otherwise <c>false</c>.</returns>
-    private bool IsPreviousEventStillRunning(InvasionGameServerState state)
-        => state.State != PeriodicTaskState.NotStarted
-           && state.LastRunUtc.Add(this.Configuration?.TaskDuration ?? TimeSpan.Zero) > DateTime.UtcNow;
 
     /// <summary>
     /// Iterates the mob configurations and registers the selected spawn maps into the state.
@@ -439,7 +427,7 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
         /// </summary>
         public async Task CleanUpAsync()
         {
-            this._plugin._cleanupHandlers.Remove(this.CleanUpAsync);
+            this._plugin._cleanupHandlers.TryRemove(this, out _);
             if (!this._monster.IsDisposed)
             {
                 await this._monster.CurrentMap.RemoveAsync(this._monster).ConfigureAwait(false);
