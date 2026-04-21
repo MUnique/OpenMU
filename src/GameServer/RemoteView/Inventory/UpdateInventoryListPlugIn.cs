@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory;
 
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
+using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
@@ -31,13 +32,15 @@ public class UpdateInventoryListPlugIn : IUpdateInventoryListPlugIn
     public async ValueTask UpdateInventoryListAsync()
     {
         var connection = this._player.Connection;
-        if (connection is null || this._player.SelectedCharacter?.Inventory is null)
+        if (connection is null)
         {
             return;
         }
 
         // C4 00 00 00 F3 10 ...
-        var items = this._player.SelectedCharacter.Inventory.Items.OrderBy(item => item.ItemSlot).ToList();
+        var items = (this._player.Inventory?.Items ?? this._player.SelectedCharacter?.Inventory?.Items ?? Enumerable.Empty<Item>())
+            .OrderBy(item => item.ItemSlot)
+            .ToList();
         int Write()
         {
             var itemSerializer = this._player.ItemSerializer;
@@ -46,18 +49,27 @@ public class UpdateInventoryListPlugIn : IUpdateInventoryListPlugIn
             var span = connection.Output.GetSpan(size)[..size];
             var packet = new CharacterInventoryRef(span)
             {
-                ItemCount = (byte)items.Count,
+                ItemCount = 0,
             };
 
             int headerSize = CharacterInventoryRef.GetRequiredSize(0, 0);
             int actualSize = headerSize;
-            int i = 0;
+            var seenSlots = new HashSet<byte>();
             foreach (var item in items)
             {
                 if (item.Definition is null)
                 {
                     this._player.Logger.LogWarning("Item {0} has no definition.", item);
-                    packet.ItemCount--;
+                    continue;
+                }
+
+                if (!seenSlots.Add(item.ItemSlot))
+                {
+                    this._player.Logger.LogWarning(
+                        "Duplicate item slot {Slot} detected in inventory list update for player {Player}. Skipping item {Item}.",
+                        item.ItemSlot,
+                        this._player,
+                        item);
                     continue;
                 }
 
@@ -65,7 +77,7 @@ public class UpdateInventoryListPlugIn : IUpdateInventoryListPlugIn
                 storedItem.ItemSlot = item.ItemSlot;
                 var itemSize = itemSerializer.SerializeItem(storedItem.ItemData, item);
                 actualSize += StoredItemRef.GetRequiredSize(itemSize);
-                i++;
+                packet.ItemCount++;
             }
 
             span.Slice(0, actualSize).SetPacketSize();
