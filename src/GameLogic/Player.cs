@@ -1633,7 +1633,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                         var extendsDuration = masterSkillEntry.Skill?.MasterDefinition?.ExtendsDuration ?? false;
                         if (extendsDuration && !durationExtended)
                         {
-                            durationElement = new CombinedElement(durationElement, new ConstantElement(skillEntry.CalculateValue()));
+                            durationElement = new CombinedElement(durationElement, new ConstantElement(masterSkillEntry.CalculateValue()));
                         }
                         else if (extendsDuration)
                         {
