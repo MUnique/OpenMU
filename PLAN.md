@@ -26,6 +26,7 @@ This file is the single source of truth for the project. It's written so that **
 13. [Test Accounts](#13-test-accounts)
 14. [Instructions for the AI Agent](#14-instructions-for-the-ai-agent)
 15. [Progress Log](#15-progress-log)
+16. [Included Dev Helpers (Windows)](#16-included-dev-helpers-windows)
 
 ---
 
@@ -175,14 +176,21 @@ Open http://localhost/ → login `admin` / `openmu` → change password → in *
 ```powershell
 git clone https://github.com/MUnique/OpenMU.git
 cd OpenMU
+./scripts/windows/bootstrap.ps1                     # verify prereqs
 dotnet restore src\MUnique.OpenMU.sln
 dotnet build   src\MUnique.OpenMU.sln -c Debug
 ```
 
 Edit `src\Persistence\EntityFramework\ConnectionSettings.xml` **only if** your Postgres password isn't `admin`. Only the first two `<Connection>` entries need real admin credentials — the others (`config`, `account`, `friend`, `guild`) are auto-created with scoped privileges on first run.
 
-Run the server:
+Run the server (either way works):
 ```powershell
+# via the helper
+./scripts/windows/dev-run.ps1                       # loopback (same machine)
+./scripts/windows/dev-run.ps1 -Lan                  # LAN friends
+./scripts/windows/dev-run.ps1 -Demo                 # in-memory, no DB
+
+# or manually
 cd src\Startup
 dotnet run -- -autostart -resolveIP:loopback
 ```
@@ -226,7 +234,10 @@ dotnet run -- -autostart -resolveIP:loopback
 ### Debugging
 - Visual Studio: set `MUnique.OpenMU.Startup` as Startup Project, press F5.
 - Rider: same — create a Run Config for `Startup`.
-- VS Code: use the C# extension's "launch" config targeting `src/Startup/bin/Debug/net10.0/MUnique.OpenMU.Startup.dll`.
+- VS Code / Cursor: **F5 is pre-wired** via `.vscode/launch.json`. Four
+  configs are included: loopback, LAN, demo (in-memory), reinit.
+- Common build/test/docker commands are also wired into `.vscode/tasks.json`
+  (Ctrl+Shift+P → "Tasks: Run Task").
 
 Test account to log in with: `test0` / `test0` (or `test400` / `test400` for a lvl-400 character).
 
@@ -270,7 +281,12 @@ git merge upstream/master
 14. ☐ (For friends) Friends connect using your **LAN IPv4** (run `ipconfig` to find it)
 15. ☐ In admin panel, set **IP Resolver → Local** so the connect server tells friends your LAN IP, not 127.*
 
-### Windows Firewall rules (PowerShell, admin)
+### Windows Firewall rules (admin PowerShell)
+```powershell
+./scripts/windows/firewall-open.ps1     # add the rules
+./scripts/windows/firewall-close.ps1    # remove them later
+```
+Or manually:
 ```powershell
 New-NetFirewallRule -DisplayName "OpenMU AdminPanel"    -Direction Inbound -Protocol TCP -LocalPort 80 -Action Allow
 New-NetFirewallRule -DisplayName "OpenMU ConnectServer" -Direction Inbound -Protocol TCP -LocalPort 44405,44406 -Action Allow
@@ -499,4 +515,69 @@ Only ask structured multi-choice questions about **intent** (what they want), no
 
 Append newest entries at the top. Format: `YYYY-MM-DD — who — what`.
 
+---
+
+## 16. Included Dev Helpers (Windows)
+
+This fork ships extra tooling so you can start coding on Windows without any
+manual wiring. Everything below lives on the `my-plan` branch.
+
+### AI agent configuration
+
+| File | What it does |
+|---|---|
+| `AGENTS.md` | Standard cross-agent handoff file. Read by Codex, Claude Code, and others. Points at this PLAN.md and the Cursor rules. |
+| `.cursor/rules/openmu.mdc` | Auto-loaded by every Cursor session. Contains the operating rules (Phase gating, PowerShell default, `127.127.127.127` rule, distributed-is-broken, never-commit-to-master, etc.). |
+
+### VS Code / Cursor workspace
+
+| File | What it does |
+|---|---|
+| `.vscode/launch.json` | F5 to run/debug `MUnique.OpenMU.Startup` with 4 profiles: loopback, LAN, demo (in-memory), and reinit. |
+| `.vscode/tasks.json` | Ctrl+Shift+P → "Tasks: Run Task" gives you: build / build (release) / restore / test / clean / run Startup / reset DB / docker up / docker down / docker logs. |
+| `.vscode/settings.json` | Format-on-save, LF line endings (CRLF for `.ps1`), search excludes for `bin/obj`, C#/JSON/Markdown/YAML formatter defaults, PowerShell as default Windows terminal. |
+| `.vscode/extensions.json` | VS Code / Cursor will prompt to install the recommended extensions on first open: C# Dev Kit, Docker, PowerShell, EditorConfig, YAML, Markdown All-in-One, GitLens. |
+
+A narrow override at the bottom of `.gitignore` un-ignores **only** those four
+`.vscode/*.json` files. Any other file you drop into `.vscode/` (e.g. personal
+`launch.local.json`) stays ignored automatically.
+
+### PowerShell helper scripts
+
+Run from repo root.
+
+| Script | Purpose |
+|---|---|
+| `scripts/windows/bootstrap.ps1` | Verify Git, .NET SDK 10, Node LTS, PostgreSQL, Docker are installed; report missing tools with `winget` install hints; show `dotnet --list-sdks` and Docker daemon status. |
+| `scripts/windows/docker-up.ps1` | `docker compose up -d --no-build` in `deploy/all-in-one/` and then tail the `openmu-startup` logs. `-NoLogs` to skip the tail, `-Build` to build images locally. |
+| `scripts/windows/docker-down.ps1` | `docker compose down`. `-Volumes` also deletes the `dbdata` volume (DB wipe). |
+| `scripts/windows/dev-run.ps1` | `dotnet run` Startup with the right flags. Defaults to loopback. `-Lan`, `-Public`, `-Demo`, `-Reinit`, and `-ExtraArgs` supported. |
+| `scripts/windows/dev-reset-db.ps1` | Confirm-and-reinit helper (wraps `dev-run.ps1 -Reinit`). |
+| `scripts/windows/firewall-open.ps1` | Requires admin PowerShell. Adds inbound Windows Firewall rules for 80, 44405–44406, 55901–55906, 55980. Idempotent. |
+| `scripts/windows/firewall-close.ps1` | Requires admin PowerShell. Removes those same rules. |
+| `scripts/windows/README.md` | Quick reference for the scripts. |
+
+If PowerShell blocks a script with an "execution policy" error, run this once
+(as your user, not admin):
+```powershell
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+```
+
+### Not committed on purpose
+
+| Path | Why excluded |
+|---|---|
+| `local/` | Personal scratch notes, secrets, experimental configs. Gitignored. |
+| `.env` | Any real deployment `.env` (domain names, admin emails for certbot). Generate from `.env.example` when Phase 2 is reached. |
+| `src/Persistence/EntityFramework/ConnectionSettings.xml` (with real credentials) | If you commit real Postgres passwords, rewrite history and change the password. |
+
+### Order of use (first time on Windows)
+
+1. `scripts/windows/bootstrap.ps1` — green rows everywhere.
+2. Pick Path A (`docker-up.ps1`) or Path B (`dev-run.ps1`) from §5.
+3. Open Cursor / VS Code — accept the recommended extensions prompt.
+4. F5 from `.vscode/launch.json` to debug, or Ctrl+Shift+P → Tasks for build/test.
+5. Open `http://localhost/` and check Phase 1 boxes in §7 as you go.
+
+- **2026-04-21 — AI (Claude) — added Windows-ready loadout on `my-plan` branch: `.cursor/rules/openmu.mdc` (agent rules), `AGENTS.md` (cross-agent handoff), `.vscode/{launch,tasks,settings,extensions}.json` (F5 debug + build/test/docker tasks), `scripts/windows/*.ps1` helpers (bootstrap, dev-run, dev-reset-db, docker-up/down, firewall-open/close), and a narrow `.gitignore` override to un-ignore just the four committed .vscode configs. PLAN.md §16 added.**
 - **2026-04-21 — AI (Claude) — created this PLAN.md on macOS before Windows migration. Analysis of all 22 README files complete. Clone is clean (no local commits). Goals confirmed: Phase 1 local → Phase 2 public. Next action for user: re-clone on Windows (see §3, Option A or B).**

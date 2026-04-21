@@ -1,0 +1,58 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run Startup (loopback, autostart)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/src/Startup/bin/Debug/net10.0/MUnique.OpenMU.Startup.dll",
+      "args": ["-autostart", "-resolveIP:loopback"],
+      "cwd": "${workspaceFolder}/src/Startup",
+      "stopAtEntry": false,
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "name": "Run Startup (LAN, autostart)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/src/Startup/bin/Debug/net10.0/MUnique.OpenMU.Startup.dll",
+      "args": ["-autostart", "-resolveIP:local"],
+      "cwd": "${workspaceFolder}/src/Startup",
+      "stopAtEntry": false,
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "name": "Run Startup (demo / in-memory)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/src/Startup/bin/Debug/net10.0/MUnique.OpenMU.Startup.dll",
+      "args": ["-autostart", "-resolveIP:loopback", "-demo"],
+      "cwd": "${workspaceFolder}/src/Startup",
+      "stopAtEntry": false,
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "name": "Run Startup (reinit database)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/src/Startup/bin/Debug/net10.0/MUnique.OpenMU.Startup.dll",
+      "args": ["-autostart", "-resolveIP:loopback", "-reinit"],
+      "cwd": "${workspaceFolder}/src/Startup",
+      "stopAtEntry": false,
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "name": "Attach to process",
+      "type": "coreclr",
+      "request": "attach"
+    }
+  ]
+}

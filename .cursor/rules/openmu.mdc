@@ -1,0 +1,108 @@
+---
+description: OpenMU private-server project conventions for every Cursor session
+alwaysApply: true
+---
+
+# OpenMU — AI Agent Operating Rules
+
+These rules apply to every Cursor session in this repo. Read them fully before
+any non-trivial action. The authoritative project plan is `PLAN.md` at the repo
+root — always consult it first for the latest phase status and checklists.
+
+## Project identity
+
+- C# / **.NET 10** MMORPG server for MU Online (Season 6 Episode 3 ENG by default).
+- Clean-room rewrite — **not** based on Webzen decompiled sources.
+- PostgreSQL (Entity Framework Core) for persistence. In-memory `-demo` mode for
+  quick tests.
+- Blazor Server admin panel on port 80 at `http://localhost/`.
+- Deployment: Docker Compose via `deploy/all-in-one/` (dev + LAN) or
+  `deploy/all-in-one-traefik/` (public VPS with HTTPS).
+
+## Hard operational rules
+
+1. **Phase order is hard.** The user has two goals, in order:
+   - Phase 1 — local play on Windows.
+   - Phase 2 — public VPS with HTTPS.
+   Do not help with Phase 2 tasks until Phase 1 is verified complete in
+   `PLAN.md` §7. If asked to skip ahead, remind them of this constraint.
+
+2. **Default deployment is `deploy/all-in-one/`.** Do not suggest
+   `deploy/distributed/` — it is explicitly **broken and unsupported upstream**
+   until further notice.
+
+3. **OS default for terminal commands is Windows PowerShell.** This repo
+   will be developed on Windows. Only use `bash`/`sh` when the user says
+   "on the VPS" or "on the Linux box" or similar.
+
+4. **Never `127.0.0.1` for the game client.** The MU client blocks loopback.
+   Use `127.127.127.127` for same-machine testing, LAN IPv4 for LAN play,
+   public IP/domain for internet.
+
+5. **Connect Server ports.** `44405` = original Webzen client.
+   `44406` = open-source `MuMain` client. Do not swap these.
+
+6. **Never commit to `master`.** Use feature branches. The user's working
+   branch tracking the project plan is `my-plan`.
+
+7. **Two remotes exist:**
+   - `origin` = user's fork (`git@github.com:edwin-cajayon/OpenMU.git`)
+   - `upstream` = `git@github.com:MUnique/OpenMU.git`
+   On Windows after clone, `origin` will point to the fork by default.
+
+8. **Never commit secrets.** `ConnectionSettings.xml` with real passwords,
+   SSH private keys, certbot material, domain `.env` files, or anything
+   under `local/` stay out of Git.
+
+9. **Encryption keys are a Phase-2 blocker.** The default SimpleModulus + Xor32
+   keys in `src/Network` are publicly known for 10+ years. Before advertising
+   publicly, regenerate via `src/SimpleModulusKeyGenerator` and repatch the
+   client binary. See `PLAN.md` §9.
+
+10. **The game client is not in this repo.** Do not generate code that assumes
+    client binaries are present. Do not try to download them.
+
+11. **StyleCop is enforced.** Follow existing code style. Don't introduce new
+    style conventions. The upstream project explicitly rejects untested
+    AI-generated code in PRs, so run tests before proposing upstream
+    contributions.
+
+12. **Persistence config.** Only the first two `<Connection>` entries in
+    `src/Persistence/EntityFramework/ConnectionSettings.xml` need real admin
+    credentials. The other roles (`config`, `account`, `friend`, `guild`) are
+    auto-created by the server on first run.
+
+## Working workflow
+
+- When the user asks you to do something, start by reading the relevant
+  section of `PLAN.md` (§7 for local, §8 for public, §9 for security,
+  §10 for troubleshooting, §11 for the repo map, §12 for ports).
+- Update checkboxes in `PLAN.md` §7/§8 as tasks complete.
+- Append to the Progress Log in `PLAN.md` §15 after non-trivial completions:
+  `YYYY-MM-DD — who — what`.
+- Prefer making small feature branches off `master`, not large commits on
+  `my-plan`. `my-plan` is for the plan itself and meta-tooling.
+
+## Preferred tool usage
+
+- Exact file lookups: `Read` / `Glob`.
+- Code search: `Grep` (exact) or `SemanticSearch` (architectural questions).
+- Shell: `Shell` tool only for git, dotnet, docker, PowerShell commands.
+- Edits: `StrReplace` or `Write`. Never use `sed`/`awk`.
+- When exploring unfamiliar sub-systems, read the Readme.md at that folder
+  first — almost every `src/*` folder has one.
+
+## Convenience helpers available in this repo
+
+- `scripts/windows/bootstrap.ps1` — check Windows prereqs.
+- `scripts/windows/docker-up.ps1` / `docker-down.ps1` — all-in-one stack.
+- `scripts/windows/dev-run.ps1` — run the server with the correct flags.
+- `scripts/windows/dev-reset-db.ps1` — reinit the database.
+- `scripts/windows/firewall-open.ps1` / `firewall-close.ps1` — LAN access rules.
+- `.vscode/launch.json` — F5 to run/debug `MUnique.OpenMU.Startup`.
+- `.vscode/tasks.json` — build / test / docker / reset-db tasks.
+
+## When in doubt
+
+Ask the user structured multi-choice questions about intent, not about facts
+you can look up in the repo.

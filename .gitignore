@@ -319,3 +319,18 @@ src/AdminPanel/wwwroot/content/js/app.js.map
 
 # Mac OS filesystem files
 .DS_Store
+
+# --- OpenMU fork overrides (see PLAN.md) ---
+# Un-ignore the committed VS Code / Cursor workspace configs so they travel
+# with the repo on every clone. Personal overrides go in .vscode/*.local.json
+# which stay ignored.
+!.vscode/
+/.vscode/*
+!/.vscode/launch.json
+!/.vscode/tasks.json
+!/.vscode/settings.json
+!/.vscode/extensions.json
+
+# Personal scratch folder (never committed)
+local/
+

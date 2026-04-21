@@ -1,0 +1,136 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/src/MUnique.OpenMU.sln",
+        "-c",
+        "Debug",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary;ForceNoAlign"
+      ],
+      "problemMatcher": "$msCompile",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "build (release)",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/src/MUnique.OpenMU.sln",
+        "-c",
+        "Release"
+      ],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "restore",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "restore",
+        "${workspaceFolder}/src/MUnique.OpenMU.sln"
+      ],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "test",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "test",
+        "${workspaceFolder}/src/MUnique.OpenMU.sln",
+        "-c",
+        "Debug",
+        "--nologo"
+      ],
+      "problemMatcher": "$msCompile",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "clean",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "clean",
+        "${workspaceFolder}/src/MUnique.OpenMU.sln"
+      ],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "run Startup (loopback)",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "run",
+        "--project",
+        "${workspaceFolder}/src/Startup/MUnique.OpenMU.Startup.csproj",
+        "--",
+        "-autostart",
+        "-resolveIP:loopback"
+      ],
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "reset DB (reinit)",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "run",
+        "--project",
+        "${workspaceFolder}/src/Startup/MUnique.OpenMU.Startup.csproj",
+        "--",
+        "-autostart",
+        "-resolveIP:loopback",
+        "-reinit"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "docker up (all-in-one)",
+      "type": "shell",
+      "command": "docker compose up -d --no-build",
+      "options": {
+        "cwd": "${workspaceFolder}/deploy/all-in-one"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "docker down (all-in-one)",
+      "type": "shell",
+      "command": "docker compose down",
+      "options": {
+        "cwd": "${workspaceFolder}/deploy/all-in-one"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "docker logs (follow)",
+      "type": "shell",
+      "command": "docker compose logs -f openmu-startup",
+      "options": {
+        "cwd": "${workspaceFolder}/deploy/all-in-one"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    }
+  ]
+}
