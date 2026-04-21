@@ -4,29 +4,29 @@
 
 ### 0.1 Chuẩn bị môi trường local (Preflight)
 
-- [ ] Xác nhận công cụ đã sẵn sàng:
-  - [ ] `docker --version`
-  - [ ] `docker compose version`
-  - [ ] `dotnet --version` (>= 10 nếu chạy source)
-- [ ] Xác nhận các cổng quan trọng chưa bị chiếm:
-  - [ ] `80`, `55901-55906`, `44405-44406`, `55980`
-- [ ] Chốt mode chạy cho phase này:
-  - [ ] **Docker all-in-one** (ưu tiên để lên nhanh và test end-to-end).
+- [x] Xác nhận công cụ đã sẵn sàng:
+  - [x] `docker --version`
+  - [x] `docker compose version`
+  - [x] `dotnet --version` (>= 10 nếu chạy source)
+- [x] Xác nhận các cổng quan trọng chưa bị chiếm:
+  - [x] `80`, `55901-55906`, `44405-44406`, `55980`
+- [x] Chốt mode chạy cho phase này:
+  - [x] **Docker all-in-one** (ưu tiên để lên nhanh và test end-to-end).
   - [ ] **Run từ source** (khi cần debug sâu server code).
 
 ### 0.2 Boot nhanh bằng Docker (khuyến nghị làm trước)
 
-- [ ] Đi vào `deploy/all-in-one`.
-- [ ] Chạy local stack:
-  - [ ] `docker compose up -d --no-build`
-- [ ] Kiểm tra container đã lên:
-  - [ ] `docker compose ps`
-  - [ ] `docker compose logs -f openmu-startup` (kiểm tra init DB không lỗi)
-- [ ] Mở admin panel:
-  - [ ] `http://localhost/` (mặc định `admin/openmu`)
-- [ ] Tại admin panel:
-  - [ ] Start 2 connect servers.
-  - [ ] Start ít nhất 1 game server.
+- [x] Đi vào `deploy/all-in-one`.
+- [x] Chạy local stack:
+  - [x] `docker compose up -d --no-build`
+- [x] Kiểm tra container đã lên:
+  - [x] `docker compose ps`
+  - [x] `docker compose logs -f openmu-startup` (kiểm tra init DB không lỗi)
+- [x] Mở admin panel:
+  - [x] `http://localhost/` (mặc định `admin/openmu`)
+- [x] Tại admin panel:
+  - [x] Start 2 connect servers.
+  - [x] Start ít nhất 1 game server.
   - [ ] Bật Auto Start nếu muốn tự chạy các lần sau.
 
 ### 0.3 Xác nhận login/game flow tối thiểu (Milestone 1 gate)
@@ -41,22 +41,38 @@
   - [ ] Set IP resolve về local/loopback trong admin panel hoặc start parameter.
   - [ ] Dùng loopback IP `127.127.127.127` (không dùng `127.0.0.1` cho game client).
 
+### 0.3a Nhánh test trên mac (không có game client)
+
+- [x] Mở được Admin Panel và đăng nhập thành công.
+- [x] Xác nhận 2 Connect Server + Game Server ở trạng thái `Started`.
+- [x] Xác nhận `IP Resolving = Local` và `Auto Start = enabled`.
+- [ ] Chạy smoke test bằng lệnh:
+  - [x] `curl -I http://localhost:8081/` trả `200`
+  - [x] `nc -vz 127.0.0.1 44405` thành công
+  - [x] `nc -vz 127.0.0.1 44406` thành công
+  - [x] `nc -vz 127.0.0.1 55901` thành công
+- [x] Theo dõi log 5-10 phút:
+  - [x] `docker compose logs -f openmu-startup`
+  - [x] Không có exception nghiêm trọng lặp lại (chỉ thấy vòng stop/start theo thao tác quản trị).
+- [x] Tham chiếu runbook:
+  - [x] `docs/Mac-Server-Dev-Debug-Guide.md`
+
 ### 0.4 Chuẩn bị nhánh làm việc server
 
-- [ ] Tạo nhánh theo scope:
-  - [ ] `feature/server-local-boot`
-  - [ ] `feature/server-season6-baseline`
-- [ ] Tạo file log tiến độ (khuyến nghị):
-  - [ ] `docs/ServerExecutionLog.md` để ghi lỗi, nguyên nhân, cách fix.
+- [x] Tạo nhánh theo scope:
+  - [x] `feature/server-local-boot`
+  - [x] `feature/server-season6-baseline`
+- [x] Tạo file log tiến độ (khuyến nghị):
+  - [x] `docs/ServerExecutionLog.md` để ghi lỗi, nguyên nhân, cách fix.
 
 ## 1) Local Setup & Boot
 
 - [x] Fork `OpenMU` và đồng bộ branch làm việc.
-- [ ] Chạy local stack theo QuickStart:
-  - [ ] Database.
-  - [ ] ConnectServer.
-  - [ ] LoginServer.
-  - [ ] GameServer.
+- [x] Chạy local stack theo QuickStart:
+  - [x] Database.
+  - [x] ConnectServer.
+  - [x] LoginServer.
+  - [x] GameServer.
 - [ ] Xác nhận flow cơ bản:
   - [ ] Tạo account.
   - [ ] Đăng nhập thành công.

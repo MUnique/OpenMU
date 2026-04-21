@@ -316,3 +316,6 @@ src/AdminPanel/wwwroot/content/js/app.js.map
 
 # Mac OS filesystem files
 .DS_Store
+
+# Local venv for docs tooling (e.g. scripts/translate_missing_packet_docs.py)
+.venv_pkt/

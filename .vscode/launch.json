@@ -1,0 +1,27 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "OpenMU Startup (macOS, Docker DB)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build-openmu-startup",
+      "program": "${workspaceFolder}/bin/Debug/MUnique.OpenMU.Startup.dll",
+      "args": [
+        "-autostart",
+        "-resolveIP:loopback"
+      ],
+      "cwd": "${workspaceFolder}/src/Startup",
+      "console": "integratedTerminal",
+      "stopAtEntry": false,
+      "env": {
+        "DOTNET_ROOT": "${env:HOME}/.dotnet",
+        "PATH": "${env:HOME}/.dotnet:${env:HOME}/.dotnet/tools:/opt/homebrew/opt/postgresql@16/bin:${env:PATH}",
+        "DB_HOST": "localhost",
+        "DB_ADMIN_USER": "postgres",
+        "DB_ADMIN_PW": "admin",
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  ]
+}

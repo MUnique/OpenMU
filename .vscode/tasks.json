@@ -1,0 +1,15 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build-openmu-startup",
+      "type": "shell",
+      "command": "export DOTNET_ROOT=\"$HOME/.dotnet\"; export PATH=\"$DOTNET_ROOT:$DOTNET_ROOT/tools:/opt/homebrew/opt/postgresql@16/bin:$PATH\"; dotnet build \"${workspaceFolder}/src/Startup/MUnique.OpenMU.Startup.csproj\" -c Debug",
+      "problemMatcher": "$msCompile",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+  ]
+}

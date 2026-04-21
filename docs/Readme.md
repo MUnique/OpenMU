@@ -173,3 +173,12 @@ progress of the project. See also:
 
 * [Checklist - Project Lead/Product Owner](Checklist-ProjectLead.md):
   Role-based checklist for scope, milestones and quality gates
+
+* [Mac Server Dev & Debug Guide](Mac-Server-Dev-Debug-Guide.md):
+  Practical guide to run and debug OpenMU server on macOS without game client
+
+* [Deploy VPS Checklist](Deploy-VPS-Checklist.md):
+  End-to-end checklist from image build to VPS deployment, rollback and operations
+
+* [Vietnamese Docs](vietnamese/Readme.md):
+  Vietnamese translations and localized documentation index
