@@ -90,34 +90,6 @@ public class InMemoryPersistenceContextProvider : IMigratableDatabaseContextProv
         return context;
     }
 
-    private void AttachChangePublisher(InMemoryContext context, params Type[] editTypes)
-    {
-        if (this.ChangePublisher is { } changePublisher)
-        {
-#pragma warning disable VSTHRD100
-            async void OnContextOnSavedChanges(object? o, EventArgs e)
-#pragma warning restore VSTHRD100
-            {
-                try
-                {
-                    foreach (var editType in editTypes)
-                    {
-                        foreach (var obj in await context.GetAsync(editType, default).ConfigureAwait(false))
-                        {
-                            await changePublisher.ConfigurationChangedAsync(editType, obj.GetId(), obj).ConfigureAwait(false);
-                        }
-                    }
-                }
-                catch
-                {
-                    // ignore all errors.
-                }
-            }
-
-            context.SavedChanges += OnContextOnSavedChanges;
-        }
-    }
-
     /// <inheritdoc />
     public Task<bool> DatabaseExistsAsync(CancellationToken cancellationToken)
     {
@@ -166,5 +138,35 @@ public class InMemoryPersistenceContextProvider : IMigratableDatabaseContextProv
     public void ResetCache()
     {
         // do nothing here
+    }
+
+    private void AttachChangePublisher(InMemoryContext context, Type editType)
+    {
+        if (this.ChangePublisher is { } changePublisher)
+        {
+#pragma warning disable VSTHRD100
+            async void OnContextOnSavedChanges(object? o, EventArgs e)
+#pragma warning restore VSTHRD100
+            {
+                await this.PublishConfigurationChangesAsync(context, changePublisher, editType).ConfigureAwait(false);
+            }
+
+            context.SavedChanges += OnContextOnSavedChanges;
+        }
+    }
+
+    private async ValueTask PublishConfigurationChangesAsync(InMemoryContext context, IConfigurationChangePublisher changePublisher, Type editType)
+    {
+        try
+        {
+            foreach (var obj in await context.GetAsync(editType, default).ConfigureAwait(false))
+            {
+                await changePublisher.ConfigurationChangedAsync(editType, obj.GetId(), obj).ConfigureAwait(false);
+            }
+        }
+        catch
+        {
+            // ignore all errors.
+        }
     }
 }

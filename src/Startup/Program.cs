@@ -259,9 +259,9 @@ internal sealed class Program : IDisposable
             .AddSingleton(s =>
                 this.DeterminePersistenceContextProviderAsync(
                     args,
-                    s.GetService<ILoggerFactory>() ?? throw new Exception($"{nameof(ILoggerFactory)} not registered."),
-                    s.GetService<IConfigurationChangeListener>() ?? throw new Exception($"{nameof(IConfigurationChangeListener)} not registered."),
-                    s.GetService<IConfigurationChangePublisher>() ?? throw new Exception($"{nameof(IConfigurationChangePublisher)} not registered."))
+                    s.GetService<ILoggerFactory>() ?? throw new InvalidOperationException($"{nameof(ILoggerFactory)} not registered."),
+                    s.GetService<IConfigurationChangeListener>() ?? throw new InvalidOperationException($"{nameof(IConfigurationChangeListener)} not registered."),
+                    s.GetService<IConfigurationChangePublisher>() ?? throw new InvalidOperationException($"{nameof(IConfigurationChangePublisher)} not registered."))
                     .WaitAndUnwrapException())
             .AddSingleton<IPersistenceContextProvider>(s => s.GetService<IMigratableDatabaseContextProvider>()!)
             .AddSingleton<Lazy<IPersistenceContextProvider>>(s => new(() => s.GetService<IMigratableDatabaseContextProvider>()!))
