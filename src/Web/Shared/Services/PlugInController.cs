@@ -21,7 +21,6 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
 {
     private readonly IDataSource<GameConfiguration> _dataSource;
     private readonly IModalService _modalService;
-    private readonly PlugInManager? _plugInManager;
     private string _nameFilter = string.Empty;
     private Guid _pointFilter;
     private string _typeFilter = string.Empty;
@@ -31,12 +30,10 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
     /// </summary>
     /// <param name="dataSource">The data source.</param>
     /// <param name="modalService">The modal service.</param>
-    /// <param name="plugInManager">The plug in manager.</param>
-    public PlugInController(IDataSource<GameConfiguration> dataSource, IModalService modalService, PlugInManager? plugInManager = null)
+    public PlugInController(IDataSource<GameConfiguration> dataSource, IModalService modalService)
     {
         this._dataSource = dataSource;
         this._modalService = modalService;
-        this._plugInManager = plugInManager;
     }
 
     /// <inheritdoc />
@@ -195,8 +192,6 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
         {
             item.Configuration.SetConfiguration(configuration!, referenceResolver);
             await (await this._dataSource.GetContextAsync().ConfigureAwait(false)).SaveChangesAsync().ConfigureAwait(false);
-
-            this._plugInManager?.ConfigurePlugIn(item.Configuration.TypeId, item.Configuration);
 
             this.DataChanged?.Invoke(this, EventArgs.Empty);
         }
