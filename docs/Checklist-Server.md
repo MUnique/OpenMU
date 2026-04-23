@@ -1,3 +1,5 @@
+<!-- cspell:disable -->
+
 # Checklist Server Engineer (Private MU)
 
 ## 0) Việc cần làm ngay (theo thứ tự ưu tiên)

@@ -1,0 +1,8 @@
+{
+  "volatileFields": [
+    "tickCount",
+    "sessionId",
+    "nonce",
+    "timestamp"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "packetName": "LoginLongPassword",
+  "direction": "client_to_server",
+  "fields": {
+    "username": "test0",
+    "password": "test0",
+    "tickCount": 0,
+    "clientVersion": "2.04d",
+    "serial": "k1Pk2jcET48mxL3b"
+  }
+}

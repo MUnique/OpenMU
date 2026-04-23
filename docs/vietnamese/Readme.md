@@ -10,6 +10,7 @@ Thư mục này chứa bản dịch tiếng Việt cho tài liệu trong `docs`.
 - [Triển khai kiểm thử cấu trúc packet](PacketStructureTests.md)
 - [Tiến độ tính năng dự án](Progress.md)
 - [Packet docs tiếng Việt - Đợt 1](packets/Readme.md)
+- [Hướng dẫn setup và chạy OpenMU](Setup-Run-Project.md)
 
 ## Tài liệu kế hoạch/checklist (đã có tiếng Việt sẵn)
 

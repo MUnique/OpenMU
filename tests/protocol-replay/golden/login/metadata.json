@@ -1,0 +1,19 @@
+{
+  "flow": "login",
+  "protocolVersion": "season6-extended",
+  "clientProfile": "openmu-client-default",
+  "description": "Baseline login handshake and login request/response sequence.",
+  "packets": [
+    {
+      "direction": "client_to_server",
+      "name": "LoginLongPassword",
+      "opcode": "F1-01"
+    },
+    {
+      "direction": "server_to_client",
+      "name": "LoginResponse",
+      "opcode": "F1-01"
+    }
+  ],
+  "checksum": "replace-with-real-checksum-after-first-capture"
+}
