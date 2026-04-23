@@ -40,4 +40,9 @@ public class MapObject
     /// Gets or sets the direction.
     /// </summary>
     public Direction Direction { get; set; }
+
+    /// <summary>
+    /// Gets or sets the NPC object kind (only set for NonPlayerCharacter instances).
+    /// </summary>
+    public NpcObjectKind? NpcObjectKind { get; set; }
 }

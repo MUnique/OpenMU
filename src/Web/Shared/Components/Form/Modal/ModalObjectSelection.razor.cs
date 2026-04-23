@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Web.Shared.Components.Form;
+namespace MUnique.OpenMU.Web.Shared.Components.Form.Modal;
 
 using System.ComponentModel.DataAnnotations;
 using Blazored.Modal;

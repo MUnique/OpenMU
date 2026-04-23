@@ -39,6 +39,7 @@
                 var targetUrl = $"edit-config/{this.TypeString}/" + context.Id;
             }
             <a href="@(targetUrl)" class="btn btn-info">@Resources.Edit</a>
+            <button type="button" class="btn-secondary" @onclick="@(() => this.OnDuplicateButtonClickAsync(context))"><span class="oi oi-layers"></span> @Resources.Duplicate</button>
             <button type="button" class="btn-danger" @onclick="@(() => this.OnDeleteButtonClickAsync(context))"><span class="oi oi-trash"></span> @Resources.Delete</button>
         </TemplateColumn>
     </QuickGrid>

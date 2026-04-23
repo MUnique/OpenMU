@@ -10,7 +10,7 @@ using Blazored.Modal;
 using Blazored.Modal.Services;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Persistence;
-using MUnique.OpenMU.Web.Shared.Components.Form;
+using MUnique.OpenMU.Web.Shared.Components.Form.Modal;
 using MUnique.OpenMU.Web.Shared.Properties;
 
 /// <summary>

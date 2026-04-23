@@ -1,4 +1,4 @@
-﻿// <copyright file="ItemEdit.razor.cs" company="MUnique">
+// <copyright file="ItemEdit.razor.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -65,6 +65,12 @@ public sealed partial class ItemEdit : IDisposable
     /// <inheritdoc />
     protected override void OnParametersSet()
     {
+        if (this._viewModel?.Item == this.Item)
+        {
+            base.OnParametersSet();
+            return;
+        }
+
         if (this._viewModel is { } oldModel)
         {
             oldModel.PropertyChanged -= this.OnItemPropertyChanged;

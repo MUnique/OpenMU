@@ -11,7 +11,7 @@ using Blazored.Modal.Services;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
-using MUnique.OpenMU.Web.Shared.Components.Form;
+using MUnique.OpenMU.Web.Shared.Components.Form.Modal;
 using MUnique.OpenMU.Web.Shared.Models;
 
 /// <summary>

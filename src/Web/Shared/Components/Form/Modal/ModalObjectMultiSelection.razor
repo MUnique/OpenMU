@@ -1,0 +1,16 @@
+@typeparam TItem
+
+@inject IModalService _modalService;
+
+<EditForm Model="@this" class="modal-multi-selection">
+  <div class="modal-multi-selection__content">
+    <CascadingValue Value="@this.PersistenceContext">
+      <MultiLookupField TObject="TItem" @bind-Value="@this.Items" Label="@typeof(TItem).Name"/>
+    </CascadingValue>
+  </div>
+
+  <div class="modal-multi-selection__actions">
+    <button type="submit" @onclick="@SubmitAsync" class="btn-primary">OK</button>
+    <button type="button" @onclick="@CancelAsync" class="btn-secondary">Cancel</button>
+  </div>
+</EditForm>

@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Web.Map.Map;
 
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.NPC;
 
 /// <summary>
 /// Extension methods for <see cref="ILocateable"/>.
@@ -26,6 +27,7 @@ public static class LocateableExtensions
             Name = locateable.ToString() ?? string.Empty,
             X = locateable.Position.X,
             Y = locateable.Position.Y,
+            NpcObjectKind = (locateable as NonPlayerCharacter)?.Definition.ObjectKind,
         };
     }
 }
