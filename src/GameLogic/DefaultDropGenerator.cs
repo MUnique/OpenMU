@@ -35,6 +35,7 @@ public class DefaultDropGenerator : IDropGenerator
     private readonly IList<ItemDefinition> _ancientItems;
     private readonly IList<ItemDefinition> _droppableItems;
     private readonly IList<ItemDefinition>?[] _droppableItemsPerMonsterLevel = new IList<ItemDefinition>?[byte.MaxValue + 1];
+    private readonly IList<ItemDefinition>?[] _droppableSocketItemsPerMonsterLevel = new IList<ItemDefinition>?[byte.MaxValue + 1];
 
     private readonly byte _maxItemOptionLevelDrop;
     private readonly byte _excellentItemDropLevelDelta;
@@ -579,7 +580,8 @@ public class DefaultDropGenerator : IDropGenerator
             return null;
         }
 
-        return this._droppableItemsPerMonsterLevel[monsterLevel]
+        var cache = isSocketItem ? this._droppableSocketItemsPerMonsterLevel : this._droppableItemsPerMonsterLevel;
+        return cache[monsterLevel]
             ??= (from it in this._droppableItems
                  where CanDropAtMonsterLevel(it, monsterLevel)
                        && (it.DropLevel > monsterLevel - DropLevelMaxGap)

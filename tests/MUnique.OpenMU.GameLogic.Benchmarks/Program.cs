@@ -24,5 +24,6 @@ public static class Program
     public static void Main(string[] args)
     {
         BenchmarkRunner.Run<DropGeneratorBenchmarks>();
+        BenchmarkRunner.Run<PartyBenchmarks>();
     }
 }
