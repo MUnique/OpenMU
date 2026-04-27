@@ -1,4 +1,4 @@
-﻿// <copyright file="GameContext.cs" company="MUnique">
+// <copyright file="GameContext.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -80,6 +80,7 @@ public class GameContext : AsyncDisposable, IGameContext
             this.DropGenerator = dropGenerator;
             this.ConfigurationChangeMediator = changeMediator;
             this.ItemPowerUpFactory = new ItemPowerUpFactory(loggerFactory.CreateLogger<ItemPowerUpFactory>());
+            this.PartyManager = new PartyManager(configuration.MaximumPartySize, loggerFactory.CreateLogger<Party>());
             this._recoverTimer = new Timer(this.RecoverTimerElapsed, null, this.Configuration.RecoveryInterval, this.Configuration.RecoveryInterval);
             this._tasksTimer = new Timer(this.ExecutePeriodicTasks, null, 1000, 1000);
             this.FeaturePlugIns = new FeaturePlugInContainer(this.PlugInManager);
@@ -113,6 +114,9 @@ public class GameContext : AsyncDisposable, IGameContext
     public virtual float ExperienceRate => this.Configuration.ExperienceRate;
 
     /// <inheritdoc />
+    public virtual float MasterExperienceRate => this.Configuration.MasterExperienceRate;
+
+    /// <inheritdoc />
     public virtual bool PvpEnabled { get; }
 
     /// <inheritdoc/>
@@ -136,6 +140,9 @@ public class GameContext : AsyncDisposable, IGameContext
     /// <inheritdoc />
     public FeaturePlugInContainer FeaturePlugIns { get; }
 
+    /// <inheritdoc />
+    public Offline.OfflinePlayerManager OfflinePlayerManager { get; } = new();
+
     /// <inheritdoc/>
     public IItemPowerUpFactory ItemPowerUpFactory { get; }
 
@@ -145,15 +152,16 @@ public class GameContext : AsyncDisposable, IGameContext
     /// <summary>
     /// Gets the players by character name dictionary.
     /// </summary>
-    public IDictionary<string, Player> PlayersByCharacterName { get; } = new ConcurrentDictionary<string, Player>();
+    public ConcurrentDictionary<string, Player> PlayersByCharacterName { get; } = new ConcurrentDictionary<string, Player>(StringComparer.OrdinalIgnoreCase);
 
     /// <inheritdoc />
     public DuelRoomManager DuelRoomManager { get; set; }
 
-    /// <summary>
-    /// Gets the state of the active self defenses.
-    /// </summary>
+    /// <inheritdoc />
     public ConcurrentDictionary<(Player Attacker, Player Defender), DateTime> SelfDefenseState { get; } = new();
+
+    /// <inheritdoc />
+    public IPartyManager PartyManager { get; }
 
     /// <inheritdoc />
     public ILoggerFactory LoggerFactory { get; }
@@ -338,7 +346,7 @@ public class GameContext : AsyncDisposable, IGameContext
         PlayerCounter.Add(-1);
         if (player.SelectedCharacter != null)
         {
-            this.PlayersByCharacterName.Remove(player.SelectedCharacter.Name);
+            this.PlayersByCharacterName.TryRemove(player.SelectedCharacter.Name, out _);
         }
 
         player.CurrentMap?.RemoveAsync(player);
@@ -504,13 +512,13 @@ public class GameContext : AsyncDisposable, IGameContext
 
     private ValueTask PlayerEnteredWorldAsync(Player player)
     {
-        this.PlayersByCharacterName.Add(player.SelectedCharacter!.Name, player);
+        this.PlayersByCharacterName.TryAdd(player.SelectedCharacter!.Name, player);
         return ValueTask.CompletedTask;
     }
 
     private ValueTask PlayerLeftWorldAsync(Player player)
     {
-        this.PlayersByCharacterName.Remove(player.SelectedCharacter!.Name);
+        this.PlayersByCharacterName.TryRemove(player.SelectedCharacter!.Name, out _);
         return ValueTask.CompletedTask;
     }
 }

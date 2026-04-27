@@ -79,14 +79,22 @@
     </Compile>
   </ItemGroup>
 
-  <ItemGroup Condition="'$(ci)'!='true'">
-    <PackageReference Include="BuildWebCompiler2022" />
-  </ItemGroup>
+    <ItemGroup Condition="'$(ci)'!='true' and '$(OS)'=='Windows_NT'">
+        <PackageReference Include="BuildWebCompiler2022" />
+    </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\GameLogic\MUnique.OpenMU.GameLogic.csproj" />
     <ProjectReference Include="..\..\Persistence\MUnique.OpenMU.Persistence.csproj" />
     <ProjectReference Include="..\ItemEditor\MUnique.OpenMU.Web.ItemEditor.csproj" />
   </ItemGroup>
+
+  <Target Name="CompileSass" BeforeTargets="Build" Condition="'$(ci)'!='true' and '$(OS)'!='Windows_NT'">
+    <Exec Command="sass --version" IgnoreExitCode="true">
+      <Output TaskParameter="ExitCode" PropertyName="SassExists"/>
+    </Exec>
+    <Error Condition="'$(SassExists)'!='0'" Text="Dart Sass not installed. Install with: npm install -g sass."/>
+    <Exec Command="sass Styles/Site.scss:wwwroot/css/shared.css --style=expanded --no-source-map" />
+  </Target>
 
 </Project>

@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GuildServer.Host;
 using global::Dapr.Client;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.EntityFramework.Model;
 using MUnique.OpenMU.ServerClients;
 
 /// <summary>
@@ -64,6 +65,45 @@ public class GuildChangePublisher : IGuildChangePublisher
         catch (Exception ex)
         {
             this._logger.LogError(ex, nameof(this.AssignGuildToPlayerAsync));
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask AllianceCreatedAsync(uint masterGuildId, uint memberGuildId)
+    {
+        try
+        {
+            await this._daprClient.InvokeMethodAsync("pubsub", nameof(IGameServer.AllianceCreatedAsync), (masterGuildId, memberGuildId)).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, nameof(this.AllianceCreatedAsync));
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask AllianceDisbandedAsync(uint masterGuildId, uint memberGuildId)
+    {
+        try
+        {
+            await this._daprClient.InvokeMethodAsync("pubsub", nameof(IGameServer.AllianceDisbandedAsync), (masterGuildId, memberGuildId)).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, nameof(this.AllianceDisbandedAsync));
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask GuildHostilityChangedAsync(uint guildIdA, IReadOnlyList<uint> allianceGuildIdsA, uint guildIdB, IReadOnlyList<uint> allianceGuildIdsB, bool created)
+    {
+        try
+        {
+            await this._daprClient.PublishEventAsync("pubsub", nameof(IGameServer.GuildHostilityChangedAsync), (guildIdA, allianceGuildIdsA, guildIdB, allianceGuildIdsB, created)).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, nameof(this.GuildHostilityChangedAsync));
         }
     }
 }

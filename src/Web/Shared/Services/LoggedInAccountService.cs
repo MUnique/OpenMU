@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.Web.Shared.Services;
 using MUnique.OpenMU.Interfaces;
 
 /// <summary>
-/// Services for the <see cref="LoggedIn"/> page.
+/// Services for the <see cref="LoggedInAccount"/> page.
 /// </summary>
 public class LoggedInAccountService : IDataService<LoggedInAccount>, ISupportDataChangedNotification
 {
@@ -25,7 +25,9 @@ public class LoggedInAccountService : IDataService<LoggedInAccount>, ISupportDat
         this._serverProvider = serverProvider;
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Event raised when the data has changed.
+    /// </summary>
     public event EventHandler? DataChanged;
 
     /// <summary>

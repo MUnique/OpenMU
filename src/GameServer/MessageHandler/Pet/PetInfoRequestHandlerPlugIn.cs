@@ -45,6 +45,7 @@ internal class PetInfoRequestHandlerPlugIn : IPacketHandlerPlugIn
             StorageType.Inventory => PetStorageLocation.Inventory,
             StorageType.InventoryPetSlot => PetStorageLocation.InventoryPetSlot,
             StorageType.PersonalShop => PetStorageLocation.PersonalShop,
+            StorageType.NpcShop => PetStorageLocation.NpcShop,
             StorageType.TradeOther => PetStorageLocation.TradeOther,
             StorageType.TradeOwn => PetStorageLocation.TradeOwn,
             StorageType.Vault => PetStorageLocation.Vault,

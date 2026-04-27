@@ -4,8 +4,8 @@
 
 namespace MUnique.OpenMU.Dapr.Common;
 
-using System.Threading;
 using System.Text.Json.Serialization;
+using System.Threading;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -293,6 +293,28 @@ public static class Extensions
     {
         await app.Services.GetService<IDatabaseConnectionSettingProvider>()!
             .InitializeAsync(default)
+            .ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Waits for the database secrets to be loaded and then for the database to be up-to-date.
+    /// This is intended to be called from <see cref="Microsoft.Extensions.Hosting.IHostedLifecycleService.StartedAsync"/>
+    /// which is called after the web server has already started, breaking the circular dependency where:
+    /// the Dapr sidecar needs the app HTTP API to be up before it initializes its secret store,
+    /// but the app needs Dapr secrets to connect to the database.
+    /// </summary>
+    /// <param name="serviceProvider">The service provider.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    public static async Task WaitForDatabaseInitializationAsync(this IServiceProvider serviceProvider, CancellationToken cancellationToken = default)
+    {
+        var dbConnectionProvider = serviceProvider.GetRequiredService<IDatabaseConnectionSettingProvider>();
+        if (dbConnectionProvider.Initialization is { } initTask)
+        {
+            await initTask.WaitAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        await serviceProvider.GetRequiredService<PersistenceContextProvider>()
+            .WaitForUpdatedDatabaseAsync(cancellationToken)
             .ConfigureAwait(false);
     }
 

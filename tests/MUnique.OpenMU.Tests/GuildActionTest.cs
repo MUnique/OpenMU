@@ -33,12 +33,12 @@ public class GuildActionTest : GuildTestBase
         await base.SetupAsync().ConfigureAwait(false);
 
         var gameServerContext = this.CreateGameServer();
-        this._guildMasterPlayer = await TestHelper.CreatePlayerAsync(gameServerContext).ConfigureAwait(false);
+        this._guildMasterPlayer = await PlayerTestHelper.CreatePlayerAsync(gameServerContext).ConfigureAwait(false);
         this._guildMasterPlayer.SelectedCharacter!.Id = this.GuildMaster.Id;
         this._guildMasterPlayer.SelectedCharacter.Name = this.GuildMaster.Name;
         await this.GuildServer.PlayerEnteredGameAsync(this.GuildMaster.Id, this.GuildMaster.Name, 0).ConfigureAwait(false);
         this._guildMasterPlayer.Attributes![Stats.Level] = 100;
-        this._player = await TestHelper.CreatePlayerAsync(gameServerContext).ConfigureAwait(false);
+        this._player = await PlayerTestHelper.CreatePlayerAsync(gameServerContext).ConfigureAwait(false);
         await this._player.CurrentMap!.AddAsync(this._guildMasterPlayer).ConfigureAwait(false);
         this._player.SelectedCharacter!.Name = "Player";
         this._player.SelectedCharacter.Id = Guid.NewGuid();
@@ -137,7 +137,10 @@ public class GuildActionTest : GuildTestBase
         var action = new GuildListRequestAction();
         await action.RequestGuildListAsync(this._player).ConfigureAwait(false);
         var guildList = await this.GuildServer.GetGuildListAsync(this._player.GuildStatus!.GuildId).ConfigureAwait(false);
-        Mock.Get(this._player.ViewPlugIns.GetPlugIn<IShowGuildListPlugIn>()!).Verify(v => v!.ShowGuildListAsync(It.Is<IEnumerable<GuildListEntry>>(list => list.Any(entry => entry.PlayerName == this._player.SelectedCharacter!.Name))), Times.Once());
+        Mock.Get(this._player.ViewPlugIns.GetPlugIn<IShowGuildListPlugIn>()!)
+            .Verify(v => v!.ShowGuildListAsync(
+                It.Is<IReadOnlyCollection<GuildListEntry>>(list => list.Any(entry => entry.PlayerName == this._player.SelectedCharacter!.Name)),
+                It.Is<Interfaces.Guild>(g => g.Name == GuildName)), Times.Once());
         Assert.That(guildList.Any(entry => entry.PlayerName == this._player.SelectedCharacter!.Name), Is.True);
     }
 

@@ -387,6 +387,12 @@
   <data name="EarthShakeSkillPlugIn_Description" xml:space="preserve">
     <value>Handles the earth shake skill of the dark horse. Pushes the targets away from the attacker.</value>
   </data>
+  <data name="FireScreamSkillPlugIn_Name" xml:space="preserve">
+    <value>Fire scream skill</value>
+  </data>
+  <data name="FireScreamSkillPlugIn_Description" xml:space="preserve">
+    <value>Handles the fire scream skill of the dark lord class. Based on a chance, it does an additional damage (explosion) to any targets in a radius which origin is the target itself.</value>
+  </data>
   <data name="ForceSkillAction_Name" xml:space="preserve">
     <value>ForceSkillAction</value>
   </data>
@@ -422,6 +428,18 @@
   </data>
   <data name="PlasmaStormSkillPlugIn_Description" xml:space="preserve">
     <value>Handles the plasma storm skill of the fenrir pet. It randomly halves the durability of a target's equipped item.</value>
+  </data>
+  <data name="PollutionSkillPlugIn_Name" xml:space="preserve">
+    <value>Pollution Skill</value>
+  </data>
+  <data name="PollutionSkillPlugIn_Description" xml:space="preserve">
+    <value>Handles the pollution skill (book of lagle) of the summoner class. Based on a chance, it may push the targets 2 squares away from the attacker.</value>
+  </data>
+  <data name="RequiemSkillPlugIn_Name" xml:space="preserve">
+    <value>Requiem Skill</value>
+  </data>
+  <data name="RequiemSkillPlugIn_Description" xml:space="preserve">
+    <value>Handles the requiem skill (book of neil) of the summoner class. Based on a chance, it may stun the target.</value>
   </data>
   <data name="SoulBarrierProficieSkillAction_Name" xml:space="preserve">
     <value>SoulBarrierProficieSkillAction</value>
@@ -1105,7 +1123,7 @@
     <value>Multiply required money by reset count</value>
   </data>
   <data name="ResetConfiguration_ResetStats_Name" xml:space="preserve">
-    <value>Reset stats</value>
+    <value>Reset base stats to class defaults</value>
   </data>
   <data name="ResetConfiguration_PointsPerReset_Name" xml:space="preserve">
     <value>Points per reset</value>
@@ -1114,7 +1132,7 @@
     <value>Multiply points by reset count</value>
   </data>
   <data name="ResetConfiguration_ReplacePointsPerReset_Name" xml:space="preserve">
-    <value>Reset points per reset</value>
+    <value>Replace level-up points with reset total</value>
   </data>
   <data name="ResetConfiguration_MoveHome_Name" xml:space="preserve">
     <value>Move home</value>
@@ -1139,5 +1157,17 @@
   </data>
   <data name="BaseInvasionPlugIn_DefaultStartMessage" xml:space="preserve">
     <value>[{mapName}] Invasion!</value>
+  </data>
+  <data name="OfflineLevelingChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Offline Leveling Command</value>
+  </data>
+  <data name="OfflineLevelingChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Allows players to start offline leveling with /offlevel. The character stays in the world after the client disconnects and stops when the player logs back in.</value>
+  </data>
+  <data name="PartyAutoRejoinPlugIn_Name" xml:space="preserve">
+    <value>Party Auto-Rejoin</value>
+  </data>
+  <data name="PartyAutoRejoinPlugIn_Description" xml:space="preserve">
+    <value>Automatically rejoins players to their previous party upon entering the world.</value>
   </data>
 </root>

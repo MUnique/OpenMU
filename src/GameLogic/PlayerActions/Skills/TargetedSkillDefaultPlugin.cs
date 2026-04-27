@@ -55,13 +55,13 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
 
         if (attributes[Stats.IsStunned] > 0)
         {
-            player.Logger.LogWarning($"Probably Hacker - player {player} is attacking in stunned state");
+            player.Logger.LogWarning("Probably Hacker - player {Player} is attacking in stunned state", player);
             return;
         }
 
         if (attributes[Stats.IsAsleep] > 0)
         {
-            player.Logger.LogWarning($"Probably Hacker - player {player} is attacking in asleep state");
+            player.Logger.LogWarning("Probably Hacker - player {Player} is attacking in asleep state", player);
             return;
         }
 
@@ -263,9 +263,9 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
 
                 if (!target.IsAtSafezone() && !player.IsAtSafezone() && target != player)
                 {
-                    await target.AttackByAsync(player, skillEntry, isCombo, 1, skill.NumberOfHitsPerAttack > 1 ? false : null).ConfigureAwait(false);
+                    var hitInfo = await target.AttackByAsync(player, skillEntry, isCombo, 1, skill.NumberOfHitsPerAttack > 1 ? false : null).ConfigureAwait(false);
                     player.LastAttackedTarget.SetTarget(target);
-                    success = await target.TryApplyElementalEffectsAsync(player, skillEntry).ConfigureAwait(false) || success;
+                    success = await target.TryApplyElementalEffectsAsync(player, skillEntry, hitInfo).ConfigureAwait(false) || success;
 
                     for (int hit = 2; hit <= skill.NumberOfHitsPerAttack; hit++)
                     {
@@ -279,7 +279,7 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
                 var canDoBuff = !player.IsAtSafezone() || player.CurrentMiniGame is { };
                 if (!canDoBuff)
                 {
-                    player.Logger.LogWarning($"Can't apply magic effect when being in the safezone. skill: {skill.Name} ({skill.Number}), skillType: {skill.SkillType}.");
+                    player.Logger.LogWarning("Can't apply magic effect when being in the safe-zone. skill: {SkillName} ({SkillNumber}), skillType: {SkillType}.", skill.Name, skill.Number, skill.SkillType);
                     break;
                 }
 
@@ -295,12 +295,12 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
                 }
                 else
                 {
-                    player.Logger.LogWarning($"Skill.MagicEffectDef isn't null, but it's not a buff or regeneration skill. skill: {skill.Name} ({skill.Number}), skillType: {skill.SkillType}.");
+                    player.Logger.LogWarning("Skill.MagicEffectDef isn't null, but it's not a buff or regeneration skill. skill: {SkillName} ({SkillNumber}), skillType: {SkillType}.", skill.Name, skill.Number, skill.SkillType);
                 }
             }
             else
             {
-                player.Logger.LogWarning($"Skill.MagicEffectDef is null, skill: {skill.Name} ({skill.Number}), skillType: {skill.SkillType}.");
+                player.Logger.LogWarning("Skill.MagicEffectDef is null, skill: {SkillName} ({SkillNumber}), skillType: {SkillType}.", skill.Name, skill.Number, skill.SkillType);
             }
         }
 

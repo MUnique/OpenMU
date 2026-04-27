@@ -2,19 +2,21 @@
 @using MUnique.OpenMU.DataModel
 @using MUnique.OpenMU.DataModel.Entities
 @using MUnique.OpenMU.Web.AdminPanel.Properties
+@using MUnique.OpenMU.Web.Shared.Services
 
 @inject LoggedInAccountService AccountService;
+@inject OfflineAccountService OfflineService;
 
 <PageTitle>OpenMU: @Resources.OnlineAccounts</PageTitle>
 <Breadcrumb IsFirstFromRoot="true" Caption="@Resources.OnlineAccounts"/>
 <h1>@Resources.OnlineAccounts</h1>
 
-<div>
+<div class="w-100">
   <DataTable TItem=@LoggedInAccount>
     <TableHeader>
-      <th class="col-1">@typeof(Account).GetPropertyCaption(nameof(Account.LoginName))</th>
-      <th class="col-1">@Resources.ServerID</th>
-      <th class="col-1">@Resources.Action</th>
+      <th class="col-3">@typeof(Account).GetPropertyCaption(nameof(Account.LoginName))</th>
+      <th class="col-2">@Resources.ServerID</th>
+      <th class="col-2">@Resources.Action</th>
     </TableHeader>
     <ItemTemplate Context="item">
       <td>@item.LoginName</td>
@@ -22,6 +24,29 @@
       <td>
         <button class="btn btn-warning" type="button" @onclick="() => this.AccountService.SetAccountOfflineAsync(item)">
           <span class="oi oi-bolt" aria-hidden="true" /> @Resources.Disconnect
+        </button>
+      </td>
+    </ItemTemplate>
+  </DataTable>
+</div>
+
+<h2>@Resources.ActiveOfflinePlayer</h2>
+
+<div class="w-100">
+  <DataTable TItem=@OfflineAccount>
+    <TableHeader>
+      <th class="col-3">@typeof(Account).GetPropertyCaption(nameof(Account.LoginName))</th>
+      <th class="col-2">@Resources.ServerID</th>
+      <th class="col-3">@Resources.StartedAt</th>
+      <th class="col-2">@Resources.Action</th>
+    </TableHeader>
+    <ItemTemplate Context="item">
+      <td>@item.LoginName</td>
+      <td>@item.ServerId</td>
+      <td>@item.StartedAt.ToString("yyyy-MM-dd HH:mm:ss") UTC</td>
+      <td>
+        <button class="btn btn-warning" type="button" @onclick="() => this.OfflineService.StopOfflinePlayerAsync(item)">
+          <span class="oi oi-media-stop" aria-hidden="true" /> @Resources.Stop
         </button>
       </td>
     </ItemTemplate>

@@ -5,6 +5,8 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Items;
 
 using System.ComponentModel;
+using MUnique.OpenMU.DataModel.Configuration;
+using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
@@ -37,6 +39,12 @@ public class MoveItemAction
     /// <param name="toStorage">To storage.</param>
     public async ValueTask MoveItemAsync(Player player, byte fromSlot, Storages fromStorage, byte toSlot, Storages toStorage)
     {
+        if (!this.IsMoveAllowed(player, fromStorage, toStorage))
+        {
+            await player.InvokeViewPlugInAsync<IItemMoveFailedPlugIn>(p => p.ItemMoveFailedAsync(null)).ConfigureAwait(false);
+            return;
+        }
+
         var fromStorageInfo = this.GetStorageInfo(player, fromStorage);
         var fromItemStorage = fromStorageInfo?.Storage;
         var item = fromItemStorage?.GetItem(fromSlot);
@@ -55,7 +63,7 @@ public class MoveItemAction
         if (movement != Movement.None)
         {
             var cancelEventArgs = new CancelEventArgs();
-            player.GameContext.PlugInManager.GetPlugInPoint<IItemMovingPlugIn>()?.ItemMoving(player, item, fromStorage, toSlot, cancelEventArgs);
+            player.GameContext.PlugInManager.GetPlugInPoint<IItemMovingPlugIn>()?.ItemMoving(player, item, toStorage, toSlot, cancelEventArgs);
             if (cancelEventArgs.Cancel)
             {
                 movement = Movement.None;
@@ -65,13 +73,13 @@ public class MoveItemAction
         switch (movement)
         {
             case Movement.Normal:
-                await this.MoveNormalAsync(player, fromSlot, toSlot, toStorage, fromItemStorage!, item, toItemStorage!).ConfigureAwait(false);
+                await this.MoveNormalAsync(player, fromStorage, fromSlot, toStorage, toSlot, fromItemStorage!, item, toItemStorage!).ConfigureAwait(false);
                 break;
             case Movement.PartiallyStack when toItemStorage?.GetItem(toSlot) is { } targetItem:
                 await this.PartiallyStackAsync(player, item, targetItem).ConfigureAwait(false);
                 break;
             case Movement.CompleteStack when toItemStorage?.GetItem(toSlot) is { } targetItem:
-                await this.FullStackAsync(player, item, targetItem).ConfigureAwait(false);
+                await this.FullStackAsync(player, fromItemStorage!, item, targetItem).ConfigureAwait(false);
                 break;
             default:
                 await player.InvokeViewPlugInAsync<IItemMoveFailedPlugIn>(p => p.ItemMoveFailedAsync(item)).ConfigureAwait(false);
@@ -92,9 +100,10 @@ public class MoveItemAction
         }
     }
 
-    private async ValueTask FullStackAsync(Player player, Item sourceItem, Item targetItem)
+    private async ValueTask FullStackAsync(Player player, IStorage sourceStorage, Item sourceItem, Item targetItem)
     {
         targetItem.Durability += sourceItem.Durability;
+        await sourceStorage.RemoveItemAsync(sourceItem).ConfigureAwait(false);
         await player.InvokeViewPlugInAsync<IItemMoveFailedPlugIn>(p => p.ItemMoveFailedAsync(sourceItem)).ConfigureAwait(false);
         await player.InvokeViewPlugInAsync<Views.Inventory.IItemRemovedPlugIn>(p => p.RemoveItemAsync(sourceItem.ItemSlot)).ConfigureAwait(false);
         await player.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(targetItem, false)).ConfigureAwait(false);
@@ -110,12 +119,26 @@ public class MoveItemAction
         await player.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(targetItem, false)).ConfigureAwait(false);
     }
 
-    private async ValueTask MoveNormalAsync(Player player, byte fromSlot, byte toSlot, Storages toStorage, IStorage fromItemStorage, Item item, IStorage toItemStorage)
+    private async ValueTask MoveNormalAsync(Player player, Storages fromStorage, byte fromSlot, Storages toStorage, byte toSlot, IStorage fromItemStorage, Item item, IStorage toItemStorage)
     {
         await fromItemStorage.RemoveItemAsync(item).ConfigureAwait(false);
         if (!await toItemStorage.AddItemAsync(toSlot, item).ConfigureAwait(false))
         {
-            await fromItemStorage.AddItemAsync(item).ConfigureAwait(false);
+            var restoredToOriginalSlot = await fromItemStorage.AddItemAsync(fromSlot, item).ConfigureAwait(false);
+            if (!restoredToOriginalSlot)
+            {
+                var restoredToAnySlot = await fromItemStorage.AddItemAsync(item).ConfigureAwait(false);
+                player.Logger.LogCritical(
+                    "Inconsistent inventory state after failed item move rollback. Player: {player}, fromStorage: {fromStorage}, fromSlot: {fromSlot}, toStorage: {toStorage}, toSlot: {toSlot}, item: {item}, restoredToAnySlot: {restoredToAnySlot}",
+                    player,
+                    fromStorage,
+                    fromSlot,
+                    toStorage,
+                    toSlot,
+                    item,
+                    restoredToAnySlot);
+                await player.InvokeViewPlugInAsync<IUpdateInventoryListPlugIn>(p => p.UpdateInventoryListAsync()).ConfigureAwait(false);
+            }
 
             await player.InvokeViewPlugInAsync<IItemMoveFailedPlugIn>(p => p.ItemMoveFailedAsync(item)).ConfigureAwait(false);
             return;
@@ -161,7 +184,7 @@ public class MoveItemAction
                     player.Inventory,
                     (byte)(InventoryRows + (player.SelectedCharacter!.InventoryExtensions * RowsOfOneExtension)),
                     EquippableSlotsCount,
-                    (byte)(EquippableSlotsCount + player.GetInventorySize()));
+                    (byte)(EquippableSlotsCount + player.InventorySize));
                 break;
             case Storages.PersonalStore when player.ShopStorage is not null:
                 result = new StorageInfo(
@@ -305,12 +328,12 @@ public class MoveItemAction
 
         for (var i = toStorage.StartIndex; i < toStorage.EndIndex; i++)
         {
-            if (toStorage.StartIndex == fromSlot && sameStorage)
+            if (i == fromSlot && sameStorage)
             {
                 continue; // to make sure that the same item is not blocking itself
             }
 
-            var blockingItem = toStorage.Storage.GetItem(toStorage.StartIndex);
+            var blockingItem = toStorage.Storage.GetItem(i);
             if (blockingItem is null)
             {
                 continue; // no item is blocking the slot
@@ -319,20 +342,7 @@ public class MoveItemAction
             this.SetUsedSlots(toStorage, blockingItem, usedSlots);
         }
 
-        return this.AreTargetSlotsBlocked(item, toSlot, toStorage, usedSlots) ? Movement.None : Movement.Normal;
-    }
-
-    private bool AreTargetSlotsBlocked(Item item, byte toSlot, StorageInfo toStorage, bool[,] usedSlots)
-    {
-        for (var i = toStorage.StartIndex; i < toStorage.EndIndex; i++)
-        {
-            if (this.IsTargetSlotBlocked(item, toSlot, toStorage, usedSlots))
-            {
-                return true;
-            }
-        }
-
-        return false;
+        return this.IsTargetSlotBlocked(item, toSlot, toStorage, usedSlots) ? Movement.None : Movement.Normal;
     }
 
     private bool IsTargetSlotBlocked(Item item, byte toSlot, StorageInfo toStorage, bool[,] usedSlots)
@@ -377,6 +387,45 @@ public class MoveItemAction
                 usedSlots[r, c] = true;
             }
         }
+    }
+
+    private bool IsMoveAllowed(Player player, Storages fromStorage, Storages toStorage)
+    {
+        if (player.SelectedCharacter is null)
+        {
+            return false;
+        }
+
+        return this.IsStorageContextAllowed(player, fromStorage)
+               && this.IsStorageContextAllowed(player, toStorage);
+    }
+
+    private bool IsStorageContextAllowed(Player player, Storages storage)
+    {
+        var state = player.PlayerState.CurrentState;
+        var openedWindow = player.OpenedNpc?.Definition.NpcWindow;
+
+        return storage switch
+        {
+            Storages.Inventory => state == PlayerState.EnteredWorld
+                                  || state == PlayerState.NpcDialogOpened
+                                  || state == PlayerState.TradeOpened,
+            Storages.PersonalStore => state == PlayerState.EnteredWorld,
+            Storages.Vault => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.VaultStorage,
+            Storages.Trade => state == PlayerState.TradeOpened,
+            Storages.ChaosMachine => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.ChaosMachine,
+            Storages.PetTrainer => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.PetTrainer,
+            Storages.Refinery => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.ElphisRefinery,
+            Storages.Smelting => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.RefineStoneMaking,
+            Storages.ItemRestore => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.RemoveJohOption,
+            Storages.ChaosCardMaster => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.ChaosCardCombination,
+            Storages.CherryBlossomSpirit => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.CherryBlossomBranchesAssembly,
+            Storages.SeedCrafting => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.SeedMaster,
+            Storages.SeedSphereCrafting => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.SeedResearcher,
+            Storages.SeedMountCrafting => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.SeedResearcher,
+            Storages.SeedUnmountCrafting => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.SeedResearcher,
+            _ => false,
+        };
     }
 
     private record StorageInfo(IStorage Storage, byte Rows, byte StartIndex, byte EndIndex);

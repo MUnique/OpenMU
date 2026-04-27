@@ -105,6 +105,32 @@ internal class AccountRepository : CachingGenericRepository<Account>
     }
 
     /// <summary>
+    /// Authenticates the account by login name and password, returning minimal state data without loading the full account.
+    /// </summary>
+    /// <param name="loginName">The login name.</param>
+    /// <param name="password">The password.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The <see cref="DataModel.Entities.AccountState"/> if credentials are valid; otherwise, null.</returns>
+    internal async ValueTask<DataModel.Entities.AccountState?> AuthenticateAsync(string loginName, string password, CancellationToken cancellationToken = default)
+    {
+        using var context = this.GetContext();
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var accountInfo = await context.Context.Set<Account>()
+            .Where(a => a.LoginName == loginName)
+            .Select(a => new { a.PasswordHash, a.State })
+            .AsNoTracking()
+            .FirstOrDefaultAsync(cancellationToken).ConfigureAwait(false);
+
+        if (accountInfo is not null && BCrypt.Verify(password, accountInfo.PasswordHash))
+        {
+            return accountInfo.State;
+        }
+
+        return null;
+    }
+
+    /// <summary>
     /// Gets the account by login name.
     /// </summary>
     /// <param name="loginName">The login name.</param>

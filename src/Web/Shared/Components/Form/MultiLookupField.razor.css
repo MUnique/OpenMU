@@ -1,0 +1,120 @@
+.multi-lookup-field {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.multi-lookup-field__container {
+    position: relative;
+    display: inline-block;
+}
+
+.multi-lookup-field__selected-items {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    background: #fff;
+    min-height: 2.4em;
+    cursor: text;
+    position: relative;
+    z-index: 1051;
+}
+
+.multi-lookup-field__tag {
+    display: inline-flex;
+    align-items: center;
+    background-color: #e9ecef;
+    border: 1px solid #ced4da;
+    border-radius: 0.2rem;
+    padding: 0.1rem 0.4rem;
+    font-size: 1rem;
+    line-height: 1.4;
+    white-space: nowrap;
+}
+
+.multi-lookup-field__tag-remove {
+    background: none;
+    border: none;
+    color: #6c757d;
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+    margin-left: 0.25rem;
+    padding: 0;
+}
+
+.multi-lookup-field__tag-remove:hover {
+    color: #dc3545;
+}
+
+.multi-lookup-field__search-input {
+    flex: 1 1 auto;
+    min-width: 8rem;
+    border: none;
+    outline: none;
+    padding: 0.15rem;
+    font-size: 1rem;
+    background: transparent;
+    margin: 0.5rem 0.25rem;
+}
+
+.multi-lookup-field__dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1050;
+    width: 100%;
+    max-height: 300px;
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid #ced4da;
+    border-top: none;
+    border-radius: 0 0 0.25rem 0.25rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    margin-top: -1px;
+}
+
+.multi-lookup-field__dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.6rem;
+    cursor: pointer;
+    font-size: 1rem;
+    user-select: none;
+}
+
+.multi-lookup-field__dropdown-item:hover {
+    background-color: #f0f0f0;
+}
+
+.multi-lookup-field__dropdown-item--selected {
+    background-color: #e8f0fe;
+}
+
+.multi-lookup-field__dropdown-item--selected:hover {
+    background-color: #d4e4fc;
+}
+
+.multi-lookup-field__dropdown-item--loading,
+.multi-lookup-field__dropdown-item--empty {
+    color: #6c757d;
+    cursor: default;
+    font-style: italic;
+}
+
+.multi-lookup-field__dropdown-item--loading:hover,
+.multi-lookup-field__dropdown-item--empty:hover {
+    background-color: transparent;
+}
+
+.multi-lookup-field__dropdown-item input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    pointer-events: none;
+    cursor: pointer;
+}

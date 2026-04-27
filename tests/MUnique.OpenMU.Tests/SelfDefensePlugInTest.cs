@@ -22,7 +22,7 @@ public class SelfDefensePlugInTest
     [Test]
     public async ValueTask OwnSummonHitDoesNotStartSelfDefenseAsync()
     {
-        var player = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
 
         var summonMock = new Mock<IAttackable>();
         var summonable = summonMock.As<ISummonable>();

@@ -18,9 +18,9 @@ public class AreaSkillHitAction
     public async ValueTask AttackTargetAsync(Player player, IAttackable target, SkillEntry skill)
     {
         if (skill.Skill?.SkillType != SkillType.AreaSkillExplicitHits
-            || target is null
             || !target.IsAlive
-            || target.IsAtSafezone())
+            || target.IsAtSafezone()
+            || (target is Player && !player.GameContext.Configuration.AreaSkillHitsPlayer))
         {
             return;
         }
@@ -33,8 +33,8 @@ public class AreaSkillHitAction
 
         if (target.CheckSkillTargetRestrictions(player, skill.Skill))
         {
-            await target.AttackByAsync(player, skill, false).ConfigureAwait(false);
-            await target.TryApplyElementalEffectsAsync(player, skill).ConfigureAwait(false);
+            var hitInfo = await target.AttackByAsync(player, skill, false).ConfigureAwait(false);
+            await target.TryApplyElementalEffectsAsync(player, skill, hitInfo).ConfigureAwait(false);
         }
     }
 }

@@ -40,7 +40,7 @@ public class EarthShakeSkillPlugIn : IAreaSkillPlugIn
         }
 
         var currentDistance = startingPoint.EuclideanDistanceTo(currentTarget);
-        while (currentDistance < skillEntry.Skill.Range)
+        for (int i = 0; i < 3; i++)
         {
             var nextTarget = currentTarget.CalculateTargetPoint(direction);
             if (!currentMap.Terrain.WalkMap[nextTarget.X, nextTarget.Y]

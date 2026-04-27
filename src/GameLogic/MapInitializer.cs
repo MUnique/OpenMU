@@ -1,4 +1,4 @@
-﻿// <copyright file="MapInitializer.cs" company="MUnique">
+// <copyright file="MapInitializer.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -209,6 +209,11 @@ public class MapInitializer : IMapInitializer
         {
             this._logger.LogDebug("Creating destructible {spawn}", spawnArea);
             npc = new Destructible(spawnArea, monsterDef, createdMap, eventStateProvider, dropGenerator ?? this._dropGenerator, this.PlugInManager!);
+        }
+        else if (monsterDef.MerchantStore is not null)
+        {
+            this._logger.LogDebug("Creating merchant npc {spawn}", spawnArea);
+            npc = new MerchantNpc(spawnArea, monsterDef, createdMap);
         }
         else
         {

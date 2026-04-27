@@ -137,6 +137,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<TimeSpan>("DelayPerOneDistance")
                         .HasColumnType("interval");
 
+                    b.Property<int>("EffectRange")
+                        .HasColumnType("integer");
+
                     b.Property<float>("FrustumDistance")
                         .HasColumnType("real");
 
@@ -153,6 +156,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasColumnType("integer");
 
                     b.Property<int>("MaximumNumberOfHitsPerTarget")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MinimumNumberOfHitsPerAttack")
                         .HasColumnType("integer");
 
                     b.Property<int>("MinimumNumberOfHitsPerTarget")
@@ -1032,6 +1038,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<Guid?>("DuelConfigurationId")
                         .HasColumnType("uuid");
 
+                    b.Property<byte>("ExcellentItemDropLevelDelta")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("smallint")
+                        .HasDefaultValue((byte)25);
+
                     b.Property<string>("ExperienceFormula")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("text")
@@ -1058,6 +1069,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("text")
                         .HasDefaultValue("(505 * level * level * level) + (35278500 * level) + (228045 * level * level)");
+
+                    b.Property<float>("MasterExperienceRate")
+                        .HasColumnType("real");
 
                     b.Property<byte>("MaximumCharactersPerAccount")
                         .HasColumnType("smallint");
@@ -1644,6 +1658,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<Guid?>("ItemSlotId")
                         .HasColumnType("uuid");
+
+                    b.Property<byte?>("MaximumDropLevel")
+                        .HasColumnType("smallint");
 
                     b.Property<byte>("MaximumItemLevel")
                         .HasColumnType("smallint");
@@ -3205,6 +3222,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<int>("SkillType")
                         .HasColumnType("integer");
+
+                    b.Property<bool>("SkipElementalModifier")
+                        .HasColumnType("boolean");
 
                     b.Property<int>("Target")
                         .HasColumnType("integer");

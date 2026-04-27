@@ -6482,7 +6482,7 @@ public readonly struct CashShopStorageListRequest
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 8;
+    public static int Length => 10;
 
     /// <summary>
     /// Gets the header of this packet.
@@ -6681,7 +6681,7 @@ public readonly struct CashShopStorageItemConsumeRequest
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 5;
+    public static int Length => 15;
 
     /// <summary>
     /// Gets the header of this packet.
@@ -12307,8 +12307,8 @@ public readonly struct GuildRelationshipChangeRequest
     /// </summary>
     public ushort TargetPlayerId
     {
-        get => ReadUInt16LittleEndian(this._data.Span[5..]);
-        set => WriteUInt16LittleEndian(this._data.Span[5..], value);
+        get => ReadUInt16BigEndian(this._data.Span[5..]);
+        set => WriteUInt16BigEndian(this._data.Span[5..], value);
     }
 
     /// <summary>
@@ -12413,8 +12413,8 @@ public readonly struct GuildRelationshipChangeResponse
     /// </summary>
     public ushort TargetPlayerId
     {
-        get => ReadUInt16LittleEndian(this._data.Span[6..]);
-        set => WriteUInt16LittleEndian(this._data.Span[6..], value);
+        get => ReadUInt16BigEndian(this._data.Span[6..]);
+        set => WriteUInt16BigEndian(this._data.Span[6..], value);
     }
 
     /// <summary>
@@ -17580,6 +17580,11 @@ public readonly struct DuelChannelQuitRequest
         /// The shop storage of another player.
         /// </summary>
             PersonalShop = 5,
+
+        /// <summary>
+        /// The shop storage of an NPC (merchant).
+        /// </summary>
+            NpcShop = 6,
 
         /// <summary>
         /// The inventory slot of the pet. That's used when a pet leveled up.

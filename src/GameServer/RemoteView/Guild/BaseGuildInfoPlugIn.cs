@@ -37,7 +37,8 @@ public abstract class BaseGuildInfoPlugIn<T>
             if (AppendedGuildDeletedSenders.Add(player.GameServerContext))
             {
                 // to make sure we just add one event handler
-                this.Player.GameServerContext.GuildDeleted += OnGuildDeleted;
+                this.Player.GameServerContext.GuildDeleted += OnGuildChanged;
+                this.Player.GameServerContext.GuildChanged += OnGuildChanged;
             }
         }
     }
@@ -84,7 +85,7 @@ public abstract class BaseGuildInfoPlugIn<T>
         return data;
     }
 
-    private static void OnGuildDeleted(object? sender, GuildDeletedEventArgs args)
+    private static void OnGuildChanged(object? sender, GuildEventArgs args)
     {
         Cache.TryRemove(args.GuildId, out _);
     }

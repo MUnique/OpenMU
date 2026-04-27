@@ -1,4 +1,4 @@
-﻿// <copyright file="MuHelper.cs" company="MUnique">
+// <copyright file="MuHelper.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -82,6 +82,7 @@ public class MuHelper : AsyncDisposable
         await this._player.InvokeViewPlugInAsync<IMuHelperStatusUpdatePlugIn>(p => p.ConsumeMoneyAsync((uint)requiredMoney)).ConfigureAwait(false);
 
         this._player.Attributes?.AddElement(ActiveElement, Stats.IsMuHelperActive);
+        this._stopCts?.Dispose();
         this._stopCts = new CancellationTokenSource();
         var cts = this._stopCts.Token;
         this._runTask = this.RunLoopAsync(cts);
@@ -104,7 +105,14 @@ public class MuHelper : AsyncDisposable
             this._player.Attributes?.RemoveElement(ActiveElement, Stats.IsMuHelperActive);
 
             await stopCts.CancelAsync().ConfigureAwait(false);
-            await runTask.ConfigureAwait(false);
+
+            // Skip awaiting the loop task if we are currently executing inside it
+            // (i.e. CollectAsync triggered StopAsync), to avoid a self-deadlock.
+            if (runTask.Id != Task.CurrentId)
+            {
+                await runTask.ConfigureAwait(false);
+            }
+
             this._runTask = null;
             stopCts.Dispose();
             this._stopCts = null;
@@ -113,7 +121,7 @@ public class MuHelper : AsyncDisposable
         }
         catch (Exception ex)
         {
-            this._player.Logger.LogWarning(ex, "Exception during stopping the mu helper: {0}", ex);
+            this._player.Logger.LogWarning(ex, "Exception during stopping the mu helper for {CharacterName}: {Error}", this._player.Name, ex.Message);
         }
     }
 
@@ -123,26 +131,19 @@ public class MuHelper : AsyncDisposable
         await this.StopAsync().ConfigureAwait(false);
     }
 
-    /// <summary>
-    /// Calculates the required money for the next pay interval.
-    /// </summary>
-    /// <returns>the required money.</returns>
-    private int CalculateRequiredMoney()
-    {
-        var currentStage = (int)(DateTime.UtcNow.Subtract(this._startTimestamp) / this._configuration.StageInterval);
-        currentStage = Math.Max(0, currentStage);
-        currentStage = Math.Min(this._configuration.CostPerStage.Count - 1, currentStage);
-
-        var costMultiplier = this._configuration.CostPerStage[currentStage];
-        var totalLevel = (int)(this._player.Level + this._player.Attributes?[Stats.MasterLevel] ?? 0);
-
-        return costMultiplier * totalLevel;
-    }
+    private int CalculateRequiredMoney() =>
+        MuHelperZenCostCalculator.Calculate(this._player, this._configuration, this._startTimestamp);
 
     private async Task RunLoopAsync(CancellationToken cancellationToken)
     {
         try
         {
+            if (this._configuration.PayInterval <= TimeSpan.Zero)
+            {
+                this._player.Logger.LogDebug("MU Helper PayInterval is {PayInterval}. Stopping for {CharacterName}.", this._configuration.PayInterval, this._player.Name);
+                return;
+            }
+
             using var timer = new PeriodicTimer(this._configuration.PayInterval);
             while (true)
             {
@@ -153,7 +154,7 @@ public class MuHelper : AsyncDisposable
         }
         catch (OperationCanceledException)
         {
-            // we expect that ...
+            // expected when StopAsync cancels the token.
         }
         catch (Exception ex)
         {

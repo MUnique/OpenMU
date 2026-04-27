@@ -62,7 +62,7 @@ public class PlugInProxyTypeGeneratorTest
         var generator = new PlugInProxyTypeGenerator();
         var proxy = generator.GenerateProxy<IExamplePlugIn>(new PlugInManager(null, NullLoggerFactory.Instance, null, null));
 
-        var player = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
         var command = "test";
         var args = new MyEventArgs();
         var firstMock = new Mock<IExamplePlugIn>();
@@ -115,7 +115,7 @@ public class PlugInProxyTypeGeneratorTest
         var generator = new PlugInProxyTypeGenerator();
         var proxy = generator.GenerateProxy<IExamplePlugIn>(new PlugInManager(null, NullLoggerFactory.Instance, null, null));
 
-        var player = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
         var command = "test";
         var args = new MyEventArgs();
         var firstMock = new Mock<IExamplePlugIn>();
@@ -142,7 +142,7 @@ public class PlugInProxyTypeGeneratorTest
         var generator = new PlugInProxyTypeGenerator();
         var proxy = generator.GenerateProxy<IExamplePlugIn>(new PlugInManager(null, NullLoggerFactory.Instance, null, null));
 
-        var player = await TestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
         var command = "test";
         var args = new MyEventArgs();
         var firstMock = new Mock<IExamplePlugIn>();

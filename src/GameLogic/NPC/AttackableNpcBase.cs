@@ -19,9 +19,12 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
 {
+    private const byte MaximumDropDistance = 2;
+
     private readonly IEventStateProvider? _eventStateProvider;
     private readonly IDropGenerator _dropGenerator;
     private readonly PlugInManager _plugInManager;
+
     private int _health;
 
     /// <summary>
@@ -140,6 +143,9 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
 
     /// <inheritdoc />
     public abstract ValueTask ApplyPoisonDamageAsync(IAttacker initialAttacker, uint damage);
+
+    /// <inheritdoc />
+    public abstract ValueTask ApplyBleedingDamageAsync(IAttacker initialAttacker, uint damage);
 
     /// <inheritdoc/>
     public ValueTask KillInstantlyAsync()
@@ -390,7 +396,7 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
             }
             else
             {
-                dropCoordinates = this.CurrentMap.Terrain.GetRandomCoordinate(this.Position, 4);
+                dropCoordinates = this.CurrentMap.Terrain.GetRandomCoordinate(this.Position, MaximumDropDistance);
             }
 
             var owners = killer.Party?.PartyList.AsEnumerable() ?? killer.GetAsEnumerable();

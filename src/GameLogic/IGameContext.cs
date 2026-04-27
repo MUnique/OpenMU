@@ -1,4 +1,4 @@
-﻿// <copyright file="IGameContext.cs" company="MUnique">
+// <copyright file="IGameContext.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -31,6 +31,11 @@ public interface IGameContext
     /// Gets the global experience rate.
     /// </summary>
     float ExperienceRate { get; }
+
+    /// <summary>
+    /// Gets the global master experience rate.
+    /// </summary>
+    float MasterExperienceRate { get; }
 
     /// <summary>
     /// Gets a value indicating whether PVP is enabled.
@@ -78,6 +83,11 @@ public interface IGameContext
     FeaturePlugInContainer FeaturePlugIns { get; }
 
     /// <summary>
+    /// Gets the offline player manager which tracks active offline players.
+    /// </summary>
+    Offline.OfflinePlayerManager OfflinePlayerManager { get; }
+
+    /// <summary>
     /// Gets the players count of the game.
     /// </summary>
     int PlayerCount { get; }
@@ -106,6 +116,11 @@ public interface IGameContext
     /// Gets the state of the active self defenses. The datetime holds the timestamp when self-defense ends.
     /// </summary>
     ConcurrentDictionary<(Player Attacker, Player Defender), DateTime> SelfDefenseState { get; }
+
+    /// <summary>
+    /// Gets the party manager which handles party creation and persistence.
+    /// </summary>
+    IPartyManager PartyManager { get; }
 
     /// <summary>
     /// Gets the initialized maps which are hosted on this context.

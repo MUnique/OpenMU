@@ -1441,6 +1441,12 @@
   <data name="GameConfiguration_ExperienceRate_Description" xml:space="preserve">
     <value></value>
   </data>
+  <data name="GameConfiguration_MasterExperienceRate_Caption" xml:space="preserve">
+    <value>Master Experience Rate</value>
+  </data>
+  <data name="GameConfiguration_MasterExperienceRate_Description" xml:space="preserve">
+    <value></value>
+  </data>
   <data name="GameConfiguration_PreventExperienceOverflow_Caption" xml:space="preserve">
     <value>Prevent Experience Overflow</value>
   </data>
@@ -2411,6 +2417,12 @@
     <value>Drop Level</value>
   </data>
   <data name="ItemDefinition_DropLevel_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="ItemDefinition_MaximumDropLevel_Caption" xml:space="preserve">
+    <value>Maximum Drop Level</value>
+  </data>
+  <data name="ItemDefinition_MaximumDropLevel_Description" xml:space="preserve">
     <value></value>
   </data>
   <data name="ItemDefinition_MaximumItemLevel_Caption" xml:space="preserve">

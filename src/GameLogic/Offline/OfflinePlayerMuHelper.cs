@@ -1,0 +1,214 @@
+// <copyright file="OfflinePlayerMuHelper.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.GameLogic.Offline;
+
+using System.Threading;
+using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.MuHelper;
+using MUnique.OpenMU.GameLogic.Views.MuHelper;
+
+/// <summary>
+/// Server-side intelligence that drives an <see cref="OfflinePlayer"/> after the real
+/// client disconnects. Mirrors the C++ <c>CMuHelper::Work()</c> loop including:
+/// <list type="bullet">
+///   <item>Basic / conditional / combo skill attack selection</item>
+///   <item>Buff application (up to 3 configured buff skills)</item>
+///   <item>Heal / drain-life based on HP %</item>
+///   <item>Return-to-origin regrouping</item>
+///   <item>Item pickup (Zen, Jewels, Excellent, Ancient, and named extra items)</item>
+///   <item>Skill and movement animations broadcast to nearby observers</item>
+///   <item>Pet control</item>
+/// </list>
+/// </summary>
+public sealed class OfflinePlayerMuHelper : AsyncDisposable
+{
+    private readonly OfflinePlayer _player;
+
+    private readonly CombatHandler _combatHandler;
+    private readonly BuffHandler _buffHandler;
+    private readonly ItemPickupHandler _itemPickupHandler;
+    private readonly MovementHandler _movementHandler;
+    private readonly RepairHandler _repairHandler;
+    private readonly ZenConsumptionHandler _zenHandler;
+    private readonly HealingHandler _healingHandler;
+    private readonly PetHandler _petHandler;
+    private readonly CancellationTokenSource _cts = new();
+    private readonly EventHandler<DeathInformation> _deathHandler;
+
+    private Timer? _aiTimer;
+    private bool _isDead;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="OfflinePlayerMuHelper"/> class.
+    /// </summary>
+    /// <param name="player">The offline player.</param>
+    public OfflinePlayerMuHelper(OfflinePlayer player)
+    {
+        this._player = player;
+        var originalPosition = player.Position;
+        var config = player.MuHelperSettings;
+
+        this._buffHandler = new BuffHandler(player, config);
+        this._healingHandler = new HealingHandler(player, config);
+        this._itemPickupHandler = new ItemPickupHandler(player, config);
+        this._movementHandler = new MovementHandler(player, config, originalPosition);
+        this._combatHandler = new CombatHandler(player, config, this._movementHandler, this._buffHandler, originalPosition);
+        this._repairHandler = new RepairHandler(player, config);
+        this._zenHandler = new ZenConsumptionHandler(player);
+        this._petHandler = new PetHandler(player, config);
+
+        if (config is null)
+        {
+            this._player.Logger.LogDebug("Offline player started for {CharacterName} without a valid MU Helper configuration.", this._player.Name);
+        }
+        else
+        {
+            this._player.Logger.LogDebug("Offline player configuration for {CharacterName}: MuHelperSettings={Settings}.", this._player.Name, config);
+        }
+
+        this._deathHandler = (_, e) => this.OnPlayerDied(e);
+        this._player.Died += this._deathHandler;
+    }
+
+    /// <summary>Starts the 500 ms AI timer and a separate pet AI.</summary>
+    public void Start()
+    {
+        _ = this._petHandler.InitializeAsync();
+
+        this._aiTimer ??= new Timer(
+            state => _ = this.SafeTickAsync(this._cts.Token),
+            null,
+            TimeSpan.FromSeconds(1),
+            TimeSpan.FromMilliseconds(500));
+    }
+
+    /// <inheritdoc />
+    protected override async ValueTask DisposeAsyncCore()
+    {
+        await this._cts.CancelAsync().ConfigureAwait(false);
+        await this._petHandler.StopAsync().ConfigureAwait(false);
+        await base.DisposeAsyncCore().ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            this._player.Died -= this._deathHandler;
+            this._aiTimer?.Dispose();
+            this._aiTimer = null;
+            this._cts.Dispose();
+        }
+
+        base.Dispose(disposing);
+    }
+
+    private void OnPlayerDied(DeathInformation e)
+    {
+        this._player.Logger.LogDebug("Offline player '{Name}' died. Killer: {KillerName}.", this._player.Name, e.KillerName);
+        this._isDead = true;
+        this._cts.Cancel();
+    }
+
+    private async Task SafeTickAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            await this.TickAsync(cancellationToken).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+            // expected during shutdown
+        }
+        catch (Exception ex)
+        {
+            this._player.Logger.LogError(ex, "Error in offline player helper tick for {AccountLoginName}.", this._player.AccountLoginName);
+        }
+    }
+
+    private async ValueTask TickAsync(CancellationToken cancellationToken)
+    {
+        if (await this.HandleDeathAsync().ConfigureAwait(false))
+        {
+            return;
+        }
+
+        if (cancellationToken.IsCancellationRequested)
+        {
+            return;
+        }
+
+        if (this._player.PlayerState.CurrentState != PlayerState.EnteredWorld)
+        {
+            return;
+        }
+
+        await this._zenHandler.DeductZenAsync().ConfigureAwait(false);
+
+        await this._repairHandler.PerformRepairsAsync().ConfigureAwait(false);
+        await this._petHandler.CheckPetDurabilityAsync().ConfigureAwait(false);
+
+        if (this.IsOnSkillCooldown())
+        {
+            return;
+        }
+
+        // CMuHelper::Work() order: Buff → RecoverHealth → ObtainItem → Regroup → Attack
+        if (!await this._buffHandler.PerformBuffsAsync().ConfigureAwait(false))
+        {
+            return;
+        }
+
+        await this._healingHandler.PerformHealthRecoveryAsync().ConfigureAwait(false);
+        await this._combatHandler.PerformDrainLifeRecoveryAsync().ConfigureAwait(false);
+        await this._itemPickupHandler.PickupItemsAsync().ConfigureAwait(false);
+
+        if (this._player.IsWalking)
+        {
+            return;
+        }
+
+        if (!await this._movementHandler.RegroupAsync().ConfigureAwait(false))
+        {
+            return;
+        }
+
+        await this._combatHandler.PerformAttackAsync().ConfigureAwait(false);
+    }
+
+    private async ValueTask<bool> HandleDeathAsync()
+    {
+        if (this._isDead)
+        {
+            if (!this._player.IsAlive)
+            {
+                // The offline player is dead. We wait for the server's 3-second respawn timer to finish.
+                return true;
+            }
+
+            if (this._player.Account?.LoginName is { } loginName)
+            {
+                this._player.Logger.LogInformation("Offline player died and successfully respawned. Stopping session for {0}.", loginName);
+                await this._player.GameContext.OfflinePlayerManager.StopAsync(loginName).ConfigureAwait(false);
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    private bool IsOnSkillCooldown()
+    {
+        if (this._combatHandler.SkillCooldownTicks > 0)
+        {
+            this._combatHandler.DecrementCooldown();
+            return true;
+        }
+
+        return false;
+    }
+}

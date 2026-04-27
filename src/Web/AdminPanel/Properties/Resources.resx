@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -135,6 +135,24 @@
   <data name="Delete" xml:space="preserve">
     <value>Delete</value>
   </data>
+  <data name="Duplicate" xml:space="preserve">
+    <value>Duplicate</value>
+  </data>
+  <data name="DuplicatedSuccessfully" xml:space="preserve">
+    <value>Duplicated '{0}' successfully.</value>
+  </data>
+  <data name="CouldNotFindToDuplicate" xml:space="preserve">
+    <value>Couldn't find '{0}' to duplicate.</value>
+  </data>
+  <data name="TypeDoesNotSupportCloning" xml:space="preserve">
+    <value>Type '{0}' does not support cloning.</value>
+  </data>
+  <data name="FailedToClone" xml:space="preserve">
+    <value>Failed to clone '{0}'.</value>
+  </data>
+  <data name="ErrorDuplicating" xml:space="preserve">
+    <value>Error duplicating '{0}': {1}</value>
+  </data>
   <data name="CreateUser" xml:space="preserve">
     <value>Create User</value>
   </data>
@@ -179,6 +197,9 @@
   </data>
   <data name="Edit" xml:space="preserve">
     <value>Edit</value>
+  </data>
+  <data name="Refresh" xml:space="preserve">
+    <value>Refresh</value>
   </data>
   <data name="SavedChanges" xml:space="preserve">
     <value>The changes have been saved.</value>
@@ -557,5 +578,20 @@
   </data>
   <data name="SelectZipFileToRestore" xml:space="preserve">
     <value>Select a .zip backup file to restore</value>
+  </data>
+  <data name="Character" xml:space="preserve">
+    <value>Character</value>
+  </data>
+  <data name="StartedAt" xml:space="preserve">
+    <value>Started At</value>
+  </data>
+  <data name="ActiveOfflinePlayer" xml:space="preserve">
+    <value>Active Offline Player</value>
+  </data>
+  <data name="CouldNotFindToDelete" xml:space="preserve">
+    <value>Couldn't find '{0}' to delete.</value>
+  </data>
+  <data name="DeleteFailedReferenced" xml:space="preserve">
+    <value>Couldn't delete '{0}', probably because it's referenced by another object. For details, see log</value>
   </data>
 </root>

@@ -592,6 +592,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Handles the fire scream skill of the dark lord class. Based on a chance, it does an additional damage (explosion) to any targets in a radius which origin is the target itself..
+        /// </summary>
+        public static string FireScreamSkillPlugIn_Description {
+            get {
+                return ResourceManager.GetString("FireScreamSkillPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fire scream skill.
+        /// </summary>
+        public static string FireScreamSkillPlugIn_Name {
+            get {
+                return ResourceManager.GetString("FireScreamSkillPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the force skill of the dark lord..
         /// </summary>
         public static string ForceSkillAction_Description {
@@ -1492,6 +1510,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Allows players to start offline leveling with /offlevel. The character stays in the world after the client disconnects and stops when the player logs back in..
+        /// </summary>
+        public static string OfflineLevelingChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("OfflineLevelingChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Offline Leveling Command.
+        /// </summary>
+        public static string OfflineLevelingChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("OfflineLevelingChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the chat command &apos;/online&apos;. Gets the count of game masters and players online..
         /// </summary>
         public static string OnlineChatCommandPlugIn_Description {
@@ -1560,6 +1596,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string OpenWarehouseChatCommandPlugIn_Name {
             get {
                 return ResourceManager.GetString("OpenWarehouseChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Automatically rejoins players to their previous party upon entering the world..
+        /// </summary>
+        public static string PartyAutoRejoinPlugIn_Description {
+            get {
+                return ResourceManager.GetString("PartyAutoRejoinPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Party Auto-Rejoin.
+        /// </summary>
+        public static string PartyAutoRejoinPlugIn_Name {
+            get {
+                return ResourceManager.GetString("PartyAutoRejoinPlugIn_Name", resourceCulture);
             }
         }
         
@@ -1843,6 +1897,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Handles the pollution skill (book of lagle) of the summoner class. Based on a chance, it may push the targets 2 squares away from the attacker..
+        /// </summary>
+        public static string PollutionSkillPlugIn_Description {
+            get {
+                return ResourceManager.GetString("PollutionSkillPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pollution Skill.
+        /// </summary>
+        public static string PollutionSkillPlugIn_Name {
+            get {
+                return ResourceManager.GetString("PollutionSkillPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the chat command &apos;/post message&apos;. Sends a global blue system message to all players of the game..
         /// </summary>
         public static string PostChatCommandPlugIn_Description {
@@ -2016,6 +2088,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Handles the requiem skill (book of neil) of the summoner class. Based on a chance, it may stun the target..
+        /// </summary>
+        public static string RequiemSkillPlugIn_Description {
+            get {
+                return ResourceManager.GetString("RequiemSkillPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Requiem Skill.
+        /// </summary>
+        public static string RequiemSkillPlugIn_Name {
+            get {
+                return ResourceManager.GetString("RequiemSkillPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handle Reset Character NPC Request.
         /// </summary>
         public static string ResetCharacterNpcPlugin_Description {
@@ -2106,7 +2196,7 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Reset points per reset.
+        ///   Looks up a localized string similar to Replace level-up points with reset total.
         /// </summary>
         public static string ResetConfiguration_ReplacePointsPerReset_Name {
             get {
@@ -2142,7 +2232,7 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Reset stats.
+        ///   Looks up a localized string similar to Reset base stats to class defaults.
         /// </summary>
         public static string ResetConfiguration_ResetStats_Name {
             get {

@@ -281,6 +281,12 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
     /// <inheritdoc />
     public async ValueTask<bool> DisconnectAccountAsync(string accountName)
     {
+        if (this._gameContext.OfflinePlayerManager.IsActive(accountName))
+        {
+            await this._gameContext.OfflinePlayerManager.StopAsync(accountName).ConfigureAwait(false);
+            return true;
+        }
+
         var players = await this._gameContext.GetPlayersAsync().ConfigureAwait(false);
         var player = players.FirstOrDefault(p => p.Account?.LoginName == accountName);
         if (player != null)
@@ -397,6 +403,24 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
         await this.RemovePlayerFromGuildAsync(player).ConfigureAwait(false);
     }
 
+    /// <inheritdoc/>
+    public async ValueTask AllianceCreatedAsync(uint masterGuildId, uint memberGuildId)
+    {
+        await this._gameContext.RefreshGuildInfoAsync(memberGuildId).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    public async ValueTask AllianceDisbandedAsync(uint masterGuildId, uint memberGuildId)
+    {
+        await this._gameContext.RefreshGuildInfoAsync(memberGuildId).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    public async ValueTask GuildHostilityChangedAsync(uint guildIdA, IReadOnlyList<uint> allianceGuildIdsA, uint guildIdB, IReadOnlyList<uint> allianceGuildIdsB, bool created)
+    {
+        this._gameContext.UpdateGuildHostility(guildIdA, allianceGuildIdsA, guildIdB, allianceGuildIdsB, created);
+    }
+
     /// <summary>
     /// Creates an instance of <see cref="ServerInfo"/> with the data of this instance.
     /// </summary>
@@ -420,7 +444,7 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
 
     private async ValueTask RemovePlayerFromGuildAsync(Player player, bool unregisterFromContext = true)
     {
-        if (unregisterFromContext && player.GuildStatus?.GuildId is { } guildId)
+        if (unregisterFromContext && player.GuildStatus?.GuildId is not null)
         {
             await this._gameContext.UnregisterGuildMemberAsync(player).ConfigureAwait(false);
         }
