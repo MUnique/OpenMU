@@ -17582,7 +17582,7 @@ public readonly struct DuelChannelQuitRequest
             PersonalShop = 5,
 
         /// <summary>
-        /// The shop storage of a NPC (merchant).
+        /// The shop storage of an NPC (merchant).
         /// </summary>
             NpcShop = 6,
 

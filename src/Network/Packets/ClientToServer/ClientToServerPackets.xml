@@ -4310,7 +4310,7 @@
         </EnumValue>
         <EnumValue>
           <Name>NpcShop</Name>
-          <Description>The shop storage of a NPC (merchant).</Description>
+          <Description>The shop storage of an NPC (merchant).</Description>
           <Value>6</Value>
         </EnumValue>
         <EnumValue>
