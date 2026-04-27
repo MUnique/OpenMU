@@ -16,7 +16,6 @@ public class MerchantNpc : NonPlayerCharacter
     /// <param name="spawnInfo">The spawn information.</param>
     /// <param name="stats">The stats.</param>
     /// <param name="map">The map on which this instance will spawn.</param>
-    /// <exception cref="MerchantNpc">MerchantStore</exception>
     public MerchantNpc(MonsterSpawnArea spawnInfo, MonsterDefinition stats, GameMap map)
         : base(spawnInfo, stats, map)
     {
