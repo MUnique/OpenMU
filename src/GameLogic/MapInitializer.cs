@@ -210,7 +210,7 @@ public class MapInitializer : IMapInitializer
             this._logger.LogDebug("Creating destructible {spawn}", spawnArea);
             npc = new Destructible(spawnArea, monsterDef, createdMap, eventStateProvider, dropGenerator ?? this._dropGenerator, this.PlugInManager!);
         }
-        else if (monsterDef.MerchantStore is not null && monsterDef.NpcWindow is (NpcWindow.Merchant or NpcWindow.Merchant1))
+        else if (monsterDef.MerchantStore is not null)
         {
             this._logger.LogDebug("Creating merchant npc {spawn}", spawnArea);
             npc = new MerchantNpc(spawnArea, monsterDef, createdMap);
