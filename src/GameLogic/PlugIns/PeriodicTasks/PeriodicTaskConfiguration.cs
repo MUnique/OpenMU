@@ -12,12 +12,6 @@ using MUnique.OpenMU.Interfaces;
 public class PeriodicTaskConfiguration
 {
     /// <summary>
-    /// Gets or sets a timetable for the event.
-    /// </summary>
-    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.PeriodicTaskConfiguration_Timetable_Name), Order = 4)]
-    public IList<TimeOnly> Timetable { get; set; } = new List<TimeOnly>();
-
-    /// <summary>
     /// Gets or sets a time delay.
     /// </summary>
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.PeriodicTaskConfiguration_PreStartMessageDelay_Name), Order = 1)]
@@ -40,6 +34,12 @@ public class PeriodicTaskConfiguration
     /// </summary>
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.PeriodicTaskConfiguration_EndMessage_Name), Order = 4)]
     public LocalizedString EndMessage { get; set; }
+
+    /// <summary>
+    /// Gets or sets a timetable for the event.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.PeriodicTaskConfiguration_Timetable_Name), Order = 5)]
+    public IList<TimeOnly> Timetable { get; set; } = new List<TimeOnly>();
 
     /// <summary>
     /// Generate a sequence of time points like [00:00, 00:01, ...].

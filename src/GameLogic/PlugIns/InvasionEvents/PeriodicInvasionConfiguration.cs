@@ -26,6 +26,6 @@ public class PeriodicInvasionConfiguration : PeriodicTaskConfiguration
     /// <summary>
     /// Gets or sets the monster spawns for this invasion.
     /// </summary>
-    [Display(Name = "Monster Spawns", Order = 5)]
+    [Display(Name = "Monster Spawns", Order = 6)]
     public IList<InvasionSpawnConfiguration> Mobs { get; set; } = [];
 }
