@@ -4309,6 +4309,11 @@
           <Value>5</Value>
         </EnumValue>
         <EnumValue>
+          <Name>NpcShop</Name>
+          <Description>The shop storage of a NPC (merchant).</Description>
+          <Value>6</Value>
+        </EnumValue>
+        <EnumValue>
           <Name>InventoryPetSlot</Name>
           <Description>The inventory slot of the pet. That's used when a pet leveled up.</Description>
           <Value>254</Value>

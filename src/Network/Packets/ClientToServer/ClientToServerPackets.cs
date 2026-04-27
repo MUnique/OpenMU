@@ -17582,6 +17582,11 @@ public readonly struct DuelChannelQuitRequest
             PersonalShop = 5,
 
         /// <summary>
+        /// The shop storage of a NPC (merchant).
+        /// </summary>
+            NpcShop = 6,
+
+        /// <summary>
         /// The inventory slot of the pet. That's used when a pet leveled up.
         /// </summary>
             InventoryPetSlot = 254,
