@@ -1198,6 +1198,13 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         experience *= this.Attributes[expRateAttribute] + this.Attributes[Stats.BonusExperienceRate];
         experience *= this.CurrentMap?.Definition.ExpMultiplier ?? 1;
 
+        var minMultiplier = this.Attributes[Stats.ExperienceRandomMinMultiplier];
+        var maxMultiplier = this.Attributes[Stats.ExperienceRandomMaxMultiplier];
+        if (minMultiplier > 0 && maxMultiplier > 0)
+        {
+            experience = Rand.NextInt((int)(experience * minMultiplier), (int)(experience * maxMultiplier));
+        }
+
         if (isAddMasterExperience)
         {
             await this.AddMasterExperienceAsync((int)experience, killedObject).ConfigureAwait(false);

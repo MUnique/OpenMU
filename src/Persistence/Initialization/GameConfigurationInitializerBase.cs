@@ -1,4 +1,4 @@
-﻿// <copyright file="GameConfigurationInitializerBase.cs" company="MUnique">
+// <copyright file="GameConfigurationInitializerBase.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -238,7 +238,14 @@ public abstract class GameConfigurationInitializerBase : InitializerBase
     {
         var moneyAmountRate = this.Context.CreateNew<ConstValueAttribute>(1f, Stats.MoneyAmountRate.GetPersistent(this.GameConfiguration));
         this.GameConfiguration.GlobalBaseAttributeValues.Add(moneyAmountRate);
+
+        var experienceRandomMinMultiplier = this.Context.CreateNew<ConstValueAttribute>(0.8f, Stats.ExperienceRandomMinMultiplier.GetPersistent(this.GameConfiguration));
+        this.GameConfiguration.GlobalBaseAttributeValues.Add(experienceRandomMinMultiplier);
+
+        var experienceRandomMaxMultiplier = this.Context.CreateNew<ConstValueAttribute>(1.2f, Stats.ExperienceRandomMaxMultiplier.GetPersistent(this.GameConfiguration));
+        this.GameConfiguration.GlobalBaseAttributeValues.Add(experienceRandomMaxMultiplier);
     }
+
 
     private long CalcNeededMasterExp(long lvl)
     {

@@ -389,6 +389,10 @@ public sealed class Party : AsyncDisposable
             if (!shouldDispose)
             {
                 this._partyMembers = this._partyMembers.Where(m => m != member).ToArray();
+                if (this.PartyMaster == member)
+                {
+                    this.PartyMaster = this._partyMembers.FirstOrDefault();
+                }
             }
 
             this.UpdateExperienceBonus();
@@ -500,6 +504,16 @@ public sealed class Party : AsyncDisposable
         var (levelSum, maxLevel) = this.CalculatePartyLevels(recipients);
         var baseExp = killed.CalculateBaseExperience(maxLevel);
 
+        if (recipients.FirstOrDefault()?.Attributes is { } attributes)
+        {
+            var minMultiplier = attributes[Stats.ExperienceRandomMinMultiplier];
+            var maxMultiplier = attributes[Stats.ExperienceRandomMaxMultiplier];
+            if (minMultiplier != 0 && maxMultiplier != 0)
+            {
+                baseExp = Rand.NextInt((int)(baseExp * minMultiplier), (int)(baseExp * maxMultiplier));
+            }
+        }
+
         var totalDistributed = baseExp
                                * this._experienceBonus
                                * (killed.CurrentMap?.Definition.ExpMultiplier ?? 1);
@@ -534,34 +548,48 @@ public sealed class Party : AsyncDisposable
             return;
         }
 
-        // Navigate to the last generation class to compare, since, currently, there is no way to look back.
-        var uniqueClasses = members
-            .Select(m => m.CharacterClass)
-            .Where(c => c != null)
-            .Select(c =>
-            {
-                var current = c!;
-                while (current.NextGenerationClass is { } next)
-                {
-                    current = next;
-                }
+        var attributes = (members.FirstOrDefault() as Player)?.Attributes;
+        var perPartyMemberBonus = attributes?[Stats.ExperienceRatePerPartyMemberBonus] ?? 0.01f;
+        var setPartyBonus = attributes?[Stats.ExperienceRateBonusForSetParty] ?? 0.02f;
 
-                return current;
-            })
-            .Distinct()
-            .Count();
-
-        // General bonus: 2 players=1.02, 3 players=1.03, etc.
-        double bonus = 1.0 + (count * 0.01);
-
-        // Set party adds another 2% bonus.
-        bool isSetParty = uniqueClasses == count && count >= 3;
-        if (isSetParty)
+        if (perPartyMemberBonus == 0 && setPartyBonus == 0)
         {
-            bonus += 0.02;
+            this._experienceBonus = 1.0;
+            return;
         }
 
-        this._experienceBonus = bonus;
+        // General bonus: 2 players=1.02, 3 players=1.03, etc.
+        double bonus = 1.0 + (count * perPartyMemberBonus);
+
+        if (setPartyBonus != 0)
+        {
+            // Navigate to the last generation class to compare, since, currently, there is no way to look back.
+            var uniqueClasses = members
+                .Select(m => m.CharacterClass)
+                .Where(c => c != null)
+                .Select(c =>
+                {
+                    var current = c!;
+                    while (current.NextGenerationClass is { } next)
+                    {
+                        current = next;
+                    }
+
+                    return current;
+                })
+                .Distinct()
+                .Count();
+
+            // Set party adds an extra flat bonus on top of the general bonus.
+            bool isSetParty = uniqueClasses == count && count >= 3;
+            if (isSetParty)
+            {
+                bonus += setPartyBonus;
+            }
+        }
+
+        // Avoid negative xp values.
+        this._experienceBonus = Math.Max(0, bonus);
     }
 
     private async Task HealthUpdateLoopAsync(CancellationToken cancellationToken)
