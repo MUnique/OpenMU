@@ -73,6 +73,7 @@ public static class WebApplicationExtensions
 
         services.AddSingleton<IDataSource<GameConfiguration>, GameConfigurationDataSource>();
         services.AddSingleton<IDataSource<Account>, AccountDataSource>();
+        services.AddSingleton<ConfigurationSearchIndexCache>();
         services.AddScoped<SetupService>();
         services.AddScoped<DataUpdateService>();
         services.AddScoped<AccountService>();

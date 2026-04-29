@@ -15,6 +15,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Web.AdminPanel.Components;
+using MUnique.OpenMU.Web.AdminPanel.Services;
 using MUnique.OpenMU.Web.Shared;
 using MUnique.OpenMU.Web.Shared.Models;
 using MUnique.OpenMU.Web.Shared.Services;
@@ -69,6 +70,7 @@ public class Startup
         services.AddScoped<IDataService<PlugInConfigurationViewItem>>(serviceProvider => serviceProvider.GetService<PlugInController>()!);
 
         services.AddSingleton<ILookupController, PersistentObjectsLookupController>();
+        services.AddSingleton<ConfigurationSearchIndexCache>();
 
         services.AddScoped<IChangeNotificationService, ChangeNotificationService>();
     }

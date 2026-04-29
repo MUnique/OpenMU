@@ -47,7 +47,7 @@ public class PersistentObjectsLookupController : ILookupController
                 return Enumerable.Empty<T>();
             }
 
-            var owner = await this._gameConfigurationSource.GetOwnerAsync();
+            var owner = await this._gameConfigurationSource.GetOwnerAsync().ConfigureAwait(true);
             IEnumerable<T> values;
             if (this._gameConfigurationSource.IsSupporting(typeof(T))
                 && persistenceContext?.IsSupporting(typeof(T)) is not true)
@@ -73,9 +73,15 @@ public class PersistentObjectsLookupController : ILookupController
                 return values;
             }
 
-            return values.Where(v => v.GetName().StartsWith(text, StringComparison.InvariantCultureIgnoreCase))
-                .Concat(values.Where(v => v.GetName().Contains(text, StringComparison.InvariantCultureIgnoreCase)))
-                .Distinct();
+            var searchWords = text.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            var query = values;
+
+            foreach (var word in searchWords)
+            {
+                query = query.Where(v => v.GetName().Contains(word, StringComparison.OrdinalIgnoreCase));
+            }
+
+            return query.Distinct();
         }
         catch (Exception ex)
         {

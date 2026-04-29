@@ -1,22 +1,38 @@
-﻿@using MUnique.OpenMU.Web.AdminPanel.Properties
+@using MUnique.OpenMU.Web.AdminPanel.Properties
 
 @inherits LayoutComponentBase
 
 <div class="page">
-  <div class="sidebar">
-    <NavMenu />
-  </div>
-    <BlazoredToasts />
-  <main>
-    <div class="top-row px-4">
-      <BreadcrumbNavigation />
-      <a href="https://munique.net" target="_blank">@Resources.About</a>
+    <div class="sidebar">
+        <NavMenu />
     </div>
-    <article class="content px-4">
-      @Body
-    </article>
 
-  </main>
+    <main>
+        <header class="main-header navbar navbar-expand navbar-light bg-light border-bottom">
+            <div class="container-fluid px-4">
+                <div class="header-content d-flex align-items-center w-100">
+                    <div class="header-search flex-grow-1">
+                        <ConfigurationSearch />
+                    </div>
+                    <div class="header-actions ml-3">
+                        <a href="https://munique.net" target="_blank" class="text-secondary small">@Resources.About</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="breadcrumb-bar bg-white border-bottom px-4 py-1">
+            <div class="d-flex align-items-center">
+                <BreadcrumbNavigation />
+            </div>
+        </div>
+
+        <BlazoredToasts />
+
+        <article class="content px-4 py-3">
+            @Body
+        </article>
+    </main>
 </div>
 
 <div id="blazor-error-ui" data-nosnippet>

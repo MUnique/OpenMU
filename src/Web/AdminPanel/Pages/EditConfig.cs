@@ -1,4 +1,4 @@
-﻿// <copyright file="EditConfig.cs" company="MUnique">
+// <copyright file="EditConfig.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -27,6 +27,12 @@ public sealed class EditConfig : EditBase
             { typeof(GameMapDefinition), new List<(string, string)> { (Resources.MapEditor, "/map-editor/{0}") } },
         };
 
+    /// <summary>
+    /// Gets or sets the optional search term to pre-filter fields.
+    /// </summary>
+    [SupplyParameterFromQuery(Name = "search")]
+    public string? SearchTerm { get; set; }
+
     /// <inheritdoc />
     protected override void AddFormToRenderTree(RenderTreeBuilder builder, ref int currentSequence)
     {
@@ -44,7 +50,9 @@ public sealed class EditConfig : EditBase
             builder.OpenComponent(++currentSequence, typeof(AutoForm<>).MakeGenericType(this.Type!));
             builder.AddAttribute(++currentSequence, nameof(AutoForm<object>.Model), this.Model);
             builder.AddAttribute(++currentSequence, nameof(AutoForm<object>.HideCollections), hideCollections);
+            builder.AddAttribute(++currentSequence, nameof(AutoForm<object>.SearchTerm), this.SearchTerm);
             builder.AddAttribute(++currentSequence, nameof(AutoForm<object>.OnValidSubmit), EventCallback.Factory.Create(this, this.SaveChangesAsync));
+            builder.AddAttribute(++currentSequence, nameof(AutoForm<object>.OnRefresh), EventCallback.Factory.Create(this, this.RefreshAsync));
             builder.CloseComponent();
         }
     }

@@ -1,4 +1,4 @@
-﻿// <copyright file="PlugInController.cs" company="MUnique">
+// <copyright file="PlugInController.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -21,8 +21,9 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
 {
     private readonly IDataSource<GameConfiguration> _dataSource;
     private readonly IModalService _modalService;
-    private string _nameFilter = string.Empty;
+
     private Guid _pointFilter;
+    private string _nameFilter = string.Empty;
     private string _typeFilter = string.Empty;
 
     /// <summary>
@@ -130,7 +131,7 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
 
         try
         {
-            var gameConfiguration = await this._dataSource.GetOwnerAsync(Guid.Empty);
+            var gameConfiguration = await this._dataSource.GetOwnerAsync(Guid.Empty).ConfigureAwait(true);
             var allPlugIns = GetPluginTypes().ToDictionary(t => t.GUID, t => t);
 
             var rest = count - result.Count;
@@ -143,6 +144,32 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
         }
 
         return result;
+    }
+
+    /// <summary>
+    /// Gets the plug-in by identifier.
+    /// </summary>
+    /// <param name="id">The identifier.</param>
+    /// <returns>The plug-in view item, if found.</returns>
+    public async Task<PlugInConfigurationViewItem?> GetByIdAsync(Guid id)
+    {
+        try
+        {
+            var gameConfiguration = await this._dataSource.GetOwnerAsync(Guid.Empty).ConfigureAwait(true);
+            var allPlugIns = GetPluginTypes().ToDictionary(t => t.GUID, t => t);
+
+            var config = gameConfiguration.PlugInConfigurations.FirstOrDefault(c => c.GetId() == id);
+            if (config != null && allPlugIns.TryGetValue(config.TypeId, out var plugInType))
+            {
+                return BuildConfigurationDto(plugInType, gameConfiguration, config);
+            }
+        }
+        catch (NotImplementedException)
+        {
+            // swallow
+        }
+
+        return null;
     }
 
     /// <summary>
@@ -171,7 +198,7 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
     {
         if (item.ConfigurationType is null)
         {
-            throw new ArgumentException($"{nameof(item.ConfigurationType)} must not be null.", nameof(item));
+            throw new ArgumentException(string.Format("{0} must not be null.", nameof(item.ConfigurationType)), nameof(item));
         }
 
         var referenceResolver = new ByDataSourceReferenceHandler(this._dataSource);
@@ -180,7 +207,7 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
                             ?? Activator.CreateInstance(item.ConfigurationType);
         var parameters = new ModalParameters();
         parameters.Add(nameof(ModalCreateNew<object>.Item), configuration!);
-        parameters.Add(nameof(ModalCreateNew<object>.PersistenceContext), await this._dataSource.GetContextAsync());
+        parameters.Add(nameof(ModalCreateNew<object>.PersistenceContext), await this._dataSource.GetContextAsync().ConfigureAwait(true));
         var options = new ModalOptions
         {
             DisableBackgroundCancel = true,
@@ -219,7 +246,7 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
 
     private static string GetPlugInName(Type plugInType)
     {
-        return plugInType.GetCustomAttribute<DisplayAttribute>()?.Name ?? plugInType.Name;
+        return plugInType.GetCustomAttribute<DisplayAttribute>()?.GetName() ?? plugInType.Name;
     }
 
     private static Type? GetPlugInExtensionPointType(Type plugInType)
