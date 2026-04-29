@@ -1,10 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 {
     /// <inheritdoc />
+    [DbContext(typeof(EntityDataContext))]
+    [Migration("20260404225637_AddExcellentItemDropLevelDelta")]
     public partial class AddExcellentItemDropLevelDelta : Migration
     {
         /// <inheritdoc />

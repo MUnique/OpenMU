@@ -33,11 +33,20 @@ public class StunEffectInitializer : InitializerBase
         magicEffect.InformObservers = true;
         magicEffect.SendDuration = false;
         magicEffect.StopByDeath = true;
+        magicEffect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
+        magicEffect.Duration.ConstantValue.Value = 2; // 2 seconds
 
         var isStunnedPowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
         magicEffect.PowerUpDefinitions.Add(isStunnedPowerUpDefinition);
         isStunnedPowerUpDefinition.TargetAttribute = Stats.IsStunned.GetPersistent(this.GameConfiguration);
         isStunnedPowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
         isStunnedPowerUpDefinition.Boost.ConstantValue.Value = 1;
+
+        // Placeholder for master skills that use this effect
+        var stunChancePowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
+        magicEffect.PowerUpDefinitions.Add(stunChancePowerUpDefinition);
+        stunChancePowerUpDefinition.TargetAttribute = Stats.StunChance.GetPersistent(this.GameConfiguration);
+        stunChancePowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+        stunChancePowerUpDefinition.Boost.ConstantValue.Value = 0;
     }
 }

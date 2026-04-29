@@ -326,6 +326,11 @@ internal enum MagicEffectNumber : short
     /// </summary>
     WizEnhance3 = 139,
 
+    /// <summary>
+    /// The critical damage increase mastery effect.
+    /// </summary>
+    CriticalDamageIncreaseMastery = 148,
+
     #region Artificial effects which are not sent to the client, starting at 200.
 
     /// <summary>

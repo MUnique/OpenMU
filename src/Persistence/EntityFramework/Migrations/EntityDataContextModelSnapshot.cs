@@ -1038,15 +1038,17 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<Guid?>("DuelConfigurationId")
                         .HasColumnType("uuid");
 
+                    b.Property<byte>("ExcellentItemDropLevelDelta")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("smallint")
+                        .HasDefaultValue((byte)25);
+
                     b.Property<string>("ExperienceFormula")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("text")
                         .HasDefaultValue("if(level == 0, 0, if(level < 256, 10 * (level + 8) * (level - 1) * (level - 1), (10 * (level + 8) * (level - 1) * (level - 1)) + (1000 * (level - 247) * (level - 256) * (level - 256))))");
 
                     b.Property<float>("ExperienceRate")
-                        .HasColumnType("real");
-
-                    b.Property<float>("MasterExperienceRate")
                         .HasColumnType("real");
 
                     b.Property<double>("HitsPerOneItemDurability")
@@ -1060,11 +1062,6 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasColumnType("interval")
                         .HasDefaultValue(new TimeSpan(0, 0, 1, 0, 0));
 
-                    b.Property<byte>("ExcellentItemDropLevelDelta")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("smallint")
-                        .HasDefaultValue((byte)25);
-
                     b.Property<int>("LetterSendPrice")
                         .HasColumnType("integer");
 
@@ -1072,6 +1069,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("text")
                         .HasDefaultValue("(505 * level * level * level) + (35278500 * level) + (228045 * level * level)");
+
+                    b.Property<float>("MasterExperienceRate")
+                        .HasColumnType("real");
 
                     b.Property<byte>("MaximumCharactersPerAccount")
                         .HasColumnType("smallint");
@@ -1658,6 +1658,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<Guid?>("ItemSlotId")
                         .HasColumnType("uuid");
+
+                    b.Property<byte?>("MaximumDropLevel")
+                        .HasColumnType("smallint");
 
                     b.Property<byte>("MaximumItemLevel")
                         .HasColumnType("smallint");

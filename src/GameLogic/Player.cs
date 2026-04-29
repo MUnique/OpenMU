@@ -1457,7 +1457,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     /// <summary>
     /// Clears all subscribers from the <see cref="PlayerDisconnected"/> event so that
-    /// <see cref="DisconnectAsync"/> will not raise it. Used by offline leveling to prevent
+    /// <see cref="DisconnectAsync"/> will not raise it. Used by offline player to prevent
     /// <c>GameServer.OnPlayerDisconnectedAsync</c> from double-saving and double-logging off
     /// after the real client disconnects.
     /// </summary>
@@ -1633,7 +1633,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                         var extendsDuration = masterSkillEntry.Skill?.MasterDefinition?.ExtendsDuration ?? false;
                         if (extendsDuration && !durationExtended)
                         {
-                            durationElement = new CombinedElement(durationElement, new ConstantElement(skillEntry.CalculateValue()));
+                            durationElement = new CombinedElement(durationElement, new ConstantElement(masterSkillEntry.CalculateValue()));
                         }
                         else if (extendsDuration)
                         {
@@ -2013,7 +2013,18 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 backupInventory.RestoreItemStates();
                 foreach (var item in backupInventory.Items)
                 {
-                    await inventory.AddItemAsync(item.ItemSlot, item).ConfigureAwait(false);
+                    try
+                    {
+                        if (!await inventory.AddItemAsync(item.ItemSlot, item).ConfigureAwait(false)
+                            && !await inventory.AddItemAsync(item).ConfigureAwait(false))
+                        {
+                            this.Logger.LogError("Failed to restore item {item} from backup inventory of player {player}.", item, this.Name);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        this.Logger.LogError(ex, "Error restoring item {item} from backup inventory of player {player}.", item, this.Name);
+                    }
                 }
 
                 inventory.ItemStorage.Money = backupInventory.Money;

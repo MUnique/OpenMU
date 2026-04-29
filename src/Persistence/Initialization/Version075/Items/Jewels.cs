@@ -84,6 +84,7 @@ public class Jewels : InitializerBase
         itemDefinition.Group = 12;
         itemDefinition.DropsFromMonsters = false;
         itemDefinition.DropLevel = 12;
+        itemDefinition.MaximumDropLevel = 66;
         itemDefinition.Durability = 1;
         itemDefinition.Width = 1;
         itemDefinition.Height = 1;
