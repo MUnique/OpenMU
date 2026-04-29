@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -35,6 +35,7 @@
     <ProjectReference Include="..\DataModel\MUnique.OpenMU.DataModel.csproj" />
     <ProjectReference Include="..\Interfaces\MUnique.OpenMU.Interfaces.csproj" />
     <ProjectReference Include="..\PlugIns\MUnique.OpenMU.PlugIns.csproj" />
+    <ProjectReference Include="SourceGenerator\MUnique.OpenMU.Persistence.SourceGenerator.csproj" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
   <ItemGroup>

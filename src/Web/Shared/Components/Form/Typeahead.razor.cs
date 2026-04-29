@@ -19,7 +19,7 @@ using Microsoft.AspNetCore.Components.Web;
 /// <typeparam name="TValue">The type of the value.</typeparam>
 public partial class Typeahead<TItem, TValue> : ComponentBase, IDisposable
 {
-    private readonly Debouncer _searchDebouncer = new(300);
+    private Debouncer _searchDebouncer = null!;
 
     private bool _isOpen;
     private bool _isLoading;
@@ -141,8 +141,15 @@ public partial class Typeahead<TItem, TValue> : ComponentBase, IDisposable
 #pragma warning restore VSTHRD103
             this._searchCts?.Dispose();
             this._searchCts = null;
-            this._searchDebouncer.Dispose();
+            this._searchDebouncer?.Dispose();
         }
+    }
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        this._searchDebouncer = new Debouncer(this.DebounceTime);
     }
 
     /// <inheritdoc />
@@ -166,7 +173,7 @@ public partial class Typeahead<TItem, TValue> : ComponentBase, IDisposable
         }
         else
         {
-            // Multiple selection mode - no action needed for single-value parameter.
+            // Multiple selection mode, no action needed for single-value parameter.
         }
     }
 
@@ -244,12 +251,13 @@ public partial class Typeahead<TItem, TValue> : ComponentBase, IDisposable
             var results = await this.SearchMethod(this._searchText).ConfigureAwait(true);
             if (!token.IsCancellationRequested)
             {
-                this._suggestions = results?.Take(this.MaximumSuggestions).ToList() ?? new List<TItem>();
-
+                IEnumerable<TItem> filteredResults = results ?? Enumerable.Empty<TItem>();
                 if (this.IsMultiple && this.Values != null)
                 {
-                    this._suggestions = this._suggestions.Where(s => !this.Values.Contains((TValue)(object)s!)).ToList();
+                    filteredResults = filteredResults.Where(s => !this.Values.Contains((TValue)(object)s!));
                 }
+
+                this._suggestions = filteredResults.Take(this.MaximumSuggestions).ToList();
             }
         }
         catch (TaskCanceledException)
