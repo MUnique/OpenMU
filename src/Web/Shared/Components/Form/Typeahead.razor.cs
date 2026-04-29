@@ -309,11 +309,11 @@ public partial class Typeahead<TItem, TValue> : ComponentBase, IDisposable
         {
             if (!EqualityComparer<TItem>.Default.Equals(item!, default!))
             {
-                var val = (TValue)(object)item;
+                var val = (TValue)(object)item!;
                 var newValues = this.Values == null ? new List<TValue>() : new List<TValue>(this.Values);
-                if (!newValues.Contains(val))
+                if (!newValues.Contains(val!))
                 {
-                    newValues.Add(val);
+                    newValues.Add(val!);
                     await this.ValuesChanged.InvokeAsync(newValues).ConfigureAwait(false);
                 }
             }
@@ -330,7 +330,7 @@ public partial class Typeahead<TItem, TValue> : ComponentBase, IDisposable
             }
             else
             {
-                await this.ValueChanged.InvokeAsync((TValue)(object)item).ConfigureAwait(false);
+                await this.ValueChanged.InvokeAsync((TValue)(object)item!).ConfigureAwait(false);
                 this._searchText = this.GetItemText(item);
             }
 
