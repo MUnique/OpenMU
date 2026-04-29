@@ -3,7 +3,8 @@ services:
     image: nginx:alpine
     container_name: nginx-80
     ports:
-      - "80:80"
+      # 9080 on host avoids conflict with other services using port 80 (AdminPanel via nginx).
+      - "9080:80"
     volumes:
       - ./nginx/nginx.dev.conf:/etc/nginx/nginx.conf:ro
       - ./.htpasswd:/etc/nginx/.htpasswd

@@ -1,13 +1,20 @@
 services:
 
+  # Apple Silicon: avoid local Dockerfile build (linux/amd64/v8 runner mismatch) and use published multi-arch image.
   openmu-startup:
-    build:
-      context: ../../src
-      dockerfile: Startup/Dockerfile
+    image: munique/openmu:latest
+    platform: linux/arm64
+    pull_policy: if_not_present
     restart: "no"
+    # Same machine + MU client: advertise 127.127.127.127 (not public IP / not 127.0.0.1).
+    # See OpenMU QuickStart.md and src/Network/IpAddressResolverFactory.cs.
+    environment:
+      RESOLVE_IP: loopback
     ports:
-      - "8081:8080"
+      # Avoid collision with other local services on 8081
+      - "9081:8080"
 
   database:
+    platform: linux/arm64
     ports:
       - "5433:5432"
