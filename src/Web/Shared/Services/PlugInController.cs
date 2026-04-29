@@ -198,7 +198,7 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
     {
         if (item.ConfigurationType is null)
         {
-            throw new ArgumentException(string.Format("{0} must not be null.", nameof(item.ConfigurationType)), nameof(item));
+            throw new ArgumentException($"{nameof(item.ConfigurationType)} must not be null.", nameof(item));
         }
 
         var referenceResolver = new ByDataSourceReferenceHandler(this._dataSource);

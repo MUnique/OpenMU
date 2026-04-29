@@ -124,18 +124,32 @@ public partial class Typeahead<TItem, TValue> : ComponentBase, IDisposable
     /// <inheritdoc />
     public void Dispose()
     {
+        this.Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    /// <summary>
+    /// Releases unmanaged and - optionally - managed resources.
+    /// </summary>
+    /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
 #pragma warning disable VSTHRD103
-        this._searchCts?.Cancel();
+            this._searchCts?.Cancel();
 #pragma warning restore VSTHRD103
-        this._searchCts?.Dispose();
-        this._searchDebouncer.Dispose();
+            this._searchCts?.Dispose();
+            this._searchCts = null;
+            this._searchDebouncer.Dispose();
+        }
     }
 
     /// <inheritdoc />
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
-        if (!this.IsMultiple && this.Value != null)
+        if (!this.IsMultiple && !EqualityComparer<TValue>.Default.Equals(this.Value!, default!))
         {
             var text = this.GetItemText(this.GetItemFromValue(this.Value!));
             if (this._searchText != text && !this._isOpen)
@@ -143,12 +157,16 @@ public partial class Typeahead<TItem, TValue> : ComponentBase, IDisposable
                 this._searchText = text;
             }
         }
-        else if (!this.IsMultiple && this.Value == null)
+        else if (!this.IsMultiple && EqualityComparer<TValue>.Default.Equals(this.Value!, default!))
         {
             if (!this._isOpen)
             {
                 this._searchText = string.Empty;
             }
+        }
+        else
+        {
+            // Multiple selection mode - no action needed for single-value parameter.
         }
     }
 
@@ -194,7 +212,7 @@ public partial class Typeahead<TItem, TValue> : ComponentBase, IDisposable
         this._isOpen = false;
         if (!this.IsMultiple)
         {
-            this._searchText = this.Value == null ? string.Empty : this.GetItemText(this.GetItemFromValue(this.Value));
+            this._searchText = EqualityComparer<TValue>.Default.Equals(this.Value!, default!) ? string.Empty : this.GetItemText(this.GetItemFromValue(this.Value!));
         }
         else
         {
@@ -278,6 +296,10 @@ public partial class Typeahead<TItem, TValue> : ComponentBase, IDisposable
             {
                 this._isOpen = false;
             }
+            else
+            {
+                // Other keys are not handled.
+            }
         }
     }
 
@@ -285,7 +307,7 @@ public partial class Typeahead<TItem, TValue> : ComponentBase, IDisposable
     {
         if (this.IsMultiple)
         {
-            if (item != null)
+            if (!EqualityComparer<TItem>.Default.Equals(item!, default!))
             {
                 var val = (TValue)(object)item;
                 var newValues = this.Values == null ? new List<TValue>() : new List<TValue>(this.Values);
@@ -301,7 +323,7 @@ public partial class Typeahead<TItem, TValue> : ComponentBase, IDisposable
         }
         else
         {
-            if (item == null)
+            if (EqualityComparer<TItem>.Default.Equals(item!, default!))
             {
                 await this.ValueChanged.InvokeAsync(default).ConfigureAwait(false);
                 this._searchText = string.Empty;
@@ -339,14 +361,14 @@ public partial class Typeahead<TItem, TValue> : ComponentBase, IDisposable
         await this.PerformSearchAsync().ConfigureAwait(false);
     }
 
-    private TItem? GetItemFromValue(TValue value)
+    private TItem? GetItemFromValue(TValue? value)
     {
-        if (value == null)
+        if (EqualityComparer<TValue>.Default.Equals(value!, default!))
         {
             return default;
         }
 
-        return (TItem)(object)value;
+        return (TItem)(object)value!;
     }
 
     private string GetItemText(TItem? item)

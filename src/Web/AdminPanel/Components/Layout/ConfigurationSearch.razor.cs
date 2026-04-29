@@ -72,6 +72,10 @@ public partial class ConfigurationSearch : IDisposable
         {
             score -= 45;
         }
+        else
+        {
+            // Caption does not contain the query, no score adjustment needed.
+        }
 
         if (entry.NormalizedHaystack.StartsWith(normalizedQuery, StringComparison.Ordinal))
         {
@@ -136,6 +140,10 @@ public partial class ConfigurationSearch : IDisposable
                  && this._searchResults.FirstOrDefault() is { } firstResult)
         {
             this.NavigateToResult(firstResult);
+        }
+        else
+        {
+            // Other keys are not handled.
         }
 
         return Task.CompletedTask;
