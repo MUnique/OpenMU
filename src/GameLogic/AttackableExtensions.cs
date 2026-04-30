@@ -21,12 +21,16 @@ public static class AttackableExtensions
 {
     private const short ExplosionMagicEffectNumber = 75;   // 0x4B
 
+    private const short StunnedMagicEffectNumber = 61;     // 0x3D
+
     private static readonly IDictionary<AttributeDefinition, AttributeDefinition> ReductionModifiers =
         new Dictionary<AttributeDefinition, AttributeDefinition>
         {
             { Stats.CurrentMana, Stats.ManaUsageReduction },
             { Stats.CurrentAbility, Stats.AbilityUsageReduction },
         };
+
+    private static MagicEffectDefinition? stunEffectDefinition;
 
     extension(IAttackable attackable)
     {
@@ -327,7 +331,7 @@ public static class AttackableExtensions
         }
 
         float chance = target is Player ? skillEntry.PowerUpChancePvp!.Value : skillEntry.PowerUpChance!.Value;
-        if (!Rand.NextRandomBool(Convert.ToDouble(chance)))
+        if (!Rand.NextRandomBool(chance))
         {
             return;
         }
@@ -597,6 +601,20 @@ public static class AttackableExtensions
         return Math.Max(tempExperience, 0) * 1.25;
     }
 
+    /// <summary>
+    /// Applies the mace mastery stun effect to the specified attackable.
+    /// </summary>
+    /// <param name="attacker">The attacker.</param>
+    /// <param name="attackable">The attackable.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    public static async ValueTask ApplyMaceMasteryStunEffectAsync(this Player attacker, IAttackable attackable)
+    {
+        stunEffectDefinition ??= attacker.GameContext.Configuration.MagicEffects.First(m => m.Number == StunnedMagicEffectNumber);
+        var powerUp = attackable.Attributes.CreateElement(stunEffectDefinition.PowerUpDefinitions.First(pu => pu.TargetAttribute == Stats.IsStunned));
+        var magicEffect = new MagicEffect(TimeSpan.FromSeconds(2), stunEffectDefinition, [new MagicEffect.ElementWithTarget(powerUp, Stats.IsStunned)]);
+        await attackable.MagicEffectList.AddEffectAsync(magicEffect).ConfigureAwait(false);
+    }
+
     private static bool IsAttackSuccessfulTo(this IAttacker attacker, IAttackable defender)
     {
         var hitChance = attacker.GetHitChanceTo(defender);
@@ -863,8 +881,8 @@ public static class AttackableExtensions
         }
         else if (magicEffectDefinition.PowerUpDefinitions.Any(e => e.TargetAttribute == Stats.IsStunned))
         {
-            var stunChancePowerUp = powerUps.FirstOrDefault(p => p.Target == Stats.StunChance);
-            if (stunChancePowerUp.Boost is null || !Rand.NextRandomBool(Convert.ToDouble(stunChancePowerUp.Boost.Value)))
+            var stunChancePowerUp = powerUps.FirstOrDefault(p => p.Target == Stats.MasteryStunChance);
+            if (stunChancePowerUp.Boost is null || !Rand.NextRandomBool(stunChancePowerUp.Boost.Value))
             {
                 return;
             }

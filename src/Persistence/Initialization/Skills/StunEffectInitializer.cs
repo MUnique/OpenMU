@@ -45,7 +45,7 @@ public class StunEffectInitializer : InitializerBase
         // Placeholder for master skills that use this effect
         var stunChancePowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
         magicEffect.PowerUpDefinitions.Add(stunChancePowerUpDefinition);
-        stunChancePowerUpDefinition.TargetAttribute = Stats.StunChance.GetPersistent(this.GameConfiguration);
+        stunChancePowerUpDefinition.TargetAttribute = Stats.MasteryStunChance.GetPersistent(this.GameConfiguration);
         stunChancePowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
         stunChancePowerUpDefinition.Boost.ConstantValue.Value = 0;
     }

@@ -297,6 +297,11 @@ internal enum MagicEffectNumber : short
     WizEnhance = 0x52,
 
     /// <summary>
+    /// The cold effect caused by chain drive and strike of destruction skills. Like <see cref="Iced"/>, it also slows down movement.
+    /// </summary>
+    Cold = 0x56,
+
+    /// <summary>
     /// The ignore defense effect of the rage fighter.
     /// </summary>
     IgnoreDefense = 129,
@@ -317,6 +322,11 @@ internal enum MagicEffectNumber : short
     DecreaseBlock = 132,
 
     /// <summary>
+    /// The greater fortitude (swell life proficiency) effect.
+    /// </summary>
+    GreaterFortitude2 = 135,
+
+    /// <summary>
     /// The wiz enhance strengthener effect.
     /// </summary>
     WizEnhance2 = 138,
@@ -329,7 +339,7 @@ internal enum MagicEffectNumber : short
     /// <summary>
     /// The critical damage increase mastery effect.
     /// </summary>
-    CriticalDamageIncreaseMastery = 148,
+    CriticalDamageIncrease2 = 148,
 
     #region Artificial effects which are not sent to the client, starting at 200.
 
