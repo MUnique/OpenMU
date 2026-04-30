@@ -48,9 +48,39 @@ public partial class ConfigurationSearch : IDisposable
     protected override Task OnInitializedAsync()
     {
         this.SetupService.DatabaseInitialized += this.OnDatabaseInitializedAsync;
+
+        if (!this.RendererInfo.IsInteractive)
+        {
+            return base.OnInitializedAsync();
+        }
+
         if (this.SearchIndexCache.IsLoaded)
         {
             this._searchEntries = this.SearchIndexCache.Entries;
+        }
+        else
+        {
+            this._isLoading = true;
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await this.SearchIndexCache.EnsureLoadedAsync().ConfigureAwait(false);
+                }
+                catch
+                {
+                    // Errors are logged inside EnsureLoadedAsync
+                }
+                finally
+                {
+                    await this.InvokeAsync(() =>
+                    {
+                        this._searchEntries = this.SearchIndexCache.Entries;
+                        this._isLoading = false;
+                        this.StateHasChanged();
+                    }).ConfigureAwait(false);
+                }
+            });
         }
 
         return base.OnInitializedAsync();
@@ -58,17 +88,17 @@ public partial class ConfigurationSearch : IDisposable
 
     private static int CalculateScore(ConfigurationSearchEntry entry, string normalizedQuery, IReadOnlyList<string> queryParts)
     {
-        if (queryParts.Count == 0 || !queryParts.All(part => entry.NormalizedHaystack.Contains(part, StringComparison.Ordinal)))
+        if (queryParts.Count == 0 || !queryParts.All(part => entry.NormalizedHaystack.Contains(part, StringComparison.OrdinalIgnoreCase)))
         {
             return int.MaxValue;
         }
 
         var score = 100;
-        if (entry.NormalizedCaption.StartsWith(normalizedQuery, StringComparison.Ordinal))
+        if (entry.NormalizedCaption.StartsWith(normalizedQuery, StringComparison.OrdinalIgnoreCase))
         {
             score -= 60;
         }
-        else if (entry.NormalizedCaption.Contains(normalizedQuery, StringComparison.Ordinal))
+        else if (entry.NormalizedCaption.Contains(normalizedQuery, StringComparison.OrdinalIgnoreCase))
         {
             score -= 45;
         }
@@ -77,7 +107,7 @@ public partial class ConfigurationSearch : IDisposable
             // Caption does not contain the query, no score adjustment needed.
         }
 
-        if (entry.NormalizedHaystack.StartsWith(normalizedQuery, StringComparison.Ordinal))
+        if (entry.NormalizedHaystack.StartsWith(normalizedQuery, StringComparison.OrdinalIgnoreCase))
         {
             score -= 20;
         }
@@ -89,27 +119,19 @@ public partial class ConfigurationSearch : IDisposable
     private static string Normalize(string value)
     {
         return string.Join(
-                ' ',
-                value.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
-            .ToUpperInvariant();
+            ' ',
+            value.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
     }
 
-    private async Task OnSearchFocusAsync(FocusEventArgs _)
+    private void OnSearchFocus(FocusEventArgs _)
     {
-        await this.EnsureIndexLoadedAsync().ConfigureAwait(true);
         this.UpdateSearchResults();
     }
 
     private Task OnSearchInputAsync()
     {
-
         _ = this._searchDebouncer.DebounceAsync(async token =>
         {
-            if (this._searchEntries.Count == 0)
-            {
-                await this.EnsureIndexLoadedAsync().ConfigureAwait(false);
-            }
-
             if (!token.IsCancellationRequested)
             {
                 await this.InvokeAsync(() =>
@@ -189,24 +211,5 @@ public partial class ConfigurationSearch : IDisposable
         this._searchResults.Clear();
         this.NavigationHistory.Clear();
         this.NavigationManager.NavigateTo(entry.Url);
-    }
-
-    private async Task EnsureIndexLoadedAsync()
-    {
-        if (this._searchEntries.Count > 0 || this._isLoading)
-        {
-            return;
-        }
-
-        this._isLoading = true;
-        try
-        {
-            await this.SearchIndexCache.EnsureLoadedAsync().ConfigureAwait(true);
-            this._searchEntries = this.SearchIndexCache.Entries;
-        }
-        finally
-        {
-            this._isLoading = false;
-        }
     }
 }
