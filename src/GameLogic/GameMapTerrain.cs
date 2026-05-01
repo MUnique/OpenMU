@@ -75,7 +75,6 @@ public class GameMapTerrain
     /// Samples from a pre-computed array in O(1) per call.
     /// </summary>
     /// <returns>A valid spawn point, or null if none exists.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Point? GetRandomWalkableCoordinate()
     {
         var points = this._spawnPoints;
