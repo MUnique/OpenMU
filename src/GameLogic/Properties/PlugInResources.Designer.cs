@@ -1510,6 +1510,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Allows players to start offline leveling with /offlevel. The character stays in the world after the client disconnects and stops when the player logs back in..
+        /// </summary>
+        public static string OfflineLevelingChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("OfflineLevelingChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Offline Leveling Command.
+        /// </summary>
+        public static string OfflineLevelingChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("OfflineLevelingChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the chat command &apos;/online&apos;. Gets the count of game masters and players online..
         /// </summary>
         public static string OnlineChatCommandPlugIn_Description {
@@ -1578,6 +1596,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string OpenWarehouseChatCommandPlugIn_Name {
             get {
                 return ResourceManager.GetString("OpenWarehouseChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Automatically rejoins players to their previous party upon entering the world..
+        /// </summary>
+        public static string PartyAutoRejoinPlugIn_Description {
+            get {
+                return ResourceManager.GetString("PartyAutoRejoinPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Party Auto-Rejoin.
+        /// </summary>
+        public static string PartyAutoRejoinPlugIn_Name {
+            get {
+                return ResourceManager.GetString("PartyAutoRejoinPlugIn_Name", resourceCulture);
             }
         }
         
@@ -2178,7 +2214,7 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Reset points per reset.
+        ///   Looks up a localized string similar to Replace level-up points with reset total.
         /// </summary>
         public static string ResetConfiguration_ReplacePointsPerReset_Name {
             get {
@@ -2214,7 +2250,7 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Reset stats.
+        ///   Looks up a localized string similar to Reset base stats to class defaults.
         /// </summary>
         public static string ResetConfiguration_ResetStats_Name {
             get {
@@ -3200,60 +3236,6 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string WeatherUpdatePlugIn_Name {
             get {
                 return ResourceManager.GetString("WeatherUpdatePlugIn_Name", resourceCulture);
-            }
-        }
- 
-        /// <summary>
-        ///   Looks up a localized string similar to Offline Leveling Command.
-        /// </summary>
-        public static string OfflineLevelingChatCommandPlugIn_Name {
-            get {
-                return ResourceManager.GetString("OfflineLevelingChatCommandPlugIn_Name", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Allows players to start offline leveling.
-        /// </summary>
-        public static string OfflineLevelingChatCommandPlugIn_Description {
-            get {
-                return ResourceManager.GetString("OfflineLevelingChatCommandPlugIn_Description", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Allows players to start offline leveling.
-        /// </summary>
-        public static string OfflineLevelingStopOnLoginPlugIn_Name {
-            get {
-                return ResourceManager.GetString("OfflineLevelingStopOnLoginPlugIn_Name", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Allows players to start offline leveling.
-        /// </summary>        
-        public static string OfflineLevelingStopOnLoginPlugIn_Description {
-            get {
-                return ResourceManager.GetString("OfflineLevelingStopOnLoginPlugIn_Description", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Party auto rejoin.
-        /// </summary>
-        public static string PartyAutoRejoinPlugIn_Name {
-            get {
-                return ResourceManager.GetString("PartyAutoRejoinPlugIn_Name", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Party auto rejoin.
-        /// </summary>        
-        public static string PartyAutoRejoinPlugIn_Description {
-            get {
-                return ResourceManager.GetString("PartyAutoRejoinPlugIn_Description", resourceCulture);
             }
         }
     }

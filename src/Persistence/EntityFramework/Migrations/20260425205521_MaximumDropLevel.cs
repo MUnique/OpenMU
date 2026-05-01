@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -6,29 +5,31 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 {
     /// <inheritdoc />
-    [DbContext(typeof(EntityDataContext))]
-    [Migration("20260404225637_AddExcellentItemDropLevelDelta")]
-    public partial class AddExcellentItemDropLevelDelta : Migration
+    public partial class MaximumDropLevel : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<byte>(
-                name: "ExcellentItemDropLevelDelta",
+                name: "MaximumDropLevel",
                 schema: "config",
-                table: "GameConfiguration",
+                table: "ItemDefinition",
                 type: "smallint",
-                nullable: false,
-                defaultValue: (byte)25);
+                nullable: true);
+
+            migrationBuilder.Sql(
+                @"UPDATE config.""ItemDefinition""
+                SET ""MaximumDropLevel"" = 66
+                WHERE ""Group"" = 12 AND ""Number"" = 15");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "ExcellentItemDropLevelDelta",
+                name: "MaximumDropLevel",
                 schema: "config",
-                table: "GameConfiguration");
+                table: "ItemDefinition");
         }
     }
 }
