@@ -1,4 +1,4 @@
-﻿// <copyright file="PlugInConfiguration.cs" company="MUnique">
+// <copyright file="PlugInConfiguration.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -81,7 +81,7 @@ public class PlugInConfiguration : INotifyPropertyChanged
         get
         {
             var plugInType = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(assembly => assembly.DefinedTypes)
+                .SelectMany(GetTypesSafely)
                 .FirstOrDefault(t => t.GUID == this.TypeId);
             var plugInAttribute = plugInType?.GetCustomAttribute<DisplayAttribute>(inherit: false);
 
@@ -102,5 +102,21 @@ public class PlugInConfiguration : INotifyPropertyChanged
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+
+    private static IEnumerable<TypeInfo> GetTypesSafely(Assembly assembly)
+    {
+        try
+        {
+            return assembly.DefinedTypes;
+        }
+        catch (ReflectionTypeLoadException ex)
+        {
+            return ex.Types.Where(t => t != null).Select(t => t!.GetTypeInfo());
+        }
+        catch
+        {
+            return Enumerable.Empty<TypeInfo>();
+        }
     }
 }

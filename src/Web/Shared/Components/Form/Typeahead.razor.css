@@ -1,0 +1,137 @@
+.typeahead {
+    position: relative;
+    width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.typeahead-controls {
+    display: flex;
+    align-items: center;
+    position: relative;
+    padding: 0.375rem 2.2rem;
+    min-height: calc(1.5em + 0.75rem + 2px);
+    cursor: text;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    background-color: #fff;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.typeahead-controls:focus-within {
+    color: #495057;
+    background-color: #fff;
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.typeahead-single-value,
+.typeahead-multi-values {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.typeahead-multi-value {
+    display: inline-flex;
+    align-items: center;
+    background-color: #e9ecef;
+    border: 1px solid #ced4da;
+    border-radius: 0.2rem;
+    padding: 0.1rem 0.4rem;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    white-space: nowrap;
+}
+
+.typeahead-multi-value-remove {
+    background: none;
+    border: none;
+    color: #6c757d;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    line-height: 1;
+    margin-left: 0.3rem;
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+
+.typeahead-multi-value-remove:hover {
+    color: #dc3545;
+}
+
+.typeahead-input {
+    flex: 1 1 auto;
+    min-width: 60px;
+    border: none;
+    outline: none;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    line-height: inherit;
+    font-family: inherit;
+    color: inherit;
+}
+
+.typeahead-spinner {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    z-index: 5;
+}
+
+.typeahead-icon-left {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+    pointer-events: none;
+    z-index: 5;
+    font-size: 0.9rem;
+}
+
+.typeahead-selected-value {
+    flex: 1 1 auto;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.typeahead-selected-value-text {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.typeahead-single-value-remove {
+    padding: 0 0.5rem;
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.typeahead-results {
+    position: absolute;
+    width: 100%;
+    top: 100%;
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 0.5rem 0;
+    margin-top: 0.125rem;
+    z-index: 1000;
+}
+
+.typeahead-no-results {
+    pointer-events: none;
+}

@@ -33,8 +33,14 @@ public class EnumerableLookupController : ILookupController
             return this._sourceEnumerable.OfType<T>();
         }
 
-        return this._sourceEnumerable.OfType<T>().Where(v => v.GetName().StartsWith(text, StringComparison.InvariantCultureIgnoreCase))
-            .Concat(this._sourceEnumerable.OfType<T>().Where(v => v.GetName().Contains(text, StringComparison.InvariantCultureIgnoreCase)))
-            .Distinct();
+        var searchWords = text.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        var query = this._sourceEnumerable.OfType<T>();
+
+        foreach (var word in searchWords)
+        {
+            query = query.Where(v => v.GetName().Contains(word, StringComparison.OrdinalIgnoreCase));
+        }
+
+        return query.Distinct();
     }
 }
