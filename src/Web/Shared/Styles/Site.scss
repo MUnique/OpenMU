@@ -1,4 +1,9 @@
-﻿@import "bootstrap-4.6.1/scss/bootstrap";
+﻿// Disable form validation icons and extra padding
+$form-feedback-icon-valid: none;
+$form-feedback-icon-invalid: none;
+$enable-validation-icons: false;
+
+@import "bootstrap-4.6.1/scss/bootstrap";
 @import "open-iconic/font/css/open-iconic-bootstrap.min.css";
 
 @import "Navigation";

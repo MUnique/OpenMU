@@ -9,6 +9,7 @@ namespace MUnique.OpenMU.Persistence.InMemory;
 using System.Threading;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// A context provider which uses in-memory repositories to hold its data, e.g. for testing or demo purposes.
@@ -16,7 +17,6 @@ using MUnique.OpenMU.Interfaces;
 /// </summary>
 public class InMemoryPersistenceContextProvider : IMigratableDatabaseContextProvider
 {
-    private readonly IConfigurationChangePublisher? _changePublisher;
     private InMemoryRepositoryProvider _repositoryProvider = new ();
 
     /// <summary>
@@ -25,22 +25,31 @@ public class InMemoryPersistenceContextProvider : IMigratableDatabaseContextProv
     /// <param name="changePublisher">The change publisher.</param>
     public InMemoryPersistenceContextProvider(IConfigurationChangePublisher? changePublisher = null)
     {
-        this._changePublisher = changePublisher;
+        this.ChangePublisher = changePublisher;
     }
 
     /// <inheritdoc />
     public IRepositoryProvider RepositoryProvider => this._repositoryProvider;
 
+    /// <summary>
+    /// Gets or sets the publisher for configuration changes.
+    /// </summary>
+    public IConfigurationChangePublisher? ChangePublisher { get; set; }
+
     /// <inheritdoc/>
     public IContext CreateNewContext()
     {
-        return new InMemoryContext(this._repositoryProvider);
+        var context = new InMemoryContext(this._repositoryProvider);
+        this.AttachChangePublisher(context, typeof(PlugInConfiguration));
+        return context;
     }
 
     /// <inheritdoc/>
     public IContext CreateNewContext(GameConfiguration gameConfiguration)
     {
-        return new InMemoryContext(this._repositoryProvider);
+        var context = new InMemoryContext(this._repositoryProvider);
+        this.AttachChangePublisher(context, typeof(PlugInConfiguration));
+        return context;
     }
 
     /// <inheritdoc/>
@@ -77,28 +86,7 @@ public class InMemoryPersistenceContextProvider : IMigratableDatabaseContextProv
     public IContext CreateNewTypedContext(Type editType, bool useCache, GameConfiguration? gameConfiguration = null)
     {
         var context = new InMemoryContext(this._repositoryProvider);
-        if (this._changePublisher is { })
-        {
-#pragma warning disable VSTHRD100
-            async void OnContextOnSavedChanges(object? o, EventArgs e)
-#pragma warning restore VSTHRD100
-            {
-                try
-                {
-                    foreach (var obj in await context.GetAsync(editType, default).ConfigureAwait(false))
-                    {
-                        await this._changePublisher.ConfigurationChangedAsync(editType, obj.GetId(), obj).ConfigureAwait(false);
-                    }
-                }
-                catch
-                {
-                    // ignore all errors.
-                }
-            }
-
-            context.SavedChanges += OnContextOnSavedChanges;
-        }
-
+        this.AttachChangePublisher(context, editType);
         return context;
     }
 
@@ -150,5 +138,35 @@ public class InMemoryPersistenceContextProvider : IMigratableDatabaseContextProv
     public void ResetCache()
     {
         // do nothing here
+    }
+
+    private void AttachChangePublisher(InMemoryContext context, Type editType)
+    {
+        if (this.ChangePublisher is { } changePublisher)
+        {
+#pragma warning disable VSTHRD100
+            async void OnContextOnSavedChanges(object? o, EventArgs e)
+#pragma warning restore VSTHRD100
+            {
+                await this.PublishConfigurationChangesAsync(context, changePublisher, editType).ConfigureAwait(false);
+            }
+
+            context.SavedChanges += OnContextOnSavedChanges;
+        }
+    }
+
+    private async ValueTask PublishConfigurationChangesAsync(InMemoryContext context, IConfigurationChangePublisher changePublisher, Type editType)
+    {
+        try
+        {
+            foreach (var obj in await context.GetAsync(editType, default).ConfigureAwait(false))
+            {
+                await changePublisher.ConfigurationChangedAsync(editType, obj.GetId(), obj).ConfigureAwait(false);
+            }
+        }
+        catch
+        {
+            // ignore all errors.
+        }
     }
 }

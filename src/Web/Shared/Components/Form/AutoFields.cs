@@ -1,4 +1,4 @@
-﻿// <copyright file="AutoFields.cs" company="MUnique">
+// <copyright file="AutoFields.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -53,6 +53,7 @@ public class AutoFields : ComponentBase
         Builders.Add(new IntCollectionFieldBuilder());
         Builders.Add(new ByteArrayFieldBuilder());
         Builders.Add(new ValueListFieldBuilder());
+        Builders.Add(new InvasionSpawnTableFieldBuilder());
     }
 
     /// <summary>

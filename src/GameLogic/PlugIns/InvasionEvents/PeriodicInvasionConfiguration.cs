@@ -1,13 +1,16 @@
-﻿// <copyright file="PeriodicInvasionConfiguration.cs" company="MUnique">
+// <copyright file="PeriodicInvasionConfiguration.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
 namespace MUnique.OpenMU.GameLogic.PlugIns.InvasionEvents;
 
+using System.ComponentModel.DataAnnotations;
 using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 
 /// <summary>
-/// Abstract configuration for periodic invasions.
+/// Configuration data for a periodic invasion event.
+/// Responsible only for describing the shape of the configuration (SRP).
+/// Default values live in <see cref="InvasionConfigurationDefaults"/>.
 /// </summary>
 public class PeriodicInvasionConfiguration : PeriodicTaskConfiguration
 {
@@ -16,28 +19,13 @@ public class PeriodicInvasionConfiguration : PeriodicTaskConfiguration
     /// </summary>
     public PeriodicInvasionConfiguration()
     {
-        this.Message = "Invasion's been started!";
+        this.StartMessage = "Invasion has started!";
+        this.EndMessage = "Invasion has ended!";
     }
 
     /// <summary>
-    /// Gets the default configuration.
+    /// Gets or sets the monster spawns for this invasion.
     /// </summary>
-    public static PeriodicInvasionConfiguration DefaultGoldenInvasion => new()
-    {
-        TaskDuration = TimeSpan.FromMinutes(5),
-        PreStartMessageDelay = TimeSpan.FromSeconds(3),
-        Message = "[{mapName}] Golden Invasion!",
-        Timetable = GenerateTimeSequence(TimeSpan.FromHours(4)).ToList(), // Every 4 hours
-    };
-
-    /// <summary>
-    /// Gets the default configuration for the red dragon invasion.
-    /// </summary>
-    public static PeriodicInvasionConfiguration DefaultRedDragonInvasion => new()
-    {
-        TaskDuration = TimeSpan.FromMinutes(10),
-        PreStartMessageDelay = TimeSpan.FromSeconds(3),
-        Message = "[{mapName}] Red Dragon Invasion!",
-        Timetable = GenerateTimeSequence(TimeSpan.FromHours(6), new TimeOnly(2, 0)).ToList(), // Every 6 hours, starting from 02:00
-    };
+    [Display(Name = "Monster Spawns", Order = 6)]
+    public IList<InvasionSpawnConfiguration> Mobs { get; set; } = [];
 }

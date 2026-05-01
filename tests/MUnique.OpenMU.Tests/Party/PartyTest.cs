@@ -44,7 +44,7 @@ public class PartyTest
         var partyMember2 = (Player)party.PartyList[1];
         var partyMember3 = party.PartyList[2];
 
-        await this._kickAction.KickPlayerAsync(partyMember2, (byte)((List<IPartyMember>)party.PartyList).IndexOf(partyMember3)).ConfigureAwait(false);
+        await this._kickAction.KickPlayerAsync(partyMember2, GetPartyMemberIndex(party, partyMember3)).ConfigureAwait(false);
         Assert.That(party.PartyList, Contains.Item(partyMember3));
     }
 
@@ -57,7 +57,7 @@ public class PartyTest
         var party = await this.CreatePartyWithMembersAsync(3).ConfigureAwait(false);
         var partyMember2 = party.PartyList[1];
 
-        await this._kickAction.KickPlayerAsync((Player)partyMember2, (byte)((List<IPartyMember>)party.PartyList).IndexOf(partyMember2)).ConfigureAwait(false);
+        await this._kickAction.KickPlayerAsync((Player)partyMember2, GetPartyMemberIndex(party, partyMember2)).ConfigureAwait(false);
         Assert.That(party.PartyList, Is.Not.Contains(partyMember2));
         Assert.That(party.PartyList, Has.Count.EqualTo(2));
     }
@@ -72,7 +72,7 @@ public class PartyTest
         var partyMaster = (Player)party.PartyList[0];
         var partyMember = (Player)party.PartyList[1];
 
-        await this._kickAction.KickPlayerAsync(partyMaster, (byte)((List<IPartyMember>)party.PartyList).IndexOf(partyMember)).ConfigureAwait(false);
+        await this._kickAction.KickPlayerAsync(partyMaster, GetPartyMemberIndex(party, partyMember)).ConfigureAwait(false);
         Assert.That(party.PartyList, Is.Not.Contains(partyMember));
         Assert.That(party.PartyList, Has.Count.EqualTo(2));
     }
@@ -87,7 +87,7 @@ public class PartyTest
         var partyMaster = party.PartyList[0];
         var partyMember = party.PartyList[1];
 
-        await this._kickAction.KickPlayerAsync((Player)partyMaster, (byte)((List<IPartyMember>)party.PartyList).IndexOf(partyMaster)).ConfigureAwait(false);
+        await this._kickAction.KickPlayerAsync((Player)partyMaster, GetPartyMemberIndex(party, partyMaster)).ConfigureAwait(false);
 
         // Master leaves the party; the remaining 2 members stay.
         Assert.That(partyMaster.Party, Is.Null);
@@ -187,6 +187,19 @@ public class PartyTest
         var result = await PlayerTestHelper.CreatePlayerAsync(GameContextTestHelper.CreateGameContext()).ConfigureAwait(false);
         await result.PlayerState.TryAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
         return result;
+    }
+
+    private static byte GetPartyMemberIndex(Party party, IPartyMember member)
+    {
+        for (byte index = 0; index < party.PartyList.Count; index++)
+        {
+            if (party.PartyList[index] == member)
+            {
+                return index;
+            }
+        }
+
+        throw new ArgumentException("The member is not part of the party.", nameof(member));
     }
 
     private async ValueTask<Party> CreatePartyWithMembersAsync(int numberOfMembers)

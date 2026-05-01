@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using MUnique.OpenMU.Dapr.Common;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.EntityFramework;
+using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// The API controller which handles the calls of the <see cref="ConfigurationChangePublisher"/>
@@ -21,14 +22,17 @@ using MUnique.OpenMU.Persistence.EntityFramework;
 public class ConfigurationChangeController : ControllerBase
 {
     private readonly IConfigurationChangeListener _changeListener;
+    private readonly PlugInManager _plugInManager;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConfigurationChangeController" /> class.
     /// </summary>
     /// <param name="changeListener">The change listener.</param>
-    public ConfigurationChangeController(IConfigurationChangeListener changeListener)
+    /// <param name="plugInManager">The plugin manager.</param>
+    public ConfigurationChangeController(IConfigurationChangeListener changeListener, PlugInManager plugInManager)
     {
         this._changeListener = changeListener;
+        this._plugInManager = plugInManager;
     }
 
     /// <summary>
@@ -50,6 +54,7 @@ public class ConfigurationChangeController : ControllerBase
     [Topic("pubsub", nameof(IConfigurationChangePublisher.ConfigurationChangedAsync))]
     public ValueTask ConfigurationChangedAsync([FromBody] ConfigurationChangeArguments arguments)
     {
+        this._plugInManager.ApplyChangedConfiguration(arguments.Type, arguments.Id, arguments.Configuration);
         return this._changeListener.ConfigurationChangedAsync(arguments.Type, arguments.Id, arguments.Configuration!, null);
     }
 
@@ -61,6 +66,7 @@ public class ConfigurationChangeController : ControllerBase
     [Topic("pubsub", nameof(IConfigurationChangePublisher.ConfigurationRemovedAsync))]
     public ValueTask ConfigurationRemovedAsync([FromBody] ConfigurationChangeArguments arguments)
     {
+        this._plugInManager.ApplyRemovedConfiguration(arguments.Type, arguments.Id);
         return this._changeListener.ConfigurationRemovedAsync(arguments.Type, arguments.Id, null, null);
     }
 }
