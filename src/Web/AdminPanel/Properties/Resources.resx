@@ -561,6 +561,24 @@
   <data name="GameServerCount" xml:space="preserve">
     <value>Game server count</value>
   </data>
+  <data name="ExportBackup" xml:space="preserve">
+    <value>Export Backup</value>
+  </data>
+  <data name="ImportBackup" xml:space="preserve">
+    <value>Import Backup</value>
+  </data>
+  <data name="ImportingBackupPleaseWait" xml:space="preserve">
+    <value>Importing backup, please wait ...</value>
+  </data>
+  <data name="BackupImportSucceeded" xml:space="preserve">
+    <value>Backup import succeeded. Please restart the server process to apply the changes.</value>
+  </data>
+  <data name="BackupImportFailed" xml:space="preserve">
+    <value>Backup import failed.</value>
+  </data>
+  <data name="SelectZipFileToRestore" xml:space="preserve">
+    <value>Select a .zip backup file to restore</value>
+  </data>
   <data name="Character" xml:space="preserve">
     <value>Character</value>
   </data>
