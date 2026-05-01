@@ -77,7 +77,7 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
         {
             Point? spawnPoint = (x.HasValue && y.HasValue)
                 ? new Point(x.Value, y.Value)
-                : gameMap.Terrain.GetRandomWalkableCoordinate();
+                : gameMap.Terrain.RandomWalkableCoordinate;
 
             if (spawnPoint is null)
             {

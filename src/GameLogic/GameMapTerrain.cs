@@ -1,4 +1,4 @@
-﻿// <copyright file="GameMapTerrain.cs" company="MUnique">
+// <copyright file="GameMapTerrain.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -74,16 +74,18 @@ public class GameMapTerrain
     /// Gets a random walkable, non-safezone point anywhere on the map.
     /// Samples from a pre-computed array in O(1) per call.
     /// </summary>
-    /// <returns>A valid spawn point, or null if none exists.</returns>
-    public Point? GetRandomWalkableCoordinate()
+    public Point? RandomWalkableCoordinate
     {
-        var points = this._spawnPoints;
-        if (points.Length == 0)
+        get
         {
-            return null;
-        }
+            var points = this._spawnPoints;
+            if (points.Length == 0)
+            {
+                return null;
+            }
 
-        return points[Random.Shared.Next(points.Length)];
+            return points[Random.Shared.Next(points.Length)];
+        }
     }
 
     /// <summary>
