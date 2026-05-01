@@ -89,12 +89,22 @@
     <ProjectReference Include="..\ItemEditor\MUnique.OpenMU.Web.ItemEditor.csproj" />
   </ItemGroup>
 
+  <!-- Homebrew Node links global npm bins to /opt/homebrew/opt/node/bin/sass; MSBuild inherits a minimal PATH where `sass` alone is often missing. -->
+  <PropertyGroup Condition="'$(DartSass)' == '' and Exists('/opt/homebrew/opt/node/bin/sass')">
+    <DartSass>/opt/homebrew/opt/node/bin/sass</DartSass>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(DartSass)' == '' and Exists('/usr/local/opt/node/bin/sass')">
+    <DartSass>/usr/local/opt/node/bin/sass</DartSass>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(DartSass)' == ''">
+    <DartSass>sass</DartSass>
+  </PropertyGroup>
   <Target Name="CompileSass" BeforeTargets="Build" Condition="'$(ci)'!='true' and '$(OS)'!='Windows_NT'">
-    <Exec Command="sass --version" IgnoreExitCode="true">
+    <Exec Command="&quot;$(DartSass)&quot; --version" IgnoreExitCode="true">
       <Output TaskParameter="ExitCode" PropertyName="SassExists"/>
     </Exec>
-    <Error Condition="'$(SassExists)'!='0'" Text="Dart Sass not installed. Install with: npm install -g sass."/>
-    <Exec Command="sass Styles/Site.scss:wwwroot/css/shared.css --style=expanded --no-source-map" />
+    <Error Condition="'$(SassExists)'!='0'" Text="Dart Sass not installed. Homebrew: npm install -g sass (see /opt/homebrew/opt/node/bin/sass) or: npm install -g sass. Override with -p:DartSass=/path/to/sass."/>
+    <Exec Command="&quot;$(DartSass)&quot; Styles/Site.scss:wwwroot/css/shared.css --style=expanded --no-source-map" />
   </Target>
 
 </Project>
