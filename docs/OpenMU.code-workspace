@@ -8,6 +8,21 @@
 		},
 		{
 			"path": "../../muonline-xulek"
+		},
+		{
+			"path": "../../muonline-bmd-viewer"
+		},
+		{
+			"path": "../../muonline-bernat-main"
+		},
+		{
+			"path": "../../../Project/MU/takumi"
+		},
+		{
+			"path": "../../../Project/MU/SRC ThangCuoi"
+		},
+		{
+			"path": "../../../Project/MU/Source Pegasus 5.2"
 		}
 	],
 	"settings": {}
