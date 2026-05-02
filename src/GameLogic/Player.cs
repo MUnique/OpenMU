@@ -212,6 +212,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// </summary>
     public Character? SelectedCharacter => this._selectedCharacter;
 
+    /// <inheritdoc/>
+    public CharacterClass? CharacterClass => this.SelectedCharacter?.CharacterClass;
+
     /// <summary>
     /// Gets or sets the pose of the currently selected character.
     /// </summary>
@@ -1184,18 +1187,25 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return 0;
         }
 
-        var addMasterExperience = characterClass.IsMasterClass
-                            && (short)this.Attributes![Stats.Level] == this.GameContext.Configuration.MaximumLevel;
-        var expRateAttribute = addMasterExperience ? Stats.MasterExperienceRate : Stats.ExperienceRate;
-        var gameRate = addMasterExperience ? this.GameContext.MasterExperienceRate : this.GameContext.ExperienceRate;
+        var currentLevel = (short)this.Attributes![Stats.Level];
+        var isMaxLevel = currentLevel == this.GameContext.Configuration.MaximumLevel;
+        var isAddMasterExperience = characterClass.IsMasterClass && isMaxLevel;
+        var expRateAttribute = isAddMasterExperience ? Stats.MasterExperienceRate : Stats.ExperienceRate;
+        var gameRate = isAddMasterExperience ? this.GameContext.MasterExperienceRate : this.GameContext.ExperienceRate;
 
         var experience = killedObject.CalculateBaseExperience(this.Attributes![Stats.TotalLevel]);
         experience *= gameRate;
         experience *= this.Attributes[expRateAttribute] + this.Attributes[Stats.BonusExperienceRate];
         experience *= this.CurrentMap?.Definition.ExpMultiplier ?? 1;
-        experience = Rand.NextInt((int)(experience * 0.8), (int)(experience * 1.2));
 
-        if (addMasterExperience)
+        var minMultiplier = this.Attributes[Stats.ExperienceRandomMinMultiplier];
+        var maxMultiplier = this.Attributes[Stats.ExperienceRandomMaxMultiplier];
+        if (minMultiplier > 0 && maxMultiplier > 0)
+        {
+            experience = Rand.NextInt((int)(experience * minMultiplier), (int)(experience * maxMultiplier));
+        }
+
+        if (isAddMasterExperience)
         {
             await this.AddMasterExperienceAsync((int)experience, killedObject).ConfigureAwait(false);
         }

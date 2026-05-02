@@ -1,4 +1,4 @@
-﻿// <copyright file="Stats.cs" company="MUnique">
+// <copyright file="Stats.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -110,6 +110,26 @@ public class Stats
     /// Gets the experience rate attribute definition.
     /// </summary>
     public static AttributeDefinition ExperienceRate { get; } = new(new Guid("1AD454D4-BEF9-416E-BC49-82A5B0277FC7"), "Experience Rate", "Defines the experience rate multiplier of a character. By default it's 1.0 and may be modified by seals or other stuff.");
+
+    /// <summary>
+    /// Gets the experience random min multiplier attribute definition.
+    /// </summary>
+    public static AttributeDefinition ExperienceRandomMinMultiplier { get; } = new(new Guid("536BF8B0-D24B-4314-95B7-5D651F5892DF"), "Experience Random Min Multiplier", "Defines the minimum multiplier for the randomized experience gain.");
+
+    /// <summary>
+    /// Gets the experience random max multiplier attribute definition.
+    /// </summary>
+    public static AttributeDefinition ExperienceRandomMaxMultiplier { get; } = new(new Guid("74CE26C6-6D59-4420-AF3F-457E138AE41C"), "Experience Random Max Multiplier", "Defines the maximum multiplier for the randomized experience gain.");
+
+    /// <summary>
+    /// Gets the experience rate per party member bonus attribute definition.
+    /// </summary>
+    public static AttributeDefinition ExperienceRatePerPartyMemberBonus { get; } = new(new Guid("851DE4C6-0F57-44BB-9A43-2FEE3751FCDE"), "Experience Rate Per Party Member Bonus", "Defines the bonus experience rate per party member. Default is 0.01.");
+
+    /// <summary>
+    /// Gets the experience rate bonus for set party attribute definition.
+    /// </summary>
+    public static AttributeDefinition ExperienceRateBonusForSetParty { get; } = new(new Guid("8FF5C2C7-51DE-4E0A-89D9-36CFDBB11775"), "Experience Rate Bonus For Set Party", "Defines the additional bonus experience rate for a set party (3+ different classes). Default is 0.02.");
 
     /// <summary>
     /// Gets the bonus experience rate attribute definition, which is added to <see cref="ExperienceRate"/> or <see cref="MasterExperienceRate"/>.

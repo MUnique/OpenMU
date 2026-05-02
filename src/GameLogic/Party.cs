@@ -34,6 +34,7 @@ public sealed class Party : AsyncDisposable
     private CancellationTokenSource? _healthUpdateCts;
 
     private IPartyMember[] _partyMembers = [];
+    private double _experienceBonus = 1.0;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Party"/> class.
@@ -92,6 +93,7 @@ public sealed class Party : AsyncDisposable
             newMember.Party = this;
             this._partyManager.TrackMembership(newMember.Name, this);
             this._partyMembers = [..this._partyMembers, newMember];
+            this.UpdateExperienceBonus();
         }
 
         await this.SendPartyListAsync().ConfigureAwait(false);
@@ -135,6 +137,7 @@ public sealed class Party : AsyncDisposable
             }
 
             this._partyMembers = updated;
+            this.UpdateExperienceBonus();
         }
 
         await this.SendPartyListAsync().ConfigureAwait(false);
@@ -340,22 +343,6 @@ public sealed class Party : AsyncDisposable
         base.Dispose(disposing);
     }
 
-    private static (int Total, float PerLevel) CalculatePartyExperience(List<Player> recipients, IAttackable killed)
-    {
-        var count = recipients.Count;
-        var totalLevel = recipients.Sum(p => (int)p.Attributes![Stats.TotalLevel]);
-        var averageLevel = totalLevel / count;
-        var baseExp = killed.CalculateBaseExperience(averageLevel);
-
-        var totalAvg = baseExp * count * Math.Pow(1.05, count - 1);
-        totalAvg *= killed.CurrentMap?.Definition.ExpMultiplier ?? 1;
-
-        var total = Rand.NextInt((int)(totalAvg * 0.8), (int)(totalAvg * 1.2));
-        var perLevel = (float)total / totalLevel;
-
-        return (total, perLevel);
-    }
-
     private static async ValueTask AwardExperienceAsync(Player player, float perLevel, IAttackable killed)
     {
         var attributes = player.Attributes!;
@@ -402,7 +389,13 @@ public sealed class Party : AsyncDisposable
             if (!shouldDispose)
             {
                 this._partyMembers = this._partyMembers.Where(m => m != member).ToArray();
+                if (this.PartyMaster == member)
+                {
+                    this.PartyMaster = this._partyMembers.FirstOrDefault();
+                }
             }
+
+            this.UpdateExperienceBonus();
         }
 
         if (shouldDispose)
@@ -439,36 +432,6 @@ public sealed class Party : AsyncDisposable
         }
     }
 
-    private async ValueTask<int> InternalDistributeExperienceAfterKillAsync(IAttackable killedObject, IObservable killer)
-    {
-        if (killedObject.IsSummonedMonster)
-        {
-            return 0;
-        }
-
-        using (await killer.ObserverLock.ReaderLockAsync().ConfigureAwait(false))
-        {
-            this._distributionList.AddRange(
-                this._partyMembers.OfType<Player>()
-                    .Where(p => p.Attributes is { }
-                                && (p == killer || killer.Observers.Contains(p))));
-        }
-
-        if (this._distributionList.Count == 0)
-        {
-            return 0;
-        }
-
-        var (total, perLevel) = CalculatePartyExperience(this._distributionList, killedObject);
-
-        foreach (var player in this._distributionList)
-        {
-            await AwardExperienceAsync(player, perLevel, killedObject).ConfigureAwait(false);
-        }
-
-        return total;
-    }
-
     private async ValueTask UpdateNearbyCountAsync()
     {
         foreach (var member in this._partyMembers)
@@ -490,6 +453,36 @@ public sealed class Party : AsyncDisposable
         }
     }
 
+    private async ValueTask<int> InternalDistributeExperienceAfterKillAsync(IAttackable killedObject, IObservable killer)
+    {
+        if (killedObject.IsSummonedMonster)
+        {
+            return 0;
+        }
+
+        using (await killer.ObserverLock.ReaderLockAsync().ConfigureAwait(false))
+        {
+            this._distributionList.AddRange(
+                this._partyMembers.OfType<Player>()
+                    .Where(p => p.Attributes is { }
+                                && (p == killer || killer.Observers.Contains(p))));
+        }
+
+        if (this._distributionList.Count == 0)
+        {
+            return 0;
+        }
+
+        var (total, perLevel) = this.CalculatePartyExperience(this._distributionList, killedObject);
+
+        foreach (var player in this._distributionList)
+        {
+            await AwardExperienceAsync(player, perLevel, killedObject).ConfigureAwait(false);
+        }
+
+        return total;
+    }
+
     private async ValueTask SendPartyListAsync()
     {
         foreach (var member in this._partyMembers)
@@ -504,6 +497,99 @@ public sealed class Party : AsyncDisposable
                 this._logger.LogDebug(ex, "Error sending party list to {Name}", member.Name);
             }
         }
+    }
+
+    private (int Total, float PerLevel) CalculatePartyExperience(List<Player> recipients, IAttackable killed)
+    {
+        var (levelSum, maxLevel) = this.CalculatePartyLevels(recipients);
+        var baseExp = killed.CalculateBaseExperience(maxLevel);
+
+        if (recipients.FirstOrDefault()?.Attributes is { } attributes)
+        {
+            var minMultiplier = attributes[Stats.ExperienceRandomMinMultiplier];
+            var maxMultiplier = attributes[Stats.ExperienceRandomMaxMultiplier];
+            if (minMultiplier != 0 && maxMultiplier != 0)
+            {
+                baseExp = Rand.NextInt((int)(baseExp * minMultiplier), (int)(baseExp * maxMultiplier));
+            }
+        }
+
+        var totalDistributed = baseExp
+                               * this._experienceBonus
+                               * (killed.CurrentMap?.Definition.ExpMultiplier ?? 1);
+
+        return ((int)totalDistributed, (float)totalDistributed / levelSum);
+    }
+
+    private (int LevelSum, int MaxLevel) CalculatePartyLevels(List<Player> recipients)
+    {
+        int levelSum = 0;
+        int maxLevel = 0;
+        foreach (var player in recipients)
+        {
+            var level = (int)player.Attributes![Stats.TotalLevel];
+            levelSum += level;
+            if (level > maxLevel)
+            {
+                maxLevel = level;
+            }
+        }
+
+        return (levelSum, maxLevel);
+    }
+
+    private void UpdateExperienceBonus()
+    {
+        var members = this._partyMembers;
+        var count = members.Length;
+        if (count < 2)
+        {
+            this._experienceBonus = 1.0;
+            return;
+        }
+
+        var attributes = (members.FirstOrDefault() as Player)?.Attributes;
+        var perPartyMemberBonus = attributes?[Stats.ExperienceRatePerPartyMemberBonus] ?? 0.01f;
+        var setPartyBonus = attributes?[Stats.ExperienceRateBonusForSetParty] ?? 0.02f;
+
+        if (perPartyMemberBonus == 0 && setPartyBonus == 0)
+        {
+            this._experienceBonus = 1.0;
+            return;
+        }
+
+        // General bonus: 2 players=1.02, 3 players=1.03, etc.
+        double bonus = 1.0 + (count * perPartyMemberBonus);
+
+        if (setPartyBonus != 0)
+        {
+            // Navigate to the last generation class to compare, since, currently, there is no way to look back.
+            var uniqueClasses = members
+                .Select(m => m.CharacterClass)
+                .Where(c => c != null)
+                .Select(c =>
+                {
+                    var current = c!;
+                    while (current.NextGenerationClass is { } next)
+                    {
+                        current = next;
+                    }
+
+                    return current;
+                })
+                .Distinct()
+                .Count();
+
+            // Set party adds an extra flat bonus on top of the general bonus.
+            bool isSetParty = uniqueClasses == count && count >= 3;
+            if (isSetParty)
+            {
+                bonus += setPartyBonus;
+            }
+        }
+
+        // Avoid negative xp values.
+        this._experienceBonus = Math.Max(0, bonus);
     }
 
     private async Task HealthUpdateLoopAsync(CancellationToken cancellationToken)

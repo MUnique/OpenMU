@@ -402,4 +402,19 @@ public enum UpdateVersion
     /// The version of the <see cref="FinishDarkLordMasterTreePlugIn"/>.
     /// </summary>
     FinishDarkLordMasterTree = 79,
+
+    /// <summary>
+    /// The version of the <see cref="AddExperienceConfigAttributesPlugIn075"/>.
+    /// </summary>
+    AddExperienceConfigAttributes075 = 80,
+
+    /// <summary>
+    /// The version of the <see cref="AddExperienceConfigAttributesPlugIn095d"/>.
+    /// </summary>
+    AddExperienceConfigAttributes095d = 81,
+
+    /// <summary>
+    /// The version of the <see cref="AddExperienceConfigAttributesPlugInSeason6"/>.
+    /// </summary>
+    AddExperienceConfigAttributesSeason6 = 82,
 }
