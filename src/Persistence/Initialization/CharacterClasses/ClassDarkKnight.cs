@@ -76,6 +76,7 @@ internal partial class CharacterClassInitialization
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.ComboBonus, 0.5f, Stats.TotalEnergy));
 
         result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.AttackSpeedAny, Stats.IsOneHandedSwordEquipped, Stats.WeaponMasteryAttackSpeed));
+        result.AttributeCombinations.Add(this.CreateConditionalRelationship(Stats.DoubleDamageChance, Stats.IsSpearEquipped, Stats.SpearMasteryDoubleDamageChance));
 
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.FenrirBaseDmg, 1.0f / 3, Stats.TotalStrength));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.FenrirBaseDmg, 1.0f / 5, Stats.TotalAgility));

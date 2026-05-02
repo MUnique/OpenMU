@@ -1130,14 +1130,41 @@ public class Stats
     public static AttributeDefinition DoubleDamageChance { get; } = new(new Guid("2B8A03E6-1CC2-48A0-8633-3F36E17050F4"), "Double Damage Chance", string.Empty);
 
     /// <summary>
-    /// Gets the stun chance attribute definition.
+    /// Gets the MST stun chance attribute definition.
     /// </summary>
-    public static AttributeDefinition StunChance { get; } = new(new Guid("610D3259-1158-424A-8738-9EB7A71DE600"), "Stun Chance", string.Empty);
+    /// <remarks>Bucket attribute for the master skills: wind tome (book of neil) mastery, fire burst mastery and earthshake mastery.</remarks>
+    public static AttributeDefinition MasteryStunChance { get; } = new(new Guid("610D3259-1158-424A-8738-9EB7A71DE600"), "Mastery Stun Chance (MST)", string.Empty);
 
     /// <summary>
-    /// Gets the pollution skill MST target move chance, which rises with lightning tome mastery.
+    /// Gets the MST mace mastery stun chance attribute definition.
     /// </summary>
-    public static AttributeDefinition PollutionMoveTargetChance { get; } = new(new Guid("6F9619FF-8B86-D011-B42D-00C04FC964FF"), "Pollution Move Target Chance (MST)", "The pollution skill (book of lagle) move chance, which rises with lightning tome mastery.");
+    public static AttributeDefinition MaceMasteryStunChance { get; } = new(new Guid("6E3A9F2D-5B7C-4D8E-A1F3-2C9E5B7D4F6A"), "Mace Mastery Stun Chance (MST)", string.Empty);
+
+    /// <summary>
+    /// Gets the MST target move chance attribute definition.
+    /// </summary>
+    /// <remarks>Bucket attribute for the master skills: lightning tome (book of lagle) mastery and twisting slash mastery.</remarks>
+    public static AttributeDefinition MasteryMoveTargetChance { get; } = new(new Guid("6F9619FF-8B86-D011-B42D-00C04FC964FF"), "Mastery Move Target Chance (MST)", "A generic master tree move target chance attribute, which serves as a bucket for \"mastery\" skills.");
+
+    /// <summary>
+    /// Gets the rageful blow mastery decrease durability MST chance attribute definition.
+    /// </summary>
+    public static AttributeDefinition RagefulBlowMasteryDurabilityDecChance { get; } = new(new Guid("2F8A5D3B-9C7E-4F1A-B6D2-8E3C5A7F9B1D"), "Rageful Blow Mastery Durability Decrease Chance (MST)", string.Empty);
+
+    /// <summary>
+    /// Gets the spear mastery double damage chance attribute definition.
+    /// </summary>
+    public static AttributeDefinition SpearMasteryDoubleDamageChance { get; } = new(new Guid("5D9E2A7B-3C4F-8E1A-B5D6-2E7F9C4A1B8D"), "Spear Mastery Double Damage Chance (MST)", string.Empty);
+
+    /// <summary>
+    /// Gets the swell life skill health increase attribute definition.
+    /// </summary>
+    public static AttributeDefinition SwellLifeHealthIncrease { get; } = new(new Guid("9C4E7B2A-F1D6-4A3E-B8C5-1D7F2E9A3B4C"), "Swell Life Health Increase", string.Empty);
+
+    /// <summary>
+    /// Gets the swell life skill mana increase attribute definition.
+    /// </summary>
+    public static AttributeDefinition SwellLifeManaIncrease { get; } = new(new Guid("8B4F1C6D-9A2E-4F7B-A3D5-1E9C7F2A4B6D"), "Swell Life Mana Increase", string.Empty);
 
     /// <summary>
     /// Gets the mana after monster kill attribute definition.

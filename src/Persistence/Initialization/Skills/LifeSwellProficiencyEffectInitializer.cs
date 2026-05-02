@@ -1,4 +1,4 @@
-﻿// <copyright file="CriticalDamageIncreaseMasteryEffectInitializer.cs" company="MUnique">
+﻿// <copyright file="LifeSwellProficiencyEffectInitializer.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -10,16 +10,16 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
 
 /// <summary>
-/// Initializer which initializes the critical damage increase mastery effect.
+/// Initializer which initializes the life swell proficiency effect.
 /// </summary>
-public class CriticalDamageIncreaseMasteryEffectInitializer : InitializerBase
+public class LifeSwellProficiencyEffectInitializer : InitializerBase
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="CriticalDamageIncreaseMasteryEffectInitializer"/> class.
+    /// Initializes a new instance of the <see cref="LifeSwellProficiencyEffectInitializer"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
     /// <param name="gameConfiguration">The game configuration.</param>
-    public CriticalDamageIncreaseMasteryEffectInitializer(IContext context, GameConfiguration gameConfiguration)
+    public LifeSwellProficiencyEffectInitializer(IContext context, GameConfiguration gameConfiguration)
         : base(context, gameConfiguration)
     {
     }
@@ -29,19 +29,19 @@ public class CriticalDamageIncreaseMasteryEffectInitializer : InitializerBase
     {
         var magicEffect = this.Context.CreateNew<MagicEffectDefinition>();
         this.GameConfiguration.MagicEffects.Add(magicEffect);
-        magicEffect.Number = (byte)MagicEffectNumber.CriticalDamageIncrease2;
-        magicEffect.Name = "Critical Damage Increase Mastery Skill Effect";
+        magicEffect.Number = (byte)MagicEffectNumber.GreaterFortitude2;
+        magicEffect.Name = "Life Swell Proficiency Skill Effect";
 
-        var critDmgIncEffect = this.GameConfiguration.MagicEffects.First(e => e.Number == (short)MagicEffectNumber.CriticalDamageIncrease);
-        magicEffect.InformObservers = critDmgIncEffect.InformObservers;
-        magicEffect.SubType = critDmgIncEffect.SubType;
-        magicEffect.SendDuration = critDmgIncEffect.SendDuration;
-        magicEffect.StopByDeath = critDmgIncEffect.StopByDeath;
+        var lifeSwellEffect = this.GameConfiguration.MagicEffects.First(e => e.Number == (short)MagicEffectNumber.GreaterFortitude);
+        magicEffect.InformObservers = lifeSwellEffect.InformObservers;
+        magicEffect.SubType = lifeSwellEffect.SubType;
+        magicEffect.SendDuration = lifeSwellEffect.SendDuration;
+        magicEffect.StopByDeath = lifeSwellEffect.StopByDeath;
         magicEffect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
-        magicEffect.Duration.ConstantValue.Value = critDmgIncEffect.Duration!.ConstantValue.Value;
-        magicEffect.Duration.MaximumValue = critDmgIncEffect.Duration.MaximumValue;
+        magicEffect.Duration.ConstantValue.Value = lifeSwellEffect.Duration!.ConstantValue.Value;
+        magicEffect.Duration.MaximumValue = lifeSwellEffect.Duration.MaximumValue;
 
-        foreach (var durationRelatedValue in critDmgIncEffect.Duration.RelatedValues)
+        foreach (var durationRelatedValue in lifeSwellEffect.Duration.RelatedValues)
         {
             var durationRelatedValueCopy = this.Context.CreateNew<AttributeRelationship>();
             durationRelatedValueCopy.InputAttribute = durationRelatedValue.InputAttribute!.GetPersistent(this.GameConfiguration);
@@ -50,7 +50,7 @@ public class CriticalDamageIncreaseMasteryEffectInitializer : InitializerBase
             magicEffect.Duration.RelatedValues.Add(durationRelatedValueCopy);
         }
 
-        foreach (var powerUp in critDmgIncEffect.PowerUpDefinitions)
+        foreach (var powerUp in lifeSwellEffect.PowerUpDefinitions)
         {
             var powerUpCopy = this.Context.CreateNew<PowerUpDefinition>();
             magicEffect.PowerUpDefinitions.Add(powerUpCopy);
@@ -68,10 +68,16 @@ public class CriticalDamageIncreaseMasteryEffectInitializer : InitializerBase
             }
         }
 
-        var critChancePowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
-        magicEffect.PowerUpDefinitions.Add(critChancePowerUpDefinition);
-        critChancePowerUpDefinition.TargetAttribute = Stats.CriticalDamageChance.GetPersistent(this.GameConfiguration);
-        critChancePowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
-        critChancePowerUpDefinition.Boost.ConstantValue.Value = 0;
+        // one percent per party member in view
+        var boostPerPartyMember = this.Context.CreateNew<AttributeRelationship>();
+        boostPerPartyMember.InputAttribute = Stats.NearbyPartyMemberCount.GetPersistent(this.GameConfiguration);
+        boostPerPartyMember.InputOperator = InputOperator.Multiply;
+        boostPerPartyMember.InputOperand = 1f / 100;
+
+        var manaPowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
+        magicEffect.PowerUpDefinitions.Add(manaPowerUpDefinition);
+        manaPowerUpDefinition.TargetAttribute = Stats.SwellLifeManaIncrease.GetPersistent(this.GameConfiguration);
+        manaPowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+        manaPowerUpDefinition.Boost.RelatedValues.Add(boostPerPartyMember);
     }
 }

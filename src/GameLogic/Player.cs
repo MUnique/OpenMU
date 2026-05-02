@@ -1,4 +1,4 @@
-// <copyright file="Player.cs" company="MUnique">
+﻿// <copyright file="Player.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -756,7 +756,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
 
         await this.HitAsync(hitInfo, attacker, skill?.Skill, isFinalStreakHit).ConfigureAwait(false);
-        await this.DecreaseItemDurabilityAfterHitAsync(hitInfo).ConfigureAwait(false);
+        await this.DecreaseItemDurabilityAfterHitAsync(hitInfo, attacker.Attributes[Stats.RagefulBlowMasteryDurabilityDecChance]).ConfigureAwait(false);
 
         if (attacker as IPlayerSurrogate is { } playerSurrogate)
         {
@@ -766,6 +766,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         if (attacker is Player attackerPlayer)
         {
             await attackerPlayer.AfterHitTargetAsync().ConfigureAwait(false);
+
+            if (attackerPlayer.Attributes?[Stats.IsMaceEquipped] > 0 && Rand.NextRandomBool(attackerPlayer.Attributes[Stats.MaceMasteryStunChance]))
+            {
+                await attackerPlayer.ApplyMaceMasteryStunEffectAsync(this).ConfigureAwait(false);
+            }
         }
 
         return hitInfo;
@@ -2659,12 +2664,25 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
     }
 
-    private async ValueTask DecreaseItemDurabilityAfterHitAsync(HitInfo hitInfo)
+    private async ValueTask DecreaseItemDurabilityAfterHitAsync(HitInfo hitInfo, float ragefulBlowMasteryDurabilityDecChance = 0)
     {
-        var randomArmorItem = this.Inventory?.EquippedItems.Where(ItemExtensions.IsDefensiveItem).SelectRandom();
-        if (randomArmorItem is { })
+        var randomDefensiveItem = this.Inventory?.EquippedItems.Where(ItemExtensions.IsDefensiveItem).SelectRandom();
+        if (randomDefensiveItem is { })
         {
-            await this.DecreaseDefenseItemDurabilityAsync(randomArmorItem, hitInfo).ConfigureAwait(false);
+            await this.DecreaseDefenseItemDurabilityAsync(randomDefensiveItem, hitInfo).ConfigureAwait(false);
+        }
+
+        if (Rand.NextRandomBool(ragefulBlowMasteryDurabilityDecChance))
+        {
+            var randomArmorItem = this.Inventory?.EquippedItems.Where(ItemExtensions.IsArmorItem).SelectRandom();
+            if (randomArmorItem is { })
+            {
+                var durabilityFactor = 1.1 - this.Attributes![Stats.ItemDurationIncrease];  // 10% decrease
+                if (durabilityFactor > 0 && randomArmorItem.DecreaseDurability(randomArmorItem.GetMaximumDurabilityOfOnePiece() * durabilityFactor))
+                {
+                    await this.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(randomArmorItem, false)).ConfigureAwait(false);
+                }
+            }
         }
 
         if (this.Inventory?.GetItem(InventoryConstants.PetSlot) is { Durability: > 0.0 } pet)

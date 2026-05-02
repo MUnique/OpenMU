@@ -77,7 +77,8 @@ internal class SkillsInitializer : SkillsInitializerBase
         { SkillNumber.Requiem, MagicEffectNumber.Requiem },
         { SkillNumber.FireBurstMastery, MagicEffectNumber.Stunned },
         { SkillNumber.EarthshakeMastery, MagicEffectNumber.Stunned },
-        { SkillNumber.CritDmgIncPowUp3, MagicEffectNumber.CriticalDamageIncreaseMastery },
+        { SkillNumber.CritDmgIncPowUp3, MagicEffectNumber.CriticalDamageIncrease2 },
+        { SkillNumber.SwellLifeProficiency, MagicEffectNumber.GreaterFortitude2 },
     };
 
     private readonly IDictionary<byte, MasterSkillRoot> _masterSkillRoots;
@@ -694,6 +695,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         new RequiemEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         new StunEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         new CriticalDamageIncreaseMasteryEffectInitializer(this.Context, this.GameConfiguration).Initialize();
+        new LifeSwellProficiencyEffectInitializer(this.Context, this.GameConfiguration).Initialize();
     }
 
     private void MapSkillsToEffects()
@@ -763,8 +765,8 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.AddMasterSkillDefinition(SkillNumber.LungeStrengthener, SkillNumber.Lunge, SkillNumber.Undefined, 2, 2, SkillNumber.Lunge, 20, Formula632);
         this.AddMasterSkillDefinition(SkillNumber.TwistingSlashStreng, SkillNumber.TwistingSlash, SkillNumber.Undefined, 2, 3, SkillNumber.TwistingSlash, 20, Formula632);
         this.AddMasterSkillDefinition(SkillNumber.RagefulBlowStreng, SkillNumber.RagefulBlow, SkillNumber.Undefined, 2, 3, SkillNumber.RagefulBlow, 20, Formula502);
-        this.AddMasterSkillDefinition(SkillNumber.TwistingSlashMastery, SkillNumber.TwistingSlashStreng, SkillNumber.Undefined, 2, 4, SkillNumber.TwistingSlash, 20, Formula120);
-        this.AddMasterSkillDefinition(SkillNumber.RagefulBlowMastery, SkillNumber.RagefulBlowStreng, SkillNumber.Undefined, 2, 4, SkillNumber.RagefulBlow, 20, Formula120);
+        this.AddMasterSkillDefinition(SkillNumber.TwistingSlashMastery, SkillNumber.TwistingSlashStreng, SkillNumber.Undefined, 2, 4, SkillNumber.TwistingSlashStreng, 20, $"{Formula120} / 100", Formula120, Stats.MasteryMoveTargetChance, AggregateType.AddRaw);
+        this.AddMasterSkillDefinition(SkillNumber.RagefulBlowMastery, SkillNumber.RagefulBlowStreng, SkillNumber.Undefined, 2, 4, SkillNumber.RagefulBlowStreng, 20, $"{Formula120} / 100", Formula120, Stats.RagefulBlowMasteryDurabilityDecChance, AggregateType.AddRaw);
         this.AddPassiveMasterSkillDefinition(SkillNumber.MaximumLifeIncrease, Stats.MaximumHealth, AggregateType.AddRaw, Formula10235, 4, 2);
         this.AddPassiveMasterSkillDefinition(SkillNumber.WeaponMasteryBladeMaster, Stats.MasterSkillPhysBonusDmg, AggregateType.AddRaw, Formula502, 4, 2);
         this.AddMasterSkillDefinition(SkillNumber.DeathStabStrengthener, SkillNumber.DeathStab, SkillNumber.Undefined, 2, 5, SkillNumber.DeathStab, 20, Formula502);
@@ -777,18 +779,13 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.AddPassiveMasterSkillDefinition(SkillNumber.SpearStrengthener, Stats.SpearBonusDamage, AggregateType.AddRaw, Formula632, 2, 3);
         this.AddPassiveMasterSkillDefinition(SkillNumber.TwoHandedSwordMaster, Stats.TwoHandedSwordMasteryBonusDamage, AggregateType.AddRaw, Formula1154, 3, 3, SkillNumber.TwoHandedSwordStrengthener);
         this.AddPassiveMasterSkillDefinition(SkillNumber.OneHandedSwordMaster, Stats.WeaponMasteryAttackSpeed, AggregateType.AddRaw, Formula1, 3, 3, SkillNumber.OneHandedSwordStrengthener, SkillNumber.Undefined, 10);
-
-        // todo: Probability of stunning the target for 2 seconds according to the assigned Skill Level while using a Mace.
-        this.AddMasterSkillDefinition(SkillNumber.MaceMastery, SkillNumber.MaceStrengthener, SkillNumber.Undefined, 3, 3, SkillNumber.Undefined, 20, Formula120);
-
-        // todo: Increases the probability of Double Damage while using a Spear according to the assigned Skill Level.
-        this.AddMasterSkillDefinition(SkillNumber.SpearMastery, SkillNumber.SpearStrengthener, SkillNumber.Undefined, 3, 3, SkillNumber.Undefined, 20, Formula120);
-
-        this.AddMasterSkillDefinition(SkillNumber.SwellLifeStrengt, SkillNumber.SwellLife, SkillNumber.Undefined, 3, 4, SkillNumber.SwellLife, 20, Formula181);
+        this.AddPassiveMasterSkillDefinition(SkillNumber.MaceMastery, Stats.MaceMasteryStunChance, AggregateType.AddRaw, $"{Formula120} / 100", 3, 3, SkillNumber.MaceStrengthener);
+        this.AddPassiveMasterSkillDefinition(SkillNumber.SpearMastery, Stats.SpearMasteryDoubleDamageChance, AggregateType.AddRaw, $"{Formula120} / 100", 3, 3, SkillNumber.SpearStrengthener);
+        this.AddMasterSkillDefinition(SkillNumber.SwellLifeStrengt, SkillNumber.SwellLife, SkillNumber.Undefined, 3, 4, SkillNumber.SwellLife, 20, $"{Formula181} / 100", Formula181, Stats.SwellLifeHealthIncrease, AggregateType.AddRaw);
         this.AddPassiveMasterSkillDefinition(SkillNumber.ManaReduction, Stats.ManaUsageReduction, AggregateType.AddRaw, Formula722Value, Formula722, 4, 3);
         this.AddPassiveMasterSkillDefinition(SkillNumber.MonsterAttackSdInc, Stats.ShieldAfterMonsterKillMultiplier, AggregateType.AddFinal, Formula914, 4, 3);
         this.AddPassiveMasterSkillDefinition(SkillNumber.MonsterAttackLifeInc, Stats.HealthAfterMonsterKillMultiplier, AggregateType.AddFinal, Formula4319, 4, 3);
-        this.AddMasterSkillDefinition(SkillNumber.SwellLifeProficiency, SkillNumber.SwellLifeStrengt, SkillNumber.Undefined, 3, 5, SkillNumber.SwellLife, 20, Formula181);
+        this.AddMasterSkillDefinition(SkillNumber.SwellLifeProficiency, SkillNumber.SwellLifeStrengt, SkillNumber.Undefined, 3, 5, SkillNumber.SwellLifeStrengt, 20, $"{Formula181} / 100", Formula181, Stats.SwellLifeManaIncrease, AggregateType.AddRaw);
         this.AddPassiveMasterSkillDefinition(SkillNumber.MinimumAttackPowerInc, Stats.MinimumPhysBaseDmg, AggregateType.AddRaw, Formula502, 5, 3);
         this.AddPassiveMasterSkillDefinition(SkillNumber.MonsterAttackManaInc, Stats.ManaAfterMonsterKillMultiplier, AggregateType.AddFinal, Formula4319, 5, 3, SkillNumber.MonsterAttackLifeInc);
 
@@ -842,8 +839,8 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.AddPassiveMasterSkillDefinition(SkillNumber.WindTomeStrengthener, Stats.RequiemBonusDmg, AggregateType.AddRaw, Formula632, 2, 2);
         this.AddPassiveMasterSkillDefinition(SkillNumber.LightningTomeStren, Stats.PollutionBonusDmg, AggregateType.AddRaw, Formula632, 2, 2);
         this.AddPassiveMasterSkillDefinition(SkillNumber.FireTomeMastery, Stats.BleedingDamageMultiplier, AggregateType.AddRaw, $"{Formula181} / 100", 3, 2, SkillNumber.FireTomeStrengthener);
-        this.AddPassiveMasterSkillDefinition(SkillNumber.WindTomeMastery, Stats.StunChance, AggregateType.AddRaw, $"{Formula120} / 100", 3, 2, SkillNumber.WindTomeStrengthener);
-        this.AddPassiveMasterSkillDefinition(SkillNumber.LightningTomeMastery, Stats.PollutionMoveTargetChance, AggregateType.AddRaw, $"{Formula181} / 100", 3, 2, SkillNumber.LightningTomeStren);
+        this.AddPassiveMasterSkillDefinition(SkillNumber.WindTomeMastery, Stats.MasteryStunChance, AggregateType.AddRaw, $"{Formula120} / 100", 3, 2, SkillNumber.WindTomeStrengthener);
+        this.AddPassiveMasterSkillDefinition(SkillNumber.LightningTomeMastery, Stats.MasteryMoveTargetChance, AggregateType.AddRaw, $"{Formula181} / 100", 3, 2, SkillNumber.LightningTomeStren);
         this.AddMasterSkillDefinition(SkillNumber.SleepStrengthener, SkillNumber.Sleep, SkillNumber.Undefined, 2, 3, SkillNumber.Sleep, 20, Formula120);
         this.AddMasterSkillDefinition(SkillNumber.ChainLightningStr, SkillNumber.ChainLightning, SkillNumber.Undefined, 2, 4, SkillNumber.ChainLightning, 20, Formula502);
         this.AddMasterSkillDefinition(SkillNumber.LightningShockStr, SkillNumber.LightningShock, SkillNumber.Undefined, 2, 4, SkillNumber.LightningShock, 20, Formula502);
@@ -878,10 +875,10 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.AddMasterSkillDefinition(SkillNumber.CriticalDmgIncPowUp, SkillNumber.IncreaseCriticalDamage, SkillNumber.Undefined, 2, 3, SkillNumber.IncreaseCriticalDamage, 20, Formula632, Formula632, Stats.CriticalDamageBonus, AggregateType.AddRaw);
         this.AddMasterSkillDefinition(SkillNumber.EarthshakeStreng, SkillNumber.Earthshake, SkillNumber.DarkHorseStreng1, 2, 3, SkillNumber.Earthshake, 20, Formula502);
         this.AddPassiveMasterSkillDefinition(SkillNumber.WeaponMasteryLordEmperor, Stats.MasterSkillPhysBonusDmg, AggregateType.AddRaw, Formula502, 3, 2);
-        this.AddMasterSkillDefinition(SkillNumber.FireBurstMastery, SkillNumber.FireBurstStreng, SkillNumber.Undefined, 2, 4, SkillNumber.FireBurstStreng, 20, $"{Formula120} / 100", Formula120, Stats.StunChance, AggregateType.AddRaw);
+        this.AddMasterSkillDefinition(SkillNumber.FireBurstMastery, SkillNumber.FireBurstStreng, SkillNumber.Undefined, 2, 4, SkillNumber.FireBurstStreng, 20, $"{Formula120} / 100", Formula120, Stats.MasteryStunChance, AggregateType.AddRaw);
         this.AddMasterSkillDefinition(SkillNumber.CritDmgIncPowUp2, SkillNumber.CriticalDmgIncPowUp, SkillNumber.Undefined, 2, 4, SkillNumber.CriticalDmgIncPowUp, 20, Formula803, true);
-        this.AddMasterSkillDefinition(SkillNumber.EarthshakeMastery, SkillNumber.EarthshakeStreng, SkillNumber.Undefined, 2, 4, SkillNumber.EarthshakeStreng, 20, $"{Formula120} / 100", Formula120, Stats.StunChance, AggregateType.AddRaw);
-        this.AddMasterSkillDefinition(SkillNumber.CritDmgIncPowUp3, SkillNumber.CritDmgIncPowUp2, SkillNumber.Undefined, 2, 5, SkillNumber.CritDmgIncPowUp2, 20, $"{Formula181} / 100", Formula181,  Stats.CriticalDamageChance, AggregateType.AddRaw);
+        this.AddMasterSkillDefinition(SkillNumber.EarthshakeMastery, SkillNumber.EarthshakeStreng, SkillNumber.Undefined, 2, 4, SkillNumber.EarthshakeStreng, 20, $"{Formula120} / 100", Formula120, Stats.MasteryStunChance, AggregateType.AddRaw);
+        this.AddMasterSkillDefinition(SkillNumber.CritDmgIncPowUp3, SkillNumber.CritDmgIncPowUp2, SkillNumber.Undefined, 2, 5, SkillNumber.CritDmgIncPowUp2, 20, $"{Formula181} / 100", Formula181, Stats.CriticalDamageChance, AggregateType.AddRaw);
         this.AddMasterSkillDefinition(SkillNumber.FireScreamStren, SkillNumber.FireScream, SkillNumber.Undefined, 2, 5, SkillNumber.FireScream, 20, Formula502);
         this.AddPassiveMasterSkillDefinition(SkillNumber.DarkSpiritStr, Stats.RavenBonusDamage, AggregateType.AddRaw, Formula632, 2, 3);
         this.AddPassiveMasterSkillDefinition(SkillNumber.ScepterStrengthener, Stats.ScepterStrBonusDamage, AggregateType.AddRaw, Formula502, 2, 3);

@@ -459,6 +459,12 @@
   <data name="SummonPartySkillPlugin_Description" xml:space="preserve">
     <value>Handles the summon party skill of the dark lord class.</value>
   </data>
+  <data name="TwistingSlashMasterySkillPlugIn_Name" xml:space="preserve">
+    <value>TwistingSlashMasterySkillPlugIn</value>
+  </data>
+  <data name="TwistingSlashMasterySkillPlugIn_Description" xml:space="preserve">
+    <value>Handles the twisting slash mastery skill of the dark knight class. Based on a chance, it may push the targets 2 squares away from the attacker.</value>
+  </data>
   <data name="AddAgilityStatChatCommandPlugIn_Name" xml:space="preserve">
     <value>Add agility chat command</value>
   </data>

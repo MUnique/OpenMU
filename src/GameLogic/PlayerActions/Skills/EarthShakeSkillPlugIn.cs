@@ -39,7 +39,6 @@ public class EarthShakeSkillPlugIn : IAreaSkillPlugIn
             direction = (Direction)Rand.NextInt(1, 9);
         }
 
-        var currentDistance = startingPoint.EuclideanDistanceTo(currentTarget);
         for (int i = 0; i < 3; i++)
         {
             var nextTarget = currentTarget.CalculateTargetPoint(direction);
@@ -51,7 +50,6 @@ public class EarthShakeSkillPlugIn : IAreaSkillPlugIn
             }
 
             currentTarget = nextTarget;
-            currentDistance = startingPoint.EuclideanDistanceTo(currentTarget);
         }
 
         await movableTarget.MoveAsync(currentTarget).ConfigureAwait(false);

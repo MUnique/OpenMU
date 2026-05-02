@@ -2826,6 +2826,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Handles the twisting slash mastery skill of the dark knight class. Based on a chance, it may push the targets 2 squares away from the attacker..
+        /// </summary>
+        public static string TwistingSlashMasterySkillPlugIn_Description {
+            get {
+                return ResourceManager.GetString("TwistingSlashMasterySkillPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to TwistingSlashMasterySkillPlugIn.
+        /// </summary>
+        public static string TwistingSlashMasterySkillPlugIn_Name {
+            get {
+                return ResourceManager.GetString("TwistingSlashMasterySkillPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the chat command &apos;/unbanacc &lt;acc&gt;&apos;. Unbans an account from the game..
         /// </summary>
         public static string UnBanAccChatCommandPlugIn_Description {
