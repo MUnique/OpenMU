@@ -243,6 +243,14 @@ public class Stats
     /// <summary>
     /// Gets the min and max physical base DMG attribute definition.
     /// </summary>
+    /// <remarks>
+    /// <see cref="AggregateType.AddRaw"/> values include:
+    ///     Weapon item option; excellent lvl/20 option (weapons)
+    /// <see cref="AggregateType.Multiplicate"/> values include:
+    ///     Double wield halving (averaging).
+    /// <see cref="AggregateType.AddFinal"/> values include:
+    ///     Excellent lvl/20 option (pendant); wings damage option; harmony damage (min and max) option; gold fenrir damage bonus; <see cref="BaseDamageBonus"/>.
+    /// </remarks>
     public static AttributeDefinition PhysicalBaseDmg { get; } = new(new Guid("DD1E13E4-BFFD-45B5-9B91-9080710324B2"), "Physical Base Damage (min and max)", string.Empty);
 
     /// <summary>
@@ -421,7 +429,12 @@ public class Stats
     /// <summary>
     /// Gets the physical base (min and max) damage increase attribute definition>.
     /// </summary>
-    /// <remarks>Includes excellent 2% physical increase option, ammunition damage increase, and the double wield multiplier (55%).</remarks>
+    /// <remarks>
+    /// <see cref="AggregateType.AddRaw"/> values include:
+    ///     Excellent 2% increase option (double wield weapons); ammunition damage increase.
+    /// <see cref="AggregateType.Multiplicate"/> values include:
+    ///     Double wield halving (averaging); double wield bonus multiplier (55%); excellent 2% increase option (pendant and other weapons).
+    /// </remarks>
     public static AttributeDefinition PhysicalBaseDmgIncrease { get; } = new(new Guid("104B4DAA-C507-4CBB-AF38-D53DDBB4817E"), "Physical Base Damage Increase", string.Empty);
 
     /// <summary>

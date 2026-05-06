@@ -112,7 +112,7 @@ internal partial class CharacterClassInitialization : InitializerBase
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.MaximumPhysBaseDmg, 1, Stats.MaximumPhysBaseDmgByWeapon));
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.MinimumPhysBaseDmg, 1, Stats.BaseMinDamageBonus));
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.MaximumPhysBaseDmg, 1, Stats.BaseMaxDamageBonus));
-        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.PhysicalBaseDmg, 1, Stats.BaseDamageBonus));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.PhysicalBaseDmg, 1, Stats.BaseDamageBonus, aggregateType: AggregateType.AddFinal));
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.MinimumPhysBaseDmg, 1, Stats.PhysicalBaseDmg));
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.MaximumPhysBaseDmg, 1, Stats.PhysicalBaseDmg));
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.MinimumPhysBaseDmg, 1, Stats.PhysicalBaseDmgIncrease, aggregateType: AggregateType.Multiplicate));
@@ -191,11 +191,16 @@ internal partial class CharacterClassInitialization : InitializerBase
     private void AddDoubleWieldAttributeRelationships(ICollection<AttributeRelationship> attributeRelationships)
     {
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.HasDoubleWield, 1, Stats.DoubleWieldWeaponCount, InputOperator.Maximum));
-        var tempDoubleWield = this.Context.CreateNew<AttributeDefinition>(Guid.NewGuid(), "Temp Double Wield multiplier", string.Empty);
-        this.GameConfiguration.Attributes.Add(tempDoubleWield);
-        attributeRelationships.Add(this.CreateAttributeRelationship(tempDoubleWield, -0.45f, Stats.HasDoubleWield));
-        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.PhysicalBaseDmgIncrease, 1, tempDoubleWield, InputOperator.Add, AggregateType.Multiplicate));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.PhysicalBaseDmgIncrease, 0.55f, Stats.HasDoubleWield, InputOperator.ExponentiateByAttribute, AggregateType.Multiplicate));
         attributeRelationships.Add(this.CreateConditionalRelationship(Stats.MinimumPhysBaseDmgByWeapon, Stats.HasDoubleWield, Stats.MinPhysBaseDmgByRightWeapon));
         attributeRelationships.Add(this.CreateConditionalRelationship(Stats.MaximumPhysBaseDmgByWeapon, Stats.HasDoubleWield, Stats.MaxPhysBaseDmgByRightWeapon));
+
+        // We need to average the base damage of the two weapons and their item option and excellent options.
+        // For PhysicalBaseDmgIncrease, to avoid using extra attributes, we use ad-hoc AggregateTypes (see ItemPowerUpFactory.GetPowerUpsOfItemOptions())
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.MinimumPhysBaseDmgByWeapon, 0.5f, Stats.HasDoubleWield, InputOperator.ExponentiateByAttribute, AggregateType.Multiplicate));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.MaximumPhysBaseDmgByWeapon, 0.5f, Stats.HasDoubleWield, InputOperator.ExponentiateByAttribute, AggregateType.Multiplicate));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.PhysicalBaseDmg, 0.5f, Stats.HasDoubleWield, InputOperator.ExponentiateByAttribute, AggregateType.Multiplicate));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.PhysicalBaseDmgIncrease, 0.5f, Stats.HasDoubleWield, InputOperator.ExponentiateByAttribute, AggregateType.Multiplicate));
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.PhysicalBaseDmgIncrease, 1, Stats.HasDoubleWield));
     }
 }
