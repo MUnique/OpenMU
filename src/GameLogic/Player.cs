@@ -80,6 +80,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     private Lazy<ComboStateMachine>? _comboStateLazy;
 
+    private const ushort DurabilityReduction1SkillId = 300;
+    private const ushort DurabilityReduction1FistMasterSkillId = 578;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Player" /> class.
     /// </summary>di
@@ -2677,8 +2680,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             var randomArmorItem = this.Inventory?.EquippedItems.Where(ItemExtensions.IsArmorItem).SelectRandom();
             if (randomArmorItem is { })
             {
-                var durabilityFactor = 1.1 - this.Attributes![Stats.ItemDurationIncrease];  // 10% decrease
-                if (durabilityFactor > 0 && randomArmorItem.DecreaseDurability(randomArmorItem.GetMaximumDurabilityOfOnePiece() * durabilityFactor))
+                var isRageFighter = this.Attributes?[Stats.VitalitySkillMultiplier] > 0;
+                var durabilityReductionSkill = this.SkillList?.GetSkill(isRageFighter ? DurabilityReduction1FistMasterSkillId : DurabilityReduction1SkillId);
+                var attenuation = durabilityReductionSkill is null ? 1.0 : durabilityReductionSkill.Level / 5.0;
+                var reductionFactor = (10 - attenuation) / 100;  // 10% base decrease
+                if (reductionFactor > 0 && randomArmorItem.DecreaseDurability(randomArmorItem.GetMaximumDurabilityOfOnePiece() * reductionFactor))
                 {
                     await this.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(randomArmorItem, false)).ConfigureAwait(false);
                 }
