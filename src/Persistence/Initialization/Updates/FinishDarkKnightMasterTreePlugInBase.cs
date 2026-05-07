@@ -178,12 +178,12 @@ public abstract class FinishDarkKnightMasterTreePlugInBase : UpdatePlugInBase
         }
 
         // Update wings physical base dmg option
-        var wingsSlot = gameConfiguration.ItemSlotTypes.First(st => st.ItemSlots.Contains(7));
+        var wingsSlot = gameConfiguration.ItemSlotTypes.First(st => st.ItemSlots.Contains(InventoryConstants.WingsSlot));
         foreach (var wing in gameConfiguration.Items.Where(i => i.ItemSlot == wingsSlot))
         {
-            if (wing.PossibleItemOptions.FirstOrDefault(pio => pio.PossibleOptions.FirstOrDefault(po => po.PowerUpDefinition?.TargetAttribute == physicalBaseDmg) is not null) is { } pio)
+            if (wing.PossibleItemOptions.SelectMany(pio => pio.PossibleOptions).FirstOrDefault(po => po.PowerUpDefinition?.TargetAttribute == physicalBaseDmg) is { } pio)
             {
-                foreach (var levelOption in pio.PossibleOptions.First(po => po.PowerUpDefinition!.TargetAttribute == physicalBaseDmg).LevelDependentOptions)
+                foreach (var levelOption in pio.LevelDependentOptions)
                 {
                     levelOption.PowerUpDefinition!.Boost!.ConstantValue.AggregateType = AggregateType.AddFinal;
                 }
