@@ -54,7 +54,7 @@ public abstract class FinishDarkKnightMasterTreePlugInBase : UpdatePlugInBase
         // Update attribute combinations
         var maximumHealth = Stats.MaximumHealth.GetPersistent(gameConfiguration);
         var maximumMana = Stats.MaximumMana.GetPersistent(gameConfiguration);
-        var obsoleteTempDoubleWield = gameConfiguration.Attributes.FirstOrDefault(a => a.Designation == "Temp Double Wield multiplier"); // we remove this later
+        var obsoleteTempDoubleWieldMultipliers = gameConfiguration.Attributes.Where(a => a.Designation == "Temp Double Wield multiplier"); // we remove this later
         var hasDoubleWield = Stats.HasDoubleWield.GetPersistent(gameConfiguration);
         var minimumPhysBaseDmgByWeapon = Stats.MinimumPhysBaseDmgByWeapon.GetPersistent(gameConfiguration);
         var maximumPhysBaseDmgByWeapon = Stats.MaximumPhysBaseDmgByWeapon.GetPersistent(gameConfiguration);
@@ -99,12 +99,13 @@ public abstract class FinishDarkKnightMasterTreePlugInBase : UpdatePlugInBase
                 || charClass.Number == 12 || charClass.Number == 13 // MG classes
                 || charClass.Number == 24 || charClass.Number == 25) // RF classes
             {
-                if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.InputOperand == -0.45) is { } hasDoubleWieldToTempDoubleWieldMultiplier)
+                if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.InputOperand == -0.45f) is { } hasDoubleWieldToTempDoubleWieldMultiplier)
                 {
                     charClass.AttributeCombinations.Remove(hasDoubleWieldToTempDoubleWieldMultiplier);
                 }
 
-                if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.PhysicalBaseDmgIncrease && attrCombo.InputAttribute == obsoleteTempDoubleWield) is { } tempDoubleWieldToPhysicalBaseDmgIncrease)
+                if (charClass.AttributeCombinations.FirstOrDefault(attrCombo => attrCombo.TargetAttribute == Stats.PhysicalBaseDmgIncrease
+                    && obsoleteTempDoubleWieldMultipliers.Contains(attrCombo.InputAttribute)) is { } tempDoubleWieldToPhysicalBaseDmgIncrease)
                 {
                     tempDoubleWieldToPhysicalBaseDmgIncrease.InputAttribute = hasDoubleWield;
                     tempDoubleWieldToPhysicalBaseDmgIncrease.InputOperand = 0.55f;
@@ -170,8 +171,8 @@ public abstract class FinishDarkKnightMasterTreePlugInBase : UpdatePlugInBase
             }
         });
 
-        // Removed obsolete attribute
-        if (obsoleteTempDoubleWield is not null)
+        // Removed obsolete attributes
+        foreach (var obsoleteTempDoubleWield in obsoleteTempDoubleWieldMultipliers.ToList())
         {
             gameConfiguration.Attributes.Remove(obsoleteTempDoubleWield);
         }
@@ -180,10 +181,9 @@ public abstract class FinishDarkKnightMasterTreePlugInBase : UpdatePlugInBase
         var wingsSlot = gameConfiguration.ItemSlotTypes.First(st => st.ItemSlots.Contains(7));
         foreach (var wing in gameConfiguration.Items.Where(i => i.ItemSlot == wingsSlot))
         {
-            if (wing.PossibleItemOptions.FirstOrDefault() is { } pio
-                && pio.PossibleOptions.FirstOrDefault(po => po.PowerUpDefinition?.TargetAttribute == physicalBaseDmg) is { } physicalBaseDmgOption)
+            if (wing.PossibleItemOptions.FirstOrDefault(pio => pio.PossibleOptions.FirstOrDefault(po => po.PowerUpDefinition?.TargetAttribute == physicalBaseDmg) is not null) is { } pio)
             {
-                foreach (var levelOption in physicalBaseDmgOption.LevelDependentOptions)
+                foreach (var levelOption in pio.PossibleOptions.First(po => po.PowerUpDefinition!.TargetAttribute == physicalBaseDmg).LevelDependentOptions)
                 {
                     levelOption.PowerUpDefinition!.Boost!.ConstantValue.AggregateType = AggregateType.AddFinal;
                 }

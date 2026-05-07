@@ -85,12 +85,13 @@ public class FinishDarkKnightMasterTreePlugInSeason6 : FinishDarkKnightMasterTre
                     boostRelatedValue.InputOperand = 1f / 10000;
                 }
             }
-        }
 
-        var boostPerPartyMember = context.CreateNew<AttributeRelationship>();
-        boostPerPartyMember.InputAttribute = Stats.NearbyPartyMemberCount.GetPersistent(gameConfiguration);
-        boostPerPartyMember.InputOperator = InputOperator.Multiply;
-        boostPerPartyMember.InputOperand = 1f / 100;
+            var boostPerPartyMember = context.CreateNew<AttributeRelationship>();
+            boostPerPartyMember.InputAttribute = Stats.NearbyPartyMemberCount.GetPersistent(gameConfiguration);
+            boostPerPartyMember.InputOperator = InputOperator.Multiply;
+            boostPerPartyMember.InputOperand = 1f / 100;
+            maxHealth.Boost.RelatedValues.Add(boostPerPartyMember);
+        }
 
         // Create Life Swell Proficiency Skill Effect
         var lifeSwellProficiencyEffect = this.CreateLifeSwellProficiencyEffect(context, gameConfiguration);
@@ -100,11 +101,9 @@ public class FinishDarkKnightMasterTreePlugInSeason6 : FinishDarkKnightMasterTre
         }
 
         // Restore iced effect (revert bug)
-        var icedEffect = gameConfiguration.MagicEffects.First(e => e.Number == (short)MagicEffectNumber.Iced);
-        if (icedEffect.Chance is { } iceChance)
+        if (gameConfiguration.MagicEffects.First(e => e.Number == (short)MagicEffectNumber.Iced && e.Chance is { }) is { } originalIced)
         {
-            icedEffect.Chance = null;
-            await context.DeleteAsync(iceChance).ConfigureAwait(false);
+            originalIced.Chance = null;
         }
 
         // Create chain drive cold effect
@@ -200,20 +199,6 @@ public class FinishDarkKnightMasterTreePlugInSeason6 : FinishDarkKnightMasterTre
             swellLifeProficiency.TargetAttribute = swellLifeManaIncrease;
             swellLifeProficiency.Aggregation = AggregateType.AddRaw;
             swellLifeProficiency.ValueFormula = $"{swellLifeProficiency.ValueFormula} / 100";
-        }
-
-        // Update wings physical base dmg option
-        var wingsSlot = gameConfiguration.ItemSlotTypes.First(st => st.ItemSlots.Contains(7));
-        foreach (var wing in gameConfiguration.Items.Where(i => i.ItemSlot == wingsSlot))
-        {
-            if (wing.PossibleItemOptions.FirstOrDefault() is { } pio
-                && pio.PossibleOptions.FirstOrDefault(po => po.PowerUpDefinition?.TargetAttribute == physicalBaseDmg) is { } physicalBaseDmgOption)
-            {
-                foreach (var levelOption in physicalBaseDmgOption.LevelDependentOptions)
-                {
-                    levelOption.PowerUpDefinition!.Boost!.ConstantValue.AggregateType = AggregateType.AddFinal;
-                }
-            }
         }
     }
 
