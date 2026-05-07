@@ -1146,7 +1146,7 @@ public class Stats
     /// Gets the MST stun chance attribute definition.
     /// </summary>
     /// <remarks>Bucket attribute for the master skills: wind tome (book of neil) mastery, fire burst mastery and earthshake mastery.</remarks>
-    public static AttributeDefinition MasteryStunChance { get; } = new(new Guid("610D3259-1158-424A-8738-9EB7A71DE600"), "Mastery Stun Chance (MST)", string.Empty);
+    public static AttributeDefinition MasteryStunChance { get; } = new(new Guid("610D3259-1158-424A-8738-9EB7A71DE600"), "Mastery Stun Chance (MST)", "A generic master tree stun chance attribute, which serves as a bucket for \"mastery\" skills.");
 
     /// <summary>
     /// Gets the MST mace mastery stun chance attribute definition.
