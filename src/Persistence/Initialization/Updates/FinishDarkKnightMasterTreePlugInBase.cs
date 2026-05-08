@@ -34,7 +34,7 @@ public abstract class FinishDarkKnightMasterTreePlugInBase : UpdatePlugInBase
     public override bool IsMandatory => true;
 
     /// <inheritdoc />
-    public override DateTime CreatedAt => new(2026, 5, 7, 16, 0, 0, DateTimeKind.Utc);
+    public override DateTime CreatedAt => new(2026, 5, 8, 16, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
@@ -63,7 +63,6 @@ public abstract class FinishDarkKnightMasterTreePlugInBase : UpdatePlugInBase
         var doubleDamageChance = Stats.DoubleDamageChance.GetPersistent(gameConfiguration);
         var isSpearEquipped = Stats.IsSpearEquipped.GetPersistent(gameConfiguration);
 
-        // Update attribute combinations
         gameConfiguration.CharacterClasses.ForEach(charClass =>
         {
             // Update common combination attribute
