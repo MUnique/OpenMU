@@ -68,6 +68,7 @@ public class FinishDarkKnightMasterTreePlugInSeason6 : FinishDarkKnightMasterTre
         {
             maxHealth.TargetAttribute = swellLifeHealthIncrease;
             maxHealth.Boost!.ConstantValue.Value = 0.12f;
+            maxHealth.Boost.ConstantValue.AggregateType = AggregateType.AddRaw;
             maxHealth.Boost.MaximumValue = 2f;
 
             foreach (var boostRelatedValue in maxHealth.Boost.RelatedValues)
