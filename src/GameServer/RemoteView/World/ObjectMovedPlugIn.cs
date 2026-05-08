@@ -40,7 +40,7 @@ public class ObjectMovedPlugIn : IObjectMovedPlugIn
     /// Gets or sets a value indicating whether the directions provided by <see cref="ISupportWalk.GetDirectionsAsync"/> should be send when an object moved.
     /// This is usually not required, because the game client calculates a proper path anyway and doesn't use the suggested path.
     /// </summary>
-    public bool SendWalkDirections { get; set; } = true;
+    public bool SendWalkDirections { get; set; }
 
     /// <inheritdoc/>
     public async ValueTask ObjectMovedAsync(ILocateable obj, MoveType type)
@@ -95,7 +95,7 @@ public class ObjectMovedPlugIn : IObjectMovedPlugIn
     {
         int Write()
         {
-            var stepsSize = steps.Length == 0 ? 1 : (steps.Length / 2) + 2;
+            var stepsSize = stepsLength == 0 ? 0 : (steps.Length / 2) + 2;
             var size = ObjectWalkedRef.GetRequiredSize(stepsSize);
             var span = connection.Output.GetSpan(size)[..size];
 
