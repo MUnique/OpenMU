@@ -9,6 +9,7 @@ using System.Globalization;
 using System.Threading;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Attributes;
+using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.GuildWar;
 using MUnique.OpenMU.GameLogic.MiniGames;
@@ -52,7 +53,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     private readonly AsyncLock _moveLock = new();
     private readonly AsyncLock _experienceLock = new();
 
-    private readonly Walker _walker;
+    private readonly ProjectedWalker _projectedWalker;
 
     private readonly AppearanceDataAdapter _appearanceData;
 
@@ -89,7 +90,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this.GameContext = gameContext;
         this.Logger = gameContext.LoggerFactory.CreateLogger<Player>();
         this.PersistenceContext = this.GameContext.PersistenceContextProvider.CreateNewPlayerContext(gameContext.Configuration);
-        this._walker = new Walker(this, this.GetStepDelay);
+        this._projectedWalker = new ProjectedWalker(
+            this.GetStoredPosition,
+            this.SetStoredPosition,
+            this.GetStepDuration,
+            this.RaiseAttackableMoved);
 
         this.MagicEffectList = new MagicEffectsList(this);
         this._appearanceData = new AppearanceDataAdapter(this);
@@ -145,13 +150,13 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public bool CanWalkOnSafezone => true;
 
     /// <inheritdoc />
-    public bool IsWalking => this._walker.CurrentTarget != default;
+    public bool IsWalking => this._projectedWalker.IsWalking;
 
     /// <inheritdoc />
-    public TimeSpan StepDelay => this.GetStepDelay();
+    public TimeSpan StepDelay => this.GetStepDuration(null);
 
     /// <inheritdoc />
-    public Point WalkTarget => this._walker.CurrentTarget;
+    public Point WalkTarget => this._projectedWalker.CurrentTarget;
 
     /// <summary>
     /// Gets a value indicating whether this instance is invisible to other players.
@@ -380,17 +385,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <inheritdoc/>
     public Point Position
     {
-        get => new(this.SelectedCharacter?.PositionX ?? 0, this.SelectedCharacter?.PositionY ?? 0);
+        get => this._projectedWalker.Position;
 
-        set
-        {
-            if (this.Position != value && this.SelectedCharacter is { } character)
-            {
-                character.PositionX = value.X;
-                character.PositionY = value.Y;
-                this.GameContext.PlugInManager?.GetPlugInPoint<IAttackableMovedPlugIn>()?.AttackableMoved(this);
-            }
-        }
+        set => this._projectedWalker.Position = value;
     }
 
     /// <summary>
@@ -816,7 +813,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         {
             await (this.SkillCancelTokenSource?.CancelAsync() ?? Task.CompletedTask).ConfigureAwait(false);
 
-            await this._walker.StopAsync().ConfigureAwait(false);
+            this.StopProjectedWalk();
 
             var previous = this.Position;
             this.Position = target;
@@ -866,7 +863,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         {
             await (this.SkillCancelTokenSource?.CancelAsync() ?? Task.CompletedTask).ConfigureAwait(false);
 
-            await this._walker.StopAsync().ConfigureAwait(false);
+            this.StopProjectedWalk();
 
             await this.ForEachWorldObserverAsync<IObjectsOutOfScopePlugIn>(p => p.ObjectsOutOfScopeAsync(this.GetAsEnumerable()), false).ConfigureAwait(false);
 
@@ -1331,7 +1328,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public async ValueTask MoveAsync(Point target)
     {
         this.Logger.LogDebug("MoveAsync: Player is moving to {0}", target);
-        await this._walker.StopAsync().ConfigureAwait(false);
+        this.StopProjectedWalk();
         await this.CurrentMap!.MoveAsync(this, target, this._moveLock, MoveType.Instant).ConfigureAwait(false);
         this.Logger.LogDebug("MoveAsync: Observer Count: {0}", this.Observers.Count);
     }
@@ -1364,7 +1361,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return;
         }
 
-        await this._walker.StopAsync().ConfigureAwait(false);
+        this.StopProjectedWalk();
 
         var startPoint = steps.Span[0].From;
         var currentPosition = this.Position;
@@ -1379,20 +1376,19 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return;
         }
 
-        var canWalkToTarget = currentMap.Terrain.WalkMap[target.X, target.Y];
-        if (canWalkToTarget)
+        if (ProjectedWalker.TryValidateWalkSteps(currentMap.Terrain, steps, target, out var invalidPoint))
         {
             this.Logger.LogDebug("WalkToAsync: Player is walking to {0}", target);
 
-            var token = await this._walker.InitializeWalkToAsync(target, steps).ConfigureAwait(false);
+            this.Position = startPoint;
+            this.InitializeProjectedWalk(target, steps);
             await currentMap.MoveAsync(this, target, this._moveLock, MoveType.Walk).ConfigureAwait(false);
-            await this._walker.StartWalkAsync(token).ConfigureAwait(false);
 
             this.Logger.LogDebug("WalkToAsync: Observer Count: {0}", this.Observers.Count);
         }
         else
         {
-            this.Logger.LogWarning("WalkToAsync: Player requested to walk to {0}, but it's not an allowed target", target);
+            this.Logger.LogWarning("WalkToAsync: Player requested an invalid walk to {0}. Invalid point: {1}", target, invalidPoint);
 
             // We'll send the current coordinates back to the client, so it doesn't appear in the invalid coordinates.
             await this.InvokeViewPlugInAsync<IObjectMovedPlugIn>(p => p.ObjectMovedAsync(this, MoveType.Instant)).ConfigureAwait(false);
@@ -1400,13 +1396,54 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <inheritdoc />
-    public ValueTask<int> GetDirectionsAsync(Memory<Direction> directions) => this._walker.GetDirectionsAsync(directions);
+    public ValueTask<int> GetDirectionsAsync(Memory<Direction> directions) => this._projectedWalker.GetDirectionsAsync(directions);
 
     /// <inheritdoc />
-    public ValueTask<int> GetStepsAsync(Memory<WalkingStep> steps) => this._walker.GetStepsAsync(steps);
+    public ValueTask<int> GetStepsAsync(Memory<WalkingStep> steps) => this._projectedWalker.GetStepsAsync(steps);
 
     /// <inheritdoc />
-    public ValueTask StopWalkingAsync() => this._walker.StopAsync();
+    public ValueTask StopWalkingAsync()
+    {
+        this.StopProjectedWalk();
+        return ValueTask.CompletedTask;
+    }
+
+    private void InitializeProjectedWalk(Point target, Memory<WalkingStep> steps)
+    {
+        this._projectedWalker.Initialize(target, steps);
+    }
+
+    private void StopProjectedWalk()
+    {
+        this._projectedWalker.Stop();
+    }
+
+    private Point GetStoredPosition()
+    {
+        return new(this.SelectedCharacter?.PositionX ?? 0, this.SelectedCharacter?.PositionY ?? 0);
+    }
+
+    private bool SetStoredPosition(Point position)
+    {
+        if (this.SelectedCharacter is not { } character)
+        {
+            return false;
+        }
+
+        if (character.PositionX == position.X && character.PositionY == position.Y)
+        {
+            return false;
+        }
+
+        character.PositionX = position.X;
+        character.PositionY = position.Y;
+        return true;
+    }
+
+    private void RaiseAttackableMoved()
+    {
+        this.GameContext.PlugInManager?.GetPlugInPoint<IAttackableMovedPlugIn>()?.AttackableMoved(this);
+    }
 
     /// <summary>
     /// Regenerates the attributes specified in <see cref="Stats.IntervalRegenerationAttributes"/>.
@@ -1884,7 +1921,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         await this.RemoveFromCurrentMapAsync().ConfigureAwait(false);
         await this._observerToWorldViewAdapter.ClearObservingObjectsListAsync().ConfigureAwait(false);
         this._observerToWorldViewAdapter.Dispose();
-        this._walker.Dispose();
+        this.StopProjectedWalk();
         await this.MagicEffectList.DisposeAsync().ConfigureAwait(false);
         this._respawnAfterDeathCts?.Dispose();
         (this._viewPlugIns as IDisposable)?.Dispose();
@@ -1962,7 +1999,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         this.IsAlive = false;
         this.IsTeleporting = false;
-        await this._walker.StopAsync().ConfigureAwait(false);
+        this.StopProjectedWalk();
         await this._observerToWorldViewAdapter.ClearObservingObjectsListAsync().ConfigureAwait(false);
         if (this.Summon?.Item1 is { IsAlive: true } summon)
         {
@@ -2110,16 +2147,83 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// Gets the step delay depending on the equipped items.
     /// </summary>
     /// <returns>The current step delay, depending on equipped items.</returns>
-    private TimeSpan GetStepDelay()
+    private TimeSpan GetStepDuration(WalkingStep? step)
     {
-        if (this.Inventory?.EquippedItems.Any(item => item.Definition?.ItemSlot?.ItemSlots.Contains(7) ?? false) ?? false)
+        const double referenceFrameTimeMilliseconds = 40.0;
+        const double terrainScale = 100.0;
+
+        var speed = this.GetClientMovementSpeed(step?.From);
+        var tileDistance = step is { } walkingStep ? walkingStep.From.EuclideanDistanceTo(walkingStep.To) : 1.0;
+        var movementMilliseconds = terrainScale * Math.Max(1.0, tileDistance) / speed * referenceFrameTimeMilliseconds;
+
+        return TimeSpan.FromMilliseconds(movementMilliseconds);
+    }
+
+    private double GetClientMovementSpeed(Point? position = null)
+    {
+        const double walkSpeed = 12.0;
+        const double runSpeed = 15.0;
+        const double fastWingSpeed = 16.0;
+        const double horseOrFenrirRunSpeed = 17.0;
+        const double excellentFenrirRunSpeed = 19.0;
+
+        if (this.IsInClientSafezone(position))
         {
-            // Wings
-            return TimeSpan.FromMilliseconds(300);
+            return walkSpeed;
         }
 
-        // TODO: Consider pets etc.
-        return TimeSpan.FromMilliseconds(500);
+        var pet = this.Inventory?.GetItem(InventoryConstants.PetSlot);
+        if (IsItem(pet, 13, 37))
+        {
+            return HasFenrirMovementOption(pet) ? excellentFenrirRunSpeed : horseOrFenrirRunSpeed;
+        }
+
+        if (IsItem(pet, 13, 4))
+        {
+            return horseOrFenrirRunSpeed;
+        }
+
+        var wings = this.Inventory?.GetItem(InventoryConstants.WingsSlot);
+        if (HasEquippedWings(wings) || IsItem(pet, 13, 2) || IsItem(pet, 13, 3))
+        {
+            return IsFastWing(wings) ? fastWingSpeed : runSpeed;
+        }
+
+        return runSpeed;
+    }
+
+    private bool IsInClientSafezone(Point? position = null)
+    {
+        var checkedPosition = position ?? this.Position;
+        return this.CurrentMap?.Terrain.SafezoneMap[checkedPosition.X, checkedPosition.Y] ?? false;
+    }
+
+    private static bool HasEquippedWings(Item? item)
+    {
+        return item is { Durability: > 0.0 }
+               && item.ItemSlot == InventoryConstants.WingsSlot;
+    }
+
+    private static bool IsFastWing(Item? item)
+    {
+        return IsItem(item, 12, 5)  // Wings of Dragon
+               || IsItem(item, 12, 36); // Wing of Storm
+    }
+
+    private static bool IsItem(Item? item, short group, short number)
+    {
+        return item is { Durability: > 0.0 }
+               && item.Definition is { } definition
+               && definition.Group == group
+               && definition.Number == number;
+    }
+
+    private static bool HasFenrirMovementOption(Item? item)
+    {
+        return item?.ItemOptions.Any(option =>
+            option.ItemOption?.OptionType == ItemOptionTypes.BlueFenrir
+            || option.ItemOption?.OptionType == ItemOptionTypes.BlackFenrir
+            || option.ItemOption?.OptionType == ItemOptionTypes.GoldFenrir) ?? false;
     }
 
     private async ValueTask<ExitGate> GetSpawnGateOfCurrentMapAsync()
@@ -2254,7 +2358,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return;
         }
 
-        await this._walker.StopAsync().ConfigureAwait(false);
+        this.StopProjectedWalk();
         this.IsAlive = false;
         this._respawnAfterDeathCts = new CancellationTokenSource();
         await this.ForEachWorldObserverAsync<IObjectGotKilledPlugIn>(p => p.ObjectGotKilledAsync(this, killer), true).ConfigureAwait(false);
