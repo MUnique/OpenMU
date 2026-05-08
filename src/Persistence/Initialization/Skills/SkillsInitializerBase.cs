@@ -257,7 +257,7 @@ internal abstract class SkillsInitializerBase : InitializerBase
                 e => e.Number == (short)effectNumber
                      && e.SubType == (byte)(0xFF - type)
                      && Equals(e.Duration?.ConstantValue.Value, durationInSeconds)
-                     && e.Chance?.ConstantValue.Value == chance
+                     && Equals(e.Chance?.ConstantValue.Value, chance)
                      && e.PowerUpDefinitions.FirstOrDefault()?.TargetAttribute == targetAttribute) is { } existingEffect)
         {
             return existingEffect;
