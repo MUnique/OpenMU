@@ -163,6 +163,7 @@ public static class LocateableExtensions
             return true;
         }
 
-        return map.Terrain.SafezoneMap[obj.Position.X, obj.Position.Y];
+        var position = obj.Position;
+        return map.Terrain.SafezoneMap[position.X, position.Y];
     }
 }
