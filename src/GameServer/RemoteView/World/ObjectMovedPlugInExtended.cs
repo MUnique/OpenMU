@@ -40,7 +40,7 @@ public class ObjectMovedPlugInExtended : ObjectMovedPlugIn
     {
         int Write()
         {
-            var stepsSize = steps.Length == 0 ? 1 : (steps.Length / 2) + 2;
+            var stepsSize = stepsLength == 0 ? 0 : (steps.Length / 2) + 2;
             var size = ObjectWalkedExtended.GetRequiredSize(stepsSize);
             var span = connection.Output.GetSpan(size)[..size];
 
