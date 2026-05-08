@@ -42,7 +42,6 @@ public class CharacterMoveTest
         Assert.That(count, Is.EqualTo(4));
 
         steps = steps.Slice(0, count);
-        steps.Span.Reverse();
         Assert.That(steps.Span[0].From, Is.EqualTo(StartPoint));
         Assert.That(steps.Span[steps.Length - 1].To, Is.EqualTo(EndPoint));
         for (var index = 0; index < steps.Span.Length; index++)

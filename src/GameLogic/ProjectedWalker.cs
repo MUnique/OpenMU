@@ -162,9 +162,8 @@ internal sealed class ProjectedWalker
         var count = 0;
         lock (this._walkStateLock)
         {
-            for (var index = this._currentWalkStepCount - 1; index >= 0; index--)
+            foreach (var step in this._currentWalkSteps[..this._currentWalkStepCount])
             {
-                var step = this._currentWalkSteps[index];
                 directions.Span[count] = step.Direction;
                 count++;
             }
@@ -184,9 +183,8 @@ internal sealed class ProjectedWalker
         var count = 0;
         lock (this._walkStateLock)
         {
-            for (var index = this._currentWalkStepCount - 1; index >= 0; index--)
+            foreach (var step in this._currentWalkSteps[..this._currentWalkStepCount])
             {
-                var step = this._currentWalkSteps[index];
                 steps.Span[count] = step;
                 count++;
             }
