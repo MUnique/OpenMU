@@ -712,6 +712,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             throw new InvalidOperationException("AttributeSystem not set.");
         }
 
+        if (this.IsAttackBlockedBySafezone(attacker))
+        {
+            return null;
+        }
+
         if (!this.GameContext.PvpEnabled && this.CurrentMap?.Definition.BattleZone == null &&
             this.CurrentMiniGame?.AllowPlayerKilling is false)
         {
@@ -1443,6 +1448,17 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     private void RaiseAttackableMoved()
     {
         this.GameContext.PlugInManager?.GetPlugInPoint<IAttackableMovedPlugIn>()?.AttackableMoved(this);
+    }
+
+    private bool IsAttackBlockedBySafezone(IAttacker attacker)
+    {
+        if (this.IsAtSafezone())
+        {
+            return true;
+        }
+
+        var attackerPlayer = attacker as Player ?? (attacker as IPlayerSurrogate)?.Owner;
+        return attackerPlayer?.IsAtSafezone() is true;
     }
 
     /// <summary>
