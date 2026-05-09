@@ -297,6 +297,11 @@ internal enum MagicEffectNumber : short
     WizEnhance = 0x52,
 
     /// <summary>
+    /// The blow of destruction effect.
+    /// </summary>
+    BlowOfDestruction = 0x56,
+
+    /// <summary>
     /// The ignore defense effect of the rage fighter.
     /// </summary>
     IgnoreDefense = 129,
