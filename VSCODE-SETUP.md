@@ -5,6 +5,49 @@
 
 ---
 
+## Quick reference — Start / Stop the server
+
+Run these from the repo root (`...\Rotating Earth\OpenMU`) in a **PowerShell** terminal inside VS Code (`` Ctrl+` ``).
+
+**Start:**
+
+```powershell
+./scripts/windows/dev-run.ps1
+```
+
+Wait ~12 seconds for the `Host started` log line. Leave that terminal open — it's your live log.
+
+**Stop (server is in your current terminal):**
+
+Press **Ctrl+C** in that terminal. Wait for graceful shutdown.
+
+**Stop (terminal got closed or server is detached):**
+
+```powershell
+Get-Process -Name MUnique.OpenMU.Startup -ErrorAction SilentlyContinue | Stop-Process -Force
+```
+
+**Check whether it's running:**
+
+```powershell
+Get-Process -Name MUnique.OpenMU.Startup -ErrorAction SilentlyContinue | Select-Object Id, StartTime
+Get-NetTCPConnection -LocalPort 80 -State Listen -ErrorAction SilentlyContinue
+```
+
+If both return rows, it's up. If both are empty, it's down.
+
+**Start variations:**
+
+```powershell
+./scripts/windows/dev-run.ps1 -Lan       # bind to LAN IP so friends can connect
+./scripts/windows/dev-run.ps1 -Reinit    # WIPE + reseed DB (back up first!)
+./scripts/windows/dev-run.ps1 -Demo      # in-memory DB, nothing persists
+```
+
+> **First time on a fresh clone?** You must run `dotnet build src\MUnique.OpenMU.sln -c Release` **once** before the start command will work. See §6.
+
+---
+
 ## 1. Prerequisites (one-time per PC)
 
 Open **PowerShell as Administrator** (right-click Start → "Terminal (Admin)") and run:
