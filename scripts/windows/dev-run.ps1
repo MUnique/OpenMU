@@ -42,5 +42,5 @@ if ($Demo)   { $serverArgs += '-demo' }
 if ($Reinit) { $serverArgs += '-reinit' }
 if ($ExtraArgs) { $serverArgs += $ExtraArgs }
 
-Write-Host ("dotnet run --project {0} -- {1}" -f $project, ($serverArgs -join ' ')) -ForegroundColor Cyan
-dotnet run --project $project -- @serverArgs
+Write-Host ("dotnet run -c Release --project {0} -- {1}" -f $project, ($serverArgs -join ' ')) -ForegroundColor Cyan
+dotnet run -c Release --project $project -- @serverArgs
