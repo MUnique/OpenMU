@@ -87,7 +87,7 @@ public class MonsterAttributeScaler : IFeaturePlugIn, IObjectAddedToMapPlugIn, I
     {
         if (removedObject is IAttackable attackable)
         {
-            this._scaledMonsters.TryRemove(attackable, out _);
+            this.RemoveScaling(attackable);
         }
 
         return ValueTask.CompletedTask;
@@ -123,6 +123,16 @@ public class MonsterAttributeScaler : IFeaturePlugIn, IObjectAddedToMapPlugIn, I
             return;
         }
 
+        float healthPercentage = 0f;
+        if (monster is AttackableNpcBase { IsAlive: true } npc)
+        {
+            var maxHealth = monster.Attributes[Stats.MaximumHealth];
+            if (maxHealth > 0)
+            {
+                healthPercentage = (float)npc.Health / maxHealth;
+            }
+        }
+
         foreach (var (attribute, element) in tracker)
         {
             monster.Attributes.RemoveElement(element, attribute);
@@ -130,7 +140,15 @@ public class MonsterAttributeScaler : IFeaturePlugIn, IObjectAddedToMapPlugIn, I
 
         if (monster is AttackableNpcBase npc)
         {
-            npc.Health = Math.Max(1, (int)monster.Attributes[Stats.MaximumHealth]);
+            if (npc.IsAlive)
+            {
+                var newMaxHealth = monster.Attributes[Stats.MaximumHealth];
+                npc.Health = Math.Max(1, (int)(newMaxHealth * healthPercentage));
+            }
+            else
+            {
+                npc.Health = 0;
+            }
         }
     }
 }
