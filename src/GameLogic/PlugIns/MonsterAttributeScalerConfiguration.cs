@@ -9,9 +9,94 @@ namespace MUnique.OpenMU.GameLogic.PlugIns;
 /// </summary>
 public class MonsterAttributeScalerConfiguration
 {
+    private float _scaleAllPercentage;
+    private float _damagePercentage = 25.0f;
+    private float _attackRatePercentage = 25.0f;
+    private float _defenseRatePercentage = 25.0f;
+    private float _defensePercentage = 25.0f;
+    private float _healthPercentage = 25.0f;
+
+    private bool ScaleAllActive => this._scaleAllPercentage > 0;
+
     /// <summary>
-    /// Gets or sets the percentage by which all monster base stats
-    /// (attack rate, defense, defense rate, damage, health) are increased.
+    /// Gets or sets the percentage applied to all stats at once.
+    /// When set above 0, cascades to all individual fields.
     /// </summary>
-    public float Percentage { get; set; } = 25.0f;
+    public float ScaleAllPercentage
+    {
+        get => this._scaleAllPercentage;
+        set
+        {
+            this._scaleAllPercentage = value;
+            if (value > 0)
+            {
+                this._damagePercentage = value;
+                this._attackRatePercentage = value;
+                this._defenseRatePercentage = value;
+                this._defensePercentage = value;
+                this._healthPercentage = value;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the percentage by which monster damage (MinPhysBaseDmg, MaxPhysBaseDmg) is increased.
+    /// </summary>
+    public float DamagePercentage
+    {
+        get => this.ScaleAllActive ? this._scaleAllPercentage : this._damagePercentage;
+        set => this.SetIndividualField(ref this._damagePercentage, value);
+    }
+
+    /// <summary>
+    /// Gets or sets the percentage by which monster attack rate is increased.
+    /// </summary>
+    public float AttackRatePercentage
+    {
+        get => this.ScaleAllActive ? this._scaleAllPercentage : this._attackRatePercentage;
+        set => this.SetIndividualField(ref this._attackRatePercentage, value);
+    }
+
+    /// <summary>
+    /// Gets or sets the percentage by which monster defense rate is increased.
+    /// </summary>
+    public float DefenseRatePercentage
+    {
+        get => this.ScaleAllActive ? this._scaleAllPercentage : this._defenseRatePercentage;
+        set => this.SetIndividualField(ref this._defenseRatePercentage, value);
+    }
+
+    /// <summary>
+    /// Gets or sets the percentage by which monster defense is increased.
+    /// </summary>
+    public float DefensePercentage
+    {
+        get => this.ScaleAllActive ? this._scaleAllPercentage : this._defensePercentage;
+        set => this.SetIndividualField(ref this._defensePercentage, value);
+    }
+
+    /// <summary>
+    /// Gets or sets the percentage by which monster maximum health is increased.
+    /// </summary>
+    public float HealthPercentage
+    {
+        get => this.ScaleAllActive ? this._scaleAllPercentage : this._healthPercentage;
+        set => this.SetIndividualField(ref this._healthPercentage, value);
+    }
+
+    private void SetIndividualField(ref float field, float value)
+    {
+        if (this.ScaleAllActive)
+        {
+            if (Math.Abs(value - this._scaleAllPercentage) > 0.01f)
+            {
+                this._scaleAllPercentage = 0;
+                field = value;
+            }
+
+            return;
+        }
+
+        field = value;
+    }
 }

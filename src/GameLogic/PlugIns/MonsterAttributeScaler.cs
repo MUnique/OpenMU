@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameLogic.PlugIns;
 
-using System.Collections.Concurrent;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.Attributes;
@@ -13,8 +12,7 @@ using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// A feature plugin which scales all monster base stats by a configurable percentage.
-/// Uses multiplicative IElement instances applied per-monster. A server restart is
-/// required for configuration changes to take effect.
+/// Uses shared multiplicative IElement instances. Configuration changes take effect immediately.
 /// </summary>
 [PlugIn]
 [Display(Name = nameof(PlugInResources.MonsterAttributeScaler_Name), Description = nameof(PlugInResources.MonsterAttributeScaler_Description), ResourceType = typeof(PlugInResources))]
@@ -24,19 +22,33 @@ public class MonsterAttributeScaler : IFeaturePlugIn, IObjectAddedToMapPlugIn, I
     ISupportDefaultCustomConfiguration,
     IDisabledByDefault
 {
-    private readonly ConcurrentDictionary<IAttackable, List<(AttributeDefinition Attribute, IElement Element)>> _scaledMonsters = new();
+    private readonly SimpleElement _damageMultiplier = new(1.0f, AggregateType.Multiplicate);
+    private readonly SimpleElement _attackRateMultiplier = new(1.0f, AggregateType.Multiplicate);
+    private readonly SimpleElement _defenseRateMultiplier = new(1.0f, AggregateType.Multiplicate);
+    private readonly SimpleElement _defenseMultiplier = new(1.0f, AggregateType.Multiplicate);
+    private readonly SimpleElement _healthMultiplier = new(1.0f, AggregateType.Multiplicate);
 
-    private static readonly HashSet<AttributeDefinition> ScalableStatsExceptHealth =
-    [
-        Stats.MinimumPhysBaseDmg,
-        Stats.MaximumPhysBaseDmg,
-        Stats.AttackRatePvm,
-        Stats.DefenseRatePvm,
-        Stats.DefenseBase,
-    ];
+    private MonsterAttributeScalerConfiguration? _configuration;
 
     /// <inheritdoc />
-    public MonsterAttributeScalerConfiguration? Configuration { get; set; }
+    public MonsterAttributeScalerConfiguration? Configuration
+    {
+        get => this._configuration;
+        set
+        {
+            this._configuration = value;
+            if (value is null)
+            {
+                return;
+            }
+
+            this._damageMultiplier.Value = value.DamagePercentage > 0 ? 1.0f + value.DamagePercentage / 100.0f : 1.0f;
+            this._attackRateMultiplier.Value = value.AttackRatePercentage > 0 ? 1.0f + value.AttackRatePercentage / 100.0f : 1.0f;
+            this._defenseRateMultiplier.Value = value.DefenseRatePercentage > 0 ? 1.0f + value.DefenseRatePercentage / 100.0f : 1.0f;
+            this._defenseMultiplier.Value = value.DefensePercentage > 0 ? 1.0f + value.DefensePercentage / 100.0f : 1.0f;
+            this._healthMultiplier.Value = value.HealthPercentage > 0 ? 1.0f + value.HealthPercentage / 100.0f : 1.0f;
+        }
+    }
 
     /// <inheritdoc />
     public object CreateDefaultConfig()
@@ -59,91 +71,33 @@ public class MonsterAttributeScaler : IFeaturePlugIn, IObjectAddedToMapPlugIn, I
             return ValueTask.CompletedTask;
         }
 
-        var configuration = this.Configuration ??= CreateDefaultConfiguration();
-        if (configuration.Percentage <= 0)
-        {
-            return ValueTask.CompletedTask;
-        }
-
-        if (!this._scaledMonsters.ContainsKey(monster))
-        {
-            var multiplier = 1.0f + configuration.Percentage / 100.0f;
-            this.ApplyScaling(monster, multiplier);
-        }
+        monster.Attributes.AddElement(this._damageMultiplier, Stats.MinimumPhysBaseDmg);
+        monster.Attributes.AddElement(this._damageMultiplier, Stats.MaximumPhysBaseDmg);
+        monster.Attributes.AddElement(this._attackRateMultiplier, Stats.AttackRatePvm);
+        monster.Attributes.AddElement(this._defenseRateMultiplier, Stats.DefenseRatePvm);
+        monster.Attributes.AddElement(this._defenseMultiplier, Stats.DefenseBase);
+        monster.Attributes.AddElement(this._healthMultiplier, Stats.MaximumHealth);
 
         return ValueTask.CompletedTask;
     }
 
     /// <summary>
-    /// Cleans up the tracking dictionary when a monster is removed from a map.
+    /// Removes the shared elements when a monster is removed from a map.
     /// </summary>
     public ValueTask ObjectRemovedFromMapAsync(GameMap map, ILocateable removedObject)
     {
-        if (removedObject is IAttackable attackable)
+        if (removedObject is not AttackableNpcBase monster)
         {
-            this.RemoveScaling(attackable);
+            return ValueTask.CompletedTask;
         }
+
+        monster.Attributes.RemoveElement(this._damageMultiplier, Stats.MinimumPhysBaseDmg);
+        monster.Attributes.RemoveElement(this._damageMultiplier, Stats.MaximumPhysBaseDmg);
+        monster.Attributes.RemoveElement(this._attackRateMultiplier, Stats.AttackRatePvm);
+        monster.Attributes.RemoveElement(this._defenseRateMultiplier, Stats.DefenseRatePvm);
+        monster.Attributes.RemoveElement(this._defenseMultiplier, Stats.DefenseBase);
+        monster.Attributes.RemoveElement(this._healthMultiplier, Stats.MaximumHealth);
 
         return ValueTask.CompletedTask;
-    }
-
-    private void ApplyScaling(IAttackable monster, float multiplier)
-    {
-        this.RemoveScaling(monster);
-
-        var tracker = this._scaledMonsters.GetOrAdd(monster, _ => new List<(AttributeDefinition, IElement)>());
-
-        foreach (var stat in ScalableStatsExceptHealth)
-        {
-            var element = new SimpleElement(multiplier, AggregateType.Multiplicate);
-            monster.Attributes.AddElement(element, stat);
-            tracker.Add((stat, element));
-        }
-
-        if (monster is AttackableNpcBase npc)
-        {
-            var healthElement = new SimpleElement(multiplier, AggregateType.Multiplicate);
-            monster.Attributes.AddElement(healthElement, Stats.MaximumHealth);
-            tracker.Add((Stats.MaximumHealth, healthElement));
-
-            npc.Health = Math.Max(1, (int)(npc.Health * multiplier));
-        }
-    }
-
-    private void RemoveScaling(IAttackable monster)
-    {
-        if (!this._scaledMonsters.TryRemove(monster, out var tracker))
-        {
-            return;
-        }
-
-        var npc = monster as AttackableNpcBase;
-        float healthPercentage = 0f;
-        if (npc is { IsAlive: true })
-        {
-            var maxHealth = monster.Attributes[Stats.MaximumHealth];
-            if (maxHealth > 0)
-            {
-                healthPercentage = (float)npc.Health / maxHealth;
-            }
-        }
-
-        foreach (var (attribute, element) in tracker)
-        {
-            monster.Attributes.RemoveElement(element, attribute);
-        }
-
-        if (npc is not null)
-        {
-            if (npc.IsAlive)
-            {
-                var newMaxHealth = monster.Attributes[Stats.MaximumHealth];
-                npc.Health = Math.Max(1, (int)(newMaxHealth * healthPercentage));
-            }
-            else
-            {
-                npc.Health = 0;
-            }
-        }
     }
 }
