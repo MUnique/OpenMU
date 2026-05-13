@@ -88,12 +88,6 @@ public class MonsterAttributeScalerConfiguration
     {
         if (this.ScaleAllActive)
         {
-            if (Math.Abs(value - this._scaleAllPercentage) > 0.01f)
-            {
-                this._scaleAllPercentage = 0;
-                field = value;
-            }
-
             return;
         }
 

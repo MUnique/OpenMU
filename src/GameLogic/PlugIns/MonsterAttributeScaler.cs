@@ -37,8 +37,14 @@ public class MonsterAttributeScaler : IFeaturePlugIn, IObjectAddedToMapPlugIn, I
         set
         {
             this._configuration = value;
+
             if (value is null)
             {
+                this._damageMultiplier.Value = 1.0f;
+                this._attackRateMultiplier.Value = 1.0f;
+                this._defenseRateMultiplier.Value = 1.0f;
+                this._defenseMultiplier.Value = 1.0f;
+                this._healthMultiplier.Value = 1.0f;
                 return;
             }
 
@@ -53,17 +59,10 @@ public class MonsterAttributeScaler : IFeaturePlugIn, IObjectAddedToMapPlugIn, I
     /// <inheritdoc />
     public object CreateDefaultConfig()
     {
-        return CreateDefaultConfiguration();
+        return new MonsterAttributeScalerConfiguration();
     }
 
-    private static MonsterAttributeScalerConfiguration CreateDefaultConfiguration()
-    {
-        return new();
-    }
-
-    /// <summary>
-    /// Applies configured scaling to newly spawned monsters.
-    /// </summary>
+    /// <inheritdoc />
     public ValueTask ObjectAddedToMapAsync(GameMap map, ILocateable addedObject)
     {
         if (addedObject is not AttackableNpcBase monster)
@@ -81,9 +80,7 @@ public class MonsterAttributeScaler : IFeaturePlugIn, IObjectAddedToMapPlugIn, I
         return ValueTask.CompletedTask;
     }
 
-    /// <summary>
-    /// Removes the shared elements when a monster is removed from a map.
-    /// </summary>
+    /// <inheritdoc />
     public ValueTask ObjectRemovedFromMapAsync(GameMap map, ILocateable removedObject)
     {
         if (removedObject is not AttackableNpcBase monster)
