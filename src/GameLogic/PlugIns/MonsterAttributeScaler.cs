@@ -5,10 +5,8 @@
 namespace MUnique.OpenMU.GameLogic.PlugIns;
 
 using System.Collections.Concurrent;
-using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.AttributeSystem;
-using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.PlugIns;
@@ -19,18 +17,14 @@ using MUnique.OpenMU.PlugIns;
 /// required for configuration changes to take effect.
 /// </summary>
 [PlugIn]
-[Display(Name = "Monster Attribute Scaler", Description = "Increases all monster base stats by a configurable percentage.")]
+[Display(Name = nameof(PlugInResources.MonsterAttributeScaler_Name), Description = nameof(PlugInResources.MonsterAttributeScaler_Description), ResourceType = typeof(PlugInResources))]
 [Guid("59E5B45F-0A3D-4BAF-8B6C-9E1D2F3A4B5C")]
 public class MonsterAttributeScaler : IFeaturePlugIn, IObjectAddedToMapPlugIn, IObjectRemovedFromMapPlugIn,
     ISupportCustomConfiguration<MonsterAttributeScalerConfiguration>,
     ISupportDefaultCustomConfiguration,
     IDisabledByDefault
 {
-    private MonsterAttributeScalerConfiguration? _configuration;
-
     private readonly ConcurrentDictionary<IAttackable, List<(AttributeDefinition Attribute, IElement Element)>> _scaledMonsters = new();
-
-    private readonly ConcurrentDictionary<int, byte> _loggedMonsterTypes = new();
 
     private static readonly HashSet<AttributeDefinition> ScalableStatsExceptHealth =
     [
@@ -42,14 +36,18 @@ public class MonsterAttributeScaler : IFeaturePlugIn, IObjectAddedToMapPlugIn, I
     ];
 
     /// <inheritdoc />
-    public MonsterAttributeScalerConfiguration? Configuration
-    {
-        get => this._configuration;
-        set => this._configuration = value;
-    }
+    public MonsterAttributeScalerConfiguration? Configuration { get; set; }
 
     /// <inheritdoc />
-    public object CreateDefaultConfig() => new MonsterAttributeScalerConfiguration();
+    public object CreateDefaultConfig()
+    {
+        return CreateDefaultConfiguration();
+    }
+
+    private static MonsterAttributeScalerConfiguration CreateDefaultConfiguration()
+    {
+        return new();
+    }
 
     /// <summary>
     /// Applies configured scaling to newly spawned monsters.
@@ -61,20 +59,16 @@ public class MonsterAttributeScaler : IFeaturePlugIn, IObjectAddedToMapPlugIn, I
             return ValueTask.CompletedTask;
         }
 
-        if (this.Configuration is not { Percentage: > 0 } config)
+        var configuration = this.Configuration ??= CreateDefaultConfiguration();
+        if (configuration.Percentage <= 0)
         {
             return ValueTask.CompletedTask;
         }
 
         if (!this._scaledMonsters.ContainsKey(monster))
         {
-            var multiplier = 1.0f + config.Percentage / 100.0f;
+            var multiplier = 1.0f + configuration.Percentage / 100.0f;
             this.ApplyScaling(monster, multiplier);
-
-            if (this._loggedMonsterTypes.TryAdd(monster.Definition.Number, 0))
-            {
-                Console.WriteLine($"[MonsterAttributeScaler] Scaled monster type {monster.Definition.Number} by {config.Percentage}%");
-            }
         }
 
         return ValueTask.CompletedTask;
@@ -123,8 +117,9 @@ public class MonsterAttributeScaler : IFeaturePlugIn, IObjectAddedToMapPlugIn, I
             return;
         }
 
+        var npc = monster as AttackableNpcBase;
         float healthPercentage = 0f;
-        if (monster is AttackableNpcBase { IsAlive: true } npc)
+        if (npc is { IsAlive: true })
         {
             var maxHealth = monster.Attributes[Stats.MaximumHealth];
             if (maxHealth > 0)
@@ -138,7 +133,7 @@ public class MonsterAttributeScaler : IFeaturePlugIn, IObjectAddedToMapPlugIn, I
             monster.Attributes.RemoveElement(element, attribute);
         }
 
-        if (monster is AttackableNpcBase npc)
+        if (npc is not null)
         {
             if (npc.IsAlive)
             {
