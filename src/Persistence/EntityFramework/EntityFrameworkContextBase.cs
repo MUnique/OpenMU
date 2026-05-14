@@ -181,7 +181,7 @@ internal class EntityFrameworkContextBase : IContext
             case EntityState.Detached:
                 return true;
             case EntityState.Added:
-                this.Detach(obj);
+                this.DetachInternal(obj);
                 break;
             default:
                 this.Context.Remove(obj);
