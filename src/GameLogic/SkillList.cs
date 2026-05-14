@@ -232,8 +232,8 @@ public sealed class SkillList : ISkillList, IDisposable
 
             if (isDurationDampener)
             {
-                this.Value = -1 / 500.0f;
-                this.AggregateType = AggregateType.AddFinal;
+                this.Value = -1 / 500f;
+                this.AggregateType = AggregateType.AddRaw;
                 this._skillEntry.PropertyChanged += this.OnDurabilityReductionSkillEntryOnPropertyChanged;
             }
             else
@@ -275,7 +275,7 @@ public sealed class SkillList : ISkillList, IDisposable
         {
             if (eventArgs.PropertyName == nameof(SkillEntry.Level))
             {
-                this.Value = -this._skillEntry.Level / 500.0f;
+                this.Value = -this._skillEntry.Level / 500f;
                 this.ValueChanged?.Invoke(this, EventArgs.Empty);
             }
         }
