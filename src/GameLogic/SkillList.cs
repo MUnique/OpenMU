@@ -197,9 +197,9 @@ public sealed class SkillList : ISkillList, IDisposable
 
         if (skillEntry.Skill.Number == DurabilityReduction1SkillId || skillEntry.Skill.Number == DurabilityReduction1FistMasterSkillId)
         {
-            var durabilityDecreaseFactorBoost = new PassiveSkillBoostPowerUp(skillEntry, true);
-            this.PassivePowerUps.Add(durabilityDecreaseFactorBoost);
-            this.PassivePowerUps.Add(new PowerUpWrapper(durabilityDecreaseFactorBoost, Stats.DurabilityReductionFactor, this._player.Attributes!));
+            var durabilityReductionFactorBoost = new PassiveSkillBoostPowerUp(skillEntry, true);
+            this.PassivePowerUps.Add(durabilityReductionFactorBoost);
+            this.PassivePowerUps.Add(new PowerUpWrapper(durabilityReductionFactorBoost, Stats.DurabilityReductionFactor, this._player.Attributes!));
         }
     }
 
@@ -226,11 +226,11 @@ public sealed class SkillList : ISkillList, IDisposable
     {
         private readonly SkillEntry _skillEntry;
 
-        public PassiveSkillBoostPowerUp(SkillEntry skillEntry, bool isDurationDampener = false)
+        public PassiveSkillBoostPowerUp(SkillEntry skillEntry, bool isDurabilityReductionFactor = false)
         {
             this._skillEntry = skillEntry;
 
-            if (isDurationDampener)
+            if (isDurabilityReductionFactor)
             {
                 this.Value = -1 / 500f;
                 this.AggregateType = AggregateType.AddRaw;
