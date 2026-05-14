@@ -324,7 +324,7 @@ internal enum MagicEffectNumber : short
     /// <summary>
     /// The greater fortitude (swell life proficiency) effect.
     /// </summary>
-    GreaterFortitude2 = 135,
+    GreaterFortitudeProficiency = 135,
 
     /// <summary>
     /// The wiz enhance strengthener effect.
@@ -339,7 +339,7 @@ internal enum MagicEffectNumber : short
     /// <summary>
     /// The critical damage increase mastery effect.
     /// </summary>
-    CriticalDamageIncrease2 = 148,
+    CriticalDamageIncreaseMastery = 148,
 
     #region Artificial effects which are not sent to the client, starting at 200.
 

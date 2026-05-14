@@ -29,7 +29,7 @@ public class LifeSwellProficiencyEffectInitializer : InitializerBase
     {
         var magicEffect = this.Context.CreateNew<MagicEffectDefinition>();
         this.GameConfiguration.MagicEffects.Add(magicEffect);
-        magicEffect.Number = (byte)MagicEffectNumber.GreaterFortitude2;
+        magicEffect.Number = (byte)MagicEffectNumber.GreaterFortitudeProficiency;
         magicEffect.Name = "Life Swell Proficiency Skill Effect";
 
         var lifeSwellEffect = this.GameConfiguration.MagicEffects.First(e => e.Number == (short)MagicEffectNumber.GreaterFortitude);

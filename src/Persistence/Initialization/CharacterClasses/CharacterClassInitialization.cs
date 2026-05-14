@@ -171,6 +171,7 @@ internal partial class CharacterClassInitialization : InitializerBase
         baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.DefenseDecrement));
         baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.SwellLifeHealthIncrease));
         baseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.SwellLifeManaIncrease));
+        baseAttributeValues.Add(this.CreateConstValueAttribute(0.1f, Stats.DurabilityReductionFactor));
 
         if (isMaster)
         {

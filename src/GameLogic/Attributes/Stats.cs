@@ -1145,7 +1145,7 @@ public class Stats
     /// <summary>
     /// Gets the MST stun chance attribute definition.
     /// </summary>
-    /// <remarks>Bucket attribute for the master skills: wind tome (book of neil) mastery, fire burst mastery and earthshake mastery.</remarks>
+    /// <remarks>Bucket attribute for the master skills: wind tome (book of neil) mastery, fire burst mastery, earthshake mastery and mace mastery.</remarks>
     public static AttributeDefinition MasteryStunChance { get; } = new(new Guid("610D3259-1158-424A-8738-9EB7A71DE600"), "Mastery Stun Chance (MST)", "A generic master tree stun chance attribute, which serves as a bucket for \"mastery\" skills.");
 
     /// <summary>
@@ -1165,7 +1165,17 @@ public class Stats
     public static AttributeDefinition RagefulBlowMasteryDurabilityDecChance { get; } = new(new Guid("2F8A5D3B-9C7E-4F1A-B6D2-8E3C5A7F9B1D"), "Rageful Blow Mastery Durability Decrease Chance (MST)", string.Empty);
 
     /// <summary>
-    /// Gets the spear mastery double damage chance attribute definition.
+    /// Gets the durability reduction factor attribute definition.
+    /// </summary>
+    /// <remarks>
+    /// Factor by which the maximum durability of armor items is multiplied when attacked by Rageful Blow and  <see cref="RagefulBlowMasteryDurabilityDecChance"/> is successful.
+    /// Decreases with the level of the master skills DurabilityReduction1 or DurabilityReduction1FistMaster.
+    /// Value ranges from 10% (default) to 6%.
+    /// </remarks>
+    public static AttributeDefinition DurabilityReductionFactor { get; } = new(new Guid("3C9E7F2A-B1D4-8E6F-5A0C-1D8F3B5E7A2D"), "Durability Reduction Factor", string.Empty);
+
+    /// <summary>
+    /// Gets the spear mastery double damage MST chance attribute definition.
     /// </summary>
     public static AttributeDefinition SpearMasteryDoubleDamageChance { get; } = new(new Guid("5D9E2A7B-3C4F-8E1A-B5D6-2E7F9C4A1B8D"), "Spear Mastery Double Damage Chance (MST)", string.Empty);
 

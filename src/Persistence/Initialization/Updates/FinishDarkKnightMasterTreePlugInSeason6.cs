@@ -47,7 +47,7 @@ public class FinishDarkKnightMasterTreePlugInSeason6 : FinishDarkKnightMasterTre
     {
         await base.ApplyAsync(context, gameConfiguration).ConfigureAwait(false);
 
-        var maceMasteryStunChance = Stats.MaceMasteryStunChance.GetPersistent(gameConfiguration);
+        var masteryStunChance = Stats.MasteryStunChance.GetPersistent(gameConfiguration);
         var ragefulBlowMasteryDurabilityDecChance = Stats.RagefulBlowMasteryDurabilityDecChance.GetPersistent(gameConfiguration);
         var spearMasteryDoubleDamageChance = Stats.SpearMasteryDoubleDamageChance.GetPersistent(gameConfiguration);
         var swellLifeHealthIncrease = Stats.SwellLifeHealthIncrease.GetPersistent(gameConfiguration);
@@ -175,7 +175,7 @@ public class FinishDarkKnightMasterTreePlugInSeason6 : FinishDarkKnightMasterTre
 
         if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.MaceMastery)?.MasterDefinition is { } maceMastery)
         {
-            maceMastery.TargetAttribute = maceMasteryStunChance;
+            maceMastery.TargetAttribute = masteryStunChance;
             maceMastery.Aggregation = AggregateType.AddRaw;
             maceMastery.ValueFormula = $"{maceMastery.ValueFormula} / 100";
         }
@@ -207,7 +207,7 @@ public class FinishDarkKnightMasterTreePlugInSeason6 : FinishDarkKnightMasterTre
     {
         var magicEffect = context.CreateNew<MagicEffectDefinition>();
         gameConfiguration.MagicEffects.Add(magicEffect);
-        magicEffect.Number = (byte)MagicEffectNumber.GreaterFortitude2;
+        magicEffect.Number = (byte)MagicEffectNumber.GreaterFortitudeProficiency;
         magicEffect.Name = "Life Swell Proficiency Skill Effect";
 
         var lifeSwellEffect = gameConfiguration.MagicEffects.First(e => e.Number == (short)MagicEffectNumber.GreaterFortitude);

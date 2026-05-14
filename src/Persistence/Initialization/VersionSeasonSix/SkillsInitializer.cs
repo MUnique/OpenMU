@@ -77,8 +77,8 @@ internal class SkillsInitializer : SkillsInitializerBase
         { SkillNumber.Requiem, MagicEffectNumber.Requiem },
         { SkillNumber.FireBurstMastery, MagicEffectNumber.Stunned },
         { SkillNumber.EarthshakeMastery, MagicEffectNumber.Stunned },
-        { SkillNumber.CritDmgIncPowUp3, MagicEffectNumber.CriticalDamageIncrease2 },
-        { SkillNumber.SwellLifeProficiency, MagicEffectNumber.GreaterFortitude2 },
+        { SkillNumber.CritDmgIncPowUp3, MagicEffectNumber.CriticalDamageIncreaseMastery },
+        { SkillNumber.SwellLifeProficiency, MagicEffectNumber.GreaterFortitudeProficiency },
     };
 
     private readonly IDictionary<byte, MasterSkillRoot> _masterSkillRoots;
@@ -653,6 +653,9 @@ internal class SkillsInitializer : SkillsInitializerBase
 
         this.AddAttributeRelationship(SkillNumber.DragonRoar, Stats.SkillFinalMultiplier, 1.0f, Stats.SkillMultiplier);
         this.AddAttributeRelationship(SkillNumber.DragonSlasher, Stats.SkillFinalMultiplier, 1.0f, Stats.SkillMultiplier);
+
+        // Other
+        this.AddAttributeRelationship(SkillNumber.RagefulBlowMastery, Stats.RagefulBlowMasteryDurabilityDecChance, 1, Stats.RagefulBlowMasteryDurabilityDecChance);
     }
 
     private void AddAttributeRelationship(SkillNumber skillNumber, AttributeDefinition targetAttribute, float multiplier, AttributeDefinition sourceAttribute, InputOperator inputOperator = InputOperator.Multiply, AggregateType aggregateType = AggregateType.AddRaw)
@@ -779,7 +782,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.AddPassiveMasterSkillDefinition(SkillNumber.SpearStrengthener, Stats.SpearBonusDamage, AggregateType.AddRaw, Formula632, 2, 3);
         this.AddPassiveMasterSkillDefinition(SkillNumber.TwoHandedSwordMaster, Stats.TwoHandedSwordMasteryBonusDamage, AggregateType.AddRaw, Formula1154, 3, 3, SkillNumber.TwoHandedSwordStrengthener);
         this.AddPassiveMasterSkillDefinition(SkillNumber.OneHandedSwordMaster, Stats.WeaponMasteryAttackSpeed, AggregateType.AddRaw, Formula1, 3, 3, SkillNumber.OneHandedSwordStrengthener, SkillNumber.Undefined, 10);
-        this.AddPassiveMasterSkillDefinition(SkillNumber.MaceMastery, Stats.MaceMasteryStunChance, AggregateType.AddRaw, $"{Formula120} / 100", 3, 3, SkillNumber.MaceStrengthener);
+        this.AddPassiveMasterSkillDefinition(SkillNumber.MaceMastery, Stats.MasteryStunChance, AggregateType.AddRaw, $"{Formula120} / 100", 3, 3, SkillNumber.MaceStrengthener);
         this.AddPassiveMasterSkillDefinition(SkillNumber.SpearMastery, Stats.SpearMasteryDoubleDamageChance, AggregateType.AddRaw, $"{Formula120} / 100", 3, 3, SkillNumber.SpearStrengthener);
         this.AddMasterSkillDefinition(SkillNumber.SwellLifeStrengt, SkillNumber.SwellLife, SkillNumber.Undefined, 3, 4, SkillNumber.SwellLife, 20, $"{Formula181} / 100", Formula181, Stats.SwellLifeHealthIncrease, AggregateType.AddRaw);
         this.AddPassiveMasterSkillDefinition(SkillNumber.ManaReduction, Stats.ManaUsageReduction, AggregateType.AddRaw, Formula722Value, Formula722, 4, 3);

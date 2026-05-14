@@ -29,7 +29,7 @@ public class CriticalDamageIncreaseMasteryEffectInitializer : InitializerBase
     {
         var magicEffect = this.Context.CreateNew<MagicEffectDefinition>();
         this.GameConfiguration.MagicEffects.Add(magicEffect);
-        magicEffect.Number = (byte)MagicEffectNumber.CriticalDamageIncrease2;
+        magicEffect.Number = (byte)MagicEffectNumber.CriticalDamageIncreaseMastery;
         magicEffect.Name = "Critical Damage Increase Mastery Skill Effect";
 
         var critDmgIncEffect = this.GameConfiguration.MagicEffects.First(e => e.Number == (short)MagicEffectNumber.CriticalDamageIncrease);
