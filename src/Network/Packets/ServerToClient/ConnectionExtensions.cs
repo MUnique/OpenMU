@@ -3260,7 +3260,7 @@ public static class ConnectionExtensions
     /// Is sent by the server when: After the character was selected by the player and entered the game.
     /// Causes reaction on client side: The characters enters the game world.
     /// </remarks>
-    public static async ValueTask SendCharacterInformationAsync(this IConnection? connection, byte @x, byte @y, ushort @mapId, ulong @currentExperience, ulong @experienceForNextLevel, ushort @levelUpPoints, ushort @strength, ushort @agility, ushort @vitality, ushort @energy, ushort @currentHealth, ushort @maximumHealth, ushort @currentMana, ushort @maximumMana, ushort @currentShield, ushort @maximumShield, ushort @currentAbility, ushort @maximumAbility, uint @money, CharacterHeroState @heroState, CharacterStatus @status, ushort @usedFruitPoints, ushort @maxFruitPoints, ushort @leadership, ushort @usedNegativeFruitPoints, ushort @maxNegativeFruitPoints, byte @inventoryExtensions)
+    public static async ValueTask SendCharacterInformationAsync(this IConnection? connection, byte @x, byte @y, ushort @mapId, ulong @currentExperience, ulong @experienceForNextLevel, ushort @levelUpPoints, ushort @strength, ushort @agility, ushort @vitality, ushort @energy, ushort @currentHealth, ushort @maximumHealth, ushort @currentMana, ushort @maximumMana, ushort @currentShield, ushort @maximumShield, ushort @currentAbility, ushort @maximumAbility, uint @money, CharacterHeroState @heroState, CharacterStatus @status, ushort @usedFruitPoints, ushort @maxFruitPoints, ushort @leadership, ushort @usedNegativeFruitPoints, ushort @maxNegativeFruitPoints, byte @inventoryExtensions, ushort @resets)
     {
         if (connection is null)
         {
@@ -3298,6 +3298,7 @@ public static class ConnectionExtensions
             packet.UsedNegativeFruitPoints = @usedNegativeFruitPoints;
             packet.MaxNegativeFruitPoints = @maxNegativeFruitPoints;
             packet.InventoryExtensions = @inventoryExtensions;
+            packet.Resets = @resets;
 
             return packet.Header.Length;
         }
@@ -3389,7 +3390,7 @@ public static class ConnectionExtensions
     /// Is sent by the server when: After the character was selected by the player and entered the game.
     /// Causes reaction on client side: The characters enters the game world.
     /// </remarks>
-    public static async ValueTask SendCharacterInformationExtendedAsync(this IConnection? connection, byte @x, byte @y, ushort @mapId, ulong @currentExperience, ulong @experienceForNextLevel, ushort @levelUpPoints, ushort @strength, ushort @agility, ushort @vitality, ushort @energy, ushort @leadership, uint @currentHealth, uint @maximumHealth, uint @currentMana, uint @maximumMana, uint @currentShield, uint @maximumShield, uint @currentAbility, uint @maximumAbility, uint @money, CharacterHeroState @heroState, CharacterStatus @status, ushort @usedFruitPoints, ushort @maxFruitPoints, ushort @usedNegativeFruitPoints, ushort @maxNegativeFruitPoints, ushort @attackSpeed, ushort @magicSpeed, ushort @maximumAttackSpeed, byte @inventoryExtensions)
+    public static async ValueTask SendCharacterInformationExtendedAsync(this IConnection? connection, byte @x, byte @y, ushort @mapId, ulong @currentExperience, ulong @experienceForNextLevel, ushort @levelUpPoints, ushort @strength, ushort @agility, ushort @vitality, ushort @energy, ushort @leadership, uint @currentHealth, uint @maximumHealth, uint @currentMana, uint @maximumMana, uint @currentShield, uint @maximumShield, uint @currentAbility, uint @maximumAbility, uint @money, CharacterHeroState @heroState, CharacterStatus @status, ushort @usedFruitPoints, ushort @maxFruitPoints, ushort @usedNegativeFruitPoints, ushort @maxNegativeFruitPoints, ushort @attackSpeed, ushort @magicSpeed, ushort @maximumAttackSpeed, byte @inventoryExtensions, uint @resets)
     {
         if (connection is null)
         {
@@ -3430,6 +3431,7 @@ public static class ConnectionExtensions
             packet.MagicSpeed = @magicSpeed;
             packet.MaximumAttackSpeed = @maximumAttackSpeed;
             packet.InventoryExtensions = @inventoryExtensions;
+            packet.Resets = @resets;
 
             return packet.Header.Length;
         }

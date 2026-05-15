@@ -16053,6 +16053,15 @@ public readonly ref struct CharacterInformationRef
     }
 
     /// <summary>
+    /// Gets or sets the resets.
+    /// </summary>
+    public ushort Resets
+    {
+        get => ReadUInt16LittleEndian(this._data[69..]);
+        set => WriteUInt16LittleEndian(this._data[69..], value);
+    }
+
+    /// <summary>
     /// Performs an implicit conversion from a Span of bytes to a <see cref="CharacterInformation"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
@@ -16564,6 +16573,15 @@ public readonly ref struct CharacterInformationExtendedRef
     {
         get => this._data[88];
         set => this._data[88] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the resets.
+    /// </summary>
+    public uint Resets
+    {
+        get => ReadUInt32LittleEndian(this._data[89..]);
+        set => WriteUInt32LittleEndian(this._data[89..], value);
     }
 
     /// <summary>

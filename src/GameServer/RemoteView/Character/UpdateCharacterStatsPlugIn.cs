@@ -65,7 +65,8 @@ public class UpdateCharacterStatsPlugIn : IUpdateCharacterStatsPlugIn
             (ushort)this._player.Attributes[Stats.BaseLeadership],
             (ushort)this._player.SelectedCharacter.UsedNegFruitPoints,
             this._player.SelectedCharacter.GetMaximumFruitPoints(),
-            (byte)this._player.SelectedCharacter.InventoryExtensions)
+            (byte)this._player.SelectedCharacter.InventoryExtensions,
+            (ushort)this._player.Attributes[Stats.Resets])
             .ConfigureAwait(false);
 
         if (this._player.SelectedCharacter.CharacterClass!.IsMasterClass)
