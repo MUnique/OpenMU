@@ -3220,5 +3220,23 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("WeatherUpdatePlugIn_Name", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Increases all monster base stats by a configurable percentage..
+        /// </summary>
+        public static string MonsterAttributeScaler_Description {
+            get {
+                return ResourceManager.GetString("MonsterAttributeScaler_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Monster Attribute Scaler.
+        /// </summary>
+        public static string MonsterAttributeScaler_Name {
+            get {
+                return ResourceManager.GetString("MonsterAttributeScaler_Name", resourceCulture);
+            }
+        }
     }
 }
