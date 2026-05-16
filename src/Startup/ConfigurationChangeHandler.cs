@@ -35,9 +35,9 @@ public class ConfigurationChangeHandler : IConfigurationChangePublisher
     public async Task ConfigurationChangedAsync(Type type, Guid id, object configuration)
     {
         // TODO: subscribe these systems to the change mediator
-        if (this._serviceProvider.GetService<PlugInManager>() is { } plugInManager)
+        if (configuration is PlugInConfiguration plugInConfiguration)
         {
-            plugInManager.ApplyChangedConfiguration(type, id, configuration);
+            this.OnPlugInConfigurationChanged(id, plugInConfiguration);
         }
 
         if (configuration is ConnectServerDefinition connectServerDefinition)
@@ -67,9 +67,9 @@ public class ConfigurationChangeHandler : IConfigurationChangePublisher
     /// <inheritdoc />
     public async Task ConfigurationRemovedAsync(Type type, Guid id)
     {
-        if (this._serviceProvider.GetService<PlugInManager>() is { } plugInManager)
+        if (type.IsAssignableTo(typeof(PlugInConfiguration)) && this._serviceProvider.GetService<PlugInManager>() is { } plugInManager)
         {
-            plugInManager.ApplyRemovedConfiguration(type, id);
+            plugInManager.DeactivatePlugIn(id);
         }
 
         await this._changeMediator.HandleConfigurationRemovedAsync(type, id).ConfigureAwait(false);
@@ -104,4 +104,25 @@ public class ConfigurationChangeHandler : IConfigurationChangePublisher
         }
     }
 
+    private void OnPlugInConfigurationChanged(Guid id, PlugInConfiguration plugInConfiguration)
+    {
+        if (this._serviceProvider.GetService<PlugInManager>() is not { } plugInManager)
+        {
+            return;
+        }
+
+        var currentlyActive = plugInManager.IsPlugInActive(id);
+        if (currentlyActive && !plugInConfiguration.IsActive)
+        {
+            plugInManager.DeactivatePlugIn(id);
+        }
+        else if (!currentlyActive && plugInConfiguration.IsActive)
+        {
+            plugInManager.ActivatePlugIn(id);
+        }
+        else
+        {
+            plugInManager.ConfigurePlugIn(id, plugInConfiguration);
+        }
+    }
 }
