@@ -15802,7 +15802,7 @@ public readonly ref struct CharacterInformationRef
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 73;
+    public static int Length => 72;
 
     /// <summary>
     /// Gets the header of this packet.
@@ -16050,15 +16050,6 @@ public readonly ref struct CharacterInformationRef
     {
         get => this._data[68];
         set => this._data[68] = value;
-    }
-
-    /// <summary>
-    /// Gets or sets the resets.
-    /// </summary>
-    public uint Resets
-    {
-        get => ReadUInt32LittleEndian(this._data[69..]);
-        set => WriteUInt32LittleEndian(this._data[69..], value);
     }
 
     /// <summary>
@@ -16578,10 +16569,10 @@ public readonly ref struct CharacterInformationExtendedRef
     /// <summary>
     /// Gets or sets the resets.
     /// </summary>
-    public uint Resets
+    public ushort Resets
     {
-        get => ReadUInt32LittleEndian(this._data[89..]);
-        set => WriteUInt32LittleEndian(this._data[89..], value);
+        get => ReadUInt16LittleEndian(this._data[89..]);
+        set => WriteUInt16LittleEndian(this._data[89..], value);
     }
 
     /// <summary>

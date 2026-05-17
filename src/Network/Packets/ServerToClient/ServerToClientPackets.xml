@@ -6479,6 +6479,11 @@
           <Type>Byte</Type>
           <Name>InventoryExtensions</Name>
         </Field>
+        <Field>
+          <Index>89</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Resets</Name>
+        </Field>
       </Fields>
     </Packet>
     <Packet>
