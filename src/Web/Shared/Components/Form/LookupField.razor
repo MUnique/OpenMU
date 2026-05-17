@@ -10,7 +10,7 @@
     <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
     <Typeahead TItem="TObject" TValue="TObject"
                @bind-Value="@this.CurrentValue"
-               SearchMethod="@(text => this.EffectiveLookupController.GetSuggestionsAsync<TObject>(text, this.PersistenceContext))"
+               SearchMethod="@((text, _) => this.EffectiveLookupController.GetSuggestionsAsync<TObject>(text, this.PersistenceContext))"
                EnableDropDown="true"
                MaximumSuggestions="20"
                Placeholder="Search ..."

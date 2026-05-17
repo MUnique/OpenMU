@@ -51,7 +51,25 @@ public partial class Typeahead<TItem, TValue> : ComponentBase, IDisposable
     /// Gets or sets the search method.
     /// </summary>
     [Parameter]
-    public Func<string, Task<IEnumerable<TItem>>> SearchMethod { get; set; } = null!;
+    public Func<string, CancellationToken, Task<IEnumerable<TItem>>> SearchMethod { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets a function to extract the value from the item.
+    /// </summary>
+    [Parameter]
+    public Func<TItem, TValue>? ValueSelector { get; set; }
+
+    /// <summary>
+    /// Gets or sets a function to extract the item from the value.
+    /// </summary>
+    [Parameter]
+    public Func<TValue, TItem>? ItemSelector { get; set; }
+
+    /// <summary>
+    /// Gets or sets a function to extract the display text from the item.
+    /// </summary>
+    [Parameter]
+    public Func<TItem, string>? TextSelector { get; set; }
 
     /// <summary>
     /// Gets or sets the single value.
@@ -248,13 +266,13 @@ public partial class Typeahead<TItem, TValue> : ComponentBase, IDisposable
 
         try
         {
-            var results = await this.SearchMethod(this._searchText).ConfigureAwait(true);
+            var results = await this.SearchMethod(this._searchText, token).ConfigureAwait(true);
             if (!token.IsCancellationRequested)
             {
                 IEnumerable<TItem> filteredResults = results ?? Enumerable.Empty<TItem>();
                 if (this.IsMultiple && this.Values != null)
                 {
-                    filteredResults = filteredResults.Where(s => !this.Values.Contains((TValue)(object)s!));
+                    filteredResults = filteredResults.Where(s => !this.Values.Contains(this.ValueSelector != null ? this.ValueSelector(s!) : (TValue)(object)s!));
                 }
 
                 this._suggestions = filteredResults.Take(this.MaximumSuggestions).ToList();
@@ -317,7 +335,7 @@ public partial class Typeahead<TItem, TValue> : ComponentBase, IDisposable
         {
             if (!EqualityComparer<TItem>.Default.Equals(item!, default!))
             {
-                var val = (TValue)(object)item!;
+                var val = this.ValueSelector != null ? this.ValueSelector(item!) : (TValue)(object)item!;
                 var newValues = this.Values == null ? new List<TValue>() : new List<TValue>(this.Values);
                 if (!newValues.Contains(val!))
                 {
@@ -338,7 +356,8 @@ public partial class Typeahead<TItem, TValue> : ComponentBase, IDisposable
             }
             else
             {
-                await this.ValueChanged.InvokeAsync((TValue)(object)item!).ConfigureAwait(false);
+                var val = this.ValueSelector != null ? this.ValueSelector(item!) : (TValue)(object)item!;
+                await this.ValueChanged.InvokeAsync(val).ConfigureAwait(false);
                 this._searchText = this.GetItemText(item);
             }
 
@@ -376,11 +395,21 @@ public partial class Typeahead<TItem, TValue> : ComponentBase, IDisposable
             return default;
         }
 
+        if (this.ItemSelector != null)
+        {
+            return this.ItemSelector(value!);
+        }
+
         return (TItem)(object)value!;
     }
 
     private string GetItemText(TItem? item)
     {
-        return item?.ToString() ?? string.Empty;
+        if (EqualityComparer<TItem>.Default.Equals(item!, default!))
+        {
+            return string.Empty;
+        }
+
+        return this.TextSelector != null ? this.TextSelector(item!) : item!.ToString() ?? string.Empty;
     }
 }

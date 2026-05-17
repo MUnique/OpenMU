@@ -140,7 +140,7 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
         }
         catch (NotImplementedException)
         {
-            // swallow
+            // Ignored.
         }
 
         return result;
@@ -166,7 +166,7 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
         }
         catch (NotImplementedException)
         {
-            // swallow
+            // Ignored.
         }
 
         return null;

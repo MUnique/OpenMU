@@ -1,4 +1,4 @@
-﻿// <copyright file="FlagsEnumField.razor.cs" company="MUnique">
+// <copyright file="FlagsEnumField.razor.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -63,7 +63,7 @@ public partial class FlagsEnumField<TValue> : NotifyableInputBase<TValue>
     /// </summary>
     /// <param name="text">The search text.</param>
     /// <returns>The available flags.</returns>
-    private async Task<IEnumerable<TValue>> SearchAsync(string text)
+    private async Task<IEnumerable<TValue>> SearchAsync(string text, System.Threading.CancellationToken token)
     {
         return this.UnassignedFlags.Where(f => f.ToString().Contains(text, StringComparison.InvariantCultureIgnoreCase));
     }
