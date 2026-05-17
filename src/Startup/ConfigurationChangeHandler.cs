@@ -111,18 +111,19 @@ public class ConfigurationChangeHandler : IConfigurationChangePublisher
             return;
         }
 
-        var currentlyActive = plugInManager.IsPlugInActive(id);
+        var typeId = plugInConfiguration.TypeId;
+        var currentlyActive = plugInManager.IsPlugInActive(typeId);
         if (currentlyActive && !plugInConfiguration.IsActive)
         {
-            plugInManager.DeactivatePlugIn(id);
+            plugInManager.DeactivatePlugIn(typeId);
         }
         else if (!currentlyActive && plugInConfiguration.IsActive)
         {
-            plugInManager.ActivatePlugIn(id);
+            plugInManager.ActivatePlugIn(typeId);
         }
         else
         {
-            plugInManager.ConfigurePlugIn(id, plugInConfiguration);
+            plugInManager.ConfigurePlugIn(typeId, plugInConfiguration);
         }
     }
 }
