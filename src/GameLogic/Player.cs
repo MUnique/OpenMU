@@ -1184,29 +1184,55 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return 0;
         }
 
+        var experience = this.CalculateExpAfterKill(killedObject);
+        if (experience == 0)
+        {
+            return 0;
+        }
+
         var addMasterExperience = characterClass.IsMasterClass
                             && (short)this.Attributes![Stats.Level] == this.GameContext.Configuration.MaximumLevel;
-        var expRateAttribute = addMasterExperience ? Stats.MasterExperienceRate : Stats.ExperienceRate;
-        var gameRate = addMasterExperience ? this.GameContext.MasterExperienceRate : this.GameContext.ExperienceRate;
-
-        var experience = killedObject.CalculateBaseExperience(this.Attributes![Stats.TotalLevel]);
-        experience *= gameRate;
-        experience *= this.Attributes[expRateAttribute] + this.Attributes[Stats.BonusExperienceRate];
-        experience *= this.CurrentMap?.Definition.ExpMultiplier ?? 1;
-        experience = Rand.NextInt((int)(experience * 0.8), (int)(experience * 1.2));
-
         if (addMasterExperience)
         {
-            await this.AddMasterExperienceAsync((int)experience, killedObject).ConfigureAwait(false);
+            await this.AddMasterExperienceAsync(experience, killedObject).ConfigureAwait(false);
         }
         else
         {
-            await this.AddExperienceAsync((int)experience, killedObject).ConfigureAwait(false);
+            await this.AddExperienceAsync(experience, killedObject).ConfigureAwait(false);
         }
 
         await this.AddPetExperienceAsync(experience).ConfigureAwait(false);
 
-        return (int)experience;
+        return experience;
+    }
+
+    /// <summary>
+    /// Calculates the amount of experience gained after a kill, without applying it to the character.
+    /// </summary>
+    /// <param name="killedObject">The killed monster.</param>
+    /// <returns>The calculated experience amount.</returns>
+    public int CalculateExpAfterKill(IAttackable killedObject)
+    {
+        if (this.SelectedCharacter?.CharacterClass is not { } characterClass)
+        {
+            return 0;
+        }
+
+        if (this.Attributes is not { } attributes)
+        {
+            return 0;
+        }
+
+        var addMasterExperience = characterClass.IsMasterClass
+                            && (short)attributes[Stats.Level] == this.GameContext.Configuration.MaximumLevel;
+        var expRateAttribute = addMasterExperience ? Stats.MasterExperienceRate : Stats.ExperienceRate;
+        var gameRate = addMasterExperience ? this.GameContext.MasterExperienceRate : this.GameContext.ExperienceRate;
+
+        var experience = killedObject.CalculateBaseExperience(attributes[Stats.TotalLevel]);
+        experience *= gameRate;
+        experience *= attributes[expRateAttribute] + attributes[Stats.BonusExperienceRate];
+        experience *= this.CurrentMap?.Definition.ExpMultiplier ?? 1;
+        return Rand.NextInt((int)(experience * 0.8), (int)(experience * 1.2));
     }
 
     /// <summary>

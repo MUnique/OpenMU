@@ -373,15 +373,7 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
             return;
         }
 
-        var partySize = killer.Party?.PartyList
-            .OfType<Player>()
-            .Count(p => p.CurrentMap == killer.CurrentMap && !p.IsAtSafezone() && p.Attributes is { }) ?? 1;
-        if (partySize > 1)
-        {
-            amount /= (uint)partySize;
-        }
-
-        var droppedMoney = new DroppedMoney((uint)(amount * killer.Attributes![Stats.MoneyAmountRate]), this.Position, this.CurrentMap);
+        var droppedMoney = new DroppedMoney((uint)(amount * (killer.Attributes?[Stats.MoneyAmountRate] ?? 1.0f)), this.Position, this.CurrentMap);
         await this.CurrentMap.AddAsync(droppedMoney).ConfigureAwait(false);
     }
 
@@ -393,17 +385,9 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
         // derived from this experience value, party money drops were dramatically
         // lower than solo drops. We recalculate the experience for money purposes
         // using the solo formula so money is consistent regardless of party state.
-        if (killer.Party is not null && killer.SelectedCharacter?.CharacterClass is { } characterClass)
+        if (killer.Party is not null)
         {
-            var baseExp = this.CalculateBaseExperience(killer.Attributes![Stats.TotalLevel]);
-            var isMaster = characterClass.IsMasterClass
-                           && (short)killer.Attributes[Stats.Level] == killer.GameContext.Configuration.MaximumLevel;
-            var expRateAttr = isMaster ? Stats.MasterExperienceRate : Stats.ExperienceRate;
-            var gameRate = isMaster ? killer.GameContext.MasterExperienceRate : killer.GameContext.ExperienceRate;
-
-            var experience = baseExp * gameRate * (killer.Attributes[expRateAttr] + killer.Attributes[Stats.BonusExperienceRate]);
-            experience *= killer.CurrentMap?.Definition.ExpMultiplier ?? 1;
-            exp = Rand.NextInt((int)(experience * 0.8), (int)(experience * 1.2));
+            exp = killer.CalculateExpAfterKill(this);
         }
 
         var (generatedItems, droppedMoney) = await this._dropGenerator.GenerateItemDropsAsync(this.Definition, exp, killer).ConfigureAwait(false);
