@@ -40,13 +40,12 @@ public partial class NavMenu : IDisposable
     [Inject]
     private NavigationHistory NavigationHistory { get; set; } = null!;
 
-
     private Guid? GameConfigurationId { get; set; }
 
     /// <summary>
     /// Gets the class for the entries of the navigation menu.
     /// "collapse" is a class of bootstrap which hides it.
-    /// In our css we also define to show it anyway, if the width sufficient.
+    /// In our CSS we also define to show it anyway, if the width sufficient.
     /// </summary>
     private string NavMenuCssClass => this._collapseNavMenu ? "collapse" : string.Empty;
 
