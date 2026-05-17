@@ -33,7 +33,9 @@ public class Pets : InitializerBase
         this.AddItemToJewelItemDrop(angel);
         var imp = this.CreatePet(1, "Imp", 28, (Stats.AttackDamageIncrease, 1.3f, AggregateType.Multiplicate));
         this.AddItemToJewelItemDrop(imp);
-        var uniria = this.CreatePet(2, "Horn of Uniria", 25);
+        var uniria = this.CreatePet(2, "Horn of Uniria", 25,
+            (Stats.MaxMovementSpeed, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum),
+            (Stats.MaxMovementSpeedUnderwater, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum));
         this.AddItemToJewelItemDrop(uniria);
     }
 

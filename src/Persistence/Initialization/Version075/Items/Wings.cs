@@ -118,6 +118,9 @@ public class Wings : WingsInitializerBase
         canFlyPowerUp.BaseValue = 1;
         wing.BasePowerUpAttributes.Add(canFlyPowerUp);
 
+        wing.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.MaxMovementSpeed, MovementSpeedConstants.DefaultWingMovementSpeed, AggregateType.Maximum));
+        wing.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.MaxMovementSpeedUnderwater, MovementSpeedConstants.DefaultWingMovementSpeed, AggregateType.Maximum));
+
         return wing;
     }
 }

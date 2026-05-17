@@ -267,6 +267,16 @@ internal abstract class SkillsInitializerBase : InitializerBase
         powerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
         powerUpDefinition.Boost.ConstantValue.Value = 1;
         powerUpDefinition.TargetAttribute = targetAttribute.GetPersistent(this.GameConfiguration);
+        if (targetAttribute == Stats.IsIced)
+        {
+            var movementSpeedFactorPowerUp = this.Context.CreateNew<PowerUpDefinition>();
+            effect.PowerUpDefinitions.Add(movementSpeedFactorPowerUp);
+            movementSpeedFactorPowerUp.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+            movementSpeedFactorPowerUp.Boost.ConstantValue.Value = MovementSpeedConstants.IcedMovementSpeedFactor;
+            movementSpeedFactorPowerUp.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
+            movementSpeedFactorPowerUp.TargetAttribute = Stats.MovementSpeedFactor.GetPersistent(this.GameConfiguration);
+        }
+
         return effect;
     }
 

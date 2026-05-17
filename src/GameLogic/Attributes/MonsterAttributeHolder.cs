@@ -21,6 +21,7 @@ public class MonsterAttributeHolder : IAttributeSystem
             { Stats.DefensePvp, m => m.Attributes.GetValueOfAttribute(Stats.DefenseBase) + ((m as Monster)?.SummonedBy?.Attributes?[Stats.SummonedMonsterDefenseIncrease] ?? 0) },
             { Stats.DamageReceiveDecrement, m => 1.0f },
             { Stats.AttackDamageIncrease, m => 1.0f },
+            { Stats.MovementSpeedFactor, m => 1.0f },
             { Stats.ShieldBypassChance, m => 1.0f },
             { Stats.DefenseDecrement, m => 1.0f - m.Attributes.GetValueOfAttribute(Stats.InnovationDefDecrement) },
         };
@@ -131,7 +132,7 @@ public class MonsterAttributeHolder : IAttributeSystem
         if (attributes.TryGetValue(targetAttribute, out var attribute))
         {
             attribute.RemoveElement(element);
-            if (attribute.Elements.Skip(1).Take(1).Any())
+            if (!attribute.Elements.Skip(1).Any())
             {
                 attributes.Remove(targetAttribute);
             }

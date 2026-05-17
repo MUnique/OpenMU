@@ -20,6 +20,13 @@ using MUnique.OpenMU.Persistence.Initialization.Skills;
 /// <remarks>Pet system changed in Season 9. Reference: https://muonline.webzen.com/en/gameinfo/guide/detail/76 .</remarks>
 public class Pets : InitializerBase
 {
+    private const int BlackFenrirMovementSpeedCombinationBonusNumber = 101;
+    private const int BlackFenrirUnderwaterMovementSpeedCombinationBonusNumber = 102;
+    private const int BlueFenrirMovementSpeedCombinationBonusNumber = 103;
+    private const int BlueFenrirUnderwaterMovementSpeedCombinationBonusNumber = 104;
+    private const int GoldFenrirMovementSpeedCombinationBonusNumber = 105;
+    private const int GoldFenrirUnderwaterMovementSpeedCombinationBonusNumber = 106;
+
     private const string PetExperienceFormula = "level * level * level * 100 * (level + 10)";
 
     /// <summary>
@@ -43,17 +50,23 @@ public class Pets : InitializerBase
         var imp = this.CreatePet(1, 0, 1, 1, "Imp", 28, true, true,
             (Stats.AttackDamageIncrease, 1.3f, AggregateType.Multiplicate));
         this.AddItemToJewelItemDrop(imp);
-        var uniria = this.CreatePet(2, 0, 1, 1, "Horn of Uniria", 25, true, true);
+        var uniria = this.CreatePet(2, 0, 1, 1, "Horn of Uniria", 25, true, true,
+            (Stats.MaxMovementSpeed, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum),
+            (Stats.MaxMovementSpeedUnderwater, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum));
         this.AddItemToJewelItemDrop(uniria);
 
         var dinorant = this.CreatePet(3, SkillNumber.FireBreath, 1, 1, "Horn of Dinorant", 110, false, true,
             (Stats.IsDinorantEquipped, 1, AggregateType.AddRaw),
+            (Stats.MaxMovementSpeed, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum),
+            (Stats.MaxMovementSpeedUnderwater, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum),
             (Stats.DamageReceiveDecrement, 0.9f, AggregateType.Multiplicate),
             (Stats.AttackDamageIncrease, 1.15f, AggregateType.Multiplicate));
         this.AddDinorantOptions(dinorant);
 
         var darkHorse = this.CreatePet(4, SkillNumber.Earthshake, 1, 1, "Dark Horse", 218, false, false,
-            (Stats.IsHorseEquipped, 1, AggregateType.AddRaw));
+            (Stats.IsHorseEquipped, 1, AggregateType.AddRaw),
+            (Stats.MaxMovementSpeed, MovementSpeedConstants.HorseOrFenrirMovementSpeed, AggregateType.Maximum),
+            (Stats.MaxMovementSpeedUnderwater, MovementSpeedConstants.HorseOrFenrirMovementSpeed, AggregateType.Maximum));
         this.AddDarkHorseOptions(darkHorse);
         this.GameConfiguration.DetermineCharacterClasses(CharacterClasses.AllLords).ForEach(darkHorse.QualifiedCharacters.Add);
         darkHorse.PetExperienceFormula = PetExperienceFormula;
@@ -66,7 +79,9 @@ public class Pets : InitializerBase
         this.GameConfiguration.DetermineCharacterClasses(CharacterClasses.AllLords).ForEach(darkRaven.QualifiedCharacters.Add);
 
         var fenrir = this.CreatePet(37, SkillNumber.PlasmaStorm, 2, 2, "Horn of Fenrir", 300, false, true,
-            (Stats.CanFly, 1.0f, AggregateType.AddRaw));
+            (Stats.CanFly, 1.0f, AggregateType.AddRaw),
+            (Stats.MaxMovementSpeed, MovementSpeedConstants.HorseOrFenrirMovementSpeed, AggregateType.Maximum),
+            (Stats.MaxMovementSpeedUnderwater, MovementSpeedConstants.HorseOrFenrirMovementSpeed, AggregateType.Maximum));
         this.AddFenrirOptions(fenrir);
 
         this.CreatePet(64, 0, 1, 1, "Demon", 1, false, true,
@@ -306,6 +321,36 @@ public class Pets : InitializerBase
         fenrirOptionDefinition.PossibleOptions.Add(this.CreateRelatedPetOption(ItemOptionTypes.GoldFenrir, 4, Stats.WizardryBaseDmg, AggregateType.AddRaw, ItemOptionDefinitionNumbers.Fenrir, 0, (Stats.TotalLevel, 1f / 25f)));
 
         fenrir.PossibleItemOptions.Add(fenrirOptionDefinition);
+        this.AddFenrirMovementSpeedCombinationBonuses();
+    }
+
+    private void AddFenrirMovementSpeedCombinationBonuses()
+    {
+        this.AddFenrirMovementSpeedCombinationBonus(ItemOptionTypes.BlackFenrir, BlackFenrirMovementSpeedCombinationBonusNumber, Stats.MaxMovementSpeed);
+        this.AddFenrirMovementSpeedCombinationBonus(ItemOptionTypes.BlackFenrir, BlackFenrirUnderwaterMovementSpeedCombinationBonusNumber, Stats.MaxMovementSpeedUnderwater);
+        this.AddFenrirMovementSpeedCombinationBonus(ItemOptionTypes.BlueFenrir, BlueFenrirMovementSpeedCombinationBonusNumber, Stats.MaxMovementSpeed);
+        this.AddFenrirMovementSpeedCombinationBonus(ItemOptionTypes.BlueFenrir, BlueFenrirUnderwaterMovementSpeedCombinationBonusNumber, Stats.MaxMovementSpeedUnderwater);
+        this.AddFenrirMovementSpeedCombinationBonus(ItemOptionTypes.GoldFenrir, GoldFenrirMovementSpeedCombinationBonusNumber, Stats.MaxMovementSpeed);
+        this.AddFenrirMovementSpeedCombinationBonus(ItemOptionTypes.GoldFenrir, GoldFenrirUnderwaterMovementSpeedCombinationBonusNumber, Stats.MaxMovementSpeedUnderwater);
+    }
+
+    private void AddFenrirMovementSpeedCombinationBonus(ItemOptionType optionType, int number, AttributeDefinition targetAttribute)
+    {
+        var combinationBonus = this.Context.CreateNew<ItemOptionCombinationBonus>();
+        combinationBonus.Number = number;
+        combinationBonus.Description = $"{optionType.Name}: {targetAttribute.Designation}";
+        combinationBonus.AppliesMultipleTimes = false;
+        combinationBonus.Requirements.Add(this.CreateFenrirMovementSpeedRequirement(optionType));
+        combinationBonus.Bonus = this.CreatePowerUpDefinition(targetAttribute, MovementSpeedConstants.UpgradedFenrirMovementSpeed, AggregateType.Maximum);
+        this.GameConfiguration.ItemOptionCombinationBonuses.Add(combinationBonus);
+    }
+
+    private CombinationBonusRequirement CreateFenrirMovementSpeedRequirement(ItemOptionType optionType)
+    {
+        var requirement = this.Context.CreateNew<CombinationBonusRequirement>();
+        requirement.OptionType = this.GameConfiguration.ItemOptionTypes.First(t => t == optionType);
+        requirement.MinimumCount = 1;
+        return requirement;
     }
 
     private IncreasableItemOption CreateOption(ItemOptionType optionType, int number, AttributeDefinition attributeDefinition, float value, AggregateType aggregateType, short optionNumber)

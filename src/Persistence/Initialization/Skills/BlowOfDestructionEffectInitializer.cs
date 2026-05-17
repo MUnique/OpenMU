@@ -4,8 +4,10 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.Skills;
 
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.GameLogic.Attributes;
 
 /// <summary>
 /// Initializer for the blow of destruction effect which results from the strike of destruction skill.
@@ -34,5 +36,12 @@ public class BlowOfDestructionEffectInitializer : InitializerBase
         magicEffect.StopByDeath = true;
         magicEffect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.Duration.ConstantValue.Value = (float)TimeSpan.FromSeconds(10).TotalSeconds;
+
+        var movementSpeedFactorPowerUp = this.Context.CreateNew<PowerUpDefinition>();
+        magicEffect.PowerUpDefinitions.Add(movementSpeedFactorPowerUp);
+        movementSpeedFactorPowerUp.TargetAttribute = Stats.MovementSpeedFactor.GetPersistent(this.GameConfiguration);
+        movementSpeedFactorPowerUp.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+        movementSpeedFactorPowerUp.Boost.ConstantValue.Value = MovementSpeedConstants.BlowOfDestructionMovementSpeedFactor;
+        movementSpeedFactorPowerUp.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
     }
 }

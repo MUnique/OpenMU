@@ -42,16 +42,7 @@ using Nito.AsyncEx;
 /// </summary>
 public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacker, ITrader, IPartyMember, IRotatable, IHasBucketInformation, ISupportWalk, IMovable, ILoggerOwner<Player>
 {
-    private const short IcedEffectNumber = 0x38;
-    private const short BlowOfDestructionEffectNumber = 0x56;
-    private const double IcedMovementSpeedFactor = 0.5;
-    private const double BlowOfDestructionMovementSpeedFactor = 0.33;
-    private const byte RunningGearMinimumLevel = 5;
-    private const ushort AtlansMapNumber = 7;
-    private const ushort Kalima1MapNumber = 24;
-    private const ushort Kalima6MapNumber = 29;
-    private const ushort Kalima7MapNumber = 36;
-    private const ushort Doppelgaenger3MapNumber = 67;
+    private const double WalkMovementSpeed = 12.0;
 
     private static readonly MagicEffectDefinition GMEffect = new GMMagicEffectDefinition
     {
@@ -2195,117 +2186,30 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     private double GetClientMovementSpeed(Point? position = null)
     {
-        const double walkSpeed = 12.0;
         if (this.IsInClientSafezone(position))
         {
-            return this.ApplyMovementEffects(walkSpeed);
+            return this.ApplyMovementSpeedFactor(WalkMovementSpeed);
         }
 
-        return this.ApplyMovementEffects(this.GetMountedOrRunningSpeed(walkSpeed));
+        var speedAttribute = this.Attributes?[Stats.IsUnderwater] > 0
+            ? Stats.MaxMovementSpeedUnderwater
+            : Stats.MaxMovementSpeed;
+        var speed = this.Attributes?[speedAttribute] ?? 0;
+
+        return this.ApplyMovementSpeedFactor(Math.Max(WalkMovementSpeed, speed));
     }
 
-    private double ApplyMovementEffects(double speed)
+    private double ApplyMovementSpeedFactor(double speed)
     {
-        if (this.MagicEffectList.ActiveEffects.ContainsKey(IcedEffectNumber))
-        {
-            return speed * IcedMovementSpeedFactor;
-        }
+        var movementSpeedFactor = this.Attributes?[Stats.MovementSpeedFactor] ?? 1.0;
 
-        if (this.MagicEffectList.ActiveEffects.ContainsKey(BlowOfDestructionEffectNumber))
-        {
-            return speed * BlowOfDestructionMovementSpeedFactor;
-        }
-
-        return speed;
-    }
-
-    private double GetMountedOrRunningSpeed(double walkSpeed)
-    {
-        const double runSpeed = 15.0;
-        const double fastWingSpeed = 16.0;
-        const double horseOrFenrirRunSpeed = 17.0;
-        const double excellentFenrirRunSpeed = 19.0;
-
-        var pet = this.Inventory?.GetItem(InventoryConstants.PetSlot);
-        if (this.IsItem(pet, 13, 37))
-        {
-            if (this.HasFenrirMovementOption(pet))
-            {
-                return excellentFenrirRunSpeed;
-            }
-
-            return horseOrFenrirRunSpeed;
-        }
-
-        if (this.IsItem(pet, 13, 4))
-        {
-            return horseOrFenrirRunSpeed;
-        }
-
-        var wings = this.Inventory?.GetItem(InventoryConstants.WingsSlot);
-        if (this.HasEquippedWings(wings)
-            || this.IsItem(pet, 13, 2)
-            || this.IsItem(pet, 13, 3))
-        {
-            return this.GetWingMovementSpeed(wings, runSpeed, fastWingSpeed);
-        }
-
-        return this.HasRunningGear() ? runSpeed : walkSpeed;
-    }
-
-    private double GetWingMovementSpeed(Item? wings, double runSpeed, double fastWingSpeed)
-    {
-        return this.IsFastWing(wings) ? fastWingSpeed : runSpeed;
+        return speed * (movementSpeedFactor > 0 ? movementSpeedFactor : 1.0);
     }
 
     private bool IsInClientSafezone(Point? position = null)
     {
         var checkedPosition = position ?? this.Position;
         return this.CurrentMap?.Terrain.SafezoneMap[checkedPosition.X, checkedPosition.Y] ?? false;
-    }
-
-    private bool HasEquippedWings(Item? item)
-    {
-        return item is { Durability: > 0.0 }
-               && item.ItemSlot == InventoryConstants.WingsSlot;
-    }
-
-    private bool IsFastWing(Item? item)
-    {
-        return this.IsItem(item, 12, 5)
-               || this.IsItem(item, 12, 36);
-    }
-
-    private bool HasRunningGear()
-    {
-        var slot = this.IsSwimmingMovementMap()
-            ? InventoryConstants.GlovesSlot
-            : InventoryConstants.BootsSlot;
-        return this.Inventory?.GetItem(slot) is { Durability: > 0.0, Level: >= RunningGearMinimumLevel };
-    }
-
-    private bool IsSwimmingMovementMap()
-    {
-        return this.CurrentMap?.MapId is AtlansMapNumber
-            or >= Kalima1MapNumber and <= Kalima6MapNumber
-            or Kalima7MapNumber
-            or Doppelgaenger3MapNumber;
-    }
-
-    private bool IsItem(Item? item, short group, short number)
-    {
-        return item is { Durability: > 0.0 }
-               && item.Definition is { } definition
-               && definition.Group == group
-               && definition.Number == number;
-    }
-
-    private bool HasFenrirMovementOption(Item? item)
-    {
-        return item?.ItemOptions.Any(option =>
-            option.ItemOption?.OptionType == ItemOptionTypes.BlueFenrir
-            || option.ItemOption?.OptionType == ItemOptionTypes.BlackFenrir
-            || option.ItemOption?.OptionType == ItemOptionTypes.GoldFenrir) ?? false;
     }
 
     private async ValueTask<ExitGate> GetSpawnGateOfCurrentMapAsync()
@@ -2599,7 +2503,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         {
             foreach (var powerUpDefinition in powerUpDefinitions)
             {
-                if (powerUpDefinition.TargetAttribute is not { } targetAttribute)
+                if (powerUpDefinition.TargetAttribute is null)
                 {
                     continue;
                 }
@@ -2607,13 +2511,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 var powerUps = PowerUpWrapper.CreateByPowerUpDefinition(powerUpDefinition, attributes);
                 powerUps.ForEach(p =>
                 {
-                    this.Attributes?.AddElement(p, targetAttribute);
                     this.PlayerLeftMap += OnPlayerLeftMap;
 
                     void OnPlayerLeftMap(object? o, (Player, GameMap) args)
                     {
                         this.PlayerLeftMap -= OnPlayerLeftMap;
-                        attributes.RemoveElement(p, targetAttribute);
+                        p.Dispose();
                     }
                 });
             }
