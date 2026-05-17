@@ -173,7 +173,6 @@ public partial class ConfigurationSearch : IDisposable
 
     private async ValueTask OnDatabaseInitializedAsync()
     {
-        this.SearchIndexCache.Invalidate();
         this._searchEntries = Array.Empty<ConfigurationSearchEntry>();
         this._searchResults.Clear();
         await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);

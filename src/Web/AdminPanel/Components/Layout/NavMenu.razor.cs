@@ -1,4 +1,4 @@
-﻿// <copyright file="NavMenu.razor.cs" company="MUnique">
+// <copyright file="NavMenu.razor.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -40,8 +40,6 @@ public partial class NavMenu : IDisposable
     [Inject]
     private NavigationHistory NavigationHistory { get; set; } = null!;
 
-    [Inject]
-    private ConfigurationSearchIndexCache ConfigurationSearchIndexCache { get; set; } = null!;
 
     private Guid? GameConfigurationId { get; set; }
 
@@ -68,7 +66,6 @@ public partial class NavMenu : IDisposable
         _ = Task.Run(async () =>
         {
             await this.LoadGameConfigurationAsync().ConfigureAwait(false);
-            await this.WarmupConfigurationSearchAsync().ConfigureAwait(false);
             await this.CheckForUpdatesAsync().ConfigureAwait(false);
         });
     }
@@ -83,9 +80,7 @@ public partial class NavMenu : IDisposable
     {
         // We have to reload, because the old links are not correct anymore.
         this.GameConfigurationId = null;
-        this.ConfigurationSearchIndexCache.Invalidate();
         await this.LoadGameConfigurationAsync().ConfigureAwait(false);
-        await this.WarmupConfigurationSearchAsync().ConfigureAwait(false);
         await this.CheckForUpdatesAsync().ConfigureAwait(false);
     }
 
@@ -149,22 +144,5 @@ public partial class NavMenu : IDisposable
     private void ToggleNavMenu()
     {
         this._collapseNavMenu = !this._collapseNavMenu;
-    }
-
-    private async Task WarmupConfigurationSearchAsync()
-    {
-        if (this.GameConfigurationId is null)
-        {
-            return;
-        }
-
-        try
-        {
-            await this.ConfigurationSearchIndexCache.EnsureLoadedAsync().ConfigureAwait(false);
-        }
-        catch
-        {
-            // Search warmup is optional.
-        }
     }
 }
