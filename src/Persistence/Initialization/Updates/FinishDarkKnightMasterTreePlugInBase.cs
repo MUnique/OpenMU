@@ -44,6 +44,8 @@ public abstract class FinishDarkKnightMasterTreePlugInBase : UpdatePlugInBase
         gameConfiguration.Attributes.Add(maceMasteryStunChance);
         var ragefulBlowMasteryDurabilityDecChance = context.CreateNew<AttributeDefinition>(Stats.RagefulBlowMasteryDurabilityDecChance.Id, Stats.RagefulBlowMasteryDurabilityDecChance.Designation, Stats.RagefulBlowMasteryDurabilityDecChance.Description);
         gameConfiguration.Attributes.Add(ragefulBlowMasteryDurabilityDecChance);
+        var durabilityReductionFactor = context.CreateNew<AttributeDefinition>(Stats.DurabilityReductionFactor.Id, Stats.DurabilityReductionFactor.Designation, Stats.DurabilityReductionFactor.Description);
+        gameConfiguration.Attributes.Add(durabilityReductionFactor);
         var spearMasteryDoubleDamageChance = context.CreateNew<AttributeDefinition>(Stats.SpearMasteryDoubleDamageChance.Id, Stats.SpearMasteryDoubleDamageChance.Designation, Stats.SpearMasteryDoubleDamageChance.Description);
         gameConfiguration.Attributes.Add(spearMasteryDoubleDamageChance);
         var swellLifeHealthIncrease = context.CreateNew<AttributeDefinition>(Stats.SwellLifeHealthIncrease.Id, Stats.SwellLifeHealthIncrease.Designation, Stats.SwellLifeHealthIncrease.Description);
@@ -60,6 +62,8 @@ public abstract class FinishDarkKnightMasterTreePlugInBase : UpdatePlugInBase
         var maximumPhysBaseDmgByWeapon = Stats.MaximumPhysBaseDmgByWeapon.GetPersistent(gameConfiguration);
         var physicalBaseDmg = Stats.PhysicalBaseDmg.GetPersistent(gameConfiguration);
         var physicalBaseDmgIncrease = Stats.PhysicalBaseDmgIncrease.GetPersistent(gameConfiguration);
+        var masteryStunChance = Stats.MasteryStunChance.GetPersistent(gameConfiguration);
+        var isMaceEquipped = Stats.IsMaceEquipped.GetPersistent(gameConfiguration);
         var doubleDamageChance = Stats.DoubleDamageChance.GetPersistent(gameConfiguration);
         var isSpearEquipped = Stats.IsSpearEquipped.GetPersistent(gameConfiguration);
 
@@ -92,6 +96,7 @@ public abstract class FinishDarkKnightMasterTreePlugInBase : UpdatePlugInBase
             charClass.AttributeCombinations.Add(swellLifeManaIncreaseToMaxMana);
             charClass.BaseAttributeValues.Add(context.CreateNew<ConstValueAttribute>(1, swellLifeHealthIncrease));
             charClass.BaseAttributeValues.Add(context.CreateNew<ConstValueAttribute>(1, swellLifeManaIncrease));
+            charClass.BaseAttributeValues.Add(context.CreateNew<ConstValueAttribute>(0.1f, durabilityReductionFactor));
 
             // Update/add double wield attribute combinations
             if (charClass.Number == 4 || charClass.Number == 6 || charClass.Number == 7 // DK classes
@@ -159,12 +164,19 @@ public abstract class FinishDarkKnightMasterTreePlugInBase : UpdatePlugInBase
 
                 if (charClass.Number == 4 || charClass.Number == 6 || charClass.Number == 7)
                 {
+                    var masteryStunChanceToMaceMasteryStunChance = context.CreateNew<AttributeRelationship>(
+                        maceMasteryStunChance,
+                        isMaceEquipped,
+                        masteryStunChance,
+                        AggregateType.AddRaw);
+
                     var spearMasteryDoubleDamageChanceToDoubleDamageChance = context.CreateNew<AttributeRelationship>(
                         doubleDamageChance,
                         isSpearEquipped,
                         spearMasteryDoubleDamageChance,
                         AggregateType.AddRaw);
 
+                    charClass.AttributeCombinations.Add(masteryStunChanceToMaceMasteryStunChance);
                     charClass.AttributeCombinations.Add(spearMasteryDoubleDamageChanceToDoubleDamageChance);
                 }
             }

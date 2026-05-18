@@ -165,12 +165,23 @@ public class FinishDarkKnightMasterTreePlugInSeason6 : FinishDarkKnightMasterTre
             twistingSlashMastery.ValueFormula = $"{twistingSlashMastery.ValueFormula} / 100";
         }
 
-        if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.RagefulBlowMastery)?.MasterDefinition is { } ragefulBlowMastery)
+        if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.RagefulBlowMastery) is { } ragefulBlowMastery)
         {
-            ragefulBlowMastery.ReplacedSkill = gameConfiguration.Skills.First(s => s.Number == (short)SkillNumber.RagefulBlowStreng);
-            ragefulBlowMastery.TargetAttribute = ragefulBlowMasteryDurabilityDecChance;
-            ragefulBlowMastery.Aggregation = AggregateType.AddRaw;
-            ragefulBlowMastery.ValueFormula = $"{ragefulBlowMastery.ValueFormula} / 100";
+            ragefulBlowMastery.AttributeRelationships.Add(context.CreateNew<AttributeRelationship>(
+                ragefulBlowMasteryDurabilityDecChance,
+                1,
+                ragefulBlowMasteryDurabilityDecChance,
+                InputOperator.Multiply,
+                default(AttributeDefinition?),
+                AggregateType.AddRaw));
+
+            if (ragefulBlowMastery.MasterDefinition is { } masterDefinition)
+            {
+                masterDefinition.ReplacedSkill = gameConfiguration.Skills.First(s => s.Number == (short)SkillNumber.RagefulBlowStreng);
+                masterDefinition.TargetAttribute = ragefulBlowMasteryDurabilityDecChance;
+                masterDefinition.Aggregation = AggregateType.AddRaw;
+                masterDefinition.ValueFormula = $"{masterDefinition.ValueFormula} / 100";
+            }
         }
 
         if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.MaceMastery)?.MasterDefinition is { } maceMastery)
