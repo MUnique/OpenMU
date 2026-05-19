@@ -4,6 +4,9 @@
 
 namespace MUnique.OpenMU.GameLogic.PlugIns.InvasionEvents;
 
+using System.Collections.Concurrent;
+using System.Linq;
+using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 using MUnique.OpenMU.Interfaces;
 
@@ -14,6 +17,7 @@ public class InvasionGameServerState : PeriodicTaskGameServerState
 {
     private readonly HashSet<ushort> _mapIds = [];
     private readonly Dictionary<ushort, ushort> _selectedMaps = [];
+    private readonly ConcurrentDictionary<Monster, byte> _monsters = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="InvasionGameServerState"/> class.
@@ -23,7 +27,6 @@ public class InvasionGameServerState : PeriodicTaskGameServerState
         : base(context)
     {
     }
-
 
     /// <summary>
     /// Gets or sets the map identifier used for UI display / map-event state broadcasts.
@@ -68,5 +71,52 @@ public class InvasionGameServerState : PeriodicTaskGameServerState
         this.MapId = null;
         this._mapIds.Clear();
         this._selectedMaps.Clear();
+    }
+
+    /// <summary>
+    /// Tracks a monster spawned by this invasion and handles its cleanup on death.
+    /// </summary>
+    /// <param name="monster">The monster to track.</param>
+    internal void AddMonster(Monster monster)
+    {
+        if (this._monsters.TryAdd(monster, 0))
+        {
+            monster.Died += this.OnMonsterDied;
+        }
+    }
+
+    /// <summary>
+    /// Despawns and disposes all active monsters tracked by this invasion state.
+    /// </summary>
+    internal async ValueTask CleanUpMonstersAsync()
+    {
+        if (this._monsters.Count == 0)
+        {
+            return;
+        }
+
+        var monsters = this._monsters.Keys.ToArray();
+        var tasks = monsters.Select(async monster =>
+        {
+            this._monsters.TryRemove(monster, out _);
+            monster.Died -= this.OnMonsterDied;
+
+            if (!monster.IsDisposed)
+            {
+                await monster.CurrentMap.RemoveAsync(monster).ConfigureAwait(false);
+                monster.Dispose();
+            }
+        });
+
+        await Task.WhenAll(tasks).ConfigureAwait(false);
+    }
+
+    private void OnMonsterDied(object? sender, DeathInformation e)
+    {
+        if (sender is Monster monster)
+        {
+            this._monsters.TryRemove(monster, out _);
+            monster.Died -= this.OnMonsterDied;
+        }
     }
 }

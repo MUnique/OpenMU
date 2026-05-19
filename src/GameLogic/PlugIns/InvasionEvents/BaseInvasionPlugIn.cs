@@ -20,7 +20,6 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
     where TConfiguration : PeriodicInvasionConfiguration
 {
     private readonly MapEventType? _mapEventType;
-    private readonly ConcurrentDictionary<MonsterCleanupHandler, byte> _cleanupHandlers = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BaseInvasionPlugIn{TConfiguration}"/> class.
@@ -54,8 +53,7 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
         if (addedObject is Player player)
         {
             var state = this.GetStateByGameContext(player.GameContext);
-            var isEnabled = state.State != PeriodicTaskState.NotStarted;
-            await this.TrySendMapEventStateUpdateAsync(player, isEnabled, state).ConfigureAwait(false);
+            await this.TrySendMapEventStateUpdateAsync(player, state).ConfigureAwait(false);
         }
     }
 
@@ -111,9 +109,8 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
             await gameMap.AddAsync(monster).ConfigureAwait(false);
             monster.OnSpawn();
 
-            var handler = new MonsterCleanupHandler(this, monster);
-            this._cleanupHandlers.TryAdd(handler, 0);
-            monster.Died += (_, _) => this._cleanupHandlers.TryRemove(handler, out _);
+            var state = this.GetStateByGameContext(gameContext);
+            state.AddMonster(monster);
         }
     }
 
@@ -149,8 +146,6 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
     /// <inheritdoc />
     protected override async ValueTask OnPrepareEventAsync(InvasionGameServerState state)
     {
-        state.Reset();
-
         var config = this.Configuration;
         if (config?.Mobs is not { Count: > 0 } mobs)
         {
@@ -240,7 +235,7 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
 
         if (this._mapEventType is not null)
         {
-            await state.Context.ForEachPlayerAsync(p => this.TrySendMapEventStateUpdateAsync(p, true, state)).ConfigureAwait(false);
+            await state.Context.ForEachPlayerAsync(p => this.TrySendMapEventStateUpdateAsync(p, state)).ConfigureAwait(false);
         }
     }
 
@@ -257,17 +252,11 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
 
         if (this._mapEventType is not null)
         {
-            await state.Context.ForEachPlayerAsync(p => this.TrySendMapEventStateUpdateAsync(p, false, state)).ConfigureAwait(false);
+            await state.Context.ForEachPlayerAsync(p => this.TrySendMapEventStateUpdateAsync(p, state)).ConfigureAwait(false);
         }
 
-        if (this._cleanupHandlers.Count > 0)
-        {
-            var handlers = this._cleanupHandlers.Keys.ToArray();
-            if (handlers.Length > 0)
-            {
-                await Task.WhenAll(handlers.Select(h => h.CleanUpAsync())).ConfigureAwait(false);
-            }
-        }
+        await state.CleanUpMonstersAsync().ConfigureAwait(false);
+        state.Reset();
     }
 
     /// <summary>
@@ -380,7 +369,7 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
            && map.MapId == state.MapId.Value
            && (this.EventDisplayMapIds is null || this.EventDisplayMapIds.Contains(state.MapId.Value));
 
-    private async Task TrySendMapEventStateUpdateAsync(Player player, bool enabled, InvasionGameServerState state)
+    private async Task TrySendMapEventStateUpdateAsync(Player player, InvasionGameServerState state)
     {
         if (this._mapEventType is null || !this.IsPlayerOnRelevantMap(player, state))
         {
@@ -389,6 +378,7 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
 
         try
         {
+            var enabled = state.State != PeriodicTaskState.NotStarted;
             await player.InvokeViewPlugInAsync<IMapEventStateUpdatePlugIn>(p => p.UpdateStateAsync(enabled, this._mapEventType.Value)).ConfigureAwait(false);
         }
         catch (Exception ex)
@@ -400,39 +390,4 @@ public abstract class BaseInvasionPlugIn<TConfiguration> : PeriodicTaskBasePlugI
         }
     }
 
-    /// <summary>
-    /// Handles cleanup of a single spawned monster when the invasion event finishes.
-    /// Encapsulates the self-referencing delegate pattern needed to unsubscribe from
-    /// the cleanup handler list without relying on captured uninitialized variables.
-    /// </summary>
-    private sealed class MonsterCleanupHandler
-    {
-        private readonly BaseInvasionPlugIn<TConfiguration> _plugin;
-        private readonly Monster _monster;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MonsterCleanupHandler"/> class.
-        /// </summary>
-        /// <param name="plugin">The owning plugin instance.</param>
-        /// <param name="monster">The monster to clean up.</param>
-        public MonsterCleanupHandler(BaseInvasionPlugIn<TConfiguration> plugin, Monster monster)
-        {
-            this._plugin = plugin;
-            this._monster = monster;
-        }
-
-        /// <summary>
-        /// Removes the monster from the map and disposes it.
-        /// Unsubscribes itself from the plugin's cleanup handler list so it is not called again.
-        /// </summary>
-        public async Task CleanUpAsync()
-        {
-            this._plugin._cleanupHandlers.TryRemove(this, out _);
-            if (!this._monster.IsDisposed)
-            {
-                await this._monster.CurrentMap.RemoveAsync(this._monster).ConfigureAwait(false);
-                this._monster.Dispose();
-            }
-        }
-    }
 }
