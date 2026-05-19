@@ -61,7 +61,7 @@ public class ComposableAttributeTests
     /// by using <see cref="AggregateType.Multiplicate"/> in the second element.
     /// </summary>
     [Test]
-    public void ValueWithRawAndMultiplierElement()
+    public void ValueWithRawAndMultiplierElements()
     {
         var element1 = new ConstantElement(3000);
         var element2 = new SimpleElement { Value = 5, AggregateType = AggregateType.Multiplicate };
@@ -77,7 +77,7 @@ public class ComposableAttributeTests
     /// by using <see cref="AggregateType.AddFinal"/> in the last element.
     /// </summary>
     [Test]
-    public void ValueWithRawMultiplierAndFinalElement()
+    public void ValueWithRawMultiplierAndFinalElements()
     {
         var element1 = new ConstantElement(3000);
         var element2 = new SimpleElement { Value = 5, AggregateType = AggregateType.Multiplicate };
@@ -126,7 +126,7 @@ public class ComposableAttributeTests
     /// by using <see cref="AggregateType.AddFinal"/> in the second element.
     /// </summary>
     [Test]
-    public void ValueWithMultiplierAndFinalElement()
+    public void ValueWithMultiplierAndFinalElements()
     {
         var element1 = new SimpleElement { Value = 5, AggregateType = AggregateType.Multiplicate };
         var element2 = new SimpleElement { Value = 1000, AggregateType = AggregateType.AddFinal };
