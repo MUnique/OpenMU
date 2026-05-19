@@ -6,12 +6,9 @@ namespace MUnique.OpenMU.Tests;
 
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
-using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.PlayerActions.Party;
 using MUnique.OpenMU.GameLogic.Views.Party;
-using MUnique.OpenMU.Persistence.InMemory;
-using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// Tests the party functions.
@@ -44,8 +41,8 @@ public class PartyTest
         var partyMember2 = (Player)party.PartyList[1];
         var partyMember3 = party.PartyList[2];
 
-        await this._kickAction.KickPlayerAsync(partyMember2, (byte)((List<IPartyMember>)party.PartyList).IndexOf(partyMember3)).ConfigureAwait(false);
-        Assert.That(party.PartyList, Contains.Item(partyMember3));
+        await this._kickAction.KickPlayerAsync(partyMember2, (byte)party.PartyList.ToList().IndexOf(partyMember3)).ConfigureAwait(false);
+        Assert.That(party.PartyList.ToList(), Contains.Item(partyMember3));
     }
 
     /// <summary>
@@ -57,8 +54,8 @@ public class PartyTest
         var party = await this.CreatePartyWithMembersAsync(3).ConfigureAwait(false);
         var partyMember2 = party.PartyList[1];
 
-        await this._kickAction.KickPlayerAsync((Player)partyMember2, (byte)((List<IPartyMember>)party.PartyList).IndexOf(partyMember2)).ConfigureAwait(false);
-        Assert.That(party.PartyList, Is.Not.Contains(partyMember2));
+        await this._kickAction.KickPlayerAsync((Player)partyMember2, (byte)party.PartyList.ToList().IndexOf(partyMember2)).ConfigureAwait(false);
+        Assert.That(party.PartyList.ToList(), Is.Not.Contains(partyMember2));
         Assert.That(party.PartyList, Has.Count.EqualTo(2));
     }
 
@@ -72,8 +69,8 @@ public class PartyTest
         var partyMaster = (Player)party.PartyList[0];
         var partyMember = (Player)party.PartyList[1];
 
-        await this._kickAction.KickPlayerAsync(partyMaster, (byte)((List<IPartyMember>)party.PartyList).IndexOf(partyMember)).ConfigureAwait(false);
-        Assert.That(party.PartyList, Is.Not.Contains(partyMember));
+        await this._kickAction.KickPlayerAsync(partyMaster, (byte)party.PartyList.ToList().IndexOf(partyMember)).ConfigureAwait(false);
+        Assert.That(party.PartyList.ToList(), Is.Not.Contains(partyMember));
         Assert.That(party.PartyList, Has.Count.EqualTo(2));
     }
 
@@ -87,11 +84,11 @@ public class PartyTest
         var partyMaster = party.PartyList[0];
         var partyMember = party.PartyList[1];
 
-        await this._kickAction.KickPlayerAsync((Player)partyMaster, (byte)((List<IPartyMember>)party.PartyList).IndexOf(partyMaster)).ConfigureAwait(false);
+        await this._kickAction.KickPlayerAsync((Player)partyMaster, (byte)party.PartyList.ToList().IndexOf(partyMaster)).ConfigureAwait(false);
 
         // Master leaves the party; the remaining 2 members stay.
         Assert.That(partyMaster.Party, Is.Null);
-        Assert.That(party.PartyList, Does.Not.Contain(partyMaster));
+        Assert.That(party.PartyList.ToList(), Does.Not.Contain(partyMaster));
         Assert.That(partyMember.Party, Is.SameAs(party));
         Assert.That(party.PartyList, Has.Count.EqualTo(2));
     }
