@@ -254,10 +254,12 @@ public partial class Typeahead<TItem, TValue> : ComponentBase, IDisposable
 #pragma warning disable VSTHRD103
             this._searchCts.Cancel();
 #pragma warning restore VSTHRD103
+            this._searchCts.Dispose();
         }
 
-        this._searchCts = new CancellationTokenSource();
-        var token = this._searchCts.Token;
+        var cts = new CancellationTokenSource();
+        this._searchCts = cts;
+        var token = cts.Token;
 
         this._isLoading = true;
         this._isOpen = true;
@@ -288,6 +290,12 @@ public partial class Typeahead<TItem, TValue> : ComponentBase, IDisposable
             {
                 this._isLoading = false;
                 this.StateHasChanged();
+            }
+
+            if (this._searchCts == cts)
+            {
+                this._searchCts = null;
+                cts.Dispose();
             }
         }
     }

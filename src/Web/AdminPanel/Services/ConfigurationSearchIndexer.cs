@@ -100,13 +100,14 @@ internal sealed class ConfigurationSearchIndexer
         mainIndexer.Visited.TryAdd(gameConfiguration, 0);
 
         // Add root entry
-        mainIndexer.AddEntry(rootPath, rootPath, typeof(GameConfiguration).Name);
+        mainIndexer.AddEntry(rootPath, rootPath, rootUrl, typeof(GameConfiguration).Name);
 
         // Process scalar properties (shallow, no traversal)
         foreach (var property in mainIndexer.ScalarProperties)
         {
             var caption = GetPropertyCaption(typeof(GameConfiguration), property);
-            mainIndexer.AddEntry(caption, rootPath, property.Name, property.PropertyType.Name, typeof(GameConfiguration).Name);
+            var propertyUrl = AppendSearchParameter(rootUrl, property.Name, false);
+            mainIndexer.AddEntry(caption, rootPath, propertyUrl, property.Name, property.PropertyType.Name, typeof(GameConfiguration).Name);
         }
 
         // Process collections in parallel
@@ -357,9 +358,7 @@ internal sealed class ConfigurationSearchIndexer
                 && !IsSimpleType(valueType!)
                 && (propertyValue is IEnumerable || !valueType!.IsValueType);
 
-            var propertyUrl = isNavigable
-                ? AppendSearchParameter(currentUrl, property.Name, hasParams)
-                : string.Empty;
+            var propertyUrl = AppendSearchParameter(currentUrl, property.Name, hasParams);
 
             this.AddEntry(
                 propertyCaption,
