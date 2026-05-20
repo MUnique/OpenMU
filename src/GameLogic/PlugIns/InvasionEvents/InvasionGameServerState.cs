@@ -8,7 +8,6 @@ using System.Collections.Concurrent;
 using System.Linq;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
-using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Invasion state that is created for every periodic invasion run.
