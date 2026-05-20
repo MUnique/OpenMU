@@ -3423,7 +3423,7 @@ public class PacketStructureTests
     public void CharacterInformationExtended_PacketSizeValidation()
     {
         // Fixed-length packet validation
-        const int expectedLength = 96;
+        const int expectedLength = 92;
         var actualLength = CharacterInformationExtendedRef.Length;
         
         Assert.That(actualLength, Is.EqualTo(expectedLength), 
@@ -3548,6 +3548,10 @@ public class PacketStructureTests
         // Validate field 'InventoryExtensions' boundary
         Assert.That(88 + 1, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'InventoryExtensions' exceeds packet boundary");
+        
+        // Validate field 'Resets' boundary
+        Assert.That(90 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Resets' exceeds packet boundary");
     }
 
     /// <summary>

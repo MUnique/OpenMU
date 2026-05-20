@@ -69,6 +69,12 @@ public partial class ItemDefinition
     public byte DropLevel { get; set; }
 
     /// <summary>
+    /// Gets or sets the maximum monster level at which this item can be dropped.
+    /// If no value is set, there is no upper limit.
+    /// </summary>
+    public byte? MaximumDropLevel { get; set; }
+
+    /// <summary>
     /// Gets or sets the maximum item level.
     /// </summary>
     public byte MaximumItemLevel { get; set; }

@@ -1170,4 +1170,10 @@
   <data name="PartyAutoRejoinPlugIn_Description" xml:space="preserve">
     <value>Automatically rejoins players to their previous party upon entering the world.</value>
   </data>
+  <data name="MonsterAttributeScaler_Name" xml:space="preserve">
+    <value>Monster Attribute Scaler</value>
+  </data>
+  <data name="MonsterAttributeScaler_Description" xml:space="preserve">
+    <value>Increases all monster base stats by a configurable percentage.</value>
+  </data>
 </root>

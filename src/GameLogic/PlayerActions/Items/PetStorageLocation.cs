@@ -40,6 +40,11 @@ public enum PetStorageLocation
     PersonalShop,
 
     /// <summary>
+    /// The NPC merchant shop.
+    /// </summary>
+    NpcShop,
+
+    /// <summary>
     /// The inventory slot of the pet. That's used when a pet leveled up.
     /// </summary>
     InventoryPetSlot,
