@@ -69,7 +69,8 @@ public class UpdateCharacterStatsExtendedPlugIn : IUpdateCharacterStatsPlugIn
                 (ushort)this._player.Attributes[Stats.AttackSpeed],
                 (ushort)this._player.Attributes[Stats.MagicSpeed],
                 (ushort)maxAttackSpeed,
-                (byte)this._player.SelectedCharacter.InventoryExtensions)
+                (byte)this._player.SelectedCharacter.InventoryExtensions,
+                (ushort)this._player.Attributes[Stats.Resets])
             .ConfigureAwait(false);
 
         if (this._player.SelectedCharacter.CharacterClass!.IsMasterClass)
