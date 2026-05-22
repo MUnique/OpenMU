@@ -1176,4 +1176,34 @@
   <data name="MonsterAttributeScaler_Description" xml:space="preserve">
     <value>Increases all monster base stats by a configurable percentage.</value>
   </data>
+  <data name="StatResetFeaturePlugIn_Name" xml:space="preserve">
+    <value>Stat Reset Feature</value>
+  </data>
+  <data name="StatResetFeaturePlugIn_Description" xml:space="preserve">
+    <value>Provides configuration for the stat reset feature.</value>
+  </data>
+  <data name="ResetStatsChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Reset Stats chat command</value>
+  </data>
+  <data name="ResetStatsChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/resetstats'.</value>
+  </data>
+  <data name="StatResetConfiguration_RequiredLevel_Name" xml:space="preserve">
+    <value>Required level</value>
+  </data>
+  <data name="StatResetConfiguration_RequiredMoney_Name" xml:space="preserve">
+    <value>Required money</value>
+  </data>
+  <data name="StatResetConfiguration_RequiredResetItem_Name" xml:space="preserve">
+    <value>Required reset item</value>
+  </data>
+  <data name="StatResetConfiguration_ChatCommandEnabled_Name" xml:space="preserve">
+    <value>Chat command enabled</value>
+  </data>
+  <data name="StatResetConfiguration_MoveHome_Name" xml:space="preserve">
+    <value>Move home</value>
+  </data>
+  <data name="StatResetConfiguration_LogOut_Name" xml:space="preserve">
+    <value>Log out</value>
+  </data>
 </root>
