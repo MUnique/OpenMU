@@ -373,12 +373,23 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
             return;
         }
 
-        var droppedMoney = new DroppedMoney((uint)(amount * killer.Attributes![Stats.MoneyAmountRate]), this.Position, this.CurrentMap);
+        var droppedMoney = new DroppedMoney((uint)(amount * (killer.Attributes?[Stats.MoneyAmountRate] ?? 1.0f)), this.Position, this.CurrentMap);
         await this.CurrentMap.AddAsync(droppedMoney).ConfigureAwait(false);
     }
 
     private async ValueTask DropItemAsync(int exp, Player killer)
     {
+        // When the killer is in a party, DistributeExperienceAfterKillAsync returns a
+        // total party experience that does NOT include game rate (ExperienceRate) or
+        // personal experience rate multipliers. Since the money drop amount is
+        // derived from this experience value, party money drops were dramatically
+        // lower than solo drops. We recalculate the experience for money purposes
+        // using the solo formula so money is consistent regardless of party state.
+        if (killer.Party is not null)
+        {
+            exp = killer.CalculateExpAfterKill(this);
+        }
+
         var (generatedItems, droppedMoney) = await this._dropGenerator.GenerateItemDropsAsync(this.Definition, exp, killer).ConfigureAwait(false);
         if (droppedMoney > 0)
         {
