@@ -1187,34 +1187,64 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return 0;
         }
 
+        var experience = this.CalculateExpAfterKill(killedObject);
+        if (experience == 0)
+        {
+            return 0;
+        }
+
         var currentLevel = (short)this.Attributes![Stats.Level];
+        var isMaxLevel = currentLevel == this.GameContext.Configuration.MaximumLevel;
+        var isAddMasterExperience = characterClass.IsMasterClass && isMaxLevel;
+
+        if (isAddMasterExperience)
+        {
+            await this.AddMasterExperienceAsync(experience, killedObject).ConfigureAwait(false);
+        }
+        else
+        {
+            await this.AddExperienceAsync(experience, killedObject).ConfigureAwait(false);
+        }
+
+        await this.AddPetExperienceAsync(experience).ConfigureAwait(false);
+
+        return experience;
+    }
+
+    /// <summary>
+    /// Calculates the amount of experience gained after a kill, without applying it to the character.
+    /// </summary>
+    /// <param name="killedObject">The killed monster.</param>
+    /// <returns>The calculated experience amount.</returns>
+    public int CalculateExpAfterKill(IAttackable killedObject)
+    {
+        if (this.SelectedCharacter?.CharacterClass is not { } characterClass)
+        {
+            return 0;
+        }
+
+        if (this.Attributes is not { } attributes)
+        {
+            return 0;
+        }
+
+        var currentLevel = (short)attributes[Stats.Level];
         var isMaxLevel = currentLevel == this.GameContext.Configuration.MaximumLevel;
         var isAddMasterExperience = characterClass.IsMasterClass && isMaxLevel;
         var expRateAttribute = isAddMasterExperience ? Stats.MasterExperienceRate : Stats.ExperienceRate;
         var gameRate = isAddMasterExperience ? this.GameContext.MasterExperienceRate : this.GameContext.ExperienceRate;
 
-        var experience = killedObject.CalculateBaseExperience(this.Attributes![Stats.TotalLevel]);
+        var experience = killedObject.CalculateBaseExperience(attributes[Stats.TotalLevel]);
         experience *= gameRate;
-        experience *= this.Attributes[expRateAttribute] + this.Attributes[Stats.BonusExperienceRate];
+        experience *= attributes[expRateAttribute] + attributes[Stats.BonusExperienceRate];
         experience *= this.CurrentMap?.Definition.ExpMultiplier ?? 1;
 
-        var minMultiplier = this.Attributes[Stats.ExperienceRandomMinMultiplier];
-        var maxMultiplier = this.Attributes[Stats.ExperienceRandomMaxMultiplier];
+        var minMultiplier = attributes[Stats.ExperienceRandomMinMultiplier];
+        var maxMultiplier = attributes[Stats.ExperienceRandomMaxMultiplier];
         if (minMultiplier > 0 && maxMultiplier > 0)
         {
-            experience = Rand.NextInt((int)(experience * minMultiplier), (int)(experience * maxMultiplier));
+            return Rand.NextInt((int)(experience * minMultiplier), (int)(experience * maxMultiplier));
         }
-
-        if (isAddMasterExperience)
-        {
-            await this.AddMasterExperienceAsync((int)experience, killedObject).ConfigureAwait(false);
-        }
-        else
-        {
-            await this.AddExperienceAsync((int)experience, killedObject).ConfigureAwait(false);
-        }
-
-        await this.AddPetExperienceAsync(experience).ConfigureAwait(false);
 
         return (int)experience;
     }
@@ -1222,8 +1252,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <summary>
     /// Adds the master experience to the current character.
     /// </summary>
-    /// <param name="experience">The experience which should be added.</param>
-    /// <param name="killedObject">The killed object which caused the experience gain.</param>
+    /// <param name="experience">The experience that should be added.</param>
+    /// <param name="killedObject">The killed object that caused the experience gain.</param>
     public async ValueTask AddMasterExperienceAsync(int experience, IAttackable? killedObject)
     {
         using var d = await this._experienceLock.LockAsync().ConfigureAwait(false);
