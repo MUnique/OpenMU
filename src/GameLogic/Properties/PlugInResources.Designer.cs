@@ -3238,5 +3238,95 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("MonsterAttributeScaler_Name", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Provides configuration for the stat reset feature..
+        /// </summary>
+        public static string StatResetFeaturePlugIn_Description {
+            get {
+                return ResourceManager.GetString("StatResetFeaturePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stat Reset Feature.
+        /// </summary>
+        public static string StatResetFeaturePlugIn_Name {
+            get {
+                return ResourceManager.GetString("StatResetFeaturePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the chat command &apos;/resetstats&apos;..
+        /// </summary>
+        public static string ResetStatsChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ResetStatsChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset Stats chat command.
+        /// </summary>
+        public static string ResetStatsChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ResetStatsChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Required level.
+        /// </summary>
+        public static string StatResetConfiguration_RequiredLevel_Name {
+            get {
+                return ResourceManager.GetString("StatResetConfiguration_RequiredLevel_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Required money.
+        /// </summary>
+        public static string StatResetConfiguration_RequiredMoney_Name {
+            get {
+                return ResourceManager.GetString("StatResetConfiguration_RequiredMoney_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Required reset item.
+        /// </summary>
+        public static string StatResetConfiguration_RequiredResetItem_Name {
+            get {
+                return ResourceManager.GetString("StatResetConfiguration_RequiredResetItem_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chat command enabled.
+        /// </summary>
+        public static string StatResetConfiguration_ChatCommandEnabled_Name {
+            get {
+                return ResourceManager.GetString("StatResetConfiguration_ChatCommandEnabled_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Move home.
+        /// </summary>
+        public static string StatResetConfiguration_MoveHome_Name {
+            get {
+                return ResourceManager.GetString("StatResetConfiguration_MoveHome_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Log out.
+        /// </summary>
+        public static string StatResetConfiguration_LogOut_Name {
+            get {
+                return ResourceManager.GetString("StatResetConfiguration_LogOut_Name", resourceCulture);
+            }
+        }
     }
 }
