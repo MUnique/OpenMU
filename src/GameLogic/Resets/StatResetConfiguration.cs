@@ -16,7 +16,7 @@ public class StatResetConfiguration
     /// Gets or sets the required level for a stat reset.
     /// </summary>
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.StatResetConfiguration_RequiredLevel_Name))]
-    public int RequiredLevel { get; set; } = 0;
+    public int RequiredLevel { get; set; }
 
     /// <summary>
     /// Gets or sets the required money for a stat reset.

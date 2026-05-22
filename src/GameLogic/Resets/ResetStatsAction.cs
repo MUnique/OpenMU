@@ -74,7 +74,7 @@ public class ResetStatsAction
             return;
         }
 
-        this.ResetAttributes(configuration);
+        this.ResetAttributes();
 
         if (configuration.MoveHome)
         {
@@ -91,7 +91,7 @@ public class ResetStatsAction
         }
     }
 
-    private void ResetAttributes(StatResetConfiguration configuration)
+    private void ResetAttributes()
     {
         var selectedCharacter = this._player.SelectedCharacter!;
         var investedPoints = 0;
