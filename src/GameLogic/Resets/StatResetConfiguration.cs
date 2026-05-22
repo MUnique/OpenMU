@@ -27,7 +27,7 @@ public class StatResetConfiguration
     /// <summary>
     /// Gets or sets the required item for a stat reset.
     /// </summary>
-    [Display(Name = "Required reset item")]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.StatResetConfiguration_RequiredResetItem_Name))]
     public ItemDefinition? RequiredResetItem { get; set; }
 
     /// <summary>

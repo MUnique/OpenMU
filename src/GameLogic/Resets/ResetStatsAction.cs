@@ -98,10 +98,15 @@ public class ResetStatsAction
 
         foreach (var statDef in selectedCharacter.CharacterClass!.StatAttributes.Where(s => s.IncreasableByPlayer))
         {
-            var currentValue = (int)this._player.Attributes![statDef.Attribute!];
+            if (statDef.Attribute is not { } attribute)
+            {
+                continue;
+            }
+
+            var currentValue = (int)this._player.Attributes![attribute];
             var baseValue = (int)statDef.BaseValue;
-            investedPoints += currentValue - baseValue;
-            this._player.Attributes[statDef.Attribute] = baseValue;
+            investedPoints += Math.Max(0, currentValue - baseValue);
+            this._player.Attributes[attribute] = baseValue;
         }
 
         selectedCharacter.LevelUpPoints += investedPoints;
@@ -109,29 +114,21 @@ public class ResetStatsAction
 
     private async ValueTask<bool> TryConsumeCostsAsync(StatResetConfiguration configuration)
     {
-        if (configuration.RequiredResetItem is null)
+        if (this._player.Money < configuration.RequiredMoney)
         {
-            if (this._player.Money < configuration.RequiredMoney)
-            {
-                await this.ShowMessageAsync(nameof(PlayerMessage.NotEnoughMoneyForStatReset), configuration.RequiredMoney).ConfigureAwait(false);
-                return false;
-            }
-
-            if (configuration.RequiredMoney > 0 && !this._player.TryRemoveMoney(configuration.RequiredMoney))
-            {
-                await this.ShowMessageAsync(nameof(PlayerMessage.NotEnoughMoneyForStatReset), configuration.RequiredMoney).ConfigureAwait(false);
-                return false;
-            }
+            await this.ShowMessageAsync(nameof(PlayerMessage.NotEnoughMoneyForStatReset), configuration.RequiredMoney).ConfigureAwait(false);
+            return false;
         }
-        else
+
+        Item? requiredItem = null;
+        if (configuration.RequiredResetItem is { } requiredDefinition)
         {
             if (this._player.Inventory is null)
             {
                 return false;
             }
 
-            var requiredDefinition = configuration.RequiredResetItem;
-            var requiredItem = this._player.Inventory.Items
+            requiredItem = this._player.Inventory.Items
                 .FirstOrDefault(item => item.Definition is { } definition
                                         && definition.Group == requiredDefinition.Group
                                         && definition.Number == requiredDefinition.Number);
@@ -141,19 +138,16 @@ public class ResetStatsAction
                 await this.ShowMessageAsync(nameof(PlayerMessage.NotEnoughItemsForStatReset), 1, requiredDefinition.Name).ConfigureAwait(false);
                 return false;
             }
+        }
 
-            if (this._player.Money < configuration.RequiredMoney)
-            {
-                await this.ShowMessageAsync(nameof(PlayerMessage.NotEnoughMoneyForStatReset), configuration.RequiredMoney).ConfigureAwait(false);
-                return false;
-            }
+        if (configuration.RequiredMoney > 0 && !this._player.TryRemoveMoney(configuration.RequiredMoney))
+        {
+            await this.ShowMessageAsync(nameof(PlayerMessage.NotEnoughMoneyForStatReset), configuration.RequiredMoney).ConfigureAwait(false);
+            return false;
+        }
 
-            if (configuration.RequiredMoney > 0 && !this._player.TryRemoveMoney(configuration.RequiredMoney))
-            {
-                await this.ShowMessageAsync(nameof(PlayerMessage.NotEnoughMoneyForStatReset), configuration.RequiredMoney).ConfigureAwait(false);
-                return false;
-            }
-
+        if (requiredItem is not null)
+        {
             await this._player.DestroyInventoryItemAsync(requiredItem).ConfigureAwait(false);
         }
 
@@ -166,16 +160,14 @@ public class ResetStatsAction
         if (homeMapDef is { }
             && await this._player.GameContext.GetMapAsync((ushort)homeMapDef.Number).ConfigureAwait(false) is { SafeZoneSpawnGate: { } spawnGate })
         {
-            this._player.SelectedCharacter.PositionX = (byte)Rand.NextInt(spawnGate.X1, spawnGate.X2);
-            this._player.SelectedCharacter.PositionY = (byte)Rand.NextInt(spawnGate.Y1, spawnGate.Y2);
-            this._player.SelectedCharacter.CurrentMap = spawnGate.Map;
-            this._player.Rotation = spawnGate.Direction;
+            await this._player.WarpToAsync(spawnGate).ConfigureAwait(false);
         }
     }
 
     private async ValueTask UpdateClientStatsAsync()
     {
         await this._player.InvokeViewPlugInAsync<IUpdateCharacterBaseStatsPlugIn>(p => p.UpdateCharacterBaseStatsAsync()).ConfigureAwait(false);
+        await this._player.InvokeViewPlugInAsync<IUpdateCharacterStatsPlugIn>(p => p.UpdateCharacterStatsAsync()).ConfigureAwait(false);
     }
 
     private async ValueTask ShowMessageAsync(string messageKey, params object?[] args)

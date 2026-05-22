@@ -1194,6 +1194,9 @@
   <data name="StatResetConfiguration_RequiredMoney_Name" xml:space="preserve">
     <value>Required money</value>
   </data>
+  <data name="StatResetConfiguration_RequiredResetItem_Name" xml:space="preserve">
+    <value>Required reset item</value>
+  </data>
   <data name="StatResetConfiguration_ChatCommandEnabled_Name" xml:space="preserve">
     <value>Chat command enabled</value>
   </data>
