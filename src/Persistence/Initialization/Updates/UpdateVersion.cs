@@ -404,17 +404,22 @@ public enum UpdateVersion
     FinishDarkLordMasterTree = 79,
 
     /// <summary>
+    /// The version of the <see cref="FixBloodCastleMonsterAttributesUpdatePlugIn"/>.
+    /// </summary>
+    FixBloodCastleMonsterAttributes = 80,
+
+    /// <summary>
     /// The version of the <see cref="FinishDarkKnightMasterTreePlugIn075"/>.
     /// </summary>
-    FinishDarkKnightMasterTree075 = 80,
+    FinishDarkKnightMasterTree075 = 81,
 
     /// <summary>
     /// The version of the <see cref="FinishDarkKnightMasterTreePlugIn095D"/>.
     /// </summary>
-    FinishDarkKnightMasterTree095d = 81,
+    FinishDarkKnightMasterTree095d = 82,
 
     /// <summary>
     /// The version of the <see cref="FinishDarkKnightMasterTreePlugInSeason6"/>.
     /// </summary>
-    FinishDarkKnightMasterTreeSeason6 = 82,
+    FinishDarkKnightMasterTreeSeason6 = 83,
 }

@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic;
 
 using System.Diagnostics;
 using System.Threading;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Pathfinding;
 using Nito.AsyncEx;
 
@@ -67,8 +68,7 @@ public sealed class DroppedMoney : AsyncDisposable, ILocateable
     public async ValueTask<bool> TryPickUpByAsync(Player player)
     {
         player.Logger.LogDebug("Player {0} tries to pick up {1}", player, this);
-        int amountToAdd = 0;
-        var clampMoneyOnPickup = player.GameContext?.Configuration?.ClampMoneyOnPickup ?? false;
+
         using (await this._pickupLock.LockAsync())
         {
             if (!this._availableToPick)
@@ -77,12 +77,33 @@ public sealed class DroppedMoney : AsyncDisposable, ILocateable
                 return false;
             }
 
+            this._availableToPick = false;
+        }
+
+        if (player.Party is { } party)
+        {
+            var partyMembers = party.PartyList
+                .OfType<Player>()
+                .Where(p => p.CurrentMap == player.CurrentMap && !p.IsAtSafezone() && p.Attributes is { })
+                .ToList();
+
+            if (partyMembers.Count > 0)
+            {
+                var share = (int)(this.Amount / partyMembers.Count);
+                foreach (var member in partyMembers)
+                {
+                    member.TryAddMoney((int)(share * member.Attributes![Stats.MoneyAmountRate]));
+                }
+            }
+        }
+        else
+        {
+            var clampMoneyOnPickup = player.GameContext?.Configuration?.ClampMoneyOnPickup ?? false;
             if (clampMoneyOnPickup)
             {
-                // Calculate how much can actually be added (clamp to max)
                 var maxMoney = player.GameContext?.Configuration?.MaximumInventoryMoney ?? int.MaxValue;
                 var currentMoney = player.Money;
-                amountToAdd = (int)Math.Min(this.Amount, (uint)Math.Max(0, maxMoney - currentMoney));
+                var amountToAdd = (int)Math.Min(this.Amount, (uint)Math.Max(0, maxMoney - currentMoney));
 
                 if (amountToAdd <= 0)
                 {
@@ -90,7 +111,6 @@ public sealed class DroppedMoney : AsyncDisposable, ILocateable
                     return false;
                 }
 
-                // Add the clamped amount
                 if (!player.TryAddMoney(amountToAdd))
                 {
                     player.Logger.LogDebug("Money could not be added to the inventory, Player {0}, Money {1}", player, this);
@@ -99,26 +119,12 @@ public sealed class DroppedMoney : AsyncDisposable, ILocateable
             }
             else
             {
-                // Original behavior: fail if it would exceed the maximum
                 if (!player.TryAddMoney((int)this.Amount))
                 {
                     player.Logger.LogDebug("Money could not be added to the inventory, Player {0}, Money {1}", player, this);
                     return false;
                 }
-
-                amountToAdd = (int)this.Amount;
             }
-
-            this._availableToPick = false;
-        }
-
-        if (clampMoneyOnPickup && amountToAdd < this.Amount)
-        {
-            player.Logger.LogDebug("Money '{0}' was partially picked up by player '{1}' - added {2} out of {3} (player at max limit).", this, player, amountToAdd, this.Amount);
-        }
-        else
-        {
-            player.Logger.LogDebug("Money '{0}' was picked up by player '{1}' and added to his inventory.", this, player);
         }
 
         await this.DisposeAsync().ConfigureAwait(false);
