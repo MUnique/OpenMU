@@ -96,7 +96,10 @@ public sealed class CreationPanelService : IDisposable
 
         if (this.ItemCreated is { } handler)
         {
-            await handler(session.ItemType).ConfigureAwait(false);
+            foreach (Func<Type, Task> subscriber in handler.GetInvocationList())
+            {
+                await subscriber(session.ItemType).ConfigureAwait(false);
+            }
         }
     }
 

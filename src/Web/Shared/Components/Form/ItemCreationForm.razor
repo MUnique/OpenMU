@@ -22,13 +22,13 @@ else if (this.Item is SkillEntry skillEntry && this.Owner is Character character
 }
 else
 {
-    <EditForm Model="@this.Item">
+    <EditForm Model="@this.Item" OnValidSubmit="@this.OnValidSubmit">
         <CascadingValue Value="@this.PersistenceContext">
             <DataAnnotationsValidator/>
             <CreationAutoFields/>
             <ValidationSummary/>
         </CascadingValue>
-        <button type="submit" @onclick="@this.OnValidSubmit" class="primary-button">Submit</button>
+        <button type="submit" class="primary-button">Submit</button>
         <button type="button" @onclick="@this.OnCancel" class="cancel-button">Cancel</button>
     </EditForm>
 }

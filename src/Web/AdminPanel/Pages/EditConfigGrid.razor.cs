@@ -221,27 +221,35 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
         var cancellationToken = this._disposeCts?.Token ?? default;
         var gameConfiguration = await this.DataSource.GetOwnerAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
         var creationContext = this.PersistenceContextProvider.CreateNewTypedContext(this.Type!, true, gameConfiguration);
-        var newObject = creationContext.CreateNew(this.Type!);
-
-        var session = new CreationSession
+        try
         {
-            Title = $"Create {this.Type!.GetTypeCaption()}",
-            Item = newObject,
-            ItemType = this.Type!,
-            Context = creationContext,
-            OwnsContext = true,
-            SaveAsync = async () =>
-            {
-                await creationContext.SaveChangesAsync().ConfigureAwait(false);
-                await this.DataSource.ForceDiscardChangesAsync().ConfigureAwait(false);
-                this.ToastService.ShowSuccess("New object successfully created.");
-            },
-        };
+            var newObject = creationContext.CreateNew(this.Type!);
 
-        var started = await this.CreationPanelService.BeginAsync(session).ConfigureAwait(false);
-        if (!started)
+            var session = new CreationSession
+            {
+                Title = $"Create {this.Type!.GetTypeCaption()}",
+                Item = newObject,
+                ItemType = this.Type!,
+                Context = creationContext,
+                OwnsContext = true,
+                SaveAsync = async () =>
+                {
+                    await creationContext.SaveChangesAsync().ConfigureAwait(false);
+                    await this.DataSource.ForceDiscardChangesAsync().ConfigureAwait(false);
+                    this.ToastService.ShowSuccess("New object successfully created.");
+                },
+            };
+
+            var started = await this.CreationPanelService.BeginAsync(session).ConfigureAwait(false);
+            if (!started)
+            {
+                creationContext.Dispose();
+            }
+        }
+        catch
         {
             creationContext.Dispose();
+            throw;
         }
     }
 
