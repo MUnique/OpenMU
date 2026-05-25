@@ -132,24 +132,20 @@ public class ConfigurationSearchIndexCache : IDisposable
         var stopwatch = Stopwatch.StartNew();
         try
         {
-            using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-            cts.CancelAfter(TimeSpan.FromSeconds(10));
-            var token = cts.Token;
-
-            if (!await this._persistenceContextProvider.CanConnectToDatabaseAsync(token).ConfigureAwait(false)
-                || !await this._persistenceContextProvider.DatabaseExistsAsync(token).ConfigureAwait(false))
+            if (!await this._persistenceContextProvider.CanConnectToDatabaseAsync(cancellationToken).ConfigureAwait(false)
+                || !await this._persistenceContextProvider.DatabaseExistsAsync(cancellationToken).ConfigureAwait(false))
             {
                 return Array.Empty<ConfigurationSearchEntry>();
             }
 
             using var context = this._persistenceContextProvider.CreateNewConfigurationContext();
-            var gameConfigurationId = await context.GetDefaultGameConfigurationIdAsync(token).ConfigureAwait(false);
+            var gameConfigurationId = await context.GetDefaultGameConfigurationIdAsync(cancellationToken).ConfigureAwait(false);
             if (gameConfigurationId is not { } id || id == Guid.Empty)
             {
                 return Array.Empty<ConfigurationSearchEntry>();
             }
 
-            var gameConfiguration = await this._configDataSource.GetOwnerAsync(id, token).ConfigureAwait(false);
+            var gameConfiguration = await this._configDataSource.GetOwnerAsync(id, cancellationToken).ConfigureAwait(false);
             this._logger.LogInformation("Configuration search data loaded in {0} ms.", stopwatch.ElapsedMilliseconds);
             stopwatch.Restart();
 
