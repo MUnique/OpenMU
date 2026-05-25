@@ -2,6 +2,7 @@
    Licensed under the MIT License. See LICENSE file in the project root for full license information.
    </copyright> *@
 
+@using MUnique.OpenMU.Web.AdminPanel.Properties
 @using MUnique.OpenMU.Web.Shared.Components.Form
 @using MUnique.OpenMU.Web.Shared.Services
 
@@ -14,7 +15,7 @@
     <div class="creation-panel @(this.Panel.IsCollapsed ? "collapsed" : "expanded")">
         <button type="button"
                 class="collapse-toggle"
-                title="@(this.Panel.IsCollapsed ? "Show entry form" : "Hide entry form")"
+                title="@(this.Panel.IsCollapsed ? Resources.ShowEntryForm : Resources.HideEntryForm)"
                 @onclick="@this.Panel.ToggleCollapse">
             <span class="oi @(this.Panel.IsCollapsed ? "oi-chevron-left" : "oi-chevron-right")" aria-hidden="true"></span>
         </button>

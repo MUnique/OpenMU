@@ -258,4 +258,16 @@
   <data name="Others" xml:space="preserve">
     <value>Others</value>
   </data>
+  <data name="Submit" xml:space="preserve">
+    <value>Submit</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="DiscardEntryTitle" xml:space="preserve">
+    <value>Discard current entry?</value>
+  </data>
+  <data name="DiscardEntryQuestion" xml:space="preserve">
+    <value>You're currently creating a '{0}'. Do you want to discard it and start a new one?</value>
+  </data>
 </root>

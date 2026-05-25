@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Web.Shared.Services;
 
 using Blazored.Modal.Services;
 using MUnique.OpenMU.DataModel;
+using MUnique.OpenMU.Web.Shared.Properties;
 
 /// <summary>
 /// A circuit-scoped service which holds the currently active <see cref="CreationSession"/>.
@@ -57,7 +58,7 @@ public sealed class CreationPanelService : IDisposable
         {
             var caption = existing.ItemType.GetTypeCaption();
             var confirmed = await this._modalService
-                .ShowQuestionAsync("Discard current entry?", $"You're currently creating a '{caption}'. Do you want to discard it and start a new one?")
+                .ShowQuestionAsync(Resources.DiscardEntryTitle, string.Format(Resources.DiscardEntryQuestion, caption))
                 .ConfigureAwait(false);
             if (!confirmed)
             {

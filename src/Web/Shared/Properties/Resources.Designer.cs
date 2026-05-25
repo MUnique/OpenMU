@@ -507,5 +507,49 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
                 return ResourceManager.GetString("Others", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Submit.
+        /// </summary>
+        public static string Submit
+        {
+            get
+            {
+                return ResourceManager.GetString("Submit", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string Cancel
+        {
+            get
+            {
+                return ResourceManager.GetString("Cancel", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Discard current entry?.
+        /// </summary>
+        public static string DiscardEntryTitle
+        {
+            get
+            {
+                return ResourceManager.GetString("DiscardEntryTitle", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to You're currently creating a '{0}'. Do you want to discard it and start a new one?.
+        /// </summary>
+        public static string DiscardEntryQuestion
+        {
+            get
+            {
+                return ResourceManager.GetString("DiscardEntryQuestion", resourceCulture);
+            }
+        }
     }
 }

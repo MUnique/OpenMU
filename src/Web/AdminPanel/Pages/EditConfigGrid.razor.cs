@@ -236,7 +236,7 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
                 {
                     await creationContext.SaveChangesAsync().ConfigureAwait(false);
                     await this.DataSource.ForceDiscardChangesAsync().ConfigureAwait(false);
-                    this.ToastService.ShowSuccess("New object successfully created.");
+                    this.ToastService.ShowSuccess(Resources.CreatedSuccessfully);
                 },
             };
 

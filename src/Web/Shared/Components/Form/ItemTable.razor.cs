@@ -9,6 +9,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Blazored.Modal;
 using Microsoft.AspNetCore.Components;
+using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Composition;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Web.Shared;
@@ -113,7 +114,7 @@ public partial class ItemTable<TItem>
 
         var session = new CreationSession
         {
-            Title = $"Create {typeof(TItem).Name}",
+            Title = $"Create {typeof(TItem).GetTypeCaption()}",
             Item = createdItem,
             ItemType = typeof(TItem),
             Context = this.PersistenceContext,
