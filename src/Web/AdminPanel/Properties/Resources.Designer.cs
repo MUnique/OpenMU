@@ -1430,5 +1430,59 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("YesCreateTestAccounts", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Export Backup.
+        /// </summary>
+        internal static string ExportBackup {
+            get {
+                return ResourceManager.GetString("ExportBackup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import Backup.
+        /// </summary>
+        internal static string ImportBackup {
+            get {
+                return ResourceManager.GetString("ImportBackup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Importing backup, please wait....
+        /// </summary>
+        internal static string ImportingBackupPleaseWait {
+            get {
+                return ResourceManager.GetString("ImportingBackupPleaseWait", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Backup import succeeded.
+        /// </summary>
+        internal static string BackupImportSucceeded {
+            get {
+                return ResourceManager.GetString("BackupImportSucceeded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Backup import failed.
+        /// </summary>
+        internal static string BackupImportFailed {
+            get {
+                return ResourceManager.GetString("BackupImportFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select a .zip backup file to restore.
+        /// </summary>
+        internal static string SelectZipFileToRestore {
+            get {
+                return ResourceManager.GetString("SelectZipFileToRestore", resourceCulture);
+            }
+        }
     }
 }

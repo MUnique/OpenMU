@@ -12,6 +12,7 @@
 
 namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
 
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.Persistence;
 using Mapster;
 
@@ -34,6 +35,15 @@ public static class MapsterConfigurator
 
         Mapster.TypeAdapterConfig.GlobalSettings.Default.PreserveReference(true);
         Mapster.TypeAdapterConfig.GlobalSettings.Default.IgnoreMember((member, side) => member.Name.StartsWith("Raw"));
+        Mapster.TypeAdapterConfig.GlobalSettings.Default.IgnoreMember(
+            (member, side) =>
+            {
+                static bool ContainsIElement(Type t) =>
+                    typeof(IElement).IsAssignableFrom(t)
+                    || (t.IsArray && t.GetElementType() is { } et && ContainsIElement(et))
+                    || (t.IsGenericType && t.GetGenericArguments().Any(ContainsIElement));
+                return ContainsIElement(member.Type);
+            });
 
         Mapster.TypeAdapterConfig.GlobalSettings.NewConfig<MUnique.OpenMU.DataModel.Statistics.MiniGameRankingEntry, MUnique.OpenMU.DataModel.Statistics.MiniGameRankingEntry>()
             .Include<MiniGameRankingEntry, BasicModel.MiniGameRankingEntry>();
