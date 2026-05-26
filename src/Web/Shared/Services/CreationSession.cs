@@ -41,16 +41,9 @@ public sealed class CreationSession
     /// <summary>
     /// Gets a value indicating whether the <see cref="Context"/> is owned by this session
     /// and should be disposed when the session ends. This is the case for top-level objects
-    /// whose context is independent from any page. Sessions which reuse a page's context
-    /// (e.g. nested aggregate members) must set this to <see langword="false"/>.
+    /// whose context is independent from any page.
     /// </summary>
     public bool OwnsContext { get; init; }
-
-    /// <summary>
-    /// Gets an optional token identifying the component which started this session.
-    /// It's used to cancel the session when that component is disposed (e.g. on navigation).
-    /// </summary>
-    public object? OwnerToken { get; init; }
 
     /// <summary>
     /// Gets the action which persists the created object. It's invoked when the user submits the form.

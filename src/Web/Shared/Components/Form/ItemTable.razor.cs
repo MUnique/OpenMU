@@ -14,7 +14,6 @@ using MUnique.OpenMU.DataModel.Composition;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Web.Shared;
 using MUnique.OpenMU.Web.Shared.Components.Form.Modal;
-using MUnique.OpenMU.Web.Shared.Services;
 
 /// <summary>
 /// A component which shows a collection of <typeparamref name="TItem"/> in a table.
@@ -34,8 +33,6 @@ public partial class ItemTable<TItem>
     private bool _isStartingCollapsed;
 
     private bool _isCollapsed;
-
-    private object? _activeSessionToken;
 
     /// <summary>
     /// Gets or sets the label.
@@ -108,51 +105,34 @@ public partial class ItemTable<TItem>
         }
 
         item ??= this.PersistenceContext.CreateNew<TItem>();
-        var owner = this.GetOwnerFromValueExpression();
-        var token = new object();
-        var createdItem = item;
 
-        var session = new CreationSession
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(ModalCreateNew<TItem>.Item), item);
+        parameters.Add(nameof(ModalCreateNew<TItem>.PersistenceContext), this.PersistenceContext);
+        var owner = this.GetOwnerFromValueExpression();
+        if (owner is not null)
         {
-            Title = $"Create {typeof(TItem).GetTypeCaption()}",
-            Item = createdItem,
-            ItemType = typeof(TItem),
-            Context = this.PersistenceContext,
-            Owner = owner,
-            OwnsContext = false,
-            OwnerToken = token,
-            SaveAsync = async () =>
-            {
-                this.Value ??= new List<TItem>();
-                this.Value.Add(createdItem);
-                await this.PersistenceContext.SaveChangesAsync().ConfigureAwait(false);
-                await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
-            },
-            CancelAsync = async () =>
-            {
-                await this.PersistenceContext.DeleteAsync(createdItem).ConfigureAwait(false);
-            },
+            parameters.Add(nameof(ModalCreateNew<TItem>.Owner), owner);
+        }
+
+        var options = new ModalOptions
+        {
+            DisableBackgroundCancel = true,
         };
 
-        this._activeSessionToken = token;
-        var started = await this._creationPanel.BeginAsync(session).ConfigureAwait(false);
-        if (!started)
+        var modal = this._modal.Show<ModalCreateNew<TItem>>($"Create {typeof(TItem).GetTypeCaption()}", parameters, options);
+        var result = await modal.Result.ConfigureAwait(false);
+        if (result.Cancelled)
         {
-            this._activeSessionToken = null;
-            await this.PersistenceContext.DeleteAsync(createdItem).ConfigureAwait(false);
+            await this.PersistenceContext.DeleteAsync(item).ConfigureAwait(false);
         }
-    }
-
-    /// <inheritdoc />
-    protected override void Dispose(bool disposing)
-    {
-        if (disposing && this._activeSessionToken is { } token)
+        else
         {
-            this._activeSessionToken = null;
-            _ = this._creationPanel.CancelIfOwnedByAsync(token);
+            this.Value ??= new List<TItem>();
+            this.Value.Add(item);
+            await this.PersistenceContext.SaveChangesAsync().ConfigureAwait(false);
+            await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
         }
-
-        base.Dispose(disposing);
     }
 
     private async Task OnRemoveClickAsync(TItem item)

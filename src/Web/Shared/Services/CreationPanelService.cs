@@ -120,21 +120,6 @@ public sealed class CreationPanelService : IDisposable
     }
 
     /// <summary>
-    /// Cancels the active session, but only if it was started by the component with the given token.
-    /// This is used by page-bound sessions to clean up when their page is disposed.
-    /// </summary>
-    /// <param name="ownerToken">The token of the owning component.</param>
-    public Task CancelIfOwnedByAsync(object ownerToken)
-    {
-        if (this.Current is { } session && ReferenceEquals(session.OwnerToken, ownerToken))
-        {
-            return this.CancelAsync();
-        }
-
-        return Task.CompletedTask;
-    }
-
-    /// <summary>
     /// Toggles the collapsed state of the panel.
     /// </summary>
     public void ToggleCollapse()

@@ -1,13 +1,11 @@
 ﻿@typeparam TItem
 
 @using MUnique.OpenMU.Persistence
-@using MUnique.OpenMU.Web.Shared.Services
 @using System.Text.RegularExpressions
 @inherits InputBase<ICollection<TItem>>
 
 @inject IModalService _modal
 @inject NavigationManager _navigationManager
-@inject CreationPanelService _creationPanel
 
     <div class="card">
         <h5 class="card-header">
