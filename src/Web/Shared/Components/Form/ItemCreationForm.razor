@@ -1,0 +1,68 @@
+@* <copyright file="ItemCreationForm.razor" company="MUnique">
+   Licensed under the MIT License. See LICENSE file in the project root for full license information.
+   </copyright> *@
+
+@using MUnique.OpenMU.Persistence
+@using MUnique.OpenMU.DataModel.Entities
+@using MUnique.OpenMU.Web.Shared.Components.ItemEdit
+
+@if (this.Item is Item item)
+{
+    <CascadingValue Value="@this.PersistenceContext">
+        <ItemEdit Item="@item" OnCancel="@this.OnCancel" OnValidSubmit="@this.OnValidSubmit" />
+    </CascadingValue>
+}
+else if (this.Item is SkillEntry skillEntry && this.Owner is Character character)
+{
+    <SkillEntryCreationForm SkillEntry="@skillEntry"
+                            Character="@character"
+                            PersistenceContext="@this.PersistenceContext"
+                            OnSubmit="@this.OnValidSubmit"
+                            OnCancel="@this.OnCancel" />
+}
+else
+{
+    <EditForm Model="@this.Item" OnValidSubmit="@this.OnValidSubmit">
+        <CascadingValue Value="@this.PersistenceContext">
+            <DataAnnotationsValidator/>
+            <CreationAutoFields/>
+            <ValidationSummary/>
+        </CascadingValue>
+        <button type="submit" class="primary-button">@Resources.Submit</button>
+        <button type="button" @onclick="@this.OnCancel" class="cancel-button">@Resources.Cancel</button>
+    </EditForm>
+}
+
+@code {
+
+    /// <summary>
+    /// Gets or sets the item which should be created.
+    /// </summary>
+    [Parameter]
+    public object Item { get; set; } = default!;
+
+    /// <summary>
+    /// Gets or sets the persistence context which should be used. It's required for lookups.
+    /// </summary>
+    [Parameter]
+    public IContext PersistenceContext { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the owner object of the collection containing this item.
+    /// Used to provide context for creation (e.g., filtering skills by character class).
+    /// </summary>
+    [Parameter]
+    public object? Owner { get; set; }
+
+    /// <summary>
+    /// Gets or sets the callback invoked when the form is submitted.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnValidSubmit { get; set; }
+
+    /// <summary>
+    /// Gets or sets the callback invoked when the form is cancelled.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+}

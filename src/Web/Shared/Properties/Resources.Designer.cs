@@ -326,5 +326,35 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
                 return ResourceManager.GetString("Others", resourceCulture);
             }
         }
+        
+        public static string Submit {
+            get {
+                return ResourceManager.GetString("Submit", resourceCulture);
+            }
+        }
+        
+        public static string Cancel {
+            get {
+                return ResourceManager.GetString("Cancel", resourceCulture);
+            }
+        }
+        
+        public static string DiscardEntryTitle {
+            get {
+                return ResourceManager.GetString("DiscardEntryTitle", resourceCulture);
+            }
+        }
+        
+        public static string DiscardEntryQuestion {
+            get {
+                return ResourceManager.GetString("DiscardEntryQuestion", resourceCulture);
+            }
+        }
+        
+        public static string Refresh {
+            get {
+                return ResourceManager.GetString("Refresh", resourceCulture);
+            }
+        }
     }
 }

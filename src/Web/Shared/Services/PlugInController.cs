@@ -1,4 +1,4 @@
-﻿// <copyright file="PlugInController.cs" company="MUnique">
+// <copyright file="PlugInController.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -21,8 +21,9 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
 {
     private readonly IDataSource<GameConfiguration> _dataSource;
     private readonly IModalService _modalService;
-    private string _nameFilter = string.Empty;
+
     private Guid _pointFilter;
+    private string _nameFilter = string.Empty;
     private string _typeFilter = string.Empty;
 
     /// <summary>
@@ -133,10 +134,36 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
         }
         catch (NotImplementedException)
         {
-            // swallow
+            // Ignored.
         }
 
         return result;
+    }
+
+    /// <summary>
+    /// Gets the plug-in by identifier.
+    /// </summary>
+    /// <param name="id">The identifier.</param>
+    /// <returns>The plug-in view item, if found.</returns>
+    public async Task<PlugInConfigurationViewItem?> GetByIdAsync(Guid id)
+    {
+        try
+        {
+            var gameConfiguration = await this._dataSource.GetOwnerAsync(Guid.Empty).ConfigureAwait(true);
+            var allPlugIns = GetPluginTypes().ToDictionary(t => t.GUID, t => t);
+
+            var config = gameConfiguration.PlugInConfigurations.FirstOrDefault(c => c.GetId() == id);
+            if (config != null && allPlugIns.TryGetValue(config.TypeId, out var plugInType))
+            {
+                return BuildConfigurationDto(plugInType, gameConfiguration, config);
+            }
+        }
+        catch (NotImplementedException)
+        {
+            // Ignored.
+        }
+
+        return null;
     }
 
     /// <summary>
@@ -214,7 +241,7 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
 
     private static string GetPlugInName(Type plugInType)
     {
-        return plugInType.GetCustomAttribute<DisplayAttribute>()?.Name ?? plugInType.Name;
+        return plugInType.GetCustomAttribute<DisplayAttribute>()?.GetName() ?? plugInType.Name;
     }
 
     private static Type? GetPlugInExtensionPointType(Type plugInType)
