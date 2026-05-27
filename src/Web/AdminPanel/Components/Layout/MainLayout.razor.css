@@ -6,15 +6,11 @@
 
 main {
     flex: 1;
+    min-width: 0;
 }
 
 .sidebar {
     background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
-}
-
-.main-header {
-    min-height: 4rem;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .header-search {

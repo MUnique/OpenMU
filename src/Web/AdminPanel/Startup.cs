@@ -63,14 +63,16 @@ public class Startup
 
         services.AddBlazoredModal();
         services.AddBlazoredToast();
+
+        services.AddSingleton<ILookupController, PersistentObjectsLookupController>();
+        services.AddSingleton<ConfigurationSearchIndexCache>();
+
         services.AddScoped<AccountService>();
         services.AddScoped<IDataService<Account>>(serviceProvider => serviceProvider.GetService<AccountService>()!);
 
         services.AddScoped<PlugInController>();
         services.AddScoped<IDataService<PlugInConfigurationViewItem>>(serviceProvider => serviceProvider.GetService<PlugInController>()!);
-
-        services.AddSingleton<ILookupController, PersistentObjectsLookupController>();
-        services.AddSingleton<ConfigurationSearchIndexCache>();
+        services.AddScoped<CreationPanelService>();
 
         services.AddScoped<IChangeNotificationService, ChangeNotificationService>();
     }

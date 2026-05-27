@@ -1679,5 +1679,86 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("OfflineLevelingMuHelperNotRunning", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stat reset is not enabled..
+        /// </summary>
+        public static string StatResetNotEnabled {
+            get {
+                return ResourceManager.GetString("StatResetNotEnabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stat reset is not configured..
+        /// </summary>
+        public static string StatResetNotConfigured {
+            get {
+                return ResourceManager.GetString("StatResetNotConfigured", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Required level for stat reset is {0}..
+        /// </summary>
+        public static string RequiredLevelForStatReset {
+            get {
+                return ResourceManager.GetString("RequiredLevelForStatReset", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You don&apos;t have enough money for stat reset, required zen is {0}..
+        /// </summary>
+        public static string NotEnoughMoneyForStatReset {
+            get {
+                return ResourceManager.GetString("NotEnoughMoneyForStatReset", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You don&apos;t have enough required items for stat reset, required {0} x {1}..
+        /// </summary>
+        public static string NotEnoughItemsForStatReset {
+            get {
+                return ResourceManager.GetString("NotEnoughItemsForStatReset", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stat reset is only possible in a safezone..
+        /// </summary>
+        public static string CantResetStatsNotInSafezone {
+            get {
+                return ResourceManager.GetString("CantResetStatsNotInSafezone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot reset stats with any windows opened..
+        /// </summary>
+        public static string CantResetStatsWithOpenedWindows {
+            get {
+                return ResourceManager.GetString("CantResetStatsWithOpenedWindows", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The /resetstats command is disabled..
+        /// </summary>
+        public static string StatResetChatCommandDisabled {
+            get {
+                return ResourceManager.GetString("StatResetChatCommandDisabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your stats have been reset. You have {0} level-up points available..
+        /// </summary>
+        public static string StatsResetSuccessfully {
+            get {
+                return ResourceManager.GetString("StatsResetSuccessfully", resourceCulture);
+            }
+        }
     }
 }

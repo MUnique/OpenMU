@@ -117,6 +117,19 @@ internal class EntityFrameworkContextBase : IContext
     /// <inheritdoc />
     public bool Detach(object item)
     {
+        using var l = this._lock.Lock();
+        return this.DetachInternal(item);
+    }
+
+    /// <inheritdoc />
+    public void Attach(object item)
+    {
+        using var l = this._lock.Lock();
+        this.Context.Attach(item);
+    }
+
+    private bool DetachInternal(object item)
+    {
         var entry = this.Context.Entry(item);
         if (entry is null)
         {
@@ -125,15 +138,9 @@ internal class EntityFrameworkContextBase : IContext
 
         var previousState = entry.State;
         entry.State = EntityState.Detached;
-        this.ForEachAggregate(item, obj => this.Detach(obj));
+        this.ForEachAggregate(item, obj => this.DetachInternal(obj));
 
         return previousState != EntityState.Added;
-    }
-
-    /// <inheritdoc />
-    public void Attach(object item)
-    {
-        this.Context.Attach(item);
     }
 
     /// <inheritdoc />
@@ -174,7 +181,7 @@ internal class EntityFrameworkContextBase : IContext
             case EntityState.Detached:
                 return true;
             case EntityState.Added:
-                this.Detach(obj);
+                this.DetachInternal(obj);
                 break;
             default:
                 this.Context.Remove(obj);
