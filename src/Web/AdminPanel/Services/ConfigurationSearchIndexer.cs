@@ -137,7 +137,7 @@ internal sealed class ConfigurationSearchIndexer
             }
         }
 
-        return mainIndexer.Entries;
+        return mainIndexer.Entries.DistinctBy(e => e.Url).ToArray();
     }
 
     private static string GetPropertyCaption(Type type, PropertyInfo propertyInfo)
