@@ -67,7 +67,26 @@ public class MonsterAttributeReloadTests
         Assert.That(monster.Attributes[Stats.AttackRatePvm], Is.EqualTo(50));
     }
 
-    private async ValueTask<Monster> CreateMonsterAsync()
+    /// <summary>
+    /// Tests that all spawned instances of the same monster definition pick up an attribute change.
+    /// </summary>
+    [Test]
+    public async ValueTask ReloadAttributesAppliesToAllInstancesOfDefinitionAsync()
+    {
+        var monsterDefinition = CreateMonsterDefinition();
+        var monster1 = await this.CreateMonsterAsync(monsterDefinition).ConfigureAwait(false);
+        var monster2 = await this.CreateMonsterAsync(monsterDefinition).ConfigureAwait(false);
+        var maximumHealthAttribute = monsterDefinition.Attributes.First(a => a.AttributeDefinition == Stats.MaximumHealth);
+
+        maximumHealthAttribute.Value = 2000;
+        monster1.ReloadAttributes();
+        monster2.ReloadAttributes();
+
+        Assert.That(monster1.Attributes[Stats.MaximumHealth], Is.EqualTo(2000));
+        Assert.That(monster2.Attributes[Stats.MaximumHealth], Is.EqualTo(2000));
+    }
+
+    private static MonsterDefinition CreateMonsterDefinition()
     {
         var monsterDefinition = new MonsterDefinition
         {
@@ -75,7 +94,16 @@ public class MonsterAttributeReloadTests
         };
         monsterDefinition.Attributes.Add(new MonsterAttribute { AttributeDefinition = Stats.MaximumHealth, Value = 1000 });
         monsterDefinition.Attributes.Add(new MonsterAttribute { AttributeDefinition = Stats.DefenseBase, Value = 100 });
+        return monsterDefinition;
+    }
 
+    private ValueTask<Monster> CreateMonsterAsync()
+    {
+        return this.CreateMonsterAsync(CreateMonsterDefinition());
+    }
+
+    private async ValueTask<Monster> CreateMonsterAsync(MonsterDefinition monsterDefinition)
+    {
         var map = await this._gameContext.GetMapAsync(0).ConfigureAwait(false);
         var spawnArea = new MonsterSpawnArea
         {

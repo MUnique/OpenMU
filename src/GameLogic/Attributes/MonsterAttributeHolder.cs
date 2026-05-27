@@ -164,6 +164,15 @@ public class MonsterAttributeHolder : IAttributeSystem
     /// </summary>
     public void ApplyChanges()
     {
+        // When many instances of the same monster are spawned, all of them get notified about the
+        // same change. The first one rebuilds the shared cache; the others just adopt the new one.
+        if (MonsterStatAttributesCache.TryGetValue(this._monster.Definition, out var cached)
+            && !ReferenceEquals(cached, this._statAttributes))
+        {
+            this._statAttributes = cached;
+            return;
+        }
+
         var statAttributes = BuildStatAttributes(this._monster.Definition);
         MonsterStatAttributesCache[this._monster.Definition] = statAttributes;
         this._statAttributes = statAttributes;

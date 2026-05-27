@@ -271,17 +271,20 @@ public class MapInitializer : IMapInitializer
     private void RegisterForConfigChanges(GameMap createdMap, MonsterSpawnArea spawnArea, NonPlayerCharacter spawnedObject)
     {
         // Apply changes of the monster definition (e.g. its attributes) instantly to the
-        // already spawned instance, without having to re-spawn it.
-        var definitionRegistration = spawnedObject is AttackableNpcBase
-            ? this._configurationChangeMediator?.RegisterObject(
+        // already spawned instance, without having to re-spawn it. The registration is owned
+        // by the NPC, so it gets disposed whenever the NPC is disposed.
+        if (spawnedObject is AttackableNpcBase attackableNpc
+            && this._configurationChangeMediator?.RegisterObject(
                 spawnedObject.Definition,
-                spawnedObject,
+                attackableNpc,
                 (_, _, o) =>
                 {
-                    (o as AttackableNpcBase)?.ReloadAttributes();
+                    o.ReloadAttributes();
                     return ValueTask.CompletedTask;
-                })
-            : null;
+                }) is { } definitionRegistration)
+        {
+            attackableNpc.RegisterDisposable(definitionRegistration);
+        }
 
         this._configurationChangeMediator?.RegisterObject(
             spawnArea,
@@ -290,7 +293,6 @@ public class MapInitializer : IMapInitializer
             {
                 if (area.Quantity < o.SpawnIndex + 1)
                 {
-                    definitionRegistration?.Dispose();
                     await o.DisposeAsync().ConfigureAwait(false);
                     unregisterAction();
                     this._spawnedMonsters.AddOrUpdate(spawnArea, spawnArea.Quantity, (_, _) => spawnArea.Quantity);
@@ -301,7 +303,6 @@ public class MapInitializer : IMapInitializer
                 // because MonsterAttributeHolder caches stats from the definition at construction time.
                 if (area.MonsterDefinition != o.Definition)
                 {
-                    definitionRegistration?.Dispose();
                     await o.DisposeAsync().ConfigureAwait(false);
                     unregisterAction();
                     var newNpc = await this.InitializeSpawnAsync(o.SpawnIndex, createdMap, area).ConfigureAwait(false);
@@ -331,7 +332,6 @@ public class MapInitializer : IMapInitializer
             },
             async (_, o) =>
             {
-                definitionRegistration?.Dispose();
                 await o.DisposeAsync().ConfigureAwait(false);
                 this._spawnedMonsters.TryRemove(spawnArea, out var _);
             });
