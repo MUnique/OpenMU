@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Web.Shared.Components.Form;
 
+using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
@@ -22,6 +23,7 @@ using MUnique.OpenMU.Web.Shared.Services;
 public class AutoFields : ComponentBase
 {
     private static readonly IList<IComponentBuilder> Builders = new List<IComponentBuilder>();
+    private static readonly ConcurrentDictionary<Type, IReadOnlyList<PropertyMetadata>> CachedProperties = new();
 
     /// <summary>
     /// Initializes static members of the <see cref="AutoFields"/> class.
@@ -71,6 +73,12 @@ public class AutoFields : ComponentBase
     public bool HideCollections { get; set; }
 
     /// <summary>
+    /// Gets or sets the search term to filter properties by their name or display name.
+    /// </summary>
+    [Parameter]
+    public string? SearchTerm { get; set; }
+
+    /// <summary>
     /// Gets the properties which should be shown in this component.
     /// </summary>
     /// <returns>The properties which should be shown in this component.</returns>
@@ -86,23 +94,22 @@ public class AutoFields : ComponentBase
 
             try
             {
-                return this.Context.Model.GetType()
-                    .GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy)
-                    .Where(p => p.GetCustomAttribute<TransientAttribute>() is null)
-                    .Where(p => p.GetCustomAttribute<BrowsableAttribute>()?.Browsable ?? true)
-                    .Where(p => !p.Name.StartsWith("Raw", StringComparison.InvariantCulture))
-                    .Where(p => !p.Name.StartsWith("Joined", StringComparison.InvariantCulture))
-                    .Where(p => !p.GetIndexParameters().Any())
-                    .Where(p => !this.HideCollections || !p.PropertyType.IsGenericType)
-                    .OrderBy(p => p.GetCustomAttribute<DisplayAttribute>()?.GetOrder())
-                    .ThenByDescending(p => p.PropertyType == typeof(string))
-                    .ThenByDescending(p => p.PropertyType.IsValueType)
-                    .ThenByDescending(p => !p.PropertyType.IsGenericType)
+                var modelType = this.Context.Model.GetType();
+                var properties = CachedProperties.GetOrAdd(modelType, CreatePropertyMetadata);
+
+                return properties
+                    .Where(p => !this.HideCollections || !p.IsGenericType)
+                    .Where(this.IsMatch)
+                    .OrderBy(p => p.DisplayAttribute?.GetOrder())
+                    .ThenByDescending(p => p.IsString)
+                    .ThenByDescending(p => p.IsValueType)
+                    .ThenByDescending(p => !p.IsGenericType)
+                    .Select(p => p.Property)
                     .ToList();
             }
             catch (Exception ex)
             {
-                this.Logger.LogError(ex, $"Error during determining properties of type {this.Context.Model.GetType()}: {ex.Message}{Environment.NewLine}{ex.StackTrace}");
+                this.Logger.LogError(ex, "Error during determining properties of type {ModelType}: {Message}", this.Context.Model.GetType(), ex.Message);
             }
 
             return Enumerable.Empty<PropertyInfo>();
@@ -143,4 +150,39 @@ public class AutoFields : ComponentBase
             }
         }
     }
+
+    private static IReadOnlyList<PropertyMetadata> CreatePropertyMetadata(Type type)
+    {
+        return type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy)
+            .Where(p => p.GetCustomAttribute<TransientAttribute>() is null)
+            .Where(p => p.GetCustomAttribute<BrowsableAttribute>()?.Browsable ?? true)
+            .Where(p => !p.Name.StartsWith("Raw", StringComparison.Ordinal))
+            .Where(p => !p.Name.StartsWith("Joined", StringComparison.Ordinal))
+            .Where(p => !p.GetIndexParameters().Any())
+            .Select(p => new PropertyMetadata(
+                p,
+                p.GetCustomAttribute<DisplayAttribute>(),
+                p.PropertyType.IsGenericType,
+                p.PropertyType == typeof(string),
+                p.PropertyType.IsValueType))
+            .ToList();
+    }
+
+    private bool IsMatch(PropertyMetadata metadata)
+    {
+        if (string.IsNullOrWhiteSpace(this.SearchTerm))
+        {
+            return true;
+        }
+
+        return metadata.Property.Name.Contains(this.SearchTerm, StringComparison.OrdinalIgnoreCase)
+               || (metadata.DisplayAttribute?.GetName()?.Contains(this.SearchTerm, StringComparison.OrdinalIgnoreCase) ?? false);
+    }
+
+    private sealed record PropertyMetadata(
+        PropertyInfo Property,
+        DisplayAttribute? DisplayAttribute,
+        bool IsGenericType,
+        bool IsString,
+        bool IsValueType);
 }

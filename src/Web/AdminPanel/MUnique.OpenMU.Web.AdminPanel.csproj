@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -27,7 +27,6 @@
     <PackageReference Include="BCrypt.Net-Next" />
     <PackageReference Include="Blazored.Modal" />
     <PackageReference Include="Blazored.Toast" />
-    <PackageReference Include="Blazored.Typeahead" />
     <PackageReference Include="BlazorInputFile" />
     <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid" />
     <PackageReference Include="Nito.AsyncEx" />
