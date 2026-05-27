@@ -35,9 +35,9 @@ public class MonsterAttributeHolder : IAttributeSystem
 
     private readonly AttackableNpcBase _monster;
 
-    private readonly IDictionary<AttributeDefinition, float> _statAttributes;
-
     private readonly object _attributesLock = new();
+
+    private IDictionary<AttributeDefinition, float> _statAttributes;
 
     /// <summary>
     /// Attribute dictionary of a monster instance.
@@ -158,11 +158,27 @@ public class MonsterAttributeHolder : IAttributeSystem
         throw new NotImplementedException();
     }
 
+    /// <summary>
+    /// Reloads the stat attributes from the (possibly changed) <see cref="MonsterDefinition"/>,
+    /// so that configuration changes take effect on the running game server.
+    /// </summary>
+    public void ApplyChanges()
+    {
+        var statAttributes = BuildStatAttributes(this._monster.Definition);
+        MonsterStatAttributesCache[this._monster.Definition] = statAttributes;
+        this._statAttributes = statAttributes;
+    }
+
     private static IDictionary<AttributeDefinition, float> GetStatAttributeOfMonster(MonsterDefinition monsterDefinition)
     {
-        return MonsterStatAttributesCache.GetOrAdd(monsterDefinition, monsterDef => monsterDef.Attributes.ToDictionary(
-                m => m.AttributeDefinition ?? throw Error.NotInitializedProperty(m, nameof(m.AttributeDefinition)),
-                m => m.Value));
+        return MonsterStatAttributesCache.GetOrAdd(monsterDefinition, BuildStatAttributes);
+    }
+
+    private static IDictionary<AttributeDefinition, float> BuildStatAttributes(MonsterDefinition monsterDefinition)
+    {
+        return monsterDefinition.Attributes.ToDictionary(
+            m => m.AttributeDefinition ?? throw Error.NotInitializedProperty(m, nameof(m.AttributeDefinition)),
+            m => m.Value);
     }
 
     private IDictionary<AttributeDefinition, IComposableAttribute> GetAttributeDictionary()

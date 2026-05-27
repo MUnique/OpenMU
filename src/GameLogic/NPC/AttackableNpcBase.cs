@@ -161,6 +161,15 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
         this.IsAlive = true;
     }
 
+    /// <summary>
+    /// Reloads the attributes from the <see cref="NonPlayerCharacter.Definition"/>, so that changes
+    /// to the monster definition take effect on this already spawned instance.
+    /// </summary>
+    public void ReloadAttributes()
+    {
+        (this.Attributes as MonsterAttributeHolder)?.ApplyChanges();
+    }
+
     /// <inheritdoc/>
     protected override void Dispose(bool managed)
     {
