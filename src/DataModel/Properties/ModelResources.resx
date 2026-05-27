@@ -4046,7 +4046,7 @@
     <value></value>
   </data>
   <data name="MonsterDefinition_TypeCaption" xml:space="preserve">
-    <value>Monsters</value>
+    <value>Monster</value>
   </data>
   <data name="MonsterDefinition_TypeCaptionPlural" xml:space="preserve">
     <value>Monsters</value>

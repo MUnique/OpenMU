@@ -295,6 +295,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to New object successfully created..
+        /// </summary>
+        public static string CreatedSuccessfully {
+            get {
+                return ResourceManager.GetString("CreatedSuccessfully", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create Game Server.
         /// </summary>
         public static string CreateGameServer {
@@ -591,6 +600,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string General {
             get {
                 return ResourceManager.GetString("General", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hide entry form.
+        /// </summary>
+        public static string HideEntryForm {
+            get {
+                return ResourceManager.GetString("HideEntryForm", resourceCulture);
             }
         }
         
@@ -1167,6 +1185,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string Setup {
             get {
                 return ResourceManager.GetString("Setup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show entry form.
+        /// </summary>
+        public static string ShowEntryForm {
+            get {
+                return ResourceManager.GetString("ShowEntryForm", resourceCulture);
             }
         }
         

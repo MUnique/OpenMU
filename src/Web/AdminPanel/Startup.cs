@@ -69,6 +69,7 @@ public class Startup
         services.AddScoped<IDataService<PlugInConfigurationViewItem>>(serviceProvider => serviceProvider.GetService<PlugInController>()!);
 
         services.AddSingleton<ILookupController, PersistentObjectsLookupController>();
+        services.AddScoped<CreationPanelService>();
 
         services.AddScoped<IChangeNotificationService, ChangeNotificationService>();
     }

@@ -70,6 +70,7 @@ public static class WebApplicationExtensions
         services.AddBlazoredToast();
 
         services.AddScoped<ILookupController, PersistentObjectsLookupController>();
+        services.AddScoped<CreationPanelService>();
 
         services.AddSingleton<IDataSource<GameConfiguration>, GameConfigurationDataSource>();
         services.AddSingleton<IDataSource<Account>, AccountDataSource>();

@@ -9,6 +9,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Blazored.Modal;
 using Microsoft.AspNetCore.Components;
+using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Composition;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Web.Shared;
@@ -119,7 +120,7 @@ public partial class ItemTable<TItem>
             DisableBackgroundCancel = true,
         };
 
-        var modal = this._modal.Show<ModalCreateNew<TItem>>($"Create {typeof(TItem).Name}", parameters, options);
+        var modal = this._modal.Show<ModalCreateNew<TItem>>($"Create {typeof(TItem).GetTypeCaption()}", parameters, options);
         var result = await modal.Result.ConfigureAwait(false);
         if (result.Cancelled)
         {
