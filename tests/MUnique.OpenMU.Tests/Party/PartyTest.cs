@@ -6,9 +6,12 @@ namespace MUnique.OpenMU.Tests;
 
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
+using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.PlayerActions.Party;
 using MUnique.OpenMU.GameLogic.Views.Party;
+using MUnique.OpenMU.Persistence.InMemory;
+using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// Tests the party functions.
@@ -88,7 +91,7 @@ public class PartyTest
 
         // Master leaves the party; the remaining 2 members stay.
         Assert.That(partyMaster.Party, Is.Null);
-        Assert.That(party.PartyList.ToList(), Does.Not.Contain(partyMaster));
+        Assert.That(party.PartyList, Does.Not.Contain(partyMaster));
         Assert.That(partyMember.Party, Is.SameAs(party));
         Assert.That(party.PartyList, Has.Count.EqualTo(2));
     }
