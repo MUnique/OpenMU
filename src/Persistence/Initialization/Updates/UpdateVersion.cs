@@ -407,4 +407,9 @@ public enum UpdateVersion
     /// The version of the <see cref="FixBloodCastleMonsterAttributesUpdatePlugIn"/>.
     /// </summary>
     FixBloodCastleMonsterAttributes = 80,
+
+    /// <summary>
+    /// The version of the <see cref="FinishDarkWizardMasterTreePlugIn"/>.
+    /// </summary>
+    FinishDarkWizardMasterTree = 81,
 }
