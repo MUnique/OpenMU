@@ -468,7 +468,6 @@ public sealed class GameServer : IGameServer, IDisposable, IGameServerContextPro
     {
         if (!remotePlayer.IsTemplatePlayer)
         {
-            await this.SaveSessionOfPlayerAsync(remotePlayer).ConfigureAwait(false);
             await this.SetOfflineAtLoginServerAsync(remotePlayer).ConfigureAwait(false);
         }
 

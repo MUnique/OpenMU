@@ -6,43 +6,49 @@
 
 main {
     flex: 1;
+    min-width: 0;
 }
 
 .sidebar {
     background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
 }
 
-.top-row {
-    background-color: #f7f7f7;
-    border-bottom: 1px solid #d6d5d5;
-    justify-content: flex-end;
-    height: 3.5rem;
-    display: flex;
-    align-items: center;
+.header-search {
+    max-width: 48rem;
 }
 
-    .top-row ::deep a, .top-row ::deep .btn-link {
-        white-space: nowrap;
-        margin-left: 1.5rem;
-        text-decoration: none;
-    }
+.breadcrumb-bar {
+    min-height: 2.5rem;
+}
 
-    .top-row ::deep a:hover, .top-row ::deep .btn-link:hover {
-        text-decoration: underline;
-    }
+.breadcrumb-bar ::deep .breadcrumb-nav {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    flex: 1;
+}
 
-    .top-row ::deep a:first-child {
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
+.breadcrumb-bar ::deep .breadcrumb {
+    margin-bottom: 0;
+    padding: 0.25rem 0;
+    background-color: transparent;
+}
+
+.breadcrumb-bar ::deep .btn-group {
+    margin-right: 1rem;
+}
 
 @media (max-width: 640.98px) {
-    .top-row {
-        justify-content: space-between;
+    .header-content {
+        flex-direction: column;
+        align-items: stretch !important;
+        gap: 0.5rem;
+        padding: 0.5rem 0;
     }
 
-    .top-row ::deep a, .top-row ::deep .btn-link {
-        margin-left: 0;
+    .header-actions {
+        margin-left: 0 !important;
+        text-align: right;
     }
 }
 
@@ -58,21 +64,9 @@ main {
         top: 0;
     }
 
-    .top-row {
+    .main-header {
         position: sticky;
         top: 0;
-        z-index: 1;
-    }
-
-    .top-row.auth ::deep a:first-child {
-        flex: 1;
-        text-align: right;
-        width: 0;
-    }
-
-    .top-row, article {
-        padding-left: 2rem !important;
-        padding-right: 1.5rem !important;
     }
 }
 
@@ -90,9 +84,9 @@ main {
     z-index: 1000;
 }
 
-    #blazor-error-ui .dismiss {
-        cursor: pointer;
-        position: absolute;
-        right: 0.75rem;
-        top: 0.5rem;
-    }
+#blazor-error-ui .dismiss {
+    cursor: pointer;
+    position: absolute;
+    right: 0.75rem;
+    top: 0.5rem;
+}
