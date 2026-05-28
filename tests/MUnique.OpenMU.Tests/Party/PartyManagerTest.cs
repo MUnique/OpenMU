@@ -75,7 +75,7 @@ public class PartyManagerTest
     {
         var (party, _, member2) = await this.CreatePartyWithTwoMembersAsync().ConfigureAwait(false);
 
-        await party.KickPlayerAsync((byte)((List<IPartyMember>)party.PartyList).IndexOf(member2)).ConfigureAwait(false);
+        await party.KickPlayerAsync(GetPartyMemberIndex(party, member2)).ConfigureAwait(false);
 
         Assert.That(party.PartyList, Is.Not.Contains(member2));
         Assert.That(member2.Party, Is.Null);
@@ -181,6 +181,19 @@ public class PartyManagerTest
         await party.AddAsync(member1).ConfigureAwait(false);
         await party.AddAsync(member2).ConfigureAwait(false);
         return (party, member1, member2);
+    }
+
+    private static byte GetPartyMemberIndex(Party party, IPartyMember member)
+    {
+        for (byte index = 0; index < party.PartyList.Count; index++)
+        {
+            if (party.PartyList[index] == member)
+            {
+                return index;
+            }
+        }
+
+        throw new ArgumentException("The member is not part of the party.", nameof(member));
     }
 
     private async ValueTask<Player> CreatePartyMemberAsync()

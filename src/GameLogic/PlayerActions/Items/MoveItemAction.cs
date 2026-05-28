@@ -421,7 +421,7 @@ public class MoveItemAction
             Storages.ChaosCardMaster => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.ChaosCardCombination,
             Storages.CherryBlossomSpirit => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.CherryBlossomBranchesAssembly,
             Storages.SeedCrafting => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.SeedMaster,
-            Storages.SeedSphereCrafting => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.SeedResearcher,
+            Storages.SeedSphereCrafting => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.SeedMaster,
             Storages.SeedMountCrafting => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.SeedResearcher,
             Storages.SeedUnmountCrafting => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.SeedResearcher,
             _ => false,

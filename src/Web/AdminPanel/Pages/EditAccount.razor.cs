@@ -1,4 +1,4 @@
-﻿// <copyright file="EditAccount.razor.cs" company="MUnique">
+// <copyright file="EditAccount.razor.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Web.AdminPanel.Properties;
 using MUnique.OpenMU.Web.Shared.Components.Form;
 using MUnique.OpenMU.Web.Shared.Components.ItemEdit;
 
@@ -55,6 +56,7 @@ public partial class EditAccount : EditBase
             builder.OpenComponent(++currentSequence, typeof(AutoForm<>).MakeGenericType(this.Type!));
             builder.AddAttribute(++currentSequence, nameof(AutoForm<object>.Model), this.Model);
             builder.AddAttribute(++currentSequence, nameof(AutoForm<object>.OnValidSubmit), EventCallback.Factory.Create(this, this.SaveChangesAsync));
+            builder.AddAttribute(++currentSequence, nameof(AutoForm<object>.OnRefresh), EventCallback.Factory.Create(this, this.RefreshAsync));
             builder.CloseComponent();
         }
     }

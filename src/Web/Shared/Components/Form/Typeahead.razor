@@ -1,0 +1,124 @@
+@typeparam TItem
+@typeparam TValue
+
+<div class="typeahead" id="@Id">
+    <div class="typeahead-controls" @onfocusout="OnFocusOutAsync">
+        @if (_isLoading)
+        {
+            <div class="typeahead-spinner">
+                <div class="spinner-border spinner-border-sm text-muted" role="status"></div>
+            </div>
+        }
+        
+        @if (IsMultiple && Values != null)
+        {
+            <div class="typeahead-multi-values">
+                @foreach (var val in Values)
+                {
+                    var item = GetItemFromValue(val);
+                    if (item != null)
+                    {
+                        <div class="typeahead-multi-value">
+                            @if (SelectedTemplate != null)
+                            {
+                                @SelectedTemplate(item!)
+                            }
+                            else
+                            {
+                                @GetItemText(item)
+                            }
+                            <button type="button" class="typeahead-multi-value-remove" @onclick="() => RemoveValueAsync(val)" @onclick:stopPropagation="true">&times;</button>
+                        </div>
+                    }
+                }
+                <input @ref="_searchInput"
+                       type="search"
+                       class="typeahead-input"
+                       placeholder="@(Values.Count == 0 ? Placeholder : "")"
+                       @bind-value="_searchText"
+                       @bind-value:event="oninput"
+                       @bind-value:after="OnSearchInputAsync"
+                       @onfocus="OnFocusAsync"
+                       @onkeydown="OnKeyDownAsync"
+                       autocomplete="off" />
+            </div>
+        }
+        else
+        {
+            <div class="typeahead-single-value">
+                @if (Value != null && !_isOpen)
+                {
+                    <div class="typeahead-selected-value" @onclick="OnFocusAsync">
+                        <div class="typeahead-selected-value-text">
+                            @if (SelectedTemplate != null)
+                            {
+                                @SelectedTemplate(GetItemFromValue(Value!)!)
+                            }
+                            else
+                            {
+                                @GetItemText(GetItemFromValue(Value))
+                            }
+                        </div>
+                        <span class="typeahead-single-value-remove text-muted oi oi-circle-x" @onclick="ClearValueAsync" @onclick:stopPropagation="true"></span>
+                    </div>
+                }
+                else
+                {
+                    <input @ref="_searchInput"
+                           type="search"
+                           class="typeahead-input"
+                           placeholder="@(Value == null ? Placeholder : "")"
+                           @bind-value="_searchText"
+                           @bind-value:event="oninput"
+                           @bind-value:after="OnSearchInputAsync"
+                           @onfocus="OnFocusAsync"
+                           @onkeydown="OnKeyDownAsync"
+                           autocomplete="off" />
+                }
+            </div>
+        }
+
+        <div class="typeahead-icon-left">
+            <span class="oi oi-magnifying-glass"></span>
+        </div>
+    </div>
+
+    @if (_isOpen)
+    {
+        <div class="typeahead-results dropdown-menu show">
+            @if (_isLoading && !_suggestions.Any())
+            {
+                <div class="dropdown-item text-muted typeahead-no-results">
+                    Loading...
+                </div>
+            }
+            else if (!_suggestions.Any() && !string.IsNullOrWhiteSpace(_searchText))
+            {
+                <div class="dropdown-item text-muted typeahead-no-results">
+                    No results found
+                </div>
+            }
+            else
+            {
+                var index = 0;
+                foreach (var item in _suggestions)
+                {
+                    var currentIndex = index++;
+                    <button type="button" 
+                            class="dropdown-item typeahead-result @(currentIndex == _focusedIndex ? "active" : "")"
+                            @onmousedown="() => SelectResultAsync(item)"
+                            @onmousedown:preventDefault="true">
+                        @if (ResultTemplate != null)
+                        {
+                            @ResultTemplate(item!)
+                        }
+                        else
+                        {
+                            @GetItemText(item)
+                        }
+                    </button>
+                }
+            }
+        </div>
+    }
+</div>

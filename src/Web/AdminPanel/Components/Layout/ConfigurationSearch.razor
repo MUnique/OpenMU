@@ -1,0 +1,45 @@
+@using MUnique.OpenMU.Web.AdminPanel.Properties
+
+<div class="configuration-search">
+    <div class="input-group configuration-search-container">
+        <div class="input-group-prepend">
+            <span class="input-group-text">
+                <span class="oi oi-magnifying-glass" aria-hidden="true"></span>
+            </span>
+        </div>
+        <input type="search"
+               class="form-control configuration-search__input"
+               placeholder="@($"{Resources.Search}...")"
+               @bind-value="this._searchText"
+               @bind-value:event="oninput"
+                               @bind-value:after="this.OnSearchInputAsync"
+               title="@Resources.Search"
+               @onfocus="this.OnSearchFocus"
+               @onblur="this.OnSearchBlurAsync"
+               @onkeydown="this.OnSearchKeyDownAsync"
+               autocomplete="off" />
+        @if (this._isLoading)
+        {
+            <div class="input-group-append">
+                <span class="input-group-text">
+                    <div class="spinner-border spinner-border-sm text-muted" role="status"></div>
+                </span>
+            </div>
+        }
+    </div>
+    @if (this._searchResults.Count > 0 && !string.IsNullOrWhiteSpace(this._searchText))
+    {
+        <div class="dropdown-menu configuration-search__results show">
+            @foreach (var result in this._searchResults)
+            {
+                <button type="button"
+                        class="dropdown-item configuration-search__result"
+                        @onmousedown="@(() => this.NavigateToResult(result))"
+                        @onmousedown:preventDefault="true">
+                    <span class="configuration-search__result-caption">@result.Caption</span>
+                    <span class="configuration-search__result-path">@result.Path</span>
+                </button>
+            }
+        </div>
+    }
+</div>

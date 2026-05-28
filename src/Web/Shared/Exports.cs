@@ -1,4 +1,4 @@
-﻿// <copyright file="Exports.cs" company="MUnique">
+// <copyright file="Exports.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -39,7 +39,6 @@ public static class Exports
     {
         get
         {
-            yield return "_content/Blazored.Typeahead/blazored-typeahead.js";
             yield return "_content/BlazorInputFile/inputfile.js";
         }
     }
@@ -48,7 +47,6 @@ public static class Exports
     {
         get
         {
-            yield return "_content/Blazored.Typeahead/blazored-typeahead.css";
             yield return $"{Prefix}/css/shared.css";
         }
     }

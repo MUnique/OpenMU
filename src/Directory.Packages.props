@@ -8,7 +8,6 @@
     <PackageVersion Include="BlazorInputFile" Version="0.2.0" />
     <PackageVersion Include="Blazored.Modal" Version="7.3.1" />
     <PackageVersion Include="Blazored.Toast" Version="4.2.1" />
-    <PackageVersion Include="Blazored.Typeahead" Version="4.7.0" />
     <PackageVersion Include="BuildWebCompiler2022" Version="1.14.15" />
     <PackageVersion Include="DG.AdvancedDataGridView" Version="1.2.30115.18" />
     <PackageVersion Include="Dapr.AspNetCore" Version="1.16.1" />

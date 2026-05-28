@@ -35,9 +35,9 @@ public class ConfigurationChangeHandler : IConfigurationChangePublisher
     public async Task ConfigurationChangedAsync(Type type, Guid id, object configuration)
     {
         // TODO: subscribe these systems to the change mediator
-        if (configuration is PlugInConfiguration plugInConfiguration)
+        if (this._serviceProvider.GetService<PlugInManager>() is { } plugInManager)
         {
-            this.OnPlugInConfigurationChanged(id, plugInConfiguration);
+            plugInManager.ApplyChangedConfiguration(type, id, configuration);
         }
 
         if (configuration is ConnectServerDefinition connectServerDefinition)
@@ -67,9 +67,9 @@ public class ConfigurationChangeHandler : IConfigurationChangePublisher
     /// <inheritdoc />
     public async Task ConfigurationRemovedAsync(Type type, Guid id)
     {
-        if (type.IsAssignableTo(typeof(PlugInConfiguration)) && this._serviceProvider.GetService<PlugInManager>() is { } plugInManager)
+        if (this._serviceProvider.GetService<PlugInManager>() is { } plugInManager)
         {
-            plugInManager.DeactivatePlugIn(id);
+            plugInManager.ApplyRemovedConfiguration(type, id);
         }
 
         await this._changeMediator.HandleConfigurationRemovedAsync(type, id).ConfigureAwait(false);
@@ -101,29 +101,6 @@ public class ConfigurationChangeHandler : IConfigurationChangePublisher
                 //// todo: is applying new settings required?
                 await connectServer.StartAsync().ConfigureAwait(false);
             }
-        }
-    }
-
-    private void OnPlugInConfigurationChanged(Guid id, PlugInConfiguration plugInConfiguration)
-    {
-        if (this._serviceProvider.GetService<PlugInManager>() is not { } plugInManager)
-        {
-            return;
-        }
-
-        var typeId = plugInConfiguration.TypeId;
-        var currentlyActive = plugInManager.IsPlugInActive(typeId);
-        if (currentlyActive && !plugInConfiguration.IsActive)
-        {
-            plugInManager.DeactivatePlugIn(typeId);
-        }
-        else if (!currentlyActive && plugInConfiguration.IsActive)
-        {
-            plugInManager.ActivatePlugIn(typeId);
-        }
-        else
-        {
-            plugInManager.ConfigurePlugIn(typeId, plugInConfiguration);
         }
     }
 }
