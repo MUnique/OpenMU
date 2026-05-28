@@ -79,8 +79,8 @@ internal class SkillsInitializer : SkillsInitializerBase
         { SkillNumber.EarthshakeMastery, MagicEffectNumber.Stunned },
         { SkillNumber.CritDmgIncPowUp3, MagicEffectNumber.CriticalDamageIncreaseMastery },
         { SkillNumber.SwellLifeProficiency, MagicEffectNumber.GreaterFortitudeProficiency },
-        { SkillNumber.ExpansionofWizStreng, MagicEffectNumber.WizEnhance2 },
-        { SkillNumber.ExpansionofWizMas, MagicEffectNumber.WizEnhance3 },
+        { SkillNumber.ExpansionofWizStreng, MagicEffectNumber.WizEnhanceStrengthener },
+        { SkillNumber.ExpansionofWizMas, MagicEffectNumber.WizEnhanceMastery },
     };
 
     private readonly IDictionary<byte, MasterSkillRoot> _masterSkillRoots;
