@@ -150,6 +150,18 @@ public static class ItemExtensions
     }
 
     /// <summary>
+    /// Determines whether this item is an armor item.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <returns>
+    ///   <c>true</c> if the specified item is armor; otherwise, <c>false</c>.
+    /// </returns>
+    public static bool IsArmorItem(this Item item)
+    {
+        return item.ItemSlot >= InventoryConstants.HelmSlot && item.ItemSlot <= InventoryConstants.BootsSlot;
+    }
+
+    /// <summary>
     /// Determines whether this instance is a is weapon which deals physical damage.
     /// </summary>
     /// <param name="item">The item.</param>
