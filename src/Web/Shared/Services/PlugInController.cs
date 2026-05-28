@@ -43,9 +43,6 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
     /// <summary>
     /// Gets or sets the name filter.
     /// </summary>
-    /// <value>
-    /// The name filter.
-    /// </value>
     public string NameFilter
     {
         get => this._nameFilter;
@@ -59,9 +56,6 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
     /// <summary>
     /// Gets or sets the type filter.
     /// </summary>
-    /// <value>
-    /// The type filter.
-    /// </value>
     public string TypeFilter
     {
         get => this._typeFilter;
@@ -225,6 +219,7 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
         {
             item.Configuration.SetConfiguration(configuration!, referenceResolver);
             await (await this._dataSource.GetContextAsync().ConfigureAwait(false)).SaveChangesAsync().ConfigureAwait(false);
+
             this.DataChanged?.Invoke(this, EventArgs.Empty);
         }
     }
