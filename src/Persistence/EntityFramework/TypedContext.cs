@@ -1,4 +1,4 @@
-﻿// <copyright file="TypedContext.cs" company="MUnique">
+// <copyright file="TypedContext.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -41,7 +41,7 @@ internal class TypedContext : EntityDataContext, ITypedContext
     }
 
     /// <inheritdoc/>
-    public IEntityType RootType => this._rootType ??= this.Model.GetEntityTypes().First(t => t.ClrType.BaseType == this.EditType);
+    public IEntityType RootType => this._rootType ??= this.Model.GetEntityTypes().First(t => t.ClrType == this.EditType || t.ClrType.BaseType == this.EditType);
 
     /// <summary>
     /// Gets the type which is edited with this context.

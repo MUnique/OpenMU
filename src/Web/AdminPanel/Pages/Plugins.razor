@@ -1,8 +1,6 @@
-﻿@page "/plugins"
+@page "/plugins"
 @using MUnique.OpenMU.Web.AdminPanel.Properties
 @using MUnique.OpenMU.Web.Shared.Models
-
-@inject PlugInController _plugInController;
 
 <PageTitle>@Resources.Plugins</PageTitle>
 <Breadcrumb IsFirstFromRoot="true" Caption="@Resources.Plugins"/>
@@ -17,32 +15,32 @@
             <th class="col-1">@Resources.Action</th>
         </TableHeader>
         <FilterHeader>
-            <th><PlugInExtensionPointSelection SelectedPointId="@this._plugInController.PointFilter" ExtensionPoints="@this._plugInController.ExtensionPoints" OnSelectionChanged="@this.OnPlugInPointSelected" /></th>
-            <th><input type="search" placeholder="Search" @bind="@this._plugInController.NameFilter" @bind:event="oninput"/></th>
-            <th><input type="search" placeholder="Search" @bind="@this._plugInController.TypeFilter" @bind:event="oninput"/></th>
+            <th><PlugInExtensionPointSelection SelectedPointId="@this.PlugInController.PointFilter" ExtensionPoints="@this.PlugInController.ExtensionPoints" OnSelectionChanged="@this.OnPlugInPointSelected" /></th>
+            <th><input type="search" placeholder="Search" @bind="@this.PlugInController.NameFilter" @bind:event="oninput"/></th>
+            <th><input type="search" placeholder="Search" @bind="@this.PlugInController.TypeFilter" @bind:event="oninput"/></th>
             <th></th>
         </FilterHeader>
         <ItemTemplate Context="item">
             <td title=@item.PlugInPointDescription>@item.PlugInPointName</td>
             <td title=@item.PlugInDescription>
-                <MarkedText Marked=@this._plugInController.NameFilter Text=@item.PlugInName />
+                <MarkedText Marked=@this.PlugInController.NameFilter Text=@item.PlugInName />
             </td>
             <td title=@item.TypeId>
-                <MarkedText Marked=@this._plugInController.TypeFilter Text=@item.TypeName />
+                <MarkedText Marked=@this.PlugInController.TypeFilter Text=@item.TypeName />
             </td>
             <td>
                 @if (item.IsActive)
                 {
-                    <Button class="btn-warning" @onclick="async () => await this._plugInController.DeactivateAsync(item)">@Resources.Deactivate</Button>
+                    <Button class="btn-warning" @onclick="async () => await this.PlugInController.DeactivateAsync(item)">@Resources.Deactivate</Button>
                 }
                 else
                 {
-                    <Button class="btn-success" @onclick="async () => await this._plugInController.ActivateAsync(item)">@Resources.Activate</Button>
+                    <Button class="btn-success" @onclick="async () => await this.PlugInController.ActivateAsync(item)">@Resources.Activate</Button>
                 }
 
                 @if (item.ConfigurationType is { })
                 {
-                    <Button class="btn-secondary" @onclick="() => this._plugInController.ShowPlugInConfigAsync(item)"><span class="oi oi-cog" aria-hidden="true"></span></Button>
+                    <Button class="btn-secondary" @onclick="() => this.PlugInController.ShowPlugInConfigAsync(item)"><span class="oi oi-cog" aria-hidden="true"></span></Button>
                 }
             </td>
         </ItemTemplate>
@@ -54,15 +52,3 @@
         </TableFooter>
     </DataTable>
 </div>
-
-@code {
-    
-    private void OnPlugInPointSelected(ChangeEventArgs args)
-    {
-        if (args.Value is string guidString
-            && Guid.TryParse(guidString, out var result))
-        {
-            this._plugInController.PointFilter = result;
-        }
-    }
-}

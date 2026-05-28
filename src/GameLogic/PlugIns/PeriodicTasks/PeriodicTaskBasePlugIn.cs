@@ -1,4 +1,4 @@
-﻿// <copyright file="PeriodicTaskBasePlugIn.cs" company="MUnique">
+// <copyright file="PeriodicTaskBasePlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -71,6 +71,12 @@ public abstract class PeriodicTaskBasePlugIn<TConfiguration, TState> : IPeriodic
                         return;
                     }
 
+                    if (this.IsPreviousEventStillRunning(state))
+                    {
+                        this._isStartForced = false;
+                        return;
+                    }
+
                     this._isStartForced = false;
                     state.NextRunUtc = DateTime.UtcNow.Add(configuration.PreStartMessageDelay);
                     await this.OnPrepareEventAsync(state).ConfigureAwait(false);
@@ -89,6 +95,7 @@ public abstract class PeriodicTaskBasePlugIn<TConfiguration, TState> : IPeriodic
                 {
                     state.NextRunUtc = DateTime.UtcNow.Add(configuration.TaskDuration);
                     state.State = PeriodicTaskState.Started;
+                    state.LastRunUtc = DateTime.UtcNow;
 
                     await this.OnStartedAsync(state).ConfigureAwait(false);
 
@@ -130,6 +137,15 @@ public abstract class PeriodicTaskBasePlugIn<TConfiguration, TState> : IPeriodic
     {
         return this._isStartForced || (this.Configuration?.IsItTimeToStart() ?? false);
     }
+
+    /// <summary>
+    /// Determines whether the previous event run is still within its configured task duration.
+    /// Prevents a new event from starting before the previous one has fully elapsed.
+    /// </summary>
+    /// <param name="state">The current task state.</param>
+    /// <returns><c>true</c> if the previous event duration has not elapsed yet; otherwise <c>false</c>.</returns>
+    protected virtual bool IsPreviousEventStillRunning(TState state)
+        => state.LastRunUtc != DateTime.MinValue && state.LastRunUtc.Add(this.Configuration?.TaskDuration ?? TimeSpan.Zero) > DateTime.UtcNow;
 
     /// <summary>
     /// Called when the task should be prepared before starting it.

@@ -1,4 +1,4 @@
-﻿// <copyright file="WebApplicationExtensions.cs" company="MUnique">
+// <copyright file="WebApplicationExtensions.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -70,10 +70,12 @@ public static class WebApplicationExtensions
         services.AddBlazoredToast();
 
         services.AddScoped<ILookupController, PersistentObjectsLookupController>();
+        services.AddScoped<CreationPanelService>();
 
         services.AddSingleton<IDataSource<GameConfiguration>, GameConfigurationDataSource>();
         services.AddSingleton<IDataSource<Account>, AccountDataSource>();
-        services.AddScoped<SetupService>();
+        services.AddSingleton<ConfigurationSearchIndexCache>();
+        services.AddSingleton<SetupService>();
         services.AddScoped<DataUpdateService>();
         services.AddScoped<AccountService>();
         services.AddScoped<IDataService<Account>>(serviceProvider => serviceProvider.GetService<AccountService>()!);

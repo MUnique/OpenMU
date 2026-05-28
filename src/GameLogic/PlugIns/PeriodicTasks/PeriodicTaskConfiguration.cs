@@ -1,4 +1,4 @@
-﻿// <copyright file="PeriodicTaskConfiguration.cs" company="MUnique">
+// <copyright file="PeriodicTaskConfiguration.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -12,28 +12,34 @@ using MUnique.OpenMU.Interfaces;
 public class PeriodicTaskConfiguration
 {
     /// <summary>
-    /// Gets or sets a timetable for the event.
-    /// </summary>
-    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.PeriodicTaskConfiguration_Timetable_Name))]
-    public IList<TimeOnly> Timetable { get; set; } = new List<TimeOnly>();
-
-    /// <summary>
     /// Gets or sets a time delay.
     /// </summary>
-    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.PeriodicTaskConfiguration_PreStartMessageDelay_Name))]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.PeriodicTaskConfiguration_PreStartMessageDelay_Name), Order = 1)]
     public TimeSpan PreStartMessageDelay { get; set; } = TimeSpan.FromSeconds(3);
 
     /// <summary>
     /// Gets or sets the minimum time of the task duration.
     /// </summary>
-    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.PeriodicTaskConfiguration_TaskDuration_Name))]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.PeriodicTaskConfiguration_TaskDuration_Name), Order = 2)]
     public TimeSpan TaskDuration { get; set; } = TimeSpan.FromMinutes(5);
 
     /// <summary>
-    /// Gets or sets the text which prints as a golden message in the game.
+    /// Gets or sets the text which prints as a golden message in the game when task starts.
     /// </summary>
-    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.PeriodicTaskConfiguration_Message_Name))]
-    public LocalizedString Message { get; set; }
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.PeriodicTaskConfiguration_StartMessage_Name), Order = 3)]
+    public LocalizedString StartMessage { get; set; }
+
+    /// <summary>
+    /// Gets or sets the text which prints as a golden message in the game when task ends.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.PeriodicTaskConfiguration_EndMessage_Name), Order = 4)]
+    public LocalizedString EndMessage { get; set; }
+
+    /// <summary>
+    /// Gets or sets a timetable for the event.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.PeriodicTaskConfiguration_Timetable_Name), Order = 5)]
+    public IList<TimeOnly> Timetable { get; set; } = new List<TimeOnly>();
 
     /// <summary>
     /// Generate a sequence of time points like [00:00, 00:01, ...].
