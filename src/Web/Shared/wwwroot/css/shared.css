@@ -2011,31 +2011,14 @@ textarea.form-control, textarea.valid.modified, .invalid textarea.valid {
 
 .was-validated .form-control:valid, .was-validated th input:valid, th .was-validated input:valid, .valid.modified .form-control:valid, .valid.modified th input:valid, th .valid.modified input:valid, .was-validated .invalid .valid:valid, .valid.modified .invalid .valid:valid, .invalid .was-validated .valid:valid, .invalid .valid.modified .valid:valid, .was-validated form input:valid, .valid.modified form input:valid, form .was-validated input:valid, form .valid.modified input:valid, .was-validated select:valid, .valid.modified select:valid, .form-control.is-valid, th input.is-valid, .valid.modified, .invalid .is-valid.valid, form input.is-valid, select.is-valid {
   border-color: #28a745;
-  padding-right: calc(1.5em + 0.75rem) !important;
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3e%3cpath fill='%2328a745' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
-  background-repeat: no-repeat;
-  background-position: right calc(0.375em + 0.1875rem) center;
-  background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
 }
 .was-validated .form-control:valid:focus, .was-validated th input:valid:focus, th .was-validated input:valid:focus, .valid.modified .form-control:valid:focus, .valid.modified th input:valid:focus, th .valid.modified input:valid:focus, .was-validated .invalid .valid:valid:focus, .valid.modified .invalid .valid:valid:focus, .invalid .was-validated .valid:valid:focus, .invalid .valid.modified .valid:valid:focus, .was-validated form input:valid:focus, .valid.modified form input:valid:focus, form .was-validated input:valid:focus, form .valid.modified input:valid:focus, .was-validated select:valid:focus, .valid.modified select:valid:focus, .form-control.is-valid:focus, th input.is-valid:focus, .valid.modified:focus, .invalid .is-valid.valid:focus, form input.is-valid:focus, select.is-valid:focus {
   border-color: #28a745;
   box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
 }
 
-.was-validated select.form-control:valid, .was-validated select:valid, .valid.modified select:valid, select.form-control.is-valid, .invalid select.is-valid.valid, select.is-valid, select.valid.modified {
-  padding-right: 3rem !important;
-  background-position: right 1.5rem center;
-}
-
-.was-validated textarea.form-control:valid, .valid.modified textarea.form-control:valid, .was-validated .invalid textarea.valid:valid, .valid.modified .invalid textarea.valid:valid, .invalid .was-validated textarea.valid:valid, .invalid .valid.modified textarea.valid:valid, textarea.form-control.is-valid, textarea.valid.modified, .invalid textarea.is-valid.valid {
-  padding-right: calc(1.5em + 0.75rem);
-  background-position: top calc(0.375em + 0.1875rem) right calc(0.375em + 0.1875rem);
-}
-
 .was-validated .custom-select:valid, .valid.modified .custom-select:valid, .custom-select.is-valid, .custom-select.valid.modified {
   border-color: #28a745;
-  padding-right: calc(0.75em + 2.3125rem) !important;
-  background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") right 0.75rem center/8px 10px no-repeat, #fff url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3e%3cpath fill='%2328a745' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e") center right 1.75rem/calc(0.75em + 0.375rem) calc(0.75em + 0.375rem) no-repeat;
 }
 .was-validated .custom-select:valid:focus, .valid.modified .custom-select:valid:focus, .custom-select.is-valid:focus, .custom-select.valid.modified:focus {
   border-color: #28a745;
@@ -2117,31 +2100,14 @@ textarea.form-control, textarea.valid.modified, .invalid textarea.valid {
 
 .was-validated .form-control:invalid, .was-validated th input:invalid, th .was-validated input:invalid, .was-validated .valid.modified:invalid, .valid.modified .form-control:invalid, .valid.modified th input:invalid, th .valid.modified input:invalid, .valid.modified .valid.modified:invalid, .was-validated .invalid .valid:invalid, .valid.modified .invalid .valid:invalid, .invalid .was-validated .valid:invalid, .invalid .valid.modified .valid:invalid, .was-validated form input:invalid, .valid.modified form input:invalid, form .was-validated input:invalid, form .valid.modified input:invalid, .was-validated select:invalid, .valid.modified select:invalid, .form-control.is-invalid, th input.is-invalid, .is-invalid.valid.modified, .form-control.invalid.modified, th input.invalid.modified, .invalid.modified.valid, .invalid .is-invalid.valid, form input.is-invalid, form input.invalid.modified, select.is-invalid, select.invalid.modified {
   border-color: #dc3545;
-  padding-right: calc(1.5em + 0.75rem) !important;
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23dc3545' viewBox='0 0 12 12'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
-  background-repeat: no-repeat;
-  background-position: right calc(0.375em + 0.1875rem) center;
-  background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
 }
 .was-validated .form-control:invalid:focus, .was-validated th input:invalid:focus, th .was-validated input:invalid:focus, .was-validated .valid.modified:invalid:focus, .valid.modified .form-control:invalid:focus, .valid.modified th input:invalid:focus, th .valid.modified input:invalid:focus, .valid.modified .valid.modified:invalid:focus, .was-validated .invalid .valid:invalid:focus, .valid.modified .invalid .valid:invalid:focus, .invalid .was-validated .valid:invalid:focus, .invalid .valid.modified .valid:invalid:focus, .was-validated form input:invalid:focus, .valid.modified form input:invalid:focus, form .was-validated input:invalid:focus, form .valid.modified input:invalid:focus, .was-validated select:invalid:focus, .valid.modified select:invalid:focus, .form-control.is-invalid:focus, th input.is-invalid:focus, .is-invalid.valid.modified:focus, .form-control.invalid.modified:focus, th input.invalid.modified:focus, .invalid.modified.valid:focus, .invalid .is-invalid.valid:focus, form input.is-invalid:focus, form input.invalid.modified:focus, select.is-invalid:focus, select.invalid.modified:focus {
   border-color: #dc3545;
   box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
 }
 
-.was-validated select.form-control:invalid, .was-validated select:invalid, .valid.modified select:invalid, select.form-control.is-invalid, select.is-invalid.valid.modified, .invalid select.is-invalid.valid, select.is-invalid, select.invalid.modified {
-  padding-right: 3rem !important;
-  background-position: right 1.5rem center;
-}
-
-.was-validated textarea.form-control:invalid, .was-validated textarea.valid.modified:invalid, .valid.modified textarea.form-control:invalid, .valid.modified textarea.valid.modified:invalid, .was-validated .invalid textarea.valid:invalid, .valid.modified .invalid textarea.valid:invalid, .invalid .was-validated textarea.valid:invalid, .invalid .valid.modified textarea.valid:invalid, textarea.form-control.is-invalid, textarea.is-invalid.valid.modified, textarea.form-control.invalid.modified, textarea.invalid.modified.valid, .invalid textarea.is-invalid.valid {
-  padding-right: calc(1.5em + 0.75rem);
-  background-position: top calc(0.375em + 0.1875rem) right calc(0.375em + 0.1875rem);
-}
-
 .was-validated .custom-select:invalid, .valid.modified .custom-select:invalid, .custom-select.is-invalid, .custom-select.invalid.modified {
   border-color: #dc3545;
-  padding-right: calc(0.75em + 2.3125rem) !important;
-  background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") right 0.75rem center/8px 10px no-repeat, #fff url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23dc3545' viewBox='0 0 12 12'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e") center right 1.75rem/calc(0.75em + 0.375rem) calc(0.75em + 0.375rem) no-repeat;
 }
 .was-validated .custom-select:invalid:focus, .valid.modified .custom-select:invalid:focus, .custom-select.is-invalid:focus, .custom-select.invalid.modified:focus {
   border-color: #dc3545;
