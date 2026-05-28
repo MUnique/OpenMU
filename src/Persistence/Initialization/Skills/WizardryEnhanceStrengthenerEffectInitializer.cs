@@ -49,6 +49,7 @@ public class WizardryEnhanceStrengthenerEffectInitializer : InitializerBase
             powerUpCopy.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
             powerUpCopy.Boost.ConstantValue.Value = powerUp.Boost!.ConstantValue.Value;
             powerUpCopy.Boost.ConstantValue.AggregateType = powerUp.Boost.ConstantValue.AggregateType;
+            powerUpCopy.Boost.MaximumValue = powerUp.Boost.MaximumValue;
 
             foreach (var boostRelatedValue in powerUp.Boost.RelatedValues)
             {

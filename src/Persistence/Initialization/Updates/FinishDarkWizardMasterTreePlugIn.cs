@@ -74,10 +74,20 @@ public class FinishDarkWizardMasterTreePlugIn : UpdatePlugInBase
         var wizEnhanceMasteryEffect = this.CreateWizEnhanceMasteryEffect(context, gameConfiguration);
 
         // Update master skills
-        if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.ExpansionofWizMas)?.MasterDefinition is { } expansionOfWizMastery)
+        if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.ExpansionofWizStreng) is { } expansionOfWizStreng)
         {
-            expansionOfWizMastery.ReplacedSkill = gameConfiguration.Skills.First(s => s.Number == (short)SkillNumber.ExpansionofWizStreng);
-            expansionOfWizMastery.Aggregation = AggregateType.AddRaw;
+            expansionOfWizStreng.MagicEffectDef = wizEnhanceStrengthenerEffect;
+        }
+
+        if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.ExpansionofWizMas) is { } expansionOfWizMastery)
+        {
+            expansionOfWizMastery.MagicEffectDef = wizEnhanceMasteryEffect;
+
+            if (expansionOfWizMastery.MasterDefinition is { } masterDefinition)
+            {
+                masterDefinition.ReplacedSkill = gameConfiguration.Skills.First(s => s.Number == (short)SkillNumber.ExpansionofWizStreng);
+                masterDefinition.Aggregation = AggregateType.AddRaw;
+            }
         }
     }
 
@@ -105,6 +115,7 @@ public class FinishDarkWizardMasterTreePlugIn : UpdatePlugInBase
             powerUpCopy.Boost = context.CreateNew<PowerUpDefinitionValue>();
             powerUpCopy.Boost.ConstantValue.Value = powerUp.Boost!.ConstantValue.Value;
             powerUpCopy.Boost.ConstantValue.AggregateType = powerUp.Boost.ConstantValue.AggregateType;
+            powerUpCopy.Boost.MaximumValue = powerUp.Boost.MaximumValue;
 
             foreach (var boostRelatedValue in powerUp.Boost.RelatedValues)
             {
@@ -151,6 +162,7 @@ public class FinishDarkWizardMasterTreePlugIn : UpdatePlugInBase
             powerUpCopy.Boost = context.CreateNew<PowerUpDefinitionValue>();
             powerUpCopy.Boost.ConstantValue.Value = powerUp.Boost!.ConstantValue.Value;
             powerUpCopy.Boost.ConstantValue.AggregateType = powerUp.Boost.ConstantValue.AggregateType;
+            powerUpCopy.Boost.MaximumValue = powerUp.Boost.MaximumValue;
 
             foreach (var boostRelatedValue in powerUp.Boost.RelatedValues)
             {
