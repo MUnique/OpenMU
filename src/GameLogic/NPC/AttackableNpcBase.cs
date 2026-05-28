@@ -128,7 +128,7 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
             {
                 await player.AfterHitTargetAsync().ConfigureAwait(false);
 
-                if (player.Attributes?[Stats.IsMaceEquipped] > 0 && Rand.NextRandomBool(player.Attributes[Stats.MaceMasteryStunChance]))
+                if (this.IsAlive && Rand.NextRandomBool(player.Attributes![Stats.MaceMasteryStunChance]))
                 {
                     await player.ApplyMaceMasteryStunEffectAsync(this).ConfigureAwait(false);
                 }

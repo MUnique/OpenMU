@@ -80,9 +80,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     private Lazy<ComboStateMachine>? _comboStateLazy;
 
-    private const ushort DurabilityReduction1SkillId = 300;
-    private const ushort DurabilityReduction1FistMasterSkillId = 578;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="Player" /> class.
     /// </summary>di
@@ -759,7 +756,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
 
         await this.HitAsync(hitInfo, attacker, skill?.Skill, isFinalStreakHit).ConfigureAwait(false);
-        await this.DecreaseItemDurabilityAfterHitAsync(hitInfo, attacker.Attributes[Stats.RagefulBlowMasteryDurabilityDecChance]).ConfigureAwait(false);
+        await this.DecreaseItemDurabilityAfterHitAsync(hitInfo, skill).ConfigureAwait(false);
 
         if (attacker as IPlayerSurrogate is { } playerSurrogate)
         {
@@ -770,7 +767,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         {
             await attackerPlayer.AfterHitTargetAsync().ConfigureAwait(false);
 
-            if (attackerPlayer.Attributes?[Stats.IsMaceEquipped] > 0 && Rand.NextRandomBool(attackerPlayer.Attributes[Stats.MaceMasteryStunChance]))
+            if (this.IsAlive && Rand.NextRandomBool(attackerPlayer.Attributes![Stats.MaceMasteryStunChance]))
             {
                 await attackerPlayer.ApplyMaceMasteryStunEffectAsync(this).ConfigureAwait(false);
             }
@@ -2693,7 +2690,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
     }
 
-    private async ValueTask DecreaseItemDurabilityAfterHitAsync(HitInfo hitInfo, float ragefulBlowMasteryDurabilityDecChance = 0)
+    private async ValueTask DecreaseItemDurabilityAfterHitAsync(HitInfo hitInfo, SkillEntry? skill)
     {
         var randomDefensiveItem = this.Inventory?.EquippedItems.Where(ItemExtensions.IsDefensiveItem).SelectRandom();
         if (randomDefensiveItem is { })
@@ -2701,16 +2698,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             await this.DecreaseDefenseItemDurabilityAsync(randomDefensiveItem, hitInfo).ConfigureAwait(false);
         }
 
-        if (Rand.NextRandomBool(ragefulBlowMasteryDurabilityDecChance))
+        if (Rand.NextRandomBool(skill?.Attributes?[Stats.RagefulBlowMasteryDurabilityDecChance] ?? 0))
         {
             var randomArmorItem = this.Inventory?.EquippedItems.Where(ItemExtensions.IsArmorItem).SelectRandom();
             if (randomArmorItem is { })
             {
-                var isRageFighter = this.Attributes?[Stats.VitalitySkillMultiplier] > 0;
-                var durabilityReductionSkill = this.SkillList?.GetSkill(isRageFighter ? DurabilityReduction1FistMasterSkillId : DurabilityReduction1SkillId);
-                var attenuation = durabilityReductionSkill is null ? 1.0 : durabilityReductionSkill.Level / 5.0;
-                var reductionFactor = (10 - attenuation) / 100;  // 10% base decrease
-                if (reductionFactor > 0 && randomArmorItem.DecreaseDurability(randomArmorItem.GetMaximumDurabilityOfOnePiece() * reductionFactor))
+                if (randomArmorItem.DecreaseDurability(randomArmorItem.GetMaximumDurabilityOfOnePiece() * this.Attributes![Stats.DurabilityReductionFactor]))
                 {
                     await this.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(randomArmorItem, false)).ConfigureAwait(false);
                 }
