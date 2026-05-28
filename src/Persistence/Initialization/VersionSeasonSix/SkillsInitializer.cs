@@ -79,6 +79,8 @@ internal class SkillsInitializer : SkillsInitializerBase
         { SkillNumber.EarthshakeMastery, MagicEffectNumber.Stunned },
         { SkillNumber.CritDmgIncPowUp3, MagicEffectNumber.CriticalDamageIncrease2 },
         { SkillNumber.SwellLifeProficiency, MagicEffectNumber.GreaterFortitude2 },
+        { SkillNumber.ExpansionofWizStreng, MagicEffectNumber.WizEnhance2 },
+        { SkillNumber.ExpansionofWizMas, MagicEffectNumber.WizEnhance3 },
     };
 
     private readonly IDictionary<byte, MasterSkillRoot> _masterSkillRoots;
@@ -696,6 +698,8 @@ internal class SkillsInitializer : SkillsInitializerBase
         new StunEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         new CriticalDamageIncreaseMasteryEffectInitializer(this.Context, this.GameConfiguration).Initialize();
         new LifeSwellProficiencyEffectInitializer(this.Context, this.GameConfiguration).Initialize();
+        new WizardryEnhanceStrengthenerEffectInitializer(this.Context, this.GameConfiguration).Initialize();
+        new WizardryEnhanceMasteryEffectInitializer(this.Context, this.GameConfiguration).Initialize();
     }
 
     private void MapSkillsToEffects()
@@ -795,7 +799,7 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.AddMasterSkillDefinition(SkillNumber.ExpansionofWizStreng, SkillNumber.ExpansionofWizardry, SkillNumber.Undefined, 2, 2, SkillNumber.ExpansionofWizardry, 20, Formula120Value, Formula120, Stats.MaximumWizBaseDmg, AggregateType.Multiplicate);
         this.AddMasterSkillDefinition(SkillNumber.InfernoStrengthener, SkillNumber.Inferno, SkillNumber.FlameStrengthener, 2, 3, SkillNumber.Inferno, 20, Formula502);
         this.AddMasterSkillDefinition(SkillNumber.BlastStrengthener, SkillNumber.Cometfall, SkillNumber.LightningStrengthener, 2, 3, SkillNumber.Cometfall, 20, Formula502);
-        this.AddMasterSkillDefinition(SkillNumber.ExpansionofWizMas, SkillNumber.ExpansionofWizStreng, SkillNumber.Undefined, 2, 3, SkillNumber.ExpansionofWizardry, 20, Formula120Value, Formula120, targetAttribute: Stats.CriticalDamageChance, AggregateType.Multiplicate);
+        this.AddMasterSkillDefinition(SkillNumber.ExpansionofWizMas, SkillNumber.ExpansionofWizStreng, SkillNumber.Undefined, 2, 3, SkillNumber.ExpansionofWizStreng, 20, Formula120Value, Formula120, Stats.CriticalDamageChance, AggregateType.AddRaw);
         this.AddMasterSkillDefinition(SkillNumber.PoisonStrengthener, SkillNumber.Poison, SkillNumber.Undefined, 2, 3, SkillNumber.Poison, 20, Formula632);
         this.AddMasterSkillDefinition(SkillNumber.EvilSpiritStreng, SkillNumber.EvilSpirit, SkillNumber.Undefined, 2, 4, SkillNumber.EvilSpirit, 20, Formula502);
         this.AddPassiveMasterSkillDefinition(SkillNumber.MagicMasteryGrandMaster, Stats.WizardryBaseDmg, AggregateType.AddRaw, Formula502, 4, 2, SkillNumber.EvilSpiritStreng);
