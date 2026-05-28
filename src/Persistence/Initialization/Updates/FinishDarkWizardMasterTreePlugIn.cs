@@ -13,7 +13,7 @@ using MUnique.OpenMU.Persistence.Initialization.Skills;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// This update completes the dark wizard master tree skills and effects.
+/// This update completes the dark wizard master tree expansion of wizardry effects.
 /// </summary>
 [PlugIn]
 [Display(Name = PlugInName, Description = PlugInDescription)]
@@ -28,7 +28,7 @@ public class FinishDarkWizardMasterTreePlugIn : UpdatePlugInBase
     /// <summary>
     /// The plug in description.
     /// </summary>
-    internal const string PlugInDescription = "This update completes the dark wizard master tree skills and effects.";
+    internal const string PlugInDescription = "This update completes the dark wizard master tree expansion of wizardry effects.";
 
     /// <inheritdoc />
     public override UpdateVersion Version => UpdateVersion.FinishDarkWizardMasterTree;
@@ -51,107 +51,60 @@ public class FinishDarkWizardMasterTreePlugIn : UpdatePlugInBase
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
+        // Update Wizardry Enhance effect
+        var wizardryEnhanceEffect = gameConfiguration.MagicEffects.First(e => e.Number == (short)MagicEffectNumber.WizEnhance);
+        wizardryEnhanceEffect.Duration = context.CreateNew<PowerUpDefinitionValue>();
+        wizardryEnhanceEffect.Duration.ConstantValue.Value = 1800f; // 30 minutes
+        wizardryEnhanceEffect.PowerUpDefinitions.Clear();
+
+        var minWizDmgPowerUp = context.CreateNew<PowerUpDefinition>();
+        wizardryEnhanceEffect.PowerUpDefinitions.Add(minWizDmgPowerUp);
+        minWizDmgPowerUp.TargetAttribute = Stats.MinimumWizBaseDmg.GetPersistent(gameConfiguration);
+        minWizDmgPowerUp.Boost = context.CreateNew<PowerUpDefinitionValue>();
+        minWizDmgPowerUp.Boost.MaximumValue = 100f; // 100 dmg
+
+        var minWizDmgPerEnergy = context.CreateNew<AttributeRelationship>();
+        minWizDmgPerEnergy.InputAttribute = Stats.TotalEnergy.GetPersistent(gameConfiguration);
+        minWizDmgPerEnergy.InputOperator = InputOperator.Multiply;
+        minWizDmgPerEnergy.InputOperand = 0.2f / 9; // 45 energy adds 1 min wiz damage
+        minWizDmgPowerUp.Boost.RelatedValues.Add(minWizDmgPerEnergy);
+
         // Create Critical Damage Increase Mastery Skill Effect
-        var critDmgIncMasteryEffect = this.CreateCritDmgIncMasteryEffect(context, gameConfiguration);
-
-        // Update Stunned effect
-        var stunnedEffect = gameConfiguration.MagicEffects.First(e => e.Number == (short)MagicEffectNumber.Stunned);
-        stunnedEffect.Duration = context.CreateNew<PowerUpDefinitionValue>();
-        stunnedEffect.Duration.ConstantValue.Value = 2;
-
-        var stunChancePowerUpDefinition = context.CreateNew<PowerUpDefinition>();
-        stunnedEffect.PowerUpDefinitions.Add(stunChancePowerUpDefinition);
-        stunChancePowerUpDefinition.TargetAttribute = Stats.MasteryStunChance.GetPersistent(gameConfiguration);
-        stunChancePowerUpDefinition.Boost = context.CreateNew<PowerUpDefinitionValue>();
-        stunChancePowerUpDefinition.Boost.ConstantValue.Value = 0;
-
-        // Map skills to effects
-        this.MapSkillToEffect(gameConfiguration, SkillNumber.FireBurstMastery, stunnedEffect);
-        this.MapSkillToEffect(gameConfiguration, SkillNumber.EarthshakeMastery, stunnedEffect);
-        this.MapSkillToEffect(gameConfiguration, SkillNumber.CritDmgIncPowUp3, critDmgIncMasteryEffect);
-
-        // Update AreaSkillSettings
-        this.AddAreaSkillSettings(gameConfiguration, context, SkillNumber.Earthshake, false, 0, 0, 0, useTargetAreaFilter: true, targetAreaDiameter: 10, minimumHitsPerAttack: 9, maximumHitsPerAttack: 15);
-        this.AddAreaSkillSettings(gameConfiguration, context, SkillNumber.EarthshakeStreng, false, 0, 0, 0, useTargetAreaFilter: true, targetAreaDiameter: 10, minimumHitsPerAttack: 9, maximumHitsPerAttack: 15);
-        this.AddAreaSkillSettings(gameConfiguration, context, SkillNumber.EarthshakeMastery, false, 0, 0, 0, useTargetAreaFilter: true, targetAreaDiameter: 10, minimumHitsPerAttack: 9, maximumHitsPerAttack: 15);
-
-        if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.ChaoticDiseier) is { } chaoticDiseier)
-        {
-            chaoticDiseier.AreaSkillSettings!.MinimumNumberOfHitsPerAttack = 7;
-        }
+        var wizEnhanceStrengthenerEffect = this.CreateWizEnhanceStrengthenerEffect(context, gameConfiguration);
+        var wizEnhanceMasteryEffect = this.CreateWizEnhanceMasteryEffect(context, gameConfiguration);
 
         // Update master skills
-        if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.CriticalDmgIncPowUp)?.MasterDefinition is { } fireTomeMastery)
+        if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.ExpansionofWizMas)?.MasterDefinition is { } expansionOfWizMastery)
         {
-            fireTomeMastery.TargetAttribute = Stats.CriticalDamageBonus.GetPersistent(gameConfiguration);
-            fireTomeMastery.Aggregation = AggregateType.AddRaw;
-        }
-
-        if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.FireBurstMastery)?.MasterDefinition is { } fireBurstMastery)
-        {
-            fireBurstMastery.ReplacedSkill = gameConfiguration.Skills.First(s => s.Number == (short)SkillNumber.FireBurstStreng);
-            fireBurstMastery.TargetAttribute = Stats.MasteryStunChance.GetPersistent(gameConfiguration);
-            fireBurstMastery.Aggregation = AggregateType.AddRaw;
-            fireBurstMastery.ValueFormula = $"{fireBurstMastery.ValueFormula} / 100";
-        }
-
-        if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.CritDmgIncPowUp2)?.MasterDefinition is { } critDmgIncPowUp2)
-        {
-            critDmgIncPowUp2.ReplacedSkill = gameConfiguration.Skills.First(s => s.Number == (short)SkillNumber.CriticalDmgIncPowUp);
-            critDmgIncPowUp2.ExtendsDuration = true;
-        }
-
-        if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.EarthshakeMastery)?.MasterDefinition is { } earthshakeMastery)
-        {
-            earthshakeMastery.ReplacedSkill = gameConfiguration.Skills.First(s => s.Number == (short)SkillNumber.EarthshakeStreng);
-            earthshakeMastery.TargetAttribute = Stats.MasteryStunChance.GetPersistent(gameConfiguration);
-            earthshakeMastery.Aggregation = AggregateType.AddRaw;
-            earthshakeMastery.ValueFormula = $"{earthshakeMastery.ValueFormula} / 100";
-        }
-
-        if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.CritDmgIncPowUp3)?.MasterDefinition is { } critDmgIncPowUp3)
-        {
-            critDmgIncPowUp3.ReplacedSkill = gameConfiguration.Skills.First(s => s.Number == (short)SkillNumber.CritDmgIncPowUp2);
-            critDmgIncPowUp3.TargetAttribute = Stats.CriticalDamageChance.GetPersistent(gameConfiguration);
-            critDmgIncPowUp3.Aggregation = AggregateType.AddRaw;
-            critDmgIncPowUp3.ValueFormula = $"{critDmgIncPowUp3.ValueFormula} / 100";
+            expansionOfWizMastery.ReplacedSkill = gameConfiguration.Skills.First(s => s.Number == (short)SkillNumber.ExpansionofWizStreng);
+            expansionOfWizMastery.Aggregation = AggregateType.AddRaw;
         }
     }
 
-    private MagicEffectDefinition CreateCritDmgIncMasteryEffect(IContext context, GameConfiguration gameConfiguration)
+    private MagicEffectDefinition CreateWizEnhanceStrengthenerEffect(IContext context, GameConfiguration gameConfiguration)
     {
         var magicEffect = context.CreateNew<MagicEffectDefinition>();
         gameConfiguration.MagicEffects.Add(magicEffect);
-        magicEffect.Number = (byte)MagicEffectNumber.CriticalDamageIncrease2;
-        magicEffect.Name = "Critical Damage Increase Mastery Skill Effect";
+        magicEffect.Number = (byte)MagicEffectNumber.WizEnhanceStrengthener;
+        magicEffect.Name = "Wizardry Enhance Strengthener Skill Effect";
 
-        var critDmgIncEffect = gameConfiguration.MagicEffects.First(e => e.Number == (short)MagicEffectNumber.CriticalDamageIncrease);
-        critDmgIncEffect.Duration?.MaximumValue = 180;
-        critDmgIncEffect.SubType = 17;
-        magicEffect.InformObservers = critDmgIncEffect.InformObservers;
-        magicEffect.SubType = critDmgIncEffect.SubType;
-        magicEffect.SendDuration = critDmgIncEffect.SendDuration;
-        magicEffect.StopByDeath = critDmgIncEffect.StopByDeath;
+        var wizardryEnhanceEffect = gameConfiguration.MagicEffects.First(e => e.Number == (short)MagicEffectNumber.WizEnhance);
+        magicEffect.InformObservers = wizardryEnhanceEffect.InformObservers;
+        magicEffect.SubType = wizardryEnhanceEffect.SubType;
+        magicEffect.SendDuration = wizardryEnhanceEffect.SendDuration;
+        magicEffect.StopByDeath = wizardryEnhanceEffect.StopByDeath;
         magicEffect.Duration = context.CreateNew<PowerUpDefinitionValue>();
-        magicEffect.Duration.ConstantValue.Value = critDmgIncEffect.Duration!.ConstantValue.Value;
-        magicEffect.Duration.MaximumValue = critDmgIncEffect.Duration.MaximumValue;
+        magicEffect.Duration.ConstantValue.Value = wizardryEnhanceEffect.Duration!.ConstantValue.Value;
+        magicEffect.Duration.MaximumValue = wizardryEnhanceEffect.Duration.MaximumValue;
 
-        foreach (var durationRelatedValue in critDmgIncEffect.Duration.RelatedValues)
-        {
-            var durationRelatedValueCopy = context.CreateNew<AttributeRelationship>();
-            durationRelatedValueCopy.InputAttribute = durationRelatedValue.InputAttribute!.GetPersistent(gameConfiguration);
-            durationRelatedValueCopy.InputOperator = durationRelatedValue.InputOperator;
-            durationRelatedValueCopy.InputOperand = durationRelatedValue.InputOperand;
-            magicEffect.Duration.RelatedValues.Add(durationRelatedValueCopy);
-        }
-
-        foreach (var powerUp in critDmgIncEffect.PowerUpDefinitions)
+        foreach (var powerUp in wizardryEnhanceEffect.PowerUpDefinitions)
         {
             var powerUpCopy = context.CreateNew<PowerUpDefinition>();
             magicEffect.PowerUpDefinitions.Add(powerUpCopy);
             powerUpCopy.TargetAttribute = powerUp.TargetAttribute!.GetPersistent(gameConfiguration);
             powerUpCopy.Boost = context.CreateNew<PowerUpDefinitionValue>();
             powerUpCopy.Boost.ConstantValue.Value = powerUp.Boost!.ConstantValue.Value;
+            powerUpCopy.Boost.ConstantValue.AggregateType = powerUp.Boost.ConstantValue.AggregateType;
 
             foreach (var boostRelatedValue in powerUp.Boost.RelatedValues)
             {
@@ -159,72 +112,62 @@ public class FinishDarkWizardMasterTreePlugIn : UpdatePlugInBase
                 boostRelatedValueCopy.InputAttribute = boostRelatedValue.InputAttribute!.GetPersistent(gameConfiguration);
                 boostRelatedValueCopy.InputOperator = boostRelatedValue.InputOperator;
                 boostRelatedValueCopy.InputOperand = boostRelatedValue.InputOperand;
+                boostRelatedValueCopy.AggregateType = boostRelatedValue.AggregateType;
                 powerUpCopy.Boost.RelatedValues.Add(boostRelatedValueCopy);
             }
         }
 
-        var critChancePowerUpDefinition = context.CreateNew<PowerUpDefinition>();
-        magicEffect.PowerUpDefinitions.Add(critChancePowerUpDefinition);
-        critChancePowerUpDefinition.TargetAttribute = Stats.CriticalDamageChance.GetPersistent(gameConfiguration);
-        critChancePowerUpDefinition.Boost = context.CreateNew<PowerUpDefinitionValue>();
-        critChancePowerUpDefinition.Boost.ConstantValue.Value = 0;
+        var maxDmgPowerUp = context.CreateNew<PowerUpDefinition>();
+        magicEffect.PowerUpDefinitions.Add(maxDmgPowerUp);
+        maxDmgPowerUp.TargetAttribute = Stats.MaximumWizBaseDmg.GetPersistent(gameConfiguration);
+        maxDmgPowerUp.Boost = context.CreateNew<PowerUpDefinitionValue>();
+        maxDmgPowerUp.Boost.ConstantValue.Value = 1f;
+        maxDmgPowerUp.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
 
         return magicEffect;
     }
 
-    private void MapSkillToEffect(GameConfiguration gameConfiguration, SkillNumber skillNumber, MagicEffectDefinition magicEffect)
+    private MagicEffectDefinition CreateWizEnhanceMasteryEffect(IContext context, GameConfiguration gameConfiguration)
     {
-        if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)skillNumber) is { } skill)
+        var magicEffect = context.CreateNew<MagicEffectDefinition>();
+        gameConfiguration.MagicEffects.Add(magicEffect);
+        magicEffect.Number = (byte)MagicEffectNumber.WizEnhanceMastery;
+        magicEffect.Name = "Wizardry Enhance Mastery Skill Effect";
+
+        var wizardryEnhanceEffect = gameConfiguration.MagicEffects.First(e => e.Number == (short)MagicEffectNumber.WizEnhanceStrengthener);
+        magicEffect.InformObservers = wizardryEnhanceEffect.InformObservers;
+        magicEffect.SubType = wizardryEnhanceEffect.SubType;
+        magicEffect.SendDuration = wizardryEnhanceEffect.SendDuration;
+        magicEffect.StopByDeath = wizardryEnhanceEffect.StopByDeath;
+        magicEffect.Duration = context.CreateNew<PowerUpDefinitionValue>();
+        magicEffect.Duration.ConstantValue.Value = wizardryEnhanceEffect.Duration!.ConstantValue.Value;
+        magicEffect.Duration.MaximumValue = wizardryEnhanceEffect.Duration.MaximumValue;
+
+        foreach (var powerUp in wizardryEnhanceEffect.PowerUpDefinitions)
         {
-            skill.MagicEffectDef = magicEffect;
-        }
-    }
+            var powerUpCopy = context.CreateNew<PowerUpDefinition>();
+            magicEffect.PowerUpDefinitions.Add(powerUpCopy);
+            powerUpCopy.TargetAttribute = powerUp.TargetAttribute!.GetPersistent(gameConfiguration);
+            powerUpCopy.Boost = context.CreateNew<PowerUpDefinitionValue>();
+            powerUpCopy.Boost.ConstantValue.Value = powerUp.Boost!.ConstantValue.Value;
+            powerUpCopy.Boost.ConstantValue.AggregateType = powerUp.Boost.ConstantValue.AggregateType;
 
-    private void AddAreaSkillSettings(
-        GameConfiguration gameConfiguration,
-        IContext context,
-        SkillNumber skillNumber,
-        bool useFrustumFilter,
-        float frustumStartWidth,
-        float frustumEndWidth,
-        float frustumDistance,
-        bool useDeferredHits = false,
-        TimeSpan delayPerOneDistance = default,
-        TimeSpan delayBetweenHits = default,
-        int minimumHitsPerTarget = 1,
-        int maximumHitsPerTarget = 1,
-        int minimumHitsPerAttack = default,
-        int maximumHitsPerAttack = default,
-        float hitChancePerDistanceMultiplier = 1.0f,
-        bool useTargetAreaFilter = false,
-        float targetAreaDiameter = default,
-        int projectileCount = 1,
-        int effectRange = default)
-    {
-        if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)skillNumber) is not { } skill)
-        {
-            return;
+            foreach (var boostRelatedValue in powerUp.Boost.RelatedValues)
+            {
+                var boostRelatedValueCopy = context.CreateNew<AttributeRelationship>();
+                boostRelatedValueCopy.InputAttribute = boostRelatedValue.InputAttribute!.GetPersistent(gameConfiguration);
+                boostRelatedValueCopy.InputOperator = boostRelatedValue.InputOperator;
+                boostRelatedValueCopy.InputOperand = boostRelatedValue.InputOperand;
+                boostRelatedValueCopy.AggregateType = boostRelatedValue.AggregateType;
+                powerUpCopy.Boost.RelatedValues.Add(boostRelatedValueCopy);
+            }
         }
 
-        skill.SkillType = SkillType.AreaSkillAutomaticHits;
-        var areaSkillSettings = context.CreateNew<AreaSkillSettings>();
-        skill.AreaSkillSettings = areaSkillSettings;
+        var critChancePowerUp = context.CreateNew<PowerUpDefinition>();
+        magicEffect.PowerUpDefinitions.Add(critChancePowerUp);
+        critChancePowerUp.TargetAttribute = Stats.CriticalDamageChance.GetPersistent(gameConfiguration);
+        critChancePowerUp.Boost = context.CreateNew<PowerUpDefinitionValue>();
 
-        areaSkillSettings.UseFrustumFilter = useFrustumFilter;
-        areaSkillSettings.FrustumStartWidth = frustumStartWidth;
-        areaSkillSettings.FrustumEndWidth = frustumEndWidth;
-        areaSkillSettings.FrustumDistance = frustumDistance;
-        areaSkillSettings.UseTargetAreaFilter = useTargetAreaFilter;
-        areaSkillSettings.TargetAreaDiameter = targetAreaDiameter;
-        areaSkillSettings.UseDeferredHits = useDeferredHits;
-        areaSkillSettings.DelayPerOneDistance = delayPerOneDistance;
-        areaSkillSettings.DelayBetweenHits = delayBetweenHits;
-        areaSkillSettings.MinimumNumberOfHitsPerTarget = minimumHitsPerTarget;
-        areaSkillSettings.MaximumNumberOfHitsPerTarget = maximumHitsPerTarget;
-        areaSkillSettings.MinimumNumberOfHitsPerAttack = minimumHitsPerAttack;
-        areaSkillSettings.MaximumNumberOfHitsPerAttack = maximumHitsPerAttack;
-        areaSkillSettings.HitChancePerDistanceMultiplier = hitChancePerDistanceMultiplier;
-        areaSkillSettings.ProjectileCount = projectileCount;
-        areaSkillSettings.EffectRange = effectRange;
+        return magicEffect;
     }
 }
