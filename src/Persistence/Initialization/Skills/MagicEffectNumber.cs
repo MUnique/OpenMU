@@ -330,12 +330,12 @@ internal enum MagicEffectNumber : short
     /// <summary>
     /// The wiz enhance strengthener effect.
     /// </summary>
-    WizEnhance2 = 138,
+    WizEnhanceStrengthener = 138,
 
     /// <summary>
     /// The wiz enhance mastery effect.
     /// </summary>
-    WizEnhance3 = 139,
+    WizEnhanceMastery = 139,
 
     /// <summary>
     /// The critical damage increase mastery effect.

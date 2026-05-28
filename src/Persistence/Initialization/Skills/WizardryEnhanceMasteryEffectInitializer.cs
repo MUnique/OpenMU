@@ -29,10 +29,10 @@ public class WizardryEnhanceMasteryEffectInitializer : InitializerBase
     {
         var magicEffect = this.Context.CreateNew<MagicEffectDefinition>();
         this.GameConfiguration.MagicEffects.Add(magicEffect);
-        magicEffect.Number = (byte)MagicEffectNumber.WizEnhance3;
+        magicEffect.Number = (byte)MagicEffectNumber.WizEnhanceMastery;
         magicEffect.Name = "Wizardry Enhance Mastery Skill Effect";
 
-        var wizardryEnhanceEffect = this.GameConfiguration.MagicEffects.First(e => e.Number == (short)MagicEffectNumber.WizEnhance2);
+        var wizardryEnhanceEffect = this.GameConfiguration.MagicEffects.First(e => e.Number == (short)MagicEffectNumber.WizEnhanceStrengthener);
         magicEffect.InformObservers = wizardryEnhanceEffect.InformObservers;
         magicEffect.SubType = wizardryEnhanceEffect.SubType;
         magicEffect.SendDuration = wizardryEnhanceEffect.SendDuration;

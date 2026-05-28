@@ -29,7 +29,7 @@ public class WizardryEnhanceStrengthenerEffectInitializer : InitializerBase
     {
         var magicEffect = this.Context.CreateNew<MagicEffectDefinition>();
         this.GameConfiguration.MagicEffects.Add(magicEffect);
-        magicEffect.Number = (byte)MagicEffectNumber.WizEnhance2;
+        magicEffect.Number = (byte)MagicEffectNumber.WizEnhanceStrengthener;
         magicEffect.Name = "Wizardry Enhance Strengthener Skill Effect";
 
         var wizardryEnhanceEffect = this.GameConfiguration.MagicEffects.First(e => e.Number == (short)MagicEffectNumber.WizEnhance);
