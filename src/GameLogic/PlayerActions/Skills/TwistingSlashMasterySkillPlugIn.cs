@@ -1,4 +1,4 @@
-﻿// <copyright file="PollutionSkillPlugIn.cs" company="MUnique">
+﻿// <copyright file="TwistingSlashMasterySkillPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -12,15 +12,15 @@ using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// Handles the pollution skill (book of lagle) of the summoner class. Based on a chance, it may push the targets 2 squares away from the attacker.
+/// Handles the twisting slash mastery skill of the dark knight class. Based on a chance, it may push the targets 2 squares away from the attacker.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(PlugInResources.PollutionSkillPlugIn_Name), Description = nameof(PlugInResources.PollutionSkillPlugIn_Description), ResourceType = typeof(PlugInResources))]
+[Display(Name = nameof(PlugInResources.TwistingSlashMasterySkillPlugIn_Name), Description = nameof(PlugInResources.TwistingSlashMasterySkillPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("9F4B2C1D-E7A6-4B3C-8D9E-0FAB12C3D4E5")]
-public class PollutionSkillPlugIn : IAreaSkillPlugIn
+public class TwistingSlashMasterySkillPlugIn : IAreaSkillPlugIn
 {
     /// <inheritdoc />
-    public short Key => 225;
+    public short Key => 332;
 
     /// <inheritdoc />
     public async ValueTask AfterTargetGotAttackedAsync(IAttacker attacker, IAttackable target, SkillEntry skillEntry, Point targetAreaCenter, HitInfo? hitInfo)

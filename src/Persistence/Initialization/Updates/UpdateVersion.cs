@@ -397,7 +397,7 @@ public enum UpdateVersion
     /// The version of the <see cref="FixAreaSkillsUpdatePlugIn"/>.
     /// </summary>
     FixAreaSkills = 78,
-    
+
     /// <summary>
     /// The version of the <see cref="FinishDarkLordMasterTreePlugIn"/>.
     /// </summary>
@@ -407,4 +407,24 @@ public enum UpdateVersion
     /// The version of the <see cref="FixBloodCastleMonsterAttributesUpdatePlugIn"/>.
     /// </summary>
     FixBloodCastleMonsterAttributes = 80,
+
+    /// <summary>
+    /// The version of the <see cref="FinishDarkKnightMasterTreePlugIn075"/>.
+    /// </summary>
+    FinishDarkKnightMasterTree075 = 81,
+
+    /// <summary>
+    /// The version of the <see cref="FinishDarkKnightMasterTreePlugIn095D"/>.
+    /// </summary>
+    FinishDarkKnightMasterTree095d = 82,
+
+    /// <summary>
+    /// The version of the <see cref="FinishDarkKnightMasterTreePlugInSeason6"/>.
+    /// </summary>
+    FinishDarkKnightMasterTreeSeason6 = 83,
+
+    /// <summary>
+    /// The version of the <see cref="FinishDarkWizardMasterTreePlugIn"/>.
+    /// </summary>
+    FinishDarkWizardMasterTree = 84,
 }

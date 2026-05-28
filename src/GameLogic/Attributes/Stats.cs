@@ -243,6 +243,14 @@ public class Stats
     /// <summary>
     /// Gets the min and max physical base DMG attribute definition.
     /// </summary>
+    /// <remarks>
+    /// <see cref="AggregateType.AddRaw"/> values include:
+    ///     Weapon item option; excellent lvl/20 option (weapons)
+    /// <see cref="AggregateType.Multiplicate"/> values include:
+    ///     Double wield halving (averaging).
+    /// <see cref="AggregateType.AddFinal"/> values include:
+    ///     Excellent lvl/20 option (pendant); wings damage option; harmony damage (min and max) option; gold fenrir damage bonus; <see cref="BaseDamageBonus"/>.
+    /// </remarks>
     public static AttributeDefinition PhysicalBaseDmg { get; } = new(new Guid("DD1E13E4-BFFD-45B5-9B91-9080710324B2"), "Physical Base Damage (min and max)", string.Empty);
 
     /// <summary>
@@ -421,7 +429,12 @@ public class Stats
     /// <summary>
     /// Gets the physical base (min and max) damage increase attribute definition>.
     /// </summary>
-    /// <remarks>Includes excellent 2% physical increase option, ammunition damage increase, and the double wield multiplier (55%).</remarks>
+    /// <remarks>
+    /// <see cref="AggregateType.AddRaw"/> values include:
+    ///     Excellent 2% increase option (double wield weapons); ammunition damage increase.
+    /// <see cref="AggregateType.Multiplicate"/> values include:
+    ///     Double wield halving (averaging); double wield bonus multiplier (55%); excellent 2% increase option (pendant and other weapons).
+    /// </remarks>
     public static AttributeDefinition PhysicalBaseDmgIncrease { get; } = new(new Guid("104B4DAA-C507-4CBB-AF38-D53DDBB4817E"), "Physical Base Damage Increase", string.Empty);
 
     /// <summary>
@@ -1130,14 +1143,51 @@ public class Stats
     public static AttributeDefinition DoubleDamageChance { get; } = new(new Guid("2B8A03E6-1CC2-48A0-8633-3F36E17050F4"), "Double Damage Chance", string.Empty);
 
     /// <summary>
-    /// Gets the stun chance attribute definition.
+    /// Gets the MST stun chance attribute definition.
     /// </summary>
-    public static AttributeDefinition StunChance { get; } = new(new Guid("610D3259-1158-424A-8738-9EB7A71DE600"), "Stun Chance", string.Empty);
+    /// <remarks>Bucket attribute for the master skills: wind tome (book of neil) mastery, fire burst mastery, earthshake mastery and mace mastery.</remarks>
+    public static AttributeDefinition MasteryStunChance { get; } = new(new Guid("610D3259-1158-424A-8738-9EB7A71DE600"), "Mastery Stun Chance (MST)", "A generic master tree stun chance attribute, which serves as a bucket for \"mastery\" skills.");
 
     /// <summary>
-    /// Gets the pollution skill MST target move chance, which rises with lightning tome mastery.
+    /// Gets the MST mace mastery stun chance attribute definition.
     /// </summary>
-    public static AttributeDefinition PollutionMoveTargetChance { get; } = new(new Guid("6F9619FF-8B86-D011-B42D-00C04FC964FF"), "Pollution Move Target Chance (MST)", "The pollution skill (book of lagle) move chance, which rises with lightning tome mastery.");
+    public static AttributeDefinition MaceMasteryStunChance { get; } = new(new Guid("6E3A9F2D-5B7C-4D8E-A1F3-2C9E5B7D4F6A"), "Mace Mastery Stun Chance (MST)", string.Empty);
+
+    /// <summary>
+    /// Gets the MST target move chance attribute definition.
+    /// </summary>
+    /// <remarks>Bucket attribute for the master skills: lightning tome (book of lagle) mastery and twisting slash mastery.</remarks>
+    public static AttributeDefinition MasteryMoveTargetChance { get; } = new(new Guid("6F9619FF-8B86-D011-B42D-00C04FC964FF"), "Mastery Move Target Chance (MST)", "A generic master tree move target chance attribute, which serves as a bucket for \"mastery\" skills.");
+
+    /// <summary>
+    /// Gets the rageful blow mastery decrease durability MST chance attribute definition.
+    /// </summary>
+    public static AttributeDefinition RagefulBlowMasteryDurabilityDecChance { get; } = new(new Guid("2F8A5D3B-9C7E-4F1A-B6D2-8E3C5A7F9B1D"), "Rageful Blow Mastery Durability Decrease Chance (MST)", string.Empty);
+
+    /// <summary>
+    /// Gets the durability reduction factor attribute definition.
+    /// </summary>
+    /// <remarks>
+    /// Factor by which the maximum durability of armor items is multiplied when attacked by Rageful Blow and  <see cref="RagefulBlowMasteryDurabilityDecChance"/> is successful.
+    /// Decreases with the level of the master skills DurabilityReduction1 or DurabilityReduction1FistMaster.
+    /// Value ranges from 10% (default) to 6%.
+    /// </remarks>
+    public static AttributeDefinition DurabilityReductionFactor { get; } = new(new Guid("3C9E7F2A-B1D4-8E6F-5A0C-1D8F3B5E7A2D"), "Durability Reduction Factor", string.Empty);
+
+    /// <summary>
+    /// Gets the spear mastery double damage MST chance attribute definition.
+    /// </summary>
+    public static AttributeDefinition SpearMasteryDoubleDamageChance { get; } = new(new Guid("5D9E2A7B-3C4F-8E1A-B5D6-2E7F9C4A1B8D"), "Spear Mastery Double Damage Chance (MST)", string.Empty);
+
+    /// <summary>
+    /// Gets the swell life skill health increase attribute definition.
+    /// </summary>
+    public static AttributeDefinition SwellLifeHealthIncrease { get; } = new(new Guid("9C4E7B2A-F1D6-4A3E-B8C5-1D7F2E9A3B4C"), "Swell Life Health Increase", string.Empty);
+
+    /// <summary>
+    /// Gets the swell life skill mana increase attribute definition.
+    /// </summary>
+    public static AttributeDefinition SwellLifeManaIncrease { get; } = new(new Guid("8B4F1C6D-9A2E-4F7B-A3D5-1E9C7F2A4B6D"), "Swell Life Mana Increase", string.Empty);
 
     /// <summary>
     /// Gets the mana after monster kill attribute definition.
