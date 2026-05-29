@@ -45,5 +45,7 @@
     </QuickGrid>
 </div>
 <Paginator State="@_pagination" />
-<hr />
-<button type="button" class="btn-outline-primary" @onclick="OnCreateButtonClickAsync"><span class="oi oi-plus"></span> @Resources.AddNew</button>
+<div class="add-new-bar">
+    <hr />
+    <button type="button" class="btn-outline-primary" @onclick="OnCreateButtonClickAsync"><span class="oi oi-plus"></span> @Resources.AddNew</button>
+</div>

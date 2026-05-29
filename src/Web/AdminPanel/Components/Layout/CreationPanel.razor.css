@@ -42,13 +42,35 @@
     min-width: 0;
     overflow-y: auto;
     overflow-x: hidden;
-    padding: 1rem 1.25rem;
+    padding: 1rem 1.25rem 0;
+    display: flex;
+    flex-direction: column;
 }
 
 .creation-panel-body h3 {
     margin-top: 0;
     margin-bottom: 1rem;
     word-break: break-word;
+}
+
+.creation-panel-body ::deep form {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.creation-panel-body ::deep .form-actions {
+    position: sticky;
+    bottom: 0;
+    background-color: #fff;
+    margin-top: auto;
+    border-top: 1px solid #dee2e6;
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-start;
+    padding: 1rem 0;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* Let the form controls fill the wider panel so the space is actually used. */

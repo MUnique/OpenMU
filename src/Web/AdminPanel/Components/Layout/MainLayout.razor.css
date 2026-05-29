@@ -6,7 +6,6 @@
 
 main {
     flex: 1;
-    min-width: 0;
 }
 
 .sidebar {
@@ -64,9 +63,21 @@ main {
         top: 0;
     }
 
+    .content-area {
+        display: flex;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .content-area > main {
+        flex: 0 0 50%;
+        min-width: 750px;
+    }
+
     .main-header {
         position: sticky;
         top: 0;
+        z-index: 99;
     }
 }
 

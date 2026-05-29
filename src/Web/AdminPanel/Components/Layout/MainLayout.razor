@@ -7,33 +7,35 @@
         <NavMenu />
     </div>
 
-    <main>
-        <header class="navbar navbar-expand navbar-light bg-light border-bottom">
-            <div class="container-fluid px-4">
-                <div class="header-content d-flex align-items-center w-100">
-                    <div class="header-search flex-grow-1">
-                        <ConfigurationSearch />
-                    </div>
-                    <div class="header-actions ml-3">
-                        <a href="https://munique.net" target="_blank" class="text-secondary small">@Resources.About</a>
+    <div class="content-area">
+        <main>
+            <header class="main-header navbar navbar-expand navbar-light bg-light border-bottom">
+                <div class="container-fluid px-4">
+                    <div class="header-content d-flex align-items-center w-100">
+                        <div class="header-search flex-grow-1">
+                            <ConfigurationSearch />
+                        </div>
+                        <div class="header-actions ml-3">
+                            <a href="https://munique.net" target="_blank" class="text-secondary small">@Resources.About</a>
+                        </div>
                     </div>
                 </div>
+            </header>
+
+            <div class="breadcrumb-bar bg-white border-bottom px-4 py-3">
+                <div class="d-flex align-items-center">
+                    <BreadcrumbNavigation />
+                </div>
             </div>
-        </header>
 
-        <div class="breadcrumb-bar bg-white border-bottom px-4 py-3">
-            <div class="d-flex align-items-center">
-                <BreadcrumbNavigation />
-            </div>
-        </div>
+            <BlazoredToasts />
 
-        <BlazoredToasts />
-
-        <article class="content px-4 py-3">
-            @Body
-        </article>
-    </main>
-    <CreationPanel />
+            <article class="content px-4 py-3">
+                @Body
+            </article>
+        </main>
+        <CreationPanel />
+    </div>
 </div>
 
 <div id="blazor-error-ui" data-nosnippet>
