@@ -367,9 +367,14 @@ public sealed class Party : AsyncDisposable
             return (int)totalBaseExperience;
         }
 
-        return Rand.NextInt(
-            (int)(totalBaseExperience * randomMinMultiplier),
-            (int)(totalBaseExperience * randomMaxMultiplier));
+        var minimumExperience = (int)(totalBaseExperience * randomMinMultiplier);
+        var maximumExperience = (int)(totalBaseExperience * randomMaxMultiplier);
+        if (minimumExperience < maximumExperience)
+        {
+            return Rand.NextInt(minimumExperience, maximumExperience);
+        }
+
+        return (int)totalBaseExperience;
     }
 
     private static async ValueTask AwardExperienceAsync(Player player, float perLevel, IAttackable killed)

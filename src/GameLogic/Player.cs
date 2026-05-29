@@ -1240,7 +1240,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         var maxMultiplier = attributes[Stats.RandomExperienceMaxMultiplier];
         if (minMultiplier > 0 && maxMultiplier > 0)
         {
-            return Rand.NextInt((int)(experience * minMultiplier), (int)(experience * maxMultiplier));
+            var minimumExperience = (int)(experience * minMultiplier);
+            var maximumExperience = (int)(experience * maxMultiplier);
+            if (minimumExperience < maximumExperience)
+            {
+                return Rand.NextInt(minimumExperience, maximumExperience);
+            }
         }
 
         return (int)experience;
