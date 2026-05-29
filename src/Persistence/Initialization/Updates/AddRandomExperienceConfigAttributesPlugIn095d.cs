@@ -1,4 +1,4 @@
-// <copyright file="AddExperienceConfigAttributesPlugIn095d.cs" company="MUnique">
+// <copyright file="AddRandomExperienceConfigAttributesPlugIn095d.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -8,15 +8,15 @@ using System.Runtime.InteropServices;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// This update adds the experience config attributes for version 0.95d.
+/// This update adds the random experience config attributes for version 0.95d.
 /// </summary>
 [PlugIn]
 [Display(Name = PlugInName, Description = PlugInDescription)]
 [Guid("9A166583-C3E7-4E04-924C-F01FF9840974")]
-public class AddExperienceConfigAttributesPlugIn095d : AddExperienceConfigAttributesPlugInBase
+public class AddRandomExperienceConfigAttributesPlugIn095d : AddRandomExperienceConfigAttributesPlugInBase
 {
     /// <inheritdoc />
-    public override UpdateVersion Version => UpdateVersion.AddExperienceConfigAttributes095d;
+    public override UpdateVersion Version => UpdateVersion.AddRandomExperienceConfigAttributes095d;
 
     /// <inheritdoc />
     public override string DataInitializationKey => Version095d.DataInitialization.Id;

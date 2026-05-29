@@ -20,11 +20,6 @@ public interface IPartyMember : IWorldObserver, IObservable, IIdentifiable, ILoc
     IPartyMember? LastPartyRequester { get; set; }
 
     /// <summary>
-    /// Gets the character class.
-    /// </summary>
-    CharacterClass? CharacterClass { get; }
-
-    /// <summary>
     /// Gets the maximum health.
     /// </summary>
     uint MaximumHealth { get; }

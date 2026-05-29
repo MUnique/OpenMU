@@ -409,17 +409,17 @@ public enum UpdateVersion
     FixBloodCastleMonsterAttributes = 80,
 
     /// <summary>
-    /// The version of the <see cref="AddExperienceConfigAttributesPlugIn075"/>.
+    /// The version of the <see cref="AddRandomExperienceConfigAttributesPlugIn075"/>.
     /// </summary>
-    AddExperienceConfigAttributes075 = 81,
+    AddRandomExperienceConfigAttributes075 = 81,
 
     /// <summary>
-    /// The version of the <see cref="AddExperienceConfigAttributesPlugIn095d"/>.
+    /// The version of the <see cref="AddRandomExperienceConfigAttributesPlugIn095d"/>.
     /// </summary>
-    AddExperienceConfigAttributes095d = 82,
+    AddRandomExperienceConfigAttributes095d = 82,
 
     /// <summary>
-    /// The version of the <see cref="AddExperienceConfigAttributesPlugInSeason6"/>.
+    /// The version of the <see cref="AddRandomExperienceConfigAttributesPlugInSeason6"/>.
     /// </summary>
-    AddExperienceConfigAttributesSeason6 = 83,
+    AddRandomExperienceConfigAttributesSeason6 = 83,
 }

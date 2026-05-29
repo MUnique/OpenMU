@@ -34,7 +34,6 @@ public sealed class Party : AsyncDisposable
     private CancellationTokenSource? _healthUpdateCts;
 
     private IPartyMember[] _partyMembers = [];
-    private double _experienceBonus = 1.0;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Party"/> class.
@@ -93,7 +92,6 @@ public sealed class Party : AsyncDisposable
             newMember.Party = this;
             this._partyManager.TrackMembership(newMember.Name, this);
             this._partyMembers = [..this._partyMembers, newMember];
-            this.UpdateExperienceBonus();
         }
 
         await this.SendPartyListAsync().ConfigureAwait(false);
@@ -137,7 +135,6 @@ public sealed class Party : AsyncDisposable
             }
 
             this._partyMembers = updated;
-            this.UpdateExperienceBonus();
         }
 
         await this.SendPartyListAsync().ConfigureAwait(false);
@@ -389,13 +386,7 @@ public sealed class Party : AsyncDisposable
             if (!shouldDispose)
             {
                 this._partyMembers = this._partyMembers.Where(m => m != member).ToArray();
-                if (this.PartyMaster == member)
-                {
-                    this.PartyMaster = this._partyMembers.FirstOrDefault();
-                }
             }
-
-            this.UpdateExperienceBonus();
         }
 
         if (shouldDispose)
@@ -506,8 +497,8 @@ public sealed class Party : AsyncDisposable
 
         if (recipients.FirstOrDefault()?.Attributes is { } attributes)
         {
-            var minMultiplier = attributes[Stats.ExperienceRandomMinMultiplier];
-            var maxMultiplier = attributes[Stats.ExperienceRandomMaxMultiplier];
+            var minMultiplier = attributes[Stats.RandomExperienceMinMultiplier];
+            var maxMultiplier = attributes[Stats.RandomExperienceMaxMultiplier];
             if (minMultiplier != 0 && maxMultiplier != 0)
             {
                 baseExp = Rand.NextInt((int)(baseExp * minMultiplier), (int)(baseExp * maxMultiplier));
@@ -515,7 +506,6 @@ public sealed class Party : AsyncDisposable
         }
 
         var totalDistributed = baseExp
-                               * this._experienceBonus
                                * (killed.CurrentMap?.Definition.ExpMultiplier ?? 1);
 
         return ((int)totalDistributed, (float)totalDistributed / levelSum);
@@ -536,60 +526,6 @@ public sealed class Party : AsyncDisposable
         }
 
         return (levelSum, maxLevel);
-    }
-
-    private void UpdateExperienceBonus()
-    {
-        var members = this._partyMembers;
-        var count = members.Length;
-        if (count < 2)
-        {
-            this._experienceBonus = 1.0;
-            return;
-        }
-
-        var attributes = (members.FirstOrDefault() as Player)?.Attributes;
-        var perPartyMemberBonus = attributes?[Stats.ExperienceRatePerPartyMemberBonus] ?? 0.01f;
-        var setPartyBonus = attributes?[Stats.ExperienceRateBonusForSetParty] ?? 0.02f;
-
-        if (perPartyMemberBonus == 0 && setPartyBonus == 0)
-        {
-            this._experienceBonus = 1.0;
-            return;
-        }
-
-        // General bonus: 2 players=1.02, 3 players=1.03, etc.
-        double bonus = 1.0 + (count * perPartyMemberBonus);
-
-        if (setPartyBonus != 0)
-        {
-            // Navigate to the last generation class to compare, since, currently, there is no way to look back.
-            var uniqueClasses = members
-                .Select(m => m.CharacterClass)
-                .Where(c => c != null)
-                .Select(c =>
-                {
-                    var current = c!;
-                    while (current.NextGenerationClass is { } next)
-                    {
-                        current = next;
-                    }
-
-                    return current;
-                })
-                .Distinct()
-                .Count();
-
-            // Set party adds an extra flat bonus on top of the general bonus.
-            bool isSetParty = uniqueClasses == count && count >= 3;
-            if (isSetParty)
-            {
-                bonus += setPartyBonus;
-            }
-        }
-
-        // Avoid negative xp values.
-        this._experienceBonus = Math.Max(0, bonus);
     }
 
     private async Task HealthUpdateLoopAsync(CancellationToken cancellationToken)

@@ -212,9 +212,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// </summary>
     public Character? SelectedCharacter => this._selectedCharacter;
 
-    /// <inheritdoc/>
-    public CharacterClass? CharacterClass => this.SelectedCharacter?.CharacterClass;
-
     /// <summary>
     /// Gets or sets the pose of the currently selected character.
     /// </summary>
@@ -1239,8 +1236,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         experience *= attributes[expRateAttribute] + attributes[Stats.BonusExperienceRate];
         experience *= this.CurrentMap?.Definition.ExpMultiplier ?? 1;
 
-        var minMultiplier = attributes[Stats.ExperienceRandomMinMultiplier];
-        var maxMultiplier = attributes[Stats.ExperienceRandomMaxMultiplier];
+        var minMultiplier = attributes[Stats.RandomExperienceMinMultiplier];
+        var maxMultiplier = attributes[Stats.RandomExperienceMaxMultiplier];
         if (minMultiplier > 0 && maxMultiplier > 0)
         {
             return Rand.NextInt((int)(experience * minMultiplier), (int)(experience * maxMultiplier));
