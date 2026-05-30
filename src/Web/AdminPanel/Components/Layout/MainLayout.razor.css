@@ -1,11 +1,11 @@
 .page {
-    position: relative;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
 }
 
 main {
     flex: 1;
+    min-width: 50vw;
 }
 
 .sidebar {
@@ -14,6 +14,12 @@ main {
 
 .header-search {
     max-width: 48rem;
+}
+
+.main-header {
+    top: 0;
+    z-index: 99;
+    position: sticky;
 }
 
 .breadcrumb-bar {
@@ -48,36 +54,6 @@ main {
     .header-actions {
         margin-left: 0 !important;
         text-align: right;
-    }
-}
-
-@media (min-width: 641px) {
-    .page {
-        flex-direction: row;
-    }
-
-    .sidebar {
-        width: 250px;
-        height: 100vh;
-        position: sticky;
-        top: 0;
-    }
-
-    .content-area {
-        display: flex;
-        flex: 1;
-        min-width: 0;
-    }
-
-    .content-area > main {
-        flex: 0 0 50%;
-        min-width: 750px;
-    }
-
-    .main-header {
-        position: sticky;
-        top: 0;
-        z-index: 99;
     }
 }
 

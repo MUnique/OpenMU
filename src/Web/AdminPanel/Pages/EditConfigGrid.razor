@@ -34,13 +34,13 @@
             </HeaderTemplate>
         </PropertyColumn>
 
-        <TemplateColumn Align="Align.Center">
+        <TemplateColumn Align="Align.Start">
             @{
                 var targetUrl = $"edit-config/{this.TypeString}/" + context.Id;
             }
-            <a href="@(targetUrl)" class="btn btn-info">@Resources.Edit</a>
-            <button type="button" class="btn-secondary" @onclick="@(() => this.OnDuplicateButtonClickAsync(context))"><span class="oi oi-layers"></span> @Resources.Duplicate</button>
-            <button type="button" class="btn-danger" @onclick="@(() => this.OnDeleteButtonClickAsync(context))"><span class="oi oi-trash"></span> @Resources.Delete</button>
+            <a href="@(targetUrl)" class="btn btn-info mr-1 mb-1">@Resources.Edit</a>
+            <button type="button" class="btn-secondary mr-1 mb-1" @onclick="@(() => this.OnDuplicateButtonClickAsync(context))"><span class="oi oi-layers d-none d-sm-inline"></span> @Resources.Duplicate</button>
+            <button type="button" class="btn-danger mr-1 mb-1" @onclick="@(() => this.OnDeleteButtonClickAsync(context))"><span class="oi oi-trash d-none d-sm-inline"></span> @Resources.Delete</button>
         </TemplateColumn>
     </QuickGrid>
 </div>
