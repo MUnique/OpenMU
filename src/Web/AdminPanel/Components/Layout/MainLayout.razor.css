@@ -10,7 +10,7 @@ main {
 }
 
 .sidebar {
-    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+    background-image: var(--omu-sidebar-gradient);
 }
 
 .header-search {
@@ -19,6 +19,7 @@ main {
 
 .breadcrumb-bar {
     min-height: 2.5rem;
+    background-color: var(--omu-surface-2);
 }
 
 .breadcrumb-bar ::deep .breadcrumb-nav {
@@ -59,9 +60,6 @@ main {
 
     .sidebar {
         width: 250px;
-        height: 100vh;
-        position: sticky;
-        top: 0;
     }
 
     .main-header {
@@ -71,8 +69,8 @@ main {
 }
 
 #blazor-error-ui {
-    color-scheme: light only;
-    background: lightyellow;
+    background: var(--omu-error-bg);
+    color: var(--omu-error-text);
     bottom: 0;
     box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
     box-sizing: border-box;
