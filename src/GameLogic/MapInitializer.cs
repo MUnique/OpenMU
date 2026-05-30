@@ -270,6 +270,22 @@ public class MapInitializer : IMapInitializer
 
     private void RegisterForConfigChanges(GameMap createdMap, MonsterSpawnArea spawnArea, NonPlayerCharacter spawnedObject)
     {
+        // Apply changes of the monster definition (e.g. its attributes) instantly to the
+        // already spawned instance, without having to re-spawn it. The registration is owned
+        // by the NPC, so it gets disposed whenever the NPC is disposed.
+        if (spawnedObject is AttackableNpcBase attackableNpc
+            && this._configurationChangeMediator?.RegisterObject(
+                spawnedObject.Definition,
+                attackableNpc,
+                (_, _, o) =>
+                {
+                    o.ReloadAttributes();
+                    return ValueTask.CompletedTask;
+                }) is { } definitionRegistration)
+        {
+            attackableNpc.RegisterDisposable(definitionRegistration);
+        }
+
         this._configurationChangeMediator?.RegisterObject(
             spawnArea,
             spawnedObject,
