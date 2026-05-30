@@ -25,9 +25,23 @@
         @if (!this._isCollapsed)
         {
             <div class="card-body card-text">
+                @if (this._showSearch)
+                {
+                    <div class="auto-form-container">
+                        <div class="mb-3 form-group auto-form-search-group">
+                            <input type="text"
+                                   id="item-table-search"
+                                   class="form-control"
+                                   placeholder="@($"{Resources.Search}...")"
+                                   @bind="this._searchTerm"
+                                   @bind:event="oninput" />
+                            <span class="oi oi-magnifying-glass search-icon"></span>
+                        </div>
+                    </div>
+                }
                 <table>
                     <tbody>
-                    @foreach (var item in (this.Value ?? Enumerable.Empty<TItem>())
+                    @foreach (var item in this.FilteredItems
                         .Select(i => (Name : i.GetName(), Id : i.GetId(), Item : i))
                         .OrderBy(i => i.Name))
                     {

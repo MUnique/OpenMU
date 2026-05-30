@@ -10064,6 +10064,23 @@ label > details[open] {
   z-index: 1;
 }
 
+.auto-form-search-group {
+  position: relative;
+}
+
+.auto-form-search-group .form-control, .auto-form-search-group th input, th .auto-form-search-group input, .auto-form-search-group select, .auto-form-search-group form input, form .auto-form-search-group input, .auto-form-search-group .invalid .valid, .invalid .auto-form-search-group .valid, .auto-form-search-group .valid.modified {
+  padding-left: 2.25rem;
+}
+
+.auto-form-search-group .search-icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6c757d;
+  pointer-events: none;
+}
+
 @keyframes FadeIn {
   0% {
     opacity: 0;

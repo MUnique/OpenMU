@@ -112,3 +112,20 @@ ul.socket > li > div {
 ul.socket > li > div:last-of-type {
     @extend .ml-3;
 }
+
+.auto-form-search-group {
+    position: relative;
+}
+
+.auto-form-search-group .form-control {
+    padding-left: 2.25rem;
+}
+
+.auto-form-search-group .search-icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+    pointer-events: none;
+}

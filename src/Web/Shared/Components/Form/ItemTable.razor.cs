@@ -16,12 +16,14 @@ using MUnique.OpenMU.Web.Shared;
 using MUnique.OpenMU.Web.Shared.Components.Form.Modal;
 
 /// <summary>
-/// A component which shows a collection of <typeparamref name="TItem"/> in a table.
+/// A component that shows a collection of <typeparamref name="TItem"/> in a table.
 /// </summary>
 /// <typeparam name="TItem">The type of the item.</typeparam>
 public partial class ItemTable<TItem>
     where TItem : class
 {
+    private readonly int _searchThreshold = 10;
+
     private bool _isEditable;
 
     private bool _isInlineEditable;
@@ -33,6 +35,10 @@ public partial class ItemTable<TItem>
     private bool _isStartingCollapsed;
 
     private bool _isCollapsed;
+
+    private string? _searchTerm;
+
+    private bool _showSearch;
 
     /// <summary>
     /// Gets or sets the label.
@@ -46,6 +52,23 @@ public partial class ItemTable<TItem>
     [CascadingParameter]
     public IContext PersistenceContext { get; set; } = null!;
 
+    /// <summary>
+    /// Gets the filtered list of items based on the current search term.
+    /// </summary>
+    private IEnumerable<TItem> FilteredItems
+    {
+        get
+        {
+            var items = this.Value ?? Enumerable.Empty<TItem>();
+            if (string.IsNullOrWhiteSpace(this._searchTerm))
+            {
+                return items;
+            }
+
+            return items.Where(i => i.GetName().Contains(this._searchTerm, StringComparison.OrdinalIgnoreCase));
+        }
+    }
+
     /// <inheritdoc />
     protected override void OnInitialized()
     {
@@ -57,8 +80,19 @@ public partial class ItemTable<TItem>
         this._isInlineEditable = this._isEditable && isMemberOfAggregate && this.ValueExpression!.ScaffoldColumn();
         this._isAddingSupported = !isMemberOfAggregate;
         this._isCreatingSupported = isMemberOfAggregate;
-        this._isStartingCollapsed = this.Value is not null && this.Value.Count > 10;
+        this._isStartingCollapsed = this.Value is not null && this.Value.Count > this._searchThreshold;
         this._isCollapsed = this._isStartingCollapsed;
+        this._showSearch = this.Value is not null && this.Value.Count > this._searchThreshold;
+    }
+
+    /// <inheritdoc />
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        if (this.Value is not null && this.Value.Count > this._searchThreshold)
+        {
+            this._showSearch = true;
+        }
     }
 
     /// <inheritdoc />
