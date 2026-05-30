@@ -18,6 +18,11 @@ using Nito.AsyncEx;
 /// </summary>
 public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISupportWalk, IMovable, ISummonable
 {
+    private const short IcedEffectNumber = 0x38;
+    private const short BlowOfDestructionEffectNumber = 0x56;
+    private const double IcedMovementSpeedFactor = 0.5;
+    private const double BlowOfDestructionMovementSpeedFactor = 0.33;
+
     private readonly AsyncLock _moveLock = new();
     private readonly INpcIntelligence _intelligence;
     private readonly Walker _walker;
@@ -59,7 +64,7 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
         : base(spawnInfo, stats, map, eventStateProvider, dropGenerator, plugInManager)
     {
         this._pathFinderPool = pathFinderPool;
-        this._walker = new Walker(this, () => this.StepDelay);
+        this._walker = new Walker(this, this.GetStepDelay);
         this._intelligence = npcIntelligence;
 
         (this._skillPowerUp, this._skillPowerUpDuration, this._skillPowerUpTarget) = this.CreateMagicEffectPowerUp();
@@ -87,7 +92,7 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
     public Point WalkTarget => this._walker.CurrentTarget;
 
     /// <inheritdoc/>
-    public TimeSpan StepDelay => this.Definition.MoveDelay;
+    public TimeSpan StepDelay => this.GetStepDelay(null);
 
     /// <inheritdoc/>
     /// <remarks>Monsters don't do combos.</remarks>
@@ -354,6 +359,30 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
             From = node.PreviousPoint,
             To = new Point(node.X, node.Y),
         };
+    }
+
+    private TimeSpan GetStepDelay(WalkingStep? step)
+    {
+        var tileDistance = step is { } walkingStep ? walkingStep.From.EuclideanDistanceTo(walkingStep.To) : 1.0;
+        var delayMilliseconds = this.Definition.MoveDelay.TotalMilliseconds * Math.Max(1.0, tileDistance);
+        delayMilliseconds /= this.GetMovementSpeedFactor();
+
+        return TimeSpan.FromMilliseconds(delayMilliseconds);
+    }
+
+    private double GetMovementSpeedFactor()
+    {
+        if (this.MagicEffectList.ActiveEffects.ContainsKey(IcedEffectNumber))
+        {
+            return IcedMovementSpeedFactor;
+        }
+
+        if (this.MagicEffectList.ActiveEffects.ContainsKey(BlowOfDestructionEffectNumber))
+        {
+            return BlowOfDestructionMovementSpeedFactor;
+        }
+
+        return 1.0;
     }
 
     /// <summary>

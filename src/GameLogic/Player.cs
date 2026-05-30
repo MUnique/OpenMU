@@ -9,6 +9,7 @@ using System.Globalization;
 using System.Threading;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Attributes;
+using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.GuildWar;
 using MUnique.OpenMU.GameLogic.MiniGames;
@@ -41,6 +42,17 @@ using Nito.AsyncEx;
 /// </summary>
 public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacker, ITrader, IPartyMember, IRotatable, IHasBucketInformation, ISupportWalk, IMovable, ILoggerOwner<Player>
 {
+    private const short IcedEffectNumber = 0x38;
+    private const short BlowOfDestructionEffectNumber = 0x56;
+    private const double IcedMovementSpeedFactor = 0.5;
+    private const double BlowOfDestructionMovementSpeedFactor = 0.33;
+    private const byte RunningGearMinimumLevel = 5;
+    private const ushort AtlansMapNumber = 7;
+    private const ushort Kalima1MapNumber = 24;
+    private const ushort Kalima6MapNumber = 29;
+    private const ushort Kalima7MapNumber = 36;
+    private const ushort Doppelgaenger3MapNumber = 67;
+
     private static readonly MagicEffectDefinition GMEffect = new GMMagicEffectDefinition
     {
         InformObservers = true,
@@ -148,7 +160,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public bool IsWalking => this._walker.CurrentTarget != default;
 
     /// <inheritdoc />
-    public TimeSpan StepDelay => this.GetStepDelay();
+    public TimeSpan StepDelay => this.GetStepDelay(null);
 
     /// <inheritdoc />
     public Point WalkTarget => this._walker.CurrentTarget;
@@ -713,6 +725,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         if (this.Attributes is null)
         {
             throw new InvalidOperationException("AttributeSystem not set.");
+        }
+
+        if (this.IsAttackBlockedBySafezone(attacker))
+        {
+            return null;
         }
 
         if (!this.GameContext.PvpEnabled && this.CurrentMap?.Definition.BattleZone == null &&
@@ -1450,6 +1467,17 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <inheritdoc />
     public ValueTask StopWalkingAsync() => this._walker.StopAsync();
 
+    private bool IsAttackBlockedBySafezone(IAttacker attacker)
+    {
+        if (this.IsAtSafezone())
+        {
+            return true;
+        }
+
+        var attackerPlayer = attacker as Player ?? (attacker as IPlayerSurrogate)?.Owner;
+        return attackerPlayer?.IsAtSafezone() is true;
+    }
+
     /// <summary>
     /// Regenerates the attributes specified in <see cref="Stats.IntervalRegenerationAttributes"/>.
     /// </summary>
@@ -2149,19 +2177,135 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <summary>
-    /// Gets the step delay depending on the equipped items.
+    /// Gets the step delay depending on the equipped items and current movement effects.
     /// </summary>
+    /// <param name="step">The walking step for which the delay is calculated.</param>
     /// <returns>The current step delay, depending on equipped items.</returns>
-    private TimeSpan GetStepDelay()
+    private TimeSpan GetStepDelay(WalkingStep? step)
     {
-        if (this.Inventory?.EquippedItems.Any(item => item.Definition?.ItemSlot?.ItemSlots.Contains(7) ?? false) ?? false)
+        const double referenceFrameTimeMilliseconds = 40.0;
+        const double terrainScale = 100.0;
+
+        var speed = this.GetClientMovementSpeed(step?.From);
+        var tileDistance = step is { } walkingStep ? walkingStep.From.EuclideanDistanceTo(walkingStep.To) : 1.0;
+        var movementMilliseconds = terrainScale * Math.Max(1.0, tileDistance) / speed * referenceFrameTimeMilliseconds;
+
+        return TimeSpan.FromMilliseconds(movementMilliseconds);
+    }
+
+    private double GetClientMovementSpeed(Point? position = null)
+    {
+        const double walkSpeed = 12.0;
+        if (this.IsInClientSafezone(position))
         {
-            // Wings
-            return TimeSpan.FromMilliseconds(300);
+            return this.ApplyMovementEffects(walkSpeed);
         }
 
-        // TODO: Consider pets etc.
-        return TimeSpan.FromMilliseconds(500);
+        return this.ApplyMovementEffects(this.GetMountedOrRunningSpeed(walkSpeed));
+    }
+
+    private double ApplyMovementEffects(double speed)
+    {
+        if (this.MagicEffectList.ActiveEffects.ContainsKey(IcedEffectNumber))
+        {
+            return speed * IcedMovementSpeedFactor;
+        }
+
+        if (this.MagicEffectList.ActiveEffects.ContainsKey(BlowOfDestructionEffectNumber))
+        {
+            return speed * BlowOfDestructionMovementSpeedFactor;
+        }
+
+        return speed;
+    }
+
+    private double GetMountedOrRunningSpeed(double walkSpeed)
+    {
+        const double runSpeed = 15.0;
+        const double fastWingSpeed = 16.0;
+        const double horseOrFenrirRunSpeed = 17.0;
+        const double excellentFenrirRunSpeed = 19.0;
+
+        var pet = this.Inventory?.GetItem(InventoryConstants.PetSlot);
+        if (this.IsItem(pet, 13, 37))
+        {
+            if (this.HasFenrirMovementOption(pet))
+            {
+                return excellentFenrirRunSpeed;
+            }
+
+            return horseOrFenrirRunSpeed;
+        }
+
+        if (this.IsItem(pet, 13, 4))
+        {
+            return horseOrFenrirRunSpeed;
+        }
+
+        var wings = this.Inventory?.GetItem(InventoryConstants.WingsSlot);
+        if (this.HasEquippedWings(wings)
+            || this.IsItem(pet, 13, 2)
+            || this.IsItem(pet, 13, 3))
+        {
+            return this.GetWingMovementSpeed(wings, runSpeed, fastWingSpeed);
+        }
+
+        return this.HasRunningGear() ? runSpeed : walkSpeed;
+    }
+
+    private double GetWingMovementSpeed(Item? wings, double runSpeed, double fastWingSpeed)
+    {
+        return this.IsFastWing(wings) ? fastWingSpeed : runSpeed;
+    }
+
+    private bool IsInClientSafezone(Point? position = null)
+    {
+        var checkedPosition = position ?? this.Position;
+        return this.CurrentMap?.Terrain.SafezoneMap[checkedPosition.X, checkedPosition.Y] ?? false;
+    }
+
+    private bool HasEquippedWings(Item? item)
+    {
+        return item is { Durability: > 0.0 }
+               && item.ItemSlot == InventoryConstants.WingsSlot;
+    }
+
+    private bool IsFastWing(Item? item)
+    {
+        return this.IsItem(item, 12, 5)
+               || this.IsItem(item, 12, 36);
+    }
+
+    private bool HasRunningGear()
+    {
+        var slot = this.IsSwimmingMovementMap()
+            ? InventoryConstants.GlovesSlot
+            : InventoryConstants.BootsSlot;
+        return this.Inventory?.GetItem(slot) is { Durability: > 0.0, Level: >= RunningGearMinimumLevel };
+    }
+
+    private bool IsSwimmingMovementMap()
+    {
+        return this.CurrentMap?.MapId is AtlansMapNumber
+            or >= Kalima1MapNumber and <= Kalima6MapNumber
+            or Kalima7MapNumber
+            or Doppelgaenger3MapNumber;
+    }
+
+    private bool IsItem(Item? item, short group, short number)
+    {
+        return item is { Durability: > 0.0 }
+               && item.Definition is { } definition
+               && definition.Group == group
+               && definition.Number == number;
+    }
+
+    private bool HasFenrirMovementOption(Item? item)
+    {
+        return item?.ItemOptions.Any(option =>
+            option.ItemOption?.OptionType == ItemOptionTypes.BlueFenrir
+            || option.ItemOption?.OptionType == ItemOptionTypes.BlackFenrir
+            || option.ItemOption?.OptionType == ItemOptionTypes.GoldFenrir) ?? false;
     }
 
     private async ValueTask<ExitGate> GetSpawnGateOfCurrentMapAsync()
