@@ -5,7 +5,7 @@
 
 main {
     flex: 1;
-    min-width: 50vw;
+    min-width: 0;
 }
 
 .sidebar {

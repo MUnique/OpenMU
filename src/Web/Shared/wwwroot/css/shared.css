@@ -10025,7 +10025,7 @@ mark {
   }
 }
 input[type=checkbox] {
-  width: 10%;
+  max-width: 10%;
 }
 
 form > div > div > div:first-of-type > span {
