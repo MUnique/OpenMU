@@ -28733,7 +28733,7 @@ public readonly struct QuestProgressExtended
             var header = this.Header;
             header.Type = HeaderType;
             header.Code = Code;
-            header.Length = (byte)Math.Min(data.Length, Length);
+            header.Length = (ushort)Math.Min(data.Length, Length);
             header.SubCode = SubCode;
         }
     }
@@ -28741,7 +28741,7 @@ public readonly struct QuestProgressExtended
     /// <summary>
     /// Gets the header type of this data packet.
     /// </summary>
-    public static byte HeaderType => 0xC1;
+    public static byte HeaderType => 0xC2;
 
     /// <summary>
     /// Gets the operation code of this data packet.
@@ -28762,7 +28762,7 @@ public readonly struct QuestProgressExtended
     /// <summary>
     /// Gets the header of this packet.
     /// </summary>
-    public C1HeaderWithSubCode Header => new (this._data);
+    public C2HeaderWithSubCode Header => new (this._data);
 
     /// <summary>
     /// Gets or sets the condition count.
