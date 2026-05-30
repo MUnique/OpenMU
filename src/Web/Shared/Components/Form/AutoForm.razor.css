@@ -21,6 +21,10 @@
     box-sizing: border-box;
 }
 
+.form-actions .btn-secondary {
+    margin-left: 1rem;
+}
+
 .auto-form-search-group {
     position: relative;
 }

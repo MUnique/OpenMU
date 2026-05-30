@@ -21,7 +21,6 @@
     min-height: 2.4em;
     cursor: text;
     position: relative;
-    z-index: 1051;
 }
 
 .multi-lookup-field__tag {

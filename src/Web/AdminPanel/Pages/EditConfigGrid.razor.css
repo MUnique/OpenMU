@@ -13,3 +13,16 @@
 .col-search {
     width: 50%;
 }
+
+.add-new-bar {
+    position: sticky;
+    bottom: 0;
+    background-color: #fff;
+    padding: 0.5rem 0;
+    border-top: 1px solid #dee2e6;
+    margin-top: 1rem;
+}
+
+.add-new-bar hr {
+    display: none;
+}

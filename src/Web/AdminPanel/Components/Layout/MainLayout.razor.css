@@ -1,7 +1,6 @@
 .page {
-    position: relative;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
 }
 
 main {
@@ -15,6 +14,12 @@ main {
 
 .header-search {
     max-width: 48rem;
+}
+
+.main-header {
+    top: 0;
+    z-index: 99;
+    position: sticky;
 }
 
 .breadcrumb-bar {
@@ -49,24 +54,6 @@ main {
     .header-actions {
         margin-left: 0 !important;
         text-align: right;
-    }
-}
-
-@media (min-width: 641px) {
-    .page {
-        flex-direction: row;
-    }
-
-    .sidebar {
-        width: 250px;
-        height: 100vh;
-        position: sticky;
-        top: 0;
-    }
-
-    .main-header {
-        position: sticky;
-        top: 0;
     }
 }
 
