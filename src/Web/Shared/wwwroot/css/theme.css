@@ -26,12 +26,20 @@
     --omu-mark-bg: #ffff00;
     --omu-error-bg: lightyellow;
     --omu-error-text: #212529;
-    --omu-sidebar-gradient: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+    /* vh stops (not %) so the gradient looks the same on tall sidebars (which
+       now stretch to .page height instead of being capped at 100vh). */
+    --omu-sidebar-gradient: linear-gradient(180deg, rgb(5, 39, 103) 0, #3a0647 70vh, #3a0647 100%);
     --omu-nav-link: #d7d7d7;
     --omu-spinner-dot: rgb(5, 39, 103);
 }
 
 [data-theme="dark"] {
+    /*
+     * Tell the browser to render native form controls (checkbox, radio,
+     * scrollbars, date pickers, native select arrows) in their dark variant
+     * so unchecked checkboxes/radios don't render as bright white tiles.
+     */
+    color-scheme: dark;
     --omu-bg: #121417;
     --omu-surface: #1c1f24;
     --omu-surface-2: #1a1d22;
@@ -47,7 +55,7 @@
     --omu-mark-bg: #6b5e00;
     --omu-error-bg: #3a2f00;
     --omu-error-text: #f5e9b3;
-    --omu-sidebar-gradient: linear-gradient(180deg, #0a1330 0%, #1a0322 70%);
+    --omu-sidebar-gradient: linear-gradient(180deg, #0a1330 0, #1a0322 70vh, #1a0322 100%);
     --omu-nav-link: #d7d7d7;
     --omu-spinner-dot: #66b2ff;
 }
@@ -56,6 +64,14 @@ html,
 body {
     background-color: var(--omu-bg);
     color: var(--omu-text);
+}
+
+/*
+ * shared.css has the light gradient hardcoded on .sidebar > nav (Navigation.scss).
+ * Recolor it in dark mode so nav matches body/sidebar gradient.
+ */
+[data-theme="dark"] .sidebar > nav {
+    background-image: var(--omu-sidebar-gradient);
 }
 
 /* ===== Dark-mode overrides for Bootstrap 4 surfaces ===== */

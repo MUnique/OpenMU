@@ -60,9 +60,6 @@ main {
 
     .sidebar {
         width: 250px;
-        height: 100vh;
-        position: sticky;
-        top: 0;
     }
 
     .main-header {

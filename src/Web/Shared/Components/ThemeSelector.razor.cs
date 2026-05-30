@@ -17,22 +17,11 @@ public partial class ThemeSelector : IAsyncDisposable
     private static readonly string JsModulePath =
         $"./_content/{typeof(ThemeSelector).Assembly.GetName().Name}/themeSelector.js";
 
-    private readonly NavigationManager _navigationManager;
-
     private IJSObjectReference? _jsModule;
 
     private bool _isDarkInternal;
 
     private bool _hydrated;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ThemeSelector"/> class.
-    /// </summary>
-    /// <param name="navigationManager">The navigation manager used for the post-toggle redirect.</param>
-    public ThemeSelector(NavigationManager navigationManager)
-    {
-        this._navigationManager = navigationManager;
-    }
 
     /// <summary>
     /// Gets or sets the current dark-mode state as seen by the server-side renderer.
@@ -44,6 +33,12 @@ public partial class ThemeSelector : IAsyncDisposable
     /// </remarks>
     [Parameter]
     public bool IsDark { get; set; }
+
+    /// <summary>
+    /// Gets or sets the navigation manager used for the post-toggle redirect.
+    /// </summary>
+    [Inject]
+    private NavigationManager NavigationManager { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the JS runtime used to load the theme reader module.
@@ -99,12 +94,12 @@ public partial class ThemeSelector : IAsyncDisposable
     private void Toggle()
     {
         var next = this.EffectiveIsDark ? "light" : "dark";
-        var uri = new Uri(this._navigationManager.Uri)
+        var uri = new Uri(this.NavigationManager.Uri)
             .GetComponents(UriComponents.PathAndQuery, UriFormat.Unescaped);
         var themeEscaped = Uri.EscapeDataString(next);
         var uriEscaped = Uri.EscapeDataString(uri);
 
-        var fullUri = $"Theme/Set?theme={themeEscaped}&redirectUri={uriEscaped}";
-        this._navigationManager.NavigateTo(fullUri, forceLoad: true);
+        var fullUri = $"/Theme/Set?theme={themeEscaped}&redirectUri={uriEscaped}";
+        this.NavigationManager.NavigateTo(fullUri, forceLoad: true);
     }
 }

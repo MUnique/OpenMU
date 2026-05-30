@@ -26,9 +26,9 @@ public class ThemeController : Controller
     /// Sets the UI theme by writing the theme cookie and redirects to the specified URI.
     /// </summary>
     /// <param name="theme">The theme to set, e.g. &quot;light&quot; or &quot;dark&quot;.</param>
-    /// <param name="redirectUri">The URI to redirect to after the cookie has been set.</param>
-    /// <returns>A local redirect to <paramref name="redirectUri"/>.</returns>
-    public IActionResult Set(string? theme, string redirectUri)
+    /// <param name="redirectUri">The URI to redirect to after the cookie has been set. Must be a local URL; otherwise the user is sent to the application root.</param>
+    /// <returns>A local redirect to <paramref name="redirectUri"/>, or to &quot;/&quot; if the URI is missing or non-local.</returns>
+    public IActionResult Set(string? theme, string? redirectUri)
     {
         var normalized = NormalizeTheme(theme);
         this.HttpContext.Response.Cookies.Append(
@@ -40,6 +40,13 @@ public class ThemeController : Controller
                 IsEssential = true,
                 SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Lax,
             });
+
+        // LocalRedirect throws InvalidOperationException (-> 500) on empty / non-local URIs.
+        // Fall back to the app root so a malformed request never crashes the response.
+        if (string.IsNullOrEmpty(redirectUri) || !this.Url.IsLocalUrl(redirectUri))
+        {
+            return this.LocalRedirect("/");
+        }
 
         return this.LocalRedirect(redirectUri);
     }
