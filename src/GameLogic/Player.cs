@@ -1190,9 +1190,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return 0;
         }
 
-        var addMasterExperience = characterClass.IsMasterClass
-                            && (short)this.Attributes![Stats.Level] == this.GameContext.Configuration.MaximumLevel;
-        if (addMasterExperience)
+        var currentLevel = (short)this.Attributes![Stats.Level];
+        var isMaxLevel = currentLevel == this.GameContext.Configuration.MaximumLevel;
+        var isAddMasterExperience = characterClass.IsMasterClass && isMaxLevel;
+
+        if (isAddMasterExperience)
         {
             await this.AddMasterExperienceAsync(experience, killedObject).ConfigureAwait(false);
         }
@@ -1223,23 +1225,37 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return 0;
         }
 
-        var addMasterExperience = characterClass.IsMasterClass
-                            && (short)attributes[Stats.Level] == this.GameContext.Configuration.MaximumLevel;
-        var expRateAttribute = addMasterExperience ? Stats.MasterExperienceRate : Stats.ExperienceRate;
-        var gameRate = addMasterExperience ? this.GameContext.MasterExperienceRate : this.GameContext.ExperienceRate;
+        var currentLevel = (short)attributes[Stats.Level];
+        var isMaxLevel = currentLevel == this.GameContext.Configuration.MaximumLevel;
+        var isAddMasterExperience = characterClass.IsMasterClass && isMaxLevel;
+        var expRateAttribute = isAddMasterExperience ? Stats.MasterExperienceRate : Stats.ExperienceRate;
+        var gameRate = isAddMasterExperience ? this.GameContext.MasterExperienceRate : this.GameContext.ExperienceRate;
 
         var experience = killedObject.CalculateBaseExperience(attributes[Stats.TotalLevel]);
         experience *= gameRate;
         experience *= attributes[expRateAttribute] + attributes[Stats.BonusExperienceRate];
         experience *= this.CurrentMap?.Definition.ExpMultiplier ?? 1;
-        return Rand.NextInt((int)(experience * 0.8), (int)(experience * 1.2));
+
+        var minMultiplier = attributes[Stats.RandomExperienceMinMultiplier];
+        var maxMultiplier = attributes[Stats.RandomExperienceMaxMultiplier];
+        if (minMultiplier > 0 && maxMultiplier > 0)
+        {
+            var minimumExperience = (int)(experience * minMultiplier);
+            var maximumExperience = (int)(experience * maxMultiplier);
+            if (minimumExperience < maximumExperience)
+            {
+                return Rand.NextInt(minimumExperience, maximumExperience);
+            }
+        }
+
+        return (int)experience;
     }
 
     /// <summary>
     /// Adds the master experience to the current character.
     /// </summary>
-    /// <param name="experience">The experience which should be added.</param>
-    /// <param name="killedObject">The killed object which caused the experience gain.</param>
+    /// <param name="experience">The experience that should be added.</param>
+    /// <param name="killedObject">The killed object that caused the experience gain.</param>
     public async ValueTask AddMasterExperienceAsync(int experience, IAttackable? killedObject)
     {
         using var d = await this._experienceLock.LockAsync().ConfigureAwait(false);
