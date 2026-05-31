@@ -1,4 +1,4 @@
-// <copyright file="AddMovementSpeedAttributesPlugIn095d.cs" company="MUnique">
+// <copyright file="AddMovementSpeedAttributesPlugIn095D.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -13,7 +13,7 @@ using MUnique.OpenMU.PlugIns;
 [PlugIn]
 [Display(Name = PlugInName, Description = PlugInDescription)]
 [Guid("7C38C30F-163B-4625-A82D-5C3A0A9ED883")]
-public class AddMovementSpeedAttributesPlugIn095d : AddMovementSpeedAttributesPlugInBase
+public class AddMovementSpeedAttributesPlugIn095D : AddMovementSpeedAttributesPlugInBase
 {
     /// <inheritdoc />
     public override UpdateVersion Version => UpdateVersion.AddMovementSpeedAttributes095d;

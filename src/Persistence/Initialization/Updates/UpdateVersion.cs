@@ -429,7 +429,7 @@ public enum UpdateVersion
     AddMovementSpeedAttributes075 = 84,
 
     /// <summary>
-    /// The version of the <see cref="AddMovementSpeedAttributesPlugIn095d"/>.
+    /// The version of the <see cref="AddMovementSpeedAttributesPlugIn095D"/>.
     /// </summary>
     AddMovementSpeedAttributes095d = 85,
 
