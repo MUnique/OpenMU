@@ -10294,7 +10294,7 @@
       </Fields>
     </Packet>
     <Packet>
-      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <HeaderType>C2HeaderWithSubCode</HeaderType>
       <Code>F6</Code>
       <SubCode>0C</SubCode>
       <Name>QuestProgressExtended</Name>
