@@ -25,7 +25,7 @@
             <PropertyColumn Title="Name" Property="@(c => c.Name)" Sortable="true">
             </PropertyColumn>
 
-            <TemplateColumn Align="Align.Center">
+            <TemplateColumn Align="Align.Start">
                 <button type="button" class="btn-info" @onclick="@(() => this.OnMerchantEditClickAsync(context))">@Resources.Edit</button>
             </TemplateColumn>
         </QuickGrid>

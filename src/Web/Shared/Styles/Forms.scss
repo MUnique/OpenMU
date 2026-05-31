@@ -1,4 +1,8 @@
-﻿form input {
+﻿input[type="checkbox"] {
+  max-width: 10%;
+}
+
+form input {
     @extend .form-control;
 }
 
@@ -15,10 +19,6 @@
     @extend .was-validated;
     @extend .form-control, :valid;
 }
-
-/*.validation-message {
-    @extend .invalid-feedback;
-}*/
 
 // own style:
 .primary-button {
@@ -94,15 +94,9 @@ label > details > div {
     @extend .mr-3;
 }
 
-.blazored-typeahead:valid {
-    padding: 0px 0px 0px 0px !important;
-}
-
 ul.socket {
     @extend .list-group;
     @extend .mb-3;
-   
-    //display: flex;
 }
 
 ul.socket > li {
