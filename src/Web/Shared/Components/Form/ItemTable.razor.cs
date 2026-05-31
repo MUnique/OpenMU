@@ -65,7 +65,7 @@ public partial class ItemTable<TItem>
                 return items;
             }
 
-            return items.Where(i => i.GetName().Contains(this._searchTerm, StringComparison.OrdinalIgnoreCase));
+            return items.Where(i => (i.GetName()?.Contains(this._searchTerm, StringComparison.OrdinalIgnoreCase) ?? false));
         }
     }
 
@@ -82,17 +82,13 @@ public partial class ItemTable<TItem>
         this._isCreatingSupported = isMemberOfAggregate;
         this._isStartingCollapsed = this.Value is not null && this.Value.Count > this._searchThreshold;
         this._isCollapsed = this._isStartingCollapsed;
-        this._showSearch = this.Value is not null && this.Value.Count > this._searchThreshold;
     }
 
     /// <inheritdoc />
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
-        if (this.Value is not null && this.Value.Count > this._searchThreshold)
-        {
-            this._showSearch = true;
-        }
+        this._showSearch = this.Value is not null && this.Value.Count > this._searchThreshold;
     }
 
     /// <inheritdoc />
