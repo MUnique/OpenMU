@@ -13,14 +13,14 @@ using Microsoft.AspNetCore.Mvc;
 public class ThemeController : Controller
 {
     /// <summary>
-    /// The name of the cookie that stores the selected theme.
+    /// Gets the name of the cookie that stores the selected theme.
     /// </summary>
-    public const string CookieName = "OpenMU.Theme";
+    public static string CookieName { get; } = "OpenMU.Theme";
 
     /// <summary>
-    /// The default theme used when no cookie is present.
+    /// Gets the default theme used when no cookie is present.
     /// </summary>
-    public const string DefaultTheme = "light";
+    public static string DefaultTheme { get; } = "light";
 
     /// <summary>
     /// Sets the UI theme by writing the theme cookie and redirects to the specified URI.
