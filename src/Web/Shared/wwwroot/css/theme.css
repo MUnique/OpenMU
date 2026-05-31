@@ -64,14 +64,6 @@ body {
     color: var(--omu-text);
 }
 
-/*
- * shared.css has the light gradient hardcoded on .sidebar > nav (Navigation.scss).
- * Recolor it in dark mode so nav matches body/sidebar gradient.
- */
-[data-theme="dark"] .sidebar > nav {
-    background-image: var(--omu-sidebar-gradient);
-}
-
 /* ===== Dark-mode overrides for Bootstrap 4 surfaces ===== */
 [data-theme="dark"] .bg-light,
 [data-theme="dark"] .navbar-light,
