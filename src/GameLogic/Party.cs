@@ -342,18 +342,39 @@ public sealed class Party : AsyncDisposable
 
     private static (int Total, float PerLevel) CalculatePartyExperience(List<Player> recipients, IAttackable killed)
     {
-        var count = recipients.Count;
+        var memberCount = recipients.Count;
         var totalLevel = recipients.Sum(p => (int)p.Attributes![Stats.TotalLevel]);
-        var averageLevel = totalLevel / count;
-        var baseExp = killed.CalculateBaseExperience(averageLevel);
+        var averageLevel = totalLevel / memberCount;
+        var baseExperience = killed.CalculateBaseExperience(averageLevel);
 
-        var totalAvg = baseExp * count * Math.Pow(1.05, count - 1);
-        totalAvg *= killed.CurrentMap?.Definition.ExpMultiplier ?? 1;
+        var partyBonusMultiplier = Math.Pow(1.05, memberCount - 1);
+        var mapExperienceMultiplier = killed.CurrentMap?.Definition.ExpMultiplier ?? 1;
+        var totalBaseExperience = baseExperience * memberCount * partyBonusMultiplier * mapExperienceMultiplier;
 
-        var total = Rand.NextInt((int)(totalAvg * 0.8), (int)(totalAvg * 1.2));
-        var perLevel = (float)total / totalLevel;
+        var attributes = recipients[0].Attributes!;
+        var randomMinMultiplier = attributes[Stats.RandomExperienceMinMultiplier];
+        var randomMaxMultiplier = attributes[Stats.RandomExperienceMaxMultiplier];
+        var totalExperience = CalculateTotalExperience(totalBaseExperience, randomMinMultiplier, randomMaxMultiplier);
+        var perLevel = (float)totalExperience / totalLevel;
 
-        return (total, perLevel);
+        return (totalExperience, perLevel);
+    }
+
+    private static int CalculateTotalExperience(double totalBaseExperience, float randomMinMultiplier, float randomMaxMultiplier)
+    {
+        if (randomMinMultiplier <= 0 || randomMaxMultiplier <= 0)
+        {
+            return (int)totalBaseExperience;
+        }
+
+        var minimumExperience = (int)(totalBaseExperience * randomMinMultiplier);
+        var maximumExperience = (int)(totalBaseExperience * randomMaxMultiplier);
+        if (minimumExperience < maximumExperience)
+        {
+            return Rand.NextInt(minimumExperience, maximumExperience);
+        }
+
+        return (int)totalBaseExperience;
     }
 
     private static async ValueTask AwardExperienceAsync(Player player, float perLevel, IAttackable killed)

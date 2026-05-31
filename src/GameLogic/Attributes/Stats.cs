@@ -1,4 +1,4 @@
-﻿// <copyright file="Stats.cs" company="MUnique">
+// <copyright file="Stats.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -110,6 +110,16 @@ public class Stats
     /// Gets the experience rate attribute definition.
     /// </summary>
     public static AttributeDefinition ExperienceRate { get; } = new(new Guid("1AD454D4-BEF9-416E-BC49-82A5B0277FC7"), "Experience Rate", "Defines the experience rate multiplier of a character. By default it's 1.0 and may be modified by seals or other stuff.");
+
+    /// <summary>
+    /// Gets the random experience min multiplier attribute definition.
+    /// </summary>
+    public static AttributeDefinition RandomExperienceMinMultiplier { get; } = new(new Guid("536BF8B0-D24B-4314-95B7-5D651F5892DF"), "Random Experience Min Multiplier", "Defines the minimum multiplier for the randomized experience gain.");
+
+    /// <summary>
+    /// Gets the random experience max multiplier attribute definition.
+    /// </summary>
+    public static AttributeDefinition RandomExperienceMaxMultiplier { get; } = new(new Guid("74CE26C6-6D59-4420-AF3F-457E138AE41C"), "Random Experience Max Multiplier", "Defines the maximum multiplier for the randomized experience gain.");
 
     /// <summary>
     /// Gets the bonus experience rate attribute definition, which is added to <see cref="ExperienceRate"/> or <see cref="MasterExperienceRate"/>.
