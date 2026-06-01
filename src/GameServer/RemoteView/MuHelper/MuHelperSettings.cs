@@ -143,6 +143,18 @@ public sealed class MuHelperSettings : IMuHelperSettings
     /// <summary>Gets a value indicating whether to repair items.</summary>
     public bool RepairItem { get; init; }
 
+    /// <summary>Gets a value indicating whether to automatically defend against nearby monsters attacking the character.</summary>
+    public bool UseSelfDefense { get; init; }
+
+    /// <summary>Gets a value indicating whether to automatically accept friend requests.</summary>
+    public bool AutoAcceptFriend { get; init; }
+
+    /// <summary>Gets a value indicating whether to automatically accept guild join requests.</summary>
+    public bool AutoAcceptGuild { get; init; }
+
+    /// <summary>Gets a value indicating whether to use basic attack as fallback when the configured skill cannot be used.</summary>
+    public bool FallbackBasicAttack { get; init; }
+
     /// <inheritdoc />
     public override string ToString()
     {

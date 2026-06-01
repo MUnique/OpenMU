@@ -8,8 +8,12 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.MuHelper;
 using MUnique.OpenMU.GameLogic.PlayerActions.Party;
 using MUnique.OpenMU.GameLogic.Views.Party;
+using MUnique.OpenMU.GameServer;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
 
@@ -180,6 +184,194 @@ public class PartyTest
         Assert.That(player.LastPartyRequester, Is.Null);
         Assert.That(requester.Party, Is.Null);
         Mock.Get(player.ViewPlugIns.GetPlugIn<IShowPartyRequestPlugIn>()!).Verify(v => v!.ShowPartyRequestAsync(requester), Times.Never);
+    }
+
+    /// <summary>
+    /// Tests if a party request is auto-accepted when <see cref="IMuHelperSettings.AutoAcceptFriend"/> is true
+    /// and the requester is a friend.
+    /// </summary>
+    [Test]
+    public async ValueTask PartyRequestAutoAcceptByFriendAsync()
+    {
+        var friendServer = new Mock<IFriendServer>();
+        friendServer.Setup(f => f.IsFriendAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
+        var gameContext = PartyTest.CreateGameServerContext(friendServer.Object);
+        var player = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
+        var toRequest = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
+        player.SelectedCharacter!.Name = "Requester";
+        toRequest.SelectedCharacter!.Name = "Receiver";
+        player.Observers.Add(toRequest);
+
+        var settingsMock = new Mock<IMuHelperSettings>();
+        settingsMock.Setup(s => s.AutoAcceptFriend).Returns(true);
+        toRequest.MuHelperSettings = settingsMock.Object;
+
+        var handler = new PartyRequestAction();
+        await handler.HandlePartyRequestAsync(player, toRequest).ConfigureAwait(false);
+
+        Assert.That(player.Party, Is.Not.Null);
+        Assert.That(toRequest.Party, Is.SameAs(player.Party));
+        Mock.Get(toRequest.ViewPlugIns.GetPlugIn<IShowPartyRequestPlugIn>()!).Verify(v => v!.ShowPartyRequestAsync(player), Times.Never);
+    }
+
+    /// <summary>
+    /// Tests if a party request still shows the dialog when <see cref="IMuHelperSettings.AutoAcceptFriend"/>
+    /// is true but the requester is not a friend.
+    /// </summary>
+    [Test]
+    public async ValueTask PartyRequestAutoAcceptByFriendNotFriendAsync()
+    {
+        var friendServer = new Mock<IFriendServer>();
+        friendServer.Setup(f => f.IsFriendAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(false);
+        var gameContext = PartyTest.CreateGameServerContext(friendServer.Object);
+        var player = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
+        var toRequest = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
+        player.SelectedCharacter!.Name = "Requester";
+        toRequest.SelectedCharacter!.Name = "Receiver";
+        player.Observers.Add(toRequest);
+
+        var settingsMock = new Mock<IMuHelperSettings>();
+        settingsMock.Setup(s => s.AutoAcceptFriend).Returns(true);
+        toRequest.MuHelperSettings = settingsMock.Object;
+
+        var handler = new PartyRequestAction();
+        await handler.HandlePartyRequestAsync(player, toRequest).ConfigureAwait(false);
+
+        Assert.That(player.Party, Is.Null);
+        Mock.Get(toRequest.ViewPlugIns.GetPlugIn<IShowPartyRequestPlugIn>()!).Verify(v => v!.ShowPartyRequestAsync(player), Times.Once);
+    }
+
+    /// <summary>
+    /// Tests if a party request is auto-accepted when <see cref="IMuHelperSettings.AutoAcceptGuild"/> is true
+    /// and both players are members of the same guild.
+    /// </summary>
+    [Test]
+    public async ValueTask PartyRequestAutoAcceptByGuildAsync()
+    {
+        var gameContext = GameContextTestHelper.CreateGameContext();
+        var player = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
+        var toRequest = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
+        player.Observers.Add(toRequest);
+
+        var guildId = 1u;
+        player.GuildStatus = new GuildMemberStatus(guildId, GuildPosition.GuildMaster);
+        toRequest.GuildStatus = new GuildMemberStatus(guildId, GuildPosition.NormalMember);
+
+        var settingsMock = new Mock<IMuHelperSettings>();
+        settingsMock.Setup(s => s.AutoAcceptGuild).Returns(true);
+        toRequest.MuHelperSettings = settingsMock.Object;
+
+        var handler = new PartyRequestAction();
+        await handler.HandlePartyRequestAsync(player, toRequest).ConfigureAwait(false);
+
+        Assert.That(player.Party, Is.Not.Null);
+        Assert.That(toRequest.Party, Is.SameAs(player.Party));
+        Mock.Get(toRequest.ViewPlugIns.GetPlugIn<IShowPartyRequestPlugIn>()!).Verify(v => v!.ShowPartyRequestAsync(player), Times.Never);
+    }
+
+    /// <summary>
+    /// Tests if a party request still shows the dialog when <see cref="IMuHelperSettings.AutoAcceptGuild"/>
+    /// is true but the players are in different guilds.
+    /// </summary>
+    [Test]
+    public async ValueTask PartyRequestAutoAcceptByGuildDifferentGuildAsync()
+    {
+        var gameContext = GameContextTestHelper.CreateGameContext();
+        var player = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
+        var toRequest = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
+        player.Observers.Add(toRequest);
+
+        player.GuildStatus = new GuildMemberStatus(1u, GuildPosition.GuildMaster);
+        toRequest.GuildStatus = new GuildMemberStatus(2u, GuildPosition.NormalMember);
+
+        var settingsMock = new Mock<IMuHelperSettings>();
+        settingsMock.Setup(s => s.AutoAcceptGuild).Returns(true);
+        toRequest.MuHelperSettings = settingsMock.Object;
+
+        var handler = new PartyRequestAction();
+        await handler.HandlePartyRequestAsync(player, toRequest).ConfigureAwait(false);
+
+        Assert.That(player.Party, Is.Null);
+        Mock.Get(toRequest.ViewPlugIns.GetPlugIn<IShowPartyRequestPlugIn>()!).Verify(v => v!.ShowPartyRequestAsync(player), Times.Once);
+    }
+
+    /// <summary>
+    /// Tests that a party request is not auto-accepted when no relevant flags are set.
+    /// </summary>
+    [Test]
+    public async ValueTask PartyRequestAutoAcceptNoFlagsAsync()
+    {
+        var friendServer = new Mock<IFriendServer>();
+        var gameContext = PartyTest.CreateGameServerContext(friendServer.Object);
+        var player = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
+        var toRequest = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
+        player.SelectedCharacter!.Name = "Requester";
+        toRequest.SelectedCharacter!.Name = "Receiver";
+        player.Observers.Add(toRequest);
+
+        var settingsMock = new Mock<IMuHelperSettings>();
+        toRequest.MuHelperSettings = settingsMock.Object;
+
+        var handler = new PartyRequestAction();
+        await handler.HandlePartyRequestAsync(player, toRequest).ConfigureAwait(false);
+
+        Assert.That(player.Party, Is.Null);
+        Mock.Get(toRequest.ViewPlugIns.GetPlugIn<IShowPartyRequestPlugIn>()!).Verify(v => v!.ShowPartyRequestAsync(player), Times.Once);
+    }
+
+    /// <summary>
+    /// Tests that a party request is not auto-accepted when MuHelperSettings is null.
+    /// </summary>
+    [Test]
+    public async ValueTask PartyRequestAutoAcceptNoSettingsAsync()
+    {
+        var friendServer = new Mock<IFriendServer>();
+        var gameContext = PartyTest.CreateGameServerContext(friendServer.Object);
+        var player = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
+        var toRequest = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
+        player.Observers.Add(toRequest);
+
+        var handler = new PartyRequestAction();
+        await handler.HandlePartyRequestAsync(player, toRequest).ConfigureAwait(false);
+
+        Assert.That(player.Party, Is.Null);
+        Mock.Get(toRequest.ViewPlugIns.GetPlugIn<IShowPartyRequestPlugIn>()!).Verify(v => v!.ShowPartyRequestAsync(player), Times.Once);
+    }
+
+    private static IGameServerContext CreateGameServerContext(IFriendServer friendServer)
+    {
+        var contextProvider = new InMemoryPersistenceContextProvider();
+        var context = contextProvider.CreateNewContext();
+        var gameConfiguration = context.CreateNew<MUnique.OpenMU.Persistence.BasicModel.GameConfiguration>();
+        gameConfiguration.MaximumPartySize = 5;
+        gameConfiguration.RecoveryInterval = int.MaxValue;
+        gameConfiguration.MaximumInventoryMoney = int.MaxValue;
+        var mapDef = context.CreateNew<MUnique.OpenMU.Persistence.BasicModel.GameMapDefinition>();
+        mapDef.Number = 0;
+        mapDef.TerrainData = new byte[ushort.MaxValue + 3];
+        gameConfiguration.Maps.Add(mapDef);
+
+        var mapInitializer = new MapInitializer(gameConfiguration, new NullLogger<MapInitializer>(), NullDropGenerator.Instance, null);
+
+        var gameServer = new GameServerContext(
+            new GameServerDefinition
+            {
+                GameConfiguration = gameConfiguration,
+                ServerConfiguration = new GameServerConfiguration(),
+            },
+            new Mock<IGuildServer>().Object,
+            new Mock<IEventPublisher>().Object,
+            new Mock<ILoginServer>().Object,
+            friendServer,
+            new InMemoryPersistenceContextProvider(),
+            mapInitializer,
+            new NullLoggerFactory(),
+            new PlugInManager(new List<PlugInConfiguration>(), new NullLoggerFactory(), null, null),
+            NullDropGenerator.Instance,
+            new ConfigurationChangeMediator());
+        mapInitializer.PlugInManager = gameServer.PlugInManager;
+        mapInitializer.PathFinderPool = gameServer.PathFinderPool;
+        return gameServer;
     }
 
     private async ValueTask<Player> CreatePartyMemberAsync()

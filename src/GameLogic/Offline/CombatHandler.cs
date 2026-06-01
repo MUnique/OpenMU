@@ -31,7 +31,6 @@ public sealed class CombatHandler
     private readonly OfflinePlayer _player;
     private readonly IMuHelperSettings? _config;
     private readonly MovementHandler _movementHandler;
-    private readonly BuffHandler _buffHandler;
     private readonly Point _originPosition;
     private readonly ConditionalSkillSlot[] _conditionalSkillSlots;
 
@@ -46,14 +45,12 @@ public sealed class CombatHandler
     /// <param name="player">The offline player.</param>
     /// <param name="config">The MU helper settings.</param>
     /// <param name="movementHandler">The movement handler.</param>
-    /// <param name="buffHandler">The buff handler.</param>
     /// <param name="originPosition">The original position to hunt around.</param>
-    public CombatHandler(OfflinePlayer player, IMuHelperSettings? config, MovementHandler movementHandler, BuffHandler buffHandler, Point originPosition)
+    public CombatHandler(OfflinePlayer player, IMuHelperSettings? config, MovementHandler movementHandler, Point originPosition)
     {
         this._player = player;
         this._config = config;
         this._movementHandler = movementHandler;
-        this._buffHandler = buffHandler;
         this._originPosition = originPosition;
         this._conditionalSkillSlots = config is null ? [] :
         [
@@ -163,14 +160,9 @@ public sealed class CombatHandler
     private async ValueTask ExecuteAttackAsync(IAttackable target)
     {
         var skill = this.SelectAttackSkill();
-        if (skill == null)
+        if (skill == null && this._config?.FallbackBasicAttack != true)
         {
-            // Do not attack if there are buffs configured to handle buff-only classes.
-            var buffs = this._buffHandler.ConfiguredBuffIds;
-            if (buffs.Any(id => id > 0))
-            {
-                return;
-            }
+            return;
         }
 
         await this.ExecuteAttackAsync(target, skill, false).ConfigureAwait(false);
@@ -520,6 +512,12 @@ public sealed class CombatHandler
             {
                 return (byte)ranges.Min();
             }
+        }
+
+        if (this._player.Attributes is { } attributes
+            && (attributes[Stats.IsBowEquipped] > 0 || attributes[Stats.IsCrossBowEquipped] > 0))
+        {
+            return 6;
         }
 
         return DefaultRange;

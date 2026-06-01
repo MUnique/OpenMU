@@ -8,6 +8,7 @@ using System.Buffers;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.PlayerActions.MuHelper;
+using MUnique.OpenMU.GameServer.RemoteView.MuHelper;
 using MUnique.OpenMU.Network.Packets.ClientToServer;
 using MUnique.OpenMU.PlugIns;
 
@@ -36,5 +37,9 @@ public class MuHelperSaveDataRequestHandlerPlugin : IPacketHandlerPlugIn
         var memory = memoryOwner.Memory[..dataSize];
         message.HelperData.CopyTo(memory.Span);
         await this._updateMuBotConfigurationAction.SaveDataAsync(player, memory).ConfigureAwait(false);
+        if (player.SelectedCharacter?.MuHelperConfiguration is { } configuration)
+        {
+            player.MuHelperSettings = MuHelperSettingsSerializer.TryDeserialize(configuration);
+        }
     }
 }
