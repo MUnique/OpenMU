@@ -23,7 +23,7 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 [PlugIn]
 [Display(Name = "QuestProgressS6PlugIn", Description = "Season 6 quest progress plugin sending F6 0C in S6 client format.")]
-[Guid("A1B2C3D4-E5F6-7890-ABCD-EF1234567890")]
+[Guid("B10A7CBD-3C5F-4FF3-8CAC-EE712E20A6C1")]
 [MinimumClient(6, 0, ClientLanguage.Invariant)]
 public class QuestProgressS6PlugIn : IQuestProgressPlugIn
 {
@@ -95,14 +95,14 @@ public class QuestProgressS6PlugIn : IQuestProgressPlugIn
             // SubCode
             span[4] = 0x0C;
 
-            var monsterKills = quest.RequiredMonsterKills.ToList();
-            var itemReqs = quest.RequiredItems.ToList();
-            var rewards = quest.Rewards
+            var monsterKills = quest.RequiredMonsterKills?.ToList() ?? new();
+            var itemReqs = quest.RequiredItems?.ToList() ?? new();
+            var rewards = quest.Rewards?
                 .Where(r => r.RewardType is QuestRewardType.Experience
                     or QuestRewardType.Money
                     or QuestRewardType.Item)
                 .Take(MaxSlots)
-                .ToList();
+                .ToList() ?? new();
 
             int requestCount = Math.Min(monsterKills.Count + itemReqs.Count, MaxSlots);
             int rewardCount = rewards.Count;
@@ -153,7 +153,7 @@ public class QuestProgressS6PlugIn : IQuestProgressPlugIn
         packet[b + 0] = RequestTypeMonster;
 
         // [+2..3] m_wIndex = monster number (WORD LE)
-        BinaryPrimitives.WriteUInt16LittleEndian(packet[(b + 2)..(b + 4)], (ushort)kill.Monster!.Number);
+        BinaryPrimitives.WriteUInt16LittleEndian(packet[(b + 2)..(b + 4)], (ushort)(kill.Monster?.Number ?? 0));
 
         // [+4..7] m_dwValue = required kill count (DWORD LE)
         BinaryPrimitives.WriteUInt32LittleEndian(packet[(b + 4)..(b + 8)], (uint)kill.MinimumNumber);
@@ -174,23 +174,28 @@ public class QuestProgressS6PlugIn : IQuestProgressPlugIn
         int slotIndex,
         QuestItemRequirement itemReq)
     {
+        if (itemReq.Item is not { } item)
+        {
+            return;
+        }
+
         int b = HeaderSize + (slotIndex * RequestSlotSize);
 
         packet[b + 0] = RequestTypeItem;
 
         // m_wIndex = item type (group << 9 | number)
-        ushort itemType = (ushort)(((ushort)(itemReq.Item!.Group << 9)) | (ushort)itemReq.Item.Number);
+        ushort itemType = (ushort)(((ushort)(item.Group << 9)) | (ushort)item.Number);
         BinaryPrimitives.WriteUInt16LittleEndian(packet[(b + 2)..(b + 4)], itemType);
 
         // m_dwValue = required count
         BinaryPrimitives.WriteUInt32LittleEndian(packet[(b + 4)..(b + 8)], (uint)itemReq.MinimumNumber);
 
         // m_wCurValue = current count in inventory
-        uint curCount = (uint)(this._player.Inventory?.Items.Count(i => Equals(i.Definition, itemReq.Item)) ?? 0);
+        uint curCount = (uint)(this._player.Inventory?.Items.Count(i => Equals(i.Definition, item)) ?? 0);
         BinaryPrimitives.WriteUInt32LittleEndian(packet[(b + 8)..(b + 12)], curCount);
 
         // Serialize item definition into m_byItemInfo[15]
-        var temporaryItem = new TemporaryItem { Definition = itemReq.Item };
+        var temporaryItem = new TemporaryItem { Definition = item };
         temporaryItem.Durability = temporaryItem.GetMaximumDurabilityOfOnePiece();
         this._player.ItemSerializer.SerializeItem(packet[(b + 12)..(b + 27)], temporaryItem);
     }
