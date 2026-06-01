@@ -17,7 +17,7 @@ public static class PartyRequestHandler
     /// </summary>
     /// <param name="receiver">The player receiving the party request.</param>
     /// <param name="requester">The player who sent the party request.</param>
-    /// <returns>True if the request was auto-accepted and the players are in a party; false otherwise.</returns>
+    /// <returns>True if the criteria matched (auto-accept was attempted, regardless of success); false if no criteria matched.</returns>
     public static async ValueTask<bool> TryAutoAcceptPartyRequestAsync(Player receiver, Player requester)
     {
         var settings = receiver.MuHelperSettings;
@@ -28,12 +28,14 @@ public static class PartyRequestHandler
 
         if (settings.AutoAcceptGuild && AreGuildMembers(receiver, requester))
         {
-            return await AcceptPartyRequestAsync(receiver, requester).ConfigureAwait(false);
+            await AcceptPartyRequestAsync(receiver, requester).ConfigureAwait(false);
+            return true;
         }
 
         if (settings.AutoAcceptFriend && await AreFriendsAsync(receiver, requester).ConfigureAwait(false))
         {
-            return await AcceptPartyRequestAsync(receiver, requester).ConfigureAwait(false);
+            await AcceptPartyRequestAsync(receiver, requester).ConfigureAwait(false);
+            return true;
         }
 
         return false;
