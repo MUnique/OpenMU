@@ -585,4 +585,22 @@
   <data name="HideEntryForm" xml:space="preserve">
     <value>Hide entry form</value>
   </data>
+  <data name="AllGameServers" xml:space="preserve">
+    <value>All Game Servers</value>
+  </data>
+  <data name="GlobalMessage" xml:space="preserve">
+    <value>Global Message</value>
+  </data>
+  <data name="MessagePlaceholder" xml:space="preserve">
+    <value>Enter message...</value>
+  </data>
+  <data name="OnlineCount" xml:space="preserve">
+    <value>{0} online</value>
+  </data>
+  <data name="Send" xml:space="preserve">
+    <value>Send</value>
+  </data>
+  <data name="Target" xml:space="preserve">
+    <value>Target</value>
+  </data>
 </root>

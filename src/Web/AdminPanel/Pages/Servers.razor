@@ -16,6 +16,32 @@
 }
 else
 {
+<div class="card mb-3">
+    <div class="card-body">
+        <div class="row g-2 align-items-end">
+            <div class="col-md-5">
+                <label for="global-message" class="form-label mb-1">@Resources.GlobalMessage</label>
+                <input id="global-message" type="text" class="form-control" placeholder="@Resources.MessagePlaceholder" @bind="_message" @bind:event="oninput" />
+            </div>
+            <div class="col-md-4">
+                <label for="server-select" class="form-label mb-1">@Resources.Target</label>
+                <select id="server-select" class="form-select" @bind="_selectedServerId">
+                    <option value="-1">@Resources.AllGameServers</option>
+                    @foreach (var server in _servers.Where(s => s.Type == ServerType.GameServer && s.ServerState == ServerState.Started))
+                    {
+                        <option value="@server.Id">@server.Description (@(string.Format(Resources.OnlineCount, server.CurrentConnections)))</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button class="btn btn-primary w-100" @onclick="SendMessageAsync" disabled="@string.IsNullOrWhiteSpace(_message)">
+                    @Resources.Send
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div>
   <table>
     <thead>
@@ -78,6 +104,10 @@ else
 
     private bool _isRestarting;
 
+    private string _message = string.Empty;
+
+    private int _selectedServerId = -1;
+
     /// <summary>
     /// Gets or sets the <see cref="IServerProvider"/>.
     /// </summary>
@@ -89,6 +119,12 @@ else
     /// </summary>
     [Inject]
     public IGameServerInstanceManager? ServerInstanceManager { get; set; }
+
+    /// <summary>
+    /// Gets or sets the game servers.
+    /// </summary>
+    [Inject]
+    public IDictionary<int, IGameServer> GameServers { get; set; } = null!;
 
     /// <inheritdoc />
     public void Dispose()
@@ -124,5 +160,28 @@ else
       {
         this._isRestarting = false;
       }
+    }
+
+    private async Task SendMessageAsync()
+    {
+        var message = _message;
+        if (string.IsNullOrWhiteSpace(message))
+        {
+            return;
+        }
+
+        if (_selectedServerId == -1)
+        {
+            foreach (var server in this.GameServers.Values.Where(s => s.ServerState == ServerState.Started))
+            {
+                await server.SendGlobalMessageAsync(message, MessageType.GoldenCenter).ConfigureAwait(false);
+            }
+        }
+        else if (this.GameServers.TryGetValue(_selectedServerId, out var server) && server.ServerState == ServerState.Started)
+        {
+            await server.SendGlobalMessageAsync(message, MessageType.GoldenCenter).ConfigureAwait(false);
+        }
+
+        _message = string.Empty;
     }
 }

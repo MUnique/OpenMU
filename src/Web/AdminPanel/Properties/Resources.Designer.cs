@@ -1457,5 +1457,59 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("YesCreateTestAccounts", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to All Game Servers.
+        /// </summary>
+        public static string AllGameServers {
+            get {
+                return ResourceManager.GetString("AllGameServers", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Global Message.
+        /// </summary>
+        public static string GlobalMessage {
+            get {
+                return ResourceManager.GetString("GlobalMessage", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Enter message....
+        /// </summary>
+        public static string MessagePlaceholder {
+            get {
+                return ResourceManager.GetString("MessagePlaceholder", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to {0} online.
+        /// </summary>
+        public static string OnlineCount {
+            get {
+                return ResourceManager.GetString("OnlineCount", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Send.
+        /// </summary>
+        public static string Send {
+            get {
+                return ResourceManager.GetString("Send", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Target.
+        /// </summary>
+        public static string Target {
+            get {
+                return ResourceManager.GetString("Target", resourceCulture);
+            }
+        }
     }
 }
