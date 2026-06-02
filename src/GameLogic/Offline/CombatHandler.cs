@@ -18,15 +18,16 @@ using MUnique.OpenMU.Pathfinding;
 public sealed class CombatHandler
 {
     private const byte DefaultRange = 1;
+    private const byte BowRange = 6;
     private const int ComboFinisherDelayTicks = 3;
     private const int InterSkillDelayTicks = 1;
     private const int MinComboSkillCount = 3;
 
-    private static readonly TargetedSkillDefaultPlugin DefaultPlugin = new();
-
     private const short DrainLifeBaseSkillId = 214;
     private const short DrainLifeStrengthenerSkillId = 458;
     private const short DrainLifeMasterySkillId = 462;
+
+    private static readonly TargetedSkillDefaultPlugin DefaultPlugin = new();
 
     private readonly OfflinePlayer _player;
     private readonly IMuHelperSettings? _config;
@@ -517,7 +518,7 @@ public sealed class CombatHandler
         if (this._player.Attributes is { } attributes
             && (attributes[Stats.IsBowEquipped] > 0 || attributes[Stats.IsCrossBowEquipped] > 0))
         {
-            return 6;
+            return BowRange;
         }
 
         return DefaultRange;
