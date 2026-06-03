@@ -143,7 +143,7 @@ public sealed class MuHelperSettings : IMuHelperSettings
     /// <summary>Gets a value indicating whether to repair items.</summary>
     public bool RepairItem { get; init; }
 
-    /// <summary>Gets a value indicating whether to automatically defend against nearby monsters attacking the character.</summary>
+    /// <summary>Gets a value indicating whether to automatically defend against players attacking the character.</summary>
     public bool UseSelfDefense { get; init; }
 
     /// <summary>Gets a value indicating whether to automatically accept requests from friends.</summary>
