@@ -10077,7 +10077,7 @@ label > details[open] {
   left: 0.75rem;
   top: 50%;
   transform: translateY(-50%);
-  color: #6c757d;
+  color: var(--omu-text-muted);
   pointer-events: none;
 }
 
