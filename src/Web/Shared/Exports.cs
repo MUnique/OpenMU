@@ -48,6 +48,7 @@ public static class Exports
         get
         {
             yield return $"{Prefix}/css/shared.css";
+            yield return $"{Prefix}/css/theme.css";
         }
     }
 }

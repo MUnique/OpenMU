@@ -1,0 +1,413 @@
+/*
+ * Theme tokens for the admin panel (light + dark).
+ *
+ * Loaded as a separate stylesheet via Exports.Stylesheets so it does NOT depend
+ * on Dart Sass being available at build time (the SCSS -> shared.css pipeline
+ * is skipped in Docker / CI builds where ci=true).
+ *
+ * Active theme is selected by the [data-theme] attribute on <html>, set in
+ * App.razor from the OpenMU.Theme cookie (written by ThemeController).
+ */
+
+:root,
+[data-theme="light"] {
+    --omu-bg: #ffffff;
+    --omu-surface: #f8f9fa;
+    --omu-surface-2: #ffffff;
+    --omu-surface-muted: #f7f7f7;
+    --omu-surface-hover: #e9e9e9;
+    --omu-text: #212529;
+    --omu-text-muted: #5f6368;
+    --omu-text-secondary: #6c757d;
+    --omu-border: #d6d5d5;
+    --omu-link: #0366d6;
+    --omu-link-primary: #1b6ec2;
+    --omu-link-primary-border: #1861ac;
+    --omu-mark-bg: #ffff00;
+    --omu-error-bg: lightyellow;
+    --omu-error-text: #212529;
+    --omu-sidebar-gradient: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+    --omu-nav-link: #d7d7d7;
+    --omu-spinner-dot: rgb(5, 39, 103);
+}
+
+[data-theme="dark"] {
+    /*
+     * Tell the browser to render native form controls (checkbox, radio,
+     * scrollbars, date pickers, native select arrows) in their dark variant
+     * so unchecked checkboxes/radios don't render as bright white tiles.
+     */
+    color-scheme: dark;
+    --omu-bg: #121417;
+    --omu-surface: #1c1f24;
+    --omu-surface-2: #1a1d22;
+    --omu-surface-muted: #23272d;
+    --omu-surface-hover: #2a2f36;
+    --omu-text: #e6e6e6;
+    --omu-text-muted: #a0a4ab;
+    --omu-text-secondary: #b0b4bb;
+    --omu-border: #2a2f36;
+    --omu-link: #66b2ff;
+    --omu-link-primary: #2e86d6;
+    --omu-link-primary-border: #1f6fb8;
+    --omu-mark-bg: #6b5e00;
+    --omu-error-bg: #3a2f00;
+    --omu-error-text: #f5e9b3;
+    --omu-sidebar-gradient: linear-gradient(180deg, #0a1330 0%, #1a0322 70%);
+    --omu-nav-link: #d7d7d7;
+    --omu-spinner-dot: #66b2ff;
+}
+
+html,
+body {
+    background-color: var(--omu-bg);
+    color: var(--omu-text);
+}
+
+/* ===== Dark-mode overrides for Bootstrap 4 surfaces ===== */
+[data-theme="dark"] .bg-light,
+[data-theme="dark"] .navbar-light,
+[data-theme="dark"] .breadcrumb,
+[data-theme="dark"] .breadcrumb-bar,
+[data-theme="dark"] .bg-white {
+    background-color: var(--omu-surface) !important;
+    color: var(--omu-text);
+}
+
+[data-theme="dark"] .border-bottom,
+[data-theme="dark"] .border-top,
+[data-theme="dark"] .border-left,
+[data-theme="dark"] .border-right,
+[data-theme="dark"] .border {
+    border-color: var(--omu-border) !important;
+}
+
+[data-theme="dark"] .text-secondary,
+[data-theme="dark"] small.text-secondary {
+    color: var(--omu-text-secondary) !important;
+}
+
+[data-theme="dark"] .navbar-light .navbar-text,
+[data-theme="dark"] .navbar-light .navbar-brand,
+[data-theme="dark"] .navbar-light .navbar-nav .nav-link {
+    color: var(--omu-text);
+}
+
+/* Tables (used everywhere via @extend .table .table-striped .table-hover in Tables.scss) */
+[data-theme="dark"] .table,
+[data-theme="dark"] table {
+    color: var(--omu-text);
+    background-color: transparent;
+}
+
+[data-theme="dark"] .table-striped tbody tr:nth-of-type(odd),
+[data-theme="dark"] table tbody tr:nth-of-type(odd) {
+    background-color: rgba(255, 255, 255, 0.04);
+    color: var(--omu-text);
+}
+
+[data-theme="dark"] .table-hover tbody tr:hover,
+[data-theme="dark"] table tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: var(--omu-text);
+}
+
+[data-theme="dark"] .table th,
+[data-theme="dark"] .table td,
+[data-theme="dark"] table th,
+[data-theme="dark"] table td {
+    border-color: var(--omu-border);
+}
+
+/* Form controls */
+[data-theme="dark"] .form-control,
+[data-theme="dark"] .custom-select,
+[data-theme="dark"] .custom-select-sm,
+[data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]),
+[data-theme="dark"] select,
+[data-theme="dark"] textarea {
+    background-color: var(--omu-surface-muted);
+    color: var(--omu-text);
+    border-color: var(--omu-border);
+}
+
+[data-theme="dark"] .form-control:focus,
+[data-theme="dark"] .custom-select:focus,
+[data-theme="dark"] input:focus,
+[data-theme="dark"] select:focus,
+[data-theme="dark"] textarea:focus {
+    background-color: var(--omu-surface-muted);
+    color: var(--omu-text);
+    border-color: var(--omu-link);
+    box-shadow: 0 0 0 0.2rem rgba(102, 178, 255, 0.25);
+}
+
+[data-theme="dark"] .input-group-text {
+    background-color: var(--omu-surface-hover);
+    color: var(--omu-text);
+    border-color: var(--omu-border);
+}
+
+/* Dropdowns / popovers */
+[data-theme="dark"] .dropdown-menu {
+    background-color: var(--omu-surface);
+    color: var(--omu-text);
+    border-color: var(--omu-border);
+}
+
+[data-theme="dark"] .dropdown-item {
+    color: var(--omu-text);
+}
+
+[data-theme="dark"] .dropdown-item:hover,
+[data-theme="dark"] .dropdown-item:focus {
+    background-color: var(--omu-surface-hover);
+    color: var(--omu-text);
+}
+
+/* Modals */
+[data-theme="dark"] .modal-content {
+    background-color: var(--omu-surface);
+    color: var(--omu-text);
+    border-color: var(--omu-border);
+}
+
+[data-theme="dark"] .modal-header,
+[data-theme="dark"] .modal-footer {
+    border-color: var(--omu-border);
+}
+
+[data-theme="dark"] .close {
+    color: var(--omu-text);
+    text-shadow: none;
+}
+
+/* Alerts / cards / list groups */
+[data-theme="dark"] .alert-secondary {
+    background-color: var(--omu-surface-hover);
+    color: var(--omu-text);
+    border-color: var(--omu-border);
+}
+
+[data-theme="dark"] .card,
+[data-theme="dark"] .list-group-item {
+    background-color: var(--omu-surface);
+    color: var(--omu-text);
+    border-color: var(--omu-border);
+}
+
+[data-theme="dark"] .btn-secondary {
+    background-color: #3a3f47;
+    border-color: #3a3f47;
+    color: var(--omu-text);
+}
+
+[data-theme="dark"] .btn-light {
+    background-color: var(--omu-surface-hover);
+    border-color: var(--omu-border);
+    color: var(--omu-text);
+}
+
+/*
+ * Link color in dark mode — narrow the `a` selector to skip anchors styled as
+ * buttons (Bootstrap pattern `<a class="btn btn-info">`, used by
+ * EditConfigGrid.razor and ItemTable.razor for Edit links). Without :not(.btn)
+ * our --omu-link (#66b2ff) would beat .btn-info's white text and tank contrast.
+ * .btn-link is intentionally still recolored — its semantics is a link.
+ */
+[data-theme="dark"] a:not(.btn),
+[data-theme="dark"] .btn-link {
+    color: var(--omu-link);
+}
+
+[data-theme="dark"] .btn-primary {
+    background-color: var(--omu-link-primary);
+    border-color: var(--omu-link-primary-border);
+    color: #fff;
+}
+
+/* Open-Iconic glyphs sometimes inherit black; force visible color in dark mode */
+[data-theme="dark"] .oi {
+    color: inherit;
+}
+
+/* Sidebar gradient — overrides hard-coded gradient in shared.css when dark */
+[data-theme="dark"] .sidebar > nav {
+    background-image: var(--omu-sidebar-gradient);
+}
+
+/*
+ * Sidebar dropdown (Game Configuration submenu).
+ * Navigation.scss uses `@extend .dropdown-menu` so the actual element does NOT carry
+ * the `.dropdown-menu` class — it shares styles via the compound selector. So we have
+ * to target the SCSS selector directly to recolor it.
+ */
+[data-theme="dark"] .sidebar > nav > div > ul > li.dropdown > div {
+    background-color: var(--omu-surface);
+    color: var(--omu-text);
+    border-color: var(--omu-border);
+}
+
+[data-theme="dark"] .sidebar > nav > div > ul > li.dropdown > div > a {
+    color: var(--omu-text);
+}
+
+[data-theme="dark"] .sidebar > nav > div > ul > li.dropdown > div > a:hover,
+[data-theme="dark"] .sidebar > nav > div > ul > li.dropdown > div > a:focus {
+    background-color: var(--omu-surface-hover);
+    color: var(--omu-text);
+}
+
+[data-theme="dark"] .sidebar > nav > div > ul > li.dropdown > div > a.active {
+    background-color: var(--omu-surface-hover);
+    color: var(--omu-text);
+}
+
+[data-theme="dark"] .sidebar > nav > div > ul > li.dropdown > div hr {
+    border-color: var(--omu-border);
+}
+
+/* Breadcrumb bar (used in MainLayout) */
+[data-theme="dark"] .breadcrumb-bar {
+    background-color: var(--omu-surface) !important;
+}
+
+/* Blazor error banner */
+[data-theme="dark"] #blazor-error-ui {
+    background: var(--omu-error-bg);
+    color: var(--omu-error-text);
+}
+
+/* CreationPanel sticky form-actions footer (hardcoded #fff / #dee2e6 in CreationPanel.razor.css) */
+[data-theme="dark"] .creation-panel-body .form-actions {
+    background-color: var(--omu-surface) !important;
+    border-top: 1px solid var(--omu-border) !important;
+}
+
+/* Sticky "Add New" bar in EditConfigGrid (hardcoded #fff / #dee2e6 in EditConfigGrid.razor.css, added in #788) */
+[data-theme="dark"] .add-new-bar {
+    background-color: var(--omu-surface) !important;
+    border-top: 1px solid var(--omu-border) !important;
+}
+
+/* Blazored.Modal panel (NuGet package hardcodes background-color: #fff in blazored.modal.bundle.scp.css) */
+[data-theme="dark"] .blazored-modal {
+    background-color: var(--omu-surface) !important;
+    border-color: var(--omu-border) !important;
+    color: var(--omu-text);
+}
+
+/* MultiLookupField (used in Plugins modal, ItemEdit excellent/wing options, etc.) */
+[data-theme="dark"] .multi-lookup-field__selected-items {
+    background: var(--omu-surface-2);
+    border-color: var(--omu-border);
+    color: var(--omu-text);
+}
+
+[data-theme="dark"] .multi-lookup-field__tag {
+    background-color: var(--omu-surface-hover);
+    border-color: var(--omu-border);
+    color: var(--omu-text);
+}
+
+[data-theme="dark"] .multi-lookup-field__tag-remove {
+    color: var(--omu-text-muted);
+}
+
+[data-theme="dark"] .multi-lookup-field__dropdown {
+    background: var(--omu-surface-2);
+    border-color: var(--omu-border);
+}
+
+[data-theme="dark"] .multi-lookup-field__dropdown-item {
+    color: var(--omu-text);
+}
+
+[data-theme="dark"] .multi-lookup-field__dropdown-item:hover,
+[data-theme="dark"] .multi-lookup-field__dropdown-item--selected {
+    background-color: var(--omu-surface-hover);
+}
+
+[data-theme="dark"] .multi-lookup-field__dropdown-item--selected:hover {
+    background-color: var(--omu-surface-muted);
+}
+
+[data-theme="dark"] .multi-lookup-field__dropdown-item--loading,
+[data-theme="dark"] .multi-lookup-field__dropdown-item--empty {
+    color: var(--omu-text-muted);
+}
+
+/*
+ * QuickGrid column header. shared.css applies `button { color: #212529 }` globally;
+ * `.col-title` is a bare <button>, so the header text inherits the dark color.
+ * Narrow target — don't touch `.btn-*` variants (they have their own explicit color).
+ */
+[data-theme="dark"] button.col-title,
+[data-theme="dark"] .col-title-text {
+    color: var(--omu-text);
+}
+
+/*
+ * QuickGrid sort indicator and paginator buttons render their arrows as SVG
+ * data-URIs in `background-image` with no `fill` attribute, so the paths default
+ * to black. We can't override the SVG fill from outside, so invert the element
+ * to flip black -> white in dark mode.
+ */
+[data-theme="dark"] .sort-indicator,
+[data-theme="dark"] .go-first,
+[data-theme="dark"] .go-previous,
+[data-theme="dark"] .go-next,
+[data-theme="dark"] .go-last {
+    filter: invert(1);
+}
+
+/*
+ * Bootstrap alert variants — used on the Updates and Install pages. The light
+ * backgrounds are illegible on dark mode. Match the variant's accent hue with a
+ * subtle tint over the dark surface (15% bg, 40% border).
+ * `.alert-secondary` already overridden above; not redefined here.
+ */
+[data-theme="dark"] .alert-primary {
+    background-color: rgba(46, 134, 214, 0.15);
+    color: #8ec5ff;
+    border-color: rgba(46, 134, 214, 0.4);
+}
+
+[data-theme="dark"] .alert-success {
+    background-color: rgba(40, 167, 69, 0.15);
+    color: #7dd87d;
+    border-color: rgba(40, 167, 69, 0.4);
+}
+
+[data-theme="dark"] .alert-info {
+    background-color: rgba(23, 162, 184, 0.15);
+    color: #6fc3d1;
+    border-color: rgba(23, 162, 184, 0.4);
+}
+
+[data-theme="dark"] .alert-warning {
+    background-color: rgba(255, 193, 7, 0.15);
+    color: #ffd96b;
+    border-color: rgba(255, 193, 7, 0.4);
+}
+
+[data-theme="dark"] .alert-danger {
+    background-color: rgba(220, 53, 69, 0.15);
+    color: #ef8993;
+    border-color: rgba(220, 53, 69, 0.4);
+}
+
+[data-theme="dark"] .alert-light {
+    background-color: var(--omu-surface);
+    color: var(--omu-text);
+    border-color: var(--omu-border);
+}
+
+/*
+ * Bootstrap sets per-variant <hr> border colors that are bright tints of the
+ * alert hue (e.g. .alert-primary hr -> rgb(158,204,255)); too loud over our
+ * dark alert backgrounds. One neutral muted line for all variants.
+ */
+[data-theme="dark"] .alert hr {
+    border-top-color: rgba(255, 255, 255, 0.15) !important;
+}
