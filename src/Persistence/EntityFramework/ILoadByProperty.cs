@@ -18,9 +18,10 @@ internal interface ILoadByProperty
     /// </summary>
     /// <param name="property">The property of the object which should be compared.</param>
     /// <param name="propertyValue">The value of the property.</param>
+    /// <param name="context">The originating context, or <c>null</c> to use a temporary context.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>
     /// The enumeration of the loaded objects.
     /// </returns>
-    ValueTask<IEnumerable> LoadByPropertyAsync(IProperty property, object propertyValue, CancellationToken cancellationToken = default);
+    ValueTask<IEnumerable> LoadByPropertyAsync(IProperty property, object propertyValue, EntityFrameworkContextBase? context, CancellationToken cancellationToken = default);
 }

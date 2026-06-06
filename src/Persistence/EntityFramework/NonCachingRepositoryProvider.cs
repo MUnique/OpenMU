@@ -20,9 +20,8 @@ internal class NonCachingRepositoryProvider : RepositoryProvider
     /// <param name="loggerFactory">The logger factory.</param>
     /// <param name="parent">The parent.</param>
     /// <param name="changeListener">The change publisher.</param>
-    /// <param name="contextStack">The context stack.</param>
-    public NonCachingRepositoryProvider(ILoggerFactory loggerFactory, IContextAwareRepositoryProvider? parent, IConfigurationChangeListener? changeListener, IContextStack contextStack)
-        : base(loggerFactory, changeListener, contextStack)
+    public NonCachingRepositoryProvider(ILoggerFactory loggerFactory, IContextAwareRepositoryProvider? parent, IConfigurationChangeListener? changeListener)
+        : base(loggerFactory, changeListener)
     {
         this._parent = parent;
     }

@@ -199,16 +199,14 @@ internal class EntityFrameworkContextBase : IContext
         where T : class
     {
         using var l = await this._lock.LockAsync(cancellationToken);
-        using var context = this.RepositoryProvider.ContextStack.UseContext(this);
-        return await this.GetRepository<T>().GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
+        return (T?)await this.GetRepository(typeof(T)).GetByIdAsync(id, this, cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
     public async Task<object?> GetByIdAsync(Guid id, Type type, CancellationToken cancellationToken)
     {
         using var l = await this._lock.LockAsync(cancellationToken).ConfigureAwait(false);
-        using var context = this.RepositoryProvider.ContextStack.UseContext(this);
-        return await this.GetRepository(type).GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
+        return await this.GetRepository(type).GetByIdAsync(id, this, cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -216,16 +214,14 @@ internal class EntityFrameworkContextBase : IContext
         where T : class
     {
         using var l = await this._lock.LockAsync(cancellationToken).ConfigureAwait(false);
-        using var context = this.RepositoryProvider.ContextStack.UseContext(this);
-        return await this.GetRepository<T>().GetAllAsync(cancellationToken).ConfigureAwait(false);
+        return (IEnumerable<T>)await this.GetRepository(typeof(T)).GetAllAsync(this, cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
     public async ValueTask<IEnumerable> GetAsync(Type type, CancellationToken cancellationToken)
     {
         using var l = await this._lock.LockAsync(cancellationToken).ConfigureAwait(false);
-        using var context = this.RepositoryProvider.ContextStack.UseContext(this);
-        return await this.GetRepository(type).GetAllAsync(cancellationToken).ConfigureAwait(false);
+        return await this.GetRepository(type).GetAllAsync(this, cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -282,20 +278,9 @@ internal class EntityFrameworkContextBase : IContext
         this.Context.Dispose();
     }
 
-    private IRepository<T> GetRepository<T>()
-        where T : class
+    private IContextAwareRepository GetRepository(Type type)
     {
-        if (this.RepositoryProvider.GetRepository<T>() is { } repository)
-        {
-            return repository;
-        }
-
-        throw new RepositoryNotFoundException(typeof(T));
-    }
-
-    private IRepository GetRepository(Type type)
-    {
-        if (this.RepositoryProvider.GetRepository(type) is { } repository)
+        if (this.RepositoryProvider.GetRepository(type, this) is IContextAwareRepository repository)
         {
             return repository;
         }

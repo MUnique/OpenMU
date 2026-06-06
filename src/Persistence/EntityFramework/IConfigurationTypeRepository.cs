@@ -10,9 +10,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework;
 internal interface IConfigurationTypeRepository
 {
     /// <summary>
-    /// Ensures the cache for the current configuration.
+    /// Ensures the cache for the configuration of the given originating context.
     /// </summary>
-    void EnsureCacheForCurrentConfiguration();
+    /// <param name="context">The originating context which holds the current game configuration.</param>
+    void EnsureCacheForCurrentConfiguration(EntityFrameworkContextBase? context);
 
     /// <summary>
     /// Updates the cached instance.

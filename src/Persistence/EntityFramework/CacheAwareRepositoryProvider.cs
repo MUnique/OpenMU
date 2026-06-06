@@ -1,4 +1,4 @@
-﻿// <copyright file="CacheAwareRepositoryProvider.cs" company="MUnique">
+// <copyright file="CacheAwareRepositoryProvider.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -21,7 +21,7 @@ internal class CacheAwareRepositoryProvider : ICacheAwareRepositoryProvider, ICo
 {
     private readonly ILoggerFactory _loggerFactory;
 
-    private readonly IRepositoryProvider _nonCachingRepositoryProvider;
+    private readonly IContextAwareRepositoryProvider _nonCachingRepositoryProvider;
 
     private CachingRepositoryProvider _cachingRepositoryProvider;
 
@@ -29,26 +29,17 @@ internal class CacheAwareRepositoryProvider : ICacheAwareRepositoryProvider, ICo
     /// Initializes a new instance of the <see cref="CacheAwareRepositoryProvider"/> class.
     /// </summary>
     /// <param name="loggerFactory">The logger factory.</param>
-    /// <param name="configurationChangePublisher">The configuration change publisher.</param>
+    /// <param name="configurationChangeListener">The configuration change listener.</param>
     public CacheAwareRepositoryProvider(ILoggerFactory loggerFactory, IConfigurationChangeListener? configurationChangeListener)
     {
         this._loggerFactory = loggerFactory;
         this._cachingRepositoryProvider = new CachingRepositoryProvider(loggerFactory, this);
-        this._nonCachingRepositoryProvider = new NonCachingRepositoryProvider(loggerFactory, this, configurationChangeListener, this.ContextStack);
+        this._nonCachingRepositoryProvider = new NonCachingRepositoryProvider(loggerFactory, this, configurationChangeListener);
     }
-
-    /// <inheritdoc />
-    public IContextStack ContextStack { get; } = new ContextStack();
 
     /// <inheritdoc />
     public IRepository? GetRepository(Type objectType)
     {
-        if (this.ContextStack.GetCurrentContext() is EntityFrameworkContextBase { Context: ITypedContext editContext }
-            && editContext.IsIncluded(objectType))
-        {
-            return this._nonCachingRepositoryProvider.GetRepository(objectType);
-        }
-
         return this._cachingRepositoryProvider.GetRepository(objectType)
                ?? this._nonCachingRepositoryProvider.GetRepository(objectType);
     }
@@ -57,12 +48,6 @@ internal class CacheAwareRepositoryProvider : ICacheAwareRepositoryProvider, ICo
     public IRepository<T>? GetRepository<T>()
         where T : class
     {
-        if (this.ContextStack.GetCurrentContext() is EntityFrameworkContextBase { Context: ITypedContext editContext }
-            && (editContext.IsIncluded(typeof(T)) || editContext.IsIncluded(typeof(T).BaseType!)))
-        {
-            return this._nonCachingRepositoryProvider.GetRepository<T>();
-        }
-
         return this._cachingRepositoryProvider.GetRepository<T>()
                ?? this._nonCachingRepositoryProvider.GetRepository<T>();
     }
@@ -72,20 +57,61 @@ internal class CacheAwareRepositoryProvider : ICacheAwareRepositoryProvider, ICo
         where T : class
         where TRepository : IRepository
     {
-        if (this.ContextStack.GetCurrentContext() is EntityFrameworkContextBase { Context: ITypedContext editContext }
-            && (editContext.IsIncluded(typeof(T)) || editContext.IsIncluded(typeof(T).BaseType!)))
-        {
-            return this._nonCachingRepositoryProvider.GetRepository<T, TRepository>();
-        }
-
         return this._cachingRepositoryProvider.GetRepository<T, TRepository>()
                ?? this._nonCachingRepositoryProvider.GetRepository<T, TRepository>();
     }
 
     /// <inheritdoc />
+    public IRepository? GetRepository(Type objectType, EntityFrameworkContextBase? context)
+    {
+        if (context is { Context: ITypedContext editContext }
+            && editContext.IsIncluded(objectType))
+        {
+            return this._nonCachingRepositoryProvider.GetRepository(objectType);
+        }
+
+        return this.GetRepository(objectType);
+    }
+
+    /// <inheritdoc />
+    public IRepository<T>? GetRepository<T>(EntityFrameworkContextBase? context)
+        where T : class
+    {
+        if (context is { Context: ITypedContext editContext }
+            && (editContext.IsIncluded(typeof(T)) || editContext.IsIncluded(typeof(T).BaseType!)))
+        {
+            return this._nonCachingRepositoryProvider.GetRepository<T>();
+        }
+
+        return this.GetRepository<T>();
+    }
+
+    /// <inheritdoc />
+    public TRepository? GetRepository<T, TRepository>(EntityFrameworkContextBase? context)
+        where T : class
+        where TRepository : IRepository
+    {
+        if (context is { Context: ITypedContext editContext }
+            && (editContext.IsIncluded(typeof(T)) || editContext.IsIncluded(typeof(T).BaseType!)))
+        {
+            return this._nonCachingRepositoryProvider.GetRepository<T, TRepository>();
+        }
+
+        return this.GetRepository<T, TRepository>();
+    }
+
+    /// <inheritdoc />
+    public void EnsureCachesForCurrentGameConfiguration(EntityFrameworkContextBase context)
+    {
+        this._cachingRepositoryProvider.EnsureCachesForCurrentGameConfiguration(context);
+    }
+
+    /// <inheritdoc />
     public void EnsureCachesForCurrentGameConfiguration()
     {
-        this._cachingRepositoryProvider.EnsureCachesForCurrentGameConfiguration();
+        // The caches are ensured per originating context (see the overload taking a context)
+        // and lazily on access. Without an ambient context, there is no "current" configuration
+        // to ensure here.
     }
 
     /// <inheritdoc />
