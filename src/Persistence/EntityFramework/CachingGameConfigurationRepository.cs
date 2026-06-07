@@ -35,10 +35,8 @@ internal class CachingGameConfigurationRepository : CachingGenericRepository<Gam
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        if (context is not { } currentContext)
-        {
-            throw new InvalidOperationException("There is no current context set.");
-        }
+        using var ownedContext = context is null ? this.GetContext(null) : null;
+        var currentContext = context ?? ownedContext!;
 
         var database = currentContext.Context.Database;
         await database.OpenConnectionAsync(cancellationToken).ConfigureAwait(false);
@@ -55,10 +53,8 @@ internal class CachingGameConfigurationRepository : CachingGenericRepository<Gam
     /// <inheritdoc />
     public override async ValueTask<IEnumerable<GameConfiguration>> GetAllAsync(EntityFrameworkContextBase? context, CancellationToken cancellationToken = default)
     {
-        if (context is not { } currentContext)
-        {
-            throw new InvalidOperationException("There is no current context set.");
-        }
+        using var ownedContext = context is null ? this.GetContext(null) : null;
+        var currentContext = context ?? ownedContext!;
 
         var database = currentContext.Context.Database;
         await database.OpenConnectionAsync(cancellationToken).ConfigureAwait(false);

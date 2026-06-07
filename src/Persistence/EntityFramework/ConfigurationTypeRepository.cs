@@ -113,16 +113,9 @@ internal class ConfigurationTypeRepository<T> : IRepository<T>, IConfigurationTy
     }
 
     /// <inheritdoc />
-    public async ValueTask<bool> DeleteAsync(object obj)
+    public ValueTask<bool> DeleteAsync(object obj)
     {
-        if (obj is not T item)
-        {
-            return false;
-        }
-
-        var gameConfiguration = this.GetCurrentGameConfiguration(null);
-        var collection = this._collectionSelector(gameConfiguration);
-        return collection.Remove(item);
+        throw new NotSupportedException("Deleting configuration types directly through the repository is not supported. Delete via the owning IContext instead.");
     }
 
     /// <inheritdoc />

@@ -35,7 +35,10 @@ internal class AccountRepository : CachingGenericRepository<Account>
         using var ownedContext = context is null ? this.GetContext(null) : null;
         var origin = context ?? ownedContext!;
 
-        this.RepositoryProvider.EnsureCachesForCurrentGameConfiguration(origin);
+        if (origin.Context is EntityDataContext { CurrentGameConfiguration: not null })
+        {
+            this.RepositoryProvider.EnsureCachesForCurrentGameConfiguration(origin);
+        }
 
         await origin.Context.Database.OpenConnectionAsync(cancellationToken).ConfigureAwait(false);
         try
