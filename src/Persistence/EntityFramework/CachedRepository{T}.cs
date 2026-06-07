@@ -54,7 +54,7 @@ public class CachedRepository<T> : IRepository<T>, IContextAwareRepository
     /// <param name="context">The originating context, or <c>null</c>.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>All objects of the repository.</returns>
-    public async ValueTask<IEnumerable<T>> GetAllAsync(EntityFrameworkContextBase? context, CancellationToken cancellationToken = default)
+    internal async ValueTask<IEnumerable<T>> GetAllAsync(EntityFrameworkContextBase? context, CancellationToken cancellationToken = default)
     {
         if (this._allLoaded)
         {
@@ -108,7 +108,7 @@ public class CachedRepository<T> : IRepository<T>, IContextAwareRepository
     /// <param name="context">The originating context, or <c>null</c>.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The object with the identifier.</returns>
-    public async ValueTask<T?> GetByIdAsync(Guid id, EntityFrameworkContextBase? context, CancellationToken cancellationToken = default)
+    internal async ValueTask<T?> GetByIdAsync(Guid id, EntityFrameworkContextBase? context, CancellationToken cancellationToken = default)
     {
         await this.GetAllAsync(context, cancellationToken).ConfigureAwait(false);
         this._cache.TryGetValue(id, out var result);
