@@ -83,6 +83,20 @@ public class FriendServer : IFriendServer
     }
 
     /// <inheritdoc />
+    public async ValueTask<bool> IsFriendAsync(string characterName, string friendName)
+    {
+        try
+        {
+            return await this._daprClient.InvokeMethodAsync<RequestArguments, bool>(this._targetAppId, nameof(this.IsFriendAsync), new RequestArguments(characterName, friendName)).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, "Unexpected error when checking friendship.");
+            return false;
+        }
+    }
+
+    /// <inheritdoc />
     public async ValueTask<bool> FriendRequestAsync(string playerName, string friendName)
     {
         try

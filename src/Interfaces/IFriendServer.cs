@@ -69,6 +69,14 @@ public interface IFriendServer
     ValueTask SetPlayerVisibilityStateAsync(byte serverId, Guid characterId, string characterName, bool isVisible);
 
     /// <summary>
+    /// Determines whether two players are friends (accepted friend relationship).
+    /// </summary>
+    /// <param name="characterName">The character name of the first player.</param>
+    /// <param name="friendName">The character name of the second player.</param>
+    /// <returns>True if the two players are friends; otherwise false.</returns>
+    ValueTask<bool> IsFriendAsync(string characterName, string friendName);
+
+    /// <summary>
     /// Sends a friend request to the friend, and adds a new friend view item to the players friend list.
     /// </summary>
     /// <param name="playerName">The name of the requesting player.</param>

@@ -51,9 +51,8 @@ public class CombatHandlerTests
 
         var config = new MuHelperSettings { HuntingRange = 10 };
         var movementHandler = new MovementHandler(player, config, this._origin);
-        var buffHandler = new BuffHandler(player, config);
 
-        var handler = new CombatHandler(player, config, movementHandler, buffHandler, this._origin);
+        var handler = new CombatHandler(player, config, movementHandler, this._origin);
 
         // Act
         await handler.PerformAttackAsync().ConfigureAwait(false);
@@ -95,9 +94,8 @@ public class CombatHandlerTests
         await player.SkillList!.AddLearnedSkillAsync(drainSkill).ConfigureAwait(false);
 
         var movementHandler = new MovementHandler(player, config, this._origin);
-        var buffHandler = new BuffHandler(player, config);
 
-        var handler = new CombatHandler(player, config, movementHandler, buffHandler, this._origin);
+        var handler = new CombatHandler(player, config, movementHandler, this._origin);
 
         // Act
         await handler.PerformDrainLifeRecoveryAsync().ConfigureAwait(false);
