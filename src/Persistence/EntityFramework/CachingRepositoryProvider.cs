@@ -26,20 +26,21 @@ internal class CachingRepositoryProvider : RepositoryProvider
     /// <param name="loggerFactory">The logger factory.</param>
     /// <param name="parent">The parent context aware repository provider.</param>
     public CachingRepositoryProvider(ILoggerFactory loggerFactory, IContextAwareRepositoryProvider parent)
-        : base(loggerFactory, null, parent.ContextStack)
+        : base(loggerFactory, null)
     {
         this._parent = parent;
     }
 
     /// <summary>
-    /// Ensures the caches for current game configuration.
+    /// Ensures the caches for the game configuration of the given originating context.
     /// It's meant to fill the caches also in <see cref="ConfigurationIdReferenceResolver"/>.
     /// </summary>
-    public void EnsureCachesForCurrentGameConfiguration()
+    /// <param name="context">The originating context which holds the current game configuration.</param>
+    public override void EnsureCachesForCurrentGameConfiguration(EntityFrameworkContextBase context)
     {
         foreach (var repository in this.Repositories.Values.OfType<IConfigurationTypeRepository>())
         {
-            repository.EnsureCacheForCurrentConfiguration();
+            repository.EnsureCacheForCurrentConfiguration(context);
         }
     }
 

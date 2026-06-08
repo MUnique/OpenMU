@@ -31,13 +31,10 @@ internal class GameConfigurationRepository : GenericRepository<GameConfiguration
     }
 
     /// <inheritdoc />
-    public override async ValueTask<GameConfiguration?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public override async ValueTask<GameConfiguration?> GetByIdAsync(Guid id, EntityFrameworkContextBase? context, CancellationToken cancellationToken = default)
     {
-        var currentContext = this.RepositoryProvider.ContextStack.GetCurrentContext() as EntityFrameworkContextBase;
-        if (currentContext is null)
-        {
-            throw new InvalidOperationException("There is no current context set.");
-        }
+        using var ownedContext = context is null ? this.GetContext(null) : null;
+        var currentContext = context ?? ownedContext!;
 
         var database = currentContext.Context.Database;
         await database.OpenConnectionAsync(cancellationToken).ConfigureAwait(false);
@@ -58,13 +55,10 @@ internal class GameConfigurationRepository : GenericRepository<GameConfiguration
     }
 
     /// <inheritdoc />
-    public override async ValueTask<IEnumerable<GameConfiguration>> GetAllAsync(CancellationToken cancellationToken = default)
+    public override async ValueTask<IEnumerable<GameConfiguration>> GetAllAsync(EntityFrameworkContextBase? context, CancellationToken cancellationToken = default)
     {
-        var currentContext = this.RepositoryProvider.ContextStack.GetCurrentContext() as EntityFrameworkContextBase;
-        if (currentContext is null)
-        {
-            throw new InvalidOperationException("There is no current context set.");
-        }
+        using var ownedContext = context is null ? this.GetContext(null) : null;
+        var currentContext = context ?? ownedContext!;
 
         var database = currentContext.Context.Database;
         await database.OpenConnectionAsync(cancellationToken).ConfigureAwait(false);

@@ -17,18 +17,11 @@ internal class RepositoryProvider : BaseRepositoryProvider, IContextAwareReposit
     /// </summary>
     /// <param name="loggerFactory">The logger factory.</param>
     /// <param name="changeListener">The change publisher.</param>
-    /// <param name="contextStack">The context stack.</param>
-    public RepositoryProvider(ILoggerFactory loggerFactory, IConfigurationChangeListener? changeListener, IContextStack contextStack)
+    public RepositoryProvider(ILoggerFactory loggerFactory, IConfigurationChangeListener? changeListener)
     {
         this.LoggerFactory = loggerFactory;
         this.ChangeListener = changeListener;
-        this.ContextStack = contextStack;
     }
-
-    /// <summary>
-    /// Gets the context stack. When loading an object, the current context should be pushed onto the stack.
-    /// </summary>
-    public IContextStack ContextStack { get; }
 
     /// <summary>
     /// Gets the logger factory.
@@ -39,6 +32,33 @@ internal class RepositoryProvider : BaseRepositoryProvider, IContextAwareReposit
     /// Gets the change publisher.
     /// </summary>
     protected IConfigurationChangeListener? ChangeListener { get; }
+
+    /// <inheritdoc />
+    public virtual IRepository? GetRepository(Type objectType, EntityFrameworkContextBase? context)
+    {
+        return this.GetRepository(objectType);
+    }
+
+    /// <inheritdoc />
+    public virtual IRepository<T>? GetRepository<T>(EntityFrameworkContextBase? context)
+        where T : class
+    {
+        return this.GetRepository<T>();
+    }
+
+    /// <inheritdoc />
+    public virtual TRepository? GetRepository<T, TRepository>(EntityFrameworkContextBase? context)
+        where T : class
+        where TRepository : IRepository
+    {
+        return this.GetRepository<T, TRepository>();
+    }
+
+    /// <inheritdoc />
+    public virtual void EnsureCachesForCurrentGameConfiguration(EntityFrameworkContextBase context)
+    {
+        // No caches at this level. Caching providers override this.
+    }
 
     /// <summary>
     /// Creates the generic repository for the specified type.

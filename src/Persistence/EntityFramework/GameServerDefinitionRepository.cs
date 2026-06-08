@@ -28,35 +28,39 @@ internal class GameServerDefinitionRepository : CachingGenericRepository<GameSer
     }
 
     /// <inheritdoc />
-    protected override async ValueTask LoadDependentDataAsync(object obj, DbContext currentContext, CancellationToken cancellationToken)
+    protected override async ValueTask LoadDependentDataAsync(object obj, EntityFrameworkContextBase origin, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
         if (obj is GameServerDefinition definition)
         {
-            var entityEntry = currentContext.Entry(obj);
+            var dbContext = origin.Context;
+            var entityEntry = dbContext.Entry(obj);
             foreach (var collection in entityEntry.Collections.Where(c => !c.IsLoaded && c.Metadata is INavigation))
             {
-                await this.LoadCollectionAsync(entityEntry, (INavigation)collection.Metadata, currentContext, cancellationToken).ConfigureAwait(false);
+                await this.LoadCollectionAsync(entityEntry, (INavigation)collection.Metadata, origin, cancellationToken).ConfigureAwait(false);
                 collection.IsLoaded = true;
             }
 
             if (definition.GameConfigurationId.HasValue)
             {
-                definition.RawGameConfiguration =
-                    await this.RepositoryProvider.GetRepository<GameConfiguration>()!
-                        .GetByIdAsync(definition.GameConfigurationId.Value, cancellationToken).ConfigureAwait(false);
+                if (this.RepositoryProvider.GetRepository(typeof(GameConfiguration), origin) is IContextAwareRepository configRepository)
+                {
+                    definition.RawGameConfiguration =
+                        (GameConfiguration?)await configRepository.GetByIdAsync(definition.GameConfigurationId.Value, origin, cancellationToken).ConfigureAwait(false);
+                }
 
-                if (currentContext is EntityDataContext context)
+                if (dbContext is EntityDataContext context)
                 {
                     context.CurrentGameConfiguration = definition.RawGameConfiguration;
                 }
             }
 
-            if (definition.ServerConfigurationId.HasValue)
+            if (definition.ServerConfigurationId.HasValue
+                && this.RepositoryProvider.GetRepository(typeof(GameServerConfiguration), origin) is IContextAwareRepository serverConfigRepository)
             {
-                definition.ServerConfiguration = await this.RepositoryProvider.GetRepository<GameServerConfiguration>()!
-                    .GetByIdAsync(definition.ServerConfigurationId.Value, cancellationToken).ConfigureAwait(false);
+                definition.ServerConfiguration =
+                    (GameServerConfiguration?)await serverConfigRepository.GetByIdAsync(definition.ServerConfigurationId.Value, origin, cancellationToken).ConfigureAwait(false);
             }
         }
     }

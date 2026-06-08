@@ -31,14 +31,12 @@ internal class CachingGameConfigurationRepository : CachingGenericRepository<Gam
     }
 
     /// <inheritdoc />
-    public override async ValueTask<GameConfiguration?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public override async ValueTask<GameConfiguration?> GetByIdAsync(Guid id, EntityFrameworkContextBase? context, CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        if (this.RepositoryProvider.ContextStack.GetCurrentContext() is not EntityFrameworkContextBase currentContext)
-        {
-            throw new InvalidOperationException("There is no current context set.");
-        }
+        using var ownedContext = context is null ? this.GetContext(null) : null;
+        var currentContext = context ?? ownedContext!;
 
         var database = currentContext.Context.Database;
         await database.OpenConnectionAsync(cancellationToken).ConfigureAwait(false);
@@ -53,12 +51,10 @@ internal class CachingGameConfigurationRepository : CachingGenericRepository<Gam
     }
 
     /// <inheritdoc />
-    public override async ValueTask<IEnumerable<GameConfiguration>> GetAllAsync(CancellationToken cancellationToken = default)
+    public override async ValueTask<IEnumerable<GameConfiguration>> GetAllAsync(EntityFrameworkContextBase? context, CancellationToken cancellationToken = default)
     {
-        if (this.RepositoryProvider.ContextStack.GetCurrentContext() is not EntityFrameworkContextBase currentContext)
-        {
-            throw new InvalidOperationException("There is no current context set.");
-        }
+        using var ownedContext = context is null ? this.GetContext(null) : null;
+        var currentContext = context ?? ownedContext!;
 
         var database = currentContext.Context.Database;
         await database.OpenConnectionAsync(cancellationToken).ConfigureAwait(false);
@@ -72,7 +68,7 @@ internal class CachingGameConfigurationRepository : CachingGenericRepository<Gam
                 configs.ForEach(config =>
                 {
                     ((EntityDataContext)currentContext.Context).CurrentGameConfiguration = config;
-                    (this.RepositoryProvider as ICacheAwareRepositoryProvider)?.EnsureCachesForCurrentGameConfiguration();
+                    this.RepositoryProvider.EnsureCachesForCurrentGameConfiguration(currentContext);
                 });
             }
             finally

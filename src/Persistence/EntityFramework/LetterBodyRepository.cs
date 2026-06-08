@@ -28,17 +28,19 @@ internal class LetterBodyRepository : CachingGenericRepository<LetterBody>
     /// Gets the letter body by the id of its header.
     /// </summary>
     /// <param name="headerId">The id of its header.</param>
+    /// <param name="context">The originating context.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>
     /// The body of the header.
     /// </returns>
-    public async ValueTask<LetterBody?> GetBodyByHeaderIdAsync(Guid headerId, CancellationToken cancellationToken = default)
+    public async ValueTask<LetterBody?> GetBodyByHeaderIdAsync(Guid headerId, EntityFrameworkContextBase? context, CancellationToken cancellationToken = default)
     {
-        using var context = this.GetContext();
-        var letterBody = await context.Context.Set<LetterBody>().FirstOrDefaultAsync(body => body.HeaderId == headerId, cancellationToken).ConfigureAwait(false);
+        using var ownedContext = context is null ? this.GetContext(null) : null;
+        var origin = context ?? ownedContext!;
+        var letterBody = await origin.Context.Set<LetterBody>().FirstOrDefaultAsync(body => body.HeaderId == headerId, cancellationToken).ConfigureAwait(false);
         if (letterBody is not null)
         {
-            await this.LoadDependentDataAsync(letterBody, context.Context, cancellationToken).ConfigureAwait(false);
+            await this.LoadDependentDataAsync(letterBody, origin, cancellationToken).ConfigureAwait(false);
         }
 
         return letterBody;

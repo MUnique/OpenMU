@@ -28,30 +28,35 @@ internal class AccountRepository : CachingGenericRepository<Account>
     }
 
     /// <inheritdoc />
-    public override async ValueTask<Account?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public override async ValueTask<Account?> GetByIdAsync(Guid id, EntityFrameworkContextBase? context, CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        (this.RepositoryProvider as ICacheAwareRepositoryProvider)?.EnsureCachesForCurrentGameConfiguration();
+        using var ownedContext = context is null ? this.GetContext(null) : null;
+        var origin = context ?? ownedContext!;
 
-        using var context = this.GetContext();
-        await context.Context.Database.OpenConnectionAsync(cancellationToken).ConfigureAwait(false);
+        if (origin.Context is EntityDataContext { CurrentGameConfiguration: not null })
+        {
+            this.RepositoryProvider.EnsureCachesForCurrentGameConfiguration(origin);
+        }
+
+        await origin.Context.Database.OpenConnectionAsync(cancellationToken).ConfigureAwait(false);
         try
         {
-            var accountEntry = context.Context.ChangeTracker.Entries<Account>().FirstOrDefault(a => a.Entity.Id == id);
+            var accountEntry = origin.Context.ChangeTracker.Entries<Account>().FirstOrDefault(a => a.Entity.Id == id);
             var account = accountEntry?.Entity;
             if (account is null || accountEntry?.References.Any(reference => !reference.IsLoaded) is true)
             {
                 if (account is not null)
                 {
-                    context.Detach(account);
+                    origin.Detach(account);
                 }
 
                 var objectLoader = new AccountJsonObjectLoader();
-                account = await objectLoader.LoadObjectAsync<Account>(id, context.Context, cancellationToken).ConfigureAwait(false);
-                if (account != null && !(context.Context.Entry(account) is { } entry && entry.State != EntityState.Detached))
+                account = await objectLoader.LoadObjectAsync<Account>(id, origin.Context, cancellationToken).ConfigureAwait(false);
+                if (account != null && !(origin.Context.Entry(account) is { } entry && entry.State != EntityState.Detached))
                 {
-                    context.Context.Attach(account);
+                    origin.Context.Attach(account);
                 }
             }
 
@@ -59,7 +64,7 @@ internal class AccountRepository : CachingGenericRepository<Account>
         }
         finally
         {
-            await context.Context.Database.CloseConnectionAsync().ConfigureAwait(false);
+            await origin.Context.Database.CloseConnectionAsync().ConfigureAwait(false);
         }
     }
 
@@ -67,23 +72,25 @@ internal class AccountRepository : CachingGenericRepository<Account>
     /// Gets the account by character name.
     /// </summary>
     /// <param name="characterName">The character name.</param>
+    /// <param name="context">The originating context.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>
     /// The account; otherwise, null.
     /// </returns>
-    internal async ValueTask<DataModel.Entities.Account?> GetAccountByCharacterNameAsync(string characterName, CancellationToken cancellationToken = default)
+    internal async ValueTask<DataModel.Entities.Account?> GetAccountByCharacterNameAsync(string characterName, EntityFrameworkContextBase? context, CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        using var context = this.GetContext();
-        var accountInfo = await context.Context.Set<Account>()
+        using var ownedContext = context is null ? this.GetContext(null) : null;
+        var origin = context ?? ownedContext!;
+        var accountInfo = await origin.Context.Set<Account>()
             .AsNoTracking()
             .FirstOrDefaultAsync(a => a.RawCharacters.Any(c => c.Name == characterName), cancellationToken)
             .ConfigureAwait(false);
 
         if (accountInfo != null)
         {
-            return await this.GetByIdAsync(accountInfo.Id, cancellationToken).ConfigureAwait(false);
+            return await this.GetByIdAsync(accountInfo.Id, origin, cancellationToken).ConfigureAwait(false);
         }
 
         return null;
@@ -94,14 +101,16 @@ internal class AccountRepository : CachingGenericRepository<Account>
     /// </summary>
     /// <param name="loginName">The login name.</param>
     /// <param name="password">The password.</param>
+    /// <param name="context">The originating context.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>
     /// The account, if the password is correct. Otherwise, null.
     /// </returns>
-    internal async ValueTask<DataModel.Entities.Account?> GetAccountByLoginNameAsync(string loginName, string password, CancellationToken cancellationToken = default)
+    internal async ValueTask<DataModel.Entities.Account?> GetAccountByLoginNameAsync(string loginName, string password, EntityFrameworkContextBase? context, CancellationToken cancellationToken = default)
     {
-        using var context = this.GetContext();
-        return await this.LoadAccountByLoginNameByJsonQueryAsync(loginName, password, context, cancellationToken).ConfigureAwait(false);
+        using var ownedContext = context is null ? this.GetContext(null) : null;
+        var origin = context ?? ownedContext!;
+        return await this.LoadAccountByLoginNameByJsonQueryAsync(loginName, password, origin, cancellationToken).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -109,14 +118,16 @@ internal class AccountRepository : CachingGenericRepository<Account>
     /// </summary>
     /// <param name="loginName">The login name.</param>
     /// <param name="password">The password.</param>
+    /// <param name="context">The originating context.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The <see cref="DataModel.Entities.AccountState"/> if credentials are valid; otherwise, null.</returns>
-    internal async ValueTask<DataModel.Entities.AccountState?> AuthenticateAsync(string loginName, string password, CancellationToken cancellationToken = default)
+    internal async ValueTask<DataModel.Entities.AccountState?> AuthenticateAsync(string loginName, string password, EntityFrameworkContextBase? context, CancellationToken cancellationToken = default)
     {
-        using var context = this.GetContext();
+        using var ownedContext = context is null ? this.GetContext(null) : null;
+        var origin = context ?? ownedContext!;
         cancellationToken.ThrowIfCancellationRequested();
 
-        var accountInfo = await context.Context.Set<Account>()
+        var accountInfo = await origin.Context.Set<Account>()
             .Where(a => a.LoginName == loginName)
             .Select(a => new { a.PasswordHash, a.State })
             .AsNoTracking()
@@ -134,39 +145,41 @@ internal class AccountRepository : CachingGenericRepository<Account>
     /// Gets the account by login name.
     /// </summary>
     /// <param name="loginName">The login name.</param>
+    /// <param name="context">The originating context.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>
     /// The account, if exists. Otherwise, null.
     /// </returns>
-    internal async ValueTask<DataModel.Entities.Account?> GetAccountByLoginNameAsync(string loginName, CancellationToken cancellationToken = default)
+    internal async ValueTask<DataModel.Entities.Account?> GetAccountByLoginNameAsync(string loginName, EntityFrameworkContextBase? context, CancellationToken cancellationToken = default)
     {
-        using var context = this.GetContext();
+        using var ownedContext = context is null ? this.GetContext(null) : null;
+        var origin = context ?? ownedContext!;
 
-        var accountInfo = await context.Context.Set<Account>()
+        var accountInfo = await origin.Context.Set<Account>()
            .Select(a => new { a.Id, a.LoginName })
            .AsNoTracking()
            .FirstOrDefaultAsync(a => a.LoginName == loginName, cancellationToken).ConfigureAwait(false);
 
         if (accountInfo != null)
         {
-            return await this.GetByIdAsync(accountInfo.Id, cancellationToken).ConfigureAwait(false);
+            return await this.GetByIdAsync(accountInfo.Id, origin, cancellationToken).ConfigureAwait(false);
         }
 
         return null;
     }
 
-    private async ValueTask<Account?> LoadAccountByLoginNameByJsonQueryAsync(string loginName, string password, EntityFrameworkContextBase context, CancellationToken cancellationToken)
+    private async ValueTask<Account?> LoadAccountByLoginNameByJsonQueryAsync(string loginName, string password, EntityFrameworkContextBase origin, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        var accountInfo = await context.Context.Set<Account>()
+        var accountInfo = await origin.Context.Set<Account>()
             .Select(a => new { a.Id, a.LoginName, a.PasswordHash })
             .AsNoTracking()
             .FirstOrDefaultAsync(a => a.LoginName == loginName, cancellationToken).ConfigureAwait(false);
 
         if (accountInfo != null && BCrypt.Verify(password, accountInfo.PasswordHash))
         {
-            return await this.GetByIdAsync(accountInfo.Id, cancellationToken).ConfigureAwait(false);
+            return await this.GetByIdAsync(accountInfo.Id, origin, cancellationToken).ConfigureAwait(false);
         }
 
         return null;

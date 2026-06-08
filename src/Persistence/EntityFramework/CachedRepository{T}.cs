@@ -5,13 +5,14 @@
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
 using System.Collections;
+using System.Linq;
 using System.Threading;
 
 /// <summary>
 /// A repository which caches all of its data in memory.
 /// </summary>
 /// <typeparam name="T">The type of the business object.</typeparam>
-public class CachedRepository<T> : IRepository<T>
+public class CachedRepository<T> : IRepository<T>, IContextAwareRepository
     where T : class, IIdentifiable
 {
     private readonly IDictionary<Guid, T> _cache;
@@ -42,7 +43,18 @@ public class CachedRepository<T> : IRepository<T>
     }
 
     /// <inheritdoc/>
-    public async ValueTask<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken = default)
+    public ValueTask<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken = default)
+    {
+        return this.GetAllAsync(null, cancellationToken);
+    }
+
+    /// <summary>
+    /// Gets all objects, using the given originating context to load them from the base repository.
+    /// </summary>
+    /// <param name="context">The originating context, or <c>null</c>.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>All objects of the repository.</returns>
+    internal async ValueTask<IEnumerable<T>> GetAllAsync(EntityFrameworkContextBase? context, CancellationToken cancellationToken = default)
     {
         if (this._allLoaded)
         {
@@ -62,7 +74,9 @@ public class CachedRepository<T> : IRepository<T>
         this._loading = true;
         try
         {
-            IEnumerable<T> values = await this.BaseRepository.GetAllAsync(cancellationToken).ConfigureAwait(false);
+            IEnumerable<T> values = this.BaseRepository is IContextAwareRepository contextAware
+                ? (await contextAware.GetAllAsync(context, cancellationToken).ConfigureAwait(false)).Cast<T>()
+                : await this.BaseRepository.GetAllAsync(cancellationToken).ConfigureAwait(false);
             foreach (var obj in values)
             {
                 if (!this._cache.ContainsKey(obj.Id))
@@ -82,9 +96,21 @@ public class CachedRepository<T> : IRepository<T>
     }
 
     /// <inheritdoc/>
-    public async ValueTask<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public ValueTask<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        await this.GetAllAsync(cancellationToken).ConfigureAwait(false);
+        return this.GetByIdAsync(id, null, cancellationToken);
+    }
+
+    /// <summary>
+    /// Gets an object by identifier, using the given originating context to load the data.
+    /// </summary>
+    /// <param name="id">The identifier.</param>
+    /// <param name="context">The originating context, or <c>null</c>.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The object with the identifier.</returns>
+    internal async ValueTask<T?> GetByIdAsync(Guid id, EntityFrameworkContextBase? context, CancellationToken cancellationToken = default)
+    {
+        await this.GetAllAsync(context, cancellationToken).ConfigureAwait(false);
         this._cache.TryGetValue(id, out var result);
         return result;
     }
@@ -93,6 +119,18 @@ public class CachedRepository<T> : IRepository<T>
     async ValueTask<object?> IRepository.GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await this.GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    async ValueTask<IEnumerable> IContextAwareRepository.GetAllAsync(EntityFrameworkContextBase? context, CancellationToken cancellationToken)
+    {
+        return await this.GetAllAsync(context, cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    async ValueTask<object?> IContextAwareRepository.GetByIdAsync(Guid id, EntityFrameworkContextBase? context, CancellationToken cancellationToken)
+    {
+        return await this.GetByIdAsync(id, context, cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>

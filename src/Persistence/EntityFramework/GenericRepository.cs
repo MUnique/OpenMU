@@ -32,12 +32,12 @@ internal class GenericRepository<T> : GenericRepositoryBase<T>
     }
 
     /// <summary>
-    /// Gets a context to work with. If no context is currently registered at the repository provider, a new one is getting created.
+    /// Gets a context to work with. If no originating context is given, a new temporary one is getting created.
     /// </summary>
+    /// <param name="origin">The originating context, or <c>null</c> to create a temporary context.</param>
     /// <returns>The context.</returns>
-    protected override EntityFrameworkContextBase GetContext()
+    protected override EntityFrameworkContextBase GetContext(EntityFrameworkContextBase? origin)
     {
-        var context = this.RepositoryProvider.ContextStack.GetCurrentContext() as EntityFrameworkContextBase;
-        return new EntityFrameworkContext(context?.Context ?? new TypedContext(typeof(T)), this._loggerFactory, this.RepositoryProvider, context is null, this._changeListener);
+        return new EntityFrameworkContext(origin?.Context ?? new TypedContext(typeof(T)), this._loggerFactory, this.RepositoryProvider, origin is null, this._changeListener);
     }
 }

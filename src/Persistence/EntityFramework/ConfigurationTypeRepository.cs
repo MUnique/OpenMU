@@ -1,4 +1,4 @@
-﻿// <copyright file="ConfigurationTypeRepository.cs" company="MUnique">
+// <copyright file="ConfigurationTypeRepository.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -19,7 +19,7 @@ using MUnique.OpenMU.Persistence.EntityFramework.Model;
 /// A repository which gets its data from the <see cref="EntityDataContext.CurrentGameConfiguration"/>, without additionally touching the database.
 /// </summary>
 /// <typeparam name="T">The data object type.</typeparam>
-internal class ConfigurationTypeRepository<T> : IRepository<T>, IConfigurationTypeRepository
+internal class ConfigurationTypeRepository<T> : IRepository<T>, IConfigurationTypeRepository, IContextAwareRepository
     where T : class
 {
     private readonly IContextAwareRepositoryProvider _repositoryProvider;
@@ -51,26 +51,21 @@ internal class ConfigurationTypeRepository<T> : IRepository<T>, IConfigurationTy
     /// <summary>
     /// Gets all objects by using the <see cref="_collectionSelector"/> to the current <see cref="GameConfiguration"/>.
     /// </summary>
+    /// <param name="context">The originating context which holds the current game configuration.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>All objects of the repository.</returns>
-    public ValueTask<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken = default)
+    public ValueTask<IEnumerable<T>> GetAllAsync(EntityFrameworkContextBase? context, CancellationToken cancellationToken = default)
     {
-        return ValueTask.FromResult<IEnumerable<T>>(this._collectionSelector(this.GetCurrentGameConfiguration()));
-    }
-
-    /// <inheritdoc/>
-    async ValueTask<IEnumerable> IRepository.GetAllAsync(CancellationToken cancellationToken = default)
-    {
-        cancellationToken.ThrowIfCancellationRequested();
-        return await this.GetAllAsync(cancellationToken).ConfigureAwait(false);
+        return ValueTask.FromResult<IEnumerable<T>>(this._collectionSelector(this.GetCurrentGameConfiguration(context)));
     }
 
     /// <inheritdoc />
-    public ValueTask<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public ValueTask<T?> GetByIdAsync(Guid id, EntityFrameworkContextBase? context, CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        this.EnsureCacheForCurrentConfiguration();
+        this.EnsureCacheForCurrentConfiguration(context);
 
-        var dictionary = this._cache[this.GetCurrentGameConfiguration()];
+        var dictionary = this._cache[this.GetCurrentGameConfiguration(context)];
         if (dictionary.TryGetValue(id, out var result))
         {
             return ValueTask.FromResult<T?>(result);
@@ -80,16 +75,47 @@ internal class ConfigurationTypeRepository<T> : IRepository<T>, IConfigurationTy
     }
 
     /// <inheritdoc />
-    public async ValueTask<bool> DeleteAsync(object obj)
+    public ValueTask<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        if (obj is not T item)
-        {
-            return false;
-        }
+        return this.GetAllAsync((EntityFrameworkContextBase?)null, cancellationToken);
+    }
 
-        var gameConfiguration = this.GetCurrentGameConfiguration();
-        var collection = this._collectionSelector(gameConfiguration);
-        return collection.Remove(item);
+    /// <inheritdoc />
+    public ValueTask<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return this.GetByIdAsync(id, (EntityFrameworkContextBase?)null, cancellationToken);
+    }
+
+    /// <inheritdoc/>
+    async ValueTask<IEnumerable> IRepository.GetAllAsync(CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        return await this.GetAllAsync((EntityFrameworkContextBase?)null, cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    async ValueTask<object?> IRepository.GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    {
+        return await this.GetByIdAsync(id, (EntityFrameworkContextBase?)null, cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    async ValueTask<IEnumerable> IContextAwareRepository.GetAllAsync(EntityFrameworkContextBase? context, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        return await this.GetAllAsync(context, cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    async ValueTask<object?> IContextAwareRepository.GetByIdAsync(Guid id, EntityFrameworkContextBase? context, CancellationToken cancellationToken)
+    {
+        return await this.GetByIdAsync(id, context, cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public ValueTask<bool> DeleteAsync(object obj)
+    {
+        throw new NotSupportedException("Deleting configuration types directly through the repository is not supported. Delete via the owning IContext instead.");
     }
 
     /// <inheritdoc />
@@ -103,19 +129,14 @@ internal class ConfigurationTypeRepository<T> : IRepository<T>, IConfigurationTy
         return false;
     }
 
-    /// <inheritdoc />
-    async ValueTask<object?> IRepository.GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
-    {
-        return await this.GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
-    }
-
     /// <summary>
-    /// Ensures the cache for the current configuration.
+    /// Ensures the cache for the configuration of the given originating context.
     /// TODO: Call this at a better place and time - so that we can remove this check before every GetById
     /// </summary>
-    public void EnsureCacheForCurrentConfiguration()
+    /// <param name="context">The originating context which holds the current game configuration.</param>
+    public void EnsureCacheForCurrentConfiguration(EntityFrameworkContextBase? context)
     {
-        var configuration = this.GetCurrentGameConfiguration();
+        var configuration = this.GetCurrentGameConfiguration(context);
         if (this._cache.ContainsKey(configuration))
         {
             return;
@@ -162,14 +183,14 @@ internal class ConfigurationTypeRepository<T> : IRepository<T>, IConfigurationTy
         }
     }
 
-    private GameConfiguration GetCurrentGameConfiguration()
+    private GameConfiguration GetCurrentGameConfiguration(EntityFrameworkContextBase? context)
     {
-        var context = (this._repositoryProvider.ContextStack.GetCurrentContext() as CachingEntityFrameworkContext)?.Context as EntityDataContext;
-        if (context is null)
+        var dbContext = (context as CachingEntityFrameworkContext)?.Context as EntityDataContext;
+        if (dbContext is null)
         {
             throw new InvalidOperationException("This repository can only be used within an account context.");
         }
 
-        return context.CurrentGameConfiguration ?? throw new InvalidOperationException("There is no current configuration.");
+        return dbContext.CurrentGameConfiguration ?? throw new InvalidOperationException("There is no current configuration.");
     }
 }
