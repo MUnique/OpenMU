@@ -29,7 +29,8 @@ steps:
   displayName: 'dotnet build $(buildConfiguration)'
 
 - task: DotNetCoreCLI@2
+  displayName: 'dotnet test'
   inputs:
     command: test
     projects: 'tests/*Tests/*.csproj'
-    arguments: '--configuration $(buildConfiguration)'
+    arguments: '--configuration $(buildConfiguration) --no-build'
