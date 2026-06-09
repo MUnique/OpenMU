@@ -170,18 +170,20 @@ else
             return;
         }
 
+        // Clear the input immediately (on the sync context) so the Send button gets disabled,
+        // preventing double-submission and preserving any text the user types while sending.
+        _message = string.Empty;
+
         if (_selectedServerId == -1)
         {
             foreach (var server in this.GameServers.Values.Where(s => s.ServerState == ServerState.Started))
             {
-                await server.SendGlobalMessageAsync(message, MessageType.GoldenCenter).ConfigureAwait(false);
+                await server.SendGlobalMessageAsync(message, MessageType.GoldenCenter);
             }
         }
         else if (this.GameServers.TryGetValue(_selectedServerId, out var server) && server.ServerState == ServerState.Started)
         {
-            await server.SendGlobalMessageAsync(message, MessageType.GoldenCenter).ConfigureAwait(false);
+            await server.SendGlobalMessageAsync(message, MessageType.GoldenCenter);
         }
-
-        _message = string.Empty;
     }
 }
