@@ -97,9 +97,9 @@ internal abstract class BaseMapInitializer : IMapInitializer
                 return this.MapDefinition.Number;
             }
 
-            return NumberConversionExtensions.MakeWord(
+            return (short)NumberConversionExtensions.MakeWord(
                 (byte)this._mapDefinition!.Number,
-                (byte)this._mapDefinition.Discriminator).ToSigned();
+                (byte)this._mapDefinition.Discriminator);
         }
     }
 

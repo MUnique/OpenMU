@@ -55,7 +55,7 @@ public sealed class OnlineFriend : IObservable<OnlineFriend>, IObserver<OnlineFr
     public int ServerId { get; set; }
 
     /// <summary>
-    /// Gets a value indicating whether gets a value indicating this friend is invisible or offline.
+    /// Gets a value indicating whether this friend is invisible or offline.
     /// </summary>
     public bool IsInvisibleOrOffline => this.ServerId == FriendServer.InvisibleServerId || this.ServerId == FriendServer.OfflineServerId;
 
