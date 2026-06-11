@@ -21,9 +21,9 @@ using Zuby.ADGV;
 /// </summary>
 public partial class MainForm : Form
 {
-    private readonly BindingList<ICapturedConnection> _proxiedConnections = new ();
+    private readonly BindingList<ICapturedConnection> _proxiedConnections = new();
 
-    private readonly Dictionary<ClientVersion, string> _clientVersions = new ()
+    private readonly Dictionary<ClientVersion, string> _clientVersions = new()
     {
         { new ClientVersion(106, 3, ClientLanguage.English), "Extended S6E3 (2.04d)" },
         { new ClientVersion(6, 3, ClientLanguage.English), "S6E3 (1.04d)" },
@@ -250,7 +250,7 @@ public partial class MainForm : Form
 
         var newPacket = sourceList[e.NewIndex];
         newPacket.AnalyzingRequested += this.OnPacketAnalyzingRequested;
-        
+
         if (this._filterMethod is { } filter
             && filter.DynamicInvoke(newPacket) is true)
         {
@@ -274,6 +274,7 @@ public partial class MainForm : Form
             }
         }
     }
+
     private void OnPacketFilterStringChanged(object? sender, AdvancedDataGridView.FilterEventArgs e)
     {
         try

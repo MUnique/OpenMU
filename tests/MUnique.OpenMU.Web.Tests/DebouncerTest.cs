@@ -162,7 +162,7 @@ public class DebouncerTests
         using var debouncer = new Debouncer(50);
 
         // Act & Assert
-        Assert.ThrowsAsync<ArgumentNullException>(() => 
+        Assert.ThrowsAsync<ArgumentNullException>(() =>
             debouncer.DebounceAsync((Func<Task>)null!));
     }
 
@@ -176,7 +176,7 @@ public class DebouncerTests
         using var debouncer = new Debouncer(50);
 
         // Act & Assert
-        Assert.ThrowsAsync<ArgumentNullException>(() => 
+        Assert.ThrowsAsync<ArgumentNullException>(() =>
             debouncer.DebounceAsync((Func<CancellationToken, Task>)null!));
     }
 

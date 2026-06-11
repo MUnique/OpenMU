@@ -14,7 +14,7 @@ public class LoginServer : ILoginServer
 {
     private readonly Dictionary<string, byte> _connectedAccounts = new();
 
-    private readonly AsyncLock _syncRoot = new ();
+    private readonly AsyncLock _syncRoot = new();
 
     /// <inheritdoc/>
     public async ValueTask<Dictionary<string, byte>> GetSnapshotAsync()

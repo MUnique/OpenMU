@@ -670,7 +670,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     {
         if (formatArguments.Length > 0)
         {
-             return string.Format(PlayerMessage.ResourceManager.GetString(resourceName, this.Culture) ?? string.Empty, formatArguments);
+            return string.Format(PlayerMessage.ResourceManager.GetString(resourceName, this.Culture) ?? string.Empty, formatArguments);
         }
 
         return PlayerMessage.ResourceManager.GetString(resourceName, this.Culture) ?? string.Empty;

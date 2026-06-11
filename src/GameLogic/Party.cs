@@ -91,7 +91,7 @@ public sealed class Party : AsyncDisposable
 
             newMember.Party = this;
             this._partyManager.TrackMembership(newMember.Name, this);
-            this._partyMembers = [..this._partyMembers, newMember];
+            this._partyMembers = [.. this._partyMembers, newMember];
         }
 
         await this.SendPartyListAsync().ConfigureAwait(false);

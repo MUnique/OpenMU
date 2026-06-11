@@ -203,7 +203,6 @@ public class ExDbClient
 
         void Extract(Span<byte> packet)
         {
-
             clientName = packet.ExtractString(3, 10, Encoding.UTF8);
             friendName = packet.ExtractString(13, 10, Encoding.UTF8);
             clientPlayerId = packet.TryMakeWordBigEndian(24);

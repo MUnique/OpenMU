@@ -26,7 +26,6 @@ public class DockerConnectServerInstanceManager : IConnectServerInstanceManager
     public async ValueTask InitializeConnectServerAsync(Guid connectServerDefinitionId)
     {
         // TODO: Implement this... by starting a new docker container
-
     }
 
     /// <inheritdoc />
@@ -38,6 +37,7 @@ public class DockerConnectServerInstanceManager : IConnectServerInstanceManager
         if (connectServers is not null)
         {
             await connectServers.ShutdownAsync().ConfigureAwait(false);
+
             // TODO: Remove the docker container
         }
     }

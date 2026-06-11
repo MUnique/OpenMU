@@ -23,8 +23,8 @@ public class PlugInManager
     private readonly ServiceContainer _serviceContainer;
     private readonly IDictionary<Type, object> _plugInPoints = new Dictionary<Type, object>();
     private readonly IDictionary<Guid, Type> _knownPlugIns = new ConcurrentDictionary<Guid, Type>();
-    private readonly ConcurrentDictionary<Type, ISet<Type>> _knownPlugInsPerInterfaceType = new ();
-    private readonly ConcurrentDictionary<Guid, Type> _activePlugIns = new ();
+    private readonly ConcurrentDictionary<Type, ISet<Type>> _knownPlugInsPerInterfaceType = new();
+    private readonly ConcurrentDictionary<Guid, Type> _activePlugIns = new();
     private object? _lastCreatedPlugIn;
 
     /// <summary>
@@ -520,8 +520,7 @@ public class PlugInManager
                     {
                         return Enumerable.Empty<Type>();
                     }
-                }
-            );
+                });
     }
 
     private IEnumerable<Type> DiscoverPlugIns(Assembly assembly)

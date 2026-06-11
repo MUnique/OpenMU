@@ -79,13 +79,13 @@ public class CombatHandlerTests
         var monster = await this.CreateMonsterAsync(monsterPosition).ConfigureAwait(false);
         await player.CurrentMap!.AddAsync(monster).ConfigureAwait(false);
 
-        var config = new MuHelperSettings 
-        { 
-            UseDrainLife = true, 
+        var config = new MuHelperSettings
+        {
+            UseDrainLife = true,
             HealThresholdPercent = 50,
             HuntingRange = 10
         };
-        
+
         // Add Drain Life skill to player
         var drainSkill = new TestSkill
         {
@@ -118,7 +118,7 @@ public class CombatHandlerTests
         };
         monsterDefinition.Attributes.Add(new MonsterAttribute { AttributeDefinition = Stats.MaximumHealth, Value = 1000 });
         monsterDefinition.Attributes.Add(new MonsterAttribute { AttributeDefinition = Stats.DefenseBase, Value = 100 });
-        
+
         var map = await this._gameContext.GetMapAsync(0).ConfigureAwait(false)!;
         var spawnArea = new MonsterSpawnArea
         {
@@ -132,17 +132,17 @@ public class CombatHandlerTests
         };
 
         var monster = new Monster(
-            spawnArea, 
-            monsterDefinition, 
-            map, 
-            NullDropGenerator.Instance, 
-            new Mock<INpcIntelligence>().Object, 
-            this._gameContext.PlugInManager, 
+            spawnArea,
+            monsterDefinition,
+            map,
+            NullDropGenerator.Instance,
+            new Mock<INpcIntelligence>().Object,
+            this._gameContext.PlugInManager,
             this._gameContext.PathFinderPool);
-        
+
         monster.Initialize();
         monster.Attributes[Stats.CurrentHealth] = 100;
-        
+
         return monster;
     }
 

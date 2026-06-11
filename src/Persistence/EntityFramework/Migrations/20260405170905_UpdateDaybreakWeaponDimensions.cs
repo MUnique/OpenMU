@@ -17,7 +17,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                 @"UPDATE config.""ItemDefinition"" 
                 SET ""Height"" = 4 
                 WHERE ""Group"" = 0 AND ""Number"" = 24");
-}
+        }
+
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {

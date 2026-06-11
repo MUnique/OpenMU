@@ -12,7 +12,6 @@ using System.Text.RegularExpressions;
 /// </summary>
 public static class ModelResourceProvider
 {
-
     private static readonly Regex WordSeparatorRegex = new("([a-z])([A-Z])", RegexOptions.Compiled);
 
     private static readonly ConcurrentDictionary<Assembly, ResourceManager?> ResourceManagersByAssembly = new();

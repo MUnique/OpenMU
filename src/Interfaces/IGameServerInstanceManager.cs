@@ -9,7 +9,6 @@ namespace MUnique.OpenMU.Interfaces;
 /// </summary>
 public interface IGameServerInstanceManager
 {
-
     /// <summary>
     /// Restarts all servers of this container.
     /// </summary>

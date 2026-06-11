@@ -25,7 +25,7 @@ using MUnique.OpenMU.PlugIns;
 public sealed class Connection : PacketPipeReaderBase, IConnection
 {
     private static readonly ActivitySource ActivitySource = new(typeof(Connection).FullName ?? nameof(Connection));
-    private static readonly Meter ConnectionMeter = new (MeterName);
+    private static readonly Meter ConnectionMeter = new(MeterName);
     private static readonly Counter<long> IncomingBytesCounter = ConnectionMeter.CreateCounter<long>("IncomingBytes", "bytes");
     private static readonly Counter<long> OutgoingBytesCounter = ConnectionMeter.CreateCounter<long>("OutgoingBytes", "bytes");
     private static readonly Counter<long> InvalidBlocksCounter = ConnectionMeter.CreateCounter<long>("InvalidBlocks");

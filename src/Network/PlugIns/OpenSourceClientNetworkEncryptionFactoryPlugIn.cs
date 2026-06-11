@@ -21,7 +21,7 @@ using MUnique.OpenMU.PlugIns;
 public class OpenSourceClientNetworkEncryptionFactoryPlugIn : INetworkEncryptionFactoryPlugIn
 {
     /// <inheritdoc />
-    public ClientVersion Key { get; } = new (106, 3, ClientLanguage.English);
+    public ClientVersion Key { get; } = new(106, 3, ClientLanguage.English);
 
     /// <inheritdoc />
     public IPipelinedEncryptor CreateEncryptor(PipeWriter target, DataDirection direction)

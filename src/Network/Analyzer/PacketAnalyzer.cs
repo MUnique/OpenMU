@@ -397,6 +397,7 @@ public sealed class PacketAnalyzer : IDisposable
         {
             return type.Length;
         }
+
         return null;
     }
 
@@ -428,13 +429,12 @@ public sealed class PacketAnalyzer : IDisposable
         if (packetType.Structures is not null
             && type.Fields.FirstOrDefault(f => f.Type == FieldType.StructureArray) is { } nestedStructField)
         {
-
             var countField = type.Fields.First(f => f.Name == nestedStructField.ItemCountField);
             var count = restData[countField.Index];
             var nestedStructType = packetType.Structures.First(s => s.Name == nestedStructField.TypeName);
             return nestedStructField.Index + (count * nestedStructType.Length);
-
         }
+
         if (this._clientVersionValue == ExtendedVersionValue
             && type.Fields.FirstOrDefault(f => f.Type == FieldType.Binary) is { } binaryField
             && binaryField.Name?.EndsWith("ItemData") is true)
@@ -442,7 +442,7 @@ public sealed class PacketAnalyzer : IDisposable
             return binaryField.Index + DetermineItemSize(restData, binaryField);
         }
 
-        if (type.Fields.MaxBy(f => f.Index) is { Type: not (FieldType.Binary or FieldType.StructureArray)} lastField)
+        if (type.Fields.MaxBy(f => f.Index) is { Type: not (FieldType.Binary or FieldType.StructureArray) } lastField)
         {
             return lastField.Index + FieldSize(lastField.Type);
         }

@@ -53,7 +53,7 @@ internal class WarpGateHandlerPlugIn : IPacketHandlerPlugIn
         var gate = player.SelectedCharacter?.CurrentMap?.EnterGates.FirstOrDefault(g => g.Number == gateNumber);
         if (gate is null)
         {
-            player.Logger.LogWarning("Gate {0} not found in current map {1}", gateNumber,  player.SelectedCharacter?.CurrentMap);
+            player.Logger.LogWarning("Gate {0} not found in current map {1}", gateNumber, player.SelectedCharacter?.CurrentMap);
             return;
         }
 

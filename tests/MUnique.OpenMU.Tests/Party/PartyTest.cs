@@ -23,7 +23,7 @@ using MUnique.OpenMU.PlugIns;
 [TestFixture]
 public class PartyTest
 {
-    private readonly PartyKickAction _kickAction = new ();
+    private readonly PartyKickAction _kickAction = new();
 
     /// <summary>
     /// Tests if an added party member gets added to the party list.

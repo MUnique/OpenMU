@@ -18,7 +18,7 @@ public class FullGridNetwork : BaseGridNetwork
     /// </summary>
     /// <param name="allowDiagonals">If set to <c>true</c>, diagonal traveling is allowed.</param>
     public FullGridNetwork(bool allowDiagonals)
-        :base(allowDiagonals)
+        : base(allowDiagonals)
     {
         this._nodes = new Node[0x10000];
     }

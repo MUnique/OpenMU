@@ -18,6 +18,7 @@ services.AddSingleton<IGuildServer, GuildServer>()
     .AddPeristenceProvider();
 
 var metricsRegistry = new MetricsRegistry();
+
 // todo: add some meaningful metrics
 builder.AddOpenTelemetryMetrics(metricsRegistry);
 

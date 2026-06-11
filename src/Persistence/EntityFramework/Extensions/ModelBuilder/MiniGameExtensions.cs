@@ -22,7 +22,6 @@ internal static class MiniGameExtensions
         builder.Property(p => p.Message).HasConversion(LocalizedStringConverter.Instance);
     }
 
-
     /// <summary>
     /// Applies the settings for the <see cref="MiniGameSpawnWave"/> entity.
     /// </summary>
@@ -32,7 +31,6 @@ internal static class MiniGameExtensions
         builder.Property(p => p.Description).HasConversion(LocalizedStringConverter.Instance);
         builder.Property(p => p.Message).HasConversion(LocalizedStringConverter.Instance);
     }
-
 
     /// <summary>
     /// Applies the settings for the <see cref="MiniGameDefinition"/> entity.

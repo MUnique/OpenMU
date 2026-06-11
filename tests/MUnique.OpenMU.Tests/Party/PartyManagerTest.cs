@@ -155,7 +155,7 @@ public class PartyManagerTest
         // member1 is master (first member added)
         var snapshot = new OfflinePartyMember(member1);
         await party.ReplaceMemberAsync(member1, snapshot).ConfigureAwait(false);
-        
+
         Assert.That(party.PartyMaster, Is.SameAs(snapshot));
     }
 

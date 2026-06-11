@@ -18,7 +18,7 @@ using System.Runtime.CompilerServices;
 /// <typeparam name="T">The type which should be contained in the heap.</typeparam>
 public class BinaryMinHeap<T> : IPriorityQueue<T>
 {
-    private readonly List<T> _innerList = new ();
+    private readonly List<T> _innerList = new();
     private readonly IComparer<T> _elementComparer;
 
     /// <summary>Reused variable to reduce stack allocations.</summary>
